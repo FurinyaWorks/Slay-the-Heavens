@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 13:12'
-updated_date: '2026-11-14 15:17'
+updated_date: '2026-11-14 15:22'
 labels:
   - art
   - technical-spike
@@ -20,7 +20,7 @@ ordinal: 178000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-用户指定的新风格双怪实战实验；复用25.7已完成研究但不占用其工作树。兼容在途661的28图元轻量方案，仅独立实验候选并提交PR，不合并不发布。
+用户指定的新风格双怪实战实验；复用25.7既有研究但不占用其工作树。兼容在途661轻量方案。Owner最新明确只需推送并保留独立实验分支；不保留PR，不合并、不发布。此前PR669已关闭未合并，记录保留追溯。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -28,7 +28,7 @@ ordinal: 178000
 - [x] #1 保留旧391/590对照，完成双怪各三档拟合及106/127px比较与独立审美复审
 - [x] #2 接入现有战斗actor及动画回收并验证双怪完整战斗和重复开战
 - [x] #3 生成可导入GIL，记录多怪十手牌特效容量和性能；官方PC与实体手机未测明确UNVERIFIED
-- [x] #4 提交develop实验PR，交付量产建议和42怪成本估算
+- [x] #4 推送并保留独立实验分支、可试玩候选及量产建议；不保留PR，不合并不发布
 <!-- AC:END -->
 
 ## Implementation Plan
