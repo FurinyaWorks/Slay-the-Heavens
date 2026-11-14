@@ -1,0 +1,16 @@
+{
+  "receivedAtUtc": "2026-11-14T15:02:23Z",
+  "task": "TASK-25.8",
+  "evidenceType": "owner-reported-play-experience",
+  "device": "PC",
+  "quote": "可以啊这个玩起来还挺丝滑的 基本上没什么卡顿 然后我说的是pc上",
+  "finding": "User reports smooth PC play with essentially no noticeable stutter.",
+  "candidateFile": null,
+  "candidateSha256": null,
+  "candidateIdentityStatus": "awaiting owner confirmation",
+  "quantitativeFrameTiming": null,
+  "officialReadyLog": "not supplied with this feedback",
+  "physicalPhone": "UNVERIFIED",
+  "officialCapacity": "UNVERIFIED",
+  "scope": "Qualitative PC feedback only. Does not certify all four candidates, worst-case stress, visual production approval or mobile performance."
+}
