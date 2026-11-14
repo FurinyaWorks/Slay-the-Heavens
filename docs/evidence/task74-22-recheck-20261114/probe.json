@@ -1,0 +1,252 @@
+{
+  "sourceSha": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+  "baselineFixtureSha": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+  "scope": "Isolated Git repository, current committed sources and pinned Luacheck; not hosted CI or a new policy",
+  "cases": [
+    {
+      "name": "named-CC17",
+      "file": "src/lua/abyss_treasure_ui.lua",
+      "head": "9d5d7987d10060bad412123abcbf2ce793d20117",
+      "expected": 1,
+      "ratchet": {
+        "status": 1,
+        "wallMs": 3776.4051,
+        "stdout": "Quality ratchet blocked: 1 changed Lua; 1 new violations; 876977c7 -> 9d5d7987\n",
+        "stderr": "src/lua/abyss_treasure_ui.lua:144: M.auditProbe: CC new -> 17 exceeds 15\n"
+      },
+      "report": {
+        "schemaVersion": 1,
+        "base": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+        "head": "9d5d7987d10060bad412123abcbf2ce793d20117",
+        "changedLua": [
+          "src/lua/abyss_treasure_ui.lua"
+        ],
+        "status": "blocked",
+        "errors": [
+          {
+            "file": "src/lua/abyss_treasure_ui.lua",
+            "line": 144,
+            "message": "M.auditProbe: CC new -> 17 exceeds 15"
+          }
+        ],
+        "sccBefore": [
+          67,
+          11,
+          2
+        ],
+        "sccAfter": [
+          67,
+          11,
+          2
+        ]
+      },
+      "static": {
+        "status": 0,
+        "wallMs": 9404.9877,
+        "stdout": "Luacheck 1.2.0: no new diagnostics; 14 explicit historical warnings. Battle render <=10; scoped functions <=15 (Enemy AI initialize <=21); 2161 governed responsibility measurements.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "anonymous-CC17",
+      "file": "src/lua/abyss_treasure_ui.lua",
+      "head": "ad96cf660048f4b1518b19ecb10babf295c4482a",
+      "expected": 1,
+      "ratchet": {
+        "status": 1,
+        "wallMs": 2318.8621000000003,
+        "stdout": "Quality ratchet blocked: 1 changed Lua; 1 new violations; 876977c7 -> ad96cf66\n",
+        "stderr": "src/lua/abyss_treasure_ui.lua:144: M.auditProbe: CC new -> 17 exceeds 15\n"
+      },
+      "report": {
+        "schemaVersion": 1,
+        "base": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+        "head": "ad96cf660048f4b1518b19ecb10babf295c4482a",
+        "changedLua": [
+          "src/lua/abyss_treasure_ui.lua"
+        ],
+        "status": "blocked",
+        "errors": [
+          {
+            "file": "src/lua/abyss_treasure_ui.lua",
+            "line": 144,
+            "message": "M.auditProbe: CC new -> 17 exceeds 15"
+          }
+        ],
+        "sccBefore": [
+          67,
+          11,
+          2
+        ],
+        "sccAfter": [
+          67,
+          11,
+          2
+        ]
+      },
+      "static": {
+        "status": 0,
+        "wallMs": 3057.4410000000025,
+        "stdout": "Luacheck 1.2.0: no new diagnostics; 14 explicit historical warnings. Battle render <=10; scoped functions <=15 (Enemy AI initialize <=21); 2161 governed responsibility measurements.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "governed-CC17",
+      "file": "src/lua/abyss_actor_presence.lua",
+      "head": "31daa70c3528b9f7c710c96cee9d704fcbdd9cd3",
+      "expected": 1,
+      "ratchet": {
+        "status": 1,
+        "wallMs": 2157.638500000001,
+        "stdout": "Quality ratchet blocked: 1 changed Lua; 1 new violations; 876977c7 -> 31daa70c\n",
+        "stderr": "src/lua/abyss_actor_presence.lua:10: M.auditProbe: CC new -> 17 exceeds 15\n"
+      },
+      "report": {
+        "schemaVersion": 1,
+        "base": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+        "head": "31daa70c3528b9f7c710c96cee9d704fcbdd9cd3",
+        "changedLua": [
+          "src/lua/abyss_actor_presence.lua"
+        ],
+        "status": "blocked",
+        "errors": [
+          {
+            "file": "src/lua/abyss_actor_presence.lua",
+            "line": 10,
+            "message": "M.auditProbe: CC new -> 17 exceeds 15"
+          }
+        ],
+        "sccBefore": [
+          67,
+          11,
+          2
+        ],
+        "sccAfter": [
+          67,
+          11,
+          2
+        ]
+      },
+      "static": {
+        "status": 1,
+        "wallMs": 3249.808799999999,
+        "stdout": "",
+        "stderr": "Responsibility complexity check failed: [{\"file\":\"src/lua/abyss_actor_presence.lua\",\"line\":10,\"column\":1,\"code\":\"W561\",\"message\":\"Responsibility complexity 17 exceeds 15: function 'M.auditProbe'\"}]\n"
+      }
+    },
+    {
+      "name": "nested-anonymous-CC17",
+      "file": "src/lua/abyss_treasure_ui.lua",
+      "head": "f207bd62d7d45bfa580bcf14a9a37dd3ed66d5c3",
+      "expected": 1,
+      "ratchet": {
+        "status": 1,
+        "wallMs": 2368.7733000000007,
+        "stdout": "Quality ratchet blocked: 1 changed Lua; 1 new violations; 876977c7 -> f207bd62\n",
+        "stderr": "src/lua/abyss_treasure_ui.lua:144: <anonymous>: CC new -> 17 exceeds 15\n"
+      },
+      "report": {
+        "schemaVersion": 1,
+        "base": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+        "head": "f207bd62d7d45bfa580bcf14a9a37dd3ed66d5c3",
+        "changedLua": [
+          "src/lua/abyss_treasure_ui.lua"
+        ],
+        "status": "blocked",
+        "errors": [
+          {
+            "file": "src/lua/abyss_treasure_ui.lua",
+            "line": 144,
+            "message": "<anonymous>: CC new -> 17 exceeds 15"
+          }
+        ],
+        "sccBefore": [
+          67,
+          11,
+          2
+        ],
+        "sccAfter": [
+          67,
+          11,
+          2
+        ]
+      }
+    },
+    {
+      "name": "chunk-CC17",
+      "file": "src/lua/abyss_treasure_ui.lua",
+      "head": "b8e506d3ad78c65c893012c3473c94aa33d1ade8",
+      "expected": 1,
+      "ratchet": {
+        "status": 1,
+        "wallMs": 2377.136699999999,
+        "stdout": "Quality ratchet blocked: 1 changed Lua; 1 new violations; 876977c7 -> b8e506d3\n",
+        "stderr": "src/lua/abyss_treasure_ui.lua:1: <chunk>: CC 1 -> 17 exceeds 15\n"
+      },
+      "report": {
+        "schemaVersion": 1,
+        "base": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+        "head": "b8e506d3ad78c65c893012c3473c94aa33d1ade8",
+        "changedLua": [
+          "src/lua/abyss_treasure_ui.lua"
+        ],
+        "status": "blocked",
+        "errors": [
+          {
+            "file": "src/lua/abyss_treasure_ui.lua",
+            "line": 1,
+            "message": "<chunk>: CC 1 -> 17 exceeds 15"
+          }
+        ],
+        "sccBefore": [
+          67,
+          11,
+          2
+        ],
+        "sccAfter": [
+          67,
+          11,
+          2
+        ]
+      }
+    },
+    {
+      "name": "legal-CC15",
+      "file": "src/lua/abyss_treasure_ui.lua",
+      "head": "13bd9d7da5b1d9733590bf59f018cc005a9d96c3",
+      "expected": 0,
+      "ratchet": {
+        "status": 0,
+        "wallMs": 2182.724199999997,
+        "stdout": "Quality ratchet pass: 1 changed Lua; 0 new violations; 876977c7 -> 13bd9d7d\n",
+        "stderr": ""
+      },
+      "report": {
+        "schemaVersion": 1,
+        "base": "876977c7fa86c96ce19f4f274b87dffd37ef38a0",
+        "head": "13bd9d7da5b1d9733590bf59f018cc005a9d96c3",
+        "changedLua": [
+          "src/lua/abyss_treasure_ui.lua"
+        ],
+        "status": "pass",
+        "errors": [],
+        "sccBefore": [
+          67,
+          11,
+          2
+        ],
+        "sccAfter": [
+          67,
+          11,
+          2
+        ]
+      }
+    }
+  ],
+  "inputFileSha256": {
+    "scripts/check-quality-ratchet.mjs": "8546920e6616e5077d7804aaf415c83e7678d50ac26e89be50ee2873fbb2842e",
+    "scripts/quality-ratchet-policy.mjs": "f36f43240024a37cb9b59894afc3d36ff7128cf6c7236573cb8c93633b1dfa1e",
+    "scripts/lua-quality-metrics.mjs": "485221509c4a5564287ac0b8533886a5f16f6af32a480f6a3412aa4fe7d62714"
+  }
+}

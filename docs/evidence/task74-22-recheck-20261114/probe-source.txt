@@ -1,0 +1,39 @@
+import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+import {committedSources} from '../scripts/check-quality-ratchet.mjs';
+const repo=process.cwd(),sourceSha=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
+const output=path.resolve('build/task74-22-recheck'),fixture=path.join(output,'fixture');
+assert(fixture.startsWith(path.resolve('build')+path.sep));assert(!fs.existsSync(fixture));fs.mkdirSync(fixture,{recursive:true});
+const git=(...args)=>{const r=spawnSync('git',args,{cwd:fixture,encoding:'utf8',timeout:30000});assert.equal(r.status,0,r.stderr);return r.stdout.trim()};
+const put=(file,source)=>{const p=path.join(fixture,file);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,source)};
+git('init','-q');git('config','core.autocrlf','false');
+put('.gitignore','build/\n');for(const [file,source]of Object.entries(committedSources(sourceSha)))put(file,source);
+for(const file of ['.luacheckrc','config/architecture.json','config/lua-tools.json','config/luacheck-baseline.json'])put(file,fs.readFileSync(file));
+const commit=()=>{git('add','-A');git('-c','user.name=Local recheck','-c','user.email=recheck@example.invalid','commit','--no-gpg-sign','-qm','isolated local probe');return git('rev-parse','HEAD')};
+const base=commit();fs.mkdirSync(path.join(fixture,'build/tools/luacheck'),{recursive:true});fs.copyFileSync('build/tools/luacheck/luacheck.exe',path.join(fixture,'build/tools/luacheck/luacheck.exe'));
+const body=n=>' local value=0\n'+Array.from({length:n},(_,i)=>` if x==${i} then value=value+1 end\n`).join('')+' return value\n';
+const cases=[
+ {name:'named-CC17',file:'abyss_treasure_ui',code:'function M.auditProbe(x)\n'+body(16)+'end\n',expected:1,staticExpected:0},
+ {name:'anonymous-CC17',file:'abyss_treasure_ui',code:'M.auditProbe=function(x)\n'+body(16)+'end\n',expected:1,staticExpected:0},
+ {name:'governed-CC17',file:'abyss_actor_presence',code:'function M.auditProbe(x)\n'+body(16)+'end\n',expected:1,staticExpected:1},
+ {name:'nested-anonymous-CC17',file:'abyss_treasure_ui',code:'function M.auditFactory() return function(x)\n'+body(16)+'end end\n',expected:1},
+ {name:'chunk-CC17',file:'abyss_treasure_ui',code:'M.auditChunk=0\n'+Array.from({length:16},(_,i)=>`if M.auditChunk==${i} then M.auditChunk=M.auditChunk+1 end\n`).join(''),expected:1},
+ {name:'legal-CC15',file:'abyss_treasure_ui',code:'function M.auditProbe(x)\n'+body(14)+'end\n',expected:0}
+];
+const result={sourceSha,baselineFixtureSha:base,scope:'Isolated Git repository, current committed sources and pinned Luacheck; not hosted CI or a new policy',cases:[]};
+for(const probe of cases){
+ git('restore','--source='+base,'--staged','--worktree','.');
+ const file='src/lua/'+probe.file+'.lua',before=fs.readFileSync(path.join(fixture,file),'utf8');
+ assert(/return M\s*$/.test(before));put(file,before.replace(/return M\s*$/,probe.code+'return M\n'));
+ const head=commit(),row={name:probe.name,file,head,expected:probe.expected};
+ for(const [kind,script,expected]of [['ratchet','check-quality-ratchet.mjs',probe.expected],...(probe.staticExpected===undefined?[]:[['static','check-lua-static.mjs',probe.staticExpected]])]){
+  const start=performance.now(),args=[path.join(repo,'scripts',script),...(kind==='ratchet'?['--base',base]:[])];
+  const run=spawnSync(process.execPath,args,{cwd:fixture,encoding:'utf8',timeout:60000,maxBuffer:4*1024*1024});
+  row[kind]={status:run.status,wallMs:performance.now()-start,stdout:run.stdout,stderr:run.stderr};
+  assert.equal(run.status,expected,JSON.stringify(row));
+  if(kind==='ratchet'&&expected===1)assert.match(run.stderr,/CC .* -> 17 exceeds 15/);
+  if(kind==='ratchet')row.report=JSON.parse(fs.readFileSync(path.join(fixture,'build/quality-ratchet.json')));
+ }
+ result.cases.push(row);console.log(JSON.stringify({name:row.name,ratchet:row.ratchet.status,static:row.static?.status,ratchetMs:row.ratchet.wallMs}));
+}
+result.inputFileSha256=Object.fromEntries(['scripts/check-quality-ratchet.mjs','scripts/quality-ratchet-policy.mjs','scripts/lua-quality-metrics.mjs'].map(file=>[file,createHash('sha256').update(fs.readFileSync(file)).digest('hex')]));
+fs.writeFileSync(path.join(output,'probe.json'),JSON.stringify(result,null,2)+'\n');
