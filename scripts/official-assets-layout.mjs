@@ -78,6 +78,7 @@ export function officialAssetsTheme(source){
    const {shelfColumns,...merchant}=theme.layout.merchant.official;
    Object.assign(theme.layout.merchant,structuredClone(merchant));
    theme.layout.nativeNode.shop.columns=[...shelfColumns];
+   Object.assign(theme.layout.combatChoice,structuredClone(theme.officialAssets.choicePage));
   return theme;
 }
 function cardFace(face,theme){
@@ -239,6 +240,12 @@ export function applyOfficialAssets(trees,theme){
  let cardHosts=0,removedControls=0;
   for(const tree of trees){
    const stage=child(tree,'stage')??tree;
+   const choice=child(stage,'choicePanel'),page=theme.layout.combatChoice;
+   if(choice){
+    choice.children=choice.children.filter(node=>!/^card\d+$/.test(node.name)||Number(node.name.slice(4))<=page.columns*page.rows);
+    for(let i=0;i<page.columns*page.rows;i++)required(choice,'card'+(i+1)).position=
+     [page.origin[0]+i%page.columns*page.step[0],page.origin[1]+Math.floor(i/page.columns)*page.step[1]];
+   }
    const relicBar=child(stage,'relicBar');
    if(relicBar)for(let i=1;i<=theme.officialAssets.battleRelicBar.count;i++){
     if(!child(relicBar,'slot'+i)){

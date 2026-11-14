@@ -1,6 +1,7 @@
 -- A view of an existing core selection. Only the confirm callback issues a command.
 local Combat=require("abyss_combat")
 local Theme=require("abyss_theme")
+local PAGE_SIZE=Theme.layout.combatChoice.columns*Theme.layout.combatChoice.rows
 local CardDisplay=require("abyss_card_display")
 local CardSkin=require("abyss_card_skin")
 local M={}
@@ -128,9 +129,9 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             or kind=="discard" and "选择 "..limit().." 张手牌弃置。" or "选择 1 张手牌。"
         child("hint").text=hint.." 已选 "..#view.selected..(kind=='potion'and ' 种。'or " 张。")
         child("status").text=view.error and "选择未提交，请重新确认。" or ""
-        for slot=1,10 do
+        for slot=1,PAGE_SIZE do
             local box=child("card"..slot)
-            local card=view.cards[(view.page-1)*10+slot]
+            local card=view.cards[(view.page-1)*PAGE_SIZE+slot]
             box:SetVisible(card~=nil)
             local hit=box:GetChild("hit");hit.interactable=card~=nil and not view.confirming;hit.raycastTarget=hit.interactable
             if card then
@@ -165,8 +166,8 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         for _,name in ipairs({"before","after"}) do
             local box=root:GetChild(name)
             if box then
-                box:SetVisible(#view.cards>10)
-                local hit=box:GetChild("hit");hit.interactable=not view.confirming and (name=="before" and view.page>1 or name=="after" and view.page*10<#view.cards);hit.raycastTarget=hit.interactable
+                box:SetVisible(#view.cards>PAGE_SIZE)
+                local hit=box:GetChild("hit");hit.interactable=not view.confirming and (name=="before" and view.page>1 or name=="after" and view.page*PAGE_SIZE<#view.cards);hit.raycastTarget=hit.interactable
             end
         end
     end
@@ -183,7 +184,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         if enabled~=true or not choice then self:close();return false end
         local cards=candidates(run,kind,choice)
         if not cards or #cards==0 then self:close();return false,"stale_choice_candidates" end
-        if #cards>10 and (not root:GetChild("before") or not root:GetChild("after")) then
+        if #cards>PAGE_SIZE and (not root:GetChild("before") or not root:GetChild("after")) then
             self:close();return false,"choice_page_controls_missing"
         end
         local old=self.context
@@ -209,8 +210,8 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     end
     function view:select(slot)
         if not fresh() then return false,"stale_choice" end
-        if type(slot)~="number" or slot%1~=0 or slot<1 or slot>10 then return false,"invalid_choice_slot" end
-        local card=self.cards[(self.page-1)*10+slot]
+        if type(slot)~="number" or slot%1~=0 or slot<1 or slot>PAGE_SIZE then return false,"invalid_choice_slot" end
+        local card=self.cards[(self.page-1)*PAGE_SIZE+slot]
         if not card then return false,"invalid_choice_slot" end
         local key=self.context.kind=='potion'and card.id or card.uid
         local at=selected(key)
@@ -276,7 +277,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             return action()
         end)
     end
-    for i=1,10 do local slot=i;bind(child("card"..i),function() return view:select(slot) end) end
+    for i=1,PAGE_SIZE do local slot=i;bind(child("card"..i),function() return view:select(slot) end) end
     bind(child("confirm"),function() return view:confirm() end)
     for _,name in ipairs({"before","after"}) do
         local box=root:GetChild(name)
@@ -284,7 +285,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             local delta=name=="before" and -1 or 1
             bind(box,function()
                 local page=view.page+delta
-                if page<1 or (page-1)*10>=#view.cards then return false,"invalid_choice_page" end
+                if page<1 or (page-1)*PAGE_SIZE>=#view.cards then return false,"invalid_choice_page" end
                 view.page=page;view.generation=view.generation+1;render();return true
             end)
         end

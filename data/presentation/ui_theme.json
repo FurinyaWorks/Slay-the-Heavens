@@ -14,6 +14,7 @@
     "quit": [-450,-234,280,56]
   },
   "officialAssets": {
+    "choicePage": {"columns": 2, "rows": 1, "origin": [-108, 0]},
     "neowGuide": {
       "scale":0.945,"origin":[739,61.5],
       "cloak":"#7D827B","cloakBottom":"#222D30","outline":"#182528","void":"#111E24",
