@@ -58,13 +58,26 @@ assert(strike and browser:select(strike))
 local base=browser.pages[1]
 assert(browser.commands.upgrade() and browser.upgraded and browser.pages[1]~=base)
 assert(browser.commands.upgrade() and not browser.upgraded and browser.pages[1]==base)
+local function selectCard(id)
+ for index,row in ipairs(browser.rows)do if row.id==id then assert(browser:select(index));return end end
+ error('missing public preview '..id)
+end
+local function visibleDetail()return root:GetChild('compendiumPanel'):GetChild('detail').text end
+selectCard('body_slam')
+assert(visibleDetail():find('费用 1',1,true),'base printed cost is missing')
+assert(browser.commands.upgrade())
+assert(visibleDetail():find('费用 0',1,true),'cost-only upgrade is not visible')
+selectCard('whirlwind')
+assert(visibleDetail():find('费用 X',1,true),'X cost is not readable')
+selectCard('dazed')
+assert(visibleDetail():find('费用 不可打出',1,true),'unplayable printed cost is not readable')
 local text=('中文长说明'):rep(100)
 browser.rows[1].text=text;assert(browser:select(1))
-local detail={browser.pages[1]}
-while browser.commands.detailNext()do detail[#detail+1]=browser.pages[browser.detailPage]end
-assert(table.concat(detail)==text,'long detail lost text')
+local detail={visibleDetail()}
+while browser.commands.detailNext()do detail[#detail+1]=visibleDetail()end
+assert(table.concat(detail):sub(-#text)==text,'long detail lost text')
 browser.rows[1].text=('段落\n'):rep(50);assert(browser:select(1))
-assert(#browser.pages>1 and table.concat(browser.pages)==browser.rows[1].text,'newline-heavy detail truncated')
+assert(#browser.pages>1 and table.concat(browser.pages):sub(-#browser.rows[1].text)==browser.rows[1].text,'newline-heavy detail truncated')
 -- A pointer released on a previous page or modal generation cannot activate later.
 local nextHit=hit('compendiumPanel','next')
 assert(browser.commands.next())

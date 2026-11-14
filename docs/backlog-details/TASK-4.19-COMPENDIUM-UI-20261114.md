@@ -18,11 +18,17 @@
 - 原始 `gameLayout` 未附加图鉴时真实Lua入口测试在 `missing actual generated catalogue entries` 处失败；将上下文代际更新禁用的受控负例在 `old entry gesture survived characters transition` 处失败。负例不改工作树生产源码。
 - 主控已验证架构和固定Luacheck；新增模块归UI层，未添加告警基线例外。
 - 标题高度按仓库既有原生整行经验合同 `minFontSize * 1.45 + 4 <= height` 修正为60设计单位，标题/计数间留空；新增递归断言检查native/official/V25新控件全部文字区域。浏览器能显示不能替代该原生合同。
-- `node scripts/compendium-ui-preview.mjs` 实际构建native/official/V25三种模式，通过真实GameUI+适配器调用和既有动态控件导出器生成12份快照。先让主菜单入场动画完成，再分别采菜单/卡牌/遗物/药水。产物位于 `build/compendium-preview/`，HTML由既有 `official-assets-preview` 渲染器生成，不是手工重画的假页面。
+- `node scripts/compendium-ui-preview.mjs` 实际构建native/official/V25三种模式，通过真实GameUI+适配器调用和既有动态控件导出器生成18份快照。先让主菜单入场动画完成，再分别采菜单/卡牌/遗物/药水，另外采集费用升级前后真实图鉴子树（明确省略背景）。产物位于 `build/compendium-preview/`，HTML由既有 `official-assets-preview` 渲染器生成，不是手工重画的假页面。
 
 首次构建子进程被沙箱EPERM拦截，授权本地执行后通过。official初次构建遇到跳过LFS后两张肖像仍为指针；只读根源图的SHA256与现有selection-budget收据一致，临时补齐本树两张PNG后成功生成。提交前恢复本树原指针，不提交无关肖像变化，不修改根源图。
 
 主控已实际查看native/official/V25菜单和official三类图鉴浏览器截图，三入口没有与既有开始、帮助等命中框重叠，图鉴正文和按钮可读。未知SDK纹理仍仅显示资源ID，截图不是原神客户端或官方美术验收。
+
+## 费用预览补充复核
+
+主控随后发现仅展示效果文本会遗漏纯费用升级：例如全身撞击基础1费、升级0费，但效果描述不变。新增实际Lua断言在旧实现真实失败于 `base printed cost is missing`。现沿既有DeckUI完整卡牌阅读器的打印语义，显示类型与费用，并从当前基础/升级定义读取数值；X费与不可打出也分别呈现，不读取战斗临时费用或改变卡牌规则。
+
+回归直接检查可见详情控件，覆盖1→0、X费、不可打出；长文分页通过实际可见文本拼回完整正文，密集换行仍逐字守恒，只允许增加明确元数据前缀。修改后图鉴4项加原生启动1项共5/5通过，新的真实可见控件专项再通过，固定Luacheck无新增诊断。18场景重建成功，临时肖像输入均按Git LFS oid验证并逐字节还原。
 
 ## 尚未验收
 

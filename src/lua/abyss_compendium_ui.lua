@@ -5,6 +5,14 @@ local Controller=require('abyss_controller')
 local Chars=require('abyss_prologue').chars
 local M={}
 local kinds={cards='卡牌图鉴',relics='遗物图鉴',potions='药水图鉴'}
+local cardTypes={attack='攻击',skill='技能',power='能力',status='状态',curse='诅咒'}
+local function detailText(row,kind)
+    if kind~='cards'then return row.text end
+    local definition=row.definition
+    -- Match the existing full card reader's printed cost, not combat spending.
+    local cost=definition.cost==-2 and '不可打出' or definition.costMode=='all_energy' and 'X' or tostring(definition.cost)
+    return (cardTypes[definition.type] or definition.type)..' · 费用 '..cost..'\n\n'..row.text
+end
 local function detailPages(text)
     local chars,pages=Chars(text),{}
     local first,column,lines=1,0,1
@@ -76,7 +84,7 @@ function M.new(root,data,presentation,event,options)
         local row=browser.rows[index];if not row then return false end
         browser.page=math.floor((index-1)/Theme.layout.compendium.rows)+1
         browser.selected,browser.upgraded,browser.detailPage=row,false,1
-        browser.pages=detailPages(row.text);browser.generation=browser.generation+1
+        browser.pages=detailPages(detailText(row,browser.kind));browser.generation=browser.generation+1
         return browser:render()
     end
     function browser.open(_,kind)
@@ -116,7 +124,7 @@ function M.new(root,data,presentation,event,options)
         if browser.kind~='cards' or not browser.selected then return false end
         local row=browser.catalog:card(browser.selected.id,not browser.upgraded)
         if not row then return false end
-        browser.upgraded=not browser.upgraded;browser.pages=detailPages(row.text);browser.detailPage=1;browser.generation=browser.generation+1
+        browser.upgraded=not browser.upgraded;browser.pages=detailPages(detailText(row,browser.kind));browser.detailPage=1;browser.generation=browser.generation+1
         return browser:render()
     end,30)
     for _,pair in ipairs({{'detailPrevious',-1},{'detailNext',1}})do
