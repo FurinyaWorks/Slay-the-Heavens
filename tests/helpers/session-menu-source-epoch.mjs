@@ -24,6 +24,6 @@ export function extendSessionMenuEpoch(original){
  targets.sessionMenuPrior={commit:patch.baseCommit,files:pad(prior.current)};
  const owners=paths.filter(p=>Object.values(targets).some(t=>t.files[p]?.sha256!==current[p]?.sha256));
  return createSourceEpochProjector(freeze({...prior,currentTreeCommitted:false,
-  currentCommit:patch.menuCommit,currentCommitRole:'exact reviewed menu continuation over release sources',current,targets,owners}),
+  currentCommit:prior.currentCommit,currentCommitRole:'exact reviewed menu continuation over release sources',current,targets,owners}),
  {allowConfigLayout:true,reuseFrozenInput:true});
 }
