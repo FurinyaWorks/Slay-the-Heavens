@@ -222,6 +222,7 @@ function OnStart()
                 print("ABYSS_UI settlement_requested " .. (victory and "victory" or "defeat"))
                 return true
             end })
+        require('abyss_node_resource_hints').attach(view,stage,Enum.CursorEventType.CursorClick,Enum.CursorEventType)
         view:resize(width, height)
         canvasWidth, canvasHeight = width, height
         script:EnableUpdate(true)

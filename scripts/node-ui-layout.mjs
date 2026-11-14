@@ -208,6 +208,12 @@ export function nodeLayout(theme = nativeTheme) {
       text('description',[0,-138,800,60],'',font.heading,color.text),
       ...Array.from({length:layout.roomMotion.sparkCount},(_,i)=>picture(`spark${i+1}`,[0,40,layout.roomMotion.sparkSize,layout.roomMotion.sparkSize],image.diamond,color.goldBright)),
     ])));
+  controls.push(group('resourceHints',['hp','gold'].map(kind=>{
+    const icon=layout.topBar[kind+'Icon'],value=layout.topBar[kind];
+    const left=Math.min(icon[0]-icon[2]/2,value[0]-value[2]/2),right=Math.max(icon[0]+icon[2]/2,value[0]+value[2]/2);
+    const size=[Math.max(44,right-left),Math.max(44,value[3])];
+    return {name:kind,kind:'container',position:[(left+right)/2,value[1]],size,children:[hit(size)]};
+  }),true));
   return { name: 'AbyssNodes', script: 'abyss_ui', showCursor: true, blockKeys: true, blockCursor: true,
     controls: [{ name: 'nodePanel', kind: 'container', size: [...theme.canvas.base], children: controls }] };
 }
