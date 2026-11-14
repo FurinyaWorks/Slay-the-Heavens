@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 13:12'
-updated_date: '2026-11-14 14:45'
+updated_date: '2026-11-14 14:50'
 labels:
   - art
   - technical-spike
@@ -28,7 +28,7 @@ ordinal: 178000
 - [x] #1 保留旧391/590对照，完成双怪各三档拟合及106/127px比较与独立审美复审
 - [x] #2 接入现有战斗actor及动画回收并验证双怪完整战斗和重复开战
 - [x] #3 生成可导入GIL，记录多怪十手牌特效容量和性能；官方PC与实体手机未测明确UNVERIFIED
-- [ ] #4 提交develop实验PR，交付量产建议和42怪成本估算
+- [x] #4 提交develop实验PR，交付量产建议和42怪成本估算
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -47,4 +47,6 @@ ordinal: 178000
 本轮三套候选各26项真实生产Lua/SDK测试PASS、各3冷/5重开、全创建销毁相等且0残留；另4项#661原轻量共存PASS（池32、双怪14/12，全目录最大28）。独立代码与兼容增量复审均PASS。Windows交付目录：F:/New folder/交付/怪物低多边形实验-20261114；官方PC、实体手机、官方容量保持UNVERIFIED，状态暂保留In Progress待用户导入反馈。完整证据附件：experiments/monster-lowpoly-combat/README.md、evidence/AB.json与verification.json。
 
 verify:backlog首次指出M9索引缺任务引用；已在独立工作树docs/MILESTONES.md补一条任务链接，不改里程碑范围或门禁。Fast选测对新实验目录无映射，未新增ci:full标签；本地实际执行4项合同+78项完整SDK检查+4项兼容检查及冻结链验证，常规CI结果另报。
+
+已提交实验PR https://github.com/FurinyaWorks/Slay-the-Heavens/pull/669 ，未合并、未发布、未启用自动合并。独立分支feat/monster-lowpoly-combat；四份GIL已按manifest核对并交付到Windows独立目录。三套各26 SDK检查+4兼容检查、4合同、冻结链及verify:backlog通过；现有Fast选择器无映射，常规PR CI未宣称通过。官方PC由用户自行导入，实体手机/官方容量未验，任务维持In Progress等待本轮真实导入反馈。
 <!-- SECTION:NOTES:END -->
