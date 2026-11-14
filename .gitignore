@@ -4,6 +4,7 @@
 node_modules/
 tools/vendor/
 build/
+/playtest/
 __pycache__/
 
 # OS
