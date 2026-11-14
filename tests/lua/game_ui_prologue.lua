@@ -46,7 +46,7 @@ test("a competition start opens Neow instead of the camera", function()
     root.ui = ui
     assert(F.start(ui))
     assert(ui.mode == "node" and ui.run.nodeFlow.event.id == "neow" and ui.run.nodeFlow.event.stage == "neow_intro")
-    assert(ui.run.nodeFlow.event.body == Narrative.flow.intro.full, "approved background appears in the blessing node")
+    assert(ui.run.nodeFlow.event.body == "", "Neow core only records stage; UI resolves approved copy")
     local event = root:GetChild("nodePanel"):GetChild("eventView")
     assert(event:GetChild("neowFigure").visible and not event:GetChild("art").visible)
     assert(event:GetChild("caption").text == "七天神像")

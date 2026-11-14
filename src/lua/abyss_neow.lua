@@ -10,7 +10,6 @@ local Transform=require('abyss_transform_card')
 local Potions=require('abyss_potion_random')
 local Hooks=require('abyss_relic_hooks')
 local Copy=require('abyss_combat').copy
-local Narrative=require('abyss_narrative')
 local M={}
 local category0={'THREE_CARDS','ONE_RANDOM_RARE_CARD','REMOVE_CARD','UPGRADE_CARD','TRANSFORM_CARD','RANDOM_COLORLESS'}
 local category1={'THREE_SMALL_POTIONS','RANDOM_COMMON_RELIC','TEN_PERCENT_HP_BONUS','THREE_ENEMY_KILL','HUNDRED_GOLD'}
@@ -37,7 +36,8 @@ function M.prepare(_run,event,history)
  if type(history)~='table' or type(history.bossCount)~='number' or history.bossCount<0 or history.bossCount%1~=0 then
   return false,'neow_history_unavailable'
  end
- event.stage,event.body='neow_intro',Narrative.flow.intro.full
+ -- The core owns event state; the UI reads approved story copy on this stage.
+ event.stage,event.body='neow_intro',''
  event.neowBossCount=history.bossCount
  return true
 end

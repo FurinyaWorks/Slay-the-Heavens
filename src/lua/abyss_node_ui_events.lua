@@ -215,6 +215,9 @@ function M.install(ctx)
         local body
         local function eventOutcomeBody()
             body=result and result.text or node.event and node.event.body or copy.body
+            if not result and id=='neow' and node.event and node.event.stage=='neow_intro' then
+                body=Narrative.flow.intro.full
+            end
             if not result and node.event and node.event.stage=='result' and node.event.obtainedRelicId then
                 body=body..'\n获得遗物：'..ctx.relicName(node.event.obtainedRelicId)..'。'
             end
