@@ -11,7 +11,7 @@ test('shared official HP and gold keep complete values at the approved number si
  const battle=child(gameLayout(),'battlePanel'),theme=nativeTheme;
  prepareOfficialRunHud(battle,theme);finishOfficialRunBar(battle,theme);
  const component=officialRunHudComponent(battle),hud=theme.officialAssets.battleHud;
- for(const [name,value]of [['hp','999/999'],['gold','999999']]){
+ for(const [name,value]of [['hp','9999/9999'],['gold','999999']]){
   const node=component.resources[name];
   assert.equal(node.text.fontSize,18);assert.equal(node.text.minFontSize,18,'critical values must not shrink');
   assert(value.length*18*.6+4<=node.size[0],name+' complete value must fit');

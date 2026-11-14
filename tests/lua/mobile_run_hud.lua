@@ -44,7 +44,11 @@ for _,profile in ipairs({'official-assets-first','v25-reference'})do
   refresh();assert(index(map)<index(relic),'map paper covered the shared relic component')
   assert(index(relic)<index(exit),'map paper covered the settings entry')
   for _,face in ipairs(exit:GetChild('open'):GetChild('hit'):GetChildren())do
-   assert(face:GetChild('officialBattleHud').visible and not face:GetChild('label').visible,'settings native face was not activated')
+   if profile=='official-assets-first' then
+    assert(face:GetChild('officialBattleHud').visible and not face:GetChild('label').visible,'settings native face was not activated')
+   else
+    assert(not face:GetChild('officialBattleHud').visible and face:GetChild('label').visible,'legacy settings must retain their own visible face')
+   end
   end
  end
  self.routeOpen=false;self.mode='map';refresh();assert(index(map)<index(relic))
