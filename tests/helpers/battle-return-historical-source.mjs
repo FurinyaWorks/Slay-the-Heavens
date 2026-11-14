@@ -30,3 +30,7 @@ export function assertBattleReturnClosure(readSource){
   assert(typeof actual==='string'&&actual.replaceAll('\r\n','\n')===pair[1].source,'combined linked owner identity: battle return continuation '+path);
  }
 }
+export function assertBattleReturnOwner(path,source){
+ const pair=bindings.get(path);
+ assert(pair&&typeof source==='string'&&source.replaceAll('\r\n','\n')===pair[1].source,'combined linked owner identity: battle return sampled owner '+path);
+}

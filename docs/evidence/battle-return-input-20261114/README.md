@@ -29,6 +29,8 @@
 
 新增 transientCard 邻接也曾误把自动手牌悬浮信息当 modal。9f2 的 closeInfo 明确返回 automaticCard，原 down/swallowed 允许独立动作继续；修正 fixture 为：status modal 首次只关闭、重试打开 pile；自动侧栏则同次独立 click 可打开 pile。没有为探针改生产语义。原失败及所有最终输出收在 `verification-logs.json.gz`。
 
+独立复审在首个本地提交 c253a389 发现来源桥的同次调用读数变换盲点：先验证 after，再读 owner 为 before，可能借旧 hash 通过。后续修复限定本次所有实际采样 pair owner 均为 exact after；若较早 raw owner 为 before、稍后才遇新 continuation，也回查本次先前读数并拒绝。没有跨调用授权缓存。新增 after→before、before→after、通过其他源进入后较早旧 owner 借较晚新 closure 的真实 reader 负控，原闭包合同仍执行。该问题只涉及历史验收适配器，未改变两个生产修复。
+
 ## 交接
 
 仅自己分支开发，不动发版、他人工作树或 PR。已知 `abyss_battle_details.lua`、`closeout-source-closure.json`、`copy-integration-source-closure.mjs`、`integration-source-epoch.test.mjs` 与开放 PR661 存在文件持有重叠；后续集成必须重新核对最新来源，不能直接覆盖。用户允许独立评审后正常 push，禁止创建 PR 或集成；本片不自动合并、不发布，不占桌面输入。

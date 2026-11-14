@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
-import {projectBattleReturnSource,isBattleReturnPredecessor,assertBattleReturnClosure} from '../battle-return-historical-source.mjs';
+import {projectBattleReturnSource,isBattleReturnPredecessor,assertBattleReturnClosure,assertBattleReturnOwner} from '../battle-return-historical-source.mjs';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -108,13 +108,20 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   if(typeof source!=='string'||!current||!before||(!battleContinuation&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
   let battleClosureChecked=battleContinuation;
+  const battleRawOwners=[];
   if(battleClosureChecked)assertBattleReturnClosure(readSource);
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];
    if(isBattleReturnPredecessor(owner,binding)){
+    battleRawOwners.push([owner,actual]);
     const historicalOwner=projectBattleReturnSource(owner,actual);
-    if(historicalOwner!==actual&&!battleClosureChecked){assertBattleReturnClosure(readSource);battleClosureChecked=true;}
+    if(historicalOwner!==actual&&!battleClosureChecked){
+     assertBattleReturnClosure(readSource);
+     for(const [sampledPath,sampledSource]of battleRawOwners)assertBattleReturnOwner(sampledPath,sampledSource);
+     battleClosureChecked=true;
+    }
+    if(battleClosureChecked)assertBattleReturnOwner(owner,actual);
     actual=historicalOwner;
    }
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);

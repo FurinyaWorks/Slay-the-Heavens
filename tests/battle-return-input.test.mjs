@@ -46,6 +46,20 @@ test('historical admission rechecks both source owners and foreign bytes never a
   const live=read(path);assert.equal(epoch.preCombinedSource(path,live,{target:'prior',readSource:read}),current[path].source);
   for(const owner of owners)assert.throws(()=>epoch.preCombinedSource(path,live,{target:'prior',readSource:p=>read(p)+(p===owner?'\n':'')}),/linked owner identity/);
   for(const owner of owners)assert.throws(()=>epoch.preCombinedSource(path,live,{target:'prior',readSource:p=>p===owner?current[p].source:read(p)}),/linked owner identity/,'mixed old/new owner rejected');
+  for(const owner of owners)for(const reverse of [false,true]){
+   let calls=0;
+   const changing=p=>p===owner&&((++calls===1)!==reverse)?read(p):p===owner?current[p].source:read(p);
+   assert.throws(()=>epoch.preCombinedSource(path,live,{target:'prior',readSource:changing}),/linked owner identity/,'within-call '+(reverse?'before-after':'after-before')+' rejected');
+  }
   let reads=0;assert.equal(epoch.preCombinedSource(path,live+'\n',{target:'prior',readSource(){reads++;throw Error('unexpected read');}}),live+'\n');assert.equal(reads,0);
+ }
+ const unrelated='src/lua/unrelated.lua',expanded={...current,[unrelated]:binding('return 1\n')};
+ for(const owner of owners){
+  const implicit=createSourceEpochProjector({schemaVersion:1,normalization:'LF',currentCommit:commit,
+   owners:[owner,...owners.filter(p=>p!==owner),unrelated],current:expanded,
+   targets:{prior:{commit,files:{...expanded,[unrelated]:binding('return 0\n')}}}});
+  let calls=0;
+  const changing=p=>p===unrelated?expanded[p].source:p===owner&&++calls===1?current[p].source:read(p);
+  assert.throws(()=>implicit.preCombinedSource(unrelated,expanded[unrelated].source,{target:'prior',readSource:changing}),/linked owner identity/,'earlier raw old owner cannot borrow later new closure');
  }
 });
