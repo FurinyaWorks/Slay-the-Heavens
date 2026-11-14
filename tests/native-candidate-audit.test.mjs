@@ -2,8 +2,38 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compareNativeCandidate, requireSourceSha, candidateEntrySource } from '../scripts/native-candidate-audit.mjs';
+import {auditPortraitTemplateBindings} from '../scripts/audit-native-candidate.mjs';
+import {selectionHalfImage,selectionHalfTemplate} from '../scripts/lumine-selection-background.mjs';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/native-candidate-audit/readback-slice.json', import.meta.url)));
+
+test('official selection audit binds the read-back half triangle to the same candidate and distinct native IDs',()=>{
+ const sourceSha='a'.repeat(40),candidateHash='b'.repeat(64);
+ const rows=[{template:{name:'AbyssReadyCardImage'},templateIndex:77},{template:{name:'AbyssReadyCardGroup'},templateIndex:88},
+  {template:selectionHalfImage(),templateIndex:99}];
+ const receipt={sourceCommit:sourceSha,candidate:{sha256:candidateHash},officialPortraits:{imageTemplateIndex:77,containerTemplateIndex:88,selectionHalfImageTemplateIndex:99}};
+ const options={sourceSha,candidateHash,officialAssets:true,selectionAvatar:true};
+ assert.deepEqual(auditPortraitTemplateBindings(receipt,rows,options),{image:rows[0],container:rows[1],half:rows[2]});
+ assert.deepEqual(auditPortraitTemplateBindings(receipt,rows,{...options,officialAssets:false}),{image:rows[0],container:rows[1]});
+ for(const bad of [[],rows.slice(0,2),[...rows,rows[2]],rows.map((row,i)=>i===2?{...row,templateIndex:0}:row),
+  rows.map((row,i)=>i===2?{...row,templateIndex:77}:row),[...rows,{template:{name:'foreign'},templateIndex:99}]])
+  assert.throws(()=>auditPortraitTemplateBindings(receipt,bad,options),/template binding/);
+ for(const changed of [{...receipt,sourceCommit:'c'.repeat(40)},{...receipt,candidate:{sha256:'d'.repeat(64)}},
+  {...receipt,officialPortraits:{...receipt.officialPortraits,selectionHalfImageTemplateIndex:100}}])
+  assert.throws(()=>auditPortraitTemplateBindings(changed,rows,options),/template binding/);
+});
+
+test('official selection half-template still undergoes complete ID and geometry readback comparison',()=>{
+ const check=change=>audit(input=>{
+  const wanted={template:selectionHalfImage(),templateIndex:99};
+  input.expected.runtimeTemplates=[wanted];input.actual.runtimeTemplates=[structuredClone(wanted)];
+  change(input.actual.runtimeTemplates);
+ });
+ assert.equal(check(()=>{}).ok,true);
+ for(const change of [rows=>rows.pop(),rows=>rows.push(structuredClone(rows[0])),rows=>{rows[0].templateIndex=100;},
+  rows=>{rows[0].template.fill.amount=.75;},rows=>{rows[0].template.image=100001;},rows=>{rows[0].template.name=selectionHalfTemplate+'Changed';}])
+  assert.equal(check(change).ok,false);
+});
 test('only a receipt bound to the exact candidate can add its exact entry marker', () => {
   const source = 'local view\nreturn view\n', hash = 'a'.repeat(64);
   const receipt = { buildId: '86e30616-6b6a-408e-b8bd-6491b9e2793c', candidate: { sha256: hash } };
