@@ -47,6 +47,56 @@ test('the copy ratchet catches changed text and missing review metadata',()=>{
   const lost=structuredClone(ledger);delete lost.fields['merchant.greet'];
   assert.throws(()=>verify(live,approved,lost),{code:'ERR_ASSERTION'});
 });
+// These literals are independent historical anchors, not a second runtime copy source.
+// Updating the runtime and approved snapshot together must not silently rewrite preserved prose.
+const preservedMerchant=Object.freeze({
+  greet:'路不好走吧？来，看看有没有用得上的。',
+  purchaseSuccess:'眼光不错。',
+  originHint:'做生意嘛，总得知道哪条路安全。',
+  leave:'前面可不像这里太平。一路小心。'
+});
+const originalLivingWall={
+  intro:'墙壁上浮现出一张张人脸。它们低声重复着三个词：遗忘、改变、成长。\\n\\n你可以选择一张卡牌，留下旧日的招式，或让它成为新的力量。',
+  choices:['forget','change','grow']
+};
+function verifyVerbatimPreservation(copy,legacy){
+  for(const [key,line] of Object.entries(preservedMerchant)){
+    assert.equal(legacy.merchant[key],line,'archived Lore v2 '+key+' was rewritten');
+    assert.equal(copy.merchant[key],line,'preserved merchant '+key+' changed without review');
+  }
+  assert.equal(copy.eventCopy.living_wall.intro,originalLivingWall.intro,'pre-v3 Living Wall intro changed');
+  assert.deepEqual(copy.eventCopy.living_wall.choices,originalLivingWall.choices,'Living Wall choices/order changed');
+}
+test('verbatim merchant and living-wall preservation survives a coordinated snapshot edit',()=>{
+  const runtime=read(livePath),approved=read(approvedPath),ledger=read(ledgerPath);
+  const legacy=read('docs/lore/v2/04-copy/supporting.zh-CN.json');
+  verifyVerbatimPreservation(runtime,legacy);
+  verifyVerbatimPreservation(approved,legacy);
+  for(const key of Object.keys(preservedMerchant)){
+    assert.deepEqual(ledger.fields['merchant.'+key],{ref:'lore-v2',decision:'preserved'});
+    const changed=structuredClone(runtime);changed.merchant[key]+='改';
+    assert.throws(()=>verifyVerbatimPreservation(changed,legacy),{code:'ERR_ASSERTION'},key);
+  }
+  assert.deepEqual(ledger.fields['eventCopy.living_wall.intro'],
+    {ref:'pre-v3-runtime',decision:'preserved-existing-full-pool-copy'});
+  const changedIntro=structuredClone(runtime);
+  changedIntro.eventCopy.living_wall.intro+='改';
+  assert.throws(()=>verifyVerbatimPreservation(changedIntro,legacy),{code:'ERR_ASSERTION'});
+  const reordered=structuredClone(runtime);
+  reordered.eventCopy.living_wall.choices.reverse();
+  assert.throws(()=>verifyVerbatimPreservation(reordered,legacy),{code:'ERR_ASSERTION'});
+});
+test('the official 7.2 source is a fixed event announcement, not an arbitrary allowed-domain URL',()=>{
+  const ledger=read(ledgerPath);
+  assert.equal(ledger.references['official-7.2'].url,
+    'https://ys.mihoyo.com/main/news/detail/167154');
+  assert.equal(ledger.references['official-7.2'].published,'2026-11-01');
+  assert.match(ledger.references['official-7.2'].usage,/punctuation adapted/);
+  assert.deepEqual(ledger.fields['flow.intro.full'],
+    {ref:'official-7.2',decision:'short-official-quote'});
+  assert.equal(read(livePath).flow.intro.full,'「判罚之钉」异动，「圣土化」蔓延。');
+});
+
 test('native event copy still fits original body and option frames without shrinking type',()=>{
   const copy=read(livePath),event=nativeTheme.layout.nativeNode.event;
   for(const {intro} of Object.values(copy.eventCopy)){
