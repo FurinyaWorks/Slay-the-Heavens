@@ -1,4 +1,5 @@
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
+import {preFatalBgmStopSource} from '../fatal-bgm-stop-source-inverse.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -97,13 +98,19 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
+  const inputSource=source;
+  source=preFatalBgmStopSource(path,source);
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
   if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
   for(const owner of proof.owners){
-   let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+   let raw,actual;try{raw=readSource(owner);actual=preFatalBgmStopSource(owner,raw);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+   // Equivalent historical bytes cannot authenticate a different live entry
+   // observed earlier in this call. Retain both pure old and pure new epochs.
+   if(owner===path&&(source!==inputSource||actual!==raw))
+    assert(typeof raw==='string'&&normalize(raw)===normalize(inputSource),'fatal BGM entry changed during owner validation');
    const binding=proof.current[owner];
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }

@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';
+import {preFatalBgmStopSource} from './fatal-bgm-stop-source-inverse.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -43,7 +44,8 @@ const proof=sourceEpoch.proof;
 export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
  const row=Object.hasOwn(proof.current,path)?proof.current[path]:null;
- if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
+ const prepared=preFatalBgmStopSource(path,source);
+ if(!row||typeof prepared!=='string'||hash(prepared.replaceAll('\r\n','\n'))!==row.sha256)return source;
  const before=proof.targets[target].files[path];
  if(!before||before.sha256===row.sha256)return source;
  return sourceEpoch.preCombinedSource(path,source,{target,readSource});

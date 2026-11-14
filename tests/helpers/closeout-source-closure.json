@@ -11,12 +11,12 @@
   "tests/helpers/class-potion-orb-source-inverse.mjs": "55bba5c3ddbef8e72566b3ad0025634b31168eca628a9ac67a49696cbe8f5bc0",
   "tests/helpers/class-potion-watcher-source-inverse.mjs": "c89fd927532eaa80e89ea65032bbad2575d13ef2542c437856e772db243f64ff",
   "tests/helpers/closeout-source-epoch.json.gz": "36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a",
-  "tests/helpers/closeout-source-epoch.mjs": "37bc0b8fc9e7d66be47d252e70ae7925fd4b5b3e657ecef8d5f2086210736e54",
+  "tests/helpers/closeout-source-epoch.mjs": "7a099320a56e484804e83c78c69c79c77fb57ea361e7e5d3f98655bdfcb70890",
   "tests/helpers/colorless-catalog-source-inverse.mjs": "173ba6f9a97a5f87ccd4e338975013637902f97c5f8c5e1cb60524455aa41316",
   "tests/helpers/combined-epoch/pre-defect-source-epoch.mjs": "ee1631bc3e9e29ac7ef4f96b9c42769d75cb3bfe11881b2e07b868344c3e51fa",
   "tests/helpers/combined-epoch/pre-formation-source-epoch.mjs": "81422aac13c89d3c3fa8d31f1afdff609af1f46f071a4c9d37288591cf20760f",
   "tests/helpers/combined-epoch/pre-golden-idol-source-epoch.mjs": "9c13e8134088d55a7a7b57e7f4fe905fd87cdc9a36e6c636049285e6fa99faf1",
-  "tests/helpers/combined-epoch/source-epoch-runtime.mjs": "5341c965ce41e956f153caf90c2e2097ccaee447a2d1e53a5aa666d15a238882",
+  "tests/helpers/combined-epoch/source-epoch-runtime.mjs": "fd7631aa7aa4e231e50466a3fef2da500802d2866a05bbeea43ebc169ea84081",
   "tests/helpers/combined-epoch/source-epoch.json.gz": "2085260a5aabde4476411172eb0b2e6fd3afcaa991a3cafc52f3ab0e98755c73",
   "tests/helpers/combined-epoch/source-epoch.mjs": "d6237003597c687547c2ec2cc0b08995696997194b2d2423e278e34b40a020ac",
   "tests/helpers/component-ui-source-epoch.json.gz": "df2a27ff146ecbee4fb01054eb1071458ffe491ece1bb50fa6fb33d19df74d4a",
@@ -155,5 +155,8 @@
   "tests/helpers/watcher-actor-source-inverse.mjs": "fa386ca691f8943af41becf2cb5896fee2d69bcdf84a8dfc297db050fde8f4f0",
   "tests/helpers/watcher-final-execution-source-inverse.mjs": "97ea8a10cb729dc3c96127156321205c26cb29116c62933f51612e639438ec52",
   "tests/helpers/watcher-flow-source-epoch.json.gz": "9e81602d086a81680830cf179a5d9f9f041bd56e0938b2d82eb196e50f73c015",
-  "tests/helpers/watcher-flow-source-epoch.mjs": "dad47d3abfb21ce4922a2482142ac2f702644aaa4775558c4c5b06458196cccd"
+  "tests/helpers/watcher-flow-source-epoch.mjs": "dad47d3abfb21ce4922a2482142ac2f702644aaa4775558c4c5b06458196cccd",
+  "tests/helpers/fatal-bgm-stop-source-inverse.mjs": "361c8244d0920542fb25767ba89bdd528370aeb9d52ddf530f79142bf8e7f9ca",
+  "tests/fixtures/fatal-bgm-stop-before.lua": "14ece0f2989116258357923edcada9a2eca8e14c78da198599a3e0367f343d53",
+  "tests/fixtures/fatal-bgm-stop-after.lua": "f75f309ae65559a4a1f0fd2f134193d631c7c23bd22a6ac182b35e412a7278bd"
 }
