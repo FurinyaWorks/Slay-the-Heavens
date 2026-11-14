@@ -301,7 +301,11 @@ export function applyOfficialAssets(trees,theme){
   for(let i=1;i<=6;i++){
    const slot=required(picker,'card'+i);
    if(i<=columns.length)slot.position[0]=columns[i-1];
-   else {removedControls+=count(slot)-1;cardHosts--;slot.children=[];slot.visible=false;}
+   else {
+    removedControls+=count(slot)-1;
+    if(child(slot,'roundFrame')&&child(slot,'skin')&&child(slot,'costDisc'))cardHosts--;
+    slot.children=[];slot.visible=false;
+   }
   }
  }
  return {cardHosts,removedControls};

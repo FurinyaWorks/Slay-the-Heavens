@@ -19,8 +19,11 @@ for(const revision of [...Object.values(sources),'HEAD'])for(const p of git(['di
 for(const p of [...git(['diff','--name-only','HEAD']).trim().split('\n'),...git(['ls-files','--others','--exclude-standard','tests']).trim().split('\n')])all.add(p);
 const production=['src/lua/abyss_game_ui_menu_view.lua','src/lua/abyss_game_ui_view.lua','src/lua/abyss_v25_menu_view.lua'];
 production.forEach(p=>all.add(p));
+// Full reviewed UI builds need these exact release inputs even in a shallow checkout.
+const releaseInputs=['package.json','package-lock.json','.release-please-manifest.json','CHANGELOG.md','data/release/publications.json'];
+releaseInputs.forEach(p=>all.add(p));
 const paths=[...all].filter(p=>p&&existsSync(p)&&p!=='tests/helpers/integrated-ci-binding.mjs'&&(
- production.includes(p)||p==='.gitattributes'||p==='package.json'||p==='package-lock.json'||p==='docs/legal/assets.json'||/^(scripts|tests|data|config|tools|\.github)\//.test(p))&&(/\.(mjs|json|lua|yml|yaml)$/.test(p)||p==='.gitattributes')).sort();
+ releaseInputs.includes(p)||production.includes(p)||p==='.gitattributes'||p==='package.json'||p==='package-lock.json'||p==='docs/legal/assets.json'||/^(scripts|tests|data|config|tools|\.github)\//.test(p))&&(/\.(mjs|json|lua|yml|yaml)$/.test(p)||p==='.gitattributes'||releaseInputs.includes(p))).sort();
 const requests=paths.flatMap(p=>Object.values(sources).map(revision=>revision+':'+p));
 const payload=execFileSync('git',['cat-file','--batch'],{input:requests.join('\n')+'\n',maxBuffer:64*1024*1024}),viewsByRef=new Map();
 let offset=0;
