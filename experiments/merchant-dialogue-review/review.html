@@ -1,0 +1,46 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>商人对白分页前后对照 · 离线</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#171b22;color:#edf0f5;font:16px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:24px}h1{font-size:25px;margin:0 0 8px}.notice{background:#3a2e14;border:1px solid #a78035;padding:12px}label{display:inline-flex;align-items:center;gap:6px;margin:8px 18px 8px 0}select,button{font:inherit;background:#293241;color:inherit;border:1px solid #657188;border-radius:6px;padding:6px 10px}button:disabled{opacity:.4}.columns{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{background:#212833;border:1px solid #46536a;padding:16px;min-width:0}.stage{min-height:240px;display:flex;align-items:center;justify-content:center;padding:20px;border:1px dashed #627089;margin:16px 0}.magnified{transform-origin:center;flex-shrink:0}.line{box-sizing:content-box;outline:1px solid #e4ae60;background:#f3e8cf;color:#3e3026;white-space:pre-wrap;overflow:visible;overflow-wrap:anywhere;position:relative;display:flex;align-items:center}.ink{width:100%;line-height:normal}.diagnostic{font-size:14px;min-height:28px}.warning{color:#ffd08c}.text{white-space:pre-wrap;word-break:break-all;background:#151a22;padding:12px}small,.muted{color:#b4c0d0}details{margin:16px 0}pre{overflow:auto;font:13px/1.5 monospace;white-space:pre-wrap}#original{margin-top:20px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #536078;padding:6px;text-align:left}@media(max-width:700px){.columns{grid-template-columns:1fr}main{padding:12px}}
+</style>
+<main><h1>商人对白：固定版本的分页对照</h1><p class="notice">Fengari 离线执行真实生产商人模块。这里的浏览器文字与缩放预览不是官方客户端、实体手机、真实 ready 或用户验收。长句仍可能拆页。</p>
+<div><label>长度<select id="length"><option value="all">全部</option><option value="short">短句（≤10字）</option><option value="medium">中句（11–20字）</option><option value="long">长句（＞20字）</option></select></label><label>台词<select id="kind"></select></label><label>预算/投影<select id="profile"></select></label><label>推进<select id="path"><option value="tap">点击（每0.25模拟秒）</option><option value="auto">自动（真实update路径）</option></select></label><label>展示放大<select id="zoom"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option></select></label></div>
+<p><button id="prev">上一页</button> <button id="next">下一页</button> <span id="page"></span></p>
+<div class="columns" id="columns"></div><p id="original"></p>
+<details><summary>本次采集身份与边界</summary><pre id="identity"></pre></details>
+<details><summary>完整分页与模拟时间</summary><div id="timeline"></div></details>
+<p class="muted">橙色线框按生产 merchantControl 构造器输出的真实尺寸绘制；所选倍数仅便于查看，不能换算设备字号。文本溢出保持可见并显示诊断，浏览器字体与换行不代表原生结果。模拟时间来自固定 update 步长，不是性能测量。</p></main>
+<script id="receipt" type="application/json">__RECEIPT__</script>
+<script>
+'use strict';
+const data=JSON.parse(document.querySelector('#receipt').textContent),$=s=>document.querySelector(s);
+const keys={encounter:'encounter',greet:'greet',buy:'purchaseSuccess',poor:'insufficientGold',leave:'leave',idle:'originHint'};
+const names={encounter:'进店叙述',greet:'问候',buy:'购买成功',poor:'金币不足',leave:'离店',idle:'停留闲谈'};
+let index=0;
+function option(select,value,text){const o=document.createElement('option');o.value=value;o.textContent=text;select.append(o)}
+for(const p of data.profiles)option($('#profile'),p.label,`${p.label} · ${p.budget}字符`);
+function chooseKinds(){const old=$('#kind').value;$('#kind').replaceChildren();for(const [key,name]of Object.entries(names)){const n=[...data.copy[keys[key]]].length,group=n<=10?'short':n<=20?'medium':'long';if($('#length').value==='all'||$('#length').value===group)option($('#kind'),key,`${name} · ${n}字`)}if([...$('#kind').options].some(o=>o.value===old))$('#kind').value=old;index=0;render()}
+function selected(){return ['before','after'].map(version=>data.samples.find(s=>s.version===version&&s.kind===$('#kind').value&&s.profile===$('#profile').value&&s.path===$('#path').value))}
+function render(){
+ const samples=selected(),profile=data.profiles.find(p=>p.label===$('#profile').value),g=profile.geometry,zoom=+$('#zoom').value;
+ const max=Math.max(...samples.map(s=>s.pages.length));index=Math.max(0,Math.min(index,max-1));
+ $('#prev').disabled=index===0;$('#next').disabled=index===max-1;$('#page').textContent=`对照页 ${index+1} / ${max}（两版页数可不同）`;
+ $('#columns').replaceChildren();$('#timeline').replaceChildren();
+ for(const sample of samples){
+  const card=document.createElement('section');card.className='card';const title=document.createElement('h2');title.textContent=sample.version==='before'?'修改前':'修改后';card.append(title);
+  const page=sample.pages[index],label=document.createElement('p');label.textContent=page?`第${index+1}/${sample.pages.length}页 · 最终文本出现于 ${page.finalTextAt.toFixed(3)} 模拟秒`:`本版已结束（共${sample.pages.length}页）`;card.append(label);
+  const stage=document.createElement('div');stage.className='stage';const magnified=document.createElement('div');magnified.className='magnified';magnified.style.transform=`scale(${zoom})`;
+  const line=document.createElement('div');line.className='line';line.style.width=g.size[0]+'px';line.style.height=g.size[1]+'px';line.style.fontSize=g.text.fontSize+'px';
+  const ink=document.createElement('div');ink.className='ink';ink.textContent=page?.text??'';line.append(ink);magnified.append(line);stage.append(magnified);card.append(stage);
+  const diag=document.createElement('p');diag.className='diagnostic';diag.textContent=`生产正文 ${g.size.join('×')}，字号${g.text.fontSize}；展示 ${zoom}×`;card.append(diag);
+  requestAnimationFrame(()=>{if(ink.scrollHeight>line.clientHeight+1||ink.scrollWidth>line.clientWidth+1){diag.classList.add('warning');diag.textContent+=' · 浏览器文字超出线框，请查看溢出（非原生裁切结论）'}});
+  const text=document.createElement('div');text.className='text';text.textContent=page?.text??'（无对应页）';card.append(text);$('#columns').append(card);
+  const heading=document.createElement('h3');heading.textContent=sample.version;$('#timeline').append(heading);const table=document.createElement('table');const tr=document.createElement('tr');for(const title of ['页','开始','最后字出现','结束','文本']){const th=document.createElement('th');th.textContent=title;tr.append(th)}table.append(tr);
+  for(const p of sample.pages){const row=document.createElement('tr');for(const value of [p.page,p.startedAt.toFixed(3),p.finalTextAt.toFixed(3),p.endedAt.toFixed(3),p.text]){const cell=document.createElement('td');cell.textContent=value;row.append(cell)}table.append(row)}$('#timeline').append(table);
+ }
+ $('#original').textContent='完整批准原文：'+data.copy[keys[$('#kind').value]];
+}
+$('#identity').textContent=JSON.stringify({...data,samples:undefined},null,2);
+$('#length').addEventListener('change',chooseKinds);for(const id of ['kind','profile','path'])$('#'+id).addEventListener('change',()=>{index=0;render()});$('#zoom').addEventListener('change',render);
+$('#prev').addEventListener('click',()=>{index--;render()});$('#next').addEventListener('click',()=>{index++;render()});chooseKinds();
+</script></html>
