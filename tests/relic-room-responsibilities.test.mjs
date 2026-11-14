@@ -58,6 +58,9 @@ test('bounded historical bridge rejects changed sources, foreign paths and fresh
  const epoch=createSourceEpochProjector({schemaVersion:1,normalization:'LF',currentCommit:'9f2f44e4c79789fbcb64a515938765dbc240f830',owners:[relicRoomPath,other],current,targets:{prior:{commit:'9f2f44e4c79789fbcb64a515938765dbc240f830',files:{...current,[other]:binding('return nil\n')}}}});
  let corrupt=false;const reader=p=>p===relicRoomPath?after:current[p].source+(corrupt?'\n':'');
  assert.equal(epoch.preCombinedSource(relicRoomPath,after,{target:'prior',readSource:reader}),before);
+ assert.throws(()=>epoch.preCombinedSource(relicRoomPath,after,{target:'prior',readSource:p=>current[p].source}),/linked owner identity/,'new input must not borrow the historical owner');
+ assert.equal(epoch.preCombinedSource(relicRoomPath,before,{target:'prior',readSource:p=>current[p].source}),before,'pure historical input remains valid');
+ assert.equal(epoch.preCombinedSource(relicRoomPath,after.replaceAll('\n','\r\n'),{target:'prior',readSource:p=>p===relicRoomPath?after.replaceAll('\n','\r\n'):current[p].source}),before,'exact CRLF continuation remains valid');
  corrupt=true;assert.throws(()=>epoch.preCombinedSource(relicRoomPath,after,{target:'prior',readSource:reader}),/linked owner identity/);
  for(const source of [after+'\n',after.replace('run,12','run,13'),before+'\n']){
   let reads=0;assert.equal(epoch.preCombinedSource(relicRoomPath,source,{target:'prior',readSource(){reads++;throw Error('read');}}),source);assert.equal(reads,0);

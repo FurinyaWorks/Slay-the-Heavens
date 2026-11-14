@@ -22,4 +22,8 @@
 
 ## 交接限制
 
+下文“未 push”为首次交接时的历史状态。Owner 后续已明确允许推送、不建PR，原切片已远端保存；本次来源补强经独审后仅正常追加推送，不创建PR或集成。
+
+2026-11-15 来源补强：后续 TASK-76 独审反查发现，本片旧桥允许 after 输入配合 before owner。新增反例在原实现真实失败（Missing expected exception），现仅在新 continuation 使用时要求本次实际 owner 也是完整 after；纯历史 before、CRLF 及原污染/foreign/unknown 拒绝仍保留。闭包仅重绑该 runtime 字节，生产完全未改。修后 bounded bridge 1/1，以及真实旧 epoch 身份/完整 owner union/当前历史投影三项3/3通过；未重跑产品或 Full。
+
 全部开发只在本地独立树，未 push、PR、merge、auto-merge，未操作桌面输入，未改 release/他人文件。主控维护 Backlog；不勾 AC、不标 Done。`closeout-source-closure.json`、`copy-integration-source-closure.mjs`、`integration-source-epoch.test.mjs` 与开放 PR661 存在文件重叠；本地必要加法绑定不表示接管该 PR，后续任何集成前须重新核对最新来源与闭包。本树 `verify:backlog` 通过；root 的七项里程碑导航遗漏属于主控已有状态，未修改 PR661 持有的接线。需要对精确最终本地 HEAD 独立复审；增量 ratchet 在本地提交后另报精确 HEAD 结果。

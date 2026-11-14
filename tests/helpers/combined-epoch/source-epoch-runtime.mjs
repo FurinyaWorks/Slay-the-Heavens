@@ -110,7 +110,11 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];
-   if(isRelicRoomPredecessor(binding))actual=projectHistoricalRelicRoom(owner,actual);
+   if(isRelicRoomPredecessor(binding)){
+    const projected=projectHistoricalRelicRoom(owner,actual);
+    if(roomContinuation&&owner===path)assert.notEqual(projected,actual,'combined linked owner identity: '+owner);
+    actual=projected;
+   }
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   return before.source;
