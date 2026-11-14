@@ -1431,3 +1431,5 @@ experiments/menu-red-fit/*.py text eol=lf
 docs/evidence/m7-reward-query-cards-graph-20261107.jsonl.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 docs/evidence/m9-ci-20261103/raw-ci.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 docs/evidence/pr621-deck-sort-20261111/validation.tar.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/closeout-ci-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/release-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
