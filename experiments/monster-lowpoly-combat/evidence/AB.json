@@ -1,0 +1,264 @@
+{
+  "scope": "Controlled SDK/Fengari VM and native-control software rendering, same develop baseline and recipe, sequential high→low→old; three VM starts and five restarts per variant. No OS/disk cold start, GPU frame time, PC/phone or official storage measurement.",
+  "baselineCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+  "integrationReference": "fdfca5bf3f74718ccce560b249a22a5b1bd20370",
+  "rows": [
+    {
+      "variant": "old",
+      "candidate": {
+        "path": "F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-final-old\\monster-lowpoly-combat.gil",
+        "sha256": "e11fcd598c58d08f6d0a59ef0f73a500c4502ecb8016be62f656f75fdad532e0",
+        "bytes": 19298275
+      },
+      "sourceCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+      "actualTemplateName": "MonsterFitActor",
+      "legacyInventoryName": "AbyssMonsterActor",
+      "controlsPerActor": 637,
+      "allocatedDrawingSlotsPerActor": 590,
+      "visibleImages": [
+        {
+          "id": "large-geo-slime",
+          "images": 391
+        },
+        {
+          "id": "ruin-guard",
+          "images": 590
+        }
+      ],
+      "embeddedArtLuaBytes": 446612,
+      "coldVMToBattleMedianMs": 3224.8180999999995,
+      "coldVMToBattleRangeMs": [
+        2759.2891,
+        3581.2853000000005
+      ],
+      "coldSamples": 3,
+      "restartPlusFiveUpdatesMedianMs": 431.75650000000314,
+      "restartSamples": 5,
+      "restartCreated": 1282,
+      "restartDestroyed": 1282,
+      "twoMonsterControls": 20072,
+      "oneMonsterControls": 19435,
+      "fiveMonsterTenHandControls": 21999,
+      "peakControls": 21999,
+      "idleCreated": 0,
+      "createdTotal": 31618,
+      "destroyedTotal": 31618,
+      "remaining": 0,
+      "passedChecks": 26,
+      "firstSoftwarePngMs": 568.6970999999994,
+      "fiveMonsterSoftwarePngMs": 479.1201000000001,
+      "missingGalleryImages": [
+        "StaticReference:107106",
+        "StaticReference:100149",
+        "StaticReference:100150",
+        "StaticReference:100129",
+        "StaticReference:100122"
+      ],
+      "runtimeSha256": "150b843af07f7d27f37674ddc086009474a7fc07f4f995db125e2ac071eb31ce",
+      "projectionSha256": "b5845d3d8524ee7daae2a7215176e419f32a14bb239a9ed7e0ba00b304f5ec6a"
+    },
+    {
+      "variant": "low",
+      "candidate": {
+        "path": "F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-final-low\\monster-lowpoly-combat.gil",
+        "sha256": "60aa957a186c479d4d182f704cabf1ed4a966dac6ac491e036489450f1fd89a0",
+        "bytes": 18901722
+      },
+      "sourceCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+      "actualTemplateName": "MonsterFitActor",
+      "legacyInventoryName": "AbyssMonsterActor",
+      "controlsPerActor": 392,
+      "allocatedDrawingSlotsPerActor": 349,
+      "visibleImages": [
+        {
+          "id": "large-geo-slime",
+          "images": 200
+        },
+        {
+          "id": "ruin-guard",
+          "images": 349
+        }
+      ],
+      "embeddedArtLuaBytes": 242442,
+      "coldVMToBattleMedianMs": 2008.0065999999997,
+      "coldVMToBattleRangeMs": [
+        1966.7081000000007,
+        2574.8721
+      ],
+      "coldSamples": 3,
+      "restartPlusFiveUpdatesMedianMs": 342.71050000000105,
+      "restartSamples": 5,
+      "restartCreated": 792,
+      "restartDestroyed": 792,
+      "twoMonsterControls": 19582,
+      "oneMonsterControls": 19190,
+      "fiveMonsterTenHandControls": 20774,
+      "peakControls": 20774,
+      "idleCreated": 0,
+      "createdTotal": 26718,
+      "destroyedTotal": 26718,
+      "remaining": 0,
+      "passedChecks": 26,
+      "firstSoftwarePngMs": 590.8954999999987,
+      "fiveMonsterSoftwarePngMs": 507.4942999999985,
+      "missingGalleryImages": [
+        "StaticReference:107106",
+        "StaticReference:100149",
+        "StaticReference:100150",
+        "StaticReference:100129",
+        "StaticReference:100122"
+      ],
+      "runtimeSha256": "a79079443b1ad7853ed502257dd32c2a88b52efeead46136db917020e45d2283",
+      "projectionSha256": "149d39f1f0b909c5ac53a49d53ff5133ea3498e6725a4be87d167a9f1c5e0ff7"
+    },
+    {
+      "variant": "high",
+      "candidate": {
+        "path": "F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-final-high\\monster-lowpoly-combat.gil",
+        "sha256": "1e517fcdf9b0a1f9ba33a0b1326f31c126de49b5756c1b0be97eaefda3217597",
+        "bytes": 19166743
+      },
+      "sourceCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+      "actualTemplateName": "MonsterFitActor",
+      "legacyInventoryName": "AbyssMonsterActor",
+      "controlsPerActor": 546,
+      "allocatedDrawingSlotsPerActor": 500,
+      "visibleImages": [
+        {
+          "id": "large-geo-slime",
+          "images": 349
+        },
+        {
+          "id": "ruin-guard",
+          "images": 500
+        }
+      ],
+      "embeddedArtLuaBytes": 386590,
+      "coldVMToBattleMedianMs": 2210.5029000000004,
+      "coldVMToBattleRangeMs": [
+        1950.8022999999994,
+        2642.0906999999997
+      ],
+      "coldSamples": 3,
+      "restartPlusFiveUpdatesMedianMs": 360.69250000000466,
+      "restartSamples": 5,
+      "restartCreated": 1100,
+      "restartDestroyed": 1100,
+      "twoMonsterControls": 19890,
+      "oneMonsterControls": 19344,
+      "fiveMonsterTenHandControls": 21544,
+      "peakControls": 21544,
+      "idleCreated": 0,
+      "createdTotal": 29798,
+      "destroyedTotal": 29798,
+      "remaining": 0,
+      "passedChecks": 26,
+      "firstSoftwarePngMs": 527.5120999999999,
+      "fiveMonsterSoftwarePngMs": 482.862000000001,
+      "missingGalleryImages": [
+        "StaticReference:107106",
+        "StaticReference:100149",
+        "StaticReference:100150",
+        "StaticReference:100129",
+        "StaticReference:100122"
+      ],
+      "runtimeSha256": "eac8552e8995204a4578bd8bceef2d48579e7c487f4a88c7d75b36e9840d20e5",
+      "projectionSha256": "f835b09b3e5f298ef4d41639e3f14b94c3a8dd3bbacd4818f26b6e385957ec20"
+    }
+  ],
+  "fit": {
+    "scriptSha256": "677aa06e4cee479f6b6ee53f9d76d760528f88c98a44d93b1ca34228edb8e6ce",
+    "samples": [
+      {
+        "enemy": "large-geo-slime",
+        "sourceSha256": "172487009bafda99a942dc10dfa28b85aa927a54d1a8c0fe943a3985d7fa0f07",
+        "sourceSize": [
+          1377,
+          1142
+        ],
+        "budgets": [
+          {
+            "budget": 100,
+            "nativeImages": 100,
+            "packBytes": 30038
+          },
+          {
+            "budget": 200,
+            "nativeImages": 200,
+            "packBytes": 56783
+          },
+          {
+            "budget": 350,
+            "nativeImages": 349,
+            "packBytes": 95137
+          }
+        ],
+        "fitSeconds": 2.0240371000109008
+      },
+      {
+        "enemy": "ruin-guard",
+        "sourceSha256": "a2bc9ddee6d572d8855c6c81139868edd3982fb9ba89a5c12875fcfdd1781775",
+        "sourceSize": [
+          1254,
+          1254
+        ],
+        "budgets": [
+          {
+            "budget": 200,
+            "nativeImages": 199,
+            "packBytes": 61254
+          },
+          {
+            "budget": 350,
+            "nativeImages": 349,
+            "packBytes": 101006
+          },
+          {
+            "budget": 500,
+            "nativeImages": 500,
+            "packBytes": 141083
+          }
+        ],
+        "fitSeconds": 6.187307200001669
+      }
+    ]
+  },
+  "productionConclusion": "NO_GO: current global flatten/contour fit loses more structure than the modest upper-budget savings justify. Retain old391/590 as visual baseline; use 200/349 only for technical A/B.",
+  "forecast42": {
+    "scope": "Planning estimate only, not measured human production throughput or official resources",
+    "automaticFitSecondsLinearTwoSampleRange": [
+      85.00955820045783,
+      259.8669024000701
+    ],
+    "meanHighAssetLuaBytes": 136954,
+    "estimated42HighAssetLuaBytes": 5752068,
+    "runtimeAllocation": "Only active actors allocate a shared maximum-size pool; do not multiply all 42 catalog entries into runtime controls",
+    "semanticSourceCleanupHoursPerMonster": [
+      0.5,
+      1.5
+    ],
+    "fitAndManualCorrectionHoursPerMonster": [
+      0.25,
+      0.75
+    ],
+    "nativeBattleQAHoursPerMonster": [
+      0.25,
+      0.5
+    ],
+    "totalHours42": [
+      42,
+      115.5
+    ],
+    "excluded": "Official capacity, physical devices, complex bosses/phase variants, review revisions and account time"
+  },
+  "evidenceBoundary": {
+    "officialImport": "UNVERIFIED",
+    "officialReady": "UNVERIFIED",
+    "officialPC": "UNVERIFIED",
+    "physicalPhone": "UNVERIFIED",
+    "gpu": "UNVERIFIED",
+    "officialCapacity": "UNVERIFIED",
+    "newImageGenerationApiCalls": 0,
+    "agentBilling": "not measured"
+  }
+}

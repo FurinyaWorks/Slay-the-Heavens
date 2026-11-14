@@ -1,0 +1,61 @@
+{
+  "scope": "Installed SDK software native-control comparison; not official client or GPU/phone",
+  "sdkSha256": "8d10975a41285c54935d003bf68933586bd6bcf133328435ce8e944b005d94b8",
+  "rendererSha256": "b629f6272110b757a0e946529370ae431cafd56c00b19357677e804efbe7b6c7",
+  "samples": [
+    {
+      "id": "large-geo-slime",
+      "variants": [
+        {
+          "label": "old 391",
+          "images": 391
+        },
+        {
+          "label": "budget 100",
+          "images": 100
+        },
+        {
+          "label": "budget 200",
+          "images": 200
+        },
+        {
+          "label": "budget 350",
+          "images": 349
+        }
+      ],
+      "createMs": 46.85370000000057,
+      "softwareRenderMs": 206.8801000000003,
+      "actualControls": 2136,
+      "remainingControls": 0,
+      "saveSha256": "bf0ea59e348737f5465f342463692f8391756165b4390516f6d2bd5c9392eb09",
+      "pngSha256": "22bab9d8af1900d3b6f080a42b8de0b12759dd5e30411e84535a8259f2758be2"
+    },
+    {
+      "id": "ruin-guard",
+      "variants": [
+        {
+          "label": "old 590",
+          "images": 590
+        },
+        {
+          "label": "budget 200",
+          "images": 199
+        },
+        {
+          "label": "budget 350",
+          "images": 349
+        },
+        {
+          "label": "budget 500",
+          "images": 500
+        }
+      ],
+      "createMs": 36.77970000000005,
+      "softwareRenderMs": 233.21429999999964,
+      "actualControls": 3352,
+      "remainingControls": 0,
+      "saveSha256": "ce414d65f79f14c869cc6ebf1641c0ac7f72dbacee6c9dce1ba2b6df43a0b7b5",
+      "pngSha256": "46a17f1a954902cea7676c7f0d5c3ef2330c9fcbe2b9550ccfadf4caa34a38ad"
+    }
+  ]
+}

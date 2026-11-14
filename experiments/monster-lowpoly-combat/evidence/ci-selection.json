@@ -1,0 +1,9 @@
+{
+  "mode": "full-required-by-existing-selector",
+  "reason": "New Backlog/isolated experiment inputs are unmodelled by the existing selector; no quick tests were selected.",
+  "quickTestsExecuted": 0,
+  "fullLocalExecuted": false,
+  "ciFullLabelAdded": false,
+  "executedInsteadOfClaimingQuickPass": ["4 actual Node contract tests", "3 variants x 26 production-Lua/SDK combat checks", "4 pinned-661 coexistence checks", "GIL/source/template/projection/runtime SHA verification", "verify:backlog"],
+  "normalPRCI": "pending; no CI pass claimed"
+}

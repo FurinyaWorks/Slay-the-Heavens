@@ -1,0 +1,123 @@
+{
+  "scope": "Preserved failed builds; original full receipts/GIL remain in their isolated local build directories",
+  "failures": [
+    {
+      "folder": "build\\monster-baseline-r2\\5b4c4d71-7b49-4e5f-b0d5-c43e78b7035b",
+      "receiptSha256": "9f8208d21f45ceeac3d774dcf34723dcede0692bed7e87d4e5d2e32ff680ca44",
+      "error": "Settlement graph did not compile/write completely",
+      "statuses": {
+        "staticCheck": "not_run",
+        "officialImport": "not_run",
+        "playtest": "not_run",
+        "build": "fail"
+      },
+      "graphFailure": {
+        "graphId": 1073741825,
+        "position": 0,
+        "code": "EPERM",
+        "message": "EPERM: operation not permitted, symlink 'D:\\MiliastraTools\\genshin-miliastra-mcp\\node_modules' -> 'F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r2\\5b4c4d71-7b49-4e5f-b0d5-c43e78b7035b\\wmwgfnh9z-0\\node_modules'"
+      }
+    },
+    {
+      "folder": "build\\monster-baseline-r3\\874926d8-5512-463a-8b29-cc230f9a103f",
+      "receiptSha256": "c5522f0c0d2a680142bab80c53a5d4cf25910d6829e1014023459b50b9a1ec05",
+      "error": "Settlement graph did not compile/write completely",
+      "statuses": {
+        "staticCheck": "not_run",
+        "officialImport": "not_run",
+        "playtest": "not_run",
+        "build": "fail"
+      },
+      "graphFailure": {
+        "graphId": 1073741825,
+        "position": 0,
+        "code": "EPERM",
+        "message": "EPERM: operation not permitted, symlink 'D:\\MiliastraTools\\genshin-miliastra-mcp\\node_modules' -> 'F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r3\\874926d8-5512-463a-8b29-cc230f9a103f\\wmwgfrobp-0\\node_modules'"
+      }
+    },
+    {
+      "folder": "build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51",
+      "receiptSha256": "21d8d297b9a725555ad134a77b3bb76d4092f4a7b357951792489098d60b5cc3",
+      "error": "Settlement graph did not compile/write completely",
+      "statuses": {
+        "staticCheck": "not_run",
+        "officialImport": "not_run",
+        "playtest": "not_run",
+        "build": "fail"
+      },
+      "graphFailure": {
+        "graphId": 1073741825,
+        "position": 0,
+        "code": "BUILD_FAILED",
+        "message": "The graph did not compile. Error: [error] gsts.f is only available in server_* ctxType (current: javascript)",
+        "details": {
+          "buildId": "0f991482-d6a9-41da-8f7f-ae4aa66c4030",
+          "errors": [
+            "Error: [error] gsts.f is only available in server_* ctxType (current: javascript)",
+            "[error] gs_to_ir_json failed: F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\builds\\0f991482-d6a9-41da-8f7f-ae4aa66c4030\\dist\\src\\main.gs.ts"
+          ],
+          "exitCode": 1,
+          "output": "[warn] update check failed: EPERM: operation not permitted, open 'C:\\Users\\Administrator\\AppData\\Roaming\\genshin-ts\\state.json'\n[warn] notice check failed: EPERM: operation not permitted, open 'C:\\Users\\Administrator\\AppData\\Roaming\\genshin-ts\\state.json'\n[info] Starting compilation...\n[ok] F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\builds\\0f991482-d6a9-41da-8f7f-ae4aa66c4030\\dist\\src\\main.gs.ts\n\n[info] Starting GIA generation...\nError: [error] gsts.f is only available in server_* ctxType (current: javascript)\n    at Object.assertServerCtx (D:\\MiliastraTools\\genshin-miliastra-mcp\\node_modules\\genshin-ts\\src\\runtime\\core.ts:631:15)\n    at getBoundServerF (D:\\MiliastraTools\\genshin-miliastra-mcp\\node_modules\\genshin-ts\\src\\runtime\\core.ts:569:7)\n    at Object.get (D:\\MiliastraTools\\genshin-miliastra-mcp\\node_modules\\genshin-ts\\src\\runtime\\core.ts:664:16)\n    at <anonymous> (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\builds\\0f991482-d6a9-41da-8f7f-ae4aa66c4030\\dist\\src\\main.gs.ts:8:10)\n    at wrappedHandler (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\node_modules\\genshin-ts\\src\\runtime\\core.ts:1451:7)\n    at <anonymous> (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\node_modules\\genshin-ts\\src\\runtime\\core.ts:882:48)\n    at Object.withCtx (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\node_modules\\genshin-ts\\src\\runtime\\core.ts:610:16)\n    at MetaCallRegistry.runServerHandler (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\node_modules\\genshin-ts\\src\\runtime\\core.ts:882:16)\n    at runHandler (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\node_modules\\genshin-ts\\src\\runtime\\core.ts:1457:14)\n    at Object.onSignal (F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\node_modules\\genshin-ts\\src\\runtime\\core.ts:1496:7)\n[error] gs_to_ir_json failed: F:\\New folder\\.worktrees\\monster-lowpoly-combat\\build\\monster-baseline-r4\\d1a5ed68-8763-4f0d-a3c8-69845f1ace51\\wmwgfto1k-0\\builds\\0f991482-d6a9-41da-8f7f-ae4aa66c4030\\dist\\src\\main.gs.ts\n",
+          "timedOut": false,
+          "giaCount": 0
+        }
+      }
+    },
+    {
+      "folder": "build\\monster-baseline-r5\\70b72f66-49dd-4ab4-b499-b1e8173e1fd6",
+      "receiptSha256": "80a700daf39fc28042079894db5ee655da6d8a0a2cece884f391ed36acbb8f8a",
+      "error": "Settlement graph did not compile/write completely",
+      "statuses": {
+        "staticCheck": "not_run",
+        "officialImport": "not_run",
+        "playtest": "not_run",
+        "build": "fail"
+      },
+      "graphFailure": {
+        "graphId": 1073741825,
+        "position": 0,
+        "code": "ERROR",
+        "message": "Command failed: powershell.exe -NoProfile -NonInteractive -Command New-Item -ItemType Junction -Path $env:MONSTER_LINK_DEST -Target $env:MONSTER_LINK_TARGET | Out-Null\nNew-Item : Access is denied\r\nAt line:1 char:1\r\n+ New-Item -ItemType Junction -Path $env:MONSTER_LINK_DEST -Target $env ...\r\n+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : WriteError: (F:\\New folder\\....-0\\node_modules:String) [New-Item], Win32Exception\r\n    + FullyQualifiedErrorId : NewItemCreateIOError,Microsoft.PowerShell.Commands.NewItemCommand\r\n \r\n"
+      }
+    },
+    {
+      "folder": "build\\monster-baseline-r6\\2713bd59-9761-442d-be98-0923fa7dae15",
+      "receiptSha256": "d24e4bcbf52ab17ff1e951fefda36df64fdc843def1c9b0ccd36b347a87107b0",
+      "error": "Settlement graph did not compile/write completely",
+      "statuses": {
+        "staticCheck": "not_run",
+        "officialImport": "not_run",
+        "playtest": "not_run",
+        "build": "fail"
+      },
+      "graphFailure": {
+        "graphId": 1073741825,
+        "position": 0,
+        "code": "ERROR",
+        "message": "Command failed: powershell.exe -NoProfile -NonInteractive -Command New-Item -ItemType Junction -Path $env:MONSTER_LINK_DEST -Target $env:MONSTER_LINK_TARGET | Out-Null\nNew-Item : Access is denied\r\nAt line:1 char:1\r\n+ New-Item -ItemType Junction -Path $env:MONSTER_LINK_DEST -Target $env ...\r\n+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : WriteError: (F:\\New folder\\....-0\\node_modules:String) [New-Item], Win32Exception\r\n    + FullyQualifiedErrorId : NewItemCreateIOError,Microsoft.PowerShell.Commands.NewItemCommand\r\n \r\n"
+      }
+    }
+  ],
+  "entryFailures": [
+    {
+      "candidate": "monster-combat-r6",
+      "error": "element_unavailable",
+      "fix": "Use actual Geo internal ID ironclad"
+    },
+    {
+      "candidate": "monster-combat-r7",
+      "error": "not_on_map",
+      "fix": "Dedicated lab skips opening blessing"
+    },
+    {
+      "candidate": "monster-combat-r8",
+      "error": "wrong_floor",
+      "fix": "Explicit first-floor lab setup"
+    }
+  ],
+  "inputFailures": [
+    "runtime-r10: native hit center obscured by raised card3; strict hit-ID assertion failed",
+    "runtime-r10b: actual HP did not decrease; semantic assertion failed; no false success",
+    "runtime-r9: first enemy intent was a status skill, so a player-HP-loss assertion was invalid; final run observes four complete enemy turns"
+  ]
+}

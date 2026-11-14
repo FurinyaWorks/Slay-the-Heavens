@@ -1,0 +1,69 @@
+{
+  "scope": "source geometry only, not native renderer or device",
+  "fitScriptSha256": "677aa06e4cee479f6b6ee53f9d76d760528f88c98a44d93b1ca34228edb8e6ce",
+  "parameters": {
+    "width": 256,
+    "paletteColors": 8,
+    "meanShiftSpatial": 18,
+    "meanShiftRange": 48,
+    "alphaThreshold": 128,
+    "silhouetteBudgetFraction": 0.22,
+    "accentBudgetFraction": 0.2
+  },
+  "fitterSha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293",
+  "placementSha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002",
+  "samples": [
+    {
+      "enemy": "large-geo-slime",
+      "sourceSha256": "172487009bafda99a942dc10dfa28b85aa927a54d1a8c0fe943a3985d7fa0f07",
+      "sourceSize": [
+        1377,
+        1142
+      ],
+      "budgets": [
+        {
+          "budget": 100,
+          "nativeImages": 100,
+          "packBytes": 30038
+        },
+        {
+          "budget": 200,
+          "nativeImages": 200,
+          "packBytes": 56783
+        },
+        {
+          "budget": 350,
+          "nativeImages": 349,
+          "packBytes": 95137
+        }
+      ],
+      "fitSeconds": 2.0240371000109008
+    },
+    {
+      "enemy": "ruin-guard",
+      "sourceSha256": "a2bc9ddee6d572d8855c6c81139868edd3982fb9ba89a5c12875fcfdd1781775",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "budgets": [
+        {
+          "budget": 200,
+          "nativeImages": 199,
+          "packBytes": 61254
+        },
+        {
+          "budget": 350,
+          "nativeImages": 349,
+          "packBytes": 101006
+        },
+        {
+          "budget": 500,
+          "nativeImages": 500,
+          "packBytes": 141083
+        }
+      ],
+      "fitSeconds": 6.187307200001669
+    }
+  ]
+}

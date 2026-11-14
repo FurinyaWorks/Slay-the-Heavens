@@ -1,0 +1,76 @@
+{
+  "status": "pass",
+  "scope": "Actual pinned #661 lowcost modules/data/32-slot pool plus experimental native art in the installed SDK; not entire #661 integration, official PC or phone",
+  "saveSha256": "4d1b9623aa0f35e3fdda810b9c26b3e957eff8b8b74c7c2d9f7142ff4e4abaf7",
+  "scriptSha256": "daea78cc1370a42b87f274a0f8c8ad34dc8db7688bf622648a74b6488e356ffc",
+  "checks": [
+    "new-native-art-hides-28-layer",
+    "disabled-native-art-restores-original-lightweight-asset",
+    "native-restore-does-not-double-paint",
+    "unconverted-monster-retains-28-fallback"
+  ],
+  "controlsBeforeDestroy": 19369,
+  "logs": [
+    {
+      "level": "info",
+      "text": "ABYSS_BUILD 7d2f6fa2-788e-4cea-828f-df3dd947e271",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI init Color=table",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI viewport_ready",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI ready",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_RUN seed=17321 source=clock",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI_PAGES mode=battle nodeNativeActive=false choiceNativeActive=false",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_POWER_ICON_MISSING split using labelled unknown placeholder",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "MONSTER_FIT battle ready",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "COMPAT661 spike_slime_l original_images=14",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "COMPAT661 lagavulin original_images=12",
+      "time": 0
+    }
+  ],
+  "remainingControls": 0
+}

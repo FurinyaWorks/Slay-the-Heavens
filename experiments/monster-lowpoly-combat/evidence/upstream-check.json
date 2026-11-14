@@ -1,0 +1,14 @@
+{
+  "develop": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+  "initial661": "fdfca5bf3f74718ccce560b249a22a5b1bd20370",
+  "final661": "58a30edfcb06cb34403ca71d04fcea9d3e4352ef",
+  "unchangedRelevantInputs": [
+    "scripts/lowcost-art.mjs",
+    "src/lua/abyss_lowcost_art.lua",
+    "src/lua/abyss_battle_render_actors.lua",
+    "src/lua/abyss_feedback_actor_painter.lua",
+    "data/presentation/lowcost-enemy-art.json",
+    "docs/design/GEO_LUMINE_RENDERABLE_ART_PROMPT_20261113.md"
+  ],
+  "scope": "Source comparison only; no integration merge"
+}

@@ -1,0 +1,37 @@
+{
+  "visual": {
+    "reviewId": "/root/monster_visual_review:TASK-25.8:R4:20261114T134253Z",
+    "conclusion": "TECHNICAL_GO_PRODUCTION_NO_GO",
+    "scope": "Source, simplified/fit previews, all six 106/127 host variants and actual SDK native-control software comparison; no official device acceptance",
+    "images": {
+      "large-geo-slime-native.png": "22bab9d8af1900d3b6f080a42b8de0b12759dd5e30411e84535a8259f2758be2",
+      "ruin-guard-native.png": "46a17f1a954902cea7676c7f0d5c3ef2330c9fcbe2b9550ccfadf4caa34a38ad"
+    },
+    "recommendation": "Keep old391/590 quality baseline; use200/349 for performance A/B, not mass production. Upper349/500 loses semantic structure for modest savings."
+  },
+  "code": {
+    "reviewId": "/root/monster_code_review:TASK-25.8:20261114",
+    "conclusion": "PASS",
+    "unresolvedBlocking": [],
+    "buildSha256": "da9bd37f3c69f40771af33b05e4360e1e044e542f8dba587bff4dfdb9a39fc13",
+    "runtimeSha256": "1e79f71538f65995adc46f82f0f2256b5edebfab3ce8fdb138ef19786e43557f",
+    "demoSha256": "55f944ec8099009ea8fab78659e9e7746f9d2b480bea42960fd3af3f1dcf0233",
+    "scope": "Three current GIL/projection/runtime chains, 26 checks each, actual guard damage18, source isolation, slot capacity and teardown",
+    "nonblocking": "Legacy monsterActorInventory hardcodes AbyssMonsterActor; actual GIL template is MonsterFitActor. Correct count; explicitly separated in AB.json/README."
+  },
+  "compatibility": {
+    "reviewId": "/root/monster_code_review:TASK-25.8:compat661",
+    "conclusion": "PASS",
+    "buildSha256": "7992fae4b94e83b9c9cd508e68a332991f816aca0edf975000b83bd4e14d3cb2",
+    "runtimeSha256": "daea78cc1370a42b87f274a0f8c8ad34dc8db7688bf622648a74b6488e356ffc",
+    "scope": "Pinned #661 lightweight-art modules/data/32-slot pool only; not entire integration release. Four SDK checks, exact14/12 fallback, zero remaining."
+  },
+  "closeout": {
+    "reviewId": "/root/monster_code_review:TASK-25.8:closeout",
+    "conclusion": "PASS",
+    "reportSha256": "b80917fc3a9e5ea234418a27e241dbf45c42b98c7e4fb5d549eb7d9b41646429",
+    "verifySha256": "ee4d286d82824f6d0c31debc57a0730433e703d699ccbc49f7963e2db4400d6f",
+    "deliverSha256": "9b111775d0d719244bec0ab36317206016bcde624a190a322607b87e0b617271",
+    "scope": "A/B consistency, estimates/UNVERIFIED boundaries, exact delivery manifest hashes, safe fresh-directory writes"
+  }
+}

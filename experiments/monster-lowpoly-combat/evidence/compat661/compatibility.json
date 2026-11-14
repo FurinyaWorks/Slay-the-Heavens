@@ -1,0 +1,63 @@
+{
+  "status": "failed",
+  "scope": "Actual pinned #661 lowcost modules/data/32-slot pool plus experimental native art in the installed SDK; not entire #661 integration, official PC or phone",
+  "saveSha256": "4d1b9623aa0f35e3fdda810b9c26b3e957eff8b8b74c7c2d9f7142ff4e4abaf7",
+  "scriptSha256": "ffcf7291cb115914d0a827143b9e0262d1987272f896a38b6041cae0c4eda2e0",
+  "checks": [
+    "new-native-art-hides-28-layer"
+  ],
+  "error": "Error: COMPAT_disabled-native-art-restores-original-28:1: original 28-shape asset must be restored\n    at Qi.runChunk (file:///F:/New%20folder/.artifacts/simulator-runtime/sdk/actual-session.mjs:121:19912)\n    at check (file:///F:/New%20folder/.worktrees/monster-lowpoly-combat/experiments/monster-lowpoly-combat/compat-runtime.mjs:6:83)\n    at file:///F:/New%20folder/.worktrees/monster-lowpoly-combat/experiments/monster-lowpoly-combat/compat-runtime.mjs:9:2",
+  "logs": [
+    {
+      "level": "info",
+      "text": "ABYSS_BUILD 7d2f6fa2-788e-4cea-828f-df3dd947e271",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI init Color=table",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI viewport_ready",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI ready",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_RUN seed=9054 source=clock",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_UI_PAGES mode=battle nodeNativeActive=false choiceNativeActive=false",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "ABYSS_POWER_ICON_MISSING split using labelled unknown placeholder",
+      "time": 0
+    },
+    {
+      "level": "info",
+      "text": "MONSTER_FIT battle ready",
+      "time": 0
+    }
+  ],
+  "remainingControls": 0
+}

@@ -1,0 +1,59 @@
+{
+  "scope": "source geometry only, not native renderer or device",
+  "fitterSha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293",
+  "placementSha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002",
+  "samples": [
+    {
+      "enemy": "large-geo-slime",
+      "sourceSha256": "172487009bafda99a942dc10dfa28b85aa927a54d1a8c0fe943a3985d7fa0f07",
+      "sourceSize": [
+        1377,
+        1142
+      ],
+      "budgets": [
+        {
+          "budget": 100,
+          "nativeImages": 99,
+          "packBytes": 31294
+        },
+        {
+          "budget": 200,
+          "nativeImages": 200,
+          "packBytes": 58044
+        },
+        {
+          "budget": 350,
+          "nativeImages": 345,
+          "packBytes": 97851
+        }
+      ],
+      "fitSeconds": 1.5941280999977607
+    },
+    {
+      "enemy": "ruin-guard",
+      "sourceSha256": "a2bc9ddee6d572d8855c6c81139868edd3982fb9ba89a5c12875fcfdd1781775",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "budgets": [
+        {
+          "budget": 200,
+          "nativeImages": 200,
+          "packBytes": 60296
+        },
+        {
+          "budget": 350,
+          "nativeImages": 349,
+          "packBytes": 100121
+        },
+        {
+          "budget": 500,
+          "nativeImages": 499,
+          "packBytes": 142212
+        }
+      ],
+      "fitSeconds": 5.772181299995282
+    }
+  ]
+}

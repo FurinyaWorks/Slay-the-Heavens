@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "scope": "Frozen local artifact verification; no official device acceptance",
+  "checks": [
+    "high: GIL/source/actual template/projection/runtime chain + 26 combat checks",
+    "low: GIL/source/actual template/projection/runtime chain + 26 combat checks",
+    "old: GIL/source/actual template/projection/runtime chain + 26 combat checks",
+    "pinned #661 exact 14/12 lightweight fallback and no double paint"
+  ],
+  "officialPC": "UNVERIFIED",
+  "physicalPhone": "UNVERIFIED",
+  "officialCapacity": "UNVERIFIED"
+}
