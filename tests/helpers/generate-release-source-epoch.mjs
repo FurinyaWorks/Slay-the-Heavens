@@ -25,7 +25,8 @@ for(const ref of requests){
 const prior=Object.fromEntries(inventoryBefore.map(path=>[path,binding(git(baseCommit,path))]));
 const current={},before={};
 for(const path of inventoryAfter){
- const runtime=norm(readFileSync(path,'utf8'));assert.equal(runtime,git(currentCommit,path),'exact frozen release source: '+path);
+ // Reproduce the frozen release projection independently of later reviewed layers.
+ const runtime=git(currentCommit,path);
  const source=Object.hasOwn(menu.before,path)?menu.before[path].source:runtime;
  if(hash(source)!==prior[path]?.sha256){current[path]=binding(source);before[path]=prior[path]??null;}
 }
