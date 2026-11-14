@@ -73,6 +73,249 @@ test('historical approved pages keep live input identities while unrelated pages
  t.diagnostic(replayReviewedSelection('tests/official-assets.test.mjs'));
 });
 
+test('approved pages keep live input identities while unrelated pages retain their geometry',()=>{
+ const layout=gameLayout(),template=deckCardTemplate(),theme=officialAssetsTheme(nativeTheme);
+ const nodes=[...paths(layout),...paths(template)];
+ // Event presentation now explicitly adopts the existing room component and
+ // the approved Neow adapter. Compare every owned field to that shared
+ // projection instead of treating this authorized room as unchanged geometry.
+ const expectedEvent=structuredClone(child(child(layout,'nodePanel'),'eventView'));
+ styleEvent(expectedEvent,theme);
+ applyOfficialNeowLayout({children:[{name:'nodePanel',children:[expectedEvent]}]},theme);
+ const eventProjection=new Map(paths(expectedEvent,'/SlayTheAbyss/nodePanel'));
+ // The approved minimal menu is an adopted component too. Bind every owned
+ // geometry/input field to that projection while retaining unrelated pages.
+ const expectedMenuLayout=structuredClone(layout);
+ applyOfficialNoncombatLayout(expectedMenuLayout,theme);
+ const menuProjection=new Map(paths(child(expectedMenuLayout,'menuPanel'),'/SlayTheAbyss'));
+ const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
+  .map(([path,node])=>[path,node,structuredClone(node)]);
+ const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
+ const cardText=new Map(),cardDecorationPaths=new Set(),retiredCardDecorationPaths=new Set(),cardHosts=new Set();
+ for(const [path,face]of nodes)if(child(face,'roundFrame')&&child(face,'costDisc')){
+  cardHosts.add(face);
+  for(const key of ['name','cost','costDirection','type','label','description','stamp','hit'])if(child(face,key))cardText.set(child(face,key),key==='description'?'label':key);
+  for(const [inner,node]of nodes)if(inner.startsWith(path+'/')&&node.kind==='container'){
+   cardDecorationPaths.add(inner);
+   if(['roundShadow','roundFrame','roundBody','skin','roleMark','tagEdge','tagBody','nativeRibbon','nativeCostOrb','v25NodeCardChrome']
+    .some(name=>inner.startsWith(path+'/'+name+'/')))retiredCardDecorationPaths.add(inner);
+  }
+ }
+ const result=applyOfficialAssets([layout,template],theme);
+ const current=new Map([...paths(layout),...paths(template)]);
+ const retiredDeckPrefix='/SlayTheAbyss/characterPanel/deckView/';
+ const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
+ const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[3-9]|10)(?:\/|$)/.test(path);
+ const retiredDeck=child(child(layout,'characterPanel'),'deckView');
+ assert.equal(retiredDeck.visible,false);assert.deepEqual(retiredDeck.children,[],
+  'selection must use the shared deck browser instead of keeping twelve independent card slots');
+ const merchant=new Map(paths(merchantControl(theme),'/SlayTheAbyss/nodePanel'));
+  for(const [path,node,before] of semantic){
+   if(retiredPickerChild(path)||retiredChoice(path)){
+    assert.equal(current.has(path),false,path+' exact unused capacity face is retired');continue;
+   }
+   if(path.startsWith(retiredDeckPrefix)){
+    assert.equal(current.has(path),false,path+' duplicate selection browser must be removed');continue;
+   }
+   if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
+    // The approved pile return uses permanent artwork plus one native receiver.
+    if(path.endsWith('/hit')){
+     const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
+     assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
+    }
+    continue;
+   }
+   assert.equal(current.get(path),node,path);
+   if(menuProjection.has(path)){
+    const expected=menuProjection.get(path);
+    assert.equal(node.kind,before.kind,path+' existing menu semantic control kind');
+    for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget'])
+     assert.deepEqual(node[key],expected[key],path+' approved menu '+key);
+    if(node.text){
+     const actualText={...node.text},expectedText={...expected.text};
+     delete actualText.colour;delete expectedText.colour;
+     if(expectedText.autoSize&&expectedText.minFontSize*1.45+4>expected.size?.[1])expectedText.minFontSize=nativeTheme.font.minimum;
+     assert.deepEqual(actualText,expectedText,path+' approved menu text');
+    }
+    continue;
+   }
+   if(eventProjection.has(path)){
+    assert.deepEqual(node,eventProjection.get(path),path+' shared event projection');continue;
+   }
+   if(merchant.has(path)){
+    const expected=structuredClone(merchant.get(path));
+    if(expected.text)expected.text.content=before.text.content;
+    assert.deepEqual(node,expected,path+' shared merchant projection');continue;
+   }
+   if(cardText.has(node)){
+    const canonical=child(child(child(layout,'battlePanel'),'card1'),cardText.get(node))??cardFaceChildren(theme,'node').find(part=>part.name===cardText.get(node));
+    if(canonical.text?.autoSize&&canonical.text.minFontSize*1.45+4>canonical.size[1])canonical.text.minFontSize=theme.font.minimum;
+    for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget','text'])assert.deepEqual(node[key],canonical[key],path+' shared '+key);
+    continue;
+   }
+   if(restoredPagePath(path)){
+    // Battle geometry is intentionally restored to the approved V25 tokens.
+    // The existing event-bearing objects and input/state contracts still survive.
+    for(const key of ['kind','states','focusable','interactable','raycastTarget'])assert.deepEqual(node[key],before[key],path+' '+key);
+    continue;
+   }
+  for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget']){
+   const potionLabel=/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)\/label$/.test(path);
+   const relicHit=/^\/SlayTheAbyss\/relicBar\/slot\d+\/hit$/.test(path);
+   const expected=key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
+    ?child(child(child(layout,'battlePanel'),'card1'),'cost').size:key==='visible'&&potionLabel?false:before[key];
+   assert.deepEqual(node[key],expected,path+' '+key);
+  }
+   if(node.text){const actual={...node.text},expected={...before.text};delete actual.colour;delete expected.colour;
+    if(cardText.has(node))for(const key of ['outline','outlineColour','outlineOpacity']){
+     const canonical=child(child(child(layout,'battlePanel'),'card1'),cardText.get(node)).text;
+     assert.deepEqual(actual[key],canonical[key],path+' shared '+key);expected[key]=canonical[key];
+    }
+    if(expected.autoSize&&(expected.minFontSize*1.45+4>before.size?.[1]||path.endsWith('/shopView/removal/description')))expected.minFontSize=nativeTheme.font.minimum;assert.deepEqual(actual,expected,path);}
+ }
+  const canonical=child(child(layout,'battlePanel'),'card1');
+  for(const [path,node,before]of containers){
+   if(retiredPickerChild(path)||retiredChoice(path)){
+    assert.equal(current.has(path),false,path+' exact unused capacity face is retired');continue;
+   }
+   if(/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]$/.test(path)){
+    assert.strictEqual(current.get(path),node,path+' semantic parent identity is retained');
+    assert.deepEqual(children(node),[],path+' unused parent contains no face payload');
+    for(const key of Object.keys(before))assert.deepEqual(node[key],key==='visible'?false:key==='size'?theme.layout.card.size:before[key],path+' semantic parent '+key);
+    continue;
+   }
+   if(path.startsWith(retiredDeckPrefix)){
+    assert.equal(current.has(path),false,path+' duplicate selection browser must be removed');continue;
+   }
+   if(menuProjection.has(path)){
+    assert.equal(current.get(path),node,path+' menu input owner identity');
+    for(const key of Object.keys(before))assert.deepEqual(node[key],menuProjection.get(path)[key],path+' approved menu '+key);
+    continue;
+   }
+   if(restoredPagePath(path)||path.startsWith('/SlayTheAbyss/deckPanel/pileReturn'))continue;
+   if(retiredCardDecorationPaths.has(path)){
+    assert.equal(current.has(path),false,path+' retired independent card decoration must be removed');continue;
+   }
+   if(cardDecorationPaths.has(path)){assert(current.has(path),path+' shared decoration remains addressable');continue;}
+   assert.equal(current.get(path),node,path);
+   if(eventProjection.has(path)){
+    assert.deepEqual(node,eventProjection.get(path),path+' shared event projection');continue;
+   }
+   if(merchant.has(path)){
+    assert.deepEqual(node,merchant.get(path),path+' shared merchant projection');continue;
+   }
+   for(const key of Object.keys(before)){
+    const choiceSlot=/^\/SlayTheAbyss\/choicePanel\/card([12])$/.exec(path);
+    if(choiceSlot&&key==='position'){
+     const page=theme.layout.combatChoice,index=Number(choiceSlot[1])-1;
+     assert.deepEqual(node.position,[page.origin[0]+index%page.columns*page.step[0],page.origin[1]+Math.floor(index/page.columns)*page.step[1]],path+' two-card page position');continue;
+    }
+    if(key==='scale'&&/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)$/.test(path)){
+     assert.deepEqual(node.scale,[1,1],path+' battle slot states already own their scale');continue;
+    }
+    const relicSlot=/^\/SlayTheAbyss\/relicBar\/slot(\d+)$/.exec(path);
+    if(relicSlot&&key==='position'){
+     const bar=theme.officialAssets.battleRelicBar;
+     assert.deepEqual(node.position,[bar.origin[0]+bar.step*(Number(relicSlot[1])-1),bar.origin[1]],path+' canonical position');continue;
+    }
+    assert.deepEqual(node[key],key==='size'&&cardHosts.has(node)?theme.layout.card.size:before[key],path+' '+key);
+   }
+  }
+ const cards=[...all(layout),...all(template)].filter(node=>child(node,'roundFrame')&&child(node,'costDisc'));
+ const retiredDeckCards=nodes.filter(([path,node])=>path.startsWith(retiredDeckPrefix)&&cardHosts.has(node)).map(([,node])=>node);
+ const retiredPickerCards=nodes.filter(([path,node])=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]$/.test(path)&&cardHosts.has(node)).map(([,node])=>node);
+ const retiredChoiceCards=nodes.filter(([path,node])=>retiredChoice(path)&&cardHosts.has(node)).map(([,node])=>node);
+ assert.equal(retiredDeckCards.length,12,'the duplicated twelve-card selection modal is retired');
+ assert.equal(retiredPickerCards.length,3,'only picker faces four through six are retired');
+ assert.equal(retiredChoiceCards.length,8,'only choice faces three through ten are retired');
+ const retiredCards=[...retiredDeckCards,...retiredPickerCards,...retiredChoiceCards];
+ assert.equal(result.cardHosts,cardHosts.size-retiredPickerCards.length-retiredChoiceCards.length,'composition authenticates all capacity-bounded hosts before retiring the duplicate modal');
+ assert.equal(cards.length,cardHosts.size-retiredCards.length);assert.equal(cards.length,38);assert(result.removedControls>500);
+ for(const face of cardHosts)assert.equal(cards.includes(face),!retiredCards.includes(face),'retain every active original card host');
+ assertOfficialRunContracts([layout,template]);
+ for(const card of cards){
+  for(const role of ['roundBody','roundFrame']){
+   const old=child(card,role);assert.equal(old.visible,false);assert.deepEqual(old.children,[],'retired card material must stay empty');
+  }
+  const skin=child(card,'skin');if(skin){assert.equal(skin.visible,false);assert.deepEqual(skin.children,[]);}
+  assert.equal(child(card,'costCore').image,107203);assert.equal(child(card,'costCore').visible,false);
+  for(const role of ['stsReferenceBack','stsReferenceChrome']){
+   const material=child(card,role);assert(material);assert.deepEqual(material.position,[0,0]);assert.deepEqual(material.size,theme.layout.card.size);
+  }
+ }
+  const battle=child(layout,'battlePanel');
+  assert.deepEqual(child(battle,'hero').position,[-324,-37]);
+  assert.equal(child(child(battle,'hero'),'name').visible,false);
+  assert.deepEqual(child(battle,'endTurn').position,[454.5,-220]);
+  assert.deepEqual(child(battle,'endTurn').size,[143,56]);
+  assert.deepEqual(child(battle,'drawIcon').position,[-585.5,-311.5]);
+  for(const kind of ['draw','discard']){
+   const pile=child(battle,kind+'Icon'),hit=child(pile,'hit'),label=child(battle,kind+'Label');
+   const hx=pile.position[0]+hit.position[0],hy=pile.position[1]+hit.position[1];
+   assert.equal(label.visible,false,'original pile captions remain hover details');
+   assert.equal(label.text.content,'','runtime visibility refresh must not restore a caption over exhaust');
+   assert.deepEqual(hit.size,pile.size,'actual pile stack must be clickable');
+   const turn=child(battle,'endTurn');
+   assert(hx+hit.size[0]/2<turn.position[0]-turn.size[0]/2||hx-hit.size[0]/2>turn.position[0]+turn.size[0]/2,'pile target must not overlap irreversible End Turn');
+  }
+  const hints=child(battle,'resourceHints');
+  for(let slot=1;slot<=5;slot++){
+   const help=child(battle,'potionHelp'),caption=child(help,'potionCaption'+slot);
+   assert.equal(caption.active,false);assert.equal(caption.visible,false);assert.equal(caption.text.content,'','original potion slots have no permanent abbreviations');
+   const bottle=child(battle,'potion'+slot)??child(help,'potion'+slot);
+   assert.deepEqual(bottle.position,[nativeTheme.officialAssets.battleHud.potionX+(slot-1)*nativeTheme.officialAssets.battleHud.potionStep,nativeTheme.officialAssets.battleHud.y]);
+   assert.deepEqual(bottle.size,[44,44]);
+  }
+  for(const kind of ['hp','gold']){
+   const box=child(hints,kind),hit=child(box,'hit');
+   for(let slot=1;slot<=3;slot++){
+    const potion=child(battle,'potion'+slot);
+    assert(Math.abs(box.position[0]-potion.position[0])>=(hit.size[0]+potion.size[0])/2,'resource help overlaps potion '+slot);
+   }
+  }
+  const exhaust=child(battle,'exhaustIcon'),discard=child(battle,'discardIcon');
+  assert.deepEqual(exhaust.size,[32,32],'exhaust must remain a compact visual entry');
+  assert.deepEqual(child(exhaust,'hit').size,[44,44],'compact art retains a native touch target');
+  assert.equal(child(exhaust,'image').image,102049,'reuse the verified existing exhaust keyword glyph');
+  assert.notEqual(child(exhaust,'image').colour,'#000000','do not restore the solid black circle');
+  assert.equal(child(battle,'exhaust').text.fontSize,18);
+  assert.ok(child(battle,'exhaust').size[1]>=18*1.45+4,'counter retains one native text row');
+  assert(exhaust.position[1]-child(exhaust,'hit').size[1]/2>discard.position[1]+child(discard,'hit').size[1]/2,'exhaust and discard hits overlap');
+  const reference=theme.officialAssets.stsCardReference,material=buildStsSharedCardChrome(theme),tokens=geoCardReferenceTokens(theme);
+  for(let i=1;i<=10;i++){
+   const card=child(battle,'card'+i);assert(card);
+   assert.deepEqual(card.size,[150,210]);
+   for(const [name,key]of [['cost','cost'],['name','title'],['label','body']]){
+    const field=child(card,name),geometry=reference.geometry[key];
+    assert.deepEqual(field.position,geometry.position);assert.deepEqual(field.size,geometry.size);
+    assert.equal(field.text.fontSize,Math.max(14,theme.font.minimum,tokens.typography[key]));
+   }
+   assert.deepEqual(child(card,'stsReferenceBack').children,material.children.filter(n=>['body','portraits'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits'].includes(n.name)));
+   assert.deepEqual(child(card,'roundBody').children,[],'retired square paper must not leak through reference corners');
+   assert.equal(child(card,'nameBand').visible,false);
+   for(const role of ['nativeRibbon','nativeCostOrb','skin']){
+    const retired=child(card,role);assert.equal(retired.visible,false);assert.deepEqual(retired.children,[],role+' cannot duplicate shared material');
+   }
+   const glow=child(card,'nativePlayableRim');
+   assert.deepEqual(nativeTheme.officialAssets.battleGlowSource.rgba,[.2,.9,1,.25],'source float color remains explicit despite native 8-bit quantization');
+   assert.equal(child(glow,'softEdge').children[0].opacity,.25,'main border retains source alpha');
+   for(const control of all(glow)){
+    assert(control.size[0]>0&&control.size[0]<=1600&&control.size[1]>0&&control.size[1]<=900,'every glow control must satisfy formal encoder rect limits before scale');
+   }
+   for(const layer of glow.children){
+    assert.equal(layer.children.length,8,'bounded soft contour has four edges and four corners');
+    assert(layer.children.every(n=>n.image===106056||n.image===106057),'glow must use verified continuous alpha textures');
+    for(const part of layer.children)assert.equal(part.imageType,part.name.startsWith('corner')?'basic':'stretch');
+    for(const part of layer.children.filter(n=>n.name.startsWith('corner'))){
+     assert.equal(Math.abs(part.position[0]),66,'radial center stays under the rounded card corner');
+     assert.equal(Math.abs(part.position[1]),96,'radial peak must not float outside the silhouette');
+    }
+   }
+  }
+ assertNativeUiCapacity(layout);assertNativeUiCapacity(template);
+});
+
 test('scene and button substitutions preserve semantic icons and all four native button states',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
  const before=new Map(paths(layout).filter(([,node])=>node.kind==='image').map(([path,node])=>[path,node.image]));
