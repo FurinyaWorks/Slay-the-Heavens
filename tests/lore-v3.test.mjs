@@ -56,7 +56,7 @@ const preservedMerchant=Object.freeze({
   leave:'前面可不像这里太平。一路小心。'
 });
 const originalLivingWall={
-  intro:'墙壁上浮现出一张张人脸。它们低声重复着三个词：遗忘、改变、成长。\\n\\n你可以选择一张卡牌，留下旧日的招式，或让它成为新的力量。',
+  intro:'墙壁上浮现出一张张人脸。它们低声重复着三个词：遗忘、改变、成长。\n\n你可以选择一张卡牌，留下旧日的招式，或让它成为新的力量。',
   choices:['forget','change','grow']
 };
 function verifyVerbatimPreservation(copy,legacy){
