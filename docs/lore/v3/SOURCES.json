@@ -5,7 +5,7 @@
     "official-7.2": {
       "url": "https://ys.mihoyo.com/main/news/detail/167154",
       "published": "2026-11-01",
-      "usage": "A short background quote, not an official UGC storyline"
+      "usage": "Opening words excerpted from the 2026-11-01 event announcement, with final comma punctuation adapted to a full stop for standalone UI use; not an official UGC storyline"
     },
     "lore-v2": {
       "path": "docs/lore/v2/04-copy/supporting.zh-CN.json",
