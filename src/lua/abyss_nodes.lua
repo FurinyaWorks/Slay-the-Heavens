@@ -38,6 +38,7 @@ local Sources=require('abyss_nodes_sources')
 local campSource=Sources.campSource
 
 local enter=require('abyss_nodes_entry')(M)
+local Diagnostics=require('abyss_event_entry_diagnostics')
 
 local function validateEntryMap(run,map)
     if type(map)~='table' or getmetatable(map)~=nil then return false,'invalid_snapshot' end
@@ -67,8 +68,20 @@ function M.enter(run,map,nodeId)
     -- Map.choose and every entry hook stay private until battle setup and room
     -- preparation both succeed. Keep the public map/root/path owners stable.
     local stagedMap=Combat.copy(map)
-    local ok,reason=Run.transaction(run,function(staged)return enter(staged,stagedMap,nodeId)end)
-    if not ok then return false,reason end
+    local attempted,nested
+    local ok,reason=Run.transaction(run,function(staged)
+        -- Run.transaction passes a new root; its nested path reuses the active
+        -- stage. A nested rejection poisons the outer owner but has not rolled back.
+        nested=staged==run
+        local accepted,failure,detail=enter(staged,stagedMap,nodeId)
+        attempted=detail
+        return accepted,failure
+    end)
+    if not ok then
+        local receipt=Diagnostics.failure(run,map,nodeId,reason,attempted,nested)
+        if receipt then Diagnostics.emit(receipt);return false,reason,receipt end
+        return false,reason
+    end
     map.floor,map.currentNodeId=stagedMap.floor,stagedMap.currentNodeId
     map.wingedJumps=stagedMap.wingedJumps and Combat.copy(stagedMap.wingedJumps)or nil
     if stagedMap.mapRng then

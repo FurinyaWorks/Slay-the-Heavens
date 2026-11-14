@@ -322,6 +322,7 @@
     "abyss_battle_target_bindings": "ui",
     "abyss_nodes_common": "core",
     "abyss_nodes_entry": "core",
+    "abyss_event_entry_diagnostics": "core",
     "abyss_nodes_events": "core",
     "abyss_nodes_sources": "core",
     "abyss_run_initialization": "core",

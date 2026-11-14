@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "boundary": "Controlled public Nodes entry with real RNG and rollback; not native/device evidence",
+  "sourceNormalization": "UTF-8 text with CRLF normalized to LF",
+  "sources": {
+    "src/lua/abyss_nodes.lua": "d86e1d77a0cb9347513c2fc3b9b25883239eb4e696e634f71a70d6cb7bea9e55",
+    "src/lua/abyss_nodes_entry.lua": "b5a80b99a21ba620fc7c4366d97b8ee58ddd9826f6ed05b7bd16fccfb26060eb",
+    "src/lua/abyss_event_entry_diagnostics.lua": "55ac17d85fd7513fd9936043f3e2209aefad8d40c8473d55866f9a9bdfc1c60d",
+    "src/lua/abyss_run.lua": "189e4a36804ec74f9dcc8c54a07ea5401fb07d81a44ef08d44153b15bac89030",
+    "src/lua/abyss_event_pool.lua": "2b3511baabf92f3007515de4d6707fe9b60c281d3c46ee04547109543f1219ca",
+    "src/lua/abyss_sts_random.lua": "1e0e0f64fe6a7d2edfe8609419080266c554b763fd71b9565b52eed99aaa42b9",
+    "tests/lua/event_entry_diagnostics.lua": "ab338617d285d2146e78416b85e860c8591114114878859edaba2aed41199c56",
+    "tests/event-entry-diagnostics.test.mjs": "37a437c12961174dcae631ec97ad899dd6607eab980fb31ca8ccd6e26eb30c02",
+    "data/rules.json": "caf17a7c7f5bcd53811da1895ec42bb6df790982b3ede42351317f4997872f32"
+  },
+  "receipt": {
+    "attempted": {
+      "eventCounter": 1,
+      "roomMiscCounter": 0,
+      "runMiscCounter": 0,
+      "selectionCounter": 3
+    },
+    "committed": {
+      "eventCounter": 0,
+      "known": true,
+      "miscCounter": 0
+    },
+    "event": {
+      "mappedIdKnown": false,
+      "originalId": "Addict",
+      "originalIdKnown": true
+    },
+    "kind": "event_entry_failure",
+    "node": {
+      "floor": 18,
+      "id": "f18_l1",
+      "resolvedType": "event",
+      "sourceType": "event"
+    },
+    "phase": "after_rollback",
+    "reason": "event_not_implemented",
+    "run": {
+      "act": 2,
+      "currentSeed": 42,
+      "eventSeed": "42",
+      "identityScope": "committed_post_rollback",
+      "runSeed": "42"
+    },
+    "schemaVersion": 1
+  },
+  "receiptSha256": "b4cb99984db9419acb590181e5eeba917bf286a3dc45f3bedd5b5a4024279255",
+  "stdoutSha256": "dbeb23f7de63696ab9eade34851a191f1f4dccfe15d25874d541a60eb4ba8fd7",
+  "logLines": [
+    "ABYSS_EVENT_ENTRY_FAILURE runSeed=string:42 currentSeed=number:42 eventSeed=string:42 act=number:1 node_id=string:f1_l2 node_floor=number:1 node_sourceType=string:event node_resolvedType=string:event originalId=nil mappedId=string:invalid_direct_event originalIdKnown=boolean:false mappedIdKnown=boolean:true reason=string:event_unavailable phase=string:after_rollback committed_eventCounter=number:0 committed_miscCounter=number:0 attempted_eventCounter=nil attempted_selectionCounter=nil attempted_roomMiscCounter=number:0 attempted_runMiscCounter=number:0",
+    "ABYSS_EVENT_ENTRY_FAILURE runSeed=string:42 currentSeed=number:42 eventSeed=string:42 act=number:1 node_id=string:f1_l2 node_floor=number:1 node_sourceType=string:event node_resolvedType=string:event originalId=nil mappedId=string:invalid_direct_event originalIdKnown=boolean:false mappedIdKnown=boolean:true reason=string:event_unavailable phase=string:after_rollback committed_eventCounter=number:0 committed_miscCounter=number:0 attempted_eventCounter=nil attempted_selectionCounter=nil attempted_roomMiscCounter=number:0 attempted_runMiscCounter=number:0",
+    "ABYSS_EVENT_ENTRY_FAILURE runSeed=string:42 currentSeed=number:42 eventSeed=string:42 act=number:1 node_id=string:f1_l2 node_floor=number:1 node_sourceType=string:event node_resolvedType=string:event originalId=nil mappedId=string:cleric originalIdKnown=boolean:false mappedIdKnown=boolean:true reason=string:event_unavailable phase=string:after_rollback committed_eventCounter=number:0 committed_miscCounter=number:0 attempted_eventCounter=nil attempted_selectionCounter=nil attempted_roomMiscCounter=number:0 attempted_runMiscCounter=number:0",
+    "ABYSS_EVENT_ENTRY_FAILURE runSeed=string:42 currentSeed=number:42 eventSeed=string:42 act=number:2 node_id=string:f18_l1 node_floor=number:18 node_sourceType=string:event node_resolvedType=string:event originalId=string:Addict mappedId=nil originalIdKnown=boolean:true mappedIdKnown=boolean:false reason=string:event_not_implemented phase=string:after_rollback committed_eventCounter=number:0 committed_miscCounter=number:0 attempted_eventCounter=number:1 attempted_selectionCounter=number:3 attempted_roomMiscCounter=number:0 attempted_runMiscCounter=number:0",
+    "ABYSS_EVENT_ENTRY_FAILURE runSeed=string:42 currentSeed=number:42 eventSeed=string:42 act=number:1 node_id=string:f1_l2 node_floor=number:1 node_sourceType=string:event node_resolvedType=string:event originalId=nil mappedId=string:match_game originalIdKnown=boolean:false mappedIdKnown=boolean:true reason=string:node_content_unavailable phase=string:after_rollback committed_eventCounter=number:0 committed_miscCounter=number:0 attempted_eventCounter=nil attempted_selectionCounter=nil attempted_roomMiscCounter=number:1 attempted_runMiscCounter=number:0"
+  ],
+  "status": 0
+}

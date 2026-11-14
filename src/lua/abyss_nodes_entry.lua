@@ -6,6 +6,7 @@ local Combat = require("abyss_combat")
 local Unknown = require("abyss_unknown")
 local EventPool = require("abyss_event_pool")
 local EventRandom = require("abyss_sts_random")
+local Diagnostics=require('abyss_event_entry_diagnostics')
 local Inventory = require("abyss_inventory")
 local Shop = require("abyss_shop")
 
@@ -174,9 +175,9 @@ return function(M)
         local originalId,reason=EventPool.draw(c.nextUnknown.pools,{floor=c.node.floor,gold=run.gold,act=run.act or 1,
             hp=run.hp,relicCount=#run.relics,elapsedSeconds=run.elapsedSeconds,cursed=Fountain.isCursed(run)},c.selectionRng)
         if not originalId then return false,reason end
+        c.node.originalEventId=originalId
         c.node.eventId=EventPool.contentId[originalId]
         if not c.node.eventId then return false,'event_not_implemented' end
-        c.node.originalEventId=originalId
         return true
     end
 
@@ -304,13 +305,13 @@ return function(M)
         local sourceType=node.type
         RelicHooks.onEnterRoom(run,sourceType,'enter')
         local c={node=node,sourceType=sourceType,nextMiscRng=Run.roomStreams(run,node.floor).miscRng}
-        ok,reason=prepareFlow(run,c);if not ok then return false,reason end
-        ok,reason=prepareEmerald(run,map,nodeId,c);if not ok then return false,reason end
-        ok,reason=stageCombat(run,c);if not ok then return false,reason end
+        ok,reason=prepareFlow(run,c);if not ok then return false,reason,Diagnostics.attempt(run,c)end
+        ok,reason=prepareEmerald(run,map,nodeId,c);if not ok then return false,reason,Diagnostics.attempt(run,c)end
+        ok,reason=stageCombat(run,c);if not ok then return false,reason,Diagnostics.attempt(run,c)end
         local offPath=not find(Map.available(map),nodeId)
         assert(Map.choose(map,nodeId,require('abyss_rare_relics').canWingedTravel(run)))
         if offPath then assert(require('abyss_rare_relics').useWingedTravel(run))end
-        ok,reason=commitEmerald(map,nodeId,c);if not ok then return false,reason end
+        ok,reason=commitEmerald(map,nodeId,c);if not ok then return false,reason,Diagnostics.attempt(run,c)end
         return commitRoom(run,map,c)
     end
 

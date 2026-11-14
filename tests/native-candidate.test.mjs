@@ -179,6 +179,21 @@ test('readback with correct module names but stale contents is rejected',async t
   const f=await fixture(t,{scriptContent:'return "old contents"'});await assert.rejects(f.run(),/content|digest|readback/i);
 });
 
+test('event entry diagnostic dependency is embedded and independently read back with its command owners',async t=>{
+  const f=await fixture(t);
+  const sources=new Map(['abyss_nodes','abyss_nodes_entry','abyss_event_entry_diagnostics'].map(name=>[
+    name,readFileSync(new URL(`../src/lua/${name}.lua`,import.meta.url),'utf8')
+  ]));
+  for(const [name,source]of sources)writeFileSync(join(f.root,`src/lua/${name}.lua`),source);
+  const receipt=await f.run();
+  assert.deepEqual(receipt.checkedModules,[...sources.keys(),'abyss_monster_actor_binding','abyss_ui'].sort());
+  for(const [name,source]of sources){
+    const write=f.calls.find(call=>call.name==='scene_set_client_script'&&call.args.name===name);
+    assert.equal(readFileSync(write.args.sourceFile,'utf8'),source);
+  }
+  assert.equal(f.calls.some(call=>call.name==='scene_list_client_scripts'),true);
+});
+
 test('parent alias outside root is rejected before creating any output directory',async t=>{
   const f=await fixture(t),outside=mkdtempSync(join(tmpdir(),'abyss-external-'));
   t.after(()=>rmSync(outside,{recursive:true,force:true}));
