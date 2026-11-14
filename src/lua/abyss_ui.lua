@@ -2,7 +2,44 @@ local view, Viewport, background, cardArt, portraits, v25Textures, nativeStage, 
 local artFailures={}
 local canvasWidth, canvasHeight
 local attempted = false
+local failureActive, failureExitSent = false, false
+local failureQuitHit
+local function installFailureExit(menu)
+    local quit=menu:GetChild('titleQuit')
+    if not quit then return end
+    quit:SetVisible(true)
+    for _,name in ipairs({'normal','label'})do
+        local control=quit:GetChild(name)
+        if control then control:SetVisible(true)end
+    end
+    for _,name in ipairs({'disabled','hover','pressed','selected'})do
+        local control=quit:GetChild(name)
+        if control then control:SetVisible(false)end
+    end
+    local hit=quit:GetChild('hit')
+    if not hit then return end
+    hit:SetVisible(true)
+    hit.raycastTarget=true
+    if failureQuitHit==hit then return end
+    failureQuitHit=hit
+    hit:AddCursorEventListener(Enum.CursorEventType.CursorClick,function()
+        -- The normal menu controller has been retired. Do not resume a damaged
+        -- run or claim a failed native exit request worked.
+        if not failureActive or failureExitSent then return false end
+        failureExitSent=true
+        local ok,why=pcall(function()game.ServerSignal('ABYSS_LOSE'):SendSignal()end)
+        if not ok then
+            failureExitSent=false
+            print('ABYSS_UI failure_exit_failed '..tostring(why))
+            menu:GetChild('summary').text='退出请求失败，请再次点击退出游戏。'
+            return false
+        end
+        print('ABYSS_UI failure_exit_requested')
+        return true
+    end)
+end
 local function failed(phase, reason)
+    failureActive=true
     pcall(function()require('abyss_card_skin').clearSurface()end)
     if v25Textures then pcall(function()v25Textures:clear()end)end
     print("ABYSS_UI failed " .. phase .. ": " .. tostring(reason))
@@ -17,7 +54,8 @@ local function failed(phase, reason)
     pcall(function()
         local stage = script.object:GetChild("stage")
         for _, name in ipairs({"battlePanel", "mapPanel", "nodePanel", "deckEntry", "deckPanel",
-            "characterPanel", "choicePanel", "potionPanel", "potionEntry", "prologuePanel", "exitPanel", "exitEntry", "combatRewards", "victoryEasterEgg"}) do
+            "characterPanel", "choicePanel", "potionPanel", "potionEntry", "prologuePanel", "exitPanel", "exitEntry", "combatRewards", "victoryEasterEgg",
+            "runMenu", "relicPanel", "relicBar", "relicEntry", "pageReveal"}) do
             local panel=stage:GetChild(name)
             if panel then panel:SetVisible(false) end
         end
@@ -25,16 +63,22 @@ local function failed(phase, reason)
         menu:SetVisible(true)
         menu:SetAsLastSibling()
         menu:GetChild("start"):SetVisible(false)
+        local continueRun=menu:GetChild('continueRun')
+        if continueRun then continueRun:SetVisible(false)end
+        local deathShade=menu:GetChild('deathShade')
+        if deathShade then deathShade:SetVisible(false)end
         local settle = menu:GetChild("settle")
         if settle then settle:SetVisible(false) end
         local result = menu:GetChild("result")
         if result then result:SetVisible(false) end
         menu:GetChild("summary"):SetVisible(true)
-        local message = "关卡启动失败，请退出后重新进入。"
+        local message = phase=='startup' and '关卡启动失败，请退出后重新进入。'
+            or '游戏运行异常，请退出后重新进入。'
         if game.IsTestPlay and game.IsTestPlay() then
             message = message .. "\n测试诊断 · " .. phase .. "\n" .. tostring(reason)
         end
         menu:GetChild("summary").text = message
+        installFailureExit(menu)
     end)
 end
 -- One immutable candidate snapshot; never sourced from player parameters or polled.
@@ -301,6 +345,8 @@ function OnUpdate(dt)
 end
 
 function OnDestroy()
+    failureActive=false
+    failureQuitHit=nil
     pcall(function()require('abyss_card_skin').destroySurface()end)
     if v25Textures then pcall(function()v25Textures:onDestroy()end)end
     if view then pcall(function()view:onEngineDestroy()end) end
