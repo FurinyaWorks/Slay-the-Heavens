@@ -5,12 +5,14 @@
   "device": "PC",
   "quote": "可以啊这个玩起来还挺丝滑的 基本上没什么卡顿 然后我说的是pc上",
   "finding": "User reports smooth PC play with essentially no noticeable stutter.",
-  "candidateFile": null,
-  "candidateSha256": null,
-  "candidateIdentityStatus": "awaiting owner confirmation",
+  "candidateFile": "新版低档-200-349.gil",
+  "candidateSha256": "60aa957a186c479d4d182f704cabf1ed4a966dac6ac491e036489450f1fd89a0",
+  "candidateIdentityStatus": "Owner confirmed delivered filename; SHA mapped from delivery manifest, client execution bytes not independently read back",
   "quantitativeFrameTiming": null,
   "officialReadyLog": "not supplied with this feedback",
   "physicalPhone": "UNVERIFIED",
   "officialCapacity": "UNVERIFIED",
-  "scope": "Qualitative PC feedback only. Does not certify all four candidates, worst-case stress, visual production approval or mobile performance."
+  "scope": "Qualitative PC experience for the confirmed low-budget candidate only. Does not certify other candidates, worst-case stress, visual production approval or mobile performance.",
+  "filenameConfirmation": "新版低档-200-349.gil",
+  "qualitativePcExperience": "POSITIVE_OWNER_REPORTED"
 }

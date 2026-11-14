@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 13:12'
-updated_date: '2026-11-14 15:02'
+updated_date: '2026-11-14 15:04'
 labels:
   - art
   - technical-spike
@@ -51,4 +51,6 @@ verify:backlog首次指出M9索引缺任务引用；已在独立工作树docs/MI
 已提交实验PR https://github.com/FurinyaWorks/Slay-the-Heavens/pull/669 ，未合并、未发布、未启用自动合并。独立分支feat/monster-lowpoly-combat；四份GIL已按manifest核对并交付到Windows独立目录。三套各26 SDK检查+4兼容检查、4合同、冻结链及verify:backlog通过；现有Fast选择器无映射，常规PR CI未宣称通过。官方PC由用户自行导入，实体手机/官方容量未验，任务维持In Progress等待本轮真实导入反馈。
 
 2026-11-14 Owner反馈：可以啊这个玩起来还挺丝滑的，基本上没什么卡顿；明确是PC。记录为用户实际试玩的定性性能反馈，未推断手机表现或量化FPS。目前尚待确认所试玩GIL文件名/候选SHA；不把该反馈绑定到三套全部候选，也不代替官方ready、日志或容量证据。
+
+Owner随后明确确认试玩文件为新版低档-200-349.gil。PC顺滑/基本无卡顿的反馈仅绑定该低档候选；交付manifest对应SHA256为60aa957a186c479d4d182f704cabf1ed4a966dac6ac491e036489450f1fd89a0（来自交付清单，未独立读回用户客户端执行字节）。低档已有用户PC定性体验正向反馈；其他档位PC、量化帧时、官方新日志/ready、实体手机及官方容量仍未验收。
 <!-- SECTION:NOTES:END -->
