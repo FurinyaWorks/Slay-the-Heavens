@@ -123,8 +123,12 @@ test('status detail card renders every line natively, left-aligned, and a full p
     assert.equal(box.text.align, 'left', `${box.name} reads from the left edge`);
   }
   for (const box of texts.filter(c => /^tag\d?$/.test(c.name))) assert.equal(box.text.align, 'right', box.name);
-  // The card's own hit sits above every row so a tap turns the page, never the stage.
-  assert.equal(info.children.at(-1).name, 'page');
+  // C-mode's page hit covers the legacy rows. The real native Grid must sit
+  // above it to own scrolling, with the explicit mode target above both.
+  const at=name=>info.children.findIndex(control=>control.name===name);
+  assert(at('page')>at('note3'));
+  assert(at('statusGrid')>at('page'));
+  assert.equal(info.children.at(-1).name, 'mode');
   assert.equal(info.children.at(-1).kind, 'cursorArea');
   const [, height] = theme.canvas.base;
   const room = height - theme.layout.topBar.height - s.s - theme.canvas.safe.y;

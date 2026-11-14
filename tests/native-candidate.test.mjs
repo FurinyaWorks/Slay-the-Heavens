@@ -160,7 +160,7 @@ test('source/generated module collisions are rejected',async t=>{
 
 test('extracted UI subviews are embedded, read back and checked with the entry module',async t=>{
   const f=await fixture(t);
-  const sources=new Map(['abyss_battle_card_view','abyss_battle_info_content','abyss_battle_info_view',
+  const sources=new Map(['abyss_battle_card_view','abyss_battle_info_content','abyss_battle_info_view','abyss_battle_info_scroll',
     'abyss_battle_intent_view','abyss_battle_potion_view','abyss_battle_reward_owner',
     'abyss_battle_status_view','abyss_battle_unit_view','abyss_shop_ui'].map(name=>[
     name,readFileSync(new URL(`../src/lua/${name}.lua`,import.meta.url),'utf8')

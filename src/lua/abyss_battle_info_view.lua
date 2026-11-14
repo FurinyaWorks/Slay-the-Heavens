@@ -6,6 +6,7 @@ local M = {}
 local UnitView=require("abyss_battle_unit_view")
 local C, L, S = Theme.color, Theme.layout, Theme.space
 local I = L.statusInfo
+local Scroll=require('abyss_battle_info_scroll')
 
 local function openPage(paging)
     paging.page = {items = {}, rows = 0, sections = 0}
@@ -45,10 +46,10 @@ function M.paginator(lines)
         end
     end
 
-    return function(card,width,font)
+    return function(card,width,font,footer)
         local room = Theme.canvas.base[2] - L.topBar.height - S.s - Theme.canvas.safe.y
         local heading=card.keywordOnly and 0 or I.header+I.summary+I.divider
-        local paging = {pages = {}, used = 0, width=width,font=font,budget = room - I.pad * 2 - heading - I.footer}
+        local paging = {pages = {}, used = 0, width=width,font=font,budget = room - I.pad * 2 - heading - (footer or I.footer)}
         openPage(paging)
         for _, section in ipairs(card.sections) do appendSection(paging, section) end
         return paging.pages
@@ -82,6 +83,8 @@ end
 
 function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, picture)
     local textStyles={}
+    local scroll=Scroll.new(self,child('statusInfo'),picture,ink,tint)
+    self.updateInfoScroll=function()scroll:update()end
     local function readingSize(control,name,font)
         local original=textStyles[name]
         if not original then
@@ -289,12 +292,43 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         if not actor or actor.id~=info.id or not Actors.isPresent(actor)then return end
         return describeInfo(battle,info,actor)
     end
+    local function scrollAvailable(info)
+        return not info.kind and not info.transient and not info.statusId and not info.offset and scroll:available()
+    end
+    local function readerLayout(battle,info,card,page,pages,anchor,width,font)
+        local available=scrollAvailable(info)
+        local scrolling=available and not info.paged
+        info.scrollMode=scrolling
+        local footer=scrolling and Scroll.footer(card) or footerText(info,pages)
+        if available and not scrolling then footer=footer..' · 点此改滚动'end
+        local body=math.min(I.scrollHeight,Theme.canvas.base[2]-L.topBar.height-S.s-Theme.canvas.safe.y
+            -I.pad*2-I.header-I.summary-I.divider-I.scrollFooter)
+        local height=scrolling and(body+I.pad*2+I.header+I.summary+I.divider+I.scrollFooter)or pageHeight(card,page,footer)
+        if available and not scrolling then height=height+I.scrollFooter-I.footer end
+        return pageGeometry(battle,info,height,anchor,width,font),scrolling,available,footer,body
+    end
+    local function finishReader(panel,info,geometry,footer,available,scrolling)
+        finish(panel,info,geometry,footer)
+        panel:GetChild('page'):SetVisible(not info.transient and not scrolling)
+        local mode=panel:GetChild('mode')
+        if not mode then return end
+        mode:SetVisible(available)
+        local y=geometry.y-geometry.height/2+I.pad+I.scrollFooter/2
+        mode:SetAnchoredPosition(geometry.x,y)
+        mode:SetSizeDelta(geometry.inner,I.scrollFooter)
+        if available then panel:GetChild('more'):SetAnchoredPosition(geometry.x,y)end
+    end
+    local function readerBody(panel,card,info,page,geometry,scrolling,height)
+        if scrolling then scroll:render(info,card,geometry,height)
+        else scroll:hide();pageItems(panel,card,page,geometry)end
+    end
     return function(battle,positionOnly)
         local panel, info = child("statusInfo"), self.info
         local anchor,skip=positionContext(battle,info,positionOnly)
         if skip then return end
         local card=describedCard(battle,info)
         if not card then
+            scroll:hide()
             self.info = nil
             panel:SetVisible(false)
             return
@@ -304,18 +338,17 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         end
         local width=anchor and I.cardHoverWidth or I.width
         local font=anchor and I.cardHoverFont or nil
-        local pages = paginate(card,width,font)
+        local pages = paginate(card,width,font,scrollAvailable(info)and I.scrollFooter or nil)
         info.page = math.max(1, math.min(info.page or 1, #pages))
         info.pages = #pages
         local page = pages[info.page]
-        local footer = footerText(info, pages)
-        local geometry = pageGeometry(battle, info, pageHeight(card, page, footer),anchor,width,font)
+        local geometry,scrolling,available,footer,height=readerLayout(battle,info,card,page,pages,anchor,width,font)
         frame(panel, card, geometry)
         header(panel, card, geometry)
         summaryLine(panel, card, geometry)
-        pageItems(panel, card, page, geometry)
+        readerBody(panel,card,info,page,geometry,scrolling,height)
         hideUnused(panel, geometry)
-        finish(panel, info, geometry, footer)
+        finishReader(panel,info,geometry,footer,available,scrolling)
         info.sideAnchor=anchor
     end
 end

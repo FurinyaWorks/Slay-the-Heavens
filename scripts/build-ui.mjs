@@ -11,7 +11,7 @@ import { mkdirSync, existsSync, lstatSync, readdirSync, readFileSync, realpathSy
 import { resolve, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { toLua } from './build-lua-data.mjs';
-import { battleLayout, enemyPowerTemplate } from './ui-layout.mjs';
+import { battleLayout, enemyPowerTemplate, statusDetailLineTemplate } from './ui-layout.mjs';
 import { gameLayout } from './game-ui-layout.mjs';
 import { withViewport } from './viewport-layout.mjs';
 import { buildUiTheme } from './build-ui-theme.mjs';
@@ -147,7 +147,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   const sourceTheme = JSON.parse(readFileSync('data/presentation/ui_theme.json', 'utf8').replace(/^\uFEFF/, ''));
   const theme=officialAssets?officialAssetsTheme(sourceTheme):v25BattleChrome?v25Theme(sourceTheme):sourceTheme;
   const battle = battleLayout(), layout = withViewport(gameLayout(undefined, options), theme);
-  const templates = [deckCardTemplate()];
+  const templates = [deckCardTemplate(),statusDetailLineTemplate()];
   if(v25Cards)templates.push(...v25Cards.templates);
   if(v25Masks)templates.push(...v25Masks.templates);
   if(v25BattleChrome){

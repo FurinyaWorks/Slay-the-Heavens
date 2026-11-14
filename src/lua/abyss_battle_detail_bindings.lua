@@ -138,6 +138,57 @@ function M.install(owner, _ownership, host, dependencies)
             end
         end
 
+    local function bindInfoMode(info)
+        local mode=info:GetChild('mode')
+        if not mode then return end
+        local input={}
+        local function capture(event)
+            local open,run=owner.info,owner.run
+            if not open or open.kind or open.statusId or open.offset or not run or run.phase~='combat'then return end
+            local battle=run.combat
+            return {info=open,run=run,battle=battle,turn=battle.turn,touch=event and event.touchId,
+                actor=open.index==0 and battle.player or battle.enemies[open.index]}
+        end
+        local function ready(token)
+            if not token or owner.info~=token.info or owner.run~=token.run then return false end
+            local battle=owner.run.combat
+            local actor=token.info.index==0 and battle.player or battle.enemies[token.info.index]
+            return owner.active and not owner.busy and battle==token.battle and battle.turn==token.turn
+                and actor==token.actor and Actors.isPresent(actor)
+        end
+        local function changeMode()
+            if not ready(capture())then return false end
+            local open=owner.info
+            open.paged=not open.paged;owner:render();return true
+        end
+        mode:AddCursorEventListener(host.clickEvent,function(event)
+            local token=input.released
+            input.released,input.held=nil,nil
+            if Controller.pointerBlocked(host.controller) or event and event.dragging then return false end
+            if input.pointerObserved and(not ready(token)or token.touch~=(event and event.touchId))then return false end
+            local swallow=owner.swallow
+            if swallow and swallow.touch==(event and event.touchId)then owner.swallow=nil;return false end
+            return changeMode()
+        end)
+        if hasCursorPair('CursorDown','CursorUp')then
+            mode:AddCursorEventListener(host.cursor.CursorDown,function(event)
+                input.pointerObserved=true;input.held,input.released=nil,nil
+                local token=capture(event)
+                if ready(token)then input.held=token end
+            end)
+            mode:AddCursorEventListener(host.cursor.CursorUp,function(event)
+                local token=input.held;input.held=nil
+                if ready(token)and token.touch==(event and event.touchId)then input.released=token end
+            end)
+            if host.cursor.CursorEndDrag then mode:AddCursorEventListener(host.cursor.CursorEndDrag,function()
+                input.held,input.released=nil,nil
+            end)end
+            if host.cursor.CursorExit then mode:AddCursorEventListener(host.cursor.CursorExit,function()
+                input.held,input.released=nil,nil
+            end)end
+        end
+        Controller.bind(host.controller,mode,'battleInfo',changeMode,function()return ready(capture())end,2)
+    end
     local function bindDetailControls()
         -- Enemy portraits keep targeting; the hero portrait and every status row only open
         -- details, so a status tap never plays a card or moves the potion target.
@@ -157,7 +208,7 @@ function M.install(owner, _ownership, host, dependencies)
         -- Not routed through listen(): that dismisses the open card before any handler runs.
         local function infoPage()
             local open = owner.info
-            if not open then return end
+            if not open or open.scrollMode then return false end
             owner.swallow = nil
             if (open.pages or 1) > 1 then open.page = open.page % open.pages + 1 owner:render()
             elseif dependencies.closeInfo() then owner:render() end
@@ -172,6 +223,7 @@ function M.install(owner, _ownership, host, dependencies)
             info:GetChild("page"):AddCursorEventListener(host.cursor.CursorDown,function() owner.swallow=nil end)
         end
         Controller.bind(host.controller,info:GetChild("page"),"battleInfo",infoPage,nil,1)
+        bindInfoMode(info)
         bindActorHelp(0,dependencies.child("hero"),function()end)
         if not host.monsterSurfaces then
             for i=1,5 do

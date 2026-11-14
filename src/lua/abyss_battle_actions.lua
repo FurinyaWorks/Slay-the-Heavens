@@ -138,6 +138,7 @@ function M.install(owner, _ownership, host, dependencies)
         end
     end
     function owner:update(dt)
+        if self.updateInfoScroll then self.updateInfoScroll()end
         if self.gesture then self.gesture.elapsed = (self.gesture.elapsed or 0) + dt end
         if dependencies.updateCarry then dependencies.updateCarry() end
         if self.potionAim and not dependencies.aimReady(self.potionAim) then self:render() end

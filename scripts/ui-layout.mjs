@@ -132,6 +132,14 @@ function statusRow(top) {
 // card's own hit turns pages, so every status stays reachable however many there are.
 // Lua places every child: left-aligned hierarchy of unit -> HP/Block -> buff/debuff
 // sections -> name and stacks (duration on the right) -> effect -> condition.
+export function statusDetailLineTemplate() {
+  const si=l.statusInfo,width=si.width-si.pad*2,height=si.scrollLine;
+  return {name:'AbyssStatusDetailLine',kind:'container',size:[width,height],children:[
+    picture('icon',-width/2+si.icon/2,0,si.icon,si.icon,theme.icon.status.strength,c.buff),
+    aligned(text('text',si.icon/2+si.gap/2,0,width-si.icon-si.gap,height,'',f.reading,c.text)),
+  ]};
+}
+
 function statusInfo() {
   const [width, height] = theme.canvas.base, si = l.statusInfo, line = l.nativeText.lineHeight;
   const inner = si.width - si.pad * 2, textWidth = inner - si.icon - si.gap;
@@ -165,6 +173,10 @@ function statusInfo() {
     ...rows,
     text('more', 0, 0, inner, line, '', f.small, c.textDim),
     { ...hit(si.width, si.width), name: 'page' },
+    {name:'statusGrid',kind:'grid',visible:false,size:[inner,si.scrollHeight],
+      itemTemplate:'AbyssStatusDetailLine',grid:{columns:1,horizontal:false,itemSize:[inner,si.scrollLine],
+        spacing:[0,0],padding:[0,0,0,0],scrollbar:true}},
+    {...hit(inner,si.scrollFooter),name:'mode',visible:false},
   ] };
 }
 
