@@ -61,7 +61,7 @@ test('all encounter pages remain readable and idle waits for the long text to fi
  while true do
   assert(merchant:tap());pages[#pages+1]=root:GetChild('merchant'):GetChild('line').text
   assert(utf8.len(pages[#pages])<=Theme.layout.merchant.pageCharacters)
-  local last=original.page*Theme.layout.merchant.pageCharacters>=#original.chars
+  local last=original.shown>=#original.chars
   if last then break end
   assert(merchant:tap())
  end

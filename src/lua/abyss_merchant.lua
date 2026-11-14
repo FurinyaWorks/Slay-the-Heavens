@@ -13,7 +13,31 @@ local lines = { encounter = copy.encounter, greet = copy.greet, buy = copy.purch
 local cues = { buy = "merchant_buy", poor = "merchant_deny" }
 
 local function clamp(value) return math.max(0, math.min(1, value)) end
-local function pageEnd(current)return math.min(#current.chars,(current.page or 1)*L.pageCharacters)end
+local sentenceEnds = { ["。"] = true, ["！"] = true, ["？"] = true, ["!"] = true, ["?"] = true }
+local closingQuotes = { ["」"] = true, ["』"] = true, ["”"] = true, ["’"] = true }
+-- Keep an already fitting sentence together. Long sentences retain the existing
+-- hard capacity; changing their layout or semantic breaks needs separate review.
+local function pageEnds(chars)
+    local ends, first = {}, 1
+    while first <= #chars do
+        local limit = math.min(#chars, first + L.pageCharacters - 1)
+        local last = limit
+        if limit < #chars then
+            local boundary
+            for i = first, limit do
+                if sentenceEnds[chars[i]] then
+                    local stop = i
+                    while closingQuotes[chars[stop + 1]] do stop = stop + 1 end
+                    if stop <= limit then boundary = stop end
+                end
+            end
+            last = boundary or limit
+        end
+        ends[#ends + 1], first = last, last + 1
+    end
+    return ends
+end
+local function pageEnd(current) return current.pageEnds[current.page] end
 
 -- options.color, options.sound. box is the merchant container from merchantControl().
 function M.new(box, options)
@@ -30,7 +54,8 @@ function M.new(box, options)
     local function begin(kind)
         local narration = kind == "encounter"
         local text = narration and lines[kind] or "「" .. lines[kind] .. "」"
-        merchant.current = { kind = kind, narration = narration, chars = Prologue.chars(text), shown = 0, hold = 0, page=1 }
+        local chars = Prologue.chars(text)
+        merchant.current = { kind = kind, narration = narration, chars = chars, pageEnds = pageEnds(chars), shown = 0, hold = 0, page=1 }
         merchant.idle = 0
         merchant.nod, merchant.shake = nil, nil
         if cues[kind] and options.sound then pcall(options.sound, cues[kind]) end
@@ -72,7 +97,8 @@ function M.new(box, options)
 
     local function paintSpeech(current)
         local count = math.min(pageEnd(current), math.floor(current.shown))
-        line.text = table.concat(current.chars, "", (current.page-1)*L.pageCharacters+1, count)
+        local first = current.page == 1 and 1 or current.pageEnds[current.page - 1] + 1
+        line.text = table.concat(current.chars, "", first, count)
         local speaking = not current.dismissed
         if bubble then bubble:SetVisible(speaking); line:SetVisible(speaking) end
         ink(line, bubble and L.bubble.ink or (current.narration and C.textDim or C.text))
