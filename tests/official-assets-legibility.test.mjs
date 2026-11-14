@@ -48,6 +48,33 @@ function assertSharedCard(card,theme){
   assert.equal(text.text.autoSize,false,'source-sized labels must not shrink away');assert.equal(text.text.valign,'middle');
  }
 }
+test('official play field keeps its transparent native hit area instead of acquiring a button face',()=>{
+ const theme=officialAssetsTheme(nativeTheme);
+ for(const layout of [gameLayout(),battleLayout()]){
+  const stage=child(layout,'stage')??layout,battle=child(stage,'battlePanel')??stage;
+  const area=child(battle,'playArea'),before=structuredClone(area);
+  applyOfficialAssets([layout],theme);
+  assert(!child(area,'officialButtonBacking'),'non-target card selection must not paint an opaque field');
+  assert.deepEqual(child(area,'hit'),child(before,'hit'),'field clicks retain the native receiver');
+  assert.deepEqual(child(area,'line'),child(before,'line'),'field boundary remains visible');
+  assert(!all(area).some(n=>n.kind==='image'&&n.name!=='line'&&n.visible!==false&&(n.opacity??1)>0));
+ }
+});
+test('official disabled card veil shades material while cost and card text remain above it',()=>{
+ const theme=officialAssetsTheme(nativeTheme),trees=[gameLayout(),battleLayout(),deckCardTemplate()];
+ applyOfficialAssets(trees,theme);
+ for(const tree of trees){
+  const cards=all(tree).filter(n=>child(n,'stsReferenceChrome'));
+  assert(cards.length>0,'each real native layout has card hosts');
+  for(const card of cards){
+   const index=name=>children(card).findIndex(n=>n.name===name),veil=index('blockedVeil');
+   assert(index('stsReferenceChrome')<veil,'disabled veil shades the card material');
+   for(const name of ['name','type','cost','label','description','costDirection']){
+    if(child(card,name))assert(veil<index(name),name+' remains readable above the disabled veil');
+   }
+  }
+ }
+});
 function assertTypeFrame(card,theme){
  const front=child(card,'stsReferenceChrome'),back=child(card,'stsReferenceBack'),geometry=theme.officialAssets.stsCardReference.geometry;
  assert(front&&back,'shared StS type frame required');

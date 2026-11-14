@@ -204,7 +204,9 @@ export function installStsReferenceCardChrome(face,theme){
  const arts=face.children.filter(artNode),texts=face.children.filter(n=>textNames.has(n.name));
  face.children=face.children.filter(n=>!artNode(n)&&!textNames.has(n.name));
  const overlay=face.children.findIndex(n=>n.name==='blockedVeil');
- face.children.splice(overlay<0?face.children.length:overlay,0,back,...arts,root,...texts);
+ // Disabled shading belongs above the material but below every readable label.
+ const veil=overlay<0?[]:face.children.splice(overlay,1);
+ face.children.splice(overlay<0?face.children.length:overlay,0,back,...arts,root,...veil,...texts);
  const tokens=geoCardReferenceTokens(theme),font=Math.max(14,theme.font.minimum);
  for(const [name,spec,key]of [['name',geometry.title,'title'],['cost',geometry.cost,'cost'],['type',geometry.type,'type'],['label',geometry.body,'body'],['description',geometry.body,'body']]){
   const node=find(name);if(!node)continue;node.position=[...spec.position];node.size=[...spec.size];

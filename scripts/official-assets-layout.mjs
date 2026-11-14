@@ -145,6 +145,7 @@ function battleSurfaces(root,theme){
  });
 }
 function buttonFaces(node,theme){
+ if(node.name==='playArea')return; // The battlefield receiver is transparent, not a button surface.
  if(node.name==='endTurn'&&child(child(node,'normal'),'v25Chrome'))return;
  const parts=children(node),isStateButton=node.kind==='presetButton';
  const hasHit=parts.some(item=>item.name==='hit'&&item.kind==='cursorArea');
