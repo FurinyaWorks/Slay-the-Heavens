@@ -19,7 +19,8 @@ const after=git('rev-parse','119d62f9^{commit}').trim();
 const blob=(sha,path)=>git('show',`${sha}:${path}`);
 const merchantPath='src/lua/abyss_merchant.lua';
 const sharedPaths=['src/lua/abyss_prologue.lua','data/presentation/narrative.zh-CN.json','data/presentation/ui_theme.json',
- 'scripts/cinematic-ui-layout.mjs','scripts/native-ui-theme.mjs','scripts/official-assets-layout.mjs'];
+ 'scripts/cinematic-ui-layout.mjs','scripts/native-ui-theme.mjs','scripts/official-assets-layout.mjs',
+ 'scripts/v25-layout.mjs','scripts/v25-node-layout.mjs'];
 const shared=Object.fromEntries(sharedPaths.map(path=>{
  const source=blob(before,path);
  assert.equal(blob(after,path),source,`${path} changed across the comparison`);

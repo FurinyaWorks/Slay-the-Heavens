@@ -19,7 +19,7 @@ const names={encounter:'进店叙述',greet:'问候',buy:'购买成功',poor:'�
 let index=0;
 function option(select,value,text){const o=document.createElement('option');o.value=value;o.textContent=text;select.append(o)}
 for(const p of data.profiles)option($('#profile'),p.label,`${p.label} · ${p.budget}字符`);
-function chooseKinds(){const old=$('#kind').value;$('#kind').replaceChildren();for(const [key,name]of Object.entries(names)){const n=[...data.copy[keys[key]]].length,group=n<=10?'short':n<=20?'medium':'long';if($('#length').value==='all'||$('#length').value===group)option($('#kind'),key,`${name} · ${n}字`)}if([...$('#kind').options].some(o=>o.value===old))$('#kind').value=old;index=0;render()}
+function chooseKinds(){const old=$('#kind').value||'greet';$('#kind').replaceChildren();for(const [key,name]of Object.entries(names)){const n=[...data.copy[keys[key]]].length,group=n<=10?'short':n<=20?'medium':'long';if($('#length').value==='all'||$('#length').value===group)option($('#kind'),key,`${name} · ${n}字`)}if([...$('#kind').options].some(o=>o.value===old))$('#kind').value=old;index=0;render()}
 function selected(){return ['before','after'].map(version=>data.samples.find(s=>s.version===version&&s.kind===$('#kind').value&&s.profile===$('#profile').value&&s.path===$('#path').value))}
 function render(){
  const samples=selected(),profile=data.profiles.find(p=>p.label===$('#profile').value),g=profile.geometry,zoom=+$('#zoom').value;
