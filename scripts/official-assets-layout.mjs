@@ -79,6 +79,7 @@ export function officialAssetsTheme(source){
    Object.assign(theme.layout.merchant,structuredClone(merchant));
    theme.layout.nativeNode.shop.columns=[...shelfColumns];
    Object.assign(theme.layout.combatChoice,structuredClone(theme.officialAssets.choicePage));
+   Object.assign(theme.layout.nativeNode.picker,structuredClone(theme.officialAssets.pickerPage));
   return theme;
 }
 function cardFace(face,theme){
@@ -290,5 +291,18 @@ export function applyOfficialAssets(trees,theme){
  }
  finishOfficialComposition(trees);
  for(const tree of trees)attachLowCostArt(tree);
+ // Camp and Match still hide all six semantic parents. Only configured slots
+ // have input bindings or receive card data, so retire the other face payloads.
+ const count=node=>1+children(node).reduce((sum,c)=>sum+count(c),0);
+ for(const tree of trees){
+  const picker=child(child(child(tree,'stage')??tree,'nodePanel'),'pickerView');
+  if(!picker)continue;
+  const columns=theme.layout.nativeNode.picker.columns;
+  for(let i=1;i<=6;i++){
+   const slot=required(picker,'card'+i);
+   if(i<=columns.length)slot.position[0]=columns[i-1];
+   else {removedControls+=count(slot)-1;cardHosts--;slot.children=[];slot.visible=false;}
+  }
+ }
  return {cardHosts,removedControls};
 }

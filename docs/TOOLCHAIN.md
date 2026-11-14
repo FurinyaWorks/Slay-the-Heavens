@@ -27,6 +27,7 @@
 | 分清截图证明什么 | 模拟器上述 `run.mjs` 生成 Host PNG；仅核查保存证据用 `node experiments/art-tech-lab/verify.mjs`；官方截图验收用 `npm run verify:ui -- <候选.gil>` | [批准稿](design/UI_DESIGN.md)、[UI 验收合同](ENGINEERING.md#日志与ui迁移)；模拟器软件光栅、mock 断言、官方当前候选截图分别报告。mobile.png 只是画布模拟；PNG 时长不是 GPU FPS，保存证据检查不是重新运行 |
 | 构建原生 GIL、官方导入与新 ready | 先读下文 MCP 上手顺序及 [千星技能](../.codebuddy/skills/miliastra-wonderland/SKILL.md)；`node scripts/build-native-candidate.mjs <base.gil> [build/candidates]`；只有客户端可用且获本轮输入窗口才加 `--playtest` | [候选与启动证据](ENGINEERING.md#候选身份)、[官方客户端操作](../.codebuddy/skills/miliastra-wonderland/references/official-client.md)；先读 `miliastra://workflow` 与 `miliastra://platform-rules`，保持 `MILIASTRA_ALLOW_LIVE_WRITE=0`。静态构建/写入/官方导入/ready/设备体验分别验收 |
 | 查看、编辑节点图 | [WebMiliastraNodesEditor 在线入口](https://miliastra.columbina.dev/)；实际能力先在该站核实，自动化优先查已有 MCP 实际工具列表与资源 | 这是网页编辑器入口，不声明已有无人值守导入/API 集成；已有节点图流程见下文 MCP `write_graphs`，不能将网页可编辑当作官方导入成功 |
+| GIL交付路径失效或文件名无效 | `node scripts/export-playtest.mjs <audio/candidate.json>`；从任何工作树都交付到主仓库 `playtest/latest.gil`，保留旧版并核对实体副本哈希 | 文件选择器先进入输出目录，直接点选 `latest.gil`；不依赖把工作树长路径粘进文件名框。校验路径及副本，不代表官方容量、导入或ready通过 |
 | 维护模型指引或任务 | `npm run check:guidance`；`node --test tests/agent-guidance.test.mjs`；任务先 `backlog instructions overview` | [指引维护](AGENT_GUIDANCE.md)；Backlog 缺失时报告，不手改任务文件、不另建任务系统 |
 
 **环境与交付边界：** 云隔离副本可在依赖齐全时跑 Node/Fengari 及模拟器无桌面接口；这不代表已接入用户 Windows MCP、官方编辑器或游戏。任何打开应用、抢焦点、鼠标键盘操作仍须 AGENTS 的本轮授权。先复用本机实际安装；安装条件与完整复现只链接现有说明，不在索引复制配置。实验尚非正式战斗装配/发布候选，缺官方导入、挂载、新 ready、容量或设备证据保持未验收；优先推进当前交付，不因工具探索扩大范围。
