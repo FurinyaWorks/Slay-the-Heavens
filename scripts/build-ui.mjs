@@ -13,6 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { toLua } from './build-lua-data.mjs';
 import { battleLayout, enemyPowerTemplate } from './ui-layout.mjs';
 import { gameLayout } from './game-ui-layout.mjs';
+import {attachCompendium} from './compendium-ui-layout.mjs';
 import { withViewport } from './viewport-layout.mjs';
 import { buildUiTheme } from './build-ui-theme.mjs';
 import { buildMapUI } from './map-ui-layout.mjs';
@@ -185,6 +186,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     templates.push(battlePileCardTemplate(layout,templates[0]));
     assertOfficialRunContracts([battle,layout,...templates]);
   }
+  attachCompendium(layout,theme);
   for (const tree of [battle, layout, ...templates]) assertNativeUiCapacity(tree);
   const rendered = spawnSync(python, ['tools/render_traveler_cards.py', 'data/cards.json', 'data/presentation/traveler.zh-CN.json'],
     { encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PYTHONUTF8: '1' } });

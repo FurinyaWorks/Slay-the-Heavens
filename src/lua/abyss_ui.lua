@@ -222,6 +222,8 @@ function OnStart()
                 print("ABYSS_UI settlement_requested " .. (victory and "victory" or "defeat"))
                 return true
             end })
+        require('abyss_compendium_host').attach(view,stage,Data,Presentation,Enum.CursorEventType.CursorClick,
+            {cursorEvents=Enum.CursorEventType})
         view:resize(width, height)
         canvasWidth, canvasHeight = width, height
         script:EnableUpdate(true)

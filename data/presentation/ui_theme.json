@@ -3287,6 +3287,26 @@
       "shakeAmplitude": 5,
       "pageCharacters": 9
     },
+    "compendium": {
+      "entries": [[-220,-284,196,52],[0,-284,196,52],[220,-284,196,52]],
+      "panel": [0,0,1160,640],
+      "title": [-280,280,560,60],
+      "count": [-390,224,300,44],
+      "close": [430,-280,220,52],
+      "previous": [-490,-246,130,52],
+      "next": [-320,-246,130,52],
+      "detailTitle": [180,190,650,60],
+      "detail": [180,-20,650,330],
+      "upgrade": [180,-234,180,52],
+      "detailPrevious": [-20,-234,130,52],
+      "detailNext": [380,-234,130,52],
+      "detailCount": [180,-184,220,44],
+      "list": [-390,164,300,66],
+      "rows": 6,
+      "detailCharacters": 160,
+      "detailColumns": 24,
+      "detailLines": 7
+    },
     "runMenu": {
       "panel": [460, 154, 280, 384],
       "title": [460, 318, 252, 48],
