@@ -183,7 +183,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 if runMenuAction or kind=='routeClose' or kind=='cancel' or kind=='confirm' or kind=='help' or kind=='helpClose' then return 'exit' end
                 return self.mode
             end,action,available,order or (kind=='cancel' and 1 or kind=='open' and 200 or 100),group,onFocus)
-            hit:AddCursorEventListener(clickEvent, function(event)
+            local function click(event)
                 if Controller.pointerBlocked(controller)then return false end
                 if observed or cursor.CursorDown and cursor.CursorUp and touch(event) ~= nil then
                     local token = released
@@ -195,7 +195,9 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                     held, released = nil, nil
                 elseif not available() then return false end
                 return action()
-            end)
+            end
+            if kind=='titleQuit' and platform.bindTitleExit then platform.bindTitleExit(hit,click)
+            else hit:AddCursorEventListener(clickEvent,click)end
         end
 end
 

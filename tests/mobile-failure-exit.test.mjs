@@ -47,3 +47,11 @@ OnDestroy();assert(callbacks[1]()==false and sent==1,'destroy retires fallback i
  finally{lua.lua_close(L);}
 }
 for(const mode of ['startup','update'])test(`${mode} failure retains actionable native exit after retiring the controller`,()=>run(mode));
+
+// The strict native fixture rejects duplicate event registration. Start the real
+// GameUI, exercise its ordinary confirmation, then fault the actual entry loop.
+test('real native title listener becomes the recovery exit without duplicate registration',async()=>{
+ const {runLua}=await import('../scripts/test-lua.mjs');
+ const r=runLua('tests/lua/support/mobile_failure_exit.lua');
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/MOBILE_FAILURE_NATIVE_PASS/);
+});

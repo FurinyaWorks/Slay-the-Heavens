@@ -3,7 +3,27 @@ local artFailures={}
 local canvasWidth, canvasHeight
 local attempted = false
 local failureActive, failureExitSent = false, false
-local failureQuitHit
+local failureQuitHit, failureMenu, normalTitleExit
+local function bindTitleExit(hit,normal)
+    if normal then normalTitleExit=normal end
+    if failureQuitHit==hit then return end
+    failureQuitHit=hit
+    hit:AddCursorEventListener(Enum.CursorEventType.CursorClick,function(event)
+        if failureQuitHit~=hit then return false end
+        if not failureActive then return normalTitleExit and normalTitleExit(event) or false end
+        if failureExitSent then return false end
+        failureExitSent=true
+        local ok,why=pcall(function()game.ServerSignal('ABYSS_LOSE'):SendSignal()end)
+        if not ok then
+            failureExitSent=false
+            print('ABYSS_UI failure_exit_failed '..tostring(why))
+            failureMenu:GetChild('summary').text='退出请求失败，请再次点击退出游戏。'
+            return false
+        end
+        print('ABYSS_UI failure_exit_requested')
+        return true
+    end)
+end
 local function installFailureExit(menu)
     local quit=menu:GetChild('titleQuit')
     if not quit then return end
@@ -20,23 +40,10 @@ local function installFailureExit(menu)
     if not hit then return end
     hit:SetVisible(true)
     hit.raycastTarget=true
-    if failureQuitHit==hit then return end
-    failureQuitHit=hit
-    hit:AddCursorEventListener(Enum.CursorEventType.CursorClick,function()
-        -- The normal menu controller has been retired. Do not resume a damaged
-        -- run or claim a failed native exit request worked.
-        if not failureActive or failureExitSent then return false end
-        failureExitSent=true
-        local ok,why=pcall(function()game.ServerSignal('ABYSS_LOSE'):SendSignal()end)
-        if not ok then
-            failureExitSent=false
-            print('ABYSS_UI failure_exit_failed '..tostring(why))
-            menu:GetChild('summary').text='退出请求失败，请再次点击退出游戏。'
-            return false
-        end
-        print('ABYSS_UI failure_exit_requested')
-        return true
-    end)
+    failureMenu=menu
+    -- Reuse the original native listener when construction reached menu input.
+    -- Startup faults before that boundary install the same dispatcher once.
+    bindTitleExit(hit)
 end
 local function failed(phase, reason)
     failureActive=true
@@ -289,6 +296,7 @@ function OnStart()
                   end},
               monsterActors=setmetatable({instantiate=actorInstantiate,destroy=actorDestroy},{__index=actorBinding}),
               nativeMonsterArtEnabled=flags.monsters,
+              bindTitleExit=bindTitleExit,
               color = Color, imageSource = Enum.ImageSource.StaticReference, cursorEvents = Enum.CursorEventType, keyEvents = Enum.KeyEventType,
               tween = game.Tween and function(control,fields,duration)
                   return game.Tween(componentBridge and componentBridge.unwrap(control) or control,fields,duration)
@@ -347,6 +355,7 @@ end
 function OnDestroy()
     failureActive=false
     failureQuitHit=nil
+    failureMenu,normalTitleExit=nil,nil
     pcall(function()require('abyss_card_skin').destroySurface()end)
     if v25Textures then pcall(function()v25Textures:onDestroy()end)end
     if view then pcall(function()view:onEngineDestroy()end) end
