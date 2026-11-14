@@ -1,0 +1,24 @@
+✔ one image retains source triangle geometry under native single-axis rotations (4.605157ms)
+✔ menu composition preserves current pages, templates, gameplay and reveal code (1.543641ms)
+✔ minimal menu uses the supplied native background, fixed input and two actions (51.256976ms)
+✔ one unmasked native triangle preserves all three vertices under affine placement (0.488218ms)
+✔ XYZ encoder adaptation preserves scalar Z bytes and reads native axes without a holder (3.250393ms)
+✔ independent simulator import retains X/Y while preserving the original scalar Z contract (1.093088ms)
+✔ synthetic SDK rebuild boundary exercises the same strict XYZ loader adaptation (8.727673ms)
+✔ red menu production preserves every prior owner and target and freshly rejects each changed owner drift (68.899647ms)
+✔ menu presentation continuation preserves the exact reviewed menu and rejects incomplete predecessors (574.924514ms)
+✔ red menu CI requires complete exact source and retains unknown or drifted inputs (48.979319ms)
+✔ integration validates complete raw sources and leaves every foreign byte and production owner visible (304.976544ms)
+✔ integration copy closure requires its complete exact predecessor and current dependency bytes (4.336682ms)
+✔ reviewed selection slice authenticates every complete source and rejects unknown drift (13.518883ms)
+✔ native pixel feather uses the browser renderer enum and preserves exact widths (0.345919ms)
+﹣ actual pinned browser renderer interprets native feather in pixels (0.094539ms) # Set ABYSS_SIMULATOR_RENDERER to the verified browser bundle for this local integration
+✔ native preview continuation authenticates complete current files and preserves unknown drift (2.053923ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 7162.669436
