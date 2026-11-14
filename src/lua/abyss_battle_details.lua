@@ -62,6 +62,7 @@ function M.install(owner, ownership, host, dependencies)
         if not self.active or self.busy or self.gesture or not run or run.phase ~= "combat" then return false end
         local actor = index == 0 and run.combat.player or run.combat.enemies[index]
         if not Actors.isPresent(actor) then return false end
+        dependencies.cancelActionInputs()
         dependencies.cancelPotionAim("已取消药水瞄准。")
         if self.info and self.info.index == index and self.info.id == actor.id then closeInfo()
         else self.info = {index = index, id = actor.id, battle = run.combat} end
@@ -74,6 +75,7 @@ function M.install(owner, ownership, host, dependencies)
         if not owner.active or owner.busy or not run or run.phase~="combat" and not reward then return false end
         local actor=spec.index==0 and run.combat.player or run.combat.enemies[spec.index]
         if not Actors.isPresent(actor)then return false end
+        dependencies.cancelActionInputs()
         dependencies.cancelPotionAim("已取消药水瞄准。")
         owner.info={index=spec.index,id=actor.id,battle=run.combat,kind=spec.kind,statusId=spec.statusId,
             offset=spec.offset,uid=spec.uid,source=source,transient=transient==true,

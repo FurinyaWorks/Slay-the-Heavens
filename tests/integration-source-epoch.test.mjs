@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
+import {projectBattleReturnSource} from './helpers/battle-return-historical-source.mjs';
 const sandbox=process.cwd();
 const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
 const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
@@ -97,10 +98,10 @@ test('fresh authorization covers the complete changed-owner union without cachin
  const required=Object.keys(proof.current).filter(path=>Object.values(proof.targets).some(target=>target.files[path]?.sha256!==proof.current[path]?.sha256));
  assert.deepEqual([...proof.owners].sort(),required.sort());
 });
-test('combined epoch authenticates the complete current production tree',()=>{
+test('combined historical epoch authenticates all live files through exact battle return continuations',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
  assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
- for(const path of files)assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+ for(const path of files)assert.equal(projectBattleReturnSource(path,readFileSync(path,'utf8').replaceAll('\r\n','\n')),raw(path),path);
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

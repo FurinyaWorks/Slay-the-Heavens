@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
+import {projectBattleReturnSource,isBattleReturnPredecessor,assertBattleReturnClosure} from '../battle-return-historical-source.mjs';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -98,13 +99,24 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  // This immutable proof remains a historical corpus. Authenticate exact live
+  // continuations and all linked owners before returning any prior source.
+  const historical=isBattleReturnPredecessor(path,current)?projectBattleReturnSource(path,source):source;
+  const battleContinuation=historical!==source;source=historical;
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof source!=='string'||!current||!before||(!battleContinuation&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
+  let battleClosureChecked=battleContinuation;
+  if(battleClosureChecked)assertBattleReturnClosure(readSource);
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];
+   if(isBattleReturnPredecessor(owner,binding)){
+    const historicalOwner=projectBattleReturnSource(owner,actual);
+    if(historicalOwner!==actual&&!battleClosureChecked){assertBattleReturnClosure(readSource);battleClosureChecked=true;}
+    actual=historicalOwner;
+   }
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   return before.source;

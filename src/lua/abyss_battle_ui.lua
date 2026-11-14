@@ -36,6 +36,17 @@ local function needsTarget(state, instance)
     local _, reason = Combat.canPlay(state, instance.uid, nil)
     return reason == "invalid_target"
 end
+local function bindPilePointer(owner,host,services,hit,available,openPile)
+    hit:AddCursorEventListener(host.clickEvent,function(event)
+        if Controller.pointerBlocked(host.controller)then return false end
+        if not available() or services.swallowed(event) then return false end
+        if services.consumeReleasedDragClick(event) or owner.suppressClick or owner.gesture then return false end
+        return openPile()
+    end)
+    if owner.dragEnabled then hit:AddCursorEventListener(host.cursor.CursorDown,function(event)
+        if available() and not Controller.pointerBlocked(host.controller)then services.down(event)end
+    end)end
+end
 local function install(services, functions)
     for name, fn in pairs(functions) do services[name] = fn end
 end
@@ -129,7 +140,8 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         bindEnemyPowerControl=services.bindEnemyPowerControl, unbindEnemyPowerControl=services.unbindEnemyPowerControl,
         bindEnemyDetailControls=services.bindEnemyDetailControls, unbindEnemyDetailControls=services.unbindEnemyDetailControls, bindDetailControls=services.bindDetailControls,
         potionDragTarget=services.potionDragTarget,
-        cancelCardInputs=services.cancelCardInputs, consumeReleasedDragClick=services.consumeReleasedDragClick
+        cancelCardInputs=services.cancelCardInputs, consumeReleasedDragClick=services.consumeReleasedDragClick,
+        down=services.down, swallowed=services.swallowed
     }
     host.stage = host.options.embedded and host.root or assert(host.root:GetChild("stage"), "missing stage")
     host.cursor = host.platform.cursorEvents
@@ -341,10 +353,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             end
             return false
         end
-        hit:AddCursorEventListener(host.clickEvent,function()
-            if Controller.pointerBlocked(host.controller)then return false end
-            return openPile()
-        end)
+        bindPilePointer(self,host,services,hit,available,openPile)
         Controller.bind(host.controller,hit,'battle',openPile,available,80)
     end
     local keys = host.platform.keyEvents
