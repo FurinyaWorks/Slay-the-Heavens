@@ -29,6 +29,8 @@ test('official runtime inventory preserves every producer field and rejects sele
  const file=join(dir,portraitModule+'.lua');
  for(const invalid of [source.replace(selected,selected.replace('1600','1599')),
   source.replace(selected,selected+'\n'+selected),source.replace(selected,'-- '+selected+',\nlowpolyLumine={count=1,rows={{1}}},'),
+  source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpolyLumine']=")),
+  source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpoly'..'Lumine']=")),
   source.replace('battleApprovedIdle=','battleApprovedIdleChanged=')]){
   writeFileSync(file,invalid);assert.throws(()=>portraitRuntimeInventory(dir),/official selection|Official battle idle/);
  }

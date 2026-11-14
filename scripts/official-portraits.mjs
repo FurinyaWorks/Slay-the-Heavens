@@ -143,7 +143,8 @@ function lowpolyInventory(source,{officialSelectionSource}={}) {
  const table=luaparse.parse(source,{ranges:true}).body.find(n=>n.type==='ReturnStatement')?.arguments[0];
  if(officialSelectionSource!==undefined){
   const selected=table?.fields?.filter(field=>field.key?.name==='lowpolyLumine')??[];
-  if(selected.length!==1||source.slice(...selected[0].range)!==officialSelectionSource)
+  if(table?.fields?.some(field=>field.type!=='TableKeyString')
+   ||selected.length!==1||source.slice(...selected[0].range)!==officialSelectionSource)
    throw Error('Unsupported official selection schema; read historical candidates with their pinned producer');
  }
  const rows=[];
