@@ -1,0 +1,29 @@
+✔ integration validates complete raw sources and leaves every foreign byte and production owner visible (331.372223ms)
+✔ integration copy closure requires its complete exact predecessor and current dependency bytes (4.035238ms)
+✔ red menu production preserves every prior owner and target and freshly rejects each changed owner drift (43.85272ms)
+✔ menu presentation continuation preserves the exact reviewed menu and rejects incomplete predecessors (684.776342ms)
+✔ red menu CI requires complete exact source and retains unknown or drifted inputs (29.217564ms)
+✔ navigation authenticates complete current production and retains every historical byte and absence (86.781459ms)
+✔ navigation rejects incomplete or invented predecessors rather than refreshing them (29.748796ms)
+✔ navigation CI preserves archived release bytes, all prior views and rejects forged continuation (1339.971064ms)
+✔ helper closure identities and materialized text use LF for both checkout endings (3.113011ms)
+✔ gzip and unrecognized binary dependencies preserve every byte and mutations remain visible (0.539724ms)
+✔ release additions remain in raw Full and exact historical inventories reject gaps and source drift (744.079931ms)
+✔ style continuation preserves every old complete target and adds a complete prior view without rewriting its input (2.000404ms)
+✔ the new source closure freshly rejects every missing/foreign owner and never authorizes unknown source bytes (1.139036ms)
+✔ incomplete inventories, invented predecessors and unowned additions cannot form a style epoch (1.391487ms)
+✔ real style source retains the complete CI-repair and every older target while authenticating all current raw owners (5596.068265ms)
+✔ real style CI admits only full inventory, complete source and freshly verified executable helpers (315.85738ms)
+✔ feedback synthetic source delta preserves all prior targets and materializes only the exact forward target (1.962808ms)
+✔ feedback synthetic owners remain fresh after success and unknown source never authorizes a view (2.135672ms)
+✔ feedback synthetic CI retains immutable before sources and real Full inventory without accepting unregistered inputs (78.748649ms)
+✔ feedback synthetic helper-copy closure extends exact dependencies while preserving the original map (14.61758ms)
+✔ feedback real current source and CI preserve all four immutable archives and every historical view (454.687205ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7860.746784

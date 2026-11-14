@@ -9,6 +9,7 @@ import {stsStylePatch} from './sts-style-source-proof.mjs';
 import {extendFeedbackSourceEpoch} from './sts-feedback-source-runtime.mjs';
 import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
+import {extendNavigationEpoch} from './navigation-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
@@ -47,7 +48,8 @@ export const stsStyleEpoch=extendStsStyleEpoch(ciRepairSourceEpoch,stsStylePatch
 export const menuRedPriorEpoch=extendFeedbackSourceEpoch(stsStyleEpoch,feedbackProductionPatch);
 export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
-export const sourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
+export const navigationPriorEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
+export const sourceEpoch=extendNavigationEpoch(navigationPriorEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

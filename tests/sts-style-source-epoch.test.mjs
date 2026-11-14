@@ -77,7 +77,7 @@ test('real style source retains the complete CI-repair and every older target wh
  const {sourceEpoch,ciRepairSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const p=sourceEpoch.proof,before=ciRepairSourceEpoch.proof,read=path=>readFileSync(path,'utf8');
  assert.equal(Object.keys(before.current).length,347); // config plus all 346 prior Lua modules.
- assert.equal(Object.keys(p.current).length,350); // page reveal, low-cost art, merchant pages.
+ assert.equal(Object.keys(p.current).length,352); // page reveal, low-cost art, merchant pages, two navigation owners.
  const actual=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
  assert.deepEqual(Object.keys(p.current).sort(),actual);
  for(const [path,row]of Object.entries(before.current))assert.deepEqual(p.targets.stsStylePrior.files[path],row,path+' complete prior');

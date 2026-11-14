@@ -7,7 +7,7 @@ import {sourceEpoch,menuRedPriorEpoch} from './helpers/closeout-source-epoch.mjs
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch,menuPresentationPatch,menuRedProductionPatch as patch} from './helpers/menu-red-source-epoch.mjs';
 import {assertMenuRedCiCurrent,preMenuRedCiSource,menuRedCiProof,renderMenuRedCiBinding} from './helpers/menu-red-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
-const releasePaths=[...patch.inventory,'src/lua/abyss_lowcost_art.lua','src/lua/abyss_merchant_pages.lua'].sort();
+const releasePaths=[...patch.inventory,'src/lua/abyss_lowcost_art.lua','src/lua/abyss_merchant_pages.lua','src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'].sort();
 const complete=files=>Object.fromEntries(releasePaths.map(path=>[path,files[path]??null]));
 test('red menu production preserves every prior owner and target and freshly rejects each changed owner drift',()=>{
  for(const path of patch.paths){
@@ -28,7 +28,7 @@ test('menu presentation continuation preserves the exact reviewed menu and rejec
  assert.deepEqual(sourceEpoch.proof.targets.menuPresentationPrior.files,complete(prior.proof.current));
  for(const [target,row]of Object.entries(prior.proof.targets))assert.deepEqual(sourceEpoch.proof.targets[target],{...row,files:complete(row.files)});
  assert.deepEqual(menuPresentationPatch.before,prior.proof.current[path]);
- assert.equal(raw(path),menuPresentationPatch.after.source);
+ assert.equal(sourceEpoch.preCombinedSource(path,raw(path),{target:'navigationPrior',readSource:raw}),menuPresentationPatch.after.source);
  for(const change of [p=>{p.before.source+='\n';},p=>{delete p.after;},p=>{p.path='src/lua/foreign.lua';}]){
   const invalid=structuredClone(menuPresentationPatch);change(invalid);
   assert.throws(()=>extendMenuPresentationEpoch(prior,invalid));
