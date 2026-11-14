@@ -8,12 +8,12 @@ export function prepareOfficialRunHud(root,theme){
  const hud=theme.officialAssets.battleHud,bar=child(root,'topBar');
  for(const [name,key,font]of [['hpIcon','hpIcon'],['player','hp',hud.numberSize],['goldIcon','goldIcon'],['piles','gold',hud.numberSize]]){
   const node=child(root,name);node.position=hud[key].slice(0,2);node.size=hud[key].slice(2);
-  if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:14,align:'left'});
+  if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:font,align:'left'});
  }
  for(const name of ['floorIcon','floor'])child(root,name).visible=false;
  const heading=clone(child(root,'player'));heading.name='officialHeroHeading';
  heading.position=hud.heading.slice(0,2);heading.position[1]-=hud.y;heading.size=hud.heading.slice(2);
- Object.assign(heading.text,{content:hud.headingText,fontSize:hud.headingSize,colour:hud.headingColour});
+ Object.assign(heading.text,{content:hud.headingText,fontSize:hud.headingSize,minFontSize:theme.font.minimum,colour:hud.headingColour});
  bar.children.push(heading);
  for(let index=1;index<=theme.layout.battlePotions.count;index++){
   const x=hud.potionX+(index-1)*hud.potionStep;

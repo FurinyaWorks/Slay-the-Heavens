@@ -384,7 +384,7 @@ function M.exitEntryVisible(self)
 end
 
 function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVisible,exitPanel,exitDialogOwnsForeground,runMenu,canViewRoute,child,refreshExitDialog)
-    local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
+    local hud=(Theme.presentationProfile=='official-assets-first' or Theme.presentationProfile=='v25-reference') and Theme.officialAssets.battleHud
     local utilitiesReady=false
     local routeLabels={}
     local function routeCaption(back)
@@ -429,7 +429,6 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             -- Shared utilities stay above the deck overlay; the confirmation stays
             -- above every page, including an in-flight battle presentation.
             exitEntry:SetVisible(exitEntryVisible())
-            exitEntry:SetAsLastSibling()
             exitPanel:SetVisible(exitDialogOwnsForeground())
             runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.controlsOpen and not self.routeOpen)
             require('abyss_game_ui_navigation_view').runMenu(self,runMenu,canViewRoute())
@@ -448,6 +447,11 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
                 self.mapUI:setNavigationEnabled(false)
                 child('mapPanel'):SetAsLastSibling()
             end
+            -- Route preview promotes the opaque map. Keep the same live relic
+            -- component and settings entry above that page, below its dialogs.
+            local relicBar=child('relicBar')
+            if relicBar.visible then relicBar:SetAsLastSibling() end
+            exitEntry:SetAsLastSibling()
             refreshExitDialog()
         end
 end
