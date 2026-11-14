@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 13:12'
-updated_date: '2026-11-14 15:04'
+updated_date: '2026-11-14 15:17'
 labels:
   - art
   - technical-spike
@@ -53,4 +53,6 @@ verify:backlog首次指出M9索引缺任务引用；已在独立工作树docs/MI
 2026-11-14 Owner反馈：可以啊这个玩起来还挺丝滑的，基本上没什么卡顿；明确是PC。记录为用户实际试玩的定性性能反馈，未推断手机表现或量化FPS。目前尚待确认所试玩GIL文件名/候选SHA；不把该反馈绑定到三套全部候选，也不代替官方ready、日志或容量证据。
 
 Owner随后明确确认试玩文件为新版低档-200-349.gil。PC顺滑/基本无卡顿的反馈仅绑定该低档候选；交付manifest对应SHA256为60aa957a186c479d4d182f704cabf1ed4a966dac6ac491e036489450f1fd89a0（来自交付清单，未独立读回用户客户端执行字节）。低档已有用户PC定性体验正向反馈；其他档位PC、量化帧时、官方新日志/ready、实体手机及官方容量仍未验收。
+
+Owner最新明确本轮只需推送并保留实验分支，不需要PR或合并。已关闭PR #669，未合并，自动合并从未启用；保留feat/monster-lowpoly-combat、四份GIL、全部证据及低档PC顺滑反馈。先前PR交付记录仅作历史，不作为后续合并授权。
 <!-- SECTION:NOTES:END -->
