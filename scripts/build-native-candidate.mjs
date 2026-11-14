@@ -1,4 +1,6 @@
 import {validateOfficialAssets,officialAssetsArgs,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
+import {selectionHalfTemplate} from './lumine-selection-background.mjs';
+import {attachLowCostArt} from './lowcost-art.mjs';
 import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';
 import {resolveArtFeatures,artFeatureArgs,artFeatureBuildArgs,artFeatureReceipt,artFeaturesSource,artFeatureModule,withCandidateArtDefaults} from './art-features.mjs';
 import {portraitSourceInputs,portraitRuntimeInputs,lowpolySelectPath,portraitModule,bindPortraitTemplates,portraitRuntimeInventory} from './official-portraits.mjs';
@@ -209,7 +211,9 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
           inputs:records.map(({path})=>({...fileRecord(join(root,path),root),path}))};
       }
       const actorTemplates=templates.filter(template=>template.name===monsterActorTemplateName);
-      const expectedActor=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[monsterActorTemplate(monster)],componentWidgets).templates[0]:monsterActorTemplate(monster);
+      const actorSource=monsterActorTemplate(monster);
+      if(officialAssets)attachLowCostArt(actorSource);
+      const expectedActor=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[actorSource],componentWidgets).templates[0]:actorSource;
       if(actorTemplates.length!==1||JSON.stringify(actorTemplates[0])!==JSON.stringify(expectedActor))throw Error('Monster actor template differs from candidate features or source');
       const expected=`-- Generated from the bounded native monster registry.\nreturn ${toLua(monster??{})}\n`;
       if(readFileSync(join(generated,'abyss_monster_art_data.lua'),'utf8')!==expected)throw Error('Monster artwork payload differs from candidate features or source');
@@ -227,7 +231,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     for(const source of modules.values())fileRecord(source);
     client??=await createClient(workspace);
     for(const uri of ['miliastra://workflow','miliastra://platform-rules'])writeExclusive(join(workspace,`${uri.split('//')[1]}.json`),await client.readResource({uri}));
-    const readyTemplates={},v25TemplateIndices={},maskTemplateIndices={},allTemplateIds=[];let monsterTemplate,monsterPowerTemplate,cachedUi=reusableUi(base,generated,{privateTemplates:!!(v25Cards||v25Masks)});
+    const readyTemplates={},v25TemplateIndices={},maskTemplateIndices={},allTemplateIds=[];let monsterTemplate,monsterPowerTemplate,cachedUi=reusableUi(base,generated,{privateTemplates:!!(v25Cards||v25Masks||officialAssets&&flags.selectionAvatar)});
     if(cachedUi){
       const cached=JSON.parse(readFileSync(cachedUi.receipt.path,'utf8')), actors=cached.monsterActors;
       if(!actors||![actors.templateIndex,actors.powerTemplateIndex,actors.containerTemplateIndex].every(n=>Number.isSafeInteger(n)&&n>0)
@@ -245,6 +249,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       if(template.name===monsterPowerTemplateName)monsterPowerTemplate=result;
       if(template.name===readyArtImageTemplate)readyTemplates.image=result;
       if(template.name===readyArtGroupTemplate)readyTemplates.group=result;
+      if(template.name===selectionHalfTemplate)readyTemplates.half=result;
       if(template.name===backgroundTemplate) {
         if(!modules.has(backgroundModule))throw Error('Official background template has no runtime module');
         readyTemplates.background=result;
@@ -281,8 +286,10 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       }
       if(portraits||flags.cards||flags.menuBackground){
         if(!modules.has(portraitModule))throw Error('Portrait templates lack runtime module');
-        bindPortraitTemplates(generated,{image:readyTemplates.image,container:readyTemplates.group},{root,...flags,v25BattleChrome,officialAssets});
+        if(officialAssets&&flags.selectionAvatar&&!readyTemplates.half?.templateIndex)throw Error('Selection half-triangle template has no binding');
+        bindPortraitTemplates(generated,{image:readyTemplates.image,container:readyTemplates.group,half:readyTemplates.half},{root,...flags,v25BattleChrome,officialAssets});
         receipt.officialPortraits={...portraitRuntimeInventory(generated),imageTemplateIndex:readyTemplates.image.templateIndex,containerTemplateIndex:readyTemplates.group.templateIndex,
+          ...(readyTemplates.half?{selectionHalfImageTemplateIndex:readyTemplates.half.templateIndex}:{}),
           inputs:portraitRuntimeInputs(flags).map(path=>fileRecord(join(root,path),root))};
       }
     }

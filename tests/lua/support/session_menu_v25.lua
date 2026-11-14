@@ -20,7 +20,8 @@ root.ui=h
 local function press(panel,name)
  h:update(0);h:syncController()
  local hit=root:GetChild(panel):GetChild(name):GetChild('hit')
- assert(hit.canControllerFocus);focus=hit;return hit.navigationListeners.confirm()
+ assert(hit.canControllerFocus,panel..'/'..name..' mode='..tostring(h.mode)..' exit='..tostring(h.exitOpen)..' menu='..tostring(h.menuOpen)..' covered='..tostring(h.pageReveal and h.pageReveal:covered()))
+ focus=hit;return hit.navigationListeners.confirm()
 end
 local function separated(panel,names)
  for i=1,#names do for j=i+1,#names do
@@ -40,7 +41,11 @@ separated(menu,{'continueRun','start','titleQuit'})
 assert(press('menuPanel','continueRun') and h.mode=='map')
 assert(press('exitEntry','open') and press('runMenu','abandon') and press('exitPanel','confirm'))
 assert(h.mode=='menu' and not menu:GetChild('continueRun').visible)
-assert(press('exitEntry','open'))
+assert(not root:GetChild('exitEntry').visible,'minimal title keeps the redundant menu entry hidden')
+h:update(0);h:syncController()
+local title=menu:GetChild('titleQuit'):GetChild('hit')
+assert(title.canControllerFocus);focus=title
+assert(title.navigationListeners.cancel())
 separated(root:GetChild('runMenu'),{'resume','help','map','mainMenu','abandon','quit','dismissHint'})
 assert(not root:GetChild('runMenu'):GetChild('mainMenu').visible and not root:GetChild('runMenu'):GetChild('quit').visible)
 h:disable()
