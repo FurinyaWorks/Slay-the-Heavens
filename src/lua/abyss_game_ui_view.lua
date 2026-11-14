@@ -532,6 +532,26 @@ local function finishReveal(self,platform)
     PageReveal.registerSource(platform,intent.page)
     if self.pageReveal then self.pageReveal:finish(intent)end
 end
+-- Sorting has already painted the deck projection. Keep its publication and
+-- resource cleanup boundary without repainting the covered battle/map/room.
+function M.deckChanged(self,owner,platform,changed)
+    return function()
+        if not owner.ready or self.disabled then return end
+        local intent=PageReveal.intent(self)
+        if intent.page~='deckPanel' or self.exitOpen or self.settlementRequested or self.settlementBusy then
+            return changed()
+        end
+        local surfaceFrame=CardSkin.beginFrame()
+        requestReveal(self,platform)
+        CardSkin.endFrame(surfaceFrame,surfaceScopes(self))
+        -- Readiness checks this generation's visible cells and native leases;
+        -- a deferred or replaced face still acquires the original input cover.
+        finishReveal(self,platform)
+        paintReveal(self)
+        self:syncController()
+    end
+end
+
 function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManagePotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
     return function(_)
             if self.disabled then return false,"ui_disabled" end

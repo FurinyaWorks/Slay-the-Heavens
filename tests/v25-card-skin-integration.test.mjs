@@ -188,6 +188,23 @@ check('PILE_REOPEN',function()
  end
 end)
 
+check('SORT_DESTROY_RELEASE',function()
+ local h,u,p,event,tap,drain,toggle,root=setup({'strike','defend','strike','defend','strike','defend'},{'cultist'})
+ assert(h:openDeck());h.deckUI:update(0)
+ local grid=root:GetChild('deckPanel'):GetChild('grid')
+ local first=assert(grid.items[0]):GetChild('face');local previous=roots(first)
+ assert(#previous==2,'master deck has no configured surfaces')
+ local baseline=living();grid.destroyOnRefresh=true
+ for i=1,4 do
+  assert(h.deckUI:setSort('cost'));h.deckUI:update(0)
+  local face=assert(grid.items[0]):GetChild('face');local current=roots(face)
+  assert(not first.alive and not previous[1].alive and not previous[2].alive,'sort retained destroyed card surface leases')
+  assert(#current==2 and living()==baseline,'sort leaked or evicted live surfaces')
+  boundedSlots();first,previous=face,current
+ end
+ assert(h:closeDeck());assert(not previous[1].alive and not previous[2].alive,'closed sorted list retained surfaces')
+end)
+
 check('FAILURE_FALLBACK',function()
  local h,u,p=setup({'defend','defend','defend','defend','defend','defend'},{'cultist'})
  local face=p:GetChild('card1');assert(#roots(face)==2)
@@ -265,5 +282,5 @@ assert(failures==0,tostring(failures)..' V25 card-skin integration cases failed'
   env:{...process.env,LUA_PATH:`${directory.replaceAll('\\','/')}/?.lua;./src/lua/?.lua`,LUA_PATH_5_3:`${directory.replaceAll('\\','/')}/?.lua;./src/lua/?.lua`,LUA_INIT:'',LUA_INIT_5_3:''},
  });
  assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));
- for(const name of ['FINAL_CONTENT_GEOMETRY','TEN_CARDS_COST_RESTORE','PILE_REOPEN','FAILURE_FALLBACK','REWARD_MAP_RELEASE','DEAD_TEMPLATE_CACHED_FACE','WRAPPER_RELEASE_RETRY'])assert.match(result.stdout,new RegExp(`V25_SKIN_${name}_PASS`));
+ for(const name of ['FINAL_CONTENT_GEOMETRY','TEN_CARDS_COST_RESTORE','PILE_REOPEN','SORT_DESTROY_RELEASE','FAILURE_FALLBACK','REWARD_MAP_RELEASE','DEAD_TEMPLATE_CACHED_FACE','WRAPPER_RELEASE_RETRY'])assert.match(result.stdout,new RegExp(`V25_SKIN_${name}_PASS`));
 });
