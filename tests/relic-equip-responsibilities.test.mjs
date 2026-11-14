@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {buildLuaData} from '../scripts/build-lua-data.mjs';
 import {equipVm} from './helpers/relic-equip-vm.mjs';
+import {projectHistoricalRelicRoom} from './helpers/relic-room-historical-source.mjs';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const before=read('tests/fixtures/relic-equip-before.lua'),current=read('src/lua/abyss_relic_hooks.lua');
 buildLuaData('data','build/relic-equip-evidence/abyss_data.lua');
@@ -11,7 +12,8 @@ test('onEquip freezes complete cbabad34 source and Git blob identity',()=>{
  assert.equal(createHash('sha256').update(before).digest('hex'),'ef04341232f139d6e60a7bb5e0595a65dd9487fe63b2a88f41012eab2f79c85e');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(before)}\0`).update(before).digest('hex'),'8a56442723f77b72cc3bd081a38742dc07292a00');
  assert.equal(current.slice(0,current.indexOf('-- Admission is deliberately ordered:')),before.slice(0,before.indexOf('function M.onEquip(')));
- assert.equal(current.slice(current.indexOf('function M.onUnequip(')),before.slice(before.indexOf('function M.onUnequip(')));
+ const historical=projectHistoricalRelicRoom('src/lua/abyss_relic_hooks.lua',current);
+ assert.equal(historical.slice(historical.indexOf('function M.onUnequip(')),before.slice(before.indexOf('function M.onUnequip(')));
 });
 for(const group of ['ordinary','upgrades','dynamic','integration'])test(`onEquip independent full graph VM differential: ${group}`,t=>{
  const old=equipVm(before,group),actual=equipVm(current,group);

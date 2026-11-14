@@ -7,6 +7,7 @@ import {pathToFileURL} from 'node:url';
 import {preSilentFinalEpoch as sourceEpoch,preRelicEquipEpoch} from './helpers/combined-epoch/pre-defect-source-epoch.mjs';
 import {relicEquipEpoch} from './helpers/relic-equip-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
+import {projectHistoricalRelicRoom} from './helpers/relic-room-historical-source.mjs';
 const path='src/lua/abyss_relic_hooks.lua',proof=sourceEpoch.proof,prior=preRelicEquipEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
 test('Relic equip outer epoch preserves every prior binding and exact frozen production byte',()=>{
@@ -14,7 +15,7 @@ test('Relic equip outer epoch preserves every prior binding and exact frozen pro
  assert.equal(proof.currentCommit,prior.currentCommit);
  assert.equal(proof.currentTreeCommitted,false);
  assert.match(proof.relicEquipCurrentCommitRole,/base only/);
- assert.equal(raw(path),readFileSync(path,'utf8').replaceAll('\r\n','\n'));
+ assert.equal(raw(path),projectHistoricalRelicRoom(path,readFileSync(path,'utf8').replaceAll('\r\n','\n')));
  assert.deepEqual(relicEquipEpoch.proof.targets.prior.files[path],prior.current[path]);
  assert.deepEqual(proof.targets.relicEquipPrior.files,prior.current);
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(proof.targets[name],target,name);

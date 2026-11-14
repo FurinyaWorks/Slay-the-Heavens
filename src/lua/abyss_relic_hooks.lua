@@ -146,15 +146,18 @@ function M.onRest(run,createCardReward)
  return createCardReward(run)
 end
 
+-- Resolve each hook dynamically: an earlier reward may replace the next hook.
+local function grantRoomEntryGold(run,kind)
+ for _,id in ipairs(run.relics or {})do
+   if M.localId(id)=='maw_bank' and (counters(run).maw_bank or 0)~=-2 then M.gainGold(run,12)end
+   if M.localId(id)=='ssserpent_head'and kind=='event'then M.gainGold(run,50)end
+ end
+end
+
 function M.onEnterRoom(run,kind,phase)
  require('abyss_uncommon_relics').onEnterRoom(run,kind,phase)
  -- onEnterRoom runs before justEnteredRoom; preserve those distinct phases.
- if phase~='entered' then
-  for _,id in ipairs(run.relics or {})do
-   if M.localId(id)=='maw_bank' and (counters(run).maw_bank or 0)~=-2 then M.gainGold(run,12)end
-   if M.localId(id)=='ssserpent_head'and kind=='event'then M.gainGold(run,50)end
-  end
- end
+ if phase~='entered' then grantRoomEntryGold(run,kind)end
  if phase~='enter' and kind=='shop' then
   for _,id in ipairs(run.relics or {})do if M.localId(id)=='meal_ticket' then healRun(run,15)end end
  end

@@ -16,7 +16,7 @@
   "tests/helpers/combined-epoch/pre-defect-source-epoch.mjs": "ee1631bc3e9e29ac7ef4f96b9c42769d75cb3bfe11881b2e07b868344c3e51fa",
   "tests/helpers/combined-epoch/pre-formation-source-epoch.mjs": "81422aac13c89d3c3fa8d31f1afdff609af1f46f071a4c9d37288591cf20760f",
   "tests/helpers/combined-epoch/pre-golden-idol-source-epoch.mjs": "9c13e8134088d55a7a7b57e7f4fe905fd87cdc9a36e6c636049285e6fa99faf1",
-  "tests/helpers/combined-epoch/source-epoch-runtime.mjs": "5341c965ce41e956f153caf90c2e2097ccaee447a2d1e53a5aa666d15a238882",
+  "tests/helpers/combined-epoch/source-epoch-runtime.mjs": "6d3a8944c1abaae9755c33376f14c4824b012a359a1e96a7f79c4df0a7b009d5",
   "tests/helpers/combined-epoch/source-epoch.json.gz": "2085260a5aabde4476411172eb0b2e6fd3afcaa991a3cafc52f3ab0e98755c73",
   "tests/helpers/combined-epoch/source-epoch.mjs": "d6237003597c687547c2ec2cc0b08995696997194b2d2423e278e34b40a020ac",
   "tests/helpers/component-ui-source-epoch.json.gz": "df2a27ff146ecbee4fb01054eb1071458ffe491ece1bb50fa6fb33d19df74d4a",
@@ -155,5 +155,8 @@
   "tests/helpers/watcher-actor-source-inverse.mjs": "fa386ca691f8943af41becf2cb5896fee2d69bcdf84a8dfc297db050fde8f4f0",
   "tests/helpers/watcher-final-execution-source-inverse.mjs": "97ea8a10cb729dc3c96127156321205c26cb29116c62933f51612e639438ec52",
   "tests/helpers/watcher-flow-source-epoch.json.gz": "9e81602d086a81680830cf179a5d9f9f041bd56e0938b2d82eb196e50f73c015",
-  "tests/helpers/watcher-flow-source-epoch.mjs": "dad47d3abfb21ce4922a2482142ac2f702644aaa4775558c4c5b06458196cccd"
+  "tests/helpers/watcher-flow-source-epoch.mjs": "dad47d3abfb21ce4922a2482142ac2f702644aaa4775558c4c5b06458196cccd",
+  "tests/helpers/relic-room-historical-source.mjs": "16a607b7b7375f31f4def84cd5e2bc6681ac89784a922a7ea95122076589ba93",
+  "tests/fixtures/relic-room-before.lua": "19b0ba4fcd2c5ca37219623868b8cdd978787e8861e50e2e43fefb8c70be2f2f",
+  "tests/fixtures/relic-room-after.lua": "37aa2d1a45619480824ad399cc3a271a2178e0c09e725a5d25e0f33f53acf7fc"
 }

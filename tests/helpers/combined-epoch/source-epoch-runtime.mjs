@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
+import {projectHistoricalRelicRoom,isRelicRoomPredecessor} from '../relic-room-historical-source.mjs';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -98,13 +99,18 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  // Admit only the exact full-source room continuation to this historical epoch.
+  // The immutable proof still describes its original corpus, never live production.
+  const historical=isRelicRoomPredecessor(current)?projectHistoricalRelicRoom(path,source):source;
+  const roomContinuation=historical!==source;source=historical;
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof source!=='string'||!current||!before||(!roomContinuation&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];
+   if(isRelicRoomPredecessor(binding))actual=projectHistoricalRelicRoom(owner,actual);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   return before.source;

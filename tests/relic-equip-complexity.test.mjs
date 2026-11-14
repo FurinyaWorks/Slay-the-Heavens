@@ -6,6 +6,7 @@ import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {requireLuaTool} from '../scripts/setup-lua-static.mjs';
 import {parseDiagnostics,reviewResponsibilityComplexity} from '../scripts/check-lua-static.mjs';
+import {projectHistoricalRelicRoom} from './helpers/relic-room-historical-source.mjs';
 
 const file='src/lua/abyss_relic_hooks.lua';
 const names=['M.onEquip','admitEquipment','initializeEquipCounter','equipPotionCapacity',
@@ -56,8 +57,8 @@ test('real pinned measurements reject old equip complexity and all real helper a
   }finally{rmSync(dir,{recursive:true,force:true});}
 });
 
-test('untouched equipment upgrade and room-entry residuals remain explicit and are not claimed below CC15',()=>{
-  const source=readFileSync(file,'utf8').replaceAll('\r\n','\n');
+test('untouched equipment upgrade remains explicit; room continuation retains the exact historical residual',()=>{
+  const source=projectHistoricalRelicRoom(file,readFileSync(file,'utf8').replaceAll('\r\n','\n'));
   const before=readFileSync('tests/fixtures/relic-equip-before.lua','utf8').replaceAll('\r\n','\n');
   const block=(text,start,end)=>text.slice(text.indexOf(start),text.indexOf(end,text.indexOf(start)));
   assert.equal(block(source,'local function equipmentUpgrade','-- Admission'),
