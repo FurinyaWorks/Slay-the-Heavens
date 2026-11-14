@@ -1,0 +1,16 @@
+✔ BackToBasics source fixes eight starter tags, free purge, four-argument grid, empty success and separate Leave (1.191223ms)
+✔ BackToBasics source-faithful public commands and generated NodeUI: back_to_basics_event.lua (6238.768557ms)
+✔ BackToBasics source-faithful public commands and generated NodeUI: back_to_basics_ui.lua (6641.068157ms)
+✔ source mandatory event grids keep candidate/order/identity and interrupted native ownership (5358.563282ms)
+✔ source uncommon relic callbacks produce real combat and permanent state changes (1443.024325ms)
+✔ uncommon effects activate after the normal Run obtain and combat paths (8687.566642ms)
+✔ Chemical X adds two once across all X cards while preserving zero cost and free autoplay energy (8243.297002ms)
+✔ source TOP, BOTTOM, and synchronous opening relics have real event-frame order evidence (7215.467748ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44317.824276

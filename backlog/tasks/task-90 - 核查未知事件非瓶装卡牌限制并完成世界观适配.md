@@ -1,11 +1,11 @@
 ---
 id: TASK-90
 title: 核查未知事件非瓶装卡牌限制并完成世界观适配
-status: To Do
+status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-14 19:18'
 labels:
   - playtest-20261030
   - p2
@@ -34,4 +34,8 @@ Owner在未知事件遇到「非瓶装卡牌」，玩家不了解原作遗物绑
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-11-14第二轮逐项核对，保留To Do：仅有玩家疑问与调查目标，未找到针对非瓶装限制的调查结论、实施或验证记录。
+
+2026-11-14 独立机制调查：只核既有绑定、开局入手及移除保护，不改 #668 活跃文案；正式设备与最终解释仍未验。
+
+机制调查报告：docs/backlog-details/TASK-90-BOTTLE-AUDIT-20261114.md。确认已有按UID的三类绑定及永久移除保护；复制、升级另有语义。剩余文案与真实体验交接活跃Lore线，未勾完成。
 <!-- SECTION:NOTES:END -->
