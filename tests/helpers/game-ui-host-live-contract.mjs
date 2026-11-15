@@ -15,7 +15,7 @@ const sequences={
  'short-full-source':[...common,'refresh','disable'],'short-map-failure':[...common,'confirm retry','disable'],
  'short-refresh-reentry':[...common,'refresh mixed capture','disable'],
  'short-disable-live':[...common,'real active combat with pending playback','disable live playback'],
- 'short-overlays':[...common,'combat','menu','help','close help','route','close route','resume','disable'],
+ 'short-overlays':[...common,'combat','menu','retired guide','reopen menu','route','close route','resume','disable'],
  'short-egg':[...common,'victory','egg open','egg update','egg close','egg cleanup failure','egg cleanup retry'],
  'short-route':[...common,'real map entry','native end turn and playback','terminal combat fixture and real reward creation','native reward proceed','reward down','reward up','same-content replacement pending owner','stale reward owner click','fresh reward down','fresh reward up','fresh reward reopen','native reward proceed again','disable'],
  'short-chapters':[...common,'controlled chapter one terminal treasure','real chapter one treasure claim','native chapter continue','controlled chapter two terminal treasure','real chapter two ending','disable'],
@@ -29,9 +29,9 @@ const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const contract=String.raw`
 local currentEvents,currentBefore={},nil
 local known={}
-for label in ([[construct|start|select|element|confirm|confirm retry|refresh|refresh mixed capture|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|resize|invalid dt|update|open menu|close menu|dynamic method|dynamic close|second shared platform|first captured controller|begin combat|combat tick|open exit|settle false|settle throw|settle nil|settle once|disable failure|disable retry|disabled update|second disable|disable|real active combat with pending playback|disable live playback|real map entry|native end turn and playback|terminal combat fixture and real reward creation|native reward proceed|reward down|reward up|same-content replacement pending owner|stale reward owner click|fresh reward down|fresh reward up|fresh reward reopen|native reward proceed again|controlled chapter one terminal treasure|real chapter one treasure claim|native chapter continue|controlled chapter two terminal treasure|real chapter two ending|combat|menu|help|close help|route|close route|resume|victory|egg open|egg update|egg close|egg cleanup failure|egg cleanup retry|synchronous deck|synchronous battle|synchronous map|synchronous node|synchronous potion|synchronous egg]]):gmatch('[^|]+')do known[label]=true end
+for label in ([[construct|start|select|element|confirm|confirm retry|refresh|refresh mixed capture|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|resize|invalid dt|update|open menu|close menu|dynamic method|dynamic close|second shared platform|first captured controller|begin combat|combat tick|open exit|settle false|settle throw|settle nil|settle once|disable failure|disable retry|disabled update|second disable|disable|real active combat with pending playback|disable live playback|real map entry|native end turn and playback|terminal combat fixture and real reward creation|native reward proceed|reward down|reward up|same-content replacement pending owner|stale reward owner click|fresh reward down|fresh reward up|fresh reward reopen|native reward proceed again|controlled chapter one terminal treasure|real chapter one treasure claim|native chapter continue|controlled chapter two terminal treasure|real chapter two ending|combat|menu|retired guide|reopen menu|route|close route|resume|victory|egg open|egg update|egg close|egg cleanup failure|egg cleanup retry|synchronous deck|synchronous battle|synchronous map|synchronous node|synchronous potion|synchronous egg]]):gmatch('[^|]+')do known[label]=true end
 local uiOnly={}
-for label in ([[refresh|refresh mixed capture|update|combat tick|egg update|egg open|egg close|start|select|element|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|dynamic method|dynamic close|resize|invalid dt|open menu|close menu|open exit|menu|help|close help|route|close route|resume|first captured controller|stale reward owner click|reward down|reward up|fresh reward down|fresh reward up|disabled update]]):gmatch('[^|]+')do uiOnly[label]=true end
+for label in ([[refresh|refresh mixed capture|update|combat tick|egg update|egg open|egg close|start|select|element|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|dynamic method|dynamic close|resize|invalid dt|open menu|close menu|open exit|menu|retired guide|reopen menu|route|close route|resume|first captured controller|stale reward owner click|reward down|reward up|fresh reward down|fresh reward up|disabled update]]):gmatch('[^|]+')do uiOnly[label]=true end
 local function check(value,label,why)assert(value,'CURRENT_HOST '..label..': '..why)end
 local currentMismatch
 local function different(path,a,b)currentMismatch=currentMismatch or(path..' '..tostring(a)..' / '..tostring(b));return false end
@@ -131,8 +131,11 @@ ABYSS_HOST_CURRENT_AFTER=function(label,host,result,F,hosts)
  elseif label=='deck close'or label=='dynamic close'then check(not h.deckUI.visible,label,'deck closes')
  elseif label=='open menu'or label=='menu'then check(h.exitOpen and h.menuOpen,label,'run menu opens')
  elseif label=='close menu'or label=='resume'then check(not h.exitOpen and not h.menuOpen,label,'run menu resumes')
- elseif label=='help'then check(h.controlsOpen and h.exitOpen,label,'help remains an overlay')
- elseif label=='close help'then check(not h.controlsOpen and h.menuOpen,label,'help returns to its caller')
+ elseif label=='retired guide'then
+  check(not h.root:GetChild('runMenu'):GetChild('help')and not h.root:GetChild('exitPanel'):GetChild('help')and not h.root:GetChild('exitPanel'):GetChild('guide'),label,'no retired guide control or blocker')
+  check(not h.controlsOpen and h.menuOpen and h.exitOpen,label,'retired guide leaves the same menu open')
+  for _,row in ipairs(h.controller.records)do check(not row.control.name:find('help'),label,'retired guide has no focus target')end
+ elseif label=='reopen menu'then check(result[2]==true and not h.controlsOpen and h.exitOpen and h.menuOpen,label,'menu closes and reopens without a guide layer')
  elseif label=='route'then check(h.routeOpen and h.exitOpen,label,'route overlay opens')
  elseif label=='close route'then check(not h.routeOpen and not h.exitOpen and not h.menuOpen,label,'route returns directly to its caller, without a hidden parent menu')
  elseif label=='invalid dt'then check(result[2]==false and result[3]=='invalid_delta',label,'reject invalid delta')
@@ -185,6 +188,8 @@ export function installCurrentHostContract(directory){
   ["elseif kind=='battle' then record('callback result',args[7].onChange())", "elseif kind=='battle' then print('CURRENT_HOST_SIGNATURE_ADAPTER battle options=6');assert(args.n==6 and type(args[6])=='table' and type(args[6].onChange)=='function','CURRENT battle constructor exact six-argument API');record('callback result',args[6].onChange())"],
   ['local function record(...)','local function record(...)\n if ABYSS_HOST_CURRENT_EVENT then ABYSS_HOST_CURRENT_EVENT(...) end'],
   ['local result=table.pack(pcall(fn or function()end))','ABYSS_HOST_CURRENT_BEFORE(label,host,F,hosts)\n local result=table.pack(pcall(fn or function()end))\n ABYSS_HOST_CURRENT_AFTER(label,host,result,F,hosts)'],
+  ["step('help',function()return button('runMenu','help').click()end)","step('retired guide',function()assert(not host.controlsOpen);return true end)"],
+  ["step('close help',function()return host:closeExit()end)","step('reopen menu',function()assert(host:closeExit()and not host.exitOpen and not host.menuOpen);return host:openMenu()end)"],
  ]){assert.equal(source.split(before).length,2,'one original current driver observation boundary');source=source.replace(before,after);}
  fs.writeFileSync(file,contract+'\n'+source);
 }

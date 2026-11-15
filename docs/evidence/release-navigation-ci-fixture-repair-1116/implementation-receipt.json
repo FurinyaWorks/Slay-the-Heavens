@@ -1,0 +1,110 @@
+{
+  "baseline": "392818d0bcb8fcc7fb9b80f7082218e0b3c9de74",
+  "target": "release/v2.0.0",
+  "productCommitUnchanged": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "unchangedProduction": [],
+  "originalHostTraceUnchanged": true,
+  "frozenMobileBodyVerbatimPreserved": true,
+  "backlog": {
+    "backlog/tasks/task-4.11 - 修复退出本局警告被操作说明遮挡及提示层级.md": {
+      "acceptanceLinesUnchanged": true,
+      "statusAndAssigneeUnchanged": true
+    },
+    "backlog/tasks/task-4.16 - 改善右上角菜单与操作说明的交互和信息层级.md": {
+      "acceptanceLinesUnchanged": true,
+      "statusAndAssigneeUnchanged": true
+    }
+  },
+  "inputHashes": {
+    "tests/helpers/game-ui-host-live-contract.mjs": {
+      "byteSha256": "8906bdcfea3f53759c322a9e8791131eacfe958f6e6560c5412151c8f25c1428",
+      "sourceSha256LF": "e08132bab3148d17c0c03551b3c26dbaad9837c0e3e1c9facd82a3fabd85641a"
+    },
+    "tests/lua/formal_campaign_entry.lua": {
+      "byteSha256": "36d06622bee5b99cd0954ffd1f107ec3828648f4f77e55960bb857e110b1c894",
+      "sourceSha256LF": "b39ec98c866f678d4bc001c71ab5dd862aef6e36c79eef3d4d3f4c52124fdb0d"
+    },
+    "tests/mobile-typography.test.mjs": {
+      "byteSha256": "b0c32c40ac2bcbb010ef6c076c26bf74977c3438eb0108be19d97dbfc1ea1997",
+      "sourceSha256LF": "b0c32c40ac2bcbb010ef6c076c26bf74977c3438eb0108be19d97dbfc1ea1997"
+    },
+    "tests/sts-style-source-epoch.test.mjs": {
+      "byteSha256": "1aa9ca1d513a3097124d9abd61275cda4621f2350651921dd56b04368a82374c",
+      "sourceSha256LF": "1aa9ca1d513a3097124d9abd61275cda4621f2350651921dd56b04368a82374c"
+    },
+    "tests/release-navigation-source.test.mjs": {
+      "byteSha256": "b56b0badb15404c6d44e59c78216d31122ac735f26bf9c3ea078ed5ce085fc85",
+      "sourceSha256LF": "b56b0badb15404c6d44e59c78216d31122ac735f26bf9c3ea078ed5ce085fc85"
+    },
+    "tests/helpers/release-bootstrap-merge-ci-source.mjs": {
+      "byteSha256": "13cc7508bb1dc579b1459f46deac92f7082faaa317c7bca9d9ee8d6c881d71f1",
+      "sourceSha256LF": "13cc7508bb1dc579b1459f46deac92f7082faaa317c7bca9d9ee8d6c881d71f1"
+    },
+    "tests/helpers/release-bootstrap-merge-ci-source.json.gz": {
+      "byteSha256": "363579362238b55eca0913ba39a107008e901ecd38112a4dc412bbc4be56b14c"
+    },
+    "tests/helpers/release-bootstrap-merge-before-navigation-fixture-repair-ci-source.json.gz": {
+      "byteSha256": "1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9"
+    }
+  },
+  "outer": {
+    "files": 32,
+    "archives": 96,
+    "productionBaseBlobs": 352,
+    "bootstrapGitBindings": 10,
+    "gitObjects": 12
+  },
+  "tests": {
+    "before": "before.log:5 tests/0 pass/5 fail",
+    "intermediate": "after-fixtures.log and after-fixtures-2.log retain failed experiments",
+    "menusAndSts": "after-fixtures-2.log:6 pass/1 fail; remaining inventory fixed and after-remaining-3.log:1/1 pass; not one same-run7/7",
+    "currentHost": "after-current-overlays.log: two current-only windows7-12 and13-13 status0; original historical VM trace not rerun",
+    "sourcePreOffline": "final-source.log:7/7 local PASS before shallow fix, historical stage only",
+    "sourceFinalOffline": "final-offline-trust.log:5/5 PASS after final offline fix"
+  },
+  "logs": {
+    "after-current-overlays.log": {
+      "bytes": 211,
+      "sha256": "f7b2784105bb4f3b1e022c42575db94d4c33d61e51e0f77dcbba7755c36eb863"
+    },
+    "after-fixtures-2.log": {
+      "bytes": 2865,
+      "sha256": "9109bb78ef34d2d2a61188c400b7f841e4a74794dff14a1a53713b78d7084c9b"
+    },
+    "after-fixtures.log": {
+      "bytes": 30537,
+      "sha256": "201277f471f20fdb3ecf62de3a2332a78f08acb58d714d1e69c292746fd57529"
+    },
+    "after-remaining-2.log": {
+      "bytes": 2416,
+      "sha256": "d1b9e06c1f3e13194a7209165485107b535ceda90e87bc83be392a7570416cdb"
+    },
+    "after-remaining-3.log": {
+      "bytes": 240,
+      "sha256": "104a73ce720b9a4780278a43ef6059cbfc5f7643ff47b27745adb2bda0271467"
+    },
+    "after-remaining-and-trust.log": {
+      "bytes": 3320,
+      "sha256": "f7b259fbf8ab57828cbc370a38a538f5ffb05f20a6ae75848e81beb03a985248"
+    },
+    "before.log": {
+      "bytes": 25026,
+      "sha256": "a87be7d217aea60d1e58e3a38a9afb1dca1135b413ff0d398d2ac8da97fb85cb"
+    },
+    "final-offline-trust.log": {
+      "bytes": 701,
+      "sha256": "64da9bec3ee1c0b61578ada580d8b433b1f0b978db33bf83f937eac447cff1e2"
+    },
+    "final-source.log": {
+      "bytes": 965,
+      "sha256": "31d2fffe401c3f9ac4e0961aa972730bf1f23d039a36897c26d16f7db4bd70ca"
+    }
+  },
+  "limits": [
+    "No product modification",
+    "No Hosted CI trigger or rerun",
+    "No full suite or heavy historical Host replay",
+    "No PC/mobile/official ready/capacity acceptance",
+    "No commit, push or merge by this implementer"
+  ]
+}

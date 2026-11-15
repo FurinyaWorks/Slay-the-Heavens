@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as physicalReadFileSync,readdirSync} from 'node:fs';
-import {releaseMergeRead,releaseMergeSource,releaseMergeCiPacket,assertReleaseMergeCurrent,assertReleaseMergeGitProvenance} from './helpers/release-bootstrap-merge-ci-source.mjs';
+import {releaseMergeRead,releaseMergeSource,releaseMergeCiPacket,assertReleaseMergeCurrent,assertReleaseMergeGitProvenance,releaseMergeArchivedGitRead} from './helpers/release-bootstrap-merge-ci-source.mjs';
 const readFileSync=releaseMergeRead('slicePrior',physicalReadFileSync);
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleaseNavigationSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseNavigationSourcePacket,extendReleaseNavigationSource} from './helpers/release-navigation-source.mjs';
@@ -84,10 +85,54 @@ test('actual Release merge authenticates separate slice and bootstrap views with
 });
 
 test('actual Release merge proves all production base Git blobs and exact bootstrap sources without relabelling producers',()=>{
- assertReleaseMergeGitProvenance();
+ assertReleaseMergeGitProvenance(releaseMergeArchivedGitRead());
  assert.equal(releaseMergeCiPacket.releaseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
  assert.equal(releaseMergeCiPacket.releaseParent,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
  assert.equal(Object.keys(releaseMergeCiPacket.bootstrapGitBindings).length,10,'every complete bootstrap current binding has actual Git provenance');
+});
+
+test('navigation fixture repair retains the complete original merge packet and exact historical source views',()=>{
+ const archive='tests/helpers/release-bootstrap-merge-before-navigation-fixture-repair-ci-source.json.gz',bytes=physicalReadFileSync(archive);
+ assert.equal(hash(bytes),'1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9');
+ const prior=JSON.parse(gunzipSync(bytes));assert.equal(releaseMergeCiPacket.immutableArchives[archive],hash(bytes));
+ const added=['tests/helpers/game-ui-host-live-contract.mjs','tests/lua/formal_campaign_entry.lua','tests/mobile-typography.test.mjs','tests/sts-style-source-epoch.test.mjs'];
+ assert.deepEqual(Object.keys(releaseMergeCiPacket.files).sort(),[...Object.keys(prior.files),...added].sort());
+ const changed=[];
+ for(const [path,row]of Object.entries(prior.files)){
+  assert.deepEqual(releaseMergeCiPacket.files[path].slicePrior,row.slicePrior,path);
+  assert.deepEqual(releaseMergeCiPacket.files[path].bootstrapView,row.bootstrapView,path);
+  if(releaseMergeCiPacket.files[path].current.sha256!==row.current.sha256)changed.push(path);
+  else assert.deepEqual(releaseMergeCiPacket.files[path].current,row.current,path);
+ }
+ assert.deepEqual(changed,['tests/release-navigation-source.test.mjs']);
+ // Literal complete-source identities were independently read from both exact Git commits.
+ const beforeIds={"tests/helpers/game-ui-host-live-contract.mjs":{"slicePrior":{"gitBlob":"67cb7ea22df2a49f8ec4d21ef562bd0a42c6d7f0","sha256":"0563ff777a64dcd9ca578c3add3bc2a77669b4e4bbd54762d46e24fd75fdaf9e"},"bootstrapView":{"gitBlob":"67cb7ea22df2a49f8ec4d21ef562bd0a42c6d7f0","sha256":"0563ff777a64dcd9ca578c3add3bc2a77669b4e4bbd54762d46e24fd75fdaf9e"}},"tests/lua/formal_campaign_entry.lua":{"slicePrior":{"gitBlob":"abd8a1acd79a5a0445b9d5f28549e1f2d609b8d6","sha256":"a74e6be64363a625e1f24fedc37da2823b8ac8ac43098d1c9a8268530908737a"},"bootstrapView":{"gitBlob":"abd8a1acd79a5a0445b9d5f28549e1f2d609b8d6","sha256":"a74e6be64363a625e1f24fedc37da2823b8ac8ac43098d1c9a8268530908737a"}},"tests/mobile-typography.test.mjs":{"slicePrior":{"gitBlob":"23943307f85cec1aa3480d4e7d555951efdb1dd4","sha256":"3629444610ddafec000edb5c464884f9821d249b04553ef51b1cc804825aa12f"},"bootstrapView":{"gitBlob":"23943307f85cec1aa3480d4e7d555951efdb1dd4","sha256":"3629444610ddafec000edb5c464884f9821d249b04553ef51b1cc804825aa12f"}},"tests/sts-style-source-epoch.test.mjs":{"slicePrior":{"gitBlob":"dfb3119ddbaf2d0ee9661a8eaff1f2b601e30017","sha256":"e07efc666c0fc2c2d956b621d7e770ee47a4a900256fdf891360534f8b7b36be"},"bootstrapView":{"gitBlob":"dfb3119ddbaf2d0ee9661a8eaff1f2b601e30017","sha256":"e07efc666c0fc2c2d956b621d7e770ee47a4a900256fdf891360534f8b7b36be"}}};
+ for(const path of added)for(const view of ['slicePrior','bootstrapView']){
+  const row=releaseMergeCiPacket.files[path][view],expected=beforeIds[path][view];
+  assert.equal(row.gitBlob,expected.gitBlob,path+':'+view);assert.equal(row.sha256,expected.sha256,path+':'+view);
+  assert.equal(hash(row.source),expected.sha256,path+':'+view);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.source)}\0`).update(row.source).digest('hex'),expected.gitBlob,path+':'+view);
+ }
+ assert.deepEqual(Object.keys(releaseMergeCiPacket).sort(),[...Object.keys(prior),'gitObjectProof'].sort());
+ assert.equal(Object.keys(prior.immutableArchives).length,95);
+ for(const [path,sha]of Object.entries(prior.immutableArchives))assert.equal(releaseMergeCiPacket.immutableArchives[path],sha,path);
+ assert.equal(Object.keys(releaseMergeCiPacket.immutableArchives).length,96);
+ for(const field of Object.keys(prior).filter(key=>!['files','immutableArchives'].includes(key)))assert.deepEqual(releaseMergeCiPacket[field],prior[field],field);
+});
+
+test('archived Git provenance rejects changed missing and mistyped objects without a checkout database',()=>{
+ const proof=releaseMergeCiPacket.gitObjectProof,commit=releaseMergeCiPacket.releaseCommit;
+ assertReleaseMergeGitProvenance(releaseMergeArchivedGitRead(proof));
+ const changed=structuredClone(proof);changed[commit].base64=Buffer.from('changed Git commit').toString('base64');
+ assert.throws(()=>releaseMergeArchivedGitRead(changed),/complete archived Git object/);
+ const missing=structuredClone(proof);delete missing[commit];
+ assert.throws(()=>assertReleaseMergeGitProvenance(releaseMergeArchivedGitRead(missing)),/required complete Git commit/);
+ const mistyped=structuredClone(proof);mistyped[commit].type='tree';
+ assert.throws(()=>releaseMergeArchivedGitRead(mistyped),/complete archived Git object/);
+ for(const [id,row]of Object.entries(proof).filter(([,row])=>row.type==='tree')){
+  const missing=structuredClone(proof);delete missing[id];
+  assert.throws(()=>assertReleaseMergeGitProvenance(releaseMergeArchivedGitRead(missing)),/required complete Git tree/);
+ }
 });
 
 test('actual Release merge CI trust packet rejects truncated isolated copies',async()=>{

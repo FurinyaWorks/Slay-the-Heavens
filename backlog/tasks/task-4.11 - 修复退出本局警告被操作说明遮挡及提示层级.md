@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 21:00'
+updated_date: '2026-11-15 22:41'
 labels:
   - playtest-20261030
   - p0
@@ -17,6 +17,7 @@ dependencies: []
 references:
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
+  - docs/evidence/release-navigation-ci-fixture-repair-1116/README.md
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -39,6 +40,8 @@ Owner截图：放弃本局确认框中的「操作说明」入口直接压住失
 
 <!-- SECTION:PLAN:BEGIN -->
 2026-11-15 Release接续：从36b9b157选择性适配cb1ea99a，移除退出/暂停操作说明控件、监听和返回分支；保持现有确认、取消、平台结算与C档。源码/Host回归及独审记录到RELEASE-PC-NAVIGATION-20261115，最终GIL设备AC不勾。
+
+2026-11-16 同PR690实际CI接续：移除help是既定产品要求，修正式入口与live Host仍要求旧help存在的陈旧回归；保同Run、取消、平台结算、原历史trace，并将旧字号合同和当前无help合同分离，待独审。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -61,4 +64,8 @@ PC38产品提交a9425afa50e2a1dd10e83634a3e5fc0d24633917，真实旧代码4项�
 2026-11-16 代码38fa3277/绑定dc50bea8已按docs/CI.md168纠正新增预测硬门槛，forecast仅诊断，实际workflow45/30/local75仍硬验；产品a942不动。当前5/5，独立policy增审CODE_PASS_SCOPED/12个直接job负控通过，原REQ与错误建议原文保留并更正。CI packet只单after+leaf，其他22行/before/93归档/库存保持，不重73/44/Full。共同前置PR692尚未合，后继须按新Release接续，未把代码独审当设备或发版许可。
 
 2026-11-16 本轮追加：共同前置#692已合，实际Release新base为1cc5479b713edab6fd26db4e20f8eb22b7401cb2；PR690代码独审HEAD 685d3ace14598a093a8e710042264b4a0780b944限定通过，Source/CI9/9、raw硬guard4/4、copy/corpus3/3，原独审报告和同reviewer支持bundle见docs/evidence/release-navigation-bootstrap-1116/independent-review.json及manifest。本轮仅归档和CLI附记；Source约20.6秒、每正投影123读约33MB是重复fresh成本限制，不是性能PASS。当前Hosted Full、同候选官方导入/ready/PC手机/容量仍未验；PC06色调/资源解释等产品要求未验，保留旧notes与所有checked（含#676不新勾），status保持In Progress，不授合并或发布许可。
+
+2026-11-16 PR690 CI接续：正式入口当前段验证退出/暂停help及guide不存在，保同一Run、resume、取消、单次平台结算；无controller能力入口不伪称焦点验证，有controller的current Host窗口另验无help焦点。历史Host完整trace及旧字号完整函数体继续独立保留。相关定向通过但仅离线合同，当前最终GIL/官方PC手机未验，AC不新勾；实现与来源修复详TASK4.16同轮notes及navigation证据，待独审/Hosted CI。
+
+2026-11-16 本轮PR690独审CI_FIXTURE_REVIEW_PASS、11/11只读probe及原字节日志已归档docs/evidence/release-navigation-ci-fixture-repair-1116；保当前移除help的正式入口/Run/取消/结算合同及历史断言。仅补证据与任务引用，未改已审执行输入，原AC/status保持；最终GIL的PC、手机、官方ready与容量未验。
 <!-- SECTION:NOTES:END -->

@@ -2,6 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {nativeTheme as theme} from '../scripts/native-ui-theme.mjs';
+import {releaseNavigationCiPacket} from './helpers/release-navigation-ci-source.mjs';
+import {assertReleaseMergeCurrent} from './helpers/release-bootstrap-merge-ci-source.mjs';
+// Only the old menu-reading contract consumes the complete immutable layout predecessor.
+// Actual current controls are independently checked below without source projection.
+const oldExitSource=releaseNavigationCiPacket.files['scripts/exit-ui-layout.mjs'].before.source;
+assert.equal(oldExitSource.split("'./native-ui-theme.mjs'").length,2);
+assert.equal(oldExitSource.split("'./controls-guide-layout.mjs'").length,2);
+const oldExitImports=oldExitSource.replace("'./native-ui-theme.mjs'",JSON.stringify(new URL('../scripts/native-ui-theme.mjs',import.meta.url).href)).replace("'./controls-guide-layout.mjs'",JSON.stringify(new URL('../scripts/controls-guide-layout.mjs',import.meta.url).href));
+const oldExitModule=await import('data:text/javascript;base64,'+Buffer.from(oldExitImports).toString('base64'));
+const historicalMenuTree=()=>{
+ assertReleaseMergeCurrent();
+ const t=gameLayout(),old=new Map(oldExitModule.exitControls(theme).map(control=>[control.name,control]));
+ t.controls=t.controls.map(control=>old.get(control.name)??control);return t;
+};
 const child=(c,n)=>{const v=(c.children??c.controls).find(x=>x.name===n);assert.ok(v,n);return v;};
 const tree=()=>gameLayout();
 const states=['normal','hover','pressed','disabled'];
@@ -22,12 +36,22 @@ test('every deck and relic entry count has a complete large native line',()=>{
  const t=tree();for(const name of ['deckEntry','relicEntry'])for(const state of states){const c=child(child(child(child(t,name),'open'),'hit'),state);const count=child(c,'count');assert.ok(count.text.fontSize>=22,name+' count');budget(count,'999');}
  const slot=child(child(t,'relicBar'),'slot12');budget(child(slot,'more'),'+99');
 });
-test('normal menu reading and warnings use larger text without fallback shrink',()=>{
+test('frozen pre-navigation menu reading and warnings use larger text without fallback shrink',()=>{
+ const tree=historicalMenuTree;
  const t=tree(),exit=child(t,'exitPanel');
  for(const name of ['title','message','status']){const c=child(exit,name);assert.ok(c.text.fontSize>=20,name);assert.equal(c.text.fontSize,c.text.minFontSize);}
  const message=child(exit,'message');assert.ok(message.text.fontSize>=24);assert.ok(message.size[1]>=80,'two full native lines');
  assert.ok(child(exit,'status').size[1]>=40);
  for(const panel of ['exitPanel','runMenu'])for(const button of (panel==='exitPanel'?['cancel','confirm','help']:['resume','help','map','abandon']))for(const state of states){const c=child(child(child(child(t,panel),button),'hit'),state);const label=child(c,'label');assert.ok(label.text.fontSize>=22);budget(label,label.text.content);}
+});
+
+test('normal menu reading and warnings use larger text without fallback shrink after guide retirement',()=>{
+ const t=tree(),exit=child(t,'exitPanel');
+ for(const panel of ['exitPanel','runMenu'])for(const name of ['help','guide'])assert(!(child(t,panel).children??[]).some(control=>control.name===name),'retired '+panel+'.'+name);
+ for(const name of ['title','message','status']){const c=child(exit,name);assert.ok(c.text.fontSize>=20,name);assert.equal(c.text.fontSize,c.text.minFontSize);}
+ const message=child(exit,'message');assert.ok(message.text.fontSize>=24);assert.ok(message.size[1]>=80,'two full native lines');
+ assert.ok(child(exit,'status').size[1]>=40);
+ for(const panel of ['exitPanel','runMenu'])for(const button of (panel==='exitPanel'?['cancel','confirm']:['resume','map','abandon']))for(const state of states){const c=child(child(child(child(t,panel),button),'hit'),state);const label=child(c,'label');assert.ok(label.text.fontSize>=22);budget(label,label.text.content);}
 });
 function luminance(hex){const c=hex.match(/[a-f\d]{2}/gi).slice(0,3).map(h=>{const n=parseInt(h,16)/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4});return c[0]*.2126+c[1]*.7152+c[2]*.0722;}
 function contrast(a,b){const x=luminance(a),y=luminance(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}

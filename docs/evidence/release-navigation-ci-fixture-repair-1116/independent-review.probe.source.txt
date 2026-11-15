@@ -1,0 +1,114 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {gunzipSync} from 'node:zlib';
+import {pathToFileURL} from 'node:url';
+const root='F:/New folder/.worktrees/release-pc-navigation-1115';
+const out='F:/New folder/.artifacts/release-pc-qa-20261115/ci-owner-repair-1116';
+const base='392818d0bcb8fcc7fb9b80f7082218e0b3c9de74';
+const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+const read=p=>readFileSync(root+'/'+p),text=p=>norm(read(p).toString());
+const git=(...args)=>execFileSync('git',args,{cwd:root,maxBuffer:32*1024*1024});
+const checks=[];const check=(name,fn)=>{fn();checks.push({name,result:'PASS'});};
+const packetPath='tests/helpers/release-bootstrap-merge-ci-source.json.gz';
+assert.equal(hash(read(packetPath)),process.argv[2],'frozen final packet identity supplied by author');
+const {releaseMergeCiPacket:p,assertReleaseMergeGitProvenance,releaseMergeArchivedGitRead,assertReleaseMergeCurrent}=await import(pathToFileURL(root+'/tests/helpers/release-bootstrap-merge-ci-source.mjs'));
+const archive='tests/helpers/release-bootstrap-merge-before-navigation-fixture-repair-ci-source.json.gz';
+const prior=JSON.parse(gunzipSync(read(archive)));
+check('exact original base and no production workflow configuration or timing change',()=>{
+ assert.equal(git('rev-parse','HEAD').toString().trim(),base);
+ assert.equal(git('diff',base,'--name-only','-z','--','src','scripts','config','.github').length,0);
+});
+check('all original outer bytes, 28 rows and 95 archive pins are retained with only Source after advanced',()=>{
+ assert.equal(hash(read(archive)),'1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9');
+ assert.equal(Object.keys(prior.files).length,28);assert.equal(Object.keys(p.files).length,32);
+ assert.equal(Object.keys(prior.immutableArchives).length,95);assert.equal(Object.keys(p.immutableArchives).length,96);
+ assert.deepEqual(p.immutableArchives,{...prior.immutableArchives,[archive]:hash(read(archive))});
+ for(const [path,row]of Object.entries(prior.files)){
+  assert.deepEqual(p.files[path].slicePrior,row.slicePrior,path);assert.deepEqual(p.files[path].bootstrapView,row.bootstrapView,path);
+  if(path!=='tests/release-navigation-source.test.mjs')assert.deepEqual(p.files[path],row,path);
+ }
+ for(const field of Object.keys(prior).filter(k=>!['files','immutableArchives'].includes(k)))assert.deepEqual(p[field],prior[field],field);
+ assert.equal(p.currentTreeCommitted,false);
+});
+check('every declared old before exactly equals actual Git bytes and blob at both real commits',()=>{
+ for(const [path,row]of Object.entries(p.files))for(const [view,commit]of [['slicePrior',p.slicePriorCommit],['bootstrapView',p.releaseCommit]]){
+  if(row[view]===null)continue;
+  assert.equal(row[view].source,norm(git('show',commit+':'+path).toString()),path+':'+view);
+  assert.equal(row[view].gitBlob,git('rev-parse',commit+':'+path).toString().trim());
+ }
+});
+check('all current inputs and original compressed binary archives authenticate from physical disk',()=>{
+ assertReleaseMergeCurrent((path,encoding)=>readFileSync(root+'/'+path,encoding));
+});
+const objectTypes={},queries=[];
+check('all offline Git object type and bytes match actual local objects',()=>{
+ assert.equal(Object.keys(p.gitObjectProof).length,12);
+ for(const [id,row]of Object.entries(p.gitObjectProof)){
+  assert.equal(git('cat-file','-t',id).toString().trim(),row.type);
+  assert.deepEqual(Buffer.from(row.base64,'base64'),git('cat-file',row.type,id));
+  objectTypes[row.type]=(objectTypes[row.type]??0)+1;
+ }
+ assert.deepEqual(objectTypes,{commit:3,tree:9});
+});
+check('original provenance assertions preserve every one of 25 online Git results offline',()=>{
+ const archived=releaseMergeArchivedGitRead();
+ assertReleaseMergeGitProvenance((...args)=>{const actual=git(...args).toString(),offline=archived(...args);assert.equal(offline.trim(),actual.trim(),args.join(' '));queries.push(args);return offline;});
+ assert.equal(queries.length,25);assert.equal(p.productionBaseBlobs.length,352);assert.equal(Object.keys(p.bootstrapGitBindings).length,10);
+});
+check('no Source test runtime child process Git dependency remains',()=>{
+ const source=text('tests/release-navigation-source.test.mjs');
+ assert(!source.includes('execFileSync'));assert(source.includes('assertReleaseMergeGitProvenance(releaseMergeArchivedGitRead('));
+ assert(!source.includes('assertReleaseMergeGitProvenance();'));
+});
+check('original mobile reading assertion body is kept exact in an explicitly authenticated historical view',()=>{
+ const path='tests/mobile-typography.test.mjs',before=norm(git('show',base+':'+path).toString()),current=text(path);
+ const marker="test('normal menu reading and warnings use larger text without fallback shrink',()=>{";
+ const start=before.indexOf(marker),end=before.indexOf('\n});',start)+4,original=before.slice(start,end);
+ const frozenMarker="test('frozen pre-navigation menu reading and warnings use larger text without fallback shrink',()=>{";
+ const at=current.indexOf(frozenMarker),to=current.indexOf('\n});',at)+4;
+ assert.equal(current.slice(at,to).replace(frozenMarker,marker).replace('\n const tree=historicalMenuTree;',''),original);
+ assert(current.includes("const oldExitSource=releaseNavigationCiPacket.files['scripts/exit-ui-layout.mjs'].before.source;"));
+ const historical=current.slice(current.indexOf('const historicalMenuTree='),current.indexOf('const child='));
+ assert(historical.indexOf('assertReleaseMergeCurrent();')<historical.indexOf('gameLayout()'));
+ assert(current.includes("test('normal menu reading and warnings use larger text without fallback shrink after guide retirement'"));
+});
+check('current Host only retires two guide steps while historical full trace and same-Run graph contracts remain',()=>{
+ const path='tests/lua/support/game_ui_host_trace.lua';assert.equal(text(path),norm(git('show',base+':'+path).toString()));
+ const host=text('tests/helpers/game-ui-host-live-contract.mjs');
+ for(const label of ['retired guide','reopen menu','route','close route','resume'])assert(host.includes("'"+label+"'"));
+ for(const contract of ["h.run==currentBefore.run and h.map==currentBefore.map","same(currentBefore.copy,run,nil,nil,currentBefore.memo)","currentBefore.source==F.Data","not h.controlsOpen and h.menuOpen and h.exitOpen","not h.routeOpen and not h.exitOpen and not h.menuOpen"])
+  assert(host.includes(contract),contract);
+ const pair='tests/helpers/game-ui-host-equivalence.mjs';assert.equal(text(pair),norm(git('show',base+':'+pair).toString()));
+ assert(text(pair).includes("actual===expected,'complete ordered trace mismatch"));
+ const formal=text('tests/lua/formal_campaign_entry.lua');
+ for(const contract of ["resume means the same in-memory run, not persistence","ui:openExit() and ui:confirmExit()","ui.run==active and ui.run.phase=='map' and sent[#sent]=='ABYSS_LOSE'","本局仅在当前奇域会话中保留；退出奇域后无法继续。"])
+  assert(formal.includes(contract),contract);
+});
+check('StS raw inventory is checked before projection and physical binary reads remain binary',()=>{
+ const source=text('tests/sts-style-source-epoch.test.mjs');
+ const raw=source.indexOf('assert.deepEqual(actualJs,integratedCurrentInventory(\'js\'))'),projection=source.indexOf('const rawJs=releaseNavigationPriorInventory(');
+ assert(raw>0&&projection>raw);
+ const definition=source.slice(source.indexOf('const driftRead='),source.indexOf('// A live outer owner'));
+ const binary=Buffer.from([0,255,13,10]),unselected=Buffer.from([1,0,2]);
+ const driftRead=new Function('readFileSync',definition+'return driftRead;')((path,encoding)=>path==='selected'?(encoding?'source':binary):unselected);
+ assert.deepEqual(driftRead('selected')('selected'),Buffer.concat([binary,Buffer.from('\n')]));
+ assert.equal(driftRead('selected')('selected','utf8'),'source\n');
+ assert.equal(driftRead('selected')('other'),unselected);
+});
+check('nested StS guard accepts only its exact selected outer boundary and rejects wrong path/error',()=>{
+ const source=text('tests/sts-style-source-epoch.test.mjs');
+ const definition=source.slice(source.indexOf('const stsGuard='),source.indexOf('const inventoryDriftGuard='));
+ const guard=new Function('releaseMergeCiPacket',definition+'return stsGuard;')(p);
+ const input='tests/mobile-typography.test.mjs',accept=guard(input,/fresh complete StS CI source/);
+ assert.equal(accept(new Error('fresh complete integration source: actual Release merge '+input+'\nactual mismatch')),true);
+ for(const message of ['arbitrary exception','fresh complete StS CI source '+input,'fresh complete integration source: actual Release merge wrong/path\nactual mismatch'])assert.equal(accept(new Error(message)),false);
+ const archived=guard(archive,/fresh complete StS CI source/);
+ assert.equal(archived(new Error('retained actual Release merge archive: '+archive+'\nactual mismatch')),true);
+ assert.equal(archived(new Error('retained actual Release merge archive: wrong/path\nactual mismatch')),false);
+});
+const paths=git('diff',base,'--name-only','-z').toString().split('\0').filter(Boolean);paths.push(archive);
+const receipt={reviewer:'/root/ci_release_failed_jobs_inventory',scope:'PR690 current CI fixture repair, independent of product and device acceptance',base,head:git('rev-parse','HEAD').toString().trim(),timestamp:new Date().toISOString(),node:process.version,decision:'CI_FIXTURE_REVIEW_PASS',resolvedFinding:'Both runtime historical Git dependencies replaced with complete authenticated offline objects and literal before pins; no skipped assertions',checks,gitObjects:{count:12,types:objectTypes,queries,productionBindings:352,bootstrapBindings:10},reviewedFiles:Object.fromEntries(paths.map(path=>[path,{rawSha256:hash(read(path)),lfSha256:hash(text(path))}])),observedExistingEvidence:['navigation/after-fixtures-2.log:6/7, first inventory failure retained','navigation/after-remaining-3.log:remaining1/1','navigation/after-current-overlays.log:two current windows status0'],notRun:['formal Lua','Host VMs','StS loop suites','Source suite','Full','Hosted CI','official import','ready','PC','mobile','private screenshots'],findings:[],unresolved:[]};
+writeFileSync(out+'/review690-independent.json',JSON.stringify(receipt,null,2)+'\n');
+console.log(JSON.stringify({decision:receipt.decision,checks:checks.length,objects:12,queries:queries.length,files:paths.length,packetSha256:hash(read(packetPath))},null,2));

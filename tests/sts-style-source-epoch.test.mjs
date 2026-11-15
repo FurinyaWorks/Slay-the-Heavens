@@ -1,5 +1,5 @@
 import test from 'node:test';
-import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
+import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent,integratedCurrentInventory} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
@@ -9,6 +9,21 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
  feedbackPriorCiSha,feedbackPriorClosureSha,renderFeedbackCiBinding} from './helpers/sts-feedback-source-runtime.mjs';
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
+import {releaseNavigationPriorInventory} from './helpers/release-navigation-ci-source.mjs';
+import {releaseMergeCiPacket,releaseMergeRead} from './helpers/release-bootstrap-merge-ci-source.mjs';
+const driftRead=selected=>(path,encoding)=>{
+ const raw=readFileSync(path,encoding);
+ return path!==selected?raw:typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+};
+// A live outer owner must fail at that exact boundary before the historical StS guard.
+const stsGuard=(path,inner)=>error=>{
+ const prefix=Object.hasOwn(releaseMergeCiPacket.files,path)?'fresh complete integration source: actual Release merge ':Object.hasOwn(releaseMergeCiPacket.immutableArchives,path)?'retained actual Release merge archive: ':null;
+ return prefix?error instanceof Error&&error.message.startsWith(prefix+path+'\n'):inner.test(error.message);
+};
+const inventoryDriftGuard=path=>error=>error?.code==='ERR_ASSERTION'&&[
+ 'fresh added inventory source: ',
+ 'fresh complete integration source: actual Release merge ',
+].some(prefix=>error.message.startsWith(prefix+path+'\n'));
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
@@ -25,7 +40,9 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const actualJs=discoverJs(),actualLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ assert.deepEqual(actualJs,integratedCurrentInventory('js'));assert.deepEqual(actualLua,integratedCurrentInventory('lua'));
+ const rawJs=releaseNavigationPriorInventory(actualJs,'js',releaseMergeRead('slicePrior')),rawLua=releaseNavigationPriorInventory(actualLua,'lua',releaseMergeRead('slicePrior'));
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
@@ -37,7 +54,7 @@ test('release additions remain in raw Full and exact historical inventories reje
   for(const path of added){
    assert.throws(()=>integratedPriorInventory(current.filter(p=>p!==path),target,kind),/inventory/);
    for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>integratedPriorInventory(current,target,kind,
-    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+    (p,e)=>p===path?value:readFileSync(p,e)),value===null?error=>error instanceof TypeError&&/^Cannot read properties of null \(reading '(?:toString|replaceAll)'\)$/.test(error.message):inventoryDriftGuard(path));
   }
   for(const changed of [[...current,current[0]],[...current,'tests/foreign.'+kind]])assert.throws(()=>integratedPriorInventory(changed,target,kind),/inventory/);
  }
@@ -108,10 +125,10 @@ test('real style CI admits only full inventory, complete source and freshly veri
   'scripts/check-license.mjs','tests/ci-reviewed-lfs.test.mjs','.gitattributes','config/ci-media-lfs.json','docs/legal/assets.json',
   'docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs']){
   assert(p.files[path]?.after,'exact CI/storage execution witness: '+path);
-  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete StS CI source/,path);
+  assert.throws(()=>assertStsStyleCiCurrent(files,driftRead(path)),stsGuard(path,/fresh complete StS CI source/),path);
  }
  assert.equal(p.files['docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs'].before,null,'new verifier cannot invent a historical source');
- for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:StS helper|complete StS CI) source/,path);
+ for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,driftRead(path)),stsGuard(path,/fresh (?:StS helper|complete StS CI) source/),path);
  for(const changed of [files.slice(1),[...files,files[0]],[...files,'tests/foreign.test.mjs']])assert.throws(()=>assertStsStyleCiCurrent(changed),/inventory/);
  for(const path of p.addedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined,'new style regression cannot acquire a historical hosted observation');
@@ -213,7 +230,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),driftRead(path)),stsGuard(path,/fresh (?:complete StS CI|StS helper) source/),path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

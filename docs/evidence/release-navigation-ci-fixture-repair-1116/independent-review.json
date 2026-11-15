@@ -1,0 +1,241 @@
+{
+  "reviewer": "/root/ci_release_failed_jobs_inventory",
+  "scope": "PR690 current CI fixture repair, independent of product and device acceptance",
+  "base": "392818d0bcb8fcc7fb9b80f7082218e0b3c9de74",
+  "head": "392818d0bcb8fcc7fb9b80f7082218e0b3c9de74",
+  "timestamp": "2026-11-15T22:39:31.775Z",
+  "node": "v24.18.0",
+  "decision": "CI_FIXTURE_REVIEW_PASS",
+  "resolvedFinding": "Both runtime historical Git dependencies replaced with complete authenticated offline objects and literal before pins; no skipped assertions",
+  "checks": [
+    {
+      "name": "exact original base and no production workflow configuration or timing change",
+      "result": "PASS"
+    },
+    {
+      "name": "all original outer bytes, 28 rows and 95 archive pins are retained with only Source after advanced",
+      "result": "PASS"
+    },
+    {
+      "name": "every declared old before exactly equals actual Git bytes and blob at both real commits",
+      "result": "PASS"
+    },
+    {
+      "name": "all current inputs and original compressed binary archives authenticate from physical disk",
+      "result": "PASS"
+    },
+    {
+      "name": "all offline Git object type and bytes match actual local objects",
+      "result": "PASS"
+    },
+    {
+      "name": "original provenance assertions preserve every one of 25 online Git results offline",
+      "result": "PASS"
+    },
+    {
+      "name": "no Source test runtime child process Git dependency remains",
+      "result": "PASS"
+    },
+    {
+      "name": "original mobile reading assertion body is kept exact in an explicitly authenticated historical view",
+      "result": "PASS"
+    },
+    {
+      "name": "current Host only retires two guide steps while historical full trace and same-Run graph contracts remain",
+      "result": "PASS"
+    },
+    {
+      "name": "StS raw inventory is checked before projection and physical binary reads remain binary",
+      "result": "PASS"
+    },
+    {
+      "name": "nested StS guard accepts only its exact selected outer boundary and rejects wrong path/error",
+      "result": "PASS"
+    }
+  ],
+  "gitObjects": {
+    "count": 12,
+    "types": {
+      "commit": 3,
+      "tree": 9
+    },
+    "queries": [
+      [
+        "show",
+        "-s",
+        "--format=%P",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2^{tree}"
+      ],
+      [
+        "rev-parse",
+        "b67226945c2be47c8fff31f1362412b973f68875^{tree}"
+      ],
+      [
+        "ls-tree",
+        "-r",
+        "--format=%(path)\t%(objectname)",
+        "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "--",
+        "src/lua",
+        "config/architecture.json"
+      ],
+      [
+        "ls-tree",
+        "-r",
+        "--format=%(path)\t%(objectname)",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+        "--",
+        "src/lua",
+        "config/architecture.json"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:.github/workflows/licenses.yml"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:.github/workflows/licenses.yml"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:.github/workflows/quality.yml"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:.github/workflows/quality.yml"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:.github/workflows/quick-feedback.yml"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:.github/workflows/quick-feedback.yml"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/ci-complete-calibration.test.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/ci-complete-calibration.test.mjs"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/ci-posix-concurrency.test.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/ci-posix-concurrency.test.mjs"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/engineering-quality.test.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/engineering-quality.test.mjs"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/full-quality.test.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/full-quality.test.mjs"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/helpers/integrated-ci-source.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/helpers/integrated-ci-source.mjs"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/integrated-ci-source.cases.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/integrated-ci-source.cases.mjs"
+      ],
+      [
+        "show",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/quick-feedback.test.mjs"
+      ],
+      [
+        "rev-parse",
+        "1cc5479b713edab6fd26db4e20f8eb22b7401cb2:tests/quick-feedback.test.mjs"
+      ]
+    ],
+    "productionBindings": 352,
+    "bootstrapBindings": 10
+  },
+  "reviewedFiles": {
+    "backlog/tasks/task-4.11 - 修复退出本局警告被操作说明遮挡及提示层级.md": {
+      "rawSha256": "c5a77247d1f2d1d2e489ef5d3dbe8467b2556a8df409e0989dcfaadae3a9aba6",
+      "lfSha256": "854f5bc0604ac7f3c3ba32bcf82d03c3e620346d17bf49ac2624be2fbe0ee86e"
+    },
+    "backlog/tasks/task-4.16 - 改善右上角菜单与操作说明的交互和信息层级.md": {
+      "rawSha256": "af7bc2c390cd3bd737bbc6b1a2ea267c0557dbca41aa1347cd3806044f503897",
+      "lfSha256": "b2ca357c3b7bbd7d53d33f18454e9473f79c808b937b88af957554cfff226790"
+    },
+    "tests/helpers/game-ui-host-live-contract.mjs": {
+      "rawSha256": "8906bdcfea3f53759c322a9e8791131eacfe958f6e6560c5412151c8f25c1428",
+      "lfSha256": "e08132bab3148d17c0c03551b3c26dbaad9837c0e3e1c9facd82a3fabd85641a"
+    },
+    "tests/helpers/release-bootstrap-merge-ci-source.json.gz": {
+      "rawSha256": "363579362238b55eca0913ba39a107008e901ecd38112a4dc412bbc4be56b14c",
+      "lfSha256": "0b21d228da58023f8a7f64c407503c68419cf07c452edaf8ca72b0ded71655b6"
+    },
+    "tests/helpers/release-bootstrap-merge-ci-source.mjs": {
+      "rawSha256": "13cc7508bb1dc579b1459f46deac92f7082faaa317c7bca9d9ee8d6c881d71f1",
+      "lfSha256": "13cc7508bb1dc579b1459f46deac92f7082faaa317c7bca9d9ee8d6c881d71f1"
+    },
+    "tests/lua/formal_campaign_entry.lua": {
+      "rawSha256": "36d06622bee5b99cd0954ffd1f107ec3828648f4f77e55960bb857e110b1c894",
+      "lfSha256": "b39ec98c866f678d4bc001c71ab5dd862aef6e36c79eef3d4d3f4c52124fdb0d"
+    },
+    "tests/mobile-typography.test.mjs": {
+      "rawSha256": "b0c32c40ac2bcbb010ef6c076c26bf74977c3438eb0108be19d97dbfc1ea1997",
+      "lfSha256": "b0c32c40ac2bcbb010ef6c076c26bf74977c3438eb0108be19d97dbfc1ea1997"
+    },
+    "tests/release-navigation-source.test.mjs": {
+      "rawSha256": "b56b0badb15404c6d44e59c78216d31122ac735f26bf9c3ea078ed5ce085fc85",
+      "lfSha256": "b56b0badb15404c6d44e59c78216d31122ac735f26bf9c3ea078ed5ce085fc85"
+    },
+    "tests/sts-style-source-epoch.test.mjs": {
+      "rawSha256": "1aa9ca1d513a3097124d9abd61275cda4621f2350651921dd56b04368a82374c",
+      "lfSha256": "1aa9ca1d513a3097124d9abd61275cda4621f2350651921dd56b04368a82374c"
+    },
+    "tests/helpers/release-bootstrap-merge-before-navigation-fixture-repair-ci-source.json.gz": {
+      "rawSha256": "1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9",
+      "lfSha256": "75d4f817fb3e26d210b12394792a3d2b62acfde03a152bcd8a6769a0fca9701a"
+    }
+  },
+  "observedExistingEvidence": [
+    "navigation/after-fixtures-2.log:6/7, first inventory failure retained",
+    "navigation/after-remaining-3.log:remaining1/1",
+    "navigation/after-current-overlays.log:two current windows status0"
+  ],
+  "notRun": [
+    "formal Lua",
+    "Host VMs",
+    "StS loop suites",
+    "Source suite",
+    "Full",
+    "Hosted CI",
+    "official import",
+    "ready",
+    "PC",
+    "mobile",
+    "private screenshots"
+  ],
+  "findings": [],
+  "unresolved": []
+}

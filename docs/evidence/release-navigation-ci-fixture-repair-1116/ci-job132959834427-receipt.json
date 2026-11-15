@@ -1,0 +1,13 @@
+{
+  "pr": 690,
+  "run": 43762292320,
+  "job": 132959834427,
+  "startedUtc": "2026-11-15T22:21:42.9079640Z",
+  "finishedUtc": "2026-11-15T22:21:45.6292728Z",
+  "exitCode": 0,
+  "logPath": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\ci-owner-repair-1116\\ci-inventory\\pr690-job132959834427.log",
+  "stderrPath": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\ci-owner-repair-1116\\ci-inventory\\pr690-job132959834427-stderr.log",
+  "kind": "PROVIDER_DECODED_TEXT_UTF8_POWERSHELL_LINE_SERIALIZATION_NOT_ORIGINAL_HTTP_BYTES",
+  "sha256": "553A7CC09A3CDF553856EDC9F829405CFC255C95A42386FD001CFBF1A72C1CA4",
+  "bytes": 124331
+}

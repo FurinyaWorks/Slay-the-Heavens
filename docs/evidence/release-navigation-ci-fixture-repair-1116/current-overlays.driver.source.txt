@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {rmSync,lstatSync} from 'node:fs';
+import {resolve,dirname,basename} from 'node:path';
+import {tmpdir} from 'node:os';
+import {materialize} from 'file:///F:/New%20folder/.worktrees/release-pc-navigation-1115/tests/helpers/game-ui-host-equivalence.mjs';
+import {installCurrentHostContract,executeCurrentHost} from 'file:///F:/New%20folder/.worktrees/release-pc-navigation-1115/tests/helpers/game-ui-host-live-contract.mjs';
+for(const [from,to]of [[7,12],[13,13]]){
+ const directory=materialize('new');
+ try{installCurrentHostContract(directory);executeCurrentHost(directory,{seed:1,scenario:'short-overlays',from,to});}
+ finally{
+  const absolute=resolve(directory);assert.equal(dirname(absolute),resolve(tmpdir()));assert.match(basename(absolute),/^abyss-host-new-/);assert(!lstatSync(absolute).isSymbolicLink());rmSync(absolute,{recursive:true});
+ }
+}

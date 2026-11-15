@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "target": "release/v2.0.0",
+  "base": "392818d0bcb8fcc7fb9b80f7082218e0b3c9de74",
+  "representation": "UTF-8 LF files; raw original logs inside base64 envelopes",
+  "selfExcluded": true,
+  "files": {
+    "README.md": {
+      "bytes": 5215,
+      "sha256": "ad52578297665db9dd74240ee00ddd14175125dab4f1d4ff2a7f272b26d9ba69",
+      "gitCleanBlob": "ef7a0da44c33c4800fb9fc4ce41c6a82500bee1b"
+    },
+    "after-current-overlays.log.json": {
+      "bytes": 522,
+      "sha256": "20c5ea2ac7bc78207d3963e731a92b4759fef5eb17f56038be1986b742aebb46",
+      "gitCleanBlob": "5b8c2c68217411cc292c5e4d2a805946f8e98c47"
+    },
+    "after-fixtures-2.log.json": {
+      "bytes": 4053,
+      "sha256": "df6756c48336c7c5d3e8bdf9a067c3ff714b8ce1efc20df4504ab43f1fbd5948",
+      "gitCleanBlob": "2bc47ad3267583d3d6e883986c5e8f67888aaf33"
+    },
+    "after-fixtures.log.json": {
+      "bytes": 40948,
+      "sha256": "41ab5ce27cb3b86683fd091d948a10ce319194f394051bb4fcebdd636f800f92",
+      "gitCleanBlob": "4e81899434988e26e87443f47faa07aca4264b2a"
+    },
+    "after-remaining-2.log.json": {
+      "bytes": 3458,
+      "sha256": "8e6d239e7d6ebdd955bd162c4cfe2e5beb8b94b4429d884c61c6de8ca5821d74",
+      "gitCleanBlob": "6abb5ccca0824df55ea0d262602b62319ea8b5da"
+    },
+    "after-remaining-3.log.json": {
+      "bytes": 553,
+      "sha256": "e2023262e76a0c064692772f0549ec2969af012c278258c35c0f11f5dbc16696",
+      "gitCleanBlob": "86649a88b9b6c4b862ab60d6813d32b87b5b5c51"
+    },
+    "after-remaining-and-trust.log.json": {
+      "bytes": 4670,
+      "sha256": "df28fa5528524be488194eb0a38e8450ef50a3d4755521d393c4fdd8b8e3ece4",
+      "gitCleanBlob": "59ed54c8b197d2763158d4c7cf68c232911093b0"
+    },
+    "before.log.json": {
+      "bytes": 33592,
+      "sha256": "95a38f3aed74c1e39a43d9945751c82928c07d80e49ebb123317a0359459d143",
+      "gitCleanBlob": "1ea629c82b0ecb134c3ec5244e6cfe3fd43d5d93"
+    },
+    "check-guidance.log.json": {
+      "bytes": 662,
+      "sha256": "e127f0a5ba65ee06a420c55941453a9c730c6aab0897c112e10f097081d98073",
+      "gitCleanBlob": "65bb19a1ac938445754c6993035ef43eb9c4d821"
+    },
+    "ci-job132959834335-receipt.json": {
+      "bytes": 638,
+      "sha256": "65a8279a2a78b31efa46e41af74b1a7f0891ef2b398ce0fd699c980133d1c543",
+      "gitCleanBlob": "b3139b4ddb76524d9392cb3c37528718a0c15eb0"
+    },
+    "ci-job132959834335.log.json": {
+      "bytes": 160910,
+      "sha256": "c7fb06039d6390b5a193dd6a24fcbc2cd0be307e7550b4fe46657cf0f2b079c4",
+      "gitCleanBlob": "1b0c1b2ec7edae88fa5094c7d64799b303593b26"
+    },
+    "ci-job132959834382-receipt.json": {
+      "bytes": 638,
+      "sha256": "141d49784cfe4dd0be3942283bf0cc4efa4272f8a4ed9bc282837662f6172aff",
+      "gitCleanBlob": "4e8ef70cc3abd465e2e1948784ed55b43a2d0039"
+    },
+    "ci-job132959834382.log.json": {
+      "bytes": 169426,
+      "sha256": "aca1f7438139cd3abe34707033db00eeefb73355458766f431f4fdfa1d1158c8",
+      "gitCleanBlob": "0a82cf72069b27d0a3e7569e52e9c4995bec424c"
+    },
+    "ci-job132959834412-receipt.json": {
+      "bytes": 638,
+      "sha256": "aed459bda6da5d1a16bdb134b02ae4a83af275f7bf2f86cd410dc23176f57ad6",
+      "gitCleanBlob": "ec69eb803c849a1128717751c30b0392a49b9fbd"
+    },
+    "ci-job132959834412.log.json": {
+      "bytes": 209070,
+      "sha256": "09d7d957ac3bbd25864c145295e2d95e09750e0c2ec1fe2da191ad92e81585eb",
+      "gitCleanBlob": "9ee123809bee5d8b96b37003c6d6a47dcb7c73dd"
+    },
+    "ci-job132959834427-receipt.json": {
+      "bytes": 638,
+      "sha256": "539e61000eb2ce2e5473e9e79962b4ddebc957cac75167e3e8dbef5fd97bbd94",
+      "gitCleanBlob": "615aa2a0257a566cf12eab836817999a6c3d55ad"
+    },
+    "ci-job132959834427.log.json": {
+      "bytes": 166018,
+      "sha256": "6327eb8f282ff567988c35de06c77f785af63f04db02e906ce0f63751315381c",
+      "gitCleanBlob": "bb4e28228930df1ee57798096e7a28757f54b988"
+    },
+    "current-overlays.driver.source.txt": {
+      "bytes": 901,
+      "sha256": "1de24de3e85a25fd55f9b057be93d688b642e349fe962b2e55ee824fc60320b8",
+      "gitCleanBlob": "63e36f09c8b391e3106b6e742250bec0b30e8d87"
+    },
+    "final-offline-trust.log.json": {
+      "bytes": 1171,
+      "sha256": "c7d8072fc72a9b84cb0fc1a3b85f57c18e5ece73704992f6bdf673f6f1409e93",
+      "gitCleanBlob": "3af85fd888353f4bafd1190c18263808b7d4b3fd"
+    },
+    "final-source.log.json": {
+      "bytes": 1516,
+      "sha256": "d63633a7ad96558a61af786313f655c52d65d469f81ffa3a4892872503f71ef8",
+      "gitCleanBlob": "d7d8d186d47141ceacecd5c6a3c64d97decc9b2b"
+    },
+    "implementation-receipt.json": {
+      "bytes": 4753,
+      "sha256": "1fc80fcbd2c40c953a6a5925f95a5f642ea342998186bb47432c2828b283825f",
+      "gitCleanBlob": "1a95ca1f1faef6ff72db42a128fb0af5aecab622"
+    },
+    "independent-review.json": {
+      "bytes": 8375,
+      "sha256": "e9d38d727a94372214b7168c36326386630c80e05c58ba62301b6cda16a102d4",
+      "gitCleanBlob": "8203c4c8956ed66d11cf20169ced0f33d71f0f46"
+    },
+    "independent-review.probe.source.txt": {
+      "bytes": 10590,
+      "sha256": "c1b928927dd0c869daec4ac80fd2d318652fd9619d2bcc9b9be39401bd2c0cad",
+      "gitCleanBlob": "1bdcec5782eb729bc519b56731bf18eb3223b864"
+    },
+    "metadata-diff-check.log.json": {
+      "bytes": 1439,
+      "sha256": "d5a5cc7c37dce03279b7592f17b1fe424c7a6d37447fd8d48ef4b6d44cc6fa39",
+      "gitCleanBlob": "6d648c9a4232fdbc28501fbd2f0da57b63de498e"
+    },
+    "offline-proof-provenance.json": {
+      "bytes": 2003,
+      "sha256": "983e4803f08eeff994cf9ba0ddffc812c005ed0edbd6570b4dd575b4000ef5bb",
+      "gitCleanBlob": "d1e4bf7b0591610c2c4b20666c2a5c5ebd14f619"
+    },
+    "outer-packet-receipt.json": {
+      "bytes": 226,
+      "sha256": "296dba335f1eb652e78fb149a9a74204c1833901c3f834b4f29e004684dfe366",
+      "gitCleanBlob": "5c0428b87454be5a3bfb1ec1bf7ea14e46b771de"
+    },
+    "review690-independent-probe-crlf-comparison.log.json": {
+      "bytes": 32542,
+      "sha256": "ce2031cfd22dd4c2e9b6806a5a5e406665ef07f6564925b9ba25e7cad1c02ca7",
+      "gitCleanBlob": "99679dd65e077f40c8a5c1fb8ab6409bddd247c3"
+    },
+    "review690-independent-probe.log.json": {
+      "bytes": 1705,
+      "sha256": "19a95ce12c87323300923ed37a4e7497966aca988613f05ae0aef0a11d0ee24e",
+      "gitCleanBlob": "3fa7f452a6f1e37954e15fc07033a7c59d66c3bc"
+    },
+    "verify-backlog.log.json": {
+      "bytes": 502,
+      "sha256": "fcac232de2f9c2f9298cd21ab31843574a5cb46f67dea04737d9a4b94b57bdb4",
+      "gitCleanBlob": "bffdfd2dda1472d160d6475515c766a9fdb4fb8f"
+    }
+  },
+  "frozenExecutionInputs": {
+    "tests/helpers/game-ui-host-live-contract.mjs": {
+      "rawSha256": "8906bdcfea3f53759c322a9e8791131eacfe958f6e6560c5412151c8f25c1428",
+      "lfSha256": "e08132bab3148d17c0c03551b3c26dbaad9837c0e3e1c9facd82a3fabd85641a"
+    },
+    "tests/helpers/release-bootstrap-merge-ci-source.json.gz": {
+      "rawSha256": "363579362238b55eca0913ba39a107008e901ecd38112a4dc412bbc4be56b14c",
+      "lfSha256": "0b21d228da58023f8a7f64c407503c68419cf07c452edaf8ca72b0ded71655b6"
+    },
+    "tests/helpers/release-bootstrap-merge-ci-source.mjs": {
+      "rawSha256": "13cc7508bb1dc579b1459f46deac92f7082faaa317c7bca9d9ee8d6c881d71f1",
+      "lfSha256": "13cc7508bb1dc579b1459f46deac92f7082faaa317c7bca9d9ee8d6c881d71f1"
+    },
+    "tests/lua/formal_campaign_entry.lua": {
+      "rawSha256": "36d06622bee5b99cd0954ffd1f107ec3828648f4f77e55960bb857e110b1c894",
+      "lfSha256": "b39ec98c866f678d4bc001c71ab5dd862aef6e36c79eef3d4d3f4c52124fdb0d"
+    },
+    "tests/mobile-typography.test.mjs": {
+      "rawSha256": "b0c32c40ac2bcbb010ef6c076c26bf74977c3438eb0108be19d97dbfc1ea1997",
+      "lfSha256": "b0c32c40ac2bcbb010ef6c076c26bf74977c3438eb0108be19d97dbfc1ea1997"
+    },
+    "tests/release-navigation-source.test.mjs": {
+      "rawSha256": "b56b0badb15404c6d44e59c78216d31122ac735f26bf9c3ea078ed5ce085fc85",
+      "lfSha256": "b56b0badb15404c6d44e59c78216d31122ac735f26bf9c3ea078ed5ce085fc85"
+    },
+    "tests/sts-style-source-epoch.test.mjs": {
+      "rawSha256": "1aa9ca1d513a3097124d9abd61275cda4621f2350651921dd56b04368a82374c",
+      "lfSha256": "1aa9ca1d513a3097124d9abd61275cda4621f2350651921dd56b04368a82374c"
+    },
+    "tests/helpers/release-bootstrap-merge-before-navigation-fixture-repair-ci-source.json.gz": {
+      "rawSha256": "1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9",
+      "lfSha256": "75d4f817fb3e26d210b12394792a3d2b62acfde03a152bcd8a6769a0fca9701a"
+    }
+  },
+  "metadataAfterReview": {
+    "backlog/tasks/task-4.11 - 修复退出本局警告被操作说明遮挡及提示层级.md": {
+      "metadataAppendOnlyAfterReview": true,
+      "acceptanceLinesUnchanged": true,
+      "statusAndAssigneeUnchanged": true,
+      "currentLfSha256": "5a88f0f88baaba1492f1ceed5c4f795951f77980b875669c5a456a617ab3ad3e"
+    },
+    "backlog/tasks/task-4.16 - 改善右上角菜单与操作说明的交互和信息层级.md": {
+      "metadataAppendOnlyAfterReview": true,
+      "acceptanceLinesUnchanged": true,
+      "statusAndAssigneeUnchanged": true,
+      "currentLfSha256": "c95fb7105f06ed0aac25a9f32a9bb72a87fc444dfcc30dcdacbdfc63e2ae87a3"
+    }
+  }
+}

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 21:00'
+updated_date: '2026-11-15 22:41'
 labels:
   - playtest-20261030
   - p1
@@ -19,6 +19,7 @@ references:
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/backlog-details/TASK-4.16-map-menu-return-20261101.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
+  - docs/evidence/release-navigation-ci-fixture-repair-1116/README.md
 parent_task_id: TASK-4
 priority: medium
 type: enhancement
@@ -47,6 +48,8 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 2026-11-01 QA-R2-06：1. 用真实GameUI回归复现地图菜单重复入口和两层返回。2. 地图模式隐藏且拒绝查看同一地图；其他上下文的只读地图返回一次即关闭整层菜单，保留触点代际隔离与节点只读。3. 定向菜单、路线返回、奖励和手柄回归；本地证据记录到附件，手机实测AC保持未勾。
 
 2026-11-15 Release PC11接续：从36b9b157选择性适配87fb97d8，正式战斗/节点保留顶栏地图、移除暂停菜单重复监听与焦点；无顶栏profile保留菜单回退。复用现有Token收紧删除说明后的空行，保留Release退出语义，不导手机reading依赖。
+
+2026-11-16 PR690实际CI失败接续：保存formal/mobile/Host/StS精确RED；保历史Host全trace及原116来源断言，修当前移除help后的菜单/退出合同并补当前raw库存外层准入；源码与CI最外层前像/存档逐项绑定，定向回归和独审后更新原PR，设备AC不勾。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -79,4 +82,8 @@ a9425afa独审CODE_PASS_SCOPED/unresolved=[]，双profile32组几何、4条C路�
 PC11/38产品仍a942，最新38fa/dc50只CI执行guard政策纠正及绑定，当前5/5和限定独审通过，原Owner30/20预测目标不再被误作门槛；原冻结断言/物理workflow不改。共同Release bootstrap前置PR692未合、RequiredCI与PC06/资源解释/官方PC手机仍未验，原AC不勾。
 
 2026-11-16 本轮追加：共同前置#692已合，实际Release新base为1cc5479b713edab6fd26db4e20f8eb22b7401cb2；PR690代码独审HEAD 685d3ace14598a093a8e710042264b4a0780b944限定通过，Source/CI9/9、raw硬guard4/4、copy/corpus3/3，原独审报告和同reviewer支持bundle见docs/evidence/release-navigation-bootstrap-1116/independent-review.json及manifest。本轮仅归档和CLI附记；Source约20.6秒、每正投影123读约33MB是重复fresh成本限制，不是性能PASS。当前Hosted Full、同候选官方导入/ready/PC手机/容量仍未验；PC06色调/资源解释等产品要求未验，保留旧notes与所有checked（含#676不新勾），status保持In Progress，不授合并或发布许可。
+
+2026-11-16 PR690真实CI失败修复：原定向5项均RED；保历史Host原trace与旧help字号原断言，当前菜单/正式入口按已批准PC38无help语义验同Run、关闭重开、route一次返回；current Host原失败7-12及13-13各status0。StS真实879JS/1424Lua先准入再显式投旧库存；负例reader仅改选中文件并保其余Buffer原字节，精确核对被注入路径的outer/inner拒绝，所有原缺失/重复/foreign负例保留。formal/历史及当前字号/两个StS漂移已通过，余库存单项最终1/1通过（分轮非同次7/7）。最外包363579362238b55eca0913ba39a107008e901ecd38112a4dc412bbc4be56b14c，32bindings/96archives，完整旧1656049e存档；共同Release12个Git对象先核同352/10来源后复用，离线5/5通过，在线证明函数原封，解决浅检出缺1cc而不改fetch/时限。证据root.artifacts/release-pc-qa-20261115/ci-owner-repair-1116/navigation，待独审与新CI；产品a942/官方ready/PC手机/容量及原AC不变。
+
+2026-11-16 本轮独审CI_FIXTURE_REVIEW_PASS（11/11独立只读probe，见docs/evidence/release-navigation-ci-fixture-repair-1116/independent-review.json），完整Git对象25条线上/离线查询一致，352/10、原包/前像/历史Hosttrace/旧mobile body及选中文件精确负例保全。交付仅metadata证据封装；8执行/档案输入保持独审原字节，状态/负责人/AC不变。此前分轮6/7后余1/1、current Host两窗口及最终offline5/5分别留据，未宣称同轮7/7或Full。新Hosted CI、同正式候选官方导入/ready、PC/手机/容量均未验。
 <!-- SECTION:NOTES:END -->
