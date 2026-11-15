@@ -68,14 +68,14 @@ test('controller-blocked Click and Down cannot revive after the guard opens',fun
     assert(battle.energy==3,'blocked Down became valid')
     emit('enemy1','down',4);emit('enemy1','up',4);anonymous();assert(battle.energy==2)
 end)
-test('potion aim retains its original named path without gaining anonymous card fallback',function()
+test('confirmed potion tap aim consumes once and no-target card details keep the named path',function()
     local host,ui,panel,event,tap,anonymous=setup();local battle=host.run.combat
     host.run.potions[1]='fire_potion';ui:render();assert(ui:usePotion(1))
     local hp=battle.enemies[1].hp
     event('enemy1','down',2);event('enemy1','up',2);anonymous()
-    assert(host.run.potions[1]=='fire_potion' and battle.enemies[1].hp==hp)
+    assert(host.run.potions[1]==nil and battle.enemies[1].hp==hp-20 and battle.energy==3)
     event('enemy1','click',2)
-    assert(host.run.potions[1]==nil and battle.enemies[1].hp==hp-20,'named potion path changed')
+    assert(host.run.potions[1]==nil and battle.enemies[1].hp==hp-20,'late named potion tail repeated the effect')
     host,ui,panel,event,tap=H.setup({'defend'},{'cultist'})
     battle=host.run.combat;tap('card1',1);event('enemy1','down',2);event('enemy1','up',2)
     F.actorControl(panel,'enemy1'):GetChild('hit').click({})
