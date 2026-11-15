@@ -47,7 +47,11 @@ test('Orrery modal claims five real cards and finishes with explicit continue',f
  local r,m,root,ui=setup('Orrery');local before=#r.deck
  for _=1,5 do assert(ui:press('eventView/option1'))end
  assert(#r.deck==before+5 and Pending.owner(r))
- assert(root:GetChild('eventView'):GetChild('option1'):GetChild('title').text=='继续')
+ local option=root:GetChild('eventView'):GetChild('option1')
+ local compact=require('abyss_theme').layout.nativeNode.event.reference
+ assert(option:GetChild('title').text==(compact and '继续 所有奖励已处理。'or '继续'))
+ assert(option:GetChild('description').text=='所有奖励已处理。')
+ assert(option:GetChild('title').visible and option:GetChild('description').visible==not compact)
  assert(ui:press('eventView/option1'));assert(not Pending.owner(r))
 end)
 test('Cauldron modal shows real potion text and full-slot recovery without mutation',function()
