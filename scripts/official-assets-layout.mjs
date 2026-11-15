@@ -185,6 +185,13 @@ function relicSurfaces(stage,theme){
  }
  return protectedHosts;
 }
+function potionPopupSurfaces(stage,protectedHosts){
+ const popup=child(child(child(stage,'battlePanel')??stage,'potionHelp'),'potionPopup'),native=new Set();
+ // This existing compact information card and both action widths already use
+ // the shared native tokens. Generic atlas skins would split their materials.
+ if(popup){protectedHosts.add(popup);walk(popup,node=>native.add(node));}
+ return native;
+}
 function panelSurfaces(node,theme,protectedHosts){
  // Keep all modal catchers, live field paths, sizes and visibility. Only replace
 // large landscape image surfaces; do not stretch the landscape plaque into icons.
@@ -258,6 +265,7 @@ export function applyOfficialAssets(trees,theme){
     if(node.kind==='image'&&node.name==='icon')node.colour='#FFFFFF';
    });
    const relicHosts=relicSurfaces(stage,theme);
+   const nativePotion=potionPopupSurfaces(stage,relicHosts);
    const rooms=child(stage,'nodePanel'),treasure=child(rooms,'treasureView');
    if(treasure)relicHosts.add(required(treasure,'details'));
    if(child(stage,'battlePanel')||child(stage,'endTurn')){
@@ -277,7 +285,7 @@ export function applyOfficialAssets(trees,theme){
     // geometry and preferred sizes, and let the existing autosizer fit the text.
     if(node.kind==='text'&&node.text?.autoSize&&node.text.minFontSize*1.45+4>node.size?.[1])node.text.minFontSize=theme.font.minimum;
    if(child(node,'roundFrame')&&child(node,'skin')&&child(node,'costDisc')){cardFace(node,theme);cardHosts++;}
-   else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
+   else {if(!nativePotion.has(node))buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
   const pileReturn=child(child(tree,'stage')??tree,'deckPanel');
   if(child(pileReturn,'pileReturn'))battlePileReturn(child(pileReturn,'pileReturn'),true,theme.officialAssets.images.button,theme.officialAssets.buttonInk);
