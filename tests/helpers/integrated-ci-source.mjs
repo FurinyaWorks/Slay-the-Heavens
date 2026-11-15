@@ -3,13 +3,13 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {gunzipSync} from 'node:zlib';
+import {gunzipSync,gzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
 assert.equal(integratedCiProof.schemaVersion,1);
-assert.deepEqual(integratedCiProof.sources,{native:'97af2fed6db0d8c77ea29165ec6395bfb55e2161',closeout:'fdb91c7e30688f593728bde26db0e4d6f614d933',sts:'afd8834b1e7f613b7d68c7a4b6d68ca196f37064',menu:'ec0d0b990bb4baa7d45413101599ef3030f33892',selection:'f0581b708a62378fa838233139d2efef1db7ed8b',release:'900527d931df941eed642a9667ccde92f76b73db'});
+assert.deepEqual(integratedCiProof.sources,{native:'97af2fed6db0d8c77ea29165ec6395bfb55e2161',closeout:'fdb91c7e30688f593728bde26db0e4d6f614d933',sts:'afd8834b1e7f613b7d68c7a4b6d68ca196f37064',menu:'ec0d0b990bb4baa7d45413101599ef3030f33892',selection:'f0581b708a62378fa838233139d2efef1db7ed8b',release:'900527d931df941eed642a9667ccde92f76b73db',mobileUiPrior:'1a62b5e517e138b825b8b663a973065c62ad89ec'});
 for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding of [row.current,...Object.values(row.views)].filter(Boolean)){
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
@@ -37,7 +37,7 @@ export function assertIntegratedCurrent(read=readFileSync){
 }
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;
- assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
+ assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/mobile-ui-source-plan.mjs','tests/helpers/mobile-ui-source-epoch.mjs','tests/helpers/mobile-ui-source-epoch.json.gz','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs'].sort());
  for(const [path,row]of Object.entries(patch)){assert.equal(row.before,original[path]??null,'exact integration copy predecessor: '+path);assert.match(row.after,/^[a-f0-9]{64}$/);current[path]=row.after;}
  return freeze(current);
 }
@@ -66,4 +66,16 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
 export function renderIntegratedCiBinding(sha){
  assert.match(sha,/^[a-f0-9]{64}$/);
  return `// Fixed trust leaf; excluded from its own archive.\nimport assert from 'node:assert/strict';\nimport {readFileSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nexport const integratedCiBytes=readFileSync(new URL('./integrated-ci-source.json.gz',import.meta.url));\nassert.equal(createHash('sha256').update(integratedCiBytes).digest('hex'),${JSON.stringify(sha)},'complete reviewed integration CI sources');\n`;
+}
+// Rebuild the complete original CI archive from retained views, independently
+// authenticating raw JSON and its original physical gzip. Never fetch old Git.
+export function originalMobileUiCiArchive(packet=integratedCiProof){
+ const saved=packet.priorArchive;
+ assert.equal(saved.sha256,'ed7f631311904dcacc155c434b9b37597e9a7fa1fda15c18d34687c2daf66be0');
+ const original={...saved.body,files:Object.fromEntries(saved.fileOrder.map(path=>[path,{
+  current:packet.files[path].views.mobileUiPrior,
+  views:Object.fromEntries(Object.keys(saved.body.sources).map(name=>[name,packet.files[path].views[name]]))}]))};
+ const raw=Buffer.from(JSON.stringify(original));assert.equal(hash(raw),saved.rawSha256,'complete original P0 CI JSON');
+ const bytes=gzipSync(raw);bytes[9]=saved.gzipOs;assert.equal(hash(bytes),saved.sha256,'complete original P0 CI gzip');
+ return bytes;
 }

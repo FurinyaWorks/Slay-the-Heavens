@@ -3,4 +3,4 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 export const integratedCiBytes=readFileSync(new URL('./integrated-ci-source.json.gz',import.meta.url));
-assert.equal(createHash('sha256').update(integratedCiBytes).digest('hex'),"ed7f631311904dcacc155c434b9b37597e9a7fa1fda15c18d34687c2daf66be0",'complete reviewed integration CI sources');
+assert.equal(createHash('sha256').update(integratedCiBytes).digest('hex'),"40186bc820665ce32d177ba53ae0507a9712f19de8879eef46d8c448d3e52923",'complete reviewed integration CI sources');

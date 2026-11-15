@@ -4,6 +4,7 @@ import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
 import {sourceEpoch,releaseSourceEpoch,preMobileUiSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {mobileUiPacket,extendMobileUiEpoch} from './helpers/mobile-ui-source-epoch.mjs';
+import './helpers/mobile-ui-prior.cases.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';

@@ -7,7 +7,10 @@ import {sourceEpoch,menuRedPriorEpoch} from './helpers/closeout-source-epoch.mjs
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch,menuPresentationPatch,menuRedProductionPatch as patch} from './helpers/menu-red-source-epoch.mjs';
 import {assertMenuRedCiCurrent,preMenuRedCiSource,menuRedCiProof,renderMenuRedCiBinding} from './helpers/menu-red-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
-const releasePaths=[...patch.inventory,'src/lua/abyss_lowcost_art.lua','src/lua/abyss_merchant_pages.lua'].sort();
+// Session navigation pads every older view with these two explicitly registered
+// owners (null in the old corpus); retain the complete current 352-path shape.
+const releasePaths=[...patch.inventory,'src/lua/abyss_lowcost_art.lua','src/lua/abyss_merchant_pages.lua',
+ 'src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'].sort();
 const complete=files=>Object.fromEntries(releasePaths.map(path=>[path,files[path]??null]));
 test('red menu production preserves every prior owner and target and freshly rejects each changed owner drift',()=>{
  for(const path of patch.paths){
