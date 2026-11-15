@@ -22,7 +22,9 @@ end
 assert(H.Run.obtainRelic(host.run,'Potion Belt'))
 for slot=1,5 do
  host.run.potions[slot]='flex_potion';host:refresh()
- assert(ui:openPotionMenu(slot));assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)
+ local box=(slot>3 and panel:GetChild('potionHelp') or panel):GetChild('potion'..slot)
+ local hit=box.listeners and box or box:GetChild('hit');local e={touchId=1100+slot}
+ hit.listeners.down(e);hit.listeners.up(e);hit.click(e);assert(ui.potionMenu and ui.potionMenu.slot==slot);assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)
  popup:GetChild('dismiss').listeners.click({touchId=1000+slot})
 end
 host.run.potions={'strength_potion','fire_potion','speed_potion'};host:refresh()

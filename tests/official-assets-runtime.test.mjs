@@ -620,7 +620,9 @@ assert(popup:GetChild('use').click()==false,'stale popup used newly invalid bloc
 assert(#calls>count and h.run.potions[3]=='block_potion' and not u.busy)
 battle.player.block=0
 count=#calls
-assert(popup:GetChild('use').click());drain()
+local use=popup:GetChild('use')
+use.listeners.down({touchId=4});use.listeners.up({touchId=4})
+assert(use.click({touchId=4}));drain()
 for i=count+1,#calls do assert(calls[i]==3,'selected potion Use staged another inventory slot')end
 assert(not h.run.potions[3] and battle.player.block==12)
 -- In-place pending choice after Down is rejected by the actual drag validator.
