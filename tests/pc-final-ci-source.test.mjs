@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {pcFinalCiPacket as packet,pcFinalCiSource,pcFinalCurrentInventory,pcFinalPriorInventory,assertPcFinalCiCurrent} from './helpers/pc-final-ci-source.mjs';
+import {pcFinalStorageSource,pcFinalStorageBindings} from './helpers/pc-final-storage-source.mjs';
+import {assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 test('complete final CI continuation retains original packet and rejects byte, before-identity and inventory drift',()=>{
  assertPcFinalCiCurrent(readFileSync);
  assert(Object.isFrozen(packet));
@@ -19,5 +21,16 @@ test('complete final CI continuation retains original packet and rejects byte, b
    assert.throws(()=>pcFinalPriorInventory(packet.currentInventory[kind],kind,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh added final CI source/);
    assert.throws(()=>pcFinalPriorInventory(packet.currentInventory[kind].filter(p=>p!==path),kind,readFileSync),/inventory/);
   }
+ }
+});
+
+test('LFS-only source continuation authenticates complete new bytes and keeps every unknown drift visible',()=>{
+ for(const row of pcFinalStorageBindings){
+  const source=readFileSync(row.path,'utf8');
+  assert.notEqual(pcFinalStorageSource(row.path,source),source);
+  assert.equal(pcFinalStorageSource(row.path,source+'\n'),source+'\n');
+  assert.equal(pcFinalStorageSource('foreign/'+row.path,source),source);
+  assert.equal(pcFinalStorageSource(row.path,null),null);
+  assert.throws(()=>assertIntegratedCurrent((path,encoding)=>readFileSync(path,encoding)+(path===row.path?'\n':'')),/fresh/);
  }
 });

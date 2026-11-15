@@ -7477,5 +7477,31 @@
         "sourceCommit": "dfd45d6ce3f466592700aea94d224b4c660be960"
       }
     ]
+  },
+  "pcHelperExtension": {
+    "sourceCommit": "57201aa97d2498c8c3c4deea8af1c23044c0adaf",
+    "maxPayloadBytes": 2324072,
+    "files": [
+      {
+        "path": "tests/helpers/pc-final-ci-source.json.gz",
+        "sha256": "ee99ca6ed0372689bdd45692bc55a3a8ccb09c958697388d40e40a39c9be1da9",
+        "bytes": 685981,
+        "oldBinaryGitBlobs": [
+          "aeb3f903d82b4830cf20aed3fb9a81a96f9c72f3"
+        ],
+        "category": "project-ci-history-evidence",
+        "sourceCommit": "57201aa97d2498c8c3c4deea8af1c23044c0adaf"
+      },
+      {
+        "path": "tests/helpers/pc-final-source-epoch.json.gz",
+        "sha256": "fc811b3d3f93e0f7dc9a01189349a1d94c6a241231d290031b55de7bab2af5df",
+        "bytes": 1638091,
+        "oldBinaryGitBlobs": [
+          "3965a386907531d080a0110097765289cbe3ee97"
+        ],
+        "category": "project-ci-history-evidence",
+        "sourceCommit": "57201aa97d2498c8c3c4deea8af1c23044c0adaf"
+      }
+    ]
   }
 }
