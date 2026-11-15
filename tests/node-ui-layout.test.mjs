@@ -15,9 +15,9 @@ function walk(control, visit, origin = [0, 0]) {
   for (const child of control.children ?? []) walk(child, visit, next);
 }
 const headerDecoration = ['headerShade', 'headerDivider', 'titleLineLeft', 'titleLineRight'];
-const clickable = c => c.kind === 'container' && (c.children ?? []).some(child => child.kind === 'cursorArea');
+const clickable = c => c.kind === 'container' && (c.children ?? []).some(child => child.kind === 'cursorArea' && child.name !== 'shopDismiss');
 // What the player sees together: shared chrome plus one view. The merchant appears only with the shop.
-const screen = view => [...panel.children.filter(c => (c.visible !== false || c.name==='merchant' && view==='shopView') && !views.includes(c.name) && !['backdrop', 'topBar', ...headerDecoration].includes(c.name)
+const screen = view => [...panel.children.filter(c => (c.visible !== false || c.name==='merchant' && view==='shopView') && !views.includes(c.name) && !['backdrop', 'shopDismiss', 'topBar', ...headerDecoration].includes(c.name)
     && (c.name !== 'merchant' || view === 'shopView') && !(view==='shopView' && c.name==='back')),
   ...find(panel.children, view).children.filter(c => c.visible !== false && (c.kind !== 'image' || !['glow', 'plate', 'plateBorder'].includes(c.name)))];
 
