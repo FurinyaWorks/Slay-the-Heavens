@@ -1,0 +1,14 @@
+✔ competition selection audit: events_act1 (11042.463645ms)
+✔ competition selection audit: events_act2 (10309.635694ms)
+✔ competition selection audit: relics (2993.239766ms)
+✔ competition selection audit: pending (3584.709152ms)
+✔ selection audit rejects success without a transaction (2733.811109ms)
+✔ selection audit rejects disabled reward options (2624.159778ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33549.86958

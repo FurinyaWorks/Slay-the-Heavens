@@ -1,0 +1,33 @@
+diff --git a/tests/helpers/act2_event_ui.lua b/tests/helpers/act2_event_ui.lua
+index 54666aa..aac1cac 100644
+--- a/tests/helpers/act2_event_ui.lua
++++ b/tests/helpers/act2_event_ui.lua
+@@ -1,6 +1,7 @@
+ -- Real generated tree and public Nodes/Run; native methods alone are mocks.
+ -- Navigation, source queue/boolean and history eligibility below are staged input,
+ -- never naturally earned event probability, PC RNG, or native-client evidence.
++local NativeContract=dofile('tests/lua/support/native_ui_contract.lua')
+ local H={}
+ H.UI,H.Nodes,H.Run,H.Map=require('abyss_node_ui'),require('abyss_nodes'),require('abyss_run'),require('abyss_map')
+ H.Copy,H.Data=require('abyss_combat').copy,require('abyss_data')
+@@ -26,6 +27,12 @@ function H.control(spec,parent)
+  local c={name=spec.name,parent=parent,children={},listeners={},visible=spec.visible~=false,
+   text=spec.text and spec.text.content or '',scale={1,1,1}}
+  function c:GetChild(name)return self.children[name]end
++ -- Return a fresh array in generated sibling order; keep named lookup unchanged.
++ function c:GetChildren()
++  local out={}
++  for i,child in ipairs(spec.children or {})do out[i]=assert(self.children[child.name])end
++  return out
++ end
+  function c:SetVisible(value)assert(type(value)=='boolean');self.visible=value end
+  function c:SetImage(source,id)assert(source=='static' and type(id)=='number');self.imageId=id end
+  function c:SetSizeDelta(width,height)
+@@ -33,6 +40,7 @@ function H.control(spec,parent)
+      self.size={width,height};self.sizeDeltaX,self.sizeDeltaY=width,height
+  end
+  function c:SetLocalScale(x,y,z)self.scale={x,y,z}end
++ function c:SetLocalRotation(x,y,z)NativeContract.transform3(x,y,z);self.rotation={x,y,z}end
+  function c:SetAnchoredPosition(x,y)self.x,self.y=x,y end
+  function c:AddCursorEventListener(event,fn)assert(not self.listeners[event]);self.listeners[event]=fn end
+  function c:emit(event,id)return assert(self.listeners[event],event)({touchId=id})end

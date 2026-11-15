@@ -1,0 +1,72 @@
+--- a/tests/native-ui-parity.test.mjs
++++ b/tests/native-ui-parity.test.mjs
+@@ -2,7 +2,6 @@
+ import assert from 'node:assert/strict';
+ import { controlsGuide } from '../scripts/controls-guide-layout.mjs';
+ import { gameLayout } from '../scripts/game-ui-layout.mjs';
+-import { nativeTheme as theme } from '../scripts/native-ui-theme.mjs';
+ import { runLua } from '../scripts/test-lua.mjs';
+ 
+ test('three scene-based instruction sections fit the approved modal and do not promise unbound keyboard shortcuts', () => {
+@@ -25,13 +24,14 @@
+   visit(guide);
+   const content = JSON.stringify(guide);
+   assert(!content.includes('1–9') && !content.includes('Esc') && !content.includes('Tab'));
+-  const exit = gameLayout().controls.find(c=>c.name==='exitPanel');
+-  const help = exit.children.find(c=>c.name==='help'), title = exit.children.find(c=>c.name==='title');
+-  assert(Math.abs(help.position[0]-title.position[0]) >= (help.size[0]+title.size[0])/2);
+-  assert.deepEqual(help.position,theme.layout.exitMenu.help.slice(0,2));
++  for (const name of ['exitPanel','runMenu']) {
++    const panel = gameLayout().controls.find(c=>c.name===name);
++    assert(panel, name);
++    assert(!panel.children.some(c=>['help','guide'].includes(c.name)), name+' must not expose retired instructions');
++  }
+ });
+ 
+-test('real host isolates guide input, returns controller focus, and retains map navigation after input switching', () => {
++test('real host safely cancels the current exit panel, returns controller focus, and retains map navigation after input switching', () => {
+   const result=runLua('tests/lua/native_ui_parity.lua');
+   assert.equal(result.status,0,result.stdout+result.stderr);
+   assert.match(result.stdout,/NATIVE_UI_PARITY_PASS/);
+--- a/tests/lua/native_ui_parity.lua
++++ b/tests/lua/native_ui_parity.lua
+@@ -5,16 +5,17 @@
+ local calls=0
+ local ui,root=F.fixture(nil,function()calls=calls+1;return true end,nil,nil,false,nil,nil,api)
+ local exit=root:GetChild('exitPanel')
+-assert(ui:openExit())
+-exit:GetChild('help'):GetChild('hit').click()
+-assert(ui.controlsOpen and ui.exitOpen and exit:GetChild('guide').visible)
+-assert(not ui:confirmExit() and not ui:start() and calls==0)
+-assert(not exit:GetChild('confirm'):GetChild('hit').click())
++for _,panel in ipairs({exit,root:GetChild('runMenu')})do
++    assert(panel:GetChild('help')==nil and panel:GetChild('guide')==nil,'retired instructions must not have input controls')
++end
++local previous=focus
++assert(ui:openExit() and ui.exitOpen and exit.visible)
++assert(not ui:start() and calls==0)
+ ui:syncController()
+-assert(focus==exit:GetChild('guide'):GetChild('close'):GetChild('hit'))
++assert(focus==exit:GetChild('cancel'):GetChild('hit'),'exit default focus must be safe cancel')
+ assert(focus.navigationListeners.cancel())
+-assert(not ui.controlsOpen and ui.exitOpen and not exit:GetChild('guide').visible)
+-assert(ui:closeExit() and not ui.exitOpen and calls==0)
++assert(not ui.exitOpen and not exit.visible and calls==0 and not ui.settlementRequested)
++assert(focus==previous,'cancel returns prior controller focus')
+ assert(ui:start())
+ if ui.characterOpen then
+     assert(ui:selectCharacter('traveler') and ui:selectElement('ironclad'))
+@@ -48,7 +49,10 @@
+ assert(focus.navigationListeners.confirm());ui:update(1)
+ assert(ui.mapUI.visible and ui.mapUI.scroll==0)
+ assert(ui.map==map and ui.run.floor==floor and ui.mapUI.map.currentNodeId==node)
+-assert(ui:openExit());exit:GetChild('help'):GetChild('hit').click()
+-assert(ui.controlsOpen and not ui.mapUI.navigationEnabled)
+-assert(ui:closeExit() and ui:closeExit() and ui.mapUI.navigationEnabled)
++assert(ui:openExit() and exit.visible and not ui.mapUI.navigationEnabled)
++ui:syncController()
++assert(focus==exit:GetChild('cancel'):GetChild('hit'))
++assert(focus.navigationListeners.cancel())
++assert(not ui.exitOpen and ui.mapUI.navigationEnabled and calls==0 and not ui.settlementRequested)
++assert(ui.map==map and ui.run.floor==floor and ui.mapUI.map.currentNodeId==node)
+ print('NATIVE_UI_PARITY_PASS')
