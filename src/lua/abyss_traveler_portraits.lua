@@ -86,6 +86,7 @@ local function v25Profile(asset)
 end
 local function controller(host, data, display, templates, options)
     local Idle=idleModule(data)
+    local stagedReveal=data.runtimeV2 and not Idle
     local Asset=templates or require('abyss_traveler_portrait_assets')
     local retryFailedOnPause=type(options)=='table' and options.retryFailedOnPause==true
     local nativeLifecycle=type(options)=='table' and options.nativeLifecycle==true
@@ -307,22 +308,25 @@ local function controller(host, data, display, templates, options)
             if pageIndex~=p then
                 page=create(token,Asset.containerPrefabId,host);transform(token,page);pageIndex=p
                 if Idle then idlePages[p]=page;groupIndex=0 end
-                call(token,page,'SetActive',not data.runtimeV2);call(token,page,'SetVisible',not data.runtimeV2)
+                call(token,page,'SetActive',not stagedReveal);call(token,page,'SetVisible',not stagedReveal)
             elseif groupIndex~=g then
                 group=create(token,Asset.containerPrefabId,page);transform(token,group);groupIndex=g
-                call(token,group,'SetActive',not data.runtimeV2);call(token,group,'SetVisible',not data.runtimeV2)
-                if data.runtimeV2 then revealGroups[#revealGroups+1]={control=group,page=page}end
+                call(token,group,'SetActive',not stagedReveal);call(token,group,'SetVisible',not stagedReveal)
+                if stagedReveal then revealGroups[#revealGroups+1]={control=group,page=page}end
             else
                 local row=data.rows[nextIndex]
                 local template=row[21]==1 and assert(Asset.selectionHalfImagePrefabId,'missing half-triangle template') or Asset.imagePrefabId
                 local c=create(token,template,group);image(token,c,row);nextIndex=nextIndex+1
                 if nextIndex>#data.rows then
-                    if data.runtimeV2 then phase='revealing'
+                    if stagedReveal then phase='revealing'
                     else call(token,host,'SetVisible',true);phase='ready'end
                 end
             end
         end)
-        if not ok and err~=CANCELLED then fail(err)end
+        if not ok then
+            if err~=CANCELLED then fail(err)
+            elseif Idle then reconcileCancellation()end
+        end
         if phase=='destroyed'then created={} elseif pending then cleanup()end
         working=false;return true
     end
