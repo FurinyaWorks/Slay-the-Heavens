@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 21:28'
 labels:
   - 待验
   - delivery-verify
@@ -16,6 +16,7 @@ references:
   - docs/evidence/mobile-readability-20261101/
   - docs/evidence/m4-deck-controller-lifecycle-20261102/
   - docs/plans/2026-11-03-m9-engineering-foundation.md
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -81,4 +82,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-08 PR558冻结311089f9精确Full与源码独审通过，C官方首房闭环与C60正式startup分层留证，完整UI仍未过。独立sourceDirty E1两隐藏页native SetActive得到PC菜单51.70/选角53.65 FPS短窗与合法新Run恢复、Neow/首战拖牌证据；只支持继续实验，未声称稳定60或手机改善。显式开关源码接入与E2边界实测继续，To Do、负责人及手机AC3未验保持；入口experiments/native-2d-vertical-slice/IMPLEMENTATION.md。
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+补登记已有Draft694@12f0981c静止手牌八值临时表1500→0，cardPositions快照和计算各1500保留；仅原作者计数证据，不换算FPS/GC，也不关闭手机卡顿/PC20。Draft688坐标优化既有来源保留；本轮实际Release已1cc，草稿需原作者正确接续当前基线与正式设备，未接管或新增任务。
 <!-- SECTION:NOTES:END -->

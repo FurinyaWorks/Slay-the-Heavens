@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "independent-item-title-shadow-release1cc-60cfd61d-20261116",
+  "reviewer": "release_pc22_basic_feedback (not the item-title-shadow author)",
+  "reviewedHeadSha": "60cfd61d34195a524ed0f63678e1108ad1569f6f",
+  "reviewedBaseSha": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "reviewedTreeSha": "557274c34075cc998a85f2bb8772e688f700bad8",
+  "codeCommit": "f26e74625944168acf64cb71f62f91a80ff82675",
+  "codeTree": "e80a736a3a0705b8b08252138e066a6671f94f26",
+  "mergeParents": [
+    "7e33dbf2b536061e917c9e992ec4fa5109a8cbda",
+    "1cc5479b713edab6fd26db4e20f8eb22b7401cb2"
+  ],
+  "worktree": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+  "worktreeClean": true,
+  "conclusion": "pass",
+  "findings": [],
+  "unresolved": [],
+  "scope": {
+    "type": "Exact actual-Release Source/CI merge, all ten changed executable paths plus both packets and all new evidence; original product scope authenticated by unchanged Git/review objects",
+    "changedExecutable": [
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/ci-posix-concurrency.test.mjs",
+      "tests/engineering-quality.test.mjs",
+      "tests/full-quality.test.mjs",
+      "tests/helpers/integrated-ci-source.mjs",
+      "tests/helpers/release-bootstrap-ci-source.mjs",
+      "tests/helpers/release-item-title-shadow-bootstrap-source.mjs",
+      "tests/integrated-ci-source.cases.mjs",
+      "tests/quick-feedback.test.mjs",
+      "tests/release-item-title-shadow-source.test.mjs"
+    ],
+    "changedPaths": [
+      "backlog/tasks/task-81.2 - 让安全Fast PR进入完整合并队列.md",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/README.md",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-inventory-after.json",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-inventory-after.stderr.gz",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-inventory-after.stdout.gz",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-source-after.json",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-source-after.stderr.gz",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-source-after.stdout.gz",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-source-before.json",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-source-before.stderr.gz",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/merge-source-before.stdout.gz",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/preservation.json",
+      "docs/evidence/release-item-title-shadow-bootstrap-1116/source-validation.json",
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/ci-posix-concurrency.test.mjs",
+      "tests/engineering-quality.test.mjs",
+      "tests/full-quality.test.mjs",
+      "tests/helpers/integrated-ci-source.mjs",
+      "tests/helpers/release-bootstrap-ci-source.json.gz",
+      "tests/helpers/release-bootstrap-ci-source.mjs",
+      "tests/helpers/release-item-title-shadow-bootstrap-source.json.gz",
+      "tests/helpers/release-item-title-shadow-bootstrap-source.mjs",
+      "tests/integrated-ci-source.cases.mjs",
+      "tests/quick-feedback.test.mjs",
+      "tests/release-item-title-shadow-source.test.mjs"
+    ],
+    "actualReleaseInheritedExact": [
+      "tests/ci-posix-concurrency.test.mjs",
+      "tests/engineering-quality.test.mjs",
+      "tests/full-quality.test.mjs",
+      "tests/quick-feedback.test.mjs",
+      "tests/helpers/release-bootstrap-ci-source.mjs",
+      "tests/helpers/release-bootstrap-ci-source.json.gz"
+    ],
+    "old58Coverage": "Retained only for its original checkpoint; 54 unchanged blobs authenticated from original review Git objects, four changed CI rows read independently in this review. No current whole-change claim based solely on old coverage."
+  },
+  "primaryGitAndHash": {
+    "identity": {
+      "head": "60cfd61d34195a524ed0f63678e1108ad1569f6f",
+      "code": "f26e74625944168acf64cb71f62f91a80ff82675",
+      "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "finalTree": "557274c34075cc998a85f2bb8772e688f700bad8",
+      "codeTree": "e80a736a3a0705b8b08252138e066a6671f94f26",
+      "metadataOnlySuccessor": 12
+    },
+    "completeViews": {
+      "current": 55,
+      "primaryGitViews": 90,
+      "item47": true,
+      "bootstrap10": true,
+      "packetSha256": "dabab7788653b45eff7f570f2ab2ae3797b40e1d91a5fe9ea0a54d0354a45be8"
+    },
+    "actualRelease": {
+      "singleParent": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+      "sourceBaseBlobs": 352,
+      "actualChangedPaths": 10
+    },
+    "archives": {
+      "count": 95,
+      "physicalGit": 93,
+      "lfsPayloads": 2
+    },
+    "preservation": {
+      "coverage": 58,
+      "unchanged": 54,
+      "changedCiIndependentlyRead": 4,
+      "rootMetadata": 27,
+      "runtime": 20,
+      "diagnosticArchives": 52,
+      "oldReviewHeads": [
+        "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+        "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+        "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+        "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+        "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb"
+      ],
+      "floors": [
+        [
+          "tests/reward-pool-retirement-runtime.test.mjs",
+          {
+            "durationMs": 79861,
+            "environment": "local Windows Node 24.18.0; not Hosted",
+            "tests": 2,
+            "coverage": "2/2 fresh VMs, each 36 retirement cases; zero failures, skips or cancellation",
+            "kind": "Observed local complete-file planning floor only; not a Hosted upper bound or target certification",
+            "nodeReportedDurationMs": 73618.8019,
+            "wallDurationMs": 73696,
+            "sourceLog": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stdout.gz",
+            "sourceLogSha256": "2b05214dccada06f6d559a8b095243596368279ee0f557368014b8500f607f90",
+            "sourceLogUncompressedSha256": "3b35cdea57f7fb2b8ddaac98262f9eb00845240136cd4583b729c485d0b4e2ee",
+            "testSha256": "6b739f076f55383db4df6c3c6f7997b154904483b8db1219b1a1a9577513313d",
+            "sourceReceipt": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
+            "sourceReceiptSha256": "9c1148f4042dd123b1b2e0a2be95c5dfd83c62cadb56cddd06bd252834d98a55"
+          }
+        ],
+        [
+          "tests/player-ground-shadow.test.mjs",
+          {
+            "durationMs": 22235,
+            "environment": "local Windows Node 24.18.0; not Hosted",
+            "tests": 3,
+            "coverage": "3/3 complete corrected parent file; raw Full isolated official profile, real generated-layout snapshot and lifecycle geometry; zero failures/skips/cancellation",
+            "kind": "Observed local complete-file planning floor only; forecast remains diagnostic under Owner 2026-11-07 policy; not a Hosted upper bound or certification",
+            "nodeReportedDurationMs": 22146.1864,
+            "wallDurationMs": 22235,
+            "minimumObservedFloorMs": 18852,
+            "sourceLog": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stdout.gz",
+            "sourceLogSha256": "2cbfbe7ed3c24888bd06feca182c3d70e32a91a8c0afaed6b7f04ffd33c97274",
+            "sourceLogUncompressedSha256": "cb83ddf61c8528b744336287a8e6fd10e24c241b1c609be77c91eaf7ce5a7647",
+            "testSha256": "2d476d298d698b1ee577f204b3ae5994246adb960ffb7efaf581c03616e966d7",
+            "sourceReceipt": "docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json",
+            "sourceReceiptSha256": "bde02bd9f6f0990e608766e471d43cd012553babe49c352bffadcdd59c52f719"
+          }
+        ]
+      ]
+    },
+    "authorEvidenceReadback": {
+      "originalFailure": {
+        "tests": 9,
+        "pass": 6,
+        "fail": 3
+      },
+      "authorAfter": 11,
+      "authorRaw": 2,
+      "notRerun": true
+    }
+  },
+  "extraPreservation": {
+    "diagnosticFiles": 52,
+    "diagnosticGzip": 33,
+    "ledgerRows": 38,
+    "originalReviewObjects": [
+      {
+        "sha": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+        "tree": "39c6802faf6c7cc7156f4aa04ea00e3b08ebaed7"
+      },
+      {
+        "sha": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+        "tree": "f502256b63cfc5b6317b8b95303c18e3a9d53854"
+      },
+      {
+        "sha": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+        "tree": "613981177db2f75c38668a1ab5aed62541e02bc5"
+      },
+      {
+        "sha": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+        "tree": "962c58f7dae35ea401829d81bc8935380c033e4a"
+      },
+      {
+        "sha": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+        "tree": "82502a4be707f887a52dc7bdda9c9084fa226905"
+      },
+      {
+        "sha": "2167162ef8fd5cc58e79ce9b713a2f1f4aa55f98",
+        "tree": "f3fc6adf571156e8869a2e38b59bf81b89a87c6a"
+      }
+    ]
+  },
+  "adversarial": {
+    "schemaVersion": 1,
+    "status": "PASS",
+    "node": "v24.18.0",
+    "currentRows": 55,
+    "currentRejections": 220,
+    "opaqueForeign": 636,
+    "legitimateUtf8BufferReads": true,
+    "priorViewsRejectedAsLive": 2,
+    "warmLateDriftRejected": true,
+    "archiveRejections": [
+      {
+        "path": "tests/helpers/battle-queue-ci-source-epoch.json.gz",
+        "message": "retained immutable item Release composition: tests/helpers/battle-queue-ci-source-epoch.json.gz\n+ actual - expected\n\n+ '2290fec0efa0b834fe52392012e3a05050e6bb76939240aa2963e0f7a198c2e2'\n- '4f5966d2b04fbdd564d0455aa318c3947468906581b6fa7a6a8d334f18f44db4'\n"
+      },
+      {
+        "path": "tests/helpers/release-bootstrap-ci-source.json.gz",
+        "message": "fresh complete integration source: item Release composition tests/helpers/release-bootstrap-ci-source.json.gz\n+ actual - expected\n\n+ 'f335effe82d353bd6ac34e691ad5a63f2f840fe5a03035b118e3d3158dc236bf'\n- '868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6'\n"
+      }
+    ],
+    "copy": {
+      "exact": true,
+      "changedRejected": true,
+      "missingRejected": true
+    },
+    "probeCorrection": "Initial archive regex expected only archive phase; last archived packet is also a current binary binding, so the earlier current-binding rejection is the correct fail-closed result. Initial log retained. No production or author11/2 suites rerun."
+  },
+  "authorEvidence": {
+    "sourceValidationPath": "docs/evidence/release-item-title-shadow-bootstrap-1116/source-validation.json",
+    "sourceValidationSha256": "76607a9778c9b7f11ab2a4e3802e0585377d8289cbfe3f84151e6b387bb27f29",
+    "verifiedAuthorAfter": {
+      "tests": 11,
+      "fail": 0
+    },
+    "verifiedAuthorRaw": {
+      "tests": 2,
+      "fail": 0
+    },
+    "originalFailurePreserved": {
+      "tests": 9,
+      "pass": 6,
+      "fail": 3
+    },
+    "independentlyRerun": false,
+    "rawAndCanonicalInputHashesChecked": true
+  },
+  "semanticReview": "Target-specific current→item→item CI inverse→bootstrap inverse preserves all original before/after metadata. Pure CI byte projection never authorizes src/config; complete live validator is called before current admission and rejects historical views as live. Immutable production projectors/producers and both observed floors remain unchanged. Bootstrap/current is independently authenticated at actual1cc rather than relabelling its preserved worktree metadata.",
+  "budgetAndPerformance": {
+    "retirementFloorMs": 79861,
+    "shadowFloorMs": 22235,
+    "unknownJsMs": 10000,
+    "forecasts": "diagnostic only",
+    "physicalExecutionMinutes": {
+      "windows": 45,
+      "posix": 30,
+      "trustedLocal": 75,
+      "fastWindows": 45,
+      "fastPosix": 30
+    },
+    "timingsWorkflowAndPlanningUnchanged": true
+  },
+  "limitations": [
+    "This pass is scoped to the exact final HEAD/base and retained immutable execution inputs, not a future combined source tree.",
+    "Author11/2 suites were read/hash-checked, not repeated. No product/Host, shadow22s, retirement80s, Fast/Full or CI polling.",
+    "Official candidate/import/new ready, PC/mobile experience, official capacity and current Full remain UNVERIFIED.",
+    "The first independent probe had an over-specific expected archive error regex. The same corrupted archived packet is also a current binary row and was correctly rejected earlier. Original probe log is retained; only the independent adversarial section was corrected and completed. No product finding or source modification."
+  ],
+  "evidence": [
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-title-shadow-release1cc/primary-results.json",
+      "bytes": 3872,
+      "sha256": "9df00309e7a2736a60402c1a600a1a0fb6c3b48fa22a4b44902e55e4acaf5630"
+    },
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-title-shadow-release1cc/adversarial-results.json",
+      "bytes": 1370,
+      "sha256": "b04fa12d681f1a912f4c51d1fc69595af05256abb7ace53ccc7915dff4da028f"
+    },
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-title-shadow-release1cc/probe-initial.log",
+      "bytes": 7636,
+      "sha256": "060cec0f5b8ef897ccc02ae0d1516d747aa35c7efca8a87849c60e5c0df7d91c"
+    },
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-title-shadow-release1cc/adversarial.log",
+      "bytes": 1291,
+      "sha256": "98d92c7dffe30f4d5fdc8a0d74d9a5988f248e3467fe0e136177ad3a139c1cc8"
+    },
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-title-shadow-release1cc/probe.mjs",
+      "bytes": 12909,
+      "sha256": "59c46c10f874d68359a9dabff6aca47aa6325311e64dafe5df81232b8f2e4531"
+    },
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-title-shadow-release1cc/adversarial-only.mjs",
+      "bytes": 4394,
+      "sha256": "dfd675e68d336998f416380695e8ffb5ab54d704a8204da6113d576b7c5987f8"
+    }
+  ]
+}

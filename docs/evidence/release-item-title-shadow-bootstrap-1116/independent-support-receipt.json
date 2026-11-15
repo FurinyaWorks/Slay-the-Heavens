@@ -1,0 +1,49 @@
+{
+  "archive": "independent-support.json.gz",
+  "sha256": "4a729efe8a630292b990fba913460202c95f6875e0597c01aa787a6c93cf9cde",
+  "bytes": 20992,
+  "files": [
+    {
+      "path": "review-item-title-shadow-release1cc/adversarial-only.mjs",
+      "bytes": 4394,
+      "sha256": "dfd675e68d336998f416380695e8ffb5ab54d704a8204da6113d576b7c5987f8"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/adversarial-results.json",
+      "bytes": 1370,
+      "sha256": "b04fa12d681f1a912f4c51d1fc69595af05256abb7ace53ccc7915dff4da028f"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/adversarial.log",
+      "bytes": 1291,
+      "sha256": "98d92c7dffe30f4d5fdc8a0d74d9a5988f248e3467fe0e136177ad3a139c1cc8"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/primary-results.json",
+      "bytes": 3872,
+      "sha256": "9df00309e7a2736a60402c1a600a1a0fb6c3b48fa22a4b44902e55e4acaf5630"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/probe-initial.log",
+      "bytes": 7636,
+      "sha256": "060cec0f5b8ef897ccc02ae0d1516d747aa35c7efca8a87849c60e5c0df7d91c"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/probe.log",
+      "bytes": 7636,
+      "sha256": "060cec0f5b8ef897ccc02ae0d1516d747aa35c7efca8a87849c60e5c0df7d91c"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/probe.mjs",
+      "bytes": 12909,
+      "sha256": "59c46c10f874d68359a9dabff6aca47aa6325311e64dafe5df81232b8f2e4531"
+    },
+    {
+      "path": "review-item-title-shadow-release1cc/write-report.mjs",
+      "bytes": 7756,
+      "sha256": "46b4ebece43a6c4d65d4f0ce4cb164b97c12145755b5f8cce53e199df14a67a3"
+    }
+  ],
+  "allMembersReadback": true,
+  "noNewExecution": true
+}

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 03:53'
-updated_date: '2026-11-15 19:58'
+updated_date: '2026-11-15 21:28'
 labels:
   - enhancement
   - awaiting-live
@@ -20,6 +20,7 @@ references:
   - docs/BACKLOG-AUDIT-20261026.md
   - docs/plans/2026-10-30-battle-life.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 parent_task_id: TASK-29
 priority: medium
 ordinal: 44000
@@ -78,4 +79,6 @@ ordinal: 44000
 原36:28–37:03及50:13–50:35已逐字核对，Release有既有CardFlow/card_flow_feedback回归，现由独立worker补自然Host接入与轨迹，不重复PC13/684加载或PC12输入；无原图12与正式候选窗口，不能将mock计数称PC画面/FPS，未证实前不改产品或勾AC。
 
 PC22确认自然seed1 Strike UID5命中点y=-0.6667到同UID入弃牌起点47.3333跳48；playedCard/cardTrail同父同canvas且旋转0，非几何父层错觉。冻结1b272ab7生产单行CardFlow.playing使用现有ty-stop，另新增三路径回归（Strike/无stop Defend/受控Shockwave消耗）3/3；既有CardFlow与默认polish17通过，Fast10JS+37Lua通过。原探针fixture错误、官方profile旧polish2失败与原基线同失败、Fast内调用npm事实保留。独立产品复审/来源接续正在执行，不能称完整CI或实机验收；装饰流光灰烬延期，基础轨迹已修未验。
+
+PC22正常Release PR698@be91df3a已推并创建；单行ty-stop/三路径与产品独审保留，actual1cc CI20/96档案/17输入增审通过。原Source9pass1fail与修后受影响CI3/3+raw2均保存，未虚报最终单次全套10/10。基础交接已修未设备验，装饰精修延期。
 <!-- SECTION:NOTES:END -->

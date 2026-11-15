@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 18:58'
+updated_date: '2026-11-15 21:28'
 labels:
   - playtest-20261030
   - p1
@@ -17,6 +17,7 @@ references:
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/evidence/release-pc-item-title-shadow-20261116/README.md
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 parent_task_id: TASK-25
 priority: medium
 type: task
@@ -56,4 +57,6 @@ PC21原product862c已基Release36组合到df5ad3dc，源脚位/椭圆/flags及pa
 2026-11-16 原5个source失败在c46输入已实测补验，与新源4+raw成本1合计10/10；该结论不外推后继。实际Full raw discovery发现阴影夹具缺正式profile，2167162e增加隔离数据/UI配置及有效入口回归；独审SHADOW-H01纠正真实布局快照为abyss_ui_layout，c34443bc后3/3通过（18,851.0625ms）。根raw-shadow-profile日志保留原nilfigure及TEMP父目录缺失失败，非产品新失败或全局runner缺陷。harness独审限定通过，47CI输入/已知父测成本正在最小接续；同候选官方画面、容量及PC手机仍未验，AC不勾。
 
 阴影raw Full入口最终增量e2eb/aac现已SOURCE_CI_COST_INCREMENT_PASS_WITH_LIMITS、findings/unresolved空；当前47CI与778样本物理前后核验，shadow仅自身floor投影、原retirement79,861ms及全部旧cost/receipt不变。新鲜shadow3/3 wall22,235ms，旧nilfigure/TEMP失败与快照修正证据保持。最终58输入覆盖；实际workflow超时及负控硬验，预测仅诊断，不授设备或发布许可。#692新基线接续/同候选官方PC手机仍未验。
+
+PC21本组合actual1cc来源11/11+raw2与独审通过，862c→df5产品/216-c344真实snapshot修复原样，唯一fresh22,235ms与原67/67身份保持，未重复产品。PC09美术延期；同候选PC/手机阴影与容量仍未验，不勾新#676。
 <!-- SECTION:NOTES:END -->

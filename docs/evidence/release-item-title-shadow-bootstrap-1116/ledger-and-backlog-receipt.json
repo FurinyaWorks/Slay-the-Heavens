@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "reviewedCodeCheckpoint": "60cfd61d34195a524ed0f63678e1108ad1569f6f",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "allRows": 38,
+  "idsOrderedAndUnique": true,
+  "observationSeverityTimeImageTaskColumnsUnchanged": true,
+  "changedStatusIds": [
+    "PC01",
+    "PC04",
+    "PC06",
+    "PC07",
+    "PC08",
+    "PC11",
+    "PC12",
+    "PC13",
+    "PC18",
+    "PC19",
+    "PC20",
+    "PC21",
+    "PC22",
+    "PC26",
+    "PC30",
+    "PC32",
+    "PC38"
+  ],
+  "beforeSha256": "6ee42c1f06a973ebb83cafca449a209284ea662666f971938b801e7290bfa27a",
+  "afterSha256": "5da5f491601c3ae6fdc76cbc924d2cc5f8cb79beb4390116b47b800e9e005aab",
+  "tasks": [
+    {
+      "id": "TASK-4.15",
+      "oldChecked": [],
+      "checked": [],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-25.5",
+      "oldChecked": [],
+      "checked": [],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-103.3",
+      "oldChecked": [],
+      "checked": [],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-4.16",
+      "oldChecked": [
+        4
+      ],
+      "checked": [
+        4
+      ],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-103.2",
+      "oldChecked": [
+        2,
+        3,
+        4
+      ],
+      "checked": [
+        2,
+        3,
+        4
+      ],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-29.1",
+      "oldChecked": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "checked": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-100",
+      "oldChecked": [],
+      "checked": [],
+      "status": "In Progress",
+      "new676Accepted": 0
+    },
+    {
+      "id": "TASK-4.21",
+      "oldChecked": [
+        1,
+        2,
+        4
+      ],
+      "checked": [
+        1,
+        2,
+        4
+      ],
+      "status": "In Progress",
+      "new676Accepted": 0
+    }
+  ],
+  "independentSupportFiles": 8,
+  "limits": [
+    "Metadata/Backlog update only; no new runtime or CI input.",
+    "Current Hosted Full/candidate/device/capacity not inferred."
+  ]
+}

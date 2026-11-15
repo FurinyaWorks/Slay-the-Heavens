@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-15 19:58'
+updated_date: '2026-11-15 21:28'
 labels:
   - 待验
   - delivery-verify
@@ -15,6 +15,7 @@ references:
   - docs/evidence/release-pc-item-title-shadow-20261116/README.md
   - >-
     docs/evidence/release-item-title-shadow-source-1116/independent-increment.json
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 171000
@@ -93,4 +94,6 @@ PC01标题/批准按钮恢复产品8ee在df5组合、6cc来源/harness c344/e2eb
 新源码假设已具体到characterPanel/officialBackdropVeil：attachOfficialBackdrops插入旧全屏层，正式applyV25CharacterLayout未列入隐藏集合，可能位于已批准人物背景之上；runtime ready仅管理v25Background及details。独立Release36 Host RED核验进行中，不能先称私图06根因或实机修复，不改角色/平衡/标题或造新蒙层。
 
 PC04产品0a56仅退休officialBackdropVeil旧全屏层，a3b最终回归与evidence9b0已组合74a598。精确Release逆放2RED/1默认PASS、原8定向、独立失败回退探针及组合5/5通过；正式生成仅一个visible字段变化，其它3profile字节不变。旧层缺陷不是私图06唯一根因证明；独立HUD半透明区批准位置/正式画面AC4未验。来源565cb735与21+1输入独审通过，保留fallback与输入blocker，未勾新AC。
+
+当前Release1cc实际前置692已合；PC01本组合标题/按钮和旧菜单证据原样，55current来源独审通过。PC04正常PR697@2c06753d退休旧veil，actual1cc来源10/10+raw2/2及23+1输入覆盖；批准HUD backing位置与正式画面/PC手机仍未验。
 <!-- SECTION:NOTES:END -->

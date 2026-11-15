@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 17:02'
+updated_date: '2026-11-15 21:28'
 labels:
   - playtest-20261030
   - p1
@@ -20,6 +20,7 @@ references:
   - docs/backlog-details/TASK-4.16-map-menu-return-20261101.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/690'
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 parent_task_id: TASK-4
 priority: medium
 type: enhancement
@@ -66,4 +67,6 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 2026-11-14第二轮状态纠正：已有1/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
 PC11去重/退出说明已在Release PR690@11ec36bf，默认回退/四态几何/旧输入/手柄焦点软件通过；PC06样式与资源说明仍未验。本组不重复实现导航，旧AC3说明页部分被最新PC38移除要求覆盖，历史AC保留未勾，其余有效资源含义/设备要求不变。
+
+PC11正常PR690现392818d0已actual1cc合流、Source9/rawguard4/copy3及独审通过。PC06正常PR695@350c447c只选#672原生设置图标6行，产品3/菜单7与窄Source6及两部分独审通过；原深棕色调症状/继承2.5边界及设备未验。
 <!-- SECTION:NOTES:END -->

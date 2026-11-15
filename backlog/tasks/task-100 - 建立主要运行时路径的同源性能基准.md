@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-15 17:02'
+updated_date: '2026-11-15 21:28'
 labels:
   - 待验
   - delivery-verify
@@ -13,6 +13,7 @@ milestone: m-8
 dependencies: []
 references:
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/688'
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 documentation:
   - docs/backlog-details/M7-SCOPE-GAP-20261105.md
   - docs/backlog-details/TASK-100.md
@@ -68,4 +69,6 @@ PR #523 首份离线Host全路径基线已实现：固定实际seed、源摘要�
 2026-11-14第二轮状态纠正：已有Host基准、visibility配对与SDK阶段记录，当前候选完整覆盖待补；工具及研究已开展，不应标To Do。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
 
 新实际Release draft PR688@61bdf6c069f8e30e6aa3ff44d3ecddd25c159ee2由TASK-4.21跟踪同b56/be41坐标剪枝，预热90+300帧计数900→0；不代表PC20卡顿/疑似闪退根因已证实。私有e046条件不同记录2700→0与VM不利P50/P95继续保留，不再新提同补丁PR、不把代码计数或CI当PC性能实测。PC20仍待同条件系统负载/进程、同候选PC及受影响手机结果。
+
+PC20未闭；已读取在途Draft688@2c038f8d坐标计数900→0与新增Draft694@12f0981c八值临时表1500→0，后者计算1500/cardPositions1500保留，不是总分配、GC、FPS或闪退根因。原VM不利数据仍保留；actual1cc准入与同候选同条件系统负载/PC手机证据仍缺，不重复已有优化或虚报Done。
 <!-- SECTION:NOTES:END -->
