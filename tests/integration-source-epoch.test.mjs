@@ -89,7 +89,7 @@ test('shop/deck source slices reject unknown drift without I/O and freshly rejec
  for(const owner of proof.owners){
   let bad=false,reads=0;
   const reader=p=>{reads++;return bad&&p===owner?raw(p)+'\n':raw(p);};
-  assert.equal(sourceSlice(path,source,target,reader),before);assert.equal(reads,proof.owners.length+1,'fresh UI continuation recheck');bad=true;
+   assert.equal(sourceSlice(path,source,target,reader),before);assert.equal(reads,proof.owners.length);bad=true;
   assert.throws(()=>sourceSlice(path,source,target,reader),/linked owner identity/,owner);
   for(const missing of [null,undefined,17])assert.throws(()=>sourceSlice(path,source,target,p=>p===owner?missing:raw(p)),/linked owner identity/,owner);
   assert.throws(()=>sourceSlice(path,source,target,p=>{if(p===owner)throw Error('removed');return raw(p);}),/linked owner missing/,owner);

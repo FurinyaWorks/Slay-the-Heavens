@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 13:10'
-updated_date: '2026-11-15 22:26'
+updated_date: '2026-11-15 22:33'
 labels: []
 dependencies: []
 references:
@@ -47,4 +47,6 @@ ordinal: 178000
 2026-11-15继续执行：补查跨模块合同发现metadata未登记当前CI原文，已通过merge:auto暂停PR682并读回；153项仅为当轮定向结果，不是Full通过。现同批纳入TASK34七行永久故障音乐清理，单UI后继接最新session/Neow，原大archive/六源views不改，新增精确小后继与实际复制闭包。48项epoch+80项依赖/Backlog+20pass1既有renderer能力skip通过。独审ses_e2058991bffe7LK6jit0BB7vj0另检出生成器依赖未合侧分支Git对象，已用对象不可用反例先红后绿并改为认证托管fixture，最终5/5通过。详见docs/evidence/dependency-bgm-source-contract-20261115.md；AC4仍待最终独审、正常CI/合后，不记Done。
 
 2026-11-15实际Full43727819459/head04ebf5af已失败，保持未授权；已读取全部15个失败测试shard，归并10文件11例的四类合同衔接问题：current读取多一次、owner排序、旧session epoch绑定、Windows leaf EOL。当前路径恢复原116次排序鲜读，历史兼容才额外重读UI；六份原current断言未改。旧session provenance改查显式保留epoch，CRLF反例先红后绿。来源5/5，原失败例8通过，三份本机历史文件导入受临时目录/junction能力阻塞；独立当前准入探针116owner/348异常/116恢复/unknown零读通过，不称三整文件过。详见docs/evidence/pr682-full-correction-20261115.md，待独审与新HEAD正常CI。
+
+2026-11-15本批纠偏补验：独审又指出本PR新增的current +1读取断言漏回退，现原样恢复基线owners.length，完整来源/epoch/真实session三文件56/56通过、无跳过。当前准入仍116次排序鲜读，历史before兼容保留混期和热漂移拒绝。三份本机历史大文件导入能力阻塞不冒充整文件成功，等待新HEAD Hosted原测试；最终当前包与证据见pr682-full-correction附件。
 <!-- SECTION:NOTES:END -->
