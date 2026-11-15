@@ -1,0 +1,33 @@
+Exact f85f4e4435e8b128c16713ed23bcbb2559f4fd1e, RED actual static-art CLI using original generator
+✖ MCP mock: formal CLI consumes opt-in art in the actual UI and dynamic presentation, baseline stays zero (5295.105995ms)
+ℹ tests 1
+ℹ pass 0
+ℹ fail 1
+✖ MCP mock: formal CLI consumes opt-in art in the actual UI and dynamic presentation, baseline stays zero (5295.105995ms)
+  AssertionError [ERR_ASSERTION]: [2:72] code unit U+5BF9 is not allowed in the current encoding mode
+
+GREEN exact fixture with candidate patch and local mock SDK
+✔ MCP mock: formal CLI consumes opt-in art in the actual UI and dynamic presentation, baseline stays zero (9836.396276ms)
+✔ MCP mock: changed presentation card identity during prepare fails before connecting (1452.426925ms)
+✔ MCP mock: changed shadowed card table during prepare fails before connecting (1333.739614ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12799.001124
+
+GREEN separately scoped build/receipt & default/ready-art tests (only verified successful names)
+✔ explicit zero-art UI CLI builds without npm dependencies and preserves zero-art fallback (1816.618694ms)
+✔ explicit art candidate uses exactly the selected real card hosts, never all 26 (1426.084614ms)
+✔ explicit cards opt-in production UI contains empty runtime artwork holders in all contexts and 75 lazily bound card definitions (2131.688694ms)
+
+GREEN game-ui wrapper after building real data (its one passing wrapper runs 16/6/13 Lua groups)
+✔ generated Chinese display and native tree exercise the real game entry and run controllers (63094.338577ms)
+
+default PASS 22 byte-identical generated files; compact identifier syntax retained
+official PASS 23 byte-identical generated files; compact identifier syntax retained
+
+Independent review: PASS_SCOPED; all 5 paths, verified exact patch and checked final logs. No Full.

@@ -1,0 +1,110 @@
+--- a/scripts/build-ui.mjs
++++ b/scripts/build-ui.mjs
+@@ -222,7 +222,9 @@
+   const narrative = JSON.parse(readFileSync('data/presentation/narrative.zh-CN.json', 'utf8'));
+   narrative.codeVersion = releaseNotes.build.version;
+   writeFileSync(join(outputDirectory, 'abyss_narrative.lua'), `-- Generated from the approved narrative copy source.\nreturn ${utf8ToLua(narrative)}\n`, 'utf8');
+-  writeFileSync(join(outputDirectory, 'abyss_presentation.lua'), `-- Generated from the checked Traveler presentation.\nreturn ${utf8ToLua(cards)}\n`, 'utf8');
++  // The explicit static-art receipt still authenticates the canonical toLua field bytes.
++  const encodePresentation=art?toLua:utf8ToLua;
++  writeFileSync(join(outputDirectory, 'abyss_presentation.lua'), `-- Generated from the checked Traveler presentation.\nreturn ${encodePresentation(cards)}\n`, 'utf8');
+   writeFileSync(join(outputDirectory, 'battle-ui.json'), JSON.stringify(battle, null, 2) + '\n', 'utf8');
+   writeFileSync(join(outputDirectory, 'game-ui.json'), JSON.stringify(layout, null, 2) + '\n', 'utf8');
+   writeFileSync(join(outputDirectory, 'abyss_ui_layout.lua'), `-- Native layout fixture generated from the import tree.\nreturn ${toLua(layout.controls)}\n`, 'utf8');
+--- a/tests/game-ui.test.mjs
++++ b/tests/game-ui.test.mjs
+@@ -1,5 +1,6 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
++import luaparse from 'luaparse';
+ import { buildUI } from '../scripts/build-ui.mjs';
+ import { gameLayout, resultStats } from '../scripts/game-ui-layout.mjs';
+ import { runLua } from '../scripts/test-lua.mjs';
+@@ -81,7 +82,18 @@
+   buildUI();
+   const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
+   const narrative = readFileSync('build/lua/abyss_narrative.lua', 'utf8');
+-  assert.ok(narrative.includes(`["codeVersion"]="v${version}"`));
++  const chunk=luaparse.parse(Buffer.from(narrative).toString('latin1'),{luaVersion:'5.3',encodingMode:'pseudo-latin1'});
++  assert.equal(chunk.body.length,1);
++  const [returned]=chunk.body;
++  assert.equal(returned.type,'ReturnStatement');
++  assert.equal(returned.arguments.length,1);
++  const [table]=returned.arguments;
++  assert.equal(table.type,'TableConstructorExpression');
++  const roots=table.fields.filter(row=>row.type==='TableKeyString'?row.key.name==='codeVersion'
++    :row.type==='TableKey'&&row.key.type==='StringLiteral'&&row.key.value==='codeVersion');
++  assert.equal(roots.length,1,'exactly one top-level runtime codeVersion');
++  assert.equal(roots[0].value.type,'StringLiteral');
++  assert.equal(roots[0].value.value,'v'+version);
+   assert.doesNotMatch(narrative, /releaseNotes|sourceCommit|sourceDirty/,
+     'runtime presentation carries only the current version, not announcement history or development identity');
+   // Each real-tree fixture retains its bounded runner deadline and all cases.
+--- a/tests/native-card-art-binding.test.mjs
++++ b/tests/native-card-art-binding.test.mjs
+@@ -5,10 +5,10 @@
+ import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync, symlinkSync, linkSync } from 'node:fs';
+ import { createHash } from 'node:crypto';
+ import { tmpdir } from 'node:os';
+-import { join } from 'node:path';
++import { basename, join } from 'node:path';
+ import { runLua } from '../scripts/test-lua.mjs';
+ import { toLua } from '../scripts/build-lua-data.mjs';
+-import { nativeCardArtArgs, prepareNativeCardArt, attachNativeCardArt } from '../scripts/card-art-samples.mjs';
++import { nativeCardArtArgs, prepareNativeCardArt, attachNativeCardArt, nativeCardArtBuildReceipt } from '../scripts/card-art-samples.mjs';
+ import { buildUI, assertNativeUiCapacity } from '../scripts/build-ui.mjs';
+ 
+ const row=(image=100003)=>({image,position:[1.125,-2.25],size:[3.5,4.75],anchorMin:[.5,.5],anchorMax:[.5,.5],pivot:[.5,.5],scale:[1,1],rotation:[23.125,-45.25,9.75],colour:[12,34,56,78],imageType:image===100003?'stretch':'basic'});
+@@ -24,7 +24,8 @@
+ function directory(fn){const p=mkdtempSync(join(tmpdir(),'abyss-controlled-art-'));try{return fn(p);}finally{rmSync(p,{recursive:true,force:true});}}
+ 
+ test('explicit art candidate uses exactly the selected real card hosts, never all 26',()=>directory(output=>{
+- buildUI(output,undefined,{nativeCardArt:{registry:registry(),hosts:['battlePanel/card1']}});
++ const options={registry:registry(),hosts:['battlePanel/card1']};
++ buildUI(output,undefined,{nativeCardArt:options});
+  const game=JSON.parse(readFileSync(join(output,'game-ui.json'))),battle=JSON.parse(readFileSync(join(output,'battle-ui.json')));
+  assert.equal(pools(game).length,1,'missing explicit real card pool');assert.equal(pools(battle).length,1);
+  assert.equal(pools(game)[0][0].endsWith('/battlePanel/card1'),true);
+@@ -34,6 +35,20 @@
+  const receipt=JSON.parse(readFileSync(join(output,'native-card-art-receipt.json')));
+  assert.equal(receipt.staticPools,1);assert.equal(receipt.controlsPerPool,4);assert.equal(receipt.staticAddedControls,4);
+  assert.equal(receipt.deckTemplateEnabled,false);
++ const candidate=prepareNativeCardArt(options),verify=()=>nativeCardArtBuildReceipt(candidate,{root:output,directory:output});
++ const path=join(output,'abyss_presentation.lua'),source=readFileSync(path,'utf8');
++ const signed=verify(),record=signed.outputs.find(row=>basename(row.path)==='abyss_presentation.lua');
++ assert.equal(record.sha256,createHash('sha256').update(source).digest('hex'));
++ for(const [query,replacement,pattern] of [
++  ['["cleave"]=', '["renamed_cleave"]=', /consume native art slots for cleave/],
++  ['["nativeArt"]=', 'nativeArt=', /unique canonical card fields/],
++  ['["capacity"]=2', '["capacity"]=9', /consume native art slots for cleave/],
++ ]){
++  const staged=source.replace(query,replacement);
++  assert.notEqual(staged,source,query);
++  writeFileSync(path,staged);
++  assert.throws(verify,pattern);
++ }
+ }));
+ 
+ for(const enabled of [false,true])test(`${enabled?'explicit cards-on':'ordinary default-off'} build remains byte-identical after a static candidate build`,()=>directory(output=>{
+--- a/tests/build-ui-input-protection.test.mjs
++++ b/tests/build-ui-input-protection.test.mjs
+@@ -116,7 +116,7 @@
+   assert.match(result.stdout, /Native battle UI and Traveler display module built/);
+   assert.deepEqual(readdirSync(join(root, 'out')).sort(), [...outputs].sort());
+   assert.doesNotMatch(readFileSync(join(root, 'out/game-ui.json'), 'utf8'), /"artSamples"/);
+-  assert.doesNotMatch(readFileSync(join(root, 'out/abyss_presentation.lua'), 'utf8'), /\["nativeArt"\]/);
++  assert.doesNotMatch(readFileSync(join(root, 'out/abyss_presentation.lua'), 'utf8'), /(?:\["nativeArt"\]|\bnativeArt)\s*=/);
+   inputs.forEach((file, index) => assert.deepEqual(readFileSync(join(root, 'data', file)), before[index]));
+ }));
+ 
+--- a/tests/ready-card-production-build.test.mjs
++++ b/tests/ready-card-production-build.test.mjs
+@@ -9,7 +9,7 @@
+   assert.deepEqual(readyCardHolderPaths(game).sort(),[...expectedReadyCardGameHosts].sort(),'all existing and starter-deck faces remain eligible');
+   assert.deepEqual(readyCardHolderPaths(templates.find(t=>t.name==='AbyssDeckCard')),['AbyssDeckCard/face']);
+   for(const holder of holders(game))assert.deepEqual(holder.children,[]);
+-  const lua=readFileSync(join(dir,'abyss_presentation.lua'),'utf8');assert.equal((lua.match(/\["runtime"\]=true/g)??[]).length,0,'ordinary rule/text presentation must not eagerly load artwork');
++  const lua=readFileSync(join(dir,'abyss_presentation.lua'),'utf8');assert.equal((lua.match(/(?:\["runtime"\]|\bruntime)\s*=\s*true/g)??[]).length,0,'ordinary rule/text presentation must not eagerly load artwork');
+   const assets=readFileSync(join(dir,'abyss_ready_card_assets.lua'),'utf8');
+   assert.equal((assets.match(/\["runtime"\]=true/g)??[]).length,75);
+   assert.equal((assets.match(/\["rectangleEncoding"\]=/g)??[]).length,72);
