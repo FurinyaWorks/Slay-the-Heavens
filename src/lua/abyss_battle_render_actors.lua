@@ -167,10 +167,28 @@ function M.install(owner, ownership, host, dependencies)
         intentPosition(value,x+L.intent.size/2+S.xs+width/2,y,intentGeometryOwner)
         dependencies.ink(value,intentTone(alpha))
     end
+    local function renderSleepIntent(box,face,x,y,allowed,alpha)
+        local sleeping=face.sourceEnum=='SLEEP' or not face.sourceEnum and (face.worldKind or face.kind)=='sleep'
+        local label=box:GetChild('intentLabel')
+        intentVisible(label,allowed~=false and sleeping,intentGeometryOwner)
+        local text=sleeping and 'Zzz' or ''
+        if intentTexts[label]~=text or label.alive==false then
+            intentTexts[label]=nil;label.text=text;intentTexts[label]=text
+        end
+        if sleeping then
+            label.fontSize=Theme.font.label
+            intentSize(label,L.intent.valueWidth,L.nativeText.lineHeight,intentGeometryOwner)
+            intentPosition(label,x,y,intentGeometryOwner);dependencies.ink(label,intentTone(alpha))
+        end
+        return sleeping
+    end
     local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
         local x,y,size=intentGeometry(portrait,geometry)
-        renderIntentIcon(box,face,x,y,size,allowed,alpha)
-        for _,name in ipairs({'intentBadge','intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
+        -- Reuse the existing label for SLEEP: the approved tiny glyph alone
+        -- reads as a dot. This is presentation only; selected/displayed intent stays source-owned.
+        local sleeping=renderSleepIntent(box,face,x,y,allowed,alpha)
+        renderIntentIcon(box,face,x,y,size,allowed~=false and not sleeping,alpha)
+        for _,name in ipairs({'intentBadge','intentExtra'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
         renderIntentValue(box,face,x,y,allowed,alpha)
         local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
         local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,intentGeometryOwner)
