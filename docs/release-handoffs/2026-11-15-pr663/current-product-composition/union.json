@@ -1,0 +1,507 @@
+{
+  "release": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "heads": {
+    "678": "3eb212bd18e3af038f65ac67ed93049af70cc78e",
+    "679": "f564aea6a3c517b71a85534a81be5e2e36278baf",
+    "684": "6c45778c47788c2e69a68d3a48ec7a5a5ba3455b",
+    "690": "392818d0bcb8fcc7fb9b80f7082218e0b3c9de74",
+    "695": "9cc1b85f49f49317824c6e6ef86f625dfa73c826",
+    "696": "44711d80a427e811745ad005c314e069a1a54038",
+    "697": "2c06753de6f96ab6908ebe30d8e4a216d1ebbe60",
+    "698": "17580f25c742a7facb5626db8fc17efb4abe269b",
+    "699": "73da2626d37fb52f90e71cd65838c08a1b9cae7c"
+  },
+  "intentionalCIExclusions": [
+    "scripts/ci-test-timings.json",
+    "scripts/test-lua.mjs"
+  ],
+  "files": {
+    "data/presentation/lowcost-potion-art.json": {
+      "PR": [
+        699
+      ],
+      "baseline": null,
+      "sources": {
+        "699": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08"
+      },
+      "merge": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+      "conflict": false
+    },
+    "data/presentation/lowcost-relic-art.json": {
+      "PR": [
+        699
+      ],
+      "baseline": "1735a5f8dfca4b28220825aa163d8b9dc4d8a1aceba0244eb6e11ae6198963b3",
+      "sources": {
+        "699": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526"
+      },
+      "merge": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526",
+      "conflict": false
+    },
+    "data/presentation/menu-title-mark.json": {
+      "PR": [
+        699
+      ],
+      "baseline": null,
+      "sources": {
+        "699": "e1b8e8b19b881465f80d9ae7d96f4e857ff2d5f70f5835788d5ff15252f77698"
+      },
+      "merge": "e1b8e8b19b881465f80d9ae7d96f4e857ff2d5f70f5835788d5ff15252f77698",
+      "conflict": false
+    },
+    "data/presentation/ui_theme.json": {
+      "PR": [
+        684,
+        699
+      ],
+      "baseline": "6e2fbf19879f05a1efa79c8f8d0533c1cce8c2c407c588d05e439d57f9c59f64",
+      "sources": {
+        "684": "6f15e9d241542762bbe1e3a0b8a33b4244a46c1faeb946c1c17b7b11d2c11330",
+        "699": "5656b4bcbe42ac2e329f787eb2250537ae8f4755b145d20d4743fc73291c7363"
+      },
+      "merge": "68b4e75be2e3cf395ec3bbedb4360df267de4a208a43e07bc9b5375415406e4d",
+      "conflict": false
+    },
+    "scripts/build-ui.mjs": {
+      "PR": [
+        699
+      ],
+      "baseline": "76fbf00c577458f1211f5c78a08698de4dc6f51a019074a8c00e55887691f907",
+      "sources": {
+        "699": "07e18cfc5a2bf0121f9f2acc23d943b7b54891c1b808a2ac184541cd264ae456"
+      },
+      "merge": "07e18cfc5a2bf0121f9f2acc23d943b7b54891c1b808a2ac184541cd264ae456",
+      "conflict": false
+    },
+    "scripts/exit-ui-layout.mjs": {
+      "PR": [
+        690
+      ],
+      "baseline": "b0a358903c98c3f66b829f1b3f8e51b195b2bf5aa6064b554f3330adabc7c02b",
+      "sources": {
+        "690": "1385056500bf09ae7db564844161afe27d1700d5ca8839334e59f1a034ffcbf6"
+      },
+      "merge": "1385056500bf09ae7db564844161afe27d1700d5ca8839334e59f1a034ffcbf6",
+      "conflict": false
+    },
+    "scripts/lowcost-art.mjs": {
+      "PR": [
+        699
+      ],
+      "baseline": "eb06982af04f2f09aad86580803a92426240da205c26b8287f661a12b32e40a8",
+      "sources": {
+        "699": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32"
+      },
+      "merge": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32",
+      "conflict": false
+    },
+    "scripts/noncombat-v25-layout.mjs": {
+      "PR": [
+        697
+      ],
+      "baseline": "aa280ecac41a73e1127db1505577c119bb29a96d100db619d863890e93b4d0d9",
+      "sources": {
+        "697": "e48115c39396240ac6911fc9495600eaba0e5a974845e5999bff423abc78458b"
+      },
+      "merge": "e48115c39396240ac6911fc9495600eaba0e5a974845e5999bff423abc78458b",
+      "conflict": false
+    },
+    "scripts/official-assets-layout.mjs": {
+      "PR": [
+        684,
+        696
+      ],
+      "baseline": "c1fb214dd0f342913dde97c89f2187c7557e932b044af0c0b30ba18d05b3a944",
+      "sources": {
+        "684": "c25cb1440699d228c7ec6fa333e25a1997c6daf22b857fc6029a30f2863f9868",
+        "696": "09332935e3d280a02c1cf2b61e1d8a58c70b1c72d3b9717d814af8778081afc4"
+      },
+      "merge": "4732c9da23401bf8f704e350a9c188ed2dc3af00e7cff9b7a67d54201729de7c",
+      "conflict": false
+    },
+    "scripts/official-battle-hud.mjs": {
+      "PR": [
+        695
+      ],
+      "baseline": "05f1bc955d40f60ed295f9a7441ac45bed4c109fc9b7d61f384dae0137126e0c",
+      "sources": {
+        "695": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7"
+      },
+      "merge": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+      "conflict": false
+    },
+    "scripts/official-map-return-controls.mjs": {
+      "PR": [
+        697
+      ],
+      "baseline": null,
+      "sources": {
+        "697": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68"
+      },
+      "merge": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68",
+      "conflict": false
+    },
+    "scripts/official-picker-controls.mjs": {
+      "PR": [
+        696
+      ],
+      "baseline": null,
+      "sources": {
+        "696": "a3a675d9a6e92b0d03de1c3ac9b6acd9ec7b7b839b83091b24f76ffe486a9963"
+      },
+      "merge": "a3a675d9a6e92b0d03de1c3ac9b6acd9ec7b7b839b83091b24f76ffe486a9963",
+      "conflict": false
+    },
+    "scripts/official-portraits.mjs": {
+      "PR": [
+        699
+      ],
+      "baseline": "0e318db01fb540c370257e15588a56bac2a8584d0c6dc96a6390a9fc962406a4",
+      "sources": {
+        "699": "fb561ab7564feffeedade235468357fd208313d8dcc3bca9cb1160d2ec0d1dbb"
+      },
+      "merge": "fb561ab7564feffeedade235468357fd208313d8dcc3bca9cb1160d2ec0d1dbb",
+      "conflict": false
+    },
+    "scripts/official-run-layout.mjs": {
+      "PR": [
+        696,
+        697
+      ],
+      "baseline": "d21d275ac8a9572923cb1e89554889eab1439c48ec9bb76fd4f6234cdb9d9d70",
+      "sources": {
+        "696": "3a4d7977718b220207095586986967968738584c558855fdecf45da35acfe178",
+        "697": "c84504418fc773445d982fc2f8e83b548d04ff2b35090fc3c854c816389b93b9"
+      },
+      "merge": "85ee889db70e3f42646db7b941a0cb05a32d84835b92194c7f2f437d31abff6f",
+      "conflict": false
+    },
+    "scripts/potion-art.mjs": {
+      "PR": [
+        699
+      ],
+      "baseline": null,
+      "sources": {
+        "699": "a57f7fc51c24d001f24d2617992b6a87ffc873ecbd326e5141572fd5e7b0a63f"
+      },
+      "merge": "a57f7fc51c24d001f24d2617992b6a87ffc873ecbd326e5141572fd5e7b0a63f",
+      "conflict": false
+    },
+    "scripts/ui-layout.mjs": {
+      "PR": [
+        684
+      ],
+      "baseline": "82f1002ab12b6ba43e59c87beea4124045b70f5871ecc74006559eb2deba4141",
+      "sources": {
+        "684": "c04c3d1bf28978716a14a0e9d8023deb40b24dc46acdcdea261ff5969a95b60e"
+      },
+      "merge": "c04c3d1bf28978716a14a0e9d8023deb40b24dc46acdcdea261ff5969a95b60e",
+      "conflict": false
+    },
+    "scripts/v25-menu-layout.mjs": {
+      "PR": [
+        699
+      ],
+      "baseline": "c9d4d512770a695e5d76e8eab2ce0a3fb343efd497df5182a03617f49aedb510",
+      "sources": {
+        "699": "00c8902e05fc6c7e475d06fb344483d86632479b231353c4593a4b471f6de6f3"
+      },
+      "merge": "00c8902e05fc6c7e475d06fb344483d86632479b231353c4593a4b471f6de6f3",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_card_bindings.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "add73e13c968039d9eee32dacd3d7d866c21ec6e2ccc89182d4f199d2ee9b7e7",
+      "sources": {
+        "684": "73aaabd364058cc14f5fe1b539ec014cfdd62293e394b8ede097f0e5cb26a2ef"
+      },
+      "merge": "73aaabd364058cc14f5fe1b539ec014cfdd62293e394b8ede097f0e5cb26a2ef",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_card_gestures.lua": {
+      "PR": [
+        679,
+        684
+      ],
+      "baseline": "de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153",
+      "sources": {
+        "679": "8ba7680d8b2839d69cda0b5794e385e94621febe702f1a2d5a755145b3ce51cc",
+        "684": "dae42c2bbd6b6223bc0548c6a5b714af0b7a7c43a27936483458c627299fddfe"
+      },
+      "merge": "0ea46386d60b420c3b4c5ef9cb6d53006403ad98207295021ee2d7c03ce75404",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_potion_popup.lua": {
+      "PR": [
+        679
+      ],
+      "baseline": "705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd",
+      "sources": {
+        "679": "433834716e6059f51baba96c699a4f8594af0da1a187a5c70cc58b6020e14b5f"
+      },
+      "merge": "433834716e6059f51baba96c699a4f8594af0da1a187a5c70cc58b6020e14b5f",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_render_actors.lua": {
+      "PR": [
+        684,
+        699
+      ],
+      "baseline": "dfa8d897365b7224cda5e02be448b87334fb7c3160dc672b08940f09a9477845",
+      "sources": {
+        "684": "4b4819a62d6168ef1d3c8b892e957fba52b3bda21246cfa0a82569780187258f",
+        "699": "6955f2abc927133348efd803c8f0542adad0f1e32fc2ed677f6b56fb4e007b3f"
+      },
+      "merge": "7c601060c48e6f6b2d7493c1d5036a5e2c54af4699b45074aa0e5e0b3c1a2a1b",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_reward_layout.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "7a62389ebc5e053bd32ef3f95d7552d89c67a4f20346c81d1ed603f500622e3d",
+      "sources": {
+        "699": "c488b2977666893c0f74bff0393c3540c5071fdd1b48de6c5c39e2ba9afb48a6"
+      },
+      "merge": "c488b2977666893c0f74bff0393c3540c5071fdd1b48de6c5c39e2ba9afb48a6",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_ui.lua": {
+      "PR": [
+        679
+      ],
+      "baseline": "c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481",
+      "sources": {
+        "679": "51ce4aea76acef8e4676a87bf1236be00061cb0faed231ecd69b1a71bdcb2b78"
+      },
+      "merge": "51ce4aea76acef8e4676a87bf1236be00061cb0faed231ecd69b1a71bdcb2b78",
+      "conflict": false
+    },
+    "src/lua/abyss_battle_unit_view.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "e723f9d6f1d696cc317947935a1e9a04e10f0046311a4034712c1ec133eea74e",
+      "sources": {
+        "684": "2f020af59e3e9a835fb41fec6a9f10680f05acbf6e7ab26e08d4315afed4f3e6"
+      },
+      "merge": "2f020af59e3e9a835fb41fec6a9f10680f05acbf6e7ab26e08d4315afed4f3e6",
+      "conflict": false
+    },
+    "src/lua/abyss_card_flow.lua": {
+      "PR": [
+        698
+      ],
+      "baseline": "65dcdf5306c4a4a3665d934843f10974224b4b876189b0c0b0fa387458bec5fb",
+      "sources": {
+        "698": "abeb85aab55a9d4cf1c8c8b9f434aaf8ffff1e77e0b027160099a4e939e21c13"
+      },
+      "merge": "abeb85aab55a9d4cf1c8c8b9f434aaf8ffff1e77e0b027160099a4e939e21c13",
+      "conflict": false
+    },
+    "src/lua/abyss_combat.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "609e75ba6e83da7b2311629adfdc2fd101c8167d3d17dbb1cdc0748baa9b1d1c",
+      "sources": {
+        "684": "d8dceaabd56e937d80756579b45fbce4efbefcda4570702ac7d0e9c52e33f392"
+      },
+      "merge": "d8dceaabd56e937d80756579b45fbce4efbefcda4570702ac7d0e9c52e33f392",
+      "conflict": false
+    },
+    "src/lua/abyss_feedback_actor_painter.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "3c3d306e8892be43ecdaf1ba4d8035ca369a8b5ecfd5295bfd23aff22a1b7caf",
+      "sources": {
+        "699": "4436488ad0c1e82a9adf37442db870c907c23be916ad06ec68d01c6b33035b6c"
+      },
+      "merge": "4436488ad0c1e82a9adf37442db870c907c23be916ad06ec68d01c6b33035b6c",
+      "conflict": false
+    },
+    "src/lua/abyss_game_ui.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "04456f26110addedb28d3109910091e18011902c3ef6a028e0b61a16aca56ed0",
+      "sources": {
+        "684": "1ebcc412f18c51c41a943a648ebed487b8531618dc4ec7d8cef68b9657d303e9"
+      },
+      "merge": "1ebcc412f18c51c41a943a648ebed487b8531618dc4ec7d8cef68b9657d303e9",
+      "conflict": false
+    },
+    "src/lua/abyss_game_ui_input.lua": {
+      "PR": [
+        690,
+        697
+      ],
+      "baseline": "b3e87c57b5b8940ae3ccf5bba323074d4f0cad1d978233105c772f2035d8db47",
+      "sources": {
+        "690": "b2394cff71e20fdc5490fca41718435b623b1b9971827df1b639a77abcc75086",
+        "697": "8476a62e295e72b065fd48642afccf4158c1b70a23aad52290d8ffd3dbee7c9d"
+      },
+      "merge": "eb4ef0623f7621a1c5bac9e2fdc919a4c08b8128ef5aa863e1329d9d2a68280c",
+      "conflict": false
+    },
+    "src/lua/abyss_game_ui_navigation_view.lua": {
+      "PR": [
+        690
+      ],
+      "baseline": "5f1011667a49bf2726250be24949a411efc0b3747a57b4207f168edc47578b2d",
+      "sources": {
+        "690": "dfbdd2ab195f05ddf400bf81db428a02d01e886a01a3a4f81469edc9091b4d74"
+      },
+      "merge": "dfbdd2ab195f05ddf400bf81db428a02d01e886a01a3a4f81469edc9091b4d74",
+      "conflict": false
+    },
+    "src/lua/abyss_game_ui_overlays.lua": {
+      "PR": [
+        690
+      ],
+      "baseline": "c576f46a30c8e954a856fc91a38f25f8abb576a5423378e3a4fc28c9e3aa6b00",
+      "sources": {
+        "690": "d524f0fb95d207ccbe5cebadc5379d734eeca721967032c16ba620bc6045d26a"
+      },
+      "merge": "d524f0fb95d207ccbe5cebadc5379d734eeca721967032c16ba620bc6045d26a",
+      "conflict": false
+    },
+    "src/lua/abyss_game_ui_view.lua": {
+      "PR": [
+        684,
+        697
+      ],
+      "baseline": "92e6936729549fef3b1e794e5cb8eccf616d0e562f49d5583d7f3bba3e2150aa",
+      "sources": {
+        "684": "d122d66ddf22b16da1ca060eb116aa9ed314476bb3ef0242c3c284c92a0fc3af",
+        "697": "34af7bc390792b5eb4b62f265edd10f9786ed153b21ad35b74662ace514db215"
+      },
+      "merge": "5822596303e40ed4821708a27f054c14a0ccdae5451f12ec9288f1bfdd54daaf",
+      "conflict": false
+    },
+    "src/lua/abyss_map_ui.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "f71c09ef038edcb90cf258a5faac64abb44bbf3fc9367c1893101298e2f33234",
+      "sources": {
+        "684": "1aef3a4f67bcf40513b73d542d7a3722411d738ffaf98d64c0f1798e08c1793c"
+      },
+      "merge": "1aef3a4f67bcf40513b73d542d7a3722411d738ffaf98d64c0f1798e08c1793c",
+      "conflict": false
+    },
+    "src/lua/abyss_node_ui.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "93afa0ae2dbe98a08caeaa101e13775df3fea3fd0ddc48c0f16546c5eb5f5061",
+      "sources": {
+        "699": "8c684f538b250298526856096281dab20359e5793417e810cee1dba65eb669a7"
+      },
+      "merge": "8c684f538b250298526856096281dab20359e5793417e810cee1dba65eb669a7",
+      "conflict": false
+    },
+    "src/lua/abyss_node_ui_events.lua": {
+      "PR": [
+        678
+      ],
+      "baseline": "c3d425e0c65b57fedc5d9d6f63a412403b4197c7b42bfaec407d91fa710c54cc",
+      "sources": {
+        "678": "179228741b235af825e308e4f46d2f30bb779671bb59d6b4b664110874592d99"
+      },
+      "merge": "179228741b235af825e308e4f46d2f30bb779671bb59d6b4b664110874592d99",
+      "conflict": false
+    },
+    "src/lua/abyss_node_ui_feedback.lua": {
+      "PR": [
+        696
+      ],
+      "baseline": "7df89c485223820f2eccc68dffc0b53b1319e090a4cb7f2b57a29ff16a682f4c",
+      "sources": {
+        "696": "86043453252c36a7b3dc4c5f108b7856d88935b8deeb68e00904dc258bf59e86"
+      },
+      "merge": "86043453252c36a7b3dc4c5f108b7856d88935b8deeb68e00904dc258bf59e86",
+      "conflict": false
+    },
+    "src/lua/abyss_node_ui_lifecycle.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "141c1a4ec43dd139b05cd6ef1de666d8ec19d990add01d2371a0afea108ce516",
+      "sources": {
+        "684": "a3f90bcbfdbb96ff1321871c28da2d3a44562b3e7f7858cbac150ec0612d5cd9"
+      },
+      "merge": "a3f90bcbfdbb96ff1321871c28da2d3a44562b3e7f7858cbac150ec0612d5cd9",
+      "conflict": false
+    },
+    "src/lua/abyss_node_ui_shop.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "56723361a9ff0b243800599cafcf15ef3f869daa4bd8aad37af43ad778e69d51",
+      "sources": {
+        "699": "6f7838454477ae2f4348f4b53977e673c54e83c4b9518b4d666aab879c797bc8"
+      },
+      "merge": "6f7838454477ae2f4348f4b53977e673c54e83c4b9518b4d666aab879c797bc8",
+      "conflict": false
+    },
+    "src/lua/abyss_page_reveal.lua": {
+      "PR": [
+        684
+      ],
+      "baseline": "5b93f48110bdf0d520191deb037e2abdde67f50c1218c788229618c815165230",
+      "sources": {
+        "684": "b735419988642a03f0edc062aa4e1e18c1d6505821a65eeecf8fb91dc7e78d5e"
+      },
+      "merge": "b735419988642a03f0edc062aa4e1e18c1d6505821a65eeecf8fb91dc7e78d5e",
+      "conflict": false
+    },
+    "src/lua/abyss_potion_discard_ui.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "023c094dee526f520794fcb8d14b70d53b823fc24049a6946cdb23bda1668426",
+      "sources": {
+        "699": "ebaa819919dc8abee3299f3aca240ee89433973b86179e6e9234b6379a2f3f55"
+      },
+      "merge": "ebaa819919dc8abee3299f3aca240ee89433973b86179e6e9234b6379a2f3f55",
+      "conflict": false
+    },
+    "src/lua/abyss_relic_pending_ui.lua": {
+      "PR": [
+        678
+      ],
+      "baseline": "a1d5ba5d2d81ef63209651b571d91de24d967e12e144f3b454a5f9439cf2fe23",
+      "sources": {
+        "678": "3639a8355383430f6c0603a999f39d0c030006de3f82616f510b8ada366a7fda"
+      },
+      "merge": "3639a8355383430f6c0603a999f39d0c030006de3f82616f510b8ada366a7fda",
+      "conflict": false
+    },
+    "src/lua/abyss_relic_view_ui.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "acb7c4480c4cad44b83aa95a9b25825db217d8b98484ca5d2c88d47b8b366ebf",
+      "sources": {
+        "699": "78cb4964bf94f7dfa19ace1440139194866ec8a6ccc5bb50442468219c5965a5"
+      },
+      "merge": "78cb4964bf94f7dfa19ace1440139194866ec8a6ccc5bb50442468219c5965a5",
+      "conflict": false
+    },
+    "src/lua/abyss_shop_ui.lua": {
+      "PR": [
+        699
+      ],
+      "baseline": "b2eb4bf26b0423c7aece0dd8b88eab7ad8f89f3f568ece13402fb8c5a66e8fdd",
+      "sources": {
+        "699": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14"
+      },
+      "merge": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14",
+      "conflict": false
+    }
+  }
+}

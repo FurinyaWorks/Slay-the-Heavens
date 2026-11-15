@@ -1,0 +1,35 @@
+--- a/tests/lua/support/official_map_return.lua
++++ b/tests/lua/support/official_map_return.lua
+@@ -24,6 +24,14 @@
+  local h,r=F.fixture(nil,nil,nil,cursor,false,nil,nil,api);assert(F.start(h))
+  return h,r,get(r,'mapPanel','previewBack'),get(r,'mapPanel','previewBack','hit')
+ end
++local function openRetainedRoute(h,r,context,touch)
++ local old=get(r,'runMenu','map')
++ assert(not old.visible,'official pause no longer owns a duplicate route entry')
++ local retained
++ if context=='battle' then retained=get(r,'battlePanel','topBar','battleRoute')
++ else retained=get(r,'nodePanel','runRoute') end
++ assert(retained.visible and tap(get(retained,'hit'),touch) and h.routeOpen)
++end
+ local function preview(h,r,context)
+  if context=='battle'then assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+  else
+@@ -32,7 +40,7 @@
+   for i=1,#path-1 do assert(Map.choose(h.map,path[i]))end
+   h.run.floor=h.map.floor;assert(h.mapUI:choose(routes.at(h.map,path[#path]).id))
+  end
+- assert(h:openMenu());assert(tap(get(r,'runMenu','map','hit'),1) and h.routeOpen)
++ openRetainedRoute(h,r,context,1)
+  -- Include the current node's rotating token and reachable node pulse bounds.
+  local layout=require('abyss_ui_layout');local spec
+  for _,s in ipairs(layout)do
+@@ -57,7 +65,7 @@
+  hit.listeners.down({touchId=3});hit.listeners.up({touchId=3});state(back,'hover')
+  assert(h:closeExit());state(back,'disabled');assert(not hit.click({touchId=3}))
+  assert(h:openMenu());assert(not back.visible and not hit.click({touchId=3}))
+- assert(tap(get(r,'runMenu','map','hit'),4));state(back,'normal')
++ assert(h:closeExit());openRetainedRoute(h,r,'battle',4);state(back,'normal')
+  hit.listeners.down({touchId=7});hit.listeners.endDrag({touchId=7});state(back,'normal')
+  assert(not hit.click({touchId=7}) and h.routeOpen)
+  assert(tap(hit,5));assert(h.mode=='battle' and not h.exitOpen and not h.routeOpen)

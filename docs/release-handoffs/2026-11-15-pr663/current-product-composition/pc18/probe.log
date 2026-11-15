@@ -1,0 +1,4 @@
+DEFAULT_FALLBACK fire_potion image=111046
+DEFAULT_FALLBACK strength_potion image=111046
+DEFAULT_FALLBACK flex_potion image=111046
+PASS actual #699 refreshEntry; default generated owner; 3 identities x 4 states + empty retirement; missing pools preserve atlas fallback, not distinct illustrations; image writes=12

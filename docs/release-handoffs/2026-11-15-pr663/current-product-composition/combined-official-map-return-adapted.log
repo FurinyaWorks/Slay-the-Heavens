@@ -1,0 +1,24 @@
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ok pc08 1 - four live states, cancellation, stale touches, menu cover and C-tier click use the original hit
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ok pc08 2 - camp preview restores its existing caller, live caption and unchanged Run including RNG
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ok pc08 3 - controller focus uses existing binding and stale callbacks remain guarded
+OFFICIAL_MAP_RETURN_PASS 3
+
+✔ official map return reuses final character cancel material in every state, retaining its input and caption (664.335803ms)
+✔ generated official Host preserves pointer, controller and read-only return behavior (10923.63206ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11807.965824
