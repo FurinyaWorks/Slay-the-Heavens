@@ -1,0 +1,14 @@
+✔ replay never overwrites existing output or repository sources (10.131ms)
+﹣ replay refuses a real symbolic-link parent (3.2597ms) # filesystem does not expose the junction as a Node symbolic link
+✔ source drift and head drift reject rather than publishing a current result (3.8546ms)
+✔ same-byte-size changes to unrelated mapped modules are not accepted (1.0666ms)
+✔ readback rejects absent, corrupt, escaping or numerically inconsistent artifacts (1.7637ms)
+✔ persisted module identity, count and total are verified independently (13.3905ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 43.3582

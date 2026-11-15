@@ -1,0 +1,33 @@
+✖ replay never overwrites existing output or repository sources (5.8472ms)
+﹣ replay refuses a real symbolic-link parent (6.8772ms) # filesystem does not expose the junction as a Node symbolic link
+✔ source drift and head drift reject rather than publishing a current result (3.1788ms)
+✔ same-byte-size changes to unrelated mapped modules are not accepted (0.7586ms)
+✔ readback rejects absent, corrupt, escaping or numerically inconsistent artifacts (1.7993ms)
+✔ readback requires exactly the complete four schemes by seven role counts (1.2975ms)
+✔ persisted module identity, count and total are verified independently (15.0486ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 5
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 42.5077
+
+✖ failing tests:
+
+test at build\capacity-105-negative-controls\g-output\replay.test.mjs:11:1
+✖ replay never overwrites existing output or repository sources (5.8472ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/backlog-continuation-1115/build/capacity-105-negative-controls/g-output/replay.test.mjs:14:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /exist/,
+    operator: 'throws',
+    diff: 'simple'
+  }

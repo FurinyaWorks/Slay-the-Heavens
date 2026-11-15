@@ -1,0 +1,26 @@
+[
+  {
+    "detected": true,
+    "log": "g-negative-readback.txt",
+    "exitCode": 1,
+    "guard": "readback"
+  },
+  {
+    "detected": true,
+    "log": "g-negative-output.txt",
+    "exitCode": 1,
+    "guard": "output"
+  },
+  {
+    "detected": true,
+    "log": "g-negative-input.txt",
+    "exitCode": 1,
+    "guard": "input"
+  },
+  {
+    "detected": true,
+    "log": "g-negative-mapped.txt",
+    "exitCode": 1,
+    "guard": "mapped"
+  }
+]

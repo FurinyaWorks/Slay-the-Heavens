@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "scope": "non-production offline replay contract integration and historical evidence preservation",
+  "base": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "branch": "feat/capacity-integration-1115",
+  "sourceHead": "92e794247566d27025e48d0073a9e502f2881eb0",
+  "integrationMethod": "selective git restore of capacity-only committed paths; Backlog mutations through CLI",
+  "currentBaselineChecks": [
+    {
+      "command": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe --test experiments/capacity-105/replay.test.mjs",
+      "exitCode": 0,
+      "tests": 7,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 1,
+      "skipReason": "filesystem does not expose the junction as a Node symbolic link",
+      "rawOutput": "contracts-node24.txt"
+    },
+    {
+      "command": "npm run verify:backlog",
+      "node": "v22.22.1",
+      "exitCode": 0,
+      "result": "任务编号、首发排期、负责人及仅岩系旅行者前两幕规划范围检查通过；当前任务均有优先级、未完成High不超过5项；不认证运行时准入、平台或实机。"
+    },
+    {
+      "command": "Node v24.18.0 --check experiments/capacity-105/{run,replay-contract,replay.test}.mjs (three explicit commands)",
+      "exitCode": 0
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "note": "Git warned that CLI-written task LF will become CRLF on checkout; no whitespace errors"
+    }
+  ],
+  "historicalGReadbackUsingCurrentHelper": {
+    "status": "pass",
+    "operations": [
+      "raw results bytes and SHA256 equal committed historical summary",
+      "current verifyRows(raw.rows, original inventories, original g output) returns true",
+      "all summary row fields deep-equal original result row fields",
+      "historical manifest input list and digest equal raw result inputIdentity",
+      "all 639 source files still match historical manifest bytes and SHA256"
+    ],
+    "rawResults": {
+      "sourceRelativePath": "build/capacity-105/replay-20261115-g/results.json",
+      "bytes": 256675,
+      "sha256": "6d4b1ea656f4b9d9824f55e0d48ff85971421601d442f4ec200414f25d651ed7"
+    },
+    "rows": 28,
+    "inputCount": 639,
+    "inputDigest": "56678197a6d8839150db5ba0c5fcdfdd3866111cb57d26d16c47572ab7c68fc4",
+    "mappedModules": 364,
+    "measurementAppliesTo": "historical e65d9b98 dirty-source g replay only; not c2409ad7 candidate"
+  },
+  "recovery": {
+    "index": "archive-index.json",
+    "all83MembersReadBackByteIdentical": true,
+    "legacy39RecordsUnchanged": true,
+    "sourceThreeHydratedPngHashesUnchanged": true,
+    "sourceWorktreeFinalStatus": "same three LFS-restored PNG paths show M; HEAD remains 92e794247566d27025e48d0073a9e502f2881eb0",
+    "largeArchiveTracked": false,
+    "remotePreservation": "not_uploaded"
+  },
+  "taskReadback": {
+    "TASK-105": {
+      "status": "In Progress",
+      "assignees": ["Furinya"],
+      "acceptanceCriteriaCompleted": 0,
+      "acceptanceCriteriaCount": 6
+    },
+    "TASK-97": {
+      "status": "Blocked",
+      "assignees": ["Furinya"],
+      "dependencies": ["TASK-96", "TASK-105"],
+      "acceptanceCriteriaCompleted": 0,
+      "acceptanceCriteriaCount": 4,
+      "ownerApproval": "still_required"
+    }
+  },
+  "failedAttemptsAndResolution": [
+    {
+      "operation": "first Backlog edit invocation",
+      "result": "PowerShell unquoted @Furinya caused argument parsing rejection before writes",
+      "resolution": "quoted assignee invocation succeeded, then CLI restored exact stored owner Furinya"
+    },
+    {
+      "operation": "first npm run verify:backlog",
+      "result": "ERR_MODULE_NOT_FOUND: luaparse in clean worktree without node_modules",
+      "resolution": "npm ci --ignore-scripts --offline installed locked 11 packages; subsequent check passed"
+    },
+    {
+      "operation": "first preservation audit requiring raw equality of imported scripts and g inputs",
+      "result": "helper/test differ solely by Git checkout EOL conversion",
+      "resolution": "preserved exact historical bytes; separately recorded current raw hash and verified equality after CRLF-to-LF normalization; did not rewrite historical input identity"
+    }
+  ],
+  "notRun": [
+    "historical full 28-scenario experiment rerun on c2409ad7",
+    "new current candidate serialization or GIL build/readback",
+    "Full or complete legacy engineering/test matrix",
+    "official tools, import, startup ready, PC or physical phone operation",
+    "check:platform-load or verify:platform-load (production entrypoints unchanged)",
+    "new guard-removal mutations (source g historical controls retained)",
+    "Hosted CI, independent review, verify:delivery",
+    "push, PR creation, merge, release branch mutation"
+  ],
+  "officialMB": null,
+  "officialStatus": "UNVERIFIED",
+  "phone": "UNVERIFIED",
+  "longTermProductionGO": "UNVERIFIED",
+  "reviewConclusion": "bounded offline slice ready for controller review; no independent-review or merge-readiness claim"
+}

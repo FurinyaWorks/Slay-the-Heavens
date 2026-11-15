@@ -5,10 +5,11 @@ status: Blocked
 assignee:
   - Furinya
 created_date: '2026-11-03 02:45'
-updated_date: '2026-11-14 10:18'
+updated_date: '2026-11-15 13:49'
 labels: []
 milestone: m-9
 dependencies:
+  - TASK-96
   - TASK-105
 references:
   - docs/ORIGINAL_V4.md
@@ -42,4 +43,6 @@ ordinal: 139000
 
 2026-11-13：仅本任务批量量产/正式开放依赖TASK-105容量GO；单角色试验和近期版本的修复、发布不受此依赖阻断，Owner独立审批仍保留。
 当前编号映射（2026-11-03）：本任务属于 M9/m-9 内容扩充；下文及未勾 AC4 的旧称“M7 核心体验/基础 UI”均对应当前 M8/m-8 的体验、触屏、性能与稳定性门槛。保留原 AC4 文字和未勾状态，不改验收实质。
+
+2026-11-15授权接续保留既有关系：TASK96角色差异化设计确认与TASK105批量容量GO均为前置；仍需Owner逐角色明确批准。未交付/确认设计不实施，未验AC保持未勾，维持Blocked；不将既有V4代码、离线实验或本轮集成当作设计批准或量产GO。依赖机制及最终关系对账由主控TASK87.2统一适配。
 <!-- SECTION:NOTES:END -->

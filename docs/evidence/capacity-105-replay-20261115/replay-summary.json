@@ -1,0 +1,2129 @@
+{
+  "schemaVersion": 2,
+  "sourceCommit": "e65d9b98fbec69442047650254238cd9244df805",
+  "recordedAt": "2026-11-15T05:57:07.177Z",
+  "node": "v24.18.0",
+  "measurement": "offline-input-serialization-NOT-official-storage",
+  "officialMB": null,
+  "officialStatus": "UNVERIFIED",
+  "playableCandidatesBuilt": 0,
+  "profiles": {
+    "current": {
+      "officialAssets": true,
+      "nativePageLifecycle": true
+    },
+    "cliDefaults": {
+      "artFeatures": {
+        "menuBackground": true,
+        "selectionAvatar": true,
+        "battlePortrait": true
+      }
+    },
+    "fallback": {
+      "artFeatures": {
+        "cards": false,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      }
+    }
+  },
+  "replay": {
+    "output": "build/capacity-105/replay-20261115-g",
+    "elapsedMs": 83618.6192,
+    "sourceDirty": true
+  },
+  "samples": [
+    {
+      "role": "HT",
+      "cards": 75,
+      "luaBytes": 142447
+    },
+    {
+      "role": "AR",
+      "cards": 75,
+      "luaBytes": 141860
+    },
+    {
+      "role": "FR",
+      "cards": 75,
+      "luaBytes": 149767
+    },
+    {
+      "role": "RD",
+      "cards": 75,
+      "luaBytes": 137183
+    }
+  ],
+  "categoryTotals": {
+    "gameplayData": {
+      "bytes": 799158,
+      "modules": 4
+    },
+    "characterArt": {
+      "bytes": 1323220,
+      "modules": 1
+    },
+    "sharedPresentation": {
+      "bytes": 451226,
+      "modules": 11
+    },
+    "runtimeLogic": {
+      "bytes": 2963791,
+      "modules": 348
+    }
+  },
+  "artFields": [
+    {
+      "key": "imagePrefabId",
+      "bytes": 15
+    },
+    {
+      "key": "containerPrefabId",
+      "bytes": 19
+    },
+    {
+      "key": "avatar96",
+      "bytes": 29599
+    },
+    {
+      "key": "battle133",
+      "bytes": 354060
+    },
+    {
+      "key": "selection133",
+      "bytes": 128377
+    },
+    {
+      "key": "battlePixel",
+      "bytes": 5145
+    },
+    {
+      "key": "selectionUses",
+      "bytes": 29
+    },
+    {
+      "key": "selectionHalfImagePrefabId",
+      "bytes": 28
+    },
+    {
+      "key": "lowpolyLumine",
+      "bytes": 264342
+    },
+    {
+      "key": "battleApprovedIdle",
+      "bytes": 540341
+    }
+  ],
+  "portraitPackBytes": 1323220,
+  "trimmedPackBytes": 1194842,
+  "rawResults": {
+    "path": "build/capacity-105/replay-20261115-g/results.json",
+    "bytes": 256675,
+    "sha256": "6d4b1ea656f4b9d9824f55e0d48ff85971421601d442f4ec200414f25d651ed7"
+  },
+  "inputDigest": "56678197a6d8839150db5ba0c5fcdfdd3866111cb57d26d16c47572ab7c68fc4",
+  "inputCount": 639,
+  "profilesMeasured": {
+    "current": {
+      "luaBytes": 5537395,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "hiddenControls": 26552,
+      "templates": 7
+    },
+    "cliDefaults": {
+      "luaBytes": 5025210,
+      "layoutJsonBytes": 1670843,
+      "templateJsonBytes": 22656,
+      "controls": 14384,
+      "hiddenControls": 14213,
+      "templates": 6
+    },
+    "fallback": {
+      "luaBytes": 3978587,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "hiddenControls": 14205,
+      "templates": 4
+    }
+  },
+  "rows": [
+    {
+      "scheme": "independent",
+      "additionalRoles": 0,
+      "totalV4Roles": 4,
+      "cards": 300,
+      "dataLuaBytes": 577904,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 5537395,
+      "deltaLuaBytes": 0,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-0.json.gz",
+        "bytes": 219827,
+        "sha256": "3306fc04aea2de57327fbe61f483188914f3d16e63d34624a3477a78c48a1930"
+      },
+      "payloadSha256": "2f544089183abf988115365ba6186861372362564b0b56791de1c9fa2eebae64",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 577904,
+          "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 0,
+      "totalV4Roles": 4,
+      "cards": 300,
+      "dataLuaBytes": 577904,
+      "portraitLuaBytes": 1194842,
+      "luaBytes": 5409017,
+      "deltaLuaBytes": -128378,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-0.json.gz",
+        "bytes": 200567,
+        "sha256": "15594e1530f5fe7862a4644bb0f4a819d21853be8ed74b01034577f6ae626bd5"
+      },
+      "payloadSha256": "e22f2784d219207ea2eacd773ca78f48cc0afdd77333d2f9be9ac2a36c1982ad",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 577904,
+          "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1194842,
+          "sha256": "41525e8b3ea4a70440266ecb83f6a12ad660d4e484d0db5840013f8a4f1d86bc"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 0,
+      "totalV4Roles": 4,
+      "cards": 300,
+      "dataLuaBytes": 577904,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 5537395,
+      "deltaLuaBytes": 0,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-0.json.gz",
+        "bytes": 219827,
+        "sha256": "3306fc04aea2de57327fbe61f483188914f3d16e63d34624a3477a78c48a1930"
+      },
+      "payloadSha256": "2f544089183abf988115365ba6186861372362564b0b56791de1c9fa2eebae64",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 577904,
+          "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 0,
+      "totalV4Roles": 4,
+      "cards": 300,
+      "dataLuaBytes": 577904,
+      "portraitLuaBytes": 76,
+      "luaBytes": 3978587,
+      "deltaLuaBytes": -1558808,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-0.json.gz",
+        "bytes": 34787,
+        "sha256": "befc976d7c95fbef14d40dd382c29ab950fe4fe428ecdad9b7e4ca1807c4dc2a"
+      },
+      "payloadSha256": "de187062de36f8ba33248944cce09130f67effbb2f20d44924c55ef5a3b21f6a",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 577904,
+          "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "independent",
+      "additionalRoles": 1,
+      "totalV4Roles": 5,
+      "cards": 375,
+      "dataLuaBytes": 720579,
+      "portraitLuaBytes": 2646526,
+      "luaBytes": 7003376,
+      "deltaLuaBytes": 1465981,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 2,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-1.json.gz",
+        "bytes": 411862,
+        "sha256": "e0e7c28f5c0817555503b485a3766b5a723cef98dcf1c4ee10910010b0f77823"
+      },
+      "payloadSha256": "43e21c0abf9ac309110d71dac1e3607d60d4a0db7241ac9c7d7dd3f491d1c0a5",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 720579,
+          "sha256": "9563cf7ace37cbcf6ea3a41877fd88db5d1f80ae2d69681b31c93a19fed02e37"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 2646526,
+          "sha256": "06c5e881026bd3687ab75edd1db5cfa944e8e4b01cf85aa7917acded5b02cce8"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 1,
+      "totalV4Roles": 5,
+      "cards": 375,
+      "dataLuaBytes": 720579,
+      "portraitLuaBytes": 2389770,
+      "luaBytes": 6746620,
+      "deltaLuaBytes": 1209225,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 2,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-1.json.gz",
+        "bytes": 372756,
+        "sha256": "b2e0eccbce17ac07fbdf5aecf8eca3e6fa27842ccfb352fb42099b9a59149ad2"
+      },
+      "payloadSha256": "01957c9eca3f3fe48949659d4a787eba6249467d980c0b2859ccf8bd584d5f5c",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 720579,
+          "sha256": "9563cf7ace37cbcf6ea3a41877fd88db5d1f80ae2d69681b31c93a19fed02e37"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 2389770,
+          "sha256": "cf296e873de9203312a20a637ef87a4b2ffcd1cffdda8c2b8512466e7a0c6410"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 1,
+      "totalV4Roles": 5,
+      "cards": 375,
+      "dataLuaBytes": 720579,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 5680070,
+      "deltaLuaBytes": 142675,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-1.json.gz",
+        "bytes": 227157,
+        "sha256": "e9f57eb73d2c558b9bb8dd48663e92555efaea3b84389c285bb7cdc7a14744ef"
+      },
+      "payloadSha256": "0da1b089e8ce06bd9526bc0be1d7ed3616f077d1c9cb9c7ce1b72256885a1a61",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 720579,
+          "sha256": "9563cf7ace37cbcf6ea3a41877fd88db5d1f80ae2d69681b31c93a19fed02e37"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 1,
+      "totalV4Roles": 5,
+      "cards": 375,
+      "dataLuaBytes": 720579,
+      "portraitLuaBytes": 76,
+      "luaBytes": 4121262,
+      "deltaLuaBytes": -1416133,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-1.json.gz",
+        "bytes": 41654,
+        "sha256": "bd7e1e33eb50662a9d974328f8c792e68d94f866fae4c4ca2df38fa90c30f786"
+      },
+      "payloadSha256": "515e6bb223d67a539285aa29043ec2f040799a837d67fbc02c091a866990c9c8",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 720579,
+          "sha256": "9563cf7ace37cbcf6ea3a41877fd88db5d1f80ae2d69681b31c93a19fed02e37"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "independent",
+      "additionalRoles": 2,
+      "totalV4Roles": 6,
+      "cards": 450,
+      "dataLuaBytes": 862673,
+      "portraitLuaBytes": 3969766,
+      "luaBytes": 8468710,
+      "deltaLuaBytes": 2931315,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 3,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-2.json.gz",
+        "bytes": 604256,
+        "sha256": "89f8f3137128994d907c72af8b74438f3aaafa79fae3ff25adbf465b2241e2c4"
+      },
+      "payloadSha256": "a80b8f2555406a277906cb0ac38294b5d14e82bf8ce061cf9c9209cd214bc4fb",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 862673,
+          "sha256": "ab48f154b9c9f89a67b1f61d9d9418ef91f98dfe66c795c2640ed8f7c8f116b4"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 3969766,
+          "sha256": "a34bb5f0a40663c567f5b3bfc78afeedf5b0dada29fff481d9e1d2b6e5218525"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 2,
+      "totalV4Roles": 6,
+      "cards": 450,
+      "dataLuaBytes": 862673,
+      "portraitLuaBytes": 3584632,
+      "luaBytes": 8083576,
+      "deltaLuaBytes": 2546181,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 3,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-2.json.gz",
+        "bytes": 545827,
+        "sha256": "c5f3b5b67d37513abd9068be9313b847270dd9bf76647cfd1dc2dafbc61042a5"
+      },
+      "payloadSha256": "10508f7e0bc6387b519a00f5d491e76c024ef7b51010314fdeff9ea79e46960b",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 862673,
+          "sha256": "ab48f154b9c9f89a67b1f61d9d9418ef91f98dfe66c795c2640ed8f7c8f116b4"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 3584632,
+          "sha256": "a7d6547de61b7cdcf4afd57a10ecc6b8dc0628a7f137793188dc09b7a13be4cc"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 2,
+      "totalV4Roles": 6,
+      "cards": 450,
+      "dataLuaBytes": 862673,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 5822164,
+      "deltaLuaBytes": 284769,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-2.json.gz",
+        "bytes": 234298,
+        "sha256": "cc3bf629f2943ddc88c6249552e4267383bae7fa0360b7a2402991d6f9add9dc"
+      },
+      "payloadSha256": "bf8a314146e9a2614f50b6efdce77e38c42b8035948dfb5a31348196699e40d2",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 862673,
+          "sha256": "ab48f154b9c9f89a67b1f61d9d9418ef91f98dfe66c795c2640ed8f7c8f116b4"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 2,
+      "totalV4Roles": 6,
+      "cards": 450,
+      "dataLuaBytes": 862673,
+      "portraitLuaBytes": 76,
+      "luaBytes": 4263356,
+      "deltaLuaBytes": -1274039,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-2.json.gz",
+        "bytes": 49022,
+        "sha256": "866301a4e8e2e9dd567d55b1269ae2fed2c66938f57ac76860c11391405f4028"
+      },
+      "payloadSha256": "79748976ceadd9392c6bcf419bb9c900aad4f427b7f57aeb8f07afd5a763d0d1",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 862673,
+          "sha256": "ab48f154b9c9f89a67b1f61d9d9418ef91f98dfe66c795c2640ed8f7c8f116b4"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "independent",
+      "additionalRoles": 10,
+      "totalV4Roles": 14,
+      "cards": 1050,
+      "dataLuaBytes": 2007059,
+      "portraitLuaBytes": 14555686,
+      "luaBytes": 20199016,
+      "deltaLuaBytes": 14661621,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 11,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-10.json.gz",
+        "bytes": 2143252,
+        "sha256": "235f8ae06556c4cf6ea20b705b587c00ea8342e172d5dbfd96154b059909bb08"
+      },
+      "payloadSha256": "108369e189e558067e8654b3d767cb0faab8c08f6fe2914e3dab436a967c3ce2",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 2007059,
+          "sha256": "5ea0f41250c6eca966aa37291fcf29384f18213da9d21c4f52ee62d546283ad9"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 14555686,
+          "sha256": "858615a101f2bbe10581f3389bac874c0c96fe0236dd7b8a504b2fa881f96d0d"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 10,
+      "totalV4Roles": 14,
+      "cards": 1050,
+      "dataLuaBytes": 2007059,
+      "portraitLuaBytes": 13143528,
+      "luaBytes": 18786858,
+      "deltaLuaBytes": 13249463,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 11,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-10.json.gz",
+        "bytes": 1931619,
+        "sha256": "f23d43940c16684398f314f917b7856cfaea5da6714f255a25c6bde50deff0c3"
+      },
+      "payloadSha256": "f76ab36d4ee62b7f7c5c795e46672b3b624b7f2229d6bd4ebaacee28a5fd2deb",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 2007059,
+          "sha256": "5ea0f41250c6eca966aa37291fcf29384f18213da9d21c4f52ee62d546283ad9"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 13143528,
+          "sha256": "21da900192b0619460dacf12d3d2bef40eb001aad209ec2892065b6ffab20975"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 10,
+      "totalV4Roles": 14,
+      "cards": 1050,
+      "dataLuaBytes": 2007059,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 6966550,
+      "deltaLuaBytes": 1429155,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-10.json.gz",
+        "bytes": 293331,
+        "sha256": "f68d46642bacc76559209b83a4f6c843838a3370b92c9601fc931e6021380e7d"
+      },
+      "payloadSha256": "6395020079fad2ce0540f27e30132829f3c40a3407d69de1ccd1b81e903b8b70",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 2007059,
+          "sha256": "5ea0f41250c6eca966aa37291fcf29384f18213da9d21c4f52ee62d546283ad9"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 10,
+      "totalV4Roles": 14,
+      "cards": 1050,
+      "dataLuaBytes": 2007059,
+      "portraitLuaBytes": 76,
+      "luaBytes": 5407742,
+      "deltaLuaBytes": -129653,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-10.json.gz",
+        "bytes": 107835,
+        "sha256": "c47650138bc386c424c464650fb85aa7e4f978dfcffcb75e3bff7d97d7dc56a5"
+      },
+      "payloadSha256": "36fb269b04affc1971342e6e84c08380f3938a6c34add7ec96ac90afb03a841f",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 2007059,
+          "sha256": "5ea0f41250c6eca966aa37291fcf29384f18213da9d21c4f52ee62d546283ad9"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "independent",
+      "additionalRoles": 20,
+      "totalV4Roles": 24,
+      "cards": 1800,
+      "dataLuaBytes": 3438863,
+      "portraitLuaBytes": 27788086,
+      "luaBytes": 34863220,
+      "deltaLuaBytes": 29325825,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 21,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-20.json.gz",
+        "bytes": 4068862,
+        "sha256": "61cb487ba8dd7ce5447764948b487d5c396084cd5eab439a031b5af389920dcf"
+      },
+      "payloadSha256": "26fe9aae8a700c1c10bd74a0276462c2e1d06536b598461375f26ae9a2a1994a",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 3438863,
+          "sha256": "1d58ff23511170e9321246920e3eea4a658f20772dad08e8a4d8ff7299d0e51a"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 27788086,
+          "sha256": "ea04f6728216131b95aae80bf359dae659396f9fc0fb12d20868f4c41b82f89d"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 20,
+      "totalV4Roles": 24,
+      "cards": 1800,
+      "dataLuaBytes": 3438863,
+      "portraitLuaBytes": 25092148,
+      "luaBytes": 32167282,
+      "deltaLuaBytes": 26629887,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 21,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-20.json.gz",
+        "bytes": 3662145,
+        "sha256": "aa3cacce2ad594b25f92d662b2af4a33d7edd1b2d51c75625d9a6cbce2d09383"
+      },
+      "payloadSha256": "fe06a6afb33e69f53369aa8d15759a365f9c6e3670389af6a779a33529fd853c",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 3438863,
+          "sha256": "1d58ff23511170e9321246920e3eea4a658f20772dad08e8a4d8ff7299d0e51a"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 25092148,
+          "sha256": "57ec78746d90c3ae336cab36e6be5895543b4e1d35fa63705fb9ddf527c67567"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 20,
+      "totalV4Roles": 24,
+      "cards": 1800,
+      "dataLuaBytes": 3438863,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 8398354,
+      "deltaLuaBytes": 2860959,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-20.json.gz",
+        "bytes": 368176,
+        "sha256": "a8223dc4404104ef3232e5b2f440f3910644a652fc8ecc1ce2383f64ac1078e2"
+      },
+      "payloadSha256": "9b3eecfb34cd6c315d4a5ba216f87492267629382d62f2a3715bbac8796ba7cc",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 3438863,
+          "sha256": "1d58ff23511170e9321246920e3eea4a658f20772dad08e8a4d8ff7299d0e51a"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 20,
+      "totalV4Roles": 24,
+      "cards": 1800,
+      "dataLuaBytes": 3438863,
+      "portraitLuaBytes": 76,
+      "luaBytes": 6839546,
+      "deltaLuaBytes": 1302151,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-20.json.gz",
+        "bytes": 182576,
+        "sha256": "a3184b8c3cca1b5bdb1e9b8a5a7887727f4afe2cc22d6051e19cd8c0647f39ed"
+      },
+      "payloadSha256": "c8126eaf6b0819d47bd975626a40725df2b1eef684ff49303dd43dfce47a60fd",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 3438863,
+          "sha256": "1d58ff23511170e9321246920e3eea4a658f20772dad08e8a4d8ff7299d0e51a"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "independent",
+      "additionalRoles": 30,
+      "totalV4Roles": 34,
+      "cards": 2550,
+      "dataLuaBytes": 4868024,
+      "portraitLuaBytes": 41020486,
+      "luaBytes": 49524781,
+      "deltaLuaBytes": 43987386,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 31,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-30.json.gz",
+        "bytes": 5992703,
+        "sha256": "3a6b8cd9ac6fc69122ddc9d4ee964a4661bd3cf20fa8322da1331c98acb3b97d"
+      },
+      "payloadSha256": "295edebc9cff19651c041d4ae3e6072849f21fa7add7867263fcd47aa1f805b8",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 4868024,
+          "sha256": "e8c3888ec01d5366cc478ad0bf8cb1c4908057cd20195382889f7403619369ea"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 41020486,
+          "sha256": "4dcb53919d3e8bb6435951b17f4ea3f6d76c427028625cd95e1dfb71be62188e"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 30,
+      "totalV4Roles": 34,
+      "cards": 2550,
+      "dataLuaBytes": 4868024,
+      "portraitLuaBytes": 37040768,
+      "luaBytes": 45545063,
+      "deltaLuaBytes": 40007668,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 31,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-30.json.gz",
+        "bytes": 5393077,
+        "sha256": "1f7e04d0506e7370d824da7f41ba12b9be777ce9d99c99e50fbb51f13c86786e"
+      },
+      "payloadSha256": "009d634423bb6b5c1138d9625aeaaf31d06bb311c72b50300187316dbc31514b",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 4868024,
+          "sha256": "e8c3888ec01d5366cc478ad0bf8cb1c4908057cd20195382889f7403619369ea"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 37040768,
+          "sha256": "857d1bbdaeaa18715061111ad2e037afc68e9cae298a741954f84cd4b7f2a17d"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 30,
+      "totalV4Roles": 34,
+      "cards": 2550,
+      "dataLuaBytes": 4868024,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 9827515,
+      "deltaLuaBytes": 4290120,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-30.json.gz",
+        "bytes": 441489,
+        "sha256": "a786f1737e2a3e54a1273e3b26748fd5bbf6b152ed925b244cc3cac6a8664f2d"
+      },
+      "payloadSha256": "0c9ff8ee2772ac62c8d3c25aed0b6a0bda3159ddecdc1882bb1bfd7cf0c95968",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 4868024,
+          "sha256": "e8c3888ec01d5366cc478ad0bf8cb1c4908057cd20195382889f7403619369ea"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 30,
+      "totalV4Roles": 34,
+      "cards": 2550,
+      "dataLuaBytes": 4868024,
+      "portraitLuaBytes": 76,
+      "luaBytes": 8268707,
+      "deltaLuaBytes": 2731312,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-30.json.gz",
+        "bytes": 256089,
+        "sha256": "1e5d87848911be573c9a747dab95dff46526b0d4534bd472b38a321c7d1ab615"
+      },
+      "payloadSha256": "03ba672d45541b7d4891caf9f8a4e875630b1476e9707e0637f10e5985ec7bcc",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 4868024,
+          "sha256": "e8c3888ec01d5366cc478ad0bf8cb1c4908057cd20195382889f7403619369ea"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "independent",
+      "additionalRoles": 100,
+      "totalV4Roles": 104,
+      "cards": 7800,
+      "dataLuaBytes": 14882723,
+      "portraitLuaBytes": 133647286,
+      "luaBytes": 152166280,
+      "deltaLuaBytes": 146628885,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 101,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "independent-100.json.gz",
+        "bytes": 19463476,
+        "sha256": "aa5b51212fa9f4bac92453517119d1fc9f30a35d590d440e3b419c0b173626c6"
+      },
+      "payloadSha256": "c2006e4090e5a781b2d4d35ab274aa7651cf3ee5f98973c37cbe58d9018ec162",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 14882723,
+          "sha256": "50a38224f26ecc49caa250bfaed6e024a5a9dbc0272c713903347551c5fa68b3"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 133647286,
+          "sha256": "6b577ecd8822daf8fe7ec1fba91421f662de103bdf5bcbdc3a35acdd405b5f5b"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "trimmed",
+      "additionalRoles": 100,
+      "totalV4Roles": 104,
+      "cards": 7800,
+      "dataLuaBytes": 14882723,
+      "portraitLuaBytes": 120681108,
+      "luaBytes": 139200102,
+      "deltaLuaBytes": 133662707,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 101,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "trimmed-100.json.gz",
+        "bytes": 17509886,
+        "sha256": "3013cd6edd9ea3e6447b7347507fbc890ce8e3929f60e7a71fdcf13c626f8cab"
+      },
+      "payloadSha256": "0433c8f61ee28661f6561ef60335fafc779516b558e808d4a232a01ddcabf73c",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 14882723,
+          "sha256": "50a38224f26ecc49caa250bfaed6e024a5a9dbc0272c713903347551c5fa68b3"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 120681108,
+          "sha256": "68e9dc3b7d871455c432f0f61805fbb7f14eada495e2861377aa04e6aab55778"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "shared",
+      "additionalRoles": 100,
+      "totalV4Roles": 104,
+      "cards": 7800,
+      "dataLuaBytes": 14882723,
+      "portraitLuaBytes": 1323220,
+      "luaBytes": 19842214,
+      "deltaLuaBytes": 14304819,
+      "layoutJsonBytes": 4636381,
+      "templateJsonBytes": 137234,
+      "controls": 28670,
+      "packedArtCopies": 1,
+      "uniqueArtPacks": 1,
+      "fixedRuntimeHostContract": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "hiddenBuild": true,
+        "cache": true,
+        "revealGroupsPerFrame": 4,
+        "selectionUses": "lowpolyLumine",
+        "assets": [
+          {
+            "asset": "traveler-geo/portraits/avatar96",
+            "images": 457,
+            "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+            "groups": 8,
+            "pages": 1
+          },
+          {
+            "asset": "traveler-geo/idle-approved-v1",
+            "images": 7303,
+            "sourceSha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+            "groups": 138,
+            "pages": 18,
+            "jsonSha256": "02a8e0a00b974d90124901328a8ae5e45286d2692b944226d657e5d67e26a1ed",
+            "periodSeconds": 2.2,
+            "motion": "approved-source-field-native-band-approximation",
+            "officialCapacity": "not_measured",
+            "devicePerformance": "not_run"
+          },
+          {
+            "asset": "lowpolyLumine",
+            "images": 1600,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 0
+          }
+        ],
+        "instances": 3,
+        "batchSize": 64,
+        "peakDynamicControls": 9553,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "shared-100.json.gz",
+        "bytes": 959663,
+        "sha256": "fd3e441fe27b988e39af25d7eb9e8ac2abcc6c00ff2a30cdbd1d43df394504c4"
+      },
+      "payloadSha256": "0b90e37cdf6aa8e7442d4f6084010e1d5acc9bbb0b2f3d110b81aaddb8e59569",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_original_v4_data.lua",
+          "bytes": 14882723,
+          "sha256": "50a38224f26ecc49caa250bfaed6e024a5a9dbc0272c713903347551c5fa68b3"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\current\\abyss_traveler_portrait_assets.lua",
+          "bytes": 1323220,
+          "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    },
+    {
+      "scheme": "fallback",
+      "additionalRoles": 100,
+      "totalV4Roles": 104,
+      "cards": 7800,
+      "dataLuaBytes": 14882723,
+      "portraitLuaBytes": 76,
+      "luaBytes": 18283406,
+      "deltaLuaBytes": 12746011,
+      "layoutJsonBytes": 1669749,
+      "templateJsonBytes": 22462,
+      "controls": 14373,
+      "packedArtCopies": 0,
+      "uniqueArtPacks": 0,
+      "syntheticRuntimeExecuted": false,
+      "artifact": {
+        "path": "fallback-100.json.gz",
+        "bytes": 773963,
+        "sha256": "8e8540d365cefe11d0db35b9450c08d4f056878d78ec17fe98b0fed4b082c9a3"
+      },
+      "payloadSha256": "ca1d99d9f8f9895dfdffeda972e89d57666ec26be7501ffabeeac2687e99248e",
+      "mappedModuleCount": 364,
+      "changedModules": [
+        {
+          "name": "abyss_original_v4_data",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_original_v4_data.lua",
+          "bytes": 14882723,
+          "sha256": "50a38224f26ecc49caa250bfaed6e024a5a9dbc0272c713903347551c5fa68b3"
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "path": "F:\\New folder\\.worktrees\\backlog-continuation-1115\\build\\capacity-105\\replay-20261115-g\\generated\\fallback\\abyss_traveler_portrait_assets.lua",
+          "bytes": 76,
+          "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c"
+        }
+      ],
+      "compressionMeaning": "gzip archive for evidence only; repetition is highly compressible; not platform encoding"
+    }
+  ],
+  "previousFNumericAndPayloadComparison": "all 28 rows identical; f source preserved in source-revision-f.json; not a performance comparison",
+  "sourceDirty": true,
+  "rawArtifactsKeptInBuild": true,
+  "officialImport": "not_run",
+  "phone": "UNVERIFIED",
+  "longTermProductionGO": "UNVERIFIED"
+}

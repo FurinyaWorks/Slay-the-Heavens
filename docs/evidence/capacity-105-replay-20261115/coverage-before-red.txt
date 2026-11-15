@@ -1,0 +1,35 @@
+✔ replay never overwrites existing output or repository sources (18.9744ms)
+﹣ replay refuses a real symbolic-link parent (2.3944ms) # filesystem does not expose the junction as a Node symbolic link
+✔ source drift and head drift reject rather than publishing a current result (2.6624ms)
+✔ same-byte-size changes to unrelated mapped modules are not accepted (0.5564ms)
+✔ readback rejects absent, corrupt, escaping or numerically inconsistent artifacts (1.4737ms)
+✖ readback requires exactly the complete four schemes by seven role counts (0.2875ms)
+✔ persisted module identity, count and total are verified independently (33.4666ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 5
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 65.6212
+
+✖ failing tests:
+
+test at build\capacity-105-negative-controls\coverage-before\replay.test.mjs:50:1
+✖ readback requires exactly the complete four schemes by seven role counts (0.2875ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/backlog-continuation-1115/build/capacity-105-negative-controls/coverage-before/replay.test.mjs:51:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /coverage/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
