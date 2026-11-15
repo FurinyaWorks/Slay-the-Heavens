@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "reviewer_task": "胡桃呈现独立评审",
+  "role": "independent_presentation_review",
+  "runtime_execution_id": "unavailable",
+  "run_date": "2026-11-15",
+  "candidate_id": "v6-e-draw1-b1-20261115",
+  "candidate_blob": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+  "implementation_head_at_read": "b911e4e089adda3695259e7c7b6032eb982a0823",
+  "prior_presentation_head": "6ce160d18fe9ba6acf892b6c6bb6af5b2e8830f8",
+  "audit_mode": "GitHub connector immutable-source static examination; no local file, no Node VM execution, no headless Chromium in this run",
+  "counts_from_source": {
+    "extra_DSL_card_entries": 57,
+    "legacy_C_entries": 18,
+    "unique_card_names": 75,
+    "rarities": {
+      "基础": 6,
+      "普通": 26,
+      "罕见": 25,
+      "稀有": 18
+    },
+    "sources": {
+      "original": 35,
+      "voice": 22,
+      "constellation": 5,
+      "quote": 3,
+      "status": 2,
+      "generic": 3,
+      "skill": 3,
+      "talent": 2
+    }
+  },
+  "source_verified": {
+    "fetch_file_blob_matches_manifest": true,
+    "legacy_compact_separate_from_CARDS_and_switch": true,
+    "extra_cards_use_effect_arrays_for_text": true,
+    "starter_deck_count_from_literal": 10,
+    "normal_reward_pool_count_by_derivation": 69,
+    "new_E_play_draw_count": 1,
+    "new_E_can_play_hp_at_least": 7,
+    "exhaust_and_restart_handlers_present": true,
+    "copyReport_retains_all_logs_code_path": true,
+    "copy_false_has_manual_textarea_fallback": true,
+    "prepAttack_compact_includes_本回合": true,
+    "hearth_upgraded_compact_includes_半血": true
+  },
+  "not_executed": [
+    "75x2 runtime play",
+    "actual desktop UI click",
+    "390px UI screenshot",
+    "clipboard permission and false-return",
+    "natural five-battle play",
+    "real phone and platform",
+    "all-source direct official verification"
+  ],
+  "result": "CHANGES_REQUESTED",
+  "severity_counts": {
+    "high": 1,
+    "medium": 2,
+    "verification_blocked": 3
+  },
+  "evidence_limit": "Static code observations only; no fabricated execution logs, screenshots, user approval, or repeat of baseline headless runs"
+}
