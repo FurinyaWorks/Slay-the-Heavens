@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "compression": "lossless gzip; decompress to obtain unchanged raw stdout/stderr",
+  "files": [
+    {
+      "file": "build-data.log.gz",
+      "rawSha256": "375f9139cb4732d6047d241483ea6904385348ae3b4b2dfdc13116ce80601cc6",
+      "gzipSha256": "c9e1d6fcb8eab63b936fcb40737b13209d4bbdb4eabbd75c425d4468cb1489c9",
+      "rawBytes": 108,
+      "gzipBytes": 113
+    },
+    {
+      "file": "build-ui.log.gz",
+      "rawSha256": "a273c886b8998942a6078b7921aea990f6e26d09ea096e553423f54c17fcbebf",
+      "gzipSha256": "ad235a0d8f1f89b574818744cc383ad99d855058c94c508789e262ddcae603a3",
+      "rawBytes": 119,
+      "gzipBytes": 124
+    },
+    {
+      "file": "engineering-green.log.gz",
+      "rawSha256": "2e66c23c80829a0d4d00cf2075811e8b278ed283f0800953560e1e0d9d77c82c",
+      "gzipSha256": "25ebfd9836cd099aebf163245cdf4f12f8451c842a63561cc57394c83a7d6af0",
+      "rawBytes": 377,
+      "gzipBytes": 278
+    },
+    {
+      "file": "engineering.log.gz",
+      "rawSha256": "88bfa2dfb9352dd6c96862997ddd9882194253c37e7c29cdcc2cfaa2395598c0",
+      "gzipSha256": "2d9d2876ef0c17b438e91ae5cdc4af6fb64c95a77371ced8f8709f75e06f10fd",
+      "rawBytes": 603,
+      "gzipBytes": 212
+    },
+    {
+      "file": "green.tap.gz",
+      "rawSha256": "1313b054447f69aff8a9f94aab7fd144bd27b370f1970136fa802747bfbd7b1c",
+      "gzipSha256": "d6f2f395faacdf01f508b79de9291767867d7187d6a1469e9cbe10f57817645f",
+      "rawBytes": 1842,
+      "gzipBytes": 671
+    },
+    {
+      "file": "lowcost.tap.gz",
+      "rawSha256": "280e0afde38dda7aa21059794e8fd6aba1044d76f93536523f9047825220191d",
+      "gzipSha256": "e3ad7dcdd50395dbffd1aa021864d2612d9605128bb2af6a52807a5a5bb8c30f",
+      "rawBytes": 678,
+      "gzipBytes": 305
+    },
+    {
+      "file": "native-contract.tap.gz",
+      "rawSha256": "975289a24b77d379d8beb01b125994c1f87d3877f6159cc8f14645f30e22f251",
+      "gzipSha256": "3cbdfcdf5ccb810387d4d976b3f93da4adc1cc28f8f8acfda31c6e3765638878",
+      "rawBytes": 1716,
+      "gzipBytes": 602
+    },
+    {
+      "file": "red-with-dependencies.tap.gz",
+      "rawSha256": "eb4e8eef8f15bd0e6f8f7d81f0db734a521d01941a8dd95e35e71c3b4dd4334e",
+      "gzipSha256": "d09bdb104adc404472d7f8777e9be8c53593fb18f9570ea6aa351b8859608fb9",
+      "rawBytes": 4004,
+      "gzipBytes": 1050
+    },
+    {
+      "file": "red.tap.gz",
+      "rawSha256": "677dc231f684a9a767960e6caf3bfb2e4b333bcbd616b69341d4bf45654c7f70",
+      "gzipSha256": "39cade9c38567061fd1dae170e25bf942af7a1c62d04ef5a43d634caa762a98f",
+      "rawBytes": 3763,
+      "gzipBytes": 1001
+    },
+    {
+      "file": "source-contract-current.tap.gz",
+      "rawSha256": "1a943b44fbfbb276377a6cbccf43bf6b9c68bc4c19f16e53bceccaf06ba84f38",
+      "gzipSha256": "64aef71bf37acc234fbaa09c27bb4b24e9a7247f3d50447b8d0a1ad2d0c07d14",
+      "rawBytes": 95979,
+      "gzipBytes": 13501
+    }
+  ]
+}
