@@ -5,7 +5,9 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import * as Scene from '../scripts/menu-red-scene.mjs';
 const children=n=>n.controls??n.children??[],all=n=>[n,...children(n).flatMap(all)];
 test('minimal menu uses the supplied native background, fixed input and two actions',()=>{
- const layout=gameLayout();applyV25MenuLayout(layout,nativeTheme);applyV25MenuLayout(layout,nativeTheme);
+ const layout=gameLayout(),beforeMenu=all(layout).find(n=>n.name==='menuPanel');
+ const liveHits=Object.fromEntries(['start','continueRun'].map(name=>[name,children(children(beforeMenu).find(n=>n.name===name)).find(n=>n.name==='hit')]));
+ applyV25MenuLayout(layout,nativeTheme);applyV25MenuLayout(layout,nativeTheme);
  const menu=all(layout).find(n=>n.name==='menuPanel');
  const scene=all(menu).find(n=>n.name==='menuRedBackground');assert(scene,'new reference must be in the actual layout');
  assert.equal(children(menu).filter(n=>n.name==='menuRuinsScene').length,1,'stable scene handle remains idempotent');
@@ -13,11 +15,25 @@ test('minimal menu uses the supplied native background, fixed input and two acti
  assert(all(scene).length<=1800,'Total background controls, including transform holders, must remain inside the user budget');
  for(const n of all(scene)){assert(['container','image'].includes(n.kind));assert(children(n).length<=60);assert(!n.focusable&&!n.scripts);if(n.kind==='image'){assert([100001,100002,100003].includes(n.image));assert(!n.fill&&!n.feather,'static background has no per-triangle stencil/soft masks');}}
  assert.equal(children(menu).find(n=>n.name==='title').visible,false);
+ const mark=all(menu).find(n=>n.name==='titleMark');
+ assert(mark,'the approved static title is present in the live menu tree');
+ assert(all(mark).some(n=>n.name==='letter0'),'title uses static reference lettering');
+ assert(all(mark).length<=500,'title control budget includes transform holders');
+ assert.equal(all(menu).filter(n=>n.name==='titleMark').length,1,'static title is not duplicated on refresh');
+ assert(!all(mark).some(n=>n.kind==='cursorArea'),'title never intercepts input');
  assert(!all(menu).some(n=>['图鉴','游戏记录'].includes(n.text?.content)));
- for(const name of ['start','titleQuit']){
+ const chrome=children(menu).find(n=>n.name==='v25MainMenu');
+ for(const name of ['start','continueRun','titleQuit']){
   const b=children(menu).find(n=>n.name===name),label=children(b).find(n=>n.name==='label'),hit=children(b).find(n=>n.name==='hit');
+  assert(children(menu).indexOf(chrome)<children(menu).indexOf(b),'shared decoration must remain below '+name);
+  if(liveHits[name])assert.equal(hit,liveHits[name],'retain the existing '+name+' transaction');
   assert.deepEqual(hit.size,[280,56]);assert.equal(label.text.outline,false);assert.equal(label.text.autoSize,false);
+  const face=children(b).find(n=>n.name==='v25MenuFace');
+  assert.deepEqual(children(face).map(n=>n.name),['normal','hover','pressed','disabled']);
+  assert.equal(children(children(face)[1]).find(n=>n.name==='arrowTop').opacity,1,'hover arrow is immediate');
+  assert.equal(children(children(face)[3]).find(n=>n.name==='arrowTop').opacity,0,'disabled arrow is hidden');
  }
+ assert.deepEqual(children(menu).find(n=>n.name==='continueRun').position,[nativeTheme.menuPresentation.start[0],nativeTheme.menuPresentation.start[1]+64]);
 });
 test('one unmasked native triangle preserves all three vertices under affine placement',()=>{
  const rotate=([x,y],deg)=>{const a=deg*Math.PI/180;return[x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a)]};

@@ -1,0 +1,66 @@
+{
+  "base-build-data.log.gz": {
+    "uncompressedSha256": "795fb7fb8bc4b08a404b8264a87d3ad9625090c8d5d92668a11f15d90ed687a5",
+    "bytes": 34
+  },
+  "base-build-ui.log.gz": {
+    "uncompressedSha256": "0d69c17c4ec2190832766c94be6842d45295ab03bb8138faca3b3f62e2711dc2",
+    "bytes": 53
+  },
+  "red-title.log.gz": {
+    "uncompressedSha256": "c15e5aee33788cd893d9a57bf49cc69014aac2e4588cc9b12dc9af8303851256",
+    "bytes": 1194
+  },
+  "green-title.log.gz": {
+    "uncompressedSha256": "710663f0001e61ec081b1c100b25e5b639088777ca41e8809f5e349b00e01004",
+    "bytes": 313
+  },
+  "green-build-default.log.gz": {
+    "uncompressedSha256": "0d69c17c4ec2190832766c94be6842d45295ab03bb8138faca3b3f62e2711dc2",
+    "bytes": 53
+  },
+  "targeted-host.log.gz": {
+    "uncompressedSha256": "f7d072bbebe32a0869b16240e56df41fbfa04259e88507b76d9896c7fa7d6118",
+    "bytes": 1321
+  },
+  "profiles.log.gz": {
+    "uncompressedSha256": "f160aa2b24775c7e016c90cf9d238422138830fa5517e4a119fe4b4c6d457ebe",
+    "bytes": 725
+  },
+  "profiles-initial-theme-mismatch.log.gz": {
+    "uncompressedSha256": "de7d69e0ac73283486a3f38cb047a327081d688da20ecc571d6f2a66c2628d4c",
+    "bytes": 1102
+  },
+  "generated-host-official.log.gz": {
+    "uncompressedSha256": "0d368441767772a28c13cf9b8acc0eb1d41554591bd711b85370c302899b438e",
+    "bytes": 55
+  },
+  "generated-host-v25.log.gz": {
+    "uncompressedSha256": "0d368441767772a28c13cf9b8acc0eb1d41554591bd711b85370c302899b438e",
+    "bytes": 55
+  },
+  "generated-host-official-initial-theme-mismatch.log.gz": {
+    "uncompressedSha256": "aa6f6c20bd5f6ee0036d6c5e7b650053d7b345695e5d086786fea998f7f01d2b",
+    "bytes": 580
+  },
+  "frozen-contract.log.gz": {
+    "uncompressedSha256": "0cfbbdc6e577bba704a528d6cfd05685ff0ddbdad9e14f8096e2069b7437353c",
+    "bytes": 4662
+  },
+  "build-theme.log.gz": {
+    "uncompressedSha256": "ed1ddcad564d886d7266081c09922b13cdab5c74d20cf4b70311c89930143bbd",
+    "bytes": 28
+  },
+  "hover-initial-cli-usage.log.gz": {
+    "uncompressedSha256": "f3a0d6ee2c53fa2c12603803fb223626480d3b1ec745ab89eca9980f1f1fb5ec",
+    "bytes": 64
+  },
+  "hover-continuity.log.gz": {
+    "uncompressedSha256": "8b502b3f8b8ec20e6d4c0c8873cf03a4c4030c16222dd0730e2d75c66f922c2f",
+    "bytes": 85
+  },
+  "four-state.log.gz": {
+    "uncompressedSha256": "e4c5f3e04dbcaa3c1d944ccea750328b6aa145fd6fd55159d178798452b3b65f",
+    "bytes": 83
+  }
+}
