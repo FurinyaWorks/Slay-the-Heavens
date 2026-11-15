@@ -1,0 +1,21 @@
+✔ default Tiny House reuses the real Neow host with readable once-only rewards (5582.243939ms)
+Official-assets cottage (separately materialized):
+✔ official Tiny House reuses the real Neow host with readable once-only rewards (6231.23362ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6483.604279
+Default-layout potion (regenerated from actual base):
+✔ popup accepts a uniquely owned release when native Click omits its ID without weakening pointer boundaries (24929.817334ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25110.553065

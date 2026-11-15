@@ -1,0 +1,28 @@
+{
+  "formalAudioCliDefaults": {
+    "releaseCandidate": true,
+    "workKey": "contest-2026",
+    "artFeatures": {
+      "cards": false,
+      "menuBackground": true,
+      "selectionAvatar": true,
+      "battlePortrait": true,
+      "monsters": false
+    }
+  },
+  "evidencePreviewCli": {
+    "releaseCandidate": false,
+    "workKey": "contest-2026",
+    "officialAssets": true,
+    "nativePageLifecycle": true,
+    "artFeatures": {
+      "cards": false,
+      "menuBackground": false,
+      "selectionAvatar": true,
+      "battlePortrait": true,
+      "monsters": false
+    }
+  },
+  "combinedFormalOfficialRejected": true,
+  "lifecycleOnlyFormalRejected": true
+}

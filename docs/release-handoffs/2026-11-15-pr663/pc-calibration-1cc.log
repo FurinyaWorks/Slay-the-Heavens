@@ -1,0 +1,12 @@
+✔ release PC actual execution guards reject job drift while forecast targets stay diagnostic (8.223121ms)
+✔ release PC raw Full inventory retains all tests, conservative costs and original execution guards (986.275561ms)
+ℹ win32: raw 887 JS / 1431 Lua; forecast 1766189ms; target 1800000ms; overrun 0ms; unchanged execution guard 2700000ms; not hosted completion
+ℹ linux: raw 887 JS / 1431 Lua; forecast 1196961ms; target 1200000ms; overrun 0ms; unchanged execution guard 1800000ms; not hosted completion
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13668.359556

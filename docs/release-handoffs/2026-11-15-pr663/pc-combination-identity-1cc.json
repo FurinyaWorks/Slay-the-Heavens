@@ -1,0 +1,48 @@
+{
+  "releaseBase": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "releaseBaseTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "frozenBootstrap": "b67226945c2be47c8fff31f1362412b973f68875",
+  "pcHead": "00ff9b272625942a4d1f22085722142baac9ee2f",
+  "unresolvedMergeTree": "aeb8f02607f5a26b33a4191fc56e055c0e422338",
+  "resolvedCandidateTree": "17859b1fbc1f190763bf012777b6adfbfa6ba0ae",
+  "records": {
+    ".gitattributes": {
+      "sha256": "2a925d1b5ebcb6a1891509a82660fb2a741d5752a66ec267c04412589bdf0752",
+      "gitBlob": "d5e9aca7f6dd35a1a2ff8ce0c0d6d00ed5baab27",
+      "bytes": 129819
+    },
+    "tests/ci-complete-calibration.test.mjs": {
+      "sha256": "672f240ad99ea169dcd700e009437630a9e8b9798bdd12efc308394a359a9065",
+      "gitBlob": "c66b232a54a53eb04ad17e7b397f879bf7354809",
+      "bytes": 195964
+    },
+    "tests/helpers/integrated-ci-source.mjs": {
+      "sha256": "38317de0517ffdbac12c52d066a1d28e78c27d8feb877043a3a946ff88d7ff2f",
+      "gitBlob": "b25fb39abba76435b814447e8001124ffdc434df",
+      "bytes": 6525
+    },
+    "tests/integrated-ci-source.cases.mjs": {
+      "sha256": "fe803fe5b6bd86ac57d01422969685b360a3c74c9ef71fd5271e5fba4c59415a",
+      "gitBlob": "52725a5510cab1d8f01059226a012570afb60751",
+      "bytes": 8395
+    },
+    "tests/release-pc-source.test.mjs": {
+      "sha256": "35056dce860697e96c41232342392798e95aab47eee8f0e2fc7a959763b47dc8",
+      "gitBlob": "51542ea60f4a4ce3683fef4312f355a434d377cc",
+      "bytes": 4660
+    },
+    "tests/helpers/release-pc-bootstrap-ci-source.mjs": {
+      "sha256": "e670e18339c9d29222f85a448aba4278c29d11c03fa10ce90daa4494955f7bef",
+      "gitBlob": "6e8ce534daf5cb36b4f82674edc3955aa839ece1",
+      "bytes": 4061
+    },
+    "tests/helpers/release-pc-bootstrap-ci-source.json.gz": {
+      "sha256": "703de0ae473393a1f3581b87fbf21efa73bb52dfad24539d136f8fbe453085ba",
+      "gitBlob": "a0c623e78043a7b8e847132c16506890e7932353",
+      "bytes": 567485
+    }
+  },
+  "reuse": "all old candidate files checked against prior FINAL-MANIFEST before adding integrationBase metadata; only new union packet/leaf changed",
+  "noCommit": true,
+  "noRemoteWrite": true
+}

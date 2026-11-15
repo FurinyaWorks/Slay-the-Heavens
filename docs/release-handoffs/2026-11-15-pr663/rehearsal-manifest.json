@@ -1,0 +1,29 @@
+{
+  "actualRelease": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "upstreamInventoriesGitCount": {
+    "1cc5479b713edab6fd26db4e20f8eb22b7401cb2": {
+      "js": 876,
+      "lua": 1423
+    },
+    "3eb212bd18e3af038f65ac67ed93049af70cc78e": {
+      "js": 877,
+      "lua": 1424
+    },
+    "10847d76edbdc7988be3bb2827cb4de067efe29f": {
+      "js": 877,
+      "lua": 1424
+    }
+  },
+  "functionalProductionDeltas": {
+    "src/lua/abyss_battle_card_gestures.lua": "7d5bb5b92b10356eaf24a98c185d9776ffc52e77",
+    "src/lua/abyss_battle_potion_popup.lua": "f30106bd67da368ea40a6ba3f8f1a2d57874f4d6",
+    "src/lua/abyss_battle_ui.lua": "529e51758b4e245a9088ce4ea79a52f789d4ee90",
+    "src/lua/abyss_node_ui_events.lua": "25c9e6a6a6cdf25cf8f6921267e5e1c637023cbd",
+    "src/lua/abyss_relic_pending_ui.lua": "f34cc7afd10903cd6727ad4716d82a1c69f3603c"
+  },
+  "scope": "synthetic product-only overlay, not complete merged source closure",
+  "combinedExpectedInventory": {
+    "js": 878,
+    "lua": 1425
+  }
+}
