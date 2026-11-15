@@ -1,0 +1,10 @@
+{
+  "head": "c46f5c6bfdba86e799d2934e0d5569f3d3cff01a",
+  "tests": 10,
+  "pass": 10,
+  "oldPreviewSourceFailuresRechecked": 5,
+  "rawSha256": "ee51b21cdd9310ee32946bce8dff38ca7287514736d8ca7a0fd671de63a43d56",
+  "gzipSha256": "80f880e06588d836e11fce2a4ec0ae9ecadfc53c85e70bc22609110c20b9f7b9",
+  "notHostedFull": true,
+  "notRerunOf73": true
+}

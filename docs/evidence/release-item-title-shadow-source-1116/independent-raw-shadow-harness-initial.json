@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "status": "REQUEST_CORRECTION",
+  "reviewer": "/root/release_items_source_review",
+  "base": "c46f5c6bfdba86e799d2934e0d5569f3d3cff01a",
+  "codeHead": "2167162ef8fd5cc58e79ce9b713a2f1f4aa55f98",
+  "codeTree": "f3fc6adf571156e8869a2e38b59bf81b89a87c6a",
+  "paths": ["scripts/test-lua.mjs", "tests/player-ground-shadow.test.mjs"],
+  "scope": "Read-only incremental harness review; previous 6cc source/CI/cost approval does not authenticate this later change.",
+  "findings": [{
+    "id": "SHADOW-H01",
+    "priority": "P2",
+    "path": "tests/player-ground-shadow.test.mjs:26",
+    "title": "Shared-layout snapshot checks an unused filename",
+    "detail": "The new regression snapshots build/lua/abyss_game_layout.lua, while buildUI emits abyss_ui_layout.lua and game_ui_fixture.lua requires abyss_ui_layout. The wrong path can be absent before and after, leaving actual shared layout contamination unchecked.",
+    "requestedFix": "Use build/lua/abyss_ui_layout.lua, as the existing lowcost-art regression already does."
+  }],
+  "passedSourceChecks": [
+    "Existing lowcost_art profile options remain exactly officialAssets:true and nativePageLifecycle:true.",
+    "New player_ground_shadow profile uses isolated officialAssets:true output and freshly generated abyss_data.lua, matching the existing approved portrait test.",
+    "Generated Lua path is an absolute temporary profile before shared build/lua and src/lua; raw Full discovery and worker CLI retain the exact fixture path matching this branch.",
+    "Temporary output is created by mkdtemp under tmpdir, cleanup retains exact-parent and fixture-prefix guards, and finally runs after child/build failure.",
+    "Existing runtime timeout policy, caller explicit limits, output budget and unknown fixture discovery are unchanged."
+  ],
+  "evidenceInspected": {
+    "red": "raw-shadow-profile-red.log: raw Full fixture failed because officialFigure was absent",
+    "green": "raw-shadow-profile-green.log: three tests passed in 17134.0901 ms; evidence belongs to root's run, not an independent reviewer rerun"
+  },
+  "limits": [
+    "The existing custom-cwd builder behavior reads source inputs from process.cwd while spawning the Lua child at cwd. This patch preserves that behavior; actual Full invokes the repository cwd. No new guarantee for arbitrary alternate cwd is claimed.",
+    "Final source/CI packet, measured cost binding, inventories and budgets require separate exact-commit incremental review after freezing.",
+    "No full matrix, 80s retirement sample, GUI, candidate or release action was performed."
+  ]
+}

@@ -1,0 +1,383 @@
+{
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "verifiedExecutableCheckpoint": "c46f5c6bfdba86e799d2934e0d5569f3d3cff01a",
+  "codeAndPolicyAndTrustInputs": 53,
+  "uncovered": [],
+  "product": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "source": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+  "rows": [
+    {
+      "path": "config/luacheck-baseline.json",
+      "gitBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "data/presentation/lowcost-potion-art.json",
+      "gitBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "data/presentation/lowcost-relic-art.json",
+      "gitBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "data/presentation/menu-title-mark.json",
+      "gitBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "gitBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.json.gz",
+      "gitBlob": "fd9eed1df603f589549f4f5b70f5f4d7cfa8a02d",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stderr.gz",
+      "gitBlob": "ae211a2cb77f6830fe3b183a87963fc514435a29",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stdout.gz",
+      "gitBlob": "90f675d210e8f492d8495be66d5b655f83dfb81a",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
+      "gitBlob": "b0e826934ae1aea58f37dd8e8885c78296468af8",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/verify.mjs",
+      "gitBlob": "12ded2bb31b926e195757a9a9bfc91835626dfca",
+      "reviewHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "executableEvidence"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/verify.mjs",
+      "gitBlob": "5761509ec872a7aabcd77054f5e3f18615720b0d",
+      "reviewHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "executableEvidence"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles.mjs",
+      "gitBlob": "d37f39811474c88406ac55d823910b3b96d14e12",
+      "reviewHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "executableEvidence"
+    },
+    {
+      "path": "docs/legal/assets.json",
+      "gitBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "scripts/build-ui.mjs",
+      "gitBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "scripts/ci-test-timings.json",
+      "gitBlob": "c413f675e27c6b45bde7210f427b4bc474529a55",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "scripts/lowcost-art.mjs",
+      "gitBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "scripts/official-portraits.mjs",
+      "gitBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "scripts/potion-art.mjs",
+      "gitBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "scripts/v25-menu-layout.mjs",
+      "gitBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "gitBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "gitBlob": "53a0fa60abbffce415dfab781384094879241c93",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "gitBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "gitBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "gitBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "gitBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "gitBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "src/lua/abyss_shop_ui.lua",
+      "gitBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "gitBlob": "9a73aa95810c4fe9df62b284ce2193d4004069ef",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "gitBlob": "641b928ef8c4983e3a9a808cf668998c2ade3683",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "gitBlob": "31aef09ed4bc0114e307e5d9f16d65f74f413640",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "gitBlob": "62f35c171720a73070876ec99dd76ad7fa8be8a9",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/potion-art-runtime.lua",
+      "gitBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-ci-source.json.gz",
+      "gitBlob": "f366540c8fe5f3da9acf29fafb64aeeee691a685",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-ci-source.mjs",
+      "gitBlob": "713d97d6c939e38e245a28baf44dd0c2395c36f7",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-planning.mjs",
+      "gitBlob": "38944a2aed9f0b703077da16f1c78503737bd622",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-source.json.gz",
+      "gitBlob": "37dd6413edec9e7b2fcbb57f98675400efd7b783",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-source.mjs",
+      "gitBlob": "ca82b46cf9ba8b5c6a4e838fa2ad41568bf5e738",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/helpers/relic-fallback-runtime.lua",
+      "gitBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/helpers/reward-alias-runtime.lua",
+      "gitBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/helpers/reward-art-runtime.lua",
+      "gitBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/helpers/reward-pool-retirement-runtime.lua",
+      "gitBlob": "617da012ba50c6b5eaa875538aac06baf7cf5fbe",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "gitBlob": "e50441ef0b6bfd87feda02f446dac108056f399c",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "gitBlob": "394f65e539cbc21cf6f6c0ee580e8eda73987309",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/lowcost-art.test.mjs",
+      "gitBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/lua/player_ground_shadow.lua",
+      "gitBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/menu-red-background.cases.mjs",
+      "gitBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/player-ground-shadow.test.mjs",
+      "gitBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/potion-art-runtime.test.mjs",
+      "gitBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/potion-art.test.mjs",
+      "gitBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/release-item-title-shadow-source.test.mjs",
+      "gitBlob": "18d477b8d3f12fbe2d922e8cfdf9edf2f27c34d7",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/reward-pool-retirement-runtime.test.mjs",
+      "gitBlob": "123929273b864971f5f48799c5af8cc892cdd59b",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "gitBlob": "6b1f4a87f326d5a101d5f4c9e12cd98954376f64",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "gitBlob": "1b4f1a6fa3b07d8adec38958adf51a1e5df0d4c2",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost"
+    }
+  ],
+  "notHostedFull": true,
+  "notOfficialAcceptance": true
+}

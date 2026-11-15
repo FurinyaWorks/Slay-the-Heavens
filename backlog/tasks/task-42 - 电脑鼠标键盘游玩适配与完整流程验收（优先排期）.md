@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 12:23'
-updated_date: '2026-11-15 17:02'
+updated_date: '2026-11-15 18:19'
 labels:
   - awaiting-live
 milestone: m-8
@@ -71,4 +71,6 @@ ordinal: 40000
 2026-11-14第二轮逐项核对，保留To Do：本项要求同一当前候选的完整PC鼠标键盘操作矩阵，未找到本项已执行的设备记录；源码输入支持不等于该整轮实测已经开始。
 
 已实际提交PR684@ae5194a7（初读Quality43734648153 queued、其余in_progress）与PR690@11ec36bf（首次Quality43735642603/Quick43735642541/Licenses43735642720 queued），均目标release/v2.0.0；只初读不轮询，不标CI完成/不调用Develop merge:auto。完整38台账现据690接续至本分支，软件/设备缺口分别保留。PC18+21+01组合df5/证据2cb产品独审有界通过，原29路径28等源、唯一689退休helper补丁；当前source/CI5FAIL与新回归约80s成本重排尚待，正式候选仍无GIL/ready/容量/PC手机结果，任务不Done。
+
+2026-11-16 完整38项接续表追加PC26/30实际进展：独立Release产品93ae7376、证据707da8ff与独审CODE_SCOPE通过；真实hover1.08交叠P2已修，原RED保留，source正在隔离接续，尚未推送/PR。不新增重复任务。PC01/18/21原source5FAIL已在c46输入实际补验10/10，但后继raw shadow入口修复带来47CI与新增成本接续，未冒称Hosted或设备验收。
 <!-- SECTION:NOTES:END -->

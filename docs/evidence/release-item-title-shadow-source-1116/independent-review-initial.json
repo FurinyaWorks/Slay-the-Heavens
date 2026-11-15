@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "status": "REQUEST_CHANGES",
+  "reviewer": "/root/release_items_source_review",
+  "reviewType": "Independent source / CI / cost adapter review; no implementation",
+  "target": "release/v2.0.0",
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productCommit": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "codeHead": "bcac5c7c12ae6847b0373a2675e03076ec7c358a",
+  "codeTree": "f0a9b0b613ea7a9576165d6d3402d79e21921bbc",
+  "evidenceSuccessor": "2d70bb36fb4e75df49b024fc763bc61ace44ba2b",
+  "evidenceTree": "706661a224fe7a91878fe1994631ae53e809df95",
+  "adapterBase": "2cb6206e",
+  "scopePaths": [
+    "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.json.gz",
+    "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stderr.gz",
+    "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stdout.gz",
+    "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
+    "scripts/ci-test-timings.json",
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/helpers/closeout-source-epoch.mjs",
+    "tests/helpers/copy-integration-source-closure.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/helpers/release-item-title-shadow-ci-source.json.gz",
+    "tests/helpers/release-item-title-shadow-ci-source.mjs",
+    "tests/helpers/release-item-title-shadow-planning.mjs",
+    "tests/helpers/release-item-title-shadow-source.json.gz",
+    "tests/helpers/release-item-title-shadow-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/integration-source-epoch.test.mjs",
+    "tests/release-item-title-shadow-source.test.mjs",
+    "tests/session-menu-navigation.test.mjs",
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "scopeCoverage": "All 19 adapter paths reviewed, including 15 source/CI/timing/test paths and 4 validator-required sample/receipt paths. Product behavior review remains delegated to the already completed independent product review; no broad product re-review.",
+  "packet": {
+    "production": {
+      "sha256": "e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba",
+      "bytes": 54697
+    },
+    "ci": {
+      "sha256": "a7c4a4d3e3e1cc3c0ced443c96d0f6a2afa474a1611f654dc6fcf38ce4b38578",
+      "bytes": 680954
+    }
+  },
+  "freshTests": [
+    {
+      "command": "node24 --test --test-concurrency=1 tests/release-item-title-shadow-source.test.mjs",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "durationMs": 2085.7078
+    },
+    {
+      "command": "node24 --test --test-concurrency=1 --test-name-pattern='release item-title-shadow raw Full inventory' tests/ci-complete-calibration.test.mjs",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "durationMs": 11912.4095
+    },
+    {
+      "command": "node24 --test --test-concurrency=1 --test-name-pattern='deck notification continuation|Neow retirement continuation|optional Neow flow helper' tests/session-menu-navigation.test.mjs",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0,
+      "durationMs": 1564.557
+    }
+  ],
+  "independentProbes": [
+    {
+      "name": "exact final head tree and nineteen-path adapter scope",
+      "status": "PASS"
+    },
+    {
+      "name": "all eight production bindings have exact Release36 before and committed product/producers/parents",
+      "status": "PASS"
+    },
+    {
+      "name": "all forty-six CI before/current Git bindings and bootstrap predecessor exact",
+      "status": "PASS"
+    },
+    {
+      "name": "all ninety-two predecessor archives plus new production packet preserve Git bytes or LFS OID and physical bytes",
+      "status": "PASS"
+    },
+    {
+      "name": "production isolated closure copies only production leaves and preserves fresh identities",
+      "status": "PASS"
+    },
+    {
+      "name": "complete 765 physical fresh sample rows remain exact and pre/post identical",
+      "status": "PASS"
+    },
+    {
+      "name": "LF and CRLF conversion of all 473 text execution rows and receipt is portable",
+      "status": "PASS"
+    },
+    {
+      "name": "physical binary signature corruption and gzip append reject; receipt content and trailing newline reject",
+      "status": "PASS"
+    },
+    {
+      "name": "backlog HEAD and unrelated review metadata are not execution dependencies",
+      "status": "FAIL",
+      "error": "The expression evaluated to a falsy value:\n\n  assert(!f.startsWith('backlog/')&&!f.startsWith('.git/')&&!f.endsWith('/README.md'))\n"
+    },
+    {
+      "name": "counterfactual omitted measured floor overloads existing POSIX assignment",
+      "status": "PASS"
+    }
+  ],
+  "staticClosure": {
+    "status": "PASS",
+    "staticImportCount": 74,
+    "entry": "tests/reward-pool-retirement-runtime.test.mjs",
+    "closureCount": 475,
+    "staticImports": [
+      "scripts/art-features.mjs",
+      "scripts/art/converted-card-data.mjs",
+      "scripts/art/lightweight-2d-assets.mjs",
+      "scripts/art/performance-pack.mjs",
+      "scripts/art/ready-card-registry.mjs",
+      "scripts/art/ready-card-runtime.mjs",
+      "scripts/build-lua-data.mjs",
+      "scripts/build-original-v4.mjs",
+      "scripts/build-ui-theme.mjs",
+      "scripts/build-ui.mjs",
+      "scripts/card-art-samples.mjs",
+      "scripts/card-face.mjs",
+      "scripts/card-lightning.mjs",
+      "scripts/character-selection-composition.mjs",
+      "scripts/character-ui-layout.mjs",
+      "scripts/cinematic-ui-layout.mjs",
+      "scripts/constellation-geometry.mjs",
+      "scripts/controls-guide-layout.mjs",
+      "scripts/deck-ui-layout.mjs",
+      "scripts/evidence-files.mjs",
+      "scripts/exit-ui-layout.mjs",
+      "scripts/game-ui-layout.mjs",
+      "scripts/lightweight-2d-profile.mjs",
+      "scripts/lightweight-card-layout.mjs",
+      "scripts/lowcost-art.mjs",
+      "scripts/lumine-selection-background.mjs",
+      "scripts/map-ui-layout.mjs",
+      "scripts/match-event-layout.mjs",
+      "scripts/menu-flat-triangle.mjs",
+      "scripts/menu-red-scene.mjs",
+      "scripts/monster-art.mjs",
+      "scripts/native-ui-theme.mjs",
+      "scripts/node-ui-layout.mjs",
+      "scripts/noncombat-neow-layout.mjs",
+      "scripts/noncombat-v25-layout.mjs",
+      "scripts/official-assets-layout.mjs",
+      "scripts/official-assets-profile.mjs",
+      "scripts/official-backdrop-layout.mjs",
+      "scripts/official-background.mjs",
+      "scripts/official-battle-card-chrome.mjs",
+      "scripts/official-battle-hud.mjs",
+      "scripts/official-battle-pile-chrome.mjs",
+      "scripts/official-portraits.mjs",
+      "scripts/official-run-hud-components.mjs",
+      "scripts/official-run-layout.mjs",
+      "scripts/potion-discard-layout.mjs",
+      "scripts/potion-slot-visual.mjs",
+      "scripts/release-notes.mjs",
+      "scripts/relic-view-layout.mjs",
+      "scripts/sts-card-reference-profile.mjs",
+      "scripts/sts-neow-choice-layout.mjs",
+      "scripts/sts-neow-guide-layout.mjs",
+      "scripts/sts-reward-row-layout.mjs",
+      "scripts/ui-layout.mjs",
+      "scripts/ui-profile.mjs",
+      "scripts/v25-battle-chrome.mjs",
+      "scripts/v25-battle-scene.mjs",
+      "scripts/v25-card-binding.mjs",
+      "scripts/v25-card-templates.mjs",
+      "scripts/v25-character-layout.mjs",
+      "scripts/v25-layout.mjs",
+      "scripts/v25-map-layout.mjs",
+      "scripts/v25-menu-layout.mjs",
+      "scripts/v25-node-layout.mjs",
+      "scripts/v25-portrait-profile.mjs",
+      "scripts/v25-private-card-assets.mjs",
+      "scripts/v25-profile.mjs",
+      "scripts/v25-result-layout.mjs",
+      "scripts/v25-turn-notice-layout.mjs",
+      "scripts/v25-ui-mask-assets.mjs",
+      "scripts/validate-data.mjs",
+      "scripts/victory-easter-egg-layout.mjs",
+      "scripts/viewport-layout.mjs",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "missing": []
+  },
+  "packetContinuity": {
+    "status": "PASS",
+    "initialCi": {
+      "bytes": 680454,
+      "sha256": "805a5c4aec2e2fec4ba11c15f9f6473dbae297caaf8beecb1f35b482e7fb0798"
+    },
+    "changedCurrentRows": [
+      "scripts/ci-test-timings.json",
+      "tests/helpers/release-item-title-shadow-planning.mjs",
+      "tests/release-item-title-shadow-source.test.mjs"
+    ],
+    "identicalBefore": true,
+    "identicalInventory": true,
+    "identicalImmutableArchives": true
+  },
+  "metadataReproduction": [
+    {
+      "path": "data/README.md",
+      "status": "METADATA_CHANGE_REJECTED",
+      "error": "fresh retirement execution input: data/README.md\n+ actual - expected\n\n+ '8caa91bcc9f7a2bb524a122fab6b553a91979418023821e59461045e803f6987'\n- 'dac6b4dd5e3ffb8fb91aed8d9bee270183105ec75e60d7a747a66d81b70ceb20'\n"
+    },
+    {
+      "path": "data/SOURCES.md",
+      "status": "METADATA_CHANGE_REJECTED",
+      "error": "fresh retirement execution input: data/SOURCES.md\n+ actual - expected\n\n+ '3872288864efaf06a15ad70ccd675080a232de6a2dcf9f2b23ee2cb744303cc2'\n- 'c9f13114a14b238e52142cc427490822fe189b5547fada52bef77c4d07e1a78d'\n"
+    }
+  ],
+  "cost": {
+    "js": 881,
+    "lua": 1424,
+    "localFloorMs": 79861,
+    "freshPhysicalObservation": {
+      "inputs": 765,
+      "executionClaimed": 475,
+      "dependencies": 290,
+      "wallMs": 73696,
+      "nodeMs": 73618.8019,
+      "tests": 2,
+      "pass": 2,
+      "note": "Observed archived sample inspected; not rerun by reviewer. 2 rows are non-executable sampled metadata and require separation."
+    },
+    "counterfactualPosixOriginalAssignmentMs": 1262824,
+    "windows": {
+      "shards": 18,
+      "forecastIncludingLuaAndReserveMs": 1762741,
+      "targetMs": 1800000,
+      "executionGuardMs": 2700000
+    },
+    "posix": {
+      "shards": 15,
+      "forecastIncludingReserveMs": 1197621,
+      "targetMs": 1200000,
+      "executionGuardMs": 1800000,
+      "marginMs": 2379
+    },
+    "hostedCompleted": false
+  },
+  "findings": [
+    {
+      "id": "SRC-01",
+      "priority": "P2",
+      "status": "OPEN",
+      "title": "Cost proof authenticates two non-executable data documents",
+      "paths": [
+        "tests/helpers/release-item-title-shadow-planning.mjs:15",
+        "tests/helpers/release-item-title-shadow-planning.mjs:20",
+        "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json:137",
+        "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json:144"
+      ],
+      "evidence": "Both data/README.md and data/SOURCES.md are in the 475-row active execution closure. Fresh injected metadata-only changes fail with fresh retirement execution input. The static 74-module builder graph and its data loader never read either document; buildUI optionalSources scans art, not data. Thus metadata-only edits unnecessarily invalidate the measured cost proof.",
+      "requestedFix": "Preserve the 765-row physical before/after observation verbatim. Separate these two sampled metadata rows from the active execution closure, retaining 473 execution inputs and 290 installed dependencies. Retain real source/fixture/data drift and new JSON discovery rejection, unchanged costs, all before bindings, and old archives. Do not rerun the 80s sample or the 73-case matrix."
+    }
+  ],
+  "unresolved": [
+    "SRC-01"
+  ],
+  "resolvedHistory": [
+    {
+      "id": "SRC-H01",
+      "title": "Binary PNG execution inputs formerly decoded as UTF-8",
+      "affectedCode": "f0168055d00cd7a5c67f72854ae0a8044e141144",
+      "fixedCode": "bcac5c7c12ae6847b0373a2675e03076ec7c358a",
+      "status": "RESOLVED",
+      "evidence": "Final bcac uses physical hashes for binary rows; independent read injection changed PNG signature byte 0x89 to 0x88 and was rejected. Both PNG binary snapshots remain exact. Original bug identified by author self-check concurrently with independent source inspection; reviewer did not claim a runtime reproduction on f016."
+    }
+  ],
+  "acceptance": {
+    "sourceCI": "REQUEST_CHANGES: SRC-01 only; all other checked identities, projections, inventories, costs and physical negative controls passed",
+    "hostedFull": "UNVERIFIED; final 73/44 and full Hosted matrix not rerun",
+    "formalGIL": "NOT_PERFORMED",
+    "officialImportReady": "UNVERIFIED",
+    "PCDevice": "UNVERIFIED",
+    "mobileDevice": "UNVERIFIED",
+    "officialCapacity": "UNVERIFIED",
+    "releaseGo": "NO_GO"
+  },
+  "limitations": [
+    "Initial 73/73 belongs only to physically retained 805a5c4a CI packet, not final a7c4.",
+    "The old single-VM 72-case timeout remains historical failure; two fresh 36-case VMs and local forecast do not establish all-Host pressure pass.",
+    "No GUI, input, MCP, official candidate, tag, push, PR, CI polling, or task mutation performed."
+  ]
+}
