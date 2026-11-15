@@ -1,0 +1,31 @@
+{
+  "scope": "test-only corrected explicit different-rarity pair for potions plus independent same-rarity index pair; six production modules unchanged",
+  "parentCommit": "33e707934a63bff439c4af49951e6edf5bdb66e7",
+  "result": "3/3; 7.461s",
+  "evidence": [
+    {
+      "file": "compendium-review-fix-group-final.log.gz",
+      "sha256": "c291b0cfd0201b9a8608076e933660e50f38e7d16664b314e91475ad3e469111",
+      "bytes": 792,
+      "gzipSha256": "cfb240ef499319a57a31578511f8be05d3531776cfb20ca5fdf1a3cb56446e52"
+    },
+    {
+      "file": "compendium-review-retained-green.log.gz",
+      "sha256": "90c0dda4b2ead4e3736124ad2c542cc4062e88ee2b3125863abeb0882fceb04d",
+      "bytes": 101,
+      "gzipSha256": "42b29cf60263ce12f4a6ff2f62491f8dcd1f7485bc11e461673025bb27d59547"
+    },
+    {
+      "file": "compendium-review-previous-ui-red.log.gz",
+      "sha256": "e1ae96a5fd3c5358e12509cd8e5cb80e7c4e2c900a1fc8355a8bf41f80b8e9ec",
+      "bytes": 354,
+      "gzipSha256": "33d5fa6c4a202230a6f22803f1040fcbaddbeb2ae8437ca4437f5e6be3a86aa3"
+    },
+    {
+      "file": "compendium-review-previous-actions-red.log.gz",
+      "sha256": "27abd29d73b8c66bc7a21af7530bd9d4bb9800de3257c337b1eab8fe5fc48776",
+      "bytes": 365,
+      "gzipSha256": "ab7f6fe9ba514b07f86d6e9a8ebdaaf39e87a6d5faa865f00ee9b11ccaf3e6f2"
+    }
+  ]
+}

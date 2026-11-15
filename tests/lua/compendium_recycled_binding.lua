@@ -38,7 +38,12 @@ for _,kind in ipairs({'relics','potions'})do
  b=open(kind);grid=panel:GetChild('iconGrid')
  local indices={};for i,line in ipairs(b.lines)do if line.entries then indices[#indices+1]=i end end
  assert(#indices>1)
- local pairs_={{indices[1],indices[2]}}
+ local pairs_={}
+ for i=2,#indices do
+  if b.lines[indices[1]].rarity~=b.lines[indices[i]].rarity then
+   pairs_[#pairs_+1]={indices[1],indices[i]};break
+  end
+ end
  for i=2,#indices do
   if b.lines[indices[i-1]].rarity==b.lines[indices[i]].rarity then
    pairs_[#pairs_+1]={indices[i-1],indices[i]};break
