@@ -10,6 +10,7 @@ import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferen
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
 import {battlePileReturn} from './official-battle-pile-chrome.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
+import {pickerControlTheme} from './official-picker-controls.mjs';
 const children=node=>node?.controls??node?.children??[];
 const child=(node,name)=>children(node).find(item=>item.name===name);
 const required=(node,name)=>{const value=child(node,name);if(!value)throw Error('Official assets missing '+name);return value;};
@@ -80,6 +81,7 @@ export function officialAssetsTheme(source){
    theme.layout.nativeNode.shop.columns=[...shelfColumns];
    Object.assign(theme.layout.combatChoice,structuredClone(theme.officialAssets.choicePage));
    Object.assign(theme.layout.nativeNode.picker,structuredClone(theme.officialAssets.pickerPage));
+   pickerControlTheme(theme);
   return theme;
 }
 function cardFace(face,theme){

@@ -65,6 +65,20 @@ local function referenceChrome(ctx, box, look, hover)
     referenceShop(ctx, box, look, hover)
 end
 
+local function sharedButtonChrome(box, look, hover, pressed)
+    local shared = box:GetChild('sharedButtonChrome')
+    if not shared then return false end
+    local enabled = look.enabled and not look.selected
+    shared:GetChild('normal'):SetVisible(look.selected == true or enabled and not pressed and not hover)
+    shared:GetChild('hover'):SetVisible(hover == true)
+    shared:GetChild('pressed'):SetVisible(pressed == true)
+    shared:GetChild('disabled'):SetVisible(not look.enabled)
+    for _, name in ipairs({'border','normal','hover','pressed','disabled','selected'}) do
+        box:GetChild(name):SetVisible(false)
+    end
+    return true
+end
+
 -- Installs the feedback responsibility on one node UI instance.
 function M.install(ctx)
     ctx.buttonLooks, ctx.buttonHover, ctx.buttonPress = {}, nil, nil
@@ -106,6 +120,7 @@ function M.install(ctx)
         referenceChrome(ctx, box, look, hover)
         neowChoiceChrome(ctx, box, look, hover, pressed)
         local scale = pressed and layout.buttonStates.pressedScale or layout.buttonStates.normalScale
+        if sharedButtonChrome(box, look, hover, pressed) then scale = 1 end
         box:SetLocalScale(scale, scale, 1)
     end
 
