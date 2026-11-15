@@ -1,0 +1,220 @@
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -1433,3 +1433,7 @@
+ docs/evidence/pr621-deck-sort-20261111/validation.tar.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+ tests/helpers/closeout-ci-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+ tests/helpers/release-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
++
++# Explicit final PC/bootstrap CI union trust leaf.
++tests/helpers/release-pc-bootstrap-ci-source.mjs text eol=lf
++tests/helpers/release-pc-bootstrap-ci-source.json.gz -text
+--- a/tests/ci-complete-calibration.test.mjs
++++ b/tests/ci-complete-calibration.test.mjs
+@@ -43,7 +43,7 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
+-import {releasePcCiRead,releasePcPriorInventory,assertReleasePcCiCurrent,releasePcCiPacket} from './helpers/release-pc-ci-source.mjs';
++import {releaseUnionCiRead as releasePcCiRead, releaseUnionPriorInventory as releasePcPriorInventory, assertReleaseUnionCiCurrent as assertReleasePcCiCurrent, releaseUnionCiPacket as releasePcCiPacket} from './helpers/release-pc-bootstrap-ci-source.mjs';
+ const liveDiskReadFileSync=releasePcCiRead(rawReleaseReadFileSync);
+ import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
+ import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+@@ -2034,6 +2034,20 @@
+  for(const path of p.priorInventory.lua)assert(lua.includes(path));
+  assert.equal(rawCurrentTimings.unknownJsMs,10000);
+  assertReleasePhysicalExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
++ assert.equal(rawCurrentTimings.unknownLuaMs,10000);
++ const physical=rawReleaseReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
++ for(const path of ['.github/workflows/quality.yml','.github/workflows/licenses.yml']){
++  const source=rawReleaseReadFileSync(path,'utf8').replaceAll('\r\n','\n');
++  assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
++  assert.match(source,/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
++  assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
++  assert.match(source,/permissions:\n  contents: read/);
++ }
++ const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
++ assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
++ assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
++ assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
++
+  for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+   for(const path of js.filter(path=>!p.priorInventory.js.includes(path)))
+    assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs,'new unmeasured test retains its conservative cost: '+path);
+--- a/tests/helpers/integrated-ci-source.mjs
++++ b/tests/helpers/integrated-ci-source.mjs
+@@ -5,7 +5,7 @@
+ import {createHash} from 'node:crypto';
+ import {gunzipSync} from 'node:zlib';
+ import {integratedCiBytes} from './integrated-ci-binding.mjs';
+-import {releasePcCiSource,releasePcCiCheckedSource,releasePcPriorInventory,releasePcCiPacket,assertReleasePcCiCurrent} from './release-pc-ci-source.mjs';
++import {releaseUnionCiSource as releasePcCiSource, releaseUnionCiCheckedSource as releasePcCiCheckedSource, releaseUnionPriorInventory as releasePcPriorInventory, releaseUnionCiPacket as releasePcCiPacket, assertReleaseUnionCiCurrent as assertReleasePcCiCurrent} from './release-pc-bootstrap-ci-source.mjs';
+ const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+ const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
+ export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
+--- a/tests/integrated-ci-source.cases.mjs
++++ b/tests/integrated-ci-source.cases.mjs
+@@ -1,7 +1,7 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+-import {readFileSync as rawReadFileSync} from 'node:fs';
+-import {releasePcCiRead,releasePcPriorInventory} from './helpers/release-pc-ci-source.mjs';
++import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
++import {releaseUnionCiRead as releasePcCiRead, releaseUnionPriorInventory as releasePcPriorInventory, releaseUnionViewRead, releaseUnionCiPacket, releaseUnionViewSource, assertReleaseUnionCiCurrent, assertReleaseUnionRawInventory} from './helpers/release-pc-bootstrap-ci-source.mjs';
+ import {createHash} from 'node:crypto';
+ import {discoverJs} from '../scripts/ci-shards.mjs';
+ import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
+@@ -39,3 +39,65 @@
+   assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'f'.repeat(64)}),/copy predecessor/);
+  }
+ });
++
++import {releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
++// The bootstrap checkpoint stays historical; final raw bytes are certified first.
++const bootstrapRead=releaseUnionViewRead('bootstrap',rawReadFileSync);
++test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
++ assertReleaseUnionCiCurrent();
++ assertReleaseBootstrapCiCurrent(bootstrapRead);
++ for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
++  const source=bootstrapRead(path,'utf8').replaceAll('\r\n','\n');
++  assert.equal(releaseBootstrapCiSource(path,source),row.before.source,path);
++  for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(releaseBootstrapCiSource(path,foreign),foreign);
++  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseBootstrapCiSource(foreignPath,source),source);
++  assert.throws(()=>assertReleaseBootstrapCiCurrent(releaseUnionViewRead('bootstrap',(p,e)=>{
++   const value=rawReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
++  })),error=>{assert(error.message.includes(path));return true;});
++  assert.throws(()=>assertReleaseBootstrapCiCurrent(releaseUnionViewRead('bootstrap',(p,e)=>{if(p===path)throw Error('missing '+p);return rawReadFileSync(p,e);})),/missing/);
++  if(path.startsWith('.github/')){
++   for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(releaseBootstrapWorkflowBefore(path,input),row.before.source);
++   for(const foreign of [source+'\n',source.slice(1),source.replace('release/**','foreign/**')])
++    assert.throws(()=>releaseBootstrapWorkflowBefore(path,foreign),/fresh complete Release bootstrap workflow/);
++  }
++ }
++ const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
++ assert.throws(()=>assertReleaseBootstrapCiCurrent(releaseUnionViewRead('bootstrap',(p,e)=>p===archive?rawReadFileSync(p).subarray(1):rawReadFileSync(p,e))),/immutable bootstrap predecessor/);
++ const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
++ for(const [kind,paths]of Object.entries(inventories)){
++  assertReleaseUnionRawInventory(paths,kind);
++  const prior=releasePcPriorInventory(paths,kind,rawReadFileSync);
++  assertReleaseBootstrapRawInventory(prior,kind);
++  for(const bad of [[],prior.slice(1),[...prior,prior[0]],[...prior,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
++   assert.throws(()=>assertReleaseBootstrapRawInventory(bad,kind),/raw discovery inventory/);
++ }
++ const leaf=rawReadFileSync('tests/helpers/release-bootstrap-ci-source.mjs','utf8');
++ const bytes=rawReadFileSync('tests/helpers/release-bootstrap-ci-source.json.gz');
++ const marker="const bytes=readFileSync(new URL('./release-bootstrap-ci-source.json.gz',import.meta.url));";
++ assert.equal(leaf.split(marker).length,2);
++ const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
++ await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete Release bootstrap CI continuation/);
++});
++
++test('Release PC bootstrap union authenticates final bytes and keeps both historical checkpoints exact',()=>{
++ assertReleaseUnionCiCurrent();
++ for(const [path,row]of Object.entries(releaseUnionCiPacket.files)){
++  const actual=rawReadFileSync(path,'utf8').replaceAll('\r\n','\n');
++  assert.equal(hash(actual),row.current.sha256,path);
++  for(const view of ['pc','bootstrap']){
++   const expected=row.views[view]?.source??actual;
++   assert.equal(releaseUnionViewSource(path,actual,view),expected,path+' '+view);
++   if(row.views[view])assert.equal(releaseUnionViewSource(path,actual.replaceAll('\n','\r\n'),view),expected);
++   for(const foreign of [actual+'\n',actual.slice(1),null,{},17])assert.equal(releaseUnionViewSource(path,foreign,view),foreign);
++  }
++  for(const mode of ['drift','missing'])assert.throws(()=>assertReleaseUnionCiCurrent((p,e)=>{
++   if(p===path&&mode==='missing')throw Error('missing '+p);
++   const value=rawReadFileSync(p,e);return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
++  }),error=>{assert(error.message.includes(path));return true;});
++ }
++ const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
++ for(const [kind,paths]of Object.entries(inventories)){
++  assertReleaseUnionRawInventory(paths,kind);
++  for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,'tests/foreign.test.mjs']])assert.throws(()=>assertReleaseUnionRawInventory(bad,kind));
++ }
++});
+--- a/tests/release-pc-source.test.mjs
++++ b/tests/release-pc-source.test.mjs
+@@ -5,7 +5,9 @@
+ import {discoverJs} from '../scripts/ci-shards.mjs';
+ import {sourceEpoch,preReleasePcSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+ import {releasePcSourcePacket,extendReleasePcSource} from './helpers/release-pc-source.mjs';
+-import {releasePcCiPacket,releasePcCiSource,releasePcPriorInventory,assertReleasePcRawInventory,assertReleasePcCiCurrent} from './helpers/release-pc-ci-source.mjs';
++import {releasePcCiPacket,releasePcCiSource,assertReleasePcRawInventory,assertReleasePcCiCurrent} from './helpers/release-pc-ci-source.mjs';
++import {assertReleaseUnionCiCurrent,releaseUnionViewRead,releaseUnionPriorInventory as releasePcPriorInventory} from './helpers/release-pc-bootstrap-ci-source.mjs';
++const pcRead=releaseUnionViewRead('pc',readFileSync);
+ const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+ 
+ test('release PC production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
+@@ -21,14 +23,15 @@
+ });
+ 
+ test('release PC CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
+- assertReleasePcCiCurrent();
++ assertReleaseUnionCiCurrent();
++ assertReleasePcCiCurrent(pcRead);
+  for(const [path,row]of Object.entries(releasePcCiPacket.files)){
+-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
++  const source=norm(pcRead(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
+   const production=path.startsWith('src/')||path==='config/architecture.json';
+   assert.equal(releasePcCiSource(path,source),production?source:row.before?.source??source,path);
+   for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(releasePcCiSource(path,foreign),foreign,path);
+   for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releasePcCiSource(foreignPath,source),source);
+-  assert.throws(()=>assertReleasePcCiCurrent((p,encoding)=>{
++  assert.throws(()=>assertReleaseUnionCiCurrent((p,encoding)=>{
+    const raw=readFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;
+   }),/fresh complete integration source/);
+  }
+--- /dev/null
++++ b/tests/helpers/release-pc-bootstrap-ci-source.mjs
+@@ -0,0 +1,54 @@
++// CI-only explicit union. Original PC/bootstrap archives and leaves stay immutable.
++// This trust leaf is excluded from its own packet; no production reader imports it.
++import assert from 'node:assert/strict';
++import {readFileSync} from 'node:fs';
++import {createHash} from 'node:crypto';
++import {gunzipSync} from 'node:zlib';
++import {releasePcPriorInventory,assertReleasePcCiCurrent} from './release-pc-ci-source.mjs';
++import {assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
++const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
++const bytes=readFileSync(new URL('./release-pc-bootstrap-ci-source.json.gz',import.meta.url));
++assert.equal(hash(bytes),'701665c217a582af74f3ce182f5262fafa22f1832fb7fc60c830add07931be99','complete PC bootstrap union');
++const packet=JSON.parse(gunzipSync(bytes));
++assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
++assert.deepEqual(packet.heads,{pc:'00ff9b272625942a4d1f22085722142baac9ee2f',bootstrap:'b67226945c2be47c8fff31f1362412b973f68875'});
++assert.equal(packet.currentTreeCommitted,false,'isolated union is not a published commit');
++for(const [path,row]of Object.entries(packet.files))for(const b of [row.current,row.before,...Object.values(row.views)].filter(Boolean)){
++ assert.equal(b.source,norm(b.source),path);assert.equal(hash(b.source),b.sha256,path);
++ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(b.source)}\0`).update(b.source).digest('hex'),b.gitBlob,path);
++}
++const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
++export const releaseUnionCiPacket=freeze(packet);
++const rowFor=path=>Object.hasOwn(packet.files,path)?packet.files[path]:null;
++const exact=(row,source)=>row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))===row.current.sha256;
++export function releaseUnionViewSource(path,source,view){
++ assert(['pc','bootstrap'].includes(view));const row=rowFor(path);
++ return exact(row,source)&&row.views[view]?row.views[view].source:source;
++}
++function reader(project,read){return(path,encoding)=>{
++ const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=project(path,text);
++ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
++};}
++export const releaseUnionViewRead=(view,read=readFileSync)=>reader((p,s)=>releaseUnionViewSource(p,s,view),read);
++export function releaseUnionCiCheckedSource(path,source,before){
++ const row=rowFor(path);
++ if(!row?.before||!exact(row,source)||(before&&before.sha256!==row.before.sha256))return source;
++ return row.before.source;
++}
++export function releaseUnionCiSource(path,source,before){
++ if(path.startsWith('src/')||path==='config/architecture.json')return source;
++ return releaseUnionCiCheckedSource(path,source,before);
++}
++export const releaseUnionCiRead=(read=readFileSync)=>reader(releaseUnionCiSource,read);
++export function assertReleaseUnionCiCurrent(read=readFileSync){
++ for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: PC bootstrap '+path);
++ for(const [path,sha]of Object.entries(packet.immutableArchives))assert.equal(hash(read(path)),sha,'retained complete immutable union predecessor: '+path);
++ assertReleasePcCiCurrent(releaseUnionViewRead('pc',read));
++ assertReleaseBootstrapCiCurrent(releaseUnionViewRead('bootstrap',read));
++}
++export function assertReleaseUnionRawInventory(paths,kind='js'){
++ assert(['js','lua'].includes(kind));assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete union raw discovery inventory');
++}
++export function releaseUnionPriorInventory(paths,kind='js',read=readFileSync){
++ return releasePcPriorInventory(paths,kind,releaseUnionViewRead('pc',read));
++}

@@ -1,0 +1,59 @@
+{
+  "inputs": {
+    "pc": "00ff9b272625942a4d1f22085722142baac9ee2f",
+    "bootstrap": "b67226945c2be47c8fff31f1362412b973f68875",
+    "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210"
+  },
+  "candidateFiles": {
+    ".gitattributes": {
+      "sha256": "2a925d1b5ebcb6a1891509a82660fb2a741d5752a66ec267c04412589bdf0752",
+      "bytes": 129819
+    },
+    "tests/ci-complete-calibration.test.mjs": {
+      "sha256": "672f240ad99ea169dcd700e009437630a9e8b9798bdd12efc308394a359a9065",
+      "bytes": 195964
+    },
+    "tests/helpers/integrated-ci-source.mjs": {
+      "sha256": "38317de0517ffdbac12c52d066a1d28e78c27d8feb877043a3a946ff88d7ff2f",
+      "bytes": 6525
+    },
+    "tests/integrated-ci-source.cases.mjs": {
+      "sha256": "fe803fe5b6bd86ac57d01422969685b360a3c74c9ef71fd5271e5fba4c59415a",
+      "bytes": 8395
+    },
+    "tests/release-pc-source.test.mjs": {
+      "sha256": "35056dce860697e96c41232342392798e95aab47eee8f0e2fc7a959763b47dc8",
+      "bytes": 4660
+    },
+    "tests/helpers/release-pc-bootstrap-ci-source.mjs": {
+      "sha256": "9a3da229f9eaad510ad8973f44e2d01fe847e09a2e461453d9e79f636c9ecdbf",
+      "bytes": 3855
+    },
+    "tests/helpers/release-pc-bootstrap-ci-source.json.gz": {
+      "sha256": "701665c217a582af74f3ce182f5262fafa22f1832fb7fc60c830add07931be99",
+      "bytes": 567324
+    }
+  },
+  "evidence": {
+    "merge-tree.txt": "ebd61cfde65ff2ee5d4608e7acb4105552e368b1d2aa99609dccc97c2c9e8095",
+    "generate.log": "4a3c480f5d5ab276a9deb0f9ed958ea857536ddc17cf0cff186f97d218532b4e",
+    "targeted-first.log": "b3cf0cef62aa0164fc60734528bbb7a1c7505c011694b1ef5a3388db5c86a764",
+    "targeted-cases.log": "fdd5be278bea8a56758167ab3d07e0443b5bbee6abf520fab29a1cf27d961d94",
+    "targeted-current.log": "106fff2de7e42270c895e9e89ae97ecb2285bc0a0a5bdcb25b73f7f8a7a955dc",
+    "resolve.py": "93c2b4d31f71b4d63002b3d99180d59abf54aba92418d4209806cb34e85db150",
+    "union-leaf.template": "ca4129f654ae0760dc5f94db9fd5693ea01be75326be0712872dc719541e5236",
+    "resolution-source-only.patch": "ab8371be44ac4f326b830f190234255c3b0bc335cfc4009a3e5ea75fc9580164",
+    "HANDOFF.md": "32f10b5919b7e21af7b0c5d63931114e515cd9b624295af20d7ebe0624aaa4c8",
+    "INDEPENDENT-REVIEW.md": "adf5d37a567e5f7de3e89595dca519bf77f1980189177796ef437a3788a91862"
+  },
+  "oldLeavesAndPackets": "byte-identical",
+  "tests": {
+    "pcCases": 2,
+    "integratedCases": 4,
+    "initialClosureError": ".release-please-manifest.json missing; fixed only by exact 19B manifest + 5015B changelog",
+    "physicalForecastCurrent": "NOT_RUN"
+  },
+  "remoteWrites": false,
+  "commit": null,
+  "independentReview": "PASS scoped static source review; no test rerun"
+}

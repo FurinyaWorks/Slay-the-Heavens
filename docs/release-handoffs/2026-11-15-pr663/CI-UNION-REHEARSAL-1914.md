@@ -7,3 +7,5 @@
 定向结果：PC 绑定及原始发现 **2/2**；共同 cases 首轮 **3/4**，缺少隔离物化的两个普通根文件，其唯一失败单独补回精确头来源后 **1/1**。包含两个真实历史视图、变更/缺失/foreign 键负对照、copy closure，保留生产 owner 可见。参见[定向日志](ci-union-1914.log)。
 
 这不是 Full CI、合并准入或产品状态。接续顺序：等 #692 独立评审和精确 Required 状态完成，再在已准入的真实 Release 基线实际合入 / 重新生成最终外层，并一次吸收 #684 后续诊断补丁；不能复用测试合成 SHA，也不能放松分支规则或仅据这组局部绿合并。#690 另有整合作用域，不包含在本预演。
+
+[源码差分（审阅用）](ci-union-resolution-source-only.patch) · [身份清单](ci-union-resolution-manifest.json)。差分以 #684 为比较点，需先纳入 #692 无冲突的测试、原始 bootstrap leaf/packet，并从真实最终源码再生成外层；不是可独立应用的产品补丁。物理 guard / forecast 的最终组合回调本轮未执行；Windows、完整历史调用者、正式独立集成评审和 Hosted admission 都未完成。
