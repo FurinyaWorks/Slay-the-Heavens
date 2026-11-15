@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 03:47'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-15 06:58'
 labels:
   - 待验
   - delivery-verify
@@ -54,6 +54,8 @@ ordinal: 120000
 2026-11-05复采同SHA队列/push原始run/jobs与最新100个Quality样本，区分已证明的工程AC与稳定Full30分钟/自然Fast20样本剩余出口；保持In Progress。
 
 2026-11-09 辅助切片：在已公开#571组合上定位#564 Full暴露的三个历史来源合同慢测，仅优化可证明等价的重复计算；完整断言、鲜读owner、原预算与矩阵保持，定向前后测量和独立审查后及时发布，不重复Full或占用用户电脑。
+
+2026-11-15协助切片：从origin/develop独立feat/source-proof-cost-followup-1115，仅将relic-query来源合同的不可变expected按consume/host派生一次；先做同源有界读序与防护差分，再只跑原owner-matrix命名合同一次。全部实际fresh-reader、失败恢复、nested及same-call混读断言保持；不改生产、CI权重、并发、预算、超时，不提交或发PR。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -103,4 +105,12 @@ PR370首头5d66abfc的run41009713098 impact 05:40:13创建、05:52:29开始、05
 
 2026-11-13对账：原AC1–3均已勾但仍In Progress；M7章程稳定Full≤30分钟及自然Fast样本未有通过证据，因此补AC4作为剩余出口，保留原三项真实通过与原始耗时。
 PR269合后Windows日志确认两类合同错误：新快反馈工作流CRLF未归一，三份fixture合同冻结旧runner整文件hash未识别已批准的调度编辑。修复保留原63ec1495全runner SHA，通过严格校验新调度block的SHA64f2b495后仅逆转该block和单一import；原runLua、全部超时、进程参数、输出/失败路径仍由原hash保护。新增LF/CRLF等价、任意deadline/进程修改仍拒绝、调度改写仍拒绝负例。精确Node24.18.0在已构建数据/UI上18/18过0skip，165.697秒；含真实7UI片/53case/6播放种子与原全部负例。用户已明确授权先合并后完整CI，未宣称远端通过。复用现有TASK75，不再建重复任务。
+
+本轮以已完成push Full43615128387的rules7历史实测584077.3832ms定位，不触发或轮询CI；历史实测不能充作本地前后提速对照。原TASK75保持In Progress/Furinya。
+
+2026-11-15来源fixture单点切片：独立feat/source-proof-cost-followup-1115基线e65，仅将不可变expected从owner内层移至consume/host一次。先跑同源有界前后probe，69条返回/owner读序/失败恢复/nested/mixed轨迹相同，计数小矩阵4到2、完整静态2170到62；原named owner-matrix仅执行一次，1/1通过0skip，测试体11413.3658ms、进程28178.7303ms。证据在该独立树.artifacts/source-proof-cost-followup-1115/handoff.json、exact.diff、probe.json及named-owner-matrix.log；LF after SHA603020d5d29e8c3d66886609f2dd7e3a142321ec63bb7465c23adf575db4a77e。没有本地旧版同named墙钟基线，不与历史CI整文件584077ms计算提速倍数。未改生产、pipeline、权重、并发、预算或timeout，未跑Full，未commit/PR/push；TASK75继续In Progress，等待主控统一独审收尾。
+
+2026-11-15 主控收尾独审通过：/root/engineering_queue_audit:task75-pure-expected-hoist:20261115，绑定LF SHA603020d5d29e8c3d66886609f2dd7e3a142321ec63bb7465c23adf575db4a77e，unresolved=[]。原始源码/探针/named日志逐字节归档于docs/evidence/task75-source-proof-cost-20261115/raw-evidence.json.gz并有hash清单。只保全现有单点切片，不新增优化、不建PR或入发版队列，TASK75及稳定Full目标保持未完成。
+
+2026-11-15 收尾检查：原依赖junction指向空的根node_modules，Backlog检查报缺luaparse；仅保留本树junction到.artifacts/dependency-link-before-closeout，再离线npm ci恢复锁定11包，未改根目录。精确Node24.18.0执行verify:backlog及git diff --check通过；不重复named测试或Full。
 <!-- SECTION:NOTES:END -->
