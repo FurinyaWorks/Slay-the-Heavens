@@ -1,0 +1,35 @@
+2026-11-15T21:09:42.0451680Z Complete job name: engineering-posix (5/15)
+2026-11-15T21:09:44.2505119Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +457e63149ecda3745366e6e502281cbd8b045087:refs/remotes/pull/695/merge
+2026-11-15T21:09:47.6801599Z  * [new ref]         457e63149ecda3745366e6e502281cbd8b045087 -> pull/695/merge
+2026-11-15T21:09:49.5634356Z 457e63149ecda3745366e6e502281cbd8b045087
+2026-11-15T21:11:29.2718927Z ✖ battle continuation retains exact historical sources and complete current Full coverage (14.914126ms)
+2026-11-15T21:11:29.2760556Z ✖ combined closeout validates raw current sources and complete Full discovery independently of immutable slice views (226.60295ms)
+2026-11-15T21:11:29.2762155Z ✖ run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts (7.230292ms)
+2026-11-15T21:11:29.2765067Z ✖ Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic (1.431983ms)
+2026-11-15T21:22:02.7742685Z ℹ tests 502
+2026-11-15T21:22:02.7743306Z ℹ pass 498
+2026-11-15T21:22:02.7743647Z ℹ fail 4
+2026-11-15T21:22:02.7819536Z ✖ failing tests:
+2026-11-15T21:22:02.7820028Z test at tests/ci-complete-calibration.test.mjs:1501:1
+2026-11-15T21:22:02.7820756Z ✖ battle continuation retains exact historical sources and complete current Full coverage (14.914126ms)
+2026-11-15T21:22:02.7963218Z test at tests/ci-complete-calibration.test.mjs:1854:1
+2026-11-15T21:22:02.7963889Z ✖ combined closeout validates raw current sources and complete Full discovery independently of immutable slice views (226.60295ms)
+2026-11-15T21:22:02.7964530Z   AssertionError [ERR_ASSERTION]: raw current source: scripts/official-battle-hud.mjs
+2026-11-15T21:22:02.7965520Z   + 'd24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7'
+2026-11-15T21:22:02.7965926Z   - '60df1c2e5b6a48dbaa47137545bfa9fc29efd1e9ff757c0f766780cd8589c080'
+2026-11-15T21:22:02.7969756Z     actual: 'd24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7',
+2026-11-15T21:22:02.7970183Z     expected: '60df1c2e5b6a48dbaa47137545bfa9fc29efd1e9ff757c0f766780cd8589c080',
+2026-11-15T21:22:02.7971110Z test at tests/ci-complete-calibration.test.mjs:1940:1
+2026-11-15T21:22:02.7971743Z ✖ run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts (7.230292ms)
+2026-11-15T21:22:02.7972314Z   AssertionError [ERR_ASSERTION]: complete current HUD source: scripts/official-battle-hud.mjs
+2026-11-15T21:22:02.7973086Z   + 'd24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7'
+2026-11-15T21:22:02.7973462Z   - '05f1bc955d40f60ed295f9a7441ac45bed4c109fc9b7d61f384dae0137126e0c'
+2026-11-15T21:22:02.7977281Z     actual: 'd24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7',
+2026-11-15T21:22:02.7977704Z     expected: '05f1bc955d40f60ed295f9a7441ac45bed4c109fc9b7d61f384dae0137126e0c',
+2026-11-15T21:22:02.7978635Z test at tests/ci-complete-calibration.test.mjs:1996:1
+2026-11-15T21:22:02.7979231Z ✖ Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic (1.431983ms)
+2026-11-15T21:22:02.7979936Z   AssertionError [ERR_ASSERTION]: fresh complete integration source: bootstrap tests/helpers/integrated-ci-source.mjs
+2026-11-15T21:22:02.7980765Z   + '2813c135a3df3e03dd72bb745f2adaea8b105b29cccd5113c72148973db43578'
+2026-11-15T21:22:02.7981143Z   - '65c09f7410a7a22ef3588a9806a8ac79d26fd7d78fe9fb326705e0273d34e6d9'
+2026-11-15T21:22:02.7985784Z     actual: '2813c135a3df3e03dd72bb745f2adaea8b105b29cccd5113c72148973db43578',
+2026-11-15T21:22:02.7986193Z     expected: '65c09f7410a7a22ef3588a9806a8ac79d26fd7d78fe9fb326705e0273d34e6d9',

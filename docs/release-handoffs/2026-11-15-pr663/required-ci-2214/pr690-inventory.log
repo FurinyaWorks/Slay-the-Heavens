@@ -1,0 +1,10 @@
+EXACT HOSTED MERGE 672aadeb5c66e713e5474e5ab71f3eb35dc698d4 tree acc529c1ac8fdc5f7d736ede86026241cad15d01
+RED original inventory equality; additions [
+  'tests/exit-menu-closeout.test.mjs',
+  'tests/pause-route-entry.test.mjs',
+  'tests/release-navigation-source.test.mjs'
+]
+PASS actual Release composition source/archive guard against exact Git blobs
+GREEN bounded mapping only js 879 -> 876 missing/duplicate/changed-added refused
+GREEN bounded mapping only lua 1424 -> 1423 missing/duplicate/changed-added refused
+NOT_RUN original full test/file/suite; no production patch or frozen source rebinding

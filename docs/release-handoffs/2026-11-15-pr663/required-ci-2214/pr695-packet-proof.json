@@ -1,0 +1,34 @@
+{
+  "head": "350c447c96dc65c1b48c48c3e0e24a3b627e4b2f",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "pc06PacketHash": "cef63cfac0c079e6f95a913c20a897464833bac8012404c4062fbb7ddebf87eb",
+  "packetExactCurrentAndPredecessorVerified": [
+    {
+      "path": "scripts/official-battle-hud.mjs",
+      "rawCurrentSha256": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+      "releaseBeforeSha256": "05f1bc955d40f60ed295f9a7441ac45bed4c109fc9b7d61f384dae0137126e0c",
+      "projectByExistingHelper": false
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "rawCurrentSha256": "2813c135a3df3e03dd72bb745f2adaea8b105b29cccd5113c72148973db43578",
+      "releaseBeforeSha256": "65c09f7410a7a22ef3588a9806a8ac79d26fd7d78fe9fb326705e0273d34e6d9",
+      "projectByExistingHelper": true
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "rawCurrentSha256": "e8ae273d08ec07d59f0c13f0e226022069405a5ff9985b196695f8a182c7a76a",
+      "releaseBeforeSha256": "a2b0c603a5a1ea3ac45f6cdd003024d86180c0f25a5456822fa8402fdf64b733",
+      "projectByExistingHelper": true
+    },
+    {
+      "path": "tests/official-run-chrome.test.mjs",
+      "rawCurrentSha256": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+      "releaseBeforeSha256": "4cac72f1f00f361e6f4ce5fe91c37cf2a1dab86645cce63eeb631ad6fa54f159",
+      "projectByExistingHelper": true
+    }
+  ],
+  "calibrationMissingPc06Boundary": true,
+  "fullTestsRun": false,
+  "productionUnchanged": true
+}
