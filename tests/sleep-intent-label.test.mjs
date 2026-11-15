@@ -1,8 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {mkdtempSync,rmSync,readdirSync,writeFileSync} from 'node:fs';import {join} from 'node:path';import {createRequire} from 'node:module';import {spawnSync} from 'node:child_process';
+import {mkdirSync,mkdtempSync,rmSync,readdirSync} from 'node:fs';import {join} from 'node:path';import {createRequire} from 'node:module';import {spawnSync} from 'node:child_process';
 import {buildUI} from '../scripts/build-ui.mjs';import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
 const require=createRequire(import.meta.url);
 for(const officialAssets of [false,true])test(`${officialAssets?'official':'default'} sleeping marker follows real sleep/wake and reused native actor state`,()=>{
+ mkdirSync('build',{recursive:true});
  const dir=mkdtempSync(join(process.cwd(),'build','sleep-intent-'));
  try{
   buildLuaData('data',join(dir,'abyss_data.lua'));buildUI(dir,undefined,{officialAssets});
