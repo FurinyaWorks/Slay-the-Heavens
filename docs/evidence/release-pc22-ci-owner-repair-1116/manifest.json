@@ -1,0 +1,34 @@
+{
+  "pc22-independent-review.json": {
+    "bytes": 2737,
+    "sha256": "3187f42f7de3da57dacd6c0eecb1174b6298b1d8f165c35d186ee90948c71d12"
+  },
+  "pc22-two-cases-escalated.stdout.log": {
+    "bytes": 20411,
+    "sha256": "5e69acb3ae4b28fcdb93115d590e0939bd6b20b6551b49ad8387bf4f2106eabd"
+  },
+  "pc22-two-cases-escalated.receipt.json": {
+    "bytes": 1076,
+    "sha256": "95f42012db8f1db81471581ca0dde363f2febc9903014f9878fdfe5553c5118c"
+  },
+  "pc22-four-cases-green.stdout.log": {
+    "bytes": 618,
+    "sha256": "00c61f2ef611edf6da1b59d13d1185a34a3feb6bec23757702dc74d9ed928a88"
+  },
+  "pc22-four-cases-green.receipt.json": {
+    "bytes": 1396,
+    "sha256": "c55e4144e7a1cfaabf60092a9883f20395d21fd96672b9ca3ce3b16182e73c13"
+  },
+  "pc22-ci-owner-contracts.stdout.log": {
+    "bytes": 1034,
+    "sha256": "cb35dfd50492c364b0673f5076e1c81287156d2fa2ff2402bb518c42193db4fe"
+  },
+  "pc22-ci-owner-contracts.receipt.json": {
+    "bytes": 1265,
+    "sha256": "e9a78a0c4baf38b9fe1dcd824083f146f3199ec44c44077e6b43664aec57b730"
+  },
+  "pc22-frozen-preservation.json": {
+    "bytes": 598,
+    "sha256": "d836b47503e2c2c4d1843ecd057134885507e8537e4a753f78802f02b48b88fc"
+  }
+}

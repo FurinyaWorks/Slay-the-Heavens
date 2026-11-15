@@ -59,6 +59,45 @@ test('release PC22 basic feedback CI validates complete live bindings while unkn
  for(const path of Object.keys(releasePc22BasicFeedbackSourcePacket.current))assert.equal(releasePc22BasicFeedbackCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');
 });
 
+test('PC22 owner fixture repair retains the complete prior CI packet and authenticates only three current test bindings',()=>{
+ const path='tests/helpers/release-pc22-basic-feedback-ci-before-owner-repair-source.json.gz',bytes=readFileSync(path);
+ assert.equal(hash(bytes),'313d904add6bb891c377790c55f0e64b28f0b429d78da630c7b9d57ae2748790');
+ const prior=JSON.parse(gunzipSync(bytes)),packet=releasePc22BasicFeedbackCiPacket;
+ const added=['tests/defect-final-source-epoch.test.mjs','tests/encounter-formation-source-epoch.test.mjs'];
+ const sourceTest='tests/release-pc22-basic-feedback-source.test.mjs';
+ assert.equal(Object.keys(prior.files).length,20);
+ assert.deepEqual(Object.keys(packet.files).sort(),[...Object.keys(prior.files),...added].sort());
+ const changed=[];
+ for(const [path,row]of Object.entries(prior.files)){
+  assert.deepEqual({...packet.files[path],current:row.current},row,path+' exact original CI predecessor');
+  if(packet.files[path].current.sha256!==row.current.sha256)changed.push(path);
+  else assert.deepEqual(packet.files[path].current,row.current,path+' unchanged original after binding');
+ }
+ assert.deepEqual(changed,[sourceTest]);
+ // These literal blob identities were read from the actual Release commit.
+ // Verifying their complete source bytes needs no historical Git objects in CI.
+ const beforeGitBlobs={
+  'tests/defect-final-source-epoch.test.mjs':'072e6fd3f0ed3ef7d797b221329c91fdfc1200e7',
+  'tests/encounter-formation-source-epoch.test.mjs':'d137ae680404eb393544e301c08d0b1f7589afb6',
+ };
+ for(const path of added){
+  const row=packet.files[path];
+  assert.deepEqual(Object.keys(row),['beforeCommit','before','current']);
+  assert.equal(row.beforeCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
+  assert.equal(row.before.gitBlob,beforeGitBlobs[path],path+' actual Release Git predecessor');
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before.source)}\0`).update(row.before.source).digest('hex'),beforeGitBlobs[path]);
+  assert.equal(hash(row.before.source),row.before.sha256,path+' complete Git predecessor source');
+ }
+ for(const path of [...added,sourceTest])assert.equal(packet.files[path].current.source,norm(readFileSync(path,'utf8')),path+' complete current disk source');
+ assert.equal(Object.keys(prior.immutableArchives).length,96);
+ assert.deepEqual(packet.immutableArchives,{...prior.immutableArchives,[path]:hash(bytes)});
+ assert.equal(prior.currentTreeCommitted,true);
+ assert.equal(packet.currentTreeCommitted,false,'repaired test after bindings are an uncommitted worktree capture');
+ assert.equal(packet.currentCommit,prior.currentCommit,'the historical committed CI producer is not relabelled');
+ assert.equal(packet.currentCommitRole,'uncommitted worktree capture of repaired PC22 owner test after bindings; currentCommit is the historical committed CI producer only');
+ for(const field of Object.keys(prior).filter(key=>!['files','immutableArchives','currentTreeCommitted','currentCommitRole'].includes(key)))assert.deepEqual(packet[field],prior[field],field+' unchanged original metadata');
+});
+
 test('release PC22 basic feedback raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
  assert.deepEqual(releasePc22BasicFeedbackCiPacket.rawLuaOwners,{'tests/lua/card_flow_contact_continuity.lua':['src/lua/abyss_card_flow.lua']});
  assert.deepEqual(Object.keys(releasePc22BasicFeedbackCiPacket.rawLuaOwners),

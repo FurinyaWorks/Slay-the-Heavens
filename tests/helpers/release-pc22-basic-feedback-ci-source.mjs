@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-pc22-basic-feedback-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'313d904add6bb891c377790c55f0e64b28f0b429d78da630c7b9d57ae2748790','complete release PC22 basic feedback CI continuation');
+assert.equal(hash(bytes),'d65e6170e254f376ca425035e489e89aedbedbd67d1585b1bd8bc611c991c610','complete release PC22 basic feedback CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
@@ -15,7 +15,8 @@ assert.match(packet.currentCommit,/^[a-f0-9]{40}$/);
 const bootstrap=['.github/workflows/licenses.yml','.github/workflows/quality.yml','.github/workflows/quick-feedback.yml'];
 assert.deepEqual(Object.keys(packet.files).filter(p=>p.startsWith('.github/')).sort(),bootstrap);
 for(const [path,row]of Object.entries(packet.files))assert.equal(row.beforeCommit,packet.baseCommit,'exact actual Release PC22 basic feedback CI predecessor: '+path);
-assert.equal(packet.currentTreeCommitted,true);
+assert.equal(packet.currentTreeCommitted,false);
+assert.equal(packet.currentCommitRole,'uncommitted worktree capture of repaired PC22 owner test after bindings; currentCommit is the historical committed CI producer only');
 assert.deepEqual(packet.priorSlicePacket,{path:'tests/helpers/release-pc22-basic-feedback-ci-before-release1cc-source.json.gz',sha256:'54a88fc1c7f92c7d853afa3611e5dd7b14e04e21cb1e2c942dd441cf3331eaa3'});
 assert.deepEqual(Object.keys(packet.bootstrapCurrentBindings).sort(),[
  '.github/workflows/licenses.yml','.github/workflows/quality.yml','.github/workflows/quick-feedback.yml',
