@@ -16,17 +16,17 @@ test at tests\official-map-return-controls.test.mjs:38:1
   ABYSS_RUN seed=1 source=explicit
   tests/lua/support/official_map_return.lua:9: PC08: generated Host has no shared map return face
   stack traceback:
-  	[JS]: in function 'assert'
-  	tests/lua/support/official_map_return.lua:9: in upvalue 'state'
-  	tests/lua/support/official_map_return.lua:38: in local 'fn'
-  	tests/lua/support/official_map_return.lua:22: in local 'test'
-  	tests/lua/support/official_map_return.lua:37: in main chunk
-  	[JS]: in function 'dofile'
-  	(command line):33: in main chunk
-  
-  
+      [JS]: in function 'assert'
+      tests/lua/support/official_map_return.lua:9: in upvalue 'state'
+      tests/lua/support/official_map_return.lua:38: in local 'fn'
+      tests/lua/support/official_map_return.lua:22: in local 'test'
+      tests/lua/support/official_map_return.lua:37: in main chunk
+      [JS]: in function 'dofile'
+      (command line):33: in main chunk
+
+
   1 !== 0
-  
+
       at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-map-return-1116/tests/official-map-return-controls.test.mjs:61:9)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1325:25)

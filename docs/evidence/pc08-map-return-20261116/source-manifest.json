@@ -50,7 +50,16 @@
     },
     {
       "path": "docs/evidence/pc08-map-return-20261116/host-red.tap",
-      "sha256": "94067b2de13d8e683de027ceea584f22d3e31729cdf39e31f5da315c274ad23d"
+      "sha256": "4f8d5e77da7c7c6565269d549332d27e5d17d045dff38c3c1d87c0e34b227166",
+      "form": "Whitespace-normalized readable copy; original bytes preserved in raw archive",
+      "raw": {
+        "path": "docs/evidence/pc08-map-return-20261116/host-red.tap.raw.gz",
+        "sha256": "915dc8512a2d6917f6201ff0ad2dc24d22e801a3e55cfc52968de4d872dcef64",
+        "sizeBytes": 732,
+        "uncompressedSha256": "94067b2de13d8e683de027ceea584f22d3e31729cdf39e31f5da315c274ad23d",
+        "uncompressedSizeBytes": 1571,
+        "verification": "gunzip bytes exactly match original frozen host-red.tap; non-whitespace readable content identical"
+      }
     },
     {
       "path": "docs/evidence/pc08-map-return-20261116/final-targeted.tap",
@@ -64,7 +73,7 @@
   "validation": {
     "targeted": "11 tests pass; 3 full generated official Host scenarios",
     "architecture": "351 modules / 1989 edges pass",
-    "diffCheck": "pass",
+    "diffCheck": "PASS full candidate git diff --check 36b9b157ee6f05b65eb9f1da7e2978647d36c210 after evidence-only correction. Earlier worktree-only check missed whitespace in newly added host-red.tap; original failure bytes preserved in raw archive.",
     "luaStatic": "PASS Luacheck 1.2.0; no new diagnostics; 6 historical warnings; 2215 governed responsibility measurements; existing binary sha256 0f1c69c4d09f1ebb4d8df14c215e4553e2e639bd4cb7bf3c639b0daa6198317b",
     "fast": "plan only; full=false; no Fast execution",
     "officialImport": "UNVERIFIED",
