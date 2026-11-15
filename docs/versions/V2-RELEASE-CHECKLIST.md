@@ -44,7 +44,9 @@ Version：v2.0.0                                   NO-GO
    └─ [ ] 人工更新已有千星作品，记录 GUID、版本与成功回执
 ```
 
-**注意操作顺序**：先将 #665/#661/#663 和其他必要结果实际合入 `develop`，在发行分支一次性升至 2.0.0 并定稿更新日志，再从准确的 2.0.0 源码构建、进行 CI/官方设备验证，最后合入 `master` 并打 Tag。**不要先验 1.2.0 再改版本号而不重建**。
+**注意操作顺序（2026-11-15 Release 分流后）**：#661/#663 已进入 `release/v2.0.0` 的冻结起点 `develop@c2409ad750c15124b7b843c6bbfa5b222537cb75`。本版必要修复与发布元数据经 PR 集成到 `release/v2.0.0`；#665 仍以 `develop` 为 base，不能把本 PR 或其他在途成果当作已进入 Release。协调者先核对准确 diff 和来源，仅选择性移植本版所需内容，**不得把后续 develop 整体合入 Release**。在 Release 一次性定稿 2.0.0 与更新日志，再冻结源码、构建并完成对应 CI/官方设备验证；最后经 PR 合入 `master`，在准确发行提交打 Tag，平台由 Owner 人工更新。Release 修复另经 PR 回流 develop。**不要先验 1.2.0 再改版本号而不重建**。
+
+分流及准入入口：[Release 交接](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/release/v2.0.0/docs/versions/V2-RELEASE-HANDOFF.md)。其中保护、路由和 CI 快照须按当前远端读回；本页不授权修改保护、不把 Develop 专用 `merge:auto` 用于 Release，也不将日常定向回归等同于 RC 放行。下方旧表只保留历史追溯，不决定当前合并去向。
 
 ## 已有 Backlog：直接复用，不新建重复任务
 
