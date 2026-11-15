@@ -21,7 +21,14 @@ const bytes=readFileSync(new URL('./integration-source-closure.json',import.meta
 assert.equal(hash(bytes),'800fcc9efd889f482259d0e1e9f1501f0e9597ac05552622ede00dd3dcdb4a94','complete integration helper closure identity');
 const currentBytes=readFileSync(new URL('./closeout-source-closure.json',import.meta.url));
 assert.equal(hash(currentBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','complete closeout source helper closure');
-const files=extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure)),inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
+const files={...extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure))};
+export const releaseNavigationHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'987330f2d0d2f4e8318550f9855d94f03069af7a8112c2a795f6c051f4ac70cb'},
+ {path:'tests/helpers/release-navigation-source.mjs',before:null,after:'23d6276435f6d9e15cdfe5a20ce1ea88ebb4c5a36902b02aada9bf28cacdcc1d'},
+ {path:'tests/helpers/release-navigation-source.json.gz',before:null,after:'83b69705480776eb130b3487f09af79c50625410925e76bba958644093c91f31'}
+];
+for(const row of releaseNavigationHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release navigation helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
