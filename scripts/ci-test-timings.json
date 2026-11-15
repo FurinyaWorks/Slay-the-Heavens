@@ -6282,6 +6282,21 @@
         "testSha256": "8709c8de6cd8fdc5ee8aad61e6c68f25d2ba077c7a545c13f1908f30549006d4",
         "sourceReceipt": "docs/evidence/m7-golden-idol-current-20261111/source-receipt.json",
         "sourceReceiptSha256": "943d5446780f34dea1e23514eb381bd77430d463b0221db496f390623be31993"
+      },
+      "tests/reward-pool-retirement-runtime.test.mjs": {
+        "durationMs": 79861,
+        "environment": "local Windows Node 24.18.0; not Hosted",
+        "tests": 2,
+        "coverage": "2/2 fresh VMs, each 36 retirement cases; zero failures, skips or cancellation",
+        "kind": "Observed local complete-file planning floor only; not a Hosted upper bound or target certification",
+        "nodeReportedDurationMs": 73618.8019,
+        "wallDurationMs": 73696,
+        "sourceLog": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stdout.gz",
+        "sourceLogSha256": "2b05214dccada06f6d559a8b095243596368279ee0f557368014b8500f607f90",
+        "sourceLogUncompressedSha256": "3b35cdea57f7fb2b8ddaac98262f9eb00845240136cd4583b729c485d0b4e2ee",
+        "testSha256": "6b739f076f55383db4df6c3c6f7997b154904483b8db1219b1a1a9577513313d",
+        "sourceReceipt": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
+        "sourceReceiptSha256": "c2683273e948613338618d60755a55c2a56a164a643d7a626cc0d6926314b1b7"
       }
     }
   },
