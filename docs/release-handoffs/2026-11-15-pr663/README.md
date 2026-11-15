@@ -1,11 +1,20 @@
 # 2.0.0 发版阻塞交接：PR #663
 本分支是发布交接记录，不是发版分支，不提合并 PR。补丁由正在处理 #663 的执行者按实际状态接续；不要把此文档目录合进主干。
 
+
+## 当前接续：#663 已合入，旧修复补丁不要再用
+
+[PR #663](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/663) 已于 2026-11-15 10:31 UTC 由原生队列合入 `develop`，合后提交 `c2409ad750c15124b7b843c6bbfa5b222537cb75` 同时是 [队列 Full 43695252430](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/43695252430) 的成功测试提交。下方旧 Windows 失败和修复步骤只供取证；**不要对新 develop 重放**。合后运行与正式候选验收另算，不以队列成功代替。
+
+现在应在该合后基线（或其已验证后继）接续 [#672](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/672)。不要把旧 PR 基线的 CI 或 `9b7794e` 测试候选算作最终组合。现有四文件 2.0.0 版本补丁已在合后 `c2409ad7` 的真实文件上隔离试用：`git apply --check` 通过，版本字段都为 2.0.0，依赖和 16 节历史日志保持原样。只证明补丁适用，未提交发版版本、未冻结 changelog，也未重建 GIL；玩家文案仍按最终实际内容复核。PC／手机最终采证用 [最新版同候选清单](FINAL-RC-ONE-PASS.md)。
+
+## 历史取证（已收口）
+
 适用范围：PR HEAD `d3783cd17be21dedcffd22f391cecc6455ce9a50`、base `e65d9b98fbec69442047650254238cd9244df805`。任何一边变更，先由原执行者核对差异；不强推，不从这个包自动合并或发版。
 
 [红灯：Windows 18/18](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/43665762352/job/132664887560) 的唯一失败是源码身份验证子进程 30 秒超时。补丁只改测试辅助代码与回归，保持 30 秒、逐条摘要比较、旧见证、真实 owner 读及完整 CI 门槛。没有游戏源码变更，不能当作候选包或实机通过。
 
-## 原执行者：在干净、权限正常的现有 #663 工作树执行
+### 历史执行步骤（不要在新基线上运行）
 先核对 HEAD/BASE，确保已取到库中登记的 LFS 对象。从 git show 核对 pointer 的 OID，再核验工作树实际文件，不要用 132 字节 pointer 生成见证（实测生成器接受了 pointer 并输出错误闭包摘要，取回实物才复现正确见证）。
 - `tests/helpers/release-source-epoch.json.gz`：SHA-256 `5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780`，2,587,324 字节。
 - 其余已迁 LFS 对象按当前仓库流程正常读回。已有对象不重下。
