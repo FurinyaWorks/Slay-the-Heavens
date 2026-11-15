@@ -6,12 +6,20 @@ import {gunzipSync,gzipSync} from 'node:zlib';
 import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
+export function assertOriginalSessionMenuWitness(menu){
+ const source=JSON.stringify(menu);
+ assert.equal(hash(source),'faf5708dea4f2c825683b9a0673eb1af8c64d094268b0c154de2a923e3397bac','immutable original session menu source witness');
+ // The historical witness was produced by pinned Node 24 on Windows. Gzip's
+ // OS header is metadata; reproduce that exact physical witness on every OS.
+ const original=gzipSync(source);original[9]=10;
+ assert.equal(hash(original),'ee5c239203d26701a31b1a5b71db4aa984c664db6b2bcc2482007f567ff94f52','immutable original Windows gzip witness');
+}
 export function extendSessionMenuEpoch(original){
  const bytes=readFileSync(new URL('./session-menu-source-epoch.json.gz',import.meta.url));
  assert.equal(hash(bytes),'a01740a49c5e118391a852344365df664c85b06b2c550093b868dc1dac0418c6','complete session menu source witness');
  const patch=JSON.parse(gunzipSync(bytes)),prior=original.proof;
  const {continuation,...menu}=patch;
- assert.equal(hash(gzipSync(JSON.stringify(menu))),'ee5c239203d26701a31b1a5b71db4aa984c664db6b2bcc2482007f567ff94f52','immutable original session menu source witness');
+ assertOriginalSessionMenuWitness(menu);
  assert.equal(patch.schemaVersion,1);assert.equal(patch.normalization,'LF');
  assert.equal(patch.menuCommit,'a0d3cd6cfe5e19f720837db2d39b1b69aa995bae');
  assert.equal(patch.baseCommit,'fbb455a502f436390a539f4d4f3181fb084be472');

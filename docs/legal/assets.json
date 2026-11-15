@@ -9853,6 +9853,22 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "sourceCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830"
+    },
+    "tests/helpers/closeout-ci-source.json.gz": {
+      "sha256": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+      "bytes": 2848271,
+      "category": "project-ci-history-evidence",
+      "lfs": true,
+      "storage": "ci-media-lfs-v1",
+      "sourceCommit": "dfd45d6ce3f466592700aea94d224b4c660be960"
+    },
+    "tests/helpers/release-source-epoch.json.gz": {
+      "sha256": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+      "bytes": 2587324,
+      "category": "project-ci-history-evidence",
+      "lfs": true,
+      "storage": "ci-media-lfs-v1",
+      "sourceCommit": "dfd45d6ce3f466592700aea94d224b4c660be960"
     }
   }
 }

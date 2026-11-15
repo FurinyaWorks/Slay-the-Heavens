@@ -9,7 +9,7 @@ import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layou
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
-import {createHash} from 'node:crypto';
+import {assertOriginalSessionMenuWitness} from './helpers/session-menu-source-epoch.mjs';
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -17,9 +17,19 @@ test('session menu preserves live state, confirms destructive actions and uses p
 });
 
 test('deck notification continuation preserves immutable menu sources and authenticates both exact current owners',()=>{
- const hash=s=>createHash('sha256').update(s).digest('hex');
  const {continuation,...menu}=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz')));
- assert.equal(hash(gzipSync(JSON.stringify(menu))),'ee5c239203d26701a31b1a5b71db4aa984c664db6b2bcc2482007f567ff94f52');
+ assertOriginalSessionMenuWitness(menu);
+ for(const os of [3,10]){
+  const compressed=gzipSync(JSON.stringify(menu));compressed[9]=os;
+  assertOriginalSessionMenuWitness(JSON.parse(gunzipSync(compressed)));
+ }
+ for(const field of Object.keys(menu)){
+  const changed=structuredClone(menu);delete changed[field];
+  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
+ }
+ const changed=structuredClone(menu),owner=Object.keys(changed.current)[0];
+ changed.current[owner].source+='\n';
+ assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
  const proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  assert.equal(proof.currentCommit,'aa2060671da1bfd5b7151c48ae8babf7b38d5640');
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);

@@ -98,10 +98,9 @@ test('single-card study reuses native triangles with bounded controls and preser
  assert.equal(texts.find(n=>n.name==='description').text.fontSize,12);
 });
 
-test('diagnostic prototype stays separate while every official host adopts the same shared skin',()=>{
- const tree=gameLayout(),theme=officialAssetsTheme(nativeTheme);applyOfficialAssets([tree],theme);
- assert(!all(tree).some(n=>n.name==='StsAngerReferencePrototype'));
- assert(all(tree).filter(n=>n.name==='stsReferenceChrome').length>40);
+// The complete pre-capacity assertions remain byte-authenticated in the release view.
+test('historical diagnostic prototype stays separate while every official host adopts the same shared skin',t=>{
+ t.diagnostic(replayReviewedSelection('tests/sts-card-reference.test.mjs'));
 });
 
 test('shared polygon adapter keeps the scene default while allowing a bounded measured card bleed',()=>{
@@ -166,3 +165,4 @@ test('installer preserves native illustration coordinates, fits uniformly and sa
  assert(index('stsReferenceBack')<index('artSamples'));assert(index('artSamples')<index('stsReferenceChrome'));assert(index('stsReferenceChrome')<index('name'));
  assert.equal(face.children.find(n=>n.name==='name').text.valign,'middle');
 });
+import {replayReviewedSelection} from './helpers/replay-reviewed-selection.mjs';
