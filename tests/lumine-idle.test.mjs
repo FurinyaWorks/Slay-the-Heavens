@@ -7,6 +7,7 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {approvedBattleIdle,writePortraitModule,portraitRuntimeInventory,portraitModule} from '../scripts/official-portraits.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
+import {utf8ToLua} from '../scripts/lua-utf8-literal.mjs';
 const setup=`
 local function row(y)return {100001,0,y,3,3,.5,.5,.5,.5,.5,.5,1,1,0,255,240,210,255}end
 local data={renderProfile='approved-idle-v1',width=133,height=122,period=2.2,count=2,
@@ -91,6 +92,9 @@ test('official battle publishes only the source-locked approved idle and rejects
  assert.equal(hash('art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png'),asset.sourceSha256);
  assert.equal(hash('art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif'),'0449a8b3094f0a628f493b27157ae2d8b27d646ceb9541f6f5e9ce98a9ebeff1');
  const source=writePortraitModule(dir,{officialAssets:true,selectionAvatar:false,battlePortrait:true});
+ assert.equal(asset.samplesPerCycle,20);assert.equal(asset.period,2.2);
+ assert(asset.rows.every(row=>row.length===18));
+ assert(source.includes(`battleApprovedIdle=${utf8ToLua(asset)}`),'approved literal uses the exact lossless compact producer');
  const row=portraitRuntimeInventory(dir).assets.find(a=>a.asset==='traveler-geo/idle-approved-v1');
  assert.equal(row.images,7303);assert.equal(row.pages,18);assert.equal(row.periodSeconds,2.2);
  assert(!portraitRuntimeInventory(dir).assets.some(a=>a.asset==='temporary-pixel-traveler'));

@@ -2,6 +2,7 @@ import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {toLua} from './build-lua-data.mjs';
+import {utf8ToLua} from './lua-utf8-literal.mjs';
 import {createRequire} from 'node:module';
 import {isLightweightProfile,lightweightInventory,boundedPortraitSource} from './lightweight-2d-profile.mjs';
 import {v25Theme} from './v25-layout.mjs';
@@ -207,7 +208,7 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
  if(officialAssets&&selectionAvatar)data.push("selectionUses='lowpolyLumine'",`selectionHalfImagePrefabId=${selectionHalfImageTemplateIndex}`,`lowpolyLumine=${toLua(lumineSelectionBackground(root))}`);
  // One approved combat figure. The temporary pixel remains selection-only;
  // missing or changed approved idle data is a build error, never a fallback.
- if(officialAssets&&battlePortrait)data.push(`battleApprovedIdle=${toLua(approvedBattleIdle(root))}`);
+ if(officialAssets&&battlePortrait)data.push(`battleApprovedIdle=${utf8ToLua(approvedBattleIdle(root))}`);
  if(v25BattleChrome){
   const theme=v25Theme(JSON.parse(readFileSync(join(root,'data/presentation/ui_theme.json'),'utf8')));
   data.push(`v25PortraitProfile=${toLua(v25PortraitRuntimeProfile(theme))}`);
@@ -258,7 +259,7 @@ export function portraitRuntimeInventory(directory) {
  const flags={selectionAvatar:/\bavatar96=/.test(source),battlePortrait:/\bbattle133=/.test(source)};
  const officialAssets=source.includes('battlePixel=');
  if(officialAssets&&flags.battlePortrait){
-  const expected=`battleApprovedIdle=${toLua(approvedBattleIdle())}`;
+  const expected=`battleApprovedIdle=${utf8ToLua(approvedBattleIdle())}`;
   if(source.split(expected).length!==2)throw Error('Official battle idle differs from the pinned producer');
  }
  const selectionMarkers=source.split(/\r?\n/).filter(line=>line.startsWith('selectionUses='));

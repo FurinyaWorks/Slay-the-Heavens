@@ -19,14 +19,19 @@ test('safe identifier keys shorten without quoting reserved, numeric, prototype 
  assert.equal(utf8ToLua({b:2,a:1}),'{a=1,b=2}','deterministic original key order');
  assert.equal(toLua({b:2,a:1}),'{["a"]=1,["b"]=2}','legacy serializer remains unchanged');
 });
+test('fractional literal spelling removes only a redundant zero and leaves scientific, integer and text tokens intact',()=>{
+ assert.equal(utf8ToLua([.5,-.5,.00001,-.00001,0,-0,1,-1,1e-7,-1e-7,1e21]),'{.5,-.5,.00001,-.00001,0,0,1,-1,1e-7,-1e-7,1e+21}');
+ assert.equal(utf8ToLua(['0.5','-0.5','--0.5','[=[0.5]=]','1e-7']),'{"0.5","-0.5","--0.5","[=[0.5]=]","1e-7"}');
+ assert.equal(toLua([.5,-.5]),'{0.5,-0.5}','legacy numeric spelling remains unchanged');
+});
 test('UTF-8 literals preserve all Lua string bytes, keys, controls and numeric values',()=>{
  const directory=mkdtempSync(join(tmpdir(),'abyss-utf8-literal-'));
  try{
   const strings=['中文，易伤 88/88→9999/9999','🙂旅行者🗺️','\\230\\1"\'\n\r\t\0'+'9]=]--',
    Array.from({length:256},(_,code)=>String.fromCharCode(code)).join(''),'\u2028\u2029\ufeff'];
-  const value={strings,中文:{'复杂键\\\n"':strings[2]},numbers:[0,-0,1,-2,1.2345678901234567,1e-300,1e300],yes:true,no:false,
+  const value={strings,中文:{'复杂键\\\n"':strings[2]},numbers:[0,-0,1,-2,1.2345678901234567,1e-300,1e300,.5,-.5,.5000000000000001,.49999999999999994,.000001,-.000001,1e-7,-1e-7,Number.MIN_VALUE,-Number.MIN_VALUE,Number.MAX_VALUE,-Number.MAX_VALUE,Number.MIN_SAFE_INTEGER,Number.MAX_SAFE_INTEGER],yes:true,no:false,
    exceptional:Object.fromEntries([...luaKeywords,'__proto__','constructor','prototype','','0','01','1.5','a-b','a b','a.b','中文','é','x\nq','x"q','\\','safe','_safe9','A0'].map((key,i)=>[key,[i,strings[i%strings.length]]]))};
-  const program=`local a=${toLua(value)}\nlocal b=${utf8ToLua(value)}\nlocal function equal(x,y)\n assert(type(x)==type(y),'type')\n if type(x)~='table'then assert(x==y,'value');if type(x)=='string'then assert(#x==#y,'bytes')end;return end\n for k,v in pairs(x)do equal(v,y[k])end;for k in pairs(y)do assert(x[k]~=nil,'extra key')end\nend\nequal(a,b)\nequal(${originalV4ToLua({missing:null,nested:[null,'中文']})},${utf8ToLua({missing:null,nested:[null,'中文']},{nullAsNil:true})})\nprint('UTF8_LITERAL_BYTE_EQUAL')\n`;
+  const program=`local a=${toLua(value)}\nlocal b=${utf8ToLua(value)}\nlocal function equal(x,y)\n assert(type(x)==type(y),'type')\n if type(x)~='table'then assert(x==y,'value');if type(x)=='string'then assert(#x==#y,'bytes')elseif type(x)=='number'then assert(math.type(x)==math.type(y),'numeric subtype');assert(string.pack('d',x)==string.pack('d',y),'double bits')end;return end\n for k,v in pairs(x)do equal(v,y[k])end;for k in pairs(y)do assert(x[k]~=nil,'extra key')end\nend\nequal(a,b)\nequal(${originalV4ToLua({missing:null,nested:[null,'中文']})},${utf8ToLua({missing:null,nested:[null,'中文']},{nullAsNil:true})})\nprint('UTF8_LITERAL_BYTE_EQUAL')\n`;
   const file=join(directory,'check.lua');writeFileSync(file,program);
   const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),file],{encoding:'utf8',timeout:30000,windowsHide:true});
   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/UTF8_LITERAL_BYTE_EQUAL/);
