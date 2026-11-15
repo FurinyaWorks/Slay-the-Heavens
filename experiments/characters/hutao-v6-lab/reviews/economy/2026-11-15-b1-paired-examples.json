@@ -1,0 +1,1049 @@
+{
+  "source_blobs": {
+    "A": "364e1d3e8c8559e2fcb26276b9ae8a2813f21735",
+    "B1": "3da512df7e62afdbfe49c7a8d47a781bebe65786"
+  },
+  "runner": "b3a38c2578935147fb67b56a2990c0546cff83ee",
+  "nature": "Three preregistered holdout seeds selected AFTER data inspection as illustrative counterexamples; not independent holdout significance.",
+  "cases": {
+    "A": [
+      {
+        "seed": 3002,
+        "policy": "ignite",
+        "win": true,
+        "dead": false,
+        "finish": {
+          "phase": "win",
+          "floor": 5,
+          "hp": 3,
+          "wins": 5,
+          "turn": 6,
+          "deck": [
+            "heavy",
+            "e+",
+            "q",
+            "caution",
+            "red",
+            "c13",
+            "r09",
+            "u17"
+          ]
+        },
+        "firstHand": [
+          "guard",
+          "guard",
+          "normal",
+          "q",
+          "normal"
+        ],
+        "floors": [
+          {
+            "floor": 1,
+            "startHP": 72,
+            "firstHand": [
+              "guard",
+              "guard",
+              "normal",
+              "q",
+              "normal"
+            ]
+          },
+          {
+            "floor": 2,
+            "startHP": 59,
+            "firstHand": [
+              "heavy",
+              "e",
+              "guard",
+              "guard",
+              "q"
+            ]
+          },
+          {
+            "floor": 3,
+            "startHP": 45,
+            "firstHand": [
+              "caution",
+              "guard",
+              "red",
+              "guard",
+              "heavy"
+            ]
+          },
+          {
+            "floor": 4,
+            "startHP": 32,
+            "firstHand": [
+              "red",
+              "e",
+              "normal",
+              "r09",
+              "guard"
+            ]
+          },
+          {
+            "floor": 5,
+            "startHP": 40,
+            "firstHand": [
+              "guard",
+              "red",
+              "guard",
+              "caution",
+              "heavy"
+            ]
+          }
+        ],
+        "offered": [
+          {
+            "floor": 1,
+            "offers": [
+              "c06",
+              "u08",
+              "red"
+            ],
+            "selected": "red"
+          },
+          {
+            "floor": 2,
+            "offers": [
+              "u07",
+              "c03",
+              "c13"
+            ],
+            "selected": "c13"
+          },
+          {
+            "floor": 3,
+            "offers": [
+              "u17",
+              "c05",
+              "r09"
+            ],
+            "selected": "r09"
+          },
+          {
+            "floor": 4,
+            "offers": [
+              "c19",
+              "u17",
+              "u05"
+            ],
+            "selected": "u17"
+          }
+        ],
+        "failed": null,
+        "ledger": {
+          "paid": 36,
+          "enemyLoss": 70,
+          "healed": 19,
+          "restHeal": 18,
+          "campRest": 1,
+          "campUpgrade": 1,
+          "firstTurnE": 0,
+          "firstBattleE": 1,
+          "totalE": 6,
+          "turns": 14,
+          "cardsPlayed": 45,
+          "offerRare": 1,
+          "offerTotal": 12,
+          "rewardRare": 1,
+          "rewardCards": [
+            "red",
+            "c13",
+            "r09",
+            "u17"
+          ],
+          "maxHealUsed": 7
+        }
+      },
+      {
+        "seed": 3009,
+        "policy": "ignite",
+        "win": false,
+        "dead": true,
+        "finish": {
+          "phase": "lose",
+          "floor": 5,
+          "hp": 0,
+          "wins": 4,
+          "turn": 5,
+          "deck": [
+            "heavy",
+            "e+",
+            "q",
+            "caution",
+            "u15",
+            "r02",
+            "c01",
+            "r09"
+          ]
+        },
+        "firstHand": [
+          "guard",
+          "normal",
+          "normal",
+          "e",
+          "caution"
+        ],
+        "floors": [
+          {
+            "floor": 1,
+            "startHP": 72,
+            "firstHand": [
+              "guard",
+              "normal",
+              "normal",
+              "e",
+              "caution"
+            ]
+          },
+          {
+            "floor": 2,
+            "startHP": 67,
+            "firstHand": [
+              "heavy",
+              "e",
+              "normal",
+              "caution",
+              "normal"
+            ]
+          },
+          {
+            "floor": 3,
+            "startHP": 48,
+            "firstHand": [
+              "caution",
+              "heavy",
+              "u15",
+              "normal",
+              "q"
+            ]
+          },
+          {
+            "floor": 4,
+            "startHP": 22,
+            "firstHand": [
+              "normal",
+              "guard",
+              "guard",
+              "normal",
+              "guard"
+            ]
+          },
+          {
+            "floor": 5,
+            "startHP": 25,
+            "firstHand": [
+              "r09",
+              "caution",
+              "u15",
+              "c01",
+              "guard"
+            ]
+          }
+        ],
+        "offered": [
+          {
+            "floor": 1,
+            "offers": [
+              "renew",
+              "u01",
+              "u15"
+            ],
+            "selected": "u15"
+          },
+          {
+            "floor": 2,
+            "offers": [
+              "r02",
+              "c05",
+              "trick"
+            ],
+            "selected": "r02"
+          },
+          {
+            "floor": 3,
+            "offers": [
+              "wildfire",
+              "c01",
+              "r15"
+            ],
+            "selected": "c01"
+          },
+          {
+            "floor": 4,
+            "offers": [
+              "r09",
+              "u10",
+              "u16"
+            ],
+            "selected": "r09"
+          }
+        ],
+        "failed": {
+          "floor": 5,
+          "turn": 5,
+          "why": "death",
+          "hp": 0,
+          "logs": [
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "战斗失败，无法继续。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "受到12点伤害，格挡抵消0，失去9生命。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "高塔守门人发动攻击12。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "结束第5回合。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "本回合下一张攻击首命中额外+2。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "抽牌2（受手牌上限限制）。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "打出「作诗一首」，支付1能量。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "高塔守门人受到6点攻击伤害，实际失血6。"
+            }
+          ]
+        },
+        "ledger": {
+          "paid": 36,
+          "enemyLoss": 80,
+          "healed": 26,
+          "restHeal": 18,
+          "campRest": 1,
+          "campUpgrade": 1,
+          "firstTurnE": 1,
+          "firstBattleE": 1,
+          "totalE": 6,
+          "turns": 17,
+          "cardsPlayed": 50,
+          "offerRare": 3,
+          "offerTotal": 12,
+          "rewardRare": 2,
+          "rewardCards": [
+            "u15",
+            "r02",
+            "c01",
+            "r09"
+          ],
+          "maxHealUsed": 7
+        }
+      },
+      {
+        "seed": 3007,
+        "policy": "rush",
+        "win": false,
+        "dead": true,
+        "finish": {
+          "phase": "lose",
+          "floor": 5,
+          "hp": 0,
+          "wins": 4,
+          "turn": 2,
+          "deck": [
+            "heavy+",
+            "e",
+            "q+",
+            "caution",
+            "r05",
+            "u12",
+            "u18",
+            "red"
+          ]
+        },
+        "firstHand": [
+          "guard",
+          "normal",
+          "guard",
+          "heavy",
+          "normal"
+        ],
+        "floors": [
+          {
+            "floor": 1,
+            "startHP": 72,
+            "firstHand": [
+              "guard",
+              "normal",
+              "guard",
+              "heavy",
+              "normal"
+            ]
+          },
+          {
+            "floor": 2,
+            "startHP": 69,
+            "firstHand": [
+              "r05",
+              "e",
+              "guard",
+              "guard",
+              "normal"
+            ]
+          },
+          {
+            "floor": 3,
+            "startHP": 63,
+            "firstHand": [
+              "u12",
+              "normal",
+              "normal",
+              "heavy",
+              "caution"
+            ]
+          },
+          {
+            "floor": 4,
+            "startHP": 40,
+            "firstHand": [
+              "r05",
+              "normal",
+              "u12",
+              "q",
+              "normal"
+            ]
+          },
+          {
+            "floor": 5,
+            "startHP": 22,
+            "firstHand": [
+              "normal",
+              "u18",
+              "heavy",
+              "e",
+              "guard"
+            ]
+          }
+        ],
+        "offered": [
+          {
+            "floor": 1,
+            "offers": [
+              "u03",
+              "r02",
+              "r05"
+            ],
+            "selected": "r05"
+          },
+          {
+            "floor": 2,
+            "offers": [
+              "c11",
+              "u12",
+              "r15"
+            ],
+            "selected": "u12"
+          },
+          {
+            "floor": 3,
+            "offers": [
+              "mark",
+              "u17",
+              "u18"
+            ],
+            "selected": "u18"
+          },
+          {
+            "floor": 4,
+            "offers": [
+              "u15",
+              "red",
+              "r03"
+            ],
+            "selected": "red"
+          }
+        ],
+        "failed": {
+          "floor": 5,
+          "turn": 2,
+          "why": "death",
+          "hp": 0,
+          "logs": [
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "战斗失败，无法继续。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "受到14点伤害，格挡抵消0，失去10生命。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "高塔守门人发动攻击14。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "高塔守门人受到2点血梅香伤害，实际失血2。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "结束第2回合。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "高塔守门人获得血梅香（2次，结束阶段每次2伤）。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "高塔守门人受到10点攻击伤害，实际失血10。"
+            },
+            {
+              "floor": 5,
+              "turn": 2,
+              "msg": "打出「赤团开时斜飞去」，支付0能量。"
+            }
+          ]
+        },
+        "ledger": {
+          "paid": 24,
+          "enemyLoss": 71,
+          "healed": 23,
+          "restHeal": 0,
+          "campRest": 0,
+          "campUpgrade": 2,
+          "firstTurnE": 0,
+          "firstBattleE": 0,
+          "totalE": 4,
+          "turns": 11,
+          "cardsPlayed": 33,
+          "offerRare": 4,
+          "offerTotal": 12,
+          "rewardRare": 1,
+          "rewardCards": [
+            "r05",
+            "u12",
+            "u18",
+            "red"
+          ],
+          "maxHealUsed": 11
+        }
+      }
+    ],
+    "B1": [
+      {
+        "seed": 3002,
+        "policy": "ignite",
+        "win": false,
+        "dead": true,
+        "finish": {
+          "phase": "lose",
+          "floor": 5,
+          "hp": 0,
+          "wins": 4,
+          "turn": 5,
+          "deck": [
+            "heavy",
+            "e+",
+            "q",
+            "caution",
+            "r04",
+            "u09",
+            "c12",
+            "r16"
+          ]
+        },
+        "firstHand": [
+          "guard",
+          "guard",
+          "normal",
+          "q",
+          "normal"
+        ],
+        "floors": [
+          {
+            "floor": 1,
+            "startHP": 72,
+            "firstHand": [
+              "guard",
+              "guard",
+              "normal",
+              "q",
+              "normal"
+            ]
+          },
+          {
+            "floor": 2,
+            "startHP": 59,
+            "firstHand": [
+              "e",
+              "heavy",
+              "normal",
+              "guard",
+              "q"
+            ]
+          },
+          {
+            "floor": 3,
+            "startHP": 49,
+            "firstHand": [
+              "guard",
+              "u09",
+              "guard",
+              "e",
+              "normal"
+            ]
+          },
+          {
+            "floor": 4,
+            "startHP": 47,
+            "firstHand": [
+              "normal",
+              "normal",
+              "heavy",
+              "normal",
+              "guard"
+            ]
+          },
+          {
+            "floor": 5,
+            "startHP": 31,
+            "firstHand": [
+              "heavy",
+              "c12",
+              "e",
+              "r04",
+              "q"
+            ]
+          }
+        ],
+        "offered": [
+          {
+            "floor": 1,
+            "offers": [
+              "r03",
+              "r04",
+              "u10"
+            ],
+            "selected": "r04"
+          },
+          {
+            "floor": 2,
+            "offers": [
+              "u18",
+              "u09",
+              "c04"
+            ],
+            "selected": "u09"
+          },
+          {
+            "floor": 3,
+            "offers": [
+              "afterglow",
+              "c03",
+              "c12"
+            ],
+            "selected": "c12"
+          },
+          {
+            "floor": 4,
+            "offers": [
+              "c09",
+              "r16",
+              "c05"
+            ],
+            "selected": "r16"
+          }
+        ],
+        "failed": {
+          "floor": 5,
+          "turn": 5,
+          "why": "death",
+          "hp": 0,
+          "logs": [
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "战斗失败，无法继续。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "受到12点伤害，格挡抵消10，失去1生命。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "高塔守门人发动攻击12。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "结束第5回合。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "打出「防御」，支付1能量。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "打出「防御」，支付1能量。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "高塔守门人受到7点攻击伤害，实际失血7。"
+            },
+            {
+              "floor": 5,
+              "turn": 5,
+              "msg": "打出「重击」，支付1能量。"
+            }
+          ]
+        },
+        "ledger": {
+          "paid": 42,
+          "enemyLoss": 70,
+          "healed": 22,
+          "restHeal": 18,
+          "campRest": 1,
+          "campUpgrade": 1,
+          "firstTurnE": 0,
+          "firstBattleE": 1,
+          "totalE": 6,
+          "turns": 15,
+          "cardsPlayed": 41,
+          "offerRare": 3,
+          "offerTotal": 12,
+          "rewardRare": 2,
+          "rewardCards": [
+            "r04",
+            "u09",
+            "c12",
+            "r16"
+          ],
+          "maxHealUsed": 7
+        }
+      },
+      {
+        "seed": 3009,
+        "policy": "ignite",
+        "win": true,
+        "dead": false,
+        "finish": {
+          "phase": "win",
+          "floor": 5,
+          "hp": 2,
+          "wins": 5,
+          "turn": 5,
+          "deck": [
+            "heavy",
+            "e+",
+            "q",
+            "caution",
+            "c13",
+            "r03",
+            "r02",
+            "c12"
+          ]
+        },
+        "firstHand": [
+          "guard",
+          "normal",
+          "normal",
+          "e",
+          "caution"
+        ],
+        "floors": [
+          {
+            "floor": 1,
+            "startHP": 72,
+            "firstHand": [
+              "guard",
+              "normal",
+              "normal",
+              "e",
+              "caution"
+            ]
+          },
+          {
+            "floor": 2,
+            "startHP": 67,
+            "firstHand": [
+              "c13",
+              "caution",
+              "e",
+              "guard",
+              "guard"
+            ]
+          },
+          {
+            "floor": 3,
+            "startHP": 63,
+            "firstHand": [
+              "heavy",
+              "r03",
+              "normal",
+              "caution",
+              "c13"
+            ]
+          },
+          {
+            "floor": 4,
+            "startHP": 30,
+            "firstHand": [
+              "q",
+              "guard",
+              "normal",
+              "r03",
+              "caution"
+            ]
+          },
+          {
+            "floor": 5,
+            "startHP": 31,
+            "firstHand": [
+              "guard",
+              "normal",
+              "guard",
+              "normal",
+              "c13"
+            ]
+          }
+        ],
+        "offered": [
+          {
+            "floor": 1,
+            "offers": [
+              "c14",
+              "u20",
+              "c13"
+            ],
+            "selected": "c13"
+          },
+          {
+            "floor": 2,
+            "offers": [
+              "r03",
+              "c04",
+              "trick"
+            ],
+            "selected": "r03"
+          },
+          {
+            "floor": 3,
+            "offers": [
+              "r02",
+              "c04",
+              "u13"
+            ],
+            "selected": "r02"
+          },
+          {
+            "floor": 4,
+            "offers": [
+              "c12",
+              "u14",
+              "c06"
+            ],
+            "selected": "c12"
+          }
+        ],
+        "failed": null,
+        "ledger": {
+          "paid": 30,
+          "enemyLoss": 84,
+          "healed": 26,
+          "restHeal": 18,
+          "campRest": 1,
+          "campUpgrade": 1,
+          "firstTurnE": 1,
+          "firstBattleE": 1,
+          "totalE": 5,
+          "turns": 14,
+          "cardsPlayed": 42,
+          "offerRare": 2,
+          "offerTotal": 12,
+          "rewardRare": 2,
+          "rewardCards": [
+            "c13",
+            "r03",
+            "r02",
+            "c12"
+          ],
+          "maxHealUsed": 7
+        }
+      },
+      {
+        "seed": 3007,
+        "policy": "rush",
+        "win": true,
+        "dead": false,
+        "finish": {
+          "phase": "win",
+          "floor": 5,
+          "hp": 10,
+          "wins": 5,
+          "turn": 5,
+          "deck": [
+            "heavy+",
+            "e",
+            "q+",
+            "caution",
+            "r05",
+            "u12",
+            "u01",
+            "farewell"
+          ]
+        },
+        "firstHand": [
+          "guard",
+          "normal",
+          "guard",
+          "heavy",
+          "normal"
+        ],
+        "floors": [
+          {
+            "floor": 1,
+            "startHP": 72,
+            "firstHand": [
+              "guard",
+              "normal",
+              "guard",
+              "heavy",
+              "normal"
+            ]
+          },
+          {
+            "floor": 2,
+            "startHP": 69,
+            "firstHand": [
+              "r05",
+              "e",
+              "guard",
+              "guard",
+              "normal"
+            ]
+          },
+          {
+            "floor": 3,
+            "startHP": 63,
+            "firstHand": [
+              "u12",
+              "normal",
+              "normal",
+              "heavy",
+              "caution"
+            ]
+          },
+          {
+            "floor": 4,
+            "startHP": 40,
+            "firstHand": [
+              "normal",
+              "u01",
+              "q",
+              "normal",
+              "heavy"
+            ]
+          },
+          {
+            "floor": 5,
+            "startHP": 36,
+            "firstHand": [
+              "u12",
+              "guard",
+              "caution",
+              "normal",
+              "heavy"
+            ]
+          }
+        ],
+        "offered": [
+          {
+            "floor": 1,
+            "offers": [
+              "u03",
+              "r02",
+              "r05"
+            ],
+            "selected": "r05"
+          },
+          {
+            "floor": 2,
+            "offers": [
+              "c11",
+              "u12",
+              "r15"
+            ],
+            "selected": "u12"
+          },
+          {
+            "floor": 3,
+            "offers": [
+              "mark",
+              "u01",
+              "r12"
+            ],
+            "selected": "u01"
+          },
+          {
+            "floor": 4,
+            "offers": [
+              "afterglow",
+              "farewell",
+              "renew"
+            ],
+            "selected": "farewell"
+          }
+        ],
+        "failed": null,
+        "ledger": {
+          "paid": 10,
+          "enemyLoss": 77,
+          "healed": 25,
+          "restHeal": 0,
+          "campRest": 0,
+          "campUpgrade": 2,
+          "firstTurnE": 0,
+          "firstBattleE": 0,
+          "totalE": 1,
+          "turns": 11,
+          "cardsPlayed": 34,
+          "offerRare": 4,
+          "offerTotal": 12,
+          "rewardRare": 1,
+          "rewardCards": [
+            "r05",
+            "u12",
+            "u01",
+            "farewell"
+          ],
+          "maxHealUsed": 8
+        }
+      }
+    ]
+  }
+}
