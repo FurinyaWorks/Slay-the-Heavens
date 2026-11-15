@@ -6,7 +6,7 @@
 
 [逐blob发射输入证明](../evidence/release-lua-serialization-after-potion-20261116/input-identity.json)：scripts/tools/data/config/art与package/lock/manifest/CHANGELOG九组对象，在原36→新f564、原f85→新checkpoint对应同源；74个静态脚本依赖未读取三份P0 Lua，Python呈现器也不读它们。loadReleaseNotes虽读取Git身份，buildUI仅发射build.version；源commit/dirty不进入这25文件。原candidateScriptFiles另收 authored Lua sourceFile，不在配对生成器调用链。
 
-因此保留原证明的 **36→d48** 身份：五模块值/键型/string bytes/numeric subtype+bits及20其它输出相等，640086源码B也是该原比较的结果。**本轮不新配对/双构建，不称当前fresh输出或官方MB**；全仓与5120输入指纹明确不等/不复用，P0三源有变化，不能推出候选/GIL/设备等价。
+因此保留原证明的 **36→d48** 身份：五模块值/键型/string bytes/numeric subtype+bits及20其它输出相等，640086源码B也是该原比较的结果。提交proof按LF绑定Git blob `c8ddcd69626550886c04dff73beffe83bd0cb432`，实际读回SHA256 `23bc366c12d9b12f368d3107cb4612b88c0032bf3aaa5e444648dd70c66f305d`；旧CRLF工作树SHA `9843cda9…`另保留为captured字段，不充当提交身份。**本轮不新配对/双构建，不称当前fresh输出或官方MB**；全仓与5120输入指纹明确不等/不复用，P0三源有变化，不能推出候选/GIL/设备等价。
 
 本轮Node24.18.0串行仅：newdelta及必要current/P0-copy命名合同 **8/8 PASS**（41.52秒）；原 `tests/lua-utf8-literal.test.mjs` **2/2 PASS**（0.22秒），原测试blob和30秒预算不改。实际完整发现 **878JS/1424Lua**；Win/POSIX forecast1757179/1190964ms仅诊断，物理45/30分钟guard不改。0失败/跳过/取消；`git diff --check`通过。
 

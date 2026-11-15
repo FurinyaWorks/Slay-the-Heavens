@@ -164,7 +164,11 @@
   },
   "retainedPair": {
     "path": "docs/evidence/release-lua-serialization-20261116/proof.json",
-    "sha256": "9843cda95ab4110a1e6b6ecc787862f3c6de89a8c6efb1b2efd26dee3bc42298",
+    "normalization": "LF",
+    "gitBlob": "c8ddcd69626550886c04dff73beffe83bd0cb432",
+    "committedLfSha256": "23bc366c12d9b12f368d3107cb4612b88c0032bf3aaa5e444648dd70c66f305d",
+    "capturedCrlfSha256": "9843cda95ab4110a1e6b6ecc787862f3c6de89a8c6efb1b2efd26dee3bc42298",
+    "capturedNormalization": "CRLF",
     "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
     "head": "d48bb642fb45fedfeb3b55417d0e120e0e69e8e9",
     "savedSourceBytes": 640086,
