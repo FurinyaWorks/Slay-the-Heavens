@@ -25,7 +25,9 @@ local function tap(root,panel,button)
     local hit=assert(root:GetChild(panel)):GetChild(button):GetChild("hit")
     local parent=hit
     while parent do assert(parent.visible,"hidden exit control"); parent=parent.parent end
-    if hit.interactable then return hit.click() end
+    if hit.kind=='cursorArea' then
+        if hit.raycastTarget~=false then return hit.click() end
+    elseif hit.interactable then return hit.click() end
 end
 local function open(root)
     if not tap(root,"exitEntry","open") then return false end
@@ -34,6 +36,18 @@ local function open(root)
     local ok=tap(root,'runMenu',name)
     assert(not root:GetChild('runMenu').visible and root:GetChild('exitPanel').visible)
     return ok
+end
+-- Platform departure is a title action; the live-run menu offers abandon.
+-- Keep this path distinct so the original settlement assertions still test
+-- the platform callback rather than accidentally confirming run destruction.
+local function openPlatform(root)
+    local menu=root:GetChild('menuPanel')
+    if not menu.visible then
+        assert(tap(root,'exitEntry','open'))
+        assert(tap(root,'runMenu','mainMenu'))
+    end
+    assert(menu.visible and menu:GetChild('titleQuit').visible)
+    return tap(root,'menuPanel','titleQuit')
 end
 local function cancel(root) return tap(root,"exitPanel","cancel") end
 local function confirm(root) return tap(root,"exitPanel","confirm") end
@@ -81,7 +95,8 @@ test("exit remains available during enemy feedback and does not wait for its ban
     battle(ui); ui.battleUI:endTurn()
     assert(ui.battleUI.busy)
     local before=Combat.copy(ui.run)
-    assert(open(root),"feedback locked the exit")
+    assert(openPlatform(root),"feedback locked the exit")
+    assert(ui.sessionPaused and ui.navigationAction==nil,'platform exit must not confirm abandon')
     local elapsed=ui.battleUI.feedback.elapsed
     ui:update(20)
     assert(same(before,ui.run) and ui.battleUI.feedback.elapsed==elapsed)
@@ -89,6 +104,19 @@ test("exit remains available during enemy feedback and does not wait for its ban
     assert(not ui:confirmExit() and not ui:closeExit() and not testStart(ui))
     ui:update(20)
     assert(same(before,ui.run) and calls==1)
+    -- The adjacent abandon flow intentionally retires feedback only after its
+    -- own confirmation; cancelling it must preserve the queued presentation.
+    local abandoned=0
+    local other,r=F.fixture(nil,function()abandoned=abandoned+1;return true end)
+    battle(other);other.battleUI:endTurn();assert(other.battleUI.busy)
+    local run=other.run;local snapshot=Combat.copy(run)
+    assert(open(r) and other.navigationAction=='abandon')
+    local frozen=other.battleUI.feedback.elapsed
+    other:update(20)
+    assert(same(snapshot,run) and other.battleUI.feedback.elapsed==frozen)
+    assert(cancel(r) and other.run==run and other.battleUI.busy)
+    assert(open(r) and confirm(r))
+    assert(other.run==nil and not other.battleUI.busy and abandoned==0 and not other.settlementRequested)
 end)
 
 test("node and deck overlays retain state when exit is cancelled",function()
@@ -121,7 +149,7 @@ test("failed platform requests stay visible and retry submits only once",functio
         return calls>2
     end)
     battle(ui); local before=Combat.copy(ui.run)
-    assert(open(root))
+    assert(openPlatform(root))
     assert(not confirm(root) and not ui.settlementRequested)
     assert(root:GetChild("exitPanel"):GetChild("status").text:find("重试",1,true))
     assert(not confirm(root) and calls==2)
@@ -133,10 +161,10 @@ test("a cancelled pointer gesture cannot confirm a subsequently reopened dialog"
     local events={CursorDown="down",CursorUp="up",CursorExit="out",CursorDrag="drag",CursorEndDrag="endDrag",CursorMove="move"}
     local calls=0
     local ui,root=F.fixture(nil,function() calls=calls+1; return true end,nil,events)
-    assert(testStart(ui)); assert(open(root))
+    assert(testStart(ui)); assert(openPlatform(root))
     local hit=root:GetChild("exitPanel"):GetChild("confirm"):GetChild("hit")
     hit.listeners.down()
-    assert(cancel(root)); assert(open(root))
+    assert(cancel(root)); assert(openPlatform(root))
     hit.listeners.up(); hit.click()
     assert(calls==0 and ui.exitOpen)
     hit.listeners.down(); hit.listeners.up(); hit.click(); hit.click()
