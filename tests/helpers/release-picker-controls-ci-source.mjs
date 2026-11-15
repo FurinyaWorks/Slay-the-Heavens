@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-picker-controls-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f','complete release picker controls CI continuation');
+assert.equal(hash(bytes),'8f63e3cb7ee9b5a81139b4193589ce6f098e423d43b576d190925411681776fe','complete release picker controls CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
@@ -17,6 +17,11 @@ assert.deepEqual(Object.keys(packet.files).filter(p=>p.startsWith('.github/')).s
 for(const [path,row]of Object.entries(packet.files))assert.equal(row.beforeCommit,packet.baseCommit,'exact actual Release picker controls CI predecessor: '+path);
 assert.equal(packet.currentTreeCommitted,true);
 assert.deepEqual(packet.priorPickerPacket,{path:'tests/helpers/release-picker-controls-ci-before-release1cc-source.json.gz',sha256:'550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f'});
+assert.deepEqual(Object.keys(packet.bootstrapCurrentBindings).sort(),[
+ '.github/workflows/licenses.yml','.github/workflows/quality.yml','.github/workflows/quick-feedback.yml',
+ 'tests/ci-complete-calibration.test.mjs','tests/ci-posix-concurrency.test.mjs','tests/engineering-quality.test.mjs',
+ 'tests/full-quality.test.mjs','tests/helpers/integrated-ci-source.mjs','tests/integrated-ci-source.cases.mjs','tests/quick-feedback.test.mjs',
+],'complete ten actual Release bootstrap current sources');
 for(const [path,row]of Object.entries(packet.bootstrapCurrentBindings))
  assert.deepEqual(packet.files[path].before,row.current,'exact actual Release bootstrap current predecessor: '+path);
 for(const [path,row]of Object.entries(packet.files))for(const binding of [row.before,row.current].filter(Boolean)){
