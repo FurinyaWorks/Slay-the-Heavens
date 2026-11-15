@@ -1,0 +1,232 @@
+{
+  "exactTestInventory": {
+    "js": {
+      "added": [
+        "tests/shop-dismiss.test.mjs",
+        "tests/tiny-house-pending-ui.test.mjs"
+      ],
+      "pcCount": 887,
+      "rehearsalCount": 889
+    },
+    "lua": {
+      "added": [
+        "tests/lua/shop_dismiss.lua",
+        "tests/lua/tiny_house_pending_ui.lua"
+      ],
+      "pcCount": 1431,
+      "rehearsalCount": 1433
+    }
+  },
+  "files": [
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "scripts/node-ui-layout.mjs",
+      "pc": {
+        "blob": "adca07200e24c7edcd36dd7d819f022d35d8d7c6",
+        "sha256Lf": "3f205b5338450d7ffc45d9cb0579f1754f94bc6a12ef94601d00975ead6b3d86"
+      },
+      "rehearsal": {
+        "blob": "5684b41d31bac42b617cbcdc35a1cd972d96284d",
+        "sha256Lf": "86c2790037a58ecfe3d5600b7873489750c4e5b276c25c27f4218cda524d61b2"
+      }
+    },
+    {
+      "inPcCiContinuation": true,
+      "inPcProductionContinuation": true,
+      "path": "src/lua/abyss_battle_card_gestures.lua",
+      "pc": {
+        "blob": "282e3fa8c20710cbc050b11083c4083f44f6ef86",
+        "sha256Lf": "dae42c2bbd6b6223bc0548c6a5b714af0b7a7c43a27936483458c627299fddfe"
+      },
+      "rehearsal": {
+        "blob": "f1e037d5af019e9cdc6a1acf79bb70ed6515d91d",
+        "sha256Lf": "0ea46386d60b420c3b4c5ef9cb6d53006403ad98207295021ee2d7c03ce75404"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "src/lua/abyss_battle_potion_popup.lua",
+      "pc": {
+        "blob": "7e858fd11141927cf6a5004b34ef018cff0e0f60",
+        "sha256Lf": "705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd"
+      },
+      "rehearsal": {
+        "blob": "f699ed53b5dd56f247d81a216d855464325e72a4",
+        "sha256Lf": "fbbebea4ccc1ce86ca1d0d5705e13de9b42d6bc503fc3f3eddb4ab040a10c4e8"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "src/lua/abyss_battle_ui.lua",
+      "pc": {
+        "blob": "1dfefb14189dc33d34967aef98390a7f7e925ec2",
+        "sha256Lf": "c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481"
+      },
+      "rehearsal": {
+        "blob": "00404f1c6e47a8aa834b9c146bc3b11c19628617",
+        "sha256Lf": "21daed60f946fc8a992cf644760a62c5d3dce37ff49afcb07d7a2a5cb043c472"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "src/lua/abyss_node_ui_events.lua",
+      "pc": {
+        "blob": "a66f75428bd5fea753d54bafa306eefbd1a2bd11",
+        "sha256Lf": "c3d425e0c65b57fedc5d9d6f63a412403b4197c7b42bfaec407d91fa710c54cc"
+      },
+      "rehearsal": {
+        "blob": "25c9e6a6a6cdf25cf8f6921267e5e1c637023cbd",
+        "sha256Lf": "179228741b235af825e308e4f46d2f30bb779671bb59d6b4b664110874592d99"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "src/lua/abyss_node_ui_input.lua",
+      "pc": {
+        "blob": "2536846bc35319c2865b4a08fc2b16e93c8fb760",
+        "sha256Lf": "c7aa8771c045dbdb24f7d36589f8671b548cca7c5bf55d0f5dcefddecac882ad"
+      },
+      "rehearsal": {
+        "blob": "3e1d6a6b03feb99e741cf8ea607f82cefaec591f",
+        "sha256Lf": "34b38a5648f0486bc78d83651ca5733cfdeb9c2d39ae0fa5b32eb4e61447d106"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "src/lua/abyss_relic_pending_ui.lua",
+      "pc": {
+        "blob": "077cb1c0d81a8716dd40b4f00a136cf2a5ad8611",
+        "sha256Lf": "a1d5ba5d2d81ef63209651b571d91de24d967e12e144f3b454a5f9439cf2fe23"
+      },
+      "rehearsal": {
+        "blob": "f34cc7afd10903cd6727ad4716d82a1c69f3603c",
+        "sha256Lf": "3639a8355383430f6c0603a999f39d0c030006de3f82616f510b8ada366a7fda"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "src/lua/abyss_shop_selection.lua",
+      "pc": {
+        "blob": "64fe14d2e84bf65bfe32c4610634a9f4b9fda49c",
+        "sha256Lf": "66ac3deb3029d761fea245cc1a37e9d6096ae13a7a06e18223490ce8253efb20"
+      },
+      "rehearsal": {
+        "blob": "46ea222831f69730185acea8329427b9633cbe17",
+        "sha256Lf": "53d1bcaf70f000f43a951ae2baf280413296ef7982d89d31f77cb5bcd5e85714"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/lua/approved_main_potions.lua",
+      "pc": {
+        "blob": "98dd150caeb82766ee3e8aeb6eacabe8e4f671a3",
+        "sha256Lf": "ecd536be01e0c1192c70428c7496e8b24273fd2b83f84b784e27158ae794ff3b"
+      },
+      "rehearsal": {
+        "blob": "d2982edb6102eadf6ad924c7f592b5f0279aa567",
+        "sha256Lf": "054a02968c5b2e94f90befc94bb78f3b9d2f44a0f30f0c983d606b0294194985"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/lua/shop_dismiss.lua",
+      "pc": null,
+      "rehearsal": {
+        "blob": "614be5e4e81edc258c594608d920b4d126a1e077",
+        "sha256Lf": "7c46f70b14d7b9bde5d1f4022ff08a0798599249fa5ae97a490613cc6064992c"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/lua/shop_relics_pending_ui.lua",
+      "pc": {
+        "blob": "cbb60901914f5fa1b53d746311f06065da80ec7f",
+        "sha256Lf": "d01c78184ab9abd3177d24f94f735893948bfbe0d4fa92b648c834f887c7dff1"
+      },
+      "rehearsal": {
+        "blob": "4443e0675bd283af56b301747cf8d19b1c496277",
+        "sha256Lf": "24da12abf386ecd3726c9ecd17f218337c695aa8060f43e6862ab08796fac0d6"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/lua/tiny_house_pending_ui.lua",
+      "pc": null,
+      "rehearsal": {
+        "blob": "28271e0881c18565da9c0d407c5dceb9fc7e7010",
+        "sha256Lf": "58e2df0acaa35e2fcb3fc48e899fe0fac9a527092dbbb9be35e8af3414162f34"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/node-ui-layout.test.mjs",
+      "pc": {
+        "blob": "2124b417ac16bb6f22c6498ebe822b49070f872b",
+        "sha256Lf": "338a728591f061e8616275f87e49b861155683eb64c1e53e9618edd658549ee3"
+      },
+      "rehearsal": {
+        "blob": "b8893d2b08b218573f2437359b37564ecbc3c846",
+        "sha256Lf": "4989cdf4d5ff2f538c8841ae75b6494c990b17e06085777e12b020259520229d"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/shop-dismiss.test.mjs",
+      "pc": null,
+      "rehearsal": {
+        "blob": "fdf1bd2c719c95a76831a380868d77bf2ac27f5f",
+        "sha256Lf": "207c98d6243b318cac7bfccb2fe0822107e9ae57b3aa013c7fa10f87e3e5d43f"
+      }
+    },
+    {
+      "inPcCiContinuation": false,
+      "inPcProductionContinuation": false,
+      "path": "tests/tiny-house-pending-ui.test.mjs",
+      "pc": null,
+      "rehearsal": {
+        "blob": "f338ae1159b08c52385bf234bc41bab9302c2bb3",
+        "sha256Lf": "df2df239a0b1ba9a1e198125ae35996852cbff8513efe08f2cb17f0dbc5d5636"
+      }
+    }
+  ],
+  "kind": "read-only-rehearsal-source-difference",
+  "limitation": "Isolated rehearsal only, not a candidate, source authorization, archive replacement, gate result or merge receipt.",
+  "pullRequestHeads": {
+    "678": "0c0f8586c2a42d62be6caf8e8053344161346c39",
+    "679": "29b108778c4e98b24f73d98d9a316936408c387c",
+    "680": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+    "684": "d396abb252b4dcfe4d825dccc6c850daf81086c9"
+  },
+  "rehearsalTree": "b230a5c39fe42978060f1f876f93cd91f5e9ad59",
+  "releaseBase": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "reproduce": {
+    "counterfactual": "Current CI/production proof remains preserved for its original head; commit exact frozen inputs and use existing append-only source authorization when the release owners finalize a new tree.",
+    "diffScope": [
+      "scripts/",
+      "src/lua/",
+      "tests/"
+    ],
+    "digestSemantics": "blob is raw Git blob SHA-1; sha256Lf normalizes CRLF to LF, matching existing source contracts.",
+    "mergeCommand": "git merge-tree --write-tree --merge-base <releaseBase> <previous-tree-or-first-head> <next-head>",
+    "mergeOrder": [
+      684,
+      678,
+      679,
+      680
+    ],
+    "reproducedWithoutBranchOrCommit": true
+  }
+}
