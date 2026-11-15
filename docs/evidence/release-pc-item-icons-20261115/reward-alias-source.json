@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "normalization": "LF",
+  "path": "src/lua/abyss_battle_reward_layout.lua",
+  "beforeCommit": "4431cc914f3ce5de3b5c83db475134b4217ce63a",
+  "beforeSha256": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d",
+  "afterSha256": "459089b0deb28d878031e9eb9d56700c95aa98c7f378dfb53cf8ae96c18ea631",
+  "afterGitBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a"
+}

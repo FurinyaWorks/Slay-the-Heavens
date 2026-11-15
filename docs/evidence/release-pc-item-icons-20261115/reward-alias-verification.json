@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "priorCoverage": "relic-source-coverage.json at sourceCommit 0345006e7d4d1cd39549a1479036fd7cb38f9be6 remains immutable historical observation",
+  "source": "reward-alias-source.json",
+  "eligibleCurrentScope": [
+    "akabeko",
+    "anchor",
+    "ancient_tea_set",
+    "art_of_war",
+    "astrolabe",
+    "bag_of_marbles",
+    "bag_of_preparation",
+    "bird_faced_urn",
+    "black_blood",
+    "black_star",
+    "blood_vial",
+    "bloody_idol",
+    "blue_candle",
+    "boot",
+    "bottled_flame",
+    "bottled_lightning",
+    "bottled_tornado",
+    "brimstone",
+    "bronze_scales",
+    "burning_blood",
+    "busted_crown",
+    "calipers",
+    "calling_bell",
+    "captains_wheel",
+    "cauldron",
+    "centennial_puzzle",
+    "ceramic_fish",
+    "champion_belt",
+    "charons_ashes",
+    "chemical_x",
+    "circlet",
+    "clockwork_souvenir",
+    "coffee_dripper",
+    "courier",
+    "cultist_mask",
+    "cursed_key",
+    "darkstone_periapt",
+    "dead_branch",
+    "dollys_mirror",
+    "dream_catcher",
+    "du_vu_doll",
+    "ectoplasm",
+    "empty_cage",
+    "enchiridion",
+    "eternal_feather",
+    "face_of_cleric",
+    "fossilized_helix",
+    "frozen_egg",
+    "frozen_eye",
+    "fusion_hammer",
+    "gambling_chip",
+    "ginger",
+    "girya",
+    "golden_idol",
+    "gremlin_horn",
+    "gremlin_mask",
+    "hand_drill",
+    "happy_flower",
+    "horn_cleat",
+    "ice_cream",
+    "incense_burner",
+    "ink_bottle",
+    "juzu_bracelet",
+    "kunai",
+    "lantern",
+    "lees_waffle",
+    "letter_opener",
+    "lizard_tail",
+    "magic_flower",
+    "mango",
+    "mark_of_pain",
+    "matryoshka",
+    "maw_bank",
+    "meal_ticket",
+    "meat_on_the_bone",
+    "medical_kit",
+    "membership_card",
+    "mercury_hourglass",
+    "molten_egg",
+    "mummified_hand",
+    "mutagenic_strength",
+    "necronomicon",
+    "neows_lament",
+    "nilrys_codex",
+    "nloths_gift",
+    "nloths_mask",
+    "nunchaku",
+    "odd_mushroom",
+    "oddly_smooth_stone",
+    "old_coin",
+    "omamori",
+    "orange_pellets",
+    "orichalcum",
+    "ornamental_fan",
+    "orrery",
+    "pandoras_box",
+    "pantograph",
+    "paper_frog",
+    "peace_pipe",
+    "pear",
+    "pen_nib",
+    "philosophers_stone",
+    "pocketwatch",
+    "potion_belt",
+    "prayer_wheel",
+    "preserved_insect",
+    "prismatic_shard",
+    "question_card",
+    "red_mask",
+    "red_skull",
+    "regal_pillow",
+    "runic_cube",
+    "runic_dome",
+    "runic_pyramid",
+    "sacred_bark",
+    "self_forming_clay",
+    "shovel",
+    "shuriken",
+    "singing_bowl",
+    "slavers_collar",
+    "sling",
+    "smiling_mask",
+    "snecko_eye",
+    "sozu",
+    "spirit_poop",
+    "ssserpent_head",
+    "stone_calendar",
+    "strange_spoon",
+    "strawberry",
+    "strike_dummy",
+    "sundial",
+    "the_abacus",
+    "thread_and_needle",
+    "tiny_chest",
+    "tiny_house",
+    "toolbox",
+    "torii",
+    "toxic_egg",
+    "toy_ornithopter",
+    "tungsten_rod",
+    "turnip",
+    "unceasing_top",
+    "vajra",
+    "velvet_choker",
+    "war_paint",
+    "warped_tongs",
+    "whetstone",
+    "white_beast_statue",
+    "winged_greaves"
+  ],
+  "counts": {
+    "eligible": 149,
+    "canonicalRecipe": 120,
+    "canonicalNativeOnly": 29,
+    "controlledFormalAliases": 13,
+    "rewardRows": 2,
+    "statesPerRow": 4,
+    "aliasFaceAssertions": 104,
+    "sourceFirstFaceAssertions": 32,
+    "noDataPreviews": 3,
+    "totalChecks": 139
+  },
+  "aliasMatrix": [
+    {
+      "id": "anchor",
+      "sourceId": "Anchor",
+      "canonicalNativeImage": 105065,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "bag_of_preparation",
+      "sourceId": "Bag of Preparation",
+      "canonicalNativeImage": 105043,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "black_blood",
+      "sourceId": "Black Blood",
+      "canonicalNativeImage": 105045,
+      "canonicalRecipe": true,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "black_star",
+      "sourceId": "Black Star",
+      "canonicalNativeImage": 102028,
+      "canonicalRecipe": true,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "bronze_scales",
+      "sourceId": "Bronze Scales",
+      "canonicalNativeImage": 105055,
+      "canonicalRecipe": true,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "courier",
+      "sourceId": "The Courier",
+      "canonicalNativeImage": 102007,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "lantern",
+      "sourceId": "Lantern",
+      "canonicalNativeImage": 105131,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "membership_card",
+      "sourceId": "Membership Card",
+      "canonicalNativeImage": 102026,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "oddly_smooth_stone",
+      "sourceId": "Oddly Smooth Stone",
+      "canonicalNativeImage": 105071,
+      "canonicalRecipe": true,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "slavers_collar",
+      "sourceId": "SlaversCollar",
+      "canonicalNativeImage": 102028,
+      "canonicalRecipe": true,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "smiling_mask",
+      "sourceId": "Smiling Mask",
+      "canonicalNativeImage": 105023,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "sozu",
+      "sourceId": "Sozu",
+      "canonicalNativeImage": 102028,
+      "canonicalRecipe": true,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "vajra",
+      "sourceId": "Vajra",
+      "canonicalNativeImage": 105058,
+      "canonicalRecipe": false,
+      "states": [
+        "normal",
+        "hover",
+        "pressed",
+        "disabled"
+      ],
+      "rows": [
+        1,
+        2
+      ]
+    }
+  ],
+  "observedMissingAliasMappingsAfter": [],
+  "fullRunAndRng": "recursive full Run snapshot compared after each Host refresh; only fixture-specified reward tuples are changed in both expected and actual snapshots",
+  "fallbackPolicy": "authoritative sourceId-or-id; existing RelicRewards.definition resolves canonical with run.data; otherwise preserve existing Hooks.localId; unknown source never falls back to a contradictory known item.id",
+  "limitations": [
+    "Controlled Host/mock native API; no natural campaign, candidate, official import, ready, capacity or device result.",
+    "Native-only IDs are not missing art and were not replaced.",
+    "The 149-source inventory is not evidence that all 149 naturally occur in a run or all have vector recipes."
+  ]
+}
