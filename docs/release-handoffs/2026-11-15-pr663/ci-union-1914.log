@@ -1,0 +1,33 @@
+{
+  "packetSha256": "701665c217a582af74f3ce182f5262fafa22f1832fb7fc60c830add07931be99",
+  "packetBytes": 567324,
+  "files": 52,
+  "archives": 95,
+  "inventory": {
+    "js": 887,
+    "lua": 1431
+  }
+}
+✔ release PC CI validates complete live bindings while unknown or changed bytes stay visible (1576.85347ms)
+✔ release PC raw JS and Lua inventories reject missing duplicate foreign and changed additions (73.408473ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2699.530764
+✔ integration copy closure requires its complete exact predecessor and current dependency bytes (38.554496ms)
+✔ Release bootstrap exact sources retain every old byte and reject missing drift and partial packets (1384.074935ms)
+✔ Release PC bootstrap union authenticates final bytes and keeps both historical checkpoints exact (1241.763045ms)
+Initial missing archive-listed text: .release-please-manifest.json / CHANGELOG.md staged exactly from original input; reran failing named case only:
+✔ integration validates complete raw sources and leaves every foreign byte and production owner visible (1417.689846ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2177.710427
