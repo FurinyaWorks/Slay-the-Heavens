@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "normalization": "LF",
+  "files": [
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "beforeCommit": "53cd798679678257202d8679a9801fb5c399dfa3",
+      "beforeSha256": "93afa0ae2dbe98a08caeaa101e13775df3fea3fd0ddc48c0f16546c5eb5f5061",
+      "afterSha256": "8c684f538b250298526856096281dab20359e5793417e810cee1dba65eb669a7",
+      "afterGitBlob": "3097771f47b4a0737413779aacd7d8746898bb84"
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "beforeCommit": "53cd798679678257202d8679a9801fb5c399dfa3",
+      "beforeSha256": "acb7c4480c4cad44b83aa95a9b25825db217d8b98484ca5d2c88d47b8b366ebf",
+      "afterSha256": "78cb4964bf94f7dfa19ace1440139194866ec8a6ccc5bb50442468219c5965a5",
+      "afterGitBlob": "8300b2554904df8bf88b68fc66f2bf8065045393"
+    }
+  ]
+}

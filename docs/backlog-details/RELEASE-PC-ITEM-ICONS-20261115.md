@@ -27,3 +27,13 @@
 本片基于 Release 可独立运行定向回归；#684 尚未合入时不把其药水 popup/商店修复当作本片依赖已通过。最终组合须处理相同 owner（尤其药水 popup 与商店）的补丁顺序，重新生成并做入口组合回归，形成精确 source SHA 的唯一来源续接、独立复审及既有 CI 准入。当前不推送、不开 PR、不运行 Full、不等待其 CI。
 
 未构建本片完整候选，未官方导入、真实 ready、官方容量、PC 或手机实测；未获取私人原图、不伪造像素结论。旧 9b 的 20.1781 > 20 容量 FAIL 仍有效于旧候选，旧 7cb 的 19.78MB 不可转移。环境构建失败不再探索；没有 GUI、系统策略、MCP 工具改动、发布、Tag 或 develop/master 改动。PC18/原 AC 均未勾，代码合入也不代表设备或容量验收。
+
+## 独审 P2 修正：遗物 fallback 丢失
+
+独立评审 `/root/release_final_review` 在 `53cd7986` 实证：商店 old_coin 已成功显示语义图后，同商品再次刷新遇到 `iconArt` 查找缺失，原 image=105077 仍在但 iconVisible=false，导致图标消失；single 详情同症状。原独审 probe/失败 log 以 `review-item-icons-*gz` 保留，原始 SHA 在 raw-output-identities.json。此为真实缺口，原定向通过未覆盖，不能以此前通过覆盖独审失败。
+
+- 最小生产修复增加两个可见性恢复写入：共享 `ctx.relicPicture` 先显示原图，随后有配方才由 painter 隐藏它，覆盖商店与宝箱（包括无 relic ID 的原有金币图）；`abyss_relic_view_ui` 的共享 picture 同样覆盖 single/list。没有改 painter、图标 ID/配方、布局、触点或事务。原 a274 移植十文件身份清单不变；这两个新增 owner 的 before/after 身份另见 `fallback-source.json`。
+- 新增真实生成 Host/View 红例：shop/single/list × 原88代表 calling_bell / 新33代表 old_coin × missing/dead/throw 三类池失效，共 **18/18 按预期失败**，见 `relic-fallback-red.tap.gz`。首次对已绑定 Host 重建 View 导致重复 listener 的夹具错误另存 `relic-fallback-fixture-error.tap.gz`，修正为既有 lowcost 夹具同样的独立生成 View 后才取得业务 RED。
+- 两处最小恢复后，新增三面矩阵和原 runtime/lowcost 共6/6通过，见 `relic-fallback-and-regression-green.tap.gz`。随后扩展真实 Nodes 宝箱为第四面，并发现 relic→gold 且缺池在只恢复非空 ID 时仍失败：24通过、1失败保留于 `relic-gold-fallback-red.tap.gz`；将 node 恢复放到 ID 分支前修复。未删任何旧断言。
+- 最终四面 × 两组代表 × 三故障共24场景，加宝箱遗物→金币1场景，**25/25通过**，JS和Lua都断言精确分母。每场景覆盖同物品、切物品、非法 ID 的原图映射及池恢复重绘，另覆盖关闭重开；见 `relic-fallback-final-green.tap.gz`。原始生成 Host 使用 mock 原生 API，并非设备证据。
+- 最终工程 `relic-fallback-final-engineering.log.gz` 再次通过：351模块、6165/6165测量、1992边、无新静态诊断。未重跑 Full、未新增来源/CI packet，最终组合与来源续接仍由主线程完成；待独立复审。所有设备、ready、容量及 AC 保持未验。
