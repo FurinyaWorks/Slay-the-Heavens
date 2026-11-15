@@ -23,7 +23,7 @@ test('official enabled hero gains exactly one non-input shadow at the approved s
 });
 
 test('raw Full discovery runs the shadow fixture with its own profile and leaves shared generated inputs unchanged',()=>{
- const paths=['build/lua/abyss_theme.lua','build/lua/abyss_game_layout.lua','build/lua/abyss_data.lua'];
+ const paths=['build/lua/abyss_theme.lua','build/lua/abyss_ui_layout.lua','build/lua/abyss_data.lua'];
  const read=p=>existsSync(p)?readFileSync(p):null;
  const before=paths.map(read);
  const result=runLua('tests/lua/player_ground_shadow.lua');
