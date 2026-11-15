@@ -35,7 +35,10 @@ function M.new(platform,picture,tint,ink,onCreate,onRetire)
   valid();count.text=shown and number(amount)or '';valid()
   local width=math.max(40,utf8.len(count.text)*Theme.font.small)
   native(count,'SetSizeDelta',width,Theme.layout.nativeText.lineHeight)
-  native(count,'SetAnchoredPosition',22*s-width/2,(mobile and -22 or -18)*s-Theme.layout.nativeText.lineHeight/2)
+  -- Source RightTopAligned raises the glyph centre above its amount anchor.
+  -- Native top alignment uses the existing font budget, not original GDX H0.
+  local countY=(mobile and -22 or -18)*s+Theme.font.small*1.5-Theme.layout.nativeText.lineHeight/2
+  native(count,'SetAnchoredPosition',22*s-width/2,countY)
   local colour=amount<0 and {r=255,g=0,b=0,a=255}or entry.isTurnBased and {r=255,g=255,b=255,a=255}or {r=0,g=255,b=0,a=255}
   ink(count,colour);valid()
   local hit=native(box,'GetChild','hit');native(hit,'SetVisible',true);native(hit,'SetAnchoredPosition',0,0);native(hit,'SetSizeDelta',pitch,48*s)

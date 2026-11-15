@@ -1,0 +1,40 @@
+{
+  "kind": "verbatim excerpts transcribed from actual exec tool output; not original process log files",
+  "environmentFailure": {
+    "status": 1,
+    "excerpt": "./src/lua/abyss_battle_ui.lua:4: module 'abyss_theme' not found:",
+    "correction": "npm run build:data; npm run build:ui; subsequent old-source red is product-relevant"
+  },
+  "oldDirectionRed": {
+    "status": 1,
+    "excerpt": "NATIVE_POWER_RIGHT_TOP: count projects above source amount anchor",
+    "luaFixtureMs": 3953
+  },
+  "initialFullFile": {
+    "status": 1,
+    "tests": 5,
+    "pass": 4,
+    "fail": 1,
+    "durationMs": 37575.0389,
+    "failingCase": "actual complete historical owner corpus accepts only exact live native count continuation",
+    "error": "Missing expected exception.",
+    "stack": "tests/native-power-count-alignment.test.mjs:60:10",
+    "caseDurationsMs": [
+      12913.4551,
+      5752.4573,
+      1.9234,
+      7.7369,
+      18593.3402
+    ]
+  },
+  "static": {
+    "command": "npm run check:lua-static",
+    "status": 0,
+    "output": "Luacheck 1.2.0: no new diagnostics; 14 explicit historical warnings. Battle render <=10; scoped functions <=15 (Enemy AI initialize <=21); 2161 governed responsibility measurements."
+  },
+  "architecture": {
+    "command": "npm run check:architecture",
+    "status": 0,
+    "output": "Architecture passed: 346 modules, 1955 edges; build/architecture.json"
+  }
+}

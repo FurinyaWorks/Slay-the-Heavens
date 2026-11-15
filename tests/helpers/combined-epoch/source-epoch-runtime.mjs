@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
+import {projectHistoricalNativePowerCount,isNativePowerCountPredecessor} from '../native-power-count-historical-source.mjs';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -98,13 +99,29 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  // This exact continuation only projects into the immutable historical corpus.
+  const historical=isNativePowerCountPredecessor(current)?projectHistoricalNativePowerCount(path,source):source;
+  const countContinuation=historical!==source;source=historical;
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof source!=='string'||!current||!before||(!countContinuation&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
+  let countSample;
+  if(isNativePowerCountPredecessor(current)){
+   try{countSample=readSource(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+   const projected=projectHistoricalNativePowerCount(path,countSample);
+   assert.equal(projected!==countSample,countContinuation,'combined linked owner sampled input identity: '+path);
+   assert.equal(typeof projected,'string','combined linked owner identity: '+path);
+   assert.equal(sourceHash(projected),current.sha256,'combined linked owner identity: '+path);
+  }
   for(const owner of proof.owners){
-   let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+   let actual;try{actual=owner===path&&isNativePowerCountPredecessor(current)?countSample:readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];
+   if(isNativePowerCountPredecessor(binding)){
+    const projected=projectHistoricalNativePowerCount(owner,actual);
+    if(owner===path)assert.equal(projected!==actual,countContinuation,'combined linked owner sampled input identity: '+owner);
+    actual=projected;
+   }
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   return before.source;

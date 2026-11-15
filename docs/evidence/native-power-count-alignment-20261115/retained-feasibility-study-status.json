@@ -1,0 +1,57 @@
+{
+  "status": "NO_GO; production unchanged",
+  "base": "fdcf0e7c094420f313f64d15c4fcc17255342d12",
+  "strictContract": {
+    "blockThreeDigits": 72,
+    "hp999Pair": 140,
+    "fullSafeBand": [
+      -600,
+      600
+    ],
+    "fivePairWidthWithGaps": 1152
+  },
+  "models": {
+    "compact": {
+      "status": "rejected against valid conservative contract; retains original Power conflict reproduction",
+      "path": "build/block-feasibility/compact-repro"
+    },
+    "horizontal": {
+      "fontAndRectChecks": 9506,
+      "diagnostics": 0,
+      "status": "NoGo: ownership badly displaced",
+      "scenes": [
+        "build/block-feasibility/strict-horizontal-actualHp-scenes.json",
+        "build/block-feasibility/strict-horizontal-hp999-scenes.json"
+      ]
+    },
+    "vertical32": {
+      "status": "NoGo",
+      "snapshots": "build/block-feasibility/vertical32"
+    },
+    "vertical36": {
+      "status": "NoGo",
+      "contracts": 30,
+      "handCollisions": {
+        "LotsOfSlimes": [
+          1,
+          5,
+          10
+        ],
+        "GremlinGang": [
+          0,
+          3,
+          12
+        ]
+      },
+      "note": "Power count AABB uses actual right/top font metadata; glyph and count collisions retained"
+    }
+  },
+  "evidenceBoundary": "real generated recording Host and existing rectangle/font contracts; no official, no device, no source edit; all forced Block/HP values labeled",
+  "sourceInputs": {
+    "src/lua/abyss_battle_unit_view.lua": "2065bc1416e2db6403fd1aba2f7db4e08e19bcedf29440e665b305c8bfeaae9d",
+    "src/lua/abyss_battle_enemy_view.lua": "0cf94c52da41f2d2380c266e26735352cd92e8d78ec567d662b88d11716288ff",
+    "src/lua/abyss_battle_render_actors.lua": "44c8db9e763b1d9220a99664bb2b21e57ffec5b14d8d6abfbe9678935263a661",
+    "src/lua/abyss_monster_power_view.lua": "596497c8b281634fd7e1d8735a7d127b8d724c800473a5602ff51e111229971d",
+    "src/lua/abyss_monster_source_geometry.lua": "cb32adcff9c2c06b11e8a1dfe8cccae85f76f0ed30b95c786fe6097f8b17f87f"
+  }
+}
