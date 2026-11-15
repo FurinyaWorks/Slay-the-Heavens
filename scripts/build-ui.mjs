@@ -40,7 +40,7 @@ import {applyV25ResultLayout} from './v25-result-layout.mjs';
 import {applyV25NodeLayout,applyV25RewardLayout} from './v25-node-layout.mjs';
 import {prepareV25CardTemplates} from './v25-card-templates.mjs';
 import {writeV25CardBinding,v25CardModule} from './v25-card-binding.mjs';
-import {compileImageModes} from './native-image-modes.mjs';
+import {compileImageModes,renderImageModeBinding} from './native-image-modes.mjs';
 
 export function assertNativeUiCapacity(layout) {
   const checkFonts = (control, path) => {
@@ -233,7 +233,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   writeFileSync(join(outputDirectory,'game-ui-native.json'),JSON.stringify(imageModes.layout,null,2)+'\n');
   writeFileSync(join(outputDirectory,'game-ui-templates-native.json'),JSON.stringify(imageModes.templates,null,2)+'\n');
   writeFileSync(join(outputDirectory,'native-image-mode-proof.json'),JSON.stringify(imageModes.proof,null,2)+'\n');
-  writeFileSync(join(outputDirectory,'abyss_image_mode_binding.lua'),`-- Complete gallery intent; applied before page publication.\nreturn ${toLua(imageModes.binding)}\n`);
+  writeFileSync(join(outputDirectory,'abyss_image_mode_binding.lua'),renderImageModeBinding(imageModes.binding,toLua));
   if (art) writeFileSync(join(outputDirectory,'native-card-art-receipt.json'),JSON.stringify(nativeArtReceipt(art),null,2)+'\n');
   else rmSync(join(outputDirectory,'native-card-art-receipt.json'),{force:true});
 }

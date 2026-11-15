@@ -29,7 +29,7 @@ import {prepareV25UiMasks,v25UiMaskInputs,assertV25UiMaskPreparation,v25UiMaskTe
 import {prepareV25CardTemplates} from './v25-card-templates.mjs';
 import {v25CardModule,v25PrivateInputs,writeV25CardBinding,assertV25CardPreparation} from './v25-card-binding.mjs';
 import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
-import {compileImageModes,imageModeDigest} from './native-image-modes.mjs';
+import {compileImageModes,imageModeDigest,renderImageModeBinding} from './native-image-modes.mjs';
 import {prepareComponentControlLayout,assertComponentControlOutput,componentBindingSource} from './native-component-profile.mjs';
 
 export const generatedRuntimeModules = {
@@ -177,7 +177,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
      if(imageModes.proof.staticRequests+imageModes.proof.templateRequests>0||Object.hasOwn(generatedModules,'abyss_image_mode_binding')){
       if(!Object.hasOwn(generatedModules,'abyss_image_mode_binding'))throw Error('Gallery image modes require their generated runtime binding');
       if(JSON.stringify(imageModes.proof)!==JSON.stringify(JSON.parse(readFileSync(join(generated,'native-image-mode-proof.json'),'utf8'))))throw Error('Image mode proof differs from complete source intent');
-      if(readFileSync(join(generated,'abyss_image_mode_binding.lua'),'utf8')!==`-- Complete gallery intent; applied before page publication.\nreturn ${toLua(imageModes.binding)}\n`)throw Error('Image mode runtime binding differs');
+      if(readFileSync(join(generated,'abyss_image_mode_binding.lua'),'utf8')!==renderImageModeBinding(imageModes.binding,toLua))throw Error('Image mode runtime binding differs');
       for(const [file,wanted]of [['game-ui-native.json',imageModes.layout],['game-ui-templates-native.json',imageModes.templates]]){
         if(imageModeDigest(JSON.parse(readFileSync(join(generated,file),'utf8')))!==imageModeDigest(wanted))throw Error('Lowered image mode static tree differs: '+file);
       }
