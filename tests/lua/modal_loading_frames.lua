@@ -19,7 +19,13 @@ local function tick()host:update(1/60);host.pageReveal:step(Gate.intent(host));h
 local function settle()for _=1,4 do tick()end;assert(not host.pageReveal:covered())end
 settle();assert(host:start());settle();assert(F.confirmStart(host));settle()
 assert(require('abyss_run').startCombat(host.run,'cultist_solo'));host:refresh();settle()
-local run=host.run;local before=F.Combat.copy(run)
+local run=host.run;local originalBattle=run.combat;local before=F.Combat.copy(run)
+local function same(a,b)
+ if type(a)~='table' or type(b)~='table'then return a==b end
+ for k,v in pairs(a)do if not same(v,b[k])then return false end end
+ for k in pairs(b)do if a[k]==nil then return false end end
+ return true
+end
 assert(host:openMenu() and not cover.visible,'ready settings uses its existing modal without a loading flash')
 assert(host:closeExit() and not cover.visible)
 assert(host:openPotions() and not cover.visible,'ready potion modal publishes synchronously')
@@ -27,6 +33,10 @@ assert(host:closePotions() and not cover.visible)
 heldPage='potionPanel';held=true;assert(host:openPotions())
 assert(cover.visible and veil.size[1]==F.Theme.layout.modal.size[1] and veil.size[2]==F.Theme.layout.modal.size[2])
 assert(host:closePotions() and not cover.visible);held=false;heldPage='deckPanel'
+root:GetChild('battlePanel'):GetChild('topBar'):GetChild('battleRoute'):GetChild('hit').click()
+assert(host.routeOpen and cover.visible,'a whole-page route preview must retain its full publication boundary')
+assert(veil.size[1]==F.Theme.canvas.base[1] and veil.size[2]==F.Theme.canvas.base[2],'route map incorrectly borrowed a battle-local loading frame')
+assert(host:closeExit());settle()
 held=true;assert(host:openDeck('draw'))
 assert(host.pageReveal:covered() and cover.visible,'unready modal retains input barrier')
 assert(veil.size[1]<F.Theme.canvas.base[1] and veil.size[2]<F.Theme.canvas.base[2],'same ready base must not acquire a full-screen black veil')
@@ -45,8 +55,9 @@ assert(not cover.visible,'sorting must not flash the global veil')
 assert(geometryWrites==0,'ready sorting redundantly rewrote cover geometry')
 veil.SetSizeDelta=setSize
 assert(host:closeDeck() and not cover.visible,'closing a ready modal must not flash the global veil')
-assert(host.run==run and host.run.combat==run.combat,'modal transitions preserve current run')
-assert(host.run.combat.turn==before.combat.turn and host.run.rng==before.rng,'modal transitions preserve rules/RNG')
+assert(host.run==run and host.run.combat==originalBattle,'modal transitions preserve current run and battle identity')
+local after=F.Combat.copy(run);after.elapsedSeconds=before.elapsedSeconds
+assert(same(after,before),'modal transitions preserve complete rules and RNG; only ordinary elapsed time may advance')
 -- Failure does not expose unready content or strand the ready parent.
 held=true;assert(host:openDeck('draw'));failure='injected unavailable';tick()
 assert(host.pageReveal.state=='failed' and cover.visible and not host.battleUI.active)
