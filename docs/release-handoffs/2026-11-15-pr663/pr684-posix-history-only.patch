@@ -1,0 +1,26 @@
+--- a/tests/ci-posix-concurrency.test.mjs
++++ b/tests/ci-posix-concurrency.test.mjs
+@@ -1,4 +1,5 @@
+ import test from 'node:test';
++import {releasePcCiSource} from './helpers/release-pc-ci-source.mjs';
+ import assert from 'node:assert/strict';
+ import {readFileSync} from 'node:fs';
+ import {createHash} from 'node:crypto';
+@@ -32,6 +33,17 @@
+ });
+ 
+ test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>{
++  // Reuse the authenticated Release continuation only for this historical view.
++  // Physical/current checks above continue to read the raw workflow.
++  const live=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'),path='.github/workflows/quality.yml';
++  const historical=releasePcCiSource(path,live);
++  assert.equal(digest(historical),'427d7578284ef86a85b994a5df140a328847fb990b368a798200e082cb4e26ab','only canonical predecessor or authenticated Release wrapper is accepted');
++  for(const drift of [live+'# drift\n',...(live.includes("'release/**'")?[live.replace(", 'release/**'",'')]:[]),live.replace('contents: read','contents: write')]){
++    assert.equal(releasePcCiSource(path,drift),drift,'foreign workflow bytes remain visible');
++    assert.notEqual(beforeAutoMergeWorkflow(drift),beforeAutoMergeWorkflow(historical),'foreign bytes cannot masquerade as the approved historical projection');
++  }
++  assert.equal(releasePcCiSource('src/lua/foreign.lua',live),live);
++  const current=historical;
+   for(const eol of ['\n','\r\n']){
+     const old=current.replace(cap,'').replaceAll('\n',eol);
+     const capped=current.replaceAll('\n',eol);
