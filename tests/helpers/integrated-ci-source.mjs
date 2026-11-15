@@ -9,8 +9,9 @@ import {mobilePotionPriorInventory,assertMobilePotionCiCurrent} from './mobile-p
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {potionBootstrapCiSource,potionBootstrapCiCheckedSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent} from './potion-bootstrap-ci-source.mjs';
 import {potionRegressionCiSource,potionRegressionCiCheckedSource,potionRegressionHistoricalRead,potionRegressionPriorInventory,assertPotionRegressionCiCurrent} from './potion-regression-ci-source.mjs';
-const priorCiSource=(path,source,before)=>releaseBootstrapCiSource(path,potionBootstrapCiSource(path,potionRegressionCiSource(path,source)),before);
-const priorCiCheckedSource=(path,source,before)=>releaseBootstrapCiCheckedSource(path,potionBootstrapCiCheckedSource(path,potionRegressionCiCheckedSource(path,source)),before);
+import {mobileCottageCiSource,mobileCottageCiCheckedSource,mobileCottageHistoricalRead,mobileCottagePriorInventory,assertMobileCottageCiCurrent} from './mobile-cottage-ci-source.mjs';
+const priorCiSource=(path,source,before)=>releaseBootstrapCiSource(path,potionBootstrapCiSource(path,potionRegressionCiSource(path,mobileCottageCiSource(path,source))),before);
+const priorCiCheckedSource=(path,source,before)=>releaseBootstrapCiCheckedSource(path,potionBootstrapCiCheckedSource(path,potionRegressionCiCheckedSource(path,mobileCottageCiCheckedSource(path,source))),before);
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -39,8 +40,10 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertPotionRegressionCiCurrent(read);
- const priorRead=potionRegressionHistoricalRead(read);
+ assertMobileCottageCiCurrent(read);
+ const beforeCottageRead=mobileCottageHistoricalRead(read);
+ assertPotionRegressionCiCurrent(beforeCottageRead);
+ const priorRead=potionRegressionHistoricalRead(beforeCottageRead);
  assertPotionBootstrapCiCurrent(priorRead);
  assertReleaseBootstrapCiCurrent(potionBootstrapHistoricalRead('bootstrap',priorRead));
  assertMobilePotionCiCurrent(potionBootstrapHistoricalRead('potion',priorRead));
@@ -58,6 +61,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
+ paths=mobileCottagePriorInventory(paths,kind,read);read=mobileCottageHistoricalRead(read);
  paths=potionRegressionPriorInventory(paths,kind,read);read=potionRegressionHistoricalRead(read);
  paths=mobilePotionPriorInventory(paths,kind,read);
  // New standalone reviewed views consume raw discovery. Older chained views

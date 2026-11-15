@@ -34,6 +34,12 @@ export const potionRegressionHelperCopies=[
  {path:'tests/helpers/potion-regression-source.json.gz',before:null,after:'fff211fab47d021bb4d6cd936a719bba03afcec03f7078aa49d3b165de5b8b2d'}
 ];
 for(const row of potionRegressionHelperCopies){assert.equal(files[row.path]??null,row.before,'exact potion regression helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const mobileCottageHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'c094647f798d6ca9c98c49b646cbd0ba034d90bd107d07e060c9d24396ec4a28',after:'bb270156d6497808387a49955537c956bdc95f516998c46dda1b607fbc7b69f4'},
+ {path:'tests/helpers/mobile-cottage-source.mjs',before:null,after:'f3ae85b7cf7f10edaa530a16ad0d3f295930ed698681a59ddf721d6ae9ffdbbc'},
+ {path:'tests/helpers/mobile-cottage-source.json.gz',before:null,after:'c854c2a5b21dfda72a92a738b6fc8f08ff52aa8c1008f1b957c73d1f11f5f3da'}
+];
+for(const row of mobileCottageHelperCopies){assert.equal(files[row.path]??null,row.before,'exact cottage helper-copy predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

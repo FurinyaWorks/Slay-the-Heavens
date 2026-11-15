@@ -253,3 +253,23 @@ test('potion regression composition copy closure freshly rejects packet dependen
   rmSync(directory,{recursive:true,force:true});
  }}
 });
+
+test('cottage composition copy closure freshly rejects packet dependency drift and deletion after warm success',async()=>{
+ const {copyIntegrationSourceClosure,mobileCottageHelperCopies}=await import('./helpers/copy-integration-source-closure.mjs');
+ const temp=tmpdir(),source=mkdtempSync(join(temp,'cottage-copy-source-')),target=mkdtempSync(join(temp,'cottage-copy-target-'));
+ try{
+  copyIntegrationSourceClosure(source);copyIntegrationSourceClosure(target,{sourceRoot:source});
+  for(const {path}of mobileCottageHelperCopies){
+   const file=join(source,path),bytes=readFileSync(file);assert.deepEqual(readFileSync(join(target,path)),bytes);
+   writeFileSync(file,Buffer.concat([bytes,Buffer.from('\n')]));
+   assert.throws(()=>copyIntegrationSourceClosure(target,{sourceRoot:source}),/fresh helper copy identity/);
+   writeFileSync(file,bytes);unlinkSync(file);
+   assert.throws(()=>copyIntegrationSourceClosure(target,{sourceRoot:source}),/ENOENT/);
+   writeFileSync(file,bytes);copyIntegrationSourceClosure(target,{sourceRoot:source});
+  }
+ }finally{for(const directory of [source,target]){
+  const {realpathSync}=await import('node:fs');const {relative,isAbsolute}=await import('node:path');
+  const within=relative(realpathSync.native(temp),realpathSync.native(directory));assert(!isAbsolute(within)&&within.startsWith('cottage-copy-')&&!within.startsWith('..'));
+  rmSync(directory,{recursive:true,force:true});
+ }}
+});

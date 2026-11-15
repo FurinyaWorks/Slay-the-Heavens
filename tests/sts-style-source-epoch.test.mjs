@@ -11,6 +11,7 @@ import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {mobilePotionPriorInventory,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
+import {mobileCottagePriorInventory,assertMobileCottageRawInventory} from './helpers/mobile-cottage-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -28,7 +29,14 @@ test('release additions remain in raw Full and exact historical inventories reje
  assertIntegratedCurrent();
  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
  const historical={};
- for(const [kind,raw]of [['js',rawJs],['lua',rawLua]]){
+ for(const [kind,actual]of [['js',rawJs],['lua',rawLua]]){
+  assertMobileCottageRawInventory(actual,kind);
+  const raw=mobileCottagePriorInventory(actual,kind);
+  for(const path of actual.filter(p=>!raw.includes(p))){
+   assert.throws(()=>assertMobileCottageRawInventory(actual.filter(p=>p!==path),kind),/inventory/);
+   for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>mobileCottagePriorInventory(actual,kind,
+    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+  }
   assertMobilePotionRawInventory(raw,kind);
   historical[kind]=mobilePotionPriorInventory(raw,kind);
   for(const path of raw.filter(p=>!historical[kind].includes(p))){
