@@ -29,4 +29,12 @@
 
 新增回归保留该失败，并覆盖 recycle/destroy × 同 UID/换 UID 四组；真实 Liquid Memories 的 selected 表被核心替换且同 UID cell 销毁重建时，新 cell 也接纳最新标记。原 owner 切换、菜单重入、旧 token、上限及零重建负控保留，不通过全量 Grid 刷新修复。最终定向回归 1/1 通过（14339ms），静态工程仍为 351/6170/1988、CC15/Luacheck 通过。该追加只做定向回归与原静态门槛，不触发 Full。
 
+## 独审发现的会话失效边界
+
+独审在 `8932f7de` 再取得 RED：callback 合法提交后直接替换同 Run 的 combat 并刷新，没有手动 close，旧选择层仍可见且无法确认。原 owner 负控预先 close，掩盖了此路径。
+
+现统一归约 callback 返回后的状态：合法的原 session 按 live token/selected 同步（包括命令拒绝但查询仍合法）；仍为原 session、但 run/battle/phase/picker 已失效时退役旧 view，调用原 `deckChanged` 通知 Host 恢复输入或打开 live 后继；callback 已打开新 generation 时完全保留后继。callback 抛错先清理原 session 并尝试既有 Host 接管，保持原错误值传播，不误关 callback 已打开的后继。没有用旧请求副本重开选择或绕过原 owner/busy 保护。
+
+回归加入无手动 close 的 combat/run/非战斗 phase 切换、真实确认后打出第二张远虑产生新 picker、callback 自行 close/open 后继、合法拒绝及两类错误传播负控；四组回收、required 换表与原合同保留。Run 替换夹具按真实 start 同时安装 GameUI/BattleUI 的 Run 端口，保留之前只改一端导致后续仍打旧战斗牌的夹具诊断。最终定向 1/1 通过（16262ms），共享静态工程 351 模块/6172 测量/1988 边，原 CC15/Luacheck 通过；日志为 `owner-red.log`、`owner-green.log`、`engineering-owner.log`。没有扩全仓验证或触发 Full，新 HEAD 独审仍待协调者绑定。
+
 Owner 已确认设备为 iPhone 14 Pro，IMG_1405 原图 SHA 前缀 `3de12207a53c`；不提交含标识的原图。未生成本切片 GIL、未官方导入/ready、未同候选手机实测，不将源码即时反馈或文字框量测当作手机验收。全部相关手机 AC 保持未勾，未修改候选、master、Tag 或发布记录。

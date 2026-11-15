@@ -296,13 +296,28 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         close.interactable=self.optional==true or not choice.required or #choice.selected==choice.required
         close.raycastTarget=close.interactable
     end
+    local function retireChoice()
+        self:close()
+        if onChanged then onChanged()end
+    end
+    local function sameChoice(run,battle,choice)
+        return self.run==run and self.battle==battle and run.phase=='combat'
+            and run.combat==battle and battle.pendingChoice==choice
+    end
     local function retainedChoice(binding,callback,choice)
         local generation,run,battle,uid=self.generation,self.run,self.battle,binding.uid
-        callback(self.choiceToken,uid)
-        -- A callback can close/reopen the view or replace its owner. Only the
-        -- same mandatory choice may publish an in-place selection marker.
-        if not self.visible or self.generation~=generation or self.run~=run or self.battle~=battle
-            or run.combat~=battle or battle.pendingChoice~=choice then return end
+        local called,result=pcall(callback,self.choiceToken,uid)
+        -- A callback-created newer session is authoritative, including when
+        -- that callback raises after opening it. Never retire its successor.
+        if not self.visible or self.generation~=generation then
+            if not called then error(result,0)end
+            return
+        end
+        if not called then
+            pcall(retireChoice) -- cleanup must not replace the original error
+            error(result,0)
+        end
+        if not sameChoice(run,battle,choice)then return retireChoice()end
         self.choiceToken,self.choiceSelected=choice.token,choice.selected
         paintChoiceCount(choice)
         -- A native recycle can retire or rebind the clicked cell during the
@@ -315,7 +330,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function currentChoice(binding)
         if not self.visible or not self.choiceToken or binding.generation~=self.generation
-            or not self.run or self.run.combat~=self.battle then return end
+            or not self.run or self.run.phase~='combat' or self.run.combat~=self.battle then return end
         local choice=self.battle.pendingChoice
         if choice and choice.token==self.choiceToken then return choice end
     end
