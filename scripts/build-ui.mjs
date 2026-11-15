@@ -12,6 +12,7 @@ import { mkdirSync, existsSync, lstatSync, readdirSync, readFileSync, realpathSy
 import { resolve, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { toLua } from './build-lua-data.mjs';
+import {utf8ToLua} from './lua-utf8-literal.mjs';
 import { battleLayout, enemyPowerTemplate } from './ui-layout.mjs';
 import { gameLayout } from './game-ui-layout.mjs';
 import { withViewport } from './viewport-layout.mjs';
@@ -220,8 +221,8 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),`-- Generated from the bounded native monster registry.\nreturn ${toLua(monsterArt??{})}\n`);
   const narrative = JSON.parse(readFileSync('data/presentation/narrative.zh-CN.json', 'utf8'));
   narrative.codeVersion = releaseNotes.build.version;
-  writeFileSync(join(outputDirectory, 'abyss_narrative.lua'), `-- Generated from the approved narrative copy source.\nreturn ${toLua(narrative)}\n`, 'utf8');
-  writeFileSync(join(outputDirectory, 'abyss_presentation.lua'), `-- Generated from the checked Traveler presentation.\nreturn ${toLua(cards)}\n`, 'utf8');
+  writeFileSync(join(outputDirectory, 'abyss_narrative.lua'), `-- Generated from the approved narrative copy source.\nreturn ${utf8ToLua(narrative)}\n`, 'utf8');
+  writeFileSync(join(outputDirectory, 'abyss_presentation.lua'), `-- Generated from the checked Traveler presentation.\nreturn ${utf8ToLua(cards)}\n`, 'utf8');
   writeFileSync(join(outputDirectory, 'battle-ui.json'), JSON.stringify(battle, null, 2) + '\n', 'utf8');
   writeFileSync(join(outputDirectory, 'game-ui.json'), JSON.stringify(layout, null, 2) + '\n', 'utf8');
   writeFileSync(join(outputDirectory, 'abyss_ui_layout.lua'), `-- Native layout fixture generated from the import tree.\nreturn ${toLua(layout.controls)}\n`, 'utf8');

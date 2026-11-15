@@ -3,6 +3,7 @@ import { mkdirSync, realpathSync, statSync, writeFileSync, existsSync } from 'no
 import { dirname, resolve, join, basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { contentFiles, loadContent, validateContent } from './validate-data.mjs';
+import {utf8ToLua} from './lua-utf8-literal.mjs';
 
 function rejectInputOutputAlias(inputDirectory, output) {
   let outputStat;
@@ -58,7 +59,7 @@ export function buildLuaData(inputDirectory = 'data', output = 'build/lua/abyss_
     if (basename(output).toLowerCase()==='abyss_original_v4_data.lua') throw new Error('Output collides with generated Original V4 module');
     loadOriginalV4(originalDirectory);
   }
-  const source = `-- Generated from validated JSON. Do not edit.\nreturn ${toLua(data)}\n`;
+  const source = `-- Generated from validated JSON. Do not edit.\nreturn ${utf8ToLua(data)}\n`;
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(output, source, 'utf8');
   if (original) buildOriginalV4(originalDirectory,join(dirname(output),'abyss_original_v4_data.lua'));

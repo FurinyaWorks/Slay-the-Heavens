@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {utf8ToLua} from './lua-utf8-literal.mjs';
 
 export const ORIGINAL_V4_HASHES = Object.freeze({
   'cards_v4.json': '89229cdd7f6c1640d47bca95338f5e7887fbfd8720af181f7561d6eb45a45fca',
@@ -134,7 +135,7 @@ function rejectInputOutputAlias(directory, output) {
 export function buildOriginalV4(directory = 'data/original_v4', output = 'build/lua/abyss_original_v4_data.lua') {
   const data = loadOriginalV4(directory);
   rejectInputOutputAlias(directory, output);
-  const source = `-- Generated from frozen Original V4 JSON. Do not edit.\nreturn ${originalV4ToLua(data)}\n`;
+  const source = `-- Generated from frozen Original V4 JSON. Do not edit.\nreturn ${utf8ToLua(data,{nullAsNil:true})}\n`;
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(output, source, 'utf8');
   return source;
