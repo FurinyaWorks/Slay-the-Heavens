@@ -29,9 +29,11 @@ import {prepareV25UiMasks,v25UiMaskInputs,assertV25UiMaskPreparation,v25UiMaskTe
 import {prepareV25CardTemplates} from './v25-card-templates.mjs';
 import {v25CardModule,v25PrivateInputs,writeV25CardBinding,assertV25CardPreparation} from './v25-card-binding.mjs';
 import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
+import {compileImageModes,imageModeDigest} from './native-image-modes.mjs';
 import {prepareComponentControlLayout,assertComponentControlOutput,componentBindingSource} from './native-component-profile.mjs';
 
 export const generatedRuntimeModules = {
+  abyss_image_mode_binding:'scripts/build-ui.mjs',
   abyss_component_binding:'scripts/build-ui.mjs',
   [v25CardModule]:'scripts/build-ui.mjs',
   [uiProfileModule]:'scripts/build-ui.mjs',
@@ -170,6 +172,23 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       .includes(`["codeVersion"]=${toLua(releaseNotes.build.version)}`))throw new Error('Bundled code version differs from candidate provenance');
     const layout=JSON.parse(readFileSync(join(generated,'game-ui.json'),'utf8'));
     const templates=JSON.parse(readFileSync(join(generated,'game-ui-templates.json'),'utf8'));
+    const imageModes=compileImageModes(layout,templates);
+    function verifyModeCompilation(){
+     if(imageModes.proof.staticRequests+imageModes.proof.templateRequests>0||Object.hasOwn(generatedModules,'abyss_image_mode_binding')){
+      if(!Object.hasOwn(generatedModules,'abyss_image_mode_binding'))throw Error('Gallery image modes require their generated runtime binding');
+      if(JSON.stringify(imageModes.proof)!==JSON.stringify(JSON.parse(readFileSync(join(generated,'native-image-mode-proof.json'),'utf8'))))throw Error('Image mode proof differs from complete source intent');
+      if(readFileSync(join(generated,'abyss_image_mode_binding.lua'),'utf8')!==`-- Complete gallery intent; applied before page publication.\nreturn ${toLua(imageModes.binding)}\n`)throw Error('Image mode runtime binding differs');
+      for(const [file,wanted]of [['game-ui-native.json',imageModes.layout],['game-ui-templates-native.json',imageModes.templates]]){
+        if(imageModeDigest(JSON.parse(readFileSync(join(generated,file),'utf8')))!==imageModeDigest(wanted))throw Error('Lowered image mode static tree differs: '+file);
+      }
+      receipt.imageModes={...imageModes.proof,
+        binding:fileRecord(join(generated,'abyss_image_mode_binding.lua'),workspace),
+        staticLayout:fileRecord(join(generated,'game-ui-native.json'),workspace),
+        staticTemplates:fileRecord(join(generated,'game-ui-templates-native.json'),workspace),
+        proof:fileRecord(join(generated,'native-image-mode-proof.json'),workspace)};
+      receipt.outputs.push(...['binding','staticLayout','staticTemplates','proof'].map(key=>receipt.imageModes[key]));
+     }
+    }
     if(componentWidgets){
       const binding=JSON.parse(readFileSync(join(generated,'native-component-binding.json'),'utf8'));
       assertComponentControlOutput(layout,templates,binding,componentWidgets);
@@ -225,6 +244,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       if(templates.filter(t=>t.name===name).length!==1)throw Error('Monster actors require exactly one '+name+' template');
     if(flags.menuBackground&&templates.filter(template=>template.name===backgroundTemplate).length!==1)
       throw Error('Official background requires exactly one native image template');
+    verifyModeCompilation();
     if(payloadDigest(sourceInputs(root,inputOptions))!==digest||fileRecord(base.path).sha256!==base.sha256)throw new Error('Build input changed during preparation');
     verifyNativeCardArtReceipt(receipt.nativeCardArt,{root});
     // Preflight missing/unreadable modules before starting any MCP process.
@@ -241,7 +261,8 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     }
     if(cachedUi)receipt.reusedUi=cachedUi.receipt;
     for(const template of templates) {
-      const result=cachedUi?(cachedUi.templateResults[template.name]??{reused:true}):await call('scene_add_client_template',{template,mapPath,replace:true,outputName:'abyss-full-game-test'});
+      const nativeTemplate=imageModes.templates.find(row=>row.name===template.name);
+      const result=cachedUi?(cachedUi.templateResults[template.name]??{reused:true}):await call('scene_add_client_template',{template:nativeTemplate,mapPath,replace:true,outputName:'abyss-full-game-test'});
       allTemplateIds.push(result.templateIndex);
       if(v25Masks&&template.name===v25UiMaskTemplate)maskTemplateIndices[template.name]=result.templateIndex;
       if(v25Cards?.templates.some(row=>row.name===template.name))v25TemplateIndices[template.name]=result.templateIndex;
@@ -315,7 +336,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       if(writeScripts)pendingScripts.push(update);else await call('scene_set_client_script',update);
     }
     if(writeScripts&&pendingScripts.length)mapPath=await writeScripts(mapPath,pendingScripts,workspace);
-    if(!cachedUi)await call('scene_add_client_ui',{...layout,mapPath,replace:true,outputName:'abyss-full-game-test'});
+    if(!cachedUi)await call('scene_add_client_ui',{...imageModes.layout,mapPath,replace:true,outputName:'abyss-full-game-test'});
     // Preserve the integrated builder's ownership checks when reusing a base.
     const expectedScripts=new Set(modules.keys());
     async function scriptInventory() {

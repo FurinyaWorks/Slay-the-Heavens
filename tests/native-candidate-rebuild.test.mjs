@@ -12,6 +12,8 @@ import { spawnSync } from 'node:child_process';
 import {fixtureMapBytes,installNativeToolchainFixture,readFixtureScripts} from './helpers/native-toolchain-fixture.mjs';
 import {sha256} from '../scripts/evidence-files.mjs';
 import {uiProfileSource} from '../scripts/ui-profile.mjs';
+import {compileImageModes} from '../scripts/native-image-modes.mjs';
+import {toLua} from '../scripts/build-lua-data.mjs';
 
 const builder = fileURLToPath(new URL('../scripts/build-native-candidate.mjs', import.meta.url));
 const existing = { id: 1073741899, name: '_GSTS_ABYSS_SETTLEMENT', type: 20000, writable: true };
@@ -19,7 +21,10 @@ const uiModules = Object.keys(generatedRuntimeModules).filter(name=>generatedRun
 // Rebuild/ownership fixtures exercise the ordinary default-off candidate.
 // Artwork binding and template contracts have separate opt-in integration tests.
 const templates = [readyArtTemplates().find(template=>template.name===readyArtGroupTemplate),monsterActorTemplate(null),enemyPowerTemplate()];
+const emptyImageModes=compileImageModes({name:'SlayTheAbyss',script:'abyss_ui',controls:[]},templates);
+const emptyModeSource=`-- Complete gallery intent; applied before page publication.\nreturn ${toLua(emptyImageModes.binding)}\n`;
 const generatedSource = name => name === artFeatureModule ? artFeaturesSource({})
+  : name === 'abyss_image_mode_binding' ? emptyModeSource
   : name === 'abyss_ui_profile' ? uiProfileSource()
   : name === 'abyss_monster_art_data' ? '-- Generated from the bounded native monster registry.\nreturn {}\n' : 'return {}';
 // Fake only the MCP boundary: execute the actual CLI and inspect its calls.
@@ -78,7 +83,8 @@ function run(scenario, check) {
     put('src/lua/abyss_ui.lua','return {}');
     for(const file of ['data/cards.json','data/release/candidate-art-policy.json'])put(file,readFileSync(file));
     put('scripts/build-lua-data.mjs',`import {writeFileSync} from 'node:fs';import {dirname,join} from 'node:path';writeFileSync(process.argv[3],'return {}');writeFileSync(join(dirname(process.argv[3]),'abyss_original_v4_data.lua'),'return {}');`);
-    put('scripts/build-ui.mjs',`import {writeFileSync} from 'node:fs';import {join} from 'node:path';const out=process.argv[2];for(const [name,source] of ${JSON.stringify(uiModules.map(name=>[name,generatedSource(name)]))})writeFileSync(join(out,name+'.lua'),source);writeFileSync(join(out,'game-ui.json'),JSON.stringify({name:'SlayTheAbyss',script:'abyss_ui',controls:[]}));writeFileSync(join(out,'game-ui-templates.json'),${JSON.stringify(JSON.stringify(templates))});`);
+    put('scripts/build-ui.mjs',`import {writeFileSync} from 'node:fs';import {join} from 'node:path';const out=process.argv[2];for(const [name,source] of ${JSON.stringify(uiModules.map(name=>[name,generatedSource(name)]))})writeFileSync(join(out,name+'.lua'),source);writeFileSync(join(out,'game-ui.json'),JSON.stringify({name:'SlayTheAbyss',script:'abyss_ui',controls:[]}));writeFileSync(join(out,'game-ui-templates.json'),${JSON.stringify(JSON.stringify(templates))});writeFileSync(join(out,'native-image-mode-proof.json'),${JSON.stringify(JSON.stringify(emptyImageModes.proof))});`);
+    writeFileSync(join(dir,'scripts/build-ui.mjs'),`writeFileSync(join(out,'game-ui-native.json'),${JSON.stringify(JSON.stringify(emptyImageModes.layout))});writeFileSync(join(out,'game-ui-templates-native.json'),${JSON.stringify(JSON.stringify(emptyImageModes.templates))});`,{flag:'a'});
     for(const name of Object.keys(generatedRuntimeModules))put('build/lua/'+name+'.lua',generatedSource(name));
     put('build/lua/game-ui.json',JSON.stringify({name:'SlayTheAbyss',script:'abyss_ui',controls:[]}));
     put('build/lua/game-ui-templates.json',JSON.stringify(templates));

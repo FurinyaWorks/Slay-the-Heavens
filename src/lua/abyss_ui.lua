@@ -1,5 +1,6 @@
 local view, Viewport, background, cardArt, portraits, v25Textures, nativeStage, componentBridge
 local artFailures={}
+local imageModes
 local canvasWidth, canvasHeight
 local attempted = false
 local failureActive, failureExitSent = false, false
@@ -46,6 +47,7 @@ local function installFailureExit(menu)
     bindTitleExit(hit)
 end
 local function failed(phase, reason)
+    if imageModes then imageModes:release()end
     failureActive=true
     pcall(function()require('abyss_card_skin').clearSurface()end)
     if v25Textures then pcall(function()v25Textures:clear()end)end
@@ -155,7 +157,6 @@ local function presentationReady(intent)
         local ready,reason=portraits:readyForPage(intent.mode,intent.characterOpen,intent.character,intent.page)
         if not ready then return false,reason end
     end
-    if deckPending(intent)then return false end
     if background and intent.page=='menuPanel' then
         local state=background:status()
         if state.phase=='failed' then return false,state.reason end
@@ -165,7 +166,14 @@ local function presentationReady(intent)
         local ready,reason=v25Textures:presentationReady(intent.page)
         if not ready then return false,reason end
     end
-    return require('abyss_card_art_runtime').presentationReady(intent.page)
+    local ready,reason=require('abyss_card_art_runtime').presentationReady(intent.page)
+    if not ready then return false,reason end
+    if imageModes then
+        local modes,modeReason=imageModes:step(intent.page)
+        if not modes then return false,modeReason end
+    end
+    if deckPending(intent)then return false end
+    return true
 end
 local function presentationPage(page)
     require('abyss_card_art_runtime').setPresentationPage(page)
@@ -187,6 +195,8 @@ function OnStart()
         print("ABYSS_UI viewport_ready")
         local flags = artFeatures()
         stage=attachComponents(stage,flags)
+        imageModes=require('abyss_image_modes').new(stage,require('abyss_image_mode_binding'),
+            Enum.ImageType and {basic=Enum.ImageType.Basic,stretch=Enum.ImageType.Stretch})
         local createEasterEggArt
         if not flags.cards then
             -- Legacy static candidates embed nativeArt in presentation. Suppress
@@ -296,7 +306,7 @@ function OnStart()
                   end},
               monsterActors=setmetatable({instantiate=actorInstantiate,destroy=actorDestroy},{__index=actorBinding}),
               nativeMonsterArtEnabled=flags.monsters,
-              bindTitleExit=bindTitleExit,
+              bindTitleExit=bindTitleExit,imageModes=imageModes,
               color = Color, imageSource = Enum.ImageSource.StaticReference, cursorEvents = Enum.CursorEventType, keyEvents = Enum.KeyEventType,
               tween = game.Tween and function(control,fields,duration)
                   return game.Tween(componentBridge and componentBridge.unwrap(control) or control,fields,duration)
@@ -328,6 +338,7 @@ end
 function OnUpdate(dt)
     if not view or view.disabled then return end
     local ok, reason = pcall(function()
+        if imageModes then imageModes:beginFrame()end
         local width, height = game.GetUICanvasSize()
         if width ~= canvasWidth or height ~= canvasHeight then
             Viewport.apply(script.object, width, height)
@@ -353,6 +364,7 @@ function OnUpdate(dt)
 end
 
 function OnDestroy()
+    if imageModes then imageModes:release();imageModes=nil end
     failureActive=false
     failureQuitHit=nil
     failureMenu,normalTitleExit=nil,nil

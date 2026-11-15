@@ -9,6 +9,7 @@ const roots = ['abyss_curses', 'abyss_relic_pool', 'abyss_relic_hooks', 'abyss_a
   'abyss_potion_health', 'abyss_potion_random', 'abyss_fountain'];
 const generated = ['abyss_component_binding','abyss_v25_card_assets','abyss_ui_profile','abyss_art_features','abyss_monster_actor_binding','abyss_monster_art_data', 'abyss_data', 'abyss_original_v4_data', 'abyss_map_layout', 'abyss_narrative', 'abyss_presentation', 'abyss_theme', 'abyss_menu_background_asset', 'abyss_ready_card_binding', 'abyss_ready_card_assets', 'abyss_traveler_portrait_assets'];
 
+generated.push('abyss_image_mode_binding');
 function dependencyClosure(scripts) {
   const byName = new Map(scripts.map(script => [script.name, script]));
   const visited = new Set();

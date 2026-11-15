@@ -121,6 +121,7 @@ test('every production entry parameter is registered by both native package rout
   const generated=join(f.root,'generated');mkdirSync(generated);
   writeFileSync(join(generated,'abyss_component_binding.lua'),'return {schemaVersion=1,enabled=false}');
   writeFileSync(join(generated,'abyss_v25_card_assets.lua'),'return {enabled=false}');
+  writeFileSync(join(generated,'abyss_image_mode_binding.lua'),'return {schemaVersion=1,static={},templates={},templateNames={}}');
   for(const name of ['abyss_ui_profile','abyss_art_features','abyss_monster_actor_binding','abyss_monster_art_data', 'abyss_data','abyss_original_v4_data','abyss_map_layout','abyss_narrative','abyss_presentation','abyss_theme','abyss_menu_background_asset', 'abyss_ready_card_binding', 'abyss_ready_card_assets', 'abyss_traveler_portrait_assets'])
     writeFileSync(join(generated,name+'.lua'),'return {}');
   const packaged=candidateScriptFiles(join(f.root,'src/lua'),generated).find(row=>row.name==='abyss_ui');

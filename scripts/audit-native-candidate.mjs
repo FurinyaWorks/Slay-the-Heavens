@@ -224,8 +224,19 @@ export async function auditNativeCandidate(options) {
       const source = readFileSync(sourceFile, 'utf8');
       return { name, source: name === 'abyss_ui' ? candidateEntrySource(source, buildReceipt, before) : source };
     });
-    const expectedUi = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui.json'), 'utf8'));
-    const expectedTemplates = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui-templates.json'), 'utf8'));
+    const sourceUi = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui.json'), 'utf8'));
+    const sourceTemplates = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui-templates.json'), 'utf8'));
+    // Compare the declared static codec input with the original strict checker.
+    // Runtime semantics stay in the separately authenticated complete binding.
+    let expectedUi=sourceUi,expectedTemplates=sourceTemplates;
+    if(existsSync(join(snapshot,'scripts/native-image-modes.mjs'))){
+      const {compileImageModes}=await import(pathToFileURL(join(snapshot,'scripts/native-image-modes.mjs')));
+      const imageModes=compileImageModes(sourceUi,sourceTemplates);
+      const modeProof=buildReceipt?.imageModes;
+      if(!modeProof||Object.keys(imageModes.proof).some(key=>JSON.stringify(modeProof[key])!==JSON.stringify(imageModes.proof[key])))throw Error('Image mode intent/lowering/runtime proof differs');
+      if(sha256(readFileSync(join(snapshot,'build/lua/abyss_image_mode_binding.lua')))!==modeProof.binding?.sha256)throw Error('Image mode packed runtime binding differs');
+      expectedUi=imageModes.layout;expectedTemplates=imageModes.templates;
+    }
     const expectedTemplate = expectedTemplates.find(template => template.name === 'AbyssDeckCard');
     const expectedRuntimeTemplates=runtimeNames.map(name=>({
       template:expectedTemplates.find(row=>row.name===name),templateIndex:buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:

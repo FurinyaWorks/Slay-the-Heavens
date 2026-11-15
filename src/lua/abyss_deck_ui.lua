@@ -286,6 +286,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function picture(control,id) control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
     local function fill(control, instance, catalog)
+        if platform.imageModes then control:SetVisible(false)end
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
         local definition = Combat.cardDefinition(battle or {catalog=catalog}, instance)
@@ -352,7 +353,13 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
         self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
         self.bindings[control].instance=Combat.copy(instance)
-        control:SetVisible(true)
+        local ready=true
+        if platform.imageModes then
+            local generation=self.generation
+            ready=platform.imageModes:template(control,self.browserShell and 'AbyssBattlePileCard' or 'AbyssDeckCard',
+                function()return self.visible and not self.detailPages and self.generation==generation end)
+        end
+        control:SetVisible(ready)
     end
     -- Pure presentation projection. The permanent deck and the three combat
     -- piles retain their UIDs, acquisition order and RNG state unchanged.
@@ -566,7 +573,17 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.pendingGrid=not complete
         self.gridReady=function()
             if not self.visible or self.generation~=generation or self.detailPages then return true end
+            if platform.imageModes then
+                for _,control in pairs(cells)do
+                    if control.alive~=false and control.visible~=true and platform.imageModes:templateReady(control)then control:SetVisible(true)end
+                end
+            end
             local currentFirst,currentLast=visibleCardWindow(grid,#cards,gridColumns())
+            if platform.imageModes then
+                for index=currentFirst,currentLast do
+                    if not cells[index] or not platform.imageModes:templateReady(cells[index])then self.pendingGrid=true;return false end
+                end
+            end
             complete=visibleCardsReady(cells,currentFirst,currentLast)
             self.pendingGrid=not complete
             return complete

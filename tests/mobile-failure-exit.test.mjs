@@ -25,7 +25,9 @@ local modules={abyss_game_ui={new=function()return fakeView end},abyss_data={},a
  abyss_card_art_runtime={configure=function()end,setPresentationPage=function()end},
  abyss_card_skin={configure=function()end,clearSurface=function()end,destroySurface=function()end},
  abyss_narrative={build={}},abyss_ui_profile={schemaVersion=1,nativePageLifecycle=false},abyss_monster_actor_binding={},
- abyss_page_reveal={intent=function()return {page='battlePanel'}end}}
+ abyss_page_reveal={intent=function()return {page='battlePanel'}end},
+ abyss_image_mode_binding={schemaVersion=1,static={},templates={},templateNames={}},
+ abyss_image_modes={new=function()return {beginFrame=function()end,step=function()return true end,release=function()end}end}}
 require=function(name)assert(modules[name],'missing '..name);return modules[name]end
 game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return false end,
  ServerSignal=function(name)assert(name=='ABYSS_LOSE');return {SendSignal=function()if broken then error('transport down')end;sent=sent+1 end}end}
