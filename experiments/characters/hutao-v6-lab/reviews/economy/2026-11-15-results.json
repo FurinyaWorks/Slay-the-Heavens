@@ -1,0 +1,3020 @@
+{
+  "cfg": {
+    "seeds": [
+      {
+        "name": "training",
+        "start": 1,
+        "end": 256
+      },
+      {
+        "name": "holdout",
+        "start": 1001,
+        "end": 1256
+      }
+    ],
+    "policies": [
+      "guard",
+      "balanced",
+      "ignite",
+      "rush"
+    ],
+    "turnCap": 24,
+    "actionCap": 40,
+    "starter": [
+      "normal",
+      "normal",
+      "normal",
+      "guard",
+      "guard",
+      "guard",
+      "heavy",
+      "e",
+      "q",
+      "caution"
+    ],
+    "rewardMode": "natural_offers_top_fixed_score",
+    "campThreshold": {
+      "guard": 62,
+      "balanced": 43,
+      "ignite": 32,
+      "rush": 18
+    }
+  },
+  "engine": {
+    "sourceBlob": "364e1d3e8c8559e2fcb26276b9ae8a2813f21735",
+    "method": "isolated-V8-function-eval-of-frozen-first-script",
+    "noDom": true
+  },
+  "cardCheck": {
+    "cardCount": 75,
+    "baseUpgradeForms": 150,
+    "played": 150,
+    "rejected": 0,
+    "throws": [],
+    "realStarterCount": 10,
+    "rewardPoolCount": 69,
+    "rarityRewards": {
+      "基础": 0,
+      "普通": 26,
+      "罕见": 25,
+      "稀有": 18
+    }
+  },
+  "sameCostDominated": [
+    {
+      "worse": "c05",
+      "better": "u16",
+      "aRarity": "普通",
+      "bRarity": "罕见"
+    }
+  ],
+  "scoring": {
+    "training": {
+      "guard": {
+        "n": 256,
+        "wins": 256,
+        "deaths": 0,
+        "timeouts": 0,
+        "winWilson95": [
+          0.9852,
+          1
+        ],
+        "avgHighestFloor": 5,
+        "rareOfferRate": 0.2549,
+        "paidSum": 0,
+        "paidPerRun": 0,
+        "enemyLossSum": 14595,
+        "enemyLossPerRun": 57.012,
+        "healedSum": 3819,
+        "healedPerRun": 14.918,
+        "restHealSum": 4012,
+        "restHealPerRun": 15.672,
+        "campRestSum": 241,
+        "campRestPerRun": 0.941,
+        "campUpgradeSum": 271,
+        "campUpgradePerRun": 1.059,
+        "firstTurnESum": 0,
+        "firstTurnEPerRun": 0,
+        "firstBattleESum": 0,
+        "firstBattleEPerRun": 0,
+        "totalESum": 0,
+        "totalEPerRun": 0,
+        "turnsSum": 6401,
+        "turnsPerRun": 25.004,
+        "cardsPlayedSum": 17587,
+        "cardsPlayedPerRun": 68.699,
+        "offerRareSum": 783,
+        "offerRarePerRun": 3.059,
+        "offerTotalSum": 3072,
+        "offerTotalPerRun": 12,
+        "rewardRareSum": 427,
+        "rewardRarePerRun": 1.668,
+        "maxHealUsedSum": 1417,
+        "maxHealUsedPerRun": 5.535,
+        "examples": []
+      },
+      "balanced": {
+        "n": 256,
+        "wins": 253,
+        "deaths": 3,
+        "timeouts": 0,
+        "winWilson95": [
+          0.9661,
+          0.996
+        ],
+        "avgHighestFloor": 5,
+        "rareOfferRate": 0.2572,
+        "paidSum": 254,
+        "paidPerRun": 0.992,
+        "enemyLossSum": 22095,
+        "enemyLossPerRun": 86.309,
+        "healedSum": 5393,
+        "healedPerRun": 21.066,
+        "restHealSum": 4122,
+        "restHealPerRun": 16.102,
+        "campRestSum": 229,
+        "campRestPerRun": 0.895,
+        "campUpgradeSum": 283,
+        "campUpgradePerRun": 1.105,
+        "firstTurnESum": 0,
+        "firstTurnEPerRun": 0,
+        "firstBattleESum": 0,
+        "firstBattleEPerRun": 0,
+        "totalESum": 3,
+        "totalEPerRun": 0.012,
+        "turnsSum": 4403,
+        "turnsPerRun": 17.199,
+        "cardsPlayedSum": 12406,
+        "cardsPlayedPerRun": 48.461,
+        "offerRareSum": 790,
+        "offerRarePerRun": 3.086,
+        "offerTotalSum": 3072,
+        "offerTotalPerRun": 12,
+        "rewardRareSum": 429,
+        "rewardRarePerRun": 1.676,
+        "maxHealUsedSum": 1809,
+        "maxHealUsedPerRun": 7.066,
+        "examples": [
+          {
+            "seed": 139,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去17生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害，实际失血6。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害（格挡6），实际失血0。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "c08",
+                "r03",
+                "u13",
+                "farewell"
+              ]
+            },
+            "opening": [
+              "normal",
+              "e",
+              "q",
+              "guard",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "afterglow",
+                  "c04",
+                  "c08"
+                ],
+                "selected": "c08"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "c06",
+                  "r03",
+                  "aid"
+                ],
+                "selected": "r03"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u13",
+                  "c04",
+                  "u05"
+                ],
+                "selected": "u13"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u10",
+                  "farewell",
+                  "hearth"
+                ],
+                "selected": "farewell"
+              }
+            ]
+          },
+          {
+            "seed": 249,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消2，失去10生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "获得2格挡。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到7点攻击伤害，实际失血7。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「见招拆招」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到4点攻击伤害，实际失血4。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "u13",
+                "u19",
+                "c18",
+                "r01"
+              ]
+            },
+            "opening": [
+              "guard",
+              "e",
+              "normal",
+              "heavy",
+              "q"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "r12",
+                  "renew",
+                  "u13"
+                ],
+                "selected": "u13"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u19",
+                  "u05",
+                  "r04"
+                ],
+                "selected": "u19"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "renew",
+                  "c03",
+                  "c18"
+                ],
+                "selected": "c18"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "c08",
+                  "r01",
+                  "u16"
+                ],
+                "selected": "r01"
+              }
+            ]
+          },
+          {
+            "seed": 250,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消0，失去8生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到7点攻击伤害，实际失血7。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「重击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到5点攻击伤害，实际失血5。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到5点攻击伤害，实际失血5。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "r05",
+                "u21",
+                "u15",
+                "u19"
+              ]
+            },
+            "opening": [
+              "guard",
+              "q",
+              "e",
+              "heavy",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c18",
+                  "c19",
+                  "r05"
+                ],
+                "selected": "r05"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "renew",
+                  "r01",
+                  "u21"
+                ],
+                "selected": "u21"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u15",
+                  "trick",
+                  "bloodshot"
+                ],
+                "selected": "u15"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u19",
+                  "u21",
+                  "last"
+                ],
+                "selected": "u19"
+              }
+            ]
+          }
+        ]
+      },
+      "ignite": {
+        "n": 256,
+        "wins": 173,
+        "deaths": 83,
+        "timeouts": 0,
+        "winWilson95": [
+          0.6162,
+          0.7302
+        ],
+        "avgHighestFloor": 4.949,
+        "rareOfferRate": 0.2746,
+        "paidSum": 9278,
+        "paidPerRun": 36.242,
+        "enemyLossSum": 17386,
+        "enemyLossPerRun": 67.914,
+        "healedSum": 5988,
+        "healedPerRun": 23.391,
+        "restHealSum": 4176,
+        "restHealPerRun": 16.313,
+        "campRestSum": 232,
+        "campRestPerRun": 0.906,
+        "campUpgradeSum": 267,
+        "campUpgradePerRun": 1.043,
+        "firstTurnESum": 115,
+        "firstTurnEPerRun": 0.449,
+        "firstBattleESum": 296,
+        "firstBattleEPerRun": 1.156,
+        "totalESum": 1499,
+        "totalEPerRun": 5.855,
+        "turnsSum": 3550,
+        "turnsPerRun": 13.867,
+        "cardsPlayedSum": 10248,
+        "cardsPlayedPerRun": 40.031,
+        "offerRareSum": 833,
+        "offerRarePerRun": 3.254,
+        "offerTotalSum": 3033,
+        "offerTotalPerRun": 11.848,
+        "rewardRareSum": 435,
+        "rewardRarePerRun": 1.699,
+        "maxHealUsedSum": 1871,
+        "maxHealUsedPerRun": 7.309,
+        "examples": [
+          {
+            "seed": 1,
+            "failed": {
+              "floor": 5,
+              "turn": 2,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "受到14点伤害，格挡抵消0，失去10生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "高塔守门人发动攻击14。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "高塔守门人受到2点血梅香伤害，实际失血2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "结束第2回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "抽牌1（受手牌上限限制）。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "高塔守门人受到11点攻击伤害，实际失血11。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 2,
+                  "msg": "打出「险中求进」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 2,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "c10",
+                "c15",
+                "r01",
+                "r09"
+              ]
+            },
+            "opening": [
+              "normal",
+              "guard",
+              "guard",
+              "e",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c10",
+                  "last",
+                  "aid"
+                ],
+                "selected": "c10"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "c15",
+                  "r04",
+                  "afterglow"
+                ],
+                "selected": "c15"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u20",
+                  "aid",
+                  "r01"
+                ],
+                "selected": "r01"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "r06",
+                  "r09",
+                  "c18"
+                ],
+                "selected": "r09"
+              }
+            ]
+          },
+          {
+            "seed": 2,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去18生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到15点攻击伤害，实际失血15。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "「踏火而行」支付2生命，当前18/72。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "安神秘法恢复7生命，本场累计已恢复7/12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到14点攻击伤害（格挡13），实际失血1。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "r05",
+                "red",
+                "r14",
+                "u11"
+              ]
+            },
+            "opening": [
+              "normal",
+              "guard",
+              "normal",
+              "guard",
+              "q"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c11",
+                  "r05",
+                  "u13"
+                ],
+                "selected": "r05"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "red",
+                  "r13",
+                  "c16"
+                ],
+                "selected": "red"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c14",
+                  "r14",
+                  "aid"
+                ],
+                "selected": "r14"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "r12",
+                  "u11",
+                  "trick"
+                ],
+                "selected": "u11"
+              }
+            ]
+          },
+          {
+            "seed": 7,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去13生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到5点攻击伤害（格挡1），实际失血4。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「又见梅开」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害（格挡6），实际失血0。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "r01",
+                "c07",
+                "c12",
+                "c02"
+              ]
+            },
+            "opening": [
+              "normal",
+              "q",
+              "guard",
+              "heavy",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u16",
+                  "r04",
+                  "r01"
+                ],
+                "selected": "r01"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "r06",
+                  "c07",
+                  "r03"
+                ],
+                "selected": "c07"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c12",
+                  "c06",
+                  "c04"
+                ],
+                "selected": "c12"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "aid",
+                  "r12",
+                  "c02"
+                ],
+                "selected": "c02"
+              }
+            ]
+          },
+          {
+            "seed": 8,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消3，失去14生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到11点攻击伤害（格挡1），实际失血10。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到12点攻击伤害（格挡12），实际失血0。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「重击」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "u03",
+                "u03",
+                "c16",
+                "farewell"
+              ]
+            },
+            "opening": [
+              "normal",
+              "normal",
+              "caution",
+              "heavy",
+              "guard"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c04",
+                  "u03",
+                  "r10"
+                ],
+                "selected": "u03"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u12",
+                  "u03",
+                  "r03"
+                ],
+                "selected": "u03"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c08",
+                  "c16",
+                  "renew"
+                ],
+                "selected": "c16"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "wildfire",
+                  "u10",
+                  "farewell"
+                ],
+                "selected": "farewell"
+              }
+            ]
+          }
+        ]
+      },
+      "rush": {
+        "n": 256,
+        "wins": 133,
+        "deaths": 123,
+        "timeouts": 0,
+        "winWilson95": [
+          0.4585,
+          0.58
+        ],
+        "avgHighestFloor": 4.969,
+        "rareOfferRate": 0.2792,
+        "paidSum": 4305,
+        "paidPerRun": 16.816,
+        "enemyLossSum": 20888,
+        "enemyLossPerRun": 81.594,
+        "healedSum": 6077,
+        "healedPerRun": 23.738,
+        "restHealSum": 1998,
+        "restHealPerRun": 7.805,
+        "campRestSum": 111,
+        "campRestPerRun": 0.434,
+        "campUpgradeSum": 393,
+        "campUpgradePerRun": 1.535,
+        "firstTurnESum": 56,
+        "firstTurnEPerRun": 0.219,
+        "firstBattleESum": 154,
+        "firstBattleEPerRun": 0.602,
+        "totalESum": 686,
+        "totalEPerRun": 2.68,
+        "turnsSum": 3504,
+        "turnsPerRun": 13.688,
+        "cardsPlayedSum": 9919,
+        "cardsPlayedPerRun": 38.746,
+        "offerRareSum": 851,
+        "offerRarePerRun": 3.324,
+        "offerTotalSum": 3048,
+        "offerTotalPerRun": 11.906,
+        "rewardRareSum": 421,
+        "rewardRarePerRun": 1.645,
+        "maxHealUsedSum": 2007,
+        "maxHealUsedPerRun": 7.84,
+        "examples": [
+          {
+            "seed": 1,
+            "failed": {
+              "floor": 5,
+              "turn": 6,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "受到10点伤害，格挡抵消0，失去6生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "高塔守门人发动攻击10。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "结束第6回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "高塔守门人受到13点攻击伤害，实际失血13。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "本战低血攻击强化提升至+2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "蝶舞刷新为2次己方结束阶段。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 6,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "c10",
+                "c15",
+                "u19",
+                "r06"
+              ]
+            },
+            "opening": [
+              "normal",
+              "guard",
+              "guard",
+              "e",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c10",
+                  "last",
+                  "aid"
+                ],
+                "selected": "c10"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "c15",
+                  "r04",
+                  "afterglow"
+                ],
+                "selected": "c15"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u19",
+                  "aid",
+                  "r04"
+                ],
+                "selected": "u19"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "r06",
+                  "r03",
+                  "c03"
+                ],
+                "selected": "r06"
+              }
+            ]
+          },
+          {
+            "seed": 6,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消4，失去14生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到2点血梅香伤害（格挡2），实际失血0。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到3点攻击伤害（格挡3），实际失血0。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人获得血梅香（刷新为2次）。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「火上浇油」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy+",
+                "e",
+                "q+",
+                "caution",
+                "r17",
+                "u14",
+                "r09",
+                "u14"
+              ]
+            },
+            "opening": [
+              "normal",
+              "e",
+              "q",
+              "heavy",
+              "caution"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u15",
+                  "r17",
+                  "c11"
+                ],
+                "selected": "r17"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u14",
+                  "bloodshot",
+                  "u12"
+                ],
+                "selected": "u14"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u07",
+                  "r09",
+                  "u16"
+                ],
+                "selected": "r09"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u18",
+                  "u14",
+                  "u12"
+                ],
+                "selected": "u14"
+              }
+            ]
+          },
+          {
+            "seed": 7,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消0，失去3生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到2点血梅香伤害，实际失血2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人获得血梅香（刷新为2次）。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到6点攻击伤害，实际失血6。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「花开正好」，支付2能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "r14",
+                "u04",
+                "u06",
+                "r05"
+              ]
+            },
+            "opening": [
+              "normal",
+              "q",
+              "guard",
+              "heavy",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "r14",
+                  "r13",
+                  "c01"
+                ],
+                "selected": "r14"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "c02",
+                  "u04",
+                  "c14"
+                ],
+                "selected": "u04"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u07",
+                  "u06",
+                  "u05"
+                ],
+                "selected": "u06"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u09",
+                  "r05",
+                  "c16"
+                ],
+                "selected": "r05"
+              }
+            ]
+          },
+          {
+            "seed": 9,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去11生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到2点血梅香伤害，实际失血2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到7点攻击伤害，实际失血7。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「侧身还击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人获得血梅香（刷新为2次）。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy+",
+                "e",
+                "q+",
+                "caution",
+                "u03",
+                "r01",
+                "r11",
+                "u21"
+              ]
+            },
+            "opening": [
+              "normal",
+              "normal",
+              "e",
+              "q",
+              "caution"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u03",
+                  "u04",
+                  "renew"
+                ],
+                "selected": "u03"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "c11",
+                  "r01",
+                  "r10"
+                ],
+                "selected": "r01"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "r11",
+                  "c07",
+                  "c09"
+                ],
+                "selected": "r11"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u21",
+                  "c08",
+                  "u09"
+                ],
+                "selected": "u21"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "holdout": {
+      "guard": {
+        "n": 256,
+        "wins": 256,
+        "deaths": 0,
+        "timeouts": 0,
+        "winWilson95": [
+          0.9852,
+          1
+        ],
+        "avgHighestFloor": 5,
+        "rareOfferRate": 0.2715,
+        "paidSum": 0,
+        "paidPerRun": 0,
+        "enemyLossSum": 14253,
+        "enemyLossPerRun": 55.676,
+        "healedSum": 3866,
+        "healedPerRun": 15.102,
+        "restHealSum": 4052,
+        "restHealPerRun": 15.828,
+        "campRestSum": 243,
+        "campRestPerRun": 0.949,
+        "campUpgradeSum": 269,
+        "campUpgradePerRun": 1.051,
+        "firstTurnESum": 0,
+        "firstTurnEPerRun": 0,
+        "firstBattleESum": 0,
+        "firstBattleEPerRun": 0,
+        "totalESum": 0,
+        "totalEPerRun": 0,
+        "turnsSum": 6328,
+        "turnsPerRun": 24.719,
+        "cardsPlayedSum": 17622,
+        "cardsPlayedPerRun": 68.836,
+        "offerRareSum": 834,
+        "offerRarePerRun": 3.258,
+        "offerTotalSum": 3072,
+        "offerTotalPerRun": 12,
+        "rewardRareSum": 422,
+        "rewardRarePerRun": 1.648,
+        "maxHealUsedSum": 1396,
+        "maxHealUsedPerRun": 5.453,
+        "examples": []
+      },
+      "balanced": {
+        "n": 256,
+        "wins": 251,
+        "deaths": 5,
+        "timeouts": 0,
+        "winWilson95": [
+          0.9551,
+          0.9916
+        ],
+        "avgHighestFloor": 4.996,
+        "rareOfferRate": 0.2424,
+        "paidSum": 312,
+        "paidPerRun": 1.219,
+        "enemyLossSum": 21799,
+        "enemyLossPerRun": 85.152,
+        "healedSum": 5389,
+        "healedPerRun": 21.051,
+        "restHealSum": 3780,
+        "restHealPerRun": 14.766,
+        "campRestSum": 210,
+        "campRestPerRun": 0.82,
+        "campUpgradeSum": 301,
+        "campUpgradePerRun": 1.176,
+        "firstTurnESum": 0,
+        "firstTurnEPerRun": 0,
+        "firstBattleESum": 0,
+        "firstBattleEPerRun": 0,
+        "totalESum": 6,
+        "totalEPerRun": 0.023,
+        "turnsSum": 4352,
+        "turnsPerRun": 17,
+        "cardsPlayedSum": 12276,
+        "cardsPlayedPerRun": 47.953,
+        "offerRareSum": 744,
+        "offerRarePerRun": 2.906,
+        "offerTotalSum": 3069,
+        "offerTotalPerRun": 11.988,
+        "rewardRareSum": 392,
+        "rewardRarePerRun": 1.531,
+        "maxHealUsedSum": 1744,
+        "maxHealUsedPerRun": 6.813,
+        "examples": [
+          {
+            "seed": 1033,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消0，失去10生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到10点攻击伤害，实际失血10。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「重击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到18点攻击伤害，实际失血18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「背水一战」，支付2能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy+",
+                "e",
+                "q+",
+                "caution",
+                "u05",
+                "u01",
+                "u02",
+                "u12"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "q",
+              "normal",
+              "caution",
+              "guard"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "trick",
+                  "u05",
+                  "renew"
+                ],
+                "selected": "u05"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u01",
+                  "c14",
+                  "bloodshot"
+                ],
+                "selected": "u01"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u02",
+                  "c10",
+                  "red"
+                ],
+                "selected": "u02"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u12",
+                  "c19",
+                  "renew"
+                ],
+                "selected": "u12"
+              }
+            ]
+          },
+          {
+            "seed": 1107,
+            "failed": {
+              "floor": 5,
+              "turn": 6,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "受到10点伤害，格挡抵消5，失去5生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "高塔守门人发动攻击10。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "结束第6回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "打出「防御」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "高塔守门人受到5点攻击伤害，实际失血5。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "高塔守门人受到5点攻击伤害，实际失血5。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 6,
+                  "msg": "高塔守门人受到5点攻击伤害，实际失血5。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 6,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "r10",
+                "c08",
+                "c16",
+                "u21"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "caution",
+              "q",
+              "guard",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u16",
+                  "r10",
+                  "u12"
+                ],
+                "selected": "r10"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "aid",
+                  "c08",
+                  "u15"
+                ],
+                "selected": "c08"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "spear",
+                  "c11",
+                  "c16"
+                ],
+                "selected": "c16"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "c10",
+                  "u21",
+                  "wildfire"
+                ],
+                "selected": "u21"
+              }
+            ]
+          },
+          {
+            "seed": 1110,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消0，失去3生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到9点攻击伤害，实际失血9。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「收工啦！」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到14点攻击伤害，实际失血14。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「无可奈何燃花作香」，支付2能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "u13",
+                "r15",
+                "u20",
+                "r02"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "q",
+              "caution",
+              "guard",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c12",
+                  "u13",
+                  "aid"
+                ],
+                "selected": "u13"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u17",
+                  "r15",
+                  "c18"
+                ],
+                "selected": "r15"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c02",
+                  "u20",
+                  "c05"
+                ],
+                "selected": "u20"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "renew",
+                  "u14",
+                  "r02"
+                ],
+                "selected": "r02"
+              }
+            ]
+          },
+          {
+            "seed": 1186,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去18生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到7点攻击伤害，实际失血7。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「重击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到16点攻击伤害（格挡13），实际失血3。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「一路走好！」，支付2能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "r09",
+                "r14",
+                "r05",
+                "c15"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "e",
+              "q",
+              "guard",
+              "guard"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u15",
+                  "bloodshot",
+                  "r09"
+                ],
+                "selected": "r09"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u08",
+                  "r14",
+                  "c06"
+                ],
+                "selected": "r14"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c12",
+                  "r05",
+                  "c16"
+                ],
+                "selected": "r05"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "c19",
+                  "c15",
+                  "wildfire"
+                ],
+                "selected": "c15"
+              }
+            ]
+          }
+        ]
+      },
+      "ignite": {
+        "n": 256,
+        "wins": 161,
+        "deaths": 95,
+        "timeouts": 0,
+        "winWilson95": [
+          0.5682,
+          0.6858
+        ],
+        "avgHighestFloor": 4.953,
+        "rareOfferRate": 0.2559,
+        "paidSum": 9469,
+        "paidPerRun": 36.988,
+        "enemyLossSum": 17312,
+        "enemyLossPerRun": 67.625,
+        "healedSum": 6092,
+        "healedPerRun": 23.797,
+        "restHealSum": 4176,
+        "restHealPerRun": 16.313,
+        "campRestSum": 232,
+        "campRestPerRun": 0.906,
+        "campUpgradeSum": 268,
+        "campUpgradePerRun": 1.047,
+        "firstTurnESum": 149,
+        "firstTurnEPerRun": 0.582,
+        "firstBattleESum": 308,
+        "firstBattleEPerRun": 1.203,
+        "totalESum": 1506,
+        "totalEPerRun": 5.883,
+        "turnsSum": 3530,
+        "turnsPerRun": 13.789,
+        "cardsPlayedSum": 10164,
+        "cardsPlayedPerRun": 39.703,
+        "offerRareSum": 777,
+        "offerRarePerRun": 3.035,
+        "offerTotalSum": 3036,
+        "offerTotalPerRun": 11.859,
+        "rewardRareSum": 404,
+        "rewardRarePerRun": 1.578,
+        "maxHealUsedSum": 1845,
+        "maxHealUsedPerRun": 7.207,
+        "examples": [
+          {
+            "seed": 1001,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消3，失去15生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到2点血梅香伤害，实际失血2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "进入彼岸蝶舞：攻击牌首个命中额外+3，半血以下+5，持续2次己方结束阶段。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "「蝶引来生」支付6生命，当前15/72。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "下回合额外能量现为1。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "r07",
+                "u03",
+                "r02",
+                "c10"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "normal",
+              "normal",
+              "guard",
+              "guard"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u14",
+                  "r07",
+                  "u03"
+                ],
+                "selected": "r07"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "wildfire",
+                  "r03",
+                  "u03"
+                ],
+                "selected": "u03"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "r02",
+                  "r17",
+                  "c06"
+                ],
+                "selected": "r02"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "r04",
+                  "c16",
+                  "c10"
+                ],
+                "selected": "c10"
+              }
+            ]
+          },
+          {
+            "seed": 1002,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去16生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到7点攻击伤害，实际失血7。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「重击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到5点攻击伤害（格挡3），实际失血2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到5点攻击伤害（格挡5），实际失血0。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "u04",
+                "r03",
+                "u21",
+                "u11"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "normal",
+              "e",
+              "guard",
+              "q"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "mark",
+                  "r06",
+                  "u04"
+                ],
+                "selected": "u04"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "bloodshot",
+                  "r13",
+                  "r03"
+                ],
+                "selected": "r03"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "farewell",
+                  "u21",
+                  "c18"
+                ],
+                "selected": "u21"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u12",
+                  "c04",
+                  "u11"
+                ],
+                "selected": "u11"
+              }
+            ]
+          },
+          {
+            "seed": 1004,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去17生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到2点血梅香伤害，实际失血2。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害，实际失血6。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到7点攻击伤害（格挡6），实际失血1。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "u02",
+                "r11",
+                "c01",
+                "c02"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "guard",
+              "normal",
+              "guard",
+              "q"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u10",
+                  "farewell",
+                  "u02"
+                ],
+                "selected": "u02"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "r11",
+                  "u04",
+                  "c19"
+                ],
+                "selected": "r11"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "r08",
+                  "c01",
+                  "u05"
+                ],
+                "selected": "c01"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "c11",
+                  "c02",
+                  "u10"
+                ],
+                "selected": "c02"
+              }
+            ]
+          },
+          {
+            "seed": 1005,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消4，失去5生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到6点攻击伤害，实际失血6。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "获得4格挡。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到8点攻击伤害，实际失血8。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy",
+                "e+",
+                "q",
+                "caution",
+                "c18",
+                "u12",
+                "u19",
+                "u03"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "guard",
+              "e",
+              "caution",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "mark",
+                  "c18",
+                  "c02"
+                ],
+                "selected": "c18"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u12",
+                  "red",
+                  "r13"
+                ],
+                "selected": "u12"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u19",
+                  "spear",
+                  "bloodshot"
+                ],
+                "selected": "u19"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u03",
+                  "farewell",
+                  "c16"
+                ],
+                "selected": "u03"
+              }
+            ]
+          }
+        ]
+      },
+      "rush": {
+        "n": 256,
+        "wins": 109,
+        "deaths": 147,
+        "timeouts": 0,
+        "winWilson95": [
+          0.3667,
+          0.487
+        ],
+        "avgHighestFloor": 4.949,
+        "rareOfferRate": 0.2598,
+        "paidSum": 4517,
+        "paidPerRun": 17.645,
+        "enemyLossSum": 20895,
+        "enemyLossPerRun": 81.621,
+        "healedSum": 6212,
+        "healedPerRun": 24.266,
+        "restHealSum": 1836,
+        "restHealPerRun": 7.172,
+        "campRestSum": 102,
+        "campRestPerRun": 0.398,
+        "campUpgradeSum": 397,
+        "campUpgradePerRun": 1.551,
+        "firstTurnESum": 55,
+        "firstTurnEPerRun": 0.215,
+        "firstBattleESum": 172,
+        "firstBattleEPerRun": 0.672,
+        "totalESum": 700,
+        "totalEPerRun": 2.734,
+        "turnsSum": 3527,
+        "turnsPerRun": 13.777,
+        "cardsPlayedSum": 9996,
+        "cardsPlayedPerRun": 39.047,
+        "offerRareSum": 788,
+        "offerRarePerRun": 3.078,
+        "offerTotalSum": 3033,
+        "offerTotalPerRun": 11.848,
+        "rewardRareSum": 378,
+        "rewardRarePerRun": 1.477,
+        "maxHealUsedSum": 2010,
+        "maxHealUsedPerRun": 7.852,
+        "examples": [
+          {
+            "seed": 1001,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消0，失去9生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害，实际失血6。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到4点攻击伤害，实际失血4。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到4点攻击伤害（格挡3），实际失血1。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy+",
+                "e",
+                "q+",
+                "caution",
+                "spear",
+                "r01",
+                "r02",
+                "c08"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "normal",
+              "normal",
+              "guard",
+              "guard"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u01",
+                  "c09",
+                  "spear"
+                ],
+                "selected": "spear"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "r01",
+                  "u07",
+                  "renew"
+                ],
+                "selected": "r01"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "r02",
+                  "r17",
+                  "c06"
+                ],
+                "selected": "r02"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "c08",
+                  "c19",
+                  "c04"
+                ],
+                "selected": "c08"
+              }
+            ]
+          },
+          {
+            "seed": 1006,
+            "failed": {
+              "floor": 4,
+              "turn": 2,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "受到12点伤害，格挡抵消0，失去5生命。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "火痕巡卫发动攻击12。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "受到10点伤害，格挡抵消2，失去8生命。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "灰袍祭司发动攻击10。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "结束第2回合。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "灰袍祭司受到6点攻击伤害，实际失血6。"
+                },
+                {
+                  "floor": 4,
+                  "turn": 2,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 4,
+              "hp": 0,
+              "wins": 3,
+              "turn": 2,
+              "deck": [
+                "guard",
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "c03",
+                "wildfire",
+                "r17"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "guard",
+              "guard",
+              "caution",
+              "e"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c19",
+                  "c03",
+                  "r12"
+                ],
+                "selected": "c03"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "wildfire",
+                  "r03",
+                  "aid"
+                ],
+                "selected": "wildfire"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c19",
+                  "u12",
+                  "r17"
+                ],
+                "selected": "r17"
+              }
+            ]
+          },
+          {
+            "seed": 1007,
+            "failed": {
+              "floor": 5,
+              "turn": 5,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "受到12点伤害，格挡抵消0，失去7生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人发动攻击12。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到3点血梅香伤害，实际失血3。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "结束第5回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人受到3点攻击伤害，实际失血3。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "高塔守门人获得血梅香（刷新为2次）。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 5,
+                  "msg": "打出「火上浇油」，支付1能量。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 5,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "c13",
+                "farewell",
+                "r13",
+                "u14"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "guard",
+              "normal",
+              "caution",
+              "guard"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "u14",
+                  "c13",
+                  "c06"
+                ],
+                "selected": "c13"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "r12",
+                  "u08",
+                  "farewell"
+                ],
+                "selected": "farewell"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "u07",
+                  "r13",
+                  "r12"
+                ],
+                "selected": "r13"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "u14",
+                  "c08",
+                  "bloodshot"
+                ],
+                "selected": "u14"
+              }
+            ]
+          },
+          {
+            "seed": 1008,
+            "failed": {
+              "floor": 5,
+              "turn": 4,
+              "why": "death",
+              "hp": 0,
+              "logs": [
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "战斗失败，无法继续。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "受到18点伤害，格挡抵消5，失去11生命。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人发动攻击18。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "结束第4回合。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「防御」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害（格挡6），实际失血0。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "打出「普通攻击」，支付1能量。"
+                },
+                {
+                  "floor": 5,
+                  "turn": 4,
+                  "msg": "高塔守门人受到6点攻击伤害（格挡6），实际失血0。"
+                }
+              ]
+            },
+            "final": {
+              "phase": "lose",
+              "floor": 5,
+              "hp": 0,
+              "wins": 4,
+              "turn": 4,
+              "deck": [
+                "heavy",
+                "e",
+                "q+",
+                "caution",
+                "c02",
+                "u09",
+                "u06",
+                "r06"
+              ]
+            },
+            "opening": [
+              "heavy",
+              "caution",
+              "normal",
+              "q",
+              "normal"
+            ],
+            "offered": [
+              {
+                "floor": 1,
+                "offers": [
+                  "c02",
+                  "trick",
+                  "r15"
+                ],
+                "selected": "c02"
+              },
+              {
+                "floor": 2,
+                "offers": [
+                  "u09",
+                  "hearth",
+                  "c17"
+                ],
+                "selected": "u09"
+              },
+              {
+                "floor": 3,
+                "offers": [
+                  "c17",
+                  "u07",
+                  "u06"
+                ],
+                "selected": "u06"
+              },
+              {
+                "floor": 4,
+                "offers": [
+                  "r10",
+                  "c11",
+                  "r06"
+                ],
+                "selected": "r06"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "anomaly": [],
+  "anomalyCount": 0,
+  "elapsedMs": 2824
+}
