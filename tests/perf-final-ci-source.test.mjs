@@ -4,10 +4,17 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {perfFinalCiPacket as packet,perfFinalCiSource,perfFinalCurrentInventory,perfFinalPriorInventory,assertPerfFinalCiCurrent} from './helpers/perf-final-ci-source.mjs';
 import {assertIntegratedCurrent,integratedCurrentInventory} from './helpers/integrated-ci-source.mjs';
 import {pcAfterFixCiPacket} from './helpers/pc-after-fix-ci-source.mjs';
+import {itemIconPriorInventory} from './helpers/item-semantic-icons-ci.mjs';
 const raw=path=>readFileSync(path,'utf8');
 
 test('performance CI retains complete 1f before sources, all new raw tests and unconditional fresh current checks',()=>{
  assertPerfFinalCiCurrent(readFileSync);assertIntegratedCurrent();assert(Object.isFrozen(packet));
+ let retiredReads=0;const retired=()=>{retiredReads++;throw Error('retired complete inventory reader');};
+ for(const checkpoint of [pcAfterFixCiPacket.currentInventory,packet.currentInventory])for(const kind of ['js','lua']){
+  const paths=checkpoint[kind];
+  assert.deepEqual(itemIconPriorInventory(paths,paths,kind,retired,{}),paths,'each exact complete checkpoint keeps its no-I/O identity');
+ }
+ assert.equal(retiredReads,0);
  for(const path of ['scripts/lua-utf8-literal.mjs','scripts/official-portraits.mjs'])assert(packet.files[path].before?.source,'an existing builder must not become historical absence: '+path);
  for(const kind of ['js','lua']){
   const actual=readdirSync(kind==='js'?'tests':'tests/lua').filter(path=>path.endsWith(kind==='js'?'.test.mjs':'.lua')).map(path=>(kind==='js'?'tests/':'tests/lua/')+path).sort();

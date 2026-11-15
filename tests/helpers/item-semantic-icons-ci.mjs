@@ -164,7 +164,7 @@ export function itemIconPriorInventory(paths,base,kind,read,proof){
  const added=Object.keys(itemIconCi.added[kind]).filter(path=>!base.includes(path));
  // An adopted complete current base is already its own historical identity.
  // This mapping does not replace assertIntegratedCurrent's unconditional gate.
- if(JSON.stringify([...base].sort())===JSON.stringify(perfFinalCiPacket.currentInventory[kind])&&JSON.stringify([...paths].sort())===JSON.stringify([...base].sort()))return [...paths];
+ if([pcAfterFixCiPacket.currentInventory[kind],perfFinalCiPacket.currentInventory[kind]].some(complete=>JSON.stringify([...base].sort())===JSON.stringify(complete))&&JSON.stringify([...paths].sort())===JSON.stringify([...base].sort()))return [...paths];
  paths=pcFinalPriorInventory(paths,kind,read);
  if(added.length===0)return [...paths];
  if(!added.some(path=>paths.includes(path)))return [...paths];

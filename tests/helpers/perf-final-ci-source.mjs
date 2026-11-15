@@ -17,9 +17,16 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
 }
 const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const perfFinalCiPacket=freeze(packet);
+// Append the independently reviewed identity repair without rewriting the
+// complete 403f packet. Before text comes only from its authenticated rows.
+const identityRepair=freeze({
+ 'tests/helpers/item-semantic-icons-ci.mjs':'2215df9dfa52b220bcc28e442aa3accabd690bf50c3ad3fc603a25dc2a6d53c9',
+ 'tests/perf-final-ci-source.test.mjs':'aa81989a48cb9c8d4924d6d7adcddde45261a6f073e7f3bb553271a021f5ce79'
+});
 export function perfFinalCiSource(path,source){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(typeof source!=='string'||source.includes('\r\r\n')||!row?.before)return source;
+ if(Object.hasOwn(identityRepair,path)&&hash(norm(source))===identityRepair[path])source=row.current.source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
 export function perfFinalCurrentInventory(base,kind){
@@ -33,12 +40,16 @@ export function perfFinalPriorInventory(paths,kind,read){
  const before=packet.priorInventory[kind],current=packet.currentInventory[kind],added=current.filter(path=>!before.includes(path));
  if(!added.some(path=>paths.includes(path)))return [...paths];
  assert.deepEqual([...paths].sort(),current,'complete performance raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
- for(const path of added)assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh appended raw test source: fresh performance raw test source: '+path);
+ for(const path of added){
+  const expected=Object.hasOwn(identityRepair,path)?identityRepair[path]:packet.files[path].current.sha256;
+  assert.equal(hash(norm(read(path,'utf8'))),expected,'fresh appended raw test source: fresh performance raw test source: '+path);
+ }
  return [...before];
 }
 export function assertPerfFinalCiCurrent(read){
  for(const [path,row]of Object.entries(packet.files)){
   const category=['tests/item-semantic-icons-source.test.mjs','tests/potion-art-runtime.test.mjs','tests/potion-art.test.mjs'].includes(path)?'added inventory source':/^tests\/helpers\/(potion-art-runtime|reward-art-runtime)\.lua$/.test(path)?'runtime support source':'complete integration source';
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh '+category+': fresh appended CI source: fresh performance CI source: '+path);
+  const expected=Object.hasOwn(identityRepair,path)?identityRepair[path]:row.current.sha256;
+  assert.equal(hash(norm(read(path,'utf8'))),expected,'fresh '+category+': fresh appended CI source: fresh performance CI source: '+path);
  }
 }
