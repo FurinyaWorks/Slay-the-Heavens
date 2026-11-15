@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "preRetirementHead": "c41b162b1d01069d7f78f647a28a6ca70a9d8097",
+  "productHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "createdAt": "2026-11-15T16:49:53.173Z",
+  "inputReceipt": {
+    "path": "input-receipt.json.gz",
+    "sha256": "78a6fd6b7cd430f63fb79e4651c3299abdc457e9bd0f6e978f0ff3aae83e77cc"
+  },
+  "beforeInputReceipt": {
+    "path": "input-receipt-before-retirement.json.gz",
+    "sha256": "aec1b9a02bc7cd172a2838d71e7fa5f7f5abc6c4763d249bbfa8a59a9a3e059e"
+  },
+  "runs": [
+    {
+      "name": "related-plan",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:28:47.409Z",
+      "finishedAt": "2026-11-15T16:29:29.685Z"
+    },
+    {
+      "name": "build-data",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:29:51.981Z",
+      "finishedAt": "2026-11-15T16:29:52.122Z"
+    },
+    {
+      "name": "build-ui",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:29:52.129Z",
+      "finishedAt": "2026-11-15T16:29:53.015Z"
+    },
+    {
+      "name": "build-theme",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:29:53.019Z",
+      "finishedAt": "2026-11-15T16:29:53.133Z"
+    },
+    {
+      "name": "icons",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:30:08.061Z",
+      "finishedAt": "2026-11-15T16:30:51.460Z"
+    },
+    {
+      "name": "shadow",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:30:51.548Z",
+      "finishedAt": "2026-11-15T16:31:03.033Z"
+    },
+    {
+      "name": "menu-current",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:31:03.130Z",
+      "finishedAt": "2026-11-15T16:31:27.424Z"
+    },
+    {
+      "name": "menu-hover",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:31:27.435Z",
+      "finishedAt": "2026-11-15T16:31:28.155Z"
+    },
+    {
+      "name": "menu-states",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:31:28.190Z",
+      "finishedAt": "2026-11-15T16:31:29.817Z"
+    },
+    {
+      "name": "menu-profiles",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:31:29.892Z",
+      "finishedAt": "2026-11-15T16:31:42.844Z"
+    },
+    {
+      "name": "engineering",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:32:40.061Z",
+      "finishedAt": "2026-11-15T16:32:44.555Z"
+    },
+    {
+      "name": "platform-load-daily",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:32:44.638Z",
+      "finishedAt": "2026-11-15T16:32:45.813Z"
+    },
+    {
+      "name": "reward-pool-retirement-red",
+      "status": 1,
+      "error": null,
+      "startedAt": "2026-11-15T16:33:46.882Z",
+      "finishedAt": "2026-11-15T16:34:02.137Z"
+    },
+    {
+      "name": "reward-pool-retirement-red-final",
+      "status": 1,
+      "error": null,
+      "startedAt": "2026-11-15T16:34:43.408Z",
+      "finishedAt": "2026-11-15T16:35:45.565Z"
+    },
+    {
+      "name": "reward-pool-retirement-red-bounded",
+      "status": 1,
+      "error": null,
+      "startedAt": "2026-11-15T16:36:06.775Z",
+      "finishedAt": "2026-11-15T16:37:08.617Z"
+    },
+    {
+      "name": "reward-pool-retirement-red-oracle",
+      "status": 1,
+      "error": null,
+      "startedAt": "2026-11-15T16:37:41.456Z",
+      "finishedAt": "2026-11-15T16:38:43.324Z"
+    },
+    {
+      "name": "reward-pool-retirement-green",
+      "status": 1,
+      "error": null,
+      "startedAt": "2026-11-15T16:39:13.920Z",
+      "finishedAt": "2026-11-15T16:40:15.782Z"
+    },
+    {
+      "name": "reward-pool-retirement-green-rows",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:40:50.474Z",
+      "finishedAt": "2026-11-15T16:42:12.101Z"
+    },
+    {
+      "name": "icons-after-retirement",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:42:44.616Z",
+      "finishedAt": "2026-11-15T16:43:21.390Z"
+    },
+    {
+      "name": "engineering-after-retirement",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:43:21.518Z",
+      "finishedAt": "2026-11-15T16:43:26.687Z"
+    },
+    {
+      "name": "platform-load-after-retirement",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:43:26.757Z",
+      "finishedAt": "2026-11-15T16:43:27.816Z"
+    },
+    {
+      "name": "frozen-preview-contract",
+      "status": 1,
+      "error": null,
+      "startedAt": "2026-11-15T16:43:27.895Z",
+      "finishedAt": "2026-11-15T16:43:29.104Z"
+    },
+    {
+      "name": "reward-pool-retirement-green-peer",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:44:11.569Z",
+      "finishedAt": "2026-11-15T16:45:31.430Z"
+    },
+    {
+      "name": "diff-check",
+      "status": 0,
+      "error": null,
+      "startedAt": "2026-11-15T16:49:49.195Z",
+      "finishedAt": "2026-11-15T16:49:49.292Z"
+    }
+  ],
+  "limits": {
+    "sourceCi": "UNVERIFIED_frozen_contract_failures",
+    "full": "not_run",
+    "officialGil": "not_run",
+    "candidateWrite": "not_run",
+    "officialImport": "not_run",
+    "newReady": "not_run",
+    "pcDevice": "not_run",
+    "phoneDevice": "not_run",
+    "official20MbLevel": "not_run",
+    "official3MbServer": "not_run",
+    "rcStaticDynamicLoad": "not_run",
+    "privateImages": "not_accessed",
+    "pushPrMergeRelease": "not_run"
+  }
+}

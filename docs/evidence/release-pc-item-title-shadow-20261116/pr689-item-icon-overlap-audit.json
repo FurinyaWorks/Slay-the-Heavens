@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "reviewKind": "BOUNDED_READ_ONLY_OVERLAP_AUDIT",
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "pr689Head": "23bed75c642f8f4af5c2783526a5afc4a57f471f",
+  "pc18Head": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+  "comboHead": "c41b162b1d01069d7f78f647a28a6ca70a9d8097",
+  "tree": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+  "result": "MISSING_RETIREMENT_CONFIRMED",
+  "scope": ["scripts/lowcost-art.mjs", "src/lua/abyss_battle_reward_layout.lua", "src/lua/abyss_lowcost_art.lua", "existing fallback and reward assertions"],
+  "findings": [{
+    "id": "ICON-POOL-LOOKUP-RETIREMENT",
+    "severity": "P2",
+    "status": "CONFIRMED_ON_FROZEN_COMBO",
+    "fact": "After successful paint followed by missing/throwing pool lookup, combo restores fallback but leaves the previous live same-owner pool visible.",
+    "inference": "Same-anchor sibling glyphs can obscure or contaminate the native fallback; official pixels were not observed.",
+    "source": "src/lua/abyss_battle_reward_layout.lua::paintIcon",
+    "artifact": "pr689-overlap-probe/probe.lua"
+  }],
+  "independentProbe": {
+    "engine": "Node v24.18.0 / Fengari",
+    "productionModules": ["abyss_battle_reward_layout", "abyss_lowcost_art"],
+    "synthetic": ["native handles", "Theme recipe", "identity providers"],
+    "cases": [
+      {"variant":"combo","mode":"missing","fallbackVisible":true,"oldPoolVisible":true,"exit":1,"log":"pr689-overlap-probe/combo-missing.log"},
+      {"variant":"combo","mode":"throw","fallbackVisible":true,"oldPoolVisible":true,"exit":1,"log":"pr689-overlap-probe/combo-throw.log"},
+      {"variant":"pr689","mode":"missing","fallbackVisible":true,"oldPoolVisible":false,"exit":0,"log":"pr689-overlap-probe/pr689-missing.log"},
+      {"variant":"pr689","mode":"throw","fallbackVisible":true,"oldPoolVisible":false,"exit":0,"log":"pr689-overlap-probe/pr689-throw.log"}
+    ],
+    "initialSandboxStartupFailure": "4 attempts exit -1073741502 before Lua; not counted as behavioral RED"
+  },
+  "recommendation": "Selectively reuse retirement helper semantics, preserving PC18 per-state ownership, potion branch and authoritative relicId resolver. Bind new regression and independent product review to new SHA.",
+  "taskOwnership": {"task":"TASK-38.8","source":"PR #689 / unmerged PR #673 read-only contract","mutated":false,"duplicated":false,"claimed":false,"done":false},
+  "limits": ["not a review of subsequent combo changes", "no complete Host rerun", "no Full", "no private screenshots", "no GUI/device/official ready/capacity", "PR689 shared-pool +28 control count cannot apply to per-state PC18 topology", "no merge or release approval"]
+}

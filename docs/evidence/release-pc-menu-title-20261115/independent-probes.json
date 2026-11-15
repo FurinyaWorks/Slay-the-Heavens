@@ -1,0 +1,18 @@
+{
+  "product": "8ee25feb4857092ad0458b8890bebe7cc988c3c7",
+  "reviewSha256": "52eecaf4ffcd033133551093b794f3f0159369861b95d4e402f50574184789db",
+  "rows": [
+    {
+      "path": "pc01-continue-writer-probe.lua.gz",
+      "rawSha256": "6d56d8e5077fa04e97f261198fce6ca47457f167e9c23ac34fe6f91fda2e2738",
+      "rawBytes": 1860,
+      "gzipSha256": "8d796c809a4995b9dc5b8d7034e60a9117cfc07b3d258d976f26b40c1f8d2672"
+    },
+    {
+      "path": "pc01-continue-writer-probe.log.gz",
+      "rawSha256": "97c4a40b0136329d80d2977aa0fe67dbbe3caf449e273324231389effc1c3982",
+      "rawBytes": 492,
+      "gzipSha256": "deded32ce69ba36bd495b700d9ec3ed96be929075549f20ab6c7b93a97c38f81"
+    }
+  ]
+}

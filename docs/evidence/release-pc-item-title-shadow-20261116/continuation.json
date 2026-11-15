@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "preRetirementHead": "c41b162b1d01069d7f78f647a28a6ca70a9d8097",
+  "productHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "productTree": "39c6802faf6c7cc7156f4aa04ea00e3b08ebaed7",
+  "paths": [
+    {
+      "source": "PC18",
+      "path": "config/luacheck-baseline.json",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "currentBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "data/presentation/lowcost-potion-art.json",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "currentBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "data/presentation/lowcost-relic-art.json",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "currentBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "docs/legal/assets.json",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "currentBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "scripts/lowcost-art.mjs",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "currentBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "scripts/potion-art.mjs",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "currentBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "currentBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a",
+      "currentBlob": "53a0fa60abbffce415dfab781384094879241c93",
+      "unchangedFromSource": false
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_node_ui.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "currentBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "currentBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "currentBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "currentBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "src/lua/abyss_shop_ui.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "currentBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/helpers/potion-art-runtime.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "currentBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/helpers/relic-fallback-runtime.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "currentBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/helpers/reward-alias-runtime.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "currentBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/helpers/reward-art-runtime.lua",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "currentBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/lowcost-art.test.mjs",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "currentBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/potion-art-runtime.test.mjs",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "currentBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC18",
+      "path": "tests/potion-art.test.mjs",
+      "sourceHead": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "sourceBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "currentBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC21",
+      "path": "scripts/build-ui.mjs",
+      "sourceHead": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+      "sourceBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "currentBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC21",
+      "path": "scripts/official-portraits.mjs",
+      "sourceHead": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+      "sourceBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "currentBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC21",
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "sourceHead": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+      "sourceBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "currentBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC21",
+      "path": "tests/lua/player_ground_shadow.lua",
+      "sourceHead": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+      "sourceBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "currentBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC21",
+      "path": "tests/player-ground-shadow.test.mjs",
+      "sourceHead": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+      "sourceBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+      "currentBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC01",
+      "path": "data/presentation/menu-title-mark.json",
+      "sourceHead": "6750950f23f5b437388072977256ee8389489c96",
+      "sourceBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "currentBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC01",
+      "path": "data/presentation/ui_theme.json",
+      "sourceHead": "6750950f23f5b437388072977256ee8389489c96",
+      "sourceBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "currentBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC01",
+      "path": "scripts/v25-menu-layout.mjs",
+      "sourceHead": "6750950f23f5b437388072977256ee8389489c96",
+      "sourceBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "currentBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "unchangedFromSource": true
+    },
+    {
+      "source": "PC01",
+      "path": "tests/menu-red-background.cases.mjs",
+      "sourceHead": "6750950f23f5b437388072977256ee8389489c96",
+      "sourceBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "currentBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "unchangedFromSource": true
+    }
+  ],
+  "overlapWithOriginalThreeSlices": [],
+  "selectiveContinuation": {
+    "sourceCommit": "23bed75c642f8f4af5c2783526a5afc4a57f471f",
+    "owner": "src/lua/abyss_battle_reward_layout.lua",
+    "sourceOwnerBlob": "3fca40df0a4e2a70b6ac8dfad52e39d093e0e7b0",
+    "beforeBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a",
+    "afterBlob": "53a0fa60abbffce415dfab781384094879241c93",
+    "helpersExactLfSha256": "b9ffd09971084d4a3b417e357948e5c031193e20c9b50ba6f0b387b7ab413d4e",
+    "bothHelpersVerbatim": true,
+    "reverseOnlyHelpersAndOneRelicCallEqualsPredecessor": true,
+    "changedPaths": [
+      "src/lua/abyss_battle_reward_layout.lua",
+      "tests/helpers/reward-pool-retirement-runtime.lua",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "rootSharedLayoutAdopted": false,
+    "poolCounts": {
+      "standaloneBattle": 32,
+      "fullOfficialHost": 55
+    },
+    "capacities": {
+      "relic": 16,
+      "enemy": 32,
+      "potion": 10
+    }
+  },
+  "backlogChanges": "",
+  "originalCiAndSourceAdaptersChanged": "",
+  "statuses": {
+    "sourceCi": "UNVERIFIED_frozen_contract_failures",
+    "full": "not_run",
+    "officialGil": "not_run",
+    "candidateWrite": "not_run",
+    "officialImport": "not_run",
+    "newReady": "not_run",
+    "pcDevice": "not_run",
+    "phoneDevice": "not_run",
+    "official20MbLevel": "not_run",
+    "official3MbServer": "not_run",
+    "rcStaticDynamicLoad": "not_run",
+    "privateImages": "not_accessed",
+    "pushPrMergeRelease": "not_run"
+  }
+}

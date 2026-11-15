@@ -2,7 +2,7 @@
 
 基线 `36b9b157ee6f05b65eb9f1da7e2978647d36c210`（release/v2.0.0），产品 `862c3f2a8988b1af21fc897d6de1d65650798a0d`，分支 `feat/release-pc-ground-shadow-1115`。仅从来源 `8b1a591b2972d2184db82be3802557891a2f25af` 选择移植5路径：两个构建脚本、反馈painter、两个阴影测试；没有移植来源父分支、idle后续实现、health painter、UTF-8序列化或图片模式改动。
 
-**当前结论只到源码/Host通过。** 未开PR、推送、构建官方候选或操作GUI/MCP。#676原图12为私人Library，本轮未访问原图；不能据源码认定“看起来不悬空”。TASK-25.5在主树为旧状态、PR684已有PC21新增未验AC，本切片仅只读参照，未改Backlog或勾AC。
+**当前结论只到源码/Host通过。** 未开PR、构建官方候选或操作GUI/MCP。#676原图12为私人Library，本轮未访问原图；不能据源码认定“看起来不悬空”。产品执行者未改Backlog；主线程随后通过CLI把同一PC21未验AC、实施计划、产品/证据提交和独审结果记录到TASK-25.5，历史AC与In Progress保留，不勾设备验收。远端分支保全也不等于PR准入。
 
 ## 产品行为及边界
 
@@ -32,3 +32,5 @@ Node24.18.0、既有node_modules与固定Luacheck1.2.0副本；TMP/TEMP使用工
 独立审查 `/root/pc_backport_audit` 对精确产品head/base给出 **PASS_SCOPED**、无代码发现，见 [review.md](review.md) / [review.json](review.json)；未重复回归。它独立重算足部几何和最低band，核对三生产文件新增/删除行与8b1来源相同、无health painter，并读原日志核SHA。审查只绑定产品切片，未审整个集成HEAD、未批准合并。CI/source组合、原路由Full及正式候选由主线程统一接续；当前结果不能当作Release准入。官方导入、新ready、同候选容量、PC/实体手机视觉/足部运动/死亡帧序均**UNVERIFIED**。源码默认关闭不退化与Host行为通过不能代替这些设备证据。
 
 只读归档复核可用 `node docs/evidence/release-pc-ground-shadow-20261115/verify.mjs`；它核查既有收据和压缩日志，不重跑产品、不触发CI或设备。
+
+主线程补验：在 `9327c209` 按日常入口新生成 data/UI 再运行 `platform-load daily`，三阶段 exit0，原始输出存 `platform-load-fresh.json.gz` / `platform-load-receipt.json`。相对旧基线的控件增长警告仍保留，不等于官方容量达标。原 `ci-whitespace` 对完整 base..9327c209 通过，819 个不可变媒体身份认证；产品未漂移。

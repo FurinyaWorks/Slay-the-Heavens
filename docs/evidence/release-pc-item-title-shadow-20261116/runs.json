@@ -1,0 +1,738 @@
+[
+  {
+    "name": "related-plan",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/test-affected.mjs",
+      "--base",
+      "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+      "--plan"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:28:47.409Z",
+    "finishedAt": "2026-11-15T16:29:29.685Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "related-plan.stdout.gz",
+      "rawBytes": 7706,
+      "rawSha256": "990bd5d5587a33659893b70a701f50644cc257656a989ca5f78788819784138d",
+      "gzipBytes": 1183,
+      "gzipSha256": "60f34d3f76ab16a73d643754f13236fbddf82fe6682c2d4f9ffc6cbdbc512910"
+    },
+    "stderr": {
+      "path": "related-plan.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "build-data",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/build-lua-data.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:29:51.981Z",
+    "finishedAt": "2026-11-15T16:29:52.122Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "build-data.stdout.gz",
+      "rawBytes": 33,
+      "rawSha256": "1d36f302e0bfd05d7cddf7bd955e21e395b8e35ebcca9c886839e400ff1540fb",
+      "gzipBytes": 53,
+      "gzipSha256": "dfea689887e7969430ca792222a7822a66c71b887c99d64fd214a686b31d3395"
+    },
+    "stderr": {
+      "path": "build-data.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "build-ui",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/build-ui.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:29:52.129Z",
+    "finishedAt": "2026-11-15T16:29:53.015Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "build-ui.stdout.gz",
+      "rawBytes": 52,
+      "rawSha256": "ba859b60fcb28aa58517141157f8e106b60344e8122f15a321e09404c6e6d3af",
+      "gzipBytes": 72,
+      "gzipSha256": "848effb4fef1c97d857e5b3410e826b96cdfa254d2cb70d2109c25b8855d30cd"
+    },
+    "stderr": {
+      "path": "build-ui.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "build-theme",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/build-ui-theme.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:29:53.019Z",
+    "finishedAt": "2026-11-15T16:29:53.133Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "build-theme.stdout.gz",
+      "rawBytes": 27,
+      "rawSha256": "f465d8f1616c5ad202a5234f9fdadde45d9802badd50cbb78e06f900f1715af2",
+      "gzipBytes": 47,
+      "gzipSha256": "66f28781f6a4790ff6b6f334b6e7734877576fe3a8b233696145d195ce04503f"
+    },
+    "stderr": {
+      "path": "build-theme.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "icons",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/potion-art-runtime.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:30:08.061Z",
+    "finishedAt": "2026-11-15T16:30:51.460Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "icons.stdout.gz",
+      "rawBytes": 844,
+      "rawSha256": "54c510e72cbc25ffb6c749fcf39bbc12beac50c238f73b8b2051e4351f84e4a7",
+      "gzipBytes": 512,
+      "gzipSha256": "41527d383373427e1477232ff58bfdec0786996a00a26bd1342e81771ae28c3c"
+    },
+    "stderr": {
+      "path": "icons.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "shadow",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/player-ground-shadow.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:30:51.548Z",
+    "finishedAt": "2026-11-15T16:31:03.033Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "shadow.stdout.gz",
+      "rawBytes": 340,
+      "rawSha256": "cd5157dbddbe40c8d216c66043735fc2ff0654b0cd5dc007e15fc355efa8a24d",
+      "gzipBytes": 246,
+      "gzipSha256": "cba9b5c01fb50a454f432a18f802965dea797fd604d767c573d53c3175a479ba"
+    },
+    "stderr": {
+      "path": "shadow.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "menu-current",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "--test-name-pattern",
+      "minimal menu|one unmasked|current native menu|approved title|route menu|session menu preserves live state",
+      "tests/menu-red-background.cases.mjs",
+      "tests/menu-input-boundaries-current.test.mjs",
+      "tests/title-menu-admission.test.mjs",
+      "tests/session-menu-navigation.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:31:03.130Z",
+    "finishedAt": "2026-11-15T16:31:27.424Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "menu-current.stdout.gz",
+      "rawBytes": 662,
+      "rawSha256": "700f5b78aaca8ddcd12267fe322e2a360e9ec29e9d41e19ce0df2c678ed2f20e",
+      "gzipBytes": 399,
+      "gzipSha256": "863acc9215412898c9ffed65bc9cbcc5763e0d7d44d0d7684147ed583acd560a"
+    },
+    "stderr": {
+      "path": "menu-current.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "menu-hover",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/test-lua.mjs",
+      "tests/lua/menu_hover_continuity.lua"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:31:27.435Z",
+    "finishedAt": "2026-11-15T16:31:28.155Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "menu-hover.stdout.gz",
+      "rawBytes": 83,
+      "rawSha256": "0a953f88f1bed5498ef64e8805b08b1b009c97936e226b6394bbe311ee7ca0ad",
+      "gzipBytes": 103,
+      "gzipSha256": "57e4f109496e92fc9df7e3f95f62fb5c6809bd84af141e9ea655373e90c7ca14"
+    },
+    "stderr": {
+      "path": "menu-hover.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "menu-states",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/test-lua.mjs",
+      "tests/lua/noncombat_v25_menu.lua"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:31:28.190Z",
+    "finishedAt": "2026-11-15T16:31:29.817Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "menu-states.stdout.gz",
+      "rawBytes": 81,
+      "rawSha256": "e80c9fb1182666d73f2b6fd4687303ccda8e6b30fbab5a01982a6b344c51f479",
+      "gzipBytes": 101,
+      "gzipSha256": "8ccce0359b1c8c2df8081d06820073148dada6f7b3ad200cd58110bd4e4ad384"
+    },
+    "stderr": {
+      "path": "menu-states.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "menu-profiles",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "docs/evidence/release-pc-menu-title-20261115/profiles.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:31:29.892Z",
+    "finishedAt": "2026-11-15T16:31:42.844Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "menu-profiles.stdout.gz",
+      "rawBytes": 722,
+      "rawSha256": "4b188a8354922528f00c930b636ee0066ba2d35f53b252435f86b471dbac4008",
+      "gzipBytes": 331,
+      "gzipSha256": "c5b39086df1d86f3c56430e3fde016e56a680f269d19afd987f0fd5c419463aa"
+    },
+    "stderr": {
+      "path": "menu-profiles.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "engineering",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/check-engineering.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:32:40.061Z",
+    "finishedAt": "2026-11-15T16:32:44.555Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "engineering.stdout.gz",
+      "rawBytes": 374,
+      "rawSha256": "23da4adcfb666db5913f56ec1e8635e54073c7188f3e1ae485190f7fdc0cc328",
+      "gzipBytes": 274,
+      "gzipSha256": "e04ade460b226a260029154455d8dcb6f508de1201475a640d29e4a0d1fd7970"
+    },
+    "stderr": {
+      "path": "engineering.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "platform-load-daily",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/platform-load.mjs",
+      "daily"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:32:44.638Z",
+    "finishedAt": "2026-11-15T16:32:45.813Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "platform-load-daily.stdout.gz",
+      "rawBytes": 2008,
+      "rawSha256": "de4f1e7741a1e65e66746e5373a3c10508736a56f40655d0fe209ab0c22d8ce8",
+      "gzipBytes": 841,
+      "gzipSha256": "c098134ee2713ffff7326636a1a4563de7cad04752dd5b84f15c17caea2758fb"
+    },
+    "stderr": {
+      "path": "platform-load-daily.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-red",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:33:46.882Z",
+    "finishedAt": "2026-11-15T16:34:02.137Z",
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-red.stdout.gz",
+      "rawBytes": 2485,
+      "rawSha256": "2ff8a6d85d093960eb7a079f195db89a323eaedf2717730d8d75ad1aabbd03db",
+      "gzipBytes": 804,
+      "gzipSha256": "af3ef32ab1a7927ca4b475f1f19481132cf8f5fcacfaf36afb2f3121b2aaec4c"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-red.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-red-final",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:34:43.408Z",
+    "finishedAt": "2026-11-15T16:35:45.565Z",
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-red-final.stdout.gz",
+      "rawBytes": 6305,
+      "rawSha256": "0c0d3f5605fac2b37f684396b5fe3f9bdd4862ace7beb9efe262cf9b64036fa6",
+      "gzipBytes": 907,
+      "gzipSha256": "a1d856cc929339a3c64ca6370aad2e6da6c24b25364bcac605358989454c356a"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-red-final.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-red-bounded",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:36:06.775Z",
+    "finishedAt": "2026-11-15T16:37:08.617Z",
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-red-bounded.stdout.gz",
+      "rawBytes": 6935,
+      "rawSha256": "c0b6339e9fdf94cf1e21bcf880cab796d82a6455ac3f84e56de084c6d5ed3523",
+      "gzipBytes": 926,
+      "gzipSha256": "b3e23b8f2b76e3c75c9b31e1d033257cf9df21aa5964476fe99f34d718e94630"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-red-bounded.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-red-oracle",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:37:41.456Z",
+    "finishedAt": "2026-11-15T16:38:43.324Z",
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-red-oracle.stdout.gz",
+      "rawBytes": 9170,
+      "rawSha256": "36ab54dde97c9ac4f714bbd850c751559f9e7bfd8f67a53985aea27554247dda",
+      "gzipBytes": 978,
+      "gzipSha256": "1755143e3ea84ddee7b8f127155f7031c80731e72a334d9af58ac9fd563119f7"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-red-oracle.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-green",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:39:13.920Z",
+    "finishedAt": "2026-11-15T16:40:15.782Z",
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-green.stdout.gz",
+      "rawBytes": 1179,
+      "rawSha256": "95d6b066570f7b07fb7cb70e8e8a753fa3d0a440fbd8d499f0d80b49b527147c",
+      "gzipBytes": 633,
+      "gzipSha256": "6ae017027224653f4339f8fbea53e4abd1bf6fc9a92482ff670fa1e7fc2cd2a6"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-green.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-green-rows",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "boundInputs": {
+      "path": "reward-pool-retirement-green-rows.source-inputs.json.gz",
+      "rawBytes": 15635,
+      "rawSha256": "066e799c69d36ec53a76e4b59e0762a153a2d079c7d2ed4ed57350a956f78805",
+      "gzipBytes": 5298,
+      "gzipSha256": "9efe7972c3424e596e14eea79b56c2d13cbca4f2a6038d3d7db9e8be71162201"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:40:50.474Z",
+    "finishedAt": "2026-11-15T16:42:12.101Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-green-rows.stdout.gz",
+      "rawBytes": 363,
+      "rawSha256": "17c4d43405c9901bbfdb03605a523a454025f512b78105bb216a4af26d8d941d",
+      "gzipBytes": 205,
+      "gzipSha256": "56883a76d87c0c91ca78546db18ef5e4dd9fa2d31c5538f1b77c08f8e2c9e847"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-green-rows.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "icons-after-retirement",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/potion-art-runtime.test.mjs"
+    ],
+    "boundInputs": {
+      "path": "icons-after-retirement.source-inputs.json.gz",
+      "rawBytes": 15635,
+      "rawSha256": "066e799c69d36ec53a76e4b59e0762a153a2d079c7d2ed4ed57350a956f78805",
+      "gzipBytes": 5298,
+      "gzipSha256": "9efe7972c3424e596e14eea79b56c2d13cbca4f2a6038d3d7db9e8be71162201"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:42:44.616Z",
+    "finishedAt": "2026-11-15T16:43:21.390Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "icons-after-retirement.stdout.gz",
+      "rawBytes": 843,
+      "rawSha256": "3008ae8932afed03bd16257063222a89c4f7cf5d6eeecd08b3ef229bdcfe5e34",
+      "gzipBytes": 511,
+      "gzipSha256": "aea30843990899a4a4641680309c0079a49cb44ed41dba89c8ca5cfb2dc69f37"
+    },
+    "stderr": {
+      "path": "icons-after-retirement.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "engineering-after-retirement",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/check-engineering.mjs"
+    ],
+    "boundInputs": {
+      "path": "engineering-after-retirement.source-inputs.json.gz",
+      "rawBytes": 15635,
+      "rawSha256": "066e799c69d36ec53a76e4b59e0762a153a2d079c7d2ed4ed57350a956f78805",
+      "gzipBytes": 5298,
+      "gzipSha256": "9efe7972c3424e596e14eea79b56c2d13cbca4f2a6038d3d7db9e8be71162201"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:43:21.518Z",
+    "finishedAt": "2026-11-15T16:43:26.687Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "engineering-after-retirement.stdout.gz",
+      "rawBytes": 374,
+      "rawSha256": "f26b691811db027b7b22d0053829247ae6f386bae2d7104d5e8ca384d14a9df1",
+      "gzipBytes": 274,
+      "gzipSha256": "f02eea384f1654416f60ed197db72744b645b8b68cc341c2829543a431e292b3"
+    },
+    "stderr": {
+      "path": "engineering-after-retirement.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "platform-load-after-retirement",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "scripts/platform-load.mjs",
+      "daily"
+    ],
+    "boundInputs": {
+      "path": "platform-load-after-retirement.source-inputs.json.gz",
+      "rawBytes": 15635,
+      "rawSha256": "066e799c69d36ec53a76e4b59e0762a153a2d079c7d2ed4ed57350a956f78805",
+      "gzipBytes": 5298,
+      "gzipSha256": "9efe7972c3424e596e14eea79b56c2d13cbca4f2a6038d3d7db9e8be71162201"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:43:26.757Z",
+    "finishedAt": "2026-11-15T16:43:27.816Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "platform-load-after-retirement.stdout.gz",
+      "rawBytes": 2008,
+      "rawSha256": "36ecd62d35ce5a644ff2285594bf5b5f97af237f501bb072936af40fbd3e4398",
+      "gzipBytes": 838,
+      "gzipSha256": "8db8d6b8196e0efb690d88ed140c7b3cb2b40f0841f2beb0f06acefec115a9e2"
+    },
+    "stderr": {
+      "path": "platform-load-after-retirement.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "frozen-preview-contract",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/native-candidate-preview-mask.test.mjs"
+    ],
+    "boundInputs": {
+      "path": "frozen-preview-contract.source-inputs.json.gz",
+      "rawBytes": 15635,
+      "rawSha256": "066e799c69d36ec53a76e4b59e0762a153a2d079c7d2ed4ed57350a956f78805",
+      "gzipBytes": 5298,
+      "gzipSha256": "9efe7972c3424e596e14eea79b56c2d13cbca4f2a6038d3d7db9e8be71162201"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:43:27.895Z",
+    "finishedAt": "2026-11-15T16:43:29.104Z",
+    "status": 1,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "frozen-preview-contract.stdout.gz",
+      "rawBytes": 29091,
+      "rawSha256": "1f254c51e057ce0488dca6f2115be93a8817274d706c51420c9d47c7144050cd",
+      "gzipBytes": 5279,
+      "gzipSha256": "a263fba8dc80c1e70ffab8c44de56ed5b20983bdd1965f9740304295fea091dd"
+    },
+    "stderr": {
+      "path": "frozen-preview-contract.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "reward-pool-retirement-green-peer",
+    "executable": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+    "args": [
+      "--test",
+      "--test-concurrency=1",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ],
+    "boundInputs": {
+      "path": "reward-pool-retirement-green-peer.source-inputs.json.gz",
+      "rawBytes": 16372,
+      "rawSha256": "d3dd4220c4df998f75b5a93cdcefed5098cb4201865a6b85f86e0bca540a29fd",
+      "gzipBytes": 5478,
+      "gzipSha256": "66a2fc11d420806f5e68ea9777599fed279fbd91facc2f4491338d1aa2781681"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:44:11.569Z",
+    "finishedAt": "2026-11-15T16:45:31.430Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "reward-pool-retirement-green-peer.stdout.gz",
+      "rawBytes": 362,
+      "rawSha256": "481ec111e5008b83706645522a112677ff420c9ece5e96ec4ee625d7200131ba",
+      "gzipBytes": 205,
+      "gzipSha256": "2e9cb2a18c1806b5601d82f739cb0d849819986844de6d748f55da4b55e2a1a2"
+    },
+    "stderr": {
+      "path": "reward-pool-retirement-green-peer.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  },
+  {
+    "name": "diff-check",
+    "executable": "git",
+    "args": [
+      "diff",
+      "--check",
+      "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+      "HEAD"
+    ],
+    "boundInputs": {
+      "path": "diff-check.source-inputs.json.gz",
+      "rawBytes": 16372,
+      "rawSha256": "d3dd4220c4df998f75b5a93cdcefed5098cb4201865a6b85f86e0bca540a29fd",
+      "gzipBytes": 5478,
+      "gzipSha256": "66a2fc11d420806f5e68ea9777599fed279fbd91facc2f4491338d1aa2781681"
+    },
+    "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+    "startedAt": "2026-11-15T16:49:49.195Z",
+    "finishedAt": "2026-11-15T16:49:49.292Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": {
+      "path": "diff-check.stdout.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    },
+    "stderr": {
+      "path": "diff-check.stderr.gz",
+      "rawBytes": 0,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzipBytes": 20,
+      "gzipSha256": "9e72928e7a01615b4cf090daa617b4ca9d68531748f887f323f695eb4ca3ef63"
+    }
+  }
+]

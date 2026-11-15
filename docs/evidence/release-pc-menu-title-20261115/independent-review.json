@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "result": "PASS_SCOPED",
+  "codeScope": "PC01 title/start/quit restoration and static Continue/session preservation only",
+  "reviewer": "/root/pc_backport_audit",
+  "implementer": "/root/release_menu_title_port",
+  "tree": "F:/New folder/.worktrees/release-pc-menu-title-1115",
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "head": "8ee25feb4857092ad0458b8890bebe7cc988c3c7",
+  "changedPaths": 25,
+  "productPaths": [
+    "scripts/v25-menu-layout.mjs",
+    "data/presentation/ui_theme.json",
+    "data/presentation/menu-title-mark.json"
+  ],
+  "testPaths": [
+    "tests/menu-red-background.cases.mjs"
+  ],
+  "evidencePaths": 21,
+  "checks": {
+    "titleBytesMatchFrozenSourceFbfc": true,
+    "titleSha256": "e1b8e8b19b881465f80d9ae7d96f4e857ff2d5f70f5835788d5ff15252f77698",
+    "themeOnlyApprovedFiveFields": true,
+    "continueRunLayoutHitAndTransactionPreserved": true,
+    "backgroundAndLuaUnchanged": true,
+    "staticDecorationsOrderedBelowAllThreeExistingButtons": true,
+    "sourceArchiveRawBindingsValidated": 11,
+    "sourceArchiveExplicitAbsentBaselineTitleAsset": true,
+    "compressedLogRawShaAndLengthValidated": 16,
+    "sourceLogs": "RED1of2fail title missing; GREEN2/2; targetedHost12/12; start hover continuity + result/four-state41; default/official/V25 generated trees and official/V25 paired full-tree session Host passed",
+    "fullPreviewMask": "13 passed, 2 frozen-source failures, 1 optional-browser skip",
+    "independentWholeSuiteRerun": false,
+    "privateImageViewed": false,
+    "newFontOrRasterAdded": false
+  },
+  "findings": [
+    {
+      "id": "PC01-LEGACY-P2-CONTINUE-WRITER",
+      "severity": "P2",
+      "introducedByThisSlice": false,
+      "blocksScopedProductConclusion": false,
+      "path": "src/lua/abyss_v25_menu_view.lua",
+      "function": "animateMenu",
+      "summary": "Existing Continue static hover face is visible but its dynamic menuAccent line is never advanced; shared hover writer updates start/titleQuit only.",
+      "independentProbeExitCode": 1,
+      "observed": "startAlpha=255 resumeAlpha=0 resumeFaceHover=true",
+      "baselineLuaBytesUnchanged": true,
+      "disposition": "Keep as existing unaccepted boundary; parent explicitly declined expanding this slice to Lua. Do not claim the 41 assertions cover Continue animation."
+    }
+  ],
+  "probeArtifacts": {
+    "pc01-continue-writer-probe.lua": {
+      "sha256": "6d56d8e5077fa04e97f261198fce6ca47457f167e9c23ac34fe6f91fda2e2738",
+      "bytes": 1860
+    },
+    "pc01-continue-writer-probe.log": {
+      "sha256": "97c4a40b0136329d80d2977aa0fe67dbbe3caf449e273324231389effc1c3982",
+      "bytes": 492
+    }
+  },
+  "notClaimed": [
+    "Continue dynamic hover animation passed",
+    "frozen source/CI continuation passed",
+    "full CI",
+    "merge authorization",
+    "official candidate or ready",
+    "official capacity",
+    "PC or mobile visual acceptance",
+    "private reference pixel match"
+  ],
+  "noProductOrBacklogEdits": true
+}

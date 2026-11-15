@@ -1,0 +1,284 @@
+{
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "head": "c41b162b1d01069d7f78f647a28a6ca70a9d8097",
+  "sourceTree": "ae273b494015c342e825118cb8046a9cf7ed6542",
+  "sources": [
+    {
+      "name": "PC18",
+      "head": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+      "product": "bca8c5f18684f301378e5b9c12e85a16321bbc2f",
+      "baseIsAncestor": true,
+      "paths": [
+        {
+          "path": "config/luacheck-baseline.json",
+          "sourceBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+          "combinedBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "181f32fd134776d801754932e924911f58a50433a462dccceb12d0ed0cbd3fb1",
+          "physicalBytes": 15658
+        },
+        {
+          "path": "data/presentation/lowcost-potion-art.json",
+          "sourceBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+          "combinedBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "9820031f3849650ee2e581cddc0e8aa5ab0a5ee40e1dfd51bc4667917717257a",
+          "physicalBytes": 74509
+        },
+        {
+          "path": "data/presentation/lowcost-relic-art.json",
+          "sourceBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+          "combinedBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "f8782b850558affab98358f47b055ae914ac879caab1ac7ae9901f5821fcebc0",
+          "physicalBytes": 188113
+        },
+        {
+          "path": "docs/legal/assets.json",
+          "sourceBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+          "combinedBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "74640721ac68feb00ad1561764608ca3111f7983672aac62270dd379321e4e26",
+          "physicalBytes": 474515
+        },
+        {
+          "path": "scripts/lowcost-art.mjs",
+          "sourceBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+          "combinedBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "020cb63fe5c2f12fba7ee8fccaacb5e5d3d0d563331f40299b3d3a8688435436",
+          "physicalBytes": 3458
+        },
+        {
+          "path": "scripts/potion-art.mjs",
+          "sourceBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+          "combinedBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "76995bea2139a18c471cacfd6c622be2f05fe6ed522578c701e2d293fc4992c6",
+          "physicalBytes": 2786
+        },
+        {
+          "path": "src/lua/abyss_battle_render_actors.lua",
+          "sourceBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+          "combinedBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "0c587963e6433642094ef79aca1f93b32ff2090ed5c1d5f5f2ff6be41b0039f3",
+          "physicalBytes": 25462
+        },
+        {
+          "path": "src/lua/abyss_battle_reward_layout.lua",
+          "sourceBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a",
+          "combinedBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "0ad1ec92ce7ba3c6fde138af26a73af13ce387daf506520ed42253c816e62166",
+          "physicalBytes": 6892
+        },
+        {
+          "path": "src/lua/abyss_node_ui.lua",
+          "sourceBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+          "combinedBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "dfccf5e94cf8954cfeefdebae4cd30fd695db5f333c0b6ec598acdbce3d9f9db",
+          "physicalBytes": 15888
+        },
+        {
+          "path": "src/lua/abyss_node_ui_shop.lua",
+          "sourceBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+          "combinedBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "23f04c25235399df435d522abb0f304a1094ef7cfe76287d3989eae971aad3dd",
+          "physicalBytes": 1678
+        },
+        {
+          "path": "src/lua/abyss_potion_discard_ui.lua",
+          "sourceBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+          "combinedBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "c47d77c1e4efb3515e351bda18fbb24f8f72e9019a829e8b06ab5925cbc5132e",
+          "physicalBytes": 9989
+        },
+        {
+          "path": "src/lua/abyss_relic_view_ui.lua",
+          "sourceBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+          "combinedBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "4ea3b4c4afc2828d46793414dc17ebe2cd274c9ac5ab34456bd755ba785312a3",
+          "physicalBytes": 13798
+        },
+        {
+          "path": "src/lua/abyss_shop_ui.lua",
+          "sourceBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+          "combinedBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "a810ac3c1a70c401c613fabbc55f93f60d2511288e0bf19195182e52ce027d86",
+          "physicalBytes": 14247
+        },
+        {
+          "path": "tests/helpers/potion-art-runtime.lua",
+          "sourceBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+          "combinedBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "12d8fd5a11819296267b6ea019a20304ddf0155bf1da61ad3ab82dda4409ab4d",
+          "physicalBytes": 9123
+        },
+        {
+          "path": "tests/helpers/relic-fallback-runtime.lua",
+          "sourceBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+          "combinedBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "7369bf4553b11c90a17c3598a9d7efbc693e7c7d1d12f4e2352925f595712630",
+          "physicalBytes": 5518
+        },
+        {
+          "path": "tests/helpers/reward-alias-runtime.lua",
+          "sourceBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+          "combinedBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "f8d53c86b6ee8a17978889dc9afac17727b3cfef32542b4e1f3407564576a99b",
+          "physicalBytes": 4751
+        },
+        {
+          "path": "tests/helpers/reward-art-runtime.lua",
+          "sourceBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+          "combinedBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "b06039f3cd2bb8598fcce9ac155b11fb2d52cc2ccf710b681bddd56c19521ddd",
+          "physicalBytes": 7483
+        },
+        {
+          "path": "tests/lowcost-art.test.mjs",
+          "sourceBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+          "combinedBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "597f8d16b39b9ca79d7d33f1dcb819fd13625149143d087fe803614110ba193c",
+          "physicalBytes": 2861
+        },
+        {
+          "path": "tests/potion-art-runtime.test.mjs",
+          "sourceBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+          "combinedBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "9c88dd4601b5b045ba6b1f04fb792002573580cf7243ecc501e9be7d22c77daa",
+          "physicalBytes": 7454
+        },
+        {
+          "path": "tests/potion-art.test.mjs",
+          "sourceBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+          "combinedBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "fba48bf44751089c79fca639372472803cdf08ad8ed1d89970ba7e7be0d079b8",
+          "physicalBytes": 3348
+        }
+      ]
+    },
+    {
+      "name": "PC21",
+      "head": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+      "product": "862c3f2a8988b1af21fc897d6de1d65650798a0d",
+      "baseIsAncestor": true,
+      "paths": [
+        {
+          "path": "scripts/build-ui.mjs",
+          "sourceBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+          "combinedBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "f5f6fafe174af1f4c828385809b4e32f0e229f3624690c18ca279243e789aeaf",
+          "physicalBytes": 18683
+        },
+        {
+          "path": "scripts/official-portraits.mjs",
+          "sourceBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+          "combinedBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "80616facd7442a332c0b91826958830adb614a58bfc1d4b68ba47c3e8eb56d6c",
+          "physicalBytes": 24067
+        },
+        {
+          "path": "src/lua/abyss_feedback_actor_painter.lua",
+          "sourceBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+          "combinedBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "0da3137650be770a2b90bea77b30c52049fc5ab91258eac3cbce936a456e979e",
+          "physicalBytes": 16151
+        },
+        {
+          "path": "tests/lua/player_ground_shadow.lua",
+          "sourceBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+          "combinedBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "b2a9abbc6b3b241610fc0969d33e64cdfcd09f2517afdfd85e61ba056feffe99",
+          "physicalBytes": 6501
+        },
+        {
+          "path": "tests/player-ground-shadow.test.mjs",
+          "sourceBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+          "combinedBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "0ae906156c3a0e20663bc74f97903292ad3af6fb849a54d48062092bcdd4612c",
+          "physicalBytes": 3617
+        }
+      ]
+    },
+    {
+      "name": "PC01",
+      "head": "6750950f23f5b437388072977256ee8389489c96",
+      "product": "8ee25feb4857092ad0458b8890bebe7cc988c3c7",
+      "baseIsAncestor": true,
+      "paths": [
+        {
+          "path": "data/presentation/menu-title-mark.json",
+          "sourceBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+          "combinedBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "e1b8e8b19b881465f80d9ae7d96f4e857ff2d5f70f5835788d5ff15252f77698",
+          "physicalBytes": 39074
+        },
+        {
+          "path": "data/presentation/ui_theme.json",
+          "sourceBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+          "combinedBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "00a9eef0d15d5e1076ec9d131d830a33526d3dac6cb4f92e5400d20428dbb1ef",
+          "physicalBytes": 107807
+        },
+        {
+          "path": "scripts/v25-menu-layout.mjs",
+          "sourceBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+          "combinedBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "0990e6f53563a3fd249003ecc804cfbf1895d051f3ca8895031fe94705296680",
+          "physicalBytes": 5762
+        },
+        {
+          "path": "tests/menu-red-background.cases.mjs",
+          "sourceBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+          "combinedBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+          "exactGitBlobEqual": true,
+          "physicalSha256": "b2e688d94e71c8141f7de2f7b2b4bfc77f47de0d8c9c8eb34f7939e7c82a5461",
+          "physicalBytes": 4302
+        }
+      ]
+    }
+  ],
+  "overlappingPaths": [],
+  "manualConflictResolutions": [],
+  "unexpectedNonEvidencePaths": [],
+  "backlogChanges": "",
+  "unchanged": [
+    {
+      "path": "data/presentation/lowcost-enemy-art.json",
+      "baseBlob": "7871c7768bf69e39b446998508de7f214b70c09a",
+      "combinedBlob": "7871c7768bf69e39b446998508de7f214b70c09a"
+    },
+    {
+      "path": "scripts/menu-red-scene.mjs",
+      "baseBlob": "38e59d317723068e6ee814e65fcde4cadc245cbf",
+      "combinedBlob": "38e59d317723068e6ee814e65fcde4cadc245cbf"
+    },
+    {
+      "path": "src/lua/abyss_v25_menu_view.lua",
+      "baseBlob": "9ce5e707bc34f7ecbe675dc8a30f013f64dfc587",
+      "combinedBlob": "9ce5e707bc34f7ecbe675dc8a30f013f64dfc587"
+    }
+  ]
+}
