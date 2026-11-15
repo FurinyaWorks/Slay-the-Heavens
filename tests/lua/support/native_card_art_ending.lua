@@ -118,7 +118,7 @@ assert(confirm.canControllerFocus);confirm.navigationListeners.confirm()
 eq(run.phase,'victory');eq(run.ending,'true_victory');eq(host.mode,'victory')
 assert(not run.endingProceed and not run.rewards and run.nodeFlow.complete)
 assert(shown(get(root,'menuPanel/result'))and not shown(nodePanel))
-assert(get(root,'menuPanel/title').text:find('真结局',1,true));eq(F.statValue(root,'floor'),'55 / 55')
+eq(get(root,'menuPanel/title').text,'最终挑战完成','reviewed true-victory title');eq(F.statValue(root,'floor'),'55 / 55')
 -- Descendants may retain own visible=true under a hidden parent; that is not a
 -- leak. Require ancestor-aware visibility and the genuinely bound art clear.
 assert(confirm.visible and not shown(confirm),'expected inherited hidden child')
