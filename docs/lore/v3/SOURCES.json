@@ -23,15 +23,20 @@
       "path": "data/presentation/narrative.zh-CN.json",
       "commit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
       "usage": "Living Wall intro and event identity preserved exactly from the prior develop runtime, not from the v2 packet"
+    },
+    "integrated-traveler-copy": {
+      "path": "data/presentation/narrative.zh-CN.json",
+      "commit": "e65d9b98fbec69442047650254238cd9244df805",
+      "usage": "Inactive combat intro wording carried from merged #661 after reviewed Traveler-name migration; not approved for activation"
     }
   },
   "fields": {
     "combatIntros.cultist": {
-      "ref": "lore-v2",
+      "ref": "integrated-traveler-copy",
       "decision": "inactive-legacy-needs-review-before-use"
     },
     "combatIntros.looter": {
-      "ref": "lore-v2",
+      "ref": "integrated-traveler-copy",
       "decision": "inactive-legacy-needs-review-before-use"
     },
     "eventCopy.cleric.intro": {

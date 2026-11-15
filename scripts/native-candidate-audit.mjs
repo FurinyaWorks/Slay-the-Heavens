@@ -17,6 +17,8 @@ export function requireSourceSha(source) {
   return source.toLowerCase();
 }
 const validAlpha = value => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+const rectangleKinds=new Set(['container','image','text','cursorArea','textWindow','animation','presetButton','keyHint','grid','reference']);
+const textKind=value=>value.kind==='text'||value.kind==='textWindow';
 
 // The native reader expands defaults and lowercases colours. Fill implies mask.
 // Keep geometry, text, assets, grid, button states and child order in the comparison.
@@ -25,13 +27,23 @@ export function normalizeUi(value, context = Array.isArray(value) ? 'controls' :
   if (Array.isArray(value)) return value.map(item => normalizeUi(item, context === 'controls' ? 'control' : 'opaque', source));
   if (!value || typeof value !== 'object') return value;
   const result = {};
+  // The encoder supplies this exact default only for an un-sized container.
+  if(source&&context==='control'&&value.kind==='container'&&value.size===undefined)result.size=[150,150];
+  if(source&&context==='fill'&&value.amount===undefined)result.amount=1;
   for (const name of Object.keys(value).sort()) {
-    const item = value[name];
+    let item = value[name];
+    if(source&&context==='control'&&value.kind==='container'&&name==='size'&&item===undefined)item=[150,150];
+    if(source&&context==='fill'&&name==='amount'&&item===undefined)item=1;
+    // The XYZ reader returns Z alone when X/Y are zero, and omits all-zero Z.
+    if(context==='control'&&rectangleKinds.has(value.kind)&&name==='rotation'&&Array.isArray(item)&&item.length===3&&item.every(Number.isFinite)
+      &&item[0]===0&&item[1]===0)item=item[2];
     if (context === 'control' && (name === 'mask' && value.fill || name === 'position' && JSON.stringify(item) === '[0,0]'
       || name === 'visible' && item === true || name === 'rotation' && item === 0
       || name === 'scale' && ['[1,1]', '[1,1,1]'].includes(JSON.stringify(item)) || name === 'focusable' && item === false
       // The native reader emits child lists only when nonempty.
       || name === 'children' && Array.isArray(item) && item.length === 0)
+      // These static decorations have no CursorArea raycast switch.
+      || context==='control'&&['container','image','text','textWindow'].includes(value.kind)&&name==='raycastTarget'&&item===false
       || ['control', 'text'].includes(context) && name === 'opacity' && item === 1
       // Native image/text ink is packed as ARGB, so values rounding to 255
       // have the same omitted opaque default as an explicit opacity of 1.
@@ -46,12 +58,14 @@ export function normalizeUi(value, context = Array.isArray(value) ? 'controls' :
       || context === 'grid' && (name === 'horizontal' && item === false || name === 'scrollbar' && item === true || name === 'preview')
       // The native reader omits text ink only when its ARGB is 0xffffffff.
       // Keep opacity separate, and never apply this default to opaque metadata.
-      || context === 'text' && (name === 'autoSize' && item === false || name === 'content' && item === ''
+      || context === 'text' && (name === 'autoSize' && item === false || name === 'content' && item === '' || name==='outline'&&item===true
         // scene-save writes minFontSize ?? 20 and omits exactly 20 on readback.
         || name === 'minFontSize' && item === 20
         || name === 'colour' && typeof item === 'string' && item.toLowerCase() === '#ffffff')) continue;
     const next = context === 'control' && name === 'children' ? 'controls'
-      : context === 'control' && ['text', 'grid'].includes(name) ? name
+      : context==='control'&&name==='text'&&textKind(value)?'text'
+      : context==='control'&&(name==='grid'||name==='anchor'&&rectangleKinds.has(value.kind))?name
+      : context==='control'&&value.kind==='image'&&name==='fill'?'fill'
       : context === 'control' && name === 'colour' || context === 'text' && ['colour', 'background', 'outlineColour'].includes(name) ? 'colour' : 'opaque';
     result[name] = normalizeUi(item, next, source);
   }
@@ -68,11 +82,15 @@ function interfaceMetadata(spec) {
 function uiComparisonContext(context, key, value) {
   if (context === 'control') {
     if (key === 'children') return 'controls';
-    if (['text', 'grid'].includes(key)) return key;
+    if(key==='text'&&textKind(value)||key==='grid'||key==='anchor'&&rectangleKinds.has(value.kind))return key;
+    if(key==='fill'&&value.kind==='image')return 'fill';
     if (['position', 'size', 'scale'].includes(key)) return 'float-vector';
     if (key === 'opacity' && value.kind === 'image') return 'alpha-byte';
-    if (['rotation', 'opacity'].includes(key)) return 'float';
+    if(key==='rotation'&&rectangleKinds.has(value.kind))return 'rotation';
+    if(key==='opacity')return 'float';
   }
+  if(context==='anchor'&&['min','max'].includes(key))return 'f32-pair';
+  if(context==='fill'&&key==='amount')return 'fill-progress';
   if (context === 'text' && (key === 'opacity' || key === 'backgroundOpacity' && value.background !== undefined
     || key === 'outlineOpacity' && value.outlineColour !== undefined)) return 'alpha-byte';
   if (context === 'text' && ['fontSize', 'minFontSize'].includes(key)) return 'float';
@@ -80,6 +98,15 @@ function uiComparisonContext(context, key, value) {
   return 'opaque';
 }
 function equivalent(left, right, context = 'opaque') {
+  if(context==='fill-progress')return validAlpha(left)&&validAlpha(right)&&Math.round(left*100)/100===right;
+  if(context==='f32-pair'||context==='rotation'&&Array.isArray(left)){
+    const size=context==='f32-pair'?2:3;
+    return Array.isArray(left)&&Array.isArray(right)&&left.length===size&&right.length===size
+      &&left.every((value,index)=>Number.isFinite(value)&&Number.isFinite(right[index])
+        &&(value===right[index]||Math.fround(value)===right[index]));
+  }
+  if(context==='rotation')return typeof left==='number'&&typeof right==='number'
+    &&Number.isFinite(left)&&Number.isFinite(right)&&(left===right||Math.fround(left)===right);
   if (context === 'alpha-byte') {
     return validAlpha(left) && validAlpha(right) && Math.round(left * 255) / 255 === right;
   }

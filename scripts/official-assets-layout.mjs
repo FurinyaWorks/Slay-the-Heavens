@@ -2,9 +2,12 @@ import {compactBoundedCardFaces} from './lightweight-card-layout.mjs';
 import {applyV25BattleScene} from './v25-battle-scene.mjs';
 import {applyV25BattleChrome} from './v25-battle-chrome.mjs';
 import {applyV25TurnNoticeLayout} from './v25-turn-notice-layout.mjs';
+import {styleTreasure} from './v25-node-layout.mjs';
 import {v25Theme,applyV25BattleLayout,rebuildV25CardFaces} from './v25-layout.mjs';
 import {officialBattleHud,officialBattleUtilityFaces} from './official-battle-hud.mjs';
 import {officialBattleCardChrome} from './official-battle-card-chrome.mjs';
+import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferenceTokens} from './sts-card-reference-profile.mjs';
+import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
 import {battlePileReturn} from './official-battle-pile-chrome.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
 const children=node=>node?.controls??node?.children??[];
@@ -21,11 +24,20 @@ const setImage=(control,id,colour)=>{
 export function officialAssetsTheme(source){
   const theme=structuredClone(source);
   const approved=v25Theme(source);
+  // Map geometry already uses the approved paper; its live ink writers must
+  // receive the same palette instead of the retired dark-map gold/lavender.
+  theme.color.mapCanvas=structuredClone(approved.color.mapCanvas);
+  theme.color.node=structuredClone(approved.color.node);
   theme.layout.v25Menu=structuredClone(approved.layout.v25Menu);
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
+  theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
   theme.layout.nativeNode.event.neow.bubbleText=[-45,96,270,130];
  if(theme.officialAssets?.profile!=='official-assets-first-v1')throw Error('Missing official asset theme');
+  Object.assign(theme.officialAssets.rewardRows,{pressed:theme.officialAssets.neowChoice.pressed,
+   disabled:theme.officialAssets.neowChoice.disabled,ink:theme.officialAssets.buttonInk});
+ theme.officialAssets.stsCardReference={...geoCardReferenceTokens(theme),geometry:structuredClone(stsReferenceRuntimeGeometry)};
  theme.presentationProfile='official-assets-first';
+ theme.lowCostArt=loadLowCostArt();
  theme.cardSkin.text.body=theme.officialAssets.cardInk;
   theme.cardSkin.costText=theme.officialAssets.battleCostInk;
   theme.cardSkin.text.title=theme.officialAssets.battleCardTitleInk;
@@ -66,6 +78,8 @@ export function officialAssetsTheme(source){
    const {shelfColumns,...merchant}=theme.layout.merchant.official;
    Object.assign(theme.layout.merchant,structuredClone(merchant));
    theme.layout.nativeNode.shop.columns=[...shelfColumns];
+   Object.assign(theme.layout.combatChoice,structuredClone(theme.officialAssets.choicePage));
+   Object.assign(theme.layout.nativeNode.picker,structuredClone(theme.officialAssets.pickerPage));
   return theme;
 }
 function cardFace(face,theme){
@@ -118,6 +132,7 @@ function cardFace(face,theme){
   disc.size=[34,34];disc.imageType='basic';
   const cost=required(face,'cost');cost.text.outline=true;cost.text.outlineColour='#4A2B27';cost.text.outlineOpacity=1;
   officialBattleCardChrome(face,theme);
+  installStsReferenceCardChrome(face,theme);
 }
 function battleSurfaces(root,theme){
  walk(root,node=>{
@@ -203,7 +218,7 @@ function pageBackgrounds(node,theme){
   }
  }
   if(node.name==='nodePanel'){
-  const backdrop=child(node,'backdrop');if(backdrop)setImage(backdrop,ids.act1_3,'#FFFFFF');
+  const backdrop=child(node,'backdrop');if(backdrop)setImage(backdrop,theme.image.rect,'#10191C');
   }
   if(node.name==='officialBattleBackdrop'){
    // Runtime scene switches remain valid; the foreground V25 scene now owns
@@ -226,6 +241,12 @@ export function applyOfficialAssets(trees,theme){
  let cardHosts=0,removedControls=0;
   for(const tree of trees){
    const stage=child(tree,'stage')??tree;
+   const choice=child(stage,'choicePanel'),page=theme.layout.combatChoice;
+   if(choice){
+    choice.children=choice.children.filter(node=>!/^card\d+$/.test(node.name)||Number(node.name.slice(4))<=page.columns*page.rows);
+    for(let i=0;i<page.columns*page.rows;i++)required(choice,'card'+(i+1)).position=
+     [page.origin[0]+i%page.columns*page.step[0],page.origin[1]+Math.floor(i/page.columns)*page.step[1]];
+   }
    const relicBar=child(stage,'relicBar');
    if(relicBar)for(let i=1;i<=theme.officialAssets.battleRelicBar.count;i++){
     if(!child(relicBar,'slot'+i)){
@@ -236,6 +257,8 @@ export function applyOfficialAssets(trees,theme){
     if(node.kind==='image'&&node.name==='icon')node.colour='#FFFFFF';
    });
    const relicHosts=relicSurfaces(stage,theme);
+   const rooms=child(stage,'nodePanel'),treasure=child(rooms,'treasureView');
+   if(treasure)relicHosts.add(required(treasure,'details'));
    if(child(stage,'battlePanel')||child(stage,'endTurn')){
     applyV25BattleLayout(tree,theme);
     applyV25BattleChrome(tree,theme);
@@ -261,8 +284,29 @@ export function applyOfficialAssets(trees,theme){
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }
+  // Apply authored room geometry after generic surface substitution. No atlas
+  // landscape or ornate modal skin may overwrite these read-only details.
+  if(treasure)styleTreasure(treasure,theme,{skinButtons:false});
   composeOfficialRun(tree,theme);
  }
  finishOfficialComposition(trees);
+ for(const tree of trees)attachLowCostArt(tree);
+ // Camp and Match still hide all six semantic parents. Only configured slots
+ // have input bindings or receive card data, so retire the other face payloads.
+ const count=node=>1+children(node).reduce((sum,c)=>sum+count(c),0);
+ for(const tree of trees){
+  const picker=child(child(child(tree,'stage')??tree,'nodePanel'),'pickerView');
+  if(!picker)continue;
+  const columns=theme.layout.nativeNode.picker.columns;
+  for(let i=1;i<=6;i++){
+   const slot=required(picker,'card'+i);
+   if(i<=columns.length)slot.position[0]=columns[i-1];
+   else {
+    removedControls+=count(slot)-1;
+    if(child(slot,'roundFrame')&&child(slot,'skin')&&child(slot,'costDisc'))cardHosts--;
+    slot.children=[];slot.visible=false;
+   }
+  }
+ }
  return {cardHosts,removedControls};
 }

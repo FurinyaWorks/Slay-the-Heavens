@@ -130,3 +130,14 @@ test('active story surfaces never revert to old seal plot or brand',()=>{
   assert.equal(read(livePath).flow.bossEntrance.full,'');
   assert.equal(read(livePath).flow.defeat.full,'');
 });
+
+test('inactive combat intros keep the reviewed Traveler wording from merged develop',()=>{
+  const live=read(livePath),approved=read(approvedPath),ledger=read(ledgerPath);
+  for(const id of ['looter','cultist']){
+    assert.equal(live.combatIntros[id],approved.combatIntros[id]);
+    assert.match(live.combatIntros[id],/旅行者/);
+    assert.doesNotMatch(live.combatIntros[id],/荧/);
+    assert.deepEqual(ledger.fields['combatIntros.'+id],
+      {ref:'integrated-traveler-copy',decision:'inactive-legacy-needs-review-before-use'});
+  }
+});

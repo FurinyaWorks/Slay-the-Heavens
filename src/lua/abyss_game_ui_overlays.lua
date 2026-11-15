@@ -1,4 +1,5 @@
 local number = require("abyss_numbers").integer
+local PageReveal=require('abyss_page_reveal')
 local M = {}
 local function fastOverlaysBlocked(self)
     return self.mode~='menu' or self.characterOpen or self.exitOpen
@@ -96,6 +97,7 @@ end
 
 function M.openExit(self,owner)
     return function(_)
+            if self.prologue and self.prologue:covering() then return false end
             if self.disabled or self.characterOpen or self.exitOpen or self.settlementRequested or self.settlementBusy then return false end
             owner.exitGeneration = owner.exitGeneration + 1
             self.potionUI:close()
@@ -108,6 +110,7 @@ end
 
 function M.openMenu(self,owner)
     return function(_)
+            if self.prologue and self.prologue:covering() then return false end
             if self.disabled or self.easterEggOpen or self.exitOpen or self.settlementRequested or self.settlementBusy then return false end
             owner.exitGeneration = owner.exitGeneration + 1
             self.exitOpen, self.menuOpen, self.exitError = true, true, nil
@@ -132,6 +135,7 @@ function M.closeExit(self,exitPanel,owner)
             end
             self.exitOpen, self.menuOpen, self.exitError = false, false, nil
             self.battleUI.suppressClick = false
+            self.navigationAction=nil
             self:refresh()
             return true
         end
@@ -142,6 +146,7 @@ function M.confirmExit(self,owner)
             if self.disabled then return false,"ui_disabled" end
             if self.controlsOpen or self.menuOpen or self.routeOpen then return false,"menu_open" end
             if not self.exitOpen then return false, "exit_not_open" end
+            if self.navigationAction then return self:confirmNavigation() end
             -- Voluntary departure never changes combat HP, awards a victory, or
             -- fakes a defeated Run. An already-earned victory keeps its outcome.
             return owner.requestSettlement(self.mode == "victory")
@@ -161,6 +166,17 @@ function M.openDeck(openingCovered,self)
         end
 end
 
+function M.openStarterDeck(openingCovered,self,platform,owner)
+    return function(_)
+            if openingCovered() or self.disabled or not self.characterOpen or self.starting or self.exitOpen
+                or self.settlementRequested or self.settlementBusy or self.deckUI.visible or not self.characterSelection.info then return false end
+            PageReveal.registerSource(platform,'deckPanel')
+            local ok,reason=self.deckUI:openPreview(self.characterSelection.info)
+            if not ok then return false,reason end
+            owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
+            self.characterSelection.deckOpen=true;self:refresh();return true
+        end
+end
 function M.openRelics(self)
     return function(_,index)
             if self.deckUI.visible or not self:openDeck() then return false end
@@ -174,7 +190,9 @@ function M.closeDeck(self)
     return function(_)
             if self.exitOpen or self.settlementRequested then return false end
             if self.deckUI.choiceToken then return false,"card_choice_pending" end
+            local preview=self.deckUI.previewInfo~=nil
             if not self.deckUI:close() then return false end
+            if preview then self.characterSelection.deckOpen=false end
             -- Resume click-only hosts; pointer-capable card input still requires its
             -- own fresh Down/Up identity. Closing an overlay cannot revive old clicks.
             self.battleUI.suppressClick = false

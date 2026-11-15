@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
+import {types} from 'node:util';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -35,13 +36,23 @@ function configLayoutMatcher(current){
  });
 }
 const validPath=p=>p==='config/architecture.json'||/^src\/lua\/[A-Za-z0-9_-]+\.lua$/.test(p);
-function freeze(value){if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;}
+function freeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;}
+// Immutable proof records are shared by complete historical targets. Their
+// byte/hash validation is pure; live owner reads below always run afresh.
+const validatedFrozenBindings=new WeakSet();
 function validateBinding(binding){
  if(binding===null)return;
+ // Freezing an object does not freeze Object.prototype. Inherited identity
+ // fields must retain fresh validation even after an earlier successful call.
+ const cacheable=typeof binding==='object'&&!types.isProxy(binding)&&Object.isFrozen(binding)
+  &&Object.hasOwn(binding,'source')&&Object.hasOwn(binding,'sha256')
+  &&(Object.hasOwn(binding,'gitBlob')||!('gitBlob' in binding));
+ if(cacheable&&validatedFrozenBindings.has(binding))return;
  assert.equal(typeof binding?.source,'string','source identity text');
  assert.equal(normalize(binding.source),binding.source,'source identity LF');
  assert.equal(hash(binding.source),binding.sha256,'source identity SHA256');
  if(binding.gitBlob)assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,'source identity Git blob');
+ if(cacheable)validatedFrozenBindings.add(binding);
 }
 // A composed proof can share previously validated immutable source strings.
 // Reuse is explicit and accepts only an already deeply frozen JSON data graph;

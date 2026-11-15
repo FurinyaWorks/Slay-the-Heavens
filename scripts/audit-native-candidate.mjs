@@ -8,6 +8,7 @@ import {prepareAuditV25UiMasks} from './v25-ui-mask-audit-inputs.mjs';
 import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
 import {readyArtImageTemplate,readyArtGroupTemplate} from './art/ready-card-runtime.mjs';
+import {selectionHalfTemplate} from './lumine-selection-background.mjs';
 import {backgroundInputs, backgroundModule, backgroundTemplate} from './official-background.mjs';
 // Local offline tools only. Never calls a save mutation, import or playtest API.
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -17,6 +18,23 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { compareNativeCandidate, requireSourceSha, sha256, candidateEntrySource } from './native-candidate-audit.mjs';
 import { exportedCandidatePath, newEvidenceDirectory } from './native-audit-paths.mjs';
 import { releaseSourceFiles } from './release-notes.mjs';
+
+export function auditPortraitTemplateBindings(receipt,templates,{sourceSha,candidateHash,officialAssets=false,selectionAvatar=false}={}){
+  const single=name=>{const rows=templates.filter(row=>row?.template?.name===name);return rows.length===1?rows[0]:undefined;};
+  const image=single(readyArtImageTemplate),container=single(readyArtGroupTemplate);
+  if(receipt?.sourceCommit!==sourceSha||receipt?.candidate?.sha256!==candidateHash
+    ||!Number.isSafeInteger(image?.templateIndex)||image.templateIndex<=0
+    ||!Number.isSafeInteger(container?.templateIndex)||container.templateIndex<=0||image.templateIndex===container.templateIndex
+    ||receipt?.officialPortraits?.imageTemplateIndex!==image.templateIndex
+    ||receipt?.officialPortraits?.containerTemplateIndex!==container.templateIndex)
+    throw Error('Portrait runtime requires matching same-candidate template binding');
+  const half=officialAssets&&selectionAvatar?single(selectionHalfTemplate):undefined;
+  if(officialAssets&&selectionAvatar&&(!Number.isSafeInteger(half?.templateIndex)||half.templateIndex<=0
+    ||half.templateIndex!==receipt?.officialPortraits?.selectionHalfImageTemplateIndex
+    ||templates.filter(row=>row?.templateIndex===half.templateIndex).length!==1))
+    throw Error('Official selection requires matching unique same-candidate half-triangle template binding');
+  return {image,container,...(half?{half}:{})};
+}
 
 export function auditUiBuildArgs(receipt,{registryPath,deferExperimentalInventory=false,v25CardAssetsPath,v25UiMasksPath}={}) {
   const options=receipt===undefined?{artFeatures:normalizeArtFeatures()}:artBuildOptionsFromReceipt(receipt,{deferExperimentalInventory});
@@ -119,7 +137,8 @@ export async function auditNativeCandidate(options) {
     const template = save('template.json', getClientUi({ mapPath, template: 'AbyssDeckCard' }));
     const background = flags.menuBackground
       ? save('background-template.json', getClientUi({mapPath,template:backgroundTemplate})) : undefined;
-    const runtimeNames=[...(flags.cards||portraits||flags.menuBackground||buildReceipt?.v25CardAssets||buildReceipt?.v25UiMasks?[readyArtImageTemplate]:[]),readyArtGroupTemplate,monsterActorTemplateName,monsterPowerTemplateName,...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{})];
+    const runtimeNames=[...(flags.cards||portraits||flags.menuBackground||buildReceipt?.v25CardAssets||buildReceipt?.v25UiMasks?[readyArtImageTemplate]:[]),readyArtGroupTemplate,monsterActorTemplateName,monsterPowerTemplateName,
+      ...(artOptions.officialAssets&&flags.selectionAvatar?[selectionHalfTemplate]:[]),...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{})];
     const runtimeTemplates=runtimeNames.map(name=>save(name+'.json',getClientUi({mapPath,template:name})));
     const inspected = save('inspect.json', inspectFile(mapPath));
     const checked = save('static-check.json', checkClientScripts({ mapPath }));
@@ -169,11 +188,10 @@ export async function auditNativeCandidate(options) {
       bindReadyArtTemplates(join(snapshot,'build/lua'),{image:runtimeTemplates[0],group:runtimeTemplates[1]},{enabled:buildReceipt.readyCardArt.enabled});
     }
     if(portraits||flags.cards||flags.menuBackground) {
-      if(buildReceipt?.officialPortraits?.imageTemplateIndex!==runtimeTemplates?.[0]?.templateIndex
-        ||buildReceipt?.officialPortraits?.containerTemplateIndex!==runtimeTemplates?.[1]?.templateIndex)
-        throw Error('Portrait runtime requires matching same-candidate template binding');
+      const portraitBindings=auditPortraitTemplateBindings(buildReceipt,runtimeTemplates,{sourceSha,candidateHash:before,
+        officialAssets:artOptions.officialAssets,selectionAvatar:flags.selectionAvatar});
       const {bindPortraitTemplates}=await import(pathToFileURL(join(snapshot,'scripts/official-portraits.mjs')));
-      bindPortraitTemplates(join(snapshot,'build/lua'),{image:runtimeTemplates[0],container:runtimeTemplates[1]},{root:snapshot,...flags,v25BattleChrome:artOptions.v25BattleChrome});
+      bindPortraitTemplates(join(snapshot,'build/lua'),portraitBindings,{root:snapshot,...flags,v25BattleChrome:artOptions.v25BattleChrome,officialAssets:artOptions.officialAssets});
     }
     if(!deployment.some(module=>module.name===monsterActorBindingModule))throw Error('Missing monster actor runtime binding');
     {
@@ -211,7 +229,8 @@ export async function auditNativeCandidate(options) {
     const expectedTemplate = expectedTemplates.find(template => template.name === 'AbyssDeckCard');
     const expectedRuntimeTemplates=runtimeNames.map(name=>({
       template:expectedTemplates.find(row=>row.name===name),templateIndex:buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:
-        name===monsterActorTemplateName?buildReceipt?.monsterActors?.templateIndex:name===readyArtImageTemplate?
+        name===monsterActorTemplateName?buildReceipt?.monsterActors?.templateIndex:name===selectionHalfTemplate?
+        buildReceipt?.officialPortraits?.selectionHalfImageTemplateIndex:name===readyArtImageTemplate?
         buildReceipt?.v25TextureRuntime?.imageTemplateIndex??sharedReceipt?.imageTemplateIndex:
         buildReceipt?.v25TextureRuntime?.containerTemplateIndex??sharedReceipt?.containerTemplateIndex??buildReceipt?.monsterActors?.containerTemplateIndex)}));
     const expectedBackgroundTemplate = expectedTemplates.find(template => template.name === backgroundTemplate);
