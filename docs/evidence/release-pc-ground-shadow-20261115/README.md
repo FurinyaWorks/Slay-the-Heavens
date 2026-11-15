@@ -32,3 +32,5 @@ Node24.18.0、既有node_modules与固定Luacheck1.2.0副本；TMP/TEMP使用工
 独立审查 `/root/pc_backport_audit` 对精确产品head/base给出 **PASS_SCOPED**、无代码发现，见 [review.md](review.md) / [review.json](review.json)；未重复回归。它独立重算足部几何和最低band，核对三生产文件新增/删除行与8b1来源相同、无health painter，并读原日志核SHA。审查只绑定产品切片，未审整个集成HEAD、未批准合并。CI/source组合、原路由Full及正式候选由主线程统一接续；当前结果不能当作Release准入。官方导入、新ready、同候选容量、PC/实体手机视觉/足部运动/死亡帧序均**UNVERIFIED**。源码默认关闭不退化与Host行为通过不能代替这些设备证据。
 
 只读归档复核可用 `node docs/evidence/release-pc-ground-shadow-20261115/verify.mjs`；它核查既有收据和压缩日志，不重跑产品、不触发CI或设备。
+
+主线程补验：在 `9327c209` 按日常入口新生成 data/UI 再运行 `platform-load daily`，三阶段 exit0，原始输出存 `platform-load-fresh.json.gz` / `platform-load-receipt.json`。相对旧基线的控件增长警告仍保留，不等于官方容量达标。原 `ci-whitespace` 对完整 base..9327c209 通过，819 个不可变媒体身份认证；产品未漂移。

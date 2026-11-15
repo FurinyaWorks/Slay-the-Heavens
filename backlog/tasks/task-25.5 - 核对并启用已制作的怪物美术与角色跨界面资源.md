@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 15:44'
+updated_date: '2026-11-15 16:01'
 labels:
   - playtest-20261030
   - p1
@@ -53,4 +53,6 @@ Owner说明：**怪物自制美术目前在实际战斗中一点也没用起来*
 2026-11-14第二轮状态纠正：原notes已记录Alpha资产白名单、55项相关回归及CLI-MCP装配切片；11/7未发现实现的结论与这些证据矛盾。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
 PC21产品862c3f2a8988b1af21fc897d6de1d65650798a0d，证据1fd948e0b17b7164358ca08731c77c6b2cce0c72，分支feat/release-pc-ground-shadow-1115。RED2→GREEN2，最终增强2/2、既有67/67、工程351模块无新增诊断，独立pc_backport_audit PASS_SCOPED/findings=[]。证据docs/evidence/release-pc-ground-shadow-20261115；7份原日志无损hash留存。Full原路由要求但未运行，source/CI组合未验，不开未成熟PR；官方候选/ready/PC/实体手机像素与容量全未验，PC09美术精修继续延期，AC不勾。
+
+主线程在9327c209按原日常入口先build:data/build:ui再platform-load daily，新鲜三阶段均exit0。旧基线控件/hiddenControls增长警告保留；离线计数不能当官方MB/内存/FPS。原ci-whitespace完整base..9327c209 PASS/819不可变媒体，正式容量及source/CI组合仍未验。
 <!-- SECTION:NOTES:END -->
