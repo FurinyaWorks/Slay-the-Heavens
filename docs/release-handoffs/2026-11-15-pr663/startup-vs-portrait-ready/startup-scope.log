@@ -1,0 +1,3 @@
+PASS startup only: matching synthetic build + actual Host ready passes despite subsequent selection PAGE_REVEAL failed
+PASS negative: wrong candidate build was rejected
+PASS negative: actual baseline Host ABYSS_UI failed was rejected
