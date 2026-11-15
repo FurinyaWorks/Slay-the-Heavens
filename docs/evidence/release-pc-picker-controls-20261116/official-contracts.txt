@@ -19,10 +19,10 @@ test at tests\official-assets.test.mjs:72:1
 ✖ historical approved pages keep live input identities while unrelated pages retain their geometry (93.1066ms)
   AssertionError [ERR_ASSERTION]: fresh complete integration source: scripts/official-assets-layout.mjs
   + actual - expected
-  
+
   + '09332935e3d280a02c1cf2b61e1d8a58c70b1c72d3b9717d814af8778081afc4'
   - 'c1fb214dd0f342913dde97c89f2187c7557e932b044af0c0b30ba18d05b3a944'
-  
+
       at assertIntegratedCurrent (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/helpers/integrated-ci-source.mjs:35:72)
       at replayReviewedSelection (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/helpers/replay-reviewed-selection.mjs:19:2)
       at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/official-assets.test.mjs:73:15)
@@ -42,14 +42,14 @@ test at tests\official-assets.test.mjs:76:1
 ✖ approved pages keep live input identities while unrelated pages retain their geometry (760.4864ms)
   AssertionError [ERR_ASSERTION]: /SlayTheAbyss/nodePanel/pickerView/previous/hit size
   + actual - expected
-  
+
     [
   +   200,
   +   48
   -   44,
   -   208
     ]
-  
+
       at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/official-assets.test.mjs:167:11)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1325:25)
