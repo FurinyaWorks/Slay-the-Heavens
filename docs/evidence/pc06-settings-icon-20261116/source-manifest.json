@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "task": "TASK-4.16",
+  "item": "PC06 native settings icon facet only",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "formerBase": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "baseChange": "Root fast-forwarded this tree after #692 merged as1cc5479b; old36 RED retained and same RED repeated on1cc due changed base, before product edit. No self-directed rebase/branch change.",
+  "authorSource": "9c1fb9513422d67b89966a4b15fb8e1f01125e78",
+  "authorOriginalCommit": "e7f882a159500b43e048c29de2801d42a1ff78e0",
+  "sourceRole": "Uncommitted working product/test bindings collected before freeze; exact commit is supplied by handoff, not invented here.",
+  "productBefore": {
+    "path": "scripts/official-battle-hud.mjs",
+    "sha256": "05f1bc955d40f60ed295f9a7441ac45bed4c109fc9b7d61f384dae0137126e0c",
+    "sizeBytes": 7694,
+    "gitBlob": "c64acc72ffa6ee3e22bf2f74b6a90c61a00be9c0"
+  },
+  "productAfter": {
+    "path": "scripts/official-battle-hud.mjs",
+    "sha256": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+    "sizeBytes": 7778,
+    "gitBlob": "2494d0a304f7cf7c4c63a50fb9d99eb1f133e99e"
+  },
+  "authorProduct": {
+    "path": "scripts/official-battle-hud.mjs",
+    "sha256": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+    "sizeBytes": 7778,
+    "gitBlob": "2494d0a304f7cf7c4c63a50fb9d99eb1f133e99e"
+  },
+  "testBefore": {
+    "path": "tests/official-run-chrome.test.mjs",
+    "sha256": "4cac72f1f00f361e6f4ce5fe91c37cf2a1dab86645cce63eeb631ad6fa54f159",
+    "sizeBytes": 17548,
+    "gitBlob": "81f14d24b974576f0a42163dcdbf71f2c08a1f3c"
+  },
+  "testAfter": {
+    "path": "tests/official-run-chrome.test.mjs",
+    "sha256": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+    "sizeBytes": 21984,
+    "gitBlob": "c11d705cada45cade6692a9ba68cfa9e78ed65b9"
+  },
+  "productScope": [
+    "scripts/official-battle-hud.mjs exact6-line author diff",
+    "tests/official-run-chrome.test.mjs three added narrow facets and required imports; all old assertions/module source preserved"
+  ],
+  "assertionsPreserved": true,
+  "newRawParentFiles": 0,
+  "rawJsCount": 876,
+  "rawTopLevelLuaCount": 1423,
+  "unchanged": [
+    "all Lua production including352-path/116-owner epoch",
+    "Theme includingmenu y338.5",
+    "HP/gold geometry/fonts",
+    "runtime profile activation/foreground/input ownership",
+    "workflows, timings, budgets",
+    "all source epoch/CI archive helpers"
+  ],
+  "checks": {
+    "icon-red.log": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1
+    },
+    "icon-red-release1cc.log": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1
+    },
+    "icon-green.log": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "existing-ci-source.log": {
+      "tests": 3,
+      "pass": 2,
+      "fail": 1
+    },
+    "existing-production-source.log": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "build-data.log": {},
+    "build-ui.log": {},
+    "menu-related.log": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    }
+  },
+  "commands": {
+    "icon-red.log": "node --test --test-name-pattern 'official settings replace the Unicode gear' tests/official-run-chrome.test.mjs onRelease36 before product edit; Node exit1",
+    "icon-red-release1cc.log": "same exact command on1cc before product edit; Node exit1",
+    "icon-green.log": "node --test --test-name-pattern 'official settings' tests/official-run-chrome.test.mjs; Node exit0",
+    "existing-ci-source.log": "node --test tests/integrated-ci-source.cases.mjs; Node exit1 (one fail / two pass, including new Release bootstrap contract)",
+    "existing-production-source.log": "node --test --test-name-pattern 'combined epoch authenticates the complete current production tree' tests/integration-source-epoch.test.mjs; Node exit0",
+    "menu-related.log": "node --test tests/exit-ui-layout.test.mjs tests/menu-input-boundaries-current.test.mjs tests/map-menu-return.test.mjs; Node exit0",
+    "build-data.log": "node scripts/build-lua-data.mjs; exit0",
+    "build-ui.log": "node scripts/build-ui.mjs; exit0"
+  },
+  "currentFailures": [
+    {
+      "file": "tests/integrated-ci-source.cases.mjs",
+      "scope": "existing complete current CI source binding",
+      "failure": "fresh complete integration source: tests/official-run-chrome.test.mjs",
+      "expectedSha256": "4cac72f1f00f361e6f4ce5fe91c37cf2a1dab86645cce63eeb631ad6fa54f159",
+      "actualSha256": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+      "status": "PRESERVED_NOT_FIXED; root decides separate precise CI-source continuation; no13-path/packet adaptation copied"
+    }
+  ],
+  "inheritedBoundary": {
+    "menu": [
+      594,
+      338.5,
+      1
+    ],
+    "hit": [
+      48,
+      48
+    ],
+    "designCanvasYMax": 360,
+    "topHitEdge": 362.5,
+    "overrun": 2.5,
+    "status": "Inherited source geometry outside this icon facet, unchanged and not marked passed/resolved; author mixed test also requires owny335 Theme change, not imported."
+  },
+  "acceptanceBoundary": "Native picture100161 and existing four-state palette reused only in official generator. No colour/root-cause/first-frame/device acceptance claim. Old brown fallback remains outsideofficial and current runtime activation untouched.",
+  "intakeCorrection": "Archived pc06-source-intake retains correction of my earlier false claim that#672 did not change this chain; actual#672 already contains this native icon facet.",
+  "node": "v24.18.0",
+  "dependencies": "Existing picker node_modules physically copied; no npm install. External TMP/TEMP under root.artifacts/pc06-product.",
+  "notRun": [
+    "Full/Fast",
+    "whole Host suite",
+    "all official-run-chrome parents",
+    "original author three mixed-scope tests",
+    "official import/ready/candidate",
+    "PC/mobile/controller device acceptance",
+    "GUI/MCP",
+    "Backlog mutations",
+    "sourceepoch adaptations"
+  ],
+  "evidence": {
+    "icon-red.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/icon-red.log",
+      "rawBytes": 1111,
+      "rawSha256": "8c81fbdc052eb9566b6f6b0f5119bba001e640d43f1608e465403752e4f8b2d5",
+      "sizeBytes": 570,
+      "sha256": "f94d4284792251c1b927ca56d32cf9ae297d9801c5face0a22eda64f139f4522"
+    },
+    "icon-red-release1cc.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/icon-red-release1cc.log",
+      "rawBytes": 1111,
+      "rawSha256": "83c48ef52d9d301d422ece382577552926f238410fd651b824f893433d4a5d0a",
+      "sizeBytes": 571,
+      "sha256": "933f5f9f4c60fd1192fc3903f9530050d4a2f2ba897c66f3313a0c0820b4ad1b"
+    },
+    "icon-green.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/icon-green.log",
+      "rawBytes": 476,
+      "rawSha256": "0b6627231aa34acae34a3111249117f52aacfa79d6fbb1c8c350c87616554859",
+      "sizeBytes": 299,
+      "sha256": "d2d91de421e189f4c8e062501c4c4c0b8f138187af0d00e32ccc5172edd905de"
+    },
+    "existing-ci-source.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/existing-ci-source.log",
+      "rawBytes": 1774,
+      "rawSha256": "fe7b91d332f590acb1a256238562e92faa834ef24dbdaf9a2d9e51115a9cc007",
+      "sizeBytes": 823,
+      "sha256": "d1866e45dfa2e38364694912f203fd2fa275ac35058a33b9ec6213179411dfb1"
+    },
+    "existing-production-source.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/existing-production-source.log",
+      "rawBytes": 208,
+      "rawSha256": "079152aed6f5165edda977d7e584173747b4637995194a12c66e9da6853bfd33",
+      "sizeBytes": 167,
+      "sha256": "194e91348f3f570f5a39af3c01bcf2d941f5fb199f33180735cb1a3ce78fb20a"
+    },
+    "build-data.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/build-data.log",
+      "rawBytes": 34,
+      "rawSha256": "795fb7fb8bc4b08a404b8264a87d3ad9625090c8d5d92668a11f15d90ed687a5",
+      "sizeBytes": 52,
+      "sha256": "a06d2fec4a80ec9070d2d037ad36278f409116401bc400f2d50d57268c46b04f"
+    },
+    "build-ui.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/build-ui.log",
+      "rawBytes": 53,
+      "rawSha256": "0d69c17c4ec2190832766c94be6842d45295ab03bb8138faca3b3f62e2711dc2",
+      "sizeBytes": 72,
+      "sha256": "7c5cf678236ff3f04c9568e10a3f8a029c85bdd56a96be1d45da66116cc61b74"
+    },
+    "menu-related.log.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/menu-related.log",
+      "rawBytes": 824,
+      "rawSha256": "5483ceb88aa8fc0bee6ba2adbab4b703575d9846227f44b5751d77146af618dc",
+      "sizeBytes": 493,
+      "sha256": "8bb875e90d8dd1be7435d00dd61b306acf7e24835eebb5ddf9752c520068472f"
+    },
+    "pc06-source-intake.json.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-source-intake.json",
+      "rawBytes": 48518,
+      "rawSha256": "8c6a6d70f7d653dc125a0ae66c34f0b8aded944300edde1d31d33fbeb0409da7",
+      "sizeBytes": 10820,
+      "sha256": "8dd7e3acf0f2b97a3c71555e1dab1bb96639e63899338c4397bbd1c144f9d4f4"
+    },
+    "pc06-source-intake.md.gz": {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-source-intake.md",
+      "rawBytes": 4923,
+      "rawSha256": "938044b13bcd260443b201eb5241a2aad40c837fd1de2d3ee40b73ef479b3fc5",
+      "sizeBytes": 3169,
+      "sha256": "2bec9310f21047b506e4069eee4fda44c1f928325791769f1e091f64b8f9b3eb"
+    },
+    "author-mobile-hud-receipt.json.gz": {
+      "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-receipt.json",
+      "rawBytes": 2109,
+      "rawSha256": "c14e1133286b4a1e2070dee2d83b7a471ddde0af0717335958e25c155999d0a6",
+      "sizeBytes": 1040,
+      "sha256": "83ffc64cf639e46568c6df96ede7fa889aa212cb88c6f9692941e7e1a9e80c98",
+      "role": "Prior author evidence; not rerun or claimed as current acceptance"
+    },
+    "author-mobile-hud-red.log.gz": {
+      "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-red.log",
+      "rawBytes": 3477,
+      "rawSha256": "975eb185be13ec0e38eb1e1b85739efa9c1f351a92c2a9c4a001848a254867de",
+      "sizeBytes": 1019,
+      "sha256": "657115b35b209dcbeb670e25d8884a2dd9cfe54bfc264a0ea2e65c1d5acd81ee",
+      "role": "Prior author evidence; not rerun or claimed as current acceptance"
+    },
+    "author-mobile-hud-order-red.log.gz": {
+      "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-order-red.log",
+      "rawBytes": 1366,
+      "rawSha256": "42695a1a48c19ad26ee44f87b0b560ed4563da692295119bd1aead39281a848e",
+      "sizeBytes": 655,
+      "sha256": "a4459087c3e6224fafdb45a3006875b77b7c8fe0d3a0b3fc35117d0793273a91",
+      "role": "Prior author evidence; not rerun or claimed as current acceptance"
+    },
+    "author-mobile-hud-green.log.gz": {
+      "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-green.log",
+      "rawBytes": 2749,
+      "rawSha256": "3def4a32da2a58492a2c7cf9ce62e619e09cda872c958f172d44d7b02dc3cbbe",
+      "sizeBytes": 805,
+      "sha256": "ad1f21f8afd1787993f46c6e59e7dfc356c6ad7176e23b3eb60c96cd4fbc048a",
+      "role": "Prior author evidence; not rerun or claimed as current acceptance"
+    },
+    "author-mobile-hud-final.log.gz": {
+      "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-final.log",
+      "rawBytes": 878,
+      "rawSha256": "11f7a6229bd8fac09f65d036087e6ac7855f2321bb55b576083ce03b875cffcb",
+      "sizeBytes": 357,
+      "sha256": "2b20873c35766dd9258247a4529e172acd200d3d268aebebf2a892a3e5d3bdf1",
+      "role": "Prior author evidence; not rerun or claimed as current acceptance"
+    },
+    "author-review-hud-9c1fb951.json.gz": {
+      "sourceRelativePath": ".artifacts/mobile-1115-ci/review-hud-9c1fb951.json",
+      "rawBytes": 1467,
+      "rawSha256": "fc202f52c5bde81f4121cdb798e676985e1a6f83f7f92685abb10e7e384cfb05",
+      "sizeBytes": 823,
+      "sha256": "0f36a7c77a64ba90ac2961fec54d4d8dc528fce6be2dafca155dae0ec0fda0f8",
+      "role": "Prior author evidence; not rerun or claimed as current acceptance"
+    }
+  }
+}
