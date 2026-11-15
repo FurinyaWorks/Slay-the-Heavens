@@ -13,6 +13,45 @@ function M.install(owner, ownership, host, dependencies)
     local bound=setmetatable({}, {__mode="k"})
     local noTouch={}
     local function touchKey(event)return event and event.touchId or noTouch end
+    local function tokenOrigin(token)return token and (token.touch or noTouch)end
+    local function revokeInput(input)
+        if input.held then input.held.anonymousSafe=false end
+        if input.released then input.released.anonymousSafe=false end
+    end
+    local function retireOrigin(input,origin)
+        input.active[origin]=nil
+        local repaint=false
+        for _,name in ipairs({'held','released'})do
+            local token=input[name]
+            if tokenOrigin(token)==origin then
+                token.anonymousSafe=false
+                if owner.cardAim==token then owner.cardAim=nil;repaint=true end
+                input[name]=nil
+            end
+        end
+        return repaint
+    end
+    local function uniqueOrigin(input)
+        local origin
+        for active in pairs(input.active)do
+            if origin then return end -- Multiple active fingers take priority over a lone pending token.
+            origin=active
+        end
+        local held,released=tokenOrigin(input.held),tokenOrigin(input.released)
+        if held and released and held~=released then return end
+        local pending=held or released
+        if origin and pending and origin~=pending then return end
+        return origin or pending
+    end
+    local function anonymousTerminal(input,event,ended)
+        if event and event.touchId~=nil then return false end
+        local origin=uniqueOrigin(input)
+        -- A fully metadata-free Down/Up retains its existing noTouch origin.
+        if not ended and origin==noTouch and tokenOrigin(input.held)==noTouch then return false end
+        revokeInput(input)
+        if origin and retireOrigin(input,origin)then owner:render()end
+        return true
+    end
     local function eachInput(visitor)
         for _,name in ipairs({'cardInputs','potionInputs','actionInputs','enemyInputs'})do
             for _,input in pairs(ownership[name] or {})do if visitor(input) then return true end end
@@ -27,6 +66,11 @@ function M.install(owner, ownership, host, dependencies)
             if input.released then input.released.anonymousSafe=false end
         end)
         return pending
+    end
+    local function beginOrigin(input,event)
+        -- A fresh named Down owns a new physical sequence, including reused IDs.
+        if event and event.touchId~=nil then retireOrigin(input,touchKey(event))end
+        return revokeAnonymous()
     end
     local function anonymousToken(input)
         local token=input.released
@@ -169,7 +213,7 @@ function M.install(owner, ownership, host, dependencies)
                 control:AddCursorEventListener(host.cursor.CursorDown, function(event)
                     if not entryAt() then return false end
                     ownership.enemyPointerObserved = true
-                    local ambiguous=revokeAnonymous()
+                    local ambiguous=beginOrigin(input,event)
                     input.active[touchKey(event)]=true
                     local dismissed = dependencies.down(event)
                     input.held, input.released = nil, nil
@@ -194,6 +238,7 @@ function M.install(owner, ownership, host, dependencies)
                 local function releaseEnemy(event, ended)
                     if not entryAt() then return false end
                     ownership.enemyPointerObserved = true
+                    if anonymousTerminal(input,event,ended)then return end
                     input.active[touchKey(event)]=nil
                     local touch, held = event and event.touchId, input.held
                     if held and held.touch == touch then
@@ -211,6 +256,7 @@ function M.install(owner, ownership, host, dependencies)
                 end
                 if host.cursor.CursorExit then
                     control:AddCursorEventListener(host.cursor.CursorExit,function(event)
+                        if anonymousTerminal(input,event,true)then return end
                         input.active[touchKey(event)]=nil
                         local touch=event and event.touchId
                         if input.held and (touch==nil or input.held.touch==touch)then input.held.anonymousSafe=false end
