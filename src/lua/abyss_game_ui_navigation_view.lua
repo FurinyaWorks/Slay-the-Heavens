@@ -31,11 +31,12 @@ end
 local function compact(menu,routeEnabled,mainEnabled)
     local R=Theme.layout.runMenu
     local step=R.help[2]-R.map[2]
-    local upperGap=(routeEnabled and 0 or step)+(mainEnabled and 0 or step)
+    local upperGap=step+(routeEnabled and 0 or step)+(mainEnabled and 0 or step)
     local gap=upperGap+(mainEnabled and 0 or step)
     local function at(name,spec,dy)menu:GetChild(name):SetAnchoredPosition(spec[1],spec[2]+dy)end
     at('rule',R.rule,upperGap);at('abandon',R.abandon,upperGap);at('dismissHint',R.dismissHint,gap)
-    at('mainMenu',R.mainMenu,routeEnabled and 0 or step)
+    at('map',R.map,step)
+    at('mainMenu',R.mainMenu,step+(routeEnabled and 0 or step))
     at('quit',R.quit,gap)
     for _,name in ipairs({'border','face','catch'})do
         local c=menu:GetChild(name)
@@ -45,6 +46,9 @@ local function compact(menu,routeEnabled,mainEnabled)
     end
 end
 function M.runMenu(self,menu,routeEnabled)
+    -- Official run pages already expose the shared top-bar route action.
+    -- Keep the menu fallback for profiles without those controls.
+    routeEnabled=routeEnabled and Theme.presentationProfile~='official-assets-first'
     local hasRun=Navigation.hasRun(self)
     local mainEnabled=hasRun and not self.sessionPaused
     menu:GetChild('mainMenu'):SetVisible(mainEnabled)
