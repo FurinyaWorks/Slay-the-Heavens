@@ -74,6 +74,29 @@ local function paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
     LowCostArt.dim(icon,dim and .4 or 1)
     LowCostArt.refresh(box,{r=tone.r,g=tone.g,b=tone.b,a=255})
 end
+local function intentTone(alpha,kind)
+    -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
+    -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
+    local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
+    return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
+end
+local function sleepIntentWriter(geometryOwner,intentTexts,ink,tone)
+    return function(box,face,x,y,allowed,alpha)
+        local sleeping=face.sourceEnum=='SLEEP' or not face.sourceEnum and (face.worldKind or face.kind)=='sleep'
+        local label=box:GetChild('intentLabel')
+        intentVisible(label,allowed~=false and sleeping,geometryOwner)
+        local text=sleeping and 'Zzz' or ''
+        if intentTexts[label]~=text or label.alive==false then
+            intentTexts[label]=nil;label.text=text;intentTexts[label]=text
+        end
+        if sleeping then
+            label.fontSize=Theme.font.label
+            intentSize(label,L.intent.valueWidth,L.nativeText.lineHeight,geometryOwner)
+            intentPosition(label,x,y,geometryOwner);ink(label,tone(alpha))
+        end
+        return sleeping
+    end
+end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)
     -- A new view binding starts fresh; weak native keys cannot retain retired actors.
@@ -132,12 +155,6 @@ function M.install(owner, ownership, host, dependencies)
         if geometry then return geometry.intentX,geometry.intentY,geometry.intentWidth end
         return 0,portrait/2,128*Theme.canvas.base[1]/1920
     end
-    local function intentTone(alpha,kind)
-        -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
-        -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
-        local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
-        return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
-    end
     local function renderIntentIcon(box,face,x,y,size,allowed,alpha)
         local kind=face.worldKind or face.kind
         local visible=allowed~=false and (face.sourceEnum and face.worldVisible or not face.sourceEnum)
@@ -167,21 +184,7 @@ function M.install(owner, ownership, host, dependencies)
         intentPosition(value,x+L.intent.size/2+S.xs+width/2,y,intentGeometryOwner)
         dependencies.ink(value,intentTone(alpha))
     end
-    local function renderSleepIntent(box,face,x,y,allowed,alpha)
-        local sleeping=face.sourceEnum=='SLEEP' or not face.sourceEnum and (face.worldKind or face.kind)=='sleep'
-        local label=box:GetChild('intentLabel')
-        intentVisible(label,allowed~=false and sleeping,intentGeometryOwner)
-        local text=sleeping and 'Zzz' or ''
-        if intentTexts[label]~=text or label.alive==false then
-            intentTexts[label]=nil;label.text=text;intentTexts[label]=text
-        end
-        if sleeping then
-            label.fontSize=Theme.font.label
-            intentSize(label,L.intent.valueWidth,L.nativeText.lineHeight,intentGeometryOwner)
-            intentPosition(label,x,y,intentGeometryOwner);dependencies.ink(label,intentTone(alpha))
-        end
-        return sleeping
-    end
+    local renderSleepIntent=sleepIntentWriter(intentGeometryOwner,intentTexts,function(...)return dependencies.ink(...)end,intentTone)
     local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
         local x,y,size=intentGeometry(portrait,geometry)
         -- Reuse the existing label for SLEEP: the approved tiny glyph alone
