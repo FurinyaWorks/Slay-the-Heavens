@@ -1,0 +1,28 @@
+[
+  {
+    "profile": "default",
+    "generatedTreeSha256": "467566fe5f7433175c3f4258c0af4fc20bc708c66592cff1399a91bac1b9bbec",
+    "controls": 98,
+    "titleControls": 0
+  },
+  {
+    "profile": "official",
+    "generatedTreeSha256": "c444dd3530f457d7aa6c2c2fcbdbea153dcea160dc536090d2eee7a15832bea9",
+    "controls": 2310,
+    "titleControls": 416,
+    "backgroundSha256": "8c884b4edb72e1be3c05e15d4321bc691eb50ba413034fde4b2c9d9b41a4d694",
+    "backgroundControls": 1733,
+    "hostStatus": 0,
+    "hostError": null
+  },
+  {
+    "profile": "v25",
+    "generatedTreeSha256": "4d77758aa6baecc7aa7f3445126899d70b64d9146fc1a5f31036e27fa961aa97",
+    "controls": 2974,
+    "titleControls": 416,
+    "backgroundSha256": "8c884b4edb72e1be3c05e15d4321bc691eb50ba413034fde4b2c9d9b41a4d694",
+    "backgroundControls": 1733,
+    "hostStatus": 0,
+    "hostError": null
+  }
+]
