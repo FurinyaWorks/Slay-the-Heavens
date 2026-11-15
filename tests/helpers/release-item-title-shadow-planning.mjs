@@ -49,3 +49,49 @@ export function assertRetirementPlanningCurrent(read=readFileSync){
  assert.deepEqual(timings.jsPlanning.localLowerBounds[p.entry],{...p.floor,sourceReceipt:retirementPlanningReceiptPath,sourceReceiptSha256:hash(bytes)},'exact observed floor uses original planning mechanism');
  return p;
 }
+
+export const shadowPlanningReceiptPath='docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json';
+const shadowBytes=Buffer.from(norm(readFileSync(new URL('../../'+shadowPlanningReceiptPath,import.meta.url))));
+assert.equal(hash(shadowBytes),'bde02bd9f6f0990e608766e471d43cd012553babe49c352bffadcdd59c52f719','immutable corrected shadow complete-file planning receipt');
+export const shadowPlanningReceipt=JSON.parse(shadowBytes);
+export function assertShadowPlanningCurrent(read=readFileSync){
+ const p=shadowPlanningReceipt;
+ assert.equal(hash(norm(read(shadowPlanningReceiptPath))),hash(shadowBytes),'fresh shadow planning receipt');
+ for(const row of p.closure){const b=read(row.path);assert.equal(hash(row.lfSha256?norm(b):b),row.lfSha256??row.sha256,'fresh shadow execution input: '+row.path);}
+ for(const row of p.dependencies)assert.equal(hash(read(row.path)),row.sha256,'fresh shadow dependency input: '+row.path);
+ const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
+ assert.deepEqual(p.sampledMetadataExcluded,['data/README.md','data/SOURCES.md']);
+ for(const prefix of ['src/lua/','data/'])assert.deepEqual(walk(prefix.slice(0,-1)).filter(path=>prefix==='data/'?!p.sampledMetadataExcluded.includes(path):path.endsWith('.lua')).sort(),p.closure.filter(row=>row.path.startsWith(prefix)).map(row=>row.path),'complete shadow execution corpus: '+prefix);
+ // Only this one floor is self-referential. The sampled config, including all
+ // old observations and the retirement floor, remains otherwise complete.
+ const current=JSON.parse(read(p.config.path,'utf8')),projected=structuredClone(current);
+ delete projected.jsPlanning.localLowerBounds[p.entry];
+ assert.equal(hash(JSON.stringify(projected,null,2)+'\n'),p.config.lfSha256,'complete shadow planning config except its sole new floor');
+ assert.equal(hash(p.config.source),p.config.lfSha256);assert(!JSON.parse(p.config.source).jsPlanning.localLowerBounds[p.entry]);
+ assert.deepEqual(current.jsPlanning.localLowerBounds[p.entry],{...p.floor,sourceReceipt:shadowPlanningReceiptPath,sourceReceiptSha256:hash(shadowBytes)},'exact new shadow floor and complete receipt binding');
+ for(const [path,sha]of Object.entries(p.evidence))assert.equal(hash(read(path)),sha,'original complete shadow sample: '+path);
+ const sample=JSON.parse(gunzipSync(read(p.observation.path))),inputs=[...p.closure,...p.dependencies];
+ assert.deepEqual(sample.before,sample.after,'every measured shadow input remains unchanged');
+ assert.deepEqual(sample.before.map(row=>row.path),[...inputs.map(row=>row.path),p.config.path],'complete measured shadow input inventory');
+ for(const [i,row]of inputs.entries())assert.equal(sample.before[i].sha256,row.sha256,'physical shadow sample input: '+row.path);
+ assert.equal(sample.before.at(-1).sha256,hash(p.config.source),'sampled complete original config before the one new floor');
+ assert.equal(sample.freezeCommit,'c34443bcd56350fbe7a2bc9396bcdc9090d2dddb');assert.equal(sample.node,'v24.18.0');assert.equal(sample.nodeSha256,'9a4eb5f1c29c6a2e93852ead46b999e284a6a5ca8bab4d4e241d587d025a52de');
+ assert.deepEqual([sample.status,sample.error,sample.signal],[0,null,null]);
+ const log=gunzipSync(read(p.floor.sourceLog));assert.equal(hash(log),p.floor.sourceLogUncompressedSha256);
+ assert.match(log.toString(),/ℹ tests 3\r?\nℹ suites 0\r?\nℹ pass 3\r?\nℹ fail 0\r?\nℹ cancelled 0\r?\nℹ skipped 0\r?\nℹ todo 0/);
+ assert.equal(Number(/ℹ duration_ms ([\d.]+)/.exec(log.toString())[1]),p.floor.nodeReportedDurationMs);
+ assert.equal(sample.wallDurationMs,p.floor.wallDurationMs);assert.equal(p.floor.durationMs,Math.max(18852,sample.wallDurationMs,Math.ceil(p.floor.nodeReportedDurationMs)),'new observation cannot lower a complete observed shadow cost');
+ return p;
+}
+
+// Owner 2026-11-07: predictions are diagnostic; physical job guards are hard.
+// Read the unique four-space job property, never a step-local lookalike.
+export function assertReleaseItemTitleShadowPhysicalGuards(source){
+ const expected={fast:"${{ matrix.os == 'windows-2025' && 45 || 30 }}",rules:"${{ inputs.runner_pool == 'local-special' && 75 || 45 }}",'engineering-posix-shards':'30'};
+ for(const [name,value]of Object.entries(expected)){
+  const blocks=[...norm(source).matchAll(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'gm'))];
+  assert.equal(blocks.length,1,'unique physical guard job: '+name);
+  const timeouts=[...blocks[0][0].matchAll(/^    timeout-minutes: (.+)$/gm)].map(match=>match[1]);
+  assert.deepEqual(timeouts,[value],'unique original physical job timeout: '+name);
+ }
+}

@@ -6297,6 +6297,22 @@
         "testSha256": "6b739f076f55383db4df6c3c6f7997b154904483b8db1219b1a1a9577513313d",
         "sourceReceipt": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
         "sourceReceiptSha256": "9c1148f4042dd123b1b2e0a2be95c5dfd83c62cadb56cddd06bd252834d98a55"
+      },
+      "tests/player-ground-shadow.test.mjs": {
+        "durationMs": 22235,
+        "environment": "local Windows Node 24.18.0; not Hosted",
+        "tests": 3,
+        "coverage": "3/3 complete corrected parent file; raw Full isolated official profile, real generated-layout snapshot and lifecycle geometry; zero failures/skips/cancellation",
+        "kind": "Observed local complete-file planning floor only; forecast remains diagnostic under Owner 2026-11-07 policy; not a Hosted upper bound or certification",
+        "nodeReportedDurationMs": 22146.1864,
+        "wallDurationMs": 22235,
+        "minimumObservedFloorMs": 18852,
+        "sourceLog": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stdout.gz",
+        "sourceLogSha256": "2cbfbe7ed3c24888bd06feca182c3d70e32a91a8c0afaed6b7f04ffd33c97274",
+        "sourceLogUncompressedSha256": "cb83ddf61c8528b744336287a8e6fd10e24c241b1c609be77c91eaf7ce5a7647",
+        "testSha256": "2d476d298d698b1ee577f204b3ae5994246adb960ffb7efaf581c03616e966d7",
+        "sourceReceipt": "docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json",
+        "sourceReceiptSha256": "bde02bd9f6f0990e608766e471d43cd012553babe49c352bffadcdd59c52f719"
       }
     }
   },

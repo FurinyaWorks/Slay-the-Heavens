@@ -6,12 +6,12 @@ import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleaseItemTitleShadowSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseItemTitleShadowSourcePacket,extendReleaseItemTitleShadowSource} from './helpers/release-item-title-shadow-source.mjs';
 import {releaseItemTitleShadowCiPacket,releaseItemTitleShadowCiSource,releaseItemTitleShadowPriorInventory,assertReleaseItemTitleShadowRawInventory,assertReleaseItemTitleShadowCiCurrent} from './helpers/release-item-title-shadow-ci-source.mjs';
-import {retirementPlanningReceipt,assertRetirementPlanningCurrent} from './helpers/release-item-title-shadow-planning.mjs';
+import {retirementPlanningReceipt,assertRetirementPlanningCurrent,shadowPlanningReceipt,assertShadowPlanningCurrent,assertReleaseItemTitleShadowPhysicalGuards} from './helpers/release-item-title-shadow-planning.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('retirement observed local floor authenticates its execution inputs and preserves every original cost',()=>{
  const p=assertRetirementPlanningCurrent(),prior=JSON.parse(releaseItemTitleShadowCiPacket.files['scripts/ci-test-timings.json'].before.source),current=JSON.parse(readFileSync('scripts/ci-test-timings.json','utf8'));
- delete current.jsPlanning.localLowerBounds[p.entry];assert.deepEqual(current,prior,'only the new observed lower bound is appended');
+ delete current.jsPlanning.localLowerBounds[p.entry];delete current.jsPlanning.localLowerBounds[shadowPlanningReceipt.entry];assert.deepEqual(current,prior,'only the two exact new observed lower bounds are appended');
  assert.equal(p,retirementPlanningReceipt);
  for(const path of [p.entry,'tests/helpers/reward-pool-retirement-runtime.lua','tests/lua/support/game_ui_fixture.lua','src/lua/abyss_battle_reward_layout.lua','scripts/build-ui.mjs','data/presentation/ui_theme.json','.release-please-manifest.json','CHANGELOG.md',p.closure.find(row=>row.path.endsWith('.png')).path,p.dependencies[0].path]){
   for(const change of ['append','missing'])assert.throws(()=>assertRetirementPlanningCurrent((file,encoding)=>{
@@ -23,6 +23,26 @@ test('retirement observed local floor authenticates its execution inputs and pre
  for(const metadata of ['data/README.md','data/SOURCES.md'])assertRetirementPlanningCurrent((path,encoding)=>{
   const b=readFileSync(path,encoding);return path===metadata?typeof b==='string'?b+'\nmetadata-only change':Buffer.concat([b,Buffer.from('\nmetadata-only change')]):b;
  });
+});
+
+test('corrected shadow floor accepts only complete execution inputs and projects only its own new config record',()=>{
+ const p=assertShadowPlanningCurrent();assert.equal(p,shadowPlanningReceipt);
+ for(const path of [p.entry,'scripts/test-lua.mjs','tests/lua/player_ground_shadow.lua','tests/lua/support/game_ui_fixture.lua','data/presentation/ui_theme.json',...p.closure.filter(r=>r.path.endsWith('.png')).map(r=>r.path)])
+  assert.throws(()=>assertShadowPlanningCurrent((file,encoding)=>{const b=readFileSync(file,encoding);return file===path?typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]):b;}),/fresh shadow execution input/);
+ for(const change of [c=>c.unknownJsMs++,c=>c.initialMs.win32[0]++,c=>c.jsPlanning.localLowerBounds[retirementPlanningReceipt.entry].durationMs++,c=>{c.foreignBudget=2700001;}])
+  assert.throws(()=>assertShadowPlanningCurrent((path,encoding)=>{if(path!==p.config.path)return readFileSync(path,encoding);const c=JSON.parse(readFileSync(path,'utf8'));change(c);return JSON.stringify(c,null,2)+'\n';}),/complete shadow planning config/);
+ assert.throws(()=>assertShadowPlanningCurrent((path,encoding)=>{if(path!==p.config.path)return readFileSync(path,encoding);const c=JSON.parse(readFileSync(path,'utf8'));c.jsPlanning.localLowerBounds[p.entry].durationMs++;return JSON.stringify(c,null,2)+'\n';}),/exact new shadow floor/);
+ for(const metadata of p.sampledMetadataExcluded)assertShadowPlanningCurrent((path,encoding)=>{assert.notEqual(path,metadata,'non-executable description is never read');return readFileSync(path,encoding);});
+});
+
+test('raw Release physical job guards reject missing changed duplicate step-only and wrong-job timeouts',()=>{
+ const source=norm(readFileSync('.github/workflows/quality.yml','utf8'));assertReleaseItemTitleShadowPhysicalGuards(source);
+ for(const value of ["${{ matrix.os == 'windows-2025' && 45 || 30 }}","${{ inputs.runner_pool == 'local-special' && 75 || 45 }}",'30']){
+  const line='    timeout-minutes: '+value;
+  for(const changed of ['',line.replace(value,'999'),line+'\n'+line,'      timeout-minutes: '+value])
+   assert.throws(()=>assertReleaseItemTitleShadowPhysicalGuards(source.replace(line,changed)),/physical job timeout/);
+ }
+ assert.throws(()=>assertReleaseItemTitleShadowPhysicalGuards(source.replace('  engineering-posix-shards:','  foreign-posix-shards:')),/physical guard job/);
 });
 
 test('release item-title-shadow production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
