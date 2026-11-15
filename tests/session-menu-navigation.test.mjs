@@ -9,7 +9,7 @@ import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layou
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
-import {assertOriginalSessionMenuWitness,assertPriorSessionMenuWitness,extendMobileSessionMenuEpoch} from './helpers/session-menu-source-epoch.mjs';
+import {assertOriginalSessionMenuWitness,assertPriorSessionMenuWitness,extendMobileSessionMenuEpoch,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -18,8 +18,8 @@ test('session menu preserves live state, confirms destructive actions and uses p
 
 test('deck notification continuation preserves immutable menu sources and authenticates both exact current owners',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz')));
- assertPriorSessionMenuWitness(packet);
- const {mobileContinuation,continuation,...menu}=packet;
+ assertNeowStaticPredecessor(packet);
+ const {neowRetirementStaticContinuation,neowRetirementContinuation,mobileContinuation,continuation,...menu}=packet;
  assertOriginalSessionMenuWitness(menu);
  for(const os of [3,10]){
   const compressed=gzipSync(JSON.stringify(menu));compressed[9]=os;
@@ -34,7 +34,7 @@ test('deck notification continuation preserves immutable menu sources and authen
  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
  const proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  assert.equal(proof.targets.mobilePrior.commit,'aa2060671da1bfd5b7151c48ae8babf7b38d5640');
- assert.equal(proof.currentCommit,mobileContinuation.currentCommit);
+ assert.equal(proof.currentCommit,neowRetirementStaticContinuation.currentCommit);
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);
  for(const p of Object.keys(continuation.current)){
   assert.deepEqual(proof.targets.sessionMenuReviewed.files[p],menu.current[p]);
@@ -56,21 +56,21 @@ test('mobile continuation preserves both prior packets and every old target whil
  const changed=['src/lua/abyss_ui.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_view.lua'];
  assert.deepEqual(Object.keys(mobile.current),changed);
  assert.equal(mobile.currentCommit,'ca103dedb636ad064951c33f207a01bad93bbef8');
- assert.equal(proof.currentCommit,mobile.currentCommit);
- const {mobilePrior,...oldTargets}=proof.targets;
+ assert.equal(proof.targets.mobileRetirementPrior.commit,mobile.currentCommit);
+ const {mobilePrior,navigationRetirementPrior,mobileRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
  assert.deepEqual(Object.keys(mobilePrior.files),Object.keys(proof.current),'complete mobile predecessor view');
  const prior={proof:{...proof,currentCommit:mobile.baseCommit,current:mobilePrior.files,targets:oldTargets}};
  const replay=extendMobileSessionMenuEpoch(prior,mobile).proof;
  for(const [name,target]of Object.entries(oldTargets))assert.deepEqual(replay.targets[name],target,'unchanged prior target and receipts: '+name);
- for(const p of Object.keys(proof.current))assert.deepEqual(proof.current[p],mobile.current[p]??mobilePrior.files[p],'exact three-source continuation: '+p);
- assertPriorSessionMenuWitness(packet);
+ for(const p of Object.keys(proof.current))assert.deepEqual(mobileRetirementPrior.files[p],mobile.current[p]??mobilePrior.files[p],'exact three-source continuation: '+p);
+ assertNeowStaticPredecessor(packet);
  for(const mutate of [p=>delete p.current[changed[0]],p=>p.before[changed[0]].source+='\n',
   p=>p.current[changed[0]].source+='\n',p=>p.currentCommit='f'.repeat(40),
   p=>p.current['src/lua/foreign.lua']=p.current[changed[0]]]){
   const invalid=structuredClone(mobile);mutate(invalid);assert.throws(()=>extendMobileSessionMenuEpoch(prior,invalid));
  }
  const oldPacket=structuredClone(packet);oldPacket.continuation.current[Object.keys(oldPacket.continuation.current)[0]].source+='\n';
- assert.throws(()=>assertPriorSessionMenuWitness(oldPacket),/immutable complete deck notification witness/);
+ assert.throws(()=>assertNeowStaticPredecessor(oldPacket),/immutable original one-owner Neow retirement packet/);
  for(const p of changed){
   assert.equal(read(p),mobile.current[p].source,'live source equals fixed producer blob');
   assert.deepEqual(mobile.before[p],mobilePrior.files[p]);
@@ -80,6 +80,53 @@ test('mobile continuation preserves both prior packets and every old target whil
   const foreign=read(p)+'\n';let calls=0;
   assert.equal(sourceEpoch.preCombinedSource(p,foreign,{target:'mobilePrior',readSource:()=>{calls++;throw Error('foreign source cannot read owners');}}),foreign);
   assert.equal(calls,0);
+ }
+});
+test('Neow retirement continuation keeps the complete prior corpus and rejects fresh owner drift',()=>{
+ const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),retirement=packet.neowRetirementContinuation;
+ assertNeowStaticPredecessor(packet);
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const {navigationRetirementPrior,mobileRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
+ assert.deepEqual(navigationRetirementPrior.files,proof.targets.mobilePrior.files);
+ assert.equal(mobileRetirementPrior.commit,packet.mobileContinuation.currentCommit);
+ assert.equal(navigationRetirementPrior.commit,'808a310cfc9a0c2734ec424d7ac80d3a040557c8');
+ assert.deepEqual(Object.keys(navigationRetirementPrior.files),Object.keys(proof.current));
+ assert.equal(Object.keys(navigationRetirementPrior.files).length,352);
+ const prior={proof:{...proof,currentCommit:mobileRetirementPrior.commit,current:mobileRetirementPrior.files,targets:oldTargets}};
+ const replay=extendNeowRetirementEpoch(prior,retirement).proof;
+ for(const [name,target]of Object.entries(oldTargets))assert.deepEqual(replay.targets[name],target,'unchanged historical target '+name);
+ for(const p of Object.keys(proof.current))assert.deepEqual(neowRetirementStaticPrior.files[p],retirement.current[p]??mobileRetirementPrior.files[p],'exact one-owner extension '+p);
+ assert.deepEqual(retirement.before[path],navigationRetirementPrior.files[path]);
+ assert.equal(read(path),packet.neowRetirementStaticContinuation.current[path].source);
+ assert.equal(sourceEpoch.preCombinedSource(path,read(path),{target:'navigationRetirementPrior',readSource:read}),retirement.before[path].source);
+ for(const bad of [null,read(path)+'\n'])assert.throws(()=>sourceEpoch.preCombinedSource(path,read(path),{target:'navigationRetirementPrior',readSource:p=>p===path?bad:read(p)}),/linked owner identity/);
+ for(const mutate of [r=>delete r.current[path],r=>r.before[path].source+='\n',r=>r.current[path].source+='\n',
+  r=>r.currentCommit='f'.repeat(40),r=>r.current['src/lua/foreign.lua']=r.current[path]]){
+  const invalid=structuredClone(retirement);mutate(invalid);assert.throws(()=>extendNeowRetirementEpoch(prior,invalid));
+ }
+ const changed=structuredClone(packet);changed.continuation.current['src/lua/abyss_game_ui.lua'].source+='\n';
+ assert.throws(()=>assertNeowStaticPredecessor(changed),/immutable original one-owner Neow retirement packet/);
+ const foreign=read(path)+'\n';let calls=0;
+ assert.equal(sourceEpoch.preCombinedSource(path,foreign,{target:'navigationRetirementPrior',readSource:()=>{calls++;throw Error('foreign source cannot authorize owners');}}),foreign);
+ assert.equal(calls,0);
+});
+test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
+ const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
+ assertNeowStaticPredecessor(packet);
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
+ const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
+ assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);
+ assert.deepEqual(extension.before[path],packet.neowRetirementContinuation.current[path],'original b1 bytes are not relabelled');
+ const replay=extendNeowStaticEpoch(prior,extension).proof;
+ for(const [name,target]of Object.entries(oldTargets))assert.deepEqual(replay.targets[name],target,'unchanged first-fix target '+name);
+ for(const p of Object.keys(proof.current))assert.deepEqual(proof.current[p],extension.current[p]??neowRetirementStaticPrior.files[p]);
+ assert.equal(proof.currentTreeCommitted,false);
+ assert.equal(proof.currentCommit,'9783f9ed4fdf021270668b66c863b9dfeebc7150');
+ assert.equal(sourceEpoch.preCombinedSource(path,read(path),{target:'neowRetirementStaticPrior',readSource:read}),extension.before[path].source);
+ for(const bad of [null,read(path)+'\n'])assert.throws(()=>sourceEpoch.preCombinedSource(path,read(path),{target:'neowRetirementStaticPrior',readSource:p=>p===path?bad:read(p)}),/linked owner identity/);
+ for(const mutate of [r=>delete r.current[path],r=>r.before[path].source+='\n',r=>r.current[path].source+='\n',r=>r.currentCommit='f'.repeat(40)]){
+  const invalid=structuredClone(extension);mutate(invalid);assert.throws(()=>extendNeowStaticEpoch(prior,invalid));
  }
 });
 test('reward and mandatory card choices resume with their original live tokens',()=>{
