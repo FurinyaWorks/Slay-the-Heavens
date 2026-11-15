@@ -1,0 +1,1621 @@
+TAP version 13
+# node:internal/modules/run_main:123
+#     triggerUncaughtException(
+#     ^
+# AssertionError [ERR_ASSERTION]: combined linked owner identity: src/lua/abyss_battle_render_actors.lua
+#     at Object.preCombinedSource (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/tests/helpers/combined-epoch/source-epoch-runtime.mjs:119:4)
+#     at sourceSlice (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/tests/helpers/closeout-source-epoch.mjs:62:21)
+#     at project (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/[eval1]:6:22)
+#     at file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/[eval1]:7:17
+#     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+#     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:272:26)
+#     at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:268:20)
+#     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+#   generatedMessage: false,
+#   code: 'ERR_ASSERTION',
+#   actual: false,
+#   expected: true,
+#   operator: '==',
+#   diff: 'simple'
+# }
+# Node.js v22.22.1
+# Subtest: runtime helper copy continuation retains every old view and rejects stale predecessor identity
+ok 1 - runtime helper copy continuation retains every old view and rejects stale predecessor identity
+  ---
+  duration_ms: 480.7924
+  type: 'test'
+  ...
+# Subtest: runtime helper copy freshly rejects isolated edits and deletion after warm copy success
+ok 2 - runtime helper copy freshly rejects isolated edits and deletion after warm copy success
+  ---
+  duration_ms: 1741.1943
+  type: 'test'
+  ...
+# Subtest: shop/deck continuation retains the complete closeout predecessor and every original target
+not ok 3 - shop/deck continuation retains the complete closeout predecessor and every original target
+  ---
+  duration_ms: 397.2438
+  type: 'test'
+  location: 'F:\\New folder\\.worktrees\\release-pc-item-icons-1115\\tests\\integration-source-epoch.test.mjs:51:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    src/lua/abyss_potion_discard_ui.lua
+    + actual - expected
+    ... Skipped lines
+    
+      '-- Physical slots follow capacity; outside-combat use and discard are explicit.\n' +
+        "local Run=require('abyss_run')\n" +
+        "local Theme=require('abyss_theme')\n" +
+    +   "local Art=require('abyss_lowcost_art')\n" +
+        "local integer=require('abyss_numbers').integer\n" +
+        'local M={}\n' +
+        "local Controller=require('abyss_controller')\n" +
+        'local function find(entries,id)for _,entry in ipairs(entries)do if entry.id==id then return entry end end end\n' +
+        'local function entryFace(variant,official,mapSlots)\n' +
+    ...
+        'local function refreshBottle(bottle,id,platform)\n' +
+    +   '    bottle:SetVisible(id~=nil);if not id then Art.hide(bottle,false);return end\n' +
+    -   '    bottle:SetVisible(id~=nil);if not id then return end\n' +
+        '    bottle:SetImage(platform.imageSource,Theme.icon.potion[id] or Theme.icon.intent.unknown)\n' +
+        "    local colour=(Theme.icon.potionTint or {})[id] or (id=='fire_potion' and Theme.color.potionShell.fire or Theme.color.potionShell.normal).ink\n" +
+        '    bottle.imageColor=platform.color(colour.r,colour.g,colour.b,colour.a)\n' +
+    +   "    local size=Theme.presentationProfile=='official-assets-first' and Theme.layout.battlePotions.bottleSize or Theme.layout.potionDiscard.entryVisual.bottleSize\n" +
+    +   "    Art.paint(bottle,'potion',id,size,platform)\n" +
+        'end\n' +
+        'function M.refreshEntry(hit,run,platform,mapSlots)\n' +
+        '    local capacity=run and Run.potionCapacity(run) or 0\n' +
+        "    for _,state in ipairs({'normal','hover','pressed','disabled'})do\n" +
+        '        local variant=hit:GetChild(state)\n' +
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    -- Physical slots follow capacity; outside-combat use and discard are explicit.
+    local Run=require('abyss_run')
+    local Theme=require('abyss_theme')
+    local integer=require('abyss_numbers').integer
+    local M={}
+    local Controller=require('abyss_controller')
+    local function find(entries,id)for _,entry in ipairs(entries)do if entry.id==id then return entry end end end
+    local function entryFace(variant,official,mapSlots)
+            if official or Theme.presentationProfile=='v25-reference' and variant:GetChild('v25MapPotionStyle') then
+                for _,name in ipairs({'label','entryFace','officialButtonBacking'})do
+                    local control=variant:GetChild(name)
+                    if control then control:SetVisible(not mapSlots)end
+                end
+            end
+    end
+    -- Read-only shared entry paint. Keep the existing management button and its
+    -- binding; a slot silhouette never consumes a potion or changes selection.
+    local function refreshBottle(bottle,id,platform)
+        bottle:SetVisible(id~=nil);if not id then return end
+        bottle:SetImage(platform.imageSource,Theme.icon.potion[id] or Theme.icon.intent.unknown)
+        local colour=(Theme.icon.potionTint or {})[id] or (id=='fire_potion' and Theme.color.potionShell.fire or Theme.color.potionShell.normal).ink
+        bottle.imageColor=platform.color(colour.r,colour.g,colour.b,colour.a)
+    end
+    function M.refreshEntry(hit,run,platform,mapSlots)
+        local capacity=run and Run.potionCapacity(run) or 0
+        for _,state in ipairs({'normal','hover','pressed','disabled'})do
+            local variant=hit:GetChild(state)
+            local official=Theme.presentationProfile=='official-assets-first'
+            entryFace(variant,official,mapSlots)
+            variant:GetChild('label').text=run and '药水 '..Run.potionCount(run)..'/'..capacity or '药水'
+            for i=1,Theme.layout.battlePotions.count do
+                local slot=variant:GetChild('slot'..i)
+                local id=i<=capacity and run.potions[i] or nil
+                slot:SetVisible(mapSlots==true and i<=capacity)
+                if mapSlots then
+                    local step=official and Theme.officialAssets.battleHud.potionStep or 42
+                    slot:SetAnchoredPosition((i-(capacity+1)/2)*step,0)
+                end
+                slot:GetChild('emptyShell'):SetVisible(id==nil)
+                slot:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
+                slot:GetChild('fireShell'):SetVisible(id=='fire_potion')
+                slot:GetChild('selectedShell'):SetVisible(false)
+                refreshBottle(slot:GetChild('bottle'),id,platform)
+            end
+        end
+    end
+    function M.new(root,clickEvent,platform,allowed,onChange,onClose)
+        local self={root=root,visible=false,generation=0}
+        local function child(name)return assert(root:GetChild(name),'missing potion control '..name)end
+        local function caption(name,value)
+            local hit=child(name):GetChild('hit')
+            for _,state in ipairs({'normal','hover','pressed','disabled'})do hit:GetChild(state):GetChild('label').text=value end
+        end
+        local function currentSelection()
+            local s=self.selected
+            return s and s.slot<=Run.potionCapacity(self.run) and self.run.potions==s.inventory and self.run.potions[s.slot]==s.id
+                and self.run.phase==s.phase and self.run.combat==s.battle
+        end
+        local function detail(definition) local special=require('abyss_potion_text').special(definition,self.run,true);if special then return definition.name..'；'..special end
+            if require('abyss_relic_hooks').owns(self.run,'sacred_bark') then
+                return definition.name..'；'..require('abyss_potion_text').describe(self.run,definition.id)
+            end
+            if definition.description then return definition.name..'；'..definition.description end
+            local result={definition.name}
+            for _,effect in ipairs(definition.effects)do
+                local value=integer(effect.value or 0)
+                if effect.op=='damage'then result[#result+1]='对一个敌人造成 '..value..' 点伤害'
+                elseif effect.op=='block'then result[#result+1]='获得 '..value..' 点格挡'
+                elseif effect.op=='energy'then result[#result+1]='获得 '..value..' 点能量'
+                elseif effect.status then
+                    local status=find(self.run.data.statuses.statuses,effect.status)
+                    result[#result+1]=(effect.op=='applyStatus' and '使一个敌人获得 ' or '获得 ')..value..' 层'..(status and status.name or effect.status)
+                end
+            end
+            return table.concat(result,'；')
+        end
+        function self:render()
+            if not self.visible then return end
+            self.generation=self.generation+1
+            if not currentSelection()then self.selected=nil end
+            local capacity=Run.potionCapacity(self.run)
+            for slot=1,Theme.layout.battlePotions.count do
+                local id=self.run.potions[slot]
+                local definition=id and find(self.run.data.potions.potions,id)
+                child('slot'..slot):SetVisible(slot<=capacity)
+                caption('slot'..slot,'槽 '..slot..'\n'..(definition and definition.name or '空槽'))
+                local hit=child('slot'..slot):GetChild('hit');hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
+            end
+            local selected=self.selected
+            child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
+            local view=selected and Run.potionView(self.run)[selected.slot]
+            local discard=child('discard'):GetChild('hit');discard.interactable=view and view.canDiscard~=false or false;discard.raycastTarget=discard.interactable
+            local use=child('use'):GetChild('hit');use.interactable=self.run.phase~='combat' and view and view.canUse or false;use.raycastTarget=use.interactable
+            if view and view.reason=='potion_event_restricted' then
+                child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
+            end
+        end
+        function self:open(run)
+            if self.visible or not allowed(run)then return false end
+            self.visible,self.run,self.selected=true,run,nil
+            root:SetVisible(true);root:SetAsLastSibling();self:render();return true
+        end
+        function self:close()
+            if not self.visible then return false end
+            self.visible,self.run,self.selected=false,nil,nil
+            self.generation=self.generation+1;root:SetVisible(false);return true
+        end
+        local function bind(name,action)
+            local hit=child(name):GetChild('hit')
+            local held,released,observed
+            local function valid(token)
+                return self.visible and allowed(self.run) and hit.interactable
+                    and (not token or token.run==self.run and token.generation==self.generation
+                        and token.phase==self.run.phase and token.battle==self.run.combat
+                        and token.inventory==self.run.potions
+                        and (not token.battle or token.turn==token.battle.turn and token.battlePhase==token.battle.phase))
+            end
+            local cursor=platform.cursorEvents or {}
+            Controller.bind(platform.controller,hit,'potions',action,function()return valid()end,name=='cancel' and 100 or 10)
+            if cursor.CursorDown and cursor.CursorUp then
+                hit:AddCursorEventListener(cursor.CursorDown,function(event)
+                    observed=true;held,released=nil,nil
+                    if valid()then held={run=self.run,generation=self.generation,touch=event and event.touchId,
+                        phase=self.run.phase,battle=self.run.combat,inventory=self.run.potions,
+                        turn=self.run.combat and self.run.combat.turn,battlePhase=self.run.combat and self.run.combat.phase}end
+                end)
+                hit:AddCursorEventListener(cursor.CursorUp,function(event)
+                    released=held and held.touch==(event and event.touchId) and valid(held) and held or nil;held=nil
+                end)
+                if cursor.CursorEndDrag then hit:AddCursorEventListener(cursor.CursorEndDrag,function()held,released=nil,nil end)end
+            end
+            hit:AddCursorEventListener(clickEvent,function(event)
+                if Controller.pointerBlocked(platform.controller)then return false end
+                if observed then
+                    local token=released;released=nil
+                    if not token or token.touch~=(event and event.touchId) or not valid(token)then return false end
+                elseif not valid()then return false end
+                return action()
+            end)
+        end
+        for i=1,Theme.layout.battlePotions.count do
+            local slot=i
+            bind('slot'..slot,function()
+                self.selected={slot=slot,id=self.run.potions[slot],inventory=self.run.potions,phase=self.run.phase,battle=self.run.combat}
+                self:render();return true
+            end)
+        end
+        bind('discard',function()
+            if not currentSelection()then self:render();return false end
+            local ok,reason=Run.discardPotion(self.run,self.selected.slot)
+            self.selected=nil;self:render();if ok then onChange()end;return ok,reason
+        end)
+        bind('use',function()
+            if not currentSelection() or self.run.phase=='combat' then self:render();return false end
+            local ok,reason=Run.usePotion(self.run,self.selected.slot)
+            self.selected=nil;self:render();if ok then onChange()end;return ok,reason
+        end)
+        bind('cancel',onClose)
+        root.disableCursorEventPassthrough=true
+        child('blocker'):AddCursorEventListener(clickEvent,function()return true end)
+        root:SetVisible(false)
+        return self
+    end
+    return M
+    
+  actual: |-
+    -- Physical slots follow capacity; outside-combat use and discard are explicit.
+    local Run=require('abyss_run')
+    local Theme=require('abyss_theme')
+    local Art=require('abyss_lowcost_art')
+    local integer=require('abyss_numbers').integer
+    local M={}
+    local Controller=require('abyss_controller')
+    local function find(entries,id)for _,entry in ipairs(entries)do if entry.id==id then return entry end end end
+    local function entryFace(variant,official,mapSlots)
+            if official or Theme.presentationProfile=='v25-reference' and variant:GetChild('v25MapPotionStyle') then
+                for _,name in ipairs({'label','entryFace','officialButtonBacking'})do
+                    local control=variant:GetChild(name)
+                    if control then control:SetVisible(not mapSlots)end
+                end
+            end
+    end
+    -- Read-only shared entry paint. Keep the existing management button and its
+    -- binding; a slot silhouette never consumes a potion or changes selection.
+    local function refreshBottle(bottle,id,platform)
+        bottle:SetVisible(id~=nil);if not id then Art.hide(bottle,false);return end
+        bottle:SetImage(platform.imageSource,Theme.icon.potion[id] or Theme.icon.intent.unknown)
+        local colour=(Theme.icon.potionTint or {})[id] or (id=='fire_potion' and Theme.color.potionShell.fire or Theme.color.potionShell.normal).ink
+        bottle.imageColor=platform.color(colour.r,colour.g,colour.b,colour.a)
+        local size=Theme.presentationProfile=='official-assets-first' and Theme.layout.battlePotions.bottleSize or Theme.layout.potionDiscard.entryVisual.bottleSize
+        Art.paint(bottle,'potion',id,size,platform)
+    end
+    function M.refreshEntry(hit,run,platform,mapSlots)
+        local capacity=run and Run.potionCapacity(run) or 0
+        for _,state in ipairs({'normal','hover','pressed','disabled'})do
+            local variant=hit:GetChild(state)
+            local official=Theme.presentationProfile=='official-assets-first'
+            entryFace(variant,official,mapSlots)
+            variant:GetChild('label').text=run and '药水 '..Run.potionCount(run)..'/'..capacity or '药水'
+            for i=1,Theme.layout.battlePotions.count do
+                local slot=variant:GetChild('slot'..i)
+                local id=i<=capacity and run.potions[i] or nil
+                slot:SetVisible(mapSlots==true and i<=capacity)
+                if mapSlots then
+                    local step=official and Theme.officialAssets.battleHud.potionStep or 42
+                    slot:SetAnchoredPosition((i-(capacity+1)/2)*step,0)
+                end
+                slot:GetChild('emptyShell'):SetVisible(id==nil)
+                slot:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
+                slot:GetChild('fireShell'):SetVisible(id=='fire_potion')
+                slot:GetChild('selectedShell'):SetVisible(false)
+                refreshBottle(slot:GetChild('bottle'),id,platform)
+            end
+        end
+    end
+    function M.new(root,clickEvent,platform,allowed,onChange,onClose)
+        local self={root=root,visible=false,generation=0}
+        local function child(name)return assert(root:GetChild(name),'missing potion control '..name)end
+        local function caption(name,value)
+            local hit=child(name):GetChild('hit')
+            for _,state in ipairs({'normal','hover','pressed','disabled'})do hit:GetChild(state):GetChild('label').text=value end
+        end
+        local function currentSelection()
+            local s=self.selected
+            return s and s.slot<=Run.potionCapacity(self.run) and self.run.potions==s.inventory and self.run.potions[s.slot]==s.id
+                and self.run.phase==s.phase and self.run.combat==s.battle
+        end
+        local function detail(definition) local special=require('abyss_potion_text').special(definition,self.run,true);if special then return definition.name..'；'..special end
+            if require('abyss_relic_hooks').owns(self.run,'sacred_bark') then
+                return definition.name..'；'..require('abyss_potion_text').describe(self.run,definition.id)
+            end
+            if definition.description then return definition.name..'；'..definition.description end
+            local result={definition.name}
+            for _,effect in ipairs(definition.effects)do
+                local value=integer(effect.value or 0)
+                if effect.op=='damage'then result[#result+1]='对一个敌人造成 '..value..' 点伤害'
+                elseif effect.op=='block'then result[#result+1]='获得 '..value..' 点格挡'
+                elseif effect.op=='energy'then result[#result+1]='获得 '..value..' 点能量'
+                elseif effect.status then
+                    local status=find(self.run.data.statuses.statuses,effect.status)
+                    result[#result+1]=(effect.op=='applyStatus' and '使一个敌人获得 ' or '获得 ')..value..' 层'..(status and status.name or effect.status)
+                end
+            end
+            return table.concat(result,'；')
+        end
+        function self:render()
+            if not self.visible then return end
+            self.generation=self.generation+1
+            if not currentSelection()then self.selected=nil end
+            local capacity=Run.potionCapacity(self.run)
+            for slot=1,Theme.layout.battlePotions.count do
+                local id=self.run.potions[slot]
+                local definition=id and find(self.run.data.potions.potions,id)
+                child('slot'..slot):SetVisible(slot<=capacity)
+                caption('slot'..slot,'槽 '..slot..'\n'..(definition and definition.name or '空槽'))
+                local hit=child('slot'..slot):GetChild('hit');hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
+            end
+            local selected=self.selected
+            child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
+            local view=selected and Run.potionView(self.run)[selected.slot]
+            local discard=child('discard'):GetChild('hit');discard.interactable=view and view.canDiscard~=false or false;discard.raycastTarget=discard.interactable
+            local use=child('use'):GetChild('hit');use.interactable=self.run.phase~='combat' and view and view.canUse or false;use.raycastTarget=use.interactable
+            if view and view.reason=='potion_event_restricted' then
+                child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
+            end
+        end
+        function self:open(run)
+            if self.visible or not allowed(run)then return false end
+            self.visible,self.run,self.selected=true,run,nil
+            root:SetVisible(true);root:SetAsLastSibling();self:render();return true
+        end
+        function self:close()
+            if not self.visible then return false end
+            self.visible,self.run,self.selected=false,nil,nil
+            self.generation=self.generation+1;root:SetVisible(false);return true
+        end
+        local function bind(name,action)
+            local hit=child(name):GetChild('hit')
+            local held,released,observed
+            local function valid(token)
+                return self.visible and allowed(self.run) and hit.interactable
+                    and (not token or token.run==self.run and token.generation==self.generation
+                        and token.phase==self.run.phase and token.battle==self.run.combat
+                        and token.inventory==self.run.potions
+                        and (not token.battle or token.turn==token.battle.turn and token.battlePhase==token.battle.phase))
+            end
+            local cursor=platform.cursorEvents or {}
+            Controller.bind(platform.controller,hit,'potions',action,function()return valid()end,name=='cancel' and 100 or 10)
+            if cursor.CursorDown and cursor.CursorUp then
+                hit:AddCursorEventListener(cursor.CursorDown,function(event)
+                    observed=true;held,released=nil,nil
+                    if valid()then held={run=self.run,generation=self.generation,touch=event and event.touchId,
+                        phase=self.run.phase,battle=self.run.combat,inventory=self.run.potions,
+                        turn=self.run.combat and self.run.combat.turn,battlePhase=self.run.combat and self.run.combat.phase}end
+                end)
+                hit:AddCursorEventListener(cursor.CursorUp,function(event)
+                    released=held and held.touch==(event and event.touchId) and valid(held) and held or nil;held=nil
+                end)
+                if cursor.CursorEndDrag then hit:AddCursorEventListener(cursor.CursorEndDrag,function()held,released=nil,nil end)end
+            end
+            hit:AddCursorEventListener(clickEvent,function(event)
+                if Controller.pointerBlocked(platform.controller)then return false end
+                if observed then
+                    local token=released;released=nil
+                    if not token or token.touch~=(event and event.touchId) or not valid(token)then return false end
+                elseif not valid()then return false end
+                return action()
+            end)
+        end
+        for i=1,Theme.layout.battlePotions.count do
+            local slot=i
+            bind('slot'..slot,function()
+                self.selected={slot=slot,id=self.run.potions[slot],inventory=self.run.potions,phase=self.run.phase,battle=self.run.combat}
+                self:render();return true
+            end)
+        end
+        bind('discard',function()
+            if not currentSelection()then self:render();return false end
+            local ok,reason=Run.discardPotion(self.run,self.selected.slot)
+            self.selected=nil;self:render();if ok then onChange()end;return ok,reason
+        end)
+        bind('use',function()
+            if not currentSelection() or self.run.phase=='combat' then self:render();return false end
+            local ok,reason=Run.usePotion(self.run,self.selected.slot)
+            self.selected=nil;self:render();if ok then onChange()end;return ok,reason
+        end)
+        bind('cancel',onClose)
+        root.disableCursorEventPassthrough=true
+        child('blocker'):AddCursorEventListener(clickEvent,function()return true end)
+        root:SetVisible(false)
+        return self
+    end
+    return M
+    
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/integration-source-epoch.test.mjs:68:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: shop/deck source slices reject unknown drift without I/O and freshly reject every missing or changed owner
+ok 4 - shop/deck source slices reject unknown drift without I/O and freshly reject every missing or changed owner
+  ---
+  duration_ms: 194.3293
+  type: 'test'
+  ...
+# Subtest: shop/deck archive collection rejects unlisted drift, missing sources and changes during collection
+ok 5 - shop/deck archive collection rejects unlisted drift, missing sources and changes during collection
+  ---
+  duration_ms: 1646.8228
+  type: 'test'
+  ...
+# Subtest: detached shop/deck source slices use fresh local owners and cannot replace missing sources with archived text
+not ok 6 - detached shop/deck source slices use fresh local owners and cannot replace missing sources with archived text
+  ---
+  duration_ms: 1677.5359
+  type: 'test'
+  location: 'F:\\New folder\\.worktrees\\release-pc-item-icons-1115\\tests\\integration-source-epoch.test.mjs:120:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Command failed: C:\Program Files\nodejs\node.exe --input-type=module -e import assert from 'node:assert/strict';
+       import {readFileSync,writeFileSync,unlinkSync} from 'node:fs';
+       import {sourceSlice,sourceEpoch} from './tests/helpers/closeout-source-epoch.mjs';
+       const path='src/lua/abyss_deck_ui.lua',owner='src/lua/abyss_merchant.lua';
+       const input=readFileSync(path,'utf8'),expected=sourceEpoch.proof.targets.shopDeckPrior.files[path].source;
+       const project=()=>sourceSlice(path,input,'shopDeckPrior');
+       assert.equal(project(),expected);
+       const source=readFileSync(owner,'utf8');writeFileSync(owner,source+'\n');
+       assert.throws(project,/linked owner identity/);
+       writeFileSync(owner,source);assert.equal(project(),expected);
+       unlinkSync(owner);assert.throws(project,/linked owner missing/);
+    node:internal/modules/run_main:123
+        triggerUncaughtException(
+        ^
+    
+    AssertionError [ERR_ASSERTION]: combined linked owner identity: src/lua/abyss_battle_render_actors.lua
+        at Object.preCombinedSource (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/tests/helpers/combined-epoch/source-epoch-runtime.mjs:119:4)
+        at sourceSlice (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/tests/helpers/closeout-source-epoch.mjs:62:21)
+        at project (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/[eval1]:6:22)
+        at file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/[eval1]:7:17
+        at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+        at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:272:26)
+        at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:268:20)
+        at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+      generatedMessage: false,
+      code: 'ERR_ASSERTION',
+      actual: false,
+      expected: true,
+      operator: '==',
+      diff: 'simple'
+    }
+    
+    Node.js v22.22.1
+    
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    Object.preCombinedSource (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/tests/helpers/combined-epoch/source-epoch-runtime.mjs:119:4)
+    sourceSlice (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/tests/helpers/closeout-source-epoch.mjs:62:21)
+    project (file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/[eval1]:6:22)
+    file:///C:/Users/ADMINI%7E1/AppData/Local/Temp/shop-deck-epoch-Jo0hAF/[eval1]:7:17
+    ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:272:26)
+    async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:268:20)
+    async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+    genericNodeError (node:internal/errors:983:15)
+    wrappedFn (node:internal/errors:537:14)
+    checkExecSyncError (node:child_process:916:11)
+    execFileSync (node:child_process:952:15)
+    TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/integration-source-epoch.test.mjs:136:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: fresh authorization covers the complete changed-owner union without caching
+ok 7 - fresh authorization covers the complete changed-owner union without caching
+  ---
+  duration_ms: 4.4416
+  type: 'test'
+  ...
+# Subtest: combined epoch authenticates the complete current production tree
+not ok 8 - combined epoch authenticates the complete current production tree
+  ---
+  duration_ms: 14.8051
+  type: 'test'
+  location: 'F:\\New folder\\.worktrees\\release-pc-item-icons-1115\\tests\\integration-source-epoch.test.mjs:143:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    src/lua/abyss_battle_render_actors.lua
+    + actual - expected
+    ... Skipped lines
+    
+      '-- Read state, issue Run commands. No damage/energy/outcome rules live in this view.\n' +
+        'local Combat = require("abyss_combat")\n' +
+        'local Actors = require("abyss_actor")\n' +
+        'local Theme = require("abyss_theme")\n' +
+        "local EnemyView = require('abyss_battle_enemy_view')\n" +
+    ...
+        '    local function enemyIntentAllowed(actor,battle)\n' +
+    +   '        return not re'... 14973 more characters
+    -   '        return not re'... 14843 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
+    local Combat = require("abyss_combat")
+    local Actors = require("abyss_actor")
+    local Theme = require("abyss_theme")
+    local EnemyView = require('abyss_battle_enemy_view')
+    local DamageView = require('abyss_battle_damage_view')
+    local PotionView = require("abyss_battle_potion_view")
+    local IntentView = require("abyss_battle_intent_view")
+    local RewardOwner = require("abyss_battle_reward_owner")
+    local LowCostArt=require('abyss_lowcost_art')
+    local M = {}
+    local C, L, S = Theme.color, Theme.layout, Theme.space
+    local number = require("abyss_numbers").integer
+    local potionText = PotionView.potionText
+    local intentView = IntentView.intentView
+    -- Last successful geometry writer per native handle; tokens hold no view references.
+    local intentSizes=setmetatable({},{__mode='k'})
+    local intentPositions=setmetatable({},{__mode='k'})
+    local function intentSize(control,width,height,owner)
+        local painted=intentSizes[control]
+        if painted and painted.owner==owner and painted.width==width
+            and painted.height==height and control.alive~=false then return end
+        -- Revoke the old promise before a setter can partially apply or re-enter.
+        local pending={};intentSizes[control]=pending
+        local ok,result=pcall(control.SetSizeDelta,control,width,height)
+        local current=intentSizes[control]==pending
+        intentSizes[control]=nil
+        if not ok then error(result,0) end
+        if result~=false and current then intentSizes[control]={owner=owner,width=width,height=height} end
+    end
+    local function intentPosition(control,x,y,owner)
+        local painted=intentPositions[control]
+        if painted and painted.owner==owner and painted.x==x
+            and painted.y==y and control.alive~=false then return end
+        local pending={};intentPositions[control]=pending
+        local ok,result=pcall(control.SetAnchoredPosition,control,x,y)
+        local current=intentPositions[control]==pending
+        intentPositions[control]=nil
+        if not ok then error(result,0) end
+        -- Overlapping native setters have unknown completion order: retry next time.
+        if result~=false and current then intentPositions[control]={owner=owner,x=x,y=y} end
+    end
+    -- Only the six intent controls have exclusive visibility writers in this module.
+    -- Name visibility is also owned by UnitView, so it is deliberately not cached.
+    local intentVisibilities=setmetatable({},{__mode='k'})
+    local function intentVisible(control,value,binding)
+        local saved=intentVisibilities[control]
+        if saved and saved.binding==binding and saved.value==value and control.alive~=false then return end
+        local pending={};intentVisibilities[control]=pending
+        local ok,accepted=pcall(control.SetVisible,control,value)
+        local ownsWrite=intentVisibilities[control]==pending
+        intentVisibilities[control]=nil
+        if not ok then error(accepted,0) end
+        if accepted~=false and ownsWrite then intentVisibilities[control]={binding=binding,value=value} end
+    end
+    local function needsTarget(state, instance)
+        -- Ask the core to validate the same card with and without a target.
+        local _, reason = Combat.canPlay(state, instance.uid, nil)
+        return reason == "invalid_target"
+    end
+    local function aimsAtAllEnemies(battle,uid)
+        for _,instance in ipairs(battle.hand) do
+            if instance.uid==uid then return Combat.cardDefinition(battle,instance).target=='ALL_ENEMY' end
+        end
+        return false
+    end
+    local function enemyPortraitIcon(enemy)
+        return Theme.icon.enemy[enemy.definitionId] or Theme.icon.node[enemy.tier == 'normal' and 'combat' or enemy.tier]
+    end
+    local function paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
+        local icon=box:GetChild('portrait')
+        if host.monsterArt:write(box,x,y,portrait,tone)then LowCostArt.hide(icon,false);return end
+        LowCostArt.paint(icon,'enemy',enemy.definitionId,portrait,host.platform)
+        LowCostArt.dim(icon,dim and .4 or 1)
+        LowCostArt.refresh(box,{r=tone.r,g=tone.g,b=tone.b,a=255})
+    end
+    -- Explicit ports preserve the approved implementation without a shared constructor closure.
+    function M.install(owner, ownership, host, dependencies)
+        -- A new view binding starts fresh; weak native keys cannot retain retired actors.
+        local intentGeometryOwner={}
+        local intentImages=setmetatable({},{__mode='k'})
+        local intentTexts=setmetatable({},{__mode='k'})
+        local potionCaptions=setmetatable({},{__mode='k'})
+        local function intentPicture(control,id)
+            local image=type(id)=='table' and id.id or id
+            local source=host.platform.imageSource
+            local painted=intentImages[control]
+            if painted and painted.image==image and painted.source==source and control.alive~=false then return end
+            intentImages[control]=nil
+            if dependencies.picture(control,id)~=false then intentImages[control]={image=image,source=source} end
+        end
+        local function pendingCardTarget(frame)
+            if not frame.fighting or not owner.selected then return false end
+            for _, instance in ipairs(frame.battle.hand) do
+                if instance.uid == owner.selected then return needsTarget(frame.battle, instance) end
+            end
+            return false
+        end
+        local function potionHighlighted(enemy, index, pendingTarget)
+            local aim = owner.potionAim
+            if not aim or pendingTarget or not Actors.isActive(enemy) then return false end
+            if aim.moving then
+                local valid, hovered = dependencies.potionDragTarget(aim)
+                return valid and hovered == index
+            end
+            -- Point selection advertises every legal enemy; a moving bottle locks
+            -- only the hovered target through potionDragTarget above.
+            return true
+        end
+        local function enemyHighlighted(frame, enemy, index, pendingTarget)
+            local targetable = frame.active and pendingTarget and Combat.canPlay(frame.battle, owner.selected, index)
+            if owner.gesture and owner.gesture.moving then
+                local valid, hovered = dependencies.dragTarget(owner.gesture)
+                targetable = valid and hovered == index
+            end
+            return targetable == true or potionHighlighted(enemy,index,pendingTarget) or owner.acting == enemy.id
+        end
+        local function enemyIntentFace(frame,enemy,index)
+            local face
+            if IntentView.hasSourceIntent(enemy)then
+                local view=host.monsterIntentParticles
+                local selected=view:needsSelected(enemy.id) and IntentView.selectedDescriptor(frame.battle,index) or nil
+                face=view:face(enemy.id,selected,function(base)
+                    return Combat.intentAttackAmount(frame.battle,enemy,frame.battle.player,base)
+                end)
+            else face=intentView(frame.battle,index)end
+            -- Dome changes visibility, never the source selected/displayed state.
+            if require('abyss_boss_relics').hidesIntents(owner.run)then face.hidden=true;face.value=''end
+            return face
+        end
+        local function intentGeometry(portrait,geometry)
+            if geometry then return geometry.intentX,geometry.intentY,geometry.intentWidth end
+            return 0,portrait/2,128*Theme.canvas.base[1]/1920
+        end
+        local function intentTone(alpha,kind)
+            -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
+            -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
+            local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
+            return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
+        end
+        local function renderIntentIcon(box,face,x,y,size,allowed,alpha)
+            local kind=face.worldKind or face.kind
+            local visible=allowed~=false and (face.sourceEnum and face.worldVisible or not face.sourceEnum)
+            local icon=box:GetChild('intentIcon');intentVisible(icon,visible==true,intentGeometryOwner)
+            -- STS 128px intent frames are mostly transparent padding; the official glyphs here
+            -- are full-bleed, so draw them at the glyph size and float them clear of the head.
+            local glyph=math.min(size,L.intent.size)
+            intentSize(icon,glyph,glyph,intentGeometryOwner);intentPosition(icon,x,y,intentGeometryOwner)
+            if visible then
+                intentPicture(icon,Theme.icon.intent[kind] or Theme.icon.intent.unknown)
+                dependencies.tint(icon,intentTone(alpha,kind))
+            end
+        end
+        local function renderIntentValue(box,face,x,y,allowed,alpha)
+            local kind=face.worldKind or face.kind
+            local value=box:GetChild('intent')
+            local attack=face.sourceEnum and face.sourceEnum:sub(1,6)=='ATTACK' or not face.sourceEnum and kind=='attack'
+            intentVisible(value,allowed~=false and attack and face.value~='',intentGeometryOwner)
+            local text=face.value and face.value:gsub('×','x') or ''
+            if intentTexts[value]~=text or value.alive==false then
+                intentTexts[value]=nil
+                value.text=text
+                intentTexts[value]=text
+            end
+            local width=math.max(L.intent.valueWidth,utf8.len(text)*L.intent.numberSize)
+            intentSize(value,width,L.nativeText.lineHeight,intentGeometryOwner)
+            intentPosition(value,x+L.intent.size/2+S.xs+width/2,y,intentGeometryOwner)
+            dependencies.ink(value,intentTone(alpha))
+        end
+        local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
+            local x,y,size=intentGeometry(portrait,geometry)
+            renderIntentIcon(box,face,x,y,size,allowed,alpha)
+            for _,name in ipairs({'intentBadge','intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
+            renderIntentValue(box,face,x,y,allowed,alpha)
+            local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
+            local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,intentGeometryOwner)
+            intentPosition(hit,x,y,intentGeometryOwner);intentSize(hit,64*sx,64*sy,intentGeometryOwner)
+        end
+        local function enemyIntentAllowed(actor,battle)
+            return not require('abyss_boss_relics').hidesIntents(owner.run) and Actors.isPresent(actor) and not owner.feedback.dying[actor.id]
+                and not owner.feedback.escaping[actor.id] and battle.player.hp>0
+        end
+        local function enemyAimProjection(frame)
+            local aimed = owner.gesture or owner.carry
+            local projection = { pendingTarget = pendingCardTarget(frame) }
+            if aimed and aimed.moving then projection.valid, projection.target = dependencies.dragTarget(aimed) end
+            -- Original targeting updates card damage, not future enemy HP. Keep the
+            -- legacy preview outside this profile; cloning and playing a detached
+            -- battle on pointer input is both unnecessary and expensive here.
+            local futureHp = Theme.presentationProfile ~= 'official-assets-first'
+            if projection.valid and not futureHp then projection.allEnemies=aimsAtAllEnemies(frame.battle,aimed.uid) end
+            if projection.valid and futureHp then projection.losses = DamageView.preview(frame.battle, aimed.uid, projection.target) end
+            local potion=owner.potionAim
+            if potion and potion.moving then
+                projection.valid,projection.target=dependencies.potionDragTarget(potion)
+                if projection.valid and futureHp then projection.losses=DamageView.potionPreview(owner.run,potion.slot,projection.target) end
+            end
+            return projection
+        end
+        local function renderDamagePreview(box, enemy, portrait, width, loss)
+            local preview = box:GetChild('damagePreview')
+            preview:SetVisible(loss ~= nil and loss.loss > 0)
+            preview:SetAnchoredPosition(0, -portrait / 2 - S.xxl + L.nativeText.lineHeight)
+            preview:SetSizeDelta(width, L.nativeText.lineHeight)
+            preview.text = loss and loss.loss > 0 and (loss.hp <= 0 and '击杀' or '−' .. number(loss.loss)) or ''
+            if loss and loss.loss > 0 then box:GetChild('hpFill').fillAmount = math.max(0, loss.hp / enemy.maxHp) end
+        end
+        local function renderEnemySlot(frame, box, entry, slot, count, aim)
+            local enemy = entry.actor
+            local x, width, portrait, step, y = dependencies.enemySlot(count, slot, enemy)
+            box:SetAnchoredPosition(x, y)
+            local selected = enemyHighlighted(frame, enemy, entry.index, aim.pendingTarget)
+                or aim.allEnemies==true and Actors.isActive(enemy)
+            local loss = aim.losses and aim.losses[entry.index]
+            if aim.valid and not aim.target and loss and loss.loss > 0 then selected = true end
+            local geometry=EnemyView.geometry(enemy)
+            host.unit(box, enemy, portrait, enemyPortraitIcon(enemy), width, selected,step,geometry)
+            host.monsterPowers:render(box,entry.controlSlot,enemy,geometry)
+            box:GetChild('hit'):SetSizeDelta(geometry.hitWidth,geometry.hitHeight)
+            box:GetChild('hit'):SetAnchoredPosition(geometry.hitX-x,geometry.hitY-y)
+            local dim = (aim.pendingTarget or owner.potionAim ~= nil) and not selected
+            local portraitTone = C.text
+            local tone={r=portraitTone.r,g=portraitTone.g,b=portraitTone.b,a=dim and 102 or 255}
+            dependencies.tint(box:GetChild('portrait'),tone)
+            paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
+            renderDamagePreview(box, enemy, portrait, width, loss)
+            renderEnemyIntent(box, enemyIntentFace(frame, enemy, entry.index), portrait,geometry,
+                enemyIntentAllowed(enemy,frame.battle),host.monsterIntentParticles:alpha(enemy.id))
+            host.monsterIntentParticles:paint(box,enemy.id,geometry,enemyIntentAllowed(enemy,frame.battle))
+        end
+        local function updateEnemyIntents(dt)
+            local battle=owner.displayBattle or owner.run and owner.run.combat
+            if not battle or not owner.active then return end
+            -- The surface manager owns live handles. Feedback rows may still include
+            -- a death whose independently clocked surface has already retired.
+            for _,entry in ipairs(owner.feedback.enemyRows or {})do
+                local actor=entry.actor
+                local box=host.monsterSurfaces:find(entry.id)
+                if box then
+                local face=enemyIntentFace({battle=battle,enemyPlayback=owner.feedback.busy},actor,entry.index)
+                local g=EnemyView.geometry(actor)
+                local dying,escaping=owner.feedback.dying[entry.id],owner.feedback.escaping[entry.id]
+                host.monsterIntentParticles:update(entry.id,dt,face,g,dying,escaping)
+                renderEnemyIntent(box,face,g.portrait,g,enemyIntentAllowed(actor,battle),
+                    host.monsterIntentParticles:alpha(entry.id))
+                host.monsterIntentParticles:paint(box,entry.id,g,enemyIntentAllowed(actor,battle) and face.sourceEnum~='NONE')
+                else
+                    assert(not Actors.isPresent(actor),'active monster intent surface missing: '..entry.id)
+                end
+            end
+        end
+        local function nameBlocked(actor)
+            if owner.feedback.dying[actor.id] or owner.feedback.escaping[actor.id] then return true end
+            if not owner.gesture then return false end
+            local battle=owner.run and owner.run.combat
+            for _,card in ipairs(battle and battle.hand or {})do
+                if card.uid==owner.selected then return not needsTarget(battle,card)end
+            end
+            return false
+        end
+        local function updateEnemyNames(dt)
+            local battle=owner.run and owner.run.combat
+            if ownership.nameBattle~=battle or not ownership.nameStates then ownership.nameBattle=battle;ownership.nameStates={}end
+            local x,y
+            if host.platform.cursorPosition then x,y=dependencies.point({GetUIPos=host.platform.cursorPosition})end
+            local wanted={}
+            host.monsterSurfaces:each(function(box,_,entry)
+                local id,actor=entry.id,entry.actor;wanted[id]=true
+                local state=ownership.nameStates[id] or {timer=0,alpha=0}
+                ownership.nameStates[id]=state
+                local g=EnemyView.geometry(actor)
+                local hovered=x and y and math.abs(x-g.hitX)<g.hitWidth/2 and math.abs(y-g.hitY)<g.hitHeight/2
+                local offset
+                state.timer,state.alpha,offset=EnemyView.nameStep(state.timer,state.alpha,dt,hovered,nameBlocked(actor),1)
+                local name=box:GetChild('name');name:SetVisible(owner.active and offset~=nil and state.alpha>0)
+                if offset then
+                    name:SetAnchoredPosition(g.nameX-(box:GetChild('portrait').x or 0),g.nameY+offset*g.sourceScale)
+                    dependencies.ink(name,{r=C.gold.r,g=C.gold.g,b=C.gold.b,a=math.floor(255*state.alpha)})
+                end
+            end)
+            for id in pairs(ownership.nameStates)do if not wanted[id]then ownership.nameStates[id]=nil end end
+        end
+        local function hideEscapingHud(box,id)
+            if not owner.feedback.escaping[id] then return end
+            for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','hp','blockEdge','blockIcon','block','name','statusRow','intentIcon','intentBadge','intentExtra','intent','intentHit'})do
+                local control=box:GetChild(name)
+                intentVisibilities[control]=nil
+                local ok,why=pcall(control.SetVisible,control,false)
+                intentVisibilities[control]=nil
+                if not ok then error(why,0) end
+            end
+        end
+        local function suspendEnemies(rows)
+            local ok,why=pcall(function()
+                host.monsterSurfaces:select(rows,owner.run.combat)
+                host.monsterArt:select(rows)
+                host.monsterSurfaces:each(function(box)
+                    assert(box:SetVisible(false)~=false,'suspended monster visibility rejected')
+                    host.monsterIntentParticles:release(box)
+                end)
+            end)
+            if not ok then
+                local cleaned,reason=pcall(owner.releaseMonsterSurfaces,owner)
+                error(tostring(why)..(cleaned and '' or '; cleanup: '..tostring(reason)))
+            end
+        end
+        local function canSuspendEnemies(frame)
+            return not owner.active and frame.fighting and owner.run and owner.run.phase=='combat'
+                and owner.suspendedBattle==owner.run.combat and host.monsterSurfaces.battle==owner.run.combat
+        end
+        local function renderEnemies(frame)
+            local rows = frame.fighting and EnemyView.slots(frame.battle, owner.feedback) or {}
+            local suspended=canSuspendEnemies(frame)
+            local retained=rows
+            if not owner.active then rows={}end
+            host.monsterIntentParticles:sync(rows,owner.run and owner.run.combat,owner.feedback.current,owner.active and frame.fighting)
+            if suspended then owner.feedback.enemyRows={};suspendEnemies(retained);return end
+            host.monsterSurfaces:select(rows,owner.run and owner.run.combat)
+            owner.feedback.enemyRows = rows
+            local aim = enemyAimProjection(frame)
+            for _,entry in ipairs(rows)do owner.feedback.bindEnemySlot(entry.controlSlot,entry.id)end
+            host.monsterArt:select(rows)
+            for index,entry in ipairs(rows)do
+                local box=assert(host.monsterSurfaces:find(entry.id))
+                renderEnemySlot(frame,box,entry,index,#rows,aim)
+                hideEscapingHud(box,entry.id)
+                box:SetVisible(true)
+            end
+            updateEnemyNames(0)
+        end
+        local function renderDetails(frame)
+            local reward=owner.info and owner.info.reward and RewardOwner.ready(owner,owner.info.reward)
+            if owner.info and (not owner.active or owner.busy or owner.gesture or not frame.fighting and not reward
+                or owner.info.battle ~= frame.run.combat) then owner.info = nil end
+            host.renderInfo(frame.battle or reward and frame.run.combat)
+        end
+        local function renderRewardActions(frame)
+            local run, stolen = frame.run, frame.stolen
+            dependencies.button("skip", owner.active and frame.picking == true and not run.rewards.cardResolved and not owner.busy, false, "跳过")
+            dependencies.button("stolenGold", owner.active and stolen and not stolen.claimed and not owner.busy, false,
+                stolen and (stolen.claimed and "已取回失金 " or "取回失金 ") .. number(stolen.amount) or "取回失金")
+        end
+        local function renderContinue(frame)
+            local run = frame.run
+            dependencies.button("continue", owner.active and run and (frame.manual or run.phase == "map") and not owner.busy, true,
+                frame.manual and "前往地图" or "再战一场")
+        end
+        local function bindPotionSlots(frame)
+            if frame.fighting and not owner.busy then
+                owner.potionBattle, owner.potionRun, owner.potionSlots = frame.battle, frame.run, {}
+                for slot = 1, frame.potionCapacity do
+                    local id = frame.run.potions[slot]
+                    if id then owner.potionSlots[slot] = {slot = slot, id = id} end
+                end
+            end
+        end
+        local function boundPotion(frame, index)
+            local binding = owner.potionSlots and owner.potionSlots[index]
+            local item = binding and frame.potions[binding.slot]
+            if item and item.id ~= binding.id then return nil end
+            return item
+        end
+        local function potionSelected(slot)
+            return owner.potionMenu and owner.potionMenu.slot==slot
+                or owner.potionAim and owner.potionAim.slot==slot
+        end
+        local function paintPotionContents(face,item,tones)
+            local bottle=face:GetChild('bottle');bottle:SetVisible(item~=nil)
+            face:GetChild('label'):SetVisible(false)
+            if item then
+                dependencies.picture(bottle,Theme.icon.potion[item.id] or Theme.icon.intent.unknown)
+                dependencies.tint(bottle,(Theme.icon.potionTint or {})[item.id]
+                    or (item.id=='fire_potion' and tones.fire.ink or tones.normal.ink))
+            end
+        end
+        local function paintPotionShell(slot,item)
+            local selected=item~=nil and potionSelected(slot)==true
+            local tones=C.potionShell
+            for _,state in ipairs({'normal','hover','pressed','disabled'})do
+                local face=dependencies.child('potion'..slot):GetChild(state)
+                face:GetChild('emptyShell'):SetVisible(item==nil)
+                face:GetChild('filledShell'):SetVisible(item~=nil and item.id~='fire_potion')
+                face:GetChild('fireShell'):SetVisible(item~=nil and item.id=='fire_potion')
+                face:GetChild('selectedShell'):SetVisible(selected)
+                dependencies.tint(face:GetChild('filledShell'):GetChild('rim'),selected and tones.selected.border or tones.normal.border)
+                dependencies.tint(face:GetChild('fireShell'):GetChild('rim'),selected and tones.selected.border or tones.fire.border)
+                paintPotionContents(face,item,tones)
+            end
+        end
+        local function paintPotionCaption(slot,item,visible)
+            local caption=dependencies.child('potionCaption'..slot)
+            local original=Theme.presentationProfile=='official-assets-first'
+            local shown=not original and visible==true and item~=nil
+            local text=not original and item and PotionView.slotLabel(item)or ''
+            local prior=potionCaptions[caption]
+            if not prior or prior.shown~=shown or prior.text~=text then
+                potionCaptions[caption]=nil
+                local accepted=true
+                if not prior or prior.shown~=shown then accepted=caption:SetVisible(shown)~=false end
+                if not prior or prior.text~=text then caption.text=text end
+                if accepted then potionCaptions[caption]={shown=shown,text=text} end
+            end
+        end
+        local function renderPotions(frame)
+            -- Fixed physical slots prevent a queued second click moving to another item.
+            bindPotionSlots(frame)
+            for i = 1, L.battlePotions.count do
+                local visible = frame.fighting and i <= frame.potionCapacity
+                dependencies.show("potion" .. i, visible)
+                local item = boundPotion(frame, i)
+                dependencies.button("potion" .. i, visible and frame.active and item ~= nil, false,
+                    item and potionText(item, frame.battle) or "空药水槽")
+                dependencies.show("potionHelp" .. i, false)
+                dependencies.button("potionHelp" .. i, visible and frame.active and item ~= nil, false, "")
+                paintPotionCaption(i,item,visible)
+                paintPotionShell(i,item)
+            end
+        end
+    
+        return {
+            updateEnemyNames=updateEnemyNames, updateEnemyIntents=updateEnemyIntents, pendingCardTarget=pendingCardTarget, enemyHighlighted=enemyHighlighted, enemyIntentFace=enemyIntentFace, renderEnemyIntent=renderEnemyIntent, enemyAimProjection=enemyAimProjection,
+            renderDamagePreview=renderDamagePreview, enemyPortraitIcon=enemyPortraitIcon, renderEnemySlot=renderEnemySlot, renderEnemies=renderEnemies, renderDetails=renderDetails,
+            renderRewardActions=renderRewardActions, renderContinue=renderContinue, bindPotionSlots=bindPotionSlots, boundPotion=boundPotion, renderPotions=renderPotions,
+            potionSelected=potionSelected, paintPotionShell=paintPotionShell
+        }
+    end
+    return M
+    
+  actual: |-
+    -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
+    local Combat = require("abyss_combat")
+    local Actors = require("abyss_actor")
+    local Theme = require("abyss_theme")
+    local EnemyView = require('abyss_battle_enemy_view')
+    local DamageView = require('abyss_battle_damage_view')
+    local PotionView = require("abyss_battle_potion_view")
+    local IntentView = require("abyss_battle_intent_view")
+    local RewardOwner = require("abyss_battle_reward_owner")
+    local LowCostArt=require('abyss_lowcost_art')
+    local M = {}
+    local C, L, S = Theme.color, Theme.layout, Theme.space
+    local number = require("abyss_numbers").integer
+    local potionText = PotionView.potionText
+    local intentView = IntentView.intentView
+    -- Last successful geometry writer per native handle; tokens hold no view references.
+    local intentSizes=setmetatable({},{__mode='k'})
+    local intentPositions=setmetatable({},{__mode='k'})
+    local function intentSize(control,width,height,owner)
+        local painted=intentSizes[control]
+        if painted and painted.owner==owner and painted.width==width
+            and painted.height==height and control.alive~=false then return end
+        -- Revoke the old promise before a setter can partially apply or re-enter.
+        local pending={};intentSizes[control]=pending
+        local ok,result=pcall(control.SetSizeDelta,control,width,height)
+        local current=intentSizes[control]==pending
+        intentSizes[control]=nil
+        if not ok then error(result,0) end
+        if result~=false and current then intentSizes[control]={owner=owner,width=width,height=height} end
+    end
+    local function intentPosition(control,x,y,owner)
+        local painted=intentPositions[control]
+        if painted and painted.owner==owner and painted.x==x
+            and painted.y==y and control.alive~=false then return end
+        local pending={};intentPositions[control]=pending
+        local ok,result=pcall(control.SetAnchoredPosition,control,x,y)
+        local current=intentPositions[control]==pending
+        intentPositions[control]=nil
+        if not ok then error(result,0) end
+        -- Overlapping native setters have unknown completion order: retry next time.
+        if result~=false and current then intentPositions[control]={owner=owner,x=x,y=y} end
+    end
+    -- Only the six intent controls have exclusive visibility writers in this module.
+    -- Name visibility is also owned by UnitView, so it is deliberately not cached.
+    local intentVisibilities=setmetatable({},{__mode='k'})
+    local function intentVisible(control,value,binding)
+        local saved=intentVisibilities[control]
+        if saved and saved.binding==binding and saved.value==value and control.alive~=false then return end
+        local pending={};intentVisibilities[control]=pending
+        local ok,accepted=pcall(control.SetVisible,control,value)
+        local ownsWrite=intentVisibilities[control]==pending
+        intentVisibilities[control]=nil
+        if not ok then error(accepted,0) end
+        if accepted~=false and ownsWrite then intentVisibilities[control]={binding=binding,value=value} end
+    end
+    local function needsTarget(state, instance)
+        -- Ask the core to validate the same card with and without a target.
+        local _, reason = Combat.canPlay(state, instance.uid, nil)
+        return reason == "invalid_target"
+    end
+    local function aimsAtAllEnemies(battle,uid)
+        for _,instance in ipairs(battle.hand) do
+            if instance.uid==uid then return Combat.cardDefinition(battle,instance).target=='ALL_ENEMY' end
+        end
+        return false
+    end
+    local function enemyPortraitIcon(enemy)
+        return Theme.icon.enemy[enemy.definitionId] or Theme.icon.node[enemy.tier == 'normal' and 'combat' or enemy.tier]
+    end
+    local function paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
+        local icon=box:GetChild('portrait')
+        if host.monsterArt:write(box,x,y,portrait,tone)then LowCostArt.hide(icon,false);return end
+        LowCostArt.paint(icon,'enemy',enemy.definitionId,portrait,host.platform)
+        LowCostArt.dim(icon,dim and .4 or 1)
+        LowCostArt.refresh(box,{r=tone.r,g=tone.g,b=tone.b,a=255})
+    end
+    -- Explicit ports preserve the approved implementation without a shared constructor closure.
+    function M.install(owner, ownership, host, dependencies)
+        -- A new view binding starts fresh; weak native keys cannot retain retired actors.
+        local intentGeometryOwner={}
+        local intentImages=setmetatable({},{__mode='k'})
+        local intentTexts=setmetatable({},{__mode='k'})
+        local potionCaptions=setmetatable({},{__mode='k'})
+        local function intentPicture(control,id)
+            local image=type(id)=='table' and id.id or id
+            local source=host.platform.imageSource
+            local painted=intentImages[control]
+            if painted and painted.image==image and painted.source==source and control.alive~=false then return end
+            intentImages[control]=nil
+            if dependencies.picture(control,id)~=false then intentImages[control]={image=image,source=source} end
+        end
+        local function pendingCardTarget(frame)
+            if not frame.fighting or not owner.selected then return false end
+            for _, instance in ipairs(frame.battle.hand) do
+                if instance.uid == owner.selected then return needsTarget(frame.battle, instance) end
+            end
+            return false
+        end
+        local function potionHighlighted(enemy, index, pendingTarget)
+            local aim = owner.potionAim
+            if not aim or pendingTarget or not Actors.isActive(enemy) then return false end
+            if aim.moving then
+                local valid, hovered = dependencies.potionDragTarget(aim)
+                return valid and hovered == index
+            end
+            -- Point selection advertises every legal enemy; a moving bottle locks
+            -- only the hovered target through potionDragTarget above.
+            return true
+        end
+        local function enemyHighlighted(frame, enemy, index, pendingTarget)
+            local targetable = frame.active and pendingTarget and Combat.canPlay(frame.battle, owner.selected, index)
+            if owner.gesture and owner.gesture.moving then
+                local valid, hovered = dependencies.dragTarget(owner.gesture)
+                targetable = valid and hovered == index
+            end
+            return targetable == true or potionHighlighted(enemy,index,pendingTarget) or owner.acting == enemy.id
+        end
+        local function enemyIntentFace(frame,enemy,index)
+            local face
+            if IntentView.hasSourceIntent(enemy)then
+                local view=host.monsterIntentParticles
+                local selected=view:needsSelected(enemy.id) and IntentView.selectedDescriptor(frame.battle,index) or nil
+                face=view:face(enemy.id,selected,function(base)
+                    return Combat.intentAttackAmount(frame.battle,enemy,frame.battle.player,base)
+                end)
+            else face=intentView(frame.battle,index)end
+            -- Dome changes visibility, never the source selected/displayed state.
+            if require('abyss_boss_relics').hidesIntents(owner.run)then face.hidden=true;face.value=''end
+            return face
+        end
+        local function intentGeometry(portrait,geometry)
+            if geometry then return geometry.intentX,geometry.intentY,geometry.intentWidth end
+            return 0,portrait/2,128*Theme.canvas.base[1]/1920
+        end
+        local function intentTone(alpha,kind)
+            -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
+            -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
+            local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
+            return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
+        end
+        local function renderIntentIcon(box,face,x,y,size,allowed,alpha)
+            local kind=face.worldKind or face.kind
+            local visible=allowed~=false and (face.sourceEnum and face.worldVisible or not face.sourceEnum)
+            local icon=box:GetChild('intentIcon');intentVisible(icon,visible==true,intentGeometryOwner)
+            -- STS 128px intent frames are mostly transparent padding; the official glyphs here
+            -- are full-bleed, so draw them at the glyph size and float them clear of the head.
+            local glyph=math.min(size,L.intent.size)
+            intentSize(icon,glyph,glyph,intentGeometryOwner);intentPosition(icon,x,y,intentGeometryOwner)
+            if visible then
+                intentPicture(icon,Theme.icon.intent[kind] or Theme.icon.intent.unknown)
+                dependencies.tint(icon,intentTone(alpha,kind))
+            end
+        end
+        local function renderIntentValue(box,face,x,y,allowed,alpha)
+            local kind=face.worldKind or face.kind
+            local value=box:GetChild('intent')
+            local attack=face.sourceEnum and face.sourceEnum:sub(1,6)=='ATTACK' or not face.sourceEnum and kind=='attack'
+            intentVisible(value,allowed~=false and attack and face.value~='',intentGeometryOwner)
+            local text=face.value and face.value:gsub('×','x') or ''
+            if intentTexts[value]~=text or value.alive==false then
+                intentTexts[value]=nil
+                value.text=text
+                intentTexts[value]=text
+            end
+            local width=math.max(L.intent.valueWidth,utf8.len(text)*L.intent.numberSize)
+            intentSize(value,width,L.nativeText.lineHeight,intentGeometryOwner)
+            intentPosition(value,x+L.intent.size/2+S.xs+width/2,y,intentGeometryOwner)
+            dependencies.ink(value,intentTone(alpha))
+        end
+        local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
+            local x,y,size=intentGeometry(portrait,geometry)
+            renderIntentIcon(box,face,x,y,size,allowed,alpha)
+            for _,name in ipairs({'intentBadge','intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
+            renderIntentValue(box,face,x,y,allowed,alpha)
+            local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
+            local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,intentGeometryOwner)
+            intentPosition(hit,x,y,intentGeometryOwner);intentSize(hit,64*sx,64*sy,intentGeometryOwner)
+        end
+        local function enemyIntentAllowed(actor,battle)
+            return not require('abyss_boss_relics').hidesIntents(owner.run) and Actors.isPresent(actor) and not owner.feedback.dying[actor.id]
+                and not owner.feedback.escaping[actor.id] and battle.player.hp>0
+        end
+        local function enemyAimProjection(frame)
+            local aimed = owner.gesture or owner.carry
+            local projection = { pendingTarget = pendingCardTarget(frame) }
+            if aimed and aimed.moving then projection.valid, projection.target = dependencies.dragTarget(aimed) end
+            -- Original targeting updates card damage, not future enemy HP. Keep the
+            -- legacy preview outside this profile; cloning and playing a detached
+            -- battle on pointer input is both unnecessary and expensive here.
+            local futureHp = Theme.presentationProfile ~= 'official-assets-first'
+            if projection.valid and not futureHp then projection.allEnemies=aimsAtAllEnemies(frame.battle,aimed.uid) end
+            if projection.valid and futureHp then projection.losses = DamageView.preview(frame.battle, aimed.uid, projection.target) end
+            local potion=owner.potionAim
+            if potion and potion.moving then
+                projection.valid,projection.target=dependencies.potionDragTarget(potion)
+                if projection.valid and futureHp then projection.losses=DamageView.potionPreview(owner.run,potion.slot,projection.target) end
+            end
+            return projection
+        end
+        local function renderDamagePreview(box, enemy, portrait, width, loss)
+            local preview = box:GetChild('damagePreview')
+            preview:SetVisible(loss ~= nil and loss.loss > 0)
+            preview:SetAnchoredPosition(0, -portrait / 2 - S.xxl + L.nativeText.lineHeight)
+            preview:SetSizeDelta(width, L.nativeText.lineHeight)
+            preview.text = loss and loss.loss > 0 and (loss.hp <= 0 and '击杀' or '−' .. number(loss.loss)) or ''
+            if loss and loss.loss > 0 then box:GetChild('hpFill').fillAmount = math.max(0, loss.hp / enemy.maxHp) end
+        end
+        local function renderEnemySlot(frame, box, entry, slot, count, aim)
+            local enemy = entry.actor
+            local x, width, portrait, step, y = dependencies.enemySlot(count, slot, enemy)
+            box:SetAnchoredPosition(x, y)
+            local selected = enemyHighlighted(frame, enemy, entry.index, aim.pendingTarget)
+                or aim.allEnemies==true and Actors.isActive(enemy)
+            local loss = aim.losses and aim.losses[entry.index]
+            if aim.valid and not aim.target and loss and loss.loss > 0 then selected = true end
+            local geometry=EnemyView.geometry(enemy)
+            host.unit(box, enemy, portrait, enemyPortraitIcon(enemy), width, selected,step,geometry)
+            host.monsterPowers:render(box,entry.controlSlot,enemy,geometry)
+            box:GetChild('hit'):SetSizeDelta(geometry.hitWidth,geometry.hitHeight)
+            box:GetChild('hit'):SetAnchoredPosition(geometry.hitX-x,geometry.hitY-y)
+            local dim = (aim.pendingTarget or owner.potionAim ~= nil) and not selected
+            local portraitTone = C.text
+            local tone={r=portraitTone.r,g=portraitTone.g,b=portraitTone.b,a=dim and 102 or 255}
+            dependencies.tint(box:GetChild('portrait'),tone)
+            paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
+            renderDamagePreview(box, enemy, portrait, width, loss)
+            renderEnemyIntent(box, enemyIntentFace(frame, enemy, entry.index), portrait,geometry,
+                enemyIntentAllowed(enemy,frame.battle),host.monsterIntentParticles:alpha(enemy.id))
+            host.monsterIntentParticles:paint(box,enemy.id,geometry,enemyIntentAllowed(enemy,frame.battle))
+        end
+        local function updateEnemyIntents(dt)
+            local battle=owner.displayBattle or owner.run and owner.run.combat
+            if not battle or not owner.active then return end
+            -- The surface manager owns live handles. Feedback rows may still include
+            -- a death whose independently clocked surface has already retired.
+            for _,entry in ipairs(owner.feedback.enemyRows or {})do
+                local actor=entry.actor
+                local box=host.monsterSurfaces:find(entry.id)
+                if box then
+                local face=enemyIntentFace({battle=battle,enemyPlayback=owner.feedback.busy},actor,entry.index)
+                local g=EnemyView.geometry(actor)
+                local dying,escaping=owner.feedback.dying[entry.id],owner.feedback.escaping[entry.id]
+                host.monsterIntentParticles:update(entry.id,dt,face,g,dying,escaping)
+                renderEnemyIntent(box,face,g.portrait,g,enemyIntentAllowed(actor,battle),
+                    host.monsterIntentParticles:alpha(entry.id))
+                host.monsterIntentParticles:paint(box,entry.id,g,enemyIntentAllowed(actor,battle) and face.sourceEnum~='NONE')
+                else
+                    assert(not Actors.isPresent(actor),'active monster intent surface missing: '..entry.id)
+                end
+            end
+        end
+        local function nameBlocked(actor)
+            if owner.feedback.dying[actor.id] or owner.feedback.escaping[actor.id] then return true end
+            if not owner.gesture then return false end
+            local battle=owner.run and owner.run.combat
+            for _,card in ipairs(battle and battle.hand or {})do
+                if card.uid==owner.selected then return not needsTarget(battle,card)end
+            end
+            return false
+        end
+        local function updateEnemyNames(dt)
+            local battle=owner.run and owner.run.combat
+            if ownership.nameBattle~=battle or not ownership.nameStates then ownership.nameBattle=battle;ownership.nameStates={}end
+            local x,y
+            if host.platform.cursorPosition then x,y=dependencies.point({GetUIPos=host.platform.cursorPosition})end
+            local wanted={}
+            host.monsterSurfaces:each(function(box,_,entry)
+                local id,actor=entry.id,entry.actor;wanted[id]=true
+                local state=ownership.nameStates[id] or {timer=0,alpha=0}
+                ownership.nameStates[id]=state
+                local g=EnemyView.geometry(actor)
+                local hovered=x and y and math.abs(x-g.hitX)<g.hitWidth/2 and math.abs(y-g.hitY)<g.hitHeight/2
+                local offset
+                state.timer,state.alpha,offset=EnemyView.nameStep(state.timer,state.alpha,dt,hovered,nameBlocked(actor),1)
+                local name=box:GetChild('name');name:SetVisible(owner.active and offset~=nil and state.alpha>0)
+                if offset then
+                    name:SetAnchoredPosition(g.nameX-(box:GetChild('portrait').x or 0),g.nameY+offset*g.sourceScale)
+                    dependencies.ink(name,{r=C.gold.r,g=C.gold.g,b=C.gold.b,a=math.floor(255*state.alpha)})
+                end
+            end)
+            for id in pairs(ownership.nameStates)do if not wanted[id]then ownership.nameStates[id]=nil end end
+        end
+        local function hideEscapingHud(box,id)
+            if not owner.feedback.escaping[id] then return end
+            for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','hp','blockEdge','blockIcon','block','name','statusRow','intentIcon','intentBadge','intentExtra','intent','intentHit'})do
+                local control=box:GetChild(name)
+                intentVisibilities[control]=nil
+                local ok,why=pcall(control.SetVisible,control,false)
+                intentVisibilities[control]=nil
+                if not ok then error(why,0) end
+            end
+        end
+        local function suspendEnemies(rows)
+            local ok,why=pcall(function()
+                host.monsterSurfaces:select(rows,owner.run.combat)
+                host.monsterArt:select(rows)
+                host.monsterSurfaces:each(function(box)
+                    assert(box:SetVisible(false)~=false,'suspended monster visibility rejected')
+                    host.monsterIntentParticles:release(box)
+                end)
+            end)
+            if not ok then
+                local cleaned,reason=pcall(owner.releaseMonsterSurfaces,owner)
+                error(tostring(why)..(cleaned and '' or '; cleanup: '..tostring(reason)))
+            end
+        end
+        local function canSuspendEnemies(frame)
+            return not owner.active and frame.fighting and owner.run and owner.run.phase=='combat'
+                and owner.suspendedBattle==owner.run.combat and host.monsterSurfaces.battle==owner.run.combat
+        end
+        local function renderEnemies(frame)
+            local rows = frame.fighting and EnemyView.slots(frame.battle, owner.feedback) or {}
+            local suspended=canSuspendEnemies(frame)
+            local retained=rows
+            if not owner.active then rows={}end
+            host.monsterIntentParticles:sync(rows,owner.run and owner.run.combat,owner.feedback.current,owner.active and frame.fighting)
+            if suspended then owner.feedback.enemyRows={};suspendEnemies(retained);return end
+            host.monsterSurfaces:select(rows,owner.run and owner.run.combat)
+            owner.feedback.enemyRows = rows
+            local aim = enemyAimProjection(frame)
+            for _,entry in ipairs(rows)do owner.feedback.bindEnemySlot(entry.controlSlot,entry.id)end
+            host.monsterArt:select(rows)
+            for index,entry in ipairs(rows)do
+                local box=assert(host.monsterSurfaces:find(entry.id))
+                renderEnemySlot(frame,box,entry,index,#rows,aim)
+                hideEscapingHud(box,entry.id)
+                box:SetVisible(true)
+            end
+            updateEnemyNames(0)
+        end
+        local function renderDetails(frame)
+            local reward=owner.info and owner.info.reward and RewardOwner.ready(owner,owner.info.reward)
+            if owner.info and (not owner.active or owner.busy or owner.gesture or not frame.fighting and not reward
+                or owner.info.battle ~= frame.run.combat) then owner.info = nil end
+            host.renderInfo(frame.battle or reward and frame.run.combat)
+        end
+        local function renderRewardActions(frame)
+            local run, stolen = frame.run, frame.stolen
+            dependencies.button("skip", owner.active and frame.picking == true and not run.rewards.cardResolved and not owner.busy, false, "跳过")
+            dependencies.button("stolenGold", owner.active and stolen and not stolen.claimed and not owner.busy, false,
+                stolen and (stolen.claimed and "已取回失金 " or "取回失金 ") .. number(stolen.amount) or "取回失金")
+        end
+        local function renderContinue(frame)
+            local run = frame.run
+            dependencies.button("continue", owner.active and run and (frame.manual or run.phase == "map") and not owner.busy, true,
+                frame.manual and "前往地图" or "再战一场")
+        end
+        local function bindPotionSlots(frame)
+            if frame.fighting and not owner.busy then
+                owner.potionBattle, owner.potionRun, owner.potionSlots = frame.battle, frame.run, {}
+                for slot = 1, frame.potionCapacity do
+                    local id = frame.run.potions[slot]
+                    if id then owner.potionSlots[slot] = {slot = slot, id = id} end
+                end
+            end
+        end
+        local function boundPotion(frame, index)
+            local binding = owner.potionSlots and owner.potionSlots[index]
+            local item = binding and frame.potions[binding.slot]
+            if item and item.id ~= binding.id then return nil end
+            return item
+        end
+        local function potionSelected(slot)
+            return owner.potionMenu and owner.potionMenu.slot==slot
+                or owner.potionAim and owner.potionAim.slot==slot
+        end
+        local function paintPotionContents(face,item,tones)
+            local bottle=face:GetChild('bottle');bottle:SetVisible(item~=nil)
+            face:GetChild('label'):SetVisible(false)
+            if item then
+                dependencies.picture(bottle,Theme.icon.potion[item.id] or Theme.icon.intent.unknown)
+                dependencies.tint(bottle,(Theme.icon.potionTint or {})[item.id]
+                    or (item.id=='fire_potion' and tones.fire.ink or tones.normal.ink))
+                LowCostArt.paint(bottle,'potion',item.id,L.battlePotions.bottleSize,host.platform)
+            else LowCostArt.hide(bottle,false) end
+        end
+        local function paintPotionShell(slot,item)
+            local selected=item~=nil and potionSelected(slot)==true
+            local tones=C.potionShell
+            for _,state in ipairs({'normal','hover','pressed','disabled'})do
+                local face=dependencies.child('potion'..slot):GetChild(state)
+                face:GetChild('emptyShell'):SetVisible(item==nil)
+                face:GetChild('filledShell'):SetVisible(item~=nil and item.id~='fire_potion')
+                face:GetChild('fireShell'):SetVisible(item~=nil and item.id=='fire_potion')
+                face:GetChild('selectedShell'):SetVisible(selected)
+                dependencies.tint(face:GetChild('filledShell'):GetChild('rim'),selected and tones.selected.border or tones.normal.border)
+                dependencies.tint(face:GetChild('fireShell'):GetChild('rim'),selected and tones.selected.border or tones.fire.border)
+                paintPotionContents(face,item,tones)
+            end
+        end
+        local function paintPotionCaption(slot,item,visible)
+            local caption=dependencies.child('potionCaption'..slot)
+            local original=Theme.presentationProfile=='official-assets-first'
+            local shown=not original and visible==true and item~=nil
+            local text=not original and item and PotionView.slotLabel(item)or ''
+            local prior=potionCaptions[caption]
+            if not prior or prior.shown~=shown or prior.text~=text then
+                potionCaptions[caption]=nil
+                local accepted=true
+                if not prior or prior.shown~=shown then accepted=caption:SetVisible(shown)~=false end
+                if not prior or prior.text~=text then caption.text=text end
+                if accepted then potionCaptions[caption]={shown=shown,text=text} end
+            end
+        end
+        local function renderPotions(frame)
+            -- Fixed physical slots prevent a queued second click moving to another item.
+            bindPotionSlots(frame)
+            for i = 1, L.battlePotions.count do
+                local visible = frame.fighting and i <= frame.potionCapacity
+                dependencies.show("potion" .. i, visible)
+                local item = boundPotion(frame, i)
+                dependencies.button("potion" .. i, visible and frame.active and item ~= nil, false,
+                    item and potionText(item, frame.battle) or "空药水槽")
+                dependencies.show("potionHelp" .. i, false)
+                dependencies.button("potionHelp" .. i, visible and frame.active and item ~= nil, false, "")
+                paintPotionCaption(i,item,visible)
+                paintPotionShell(i,item)
+            end
+        end
+    
+        return {
+            updateEnemyNames=updateEnemyNames, updateEnemyIntents=updateEnemyIntents, pendingCardTarget=pendingCardTarget, enemyHighlighted=enemyHighlighted, enemyIntentFace=enemyIntentFace, renderEnemyIntent=renderEnemyIntent, enemyAimProjection=enemyAimProjection,
+            renderDamagePreview=renderDamagePreview, enemyPortraitIcon=enemyPortraitIcon, renderEnemySlot=renderEnemySlot, renderEnemies=renderEnemies, renderDetails=renderDetails,
+            renderRewardActions=renderRewardActions, renderContinue=renderContinue, bindPotionSlots=bindPotionSlots, boundPotion=boundPotion, renderPotions=renderPotions,
+            potionSelected=potionSelected, paintPotionShell=paintPotionShell
+        }
+    end
+    return M
+    
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/integration-source-epoch.test.mjs:146:33)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: preM7FinalSource: current source and configuration match original target projection
+ok 9 - preM7FinalSource: current source and configuration match original target projection
+  ---
+  duration_ms: 7.336
+  type: 'test'
+  ...
+# Subtest: preM7FinalSource: foreign input stays opaque and performs no linked reads
+ok 10 - preM7FinalSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 3.2495
+  type: 'test'
+  ...
+# Subtest: preRelicQuerySource: current source and configuration match original target projection
+ok 11 - preRelicQuerySource: current source and configuration match original target projection
+  ---
+  duration_ms: 11.8355
+  type: 'test'
+  ...
+# Subtest: preRelicQuerySource: foreign input stays opaque and performs no linked reads
+ok 12 - preRelicQuerySource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.2828
+  type: 'test'
+  ...
+# Subtest: preCoreLifecycleSource: current source and configuration match original target projection
+ok 13 - preCoreLifecycleSource: current source and configuration match original target projection
+  ---
+  duration_ms: 36.442
+  type: 'test'
+  ...
+# Subtest: preCoreLifecycleSource: foreign input stays opaque and performs no linked reads
+ok 14 - preCoreLifecycleSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 6.142
+  type: 'test'
+  ...
+# Subtest: preGameUiExtractionSource: current source and configuration match original target projection
+ok 15 - preGameUiExtractionSource: current source and configuration match original target projection
+  ---
+  duration_ms: 55.3222
+  type: 'test'
+  ...
+# Subtest: preGameUiExtractionSource: foreign input stays opaque and performs no linked reads
+ok 16 - preGameUiExtractionSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.5596
+  type: 'test'
+  ...
+# Subtest: preRound3CatalogSource: current source and configuration match original target projection
+ok 17 - preRound3CatalogSource: current source and configuration match original target projection
+  ---
+  duration_ms: 38.8297
+  type: 'test'
+  ...
+# Subtest: preRound3CatalogSource: foreign input stays opaque and performs no linked reads
+ok 18 - preRound3CatalogSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 1.142
+  type: 'test'
+  ...
+# Subtest: prePowerShopSource: current source and configuration match original target projection
+ok 19 - prePowerShopSource: current source and configuration match original target projection
+  ---
+  duration_ms: 3.8594
+  type: 'test'
+  ...
+# Subtest: prePowerShopSource: foreign input stays opaque and performs no linked reads
+ok 20 - prePowerShopSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 3.7897
+  type: 'test'
+  ...
+# Subtest: preSessionRewardSource: current source and configuration match original target projection
+ok 21 - preSessionRewardSource: current source and configuration match original target projection
+  ---
+  duration_ms: 2.7032
+  type: 'test'
+  ...
+# Subtest: preSessionRewardSource: foreign input stays opaque and performs no linked reads
+ok 22 - preSessionRewardSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.2928
+  type: 'test'
+  ...
+# Subtest: preWatcherExecutionSource: current source and configuration match original target projection
+ok 23 - preWatcherExecutionSource: current source and configuration match original target projection
+  ---
+  duration_ms: 1.1403
+  type: 'test'
+  ...
+# Subtest: preWatcherExecutionSource: foreign input stays opaque and performs no linked reads
+ok 24 - preWatcherExecutionSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.3237
+  type: 'test'
+  ...
+# Subtest: preInventoryResponsibilitiesSource: current source and configuration match original target projection
+ok 25 - preInventoryResponsibilitiesSource: current source and configuration match original target projection
+  ---
+  duration_ms: 3.3029
+  type: 'test'
+  ...
+# Subtest: preInventoryResponsibilitiesSource: foreign input stays opaque and performs no linked reads
+ok 26 - preInventoryResponsibilitiesSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.2347
+  type: 'test'
+  ...
+# Subtest: preAct1ChoiceSource: current source and configuration match original target projection
+ok 27 - preAct1ChoiceSource: current source and configuration match original target projection
+  ---
+  duration_ms: 1.1736
+  type: 'test'
+  ...
+# Subtest: preAct1ChoiceSource: foreign input stays opaque and performs no linked reads
+ok 28 - preAct1ChoiceSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.2166
+  type: 'test'
+  ...
+# Subtest: preDefectPlanSource: current source and configuration match original target projection
+ok 29 - preDefectPlanSource: current source and configuration match original target projection
+  ---
+  duration_ms: 1.1116
+  type: 'test'
+  ...
+# Subtest: preDefectPlanSource: foreign input stays opaque and performs no linked reads
+ok 30 - preDefectPlanSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 5.4731
+  type: 'test'
+  ...
+# Subtest: preColorlessCatalogSource: current source and configuration match original target projection
+ok 31 - preColorlessCatalogSource: current source and configuration match original target projection
+  ---
+  duration_ms: 2.9014
+  type: 'test'
+  ...
+# Subtest: preColorlessCatalogSource: foreign input stays opaque and performs no linked reads
+ok 32 - preColorlessCatalogSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.6086
+  type: 'test'
+  ...
+# Subtest: prePotionCallbackSource: current source and configuration match original target projection
+ok 33 - prePotionCallbackSource: current source and configuration match original target projection
+  ---
+  duration_ms: 6.2257
+  type: 'test'
+  ...
+# Subtest: prePotionCallbackSource: foreign input stays opaque and performs no linked reads
+ok 34 - prePotionCallbackSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 1.963
+  type: 'test'
+  ...
+# Subtest: preEndTurnResponsibilitiesSource: current source and configuration match original target projection
+ok 35 - preEndTurnResponsibilitiesSource: current source and configuration match original target projection
+  ---
+  duration_ms: 3.9352
+  type: 'test'
+  ...
+# Subtest: preEndTurnResponsibilitiesSource: foreign input stays opaque and performs no linked reads
+ok 36 - preEndTurnResponsibilitiesSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.467
+  type: 'test'
+  ...
+# Subtest: preActorPresenceSource: current source and configuration match original target projection
+ok 37 - preActorPresenceSource: current source and configuration match original target projection
+  ---
+  duration_ms: 7.211
+  type: 'test'
+  ...
+# Subtest: preActorPresenceSource: foreign input stays opaque and performs no linked reads
+ok 38 - preActorPresenceSource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.5367
+  type: 'test'
+  ...
+# Subtest: preRewardQueryBoundarySource: current source and configuration match original target projection
+ok 39 - preRewardQueryBoundarySource: current source and configuration match original target projection
+  ---
+  duration_ms: 2.6346
+  type: 'test'
+  ...
+# Subtest: preRewardQueryBoundarySource: foreign input stays opaque and performs no linked reads
+ok 40 - preRewardQueryBoundarySource: foreign input stays opaque and performs no linked reads
+  ---
+  duration_ms: 0.1268
+  type: 'test'
+  ...
+# Subtest: root combined projection rejects fresh missing/foreign/late-linked drift after success
+ok 41 - root combined projection rejects fresh missing/foreign/late-linked drift after success
+  ---
+  duration_ms: 2.8402
+  type: 'test'
+  ...
+# Subtest: round3 absent catalog still retires Actor, Potion, and Colorless witnesses
+ok 42 - round3 absent catalog still retires Actor, Potion, and Colorless witnesses
+  ---
+  duration_ms: 13.631
+  type: 'test'
+  ...
+# Subtest: round3 present catalog retires all witnesses and rechecks bytes before deletion
+not ok 43 - round3 present catalog retires all witnesses and rechecks bytes before deletion
+  ---
+  duration_ms: 21.1543
+  type: 'test'
+  location: 'F:\\New folder\\.worktrees\\release-pc-item-icons-1115\\tests\\integration-source-epoch.test.mjs:196:1'
+  failureType: 'testCodeFailure'
+  error: 'Colorless catalog linked owner missing: config/architecture.json: combined linked owner identity: src/lua/abyss_battle_render_actors.lua'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'fail'
+  stack: |-
+    preColorlessCatalogSource (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/helpers/epochs/colorless/tests/helpers/colorless-catalog-source-inverse.mjs:72:66)
+    check (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/helpers/round3-catalog-source-inverse.mjs:62:18)
+    prepareRound3CatalogModuleRetirement (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/helpers/round3-catalog-source-inverse.mjs:65:2)
+    TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-item-icons-1115/tests/integration-source-epoch.test.mjs:202:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: round3 retirement rejects live hardlinks and live source roots
+ok 44 - round3 retirement rejects live hardlinks and live source roots
+  ---
+  duration_ms: 8.12
+  type: 'test'
+  ...
+1..44
+# tests 44
+# suites 0
+# pass 40
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19007.454
