@@ -211,5 +211,3 @@ test('generated dismiss hit stays below item hits and the footer, without replac
     assert(confirmIndex>shopIndex and spec.children[1].name=='backdrop','bottom surface would cover purchase/leave')
 end)
 print('SHOP_DISMISS_PASS '..count)
-
-
