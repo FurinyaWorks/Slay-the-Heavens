@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-15 19:57'
+updated_date: '2026-11-15 21:04'
 labels:
   - 待验
   - delivery-verify
@@ -13,6 +13,7 @@ milestone: m-8
 dependencies: []
 references:
   - docs/evidence/release-selection-map-admission-1116/README.md
+  - docs/evidence/release-selection-map-release1cc-1116/README.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 171000
@@ -82,4 +83,6 @@ R7最终复验：SDK28项、实际浏览器HP21+Lament9项通过，20次暖选�
 最终组合祝福6帧、选角/共享初始牌组5帧均完成实际SDK渲染和独审；兜帽暗面按批准稿对照99.34%，旧身体遮挡负控62.66%，顶部旧金色缝已消除。CI修复后新closure b1271f18与原52b6582b的25生成物及全部3份完整SDK输入逐字节相同，保留原截图身份，见两目录ci-storage-runtime-equivalence.json。官方编译受本机脚本签名策略阻断，未更改策略，设备验收保持未完成。
 
 PC04确认实际officialBackdropVeil旧全屏层仍在正式选角人物背景之上；0a56产品仅退休该层，a3b最终测试已组合74a598。精确Release逆放2 RED/1默认PASS，产品8定向、独审失败回退probe及本组合5/5通过；其它3profile生成字节不变，保留fallback/input blocker。不能据此认定私图06唯一根因；批准HUD独立半透明区位置与新候选实机AC4仍未验。565cb735来源合同接续已独审，21+1输入精确覆盖，RequiredCI/正式候选/PC手机/容量不虚报。
+
+#692已实际合入Release1cc，PC04/08旧9b703分支保留history合流；代码eafcaeee/绑定80e1d3ec新base独立增审通过。352生产Git等价、26CI before/after+10bootstrap/96档案保全，产品8路径/旧production producer原样。原合流6pass3CI fail完整保留，来源10/10与两侧raw2/2通过，当前23代码/合同输入及原1可执行证据逐blob追踪。官方像素、PC04批准HUD backing位置、新ready/PC手机/容量及当前Hosted Full仍未验，不因#692合入勾AC。
 <!-- SECTION:NOTES:END -->
