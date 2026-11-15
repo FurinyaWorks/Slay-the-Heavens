@@ -64,11 +64,11 @@
     }
   ],
   "next_actions": [
-    "Mechanics and economy B1 independent reports pending; presentation B1 independent review requests changes for 18 legacy hand-maintained text paths, provenance ledger, and B1 browser evidence",
-    "Keep frozen B1 unchanged until reviewers complete; next isolated candidate must explicitly address independent findings and invalidate old review approvals",
-    "Use preregistered rarity-weight probe to implement an isolated weighted-reward draft, then test natural five-battle strategies against fixed baseline under new preregistration",
-    "Resolve 35/75 original-name provenance and card-by-card roles without relabeling unverified as official",
-    "Run real browser UI and exhaustive extreme-combo probes before owner playtest"
+    "Wait for B1 mechanics/economy reviews to finish; presentation B1 CHANGES_REQUESTED; do not inherit any B1 PASS for C1",
+    "Validate C1 draft in actual frozen HutaoGame using new preregistered multi-strategy natural five-battle tests, HP/deck/rarity analysis and real browser before freezing or requesting reviews",
+    "Resolve legacy 18 card triple-maintained wording and audit 35 original names and source provenance",
+    "Run extreme card combo and free draw/energy loophole probes, preserve failures and negative controls",
+    "Keep current B1 unchanged; no PR, no merge, no production changes, no new release"
   ],
   "not_claimed": [
     "Independent review passed for B1",
@@ -79,7 +79,9 @@
     "Official platform acceptance",
     "Reward rarity fixed in active B1 candidate",
     "Weighted reward policy improves actual five-battle HP or player enjoyment",
-    "B1 independent presentation review passed"
+    "B1 independent presentation review passed",
+    "C1 draft reviewed, frozen, playtested or integrated",
+    "Actual HutaoGame randomized reward pipeline executed in C1 browser or Node VM"
   ],
   "baseline": {
     "candidate_id": "baseline-pr640-99cc1e0",
@@ -107,6 +109,20 @@
       "heldout_rare_offer_screen_rate_original": 0.606425,
       "heldout_rare_offer_screen_rate_experimental_weighted": 0.09065,
       "limitation": "Only reward-only deterministic simulation; not HutaoGame natural 5-battle HP/win/playability. New weighted policy not in frozen B1; requires new preregistered gameplay candidate and three fresh reviews."
+    }
+  },
+  "draft_candidates": {
+    "v6-reward-weighted-c1-20261115-DRAFT": {
+      "status": "DRAFT_NOT_FROZEN_UNVERIFIED",
+      "html_path": "experiments/characters/hutao-v6-lab/candidates/v6-reward-weighted-c1-draft.html",
+      "html_git_blob_sha": "62385bed410b29aba731de3a429eb1fbe875036a",
+      "manifest_path": "experiments/characters/hutao-v6-lab/candidates/v6-reward-weighted-c1-draft.manifest.json",
+      "mechanism_scope": "Reward rarity buckets and rare chance offset only, B1 player mechanics unchanged",
+      "evidence": "Static reversible B1-to-C1 diff and isolated method 80000 offer-screen tests; no actual HutaoGame natural battle or browser test",
+      "formal_review": "NOT_STARTED",
+      "user_ready": false,
+      "merge_authorized": false,
+      "release_authorized": false
     }
   }
 }
