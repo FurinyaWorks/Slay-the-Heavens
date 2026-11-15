@@ -28,6 +28,12 @@ export const mobilePotionHelperCopies=[
  {path:'tests/helpers/mobile-potion-source.json.gz',before:null,after:'2af4fb9d547eb50d7dc75fd54fc4b505ecaf8b5f343330e31ac91054d75c2a06'}
 ];
 for(const row of mobilePotionHelperCopies){assert.equal(files[row.path]??null,row.before,'exact mobile potion helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const mobileForethoughtHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'05ffc1ef75dd3acce2d91062714c19ed578de2dd45d7897b238019aaaaaf3c60',after:'50ef76660255644c1ba4b311ae66a873ea6540dbc40b60320c60281605909087'},
+ {path:'tests/helpers/mobile-forethought-source.mjs',before:null,after:'593c3c41cd7bf0aa1f4286fd6e4b2d946d172d724253a49d88ed8d2f4bc0ab12'},
+ {path:'tests/helpers/mobile-forethought-source.json.gz',before:null,after:'d8c9875fbc221614d01ed752cc851b7a502e3f9ec09f7aa749c1de3c671277de'}
+];
+for(const row of mobileForethoughtHelperCopies){assert.equal(files[row.path]??null,row.before,'exact forethought helper-copy predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

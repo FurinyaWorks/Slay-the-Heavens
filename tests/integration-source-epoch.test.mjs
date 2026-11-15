@@ -233,3 +233,23 @@ test('round3 retirement rejects live hardlinks and live source roots',async()=>{
  const root=mkdtempSync(join(sandbox,'retirement-hardlink-')),path='src/lua/abyss_combat_catalog.lua';mkdirSync(dirname(join(root,path)),{recursive:true});
  linkSync(join(sandbox,path),join(root,path));try{assert.throws(()=>prepare(root,{sourceRoot:sandbox}),/single link|inode/);}finally{unlinkSync(join(root,path));}
 });
+
+test('forethought composition copy closure freshly rejects packet dependency drift and deletion after warm success',async()=>{
+ const {copyIntegrationSourceClosure,mobileForethoughtHelperCopies}=await import('./helpers/copy-integration-source-closure.mjs');
+ const temp=tmpdir(),source=mkdtempSync(join(temp,'forethought-copy-source-')),target=mkdtempSync(join(temp,'forethought-copy-target-'));
+ try{
+  copyIntegrationSourceClosure(source);copyIntegrationSourceClosure(target,{sourceRoot:source});
+  for(const {path}of mobileForethoughtHelperCopies){
+   const file=join(source,path),bytes=readFileSync(file);assert.deepEqual(readFileSync(join(target,path)),bytes);
+   writeFileSync(file,Buffer.concat([bytes,Buffer.from('\n')]));
+   assert.throws(()=>copyIntegrationSourceClosure(target,{sourceRoot:source}),/fresh helper copy identity/);
+   writeFileSync(file,bytes);unlinkSync(file);
+   assert.throws(()=>copyIntegrationSourceClosure(target,{sourceRoot:source}),/ENOENT/);
+   writeFileSync(file,bytes);copyIntegrationSourceClosure(target,{sourceRoot:source});
+  }
+ }finally{for(const directory of [source,target]){
+  const {realpathSync}=await import('node:fs');const {relative,isAbsolute}=await import('node:path');
+  const within=relative(realpathSync.native(temp),realpathSync.native(directory));assert(!isAbsolute(within)&&within.startsWith('forethought-copy-')&&!within.startsWith('..'));
+  rmSync(directory,{recursive:true,force:true});
+ }}
+});
