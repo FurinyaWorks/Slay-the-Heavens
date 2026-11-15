@@ -40,13 +40,14 @@ function receipt(){return {officialAssetsProfile,artFeatures:artFeatureReceipt(o
 
 // PC26/PC30 explicitly adopts the existing browser buttons and selection flags.
 // Retain every original input object; only these six controls borrow geometry.
-function sharedRoomControl(path,layout){
+function sharedRoomControl(path,layout,theme){
  const match=/^\/SlayTheAbyss\/nodePanel\/(?:(pickerView)\/(previous|next|forgePrevious|forgeNext)|(back|confirm))(?:\/(hit|label))?$/.exec(path);
  if(!match)return null;
  const name=match[2]??match[3],paging=Boolean(match[1]);
  const source=paging?child(child(layout,'deckPanel'),/previous/i.test(name)?'previous':'next')
   :child(child(layout,'characterPanel'),name==='back'?'cancel':'confirm');
- const frame=paging?[source.position[0],nativeTheme.layout.nativeNode.forge.previous[1],...source.size]:null;
+ const frame=paging?theme.layout.nativeNode.picker[/previous/i.test(name)?'previous':'next']:
+  theme.layout.nativeNode[name];
  return {source,frame,part:match[4]};
 }
 
@@ -159,7 +160,7 @@ test('approved pages keep live input identities while unrelated pages retain the
     if(expected.text)expected.text.content=before.text.content;
     assert.deepEqual(node,expected,path+' shared merchant projection');continue;
    }
-   const room=sharedRoomControl(path,layout);
+   const room=sharedRoomControl(path,layout,theme);
    if(room){
     const expected=structuredClone(before);
     if(room.part==='hit')expected.size=[...room.source.size];
@@ -227,7 +228,7 @@ test('approved pages keep live input identities while unrelated pages retain the
    if(merchant.has(path)){
     assert.deepEqual(node,merchant.get(path),path+' shared merchant projection');continue;
    }
-   const room=sharedRoomControl(path,layout);
+   const room=sharedRoomControl(path,layout,theme);
    if(room){
     assert.equal(current.get(path),node,path+' retained room input owner');
     for(const key of Object.keys(before))assert.deepEqual(node[key],key==='size'?room.source.size:

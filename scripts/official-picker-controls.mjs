@@ -17,18 +17,21 @@ function bindDecoration(button,source){
    children:state.children.filter(n=>n.name!=='label')}))});
 }
 export function pickerControlTheme(theme){
- const node=theme.layout.nativeNode,y=node.forge.previous[1];
+ const node=theme.layout.nativeNode;
+ const bottom=Math.min(...node.forge.rows)-theme.layout.card.size[1]*node.forge.hoverScale/2;
  for(const name of ['previous','next']){
-  const frame=[...theme.layout.deckView[name]];frame[1]=y;
+  const frame=[...theme.layout.deckView[name]];frame[1]=bottom-theme.space.xs-frame[3]/2;
   node.picker[name]=[...frame];node.forge[name]=[...frame];
  }
 }
 export function applyOfficialPickerControls(node,theme,deck,character){
  const picker=child(node,'pickerView');
  for(const [name,role] of [['back','cancel'],['confirm','confirm']]){
-  const button=child(node,name),position=[...button.position];
+  const button=child(node,name),layout=theme.layout.nativeNode;
   const source=structuredClone(child(character,role));
-  bindDecoration(button,source);button.position=position;
+  // Keep a full existing xs gap below paging as well as below hovered cards.
+  layout[name][1]=layout.picker.previous[1]-layout.picker.previous[3]/2-theme.space.xs-source.size[1]/2;
+  bindDecoration(button,source);button.position=layout[name].slice(0,2);
   child(button,'label').text.minFontSize=theme.font.minimum;
  }
  for(const [name,direction] of [['previous','previous'],['next','next'],['forgePrevious','previous'],['forgeNext','next']]){

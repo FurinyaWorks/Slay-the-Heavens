@@ -33,7 +33,8 @@ test('official forge and removal use the permanent browser paging material and s
   for(const name of [ordinary,forge]){
    const button=child(picker,name),chrome=child(button,'sharedButtonChrome');
    assertBrowserButton(button,child(deck,ordinary));
-   assert.deepEqual(button.position,[theme.layout.deckView[ordinary][0],nativeTheme.layout.nativeNode.forge.previous[1]]);
+   const hoverBottom=Math.min(...nativeTheme.layout.nativeNode.forge.rows)-theme.layout.card.size[1]*nativeTheme.layout.nativeNode.forge.hoverScale/2;
+   assert.deepEqual(button.position,[theme.layout.deckView[ordinary][0],hoverBottom-nativeTheme.space.xs-button.size[1]/2]);
    assert.deepEqual(button.size,theme.layout.deckView[ordinary].slice(2));
    assert.equal(child(button,'hit').kind,'cursorArea');
    assert.equal(child(button,'label').text.content,ordinary==='previous'?'上一页':'下一页');
