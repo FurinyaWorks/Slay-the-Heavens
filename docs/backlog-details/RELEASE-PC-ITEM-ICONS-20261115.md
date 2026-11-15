@@ -13,14 +13,14 @@
 
 ## 本轮真实验证
 
-原始输出集中于 [本轮证据目录](../evidence/release-pc-item-icons-20261115/)。
+原始输出集中于 [本轮证据目录](../evidence/release-pc-item-icons-20261115/)，lossless gzip 原字节及 raw/gzip SHA256 见 `raw-output-identities.json`。首个提交 raw TAP 的引擎堆栈自带空白触发 diff 检查，后续仅压缩保存原字节纠正；没有改写失败内容。
 
-- `red-with-dependencies.tap`：应用生产修复前真实生成树为 0/0 池、实际 Host 奖励缺池及 Theme 缺 potion 注册，3/3 按预期失败。最初沙箱 spawn EPERM 与缺依赖记录分别保留于 `red.tap`；它们不是行为 RED。之后物理复用已安装依赖，无新安装。
-- `green.tap`：同一运行时回归 3/3 与资源语义 guard 3/3，共 6/6 通过。42 配方全量绘制、四入口各六代表、所有 normal/hover/pressed/disabled 状态、商店同商品刷新、换槽/空槽、未知 ID、缺池/失效池/原生 setter 失败回退与显式恢复、两行遗物奖励及 source alias、非相关奖励不被清理、同帧缓存不重画均有断言。
-- `lowcost.tap`：2/2 通过，真实导入池全量 121 遗物 + 42 敌人，原生失败/重入/死亡淡出与目标变暗旧合同不变，旧 default 生成物不被夹具改写。
-- `native-contract.tap`：既有原生 UI/启动合同 6/6 通过，包含引擎只读 alive、真实 grid 销毁/回收、旧 handle 拒绝、Controller 退休负对照。它是 mock 原生 API，不是游戏或设备验收。
-- `build-data.log` / `build-ui.log` 成功。`engineering.log` 保留旧警告行身份失败；复用既有 hash 固定 Luacheck、应用原三行位置续接后的 `engineering-green.log` 通过：351 模块、6165/6165 测量、1992 边，无新增静态诊断，6 条显式历史警告。
-- `source-contract-current.tap` **40/44，4 失败**：原 frozen source owner 合同拒绝已变更生产源码；没有修改/放宽 helper、旧 witness、预算或门槛，没有把它记为全回归通过。与 #684 的最终组合来源续接由主线程在依赖落地后一次完成，本片不复制 #672 的整套来源/CI 历史。
+- `red-with-dependencies.tap.gz`：应用生产修复前真实生成树为 0/0 池、实际 Host 奖励缺池及 Theme 缺 potion 注册，3/3 按预期失败。最初沙箱 spawn EPERM 与缺依赖记录分别保留于 `red.tap.gz`；它们不是行为 RED。之后物理复用已安装依赖，无新安装。
+- `green.tap.gz`：同一运行时回归 3/3 与资源语义 guard 3/3，共 6/6 通过。42 配方全量绘制、四入口各六代表、所有 normal/hover/pressed/disabled 状态、商店同商品刷新、换槽/空槽、未知 ID、缺池/失效池/原生 setter 失败回退与显式恢复、两行遗物奖励及 source alias、非相关奖励不被清理、同帧缓存不重画均有断言。
+- `lowcost.tap.gz`：2/2 通过，真实导入池全量 121 遗物 + 42 敌人，原生失败/重入/死亡淡出与目标变暗旧合同不变，旧 default 生成物不被夹具改写。
+- `native-contract.tap.gz`：既有原生 UI/启动合同 6/6 通过，包含引擎只读 alive、真实 grid 销毁/回收、旧 handle 拒绝、Controller 退休负对照。它是 mock 原生 API，不是游戏或设备验收。
+- `build-data.log.gz` / `build-ui.log.gz` 成功。`engineering.log.gz` 保留旧警告行身份失败；复用既有 hash 固定 Luacheck、应用原三行位置续接后的 `engineering-green.log.gz` 通过：351 模块、6165/6165 测量、1992 边，无新增静态诊断，6 条显式历史警告。
+- `source-contract-current.tap.gz` **40/44，4 失败**：原 frozen source owner 合同拒绝已变更生产源码；没有修改/放宽 helper、旧 witness、预算或门槛，没有把它记为全回归通过。与 #684 的最终组合来源续接由主线程在依赖落地后一次完成，本片不复制 #672 的整套来源/CI 历史。
 
 ## 接续依赖与未验
 
