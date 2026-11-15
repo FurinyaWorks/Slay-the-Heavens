@@ -5,7 +5,7 @@ status: Blocked
 assignee:
   - Furinya
 created_date: '2026-11-03 02:45'
-updated_date: '2026-11-15 06:21'
+updated_date: '2026-11-15 06:32'
 labels:
   - design
 milestone: m-8
@@ -63,4 +63,6 @@ ordinal: 138000
 本轮协助执行者/root/content_queue_audit，唯一树.worktrees/hutao-lab-truthful-copy-1115，feat/hutao-lab-truthful-copy-1115，基线e65d9b98；旧V5/V6及发版树只读。
 
 2026-11-15 胡桃无方向依赖的隔离呈现维护已完成待独审：精确保全7c3abce0 HTML（blob d4b97370fa5e314c725edc3a1136fb1523790c78；实际SHA97b9e631…），仅7处文案替换：升级血之灶火补已有半血条件、c14/u15补本回合、三个战报按钮/导出头/结算提示明确最近100条。原3组24合同仅改输入路径，另5合同，最终29/29无skip；原source同组4真实RED+1数据一致性PASS，失败及u15测试预期纠正均保留。完整引擎逐字、75卡身份/数值/效果/来源不变，PRES01基线7c已修不重复。入口experiments/characters/hutao-v6-followup-1115/README.md；生产/冻结V4/命名不改，具体璃月角色/版本仍待答，TASK96保持Blocked和G3 HOLD。不Full、不提交推送PR。
+
+2026-11-15 呈现文字澄清：本轮报告范围涉及两个战报按钮及本地复制成功提示，另有导出头与结算提示；前条“三个战报按钮”是记录措辞错误，非新增控件。29项回归和全部7处文本替换不变。
 <!-- SECTION:NOTES:END -->
