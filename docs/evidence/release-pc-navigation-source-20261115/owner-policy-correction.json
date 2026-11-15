@@ -1,0 +1,15 @@
+{
+  "head": "38fa32775b97af37a98c108e506428c2b6c0c712",
+  "path": "tests/ci-complete-calibration.test.mjs",
+  "priorPacketSha256": "28da29c324f35d1884451672bf48df51ba405a8add44c0393b074611d652556a",
+  "currentPacketSha256": "e496eff66fdbcfd86b60c455c7332f841ba62a17e50e9e53b4e8a5677dec34d1",
+  "bytes": 147960,
+  "rows": 23,
+  "unchangedOtherRows": 22,
+  "beforePreserved": true,
+  "archivesPreserved": true,
+  "inventoriesPreserved": true,
+  "productUntouched": true,
+  "policy": "docs/CI.md:168",
+  "notHosted": true
+}
