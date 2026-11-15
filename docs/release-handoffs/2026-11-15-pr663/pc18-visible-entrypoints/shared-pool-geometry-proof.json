@@ -1,0 +1,324 @@
+{
+  "defaultTreeSha256": "0798f272cba727cf099dd7676b80c0cdf15cd4c4f447904f35e01d44c4c0a7bf",
+  "addedNodes": 55,
+  "fourFaceAlternativeNodes": 220,
+  "nodesSaved": 165,
+  "originalSubtreeUnchanged": true,
+  "faceGeometry": [
+    {
+      "slot": 1,
+      "state": "normal",
+      "authored_center": [
+        -82.666,
+        0
+      ],
+      "outside_naive_delta": [
+        -0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 1,
+      "state": "hover",
+      "authored_center": [
+        -82.666,
+        0
+      ],
+      "outside_naive_delta": [
+        -0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 1,
+      "state": "pressed",
+      "authored_center": [
+        -79.35936,
+        0.0
+      ],
+      "outside_naive_delta": [
+        -3.306640000000003,
+        0.0
+      ],
+      "bottle_width": 15.36
+    },
+    {
+      "slot": 1,
+      "state": "disabled",
+      "authored_center": [
+        -82.666,
+        0
+      ],
+      "outside_naive_delta": [
+        -0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 2,
+      "state": "normal",
+      "authored_center": [
+        -41.333,
+        0
+      ],
+      "outside_naive_delta": [
+        -0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 2,
+      "state": "hover",
+      "authored_center": [
+        -41.333,
+        0
+      ],
+      "outside_naive_delta": [
+        -0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 2,
+      "state": "pressed",
+      "authored_center": [
+        -39.67968,
+        0.0
+      ],
+      "outside_naive_delta": [
+        -1.6533200000000015,
+        0.0
+      ],
+      "bottle_width": 15.36
+    },
+    {
+      "slot": 2,
+      "state": "disabled",
+      "authored_center": [
+        -41.333,
+        0
+      ],
+      "outside_naive_delta": [
+        -0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 3,
+      "state": "normal",
+      "authored_center": [
+        0,
+        0
+      ],
+      "outside_naive_delta": [
+        0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 3,
+      "state": "hover",
+      "authored_center": [
+        0,
+        0
+      ],
+      "outside_naive_delta": [
+        0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 3,
+      "state": "pressed",
+      "authored_center": [
+        0.0,
+        0.0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0.0
+      ],
+      "bottle_width": 15.36
+    },
+    {
+      "slot": 3,
+      "state": "disabled",
+      "authored_center": [
+        0,
+        0
+      ],
+      "outside_naive_delta": [
+        0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 4,
+      "state": "normal",
+      "authored_center": [
+        41.333,
+        0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 4,
+      "state": "hover",
+      "authored_center": [
+        41.333,
+        0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 4,
+      "state": "pressed",
+      "authored_center": [
+        39.67968,
+        0.0
+      ],
+      "outside_naive_delta": [
+        1.6533200000000015,
+        0.0
+      ],
+      "bottle_width": 15.36
+    },
+    {
+      "slot": 4,
+      "state": "disabled",
+      "authored_center": [
+        41.333,
+        0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 5,
+      "state": "normal",
+      "authored_center": [
+        82.666,
+        0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 5,
+      "state": "hover",
+      "authored_center": [
+        82.666,
+        0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0
+      ],
+      "bottle_width": 16
+    },
+    {
+      "slot": 5,
+      "state": "pressed",
+      "authored_center": [
+        79.35936,
+        0.0
+      ],
+      "outside_naive_delta": [
+        3.306640000000003,
+        0.0
+      ],
+      "bottle_width": 15.36
+    },
+    {
+      "slot": 5,
+      "state": "disabled",
+      "authored_center": [
+        82.666,
+        0
+      ],
+      "outside_naive_delta": [
+        0.0,
+        0
+      ],
+      "bottle_width": 16
+    }
+  ],
+  "conditionalRuntimeGeometry": {
+    "3": [
+      {
+        "slot": 1,
+        "normal_x": -42.0,
+        "pressed_x": -40.32,
+        "outside_naive_delta": -1.68
+      },
+      {
+        "slot": 2,
+        "normal_x": 0.0,
+        "pressed_x": 0.0,
+        "outside_naive_delta": 0.0
+      },
+      {
+        "slot": 3,
+        "normal_x": 42.0,
+        "pressed_x": 40.32,
+        "outside_naive_delta": 1.68
+      }
+    ],
+    "5": [
+      {
+        "slot": 1,
+        "normal_x": -84.0,
+        "pressed_x": -80.64,
+        "outside_naive_delta": -3.36
+      },
+      {
+        "slot": 2,
+        "normal_x": -42.0,
+        "pressed_x": -40.32,
+        "outside_naive_delta": -1.68
+      },
+      {
+        "slot": 3,
+        "normal_x": 0.0,
+        "pressed_x": 0.0,
+        "outside_naive_delta": 0.0
+      },
+      {
+        "slot": 4,
+        "normal_x": 42.0,
+        "pressed_x": 40.32,
+        "outside_naive_delta": 1.68
+      },
+      {
+        "slot": 5,
+        "normal_x": 84.0,
+        "pressed_x": 80.64,
+        "outside_naive_delta": 3.36
+      }
+    ]
+  },
+  "explicitClipProperties": {}
+}

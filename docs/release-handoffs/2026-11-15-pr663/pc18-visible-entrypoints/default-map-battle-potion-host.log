@@ -1,0 +1,5 @@
+ABYSS_RUN seed=1 source=explicit
+PASS formal-default Host: map displays count only (2/3), individual slots hidden in all four states
+PASS existing management UI names Strength and Flex distinctly; same physical inventory unmodified
+PASS formal-default Host: Strength/Flex visible in battle, same 111046 and same tint in all four imported faces
+PASS formal-default Host: battle captions are visible and distinguish Strength/Flex as 力 / 肌

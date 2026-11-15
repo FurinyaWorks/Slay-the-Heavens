@@ -1,0 +1,3 @@
+ABYSS_RUN seed=1 source=explicit
+PASS formal-default Host: map displays count only (2/3), individual slots hidden in all four states
+PASS existing management UI names Strength and Flex distinctly; same physical inventory unmodified

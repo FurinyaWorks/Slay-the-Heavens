@@ -1,5 +1,7 @@
 # 2.0.0 当前产品切片：组合源、去重后地图回退、默认药水图标
 
+> 后续已用完整默认 Host 校正：此处是显式传入 mapSlots=true 的函数回退；实际默认地图只显示计数，物理槽隐藏。两瓶图形相同在默认战斗复现，但已有「力／肌」短名。见[真实入口证据](../pc18-visible-entrypoints/PC18-VISIBLE-ENTRYPOINTS.md)。
+
 真实 Release `1cc5479`，对 #678/#679/#684/#690/#695/#696/#697/#698/#699 当前确切 Git 头，仅组合生产 `src/`、`scripts/`、`data/`；排除测试 runner/timing 和各分支 CI/Backlog。未加入 #691、未修改发版配置，未尝试替各自覆盖冻结的来源证明。**43 个路径、7 处共享文件均可从精确基线文本合成**，含 #684 与 #699 的实物 `ui_theme.json`；不以「无文本冲突」证明行为或完整 Git 合并。[版本及输入/组合哈希](union.json) · [生成日志](default-generation.log) · [组合器](union.py)。默认生成的 game-ui SHA256 `6d4c5f83c986c546ca6cfb21c60a6b7dc0dfac11f278e65f74f54f7ee6963b55`。没有 SDK/GIL/实体设备。
 
 ## #690 × #697：地图恢复入口的真实组合接缝
