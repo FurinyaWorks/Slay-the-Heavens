@@ -55,13 +55,17 @@
     {
       "path": "docs/evidence/pc08-map-return-20261116/final-targeted.tap",
       "sha256": "0847de25e3e3ba1bae7eb4ee79c271ae3bd03b9971def1439ab99424e8db14e3"
+    },
+    {
+      "path": "docs/evidence/pc08-map-return-20261116/lua-static.tap",
+      "sha256": "adcc7467afa59bd664ff57ca172d0940127753399014d98e48998f9682f2c1c8"
     }
   ],
   "validation": {
     "targeted": "11 tests pass; 3 full generated official Host scenarios",
     "architecture": "351 modules / 1989 edges pass",
     "diffCheck": "pass",
-    "luaStatic": "not run: existing binary absent",
+    "luaStatic": "PASS Luacheck 1.2.0; no new diagnostics; 6 historical warnings; 2215 governed responsibility measurements; existing binary sha256 0f1c69c4d09f1ebb4d8df14c215e4553e2e639bd4cb7bf3c639b0daa6198317b",
     "fast": "plan only; full=false; no Fast execution",
     "officialImport": "UNVERIFIED",
     "ready": "UNVERIFIED",
