@@ -380,7 +380,7 @@ export function battleLayout() {
     button('stolenGold', l.battleRewards.rowOrigin, l.battleRewards.rowSize, '取回失金', false, f.body));
   controls.push({ name: 'dragLayer', kind: 'container', size: [width, height], visible: false, children: [
     { ...hit(width, height), focusable: false },
-    panel('line', l.cardDrag.playArea[0], l.cardDrag.lineY, l.cardDrag.playArea[2], s.border, c.goldBright),
+    { ...panel('line', l.cardDrag.playArea[0], l.cardDrag.lineY, l.cardDrag.playArea[2], s.border, c.goldBright), visible: false },
     text('hint', 0, l.cardDrag.lineY + s.xl, l.cardDrag.playArea[2], l.nativeText.lineHeight, '', f.body, c.goldBright),
     // Targeted cards dock below the line and aim with a dotted arc that ends on a reticle.
     ...Array.from({ length: l.cardDrag.aimDots }, (_, i) =>
