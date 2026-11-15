@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-15 06:41'
 labels:
   - 待验
   - delivery-verify
@@ -111,4 +111,6 @@ e22本地重放验证：相对basename参考与短模式原生CLI对当前360个
 2026-11-14逐项对账：选测与保守Full边界已交付；仅剩自然Fast样本P50/P90和Full30分钟性能验收，不重写选择器。
 
 2026-11-14第二轮状态纠正：选测机制与前两项AC已交付，尚缺自然Fast样本及真实耗时；属于进行中待验，不重新实现选择器。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+2026-11-15 已完成e65两个Full历史run重新配对Licenses原数据收集，本次样本自然Fast=0，不得拿这两项冒充20个Fast P50/P90；仅记录当前可核样本不足，不触发CI凑样本、不轮询队列。
 <!-- SECTION:NOTES:END -->

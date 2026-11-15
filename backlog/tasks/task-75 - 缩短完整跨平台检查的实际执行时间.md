@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 03:47'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-15 06:59'
 labels:
   - 待验
   - delivery-verify
@@ -103,4 +103,8 @@ PR370首头5d66abfc的run41009713098 impact 05:40:13创建、05:52:29开始、05
 
 2026-11-13对账：原AC1–3均已勾但仍In Progress；M7章程稳定Full≤30分钟及自然Fast样本未有通过证据，因此补AC4作为剩余出口，保留原三项真实通过与原始耗时。
 PR269合后Windows日志确认两类合同错误：新快反馈工作流CRLF未归一，三份fixture合同冻结旧runner整文件hash未识别已批准的调度编辑。修复保留原63ec1495全runner SHA，通过严格校验新调度block的SHA64f2b495后仅逆转该block和单一import；原runLua、全部超时、进程参数、输出/失败路径仍由原hash保护。新增LF/CRLF等价、任意deadline/进程修改仍拒绝、调度改写仍拒绝负例。精确Node24.18.0在已构建数据/UI上18/18过0skip，165.697秒；含真实7UI片/53case/6播放种子与原全部负例。用户已明确授权先合并后完整CI，未宣称远端通过。复用现有TASK75，不再建重复任务。
+
+2026-11-15 仅复用已完成历史run/jobs，用现有ci-run-costs重新实算：e65 push Full43615128387必要门禁4442秒、queue43605179989为6623秒；<=30分钟目标未达，不能勾最后AC。最慢push rules7/18执行2204/排队1809秒，其中JS1620秒；native49文件timing中relic-query-source-inverse584077ms相对旧权重52731，存在真实成本偏差。先隔离优化不可变fixture期望重复计算，不改CI并发/预算，不触发新Full。原始数据.artifacts/ci-completed-cost-1115，本轮小摘要docs/evidence/backlog-closeout-20261115/ci-throughput.json。
+
+2026-11-15 已开始单测试切片完成独审并本地保全：feat/source-proof-cost-followup-1115@ef42f018f34f34e12df06364e780ad0c8fe89251。原named矩阵1/1通过，69条前后探针轨迹一致，实际读序/失败恢复/mixed断言保留；静态expected2170到62不是墙钟提速证据。证据随分支归档，未改CI路由或预算，不建PR、不入队，不以本地测试宣称Full达标。
 <!-- SECTION:NOTES:END -->
