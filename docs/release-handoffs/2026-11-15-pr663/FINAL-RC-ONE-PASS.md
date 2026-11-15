@@ -18,14 +18,17 @@
 ## 3. 手机：只查 PC 无法代验的行为
 
 - 实机记录机型、设置、持续时间、来源身份。重点：设置图标看得见且点得到；地图可看已拥有遗物；选中技能牌无黑块；拖牌／触控和文字可读；死亡与奖励顺序无闪现；退出战局后仍可继续或新开；排序方向标记正确。未覆盖／未解决项原样记录，不能用 PC 替代。
+- 多敌战斗必须在实体手机上用手指走完自由瞄准、锁定、改锁、取消，核对箭头方向、终点与箭头尖端可见。目标 iOS 实机记录机型和系统，顺手覆盖计时初值、跨分钟、战斗／选路／奖励推进、跨幕连续、终局停止、新局重置和切后台／恢复，附短录像和对应日志。
 - 同一截图或报告可以支撑多个检查，但每个条目注明对应页签、时间和场景。可公开的证据脱敏后再算 SHA-256；原始私有日志按权限留存。没有真实证据则标 `UNVERIFIED`，未解决项不能勾通过。
 
 ## 4. 完成前跑现有门禁，不另造流程
 
-对最终 GIL 保存现有 UI 验收清单、启动记录和截图后，从候选对应工作树执行：
+先按[当前 UI 清单格式](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/57201aa97d2498c8c3c4deea8af1c23044c0adaf/schemas/ui-acceptance.schema.json)为本候选另建 `final-review.json`。未测屏幕先填 `pending`，不要复制历史成绩。实际启动后，用同一候选的 `buildId`、真实 `runId`、`payloadDigest` 和当前批准稿摘要 `approvedDesignDigest()` 补齐顶层身份；逐屏按现行 verifier 补实测、人工评审和截图哈希。GIL 旁保留 `candidate.json` 与 `startup-evidence.json`；截图按官方启动记录的 `runDir` 相对路径收存，不混用旧候选或旧 run 记录。两行复用同一 UI 截图时，两行都写 `sharedScreenshotReason`（与平台负载笔记不同）。
+
+从候选对应工作树执行。`npm run verify:ui` 固定使用历史清单；追加参数不能切换清单，因此这里直接调用同一个 verifier：
 
 ```sh
-npm run verify:ui -- "<final.gil>"
+node scripts/verify-ui-acceptance.mjs "<final-review.json>" "<final.gil>"
 npm run verify:platform-load -- "<final-candidate.json>" "<official-load.json>"
 ```
 
