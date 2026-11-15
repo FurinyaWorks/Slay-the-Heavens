@@ -1,8 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {mkdirSync,mkdtempSync,readdirSync,readFileSync,rmSync} from 'node:fs';import {join} from 'node:path';import {createRequire} from 'node:module';import {spawnSync} from 'node:child_process';
+import {mkdirSync,mkdtempSync,readdirSync,readFileSync,rmSync,existsSync} from 'node:fs';import {join} from 'node:path';import {createRequire} from 'node:module';import {spawnSync} from 'node:child_process';
 import {attachOfficialPortraits} from '../scripts/official-portraits.mjs';import {gameLayout} from '../scripts/game-ui-layout.mjs';import {withViewport} from '../scripts/viewport-layout.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
+import {runLua} from '../scripts/test-lua.mjs';
 const require=createRequire(import.meta.url),all=n=>[n,...(n.children??n.controls??[]).flatMap(all)];
 test('official enabled hero gains exactly one non-input shadow at the approved solid foot bound',()=>{
  const before=withViewport(gameLayout(),nativeTheme),after=structuredClone(before);
@@ -19,6 +20,16 @@ test('official enabled hero gains exactly one non-input shadow at the approved s
  assert.equal(all(after).length,all(before).length+1);figure.children=[];assert.deepEqual(after,before,'all other controls, hits and transforms must remain identical');
  const disabled=withViewport(gameLayout(),nativeTheme);attachOfficialPortraits(disabled,{selectionAvatar:false,battlePortrait:false,officialAssets:true});
  assert(!all(disabled).some(n=>n.name==='groundShadow'||n.name==='officialFigure'));
+});
+
+test('raw Full discovery runs the shadow fixture with its own profile and leaves shared generated inputs unchanged',()=>{
+ const paths=['build/lua/abyss_theme.lua','build/lua/abyss_game_layout.lua','build/lua/abyss_data.lua'];
+ const read=p=>existsSync(p)?readFileSync(p):null;
+ const before=paths.map(read);
+ const result=runLua('tests/lua/player_ground_shadow.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/PLAYER_GROUND_SHADOW_PASS/,result.stdout+result.stderr);
+ paths.forEach((p,i)=>assert.deepEqual(read(p),before[i],p+' shared input changed'));
 });
 test('actual approved portrait keeps foot anchoring, death alpha and shared lifecycle for its one shadow',()=>{
  mkdirSync('build',{recursive:true});const dir=mkdtempSync(join(process.cwd(),'build','ground-shadow-'));

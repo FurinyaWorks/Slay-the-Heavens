@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { resolve, join, dirname, basename } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { luaString, toLua } from './build-lua-data.mjs';
+import { buildLuaData, luaString, toLua } from './build-lua-data.mjs';
 import { battleLayout } from './ui-layout.mjs';
 import { partition, timings as runtimeTimings, jsShard, discoverJs } from './ci-shards.mjs';
 import { runLuaWorkers, luaSchedulingWeight } from './lua-workers.mjs';
@@ -33,10 +33,13 @@ export function runLua(script = 'tests/lua/combat.lua', { timeout, cwd = process
   // The upstream CLI's positional-script path loses Lua errors' exit status.
   // Its -e path explicitly exits nonzero when dofile raises, including syntax errors.
   const normalizedScript = script.replaceAll('\\', '/');
-  // This fixture verifies imported art pools, absent from the default profile.
-  // Prepare its own real production profile; never rewrite shared build/lua.
-  const artProfile = normalizedScript === 'tests/lua/lowcost_art.lua'
-    ? mkdtempSync(join(tmpdir(), 'abyss-lowcost-')) : null;
+  // Art fixtures need their own actual production profile, without replacing
+  // the default profile used by the other independently discovered fixtures.
+  const artConfig = normalizedScript === 'tests/lua/lowcost_art.lua'
+    ? {prefix:'abyss-lowcost-',options:{officialAssets:true,nativePageLifecycle:true}}
+    : normalizedScript === 'tests/lua/player_ground_shadow.lua'
+      ? {prefix:'abyss-shadow-',options:{officialAssets:true},data:true} : null;
+  const artProfile = artConfig ? mkdtempSync(join(tmpdir(), artConfig.prefix)) : null;
   const luaPath = (artProfile ? artProfile.replaceAll('\\','/')+'/?.lua;' : '')+'./build/lua/?.lua;./src/lua/?.lua;;';
   const frozenHand = historicalCardInputPrelude(normalizedScript,{cwd}) + frozenBattleHandPrelude(normalizedScript, {cwd})
     + eventCombatRoutePrelude(normalizedScript,{cwd}) + v25TextureBindingPrelude(normalizedScript,{cwd});
@@ -62,14 +65,17 @@ export function runLua(script = 'tests/lua/combat.lua', { timeout, cwd = process
     ? [fileURLToPath(new URL('../tests/helpers/jaw-worm-parallel.mjs', import.meta.url)), String(Date.now() + timeout), String(maxBuffer)]
     : [cli, '-e', `${selection}${frozenHand}dofile(${luaString(temporary || resolve(cwd, script))})`];
   try {
-    if (artProfile) buildUI(artProfile, undefined, {officialAssets:true,nativePageLifecycle:true});
+    if (artProfile) {
+      if (artConfig.data) buildLuaData('data', join(artProfile, 'abyss_data.lua'));
+      buildUI(artProfile, undefined, artConfig.options);
+    }
     result = spawnSync(process.execPath, args, {
     cwd, encoding: 'utf8', timeout, maxBuffer,
     env: { ...process.env, LUA_PATH: luaPath, LUA_PATH_5_3: luaPath, LUA_INIT: '', LUA_INIT_5_3: '' }
   }); } finally {
     if (temporary) unlinkSync(temporary);
     if (artProfile) {
-      if (dirname(resolve(artProfile)) !== resolve(tmpdir()) || !basename(artProfile).startsWith('abyss-lowcost-')) throw Error('Unexpected art fixture temporary path');
+      if (dirname(resolve(artProfile)) !== resolve(tmpdir()) || !basename(artProfile).startsWith(artConfig.prefix)) throw Error('Unexpected art fixture temporary path');
       rmSync(artProfile, {recursive:true,force:true});
     }
   }
