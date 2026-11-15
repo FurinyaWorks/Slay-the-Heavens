@@ -11,6 +11,8 @@
 - 其余已迁 LFS 对象按当前仓库流程正常读回。已有对象不重下。
 - 补丁 `pr663-source-only.patch` SHA-256 `f3d5630d1c073ad60c878e30df64176fa19c7d9536ee18e2ed01ee11bfce0063`。
 
+可先用本目录的只读预检核对两个已迁移的源码见证对象。将脚本置于目标工作树外，再在干净的 #663 工作树中运行 `node /path/to/check-witness-inputs.mjs .`。它验证 HEAD 中两条 LFS 指针及实际文件字节，不下载、不写入，也不代替完整 HEAD/BASE 审查。实测 pointer、同长度篡改、文件软链和指针变更均拒绝，完整对象通过。
+
 ```sh
 git apply --check /path/to/pr663-source-only.patch
 git apply --index /path/to/pr663-source-only.patch
