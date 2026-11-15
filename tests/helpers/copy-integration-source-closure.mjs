@@ -43,6 +43,14 @@ export const itemIconHelperCopies=[
       {
         "before": "163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7",
         "after": "3471ca3ce9f2f0f1ddeb87d21c201cf83a4c41592744de068696812af9154dc8"
+      },
+      {
+        "before": "3f6eff5b06cc91371de414aa1a7fb960ee447d6cdca9b8fc7807ce503793fd6c",
+        "after": "775646f95cc2a4f4008c789824ebdf597f409bcb68e82e1e7118cabbe35b042a"
+      },
+      {
+        "before": "775646f95cc2a4f4008c789824ebdf597f409bcb68e82e1e7118cabbe35b042a",
+        "after": "ca1375c9dfab0d93f78afc8b80e86e8930f92057a201e48e946d7d6a7b350c42"
       }
     ]
   },
@@ -65,9 +73,17 @@ export const itemIconHelperCopies=[
     ]
   }
 ];
+itemIconHelperCopies.push(
+ {path:'tests/helpers/pc-final-source-epoch.mjs',versions:[{before:null,after:'e63d06bca56c511f3575d546b220189d9da7e9636b447fd15d7ebf2f2561a085'}]},
+ {path:'tests/helpers/pc-final-source-epoch.json.gz',versions:[{before:null,after:'fc811b3d3f93e0f7dc9a01189349a1d94c6a241231d290031b55de7bab2af5df'}]});
 for(const row of itemIconHelperCopies){
- const version=row.versions.find(version=>version.before===(files[row.path]??null));
- assert(version,'exact item icon helper-copy predecessor: '+row.path);files[row.path]=version.after;
+ let version=row.versions.find(version=>version.before===(files[row.path]??null)),steps=0;
+ assert(version,'exact item icon helper-copy predecessor: '+row.path);
+ while(version){
+  assert(++steps<=row.versions.length,'acyclic item icon helper-copy continuation');
+  files[row.path]=version.after;
+  version=row.versions.find(next=>next.before===files[row.path]);
+ }
 }
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

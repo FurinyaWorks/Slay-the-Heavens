@@ -1,6 +1,7 @@
 // CI-only trust leaf. No production projector or helper-copy dependency imports it.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {pcFinalCiSource,pcFinalCurrentInventory,pcFinalPriorInventory} from './pc-final-ci-source.mjs';
 const norm=s=>s.replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 // Filled once from the two reviewed Git snapshots after the bounded code changes.
@@ -36,12 +37,28 @@ export const itemIconCi=freeze({
       {
         "before": "163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7",
         "after": "3471ca3ce9f2f0f1ddeb87d21c201cf83a4c41592744de068696812af9154dc8"
+      },
+      {
+        "before": "3f6eff5b06cc91371de414aa1a7fb960ee447d6cdca9b8fc7807ce503793fd6c",
+        "after": "775646f95cc2a4f4008c789824ebdf597f409bcb68e82e1e7118cabbe35b042a"
+      },
+      {
+        "before": "3f6eff5b06cc91371de414aa1a7fb960ee447d6cdca9b8fc7807ce503793fd6c",
+        "after": "ca1375c9dfab0d93f78afc8b80e86e8930f92057a201e48e946d7d6a7b350c42"
       }
     ],
     "tests/helpers/copy-integration-source-closure.mjs": [
       {
         "before": "17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0",
         "after": "009ce6fc36f821911275f61a8d5a2a67749567d981f57b1bec878c6a2d098681"
+      },
+      {
+        "before": "17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0",
+        "after": "32823db828eb0f75cfe8d1f67c528ab32911dd0b73f7ae4e9c75aeb1a70399fd"
+      },
+      {
+        "before": "17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0",
+        "after": "408f9bd0d81d8e2ff25549d8385e1b18c327396074cd3b0a13d1c4f695e02134"
       }
     ],
     "tests/integration-source-epoch.test.mjs": [
@@ -64,6 +81,10 @@ export const itemIconCi=freeze({
       {
         "before": "2c5f69104518ae70185f98b6329bbc85a395e4d89c24fbae0d6def614cf584cf",
         "after": "2f33e04816202529fcd3a37d17eea28429cc81493691d8837b4932aaec3ea7cd"
+      },
+      {
+        "before": "91ffba192be6ab3ff13928ba898c48749ed44d837203d10fd6f37f3826804df3",
+        "after": "8e1e7f20d71de2c838cec298bdf15f9b0c6368f263449a8eadcf4e897343785c"
       }
     ],
     "tests/sts-style-source-epoch.test.mjs": [
@@ -109,10 +130,12 @@ export const itemIconCi=freeze({
   },
   "inventories": {
     "js": [
+      "19d5d17db472ea35bde61f1a49b93bfe2d30258dab403709da6d8cc87b583e60",
       "210f8b9060ba2f90ff76e3c75443187680b1679b7667d267cb74b0429a845be7",
       "4bbf63f570d50ad04f1e4c9a42070ea62851208cd78e0cdb4c528d5e42496e06"
     ],
     "lua": [
+      "681e9f9260fc44a96d676c6704badef733970e519c89f34d28c7d9bce5da7332",
       "86a16eeead2e6fc6874e921d84660e339ce52b4b7ca22f51351dab5fc5f6a4e3",
       "5e31f374c21e3623655a8babbb2cad1984cc561ec4d1d99c22cf19d38a2a2d3b"
     ]
@@ -123,6 +146,7 @@ export const itemIconCi=freeze({
   }
 });
 export function itemIconCiSource(path,source,row){
+ source=pcFinalCiSource(path,source,row);
  if(typeof source!=='string'||source.includes('\r\r\n')||!row)return source;
  const aliases=Object.hasOwn(itemIconCi.aliases,path)?itemIconCi.aliases[path]:[];
  return aliases.some(alias=>alias.before===row.sha256&&alias.after===hash(norm(source)))?row.source:source;
@@ -130,15 +154,17 @@ export function itemIconCiSource(path,source,row){
 export function itemIconCurrentInventory(base,kind){
  assert(['js','lua'].includes(kind),'known item icon inventory kind');
  const added=Object.keys(itemIconCi.added[kind]).filter(path=>!base.includes(path));
- if(added.length===0)return [...base];
+ if(added.length===0)return pcFinalCurrentInventory(base,kind);
  assert(itemIconCi.inventories[kind].includes(hash(JSON.stringify(base))),'exact item icon base inventory');
- return [...base,...added].sort();
+ return pcFinalCurrentInventory([...base,...added].sort(),kind);
 }
 export function itemIconPriorInventory(paths,base,kind,read,proof){
  const added=Object.keys(itemIconCi.added[kind]).filter(path=>!base.includes(path));
+ if(added.length===0)return [...paths];
+ paths=pcFinalPriorInventory(paths,kind,read);
  if(!added.some(path=>paths.includes(path)))return [...paths];
- assert.deepEqual([...paths].sort(),itemIconCurrentInventory(base,kind),'complete item icon '+(kind==='lua'?'Lua discovery':kind)+' inventory');
- for(const path of added)assert.equal(hash(norm(read(path,'utf8'))),itemIconCi.added[kind][path],'fresh added inventory source: '+path);
+ assert.deepEqual([...paths].sort(),[...base,...added].sort(),'complete item icon '+(kind==='lua'?'Lua discovery':kind)+' inventory');
+ for(const path of added)assert.equal(hash(norm(pcFinalCiSource(path,read(path,'utf8'),{sha256:itemIconCi.added[kind][path]}))),itemIconCi.added[kind][path],'fresh added inventory source: '+path);
  if(kind==='js')assertItemIconRuntimeSupport(read,proof);
  return [...base];
 }
@@ -149,6 +175,6 @@ function assertItemIconRuntimeSupport(read,proof){
 }
 export function assertItemIconAddedSources(read,proof){
  const base={js:proof.inventory,lua:proof.luaInventory};
- for(const [kind,group]of Object.entries(itemIconCi.added))for(const [path,sha]of Object.entries(group))if(!base[kind].includes(path))assert.equal(hash(norm(read(path,'utf8'))),sha,'fresh added inventory source: '+path);
+ for(const [kind,group]of Object.entries(itemIconCi.added))for(const [path,sha]of Object.entries(group))if(!base[kind].includes(path))assert.equal(hash(norm(pcFinalCiSource(path,read(path,'utf8'),{sha256:sha}))),sha,'fresh added inventory source: '+path);
  assertItemIconRuntimeSupport(read,proof);
 }

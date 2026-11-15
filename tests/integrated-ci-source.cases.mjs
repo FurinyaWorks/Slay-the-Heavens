@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure,integratedCurrentInventory,integratedCurrentSource,integratedPriorInventory} from './helpers/integrated-ci-source.mjs';
 import {itemIconCi,itemIconCiSource,assertItemIconAddedSources,itemIconCurrentInventory,itemIconPriorInventory} from './helpers/item-semantic-icons-ci.mjs';
+import {pcFinalCiPacket,pcFinalPriorInventory} from './helpers/pc-final-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
@@ -40,7 +41,7 @@ test('item icon CI continuation pins only reviewed aliases and complete new raw 
  const snapshot=JSON.stringify(proof);assert.equal(Object.keys(itemIconCi.aliases).length,12);
  let unknownReads=0;assert.throws(()=>integratedPriorInventory(discoverJs(),'unknown','js',()=>{unknownReads++;throw Error('unexpected');}),/known integration inventory/);assert.equal(unknownReads,0);
  for(const [path,aliases]of Object.entries(itemIconCi.aliases)){
-  const row=proof.files[path].current,source=raw(path);assert(aliases.some(alias=>alias.before===row.sha256&&alias.after===hash(source)),path);
+  const row=proof.files[path].current,source=raw(path);assert(aliases.some(alias=>alias.before===row.sha256&&alias.after===hash(source))||(pcFinalCiPacket.files[path]?.before?.sha256===row.sha256&&pcFinalCiPacket.files[path]?.current?.sha256===hash(source)),path);
   assert.equal(itemIconCiSource(path,source,row),row.source);assert.equal(itemIconCiSource(path,source.replaceAll('\n','\r\n'),row),row.source);
   assert.equal(itemIconCiSource(path,source,{...row,sha256:'f'.repeat(64)}),source);
   for(const changed of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),null,{},17])assert.equal(itemIconCiSource(path,changed,row),changed);
@@ -52,7 +53,7 @@ test('item icon CI continuation pins only reviewed aliases and complete new raw 
   const current=kind==='js'?discoverJs():readdirSync('tests/lua').filter(path=>path.endsWith('.lua')).map(path=>'tests/lua/'+path).sort();
   assert.deepEqual(current,integratedCurrentInventory(kind));
   const before=kind==='js'?proof.inventory:proof.luaInventory;
-  assert.deepEqual(current.filter(path=>!before.includes(path)),Object.keys(itemIconCi.added[kind]).sort());
+  assert.deepEqual(pcFinalPriorInventory(current,kind,readFileSync).filter(path=>!before.includes(path)),Object.keys(itemIconCi.added[kind]).sort());
   for(const path of Object.keys(itemIconCi.added[kind])){
    assert.throws(()=>integratedPriorInventory(current.filter(p=>p!==path),'release',kind),/inventory/);
    assert.throws(()=>integratedPriorInventory(current,'release',kind,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/added inventory source/);

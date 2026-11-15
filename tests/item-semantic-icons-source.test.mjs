@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {sourceEpoch,sourceSlice,menuPresentationEpoch} from './helpers/closeout-source-epoch.mjs';
+import {prePcFinalSourceEpoch as sourceEpoch,prePcFinalSourceSlice as sourceSlice,menuPresentationEpoch} from './helpers/closeout-source-epoch.mjs';
 import {itemIconWitness as witness,itemIconPaths as paths,itemIconProofMatches} from './helpers/item-semantic-icons-source.mjs';
 import {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';
 import {itemIconHelperCopies} from './helpers/copy-integration-source-closure.mjs';
@@ -81,19 +81,20 @@ test('unknown, appended, foreign, nonstring and absent-target inputs remain opaq
  assert.equal(absent.preCombinedSource(path,witness.after[path].source,{target,readSource:read}),witness.after[path].source);assert.equal(reads,0);
 });
 test('copy closure pins both reviewed closeout compositions and copies the new witness/helper with fresh owner checks',()=>{
- const entry=itemIconHelperCopies.find(row=>row.path==='tests/helpers/closeout-source-epoch.mjs');assert.equal(entry.versions.length,2);
+ const entry=itemIconHelperCopies.find(row=>row.path==='tests/helpers/closeout-source-epoch.mjs');assert.equal(entry.versions.length,4);
  const sha=text=>createHash('sha256').update(text.replaceAll('\r\n','\n')).digest('hex');
- const current=readFileSync(entry.path,'utf8').replaceAll('\r\n','\n');assert.equal(sha(current),entry.versions[0].after);
+ const current=readFileSync('tests/helpers/item-icon-reviewed-closeout.mjs.txt','utf8').replaceAll('\r\n','\n');assert.equal(sha(current),'aa943b070906e85c7adb23b2019728886d83bcfb2f80b19266931b23c3f98ffc');assert.equal(sha(current),entry.versions[0].after);
+ assert.equal(sha(readFileSync(entry.path,'utf8')),entry.versions.at(-1).after,'final current helper is authenticated separately from the original two reviewed snapshots');
  const session=current.replace("import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';","import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';\nimport {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';").replace('export const sourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);','export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);\nexport const sourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);');
  assert.equal(sha(session),entry.versions[1].after,'exact future PR663 composition with the same independent precheck');
  for(const ending of [false,true]){
   const dir=mkdtempSync(join(tmpdir(),'item-icon-source-'));
   try{
-   copyCurrentSourceFixture(dir,{crlf:ending});
+   copyCurrentSourceFixture(dir,{crlf:ending,snapshotTarget:'pcFinalPrior'});
    for(const name of ['item-semantic-icons-source.mjs','item-semantic-icons-source-witness.json'])assert.equal(sha(readFileSync(join(dir,'tests/helpers',name),'utf8')),sha(readFileSync('tests/helpers/'+name,'utf8')));
    const copiedWitness=join(dir,'tests/helpers/item-semantic-icons-source-witness.json');
    if(ending)writeFileSync(copiedWitness,crlf(readFileSync(copiedWitness,'utf8')));
-   const script=`import assert from 'node:assert/strict';import {readFileSync,writeFileSync} from 'node:fs';import {sourceSlice,sourceEpoch} from './tests/helpers/closeout-source-epoch.mjs';const p='${paths[3]}',target=${JSON.stringify(targetFor(paths[3]))};const source=readFileSync(p,'utf8');assert.equal(sourceSlice(p,source,target),sourceEpoch.proof.targets[target].files[p].source);writeFileSync(p,source+'-- drift\\n');assert.throws(()=>sourceSlice(p,source,target),/linked owner identity/);`;
+   const script=`import assert from 'node:assert/strict';import {readFileSync,writeFileSync} from 'node:fs';import {prePcFinalSourceSlice as sourceSlice,prePcFinalSourceEpoch as sourceEpoch} from './tests/helpers/closeout-source-epoch.mjs';const p='${paths[3]}',target=${JSON.stringify(targetFor(paths[3]))};const source=readFileSync(p,'utf8');assert.equal(sourceSlice(p,source,target),sourceEpoch.proof.targets[target].files[p].source);writeFileSync(p,source+'-- drift\\n');assert.throws(()=>sourceSlice(p,source,target),/linked owner identity/);`;
    execFileSync(process.execPath,['--input-type=module','-e',script],{cwd:dir,stdio:'pipe'});
    writeFileSync(copiedWitness,readFileSync(copiedWitness,'utf8')+' ');
    assert.throws(()=>execFileSync(process.execPath,['--input-type=module','-e',"await import('./tests/helpers/item-semantic-icons-source.mjs')"],{cwd:dir,stdio:'pipe'}),/Command failed/,'JSON whitespace beyond CRLF normalization still fails immutable pin');

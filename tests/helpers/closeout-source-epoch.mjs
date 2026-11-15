@@ -14,6 +14,7 @@ import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendMobileUiEpoch} from './mobile-ui-source-epoch.mjs';
 import {extendPortraitIdleEpoch} from './portrait-idle-source-epoch.mjs';
+import {extendPcFinalSourceEpoch} from './pc-final-source-epoch.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -54,16 +55,19 @@ export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preMobileUiSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
 export const prePortraitIdleSourceEpoch=extendMobileUiEpoch(preMobileUiSourceEpoch);
-export const sourceEpoch=extendPortraitIdleEpoch(prePortraitIdleSourceEpoch);
-const proof=sourceEpoch.proof;
+export const prePcFinalSourceEpoch=extendPortraitIdleEpoch(prePortraitIdleSourceEpoch);
+export const sourceEpoch=extendPcFinalSourceEpoch(prePcFinalSourceEpoch);
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
-export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
+function sliceFrom(epoch,path,source,target,readSource){
+ const proof=epoch.proof;
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
- if(isItemIconAfter(proof,path,source))return sourceEpoch.preCombinedSource(path,source,{target,readSource});
+ if(isItemIconAfter(proof,path,source))return epoch.preCombinedSource(path,source,{target,readSource});
  const row=Object.hasOwn(proof.current,path)?proof.current[path]:null;
  if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
  const before=proof.targets[target].files[path];
  if(!before||before.sha256===row.sha256)return source;
- return sourceEpoch.preCombinedSource(path,source,{target,readSource});
+ return epoch.preCombinedSource(path,source,{target,readSource});
 }
+export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){return sliceFrom(sourceEpoch,path,source,target,readSource);}
+export function prePcFinalSourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){return sliceFrom(prePcFinalSourceEpoch,path,source,target,readSource);}

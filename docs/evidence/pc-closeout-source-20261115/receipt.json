@@ -1,0 +1,23 @@
+{
+  "kind": "SOURCE_AND_TARGETED_TEST_EVIDENCE_NOT_DEVICE_OR_RELEASE_ACCEPTANCE",
+  "productionCommit": "97ed740e83e2f6bb0f8377eea2209070a300b36c",
+  "productionPacketSha256": "fc811b3d3f93e0f7dc9a01189349a1d94c6a241231d290031b55de7bab2af5df",
+  "originalSourcePaths": 352,
+  "currentSourcePaths": 354,
+  "changedProductionBindings": 26,
+  "freshOwners": 120,
+  "addedWithHistoricalAbsence": ["src/lua/abyss_image_modes.lua", "src/lua/abyss_mobile_hud.lua"],
+  "originalCiPacket": {"sha256":"1e53c4b1ac4d3fd640b543f4957db4c5f51cebe5303d2c850c5c06f1f30c9d48","paths":249,"retainedViews":1992,"modified":false},
+  "newCiPacketSha256": "ee99ca6ed0372689bdd45692bc55a3a8ccb09c958697388d40e40a39c9be1da9",
+  "newCiRecords": 96,
+  "targeted": {
+    "finalProductionAndAbsence": "4/4 PASS; 120 owners individually drifted/missing; repeated LF/CRLF reads once per owner; prepopulated absent module rejected without deletion",
+    "helperCopy": "2/2 PASS; exact complete dependency copy and every helper drift rejection",
+    "originalIconSourceContracts": "7/7 PASS; complete old snapshots explicitly replayed; all 30 mixed tuples retained",
+    "originalCurrentProductionAndDetachedCopy": "2/2 PASS",
+    "ciContinuationAndOriginalCiCases": "4/4 PASS"
+  },
+  "validationBoundary": "assertIntegratedCurrent unconditionally verifies the complete new CI source continuation. Inventory mapping never bypasses this fresh-source entry. Original gzip packets, source views, deadlines and semantic assertions remain intact.",
+  "notVerified": ["hosted Full CI", "new candidate GIL", "official import/ready/capacity", "PC/mobile device acceptance", "release permission"],
+  "logs": "F:/New folder/.artifacts/pc-closeout-1115/shop"
+}

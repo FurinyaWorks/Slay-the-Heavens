@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {itemIconCiSource,itemIconCurrentInventory,itemIconPriorInventory,assertItemIconAddedSources} from './item-semantic-icons-ci.mjs';
+import {assertPcFinalCiCurrent} from './pc-final-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -35,6 +36,7 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ assertPcFinalCiCurrent(read);
  assertItemIconAddedSources(read,integratedCiProof);
  for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(itemIconCiSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(itemIconCiSource(path,read(path,'utf8'),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
