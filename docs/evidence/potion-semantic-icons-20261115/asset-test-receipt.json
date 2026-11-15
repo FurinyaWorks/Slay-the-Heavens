@@ -1,0 +1,24 @@
+{
+  "results": "3/3; raw EPERM environment failure retained separately",
+  "logs": [
+    {
+      "file": "potion-art-assets-test.log.gz",
+      "bytes": 972,
+      "sha256": "41cf5cffe8ff6ac5e79cf65bbed108c5876a15d89421f70f5e945d3746e7061d",
+      "gzipSha256": "729288227d5c29241a6405e321a86f7c33f32f9a9b61d1a2b00ea215c8957343"
+    },
+    {
+      "file": "potion-art-assets-test-green.log.gz",
+      "bytes": 902,
+      "sha256": "d02e6d4fb5347f4ac64dd296d546e2d7ac05b72d07ab244fcb5d15d1216608dc",
+      "gzipSha256": "8e3e3d2c7de71f5e82b9ec0fa546c69207b9b5a7967515818f6168d5ed24c729"
+    },
+    {
+      "file": "potion-art-assets-final.log.gz",
+      "bytes": 1151,
+      "sha256": "4625e216503165a13282f241b53ebe677ff6367cac2e959dd5dd8a389465a193",
+      "gzipSha256": "befd624c5c6682fedba44bbc4a941f5edff0c483e26a08b5f72bed91d614d315"
+    }
+  ],
+  "finalResults": "4/4; 207.985ms; includes13PNG exact hashes/dimensions and frozen recipe hash"
+}

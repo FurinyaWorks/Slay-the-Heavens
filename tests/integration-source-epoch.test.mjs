@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {itemIconProofMatches,itemIconPaths,itemIconSourceState} from './helpers/item-semantic-icons-source.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -25,8 +26,11 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  assert.deepEqual(Object.keys(frozen.current),Object.keys(closeoutPriorEpoch.proof.current));
  assert.equal(proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
+ const iconContinuation=itemIconProofMatches(proof);
  for(const path of shopDeckPaths){
-  assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+  const live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  if(iconContinuation&&itemIconPaths.includes(path))assert(itemIconSourceState(path,live),path);
+  else assert.equal(live,raw(path),path);
   for(const input of [raw(path),raw(path).replaceAll('\n','\r\n')])for(const target of Object.keys(proof.targets)){
    const before=proof.targets[target].files[path];
    const expected=before&&before.sha256!==proof.current[path].sha256?before.source:input;
@@ -104,7 +108,14 @@ test('fresh authorization covers the complete changed-owner union without cachin
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
  assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
- for(const path of files)assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+ const iconContinuation=itemIconProofMatches(proof);
+ const iconStates=[];
+ for(const path of files){
+  const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  if(iconContinuation&&itemIconPaths.includes(path)){const state=itemIconSourceState(path,source);assert(state,path);iconStates.push(state);}
+  else assert.equal(source,raw(path),path);
+ }
+ if(iconContinuation)assert(iconStates.every(state=>state===iconStates[0]),'complete unmixed five UI tuple');
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

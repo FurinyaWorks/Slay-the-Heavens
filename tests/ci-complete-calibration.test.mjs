@@ -1964,7 +1964,7 @@ test('run HUD continuation authenticates complete current sources and raw Full i
 
 test('menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
- assert.deepEqual(js,integratedCiProof.inventory,'all combined current cases execute through complete raw Full discovery');
+ assert.deepEqual(js,[...integratedCiProof.inventory,...['tests/item-semantic-icons-source.test.mjs','tests/potion-art-runtime.test.mjs','tests/potion-art.test.mjs'].filter(path=>!integratedCiProof.inventory.includes(path))].sort(),'all combined current cases execute through complete raw Full discovery');
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);
  for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){
   assert.equal(liveDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source);

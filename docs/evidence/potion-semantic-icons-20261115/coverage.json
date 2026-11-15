@@ -1,0 +1,999 @@
+{
+  "scope": "42 full-source artwork assets; only existing33 competition pool admitted; pure original geometry not native texture/device proof",
+  "base": "e65d9b98fbec69442047650254238cd9244df805",
+  "sourceSha256": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+  "sourceBytes": 70988,
+  "sources": [
+    {
+      "file": "data/potions.json",
+      "sha256": "2765fd6392979180ac604e05bbe0954019539fb95d72e5808a4ffdf52421d699"
+    },
+    {
+      "file": "src/lua/abyss_class_potions.lua",
+      "sha256": "3776a16ce36f6bc419199627fbd6f4f8403d81f28e12f6d68d6e66541e3c6f89"
+    },
+    {
+      "file": "src/lua/abyss_silent_potions.lua",
+      "sha256": "3c65971a9197b94b4b065a6c74aa75a0b539181c16fa6a8d7afd64f9c5ae5546"
+    },
+    {
+      "file": "src/lua/abyss_potion_random.lua",
+      "sha256": "26ea990c6bcb8f916f036b3c191489187aec28b209004d4a4395a9cd1f738c7a"
+    },
+    {
+      "file": "src/lua/abyss_potion_text.lua",
+      "sha256": "736721b1581a0231f59aea666a0e9bfe8026a7c3d987417f759b93a08a0e941f"
+    }
+  ],
+  "fullSource": 42,
+  "production": 33,
+  "totalShapes": 353,
+  "maxShapes": 10,
+  "poolCapacity": 10,
+  "rawDefinitionCount": 34,
+  "additionalRegistrationFiles": [
+    "src/lua/abyss_class_potions.lua",
+    "src/lua/abyss_silent_potions.lua"
+  ],
+  "fallbackForUnmapped": 100114,
+  "visualReview": {
+    "author": "three iterations viewed at named64 and unlabelled24/32 grayscale; corrected shoulder overflow and misleading flame/bolt; no extra polish after root reviewed final atlas",
+    "root": "reviewed named64/unlabelled24/32 grayscale; usable first cut; freeze requested",
+    "device": "UNVERIFIED",
+    "originalNativeTextures": "UNVERIFIED"
+  },
+  "rows": [
+    {
+      "id": "attack_potion",
+      "name": "攻击药水",
+      "production": true,
+      "motif": "交叉剑",
+      "meaning": "攻击牌三选一",
+      "shapeCount": 10,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "attack_potion",
+        "targetPolicy": "self",
+        "name": "攻击药水",
+        "rarity": "common",
+        "description": "从3张随机攻击牌中选择1张加入手牌，本回合费用为0。",
+        "effects": [
+          {
+            "op": "discover",
+            "kind": "attack",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "skill_potion",
+      "name": "技能药水",
+      "production": true,
+      "motif": "开口扳手",
+      "meaning": "技能牌三选一",
+      "shapeCount": 8,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "skill_potion",
+        "targetPolicy": "self",
+        "name": "技能药水",
+        "rarity": "common",
+        "description": "从3张随机技能牌中选择1张加入手牌，本回合费用为0。",
+        "effects": [
+          {
+            "op": "discover",
+            "kind": "skill",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "power_potion",
+      "name": "能力药水",
+      "production": true,
+      "motif": "三尖冠",
+      "meaning": "能力牌三选一",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "power_potion",
+        "targetPolicy": "self",
+        "name": "能力药水",
+        "rarity": "common",
+        "description": "从3张随机能力牌中选择1张加入手牌，本回合费用为0。",
+        "effects": [
+          {
+            "op": "discover",
+            "kind": "power",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "colorless_potion",
+      "name": "无色药水",
+      "production": true,
+      "motif": "空心晶面",
+      "meaning": "无色牌三选一",
+      "shapeCount": 7,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "colorless_potion",
+        "targetPolicy": "self",
+        "name": "无色药水",
+        "rarity": "common",
+        "description": "从3张随机无色牌中选择1张加入手牌，本回合费用为0。",
+        "effects": [
+          {
+            "op": "discover",
+            "kind": "colorless",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "blood_potion",
+      "name": "鲜血药水",
+      "production": true,
+      "motif": "血滴",
+      "meaning": "回复最大生命百分比",
+      "shapeCount": 8,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "blood_potion",
+        "targetPolicy": "self",
+        "name": "鲜血药水",
+        "rarity": "common",
+        "description": "回复最大生命20%的生命，可在战斗外使用。",
+        "effects": [
+          {
+            "op": "healPercent",
+            "value": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "block_potion",
+      "name": "护盾药水",
+      "production": true,
+      "motif": "整面盾",
+      "meaning": "立即获得格挡",
+      "shapeCount": 7,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": "#B9DCFF",
+      "definitionReceipt": {
+        "id": "block_potion",
+        "targetPolicy": "self",
+        "name": "护盾药水",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "block",
+            "value": 12
+          }
+        ]
+      }
+    },
+    {
+      "id": "strength_potion",
+      "name": "力量药水",
+      "production": true,
+      "motif": "杠铃",
+      "meaning": "本场战斗力量",
+      "shapeCount": 7,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": "#FFFFFF",
+      "definitionReceipt": {
+        "id": "strength_potion",
+        "targetPolicy": "self",
+        "name": "力量药水",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "strength",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "flex_potion",
+      "name": "肌肉药水",
+      "production": true,
+      "motif": "弯臂与日落刻线",
+      "meaning": "本回合临时力量",
+      "shapeCount": 9,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": "#FFFFFF",
+      "definitionReceipt": {
+        "id": "flex_potion",
+        "targetPolicy": "self",
+        "name": "肌肉药水",
+        "description": "先获得5层力量，再施加回合结束时失去5层力量的减益。人工制品可抵挡减益。",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "gainTemporaryStrength",
+            "status": "strength",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "dexterity_potion",
+      "name": "敏捷药水",
+      "production": true,
+      "motif": "轻羽",
+      "meaning": "本场战斗敏捷",
+      "shapeCount": 7,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": "#FFFFFF",
+      "definitionReceipt": {
+        "id": "dexterity_potion",
+        "targetPolicy": "self",
+        "name": "敏捷药水",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "dexterity",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "speed_potion",
+      "name": "速度药水",
+      "production": true,
+      "motif": "飞翼与疾行线",
+      "meaning": "本回合临时敏捷",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": "#FFFFFF",
+      "definitionReceipt": {
+        "id": "speed_potion",
+        "targetPolicy": "self",
+        "name": "速度药水",
+        "description": "先获得5层敏捷，再施加回合结束时失去5层敏捷的减益。人工制品可抵挡减益。",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "gainTemporaryDexterity",
+            "status": "dexterity",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "energy_potion",
+      "name": "能量药水",
+      "production": true,
+      "motif": "闪电",
+      "meaning": "立即获得能量",
+      "shapeCount": 6,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": "#FFE7A6",
+      "definitionReceipt": {
+        "id": "energy_potion",
+        "targetPolicy": "self",
+        "name": "能量药水",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "energy",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "swift_potion",
+      "name": "迅捷药水",
+      "production": true,
+      "motif": "三层牌与抽取箭头",
+      "meaning": "抽三张牌",
+      "shapeCount": 9,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": "#B9DCFF",
+      "definitionReceipt": {
+        "id": "swift_potion",
+        "targetPolicy": "self",
+        "name": "迅捷药水",
+        "description": "抽 3 张牌。",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "draw",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "fire_potion",
+      "name": "火焰药水",
+      "production": true,
+      "motif": "火焰",
+      "meaning": "对单敌固定伤害",
+      "shapeCount": 8,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": "#FFB09A",
+      "definitionReceipt": {
+        "id": "fire_potion",
+        "targetPolicy": "enemy_one",
+        "name": "火焰药水",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "damage",
+            "value": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "explosive_potion",
+      "name": "爆炸药水",
+      "production": true,
+      "motif": "圆炸弹与引线",
+      "meaning": "对全体敌人伤害",
+      "shapeCount": 8,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "explosive_potion",
+        "targetPolicy": "enemy_all",
+        "name": "爆炸药水",
+        "rarity": "common",
+        "description": "对所有敌人造成10点普通类型伤害，不受力量、虚弱和易伤影响。",
+        "effects": [
+          {
+            "op": "damageAll",
+            "value": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "weak_potion",
+      "name": "虚弱药水",
+      "production": true,
+      "motif": "断刃",
+      "meaning": "减少敌人攻击伤害",
+      "shapeCount": 7,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": "#BFF0B0",
+      "definitionReceipt": {
+        "id": "weak_potion",
+        "targetPolicy": "enemy_one",
+        "name": "虚弱药水",
+        "description": "对选定敌人施加 3 回合虚弱。",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "applyStatus",
+            "status": "weak",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "fear_potion",
+      "name": "恐惧药水",
+      "production": true,
+      "motif": "瞪视眼与裂痕",
+      "meaning": "易伤增加敌人受伤",
+      "shapeCount": 8,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": "#FFB09A",
+      "definitionReceipt": {
+        "id": "fear_potion",
+        "targetPolicy": "enemy_one",
+        "name": "恐惧药水",
+        "description": "对选定敌人施加 3 回合易伤。",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "applyStatus",
+            "status": "vulnerable",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "ancient_potion",
+      "name": "远古药水",
+      "production": true,
+      "motif": "齿轮环",
+      "meaning": "人工制品抵挡减益",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": "#FFE7A6",
+      "definitionReceipt": {
+        "id": "ancient_potion",
+        "targetPolicy": "self",
+        "name": "远古药水",
+        "description": "获得 1 层人工制品，本场战斗有效。",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "artifact",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "liquid_bronze",
+      "name": "液态铜",
+      "production": true,
+      "motif": "四向荆棘环",
+      "meaning": "反击荆棘",
+      "shapeCount": 10,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": "#F0B850",
+      "definitionReceipt": {
+        "id": "liquid_bronze",
+        "targetPolicy": "self",
+        "name": "液态铜",
+        "description": "获得 3 层荆棘，本场战斗有效。",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "thorns",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "regen_potion",
+      "name": "再生药水",
+      "production": true,
+      "motif": "向上新芽",
+      "meaning": "逐回合回复生命",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": "#D8FFC8",
+      "definitionReceipt": {
+        "id": "regen_potion",
+        "targetPolicy": "self",
+        "name": "再生药水",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "regen",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "heart_of_iron",
+      "name": "钢铁之心",
+      "production": true,
+      "motif": "铆钉心脏",
+      "meaning": "持续金属化防守",
+      "shapeCount": 9,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "heart_of_iron",
+        "targetPolicy": "self",
+        "name": "钢铁之心",
+        "rarity": "rare",
+        "description": "获得6层金属化，每回合结束时获得固定格挡。",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "metallicize",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "essence_of_steel",
+      "name": "钢之精华",
+      "production": true,
+      "motif": "三层甲片",
+      "meaning": "逐层损耗的护甲",
+      "shapeCount": 8,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "essence_of_steel",
+        "targetPolicy": "self",
+        "name": "钢之精华",
+        "rarity": "uncommon",
+        "description": "获得4层多层护甲，每回合结束时获得格挡；被普通攻击伤害生命时失去1层。",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "plated_armor",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "cultist_potion",
+      "name": "邪教徒药水",
+      "production": true,
+      "motif": "长喙仪式面具",
+      "meaning": "仪式每回合增加力量",
+      "shapeCount": 8,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "cultist_potion",
+        "targetPolicy": "self",
+        "name": "邪教徒药水",
+        "rarity": "rare",
+        "description": "获得1层仪式，每回合结束时获得1层力量。",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "ritual",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "elixir",
+      "name": "灵药",
+      "production": true,
+      "motif": "燃去的牌",
+      "meaning": "选择手牌消耗",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "elixir",
+        "targetPolicy": "self",
+        "name": "灵药",
+        "rarity": "uncommon",
+        "description": "选择任意张手牌消耗，可以不选。",
+        "effects": [
+          {
+            "op": "exhaustMany",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "gamblers_brew",
+      "name": "赌徒佳酿",
+      "production": true,
+      "motif": "骰子",
+      "meaning": "弃牌并重抽等量牌",
+      "shapeCount": 10,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "gamblers_brew",
+        "targetPolicy": "self",
+        "name": "赌徒佳酿",
+        "rarity": "uncommon",
+        "description": "选择任意张手牌丢弃，再抽等量牌。",
+        "effects": [
+          {
+            "op": "discardRedraw",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "liquid_memories",
+      "name": "液态记忆",
+      "production": true,
+      "motif": "回转箭头与牌",
+      "meaning": "弃牌回手",
+      "shapeCount": 9,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "liquid_memories",
+        "targetPolicy": "self",
+        "name": "液态记忆",
+        "rarity": "uncommon",
+        "description": "从弃牌堆选择1张牌回手，本回合费用为0。",
+        "effects": [
+          {
+            "op": "discardToHand",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "snecko_oil",
+      "name": "异蛇油",
+      "production": true,
+      "motif": "蛇身与眼",
+      "meaning": "抽牌并随机改费",
+      "shapeCount": 10,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "snecko_oil",
+        "targetPolicy": "self",
+        "name": "异蛇油",
+        "rarity": "rare",
+        "description": "抽5张牌，再将手中可修改费用牌的战斗费用随机改为0至3。",
+        "effects": [
+          {
+            "op": "draw",
+            "value": 5
+          },
+          {
+            "op": "randomizeHandCost",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "duplication_potion",
+      "name": "复制药水",
+      "production": true,
+      "motif": "成对重叠牌",
+      "meaning": "下一张牌复制",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "duplication_potion",
+        "targetPolicy": "self",
+        "name": "复制药水",
+        "rarity": "uncommon",
+        "description": "获得1层复制，接下来的牌额外使用一次；每轮结束减少1层。",
+        "effects": [
+          {
+            "op": "gainStatus",
+            "status": "duplication",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "distilled_chaos",
+      "name": "混沌精华",
+      "production": true,
+      "motif": "三张散射牌",
+      "meaning": "随机目标免费打出三牌",
+      "shapeCount": 8,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "distilled_chaos",
+        "targetPolicy": "self",
+        "name": "混沌精华",
+        "rarity": "uncommon",
+        "description": "免费打出抽牌堆顶3张牌，目标随机；不会额外消耗这些牌。",
+        "effects": [
+          {
+            "op": "playTopCards",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "smoke_bomb",
+      "name": "烟雾弹",
+      "production": true,
+      "motif": "烟云与逃逸尾",
+      "meaning": "逃离非首领战斗",
+      "shapeCount": 9,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "smoke_bomb",
+        "targetPolicy": "self",
+        "name": "烟雾弹",
+        "rarity": "rare",
+        "description": "逃离当前战斗，不获得战斗奖励；不能用于Boss或有背袭能力的敌人房间。",
+        "effects": [
+          {
+            "op": "escape",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "entropic_brew",
+      "name": "熵之酿",
+      "production": true,
+      "motif": "三种泡与旋转箭头",
+      "meaning": "填充随机药水",
+      "shapeCount": 9,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "entropic_brew",
+        "targetPolicy": "self",
+        "name": "熵之酿",
+        "rarity": "rare",
+        "description": "按药水槽数量生成随机药水，依次填入空槽。可在战斗外使用；战斗中不会生成果汁。",
+        "effects": [
+          {
+            "op": "generatePotions",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "fruit_juice",
+      "name": "果汁",
+      "production": true,
+      "motif": "果实与双叶",
+      "meaning": "增加最大生命",
+      "shapeCount": 8,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "fruit_juice",
+        "targetPolicy": "self",
+        "name": "果汁",
+        "rarity": "rare",
+        "description": "最大生命增加5，并回复5点生命，可在战斗外使用。",
+        "effects": [
+          {
+            "op": "increaseMaxHp",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "blessing_of_the_forge",
+      "name": "锻造祝福",
+      "production": true,
+      "motif": "锻锤与火星",
+      "meaning": "升级当前手牌",
+      "shapeCount": 8,
+      "oldIcon": 111046,
+      "explicitOldIcon": 111046,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "blessing_of_the_forge",
+        "targetPolicy": "self",
+        "name": "锻造祝福",
+        "rarity": "common",
+        "description": "升级当前全部可升级手牌，不影响永久牌组。",
+        "effects": [
+          {
+            "op": "upgradeHand",
+            "all": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "fairy_in_a_bottle",
+      "name": "瓶中精灵",
+      "production": true,
+      "motif": "双翼与精灵身",
+      "meaning": "致命自动救援",
+      "shapeCount": 9,
+      "oldIcon": 111047,
+      "explicitOldIcon": 111047,
+      "tint": null,
+      "definitionReceipt": {
+        "id": "fairy_in_a_bottle",
+        "targetPolicy": "self",
+        "name": "瓶中精灵",
+        "rarity": "rare",
+        "description": "无法主动使用。受到致命伤害时自动消耗，回复最大生命30%的生命，至少1点。",
+        "effects": [
+          {
+            "op": "fatalRevive",
+            "value": 30
+          }
+        ]
+      }
+    },
+    {
+      "id": "poison_potion",
+      "name": "毒雾药水",
+      "production": false,
+      "motif": "骷髅",
+      "meaning": "持续中毒伤害",
+      "shapeCount": 9,
+      "oldIcon": 111048,
+      "explicitOldIcon": 111048,
+      "tint": "#BFF0B0",
+      "definitionReceipt": {
+        "id": "poison_potion",
+        "targetPolicy": "enemy_one",
+        "name": "毒雾药水",
+        "rarity": "common",
+        "effects": [
+          {
+            "op": "applyStatus",
+            "status": "poison",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "cunning_potion",
+      "name": "狡诈药水",
+      "production": false,
+      "motif": "三把小刀",
+      "meaning": "生成升级小刀",
+      "shapeCount": 10,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_silent_potions.lua",
+        "definitionLine": "{id='cunning_potion',name='狡诈药水',rarity='uncommon',effects={{op='silentShivs',value=3}}},"
+      }
+    },
+    {
+      "id": "ghost_in_a_jar",
+      "name": "瓶中幽灵",
+      "production": false,
+      "motif": "鬼影与空眼",
+      "meaning": "无实体降低所受伤害",
+      "shapeCount": 10,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_silent_potions.lua",
+        "definitionLine": "{id='ghost_in_a_jar',name='瓶中幽灵',rarity='rare',effects={{op='silentGhost',value=1}}},"
+      }
+    },
+    {
+      "id": "focus_potion",
+      "name": "集中药水",
+      "production": false,
+      "motif": "同心靶",
+      "meaning": "提升充能球集中",
+      "shapeCount": 8,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_class_potions.lua",
+        "definitionLine": "{id='focus_potion',sourceId='FocusPotion',name='集中药水',rarity='common',effects={{op='classPotion',kind='focus',value=2}}},"
+      }
+    },
+    {
+      "id": "potion_of_capacity",
+      "name": "扩容药水",
+      "production": false,
+      "motif": "双空球槽与加号",
+      "meaning": "增加球槽",
+      "shapeCount": 10,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_class_potions.lua",
+        "definitionLine": "{id='potion_of_capacity',sourceId='PotionOfCapacity',name='扩容药水',rarity='uncommon',effects={{op='classPotion',kind='capacity',value=2}}},"
+      }
+    },
+    {
+      "id": "essence_of_darkness",
+      "name": "黑暗精华",
+      "production": false,
+      "motif": "放射暗球",
+      "meaning": "按球槽生成黑暗球",
+      "shapeCount": 9,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_class_potions.lua",
+        "definitionLine": "{id='essence_of_darkness',sourceId='EssenceOfDarkness',name='黑暗精华',rarity='rare',effects={{op='classPotion',kind='darkness',value=1}}},"
+      }
+    },
+    {
+      "id": "bottled_miracle",
+      "name": "瓶装奇迹",
+      "production": false,
+      "motif": "光芒中的晶牌",
+      "meaning": "生成奇迹能量牌",
+      "shapeCount": 9,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_class_potions.lua",
+        "definitionLine": "{id='bottled_miracle',sourceId='BottledMiracle',name='瓶装奇迹',rarity='common',effects={{op='classPotion',kind='miracle',value=2}}},"
+      }
+    },
+    {
+      "id": "stance_potion",
+      "name": "姿态药水",
+      "production": false,
+      "motif": "相向双三角",
+      "meaning": "选择愤怒或平静",
+      "shapeCount": 7,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_class_potions.lua",
+        "definitionLine": "{id='stance_potion',sourceId='StancePotion',name='姿态药水',rarity='uncommon',effects={{op='classPotion',kind='stance',value=0}}},"
+      }
+    },
+    {
+      "id": "ambrosia",
+      "name": "仙酒",
+      "production": false,
+      "motif": "神圣高脚杯",
+      "meaning": "进入神格",
+      "shapeCount": 9,
+      "oldIcon": 100114,
+      "explicitOldIcon": null,
+      "tint": null,
+      "definitionReceipt": {
+        "registrationSource": "src/lua/abyss_class_potions.lua",
+        "definitionLine": "{id='ambrosia',sourceId='Ambrosia',name='仙酒',rarity='rare',effects={{op='classPotion',kind='divinity',value=0}}},"
+      }
+    }
+  ],
+  "sourceNormalization": "LF"
+}

@@ -1,0 +1,415 @@
+{
+  "scope": "offline native recipe projection; no SDK/device acceptance",
+  "originalRegistrySha256": "c1f91f32dcdc6738a87a2066e36bb0669bb94d4f14e851a7a00bd1b73496f18f",
+  "originalAssetCount": 88,
+  "sourceSha256": "1744a40bf016ba29959c9ec70398d7a1e5f0402b301b88e9c9adf6007f091131",
+  "order": [
+    "pear",
+    "mango",
+    "lees_waffle",
+    "darkstone_periapt",
+    "toxic_egg",
+    "molten_egg",
+    "burning_blood",
+    "black_blood",
+    "ornamental_fan",
+    "centennial_puzzle",
+    "bottled_flame",
+    "potion_belt",
+    "bronze_scales",
+    "boot",
+    "oddly_smooth_stone",
+    "orichalcum",
+    "old_coin",
+    "maw_bank",
+    "golden_idol",
+    "ginger",
+    "turnip",
+    "omamori",
+    "art_of_war",
+    "letter_opener",
+    "whetstone",
+    "eternal_feather",
+    "toy_ornithopter",
+    "bottled_tornado",
+    "ink_bottle",
+    "bottled_lightning",
+    "blood_vial",
+    "war_paint",
+    "pen_nib"
+  ],
+  "shapeCounts": {
+    "pear": 5,
+    "mango": 4,
+    "lees_waffle": 8,
+    "darkstone_periapt": 5,
+    "toxic_egg": 6,
+    "molten_egg": 6,
+    "burning_blood": 5,
+    "black_blood": 6,
+    "ornamental_fan": 6,
+    "centennial_puzzle": 8,
+    "bottled_flame": 6,
+    "potion_belt": 9,
+    "bronze_scales": 7,
+    "boot": 6,
+    "oddly_smooth_stone": 3,
+    "orichalcum": 5,
+    "old_coin": 6,
+    "maw_bank": 9,
+    "golden_idol": 8,
+    "ginger": 6,
+    "turnip": 6,
+    "omamori": 8,
+    "art_of_war": 6,
+    "letter_opener": 6,
+    "whetstone": 4,
+    "eternal_feather": 5,
+    "toy_ornithopter": 8,
+    "bottled_tornado": 6,
+    "ink_bottle": 6,
+    "bottled_lightning": 6,
+    "blood_vial": 6,
+    "war_paint": 7,
+    "pen_nib": 5
+  },
+  "totalShapes": 203,
+  "neutral24ExactDuplicates": [],
+  "semantics": {
+    "pear": {
+      "name": "梨",
+      "description": "取得时增加10点生命上限并回复10生命。",
+      "sourceId": "Pear",
+      "effects": [],
+      "motif": "细颈圆腹梨"
+    },
+    "mango": {
+      "name": "芒果",
+      "description": "取得时增加14点生命上限并回复14生命。",
+      "sourceId": "Mango",
+      "effects": [],
+      "motif": "偏斜长芒果"
+    },
+    "lees_waffle": {
+      "name": "李家华夫饼",
+      "description": "取得时增加7点生命上限，然后回复生命至上限。",
+      "sourceId": "Lee's Waffle",
+      "effects": [],
+      "motif": "方形九格华夫饼"
+    },
+    "darkstone_periapt": {
+      "name": "黑石护符",
+      "description": "每当一张诅咒牌实际加入永久牌组，最大生命增加6，并按治疗规则回复6生命。",
+      "sourceId": "Darkstone Periapt",
+      "effects": [],
+      "motif": "链圈黑石吊坠"
+    },
+    "toxic_egg": {
+      "name": "淬毒胎石",
+      "description": "每当你获得一张技能牌时，将其升级。",
+      "sourceId": "Toxic Egg 2",
+      "effects": [],
+      "motif": "毒滴裂纹蛋"
+    },
+    "molten_egg": {
+      "name": "熔火胎石",
+      "description": "每当你获得一张攻击牌时，将其升级。",
+      "sourceId": "Molten Egg 2",
+      "effects": [],
+      "motif": "熔岩孵化蛋"
+    },
+    "burning_blood": {
+      "name": "岩脉残晶",
+      "description": "每场战斗胜利后，回复6点生命。",
+      "sourceId": null,
+      "effects": [
+        {
+          "op": "heal",
+          "value": 6
+        }
+      ],
+      "motif": "赤红岩晶与炽热裂隙"
+    },
+    "black_blood": {
+      "name": "岩脉源晶",
+      "description": "替换「岩脉残晶」。每场战斗胜利后，回复12点生命。",
+      "sourceId": null,
+      "effects": [
+        {
+          "op": "heal",
+          "value": 12
+        }
+      ],
+      "motif": "暗色双峰源晶与红脉"
+    },
+    "ornamental_fan": {
+      "name": "精致折扇",
+      "description": "每回合每打出3张攻击牌，获得4点格挡。",
+      "sourceId": "Ornamental Fan",
+      "effects": [],
+      "motif": "展开折扇和扇骨"
+    },
+    "centennial_puzzle": {
+      "name": "百年积木",
+      "description": "每场战斗首次失去生命时，抽3张牌。",
+      "sourceId": "Centennial Puzzle",
+      "effects": [],
+      "motif": "四块互锁拼图"
+    },
+    "bottled_flame": {
+      "name": "瓶装火焰",
+      "description": "拾取时选择一张攻击牌。每场战斗开始时将它放入手牌。",
+      "sourceId": "Bottled Flame",
+      "effects": [],
+      "motif": "圆肚瓶中大火舌"
+    },
+    "potion_belt": {
+      "name": "药水腰带",
+      "description": "取得时增加2个药水槽。",
+      "sourceId": "Potion Belt",
+      "effects": [],
+      "motif": "横腰带三瓶与扣"
+    },
+    "bronze_scales": {
+      "name": "铜鳞",
+      "description": null,
+      "sourceId": null,
+      "effects": [
+        {
+          "op": "gainStatus",
+          "status": "thorns",
+          "value": 3
+        }
+      ],
+      "motif": "层叠三片青铜鳞"
+    },
+    "boot": {
+      "name": "靴子",
+      "description": "攻击造成1至4点未被格挡的伤害时，改为5点。",
+      "sourceId": "Boot",
+      "effects": [],
+      "motif": "高筒靴和鞋底"
+    },
+    "oddly_smooth_stone": {
+      "name": "光滑岩片",
+      "description": null,
+      "sourceId": null,
+      "effects": [
+        {
+          "op": "gainStatus",
+          "status": "dexterity",
+          "value": 1
+        }
+      ],
+      "motif": "扁圆光滑卵石"
+    },
+    "orichalcum": {
+      "name": "奥利哈钢",
+      "description": "回合结束时若没有格挡，获得6格挡。",
+      "sourceId": "Orichalcum",
+      "effects": [],
+      "motif": "尖角金属矿簇"
+    },
+    "old_coin": {
+      "name": "古旧钱币",
+      "description": "取得时获得300金币。禁止获得金币的效果仍会生效。",
+      "sourceId": "Old Coin",
+      "effects": [],
+      "motif": "方孔古钱币"
+    },
+    "maw_bank": {
+      "name": "聚财罐",
+      "description": "每次进入房间获得12金币；在商店消费后失效。",
+      "sourceId": "MawBank",
+      "effects": [],
+      "motif": "大嘴存钱罐和投币口"
+    },
+    "golden_idol": {
+      "name": "鎏金神像",
+      "description": "非宝箱的金币奖励额外增加25%（额外金额四舍五入）；直接金币和被盗金币不加成。",
+      "sourceId": "Golden Idol",
+      "effects": [],
+      "motif": "金色端坐神像"
+    },
+    "ginger": {
+      "name": "生姜",
+      "description": "你不会陷入虚弱。",
+      "sourceId": "Ginger",
+      "effects": [],
+      "motif": "横向多节姜根"
+    },
+    "turnip": {
+      "name": "萝卜",
+      "description": "你不会陷入脆弱。",
+      "sourceId": "Turnip",
+      "effects": [],
+      "motif": "白萝卜尖根和绿叶"
+    },
+    "omamori": {
+      "name": "护符",
+      "description": "阻止接下来2次诅咒获得。",
+      "sourceId": "Omamori",
+      "effects": [],
+      "motif": "系绳御守袋"
+    },
+    "art_of_war": {
+      "name": "兵法",
+      "description": "若本回合没有使用攻击牌，下回合额外获得1点能量。",
+      "sourceId": "Art of War",
+      "effects": [],
+      "motif": "厚册兵法书"
+    },
+    "letter_opener": {
+      "name": "开信刀",
+      "description": "每回合每打出3张技能牌，对所有敌人造成5点伤害。",
+      "sourceId": "Letter Opener",
+      "effects": [],
+      "motif": "细长开信刀与信封"
+    },
+    "whetstone": {
+      "name": "磨刀石",
+      "description": "取得时随机升级2张攻击牌。",
+      "sourceId": "Whetstone",
+      "effects": [],
+      "motif": "横磨石与擦痕"
+    },
+    "eternal_feather": {
+      "name": "永恒羽毛",
+      "description": "每进入一个休息处，你的牌组每有5张牌，回复3点生命。",
+      "sourceId": "Eternal Feather",
+      "effects": [],
+      "motif": "长羽片和羽轴"
+    },
+    "toy_ornithopter": {
+      "name": "玩具扑翼机",
+      "description": "每使用一瓶药水回复5生命。",
+      "sourceId": "Toy Ornithopter",
+      "effects": [],
+      "motif": "双翼机械飞鸟"
+    },
+    "bottled_tornado": {
+      "name": "瓶装旋风",
+      "description": "拾取时选择一张能力牌。每场战斗开始时将它放入手牌。",
+      "sourceId": "Bottled Tornado",
+      "effects": [],
+      "motif": "宽口锥瓶中的旋风"
+    },
+    "ink_bottle": {
+      "name": "墨水瓶",
+      "description": "每打出10张牌，抽1张牌。",
+      "sourceId": "InkBottle",
+      "effects": [],
+      "motif": "方形墨水瓶与墨滴"
+    },
+    "bottled_lightning": {
+      "name": "瓶装闪电",
+      "description": "拾取时选择一张技能牌。每场战斗开始时将它放入手牌。",
+      "sourceId": "Bottled Lightning",
+      "effects": [],
+      "motif": "高肩长瓶中折电"
+    },
+    "blood_vial": {
+      "name": "血瓶",
+      "description": "每场战斗开始时回复2生命。",
+      "sourceId": "Blood Vial",
+      "effects": [],
+      "motif": "细长血液试管"
+    },
+    "war_paint": {
+      "name": "战纹涂料",
+      "description": "取得时随机升级2张技能牌。",
+      "sourceId": "War Paint",
+      "effects": [],
+      "motif": "开口颜料罐和刷子"
+    },
+    "pen_nib": {
+      "name": "钢笔尖",
+      "description": "每打出10张攻击牌，第10张造成双倍伤害。",
+      "sourceId": "Pen Nib",
+      "effects": [],
+      "motif": "金属笔尖与中缝"
+    }
+  },
+  "files": [
+    {
+      "file": "relics-24px-colour.png",
+      "sha256": "029e303d32e63646ae84a4ea443a6564609167b2d1103de5541d6c56eec6a512"
+    },
+    {
+      "file": "relics-24px-gray.png",
+      "sha256": "79e4b08d38633038a4f86ce7817cc9772cd8201edc377254dd27f919afc583b8"
+    },
+    {
+      "file": "relics-24px-neutral.png",
+      "sha256": "d82d9d86e264495512d7f8f4039bc1d7d4677767e491e051b4edb2a5494f9736"
+    },
+    {
+      "file": "relics-32px-colour.png",
+      "sha256": "5ae58b979b2a0d8251b06f7260cc02d7a669ea394b36cf43130aa206a81c8d8d"
+    },
+    {
+      "file": "relics-32px-gray.png",
+      "sha256": "c3e3351e00e1c0f82a7ea4c9de19c090551feaee3d9aebd7d4360f05a9793898"
+    },
+    {
+      "file": "relics-32px-neutral.png",
+      "sha256": "367928dbf87f9d93c5822fb846a30ac86a50e8fa1c24d460bd17a5e57c7c3ee4"
+    },
+    {
+      "file": "relics-named-64px.png",
+      "sha256": "28e88df755599cf5439d2c646b96f1070d4346387bd75fb8da747f1a8a11d46c"
+    }
+  ],
+  "catalogAliases": {
+    "pear": "Pear",
+    "mango": "Mango",
+    "lees_waffle": "Lee's Waffle",
+    "darkstone_periapt": "Darkstone Periapt",
+    "toxic_egg": "Toxic Egg 2",
+    "molten_egg": "Molten Egg 2",
+    "burning_blood": "Burning Blood",
+    "black_blood": "Black Blood",
+    "ornamental_fan": null,
+    "centennial_puzzle": "Centennial Puzzle",
+    "bottled_flame": null,
+    "potion_belt": "Potion Belt",
+    "bronze_scales": "Bronze Scales",
+    "boot": "Boot",
+    "oddly_smooth_stone": "Oddly Smooth Stone",
+    "orichalcum": "Orichalcum",
+    "old_coin": null,
+    "maw_bank": "MawBank",
+    "golden_idol": "Golden Idol",
+    "ginger": null,
+    "turnip": null,
+    "omamori": "Omamori",
+    "art_of_war": "Art of War",
+    "letter_opener": null,
+    "whetstone": "Whetstone",
+    "eternal_feather": null,
+    "toy_ornithopter": "Toy Ornithopter",
+    "bottled_tornado": null,
+    "ink_bottle": null,
+    "bottled_lightning": null,
+    "blood_vial": "Blood Vial",
+    "war_paint": "War Paint",
+    "pen_nib": "Pen Nib"
+  },
+  "bounds": "All rotated rectangle envelopes remain within [-50,50] on both axes; 100-unit canvas.",
+  "nativeControlsAdded": 0,
+  "integration": {
+    "registry": "data/presentation/lowcost-relic-art.json",
+    "original88ObjectsUnchanged": true,
+    "original88OrderUnchanged": true,
+    "original88RawObjectTextPreservedAfterLFNormalization": true,
+    "originalRegistryLfSha256": "1735a5f8dfca4b28220825aa163d8b9dc4d8a1aceba0244eb6e11ae6198963b3",
+    "finalRegistryRawSha256": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526",
+    "finalRegistryLfSha256": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526",
+    "allAssets": 121,
+    "productionAssets": 120,
+    "nonProductionAsset": "mark_of_bloom",
+    "nativePoolsAdded": 0,
+    "nativeControlsAdded": 0
+  },
+  "originalRegistryUnchangedAtCandidateStage": true
+}

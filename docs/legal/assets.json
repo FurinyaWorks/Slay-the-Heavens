@@ -3,6 +3,10 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "semantic-item-icon-evidence": {
+      "status": "Project-authored lightweight native primitive potion and relic illustrations. Contact sheets project these same recipes with Pillow and an installed system font; no font binary or external texture is redistributed. Existing project noncommercial license and reserved rights remain unchanged; game identities remain their owners IP. Offline previews do not prove official import, native glyph rendering, capacity or device acceptance.",
+      "evidence": "docs/evidence/potion-semantic-icons-20261115/README.md; docs/evidence/relic-semantic-icons-20261115/README.md; data/presentation/lowcost-potion-art.json; data/presentation/lowcost-relic-art.json."
+    },
     "menu-red-reference-native": {
       "status": "User-supplied character illustration and screenshots of its native geometric reconstruction for this platform project. Original artist and source license not established; no separate asset/IP sublicense or commercial clearance. Reference PNG is offline fitting input only; runtime uses native primitive IDs. Screenshots do not prove official import or device acceptance.",
       "evidence": "docs/legal/MENU_REFERENCE_PROVENANCE.md; experiments/menu-red-fit/README.md; docs/evidence/menu-red-quality-20261114/README.md"
@@ -205,6 +209,86 @@
     }
   },
   "files": {
+    "docs/evidence/potion-semantic-icons-20261115/potions-24px-colour.png": {
+      "sha256": "2c32662cc3154c38bed363124d0ab13ed52291769a537e21f8a1663a8958a9f7",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-24px-gray.png": {
+      "sha256": "f89e85460e2377feeeaeb0dbcede2b17dc30bd33802936e0f3aec902807689fc",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-24px-neutral.png": {
+      "sha256": "0225ef6e8ba678b475f0140a2a55bca744f39f777b807fee0c3cdae2430478d0",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-32px-colour.png": {
+      "sha256": "27f1bd8c1eeb8fb829406aac1c221e6f112a34b5d044a2f2c6d6287e100b01b2",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-32px-gray.png": {
+      "sha256": "851ed983b0f13b24c0a91456f25929c876a15d59802846b2b08a909943a1f8f1",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-32px-neutral.png": {
+      "sha256": "475bb4eb0ec0a44359f1a3c056a69f210f16b6f462f8b48af868e427762059e0",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-48px-colour.png": {
+      "sha256": "66fb4feffd36c7a40c744182c7abd20544ced3cd931a5be1b068d944bc26e64f",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-48px-gray.png": {
+      "sha256": "3bc57a143ffac173865de18cd9bfc02d0b6b21e39517814ffb4b7205c73c46b1",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-48px-neutral.png": {
+      "sha256": "fed47a1042f71a990557821b71510dd757e1b62e4c011fa64183676b60973126",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-64px-colour.png": {
+      "sha256": "8445d1cb5c1a9cae4e1a8aaf649419fa28cc62f760bece9fd4833d41ed9458b2",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-64px-gray.png": {
+      "sha256": "bfca125d6cdb781d7f8fa940964f15cec07b0f92b2485ee2f072a283b31094c2",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-64px-neutral.png": {
+      "sha256": "27080811169874995604583ae119abf139c2297ea10e6e09707f596c249dda8a",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/potion-semantic-icons-20261115/potions-named-64px.png": {
+      "sha256": "d760589ff76418ff8799f5fa8afae3ad3dc5399d26b10c884324b8fe056f7ed3",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-24px-colour.png": {
+      "sha256": "029e303d32e63646ae84a4ea443a6564609167b2d1103de5541d6c56eec6a512",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-24px-gray.png": {
+      "sha256": "79e4b08d38633038a4f86ce7817cc9772cd8201edc377254dd27f919afc583b8",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-24px-neutral.png": {
+      "sha256": "d82d9d86e264495512d7f8f4039bc1d7d4677767e491e051b4edb2a5494f9736",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-32px-colour.png": {
+      "sha256": "5ae58b979b2a0d8251b06f7260cc02d7a669ea394b36cf43130aa206a81c8d8d",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-32px-gray.png": {
+      "sha256": "c3e3351e00e1c0f82a7ea4c9de19c090551feaee3d9aebd7d4360f05a9793898",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-32px-neutral.png": {
+      "sha256": "367928dbf87f9d93c5822fb846a30ac86a50e8fa1c24d460bd17a5e57c7c3ee4",
+      "category": "semantic-item-icon-evidence"
+    },
+    "docs/evidence/relic-semantic-icons-20261115/relics-named-64px.png": {
+      "sha256": "28e88df755599cf5439d2c646b96f1070d4346387bd75fb8da747f1a8a11d46c",
+      "category": "semantic-item-icon-evidence"
+    },
     "experiments/menu-red-fit/input/source.png": {
       "sha256": "16bdf7b614f0fb6fdbc2414271682446c0012a9e8ff8da70abad3b7a0374480d",
       "category": "menu-red-reference-native"

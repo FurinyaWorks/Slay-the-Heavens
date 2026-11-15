@@ -1,0 +1,23 @@
+TAP version 13
+# Subtest: potion pools are bounded to live owners, leave the default profile and old registries unchanged
+ok 1 - potion pools are bounded to live owners, leave the default profile and old registries unchanged
+  ---
+  duration_ms: 1742.6815
+  type: 'test'
+  ...
+# official complete Host +47 pools/+517 controls; standalone battle +24/+264; default +0. Offline counts, not FPS.
+# Subtest: real official Host paints all 42 recipes through four paths and clears stale art without rewriting cached shapes
+ok 2 - real official Host paints all 42 recipes through four paths and clears stale art without rewriting cached shapes
+  ---
+  duration_ms: 56491.8252
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58605.7754

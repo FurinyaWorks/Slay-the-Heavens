@@ -21,7 +21,55 @@ const bytes=readFileSync(new URL('./integration-source-closure.json',import.meta
 assert.equal(hash(bytes),'800fcc9efd889f482259d0e1e9f1501f0e9597ac05552622ede00dd3dcdb4a94','complete integration helper closure identity');
 const currentBytes=readFileSync(new URL('./closeout-source-closure.json',import.meta.url));
 assert.equal(hash(currentBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','complete closeout source helper closure');
-const files=extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure)),inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
+const files={...extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure))};
+// Fixed reviewed UI continuation; both exact closeout compositions are immutable.
+export const itemIconHelperCopies=[
+  {
+    "path": "tests/helpers/combined-epoch/source-epoch-runtime.mjs",
+    "versions": [
+      {
+        "before": "5341c965ce41e956f153caf90c2e2097ccaee447a2d1e53a5aa666d15a238882",
+        "after": "ca43eda2e5c423e0a8253f0b37acc5400ef5bdf4d827acaf846693cfb8f2ddfc"
+      }
+    ]
+  },
+  {
+    "path": "tests/helpers/closeout-source-epoch.mjs",
+    "versions": [
+      {
+        "before": "552e5980a76b46fcd030fcafe516d5b7673021dce0a7b0c23072bfb67dcf1e40",
+        "after": "aa943b070906e85c7adb23b2019728886d83bcfb2f80b19266931b23c3f98ffc"
+      },
+      {
+        "before": "163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7",
+        "after": "3471ca3ce9f2f0f1ddeb87d21c201cf83a4c41592744de068696812af9154dc8"
+      }
+    ]
+  },
+  {
+    "path": "tests/helpers/item-semantic-icons-source.mjs",
+    "versions": [
+      {
+        "before": null,
+        "after": "677d96ae26bddeb634feef64c0c8418541727ec21c9ef1d8cc4da9d5c3f1228b"
+      }
+    ]
+  },
+  {
+    "path": "tests/helpers/item-semantic-icons-source-witness.json",
+    "versions": [
+      {
+        "before": null,
+        "after": "0d6ece8de408d476ec4110e7e18d3176b8b7bbb77fbbb1a9070767fccac41a29"
+      }
+    ]
+  }
+];
+for(const row of itemIconHelperCopies){
+ const version=row.versions.find(version=>version.before===(files[row.path]??null));
+ assert(version,'exact item icon helper-copy predecessor: '+row.path);files[row.path]=version.after;
+}
+const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');

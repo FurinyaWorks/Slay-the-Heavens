@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 3,
+  "base": "e65d9b98fbec69442047650254238cd9244df805",
+  "normalization": "LF",
+  "profile": {
+    "officialAssets": true,
+    "nativePageLifecycle": true
+  },
+  "historicalPotion42Run": {
+    "manifest": "runtime-source-manifest.before-relic-reward.json",
+    "tap": "original-potion42-test.tap",
+    "totalDurationMs": 58605.7754,
+    "repeated": false,
+    "scope": "Historical 42 recipes through all four Host paths; not claimed as current two-file relic-reward extension verification"
+  },
+  "production": {
+    "scripts/lowcost-art.mjs": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32",
+    "src/lua/abyss_battle_render_actors.lua": "6955f2abc927133348efd803c8f0542adad0f1e32fc2ed677f6b56fb4e007b3f",
+    "src/lua/abyss_battle_reward_layout.lua": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d",
+    "src/lua/abyss_node_ui_shop.lua": "6f7838454477ae2f4348f4b53977e673c54e83c4b9518b4d666aab879c797bc8",
+    "src/lua/abyss_potion_discard_ui.lua": "ebaa819919dc8abee3299f3aca240ee89433973b86179e6e9234b6379a2f3f55",
+    "src/lua/abyss_shop_ui.lua": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14"
+  },
+  "productionChangesSinceHistorical42Run": {
+    "scripts/lowcost-art.mjs": {
+      "before": "5bea8b69b8f27a8f20c4f5813db80966dd18f34d3bd198df5166f88f9286ee58",
+      "after": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32"
+    },
+    "src/lua/abyss_battle_reward_layout.lua": {
+      "before": "7d9025deb70ce54733124ea3babdbbc3fd651f07a60f2646f288b923ef57625b",
+      "after": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d"
+    },
+    "src/lua/abyss_shop_ui.lua": {
+      "before": "12b5ecb5587c0a8652e064e69d22db8232e80165052c2380ebea137d9af90e22",
+      "after": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14"
+    }
+  },
+  "unchangedProductionFiles": [
+    "src/lua/abyss_battle_render_actors.lua",
+    "src/lua/abyss_node_ui_shop.lua",
+    "src/lua/abyss_potion_discard_ui.lua"
+  ],
+  "baseline": {
+    "path": "config/luacheck-baseline.json",
+    "sha256": "95fcb537282d97cbb3d9ae643ed0a63381eb81aa8e6656984a0ad069fe213f8a",
+    "unchangedSinceHistoricalRun": true
+  },
+  "runtimeTests": {
+    "tests/potion-art-runtime.test.mjs": "4da626e94b97d5f1046894cc07f833cc7896b2dbf123ed24a13cefdf02332f76",
+    "tests/lua/potion_art_runtime.lua": "1bacb6318c747f21885db36a749bb6a44c9b9166fc98bfbb8c6fdda00da3a86e",
+    "tests/lua/reward_art_runtime.lua": "e4d44b67bd9f905f237b5541980ce45a6e12520aee86000012c5f270e1e365d3",
+    "tests/lowcost-art.test.mjs": "0d3c29f4b6058b715dec0d60f35323ec62d3bb746ef7f81c0d43190dcd32f4c5"
+  },
+  "registries": {
+    "potion": {
+      "sha256": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+      "assets": 42,
+      "production": 33,
+      "unchangedSinceHistoricalRun": true
+    },
+    "relic": {
+      "sha256": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526",
+      "assets": 121,
+      "original88SortedAssetsSha256": "1f8732b6833e137e19bcf76ddff08e1ec91dba99e3320f7d9b874aa2089fd115",
+      "newFixedIds": 33
+    },
+    "enemy": {
+      "assets": 42,
+      "sha256": "0244dc45e5bc69f5c912c89469f2f5025073c6e7dd706d47da0754c60907f89f",
+      "unchanged": true
+    }
+  },
+  "runtime": {
+    "command": "node --test --test-name-pattern=\"reward semantic\" tests/potion-art-runtime.test.mjs",
+    "passed": 1,
+    "failed": 0,
+    "totalDurationMs": 15362.3361,
+    "hostTestDurationMs": 15077.635,
+    "luaTimeoutMs": 60000,
+    "tap": "p2-fallback-green.tap",
+    "scope": "Affected short real Host only; two relic rows, potion reward, real shop icon; success -> same-item missing/dead/throw pool lookup -> visible original fallback -> restored pool correct recipe; retains alias/cache/native failure/unknown/empty and unrelated row protection",
+    "fullThreeTestRuntimeRepeatedAfterP2": false
+  },
+  "exactContractExecutions": [
+    {
+      "command": "node --test tests/lowcost-art.test.mjs tests/potion-art.test.mjs",
+      "passed": 6,
+      "failed": 0,
+      "totalDurationMs": 14728.8775,
+      "scope": "exact original88 + fixed33; generic121/42; potion assets4"
+    },
+    {
+      "command": "node --test --test-name-pattern=\"reviewed 33\" tests/lowcost-art.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "totalDurationMs": 336.4868,
+      "scope": "added exact33 approved recipes and 7 PNG hashes/dimensions"
+    }
+  ],
+  "controls": {
+    "defaultAdded": 0,
+    "completeHost": {
+      "potionPools": 47,
+      "potionAdded": 517,
+      "relicRewardPools": 8,
+      "relicRewardAdded": 136,
+      "totalPools": 55,
+      "totalAdded": 653
+    },
+    "standaloneBattle": {
+      "potionPools": 24,
+      "potionAdded": 264,
+      "relicRewardPools": 8,
+      "relicRewardAdded": 136,
+      "totalPools": 32,
+      "totalAdded": 400
+    },
+    "new33RecipesAdded": 0,
+    "notDeviceFps": true
+  },
+  "static": {
+    "architecture": "PASS 349 modules, 1981 edges",
+    "javascriptSyntax": "Full check passed before extension; all three changed JS files node--check passed after extension",
+    "luacheck": "PASS pinned1.2.0;6 historical warnings;2190 governed responsibility measurements",
+    "coordinateOnlyChanges": [
+      {
+        "before": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 77,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 48"
+        },
+        "after": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 80,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 51"
+        }
+      },
+      {
+        "before": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 98,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 48"
+        },
+        "after": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 101,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 51"
+        }
+      },
+      {
+        "before": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 103,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 48"
+        },
+        "after": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 106,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 51"
+        }
+      }
+    ],
+    "latestMeasurementRole": "PASS before P2; P2 adds only three SetVisible calls without branches; actual short Host parses and executes both changed Lua modules; no whole static suite repeated after P2"
+  },
+  "earlierFailures": [
+    "sandbox spawn EPERM; rerun escalated",
+    "LF hash fixture used raw CRLF hash; and exact pool whitelist missed production viewport stage; corrected",
+    "reward fixture omitted gold=0; corrected without product change",
+    "shop owner swap fixture omitted nodeUI.run/map synchronization; corrected without product change",
+    "scope assertion confused raw34 (historical poison) with actual production33; corrected to both exact counts",
+    "New relic reward exact path initially missed existing potionHelp layer: cost test rejected missing8 pools; fixed whitelist and fixture parent lookup",
+    "Short reward fixture initially assumed strength/dexterity shared atlas; assertion rejected; used actual shared strength/fear IDs without weakening assertion"
+  ],
+  "notRun": [
+    "official import",
+    "ready",
+    "device measurements"
+  ],
+  "offlineReadyForIndependentReview": true,
+  "preP2LayeredRuntime": {
+    "command": "node --test tests/potion-art-runtime.test.mjs",
+    "passed": 3,
+    "failed": 0,
+    "totalDurationMs": 34234.7561,
+    "rewardHostDurationMs": 13308.6991,
+    "potionLayeredDurationMs": 19024.9611,
+    "luaTimeoutMs": 60000,
+    "tap": "runtime-final.tap",
+    "scope": {
+      "allPotionRecipesOnActualPool": 42,
+      "realHostPaths": 4,
+      "branchSamples": [
+        "fire_potion",
+        "strength_potion",
+        "flex_potion",
+        "energy_potion",
+        "block_potion",
+        "ambrosia"
+      ],
+      "relicRewardRows": 2,
+      "states": 4
+    },
+    "marker": "POTION_ART_RUNTIME_PASS 42_GENERIC 4_PATHS 6_SAMPLES"
+  },
+  "postIndependentReviewP2": {
+    "reviewedCommit": "80ccb9695a61ff8eaf53e42b784248203ae5cac9",
+    "productionDelta": {
+      "src/lua/abyss_battle_reward_layout.lua": {
+        "before": "cc772fd2f72d3fe42c0105560b49fcc8cab7b756d3b4bb3978065d995fea183e",
+        "after": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d"
+      },
+      "src/lua/abyss_shop_ui.lua": {
+        "before": "12b5ecb5587c0a8652e064e69d22db8232e80165052c2380ebea137d9af90e22",
+        "after": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14"
+      }
+    },
+    "red": {
+      "tap": "p2-fallback-red.tap.gz",
+      "failed": 1,
+      "totalDurationMs": 12341.0217,
+      "assertion": "same-item relic missing pool must expose original fallback"
+    },
+    "intermediateFixtureFailure": {
+      "tap": "p2-fallback-fixture-failure.tap.gz",
+      "failed": 1,
+      "totalDurationMs": 13917.8397,
+      "reason": "shop native icon uses iconArt; generalized fixture lookup from rewardIconArt to icon.name+Art"
+    },
+    "green": {
+      "tap": "p2-fallback-green.tap",
+      "passed": 1,
+      "totalDurationMs": 15362.3361
+    },
+    "rendererChanged": false,
+    "otherRowsChanged": false,
+    "controlsAdded": 0
+  },
+  "canonicalStatus": "See Backlog; reviewed atomic commit exists; this agent did not commit or push the P2 follow-up",
+  "agentCommittedOrPushed": false
+}

@@ -2,7 +2,7 @@ import {readFileSync} from 'node:fs';
 const child=(n,key)=>(n?.controls??n?.children??[]).find(c=>c.name===key);
 export function loadLowCostArt(){
  const result={};
- for(const [kind,capacity]of [['relic',16],['enemy',32]]){
+ for(const [kind,capacity]of [['relic',16],['enemy',32],['potion',10]]){
   const source=JSON.parse(readFileSync(new URL(`../data/presentation/lowcost-${kind}-art.json`,import.meta.url),'utf8'));
   if(source.schemaVersion!==1||source.canvas!==100||source.capacity!==capacity||!Object.keys(source.assets??{}).length)throw Error('Invalid low-cost artwork registry: '+kind);
   for(const [id,asset]of Object.entries(source.assets)){
@@ -27,6 +27,17 @@ export function attachLowCostArt(tree){
   const relic= /\/relicBar\/slot\d+$/.test(path)||/\/relicPanel\/(row\d+\/slot|single)$/.test(path)||
    /\/shopView\/relic\d+$/.test(path)||/\/treasureView\/(reward|rewardItem\d+)$/.test(path);
   if(icon&&relic&&!child(node,'iconArt'))children.splice(children.indexOf(icon)+1,0,pool(icon,16));
+  // Only the existing live bottle owners; help popups and empty hosts need no pool.
+  const bottle=child(node,'bottle');
+  const potionFace=/^\/(?:AbyssBattle\/stage|SlayTheAbyss\/(?:stage\/)?battlePanel)\/(?:potion[1-3]|potionHelp\/potion[45])\/(normal|hover|pressed|disabled)$/.test(path);
+  const entryFace=/^\/SlayTheAbyss\/(?:stage\/)?potionEntry\/open\/hit\/(normal|hover|pressed|disabled)\/slot[1-5]$/.test(path);
+  const shopPotion=/^\/SlayTheAbyss\/(?:stage\/)?nodePanel\/shopView\/potion[1-3]$/.test(path);
+  const rewardPotion=/^\/(?:AbyssBattle\/stage|SlayTheAbyss\/(?:stage\/)?battlePanel)\/claimPotion\/(normal|hover|pressed|disabled)$/.test(path);
+  const potionIcon=bottle&&(potionFace||entryFace)?bottle:shopPotion?icon:rewardPotion?child(node,'rewardIcon'):null;
+  if(potionIcon&&!child(node,potionIcon.name+'Art'))children.splice(children.indexOf(potionIcon)+1,0,pool(potionIcon,10));
+  const rewardRelic=/^\/(?:AbyssBattle\/stage|SlayTheAbyss\/(?:stage\/)?battlePanel)\/potionHelp\/relicReward[12]\/(normal|hover|pressed|disabled)$/.test(path);
+  const rewardIcon=rewardRelic&&child(node,'rewardIcon');
+  if(rewardIcon&&!child(node,'rewardIconArt'))children.splice(children.indexOf(rewardIcon)+1,0,pool(rewardIcon,16));
  }
  walk(tree);return tree;
 }

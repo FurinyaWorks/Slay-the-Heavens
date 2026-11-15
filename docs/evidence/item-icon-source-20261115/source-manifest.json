@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15T03:53:37.267Z",
+  "scope": "Seven test-only source authentication files; production Lua and historical proof/current/target/archive/closure JSON unchanged.",
+  "beforeCommit": "e65d9b98fbec69442047650254238cd9244df805",
+  "reviewedProductionAfterCommit": "5e63b5c5697d7ce567ec896eff2d3a768a58e072",
+  "afterCommitRole": "Reviewed production source anchor only; not final delivery HEAD. Root will review and amend the atomic commit.",
+  "sources": [
+    {
+      "path": "tests/helpers/item-semantic-icons-source-witness.json",
+      "lfSha256": "0d6ece8de408d476ec4110e7e18d3176b8b7bbb77fbbb1a9070767fccac41a29",
+      "lfBytes": 117594
+    },
+    {
+      "path": "tests/helpers/item-semantic-icons-source.mjs",
+      "lfSha256": "677d96ae26bddeb634feef64c0c8418541727ec21c9ef1d8cc4da9d5c3f1228b",
+      "lfBytes": 2183
+    },
+    {
+      "path": "tests/helpers/combined-epoch/source-epoch-runtime.mjs",
+      "lfSha256": "ca43eda2e5c423e0a8253f0b37acc5400ef5bdf4d827acaf846693cfb8f2ddfc",
+      "lfBytes": 8313
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "lfSha256": "aa943b070906e85c7adb23b2019728886d83bcfb2f80b19266931b23c3f98ffc",
+      "lfBytes": 5813
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "lfSha256": "009ce6fc36f821911275f61a8d5a2a67749567d981f57b1bec878c6a2d098681",
+      "lfBytes": 4448
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "lfSha256": "ed5fd98af1eec7ceb93b67ab162aa6162527229026be4f5e74bf561ea713b373",
+      "lfBytes": 14386
+    },
+    {
+      "path": "tests/item-semantic-icons-source.test.mjs",
+      "lfSha256": "516400fd4fcb04e60d980afeeb0f0776398f61597a5f991d4454885de95117ea",
+      "lfBytes": 9552
+    }
+  ],
+  "helperClosureCopies": [
+    {
+      "path": "tests/helpers/combined-epoch/source-epoch-runtime.mjs",
+      "versions": [
+        {
+          "before": "5341c965ce41e956f153caf90c2e2097ccaee447a2d1e53a5aa666d15a238882",
+          "after": "ca43eda2e5c423e0a8253f0b37acc5400ef5bdf4d827acaf846693cfb8f2ddfc"
+        }
+      ]
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "versions": [
+        {
+          "before": "552e5980a76b46fcd030fcafe516d5b7673021dce0a7b0c23072bfb67dcf1e40",
+          "after": "aa943b070906e85c7adb23b2019728886d83bcfb2f80b19266931b23c3f98ffc"
+        },
+        {
+          "before": "163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7",
+          "after": "3471ca3ce9f2f0f1ddeb87d21c201cf83a4c41592744de068696812af9154dc8"
+        }
+      ]
+    },
+    {
+      "path": "tests/helpers/item-semantic-icons-source.mjs",
+      "versions": [
+        {
+          "before": null,
+          "after": "677d96ae26bddeb634feef64c0c8418541727ec21c9ef1d8cc4da9d5c3f1228b"
+        }
+      ]
+    },
+    {
+      "path": "tests/helpers/item-semantic-icons-source-witness.json",
+      "versions": [
+        {
+          "before": null,
+          "after": "0d6ece8de408d476ec4110e7e18d3176b8b7bbb77fbbb1a9070767fccac41a29"
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "command": "node --test tests/integration-source-epoch.test.mjs",
+      "result": "42/42 pass; build/item-icon-current-corpus.tap"
+    },
+    {
+      "command": "node --test tests/item-semantic-icons-source.test.mjs tests/source-closure-bytes.test.mjs",
+      "result": "9/9 pass; build/item-icon-epoch-negative.tap"
+    }
+  ],
+  "logs": [
+    {
+      "path": "item-icon-current-corpus.tap.gz",
+      "rawSha256": "5603ad884d2b3ce4f0abd0f04a56fe951daabab6d500222284c935bb8d30f291",
+      "rawBytes": 10471,
+      "gzipSha256": "9627d2afaba6871beb76927cad08a7d6532e5958ab10ad9891785c412392efb3",
+      "gzipBytes": 1423,
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "item-icon-epoch-negative.tap.gz",
+      "rawSha256": "57b540189bea3e8344c9eacd10bd256c0c172ea443ba16a0bd33dd04e9f4cde1",
+      "rawBytes": 2493,
+      "gzipSha256": "88db6d53062223168b6ca096636fb6a4a5c37bd0f286eb51911eb94b158e39e8",
+      "gzipBytes": 762,
+      "losslessRoundTrip": true
+    }
+  ],
+  "earlierFailures": [
+    {
+      "run": "First new negative/closure run",
+      "result": "8/9",
+      "cause": "New test wrongly assumed earlier menuPresentation proof shared the final release five-source predecessor. Corrected assertion proves that earlier proof receives no icon-after permission, with zero owner reads."
+    },
+    {
+      "run": "Intermediate combined integration/negative run",
+      "result": "49/51",
+      "cause": "Existing first shop/deck test repeated a live discard==old proof.current assertion. Narrow witness admission added for discard only; all four other current assertions and all historical raw-to-target checks preserved. Full intermediate TAP was not persisted; no reconstructed failure log is claimed. Final separate integration and negative logs below are the verification evidence."
+    }
+  ],
+  "boundaries": [
+    "Known before==target is opaque original return, zero reads.",
+    "After with a real target row freshly authenticates all owners even target==old current.",
+    "Null target is opaque original return, zero reads.",
+    "Both parameter/raw directions reject on real projections; all 30 mixed five-owner tuples reject.",
+    "Only CRLF-to-LF normalizes source/witness text; extra whitespace/comment/unknown source stays rejected or opaque as appropriate.",
+    "No Full, icon runtime, desktop, PR, commit or push executed."
+  ],
+  "finalGuardRetirement": "Current raw guards use the five-source witness only while the immutable proof matches its exact before tuple; otherwise the original per-row current bytes remain mandatory. Current guard-only rerun supersedes the earlier equivalent true-branch checks.",
+  "finalGuardEvidence": "source-current-final.tap.gz (2/2 current guards); ci-source-manifest.json pins the final conditional-retirement source hash. Other successful original inverse cases retained without rerun."
+}
