@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualReadFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleaseItemTitleShadowSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseItemTitleShadowSourcePacket,extendReleaseItemTitleShadowSource} from './helpers/release-item-title-shadow-source.mjs';
 import {releaseItemTitleShadowCiPacket,releaseItemTitleShadowCiSource,releaseItemTitleShadowPriorInventory,assertReleaseItemTitleShadowRawInventory,assertReleaseItemTitleShadowCiCurrent} from './helpers/release-item-title-shadow-ci-source.mjs';
 import {retirementPlanningReceipt,assertRetirementPlanningCurrent,shadowPlanningReceipt,assertShadowPlanningCurrent,assertReleaseItemTitleShadowPhysicalGuards} from './helpers/release-item-title-shadow-planning.mjs';
+import {itemTitleShadowBootstrapPacket,itemTitleShadowBootstrapSource,itemTitleShadowBootstrapRead,itemTitleShadowBootstrapInventory,assertItemTitleShadowBootstrapCurrent,assertItemTitleShadowBootstrapRawInventory} from './helpers/release-item-title-shadow-bootstrap-source.mjs';
+import {releaseBootstrapCiPacket,assertReleaseBootstrapCiCurrent} from './helpers/release-bootstrap-ci-source.mjs';
+const readFileSync=itemTitleShadowBootstrapRead('item',actualReadFileSync);
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('retirement observed local floor authenticates its execution inputs and preserves every original cost',()=>{
@@ -58,7 +61,7 @@ test('release item-title-shadow production preserves every complete prior target
 });
 
 test('release item-title-shadow CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
- assertReleaseItemTitleShadowCiCurrent();
+ assertReleaseItemTitleShadowCiCurrent(readFileSync);
  for(const [path,row]of Object.entries(releaseItemTitleShadowCiPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
@@ -77,7 +80,7 @@ test('release item-title-shadow raw JS and Lua inventories reject missing duplic
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseItemTitleShadowCiPacket.currentInventory[kind]);
   assertReleaseItemTitleShadowRawInventory(paths,kind);
-  assert.deepEqual(releaseItemTitleShadowPriorInventory(paths,kind),releaseItemTitleShadowCiPacket.priorInventory[kind]);
+  assert.deepEqual(releaseItemTitleShadowPriorInventory(paths,kind,readFileSync),releaseItemTitleShadowCiPacket.priorInventory[kind]);
   const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];
   assert.deepEqual(releaseItemTitleShadowPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');
   const noAdditions=paths.filter(path=>releaseItemTitleShadowCiPacket.priorInventory[kind].includes(path));
@@ -88,4 +91,51 @@ test('release item-title-shadow raw JS and Lua inventories reject missing duplic
   for(const path of paths.filter(p=>!releaseItemTitleShadowCiPacket.priorInventory[kind].includes(p)))
    assert.throws(()=>releaseItemTitleShadowPriorInventory(paths,kind,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh release item-title-shadow added inventory source/);
  }
+});
+
+test('actual Release composition preserves both complete source views and the unchanged production base',()=>{
+ const p=itemTitleShadowBootstrapPacket;
+ assertItemTitleShadowBootstrapCurrent(actualReadFileSync);
+ assertReleaseItemTitleShadowCiCurrent(itemTitleShadowBootstrapRead('item',actualReadFileSync));
+ assertReleaseBootstrapCiCurrent(itemTitleShadowBootstrapRead('release',actualReadFileSync));
+ assert.equal(releaseBootstrapCiPacket.currentCommit,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
+ assert.equal(releaseBootstrapCiPacket.currentTreeCommitted,false,'original bootstrap capture metadata is retained');
+ assert.deepEqual(Object.keys(p.productionEquivalence).sort(),Object.keys(sourceEpoch.proof.current).sort());
+ for(const [path,row]of Object.entries(p.productionEquivalence))assert.equal(row.beforeGitBlob,row.releaseGitBlob,path);
+ assert.equal(Object.keys(p.releaseGitFiles).length,10);
+ for(const [path,row]of Object.entries(releaseItemTitleShadowCiPacket.files))assert.deepEqual(p.files[path].views.item,row.current,'complete original slice view: '+path);
+ for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files))assert.deepEqual(p.files[path].views.release,row.current,'complete actual Release view: '+path);
+ for(const original of [releaseItemTitleShadowCiPacket,releaseBootstrapCiPacket])for(const [path,sha]of Object.entries(original.immutableArchives))assert.equal(p.archives[path],sha,path);
+ for(const path of Object.keys(releaseItemTitleShadowSourcePacket.current))for(const view of ['item','release'])assert.equal(itemTitleShadowBootstrapSource(path,sourceEpoch.proof.current[path].source,view),sourceEpoch.proof.current[path].source,'composition does not authorize production projection');
+});
+
+test('actual Release composition rejects fresh source and binary drift without hiding foreign inputs',async()=>{
+ const p=itemTitleShadowBootstrapPacket;
+ for(const [path,row]of Object.entries(p.files)){
+  for(const mode of ['changed','missing'])assert.throws(()=>assertItemTitleShadowBootstrapCurrent((file,encoding)=>{
+   if(file===path){if(mode==='missing')throw Error('missing '+path);const raw=actualReadFileSync(file,encoding);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);}
+   return actualReadFileSync(file,encoding);
+  }),error=>{assert(error.message.includes(path),'reject the intended fresh current input');return true;});
+  if(row.current.kind!=='text')continue;
+  const source=actualReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  for(const view of ['item','release']){
+   const production=path.startsWith('src/')||path==='config/architecture.json',expected=production?source:row.views[view]?.source??source;
+   for(const current of [source,source.replaceAll('\n','\r\n')])assert.equal(itemTitleShadowBootstrapSource(path,current,view),production||!row.views[view]?current:expected);
+   for(const foreign of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),Buffer.from(source),null,17])assert.equal(itemTitleShadowBootstrapSource(path,foreign,view),foreign);
+   for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(itemTitleShadowBootstrapSource(foreign,source,view),source);
+  }
+ }
+ for(const kind of ['js','lua']){
+  assertItemTitleShadowBootstrapRawInventory(kind);
+  const current=p.inventory.current[kind];
+  for(const view of ['item','release'])assert.deepEqual(itemTitleShadowBootstrapInventory(current,view,kind),p.inventory[view][kind]);
+  for(const bad of [[],current.slice(1),[...current,current[0]],[...current,'foreign']])assert.throws(()=>itemTitleShadowBootstrapInventory(bad,'release',kind),/raw inventory/);
+ }
+ const archive=Object.keys(p.archives)[0];
+ assert.throws(()=>assertItemTitleShadowBootstrapCurrent((path,encoding)=>path===archive?Buffer.concat([actualReadFileSync(path),Buffer.from('\n')]):actualReadFileSync(path,encoding)),/retained immutable/);
+ const leaf=actualReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.mjs','utf8'),bytes=actualReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.json.gz');
+ const marker="const bytes=readFileSync(new URL('./release-item-title-shadow-bootstrap-source.json.gz',import.meta.url));";
+ assert.equal(leaf.split(marker).length,2);
+ const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,-1).toString('base64'))},'base64');`);
+ await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete item title shadow actual Release composition/);
 });

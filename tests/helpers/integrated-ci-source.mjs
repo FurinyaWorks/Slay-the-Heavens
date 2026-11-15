@@ -6,6 +6,8 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releaseItemTitleShadowCiSource,releaseItemTitleShadowCiCheckedSource,releaseItemTitleShadowPriorInventory,releaseItemTitleShadowCiPacket,assertReleaseItemTitleShadowCiCurrent} from './release-item-title-shadow-ci-source.mjs';
+import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
+import {itemTitleShadowBootstrapSource,itemTitleShadowBootstrapRead,assertItemTitleShadowBootstrapCurrent} from './release-item-title-shadow-bootstrap-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -19,7 +21,7 @@ export function integratedSource(path,source,target){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=releaseItemTitleShadowCiSource(path,source,row?.current);
+ source=releaseBootstrapCiSource(path,releaseItemTitleShadowCiSource(path,itemTitleShadowBootstrapSource(path,source,'item'),row?.current),row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
@@ -34,9 +36,12 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertReleaseItemTitleShadowCiCurrent(read);
- for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseItemTitleShadowCiCheckedSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
- for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseItemTitleShadowCiSource(path,read(path,'utf8'),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
+ assertItemTitleShadowBootstrapCurrent(read);
+ const item=itemTitleShadowBootstrapRead('item',read),release=itemTitleShadowBootstrapRead('release',read);
+ assertReleaseBootstrapCiCurrent(release);
+ assertReleaseItemTitleShadowCiCurrent(item);
+ for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releaseItemTitleShadowCiCheckedSource(path,item(path,'utf8'),row.current),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,releaseItemTitleShadowCiSource(path,item(path,'utf8'),integratedCiProof.files[path]?.current),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
 }
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return [...releaseItemTitleShadowCiPacket.currentInventory[kind]];}
 export function extendIntegratedHelperClosure(original){
@@ -50,7 +55,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
- paths=releaseItemTitleShadowPriorInventory(paths,kind,read);
+ paths=releaseItemTitleShadowPriorInventory(paths,kind,itemTitleShadowBootstrapRead('item',read));
  // New standalone reviewed views consume raw discovery. Older chained views
  // retain their existing idempotent prior-inventory contract.
  if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
@@ -64,7 +69,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
  for(const path of added){
   const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-  assert.equal(hash(norm(releaseItemTitleShadowCiSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+  assert.equal(hash(norm(releaseBootstrapCiSource(path,releaseItemTitleShadowCiSource(path,itemTitleShadowBootstrapSource(path,read(path,'utf8'),'item'),row.current),row.current))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
 }
