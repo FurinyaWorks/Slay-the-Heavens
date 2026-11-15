@@ -1,27 +1,6 @@
-# 启动取证：不是新平衡版，也不是独立评审通过
-
-## 两份旧原型必须区分
-
-PR640历史HEAD：99cc1e0537dd611c0167584458a82ba5545694f7，HTML Git blob：364e1d3e8c8559e2fcb26276b9ae8a2813f21735。本分支baseline/pr640.html原样引用该对象，未修改牌值。
-
-本轮实际执行的是聊天提供的 `胡桃V5_75张卡牌_完整可读五战版.html`：98865字节，SHA256 `3f460adcb38c4d73bd3c3eb6aa2384850f43003244d9663de2b2ac3bc97efded`，Git blob `9d723d87128420e3b9300f291028f728c5a16ecb`。它与PR640文件不具备相同blob身份，不能直接借用验证结论。第一script的SHA256为 `dcfa90cd1c07b4b5fcd4f9c6891d7895b53ac14469e92495bb781f340d4f38cd`。本轮只在Node v22.16.0里运行这份第一script，未运行DOM/浏览器/实体设备。
-
-## 本轮实测（聊天版，仅作者诊断）
-
-实际读取CARDS/STARTER/REWARD_POOL：75种、150基升；初始10张、6种身份；奖励池69种。不是新做了75张。
-
-逐卡独立夹具：每次新游戏，将指定基础/升级实例放入手牌，3能量、活敌、无蝶舞；分别设HP72/54/37/36/18/6/1。前五档均150/150可打；6HP为146/150，1HP为138/150。该测试只证明这些夹具下canPlay许可，完全不证明每张牌有价值、自然可获取或平衡。
-
-自然开局：种子1..1000，只构造真实初始牌组并检查首手；1000局的初始每张手牌都被canPlay许可，448局首手有E。这是确定性种子样本，不能拿44.8%当理论概率，也不是1000局战役通关。
-
-人工E→重击探针：72HP、两张指定手牌、首敌35HP，打E后66HP/2能量/4格挡/2蝶舞，接重击后敌25HP并有2次梅香。37HP起步则E后31HP，接重击后敌23HP；36HP起步则30HP，敌23HP。说明高血也有蝶舞与挂梅，半血加成不是硬许可。人工手牌不是自然可及性证据。
-
-因此待验证的是：为何玩家实际感到前期机制锁住？真实灰牌是否由费用/HP支付/目标/UI引起？付血启动是否划算，条件收益是否过密，回血为何可能削弱玩法动机，坏抽牌/跨战/营地又如何？不得先假定降低HP或删半血条件就是正确修复。
-
-## 雷电参照
-
-已重新读取V5.10.4 HTML：每回合开始自动产1愿，Q不自带保留，通用伤害牌可触发雷眼协同，能力/状态名区分与伤害分段解释。旧表格记载每回合首张技能产愿，属于不同历史版本，不能混用。V5.10.4实际文件133612字节，SHA256 e89721b4e2c6176880a2a75fe31c80da5adc58b892583923357ddf8bf52bdf9d。这里只确认文件内容，不声称用户已终审全部75卡。
-
-## 当前未完成
-
-没有改胡桃机制或数值，没有新试玩成品，没有独立审查回执，没有原生Lua/实机/全量CI验收。已建立持续执行及三路评审任务；它们各自的实际结果须另行落盘。启动会话无直接Sub-agent派发成功回执，不能对外声称已运行多个Super Agent。
+# 旧基线 A 与独立评审事实（冻结不修改）
+- 原版 A：`baseline/pr640.html` Git blob `364e1d3e8c8559e2fcb26276b9ae8a2813f21735`，98,864字节；对应PR640旧提交 `99cc1e0537dd611c0167584458a82ba5545694f7`。其与聊天HTML字节差异经独立复核仅为聊天版末尾多一个 LF；不构成不同战斗规则，但不可混称同 Git blob。
+- [机制独立评审](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/feat/hutao-v6-review-decisions-20261114/experiments/characters/hutao-v6-lab/reviews/decisions/2026-11-14-baseline-independent-review.md)：CHANGES_REQUESTED，75卡/150形态单卡夹具，初始E并非满血硬锁，首手E+重击为44/256，血之灶火+满血文案冲突，付血短期HP机会成本，Q跨半血阈值时序。
+- [经济独立评审](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/feat/hutao-v6-review-economy-20261114/experiments/characters/hutao-v6-lab/reviews/economy/2026-11-15-baseline-pr640.md)：CHANGES_REQUESTED，固定五战4策略×2组各256，保血路线高完成而无奖励仍能过，主动E路线生命效率尚无同政策因果证明；69卡奖励池18稀有且等概率抽；需极端组合滥用检索。
+- [呈现独立评审](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/feat/hutao-v6-review-presentation-20261114/experiments/characters/hutao-v6-lab/reviews/presentation/2026-11-14-baseline-pr640.md)：CHANGES_REQUESTED，Clipboard回退失败仍报成功、prepAttack短句漏本回合、战报100条截断却称完整、35/75原标签原创；无头交互局部通过而真实五战是强制胜利UI验证，不是自然通关。
+这些报告各自审的**只是A**。三个自动任务具有分离的执行身份，但不保证真人/异模型；不得变造其审查结果或移植成B1通过。旧基线保留原样；新B1见 candidates/manifest 与 experiments/报告。

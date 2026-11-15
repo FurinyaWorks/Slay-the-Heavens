@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "candidate_id": "v6-e-draw1-b1-20261115",
+  "stage": "FROZEN_EXPLORATORY_NOT_APPROVED",
+  "frozen_at": "2026-11-15",
+  "implementation_branch": "feat/hutao-v6-design-lab-20261114",
+  "source": {
+    "path": "experiments/characters/hutao-v6-lab/candidates/v6-e-draw1-b1.html",
+    "git_blob_sha": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+    "commit_ref": "source_git_blob_sha_is_immutable",
+    "full_html": true
+  },
+  "baseline": {
+    "path": "experiments/characters/hutao-v6-lab/baseline/pr640.html",
+    "git_blob_sha": "364e1d3e8c8559e2fcb26276b9ae8a2813f21735",
+    "historical_commit": "99cc1e0537dd611c0167584458a82ba5545694f7"
+  },
+  "composition": {
+    "distinct_cards": 75,
+    "base_plus_upgraded": 150,
+    "starting_deck_cards": 10,
+    "reward_pool_cards": 69,
+    "starter_relic": {
+      "name": "引蝶灯",
+      "effect": "本战首次成功支付生命，获得4格挡；每战重置",
+      "replaced": false
+    }
+  },
+  "mechanical_delta": "仅蝶引来生E在成功付6HP并刷新2次彼岸蝶舞后即时抽1张；费用1、不可致死、升级3格挡、遗物4格挡与所有其他战斗/敌人/奖励数值不变",
+  "presentation_delta": [
+    "血之灶火+ 补半血前提",
+    "蝶隐之时+ 补蝶舞前提",
+    "往生秘传枪法+ 补首击加成限制",
+    "prepAttack短句补本回合",
+    "完整战报不截断至100条",
+    "Clipboard fallback核验布尔返回并提供手动全文",
+    "显式显示V6候选B1未批准"
+  ],
+  "test_plan": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-e-draw1-prereg.md",
+  "test_runner": {
+    "path": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-small-ab-runner.js",
+    "git_blob_sha": "5a91cd203a1d3d63edbbeae4b7aa57a4988287d4",
+    "source_review_runner_git_blob_sha": "5baead87a1d29ddf659e026ae6ea7bfccf6637db"
+  },
+  "results": {
+    "path": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-small-ab-raw-results.json",
+    "git_blob_sha": "41024d344689bafd870cf7d32bf0fbd1f21cb082",
+    "summary": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-small-ab-findings.md",
+    "copy_stub": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-copy-fallback-stub-probe.json"
+  },
+  "fixed_splits": {
+    "training": [
+      1,
+      64
+    ],
+    "holdout": [
+      1001,
+      1064
+    ]
+  },
+  "policies": [
+    "guard",
+    "balanced",
+    "ignite",
+    "rush"
+  ],
+  "known_limits": [
+    "样本每策略每组64、非随机玩家样本",
+    "E过牌改变后续随机数消耗，不是所有后继事件完全配对",
+    "现有固定五敌组、奖励从69张均匀抽3，其中18张稀有，未校准正式卡池",
+    "测试策略balanced几乎不主动使用E",
+    "无头浏览器/真实点击、手机/官方平台、人工好玩与命名审美未验收",
+    "卡池极端组合/无限循环对抗检索未完整覆盖",
+    "三方旧基线审查不可迁移至B1"
+  ],
+  "independent_reviews": {
+    "decisions": "REVIEW_PENDING_NEW_SOURCE",
+    "economy": "REVIEW_PENDING_NEW_SOURCE",
+    "presentation": "REVIEW_PENDING_NEW_SOURCE"
+  },
+  "human_approval": "PENDING",
+  "ready_for_owner_playtest": false,
+  "merge_authorized": false,
+  "release_authorized": false
+}

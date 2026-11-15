@@ -1,0 +1,37 @@
+{
+  "scope": "headless-free isolated mock DOM, not real browser",
+  "candidate_source_blob": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+  "scenarios": [
+    {
+      "clipboard_api": "resolves",
+      "exec_fallback": false,
+      "toast": "完整战报已复制，可以粘贴给 AI 分析。",
+      "manual_dialog": false
+    },
+    {
+      "clipboard_api": "rejects",
+      "exec_fallback": true,
+      "toast": "完整战报已复制，可以粘贴给 AI 分析。",
+      "manual_dialog": false
+    },
+    {
+      "clipboard_api": "rejects",
+      "exec_fallback": false,
+      "toast": null,
+      "manual_dialog": true,
+      "textarea_chars": 157
+    },
+    {
+      "clipboard_api": "missing",
+      "exec_fallback": false,
+      "toast": null,
+      "manual_dialog": true,
+      "textarea_chars": 157
+    }
+  ],
+  "limits": [
+    "DOM stub only, no Chromium actual click/visual result",
+    "manual textarea length 157 from first battle fixture, full long campaign not tested",
+    "test observed no false success on explicit failure paths"
+  ]
+}
