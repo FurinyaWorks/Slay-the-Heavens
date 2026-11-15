@@ -7,6 +7,7 @@ import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,rend
 import {itemIconCi,itemIconCiSource,assertItemIconAddedSources,itemIconCurrentInventory,itemIconPriorInventory} from './helpers/item-semantic-icons-ci.mjs';
 import {pcFinalCiPacket,pcFinalPriorInventory} from './helpers/pc-final-ci-source.mjs';
 import {pcFinalStorageSource} from './helpers/pc-final-storage-source.mjs';
+import {pcAfterFixCiSource} from './helpers/pc-after-fix-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
@@ -42,7 +43,7 @@ test('item icon CI continuation pins only reviewed aliases and complete new raw 
  const snapshot=JSON.stringify(proof);assert.equal(Object.keys(itemIconCi.aliases).length,12);
  let unknownReads=0;assert.throws(()=>integratedPriorInventory(discoverJs(),'unknown','js',()=>{unknownReads++;throw Error('unexpected');}),/known integration inventory/);assert.equal(unknownReads,0);
  for(const [path,aliases]of Object.entries(itemIconCi.aliases)){
-  const row=proof.files[path].current,source=raw(path),storedSource=pcFinalStorageSource(path,source);assert(aliases.some(alias=>alias.before===row.sha256&&alias.after===hash(storedSource))||(pcFinalCiPacket.files[path]?.before?.sha256===row.sha256&&pcFinalCiPacket.files[path]?.current?.sha256===hash(storedSource)),path);
+  const row=proof.files[path].current,source=raw(path),storedSource=pcFinalStorageSource(path,pcAfterFixCiSource(path,source));assert(aliases.some(alias=>alias.before===row.sha256&&alias.after===hash(storedSource))||(pcFinalCiPacket.files[path]?.before?.sha256===row.sha256&&pcFinalCiPacket.files[path]?.current?.sha256===hash(storedSource)),path);
   assert.equal(itemIconCiSource(path,source,row),row.source);assert.equal(itemIconCiSource(path,source.replaceAll('\n','\r\n'),row),row.source);
   assert.equal(itemIconCiSource(path,source,{...row,sha256:'f'.repeat(64)}),source);
   for(const changed of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),null,{},17])assert.equal(itemIconCiSource(path,changed,row),changed);

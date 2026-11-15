@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {sourceSlice} from './closeout-source-epoch.mjs';
+import {pcAfterFixHistoricalCiSource} from './pc-after-fix-ci-source.mjs';
 import {preRunHudCiSource,runHudPriorRead,runHudPriorInventory} from './run-hud-ci-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const capacityRoadmapBytes=readFileSync(new URL('./role-capacity-roadmap-source.json',import.meta.url));
@@ -29,7 +30,7 @@ export function preCloseoutCiSource(path,source,view){
  // Production sources belong to the complete freshly authenticated owner
  // closure; a CI receipt must never intercept them before that authorization.
  if(path==='config/architecture.json'||path.startsWith('src/lua/'))return source;
- source=preRunHudCiSource(path,source);
+ source=pcAfterFixHistoricalCiSource(path,preRunHudCiSource(path,source),view);
  const id=Object.hasOwn(packed.current,path)?packed.current[path]:null;
  if(!id||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==id)return source;
  const prior=before.files[path];

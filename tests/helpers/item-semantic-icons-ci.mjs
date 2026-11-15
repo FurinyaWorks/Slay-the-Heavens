@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {pcFinalCiSource,pcFinalCurrentInventory,pcFinalPriorInventory} from './pc-final-ci-source.mjs';
+import {pcAfterFixCiPacket} from './pc-after-fix-ci-source.mjs';
 const norm=s=>s.replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 // Filled once from the two reviewed Git snapshots after the bounded code changes.
@@ -160,8 +161,11 @@ export function itemIconCurrentInventory(base,kind){
 }
 export function itemIconPriorInventory(paths,base,kind,read,proof){
  const added=Object.keys(itemIconCi.added[kind]).filter(path=>!base.includes(path));
- if(added.length===0)return [...paths];
+ // An adopted complete current base is already its own historical identity.
+ // This mapping does not replace assertIntegratedCurrent's unconditional gate.
+ if(JSON.stringify([...base].sort())===JSON.stringify(pcAfterFixCiPacket.currentInventory[kind])&&JSON.stringify([...paths].sort())===JSON.stringify([...base].sort()))return [...paths];
  paths=pcFinalPriorInventory(paths,kind,read);
+ if(added.length===0)return [...paths];
  if(!added.some(path=>paths.includes(path)))return [...paths];
  assert.deepEqual([...paths].sort(),[...base,...added].sort(),'complete item icon '+(kind==='lua'?'Lua discovery':kind)+' inventory');
  for(const path of added)assert.equal(hash(norm(pcFinalCiSource(path,read(path,'utf8'),{sha256:itemIconCi.added[kind][path]}))),itemIconCi.added[kind][path],'fresh added inventory source: '+path);

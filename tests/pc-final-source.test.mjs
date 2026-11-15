@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdirSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {createHash} from 'node:crypto';
-import {sourceEpoch as epoch,prePcFinalSourceEpoch as prior,sourceSlice} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch as epoch,prePcFinalSourceEpoch as prior,pcBeforeFixEpoch,sourceSlice} from './helpers/closeout-source-epoch.mjs';
 import {pcFinalPacket} from './helpers/pc-final-source-epoch.mjs';
 import {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
@@ -12,7 +12,7 @@ const proof=epoch.proof,config='config/architecture.json',target='pcFinalPrior';
 test('final production preserves every original source/target and records new module absence',()=>{
  assert.equal(pcFinalPacket.currentCommit,'97ed740e83e2f6bb0f8377eea2209070a300b36c');
  assert.equal(Object.keys(prior.proof.current).length,352);
- const added=Object.keys(proof.current).filter(path=>!Object.hasOwn(prior.proof.current,path));
+ const added=Object.keys(pcBeforeFixEpoch.proof.current).filter(path=>!Object.hasOwn(prior.proof.current,path));
  assert.deepEqual(added,['src/lua/abyss_image_modes.lua','src/lua/abyss_mobile_hud.lua']);
  for(const [name,view]of Object.entries(prior.proof.targets)){
   assert.equal(proof.targets[name].commit,view.commit);

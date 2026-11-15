@@ -51,6 +51,10 @@ export const itemIconHelperCopies=[
       {
         "before": "775646f95cc2a4f4008c789824ebdf597f409bcb68e82e1e7118cabbe35b042a",
         "after": "ca1375c9dfab0d93f78afc8b80e86e8930f92057a201e48e946d7d6a7b350c42"
+      },
+      {
+        "before": "ca1375c9dfab0d93f78afc8b80e86e8930f92057a201e48e946d7d6a7b350c42",
+        "after": "80ce66997b851f9e9e4b7df26adcc7fcb895d6149bc70aff7b5efb13bf607982"
       }
     ]
   },
@@ -74,6 +78,8 @@ export const itemIconHelperCopies=[
   }
 ];
 itemIconHelperCopies.push(
+ {path:'tests/helpers/pc-after-fix-source.mjs',versions:[{before:null,after:'a2e83238c09a5df188ea183311f6991728850d35d3ce6b4554de8b3e2ac42b46'}]},
+ {path:'tests/helpers/pc-after-fix-source.json.gz',versions:[{before:null,after:'548900839627458b6ff40378143c7d69f208d95ff55482a52fce253b5fb291e4'}]},
  {path:'tests/helpers/pc-final-source-epoch.mjs',versions:[{before:null,after:'e63d06bca56c511f3575d546b220189d9da7e9636b447fd15d7ebf2f2561a085'}]},
  {path:'tests/helpers/pc-final-source-epoch.json.gz',versions:[{before:null,after:'fc811b3d3f93e0f7dc9a01189349a1d94c6a241231d290031b55de7bab2af5df'}]});
 for(const row of itemIconHelperCopies){

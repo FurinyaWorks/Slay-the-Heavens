@@ -7,6 +7,7 @@ import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {preStsStyleCiSource,stsStylePriorInventory,stsStylePriorRead} from './sts-style-ci-source.mjs';
 import {preMenuRedCiSource} from './menu-red-ci-source.mjs';
+import {pcAfterFixHistoricalCiSource} from './pc-after-fix-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const normalize=s=>s.replaceAll('\r\n','\n');
 const toolingBytes=normalize(readFileSync(new URL('../fixtures/pr-history-tooling-continuation.json',import.meta.url),'utf8'));
@@ -35,6 +36,7 @@ export function preRunHudCiSource(path,source){
  source=preMenuRedCiSource(path,source);
  source=preStsStyleCiSource(path,source);
  source=preNativePreviewCiSource(path,source);
+ source=pcAfterFixHistoricalCiSource(path,source,'closeoutCurrent');
  if(path===tooling.path&&typeof source==='string'&&!source.includes('\r\r\n')&&
    normalize(source)===tooling.after.source&&hash(normalize(source))===tooling.after.sha256)return tooling.before.source;
  const row=Object.hasOwn(runHudCiProof.files,path)?runHudCiProof.files[path]:null;
