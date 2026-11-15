@@ -16,6 +16,12 @@ local function hurts(kind) return kind=="damage" or kind=="hp_loss" or kind=="st
 local function mix(a,b,w) return {r=a.r+(b.r-a.r)*w,g=a.g+(b.g-a.g)*w,b=a.b+(b.b-a.b)*w,a=a.a} end
 local function colour(ctx,c,alpha) return ctx.platform.color(c.r,c.g,c.b,math.floor((c.a or 255)*(alpha or 1))) end
 local function tint(ctx,box,c,alpha) box.imageColor=colour(ctx,c,alpha) end
+local function paintGroundShadow(ctx,id,box,alpha)
+    if id~='player' then return end
+    local figure=box:GetChild('officialFigure')
+    local shadow=figure and figure:GetChild('groundShadow')
+    if shadow then tint(ctx,shadow,Theme.lowCostArt.enemy.assets.lagavulin.shapes[1].colour,alpha)end
+end
 local fadedHealth=setmetatable({},{__mode='k'})
 local healthImages={hpBorder='line',hpTrack='hpTrack',hpGhost='hpGhost',hpFill='hp',blockEdge='panelSunken',blockIcon='block'}
 local function paintHealth(ctx,id,unit,box,alpha)
@@ -321,6 +327,7 @@ function M.paint(ctx,id, dt, shakes)
     if id == "player" and ctx.platform.portraits then ctx.platform.portraits:battlePose(x,y,sx,sy,dt,motionState) end
     local tone=portraitTone(ctx,id,base,ink,flash)
     tint(ctx,portrait,tone,alpha)
+    paintGroundShadow(ctx,id,box,alpha)
     paintHealth(ctx,id,unit,box,alpha)
     MonsterArt.pose(box,x,y,sx,sy,tone,alpha)
     LowCostArt.pose(box,x,y,sx,sy,tone,alpha,ctx.platform)

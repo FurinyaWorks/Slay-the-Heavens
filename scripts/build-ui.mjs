@@ -162,7 +162,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     for(const template of templates)rebuildV25CardFaces(template,theme);
   }
   if(flags.menuBackground)attachOfficialBackground(layout, templates);
-  attachOfficialPortraits(layout,flags);attachLowpolyScenes(layout,flags);
+  attachOfficialPortraits(layout,{...flags,officialAssets});attachLowpolyScenes(layout,flags);
   const genericTemplates=readyArtTemplates();
   templates.push(...(flags.cards||flags.menuBackground||flags.selectionAvatar||flags.battlePortrait?genericTemplates:genericTemplates.filter(t=>t.name===readyArtGroupTemplate)),
     monsterActorTemplate(monsterArt),enemyPowerTemplate());
