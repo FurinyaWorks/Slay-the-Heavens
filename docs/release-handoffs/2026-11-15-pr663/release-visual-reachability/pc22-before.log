@@ -1,0 +1,11 @@
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=6
+PC22_TRANSFORM uid=5 sameParent=true centrePivot=true contact=320.0,-68.0 scale=0.42013888888889,0.42013888888889 departure=320.0,-20.0 scale=0.5,0.5
+tests/lua/card_flow_contact_continuity.lua:92: native departure anchor equals native contact anchor
+stack traceback:
+	[JS]: in function 'assert'
+	tests/lua/card_flow_contact_continuity.lua:92: in local 'test'
+	tests/lua/card_flow_contact_continuity.lua:112: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

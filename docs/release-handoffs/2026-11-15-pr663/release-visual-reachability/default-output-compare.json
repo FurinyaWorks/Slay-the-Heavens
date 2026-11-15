@@ -1,0 +1,122 @@
+[
+  {
+    "file": "abyss_art_features.lua",
+    "baseline": "3496d5246dfc2f894cccc8120b854b0921fcc1ae943377791044abb8979bf45d",
+    "fourSliceDefault": "3496d5246dfc2f894cccc8120b854b0921fcc1ae943377791044abb8979bf45d"
+  },
+  {
+    "file": "abyss_component_binding.lua",
+    "baseline": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+    "fourSliceDefault": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8"
+  },
+  {
+    "file": "abyss_data.lua",
+    "baseline": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+    "fourSliceDefault": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18"
+  },
+  {
+    "file": "abyss_map_controls.lua",
+    "baseline": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+    "fourSliceDefault": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507"
+  },
+  {
+    "file": "abyss_map_layout.lua",
+    "baseline": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+    "fourSliceDefault": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3"
+  },
+  {
+    "file": "abyss_menu_background_asset.lua",
+    "baseline": "5b1239c98b8ffe174de3fc3351ca73142786fb0059088465bb319cd09b7ec33e",
+    "fourSliceDefault": "5b1239c98b8ffe174de3fc3351ca73142786fb0059088465bb319cd09b7ec33e"
+  },
+  {
+    "file": "abyss_monster_actor_binding.lua",
+    "baseline": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+    "fourSliceDefault": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de"
+  },
+  {
+    "file": "abyss_monster_art_data.lua",
+    "baseline": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+    "fourSliceDefault": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb"
+  },
+  {
+    "file": "abyss_narrative.lua",
+    "baseline": "f34b7f3fb2977492be3d967db8c77ffa57a08313635aec5d8ad3d3aae93bb48a",
+    "fourSliceDefault": "f34b7f3fb2977492be3d967db8c77ffa57a08313635aec5d8ad3d3aae93bb48a"
+  },
+  {
+    "file": "abyss_original_v4_data.lua",
+    "baseline": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+    "fourSliceDefault": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+  },
+  {
+    "file": "abyss_presentation.lua",
+    "baseline": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+    "fourSliceDefault": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c"
+  },
+  {
+    "file": "abyss_ready_card_assets.lua",
+    "baseline": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+    "fourSliceDefault": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9"
+  },
+  {
+    "file": "abyss_ready_card_binding.lua",
+    "baseline": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+    "fourSliceDefault": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086"
+  },
+  {
+    "file": "abyss_theme.lua",
+    "baseline": "bb81179d37b73c3fe7a707d929c645c68ec8fdf2993e493ea7891cb9e2a21ca1",
+    "fourSliceDefault": "348c261e245468bb1d697615fe5009a9539a8a7c02aea92ccad56ac9fa616b92"
+  },
+  {
+    "file": "abyss_traveler_portrait_assets.lua",
+    "baseline": "347c7ba0189fe2f7666d8438c83bb4e4f0eea849971507e3065255bcc4ff5bac",
+    "fourSliceDefault": "347c7ba0189fe2f7666d8438c83bb4e4f0eea849971507e3065255bcc4ff5bac"
+  },
+  {
+    "file": "abyss_ui_layout.lua",
+    "baseline": "e798c7fa4663df8c2b2ac8561210a17a820c56d7e6c5b7d4e7be916fc605f086",
+    "fourSliceDefault": "e798c7fa4663df8c2b2ac8561210a17a820c56d7e6c5b7d4e7be916fc605f086"
+  },
+  {
+    "file": "abyss_ui_profile.lua",
+    "baseline": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69",
+    "fourSliceDefault": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69"
+  },
+  {
+    "file": "abyss_ui_templates.lua",
+    "baseline": "45694d886a4fea2730540fd9b7af0cd378055b2158598d27c4c6bd123371d6cb",
+    "fourSliceDefault": "45694d886a4fea2730540fd9b7af0cd378055b2158598d27c4c6bd123371d6cb"
+  },
+  {
+    "file": "abyss_v25_card_assets.lua",
+    "baseline": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+    "fourSliceDefault": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503"
+  },
+  {
+    "file": "art-render-v2.json",
+    "baseline": "b6d991b0e9d37abfdfde58d6c7beacd035d70eca1881fdc3f47c6f77fbcd77ec",
+    "fourSliceDefault": "b6d991b0e9d37abfdfde58d6c7beacd035d70eca1881fdc3f47c6f77fbcd77ec"
+  },
+  {
+    "file": "battle-ui.json",
+    "baseline": "c586ac4b69826db5bc85e0d0d3aa7ffeea236b33c4ac4bb4216399487e141c5c",
+    "fourSliceDefault": "c586ac4b69826db5bc85e0d0d3aa7ffeea236b33c4ac4bb4216399487e141c5c"
+  },
+  {
+    "file": "game-ui-templates.json",
+    "baseline": "bf40667522dd57298cba00fc6d0bc91470649ae40590b98c2b45ae2d9cf8c8c4",
+    "fourSliceDefault": "bf40667522dd57298cba00fc6d0bc91470649ae40590b98c2b45ae2d9cf8c8c4"
+  },
+  {
+    "file": "game-ui.json",
+    "baseline": "0798f272cba727cf099dd7676b80c0cdf15cd4c4f447904f35e01d44c4c0a7bf",
+    "fourSliceDefault": "0798f272cba727cf099dd7676b80c0cdf15cd4c4f447904f35e01d44c4c0a7bf"
+  },
+  {
+    "file": "map-ui.json",
+    "baseline": "9819abe824097acf9e339ec84f81981e73a34bacccef29f234488b7147d9b7a2",
+    "fourSliceDefault": "9819abe824097acf9e339ec84f81981e73a34bacccef29f234488b7147d9b7a2"
+  }
+]

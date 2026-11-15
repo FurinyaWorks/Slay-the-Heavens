@@ -1,0 +1,177 @@
+{
+  "default": {
+    "gameUiSha256": "0798f272cba727cf099dd7676b80c0cdf15cd4c4f447904f35e01d44c4c0a7bf",
+    "bytes": 7620707,
+    "markers": {
+      "settingsReplacement": null,
+      "pickerChrome": null,
+      "pickerPrevious": {
+        "kind": "container",
+        "position": [
+          -530,
+          116
+        ],
+        "size": [
+          44,
+          208
+        ]
+      },
+      "mapReturn": {
+        "kind": "container",
+        "position": [
+          -522,
+          -296
+        ],
+        "size": [
+          148,
+          44
+        ],
+        "visible": false
+      },
+      "mapReturnFace": null,
+      "characterVeil": {
+        "kind": "image",
+        "position": [
+          0,
+          0
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "image": 100001,
+        "colour": "#0F1117"
+      },
+      "menuTitleMark": null
+    }
+  },
+  "official": {
+    "gameUiSha256": "8849a559a8fbe562da1e08904722623fdb85cacee30b6195e512d3ef4ef3c28c",
+    "bytes": 19048930,
+    "markers": {
+      "settingsReplacement": {
+        "kind": "image",
+        "position": [
+          0,
+          0
+        ],
+        "size": [
+          28,
+          28
+        ],
+        "image": 100161,
+        "colour": "#D6CBA5"
+      },
+      "pickerChrome": {
+        "kind": "container",
+        "size": [
+          200,
+          48
+        ]
+      },
+      "pickerPrevious": {
+        "kind": "container",
+        "position": [
+          -430,
+          -245.4
+        ],
+        "size": [
+          200,
+          48
+        ]
+      },
+      "mapReturn": {
+        "kind": "container",
+        "position": [
+          -510,
+          -235
+        ],
+        "size": [
+          180,
+          60
+        ],
+        "visible": false
+      },
+      "mapReturnFace": {
+        "kind": "container",
+        "size": [
+          180,
+          60
+        ]
+      },
+      "characterVeil": {
+        "kind": "image",
+        "position": [
+          0,
+          0
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "visible": false,
+        "image": 100001,
+        "colour": "#0F1117"
+      },
+      "menuTitleMark": {
+        "kind": "container",
+        "size": [
+          1280,
+          720
+        ]
+      }
+    }
+  },
+  "v25": {
+    "gameUiSha256": "ef9c0e4a9bd508e7733f356c8ebf08c126e64e2aa33719f7a499188e0f755f2e",
+    "bytes": 12286528,
+    "markers": {
+      "settingsReplacement": null,
+      "pickerChrome": null,
+      "pickerPrevious": {
+        "kind": "container",
+        "position": [
+          -530,
+          116
+        ],
+        "size": [
+          44,
+          208
+        ]
+      },
+      "mapReturn": {
+        "kind": "container",
+        "position": [
+          -552,
+          -235
+        ],
+        "size": [
+          184,
+          52
+        ],
+        "visible": false
+      },
+      "mapReturnFace": null,
+      "characterVeil": {
+        "kind": "image",
+        "position": [
+          0,
+          0
+        ],
+        "size": [
+          1280,
+          720
+        ],
+        "image": 100001,
+        "colour": "#0F1117"
+      },
+      "menuTitleMark": {
+        "kind": "container",
+        "size": [
+          1280,
+          720
+        ]
+      }
+    }
+  }
+}

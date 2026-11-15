@@ -1,0 +1,18 @@
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=6
+PC22_TRANSFORM uid=5 sameParent=true centrePivot=true contact=320.0,-68.0 scale=0.42013888888889,0.42013888888889 departure=320.0,-68.0 scale=0.5,0.5
+ok card_flow_contact_continuity - natural opening attack UID 5 contact=320.0,-68.0 -> discard; committed rules/RNG unchanged
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+PC22_TRANSFORM uid=9 sameParent=true centrePivot=true contact=-353.33333333333,76.666666666667 scale=0.42013888888889,0.42013888888889 departure=-353.33333333333,76.666666666667 scale=0.5,0.5
+ok card_flow_contact_continuity - natural opening defense without target offset UID 9 contact=-353.33333333333,76.666666666667 -> discard; committed rules/RNG unchanged
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK status source=player target=cultist_1 amount=3
+ABYSS_FEEDBACK status source=player target=cultist_1 amount=3
+ABYSS_FEEDBACK exhaust source=- target=- amount=0
+PC22_TRANSFORM uid=1 sameParent=true centrePivot=true contact=313.33333333333,-68.0 scale=0.42013888888889,0.42013888888889 departure=313.33333333333,-68.0 scale=0.5,0.5
+ok card_flow_contact_continuity - controlled legal exhaust area skill UID 1 contact=313.33333333333,-68.0 -> exhaust; committed rules/RNG unchanged
+PC22_CONTACT_CONTINUITY_PASS 3

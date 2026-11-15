@@ -1,0 +1,2 @@
+PASS formal RC rejects V25 chrome; corresponding non-release preview accepts it
+Official profile validator exports: officialAssetFlags, officialAssetsArgs, officialAssetsFromReceipt, officialAssetsProfile, validateOfficialAssets
