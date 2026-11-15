@@ -1,0 +1,66 @@
+Exact #691 f85f4e4435e8b128c16713ed23bcbb2559f4fd1e; actual releaseCandidate:true via local fake SDK
+
+--- rc-red ---
+✖ frozen native candidate accepts identifier-key narrative without changing version provenance (71.398672ms)
+✖ frozen native candidate rejects spoofed or ambiguous bundled versions before any SDK access (103.454285ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 270.278341
+
+✖ failing tests:
+
+test at tests/native-candidate.test.mjs:242:1
+✖ frozen native candidate accepts identifier-key narrative without changing version provenance (71.398672ms)
+  Error: Bundled code version differs from candidate provenance
+      at Module.buildNativeCandidate (file:///workspace/scratch/331215e8236a/pr691-rc-version-1849/repo/scripts/build-native-candidate.mjs:170:79)
+      at async TestContext.<anonymous> (file:///workspace/scratch/331215e8236a/pr691-rc-version-1849/repo/tests/native-candidate.test.mjs:244:17)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/native-candidate.test.mjs:255:1
+✖ frozen native candidate rejects spoofed or ambiguous bundled versions before any SDK access (103.454285ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: comment spoof
+      at async TestContext.<anonymous> (file:///workspace/scratch/331215e8236a/pr691-rc-version-1849/repo/tests/native-candidate.test.mjs:271:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /Bundled code version differs/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+--- rc-green ---
+✔ canonical production modules and the native candidate recipe include the same generated bindings (40.828663ms)
+✔ encoder source and checker projection are hashed before and during packaging (23.915259ms)
+✔ complete fake SDK builds unique receipts without replacing historical input aliases (15.274051ms)
+✔ explicit frozen native candidate packages exact menu version and binds source/notes hash without publication (74.429143ms)
+✔ stale, wrong-version or omitted native narrative cannot claim frozen release provenance (109.022356ms)
+✔ frozen native candidate accepts identifier-key narrative without changing version provenance (60.066893ms)
+✔ frozen native candidate rejects spoofed or ambiguous bundled versions before any SDK access (508.367747ms)
+✔ frozen native candidate rejects dirty source and misleading source SHA (79.50741ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1075.195014
+
+--- rc-production-narrative ---
+✔ frozen native candidate accepts identifier-key narrative without changing version provenance (142.40685ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 280.998791

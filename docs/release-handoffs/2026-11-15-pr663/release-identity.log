@@ -1,0 +1,5 @@
+PASS exact release loader still emits v1.0.0, not v2.0.0
+PASS package-only bump rejected
+PASS aligned versions still require matching notes section
+PASS clean isolated v2.0.0 loads with exact synthetic identity and no publication history
+PASS uncommitted input rejected even with matching version fields

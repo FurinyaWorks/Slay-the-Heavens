@@ -1,0 +1,143 @@
+--- a/scripts/build-native-candidate.mjs
++++ b/scripts/build-native-candidate.mjs
+@@ -11,6 +11,7 @@
+ import { pathToFileURL } from 'node:url';
+ import { randomUUID } from 'node:crypto';
+ import { spawnSync } from 'node:child_process';
++import { createRequire } from 'node:module';
+ import { fileRecord, inside, sha256, writeExclusive, prepareOutputDirectory } from './evidence-files.mjs';
+ import { requireStartupEvidence } from './native-playtest-evidence.mjs';
+ import { settlementGraphSource } from './settlement-graph.mjs';
+@@ -86,6 +87,25 @@
+   if((control.children??[]).length>60)throw new Error(`MCP child limit: ${control.name}`);
+   for(const child of control.children??[])checkTree(child);
+ }
++function assertBundledCodeVersion(source,version) {
++  // Only the RC path needs the locked parser; dependency-free layout imports stay unchanged.
++  // Parse generated Lua as data, never execute it or accept matches in comments/nested values.
++  const luaparse=createRequire(import.meta.url)('luaparse');
++  let chunk;
++  try { chunk=luaparse.parse(Buffer.from(source).toString('latin1'),{luaVersion:'5.3',encodingMode:'pseudo-latin1'}); }
++  catch { throw new Error('Bundled code version differs from candidate provenance'); }
++  const returned=chunk.body.length===1&&chunk.body[0];
++  const table=returned?.type==='ReturnStatement'&&returned.arguments.length===1&&returned.arguments[0];
++  if(table?.type!=='TableConstructorExpression')throw new Error('Bundled code version differs from candidate provenance');
++  const keys=new Set();let bundled;
++  for(const field of table.fields) {
++    const key=field.type==='TableKeyString'?field.key.name:field.type==='TableKey'&&field.key.type==='StringLiteral'?field.key.value:null;
++    if(typeof key!=='string'||keys.has(key))throw new Error('Bundled code version differs from candidate provenance');
++    keys.add(key);
++    if(key==='codeVersion')bundled=field.value.type==='StringLiteral'?field.value.value:null;
++  }
++  if(bundled!==version)throw new Error('Bundled code version differs from candidate provenance');
++}
+ export async function buildNativeCandidate({baseMap,output='build/candidates',root=process.cwd(),client,createClient,
+   prepare,writeScripts,generatedModules=generatedRuntimeModules,sourceCommit,mcpVersion='injected-test-client',playtest=false,decodeLog,
+   releaseCandidate=false,workKey='alpha-test',nativeCardArt,readyCardArt,artFeatures,lightweight2d=false,legacyCardFrames=false,nativePageLifecycle=false,v25BattleChrome=false,v25CardAssets,v25UiMasks,toolchainIdentity,componentWidgets,officialAssets=false}={}) {
+@@ -166,8 +186,7 @@
+       if(payloadDigest(art.inputPaths.map(path=>fileRecord(path,root)))!==payloadDigest(artInputs))throw new Error('Native art input changed during preparation');
+       receipt.nativeCardArt=nativeCardArtBuildReceipt(art,{root,directory:generated});
+     }
+-    if(releaseCandidate && !readFileSync(join(generated,'abyss_narrative.lua'),'utf8')
+-      .includes(`["codeVersion"]=${toLua(releaseNotes.build.version)}`))throw new Error('Bundled code version differs from candidate provenance');
++    if(releaseCandidate)assertBundledCodeVersion(readFileSync(join(generated,'abyss_narrative.lua'),'utf8'),releaseNotes.build.version);
+     const layout=JSON.parse(readFileSync(join(generated,'game-ui.json'),'utf8'));
+     const templates=JSON.parse(readFileSync(join(generated,'game-ui-templates.json'),'utf8'));
+     if(componentWidgets){
+--- a/tests/native-candidate.test.mjs
++++ b/tests/native-candidate.test.mjs
+@@ -6,6 +6,7 @@
+ import { spawnSync } from 'node:child_process';
+ import { loadReleaseNotes, notesSha256, gitSourceIdentity } from '../scripts/release-notes.mjs';
+ import { toLua } from '../scripts/build-lua-data.mjs';
++import { utf8ToLua } from '../scripts/lua-utf8-literal.mjs';
+ import { sha256 } from '../scripts/evidence-files.mjs';
+ import {uiProfileSource,uiProfileReceipt} from '../scripts/ui-profile.mjs';
+ 
+@@ -40,10 +41,10 @@
+   writeFileSync(join(root,'data/input.json'),'{}');
+   writeFileSync(join(root,'base.gil'),'ORIGINAL');
+   const output=join(root,'output'); mkdirSync(output);
+-  const names=[],sources=new Map(),calls=[]; let workspace;
++  const names=[],sources=new Map(),calls=[],resources=[]; let workspace;
+   const {scriptContent,initialSources={},existingScripts=[],graphs=[],signals=[],prepareGenerated,...checkOverrides}=overrides;
+   for(const [name,source] of Object.entries(initialSources))sources.set(name,source);
+-  const client={async readResource(){return {contents:[]};},async callTool({name,arguments:args}) {
++  const client={async readResource(request){resources.push(request);return {contents:[]};},async callTool({name,arguments:args}) {
+     calls.push({name,args});
+     let data={};
+     const mapPath=join(workspace,'mock.gil');
+@@ -65,7 +66,7 @@
+     for(const update of updates)sources.set(update.name,readFileSync(update.sourceFile,'utf8'));
+     const destination=join(workspace,'batch.gil');writeFileSync(destination,'candidate');return destination;
+   };
+-  return {root,output,calls,writeScripts,run:extra=>mod.buildNativeCandidate({root,baseMap:join(root,'base.gil'),output,client,prepare,
++  return {root,output,calls,resources,writeScripts,run:extra=>mod.buildNativeCandidate({root,baseMap:join(root,'base.gil'),output,client,prepare,
+     sourceCommit:'f'.repeat(40),...extra,generatedModules:{abyss_monster_actor_binding:'builder',...extra?.generatedModules}})};
+ }
+ 
+@@ -202,12 +203,12 @@
+   });
+ }
+ 
+-async function releaseFixture(t, stale = false, mutate = () => {}) {
++async function releaseFixture(t, stale = false, mutate = () => {}, narrativeSource = version => `return {["codeVersion"]=${toLua(version)}}`) {
+   let root;
+   const f=await fixture(t,{prepareGenerated:dir=>{
+     const notes=loadReleaseNotes({root,releaseCandidate:true});
+     writeFileSync(join(dir,'abyss_narrative.lua'),stale ? (stale === 'wrong-version' ? 'return {["codeVersion"]="v0.0.1"}' : 'return {}')
+-      : `return {["codeVersion"]=${toLua(notes.build.version)}}`);
++      : narrativeSource(notes.build.version));
+     mutate(root);
+   }});
+   root=f.root;mkdirSync(join(root,'data/release'));
+@@ -238,6 +239,49 @@
+   const wrong=await releaseFixture(t,'wrong-version');await assert.rejects(wrong.run(),/Bundled code version differs/);
+   const omitted=await releaseFixture(t);await assert.rejects(omitted.run({generatedModules:{}}),/must package.*narrative/);
+ });
++test('frozen native candidate accepts identifier-key narrative without changing version provenance',async t=>{
++  let generatedNarrative;
++  const f=await releaseFixture(t,false,undefined,version=>{
++    const narrative=JSON.parse(readFileSync(new URL('../data/presentation/narrative.zh-CN.json',import.meta.url),'utf8'));
++    narrative.codeVersion=version;
++    generatedNarrative=`-- Generated from the approved narrative copy source.\nreturn ${utf8ToLua(narrative)}\n`;
++    return generatedNarrative;
++  });
++  const receipt=await f.run(),notes=loadReleaseNotes({root:f.root,releaseCandidate:true});
++  assert.equal(receipt.release.version,'v0.1.1');
++  assert.equal(receipt.release.workKey,'alpha-test');
++  assert.equal(receipt.release.notesSha256,notesSha256(notes.currentNotice));
++  assert.equal(receipt.sourceCommit,notes.build.sourceCommit);assert.equal(receipt.sourceDirty,false);
++  assert.equal(receipt.mcpVersion,'injected-test-client');
++  assert(receipt.checkedModules.includes('abyss_narrative'));
++  assert.equal(receipt.moduleDigests.abyss_narrative,sha256(generatedNarrative),'full production narrative bytes survive packaging/readback');
++  assert.equal(receipt.inputs.find(input=>input.path==='CHANGELOG.md').sha256,sha256(readFileSync(join(f.root,'CHANGELOG.md'))));
++  assert.deepEqual(f.resources.map(row=>row.uri),['miliastra://workflow','miliastra://platform-rules']);
++  assert.deepEqual(JSON.parse(readFileSync(join(f.root,'data/release/publications.json'))).releases,[]);
++});
++test('frozen native candidate rejects spoofed or ambiguous bundled versions before any SDK access',async t=>{
++  for(const [label,source]of [
++    ['wrong bare version','return {codeVersion="v0.0.1"}'],
++    ['unprefixed version','return {codeVersion="0.1.1"}'],
++    ['missing bare version','return {copy="说明"}'],
++    ['comment spoof','-- ["codeVersion"]="v0.1.1"\nreturn {}'],
++    ['nested spoof','return {nested={["codeVersion"]="v0.1.1"}}'],
++    ['string spoof',`return {copy='["codeVersion"]="v0.1.1"'}`],
++    ['duplicate mixed key','return {["codeVersion"]="v0.1.1",codeVersion="v0.0.1"}'],
++    ['duplicate correct key','return {codeVersion="v0.1.1",["codeVersion"]="v0.1.1"}'],
++    ['dynamic root key','return {["codeVersion"]="v0.1.1",[("code".."Version")]="v0.0.1"}'],
++    ['dynamic version','return {codeVersion=(function() error("must not execute") end)()}'],
++    ['post-construction mutation','local x={["codeVersion"]="v0.1.1"};x.codeVersion="v0.0.1";return x'],
++    ['extra return value','return {["codeVersion"]="v0.1.1"},{}'],
++    ['invalid Lua','return {["codeVersion"]="v0.1.1"'],
++  ]){
++    const f=await releaseFixture(t,false,undefined,()=>source);
++    await assert.rejects(f.run(),/Bundled code version differs/,label);
++    assert.equal(f.resources.length,0,label+' must reject before SDK resources');
++    assert.equal(f.calls.length,0,label+' must reject before SDK calls');
++    assert.equal(existsSync(join(f.output,'candidate.json')),false,label+' cannot publish a success receipt');
++  }
++});
+ test('frozen native candidate rejects dirty source and misleading source SHA',async t=>{
+   const f=await releaseFixture(t);
+   await assert.rejects(f.run({sourceCommit:'f'.repeat(40)}),/differs from checkout/);

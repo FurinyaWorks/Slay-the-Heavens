@@ -1,0 +1,38 @@
+Exact release navigation head: 8129bd8684a7ccf420ba0a8ec5fe077372050708
+Before: obsolete action at checkpoint 8
+tests/lua/support/game_ui_host_trace.lua:7: CURRENT_HOST help: unexpected pcall failure tests/lua/support/game_ui_host_trace.lua:297: help
+
+After: all 13 live checkpoints
+CURRENT_HOST_BEGIN 1 construct
+CURRENT_HOST_CHECK 1 construct
+CURRENT_HOST_BEGIN 2 start
+CURRENT_HOST_CHECK 2 start
+CURRENT_HOST_BEGIN 3 select
+CURRENT_HOST_CHECK 3 select
+CURRENT_HOST_BEGIN 4 element
+CURRENT_HOST_CHECK 4 element
+CURRENT_HOST_BEGIN 5 confirm
+ABYSS_RUN seed=1 source=explicit
+CURRENT_HOST_CHECK 5 confirm
+CURRENT_HOST_BEGIN 6 combat
+CURRENT_HOST_CHECK 6 combat
+CURRENT_HOST_BEGIN 7 menu
+CURRENT_HOST_CHECK 7 menu
+CURRENT_HOST_BEGIN 8 cancel menu
+CURRENT_HOST_CHECK 8 cancel menu
+CURRENT_HOST_BEGIN 9 reopen menu
+CURRENT_HOST_CHECK 9 reopen menu
+CURRENT_HOST_BEGIN 10 route
+CURRENT_HOST_CHECK 10 route
+CURRENT_HOST_BEGIN 11 close route
+CURRENT_HOST_CHECK 11 close route
+CURRENT_HOST_BEGIN 12 resume
+CURRENT_HOST_CHECK 12 resume
+CURRENT_HOST_BEGIN 13 disable
+CURRENT_HOST_CHECK 13 disable
+GAME_UI_HOST_TRACE_PASS checkpoints=13
+CURRENT_HOST_CONTRACT_PASS checkpoints=13
+
+Negative controls
+tests/lua/support/game_ui_host_trace.lua:7: CURRENT_HOST cancel menu: cancel closes current menu without settlement
+tests/lua/support/game_ui_host_trace.lua:7: CURRENT_HOST menu: retired instructions absent from live menu and exit
