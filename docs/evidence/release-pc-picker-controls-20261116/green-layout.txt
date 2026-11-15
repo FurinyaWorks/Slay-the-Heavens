@@ -1,0 +1,10 @@
+✔ official forge and removal use the permanent browser paging material and shared footer geometry (376.7397ms)
+✔ room return and confirm reuse the existing character/reward flag artwork while retaining direct input paths (289.1792ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 841.3034

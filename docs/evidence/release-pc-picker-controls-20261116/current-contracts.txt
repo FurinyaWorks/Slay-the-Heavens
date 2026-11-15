@@ -1,0 +1,17 @@
+✔ official selection flags retain readable shared ink and their aligned native hit surface (361.441ms)
+✔ both official build orders retain exact choice and picker semantics and every readable card face (643.8318ms)
+✔ run pages share the final battle bar without copied inputs or a covering legacy header (250.9945ms)
+✔ approved pages keep live input identities while unrelated pages retain their geometry (632.9ms)
+✔ scene and button substitutions preserve semantic icons and all four native button states (321.0717ms)
+✔ default profile retains its original side-arrow geometry and direct native receivers (31.3929ms)
+✔ official forge and removal use the permanent browser paging material and shared footer geometry (354.8306ms)
+✔ room return and confirm reuse the existing character/reward flag artwork while retaining direct input paths (277.3741ms)
+✔ current official Lua Host keeps shared states, readonly deck, paging, stale touches and C-tier transactions (7169.7439ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11596.6255

@@ -1,0 +1,56 @@
+# PC26 / PC30 共享分页与房间按钮离线修复
+
+状态：产品切片已提交，等待独立复审与严格来源合同接续；不是官方或设备验收。TASK-103 / TASK-103.2 保持原状态，由主线程统一维护。
+
+基线 `release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210`；产品 `a925ce43bda10030d7dfd7fe7b96c450c17f8702`。分支 `feat/release-pc-picker-controls-1116`。7个产品/回归文件的本机字节身份见 [identity.json](identity.json)；未推送、开PR、改Backlog、develop、master或Tag。
+
+## 来源与边界
+
+反馈来源是 PR676@e14e7c9bd13371319a2ea96500513b514973d287。原文保存在另一独立树 `F:/New folder/.worktrees/release-pc-closeout-1115/docs/qa/playtests/pc-20261115-verbatim.txt`，本轮只读，SHA见身份清单。
+
+- PC26 41:12–42:59：锻造闪烁；42:02希望避免混用滑动和按钮，42:11明确要求评估，42:19允许平台成本约束；42:29–42:54明确要求返回营地、确认升级、翻页和继续按钮与全局统一。
+- PC30 47:10–48:06：移除卡牌、营地升级、查看牌组的样式应复用同一体系。
+- 私图07/09本轮不可访问，未声称已看图。样式问题并非全部延期：现有组件与Token足以修复本片。是否把可选事务页换成原生滚动，需要当前能力、事务与性能证据；本片不猜测替换分页语义。
+- PR684加载/局部cover、PR685远虑多选Grid、PR690导航及图标/shadow/menu组合不进入本片。
+
+## 具体改动
+
+只在正式 `official-assets-first` composition复用最终已采用的组件。四个既有分页按钮（删牌 previous/next、锻造 forgePrevious/forgeNext）直接借用永久卡组浏览器的四态材质与200×48尺寸，沿用已有锻造页脚行。返回/确认直接借用当前选角页最终低控件旗帜材质；没有采用旧的高图元曲线实现。页码正文保留各页面已有位置，避免删牌的页码压住选中预览。动态价格/长按钮文字允许现有最小字号适配。
+
+原节点hit、按钮、标签、action和选卡事务身份保留，新增部分只有无输入装饰。原normal/hover/pressed/disabled状态驱动装饰，旧平面表面隐藏；按压缩放由借用的组件执行一次。永久卡组仍是既有5列只读浏览器；default profile的44×208侧箭头与56×44锻造箭头不变。规则、RNG、分页步长和确认/取消命令未改。
+
+## 验证与原失败
+
+运行时为现有Node24.18.0与Fengari，生成真实正式UI树并通过当前Lua Host执行；并非原神LuaHost或设备渲染。
+
+| 证据 | 结果与适用范围 |
+| --- | --- |
+| [red-layout.txt](red-layout.txt) | 在36b9生产源上新增生成树回归2项均失败，缺共享浏览器/旗帜装饰。 |
+| [targeted-layout.txt](targeted-layout.txt) | 27项通过：Deck、Node、牌堆、奖励行、共享布局与Host切片。 |
+| [official-contracts.txt](official-contracts.txt) | 原相关合同4通过、2失败完整保留：历史integration SHA、当前合同仍要求旧44×208分页hit。 |
+| [current-contracts.txt](current-contracts.txt) | 主线程明确确认用户要求采用现成共享按钮后，当前official合同按同一Deck/选角组件精确断言，9项通过。未改其它几何/身份断言；default旧尺寸有独立保护。 |
+| [green-host.txt](green-host.txt) | 最终新增5项全通过；旧44×208 hit和错误材质负控均被拒绝；1280×720、1920×1080、2340×1080及720×1280安全区与不遮卡牌/预览/按钮静态检查。 |
+| [official-host.txt](official-host.txt) | 原4项Host合同通过：商店按钮墨色、旧返回触点、17牌永久卡组、0/1/5/6/17牌及回收。 |
+| [fast.txt](fast.txt) | 既有advisory Fast成功完成17 JS+48 Lua。最终修订当前official测试预期/负控在此运行后由上述定向测试覆盖；生产代码不再变化。Fast明确要求后续完整Quality，并非Full通过。 |
+| [frozen-source.txt](frozen-source.txt) | 最终单独复核历史integration来源合同仍失败：official-assets-layout当前09332935…，冻结c1fb214d…。原适配器和SHA断言未改，交主线程严格接续。 |
+| [syntax.txt](syntax.txt)、[lua-static.txt](lua-static.txt)、[architecture.txt](architecture.txt) | 语法、Luacheck与架构通过；职责复杂度原上限15不变，351模块/1988边。 |
+
+新增Host用真实生成树检查14牌只读查看；删牌5页首末页、禁用态、悬停/按压、旧触点跨刷新无效、取消不扣费、确认只删所选牌；锻造2页末页、重选、当前列表缩至1页后页数收敛、无cursor能力C档点选、确认升级与既有等待后继续。卡牌包含现有长说明能力牌。几何和完整字符串检查不等于原生字体视觉验收。
+
+中间静态检查曾捕获 `ctx.paintButton` 复杂度16超过15，提取本模块 `sharedButtonChrome` 后原门槛通过；未增加预算。原失败没有通过放宽阈值处理。
+
+复现命令均在本工作树，`node`指上述现有Node24：
+
+```text
+node --test tests/release-picker-controls.test.mjs
+node --test --test-concurrency=1 --test-name-pattern="^approved pages keep|scene and button substitutions|both official build orders|official selection flags|run pages share" tests/official-assets.test.mjs tests/official-assets-legibility.test.mjs
+node --test --test-name-pattern="shop keeps readable button ink|17-card shop permanent deck|browser return rejects stale|permanent browser handles" tests/official-assets-runtime.test.mjs
+node --test --test-name-pattern="^historical approved pages" tests/official-assets.test.mjs
+node scripts/test-affected.mjs --fast --base 36b9b157
+node scripts/check-syntax.mjs
+node scripts/check-lua-static.mjs
+node scripts/check-architecture.mjs
+git diff --check 36b9b157ee6f05b65eb9f1da7e2978647d36c210..HEAD
+```
+
+TMP/TEMP在根`.artifacts/release-picker-temp`，依赖和Luacheck物理复用既有安装。未执行Full、GUI、MCP、候选写入、官方导入或ready；没有PC/手机帧时、原生滚动性能或本候选官方视觉证据。PC26的加载闪烁仍由PR684独立验证；完整PC26/30与相关任务验收保持未完成。

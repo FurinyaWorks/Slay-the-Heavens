@@ -1,0 +1,66 @@
+✔ official selection flags retain readable shared ink and their aligned native hit surface (372.5559ms)
+✔ both official build orders retain exact choice and picker semantics and every readable card face (670.3439ms)
+✔ run pages share the final battle bar without copied inputs or a covering legacy header (310.753ms)
+✖ historical approved pages keep live input identities while unrelated pages retain their geometry (93.1066ms)
+✖ approved pages keep live input identities while unrelated pages retain their geometry (760.4864ms)
+✔ scene and button substitutions preserve semantic icons and all four native button states (448.1726ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 4
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4440.0946
+
+✖ failing tests:
+
+test at tests\official-assets.test.mjs:72:1
+✖ historical approved pages keep live input identities while unrelated pages retain their geometry (93.1066ms)
+  AssertionError [ERR_ASSERTION]: fresh complete integration source: scripts/official-assets-layout.mjs
+  + actual - expected
+  
+  + '09332935e3d280a02c1cf2b61e1d8a58c70b1c72d3b9717d814af8778081afc4'
+  - 'c1fb214dd0f342913dde97c89f2187c7557e932b044af0c0b30ba18d05b3a944'
+  
+      at assertIntegratedCurrent (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/helpers/integrated-ci-source.mjs:35:72)
+      at replayReviewedSelection (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/helpers/replay-reviewed-selection.mjs:19:2)
+      at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/official-assets.test.mjs:73:15)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '09332935e3d280a02c1cf2b61e1d8a58c70b1c72d3b9717d814af8778081afc4',
+    expected: 'c1fb214dd0f342913dde97c89f2187c7557e932b044af0c0b30ba18d05b3a944',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\official-assets.test.mjs:76:1
+✖ approved pages keep live input identities while unrelated pages retain their geometry (760.4864ms)
+  AssertionError [ERR_ASSERTION]: /SlayTheAbyss/nodePanel/pickerView/previous/hit size
+  + actual - expected
+  
+    [
+  +   200,
+  +   48
+  -   44,
+  -   208
+    ]
+  
+      at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/official-assets.test.mjs:167:11)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 200, 48 ],
+    expected: [ 44, 208 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

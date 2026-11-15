@@ -1,0 +1,530 @@
+{
+  "tier": "fast",
+  "changed": [
+    "scripts/official-assets-layout.mjs",
+    "scripts/official-run-layout.mjs",
+    "src/lua/abyss_node_ui_feedback.lua",
+    "docs/evidence/release-pc-picker-controls-20261116/fast.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/green-host.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/green-layout.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/lua-static.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/official-contracts.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/official-host.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/red-layout.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/syntax.txt",
+    "docs/evidence/release-pc-picker-controls-20261116/targeted-layout.txt",
+    "scripts/official-picker-controls.mjs",
+    "tests/lua/support/release_picker_controls.lua",
+    "tests/release-picker-controls.test.mjs"
+  ],
+  "full": true,
+  "reason": "Unmodelled or deleted input: docs/evidence/release-pc-picker-controls-20261116/fast.txt",
+  "fast": [],
+  "integration": [],
+  "lua": [],
+  "feedback": {
+    "fast": [
+      "tests/ci-run-costs.test.mjs",
+      "tests/event-option-rim-clipping.test.mjs",
+      "tests/genshin-monster-benchmarks.test.mjs",
+      "tests/mad-gremlin-data.test.mjs",
+      "tests/monster-source-candidates.test.mjs",
+      "tests/native-candidate-deployment-closure.test.mjs",
+      "tests/native-script-batch.test.mjs",
+      "tests/noncombat-v25-layout.test.mjs",
+      "tests/official-background-lifecycle.test.mjs",
+      "tests/official-battle-pile-layout.test.mjs",
+      "tests/official-portraits-build.test.mjs",
+      "tests/official-run-hud-reuse.test.mjs",
+      "tests/playtest-input-lifecycle.test.mjs",
+      "tests/reviewed-traveler-geo-assets.test.mjs",
+      "tests/sts-neow-choice.test.mjs",
+      "tests/sts-neow-guide.test.mjs",
+      "tests/sts-reward-row.test.mjs"
+    ],
+    "lua": [
+      "tests/lua/cultist_ai_candidate.lua",
+      "tests/lua/match_game_candidate.lua",
+      "tests/lua/viewport.lua",
+      "tests/lua/transform_card_candidate.lua",
+      "tests/lua/ui_mock_contract.lua",
+      "tests/lua/warrior75_card_text.lua",
+      "tests/lua/native_card_art_binding.lua",
+      "tests/lua/jaw_worm_policy_candidate.lua",
+      "tests/lua/character_presentation_budget_5.lua",
+      "tests/lua/character_presentation_budget_8.lua",
+      "tests/lua/presentation_trace_native.lua",
+      "tests/lua/character_presentation_budget_9.lua",
+      "tests/lua/run_card_catalog_presentation.lua",
+      "tests/lua/character_presentation_budget_6.lua",
+      "tests/lua/ending_intent_view.lua",
+      "tests/lua/growing_card_text_slice_4.lua",
+      "tests/lua/presentation_responsibilities_text.lua",
+      "tests/lua/character_presentation_budget_7.lua",
+      "tests/lua/scrap_ooze_ui.lua",
+      "tests/lua/character_presentation_budget_12.lua",
+      "tests/lua/tomb_red_mask_ui.lua",
+      "tests/lua/transmogrifier_ui.lua",
+      "tests/lua/character_presentation_budget_13.lua",
+      "tests/lua/looter_potion_ui_slice_6.lua",
+      "tests/lua/potion_health_ui.lua",
+      "tests/lua/basic_curses_ui.lua",
+      "tests/lua/fountain_event_ui.lua",
+      "tests/lua/cultist_ui.lua",
+      "tests/lua/potion_smoke_ui.lua",
+      "tests/lua/wheel_event_ui.lua",
+      "tests/lua/run_card_catalog_static_deck.lua",
+      "tests/lua/looter_potion_ui_slice_5.lua",
+      "tests/lua/potion_remaining_inventory_ui.lua",
+      "tests/lua/toxic_egg_event_ui.lua",
+      "tests/lua/joust_ui.lua",
+      "tests/lua/intent_artifact_cancellation.lua",
+      "tests/lua/character_presentation_budget_14.lua",
+      "tests/lua/colorless_run.lua",
+      "tests/lua/game_ui_phase_four.lua",
+      "tests/lua/looter_potion_ui.lua",
+      "tests/lua/sensory_stone_ui.lua",
+      "tests/lua/growing_card_text.lua",
+      "tests/lua/turn_power_plans.lua",
+      "tests/lua/character_presentation_budget_16.lua",
+      "tests/lua/growing_card_text_slice_2.lua",
+      "tests/lua/looter_potion_ui_slice_2.lua",
+      "tests/lua/awakened_one_ui.lua",
+      "tests/lua/character_presentation_budget_15.lua"
+    ],
+    "estimatedLuaMs": 89113
+  },
+  "planDurationMs": 2897
+}
+Feedback timing: plan 2897 ms.
+Complete Quality required: Unmodelled or deleted input: docs/evidence/release-pc-picker-controls-20261116/fast.txt. Quick feedback covers only independently mapped inputs.
+Advisory subset: 17 fast JS and 48 related Lua files selected; 627 integration JS and 543 Lua files deferred to complete Quality. Lua scheduling estimate 89113 ms, not a deadline.
+
+> slay-the-abyss@1.0.0 build:data
+> node scripts/build-lua-data.mjs
+
+Validated Lua data module built.
+
+> slay-the-abyss@1.0.0 build:ui
+> node scripts/build-ui.mjs
+
+Native battle UI and Traveler display module built.
+Map controls and Lua layout contract built.
+Feedback timing: build 2276 ms.
+✔ natural Fast requires actual two-platform Quality execution, not cancelled placeholders or advisory (2.7796ms)
+✔ queue, wall, actual execution and unfinished/cancelled costs stay separate (1.0434ms)
+✔ missing, failed, skipped or cancelled gates never become successful Fast measurements (0.4628ms)
+✔ incomplete pages and wrong attempt/SHA/job identities reject rather than manufacture samples (0.5129ms)
+✔ insufficient natural samples remain insufficient; nearest rank is reported only from eligible runs (0.4564ms)
+✔ shared event corner masks clip the complete option chrome before live copy and input (20.5284ms)
+✔ exact four immutable Genshin direction benchmarks, never runtime approval or blanket mapping (334.357ms)
+✔ historical originals stay intact but identity direction is superseded, with anatomy correction (2.3938ms)
+✔ playable Mad Gremlin has A0 HP, passive Angry and only attack4 (10.9539ms)
+✔ valid Mad Gremlin policy and Angry status enter runtime schema (4.86ms)
+✔ Mad Gremlin rejects missing passive (4.429ms)
+✔ Mad Gremlin rejects zero passive (3.6705ms)
+✔ Mad Gremlin rejects negative passive (3.8243ms)
+✔ Mad Gremlin rejects fractional passive (3.9086ms)
+✔ Mad Gremlin rejects overflow passive (3.4155ms)
+✔ Mad Gremlin rejects missing roll (2.9573ms)
+✔ Mad Gremlin rejects zero roll (2.6581ms)
+✔ Mad Gremlin rejects too large roll (3.1826ms)
+✔ Mad Gremlin rejects unknown attack (3.1764ms)
+✔ Mad Gremlin rejects unknown field (3.3342ms)
+✔ Mad Gremlin requires an Angry status definition (4.1174ms)
+✔ Angry uses an approved picture mapping and the complete theme validates (11.1737ms)
+✔ monster roster covers exactly current Acts1–2 enemy definitions (2.7526ms)
+✔ monster files preserve reviewed source identity and strict unbound limits (3679.0865ms)
+✔ monster text identity accepts CRLF only, rejects content changes and never rewrites PNG bytes (0.3419ms)
+✔ current M3 event/relic/potion modules and their complete literal dependency closure deploy automatically (43.0469ms)
+✔ batch writer preserves native syntax and unavailable-API checks (3.2673ms)
+✔ native API checks distinguish Lua strings and comments from executable calls (0.846ms)
+✔ batch additions preserve existing filenames and avoid existing and pending export collisions (58.6154ms)
+✔ official menu and selection reuse live inputs with bounded native decoration (63.431ms)
+✔ integrated selection retains the shared deck input below its summary without overlapping the selected card (40.3491ms)
+✔ production background preserves the exact approved experiment rows, including colour and half masks (12.5936ms)
+✔ selection uses static exact-alpha geometry and reuses the selected frame without a glyph overlay (27.6545ms)
+✔ frozen full export and every literal row remain bound to the editable JSON (49.042ms)
+✔ bounded hidden creation, exact 13201 row properties/order, 8/3 fit, static idempotence (3546.2026ms)
+✔ stale generation and battle release prevent further creation or resurrection (254.3736ms)
+✔ repeat begin and tick reentry during creation do not duplicate work (260.2647ms)
+✔ release inside Instantiate invalidates returned control before any later row (252.8702ms)
+✔ creation failure nil latches, rolls back, and retries explicitly (303.454ms)
+✔ creation failure throw latches, rolls back, and retries explicitly (274.2701ms)
+✔ creation failure setter latches, rolls back, and retries explicitly (257.2361ms)
+✔ setter cancellation stops the old job and cannot display partial art (313.4305ms)
+✔ destroy failure is isolated and retained until explicit release retry (333.5775ms)
+✔ engine destruction never calls Destroy again and permanently retires callbacks (331.4327ms)
+✔ template zero, wrong source, malformed batch and dead host fail closed (337.0551ms)
+✔ engine-destroy tombstone prevents same still-reported-alive host from resurrecting (296.1552ms)
+✔ host death before the next tick retires the job rather than leaving it pending (339.6259ms)
+✔ explicit false destroy result is retained as failure, not silently dropped (312.5306ms)
+✔ creation is rejected while cleanup callbacks reenter and host configuration failure latches (269.1788ms)
+✔ packaged data module is exactly the hash-locked original literal block (5.3789ms)
+✔ active release guards host hide reentry before begin/tick or nested release (303.8331ms)
+✔ explicit false host hide is reported as release failure while cleanup still runs (237.3015ms)
+✔ V25 pile chrome fits the internal design canvas rather than Simulator device pixels (2.3812ms)
+✔ pile return keeps the existing button ink readable in all four native states (30.9928ms)
+✔ both pile return routes resolve the supplied theme ink without changing their receiver (379.9523ms)
+✔ official runtime inventory preserves every producer field and rejects selection or idle tampering (1317.1722ms)
+✔ V25 inventory counts the actual independent selection and result source instances (34.2869ms)
+✔ official shared selection inventory requires the explicit producer schema and rejects unmarked historical modules (629.1553ms)
+✔ native selection budget changes only selection art and preserves the frozen battle literal (113.8361ms)
+✔ portrait builder adds dedicated thumbnail, selection and battle hosts without changing existing controls (75.8054ms)
+✔ candidate binding rejects placeholders and extracts frozen byte-identical ROOT/ELEMENTS blocks (158.737ms)
+✔ every run page mounts the complete battle resource component, preserving writer handles (389.6978ms)
+✔ blessing, map and reward potion slots mount the same final battle faces in all states (330.5314ms)
+✔ playing input checks the actual run twice, uses the fresh focus capture and sends once (1.912ms)
+✔ original succeeded run refuses without focus or input (0.6044ms)
+✔ original failed run refuses without focus or input (0.1849ms)
+✔ original starting run refuses without focus or input (0.1325ms)
+✔ original unknown run refuses without focus or input (0.1566ms)
+✔ original missing run refuses without focus or input (0.1182ms)
+✔ running but not yet playing refuses even with a large elapsed time (0.1987ms)
+✔ running with left-playtest evidence refuses before focus (0.2327ms)
+✔ running with log-collected evidence refuses before focus (0.7358ms)
+✔ run ending during focus (succeeded) sends zero inputs (0.329ms)
+✔ run ending during focus (running) sends zero inputs (0.1398ms)
+✔ official result page still running permits its normal Leave input (0.1617ms)
+✔ unavailable/error/malformed status refuses at either observation (0.2435ms)
+✔ unavailable/error/malformed status refuses at either observation (0.1038ms)
+✔ unavailable/error/malformed status refuses at either observation (0.1579ms)
+✔ unavailable/error/malformed status refuses at either observation (0.1233ms)
+✔ unavailable/error/malformed status refuses at either observation (0.1168ms)
+✔ unavailable/error/malformed status refuses at either observation (0.2595ms)
+✔ unavailable/error/malformed status refuses at either observation (0.1349ms)
+✔ wrong or missing actual run identity refuses at either observation (0.2885ms)
+✔ wrong or missing actual run identity refuses at either observation (0.2032ms)
+✔ wrong or missing actual run identity refuses at either observation (0.2696ms)
+✔ wrong or missing actual run identity refuses at either observation (0.2094ms)
+✔ wrong or missing actual run identity refuses at either observation (0.2079ms)
+✔ text-only MCP status payload is accepted using the same checks (0.1888ms)
+✔ focus errors or missing capture refuse before any input (0.2894ms)
+✔ input failure is not retried because it may have reached the game (0.215ms)
+✔ missing run/window and path-traversal run identities refuse before any RPC (0.1526ms)
+✔ reviewed asset catalog exists independently from legacy candidates and runtime theme (16.8059ms)
+✔ armaments: frozen source, prompt, native tables, preview and metadata are coherent (110.8284ms)
+✔ cleave: frozen source, prompt, native tables, preview and metadata are coherent (131.5769ms)
+✔ heavy_blade: frozen source, prompt, native tables, preview and metadata are coherent (107.0531ms)
+✔ new metadata and assets have real LF-canonical legal inventory hashes (33.6213ms)
+✔ negative controls reject wrong IDs, escaping paths, hashes, dimensions and missing resources (92.0741ms)
+✔ a retained editor snapshot cannot hide corrupt real Lua geometry, mask or gallery ID (147.7785ms)
+✔ LF-canonical frozen text hashes survive a CRLF checkout without rewriting sources (210.2385ms)
+✔ armaments: Lua EOF normalization preserves the recoverable original export and AST (85.2474ms)
+✔ cleave: Lua EOF normalization preserves the recoverable original export and AST (130.779ms)
+✔ heavy_blade: Lua EOF normalization preserves the recoverable original export and AST (117.6135ms)
+✔ later identity rejection remains immutable history; new visual approval cannot revive old Heavy (131.7413ms)
+✔ historic real Heavy mask literals still reject disabled flags and altered geometry (1.2919ms)
+✔ identity-repair pair registers three current cards without reviving the rejected Heavy bytes (1.5021ms)
+✔ identity, source approval binding, strict FAIL and repair provenance cannot be weakened (100.1837ms)
+✔ official Neow normal choices use one measured narrow body and independent touch target (411.0933ms)
+✔ Neow token geometry cannot silently diverge from its measured body contour (267.9008ms)
+✔ guide paths remain tied to approved SVG, with one meet scale and bounded native groups (40.027ms)
+✔ hood opening has its approved upper/side dark area after body occlusion, and catches the old body overlay (0.2345ms)
+✔ Neow scene fills precisely the shared HUD body area, detecting the old exposed gold strip (747.3256ms)
+✔ every reward kind shares measured compact left-icon rows and the existing native states (87.2478ms)
+✔ composed run and standalone battle expose the same reference reward rows before runtime (484.1388ms)
+ℹ tests 113
+ℹ suites 0
+ℹ pass 113
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21625.3607
+ok 1 - opener grants Ritual, not damage or immediate Strength
+ok 2 - unmodified single-enemy action trace is 0,6,9,12,15
+ok 3 - teammate action gap does not trigger Ritual growth
+ok 4 - each live instance has independent opener and first-round skip
+ok 5 - dead actors neither act nor gain end-round Strength
+ok 6 - duplicate actions and rounds are rejected without mutating input
+ok 7 - candidate preserves externally supplied HP without RNG or range substitution
+Cultist candidate: 7 tests passed; no runtime integration or parity certification
+Lua fixture tests/lua/cultist_ai_candidate.lua: 136 ms
+ok pairing candidate 1 - initial view conceals all twelve cards with five attempts
+ok pairing candidate 2 - first reveal does not consume an attempt
+ok pairing candidate 3 - second reveal locks selection until explicit pair resolution
+ok pairing candidate 4 - a match removes both slots and emits exactly one award
+ok pairing candidate 5 - a mismatch conceals both slots and also consumes one attempt
+ok pairing candidate 6 - same slot cannot count as a second reveal
+ok pairing candidate 7 - five matches finish with two unclaimed slots and reject all replay
+ok pairing candidate 8 - five mismatches finish without an award
+ok pairing candidate 9 - mixed fifth-attempt match emits final award before becoming terminal
+ok pairing candidate 10 - equal IDs match even when not original adjacent pair slots
+ok pairing candidate 11 - constructor does not retain board aliases
+ok pairing candidate 12 - every view and result is detached from private state
+ok pairing candidate 13 - instances cannot affect each other
+ok pairing candidate 14 - malformed slot indices are atomically rejected
+ok pairing candidate 15 - malformed board shapes and values are rejected without mutation
+ok pairing candidate 16 - metatable inputs are rejected without invoking metamethods
+ok pairing candidate 17 - rejecting an invalid board does not alter caller array
+LUA_MATCH_GAME_CANDIDATE_PASS 17
+Lua fixture tests/lua/match_game_candidate.lua: 190 ms
+PASS viewport: independent host coverage, uniform content and repeated resize (9 devices)
+Lua fixture tests/lua/viewport.lua: 422 ms
+ok transform candidate 1 - colored flattens exact source groups without rarity weighting
+ok transform candidate 2 - colorless uses source colorless, not current colorless or colored groups
+ok transform candidate 3 - curse excludes original and all four special curse IDs
+ok transform candidate 4 - every duplicate original ID is removed before drawing
+ok transform candidate 5 - non-prohibited duplicates retain separate slots and original ordering
+ok transform candidate 6 - a singleton still consumes exactly one RNG call
+ok transform candidate 7 - empty source tiers do not block remaining colored tiers
+ok transform candidate 8 - all filtered or empty pools refuse without advancing RNG
+ok transform candidate 9 - special curse exclusions apply only to curse category
+ok transform candidate 10 - invalid category and prohibited ID are rejected before RNG access
+ok transform candidate 11 - missing required pool groups cannot silently become empty
+ok transform candidate 12 - malformed dense array shapes and IDs are rejected atomically
+ok transform candidate 13 - selected pool and outer metatables cannot execute hooks
+ok transform candidate 14 - only selected pool groups are required or inspected
+ok transform candidate 15 - bad RNG refuses without falling back to global randomness
+ok transform candidate 16 - results, next RNG and source arrays are detached
+ok transform candidate 17 - counter wraps at the signed32 boundary without changing inputs
+ok transform candidate 18 - fixed signed64 seed vectors agree with independent integer oracle
+ok transform candidate 19 - bounded-draw rejection advances two primitive words but one wrapper call
+ok transform candidate 20 - protected RNG metatables are rejected without evaluating hooks
+transform selection candidate groups passed: 20
+Lua fixture tests/lua/transform_card_candidate.lua: 323 ms
+LUA_NODE_UI_PASS 0
+LUA_UI_PASS 0 range=1-0
+growing_card_text: 0/0 passed
+SAPPHIRE_TREASURE_UI_PASS 0
+ok UI mock contract 1 - all five real mock factories accept signed fractional size deltas and zero
+ok UI mock contract 2 - malformed or unusable synthetic geometry is rejected before changing each scene
+ok UI mock contract 3 - cursor registrations require a callable callback in every real mock
+ok UI mock contract 4 - game key and navigation registrations keep enum values opaque and callbacks callable
+ok UI mock contract 5 - independent controls keep separate geometry and listener state
+ok UI mock contract 6 - all real factories reject the escaped cursor field but preserve button capability
+UI_MOCK_CONTRACT_PASS 6
+Lua fixture tests/lua/ui_mock_contract.lua: 906 ms
+Card text: 182 class/status/curse variants retain full names and text at approved font bounds; native visual verification still required.
+Lua fixture tests/lua/warrior75_card_text.lua: 777 ms
+NATIVE_CARD_ART_BINDING_PASS XYZ/type/RGBA/cache/fallback/tail/failure/reuse
+Lua fixture tests/lua/native_card_art_binding.lua: 921 ms
+Jaw Worm policy: 19044 assertions; 1300 opening, 1300 subsequent requests, 620 resolved choices, 4000 sequence steps passed
+Lua fixture tests/lua/jaw_worm_policy_candidate.lua: 853 ms
+ok 1 existing approved display remains detached and known unchanged cards retain wording
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 5 5 1
+Lua fixture tests/lua/character_presentation_budget_5.lua: 1114 ms
+ok 1 unknown op in either branch refuses even if existing presentation is available
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 8 8 1
+Lua fixture tests/lua/character_presentation_budget_8.lua: 1223 ms
+PRESENTATION_TRACE_NATIVE_PASS strict delegation and exact P0 inverse
+Lua fixture tests/lua/presentation_trace_native.lua: 1090 ms
+ok 1 unknown status orb hand mode and empty card explicitly refuse
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 9 9 1
+Lua fixture tests/lua/character_presentation_budget_9.lua: 1459 ms
+RUN_CARD_CATALOG_PRESENTATION_PASS complete Run300/600 capability, real base/upgraded text and native9 display ABI
+Lua fixture tests/lua/run_card_catalog_presentation.lua: 1079 ms
+ok 1 new dynamic damage tokens follow actual Combat preview instead of static base
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 6 6 1
+Lua fixture tests/lua/character_presentation_budget_6.lua: 1305 ms
+PASS ending intent 1 pair secondary actions use existing detail rows and mixed badges
+PASS ending intent 2 Smash block uses actual frozen output instead of intent rounding
+PASS ending intent 3 Heart Debilitate names all five cards and their draw-pile destination
+PASS ending intent 4 Heart buff stages and queued immutable plan share actual source values
+PASS ending intent 5 repeated full previews leave state/RNG/counter and captured old frames unchanged
+ENDING_INTENT_VIEW_PASS 5 controlled offline source projection; no live UI claim
+Lua fixture tests/lua/ending_intent_view.lua: 1340 ms
+ok growing_card_text 1 - legacy display without optional fields still renders old static text
+growing_card_text: 1/1 passed
+Lua fixture tests/lua/growing_card_text_slice_4.lua: 1689 ms
+Historical presentation replay: all 361 frozen wording records; current wording is verified separately.
+PRESENTATION_WORDING_TRACE 361 1837256485
+Lua fixture tests/lua/presentation_responsibilities_text.lua: 8124 ms
+HISTORICAL_STAGED 4938ms
+HISTORICAL_PROJECTED 4939ms
+HISTORICAL_BUILT 5720ms
+ok 1 Shiv Miracle discard triggers X cost retain exhaust and ethereal are truthful
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 7 7 1
+Lua fixture tests/lua/character_presentation_budget_7.lua: 1970 ms
+SCRAP_OOZE_UI 1 passed
+Lua fixture tests/lua/scrap_ooze_ui.lua: 1646 ms
+ok 1 new effect order counts upgrades and historical keywords are not generic placeholders
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 12 12 1
+Lua fixture tests/lua/character_presentation_budget_12.lua: 1681 ms
+TOMB_RED_MASK_UI_PASS native disabled ownership/zero payment/mask222/full result, single-action replay and replaced-Run/hidden-panel callbacks; headless only
+Lua fixture tests/lua/tomb_red_mask_ui.lua: 2155 ms
+TRANSMOGRIFIER_UI 1 passed
+Lua fixture tests/lua/transmogrifier_ui.lua: 1637 ms
+ok 1 unknown new exhaust or orb Power remains a rejection
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 13 13 1
+Lua fixture tests/lua/character_presentation_budget_13.lua: 1544 ms
+ABYSS_RUN seed=1 source=explicit
+PASS visual animation preserves a fresh bottle gesture
+LOOTER_POTION_UI 1 passed 0 failed
+Lua fixture tests/lua/looter_potion_ui_slice_6.lua: 2350 ms
+ABYSS_RUN seed=1 source=explicit
+LUA_POTION_HEALTH_UI_PASS 2
+Lua fixture tests/lua/potion_health_ui.lua: 2058 ms
+ABYSS_RUN seed=1 source=explicit
+BASIC_CURSES_UI_PASS 10 Chinese card faces, text, type, blank costs and unplayability
+Lua fixture tests/lua/basic_curses_ui.lua: 2520 ms
+PASS fountain UI cleanse immediately commits and displays actual count
+PASS fountain UI zero removals finish without a dead picker
+PASS fountain UI leave preserves the curse and holds result
+FOUNTAIN_UI 3 passed
+Lua fixture tests/lua/fountain_event_ui.lua: 2438 ms
+ABYSS_FEEDBACK orb_end_turn source=- target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+ABYSS_FEEDBACK orb_end_turn source=- target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK damage source=cultist_1 target=player amount=6
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+ok Cultist UI 1 - Cultist displays Ritual opener, persistent status and next modified attack
+LUA_CULTIST_UI_PASS 1
+Lua fixture tests/lua/cultist_ui.lua: 2018 ms
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK potion source=- target=- amount=0
+LUA_POTION_SMOKE_UI_PASS 1
+Lua fixture tests/lua/potion_smoke_ui.lua: 2536 ms
+PASS wheel UI 1 native wheel forces one spin and removal enters the existing mandatory purge picker
+PASS wheel UI 2 native relic reward names the drawn item before offering claim or skip
+WHEEL_EVENT_UI 2 passed
+Lua fixture tests/lua/wheel_event_ui.lua: 2249 ms
+RUN_CARD_CATALOG_STATIC_DECK_PASS actual DeckUI without player and combat-only FreeAttackPower cost remain distinct
+Lua fixture tests/lua/run_card_catalog_static_deck.lua: 1901 ms
+ABYSS_RUN seed=1 source=explicit
+PASS old potion input cannot cross external gold resolution
+LOOTER_POTION_UI 1 passed 0 failed
+Lua fixture tests/lua/looter_potion_ui_slice_5.lua: 2239 ms
+ABYSS_RUN seed=1 source=explicit
+LUA_POTION_REMAINING_INVENTORY_UI_PASS 12
+Lua fixture tests/lua/potion_remaining_inventory_ui.lua: 2401 ms
+TOXIC_EGG_EVENT_UI_PASS oracle seed3 actual Madness+ name/cost0/rules and true permanent acquire
+Lua fixture tests/lua/toxic_egg_event_ui.lua: 2109 ms
+ok Act2 event UI 1 - Joust five pages use the generated event controls and return to map only after result Leave
+ok Act2 event UI 2 - stale event handlers cannot pay again or resolve another owner
+JOUST_UI 2 passed
+Lua fixture tests/lua/joust_ui.lua: 2131 ms
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=fat_gremlin_1 target=- amount=0
+ABYSS_FEEDBACK recovered cancelled
+PASS cancelled playback and replacement battle cannot retain an old actor's intent
+LUA_INTENT_ARTIFACT_CANCELLATION 1 passed; 0 failed
+Lua fixture tests/lua/intent_artifact_cancellation.lua: 2424 ms
+ok 1 retained growth is read from real CardDefinition and CardPreview after a real turn
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 14 14 1
+Lua fixture tests/lua/character_presentation_budget_14.lua: 2960 ms
+ok colorless permanent growth, copy identity, pool ownership, and readable cards
+Lua fixture tests/lua/colorless_run.lua: 1747 ms
+ok game_ui_phase_four 1 - legacy raw profiles keep66 red and75 per new class without counting auxiliary cards
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=9
+ABYSS_FEEDBACK pile_choice source=discard target=- amount=0
+ABYSS_FEEDBACK pile_choice_move source=discard target=- amount=0
+ok game_ui_phase_four 2 - headbutt real click retrieval shows fourteen candidates and keeps selection across pages
+GAME_UI_PHASE_FOUR_PASS 2
+PR238_SLICE 1 2 2
+Lua fixture tests/lua/game_ui_phase_four.lua: 2880 ms
+ABYSS_RUN seed=1 source=explicit
+PASS reward list rows use existing tokens without overlap and hide picker actions
+LOOTER_POTION_UI 1 passed 0 failed
+Lua fixture tests/lua/looter_potion_ui.lua: 2313 ms
+SENSORY_STONE_UI_PASS three costs, four reward/skip actions, full card name/cost/rules, stale callbacks/touches and separate exits; all35 fit existing layout
+Lua fixture tests/lua/sensory_stone_ui.lua: 2131 ms
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=8
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=18
+ok growing_card_text 1 - normal actual click play, redraw and live modifiers update damage
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=8
+ok growing_card_text 2 - normal new combat resets text
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=8
+ok growing_card_text 3 - normal failed rule rolls back growth and label
+growing_card_text: 3/3 passed
+Lua fixture tests/lua/growing_card_text.lua: 2379 ms
+ok turn_power_plans 1 - pre Powers preserve actual acquisition order and ordinary Plasma comes last
+ok turn_power_plans 2 - bias acquisition freezes old Focus for both Power slots before execution
+ok turn_power_plans 3 - loop acquisition freezes old Focus for both Power slots before execution
+ok turn_power_plans 4 - Loop Dark growth is synchronous while queued Bias loss has not applied
+ok turn_power_plans 5 - legacy orb order is reused without inventing a relation to other Powers
+ok turn_power_plans 6 - unknown multiple pre-Power order rejects before Dark constructor growth
+ok turn_power_plans 7 - generated Shiv and Smite execute later with real Accuracy and overflow rules
+ok turn_power_plans 8 - Energized is immediate but its removal waits behind the complete pre queue
+ok turn_power_plans 9 - Collect creates Miracle plus and removes before ordinary Draw tries a full hand
+ok turn_power_plans 10 - Collect above one schedules reduction without changing amount at construction
+ok turn_power_plans 11 - Devotion constructor count advances before ordinary Draw and Mantra applies after it
+ok turn_power_plans 12 - Devotion direct Divinity branch constructs no Mantra or constructor counter
+ok turn_power_plans 13 - Noxious freezes amount and target IDs before later application
+ok turn_power_plans 14 - Noxious construction preserves raw stack amount and separately caps new Power
+ok turn_power_plans 15 - zero Noxious still constructs debuffs and consumes real Artifact
+ok turn_power_plans 16 - draw_next_turn priority twenty follows later acquired default-priority Demon Form
+ok turn_power_plans 17 - draw_card_next_turn priority twenty follows later acquired default-priority Demon Form
+ok turn_power_plans 18 - Brutality acquisition order and player death stop a later Demon Form application
+ok turn_power_plans 19 - zero pre members retain source unconditional actions without family zero shortcuts
+ok turn_power_plans 20 - zero recharge keeps both Energized callbacks and Collect once then remove
+ok turn_power_plans 21 - zero post members retain Draw LoseHP removal and Mantra construction
+ok turn_power_plans 22 - negative values and multiple unknown order are refused without inventing source sentinel objects
+ok turn_power_plans 23 - dead player or finished battle creates no actions or constructor mutations
+ok turn_power_plans 24 - combined plans are plain action data and never contain actor identities
+ok turn_power_plans 25 - one real data queue composes pre recharge tail normal Draw and post plans
+ok turn_power_plans 26 - phase membership is an initialization snapshot and live plans read replaced public filters
+TURN_POWER_PLANS_PASS 26
+Lua fixture tests/lua/turn_power_plans.lua: 1960 ms
+ok 1 all supported shared curses render in each class and reject incompatible lifecycle metadata
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 16 16 1
+Lua fixture tests/lua/character_presentation_budget_16.lua: 2213 ms
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=8
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=21
+ok growing_card_text 1 - upgraded actual click play, redraw and live modifiers update damage
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=8
+ok growing_card_text 2 - upgraded new combat resets text
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK damage source=player target=cultist_1 amount=8
+ok growing_card_text 3 - upgraded failed rule rolls back growth and label
+growing_card_text: 3/3 passed
+Lua fixture tests/lua/growing_card_text_slice_2.lua: 2348 ms
+ABYSS_RUN seed=1 source=explicit
+PASS card and gold resolve without hiding bottle; Proceed leaves it pending
+LOOTER_POTION_UI 1 passed 0 failed
+Lua fixture tests/lua/looter_potion_ui_slice_2.lua: 2285 ms
+ABYSS_RUN seed=1 source=explicit
+ABYSS_POWER_ICON_MISSING regenerate_monster using labelled unknown placeholder
+ABYSS_POWER_ICON_MISSING curiosity using labelled unknown placeholder
+ABYSS_POWER_ICON_MISSING unawakened using labelled unknown placeholder
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK action_wait source=- target=- amount=0
+ABYSS_FEEDBACK damage source=player target=awakened_one_1 amount=1
+ABYSS_FEEDBACK enemy_interrupt source=awakened_one_1 target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=awakened_one_1 target=- amount=0
+ABYSS_FEEDBACK heal source=- target=awakened_one_1 amount=300
+ABYSS_FEEDBACK heal source=- target=awakened_one_1 amount=0
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK action_wait source=- target=- amount=0
+ABYSS_FEEDBACK damage source=player target=awakened_one_1 amount=1
+ABYSS_FEEDBACK death source=- target=awakened_one_1 amount=0
+ABYSS_FEEDBACK enemy_interrupt source=awakened_one_1 target=- amount=0
+ABYSS_FEEDBACK victory source=- target=- amount=0
+AWAKENED_ONE_UI_PASS real-controls/zero-HP/rebirth-tooltip/status-tooltip/no-first-collapse/second-form/void-intent/reward-once
+Lua fixture tests/lua/awakened_one_ui.lua: 3049 ms
+ok 1 Sands and Eviscerate live costs come from Combat overrides while presentation stores base cost
+CHARACTER_PRESENTATION_PASS 1 rendered_card_variants=0
+PR238_SLICE 15 15 1
+Lua fixture tests/lua/character_presentation_budget_15.lua: 2256 ms
+Feedback timing: tests 119951 ms.
+Completed 17 JS and 48 Lua files; full Quality remains required.

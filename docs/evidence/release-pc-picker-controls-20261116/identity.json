@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "product": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+  "branch": "feat/release-pc-picker-controls-1116",
+  "feedbackSource": "PR676@e14e7c9bd13371319a2ea96500513b514973d287",
+  "transcript": {
+    "path": "F:/New folder/.worktrees/release-pc-closeout-1115/docs/qa/playtests/pc-20261115-verbatim.txt",
+    "sha256": "e4d906064530de90e8ccda6325a1f80a91c1b90e0dc1af13e845dc0ad53d2b63"
+  },
+  "sources": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "physicalSha256": "5fbadf120f38c3534d64a0f5c3a4dc2df571bceeef5eb5ce31c9d579ac8dd6c7"
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "physicalSha256": "18a3b84ab2cc9d3765128ec728f6f6b4254291584f730bc05ab984fb5c783e85"
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "physicalSha256": "1d868dc87267c5c8f4129fbf0e2827f40b2d4da6a051efb506add91e34722257"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "physicalSha256": "0b618123a54ddf74de39d6a9300da8d44b5726c9e361bebe73bb33097c5d22b2"
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "physicalSha256": "57b1937efd14fb5a7dd6189434e2f5d70ee63935a9d687ec87474de5ec8a4393"
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "physicalSha256": "6855df77f0d7463b2b30fa7c79ca079632f165e37a2e1cf9dc1c61e0c82d11ae"
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "physicalSha256": "288dfb7d5030aeacfbe7e4da10dfa4fdb96a685397f201c64561596c6bea0f8c"
+    }
+  ],
+  "officialImport": "NOT_RUN",
+  "ready": "NOT_RUN",
+  "device": "NOT_RUN",
+  "privateImages07and09": "NOT_ACCESSED",
+  "backlog": "NOT_CHANGED",
+  "push": "NOT_RUN",
+  "full": "NOT_RUN"
+}

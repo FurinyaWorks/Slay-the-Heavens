@@ -1,0 +1,12 @@
+✔ official shop keeps readable button ink after repaint and directly previews the map without changing stock (6420.4493ms)
+✔ official browser return rejects stale clicks across new choices and browser generations (6196.9439ms)
+✔ official 17-card shop permanent deck uses the approved dark five-column browser and returns to the same shop (5720.8138ms)
+✔ official permanent browser handles 0/1/5/6/17 cards, deferred index origins, detail return and recycled late callbacks (11547.3453ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 30072.2491
