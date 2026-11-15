@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "result": "PASS_SCOPED",
+  "reviewer": "/root/pc_backport_audit",
+  "implementer": "/root/release_enemy_metrics",
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "head": "862c3f2a8988b1af21fc897d6de1d65650798a0d",
+  "changedPaths": [
+    "scripts/build-ui.mjs",
+    "scripts/official-portraits.mjs",
+    "src/lua/abyss_feedback_actor_painter.lua",
+    "tests/lua/player_ground_shadow.lua",
+    "tests/player-ground-shadow.test.mjs"
+  ],
+  "findings": [],
+  "checks": {
+    "exactFivePathScopeAndSingleBaseParent": true,
+    "threeProductionPatchAddedDeletedLinesMatch8b1a591b": true,
+    "allFiveWorkingFilesMatchNormalizedCommittedBytes": true,
+    "approvedAssetIdentityGuardPreserved": true,
+    "derivedFootGeometry": {
+      "centerX": 1.5,
+      "groundY": -93,
+      "width": 127,
+      "height": 15.875,
+      "opaqueFootBand": 18,
+      "opaqueFootBandSourceY": 537.7734375
+    },
+    "defaultAndDisabledFlagsRemainWithoutShadow": true,
+    "onlyOneOfficialBattleNonRaycastImageAdded": true,
+    "shadowSharesExistingFigureHostTransformAndLifecycle": true,
+    "alphaOnlyPlayerBranch": true,
+    "monstersAndHealthPainterUnchanged": true,
+    "storedFinalNewTests": "2/2 passed, 0 skipped",
+    "storedRelatedTests": "67/67 passed, 0 skipped",
+    "storedEngineering": "351 modules; 6166/6166 measurements; 1988 edges; no new diagnostics; 6 historical warnings; 2215 governed responsibility measurements",
+    "fastPlanRequiresFull": true,
+    "testLogsInspectedNotRerun": true
+  },
+  "artifacts": {
+    "red-source-test.log": {
+      "sha256": "b0f6c0542a4ff407c01fabf2746d0e17017465af8d89bbc945253bfdd3961f1b",
+      "bytes": 2312
+    },
+    "green-source-test.log": {
+      "sha256": "69d9daed388d4feb0ddf978808e738a37b958211ac5f417ea7c048ae6c5b5e69",
+      "bytes": 349
+    },
+    "green-boundaries.log": {
+      "sha256": "635e61947b0feef53fd2e1d0f40e62df7e05ce39031b69f4ce8fc557130ee869",
+      "bytes": 350
+    },
+    "green-boundaries-final.log": {
+      "sha256": "656f5cb5f85a0949f35c609990f68e43713401c85fb83680e526846cab248ae3",
+      "bytes": 349
+    },
+    "targeted.log": {
+      "sha256": "2d70f7e3469cd1194560c6f049446e9dfcbb80e35bf0c2434fc4923196b3eea1",
+      "bytes": 7243
+    },
+    "engineering.log": {
+      "sha256": "a3842a4ac5a9c843be6f6f5d42ab1b5826bdd291956f952363785a855a6dccc8",
+      "bytes": 377
+    },
+    "fast-plan.json": {
+      "sha256": "f813231edd8accb5ef0de8220b1533eeeab5981ffd3befd15c50cea1c6d64d0e",
+      "bytes": 2838
+    }
+  },
+  "notClaimed": [
+    "entire integration HEAD",
+    "Release Full CI",
+    "merge admission",
+    "official candidate",
+    "official import or ready",
+    "official capacity",
+    "PC or mobile live pixels",
+    "actual GPU anti-aliasing/shadow aesthetics"
+  ],
+  "noSourceOrBacklogEdits": true
+}
