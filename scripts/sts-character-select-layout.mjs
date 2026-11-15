@@ -32,12 +32,14 @@ function slotFace(state,size,theme,t){
  if(label){label.visible=false;label.text.content='';}
 }
 function action(button,name,theme,t){
- flagButton(button,name,theme);
+ flagButton(button,name,theme,{continuousEdges:true});
  Object.assign(button,rect(t.rectangles[name]));const hit=child(button,'hit');hit.size=[...button.size];
  for(const state of parts(hit)){
   const flag=child(state,'v25Flag'),edges=[];
   const visit=(node,y=0)=>{const cy=y+(node.position?.[1]??0);if(node.kind==='image')edges.push(cy-node.size[1]/2,cy+node.size[1]/2);for(const part of parts(node))visit(part,cy);};
-  visit(flag);const low=Math.min(...edges),high=Math.max(...edges);
+  // Rotated triangle texture rectangles extend beyond the visible silhouette.
+  // Prefer its measured local bounds; old image-only flags retain the fallback.
+  if(!flag.flagBounds)visit(flag);const [low,high]=flag.flagBounds??[Math.min(...edges),Math.max(...edges)];
   flag.position=[0,-(low+high)/2];state.scale=[1,button.size[1]/(high-low)];
   const label=child(state,'label');label.text.content=name==='cancel'?'返回':'启程';
   label.position[1]=0;label.text.fontSize=t.font.button;label.text.minFontSize=theme.font.minimum;

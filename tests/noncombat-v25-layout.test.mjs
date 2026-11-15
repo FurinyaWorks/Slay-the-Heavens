@@ -8,6 +8,7 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {attachOfficialPortraits} from '../scripts/official-portraits.mjs';
 import {applyOfficialNoncombatLayout} from '../scripts/noncombat-v25-layout.mjs';
+import {assertNativeUiCapacity} from '../scripts/build-ui.mjs';
 const parts=n=>n?.controls??n?.children??[],child=(n,name)=>parts(n).find(c=>c.name===name);
 const all=n=>[n,...parts(n).flatMap(all)];
 test('official menu and selection reuse live inputs with bounded native decoration',()=>{
@@ -32,7 +33,11 @@ test('official menu and selection reuse live inputs with bounded native decorati
   assert(rim&&cloth,'smooth buttons retain separate rim and cloth');
   assert(parts(cloth).length>1&&parts(rim).length>1,'reference flag must retain its curved silhouette instead of two rectangles');
   assert(new Set(all(cloth).filter(n=>n.kind==='image').map(n=>n.size[0])).size>1,'flag width follows its measured silhouette');
-  assert(all(cloth).filter(n=>n.kind==='image').every(n=>[theme.image.rect,theme.image.disc].includes(n.image)));
+  assert(all(cloth).filter(n=>n.kind==='image').every(n=>n.image===100003||(n.name==='interior'&&n.image===theme.image.rect)),
+   'curved cloth must use the registered native triangle instead of visible horizontal scan bands');
+  assert(all(rim).filter(n=>n.kind==='image').every(n=>n.image===100003||(n.name==='interior'&&n.image===theme.image.rect)));
+  assert(all(cloth).some(n=>n.image===100003));assert(all(rim).some(n=>n.image===100003));
+  assert(all(flag).length<=150,'continuous edges must not multiply the native control budget');
   assert.equal(child(state,'label').text.colour,state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk,'shared official button ink preserves disabled distinction');
   assert.equal(child(state,'plate').visible,false);assert.equal(child(state,'border').visible,false);
   assert.equal(all(flag).some(n=>n.image===theme.officialAssets.images.button),false,'official rectangle must not replace original flag');
@@ -67,6 +72,41 @@ test('integrated selection retains the shared deck input below its summary witho
  for(const state of parts(hit))for(const face of [child(state,'border'),child(state,'plate')]){
   assert(face.size[0]<=deck.size[0]&&face.size[1]<=deck.size[1],'painted button surface escapes its hit box');
  }
+});
+
+test('continuous native flags retain the measured StS frame and four existing hits',()=>{
+ const theme=officialAssetsTheme(nativeTheme),layout=withViewport(gameLayout(),theme);
+ const panel=child(child(layout,'stage')??layout,'characterPanel');
+ const original=Object.fromEntries(['cancel','confirm'].map(k=>[k,child(child(panel,k),'hit')]));
+ applyOfficialNoncombatLayout(layout,theme);
+ for(const name of ['cancel','confirm']){
+  const button=child(panel,name),hit=child(button,'hit');assert.equal(hit,original[name]);
+  const [x,y,w,h]=theme.layout.stsCharacter.rectangles[name];
+  assert.deepEqual(button.position,[x+w/2-640,360-y-h/2]);assert.deepEqual(hit.size,[w,h]);
+  assert.deepEqual(hit.states,{normal:'normal',hover:'hover',pressed:'pressed',disabled:'disabled'});
+  for(const state of parts(hit)){
+   const flag=child(state,'v25Flag'),[low,high]=flag.flagBounds;
+   const measured=name==='cancel'?[-29,28]:[-29,20];
+   flag.flagBounds.forEach((v,i)=>assert(Math.abs(v-measured[i])<=.25,'seam overlap stays subpixel at the measured contour'));
+   assert(Math.abs((high-low)*state.scale[1]-h)<1e-9,'actual silhouette keeps the original hit height');
+   assert(Math.abs((flag.position[1]+(low+high)/2)*state.scale[1])<1e-9,'silhouette remains centered');
+   assert.equal(state.scale[0],1);assert.equal(child(state,'label').position[1],0);
+   assert.equal(all(flag).some(n=>['cursorArea','presetButton','text'].includes(n.kind)),false);
+   // Project the actual native triangle vertices, including supported XYZ
+   // squash and the right-half fallback. Texture box bounds are not geometry.
+   const vertices=all(child(flag,'rim')).filter(n=>n.kind==='image').flatMap(n=>{
+    const [w,h]=n.size,half=n.fill?.from==='right',r=Array.isArray(n.rotation)?n.rotation:[0,0,n.rotation??0];
+    const [rx,ry,rz]=r.map(v=>v*Math.PI/180);
+    return (half?[[0,0],[w/2,0],[0,h]]:[[-w/2,-h/2],[w/2,-h/2],[0,h/2]]).map(([x,y])=>{
+     x*=n.scale?.[0]??1;y*=n.scale?.[1]??1;
+     return [n.position[0]+(x*Math.cos(rz)-y*Math.sin(rz))*Math.cos(ry),
+      n.position[1]+(x*Math.sin(rz)+y*Math.cos(rz))*Math.cos(rx)];});
+   });
+   assert(Math.abs(Math.min(...vertices.map(p=>p[1]))-low)<1e-6,'native geometry reaches the measured bottom');
+   assert(Math.abs(Math.max(...vertices.map(p=>p[1]))-high)<1e-6,'native geometry reaches the measured top');
+  }
+ }
+ assertNativeUiCapacity(layout);
 });
 
 test('production background preserves the exact approved experiment rows, including colour and half masks',()=>{

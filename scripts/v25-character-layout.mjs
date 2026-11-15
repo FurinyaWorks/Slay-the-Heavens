@@ -1,6 +1,7 @@
 // Independent native layout from the frozen V25 reference. Original bitmaps,
-// SVG source and browser code are not embedded. Flags use 2px native shape bands;
+// SVG source and browser code are not embedded. Selection can use triangle edges;
 // fonts/gradients and the enlarged 133px portrait still require visual review.
+import {nativeFlagSurface} from './native-flag-surface.mjs';
 export const v25CharacterReference=Object.freeze({
  sourceCommit:'7e40d2d361fff6b9c89d9f409db29a9d8ac44352',
  cssSha256:'9a6d137a3297559f638e5323db424506ae394c7942cdf334551936ac0d74d17d',
@@ -108,8 +109,10 @@ export function flagButton(button,name,theme,options){
   const backing=optional(state,'officialButtonBacking');if(backing)backing.size=[180,60];
   child(state,'border').visible=false;child(state,'plate').visible=false;
   const [rim,fill,light]=palette[stateName];
-  const flag=options?.nativeFlagImage ? group('v25Flag',[180,60],[image('cloth',[0,0],[180,60],options.nativeFlagImage,fill,{imageType:'basic'})]) : group('v25Flag',[180,60],[bands('rim',points,rim,theme),bands('cloth',inner,fill,theme),
+  const surface=options?.continuousEdges?nativeFlagSurface:(name,outline,colour)=>bands(name,outline,colour,theme);
+  const flag=options?.nativeFlagImage ? group('v25Flag',[180,60],[image('cloth',[0,0],[180,60],options.nativeFlagImage,fill,{imageType:'basic'})]) : group('v25Flag',[180,60],[surface('rim',points,rim),surface('cloth',inner,fill),
    ...threads[name].map((points,i)=>lines(i?'lowerThread':'upperThread',points,1.5,light,theme,{opacity:name==='cancel'?.55:.6}))]);
+  if(options?.continuousEdges&&!options?.nativeFlagImage)flag.flagBounds=child(flag,'rim').flagBounds;
   upsert(state,flag,children(state).indexOf(label));
   label.position=[name==='cancel'?-10:10,-6];label.size=[150,42];
   const ink=stateName==='disabled'?theme.color.textMuted:theme.presentationProfile==='official-assets-first'?theme.officialAssets.buttonInk:tokens.fallbackInk;
