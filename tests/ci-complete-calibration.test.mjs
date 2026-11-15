@@ -2022,6 +2022,7 @@ test('release navigation raw Full inventory retains all tests, conservative cost
   }
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
+  assert(forecast<target,'complete current forecast fits the unchanged performance target');
   assert(forecast<guard,'complete current forecast fits the original execution guard');
  }
 });
