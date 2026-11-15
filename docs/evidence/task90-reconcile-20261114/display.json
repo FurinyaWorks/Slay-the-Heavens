@@ -1,0 +1,6 @@
+{
+  "file": "build/task90-recheck/display.lua",
+  "status": 0,
+  "stdout": "UI_OPTION 免费移除一张可移除永久牌，遗物绑定牌除外。\nUI_PICKER 选择一张可移除永久牌；被遗物指定为战斗起手的牌不能移除。\nVIEW_REASON 选择一张可移除永久牌；被遗物指定为战斗起手的牌不能移除。\nTASK90_CURRENT_DISPLAY_AND_SELECTION_PASS\n",
+  "stderr": ""
+}
