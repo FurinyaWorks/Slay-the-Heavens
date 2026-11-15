@@ -8,20 +8,43 @@ import {sourceEpoch,sessionMenuSourceEpoch} from './helpers/closeout-source-epoc
 const norm=s=>s.replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const path='src/lua/abyss_ui.lua',raw=p=>sourceEpoch.proof.current[p]?.source??null;
 
-test('successor reproduction does not require the retired side-branch producer object',()=>{
+test('successor reproduction uses authenticated predecessor bytes in a shallow checkout',()=>{
  const script=String.raw`
   import assert from 'node:assert/strict';
   import childProcess from 'node:child_process';
   import {syncBuiltinESMExports} from 'node:module';
+  import {dependencyCiProof as patch} from './tests/helpers/dependency-ci-source.mjs';
   const original=childProcess.execFileSync;
+  const beforePaths=Object.entries(patch.files).filter(([,row])=>row.before).map(([path])=>path);
+  const changedPaths=[...Object.keys(patch.files),...Object.keys(patch.binary)].sort();
+  const reply=(text,options)=>options?.encoding?text:Buffer.from(text);
+  let historicalReads=0;
   childProcess.execFileSync=(command,args,options)=>{
-   if(command==='git'&&args.some(arg=>String(arg).includes('158c492a')))
+   if(command!=='git')return original(command,args,options);
+   if(args.some(arg=>String(arg).includes('158c492a')))
     throw Error('retired side-branch object unavailable');
-   return original(command,args,options);
+   // Only historical Git input is substituted from the authenticated packet.
+   // The generator still reads every current file, closure and inventory itself.
+   if(args[0]==='rev-parse') {
+    assert.equal(args[1],patch.baseCommit.slice(0,8)+'^{commit}');
+    return reply(patch.baseCommit+'\n',options);
+   }
+   if(args[0]==='ls-tree')return reply(beforePaths.join('\n')+'\n',options);
+   if(args[0]==='diff')return reply(changedPaths.join('\n')+'\n',options);
+   if(args[0]==='ls-files')return reply('',options);
+   if(args[0]==='show') {
+    assert(args[1].startsWith(patch.baseCommit+':'));
+    const row=patch.files[args[1].slice(patch.baseCommit.length+1)];
+    assert(row?.before,'registered complete predecessor required');
+    historicalReads++;
+    return reply(row.before.source,options);
+   }
+   throw Error('real Git unavailable in shallow regression: '+args.join(' '));
   };
   syncBuiltinESMExports();
   process.argv[2]='--check';
   await import('./tests/helpers/generate-dependency-ci-source.mjs');
+  assert(historicalReads>0,'exercise complete before/after collection');
   console.log('SELF_CONTAINED_SUCCESSOR_PASS');
  `;
  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8',timeout:30000,windowsHide:true});

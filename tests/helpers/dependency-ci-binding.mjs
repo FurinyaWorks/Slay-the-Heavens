@@ -3,4 +3,4 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 export const dependencyCiBytes=readFileSync(new URL('./dependency-ci-source.json.gz',import.meta.url));
-assert.equal(createHash('sha256').update(dependencyCiBytes).digest('hex'),"4ae52eab8886ca8730dfe7998a1b06f6032f3ec5ace612b56e144421618bccba",'complete dependency/BGM CI successor');
+assert.equal(createHash('sha256').update(dependencyCiBytes).digest('hex'),"fde4c0aaf8934eea8a10377c3af0129d9f16c84278d0c63f2227d14236941624",'complete dependency/BGM CI successor');

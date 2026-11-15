@@ -33,9 +33,9 @@
 | 文件 | 新增字节 | SHA256 |
 | --- | ---: | --- |
 | `tests/fixtures/fatal-bgm-e65-source.json.gz` | 5,357 | `3e560e461232785753f5a574732ec834b19c51cfd700f09cce212009dd4a22fb` |
-| `tests/helpers/dependency-ci-source.json.gz` | 88,289 | `4ae52eab8886ca8730dfe7998a1b06f6032f3ec5ace612b56e144421618bccba` |
+| `tests/helpers/dependency-ci-source.json.gz` | 88,671 | `fde4c0aaf8934eea8a10377c3af0129d9f16c84278d0c63f2227d14236941624` |
 
-最终新增 gzip 合计 **93,646 字节**。原 `integrated-ci-source.json.gz` 仍为 `f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35`；原 binding 未改。它已经包含本基线的 runtime 续接，不能使用旧 `158c492a` 上的 `813333…` 前驱。其余既有 source/before/archive 均未改写。
+最终新增 gzip 合计 **94,028 字节**。原 `integrated-ci-source.json.gz` 仍为 `f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35`；原 binding 未改。它已经包含本基线的 runtime 续接，不能使用旧 `158c492a` 上的 `813333…` 前驱。其余既有 source/before/archive 均未改写。
 
 生产 UI 的 LF SHA256 仍为 `5ce18f5cd92624d57af9ccb522a3b1f5882f8f42b6658e0d10463b8d992a8cb8`，before 仍为 `19989127f817f2659be6a29661a916ddf04a2961f43d48a1e35367d95efd01c1`。
 
@@ -85,6 +85,8 @@ JS 发现集合 **876 → 879**（依赖、BGM、本轮来源回归三份测试�
 ### 独审后的自包含复现纠偏
 
 独审 `ses_e2058991bffe7LK6jit0BB7vj0` 发现生成器无条件依赖未合侧分支 `158c492a` 的 Git 对象；这不是当前自动 CI 必然失败，但源分支清理后无法保证 `--check` 自包含。新增子进程反例只让该侧分支对象不可用：修前 **1 fail**（命中 retired side-branch object unavailable），改为认证本仓已交付 fixture 后 **5/5 pass**。生成器只需要当前祖先基线及托管文件，producer SHA 仅作来源说明；没有改旧档，也不在 `--write` 覆盖不可变 fixture。最终小后继包和 leaf 已重新生成，上表体积/hash为最终值；本文件前述20 pass/1 skip属于修复前的来源轮次。
+
+后续独审进一步以浅克隆历史基线不可用的探针复现新增自动回归 **1 fail**：默认 POSIX 分片不保证含旧 commit。已将该默认回归的历史 Git 输入改为从经过 leaf 认证的 packet 前驱快照提供；Git 对象不参与这项自动测试，生成器仍真实读取全部 current 文件、复制闭包和发现集合，并逐字节比较完整生成结果。未知 Git 请求及侧分支 producer 读取仍明确失败。修复后五项来源回归 **5/5 pass、无 skip**。开发者显式运行生成器 CLI 的 `--check/--write` 仍使用其声明的 Git 基线；没有增加 CI fetch 或依赖准备。
 
 - 执行者原交接只有自查；主控随后已用上述独立会话完成全差异深审，修复其 P2 后仍需绑定最终 HEAD 复核和重新授权。未重试 TASK-51 已暂停且恢复窗口未知的免费路径。
 - 未运行全 `npm run check` 或大型 named 逆矩阵，按本轮授权保留待主控集成验证；本证据不是托管 CI 或合并许可。
