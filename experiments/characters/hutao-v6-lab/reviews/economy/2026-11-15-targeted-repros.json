@@ -1,0 +1,170 @@
+{
+  "source_blob": "364e1d3e8c8559e2fcb26276b9ae8a2813f21735",
+  "type": "targeted_repro_not_natural_run",
+  "hearthHigh": {
+    "hp": 72,
+    "card": "每张攻击牌首个命中额外+3伤。",
+    "played": [
+      true,
+      true
+    ],
+    "attackDamage": 6,
+    "remainingEnemyHP": 94,
+    "logs": [
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "石颚兽受到6点攻击伤害，实际失血6。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「普通攻击」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「血之灶火」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "第 1 回合：抽牌5张，获得3能量，提前格挡0。"
+      }
+    ]
+  },
+  "hearthLow": {
+    "hp": 36,
+    "card": "每张攻击牌首个命中额外+3伤。",
+    "played": [
+      true,
+      true
+    ],
+    "attackDamage": 9,
+    "remainingEnemyHP": 91,
+    "logs": [
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "石颚兽受到9点攻击伤害，实际失血9。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「普通攻击」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「血之灶火」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "第 1 回合：抽牌5张，获得3能量，提前格挡0。"
+      }
+    ]
+  },
+  "healCap": {
+    "beforeHp": 30,
+    "afterHp": 42,
+    "healed": 12,
+    "plays": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "log": [
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "获得3格挡。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "恢复2生命（本战已用12/12）。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「吃饱喝饱」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "获得3格挡。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "恢复2生命（本战已用10/12）。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「吃饱喝饱」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "获得3格挡。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "恢复2生命（本战已用8/12）。"
+      }
+    ]
+  },
+  "firstPayRelic": {
+    "valid": [
+      true,
+      true
+    ],
+    "afterHp": 66,
+    "block": 4,
+    "damage": 9,
+    "energy": 1,
+    "logs": [
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "石颚兽受到9点攻击伤害，实际失血9。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "打出「普通攻击」，支付1能量。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "进入彼岸蝶舞：攻击牌首个命中额外+3，半血以下+5，持续2次己方结束阶段。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "引蝶灯触发：首笔生命支付获得4格挡。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "「蝶引来生」支付6生命，当前66/72。"
+      },
+      {
+        "floor": 1,
+        "turn": 1,
+        "msg": "第 1 回合：抽牌5张，获得3能量，提前格挡0。"
+      },
+      {
+        "floor": 1,
+        "turn": 0,
+        "msg": "进入第 1/5 战：旧道守卫，本战临时状态重置。"
+      }
+    ]
+  }
+}
