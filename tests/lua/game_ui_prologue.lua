@@ -48,7 +48,8 @@ test('fully covered frame commits once and reveals the existing Neow page',funct
     assert(panel(root):GetChild('fade').imageColor.a==255 and not root:GetChild('nodePanel').visible)
     ui:update(P.markIn+0.01)
     assert(panel(root):GetChild('scene').visible and panel(root):GetChild('fade').imageColor.a==0 and ui.run==run)
-    ui:update(1)
+    for _=1,7 do if ui.prologue.phase=='hold' then ui:update(P.elementStep) end end
+    assert(ui.prologue.phase=='close','visible completed stages must finish before reveal')
     ui:update(P.markOut+0.01)
     assert(ui.prologue:covering() and not ui.prologue:opaque() and root:GetChild('nodePanel').visible)
     assert(ui.nodeUI.visible==false,'revealing page must stay inert')
@@ -93,7 +94,13 @@ end)
 test('large frames cannot bypass post-commit readiness or repeat creation',function()
     local ui,root=host();selected(ui);assert(ui:confirmCharacter());ui:update(20)
     assert(ui.run and ui.prologue:covering() and ui.prologue.target==0)
-    ui:update(20);ui:update(20);ui:update(20)
+    local original=ui.run
+    for i=1,7 do
+        ui:update(20)
+        assert(ui.prologue:covering() and ui.run==original and ui.prologue.lit==i,
+            'large deltas must not skip visible completed stages')
+    end
+    ui:update(20);ui:update(20)
     assert(ui.run and not panel(root).visible and not ui.prologue:covering() and ui.nodeUI.visible)
     local run=ui.run;ui:update(20);assert(ui.run==run)
 end)
@@ -143,13 +150,15 @@ test('completed preparation stages light in order and fast starts do not wait ei
     assert(scene.visible and alpha>0 and alpha<255 and ui.prologue:opaque())
     ui:update(P.markOut/2+0.001);assert(not scene.visible and root:GetChild('nodePanel').visible and not ui.nodeUI.visible)
     ui:update(P.reveal+0.001);assert(not panel(root).visible and ui.nodeUI.visible and root:GetChild('exitEntry').visible)
-    assert(ui.prologue.elapsed<2.1 and ui.prologue.elapsed>1,'short readable animation only; no fixed eight-second hold')
+    assert(ui.prologue.elapsed<2.5 and ui.prologue.elapsed>=2.3,'readable opening only; no fixed eight-second hold')
 end)
 
 test('unfinished preparation never advances a light or uncovers the destination',function()
     local ui,root=host();selected(ui);assert(ui:confirmCharacter());ui:update(P.fadeIn)
     -- Inject a stalled preparation checkpoint; no game-rule state is changed.
     ui.openingPrepared=4;ui:update(12)
+    assert(ui.prologue.lit==1,'a stalled update must not consume every visible stage')
+    for _=1,3 do ui:update(P.elementStep) end
     local scene=panel(root):GetChild('scene')
     assert(ui.prologue:opaque() and ui.prologue.target==4 and ui.prologue.lit==4)
     assert(scene:GetChild('element5').imageColor.r==P.dim.r and not root:GetChild('nodePanel').visible)

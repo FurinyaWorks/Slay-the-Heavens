@@ -61,6 +61,7 @@ function M.new(panel, options)
         if self.playing then return false end
         self.playing,self.phase,self.t,self.elapsed,self.commit=true,'cover',0,0,commit
         self.displayed,self.target,self.lit=0,0,nil
+        self.frames,self.maxDelta=0,0
         self:pose();panel:SetVisible(true)
         print('ABYSS_TRANSITION begin')
         return true
@@ -90,7 +91,9 @@ function M.new(panel, options)
         if target==7 and self.target<7 then print('ABYSS_TRANSITION ready elapsed='..self.elapsed) end
         self.target=math.max(self.target,target)
         -- Smooth completed work only. An unfinished stage never lights ahead of actual work.
-        self.displayed=math.min(self.target,self.displayed+dt/P.elementStep)
+        -- Preparation may block a host frame. Its catch-up delta must not consume
+        -- the whole visible sequence before another frame can be presented.
+        self.displayed=math.min(self.target,self.displayed+math.min(dt,P.elementStep)/P.elementStep)
         if target==7 and self.displayed>=7 and self.t>=P.markIn then
             self.phase,self.t='close',0
             print('ABYSS_TRANSITION complete elapsed='..self.elapsed)
@@ -98,6 +101,7 @@ function M.new(panel, options)
     end
     function state:update(dt)
         if not self.playing then return end
+        self.frames,self.maxDelta=self.frames+1,math.max(self.maxDelta,dt)
         self.t,self.elapsed=self.t+dt,self.elapsed+dt
         if self.phase=='cover' then
             if self.t>=P.fadeIn then self:prepare() end
@@ -105,7 +109,7 @@ function M.new(panel, options)
         elseif self.phase=='close' then
             if self.t>=P.markOut then self.phase,self.t='reveal',0;changed() end
         elseif self.t>=P.reveal then
-            print('ABYSS_TRANSITION end elapsed='..self.elapsed)
+            print('ABYSS_TRANSITION end elapsed='..self.elapsed..' frames='..self.frames..' maxDt='..self.maxDelta)
             self:cancel();changed()
         end
         if self.playing then self:pose() end

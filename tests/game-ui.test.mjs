@@ -154,7 +154,7 @@ test('cinematic and merchant controls stay inside the phone safe area and clear 
   const scene=opening.children[0],seal=scene.children.find(c=>c.name==='seal');
   assert.equal(seal.children.reduce((n,g)=>n+g.children.length,0),95,'retains the actual Liyue emblem geometry');
   assert.equal(prologue.hold,undefined,'no fixed loading-screen hold');
-  assert.equal(prologue.elementStep,0.12,'short interpolation of completed stages');
+  assert.equal(prologue.elementStep,0.2,'readable interpolation of completed stages');
   assert.equal(opening.children.at(-1).focusable,false);
 });
 

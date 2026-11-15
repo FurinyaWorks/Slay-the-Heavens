@@ -2972,7 +2972,7 @@
       "reveal": 0.3,
       "markIn": 0.3,
       "markOut": 0.3,
-      "elementStep": 0.12
+      "elementStep": 0.2
     },
     "characterSelect": {
       "panel": [
