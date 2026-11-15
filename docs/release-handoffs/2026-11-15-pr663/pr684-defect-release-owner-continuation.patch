@@ -1,0 +1,33 @@
+--- a/tests/defect-final-source-epoch.test.mjs
++++ b/tests/defect-final-source-epoch.test.mjs
+@@ -1,5 +1,6 @@
+-import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
++import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preReleasePcSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+ import test from 'node:test';
++import {releasePcSourcePacket} from './helpers/release-pc-source.mjs';
+ import assert from 'node:assert/strict';
+ import {createHash} from 'node:crypto';
+ import {readFileSync as diskReadFileSync,mkdtempSync,rmSync} from 'node:fs';
+@@ -174,11 +175,20 @@
+  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current));
+  assert.deepEqual(menuRedEpoch.proof.owners,[...stsStyleEpoch.proof.owners,owner].sort());assert.equal(menuRedEpoch.proof.owners.length,105);
+  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
+- assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(current.owners.length,116);
++ const predecessor=preReleasePcSourceEpoch.proof;
++ assert.deepEqual(predecessor.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(predecessor.owners.length,116);
++ // Preserve the original receipt, then validate the explicit Release continuation.
++ const addedOwners=['abyss_battle_card_bindings','abyss_battle_unit_view','abyss_combat'].map(name=>'src/lua/'+name+'.lua');
++ assert.deepEqual(current.owners,[...predecessor.owners,...addedOwners].sort());assert.equal(current.owners.length,119);
++ for(const path of addedOwners){
++  assert.ok(Object.hasOwn(releasePcSourcePacket.current,path),'new owner is registered by the authenticated Release packet');
++  assert.deepEqual(current.current[path],releasePcSourcePacket.current[path]);
++  assert.equal(diskReadFileSync(path,'utf8').replaceAll('\r\n','\n'),current.current[path].source);
++ }
+  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
+  const expected=current.targets.develop.files[file].source;
+  assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);
+- for(const replacement of [null,diskReadFileSync(owner,'utf8')+'\n',new Error('missing current power view')]){
++ for(const owner of ['src/lua/abyss_monster_power_view.lua',...addedOwners])for(const replacement of [null,diskReadFileSync(owner,'utf8')+'\n',new Error('missing current owner')]){
+   reads.length=0;
+   assert.throws(()=>currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:path=>{if(path===owner){reads.push(path);if(replacement instanceof Error)throw replacement;return replacement;}return raw(path);}}),/combined linked owner/);
+   assert.deepEqual(reads,current.owners.slice(0,current.owners.indexOf(owner)+1));

@@ -1,0 +1,55 @@
+--- a/tests/lua/m3_chinese_copy.lua
++++ b/tests/lua/m3_chinese_copy.lua
+@@ -1,5 +1,6 @@
+ local F=dofile('tests/lua/support/game_ui_fixture.lua')
+-local h,r=F.fixture();assert(F.start(h))
++local settlements=0
++local h,r=F.fixture(nil,function()settlements=settlements+1;return true end);assert(F.start(h))
+ local CardDisplay=require('abyss_card_display')
+ for _,d in ipairs(h.run.data.cards.cards)do
+  local p=F.Presentation[d.id]
+@@ -25,23 +26,20 @@
+ local menu=r:GetChild('runMenu')
+ local run,map=h.run,h.map
+ local hp,gold,deck,relics=run.hp,run.gold,run.deck,run.relics
+-assert(menu:GetChild('help').visible,'approved menu help must be discoverable')
+-assert(menu:GetChild('help'):GetChild('hit').click())
+-local guide=r:GetChild('exitPanel'):GetChild('guide')
+-assert(h.controlsOpen and guide.visible)
+-assert(guide:GetChild('battle'):GetChild('how4').text=='点击右下角「结束回合」')
+-assert(guide:GetChild('map'):GetChild('how4').text=='先点商品查看详情，再确认购买')
+-assert(not h:confirmExit() and not menu:GetChild('abandon'):GetChild('hit').click())
+-assert(guide:GetChild('close'):GetChild('hit').click() and h.menuOpen and not h.controlsOpen)
+-assert(menu:GetChild('abandon'):GetChild('hit').click())
+ local exit=r:GetChild('exitPanel')
+-assert(exit:GetChild('help').visible,'approved exit help must be discoverable')
+-assert(exit:GetChild('help'):GetChild('hit').click() and h.controlsOpen and guide.visible)
+-assert(not exit:GetChild('confirm'):GetChild('hit').click())
+-assert(guide:GetChild('close'):GetChild('hit').click() and h.exitOpen and not h.controlsOpen)
++-- PC38 removes the obsolete instructions modal, not consequence copy or cancel.
++assert(not menu:GetChild('help') and not exit:GetChild('help') and not exit:GetChild('guide'),'obsolete instructions entry must stay removed')
++assert(h.menuOpen and not h.controlsOpen and not h:confirmExit(),'pause menu cannot confirm destructive exit')
++assert(menu:GetChild('resume'):GetChild('hit').click() and not h.exitOpen and not h.controlsOpen)
++assert(h.run==run and h.map==map and run.hp==hp and run.gold==gold and run.deck==deck and run.relics==relics)
++assert(settlements==0 and not h.settlementRequested,'resume must not settle the run')
++assert(h:openMenu() and menu:GetChild('abandon'):GetChild('hit').click())
++assert(h.exitOpen and not h.menuOpen and not h.controlsOpen and exit.visible)
+ assert(h.run==run and h.map==map and run.hp==hp and run.gold==gold and run.deck==deck and run.relics==relics)
+ assert(exit:GetChild('message').text:find('无法恢复',1,true))
+ assert(exit:GetChild('whyText').text:find('退出奇域后无法继续',1,true),'session scope must be explicit')
+ assert(exit:GetChild('cancel'):GetChild('hit').click())
+ assert(not h.exitOpen and not h.controlsOpen)
++assert(h.run==run and h.map==map and run.hp==hp and run.gold==gold and run.deck==deck and run.relics==relics)
++assert(settlements==0 and not h.settlementRequested,'cancel must not settle the run')
+ print('M3_CHINESE_COPY_PASS')
+--- a/tests/m3-chinese-copy.test.mjs
++++ b/tests/m3-chinese-copy.test.mjs
+@@ -1,7 +1,7 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import {runLua} from '../scripts/test-lua.mjs';
+-test('competition copy keeps effect bodies concise and approved help read-only',()=>{
++test('competition copy keeps effect bodies concise and exit consequences cancellable without instructions',()=>{
+  const r=runLua('tests/lua/m3_chinese_copy.lua');
+  assert.equal(r.status,0,r.stdout+r.stderr);
+  assert.match(r.stdout,/M3_CHINESE_COPY_PASS/);

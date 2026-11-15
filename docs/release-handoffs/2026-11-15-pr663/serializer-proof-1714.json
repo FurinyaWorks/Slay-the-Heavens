@@ -1,0 +1,67 @@
+{
+  "modules": {
+    "abyss_data.lua": {
+      "before": 212819,
+      "after": 116943,
+      "saved": 95876,
+      "beforeSha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+      "afterSha256": "93dca4b269fbd5bcdc55c786bf606eb8f39662619842c9711aa3a5b33f4eca46",
+      "canonicalSha256": "37be2adf8b2d0c80bbb721821bc55aae6dcd469018002dfc1334104af92d30d7"
+    },
+    "abyss_narrative.lua": {
+      "before": 7823,
+      "after": 2528,
+      "saved": 5295,
+      "beforeSha256": "f34b7f3fb2977492be3d967db8c77ffa57a08313635aec5d8ad3d3aae93bb48a",
+      "afterSha256": "723fb7634734e75a91f6f3919e753c3618b88f8df04c3c4c6021b64b816e4f18",
+      "canonicalSha256": "18dca770b86a75ace93828aaf9cce0a7e4f5f4dea61a4b29ce7233c7257f6ff6"
+    },
+    "abyss_original_v4_data.lua": {
+      "before": 577904,
+      "after": 229355,
+      "saved": 348549,
+      "beforeSha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+      "afterSha256": "409b9ed28a7a4be6f050b842962ad4f0455a2c4658d2228f13b8b13b032bb269",
+      "canonicalSha256": "ca09fbd487ba915e52e1d868582e4557ac88f173408da0463685a2c27370dbaf"
+    },
+    "abyss_presentation.lua": {
+      "before": 74514,
+      "after": 26449,
+      "saved": 48065,
+      "beforeSha256": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+      "afterSha256": "d44c47e72a56503a1690dd743219375b9d270e08aedf3092b79d9c577fb61a41",
+      "canonicalSha256": "0fd41a7765d32d09d22700469ff9247779747fcde347babef2f3a5428e9c11c4"
+    },
+    "abyss_theme.lua": {
+      "before": 375850,
+      "after": 233549,
+      "saved": 142301,
+      "beforeSha256": "6792c7b6504005bf232297857efeb151560851ff6912d02aabe776195bce763c",
+      "afterSha256": "11d00247bccca34b56ebba8f761b2ea9a3d283e6869830d6bb603fbe81d2d85d",
+      "canonicalSha256": "5374ab2cc8d5457b8f241b286de4f0adbeb46679b60e9f04b47825b020241222"
+    }
+  },
+  "unchanged": [
+    "abyss_art_features.lua",
+    "abyss_component_binding.lua",
+    "abyss_map_controls.lua",
+    "abyss_map_layout.lua",
+    "abyss_menu_background_asset.lua",
+    "abyss_monster_actor_binding.lua",
+    "abyss_monster_art_data.lua",
+    "abyss_ready_card_assets.lua",
+    "abyss_ready_card_binding.lua",
+    "abyss_traveler_portrait_assets.lua",
+    "abyss_ui_layout.lua",
+    "abyss_ui_profile.lua",
+    "abyss_ui_templates.lua",
+    "abyss_v25_card_assets.lua",
+    "art-render-v2.json",
+    "battle-ui.json",
+    "game-ui-templates.json",
+    "game-ui.json",
+    "map-ui.json",
+    "official-assets-theme.json"
+  ],
+  "savedSourceBytes": 640086
+}
