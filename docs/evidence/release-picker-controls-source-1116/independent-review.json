@@ -1,0 +1,1042 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "release-picker-source-independent-20261116-9ff8c89f-r1",
+  "reviewer": "/root/release_picker_product_review",
+  "independentOfSourceImplementation": true,
+  "reviewedAt": "2026-11-15T18:41:14.792Z",
+  "conclusion": "pass",
+  "reviewScope": "SOURCE_CI_SCOPE",
+  "reviewedHeadSha": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+  "reviewedHeadTree": "4a1c73d7601532874f2cf2b83aa4b6812659bed5",
+  "reviewedBaseSha": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+  "reviewedBaseTree": "3036446cde57c6de5706592ced55f074d8cf06a6",
+  "releaseBaseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "releaseBaseTree": "5f5143c1834b99235541f117ccc03d4e427d8579",
+  "worktree": "F:/New folder/.worktrees/release-picker-source-1116",
+  "target": "release/v2.0.0",
+  "coveredPaths": [
+    {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "review": "Exact SHA256 pin8846606f. Complete Release36 before binding and committed93ae current binding, one actual producera925/parent36, sole changed owner feedback. Independently compared source/blob/parent to Git.",
+      "sha256": "8846606fcc1f08c98923d51c6a23f58820f9ee74b95c64d018584dd02a808ba4"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.mjs",
+      "review": "Exact fixed packet, before/current/producers path completeness and deep approved binding equality. Retains all64 complete predecessor targets and adds a full352-path Release prior; no owner-read caching or CI import. No authority from changed/foreign source.",
+      "sha256": "50a07ccd4a23a9c638716da314aef74588a6b3583280e655cefa25c883571cdf"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "review": "Exports unchanged preRelease epoch separately and composes the single current production continuation. sourceSlice still authenticates current owners afresh before returning any historical source.",
+      "sha256": "ec29bc6fe60fb8559c0a20ff45243a594cf36b68743a8d37c0b7898b5cdccb0d"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.json.gz",
+      "review": "Exact SHA256 pin550daa97.20 live bindings match exact review Git tree; nonnull before bindings match declared Release36 or bootstrap c240 Git. Original92 physical/LFS archives retained plus new production packet; original/current inventories explicit. CI working-tree collection metadata remains honest false, with final Git binding separately verified.",
+      "sha256": "550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.mjs",
+      "review": "CI-only trust leaf: exact packet hash, text SHA/Git blob checks, known exact after-to-before mapping, malformed/foreign bytes unchanged, production excluded from ordinary CI projection. Explicit complete validator alone checks production predecessor. Fresh physical archives/current inputs, raw strict inventory, and job-scoped real deadlines/trusted rules route. Forecasts remain diagnostic.",
+      "sha256": "4c401122544279d0b0a4c8219eb2274ca34ad3269b83c93513a46d92003263e5"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "review": "Original closure identities retained; exactly3 production helper transitions independently pinned. Actual isolated copied epoch imports complete proof without CI leaf. Changed new adapter and missing new packet both rejected; original copy path/alias checks remain.",
+      "sha256": "694fc8060f9345c28cb27d453d7f94f22552c61cc918c9ff73a410e05ed4f9df"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "review": "Retains frozen integrated proof/archive; adds outer exact CI continuation after fresh current checks. General production projection still returns original current bytes. Historical inventories adapt additions only after verifying actual added source; raw Full dedicated checks remain strict.",
+      "sha256": "a48e992131a63e415d0c74862ea06da4ffa08a91ee947e3087e4d342e28bcd9f"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "review": "Original semantic/source/copy assertions preserved through authenticated Release predecessor read, with full current validation first. Current source negative controls and raw dedicated contract independently retain live drift detection.",
+      "sha256": "97fa04c546684384c4d18fab796ae2cda0bf84c91cdf4d3a7e750eb195c49705"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "review": "Original working-tree currentTreeCommitted=false assertion is redirected to unchanged preRelease witness; new committed complete current proof is separately asserted. No assertion removed.",
+      "sha256": "16b3a9a8fe62553f9043a1504fb22e4ac85f6ba23dbe908348d3a0c310c95404"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "review": "Original352/116 and exact historical menu/Neow source assertions use the explicit old epoch; historical source comes only after current epoch fresh owner authorization. Existing live Lua path remains unchanged.",
+      "sha256": "d19999ab115259018e472729d6245b8502d5f8022e529eebf94e3223ebac2235"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "review": "Original raw/frozen inventory and cost receipts retain their exact old complete inputs, while new standalone raw contract binds both additions. Opaque historical arrays remain handled by original validators; raw current omission is explicitly rejected.",
+      "sha256": "dd9783d26fc84cf5c04223c2da2959cc048c5188997db5935e2098e54fe1819b"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "review": "Original historical cost/budget assertions unchanged; wrappers preserve exact original receipt inputs. New raw test discovers878JS/1423Lua with unique shard coverage and conservative unknownJS10000ms for both new tests; forecasts/reserve only diagnostic per docs/CI.md. Actual Fast45/30, hostedFull45/local75, POSIXFull30 deadlines and trusted route remain hard.",
+      "sha256": "42d4f7c71b71699037b94d5cf1f9e63d2dc08b726fa2f89d28aec001de947d13"
+    },
+    {
+      "path": "tests/release-picker-controls-source.test.mjs",
+      "review": "Current352-source corpus, every old target, source binding drift, foreign input, all-additions removal, missing/duplicate/foreign raw paths, added source drift and actual timeout/ref/dispatch negative controls. No test skip or Full runner change.",
+      "sha256": "868001c4e808a4ae065a0174171380b74629e42e4a1bdc3a359b207cda87ca74"
+    }
+  ],
+  "evidencePaths": [
+    "docs/evidence/release-picker-controls-source-1116/README.md",
+    "docs/evidence/release-picker-controls-source-1116/ci-raw-final.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/ci-raw1.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/historical-targeted.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/owners-copy.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/source-final-green.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/source-final.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/source-small-final.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/source-small.log.gz",
+    "docs/evidence/release-picker-controls-source-1116/source-validation.json"
+  ],
+  "evidenceChecks": [
+    {
+      "file": "source-small.log.gz",
+      "sha256": "48be4da776219c7c6f17c2f6fc0eb8beb64c45705faeb003a05ae01ad19c781a",
+      "rawSha256": "452dc1bef89498bc066a1d8ac8a29808e26034effa204a62de694cbb26b490ba",
+      "rawBytes": 72967,
+      "match": true
+    },
+    {
+      "file": "source-small-final.log.gz",
+      "sha256": "5fead9645349a66e1413c88cb65b9c07630f9ec76170bbfab26517943c307f05",
+      "rawSha256": "9cb989a38ce4c99db3bbc6edb769e696dbb16f92f9c338ac2ffbcd82fa08d45d",
+      "rawBytes": 739,
+      "match": true
+    },
+    {
+      "file": "ci-raw1.log.gz",
+      "sha256": "13f75216a89a2206db6f85a04fa9be162e48c2676e14f7540dc5ceaa623b07ec",
+      "rawSha256": "6f7d5900f0bf0739842caee63b0932772ee34fc245c1f386b88b204c06257036",
+      "rawBytes": 541,
+      "match": true
+    },
+    {
+      "file": "owners-copy.log.gz",
+      "sha256": "eaf7ba292ecd278a3cab3fafb01ecfa30a0ef09695aeb2e272fe320e3454b30c",
+      "rawSha256": "d879dc65d5db5f7658f3f991ff0820fbf3070b5a621597e54e3101f5ac6c667e",
+      "rawBytes": 881,
+      "match": true
+    },
+    {
+      "file": "historical-targeted.log.gz",
+      "sha256": "32bc488dfa171105eff4ea0db281941895e5b41d0d9777afb2848c2799053819",
+      "rawSha256": "32e8fd732bbe74c0331046652af10199accd88bf05e67f8061965a817583a7c2",
+      "rawBytes": 2381,
+      "match": true
+    },
+    {
+      "file": "source-final.log.gz",
+      "sha256": "3e5ba932542e878a8c66b691c7995c049814979e9971b08c7d16c4bf87794e51",
+      "rawSha256": "c1ff89ba53eb6d85edde374addbb21c1874ea564e9f6eee307e4eee815f16991",
+      "rawBytes": 1825,
+      "match": true
+    },
+    {
+      "file": "source-final-green.log.gz",
+      "sha256": "8ff47f1f5dfec099a638bc5d439890a289e60a23763954557e76c7b1b34a0642",
+      "rawSha256": "dda16f1a5454bb51ee004a8a6041b27de8925a4bc6a5a39da7fabaf33ed05e55",
+      "rawBytes": 846,
+      "match": true
+    },
+    {
+      "file": "ci-raw-final.log.gz",
+      "sha256": "ef23897e9d192be51ac761324a5630152c9d467cc3ae5088ed4130ec634e1458",
+      "rawSha256": "4daaaa552080e2a280717f868be68d5422a9d12a2b5fc499a811e3fac28798f6",
+      "rawBytes": 542,
+      "match": true
+    }
+  ],
+  "findings": [],
+  "unresolved": [],
+  "productReview": "Prior product review-picker-controls.json/md remains unchanged, bound to707da8ff/93ae. It is not evidence of source correctness. All7 original product/test Git blobs are independently unchanged in9ff.",
+  "executionTrustInputs": {
+    "productionPacket": {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "sha256": "8846606fcc1f08c98923d51c6a23f58820f9ee74b95c64d018584dd02a808ba4",
+      "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+      "currentProduct": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "producer": {
+        "src/lua/abyss_node_ui_feedback.lua": {
+          "commit": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+          "parents": [
+            "36b9b157ee6f05b65eb9f1da7e2978647d36c210"
+          ]
+        }
+      },
+      "completePrior": {
+        "sourceCount": 352,
+        "owners": 116,
+        "targets": 64
+      },
+      "current": {
+        "sourceCount": 352,
+        "owners": 116,
+        "changed": [
+          "src/lua/abyss_node_ui_feedback.lua"
+        ],
+        "liveOwnerReads": 116
+      }
+    },
+    "ciTrustLeaf": {
+      "path": "tests/helpers/release-picker-controls-ci-source.mjs",
+      "normalizedSha256": "4c401122544279d0b0a4c8219eb2274ca34ad3269b83c93513a46d92003263e5",
+      "packet": "tests/helpers/release-picker-controls-ci-source.json.gz",
+      "packetSha256": "550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f",
+      "collectionMetadata": {
+        "currentCommit": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+        "currentTreeCommitted": false,
+        "currentCommitRole": "exact committed product checkpoint; CI adapter bindings collected from working tree"
+      },
+      "note": "Trust leaf is intentionally outside its own packet to avoid a circular hash; exact reviewed Git source plus fixed packet hash is the root. Every20 packet after/before binding independently compared to Git."
+    },
+    "currentCiBindings": [
+      {
+        "path": ".github/workflows/licenses.yml",
+        "beforeCommit": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+        "before": "229dcb8ffb28444c49aef42abbbf2d8bab0ca331",
+        "current": "405aed5365a6bd6f1239a2d3f85395e158535aca"
+      },
+      {
+        "path": ".github/workflows/quality.yml",
+        "beforeCommit": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+        "before": "155b7f78c23dd9ec0a32c1fdfc0e31b85104c429",
+        "current": "68fdb599eb1d917b455d002927395b64b56e09ae"
+      },
+      {
+        "path": ".github/workflows/quick-feedback.yml",
+        "beforeCommit": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+        "before": "ef9fabf756d032b8bb6ac2c4bddb74aa83875115",
+        "current": "02106c6f1c07bb63cfb1aee45e9206da4e08d1da"
+      },
+      {
+        "path": "scripts/official-assets-layout.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "c1421b71cd85dd3c11d60b037c52161d3f6e4060",
+        "current": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e"
+      },
+      {
+        "path": "scripts/official-picker-controls.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": null,
+        "current": "15b1f0b0756b5825b44b8e9f1c178969c8afa624"
+      },
+      {
+        "path": "scripts/official-run-layout.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "ad2580f20e0dc92c6718d0897b30e94090e65050",
+        "current": "d18969baf154ba682ca57357f17af3bef8640f6b"
+      },
+      {
+        "path": "src/lua/abyss_node_ui_feedback.lua",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "a19ad1cffd2cf975f3b07ddda1dda22da94bdbdc",
+        "current": "e6caa9a86bab022830c2e924e616108f53644c08"
+      },
+      {
+        "path": "tests/ci-complete-calibration.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "8265d01699d40037de616ec9dc3c1f61becf6c18",
+        "current": "516e5f9a428824ee3c8f5f20521c41931f480da4"
+      },
+      {
+        "path": "tests/helpers/closeout-source-epoch.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "e7d0fad2be2808eac7ff18d2477d007c36dae98a",
+        "current": "83d85eef34a18ea0145af58e97149bce39f14483"
+      },
+      {
+        "path": "tests/helpers/copy-integration-source-closure.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "90ee0583dc0ecf1ce2dc732065af7a18daf565e3",
+        "current": "5f06d5a82631b262d743c05f55b766835ee02c7d"
+      },
+      {
+        "path": "tests/helpers/integrated-ci-source.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "11458a062966283e2a43adcb7443e0c32c653420",
+        "current": "cf059cc57fd7555c58d026495eebb954251ae9dd"
+      },
+      {
+        "path": "tests/helpers/release-picker-controls-source.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": null,
+        "current": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11"
+      },
+      {
+        "path": "tests/integrated-ci-source.cases.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "0081f878661e6a27fdf6272c5f46b705ceca75ac",
+        "current": "a582ea68c002fba1f8a3cc765296cc559abc4d71"
+      },
+      {
+        "path": "tests/integration-source-epoch.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "6693fb1206d302c7fecfb0677c6a32730d349782",
+        "current": "dba13a2b55f490a3aee8cbed6024719db909fc6a"
+      },
+      {
+        "path": "tests/lua/support/release_picker_controls.lua",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": null,
+        "current": "628ad8365caed6ceed95192b865417503143e679"
+      },
+      {
+        "path": "tests/official-assets.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "18cef470d592939ad53786e615fc7f5057e030a5",
+        "current": "5c73088541450102ffc23c64d5e5f7cbb92682ab"
+      },
+      {
+        "path": "tests/release-picker-controls-source.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": null,
+        "current": "1a16605782cf794056b59ab04bf3bbd79f472bae"
+      },
+      {
+        "path": "tests/release-picker-controls.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": null,
+        "current": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4"
+      },
+      {
+        "path": "tests/session-menu-navigation.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "941ebaacf4473878991633141fc8fda5205dbfda",
+        "current": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2"
+      },
+      {
+        "path": "tests/sts-style-source-epoch.test.mjs",
+        "beforeCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+        "before": "dfb3119ddbaf2d0ee9661a8eaff1f2b601e30017",
+        "current": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c"
+      }
+    ],
+    "originalIntegratedCi": {
+      "archive": "tests/helpers/integrated-ci-source.json.gz",
+      "sourceBindings": 224,
+      "closureBindings": 9,
+      "originalInventory": 876,
+      "note": "Original gzip bytes, stored complete sources, targets, costs and assertion bodies remain unchanged. assertIntegratedCurrent freshly validates originals after exact outer mapping."
+    },
+    "immutableArchives": {
+      "originalSummary": {
+        "originalCount": 92,
+        "lfs": 2,
+        "physical": 90
+      },
+      "originals": [
+        {
+          "path": "tests/helpers/battle-queue-ci-source-epoch.json.gz",
+          "sha256": "4f5966d2b04fbdd564d0455aa318c3947468906581b6fa7a6a8d334f18f44db4",
+          "physicalBytes": 303023,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/battle-queue-source-epoch.json.gz",
+          "sha256": "e82f3c47155271784ed25d87abcf19306e7a752fe1cb5aab5f3d269d26fdd42d",
+          "physicalBytes": 157852,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/closeout-ci-source.json.gz",
+          "sha256": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+          "physicalBytes": 2848271,
+          "gitStorage": "LFS pointer verified oid+size"
+        },
+        {
+          "path": "tests/helpers/closeout-source-epoch.json.gz",
+          "sha256": "36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a",
+          "physicalBytes": 2240696,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+          "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+          "physicalBytes": 738042,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/combined-epoch/source-epoch.json.gz",
+          "sha256": "2085260a5aabde4476411172eb0b2e6fd3afcaa991a3cafc52f3ab0e98755c73",
+          "physicalBytes": 1127284,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/component-alias-ci-source-epoch.json.gz",
+          "sha256": "3d11025b87ec35e234f99eb3df53dd862a69b75778c88a714db9b694a9c2f93d",
+          "physicalBytes": 51070,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/component-ui-ci-source-epoch.json.gz",
+          "sha256": "498384c890d22428b10a9c19f6720712d3e568cf871179e447c69fd8b92ea520",
+          "physicalBytes": 436099,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/component-ui-source-epoch.json.gz",
+          "sha256": "df2a27ff146ecbee4fb01054eb1071458ffe491ece1bb50fa6fb33d19df74d4a",
+          "physicalBytes": 1538232,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/defect-actor-ci-source-epoch.json.gz",
+          "sha256": "c7962302aa0363004b6d4c8e6afcb5a27431bf47b2eac2f2d3fdc2463566d638",
+          "physicalBytes": 193713,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/defect-actor-source-epoch.json.gz",
+          "sha256": "c41e28bf8a5d51f0e29f80b48f31cc5d416741ec8d54f4f6c03ce924d1027e17",
+          "physicalBytes": 28029,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/defect-final-ci-source-epoch.json.gz",
+          "sha256": "88894fcfdcc23ba6383ea5decd456c920dc296aadde209fc58ee8406480d7f75",
+          "physicalBytes": 80331,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/defect-final-source-epoch.json.gz",
+          "sha256": "a656584db182a608b75f66a46a8d31ae4d4bbaba6c64d376d1d47a011c7833ce",
+          "physicalBytes": 6804,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/effects-target-group-source-epoch.json.gz",
+          "sha256": "f22d0328aedd7b7e9c785482271483f9f083c5c6abd7cd55d19933b24a48c0c2",
+          "physicalBytes": 5195,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/encounter-formation-ci-source-epoch.json.gz",
+          "sha256": "cd039ffe6b0f7fd2959776b84cf199290b3621b8a82266bc6929876e1ce46fbf",
+          "physicalBytes": 173703,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/encounter-formation-source-epoch.json.gz",
+          "sha256": "6d082e4f921213a60a41ab1f0a4109a49645c1014cc83f315178937ca0885132",
+          "physicalBytes": 2719,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/actor/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+          "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+          "physicalBytes": 738042,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/colorless/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+          "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+          "physicalBytes": 738042,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/develop/tests/fixtures/ci-complete-calibration.json.gz",
+          "sha256": "c0b66bf5ffd13baaea0f9a035dd43636f7419a0b607cc4eab3f0c1f73155d5ab",
+          "physicalBytes": 308165,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/develop/tests/fixtures/ci-host-timing-calibration.json.gz",
+          "sha256": "70cf6cbf502ed85cf7884095cb603a92f910e9b6cb5b311cee2b4b0f1118659f",
+          "physicalBytes": 80775,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/develop/tests/fixtures/delivery-source-composition.json.gz",
+          "sha256": "d7bf28b224aaec821ac215f81adcef436fff51b009c21ef8b75d50bd16c2fa4b",
+          "physicalBytes": 900350,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/develop/tests/helpers/m7-core-final-before.json.gz",
+          "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+          "physicalBytes": 32990,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/develop/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+          "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+          "physicalBytes": 738555,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/develop/tests/helpers/relic-query-baseline-391306af.json.gz",
+          "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+          "physicalBytes": 19460,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/native/tests/helpers/m7-core-final-before.json.gz",
+          "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+          "physicalBytes": 32990,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/native/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+          "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+          "physicalBytes": 738555,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/native/tests/helpers/relic-query-baseline-391306af.json.gz",
+          "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+          "physicalBytes": 19460,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/potion/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+          "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+          "physicalBytes": 738042,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/epochs/powerShop/tests/helpers/power-shop-before-2c85.json.gz",
+          "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c",
+          "physicalBytes": 13460,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/foundation-fix-ci-source-epoch.json.gz",
+          "sha256": "bb40135a5ef6a5286f75cdf3035a451702f79cdcc36dca90d071d85f09ce30a3",
+          "physicalBytes": 59704,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/golden-idol-ci-source-epoch.json.gz",
+          "sha256": "04f512415676b3110285c40f6c19324010c1f5ecf7ffe68e063bf6aedd17b24a",
+          "physicalBytes": 183683,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/golden-idol-current-ci-source-epoch.json.gz",
+          "sha256": "c422925a6eed65e71973693175391884442636d28a583cd1633f4937a5102216",
+          "physicalBytes": 327638,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/golden-idol-current-source-epoch.json.gz",
+          "sha256": "b46c8ed0a17d8dcfa442861b4452cae2250b9ce2da31ef0bb1619be7e416fc46",
+          "physicalBytes": 2099,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/golden-idol-source-epoch.json.gz",
+          "sha256": "567be86608fc6c7f9f29a42d81f80ee77b3f769367720501f4ecbac55c1be313",
+          "physicalBytes": 2087,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/integrated-ci-source.json.gz",
+          "sha256": "f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35",
+          "physicalBytes": 3222350,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/joint-ui-ci-source-epoch.json.gz",
+          "sha256": "9fee4e85665d37746b68368fced892a316db490c8e01273328391bc57acfd840",
+          "physicalBytes": 851319,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/joint-ui-source-epoch.json.gz",
+          "sha256": "67777c3571d86bc82427fbb6ac5cd2254ed480b58285f41aa17d05d7490413f9",
+          "physicalBytes": 212019,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/joust-ci-source-epoch.json.gz",
+          "sha256": "12bcdf820c12b4aa5abc94ee5eaca48962c536cd0c77f604ca8a632c8828839b",
+          "physicalBytes": 72918,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/joust-source-epoch.json.gz",
+          "sha256": "fa0c3a6e28217ca6c5c7731c399f911cb6008b84c2c6d1afa5f3c042dee47a0d",
+          "physicalBytes": 1780,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/m7-core-final-before.json.gz",
+          "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+          "physicalBytes": 32990,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/menu-presentation-source.json.gz",
+          "sha256": "abcc561be5a49560684b70bc68a1b320485f8084039a64910d05ff9810fc8e9b",
+          "physicalBytes": 3387,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/menu-red-before-integration-production-source.json.gz",
+          "sha256": "ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae",
+          "physicalBytes": 27364,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/menu-red-ci-source.json.gz",
+          "sha256": "c56d05ae2533f27a4d083c5331b54539851c69ba6535783da83c7965261c9486",
+          "physicalBytes": 397203,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/menu-red-production-source.json.gz",
+          "sha256": "eac84b07c06da9afb0f37a63ac8b57ea4b88e825ec57f6efe50a00d9c2bae5d7",
+          "physicalBytes": 27928,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/native-preview-ci-source.json.gz",
+          "sha256": "3929e00baeed8de4f56845930c224c67c27e0a5cc98d18ea5097bfd9f8e4b39b",
+          "physicalBytes": 9076,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/noncombat-ci-source-epoch.json.gz",
+          "sha256": "4ec323d272d519731a8e6f8848cb6a3b0985d57b560834fff75062ce856da90c",
+          "physicalBytes": 100690,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/noncombat-demand-ci-source-epoch.json.gz",
+          "sha256": "05ef031199d3504977cf07bb78a476a19accf4a37cf9882a5a7762e2eb8e1efb",
+          "physicalBytes": 106427,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/noncombat-demand-source-epoch.json.gz",
+          "sha256": "152c60444fc95fbf5b5aa68f5eaf82547cab9051dd9845eb0512dd2125c8ade1",
+          "physicalBytes": 21526,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/noncombat-source-epoch.json.gz",
+          "sha256": "748b7965ddf39f1e297da92094f1ed865204177ca344aacca7e78a826d78f279",
+          "physicalBytes": 13929,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-assets-ci-source-epoch.json.gz",
+          "sha256": "bc5079ac224d1090c0f7761ca5808003160a5b2d1a0eb79e32c52bcd6f92da1b",
+          "physicalBytes": 189787,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-assets-flow-ci-source-epoch.json.gz",
+          "sha256": "2efc7dc0e787d86f49c27863cd936be82fbd90f1902331345528936335b516c8",
+          "physicalBytes": 136110,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-banner-source-epoch.json.gz",
+          "sha256": "3f1f13b24b1fd05e01706937f14e905c7003d193b446b2133e8ec25548e91628",
+          "physicalBytes": 8809,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-alignment-source-epoch.json.gz",
+          "sha256": "f834dafca07c62a1b807cbc7df3ae8619f3043a1627b8fb5dee5f464c420d458",
+          "physicalBytes": 45795,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-feedback-source-epoch.json.gz",
+          "sha256": "f9afdd64e5af540072b468709bda9523b2cd58d4c308692a9b10ee339ac176eb",
+          "physicalBytes": 55265,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-interaction-source-epoch.json.gz",
+          "sha256": "47ea3088416992ca43c97adab9ac5c724bcc4ccac1d415ec8a7d4a5328d34505",
+          "physicalBytes": 37916,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-local-render-source-epoch.json.gz",
+          "sha256": "d7c993c86bcb8c2b40b68e5ec127ae774f64f43b3a87e883ad32fa3c6d766b35",
+          "physicalBytes": 38013,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-mouse-aim-source-epoch.json.gz",
+          "sha256": "8816765be73763e6172bb022f40118dfdfe239b449dfa0617b4b6400750d4c71",
+          "physicalBytes": 10715,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-pile-source-epoch.json.gz",
+          "sha256": "2fbf3dba8ff4992cae4eccef2d8c27af70fc7a22c726fa72ece6fe5dfb3a1ccd",
+          "physicalBytes": 27857,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-potion-hud-source-epoch.json.gz",
+          "sha256": "873e1d2eb7352ba984d180141f04ef8167ff89ecce097a2ae7986a2d5c274a75",
+          "physicalBytes": 32558,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-response-source-epoch.json.gz",
+          "sha256": "9af7515d8fae9402c8751a8efdcaadc1a5d1142c095fa2e11f34ec6d92f30137",
+          "physicalBytes": 29357,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-shell-source-epoch.json.gz",
+          "sha256": "6184f4e377056b5e9c8a25ab4282556c152f1228a1436fa2cfa67196697dde22",
+          "physicalBytes": 12881,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-source-epoch.json.gz",
+          "sha256": "5e74438e077be47b5b176287b6ceeb71e69447fa32ceedf2b0e595c4499d3c80",
+          "physicalBytes": 36743,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-battle-target-source-epoch.json.gz",
+          "sha256": "52696fada35693712594a228b94ae5bf17f949049b47c01d95e5b16de5ba3c43",
+          "physicalBytes": 7388,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/official-ui-repair-source-epoch.json.gz",
+          "sha256": "7acca01bc985f6bb6bea90361374f360d7ef3e746583bd8a8da7c459951f0765",
+          "physicalBytes": 188582,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/posix15-shape-source-epoch.json.gz",
+          "sha256": "9f75ddcfc0b6b5ef19c1750efab7d7a5360d9da4825a93de3c9cfe9e702e9b06",
+          "physicalBytes": 468,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/power-shop-before-2c85.json.gz",
+          "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c",
+          "physicalBytes": 13460,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/purge-query-baseline-a27b86a5.json.gz",
+          "sha256": "7ddb2bf87ff3d7a56a80f34a4bb06e6249e7dd7d0811afd391afad16a5f39dee",
+          "physicalBytes": 5372,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/release-source-epoch.json.gz",
+          "sha256": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+          "physicalBytes": 2587324,
+          "gitStorage": "LFS pointer verified oid+size"
+        },
+        {
+          "path": "tests/helpers/relic-equip-ci-source-epoch.json.gz",
+          "sha256": "541ff621ffe4b9413b90a284949dfb496cdfbe06cb05826307b56b0ac044fd47",
+          "physicalBytes": 74390,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/relic-equip-source-epoch.json.gz",
+          "sha256": "c7f30e9773f4f08d3cf33e1ece1a1be425fa04389d0144bb285ff70643d06863",
+          "physicalBytes": 3289,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+          "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+          "physicalBytes": 738555,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/relic-lifecycle-baseline-a27b86a5.json.gz",
+          "sha256": "68112b06f51194a9523ea287549c29c2871eec56164fa21ace64a1f576efaaac",
+          "physicalBytes": 739353,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/relic-query-baseline-391306af.json.gz",
+          "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+          "physicalBytes": 19460,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/room-ui-source-epoch.json.gz",
+          "sha256": "0b3cb34acf85e814bd3e7d82254e9586a6a60c78e20fd95603b2e96e877d7bfc",
+          "physicalBytes": 221173,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/run-hud-before-ci-repair-ci-source.json.gz",
+          "sha256": "fa385b20797f37ca5a8c0a406d6ecdad6b4c0539c27a825e751b7eadeb4f5408",
+          "physicalBytes": 280679,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/run-hud-ci-source.json.gz",
+          "sha256": "685bddcc6bed77545eadc456f82ed4de10a75402cfcf597533190eb1732cbe3b",
+          "physicalBytes": 292579,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/selection-ci-source.json.gz",
+          "sha256": "02ba563b57383e8ab328051dfa29a3a0d57769a60b94cb4a265cb8ff7514881e",
+          "physicalBytes": 128931,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/session-menu-source-epoch.json.gz",
+          "sha256": "b6b8f7f14c7f541fcd686b881258c6f625f1a0bfc32239e9d15dc6aa5eb33d8b",
+          "physicalBytes": 84697,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/session-reward-before.json.gz",
+          "sha256": "d0a42f51486f79bca22b34a8f0457ca0f78e4917310ad72e70ef89c836a9b57c",
+          "physicalBytes": 5816,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/seven-refactor-source-epoch.json.gz",
+          "sha256": "98ce5a13a217c5b20bbbddf93811d5fc2dda4117bb465c33c5ad4c979608c4bd",
+          "physicalBytes": 107170,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/shop-deck-before-ci-repair-source-epoch.json.gz",
+          "sha256": "94d6f85a83a1593bbbaf34ae13986ddfbca97312e183b4e7f6b08ca58b8d911b",
+          "physicalBytes": 39331,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/shop-deck-four-source-epoch.json.gz",
+          "sha256": "51034e9da34cbe0ab153f00ab66a16918db1097ef7173932ab326cc6c2076f2b",
+          "physicalBytes": 34735,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/shop-deck-source-epoch.json.gz",
+          "sha256": "f5546b3bd0264af9e4fff867637fe217e4e7c32482e72104d7d3c1f3cc43a03b",
+          "physicalBytes": 39459,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/silent-final-ci-source-epoch.json.gz",
+          "sha256": "061f63eb40dd03dfecb8bdaf60ecc722f49da40ed75645568666fa29bddf8c2e",
+          "physicalBytes": 74632,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/silent-final-source-epoch.json.gz",
+          "sha256": "8d70652c025b8075e2a03936f12c2509dbca427abd555e472f197b1ac4850b49",
+          "physicalBytes": 6705,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/silent-tactics-source-epoch.json.gz",
+          "sha256": "046c798aed3ded45bf29ad696c777551102f74066a262174af3d9990bdabb1c7",
+          "physicalBytes": 5902,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/sts-feedback-ci.json.gz",
+          "sha256": "c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59",
+          "physicalBytes": 280213,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/sts-feedback-production.json.gz",
+          "sha256": "3acda15f5db142eeabb48f9a494d1526bde5565eb7e2272d5a36277b7394ec39",
+          "physicalBytes": 115080,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/sts-style-ci-source.json.gz",
+          "sha256": "4dc022273fd7ca381b1de6bca1fdd1c9eb49ceb94df292d9e490b4ab2abc80f5",
+          "physicalBytes": 632971,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/sts-style-prior-runtime.json.gz",
+          "sha256": "10bf3b7d960e4c02ae2d64e26d8d5f16824439b9396949973f08ccec1c9d9330",
+          "physicalBytes": 4216851,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/sts-style-source-epoch.json.gz",
+          "sha256": "cc47fd96c79d7a604d2c5c269b012354d887762aecbe2990ac89fbf2ac74c1a9",
+          "physicalBytes": 195169,
+          "gitStorage": "physical blob"
+        },
+        {
+          "path": "tests/helpers/watcher-flow-source-epoch.json.gz",
+          "sha256": "9e81602d086a81680830cf179a5d9f9f041bd56e0938b2d82eb196e50f73c015",
+          "physicalBytes": 7194,
+          "gitStorage": "physical blob"
+        }
+      ],
+      "newProductionPacketAlsoBound": true,
+      "totalCurrentArchivePins": 93
+    },
+    "rawExecutionInputs": [
+      {
+        "path": "scripts/ci-shards.mjs",
+        "normalizedSha256": "763f33a3474708c0c746de01cf4d5890085c5abb1dd660cb8ba099beecac5f1a"
+      },
+      {
+        "path": "scripts/ci-test-timings.json",
+        "normalizedSha256": "8f5644822f365b925cba048ee71a6a1e62a4b1e635074fd05397c792a5d8b961"
+      },
+      {
+        "path": "scripts/test-lua.mjs",
+        "normalizedSha256": "6f35fd632d0e509c7694050456139814bdc2da358d1afa3ea8c2770cb7156c90"
+      },
+      {
+        "path": "scripts/lua-workers.mjs",
+        "normalizedSha256": "699aa2e9e4c236c4be8fdc7b4a61f66877dbecf88d16b8ad0d488defee8d82a3"
+      },
+      {
+        "path": "scripts/ci-timeout-policy.mjs",
+        "normalizedSha256": "86884e7db31c299d1b3e908a9647d46379d958122dd519f52f92f5bce4fd8c3a"
+      },
+      {
+        "path": ".github/workflows/quality.yml",
+        "normalizedSha256": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a"
+      },
+      {
+        "path": "docs/CI.md",
+        "normalizedSha256": "1543510feefb0c1a5750e20a42e4c1677ce77fd9793f4313358c28e4b16784c4"
+      }
+    ],
+    "rawInventory": {
+      "js": 878,
+      "lua": 1423,
+      "addedJs": [
+        "tests/release-picker-controls-source.test.mjs",
+        "tests/release-picker-controls.test.mjs"
+      ]
+    },
+    "costs": {
+      "unknownJsMs": 10000,
+      "newTestsRetainConservativeFloor": true,
+      "windowsForecastMs": 1756639,
+      "posixForecastMs": 1190964,
+      "forecastAnd60000Reserve": "DIAGNOSTIC_ONLY",
+      "targetPolicy": "Owner2026-11-07 docs/CI.md: performance targets30/20min; do not add forecast target hard gate",
+      "actualHardDeadlineMinutes": {
+        "fastWindows": 45,
+        "fastPosix": 30,
+        "fullWindowsHosted": 45,
+        "fullWindowsTrustedLocal": 75,
+        "fullPosix": 30
+      },
+      "oldFrozenBudgetAssertions": "PRESERVED"
+    },
+    "isolatedCopy": {
+      "completeProductionProofImport": true,
+      "newProductionAdapterAndPacketIncluded": true,
+      "ciLeafNotImported": true,
+      "changedAdapterRejected": true,
+      "missingPacketRejected": true
+    },
+    "productBlobs": [
+      {
+        "path": "scripts/official-assets-layout.mjs",
+        "gitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+        "unchanged": true
+      },
+      {
+        "path": "scripts/official-picker-controls.mjs",
+        "gitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+        "unchanged": true
+      },
+      {
+        "path": "scripts/official-run-layout.mjs",
+        "gitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+        "unchanged": true
+      },
+      {
+        "path": "src/lua/abyss_node_ui_feedback.lua",
+        "gitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+        "unchanged": true
+      },
+      {
+        "path": "tests/official-assets.test.mjs",
+        "gitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+        "unchanged": true
+      },
+      {
+        "path": "tests/release-picker-controls.test.mjs",
+        "gitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+        "unchanged": true
+      },
+      {
+        "path": "tests/lua/support/release_picker_controls.lua",
+        "gitBlob": "628ad8365caed6ceed95192b865417503143e679",
+        "unchanged": true
+      }
+    ]
+  },
+  "independentExecutions": [
+    {
+      "script": ".artifacts/release-pc-qa-20261115/review-picker-source-probe.mjs",
+      "result": "PASS",
+      "output": ".artifacts/release-pc-qa-20261115/review-picker-source-probes.json",
+      "coverage": "352 exact Release predecessors,116 fresh owners,64 retained targets,1 actual changed owner,20 CI current/before Git bindings,92 archive physical/LFS identities,7 product blobs,actual isolated copy and listed negative controls"
+    },
+    {
+      "command": "Node24 --test --test-name-pattern=^release picker controls raw Full inventory retains tests/ci-complete-calibration.test.mjs",
+      "result": "1/1 PASS",
+      "output": ".artifacts/release-pc-qa-20261115/review-picker-source-raw.log",
+      "coverage": "Raw878JS/1423Lua,unique shard coverage,new source/product tests conservatively costed,forecasts diagnostic,actual workflow guard checks"
+    },
+    {
+      "command": "git status --short; git diff --check707da8ff..9ff8c89f; git diff707da8ff..9ff8c89f -- scripts src data config .github",
+      "result": "Clean;diff-check0;no production/data/config/workflow changes"
+    },
+    {
+      "result": "Independent probe first run had CRLF test-string replacement scaffolding error; only reviewer probe normalized LF and reran. Product/adapter unchanged.",
+      "output": ".artifacts/release-pc-qa-20261115/review-picker-source-probe-crlf-fixture-failure.log"
+    }
+  ],
+  "independentNegativeControls": {
+    "sourceOwnerDrift": true,
+    "forgedPredecessor": true,
+    "foreignBytesUnprojected": true,
+    "productionNotCiProjected": true,
+    "ciHelperAndSupportDrift": true,
+    "rawMissingDuplicateForeign": true,
+    "removingAllRawAdditions": true,
+    "workflowDeadlineAndTrustRoute": 5
+  },
+  "authorEvidenceReviewed": {
+    "source": "6/6",
+    "ownersAndCopy": "7/7",
+    "historicalTargets": "5/5 with unchanged approved-page child6/6",
+    "raw": "1/1 final diagnostic policy",
+    "failedAttempts": "Opaque historical Lua array scaffolding failure and first-match route mutation failure retained; real job mutation now replaces all matching text and independently fails. Earlier raw forecast-gated attempt retained as superseded; only final diagnostic policy is current."
+  },
+  "integrationBoundary": {
+    "pr": 692,
+    "status": "NOT_MERGED_AT_SOURCE_CHECKPOINT",
+    "head": "b6722694 parent-reported only",
+    "required": "Any actual Release base/parent change requires a fresh exact-before rebind and independent review. Do not copy another source slice after packet or claim this fixes bootstrap."
+  },
+  "notVerified": [
+    "Hosted Full/Quality/Licenses",
+    "Full/Fast suite or73 calibration cases",
+    "Formal candidate build/import/ready",
+    "Official20MB level/3MB server capacity",
+    "PC and physical mobile",
+    "PR685 combination or PR684 flicker"
+  ],
+  "operations": "Read-only source review;only root review artifacts and temporary isolated helper copies written. No product/Backlog/main-tree edits,GUI/MCP,input,push/PR/merge,tag/release orCI polling. No new forecast target gate requested."
+}

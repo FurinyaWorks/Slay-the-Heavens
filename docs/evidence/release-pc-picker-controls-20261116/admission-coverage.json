@@ -1,0 +1,155 @@
+{
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "verifiedExecutableCheckpoint": "141ea6b70086a929315c21a09dcdb1668a2fc22d",
+  "product": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+  "source": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+  "reviewNormalization": "LF",
+  "codeAndPolicyAndTrustInputs": 20,
+  "uncovered": [],
+  "rows": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "gitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "gitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "gitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "gitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "gitBlob": "516e5f9a428824ee3c8f5f20521c41931f480da4",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "gitBlob": "83d85eef34a18ea0145af58e97149bce39f14483",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "gitBlob": "5f06d5a82631b262d743c05f55b766835ee02c7d",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "gitBlob": "cf059cc57fd7555c58d026495eebb954251ae9dd",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.json.gz",
+      "gitBlob": "54dc8c1d09be790629266d214f38dc586025f9d8",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.mjs",
+      "gitBlob": "e025c1809d4bb252194f1875678a98993afa0ff7",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "gitBlob": "48ab104c88285705370f3a0955038699ec8f9375",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.mjs",
+      "gitBlob": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "gitBlob": "a582ea68c002fba1f8a3cc765296cc559abc4d71",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "gitBlob": "dba13a2b55f490a3aee8cbed6024719db909fc6a",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "gitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "gitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "tests/release-picker-controls-source.test.mjs",
+      "gitBlob": "1a16605782cf794056b59ab04bf3bbd79f472bae",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "gitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "gitBlob": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "gitBlob": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a"
+    }
+  ],
+  "limits": [
+    "No Required CI/official/device acceptance inferred.",
+    "After PR692 changes actual Release base, source bindings and review must continue on that base."
+  ]
+}

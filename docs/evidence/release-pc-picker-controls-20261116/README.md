@@ -1,6 +1,6 @@
 # PC26 / PC30 共享分页与房间按钮离线修复
 
-状态：产品独立复审已通过，最小来源接续已组合，来源独审进行中；不是官方或设备验收。TASK-103 / TASK-103.2 经Backlog CLI续接，状态In Progress，原已勾与新未验AC均保留。
+状态：产品与来源两层独立复审已通过，最小来源接续已组合；不是官方或设备验收。TASK-103 / TASK-103.2 经Backlog CLI续接，状态In Progress，原已勾与新未验AC均保留。
 
 基线 `release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210`；首轮产品 `a925ce43bda10030d7dfd7fe7b96c450c17f8702`，独审纠偏后当前产品 `93ae73760ecbe6540fac49d96c2309345d6b7824`。分支 `feat/release-pc-picker-controls-1116`。首轮7文件身份见 [identity.json](identity.json)，本次4文件增量身份见 [hover-fix-identity.json](hover-fix-identity.json)；产品执行者707da检查点未推送、开PR或改Backlog，之后CLI/来源接续由主线程另提交。未改develop、master或Tag。
 
@@ -68,3 +68,5 @@ TMP/TEMP在根`.artifacts/release-picker-temp`，依赖和Luacheck物理复用�
 主线程接续：产品独审精确绑定707da/93ae，结论CODE_SCOPE PASS、unresolved为空；[最终报告](independent-review.json)与[初REQUEST_CHANGES](independent-review-initial.json)均保留。Source作者9ff8c89f已选择性组合为2a3f836f，实际7个产品blob不变；[来源证据](../release-picker-controls-source-1116/README.md)记录source6/6、owner/copy7/7、历史5/5和raw1。原source失败仍是历史事实，未删改为通过；新身份与产品回归不混算。
 
 最新Release仍36b9，独立PR692修复共同bootstrap来源/工作流失败但尚未合入。按仓库PR依赖入口，本片先保全分支与审查，待该前置实际落地后从新Release before接续共享来源、复审并提交正常Release PR，不重复其10项修复。预测及60秒预留按docs/CI.md168仅诊断，物理工作流实际超时保持严格核验。官方候选、ready、容量、PC与实体手机不因此完成。
+
+来源独审精确绑定9ff8c89f/base707da，结论SOURCE_CI_SCOPE PASS、findings/unresolved为空；[报告](../release-picker-controls-source-1116/independent-review.json)完整覆盖13项执行/测试与10份来源证据。独立核352前驱/116owner/64历史target、20当前CI绑定、92旧档案及真实隔离copy，7产品blob不变；raw878JS/1423Lua及来源/库存/可信本地路由负控通过。没有重新运行产品整套、Fast或Full。[组合覆盖](admission-coverage.json)把当前20项变更执行/信任输入逐Git blob映射到两份独审，uncovered为空，不把独立Release36来源延伸到未来#692组合。
