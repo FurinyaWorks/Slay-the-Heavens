@@ -3,15 +3,14 @@ id: TASK-4.16
 title: 改善右上角菜单与操作说明的交互和信息层级
 status: In Progress
 assignee:
-  - '@Furinya'
+  - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 12:37'
 labels:
   - playtest-20261030
   - p1
   - grok
   - 待验
-  - delivery-verify
 milestone: m-8
 dependencies: []
 references:
@@ -19,6 +18,7 @@ references:
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/backlog-details/TASK-4.16-map-menu-return-20261101.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 parent_task_id: TASK-4
 priority: medium
 type: enhancement
@@ -36,6 +36,7 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 - [ ] #2 未启程地图入口不误导玩家；已可用时正常进入。
 - [ ] #3 操作说明层次清楚、能快速找到出牌/取消/详情/药水/地图等信息；基础资源含义易获知。
 - [x] #4 QA-R2-06本地真实Host回归：地图模式隐藏并拒绝查看同一地图；战斗或节点的只读路线预览一次返回即恢复原页面，无残留菜单，旧触点与手柄取消不穿透。
+- [ ] #5 本轮official设置菜单与顶栏不重复提供地图入口，无顶栏C档仍能查看/返回；退出页按用户要求不依赖操作说明，导航取消不穿透。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -44,6 +45,8 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 1. 基于PR432核实现有菜单退出与触控源码和回归。2. 复用inspectText为战斗及地图顶栏生命金币加入只读提示与外点关闭，保持modal及旧tap隔离。3. 定向宿主与布局验证，逐项记录已修和设备缺口后交独立复审。
 
 2026-11-01 QA-R2-06：1. 用真实GameUI回归复现地图菜单重复入口和两层返回。2. 地图模式隐藏且拒绝查看同一地图；其他上下文的只读地图返回一次即关闭整层菜单，保留触点代际隔离与节点只读。3. 定向菜单、路线返回、奖励和手柄回归；本地证据记录到附件，手机实测AC保持未勾。
+
+按本轮重复地图入口反馈，在独立pc-route-entry-1115树仅official取消暂停map原生listener/焦点并压紧行，复用已有battleRoute/runRoute；默认无顶栏profile保留菜单地图C档。两profile×PC/touch RED→GREEN，原3个地图返回合同通过，等待独审/最终来源与设备。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -61,5 +64,7 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
-2026-11-14第二轮状态纠正：已有1/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+本轮退出菜单当前导航及操作说明依赖已实际修复/回归；源码通过不代替最终设备验收，原AC不补勾。
+
+承接E5/F8；新要求优先于旧六宫格操作说明设计，不恢复已移除依赖。代码已有，设备待验。
 <!-- SECTION:NOTES:END -->

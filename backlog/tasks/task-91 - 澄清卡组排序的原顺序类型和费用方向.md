@@ -1,21 +1,21 @@
 ---
 id: TASK-91
 title: 澄清卡组排序的原顺序类型和费用方向
-status: In Progress
+status: To Do
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:52'
+updated_date: '2026-11-15 12:37'
 labels:
   - playtest-20261030
   - p2
   - grok
   - 待验
-  - delivery-verify
 dependencies: []
 references:
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 priority: low
 type: enhancement
 ---
@@ -30,6 +30,7 @@ Owner截图：卡组页显示「排序·原顺序」但没有解释原顺序是�
 <!-- AC:BEGIN -->
 - [ ] #1 排序选项准确表达原始顺序含义与费用升降方向，用户可预测结果。
 - [ ] #2 排序结果与所选规则一致，不破坏原有过滤、卡牌状态和手牌逻辑。
+- [ ] #3 本轮排序箭头选中色与默认排序按既有规则核对，属于低优先级；不得挤占快速输入、闪屏、状态错误及容量阻塞。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -49,5 +50,5 @@ Owner截图：卡组页显示「排序·原顺序」但没有解释原顺序是�
 
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
-2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+承接F7，尚未完成，不擅改实际排序规则或平衡。
 <!-- SECTION:NOTES:END -->

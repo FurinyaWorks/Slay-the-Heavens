@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-13 14:12'
-updated_date: '2026-11-14 00:22'
+updated_date: '2026-11-15 12:37'
 labels: []
 milestone: m-8
 dependencies: []
@@ -13,6 +13,7 @@ references:
   - docs/TOOLCHAIN.md
   - docs/design/UI_DESIGN.md
   - .artifacts/menu-red-background-intake/source.png
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 parent_task_id: TASK-103
 priority: medium
 type: enhancement
@@ -31,6 +32,7 @@ ordinal: 173000
 - [x] #2 hover连续过渡，可中断和快速反向；命中区固定，禁用/离开/切页复位，触控点击保留
 - [ ] #3 同候选记录冷启动及缓存返回、背景创建成本与交互性能；无逐块揭幕和重复整图创建，未实测项如实保留
 - [x] #4 独立工作树保留他人成果；相关回归、独立复审和可试玩候选完成，官方与设备验收分开报告
+- [ ] #5 核对本轮标题/开始/退出反馈与此前批准去标题决定，以实际交付候选对照最近批准稿，记录冲突处理和真实呈现结果，不能盲目恢复旧设计。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -59,4 +61,8 @@ ordinal: 173000
 最终补充复审menu-quality-proof-20261114-04覆盖浏览器/刷新/缓存探针；20次返回源稳定、控件31016恒定、背景对象和ID不变，原HP+8/首战/destroy0业务断言全部保留。原56706已切到同save77874401新服务，HTTP当前build53629ec8/active0+parked1读回通过；临时测量服务均结束。AC4按本地候选/独立复审和分开报告范围勾选；AC1/3的Owner与无感冷启动目标仍未通过，不标Done。
 
 Owner在本轮对当前1600图元候选明确反馈“效果不错你可以让它自动合并了”，确认画面并授权自动合入develop；AC1据本轮运行实拍与该确认勾选。继续保留冷启动、官方PC/手机未验边界；正在核对最新develop、精确HEAD独审及Full准入，授权前不标Done。
+
+自动合并交接：PR #650 https://github.com/FurinyaWorks/Slay-the-Abyss/pull/650 已创建并启用ci:full，HEAD=ee4f8febcd384b60ed43e68a172585968b9be42f，BASE=e805a87dc4df1a048ba5995931d98a4e4899b5e9。独立复审menu-red-merge-ee4f8feb-e805a87d-20261114通过，review位于.worktrees/menu-red-background/.artifacts/menu-quality-r1/merge-review.json。CI首次发现6PNG缺来源登记，已补齐来源、保留旧类别并严格验证无重复键，完整本地check-license与Lua hover PASS。merge:auto --dry-run当前拒绝：Full CI routing is not ready；一次诊断确认最新Quality run43534482184/attempt1的impact处于GitHub QUEUED，无已知本HEAD业务失败。尚未原生自动合并授权，不是已入队；遵循CI异步边界不反复轮询、未绕过门禁。交接文件build/delivery/menu-red-650-handoff.json保存后续统一入口命令；待Full路由就绪且精确HEAD/BASE仍匹配时可按既有Owner批准继续，不需重复批准。不标Done或清理唯一证据工作树。
+
+承接E1。本轮该核对尚未完成，旧去标题AC历史保留，不能拿旧截图当当前候选通过。
 <!-- SECTION:NOTES:END -->

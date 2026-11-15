@@ -1,16 +1,16 @@
 ---
 id: TASK-100
-title: 复核当前候选热路径基准（已有工具与样本保留）
+title: 建立主要运行时路径的同源性能基准
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:12'
-labels:
-  - 待验
-  - delivery-verify
-milestone: m-8
+updated_date: '2026-11-15 12:37'
+labels: []
+milestone: m-7
 dependencies: []
+references:
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 documentation:
   - docs/backlog-details/M7-SCOPE-GAP-20261105.md
   - docs/backlog-details/TASK-100.md
@@ -31,6 +31,7 @@ ordinal: 163000
 - [ ] #1 同一源码、输入及种子下覆盖冷暖启动、战斗回合、地图菜单奖励切换，记录模块加载、原生写入、快照、内存和总耗时
 - [ ] #2 至少三组可复现配对样本报告P50/P95与调用次数，原静止300帧重复提交有绝对计数；整体路径无未解释回退
 - [ ] #3 优化以行为等价、独立审查和实际合后Full验收；无官方候选设备证据保持UNVERIFIED并明确交接TASK-4.21
+- [ ] #4 本轮容量与性能优化保持完整玩法/画质/规则，量化前后同条件热点及至少三组配对；官方容量、真实设备长帧/FPS与离线计数分开，未覆盖快速输入/系统卡顿不得宣称全面不卡顿。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -41,6 +42,8 @@ ordinal: 163000
 4.按Owner集成要求保留原#523，以实际合入的#521/c685409d建立线性接续，不强推、不引入合并提交；刷新schema2三VM来源与分项，保留历史证据和未勾AC，完成精确独审及原生Full/队列/合后验证。
 
 2026-11-07：复用#532已审六intent控件增量，在当前核心加#538候选依赖组合执行一次原48样本固定协议，不重采求绿；依赖实际落地后核对494输入同源，和既有成本/协议/回滚保护共用正常Full与独审。
+
+2026-11-15 Owner再次明确容量/算法/尤其卡顿优化，且不得损害体验：以已审9b产品与PR672最终1f为本轮对照；先查100/100.1/109/4.21及在途树去重，分别只读量化战斗热路径、native/资源生命周期、无损打包。只修已证实冗余，独立分支和文件所有权隔离，前后同输入/种子/原生最终状态与Run/RNG等价，保留失败/重入/取消/销毁回归；至少三组配对计数与P50/P95并明确离线边界，复用现有工具/预算/CI路由，不删功能或降画质。独审和原门禁后再组合新命名GIL、严格读回与Windows路径；原7cb/latest/9b交付不覆盖，官方容量/真实ready/PC手机仍需同候选设备证据，用户自行导入且未给键鼠窗口。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -60,7 +63,5 @@ PR #523 首份离线Host全路径基线已实现：固定实际seed、源摘要�
 
 2026-11-08 PR558冻结311089f9已获独立复审及精确Full成功；C实际首房领奖回图和主动放弃结算有原图，原C2清理失败保留，另次C60正式startup通过、完整UI仍未过。独立sourceDirty E1原生两隐藏页停用实测菜单51.70/选角53.65 FPS（同机60上限短窗），日志false→true及合法Neow/首战拖牌通过；不借认C、不归因手机。显式开关源码接入与E2边界诊断继续，负责人、Sprint、任务状态及未验AC保持；入口experiments/native-2d-vertical-slice/IMPLEMENTATION.md。
 
-2026-11-14逐项对账：同源Host基准、visibility样本及原SDK结果均已交付，复用现有工具；未覆盖当前生产候选完整冷暖路径的测量继续保留，不把旧样本当当前，也不重造基准工具。
-
-2026-11-14第二轮状态纠正：已有Host基准、visibility配对与SDK阶段记录，当前候选完整覆盖待补；工具及研究已开展，不应标To Do。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+用户已要求停止开发。无损序列化d009/b4及坐标路径statusView 900→0已合成be41并推送；实际GIL减少222239字节非官方容量。其他根setter/手牌tuple/三角函数缓存仅调查未实施。来源接续fc999成本5/6 FAIL，详附件，不Done。
 <!-- SECTION:NOTES:END -->

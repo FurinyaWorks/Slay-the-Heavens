@@ -3,13 +3,13 @@ id: TASK-4.4
 title: 敌人意图一眼看懂，状态详情改成分组卡片
 status: In Progress
 assignee:
-  - '@Furinya'
+  - Furinya
 created_date: '2026-10-24 10:34'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 12:37'
+due_date: '2026-10-26'
 labels:
   - awaiting-live
   - 待验
-  - delivery-verify
 milestone: m-5
 dependencies: []
 references:
@@ -17,6 +17,7 @@ references:
   - docs/backlog-details/MOBILE-QA-20261028.md
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/backlog-details/MOBILE-QA-20261029-SOURCES.md
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 parent_task_id: TASK-4
 priority: medium
 type: feature
@@ -39,6 +40,7 @@ ordinal: 85000
 - [ ] #6 按手机实测核对状态详情与意图可读性，记录缺口。
 - [ ] #7 单位详情从头像入口即可发现全部当前增益/减益及剩余回合，超过高度可连续滚动；易伤不藏在缺乏提示的第二页，关闭不穿透。
 - [ ] #8 默认显示最终伤害和必要效果，删除力量+0及取整等无效计算链；非零修正按需查询，保留多段/窃金/逃跑等真实机制信息。
+- [ ] #9 本轮沉眠守卫用易懂睡眠表现且与真实意图一致，醒来/隐藏/复用不残留或泄露；敌人选中装饰不干扰阅读，状态面板美化不抢核心缺陷。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -47,6 +49,8 @@ ordinal: 85000
 修正用户截图指出的虚弱上箭头语义：虚弱/缠绕改用主题既有削弱图标，排查其他状态映射并运行主题/布局与战斗UI回归。
 
 2026-10-31 修复PR432意图回归合同未同步：保留独立原版constructor事实及x/root/命中框，显式核原生适配后的art/hitbox净空、单图标、右侧同高伤害数值和多段文本；不修改生产。保留现有8类可读性负对照，仅迁移旧坐标/左下数字合同并定向复验。
+
+2026-11-14 接续AC7真实缺口：保留现有意图规则与已交付分组卡片，复用原生滚动控件实现单位详情连续查看，保留C档点按分页；补头像入口、关闭不穿透、旧输入和销毁/重开回归。只在独立本地分支，不推送、不集成，官方与手机未验AC保持未完成。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -78,7 +82,13 @@ PR #304：手机反馈己方与敌方详情关闭不一致，可能为旧线上�
 
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
-2026-11-14清理旧窗口日期：原due_date=2026-10-26保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
+本轮task:pick ALLOW，核对最新develop和开放PR，无本任务源码占用。4.4现有实现仍paginate+page点击循环，AC7连续滚动未接；不重做已实现力量+0过滤或旧意图修复。
 
-2026-11-14第二轮状态纠正：已有4/8项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+当前独立执行者product_queue_scan，唯一源码写入树.worktrees/status-detail-scroll，feat/status-detail-scroll；只接AC7连续滚动，保留C档降级与已交付意图文案。
+
+2026-11-14 已在独立本地feat/status-detail-scroll@baa1174ca8e9955f18b83d97cd0a2ea122aac051实现AC7缺失的Native Grid连续滚动，固定显示全部增减益数量与提示，48高C档切换；真模板注册/正式打包发现已接。新2/2、原status_help8组、布局16/16、readability3/3、候选嵌入读回23/23、default/official构建、架构347/1957与固定静态全部通过。独审/root/batch_review:4.4:baa1174ca8e9:20261114 PASS。新增严格边界含0/1基延迟、回收销毁、actor替换、奖励相位到来但未重绘、旧Down/Up/Click与Controller返回。尚无本轮官方候选/导入/ready/PC手机，AC5/6/7的实机部分未验，不以源码代替；保持In Progress。技术附件在该分支docs/backlog-details/TASK-4.4-NATIVE-STATUS-SCROLL-20261114.md。未推送、PR或集成，不影响上线。
+
+2026-11-14 Owner追加明确允许推送、禁止PR。本分支feat/status-detail-scroll@baa1174ca8e9955f18b83d97cd0a2ea122aac051已普通原子推送origin，随后ls-remote逐SHA读回一致。仅远端保存；没有创建PR、启用自动合并、合入develop/master或发版，原AC与任务状态保持。
+
+承接C5/F4/F7；Zzz及L角已在9b/be41，真实设备待验，状态面板精修低优先级。
 <!-- SECTION:NOTES:END -->

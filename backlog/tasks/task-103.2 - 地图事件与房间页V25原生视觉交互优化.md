@@ -1,16 +1,16 @@
 ---
 id: TASK-103.2
-title: 复核房间与事件视觉差异（流程切片已交付）
+title: 地图事件与房间页V25原生视觉交互优化
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-10 11:46'
-updated_date: '2026-11-14 10:13'
-labels:
-  - 待验
-  - delivery-verify
+updated_date: '2026-11-15 12:37'
+labels: []
 milestone: m-8
 dependencies: []
+references:
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 169000
@@ -28,12 +28,17 @@ Owner明确追加授权接续地图优化，打磨两幕剧情事件及商店营
 - [x] #2 既有事件选择、费用奖励、卡牌选择、返回地图与同局状态回归通过。
 - [x] #3 可交互Web Simulator入口及同源SDK连续操作/资源释放证据可复现；官方设备未测明确说明。
 - [x] #4 独立PR和证据交付，不擅自合并或发布。
+- [ ] #5 本轮商店所有商品及悬停不压盖；删牌/锻造/牌组复用共享浏览器和全局按钮，数量变化、末页、长文与层级无溢出，滚动/分页按既有用途及实际性能选择。
 <!-- AC:END -->
 
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
 1.核查现有完整事件及#588范围，继承#603独立树。2.沿用V25左右叙事与四选项结构，先做真实剧情事件视觉身份、长文与禁用说明，再覆盖商店营地宝箱和选牌房间已有面。3.复用SDK/GameUI保存与浏览器Pixi真实渲染，逐屏查看并进行选择/返回/20次连续操作释放。4.保持规则与RNG，既有事件/房间回归、独审、独立PR和可交互入口，官方设备未测列明。
+
+2026-11-15 PC截图9商店第二排卡牌被萝卜遗物压盖：shop_pc_slice在独立feat/pc-shop-closeout-1115核实际布局并补矩形相交回归，仅scripts/v25-node-layout.mjs及对应测试；保留价格/规则/控件功能，与图标a27449ec成果分离。
+
+7cb组合真实根因细化：official商店卡牌列被shelfColumns重排而物品列未同步，修复仅ui_theme.json既有merchant物品坐标及真实组合布局回归；不造新组件、不减控件/商品。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -51,15 +56,17 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 
 整片独立复审纠正：最新d218 revision-2已撤回上一版视觉结论，AC1仍未完成；取消旧勾选，保留In Progress和原实测证据。源码组合通过不替代视觉/官方设备验收。
 
-2026-11-14逐项对账：607/634已接入事件与房间，AC2-4保持已勾；revision-2撤回AC1视觉结论，当前仅此缺口未完成，后续652宝箱修复继续原PR，不重做事件流程。
+2026-11-14 Owner截图追加纠偏：独立切片 feat/treasure-readable 处理官方房间背景移除、宝箱遗物关联关键词和诅咒解释、长文截断及提示文字对比度；不覆盖既有PR646或其他工作树。本轮先离线验证，官方设备未测。
 
-2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+2026-11-14 宝箱截图纠偏已实现于独立 feat/treasure-readable：房间纯色/自绘宝箱、关联混乱与诅咒牌面、完整两行和高对比页脚。默认与official构建、定向回归、语法/架构/daily预算通过；独审发现的行高风险已修正。证据 docs/evidence/treasure-readable-20261114/。Full与官方/手机未验，AC1及In Progress保持。
 
-2026-11-13 本轮反馈源码3ce7a682：普通事件复用styleEvent、去重复正文且保留错误；奖励条目复用圆角材质/旗帜按钮与rewardRows token。真实SDK自然7屏到首战及卡组/抽牌/空弃牌完成，祝福198次绘制0遮罩；受控奖励normal/hover/领取、两次排序返回及Lab三药+离开实测通过（仅SDK，非官方设备）。原始证据与验收边界见 docs/evidence/sts-feedback-20261113/README.md。主菜单按本次用户指示排除，官方导入/ready/手机要求保持未完成；通过现有精确SHA复审和CI后挂自动合并。
+本轮本地提交858f2f34，工作树干净。自动审批拒绝向origin FurinyaWorks/Slay-the-Abyss 推送：未确认该目的地源码外发授权；未推送、未开PR、未合并。等待Owner明确远程推送授权，离线成果完整保留。
 
-最终产品切片 fa7273ec：原生旧列表保留校准时序，原native6+官方复用3共9/9，原断言未改；来源10+隔离1和最终自然SDK7屏全部通过，祝福227帧0遮罩、空弃牌可开关。磁盘断连恢复后Git连通性、659项原始输入、存档及旧4档复核匹配；旧模拟器已停，新服务按最终源码重新启动。详细来源和未验证官方/设备边界保持在本轮README与source-checks.json。
+Owner已明确批准推送及自动合并。本轮PR652已创建，HEAD858f2f34193724b012b64b372160891540f1974d / BASEe805a87dc4df1a048ba5995931d98a4e4899b5e9 经独立复核，merge:auto读回auto-merge-requested。授权证明 .worktrees/treasure-readable/build/delivery/auto-merge-652-858f2f341937.json；ci:full，原完整CI/原生队列及合后验证仍待，不宣称已合并。
 
-2026-11-14 追加拒收已修于90c46efc：普通选项切角遮片排到装饰层后，上沿保留而不再溢出；大问号按事件换官方物品图，复用单一图片控件与主题映射。最终SDK大鱼/实验室5图、44/66/88三高度普通/悬停12组切角像素均通过，14官方图预取成功。新版试玩55316，旧62127保留至交付。源码来源10/10、隔离1/1和独审通过，证据在docs/evidence/sts-feedback-20261113/。官方与设备验收仍未完成；按用户授权送正常自动合并门禁。
+PR652许可证门禁发现两张PIL诊断图漏登记，已补docs/legal/assets.json并暂停/撤销旧授权后重审。新HEADa98a4d8389f4776753da5fb2f21245c13f12f9b3许可证CI成功；新精确独审通过，merge:auto再次读回auto-merge-requested。当前证明 .worktrees/treasure-readable/build/delivery/auto-merge-652-a98a4d8389f4.json；Full/队列/合后验证继续待GitHub，不称已合并。
 
-Full43473829313失败后已用原入口暂停授权并续修。真实冷列表提前ready的P1修于ab895b0c：按文档可见索引+不同存活控件准入，保空弃牌与warm排序。新SDK自然7屏/181祝福帧0cover、controlled17卡266排序帧0cover通过；旧55316已停，新56606可玩。Full旧合同按明确新要求续接并保原before全文、原业务/RNG/输入断言和预算；source10与repair binding复验通过，Defect隔离旧H身份明确保留。按用户最新指示不扩测，收口后立即重新挂正常自动合并，不等待整轮CI。
+本轮商店33055cf4已被独立battle agent复审PASS并整合9801fc10。真实default/official生成树验证全部商品、价格、hit与卡片hover不交叠；旧图9 card7与relic1重叠29，物品列等距右移50后净距21，最右物品与删牌留25。未改商品尺寸/价格/RNG、未新增控件。PC当前候选待验，AC1仍未完成。
+
+承接D1/D3/E6。商品列+50已在9b/be41，离线净距通过，设备待验；共享分页与事件/营地/奖励按钮风格尚未全部统一，不能新造列表。
 <!-- SECTION:NOTES:END -->

@@ -1,16 +1,15 @@
 ---
 id: TASK-29.1
 title: 打磨战斗动画、打击感和死亡音效
-status: In Progress
+status: To Do
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 03:53'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 12:37'
 labels:
   - enhancement
   - awaiting-live
   - 待验
-  - delivery-verify
 milestone: m-8
 dependencies: []
 references:
@@ -20,6 +19,7 @@ references:
   - docs/BACKLOG-AUDIT-20261026.md
   - docs/plans/2026-10-30-battle-life.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
+  - docs/backlog-details/TASK-42-PC-CLOSEOUT-HANDOFF-20261115.md
 parent_task_id: TASK-29
 priority: medium
 ordinal: 44000
@@ -39,6 +39,7 @@ ordinal: 44000
 - [x] #4 敌人依次蓄势、出手、命中、回位；非攻击动作不会演成攻击。
 - [x] #5 表现不会越玩越卡，取消或演出故障后仍能正常操作，自动检查通过。
 - [ ] #6 同一完整游戏候选已实际试玩并录制含声音录像，逐项审阅打击、格挡、状态、多段群攻、敌人行动及死亡音效，记录可接受结论或待修项；未试听不能完成。
+- [ ] #7 本轮最后一击先完成正确死亡/必要反馈，再进入奖励与地图，无提前闪屏；核查命中及抽牌/弃牌/洗牌/消耗必要反馈，异常中断重入状态一致；高成本装饰精修仅归TASK-110。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -71,5 +72,5 @@ ordinal: 44000
 
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
-2026-11-14第二轮状态纠正：已有5/6项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+承接C1/F5，仍待复现、修复和同候选实机，不因历史动画AC已勾就当本次症状已解决。TASK-110在PR670发版后，必要反馈缺陷不得一并延期。
 <!-- SECTION:NOTES:END -->
