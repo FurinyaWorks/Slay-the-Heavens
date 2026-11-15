@@ -1,13 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync as rawReadFileSync} from 'node:fs';
+import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
+// Original assertions keep their complete authenticated release predecessor.
+// release-selection-map-source.test.mjs separately verifies every live after binding.
+const readFileSync=releaseSelectionMapCiRead(rawReadFileSync);
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
- assertIntegratedCurrent();assert.deepEqual(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
+ assertIntegratedCurrent();assert.deepEqual(releaseSelectionMapPriorInventory(discoverJs(),'js',rawReadFileSync),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
  for(const [path,row]of Object.entries(proof.files))for(const target of Object.keys(proof.sources)){
   const source=raw(path),production=path.startsWith('src/')||path==='config/architecture.json';
   const expected=production?source:row.views[target]?.source??source;
