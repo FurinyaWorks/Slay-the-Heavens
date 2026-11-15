@@ -1,8 +1,8 @@
 # PC26 / PC30 共享分页与房间按钮离线修复
 
-状态：产品切片已提交，等待独立复审与严格来源合同接续；不是官方或设备验收。TASK-103 / TASK-103.2 保持原状态，由主线程统一维护。
+状态：产品独立复审已通过，最小来源接续已组合，来源独审进行中；不是官方或设备验收。TASK-103 / TASK-103.2 经Backlog CLI续接，状态In Progress，原已勾与新未验AC均保留。
 
-基线 `release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210`；首轮产品 `a925ce43bda10030d7dfd7fe7b96c450c17f8702`，独审纠偏后当前产品 `93ae73760ecbe6540fac49d96c2309345d6b7824`。分支 `feat/release-pc-picker-controls-1116`。首轮7文件身份见 [identity.json](identity.json)，本次4文件增量身份见 [hover-fix-identity.json](hover-fix-identity.json)；未推送、开PR、改Backlog、develop、master或Tag。
+基线 `release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210`；首轮产品 `a925ce43bda10030d7dfd7fe7b96c450c17f8702`，独审纠偏后当前产品 `93ae73760ecbe6540fac49d96c2309345d6b7824`。分支 `feat/release-pc-picker-controls-1116`。首轮7文件身份见 [identity.json](identity.json)，本次4文件增量身份见 [hover-fix-identity.json](hover-fix-identity.json)；产品执行者707da检查点未推送、开PR或改Backlog，之后CLI/来源接续由主线程另提交。未改develop、master或Tag。
 
 ## 来源与边界
 
@@ -64,3 +64,7 @@ git diff --check 36b9b157ee6f05b65eb9f1da7e2978647d36c210..HEAD
 ```
 
 TMP/TEMP在根`.artifacts/release-picker-temp`，依赖和Luacheck物理复用既有安装。未执行Full、GUI、MCP、候选写入、官方导入或ready；没有PC/手机帧时、原生滚动性能或本候选官方视觉证据。PC26的加载闪烁仍由PR684独立验证；完整PC26/30与相关任务验收保持未完成。
+
+主线程接续：产品独审精确绑定707da/93ae，结论CODE_SCOPE PASS、unresolved为空；[最终报告](independent-review.json)与[初REQUEST_CHANGES](independent-review-initial.json)均保留。Source作者9ff8c89f已选择性组合为2a3f836f，实际7个产品blob不变；[来源证据](../release-picker-controls-source-1116/README.md)记录source6/6、owner/copy7/7、历史5/5和raw1。原source失败仍是历史事实，未删改为通过；新身份与产品回归不混算。
+
+最新Release仍36b9，独立PR692修复共同bootstrap来源/工作流失败但尚未合入。按仓库PR依赖入口，本片先保全分支与审查，待该前置实际落地后从新Release before接续共享来源、复审并提交正常Release PR，不重复其10项修复。预测及60秒预留按docs/CI.md168仅诊断，物理工作流实际超时保持严格核验。官方候选、ready、容量、PC与实体手机不因此完成。

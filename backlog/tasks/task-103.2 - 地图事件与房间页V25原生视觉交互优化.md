@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-10 11:46'
-updated_date: '2026-11-15 18:20'
+updated_date: '2026-11-15 18:30'
 labels:
   - 待验
   - delivery-verify
@@ -74,4 +74,6 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 Full43473829313失败后已用原入口暂停授权并续修。真实冷列表提前ready的P1修于ab895b0c：按文档可见索引+不同存活控件准入，保空弃牌与warm排序。新SDK自然7屏/181祝福帧0cover、controlled17卡266排序帧0cover通过；旧55316已停，新56606可玩。Full旧合同按明确新要求续接并保原before全文、原业务/RNG/输入断言和预算；source10与repair binding复验通过，Defect隔离旧H身份明确保留。按用户最新指示不扩测，收口后立即重新挂正常自动合并，不等待整轮CI。
 
 PC30产品93ae7376/证据707da8ff，default44x208/56x44与原触点不变；official复用既有200x48 Deck分页和flagButton，真实Host只读14牌、移除5页/末页/旧tap/取消/仅一次收费、锻造2变1页及C档通过。初真实hover遮挡P2修于93ae，6项定向与四画布独审CODE_SCOPE通过，原RED保留。source/CI接续中，尚未推PR；不扩大到PR685远虑多选，不将画布模拟冒充官方PC手机，原3项历史已勾AC保留、所有新#676 AC未勾。
+
+分页代码与最小source在Release36独立树已组合，产品93ae/源9ff各自证据分开；产品独审PASS、source独审待，所有新PC/手机AC保持未勾。PR692入场共同前置尚未合，当前来源packet不能认证它实际落地后的组合，正常PR仍待该基线接续。
 <!-- SECTION:NOTES:END -->
