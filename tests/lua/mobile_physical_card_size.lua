@@ -4,6 +4,14 @@ local function near(a,b)assert(math.abs(a-b)<1e-6,tostring(a)..' ~= '..tostring(
 -- iPhone 14 Pro reference: 2556x1179 at 3x, landscape 852x393 points.
 -- These are geometry checks; actual text rasterization/touch still needs the device.
 local points=393/720
+local function findSpec(name,parent)
+ for _,node in ipairs(parent or F.Layout)do
+  if node.name==name then return node end
+  local found=findSpec(name,node.children or {})
+  if found then return found end
+ end
+end
+local handBody=findSpec('label',assert(findSpec('card1',assert(findSpec('battlePanel')).children)).children).text.fontSize
 local function bounds(card)
  local hit=card:GetChild('hit');local a=card.localRotationZ*math.pi/180
  local dx,dy=hit.x*card.localScaleX,hit.y*card.localScaleY
@@ -27,7 +35,7 @@ for _,touch in ipairs({false,true})do
     assert(other.x<hit[1]or other.x>hit[2],'raised touch card steals an adjacent lane')
    end
    if touch then
-    assert(14*card.localScaleX*points>=13,'focused touch body is below 13pt reference')
+    assert(handBody*card.localScaleX*points>=13,'focused touch body is below 13pt reference')
     assert(card.y-Theme.layout.card.size[2]*card.localScaleY/2>=-316-1e-6,'touch peek covers the reference home inset')
    else near(card.localScaleX,Theme.motion.hoverScale)end
   end
@@ -48,7 +56,8 @@ for _,touch in ipairs({false,true})do
  assert(view:refresh({phase='combat',combat=battle,combatGeneration=1},true))
  local first,second=root:GetChild('card1'),root:GetChild('card2')
  if touch then
-  assert(14*first.localScaleX*points>=13,'choice body is below 13pt reference')
+  local font=findSpec('label',assert(findSpec('face',spec.children)).children).text.fontSize
+  assert(font*first.localScaleX*points>=13,'choice body is below 13pt reference')
   assert(second.x-first.x>Theme.layout.card.size[1]*first.localScaleX,'three touch card faces overlap')
   for _,name in ipairs({'before','after','confirm'})do
    local button=root:GetChild(name);local hit=button:GetChild('hit')
@@ -69,7 +78,7 @@ for _,touch in ipairs({false,true})do
  host:update(10)
  local card=panel:GetChild('card2')
  if touch then
-  assert(14*card.localScaleX*points>=13,'reward body is below 13pt reference')
+  assert(handBody*card.localScaleX*points>=13,'reward body is below 13pt reference')
   ui:setHover(2);host:update(10)
   local half=Theme.layout.card.size[2]*card.localScaleY/2
   local skip=panel:GetChild('skip');local hit=skip
