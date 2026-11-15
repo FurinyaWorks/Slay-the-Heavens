@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "baseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productSha": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "node": "v24.18.0",
+  "commands": [
+    "node --test --test-concurrency=1 tests/exit-menu-closeout.test.mjs tests/pause-route-entry.test.mjs",
+    "node --test --test-concurrency=1 tests/exit-menu-closeout.test.mjs tests/pause-route-entry.test.mjs tests/exit-ui-layout.test.mjs tests/menu-input-boundaries-current.test.mjs",
+    "node scripts/build-lua-data.mjs",
+    "node scripts/build-ui.mjs",
+    "node --test --test-concurrency=1 tests/exit-menu-closeout.test.mjs tests/pause-route-entry.test.mjs tests/exit-ui-layout.test.mjs tests/menu-input-boundaries-current.test.mjs tests/session-menu-navigation.test.mjs tests/route-preview-return.test.mjs tests/map-menu-return.test.mjs",
+    "node --test --test-concurrency=1 tests/pause-route-entry.test.mjs",
+    "node scripts/check-engineering.mjs"
+  ],
+  "rows": [
+    {
+      "path": "red.log.gz",
+      "rawBytes": 5167,
+      "rawSha256": "dff3202ecb889c50f89b8126fd55cf602fb097b227f031bfb23c96545f1ebe26",
+      "gzipSha256": "624fc39f4a9f36f0e621e6f68caae09fd652f7665aeca92a3a06abfe83934db2"
+    },
+    {
+      "path": "green.log.gz",
+      "rawBytes": 3137,
+      "rawSha256": "f6fdc7b1d5ab697faeeaede899237862703e0a88b3218b28cf5e15a8b72c4294",
+      "gzipSha256": "3577cef9408031286dfa50c253c4a106829ff2e5a0c13f7da77f5ee484e53318"
+    },
+    {
+      "path": "related.log.gz",
+      "rawBytes": 28023,
+      "rawSha256": "b1c6ee29704c089596989cfd43a96f46a04a71c589c25fc547549cf86280c102",
+      "gzipSha256": "400ffce467bd5e18397baba3a2ccd60a5eb5e5d459d07ffa453dc7bd2cc74caa"
+    },
+    {
+      "path": "route-both-pages.log.gz",
+      "rawBytes": 318,
+      "rawSha256": "fb253e231dc5393ebccab0f26d0e2f7eb391ebb4b17656d36ecb16467bfc24c3",
+      "gzipSha256": "bb93584eb019229be82b2b5192749300f72b2d7b3b662eee48e5ff4ff1cf6c93"
+    },
+    {
+      "path": "engineering.log.gz",
+      "rawBytes": 228,
+      "rawSha256": "f6f608a5934aaac5055075796664c6fc9bdcdb4e4952dff5dcc86bdc133fce69",
+      "gzipSha256": "2f6fd13a59e1b651ffa078b5bd216bb0ff8723c9d1321427eedb9edf45547337"
+    },
+    {
+      "path": "engineering-with-tool.log.gz",
+      "rawBytes": 377,
+      "rawSha256": "a04557fe507f234c439836780e7865022fb46a1d099281c21f44f2795b0b1184",
+      "gzipSha256": "a88d62caec2cd53d99e6ebebdf01c2fd91a94c18c806d46f039dec5916c66dc4"
+    }
+  ]
+}
