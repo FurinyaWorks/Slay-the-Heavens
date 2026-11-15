@@ -2,7 +2,7 @@
 
 状态：产品切片已提交，等待独立复审与严格来源合同接续；不是官方或设备验收。TASK-103 / TASK-103.2 保持原状态，由主线程统一维护。
 
-基线 `release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210`；产品 `a925ce43bda10030d7dfd7fe7b96c450c17f8702`。分支 `feat/release-pc-picker-controls-1116`。7个产品/回归文件的本机字节身份见 [identity.json](identity.json)；未推送、开PR、改Backlog、develop、master或Tag。
+基线 `release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210`；首轮产品 `a925ce43bda10030d7dfd7fe7b96c450c17f8702`，独审纠偏后当前产品 `93ae73760ecbe6540fac49d96c2309345d6b7824`。分支 `feat/release-pc-picker-controls-1116`。首轮7文件身份见 [identity.json](identity.json)，本次4文件增量身份见 [hover-fix-identity.json](hover-fix-identity.json)；未推送、开PR、改Backlog、develop、master或Tag。
 
 ## 来源与边界
 
@@ -40,6 +40,14 @@
 中间静态检查曾捕获 `ctx.paintButton` 复杂度16超过15，提取本模块 `sharedButtonChrome` 后原门槛通过；未增加预算。原失败没有通过放宽阈值处理。
 
 Node断言diff的空白行含空格，完整base..HEAD diff-check将其报告为尾随空白。两份失败日志的原始字节另存 `official-contracts.txt.raw.gz` 与 `frozen-source.txt.raw.gz`；对应可读txt仅清理行尾空格，原失败内容与断言保留。
+
+## 独审P2纠偏
+
+独立复审对a925给出REQUEST_CHANGES：14牌锻造首屏真实CursorEnter后，底排卡片保持既有1.08缩放，新200×48分页与内侧card8/11新增交叠，外侧card7/12交叠也扩大。原静态未悬停检查漏掉此边界。独立初始反例完整保存在 [review-hover-independent-before.json](review-hover-independent-before.json) 与 [review-hover-independent-host.log](review-hover-independent-host.log)，未改原2FAIL或冻结来源报告。
+
+先在a925生产源上补真实Enter/world矩形回归，捕获 `hover card11 forgeNext overlaps`，原始字节保存在 `review-hover-red.txt.raw.gz`，可读输出见 [review-hover-red.txt](review-hover-red.txt)（仅规范化缩进空白）。修复只用现成卡高、底排行、hoverScale、Deck按钮高度与`space.xs=4`推导两行位置：hover下沿-217.4，分页中心-245.4（上沿-221.4留4）；底部返回/确认中心-303.4（上沿-273.4再留4），底沿-333.4仍在safe.y=20的-340以内。未缩小卡片、hover、按钮、触点，未改材质、动作或预算。
+
+[review-hover-green.txt](review-hover-green.txt) 记录当前6项定向通过：14牌首末页、26牌完整中页且双分页可见，真实Enter/Exit后读取当前Host变换；在1280×720、1920×1080、2340×1080三个分辨率计算world矩形，检查所有可见卡与分页/页码/底按钮无交叠，选中预览与底按钮不盖，底按钮安全区；原长文/C档/事务链路、当前official完整身份合同、default旧尺寸和错材质/旧hit负控保留。仅复跑相应定向测试与改动JS语法检查，没有再次运行Fast或不变大套。产品已发独审按93ae增审；本段不是独审通过结论。
 
 复现命令均在本工作树，`node`指上述现有Node24：
 

@@ -1,0 +1,40 @@
+✖ current official Lua Host keeps shared states, readonly deck, paging, stale touches and C-tier transactions (7251.4205ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7400.9724
+
+✖ failing tests:
+
+test at tests\release-picker-controls.test.mjs:75:1
+✖ current official Lua Host keeps shared states, readonly deck, paging, stale touches and C-tier transactions (7251.4205ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
+  ABYSS_RUN seed=1 source=explicit
+  tests/lua/support/release_picker_controls.lua:92: hover card11 forgeNext overlaps
+  stack traceback:
+      [JS]: in function 'assert'
+      tests/lua/support/release_picker_controls.lua:92: in local 'separate'
+      tests/lua/support/release_picker_controls.lua:103: in local 'hoverClearance'
+      tests/lua/support/release_picker_controls.lua:124: in main chunk
+      [JS]: in function 'dofile'
+      (command line):3: in main chunk
+
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-picker-controls-1116/tests/release-picker-controls.test.mjs:86:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

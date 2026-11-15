@@ -1,0 +1,196 @@
+{
+  "defaultUnchanged": true,
+  "identities": [
+    {
+      "name": "back",
+      "identityRetained": true,
+      "hitKind": "cursorArea",
+      "size": [
+        180,
+        60
+      ],
+      "position": [
+        -490,
+        -290
+      ],
+      "decorativeReceivers": 0
+    },
+    {
+      "name": "confirm",
+      "identityRetained": true,
+      "hitKind": "cursorArea",
+      "size": [
+        180,
+        60
+      ],
+      "position": [
+        490,
+        -290
+      ],
+      "decorativeReceivers": 0
+    },
+    {
+      "name": "previous",
+      "identityRetained": true,
+      "hitKind": "cursorArea",
+      "size": [
+        200,
+        48
+      ],
+      "position": [
+        -430,
+        -236
+      ],
+      "decorativeReceivers": 0
+    },
+    {
+      "name": "next",
+      "identityRetained": true,
+      "hitKind": "cursorArea",
+      "size": [
+        200,
+        48
+      ],
+      "position": [
+        430,
+        -236
+      ],
+      "decorativeReceivers": 0
+    },
+    {
+      "name": "forgePrevious",
+      "identityRetained": true,
+      "hitKind": "cursorArea",
+      "size": [
+        200,
+        48
+      ],
+      "position": [
+        -430,
+        -236
+      ],
+      "decorativeReceivers": 0
+    },
+    {
+      "name": "forgeNext",
+      "identityRetained": true,
+      "hitKind": "cursorArea",
+      "size": [
+        200,
+        48
+      ],
+      "position": [
+        430,
+        -236
+      ],
+      "decorativeReceivers": 0
+    }
+  ],
+  "hoverGeometry": [
+    {
+      "card": "card7",
+      "cardPosition": [
+        -450,
+        -104
+      ],
+      "cardSize": [
+        150,
+        210
+      ],
+      "hoverScale": 1.08,
+      "paging": "forgePrevious",
+      "pagingPosition": [
+        -430,
+        -236
+      ],
+      "pagingSize": [
+        200,
+        48
+      ],
+      "intersection": [
+        161,
+        5.400000000000006
+      ]
+    },
+    {
+      "card": "card8",
+      "cardPosition": [
+        -270,
+        -104
+      ],
+      "cardSize": [
+        150,
+        210
+      ],
+      "hoverScale": 1.08,
+      "paging": "forgePrevious",
+      "pagingPosition": [
+        -430,
+        -236
+      ],
+      "pagingSize": [
+        200,
+        48
+      ],
+      "intersection": [
+        21,
+        5.400000000000006
+      ]
+    },
+    {
+      "card": "card11",
+      "cardPosition": [
+        270,
+        -104
+      ],
+      "cardSize": [
+        150,
+        210
+      ],
+      "hoverScale": 1.08,
+      "paging": "forgeNext",
+      "pagingPosition": [
+        430,
+        -236
+      ],
+      "pagingSize": [
+        200,
+        48
+      ],
+      "intersection": [
+        21,
+        5.400000000000006
+      ]
+    },
+    {
+      "card": "card12",
+      "cardPosition": [
+        450,
+        -104
+      ],
+      "cardSize": [
+        150,
+        210
+      ],
+      "hoverScale": 1.08,
+      "paging": "forgeNext",
+      "pagingPosition": [
+        430,
+        -236
+      ],
+      "pagingSize": [
+        200,
+        48
+      ],
+      "intersection": [
+        161,
+        5.400000000000006
+      ]
+    }
+  ],
+  "host": {
+    "status": 0,
+    "stdout": "ABYSS_RUN seed=1 source=explicit\nHOST_FORGE_HOVER_SCALE 1.08 NEXT_VISIBLE true\nHOST_FORGE_NEXT_WORKS\n",
+    "stderr": ""
+  }
+}

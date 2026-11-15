@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "releaseBase": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "initialProduct": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+  "incrementalBase": "14363e83a93fcc668deddce9fe38f6f4d05f1926",
+  "product": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+  "reason": "Independent review P2: hovered bottom-row cards overlap widened forge paging",
+  "sources": [
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "physicalSha256": "a3a675d9a6e92b0d03de1c3ac9b6acd9ec7b7b839b83091b24f76ffe486a9963"
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "physicalSha256": "4f15427adb1c4af23b37c2adedfd2362c09a49374d125e0ca4f54db84705862d"
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "physicalSha256": "de254aff6addb0fd3b047578088ca5637c9bb89c562073683e633f00765c2806"
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "physicalSha256": "d0fc814f0b33bc6aa898efc8bd28a2eee0a3ef27857d3edc040aced6c7f2610f"
+    }
+  ],
+  "geometry": {
+    "hoverScale": 1.08,
+    "hoverBottom": -217.4,
+    "gap": 4,
+    "pagingY": -245.4,
+    "actionY": -303.4,
+    "actionBottom": -333.4,
+    "safeBottom": -340
+  },
+  "targeted": "6 passed",
+  "fast": "NOT_REPEATED",
+  "full": "NOT_RUN",
+  "officialImport": "NOT_RUN",
+  "devices": "NOT_RUN"
+}

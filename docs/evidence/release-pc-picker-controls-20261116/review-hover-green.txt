@@ -1,0 +1,14 @@
+✔ approved pages keep live input identities while unrelated pages retain their geometry (587.1229ms)
+✔ default profile retains its original side-arrow geometry and direct native receivers (33.0523ms)
+✔ official forge and removal use the permanent browser paging material and shared footer geometry (339.9811ms)
+✔ shared browser contract rejects the old side-bar hit and an unrelated button material (293.7952ms)
+✔ room return and confirm reuse the existing character/reward flag artwork while retaining direct input paths (279.4197ms)
+✔ current official Lua Host keeps shared states, readonly deck, paging, stale touches and C-tier transactions (11317.0965ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13702.7608
