@@ -65,16 +65,29 @@ function M.finish(ui)
     M.until_(ui, function() return ui.mode == 'defeat' and not ui.motion.deathReveal end)
 end
 function M.open(ui, root, api)
-    local name=root:GetChild('runMenu'):GetChild('quit').visible and 'quit' or 'abandon'
-    if api then
-        assert(M.event(ui, api, M.hit(root, 'exitEntry', 'open')))
-        assert(ui.exitOpen and ui.menuOpen)
-        assert(M.event(ui, api, M.hit(root, 'runMenu', name)))
-    else
-        assert(M.tap(M.hit(root, 'exitEntry', 'open'), 31))
-        assert(ui.exitOpen and ui.menuOpen)
-        assert(M.tap(M.hit(root, 'runMenu', name), 32))
+    local function press(panel, name, touch)
+        local hit=M.hit(root,panel,name)
+        local parent=hit
+        while parent do assert(parent.visible~=false,'hidden platform-exit journey');parent=parent.parent end
+        if api then assert(M.event(ui,api,hit)) else assert(M.tap(hit,touch)) end
     end
-    assert(ui.exitOpen and not ui.menuOpen)
+    if ui.sessionPaused then
+        press('menuPanel','titleQuit',31)
+    else
+        press('exitEntry','open',31)
+        assert(ui.exitOpen and ui.menuOpen)
+        if root:GetChild('runMenu'):GetChild('mainMenu').visible then
+            -- Live runs leave through the visible title entry; abandoning is a
+            -- different command and must never stand in for platform settlement.
+            local run=ui.run
+            press('runMenu','mainMenu',32)
+            assert(ui.sessionPaused and ui.mode=='menu' and ui.run==run)
+            press('menuPanel','titleQuit',33)
+        else
+            -- Terminal runs expose the existing platform exit in this slot.
+            press('runMenu','abandon',32)
+        end
+    end
+    assert(ui.exitOpen and not ui.menuOpen and ui.navigationAction==nil)
 end
 return M

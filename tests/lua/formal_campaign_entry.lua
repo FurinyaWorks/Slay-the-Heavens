@@ -271,9 +271,9 @@ assert(not ui.exitOpen and ui.run==active,'resume means the same in-memory run, 
 assert(ui:openExit())
 -- Approved current copy preserves the same no-persistence contract.
 local exit=panel:GetChild('exitPanel')
-assert(exit:GetChild('message').text=='确认退出本局？退出后本局结束，进度无法恢复。\n将进入平台结算，随后可选择离开。')
+assert(exit:GetChild('message').text=='确认退出游戏？退出后本局结束，进度无法恢复。\n将进入平台结算，随后可选择离开。')
 local why=exit:GetChild('whyText')
-assert(why.visible and why.text=='存档功能需作者达到创作者 4 级后开放，喜欢的话欢迎点赞支持。帮助作者提升等级。')
+assert(why.visible and why.text=='本局仅在当前奇域会话中保留；退出奇域后无法继续。')
 assert(exit:GetChild('help').visible)
 F.click(panel,'exitPanel','help');assert(ui.controlsOpen and ui.run==active)
 assert(ui:closeExit() and ui.exitOpen and ui.run==active)

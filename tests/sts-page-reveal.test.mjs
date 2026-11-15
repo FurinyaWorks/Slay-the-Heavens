@@ -107,8 +107,13 @@ textureRuntime=require('abyss_v25_texture_runtime').new({imageTemplateId=1,group
  instantiate=function()return native()end,destroy=function(c)c.alive=false end,
  createController=function()local phase='building';return{begin=function()return true end,step=function()phase='ready'end,status=function()return{phase=phase}end}end})
 local choiceFaces,battleFaces,pools,metadata={},{},{},{}
-for i=1,10 do choiceFaces[root:GetChild('choicePanel'):GetChild('card'..i):GetChild('face')]=true
- local card=root:GetChild('battlePanel'):GetChild('card'..i);if card then battleFaces[card]=true end end
+local choiceLayout=require('abyss_theme').layout.combatChoice
+for i=1,choiceLayout.columns*choiceLayout.rows do
+ choiceFaces[root:GetChild('choicePanel'):GetChild('card'..i):GetChild('face')]=true
+end
+for i=1,10 do
+ local card=root:GetChild('battlePanel'):GetChild('card'..i);if card then battleFaces[card]=true end
+end
 local Display=require('abyss_card_display');local write=Display.writeNativeArt
 Display.writeNativeArt=function(face,definition,raw,p,fallback,identity)
  if not choiceFaces[face]and not battleFaces[face]then return write(face,definition,raw,p,fallback,identity)end
