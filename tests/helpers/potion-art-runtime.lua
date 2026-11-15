@@ -1,0 +1,133 @@
+-- Actual imported Host, controllers and fixed native pools; fixture inventories
+-- may display full-source art without adding foreign potions to production data.
+local F=dofile('tests/lua/support/game_ui_fixture.lua')
+local Theme,Art,Run=require('abyss_theme'),require('abyss_lowcost_art'),require('abyss_run')
+local host,root=F.fixture();assert(F.start(host))
+local platform={imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end}
+local states={'normal','hover','pressed','disabled'}
+local ids={};for id in pairs(Theme.lowCostArt.potion.assets)do ids[#ids+1]=id end;table.sort(ids);assert(#ids==42)
+local samples={'fire_potion','strength_potion','flex_potion','energy_potion','block_potion','ambrosia'}
+assert(Theme.icon.potion.fire_potion==Theme.icon.potion.strength_potion and Theme.icon.potion.strength_potion==Theme.icon.potion.flex_potion,'same atlas representatives')
+assert(Theme.icon.potion.ambrosia==nil,'foreign illustration has no old Theme mapping')
+local entry=root:GetChild('potionEntry'):GetChild('open'):GetChild('hit')
+local battle=root:GetChild('battlePanel')
+local function bottle(slot,state)
+ local owner=slot<=3 and battle or battle:GetChild('potionHelp')
+ return owner:GetChild('potion'..slot):GetChild(state):GetChild('bottle')
+end
+local function pool(icon)return assert(icon.parent:GetChild(icon.name..'Art'))end
+local function painted(icon,id)
+ local art,asset=pool(icon),Theme.lowCostArt.potion.assets[id]
+ assert(art.visible and not icon.visible,'visible semantic art '..id)
+ for i=0,9 do local shape=art:GetChild('shape'..i);assert(shape.visible==(i<#asset.shapes),'stale shape '..id)
+  if asset.shapes[i+1]then assert(shape.imageId==asset.shapes[i+1].image and shape.x==asset.shapes[i+1].x,'recipe '..id)end
+ end
+end
+local writes=0
+local function observe(icon)
+ for _,shape in pairs(pool(icon).children)do
+  local prior=getmetatable(shape);local colour=shape.imageColor;rawset(shape,'imageColor',nil)
+  local meta={};for key,value in pairs(prior)do meta[key]=value end
+  meta.__index=function(self,key)if key=='imageColor'then return colour end;return prior.__index(self,key)end
+  meta.__newindex=function(self,key,value)
+   if key=='imageColor'then writes=writes+1;colour=value else prior.__newindex(self,key,value)end
+  end
+  setmetatable(shape,meta)
+  for _,name in ipairs({'SetImage','SetAnchoredPosition','SetSizeDelta','SetLocalRotation'})do
+   local original=shape[name];shape[name]=function(self,...)writes=writes+1;return original(self,...)end
+  end
+ end
+end
+local function cached(refresh)local before=writes;refresh();assert(writes==before,'same-frame refresh rewrites no art primitives')end
+local function nativeFailure(i)
+ Art.hide(i);local first=pool(i):GetChild('shape0');local original=first.SetImage;local calls=0
+ first.SetImage=function()calls=calls+1;return false end
+ host:refresh();assert(i.visible and not pool(i).visible,'binding must expose fallback on native failure')
+ host:refresh();assert(calls==1,'binding must not retry failed source each frame')
+ first.SetImage=original;Art.hide(i);host:refresh();assert(pool(i).visible,'binding recovers after explicit reset')
+end
+for _,state in ipairs(states)do for slot=1,5 do observe(bottle(slot,state));observe(entry:GetChild(state):GetChild('slot'..slot):GetChild('bottle'))end end
+-- Every data recipe goes through one actual imported ten-shape bottle owner.
+-- Binding behavior is sampled below, avoiding a 42 x 4 full-Host product.
+local generic=bottle(1,'normal')
+for _,id in ipairs(ids)do
+ assert(Art.paint(generic,'potion',id,32,platform));painted(generic,id)
+ cached(function()assert(Art.paint(generic,'potion',id,32,platform))end)
+end
+Art.hide(generic)
+local run=host.run;run.nodeFlow=nil;run.phase='map';run.potionSlots=5
+assert(Run.startCombat(run,'cultist_solo'));host:refresh()
+for _,id in ipairs(samples)do
+ run.potions={id,id,id,id,id};run.combat.potionInventory={id,id,id,id,id};host:refresh()
+ for _,state in ipairs(states)do for slot=1,5 do painted(bottle(slot,state),id)end end
+ cached(function()host:refresh()end)
+end
+nativeFailure(bottle(1,'normal'))
+run.potions={};host:refresh()
+for _,state in ipairs(states)do for slot=1,5 do local icon=bottle(slot,state);assert(not pool(icon).visible and not icon.visible,'empty battle slot')end end
+local combat=run.combat;run.combat=nil;run.phase='map';host:refresh()
+for _,id in ipairs(samples)do
+ run.potions={id,id,id,id,id};host:refresh()
+ for _,state in ipairs(states)do for slot=1,5 do painted(entry:GetChild(state):GetChild('slot'..slot):GetChild('bottle'),id)end end
+ cached(function()host:refresh()end)
+end
+nativeFailure(entry:GetChild('normal'):GetChild('slot1'):GetChild('bottle'))
+run.potions={};host:refresh()
+for _,state in ipairs(states)do assert(not pool(entry:GetChild(state):GetChild('slot1'):GetChild('bottle')).visible,'empty map slot')end
+-- The existing modal cancel changes no inventory, and reopening reuses owners.
+run.potions={ids[1]};host:refresh();assert(host.potionUI:open(run));assert(host.potionUI:close());host:refresh()
+painted(entry:GetChild('normal'):GetChild('slot1'):GetChild('bottle'),ids[1])
+run.combat=combat;run.phase='reward';run.rewards={manualContinue=true,gold=0,goldClaimed=true,cardResolved=true,relics={},cards={}}
+local reward=battle:GetChild('claimPotion')
+for _,state in ipairs(states)do observe(reward:GetChild(state):GetChild('rewardIcon'))end
+for _,id in ipairs(samples)do
+ run.rewards.potion={id=id,resolved=false};host:refresh()
+ for _,state in ipairs(states)do painted(reward:GetChild(state):GetChild('rewardIcon'),id)end
+ cached(function()host:refresh()end)
+end
+nativeFailure(reward:GetChild('normal'):GetChild('rewardIcon'))
+run.rewards.potion=nil;host:refresh()
+for _,state in ipairs(states)do assert(not pool(reward:GetChild(state):GetChild('rewardIcon')).visible,'removed reward art')end
+-- A future/independent non-potion pool belongs to its existing writer. Potion
+-- binding must never clear another row's painted illustration.
+local goldFace=battle:GetChild('goldReward'):GetChild('normal');local goldIcon=goldFace:GetChild('rewardIcon')
+local shapes={};for i=0,9 do shapes[#shapes+1]={name='shape'..i,kind='image',size={1,1}}end
+goldFace.children.rewardIconArt=F.control({name='rewardIconArt',kind='container',children=shapes},goldFace)
+assert(Art.paint(goldIcon,'potion',ids[1],28,platform))
+require('abyss_battle_reward_layout').paintButton('goldReward',goldFace,'normal',run,platform,function()end,function()end)
+painted(goldIcon,ids[1]);goldFace.children.rewardIconArt=nil
+-- Use the real Host node controller with an actual generated shop and quotes.
+local Map,Nodes=require('abyss_map'),require('abyss_nodes')
+local shopRun,map=Run.new(F.Data,42),Map.generate(F.Data,42)
+while not shopRun.nodeFlow do
+ local available=Map.available(map);assert(#available>0)
+ for _,node in ipairs(available)do if node.type=='shop'then assert(Nodes.enter(shopRun,map,node.id));break end end
+ if not shopRun.nodeFlow then assert(Map.choose(map,available[1].id))end
+end
+host.run,host.map=shopRun,map;host.nodeUI.run,host.nodeUI.map=shopRun,map;host:refresh()
+local shop=root:GetChild('nodePanel'):GetChild('shopView')
+for i=1,3 do observe(shop:GetChild('potion'..i):GetChild('icon'))end
+for _,id in ipairs(samples)do
+ for _,offer in ipairs(shopRun.nodeFlow.potions)do offer.id=id end;host:refresh()
+ for i=1,3 do painted(shop:GetChild('potion'..i):GetChild('icon'),id)end
+ cached(function()host:refresh()end)
+end
+nativeFailure(shop:GetChild('potion1'):GetChild('icon'))
+-- Fallback and native failure are exercised on every real path owner. Existing
+-- SetImage/tint stay visible; a missing imported pool remains safe.
+local icons={bottle(1,'normal'),entry:GetChild('normal'):GetChild('slot1'):GetChild('bottle'),
+ shop:GetChild('potion1'):GetChild('icon'),reward:GetChild('normal'):GetChild('rewardIcon')}
+for _,icon in ipairs(icons)do
+ assert(Art.paint(icon,'potion',ids[1],32,platform));painted(icon,ids[1])
+ assert(not Art.paint(icon,'potion','unknown_potion',32,platform));assert(icon.visible and not pool(icon).visible)
+ local first=pool(icon):GetChild('shape0');local original=first.SetImage;local calls=0
+ first.SetImage=function()calls=calls+1;return false end
+ assert(not Art.paint(icon,'potion',ids[2],32,platform));assert(icon.visible and not pool(icon).visible)
+ assert(not Art.paint(icon,'potion',ids[2],32,platform));assert(calls==1,'failed native source not retried each frame')
+ first.SetImage=original;Art.hide(icon);assert(Art.paint(icon,'potion',ids[3],32,platform));painted(icon,ids[3])
+ local parent,art=icon.parent,pool(icon);parent.children[icon.name..'Art']=nil
+ assert(not Art.paint(icon,'potion',ids[4],32,platform),'missing pool fallback')
+ parent.children[icon.name..'Art']=art;Art.hide(icon)
+end
+assert(#F.Data.potions.potions==34 and #host:productionCompendium():list('potions')==33,'raw poison remains historical; production scope stays 33')
+print('POTION_ART_RUNTIME_PASS '..#ids..'_GENERIC 4_PATHS '..#samples..'_SAMPLES')

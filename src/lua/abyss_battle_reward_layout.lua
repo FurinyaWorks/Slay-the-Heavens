@@ -1,5 +1,6 @@
 -- Preserve the approved ordinary list; expand only independent multi-item rows.
 local Theme=require('abyss_theme')
+local Art=require('abyss_lowcost_art')
 local RelicView=require('abyss_relic_view_ui')
 local M={}
 local rowFaces=setmetatable({},{__mode='k'})
@@ -19,6 +20,17 @@ end
 local function paintIcon(cached,name,run,platform)
  local id=rewardIcon(name,run)
  if platform.imageSource and cached.id~=id then cached.icon:SetImage(platform.imageSource,id);cached.id=id end
+ if name=='claimPotion'then
+  local potion=run and run.rewards and run.rewards.potion
+  cached.icon:SetVisible(true)
+  Art.paint(cached.icon,'potion',potion and potion.id,Theme.officialAssets.rewardRows.iconSize,platform)
+ elseif name=='relicReward1'or name=='relicReward2'then
+  local rewards=run and run.rewards
+  local item=rewards and rewards.relics and rewards.relics[tonumber(name:sub(-1))]
+  local localId=item and require('abyss_relic_hooks').localId(item.sourceId or item.id)
+  cached.icon:SetVisible(true)
+  Art.paint(cached.icon,'relic',localId,Theme.officialAssets.rewardRows.iconSize,platform)
+ end
 end
 function M.paintButton(name,part,state,run,platform,tint,ink)
  local token=Theme.officialAssets and Theme.officialAssets.rewardRows

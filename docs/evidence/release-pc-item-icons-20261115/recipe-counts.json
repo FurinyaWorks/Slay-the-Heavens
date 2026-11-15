@@ -1,0 +1,20 @@
+{
+  "potion": {
+    "ids": 42,
+    "poolCapacity": 10,
+    "shapes": 353,
+    "maxShapes": 10
+  },
+  "relic": {
+    "ids": 121,
+    "poolCapacity": 16,
+    "shapes": 935,
+    "maxShapes": 14
+  },
+  "enemy": {
+    "ids": 42,
+    "poolCapacity": 32,
+    "shapes": 689,
+    "maxShapes": 28
+  }
+}

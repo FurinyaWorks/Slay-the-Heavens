@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "normalization": "LF",
+  "files": [
+    {
+      "path": "config/luacheck-baseline.json",
+      "sha256": "95fcb537282d97cbb3d9ae643ed0a63381eb81aa8e6656984a0ad069fe213f8a",
+      "gitBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "data/presentation/lowcost-potion-art.json",
+      "sha256": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+      "gitBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "data/presentation/lowcost-relic-art.json",
+      "sha256": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526",
+      "gitBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "scripts/lowcost-art.mjs",
+      "sha256": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32",
+      "gitBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "scripts/potion-art.mjs",
+      "sha256": "a57f7fc51c24d001f24d2617992b6a87ffc873ecbd326e5141572fd5e7b0a63f",
+      "gitBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "sha256": "6955f2abc927133348efd803c8f0542adad0f1e32fc2ed677f6b56fb4e007b3f",
+      "gitBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "sha256": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d",
+      "gitBlob": "3be6065def6b7cb95e80620361edc996431567f7",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "sha256": "6f7838454477ae2f4348f4b53977e673c54e83c4b9518b4d666aab879c797bc8",
+      "gitBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "sha256": "ebaa819919dc8abee3299f3aca240ee89433973b86179e6e9234b6379a2f3f55",
+      "gitBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    },
+    {
+      "path": "src/lua/abyss_shop_ui.lua",
+      "sha256": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14",
+      "gitBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "exactLfMatch": true
+    }
+  ]
+}
