@@ -16,6 +16,21 @@ local function hurts(kind) return kind=="damage" or kind=="hp_loss" or kind=="st
 local function mix(a,b,w) return {r=a.r+(b.r-a.r)*w,g=a.g+(b.g-a.g)*w,b=a.b+(b.b-a.b)*w,a=a.a} end
 local function colour(ctx,c,alpha) return ctx.platform.color(c.r,c.g,c.b,math.floor((c.a or 255)*(alpha or 1))) end
 local function tint(ctx,box,c,alpha) box.imageColor=colour(ctx,c,alpha) end
+local fadedHealth=setmetatable({},{__mode='k'})
+local healthImages={hpBorder='line',hpTrack='hpTrack',hpGhost='hpGhost',hpFill='hp',blockEdge='panelSunken',blockIcon='block'}
+local function paintHealth(ctx,id,unit,box,alpha)
+    if id=='player' or not (ctx.state.dying[id] or fadedHealth[box]) then return end
+    -- Fade the complete HP row from its normal theme colours, never from an
+    -- already faded native colour. A retained living handle restores once.
+    fadedHealth[box]=ctx.state.dying[id] and true or nil
+    local blocked=(unit.block or 0)>0
+    for name,key in pairs(healthImages)do
+        local tone=blocked and name=='hpBorder' and C.block or blocked and name=='hpFill' and C.hpShielded or C[key]
+        tint(ctx,box:GetChild(name),tone,alpha)
+    end
+    box:GetChild('hp').fontColor=colour(ctx,C.text,alpha)
+    box:GetChild('block').fontColor=colour(ctx,C.textOnLight,alpha)
+end
 -- Piecewise pose: {time, x, scale} keys with smooth in/out between them.
 local function pose(keys, age)
     if age >= keys[#keys][1] then return keys[#keys][2], keys[#keys][3], true end
@@ -306,6 +321,7 @@ function M.paint(ctx,id, dt, shakes)
     if id == "player" and ctx.platform.portraits then ctx.platform.portraits:battlePose(x,y,sx,sy,dt,motionState) end
     local tone=portraitTone(ctx,id,base,ink,flash)
     tint(ctx,portrait,tone,alpha)
+    paintHealth(ctx,id,unit,box,alpha)
     MonsterArt.pose(box,x,y,sx,sy,tone,alpha)
     LowCostArt.pose(box,x,y,sx,sy,tone,alpha,ctx.platform)
 end

@@ -101,7 +101,9 @@ local Painter=require('abyss_feedback_actor_painter')
 local function close(a,b,label)assert(math.abs(a-b)<1e-8,(label or 'value')..': '..tostring(a)..' ~= '..tostring(b))end
 -- Exact independent creature clock / Color.lerp recurrence, including strict terminal threshold.
 for _,life in ipairs({1.8,1.0})do
- local box=control({name='creature',children={{name='portrait'},{name='impact',visible=false},{name='shield'},{name='floating'},{name='hpGhost'}}})
+ local parts={{name='portrait'},{name='impact',visible=false},{name='shield'},{name='floating'}}
+ for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','hp','blockEdge','blockIcon','block'})do parts[#parts+1]={name=name}end
+ local box=control({name='creature',children=parts})
  local state={dying={enemy={age=0,alpha=1,lifetime=life}},effects={},poses={},escaping={}}
  local unit={hp=0,id='enemy',definitionId='cultist'}
  local ctx={state=state,actor=function()return unit,box end,platform={color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end}}
@@ -111,15 +113,38 @@ for _,life in ipairs({1.8,1.0})do
  Painter.advanceDeaths(ctx,0.1);Painter.paint(ctx,'enemy',0.1,{})
  close(state.dying.enemy.alpha,.7,'source lerp after .1')
  assert(portrait.imageColor.a==math.floor(255*.7))
+ for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','blockEdge','blockIcon'})do
+  local colour=box:GetChild(name).imageColor
+  assert(colour and colour.a==portrait.imageColor.a,'death HP row must share portrait alpha: '..name)
+ end
+ for _,name in ipairs({'hp','block'})do assert(box:GetChild(name).fontColor.a==portrait.imageColor.a,'death HP text alpha: '..name)end
  assert(portrait.imageColor.r==rgb[1]and portrait.imageColor.g==rgb[2]and portrait.imageColor.b==rgb[3])
  assert(portrait.y==0 and portrait.localScaleX==1 and portrait.localScaleY==1,'death must not sink, grow or squash')
  assert(not box:GetChild('impact').visible,'source death does not invent a shard burst')
  Painter.advanceDeaths(ctx,0.1);Painter.paint(ctx,'enemy',.1,{})
  close(state.dying.enemy.alpha,.49,'source lerp composes per frame, not quadratic age')
+ assert(box:GetChild('hpTrack').imageColor.a==portrait.imageColor.a,'health alpha must not compound its already-faded value')
  Painter.advanceDeaths(ctx,life-.2)
  assert(state.dying.enemy and box.visible,'timer exactly zero remains drawable')
  Painter.advanceDeaths(ctx,.001)
  assert(not state.dying.enemy and not box.visible,'only timer strictly below zero is terminal')
+end
+-- Cancellation/rebinding can retain a native handle; a living repaint restores
+-- the HP row once without changing its normal block tint or text visibility.
+do
+ local parts={{name='portrait'},{name='impact'},{name='shield'},{name='floating'}}
+ for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','hp','blockEdge','blockIcon','block'})do parts[#parts+1]={name=name}end
+ local box,unit=control({name='retained',children=parts})
+ unit={hp=0,block=4,id='enemy',definitionId='cultist'}
+ local state={dying={enemy={age=0,alpha=.1,lifetime=1.8}},effects={},poses={},escaping={}}
+ local ctx={state=state,actor=function()return unit,box end,platform={color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end}}
+ Painter.paint(ctx,'enemy',0,{})
+ assert(box:GetChild('hpFill').imageColor.a==25,'blocked death HP still fades')
+ state.dying={};unit.hp=10
+ Painter.paint(ctx,'enemy',0,{})
+ assert(box:GetChild('hpFill').imageColor.a==255 and box:GetChild('hpTrack').imageColor.a==255,'living handle must regain full alpha')
+ assert(box:GetChild('hp').fontColor.a==255 and box:GetChild('block').fontColor.a==255)
+ assert(box:GetChild('hpFill').imageColor.r==Theme.color.hpShielded.r,'restoring a blocked row must retain its colour')
 end
 -- Unbound actor still advances; scarce display controls must never own the clock.
 do
@@ -144,6 +169,7 @@ for _,fast in ipairs({false,true})do
  h.feedback:update(.01)
  assert(not h.feedback.current or h.feedback.current.kind~='death','death is not an action wait')
  assert(h.feedback.dying[id]and h.feedback.dying[id].age>age,'independent fade outlives action gate')
+ assert(h.boxes[id]:GetChild('hpTrack').imageColor.a==h.boxes[id]:GetChild('portrait').imageColor.a,'real native actor HP row follows the independent death alpha')
  local life=fast and 1 or 1.8
  while h.feedback.dying[id]and h.feedback.dying[id].age<life-.1 do h.feedback:update(.01)end
  assert(h.feedback.dying[id],'normal/fast death not shortened to old theme .35s')

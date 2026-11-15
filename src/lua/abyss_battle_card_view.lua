@@ -572,6 +572,7 @@ function M.new(view, controls)
     local function refreshAim(g,valid,target,aiming)
         local battle=localAimBattle(view,geometryPorts(),g)
         if not battle or view.info or not controls.renderAimActors then return false end
+        view.cardAim=nil -- This owned moving gesture supersedes the older pointer/focus preview.
         -- Fresh card values for the owned UID; no retained core snapshot/preview.
         local context={data=view.data,presentation=view.presentation,battle=battle,fighting=true,run=view.run,active=true,rewards={}}
         controls.renderAimActors(context)
