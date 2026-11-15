@@ -2,8 +2,11 @@ local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local h,u,p,event,tap,drain=H.setup({'forethought','defend','defend','defend'},{'cultist','jaw_worm'})
 local F,Run=H.F,H.Run
 local CardDisplay=require('abyss_card_display')
-local function forethought(upgraded)
- h.run.combat=F.Combat.new(F.Data,{deck={'forethought','defend','defend','defend'},enemies={'cultist'}})
+local function forethought(upgraded,extra)
+ local cards={'forethought','defend','defend','defend'}
+ if extra then cards[#cards+1]='forethought'end
+ h.run.phase='combat'
+ h.run.combat=F.Combat.new(F.Data,{deck=cards,enemies={'cultist'}})
  local b=h.run.combat
  local slot;for i,c in ipairs(b.hand)do if c.cardId=='forethought'then slot=i;c.upgraded=upgraded end end
  h:refresh();tap('card'..slot,1);tap('playArea',2);drain();h.deckUI:update()
@@ -81,15 +84,83 @@ local zeroHand,zeroRng=#b.hand,b.cardRandomRng.counter
 assert(#b.pendingChoice.selected==0);deck:back();drain()
 assert(not b.pendingChoice and not deck.visible and #b.hand==zeroHand and b.cardRandomRng.counter==zeroRng,'zero selection confirms without changing cards or RNG')
 
--- A command callback may switch owners before returning to this view.
+-- A callback that invalidates the old owner must not leave a zombie modal.
 b,deck,grid=forethought(true)
 local original=deck.onPick
 deck.onPick=function(token,id)
- original(token,id);deck:close()
+ original(token,id)
  h.run.combat=F.Combat.new(F.Data,{deck={'defend'},enemies={'cultist'}});h:refresh()
 end
 grid.items[0]:GetChild('hit').listeners.click({touchId=21})
-assert(not deck.visible and h.run.combat~=b,'returning callback cannot resurrect its old modal')
+assert(not deck.visible and h.run.combat~=b and u.active,'retire old combat view and restore live battle input')
+
+b,deck,grid=forethought(true)
+original=deck.onPick
+deck.onPick=function(token,id)
+ original(token,id)
+ local nextRun=Run.new(F.Data,77);assert(Run.startCombat(nextRun,'cultist_solo'))
+ -- Match the real start port: GameUI and BattleUI install the same Run.
+ h.run,u.run=nextRun,nextRun;h:refresh()
+end
+grid.items[0]:GetChild('hit').listeners.click({touchId=23})
+assert(not deck.visible and deck.run==nil and u.run==h.run and u.active,'run replacement retires old view')
+
+b,deck,grid=forethought(true)
+original=deck.onPick
+deck.onPick=function(token,id)original(token,id);h.run.phase='map';h:refresh()end
+grid.items[0]:GetChild('hit').listeners.click({touchId=24})
+assert(not deck.visible and h.mode=='map','non-combat phase retires old choice view')
+
+-- The next request is produced by real confirm/play commands in the same
+-- battle, rather than reopening a stale copy of the old request.
+b,deck,grid=forethought(true,true)
+original=deck.onPick;session=deck.openSession
+local successor
+deck.onPick=function(token,id)
+ original(token,id);assert(Run.chooseCard(h.run,b.pendingChoice.token,0))
+ local nextUid;for _,card in ipairs(b.hand)do if card.cardId=='forethought'then nextUid=card.uid end end
+ assert(nextUid and Run.play(h.run,nextUid));successor=b.pendingChoice;h:refresh()
+end
+local defendCell
+for _,cell in pairs(grid.items)do if deck.bindings[cell].instance.cardId=='defend'then defendCell=cell;break end end
+assert(defendCell);defendCell:GetChild('hit').listeners.click({touchId=25});deck:update()
+assert(successor and deck.visible and deck.openSession>session and deck.choiceToken==successor.token,'Host opens the successor request after retiring old picker')
+deck:back();drain();assert(not b.pendingChoice)
+
+-- Callback-created newer sessions are authoritative even for the same picker.
+b,deck,grid=forethought(true)
+original=deck.onPick;session=deck.openSession
+deck.onPick=function(token,id)
+ original(token,id);deck:close();assert(deck:open(h.run,b.pendingChoice,original));deck:update()
+end
+grid.items[0]:GetChild('hit').listeners.click({touchId=26})
+assert(deck.visible and deck.openSession>session and deck.choiceToken==b.pendingChoice.token,'old return must preserve callback-opened session')
+deck:back();drain()
+
+-- A refused command leaves a valid live query. Errors retain their original
+-- value, clean the old session, and let Host recover the mandatory request.
+b,deck,grid=forethought(true)
+original=deck.onPick;session=deck.openSession
+local refused=b.pendingChoice.token
+deck.onPick=function()return false,'busy'end
+grid.items[0]:GetChild('hit').listeners.click({touchId=27})
+assert(deck.visible and deck.openSession==session and deck.choiceToken==refused and #b.pendingChoice.selected==0,'refusal keeps live choice unchanged')
+local failure={kind='callback-failure'}
+deck.onPick=function(token,id)original(token,id);error(failure)end
+local hit=grid.items[0]:GetChild('hit')
+local ok,why=pcall(hit.listeners.click,{touchId=28})
+assert(not ok and why==failure,'callback error value propagates')
+assert(deck.visible and deck.openSession>session and deck.choiceToken==b.pendingChoice.token,'Host recovers current request instead of retaining a broken session')
+deck:back();drain()
+
+b,deck,grid=forethought(true)
+original=deck.onPick;session=deck.openSession
+deck.onPick=function(token,id)
+ original(token,id);deck:close();assert(deck:open(h.run,b.pendingChoice,original));error(failure)
+end
+ok,why=pcall(grid.items[0]:GetChild('hit').listeners.click,{touchId=29})
+assert(not ok and why==failure and deck.visible and deck.openSession>session,'error cannot retire callback-opened successor session')
+deck:back();drain()
 
 -- A real doubled Liquid Memories choice requires two distinct cards. The core
 -- replaces selected[] while toggling; the retained view must adopt that table.
