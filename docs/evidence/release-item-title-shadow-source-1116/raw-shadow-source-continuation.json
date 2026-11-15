@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "codeCommit": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+  "codeTree": "613981177db2f75c38668a1ab5aed62541e02bc5",
+  "frozenHarness": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+  "frozenProduction": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "productionPacketUnchanged": "e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba",
+  "ciPacket": {
+    "sha256": "29ed620cf9e562a382d50a9722397579b0c0523196a582e9a41c8a52f6ffa18f",
+    "bytes": 688106,
+    "files": 47,
+    "added": [
+      "scripts/test-lua.mjs"
+    ],
+    "changedExistingCurrent": [
+      "scripts/ci-test-timings.json",
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/helpers/release-item-title-shadow-planning.mjs",
+      "tests/player-ground-shadow.test.mjs",
+      "tests/release-item-title-shadow-source.test.mjs"
+    ],
+    "allOtherCurrentBeforeInventoriesAnd93ArchivesUnchanged": true
+  },
+  "shadowSample": {
+    "tests": 3,
+    "pass": 3,
+    "sourceInputs": 487,
+    "dependencies": 290,
+    "projectedConfig": 1,
+    "physicalBeforeAfter": 778,
+    "wallDurationMs": 22235,
+    "nodeDurationMs": 22146.1864,
+    "minimumPriorObservationFloorMs": 18852,
+    "registeredFloorMs": 22235,
+    "ownFloorOnlyProjection": true
+  },
+  "retirement": {
+    "registeredFloorMs": 79861,
+    "receiptAndPhysicalSampleUnchanged": true
+  },
+  "validation": {
+    "sourceTests": 6,
+    "sourcePassed": 6,
+    "rawTests": 1,
+    "rawPassed": 1,
+    "rawJs": 881,
+    "rawLua": 1424,
+    "forecastMs": {
+      "win32": 1763488,
+      "linux": 1198438
+    },
+    "forecastIsDiagnostic": true,
+    "actualJobTimeoutMinutes": {
+      "rulesHosted": 45,
+      "rulesLocalSpecial": 75,
+      "posixShards": 30,
+      "fastWindows": 45,
+      "fastPosix": 30
+    },
+    "physicalJobNegativeControls": [
+      "missing",
+      "changed",
+      "duplicate",
+      "step-only",
+      "wrong-job"
+    ],
+    "planningConfigNegativeControls": [
+      "old unknown cost",
+      "initial load config",
+      "retirement floor",
+      "foreign config field",
+      "own new floor"
+    ],
+    "noWhole73Or44OrFastOrRetirement80sRerun": true
+  },
+  "policy": {
+    "source": "docs/CI.md:168",
+    "ownerDate": "2026-11-07",
+    "correction": "Remove only our newly added current raw forecast admission assertions; retain every original frozen budget assertion, original physical workflow and budgets. Forecasts including 60s reserve remain diagnostic; actual per-job timeouts are hard.",
+    "bootstrapPr692Covered": false
+  },
+  "logs": [
+    {
+      "path": "item-title-shadow-raw-shadow-discovery.log.gz",
+      "bytes": 210,
+      "sha256": "eb4d6b857c5c3c2d5608f8cacd8c1512179bfb196c0f4962416890e621ffa6cc",
+      "rawBytes": 329,
+      "rawSha256": "fc81e4db9588d391f9ae5c363100388c2eed4d5083570ca2ccb6212e80286f47"
+    },
+    {
+      "path": "raw-shadow-profile-red.log.gz",
+      "bytes": 656,
+      "sha256": "340f0578479bd0c26db5e25bba26a265f4a0b7b8f7f077260cb700a726b604e3",
+      "rawBytes": 1343,
+      "rawSha256": "118c471a7e756cdf8db167a249846ee20a4bab8918557df71228011878e6914d"
+    },
+    {
+      "path": "raw-shadow-profile-green.log.gz",
+      "bytes": 317,
+      "sha256": "a58e30a7f96763f6124f56bf0054d237d7d17cc52d79bcd4c2f80cbf3bb6fff6",
+      "rawBytes": 477,
+      "rawSha256": "dc269ba3dc583ebfca15c6daacef1610310ee88a19f655e15b6f731e3345ffd1"
+    },
+    {
+      "path": "raw-shadow-profile-correct-path.log.gz",
+      "bytes": 771,
+      "sha256": "844dd159a79187de22a070e40704d1dad384e1241314b3eafc29911c731a33fe",
+      "rawBytes": 1679,
+      "rawSha256": "5845c2a6d20f1d7cd7e9f350f9574228e4742f624030dbe45580578eeea3f15a"
+    },
+    {
+      "path": "raw-shadow-profile-correct-path-green.log.gz",
+      "bytes": 320,
+      "sha256": "4aaaebf08e51d724f83eed4aa7e45cbd11bc3e37b73d50185fad6eefe4ca50fa",
+      "rawBytes": 477,
+      "rawSha256": "3beefcfc8c4fd181014c9f8d19469d6d6957928ee4b6304bc71c10c851513d0d"
+    },
+    {
+      "path": "source-shadow-policy.log.gz",
+      "bytes": 477,
+      "sha256": "e70a32527184e4167f6ad9b4d793b9ffca331c91618aafad1191f592a8d9b24d",
+      "rawBytes": 874,
+      "rawSha256": "94a3c5747ceaab215ca7c81c90b92e552bbf6d4c0317b53163579833b5fd5303"
+    },
+    {
+      "path": "ci-shadow-policy-raw.log.gz",
+      "bytes": 324,
+      "sha256": "3686d796200234913f991e9dc5dd9291c9030ea3b7a26c328641b1815c3208c4",
+      "rawBytes": 636,
+      "rawSha256": "f393d8c8ce86237fdb6476697684bdbb83d5778ae5ef630049b5bd549549997e"
+    },
+    {
+      "path": "fresh-shadow-command.log.gz",
+      "bytes": 672,
+      "sha256": "c288b1a601ba9b2c6282da968b85dd0490adfd5dcef845215bd52132cde19eed",
+      "rawBytes": 1236,
+      "rawSha256": "f0302aaad673f19dc454c7f6bc28241db7b207a8abc468449721cf1cce5ae438"
+    }
+  ],
+  "limitations": [
+    "Initial raw discovery shell tail GetContent returned zero, while runLua/Fengari status was 1; the nil officialFigure profile failure was real. This was not a global runLua exit-status defect.",
+    "The first 17.134s green used the earlier snapshot path; the corrected 18.851s green still lacked the new complete physical execution closure. Both remain historical observations.",
+    "The correct-path first retry failed because configured TEMP node-temp directory did not exist. Preserve that failure; do not relabel it as a product regression or passing run.",
+    "The one fresh 22.235s sample has 778 unchanged physical inputs. It is local evidence, not a Hosted upper bound or official device/ready/capacity acceptance.",
+    "PR692 was only a policy/reference review and is still separate; this packet does not claim its bootstrap source after."
+  ]
+}
