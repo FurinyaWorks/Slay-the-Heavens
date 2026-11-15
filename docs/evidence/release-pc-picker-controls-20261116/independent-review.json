@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "release-picker-controls-independent-20261116-93ae7376-r2",
+  "reviewer": "/root/release_picker_product_review",
+  "independentOfImplementation": true,
+  "reviewScope": "CODE_SCOPE",
+  "conclusion": "pass",
+  "reviewedBaseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "reviewedBaseTree": "5f5143c1834b99235541f117ccc03d4e427d8579",
+  "reviewedHeadSha": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+  "reviewedHeadTree": "3036446cde57c6de5706592ced55f074d8cf06a6",
+  "productSha": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+  "productTree": "27e4cbe1ae69112d153aa126d27058615fee3009",
+  "branch": "feat/release-pc-picker-controls-1116",
+  "worktree": "F:/New folder/.worktrees/release-pc-picker-controls-1116",
+  "target": "release/v2.0.0",
+  "coveredPaths": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "review": "Theme clone remains official-only; new adapter runs after pickerPage token adoption. No source/default theme mutation."
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "review": "All six original containers/hits and existing footer labels retained. Four paging decorations exactly match final Deck native preset children; return/confirm match final low-control character flags. Final footer is derived from unchanged hover/card geometry and existing space.xs=4; P2-1 resolved without changing material/size/action/budget."
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "review": "Single run composition boundary after final character composition; no alternate renderer/page owner. Deck owner unchanged."
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "review": "Existing state gates drive four borrowed surfaces; selected maps to normal. Old surfaces hidden. Outer scale=1 avoids duplicate Deck press scaling. No action/command/input transaction/RNG change. Author static evidence retains CC15."
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "review": "Real generated Host covers readonly14, removal5 pages/last page, stale touch, cancellation, selected UID, forge2-to1 page clamp and C-tier click/continue. Reviewed assertions do not substitute for actual hover geometry or official rendering. Final incremental Host regression actually invokes Enter/Exit and computes imported positions plus current transform writes for14-card first/last pages and26-card middle page/both arrows at3 resolutions; selected preview/footer and page text/safe bounds checked. Reviewed RED from a925 detects card11 overlap, then6 GREEN."
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "review": "New sharedRoomControl exception is anchored to six controls and their hit/label only. Exact input object identity and all nonadopted fields stay checked. Existing historical source SHA test remains failing rather than bypassed. No general whitelist or threshold relaxation. Final position expectations permit the authorized footer adjustment only on the same six owners; new safe/real-hover contracts separately constrain actual geometry. Other original semantic assertions remain."
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "review": "Protects default44x208/56x44, exact shared material/geometry, direct cursor receivers,4-screen safety and negative old-hit/wrong-material cases. Final expected paging Y independently derives unchanged baseline forge rows/hoverScale, current card height, xs and Deck height. Actual Host regression now catches hover overlap."
+    }
+  ],
+  "evidenceCommitCoverage": "Initial16 evidence files reviewed at14363e83. Final707da8ff adds/updates7 evidence paths only relative to product93ae7376; no scripts/tests delta. README, both identity manifests, RED/raw-preservation, independent initial Host log and GREEN6 checked. Worktree clean; full base..head diff-check passed.",
+  "independentProbes": [
+    {
+      "script": ".artifacts/release-pc-qa-20261115/picker-independent-probe.initial.mjs",
+      "result": "Initial source positive identity/material/default checks passed; actual Host1.08 hover+next visible and independent scaled geometry exposed P2-1.",
+      "output": ".artifacts/release-pc-qa-20261115/picker-independent-probes.initial.json"
+    },
+    {
+      "script": ".artifacts/release-pc-qa-20261115/picker-independent-probe.mjs",
+      "result": "Final source PASS:6 exact container/hit/existing-label identities, focusable cursorAreas, exact adopted source material, zero added input kinds, default immutability, hoverGeometry=[], all6 safe in4 canvases, zero paging/action intersections. Negative old44x208 hit and unrelated material are both rejected.",
+      "output": ".artifacts/release-pc-qa-20261115/picker-independent-probes.json"
+    },
+    {
+      "script": ".artifacts/release-pc-qa-20261115/picker-independent-host.lua",
+      "result": "Final source PASS: real14-card camp card12 CursorEnter reaches1.08 while next visible, Exit resets1, original next click moves to page2.",
+      "output": ".artifacts/release-pc-qa-20261115/picker-independent-host.log"
+    }
+  ],
+  "authorEvidenceReviewed": [
+    "red-layout.txt",
+    "targeted-layout.txt",
+    "green-host.txt",
+    "current-contracts.txt",
+    "official-host.txt",
+    "lua-static.txt",
+    "architecture.txt",
+    "frozen-source.txt",
+    "README.md",
+    "identity.json",
+    "review-hover-red.txt",
+    "review-hover-red.txt.raw.gz",
+    "review-hover-green.txt",
+    "review-hover-independent-before.json",
+    "review-hover-independent-host.log",
+    "hover-fix-identity.json"
+  ],
+  "findings": [],
+  "unresolved": [],
+  "scopeBoundaries": {
+    "privateImages07and09": "NOT_ACCESSED",
+    "sourceFrozenIntegrationContract": "KNOWN_FAILED_AUTHOR_EVIDENCE_SEPARATE_SLICE_REQUIRED",
+    "hostedFull": "NOT_RUN_NOT_VERIFIED",
+    "officialCandidateImportAndReady": "NOT_RUN_NOT_VERIFIED",
+    "official20MBAndServer3MB": "NOT_RUN_NOT_VERIFIED",
+    "pcAndPhysicalMobile": "NOT_RUN_NOT_VERIFIED",
+    "PC26LoadingFlicker": "SEPARATE_PR684_NOT_VERIFIED_HERE",
+    "futurePR685Combination": "NOT_COMBINED; independent Deck controller 112x48 keep/confirm controls and invalidated-session fix remain outside this adapter; no source overlap in the reviewed three PR685 files",
+    "rulesAndRng": "SOURCE_UNCHANGED; readonly/transaction author probes reviewed, no claim of full game regression"
+  },
+  "operations": "No product edits, Backlog writes, GUI/input, MCP, push/PR/merge, candidate, CI polling, Fast/full rerun or branch/tag changes. Existing source tree was clean at inspection. Node needed sandbox escalation; it executed only local review probes and generated temporary offline Host fixtures outside product tree.",
+  "reviewedAt": "2026-11-15T18:12:50.852Z",
+  "resolvedFindings": [
+    {
+      "id": "P2-1",
+      "priority": "P2",
+      "path": "scripts/official-picker-controls.mjs",
+      "line": 22,
+      "title": "宽分页按钮扩大了锻造悬停卡片的交叠区域",
+      "trigger": "14张可升级牌，锻造第一页，悬停第二排card11或card12，forgeNext仍显示。左侧同理。",
+      "evidence": "Footer center(430,-236),200x48 => y[-260,-212]. Card11 center(270,-104),150x210 with real1.08 hover => x[189,351],y[-217.4,9.4]; intersection21x5.4. Card12 x[369,531] intersects161x5.4. Real Host CursorEnter verifies1.08 with next visible.",
+      "baselineDistinction": "旧56x44 forgeNext center(490,-236)只与最外卡存在3.4高窄交叠，不与card11交叠。本片新增card11/8交叠且把外卡交叠扩到161x5.4，不能把新覆盖解释为全旧缺陷。",
+      "impact": "Visible lower-row card/interactive hit and paging button geometries overlap. Source evidence proves geometric conflict; no claim about official native raycast winner or screenshot appearance.",
+      "requestedChange": "保持卡面/hoverScale/材质/动作ID/预算，使用既有footer安全间距调整布局；测试真实hover后的矩形并核对页码与底部返回/确认，不只测未缩放card.size。",
+      "status": "resolved",
+      "resolvedBy": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "resolution": "Footer derived from unchanged hover bottom and existing space.xs=4: pagingY=-245.4, actionY=-303.4. Independent final hover intersections empty; both hover-to-paging and paging-to-action gaps4. All six safe at1280x720/1920x1080/2340x1080/720x1280. Real hover1.08 and direct next input still work. Source/material/size/action/hover/card geometry/budget unchanged."
+    }
+  ],
+  "incrementalVerification": "Read entire4-path93ae fix diff; no production Lua/other3 initial source deltas. Ran independent small Node/Fengari probe once on fixed source, read author6 targeted GREEN and realHost RED. Did not repeat Fast/full or unchanged broad suites.",
+  "finalGeometry": {
+    "hoverBottom": -217.4,
+    "pagingY": -245.4,
+    "pagingTop": -221.4,
+    "pagingBottom": -269.4,
+    "actionY": -303.4,
+    "actionTop": -273.4,
+    "actionBottom": -333.4,
+    "safeBottom": -340,
+    "existingGap": 4
+  },
+  "physicalIdentities": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "sha256": "5fbadf120f38c3534d64a0f5c3a4dc2df571bceeef5eb5ce31c9d579ac8dd6c7",
+      "match": true
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "sha256": "a3a675d9a6e92b0d03de1c3ac9b6acd9ec7b7b839b83091b24f76ffe486a9963",
+      "match": true
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "sha256": "1d868dc87267c5c8f4129fbf0e2827f40b2d4da6a051efb506add91e34722257",
+      "match": true
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "sha256": "0b618123a54ddf74de39d6a9300da8d44b5726c9e361bebe73bb33097c5d22b2",
+      "match": true
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "sha256": "4f15427adb1c4af23b37c2adedfd2362c09a49374d125e0ca4f54db84705862d",
+      "match": true
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "sha256": "de254aff6addb0fd3b047578088ca5637c9bb89c562073683e633f00765c2806",
+      "match": true
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "sha256": "d0fc814f0b33bc6aa898efc8bd28a2eee0a3ef27857d3edc040aced6c7f2610f",
+      "match": true
+    }
+  ],
+  "independentFinalProbeSummary": {
+    "defaultUnchanged": true,
+    "identities": [
+      {
+        "name": "back",
+        "identityRetained": true,
+        "hitKind": "cursorArea",
+        "size": [
+          180,
+          60
+        ],
+        "position": [
+          -490,
+          -303.4
+        ],
+        "decorativeReceivers": 0
+      },
+      {
+        "name": "confirm",
+        "identityRetained": true,
+        "hitKind": "cursorArea",
+        "size": [
+          180,
+          60
+        ],
+        "position": [
+          490,
+          -303.4
+        ],
+        "decorativeReceivers": 0
+      },
+      {
+        "name": "previous",
+        "identityRetained": true,
+        "hitKind": "cursorArea",
+        "size": [
+          200,
+          48
+        ],
+        "position": [
+          -430,
+          -245.4
+        ],
+        "decorativeReceivers": 0
+      },
+      {
+        "name": "next",
+        "identityRetained": true,
+        "hitKind": "cursorArea",
+        "size": [
+          200,
+          48
+        ],
+        "position": [
+          430,
+          -245.4
+        ],
+        "decorativeReceivers": 0
+      },
+      {
+        "name": "forgePrevious",
+        "identityRetained": true,
+        "hitKind": "cursorArea",
+        "size": [
+          200,
+          48
+        ],
+        "position": [
+          -430,
+          -245.4
+        ],
+        "decorativeReceivers": 0
+      },
+      {
+        "name": "forgeNext",
+        "identityRetained": true,
+        "hitKind": "cursorArea",
+        "size": [
+          200,
+          48
+        ],
+        "position": [
+          430,
+          -245.4
+        ],
+        "decorativeReceivers": 0
+      }
+    ],
+    "hoverGeometry": [],
+    "safeAndFooter": [
+      {
+        "name": "back",
+        "safe": {
+          "1280x720": true,
+          "1920x1080": true,
+          "2340x1080": true,
+          "720x1280": true
+        },
+        "conflicts": []
+      },
+      {
+        "name": "confirm",
+        "safe": {
+          "1280x720": true,
+          "1920x1080": true,
+          "2340x1080": true,
+          "720x1280": true
+        },
+        "conflicts": []
+      },
+      {
+        "name": "previous",
+        "safe": {
+          "1280x720": true,
+          "1920x1080": true,
+          "2340x1080": true,
+          "720x1280": true
+        },
+        "conflicts": []
+      },
+      {
+        "name": "next",
+        "safe": {
+          "1280x720": true,
+          "1920x1080": true,
+          "2340x1080": true,
+          "720x1280": true
+        },
+        "conflicts": []
+      },
+      {
+        "name": "forgePrevious",
+        "safe": {
+          "1280x720": true,
+          "1920x1080": true,
+          "2340x1080": true,
+          "720x1280": true
+        },
+        "conflicts": []
+      },
+      {
+        "name": "forgeNext",
+        "safe": {
+          "1280x720": true,
+          "1920x1080": true,
+          "2340x1080": true,
+          "720x1280": true
+        },
+        "conflicts": []
+      }
+    ],
+    "negative": [
+      "old44x208 hit rejected",
+      "unrelated material rejected"
+    ],
+    "host": {
+      "status": 0,
+      "stdout": "ABYSS_RUN seed=1 source=explicit\nHOST_FORGE_HOVER_SCALE 1.08 NEXT_VISIBLE true\nHOST_FORGE_NEXT_WORKS\n",
+      "stderr": ""
+    }
+  }
+}

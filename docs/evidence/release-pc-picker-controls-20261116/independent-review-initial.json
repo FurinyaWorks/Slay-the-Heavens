@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "release-picker-controls-independent-20261116-a925ce43-r1",
+  "reviewer": "/root/release_picker_product_review",
+  "independentOfImplementation": true,
+  "reviewScope": "CODE_SCOPE",
+  "conclusion": "request_changes",
+  "reviewedBaseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "reviewedBaseTree": "5f5143c1834b99235541f117ccc03d4e427d8579",
+  "reviewedHeadSha": "14363e83a93fcc668deddce9fe38f6f4d05f1926",
+  "reviewedHeadTree": "a58f6eadc2aed970f3084f19e149035a0b8cb75e",
+  "productSha": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+  "productTree": "0a2286d1cae8938588c978b64f99a88baa6af590",
+  "branch": "feat/release-pc-picker-controls-1116",
+  "worktree": "F:/New folder/.worktrees/release-pc-picker-controls-1116",
+  "target": "release/v2.0.0",
+  "coveredPaths": [
+    {"path": "scripts/official-assets-layout.mjs", "review": "Theme clone remains official-only; new adapter runs after pickerPage token adoption. No source/default theme mutation."},
+    {"path": "scripts/official-picker-controls.mjs", "review": "All six original containers/hits and existing footer labels retained. Four paging decorations exactly match final Deck native preset children; return/confirm exactly match final low-control character flags. Only adopted geometry/material changes. New footer y ignores scaled forge row extent; finding P2-1."},
+    {"path": "scripts/official-run-layout.mjs", "review": "Single run composition boundary after final character composition; no alternate renderer/page owner. Deck owner unchanged."},
+    {"path": "src/lua/abyss_node_ui_feedback.lua", "review": "Existing state gates drive four borrowed surfaces; selected maps to normal. Old surfaces hidden. Outer scale=1 avoids duplicate Deck press scaling. No action/command/input transaction/RNG change. Author static evidence retains CC15."},
+    {"path": "tests/lua/support/release_picker_controls.lua", "review": "Real generated Host covers readonly14, removal5 pages/last page, stale touch, cancellation, selected UID, forge2-to1 page clamp and C-tier click/continue. Reviewed assertions do not substitute for actual hover geometry or official rendering."},
+    {"path": "tests/official-assets.test.mjs", "review": "New sharedRoomControl exception is anchored to six controls and their hit/label only. Exact input object identity and all nonadopted fields stay checked. Existing historical source SHA test remains failing rather than bypassed. No general whitelist or threshold relaxation."},
+    {"path": "tests/release-picker-controls.test.mjs", "review": "Protects default44x208/56x44, exact shared material/geometry, direct cursor receivers, safety and negative old-hit/wrong-material cases. Forge no-overlap loop uses unscaled cards; it misses real1.08 hover, finding P2-1."}
+  ],
+  "evidenceCommitCoverage": "14363e83 adds only the 16 docs/evidence/release-pc-picker-controls-20261116 files; reviewed README, identity and relevant pass/failure logs. No product delta after a925 at this review.",
+  "independentProbes": [
+    {"script": ".artifacts/release-pc-qa-20261115/picker-independent-probe.mjs", "result": "PASS for all six exact container/hit/existing-label identities, focusable cursorArea ownership, exact borrowed source material, zero new cursor/preset/grid receivers and default profile JSON immutability", "output": ".artifacts/release-pc-qa-20261115/picker-independent-probes.json"},
+    {"script": ".artifacts/release-pc-qa-20261115/picker-independent-host.lua", "result": "PASS reproducing real camp14 first-page card12 hover scale1.08 with next visible, hover exit1, and original next click to page2", "output": ".artifacts/release-pc-qa-20261115/picker-independent-host.log"},
+    {"result": "Counterexample: scaled forge cards7,8,11,12 intersect new footer buttons. No GUI/candidate generated.", "output": ".artifacts/release-pc-qa-20261115/picker-independent-probes.json#hoverGeometry"}
+  ],
+  "authorEvidenceReviewed": ["red-layout.txt", "targeted-layout.txt", "green-host.txt", "current-contracts.txt", "official-host.txt", "lua-static.txt", "architecture.txt", "frozen-source.txt", "README.md", "identity.json"],
+  "findings": [
+    {
+      "id": "P2-1",
+      "priority": "P2",
+      "path": "scripts/official-picker-controls.mjs",
+      "line": 22,
+      "title": "宽分页按钮扩大了锻造悬停卡片的交叠区域",
+      "trigger": "14张可升级牌，锻造第一页，悬停第二排card11或card12，forgeNext仍显示。左侧同理。",
+      "evidence": "Footer center(430,-236),200x48 => y[-260,-212]. Card11 center(270,-104),150x210 with real1.08 hover => x[189,351],y[-217.4,9.4]; intersection21x5.4. Card12 x[369,531] intersects161x5.4. Real Host CursorEnter verifies1.08 with next visible.",
+      "baselineDistinction": "旧56x44 forgeNext center(490,-236)只与最外卡存在3.4高窄交叠，不与card11交叠。本片新增card11/8交叠且把外卡交叠扩到161x5.4，不能把新覆盖解释为全旧缺陷。",
+      "impact": "Visible lower-row card/interactive hit and paging button geometries overlap. Source evidence proves geometric conflict; no claim about official native raycast winner or screenshot appearance.",
+      "requestedChange": "保持卡面/hoverScale/材质/动作ID/预算，使用既有footer安全间距调整布局；测试真实hover后的矩形并核对页码与底部返回/确认，不只测未缩放card.size。"
+    }
+  ],
+  "unresolved": ["P2-1"],
+  "scopeBoundaries": {
+    "privateImages07and09": "NOT_ACCESSED",
+    "sourceFrozenIntegrationContract": "KNOWN_FAILED_AUTHOR_EVIDENCE_SEPARATE_SLICE_REQUIRED",
+    "hostedFull": "NOT_RUN_NOT_VERIFIED",
+    "officialCandidateImportAndReady": "NOT_RUN_NOT_VERIFIED",
+    "official20MBAndServer3MB": "NOT_RUN_NOT_VERIFIED",
+    "pcAndPhysicalMobile": "NOT_RUN_NOT_VERIFIED",
+    "PC26LoadingFlicker": "SEPARATE_PR684_NOT_VERIFIED_HERE",
+    "futurePR685Combination": "NOT_COMBINED; independent Deck controller 112x48 keep/confirm controls and invalidated-session fix remain outside this adapter; no source overlap in the reviewed three PR685 files",
+    "rulesAndRng": "SOURCE_UNCHANGED; readonly/transaction author probes reviewed, no claim of full game regression"
+  },
+  "operations": "No product edits, Backlog writes, GUI/input, MCP, push/PR/merge, candidate, CI polling, Fast/full rerun or branch/tag changes. Existing source tree was clean at inspection. Node needed sandbox escalation; it executed only local review probes and generated temporary offline Host fixtures outside product tree."
+}
