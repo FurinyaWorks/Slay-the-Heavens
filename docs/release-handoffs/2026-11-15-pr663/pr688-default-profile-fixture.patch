@@ -1,0 +1,38 @@
+diff --git a/tests/lua/enemy_geometry_metrics.lua b/tests/lua/enemy_geometry_metrics.lua
+index 0799b37..a62a813 100644
+--- a/tests/lua/enemy_geometry_metrics.lua
++++ b/tests/lua/enemy_geometry_metrics.lua
+@@ -44,7 +44,9 @@ for _,selected in ipairs({'official-assets-first','legacy-test-profile'})do
+  end
+ end
+ Theme.presentationProfile,Theme.canvas.base=profile,canvas
++local official=profile=='official-assets-first'
+ local View=dofile(geometryPath)
++if official then
+ local previous=View.geometry(actor).statusCountWidth
+ for _,amount in ipairs({1,123456,-123456})do
+  actor.statuses.strength=nil;actor.powerOrder={}
+@@ -85,8 +87,22 @@ assert(heights.offense>heights.defense,'live Guardian phase did not change hitbo
+ guardian.hp=0;guardian.escaped=true;guardian.sourcePosition={x=-268,y=9}
+ calls=0;local retired=View.geometry(guardian,false);assert(calls==0)
+ unchangedFields(View.geometry(guardian),retired)
++else
++ -- The default profile does not read or display official count widths.
++ for _,amount in ipairs({1,123456,-123456})do
++  actor.statuses.strength=nil;actor.powerOrder={}
++  Actors.addStatus(actor,'strength',amount)
++  calls=0;local full=View.geometry(actor)
++  assert(calls==0 and full.statusCountWidth==Theme.layout.nativeText.lineHeight,'default fixed status geometry changed')
++  unchangedFields(full,View.geometry(actor,false));assert(calls==0)
++ end
++end
+ Actors.statusView=statusView
+-print('ENEMY_GEOMETRY_METRICS_PASS profiles=2 statusChanges=3 geometryVariants='..variants..' powerCounts=1,2,3,1')
++if official then
++ print('ENEMY_GEOMETRY_METRICS_PASS profiles=2 statusChanges=3 geometryVariants='..variants..' powerCounts=1,2,3,1')
++else
++ print('ENEMY_GEOMETRY_DEFAULT_PASS profiles=2 statusChanges=3 geometryVariants='..variants..' fixedCountWidth=true')
++end
+ 
+ local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
+ local host=H.setup({'strike','defend','strike','defend','strike'},{'cultist'})

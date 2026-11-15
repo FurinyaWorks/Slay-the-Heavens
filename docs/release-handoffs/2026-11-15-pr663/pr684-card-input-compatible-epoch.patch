@@ -1,0 +1,47 @@
+--- a/tests/helpers/historical-card-input.mjs
++++ b/tests/helpers/historical-card-input.mjs
+@@ -26,5 +26,10 @@
+  const source=readSource(path).replaceAll('\r\n','\n');
+  assert.equal(createHash('sha256').update(source).digest('hex'),binding.sha256,'unreviewed source-input gesture host');
+  const prior=preIntegrationSource(path,source,'base',{readSource});
+- return `print('HISTORICAL_CARD_INPUT_PRE_BROWSE')\npackage.preload.abyss_battle_card_gestures=function()return assert(load(${luaString(prior)},'@pre-browse-gesture'))()end\n`;
++ // The frozen gesture API and its caller must come from the same authenticated epoch.
++ const callerPath='src/lua/abyss_battle_card_bindings.lua';
++ const caller=readSource(callerPath).replaceAll('\r\n','\n');
++ assert.equal(createHash('sha256').update(caller).digest('hex'),integrationSources[callerPath].sha256,'unreviewed source-input card bindings');
++ const priorCaller=preIntegrationSource(callerPath,caller,'base',{readSource});
++ return `package.preload.abyss_battle_card_bindings=function()return assert(load(${luaString(priorCaller)},'@pre-browse-bindings'))()end\nprint('HISTORICAL_CARD_INPUT_PRE_BROWSE')\npackage.preload.abyss_battle_card_gestures=function()return assert(load(${luaString(prior)},'@pre-browse-gesture'))()end\n`;
+ }
+--- a/tests/card-input-slices.test.mjs
++++ b/tests/card-input-slices.test.mjs
+@@ -38,7 +38,7 @@
+ test('only the three frozen input archives load exact pre-browsing gesture semantics',()=>{
+  assert.deepEqual(historicalCardInputFixtures,['tests/lua/card_input_port.lua','tests/lua/card_input_port_slice_2.lua','tests/lua/card_input_port_slice_3.lua']);
+  const cwd=process.cwd(),inputs=loadHistoricalBaselineInputs();
+- const host='src/lua/abyss_battle_card_gestures.lua',linked='src/lua/abyss_monster_intent_particle_view.lua';
++ const caller='src/lua/abyss_battle_card_bindings.lua',host='src/lua/abyss_battle_card_gestures.lua',linked='src/lua/abyss_monster_intent_particle_view.lua';
+  const original=path=>{assert.ok(Object.hasOwn(inputs,path),'complete original input: '+path);return inputs[path].toString('utf8');};
+  for(const path of historicalCardInputFixtures){
+   // Call the ordinary current-cwd API, as runLua does. Only its explicit
+@@ -46,9 +46,11 @@
+   const actual=historicalCardInputPrelude(path);assert.match(actual,/HISTORICAL_CARD_INPUT_PRE_BROWSE/);
+   const reads=[];
+   assert.equal(historicalCardInputPrelude(path,{cwd,readSource:p=>{reads.push(p);return original(p);}}),actual);
+-  assert.ok(reads.includes(host)&&reads.includes(linked),'the real inverse validates both host and complete linked owner closure');
++  assert.ok(reads.includes(caller)&&reads.includes(host)&&reads.includes(linked),'the real inverse validates both host and complete linked owner closure');
+   assert.equal(historicalCardInputPrelude(path,{readSource:p=>original(p).replaceAll('\n','\r\n')}),actual,'legal original CRLF sources recover the same exact pre-browsing semantics');
+   for(let attempt=0;attempt<2;attempt++){
++   assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>original(p)+(p===caller?'\n-- drift':'')}),/unreviewed source-input card bindings/);
++   assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>{if(p===caller)throw Error('missing original caller');return original(p);}}),/missing original caller/);
+    assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>original(p)+(p===host?'\n-- drift':'')}),/unreviewed source-input gesture host/);
+    assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>original(p)+(p===linked?'\n-- drift':'')}),/delivery linked source identity/);
+   }
+@@ -56,7 +58,7 @@
+   assert.equal(historicalCardInputPrelude(path,{cwd:resolve(cwd,'unrelated-source-directory'),readSource:()=>{throw Error('foreign cwd must not read inputs');}}),'');
+   assert.equal(process.cwd(),cwd,'the current runtime cwd remains unchanged');
+  }
+- for(const path of ['tests/lua/hand_flick_intent.lua','tests/lua/battle_hand_fan_swipe.lua','tests/lua/aim_visual_parity.lua','tests/lua/card_input_port_slice_4.lua']){
++ for(const path of ['tests/lua/sparse_card_flick.lua','tests/lua/sparse_card_flick_safety.lua','tests/lua/hand_flick_intent.lua','tests/lua/battle_hand_fan_swipe.lua','tests/lua/aim_visual_parity.lua','tests/lua/card_input_port_slice_4.lua']){
+   assert.equal(historicalCardInputPrelude(path),'');
+   assert.equal(historicalCardInputPrelude(path,{readSource:()=>{throw Error('current input fixtures must not read historical sources');}}),'');
+  }
