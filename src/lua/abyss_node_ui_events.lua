@@ -91,25 +91,55 @@ local function renderEventFigure(event, id, alignment)
     alignEventBody(body, neow, alignment)
 end
 -- LargeDialogOptionButton.calculateY (ROOM): bottom-aligned stack, -82px per slot, x = 620.
-local function inlineLines(text)
+local function inlineLines(text,font,available)
+    font,available=font or 18,available or 650
     local lines, width = 1, 0
     for _, code in utf8.codes(text) do
-        local advance = code < 128 and 9 or 18
+        local advance = code < 128 and font/2 or font
         if code == 10 then lines, width = lines + 1, 0
-        elseif width + advance > 650 then lines, width = lines + 1, advance
+        elseif width + advance > available then lines, width = lines + 1, advance
         else width = width + advance end
     end
     return lines
 end
-local function compactFrames(rows)
-    local frames, bottom = {}, -275
+local function compactFrames(rows,reading)
+    local style=reading or{bottom=-275,font=18,width=650,gap=11}
+    local frames, bottom = {}, style.bottom
     for i = math.min(#rows, OPTIONS), 1, -1 do
         local text = rows[i].title .. ' ' .. (rows[i].description or '')
-        local height = 44 + (inlineLines(text) - 1) * 22
+        if reading then text=text:gsub('<[^>]+>','')end
+        local lines=inlineLines(text,style.font,style.width)
+        local height = 44 + (lines - 1) * 22
+        if reading then
+            local scale=math.min(layout.buttonStates.pressedScale,layout.buttonStates.normalScale)
+            height=math.max(math.ceil(reading.hit/scale),math.ceil(lines*reading.font*1.6+16))
+        end
         frames[i] = {225, bottom + height / 2, 700, height}
-        bottom = bottom + height + 11
+        bottom = bottom + height + style.gap
     end
     return frames
+end
+local function compactTitle(box,height,reading)
+    local title=box:GetChild('title');place(title,{0,0,650,height-8})
+    if not reading then return end
+    title.fontSize=reading.font;title.minimumFontSize=reading.font;title.adaptiveFontSize=false
+end
+local function mobileEventLayout(ctx,event,id)
+    if id=='neow' or not require('abyss_mobile_hud').profile(ctx.options)then return end
+    local reading=Theme.officialAssets.mobileReading.event
+    place(event:GetChild('name'),reading.name);place(event:GetChild('plate'),reading.paper)
+    local surface=event:GetChild('plateBorder'):GetChild('v25EventParchment')
+    place(surface:GetChild('storyPanel'),reading.paper);place(surface:GetChild('panelShadow'),reading.shadow)
+    local ribbon=surface:GetChild('ribbon');ribbon:SetAnchoredPosition(reading.ribbon[1],0);ribbon:SetLocalScale(reading.ribbon[2],1,1)
+    place(surface:GetChild('ribbonTopLight'),reading.topLight)
+    local body=event:GetChild('body');body.fontSize=21;body.minimumFontSize=21;body.adaptiveFontSize=false
+    return reading
+end
+local function fitEventBody(event,frames,reading)
+    if not reading then return end
+    local box=reading.body;local height=box.maxHeight
+    if frames and frames[1]then height=math.min(height,box.top-frames[1][2]-frames[1][4]/2-reading.gap)end
+    place(event:GetChild('body'),{box.x,box.top-height/2,box.width,height})
 end
 local function sizeOptionInput(box, w, h, neow)
     for _, part in ipairs({ 'border', 'hit' }) do
@@ -121,10 +151,11 @@ local function sizeOptionInput(box, w, h, neow)
     end
 end
 
-local function placeOptions(event, neow, rows)
+local function placeOptions(event, neow, rows,reading)
     local o = layout.event.options
     local count = math.min(#rows, OPTIONS)
-    local frames = layout.event.reference and not neow and compactFrames(rows)
+    local frames = layout.event.reference and not neow and compactFrames(rows,reading)
+    fitEventBody(event,frames,reading)
     for i = 1, OPTIONS do
         local box = event:GetChild('option' .. i)
         if box then
@@ -137,7 +168,7 @@ local function placeOptions(event, neow, rows)
                 place(box:GetChild('description'), n.description)
             elseif frames and frames[i] then
                 w, h = frames[i][3], frames[i][4]
-                place(box, frames[i]);place(box:GetChild('title'), {0, 0, 650, h - 8})
+                place(box, frames[i]);compactTitle(box,h,reading)
             elseif o.rows[i] then
                 box:SetAnchoredPosition(o.x, o.rows[i])
                 place(box:GetChild('title'), o.title)
@@ -397,7 +428,7 @@ function M.install(ctx)
             end
         end
         buildEventRows()
-        if NEOW then placeOptions(event, id == 'neow', rows) end
+        if NEOW then placeOptions(event, id == 'neow', rows,mobileEventLayout(ctx,event,id)) end
         for i = 1, OPTIONS do
             local row, box = rows[i], event:GetChild("option" .. i)
             ctx.show(box, row)
