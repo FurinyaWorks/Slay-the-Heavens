@@ -9,3 +9,5 @@
 独立复审 /root/pc695_ci_fixture_repair：15 项只读检查 PASS，无 blocking；精确文件 hash 见 pc22-independent-review.json。原 RED、GREEN、执行参数和 hash 均随附；首次沙盒 Node 启动失败保留在本地 pc22-two-cases.receipt.json，不计为用例结果。
 
 本轮不是 PC/手机实机、官方导入/ready 或容量验收。TASK-29.1 保持 In Progress，原 AC 不改。CI 需由新提交正常运行，旧运行的排队或局部成功不能视为准入。
+
+执行输出以 `.log.json` 的 base64 字段保存原字节，避免忽略规则和文本换行转换；解码后以内部 sha256/byteLength 对照执行 receipt。
