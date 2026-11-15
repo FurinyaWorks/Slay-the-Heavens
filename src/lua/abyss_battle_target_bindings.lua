@@ -62,21 +62,41 @@ function M.install(owner, ownership, host, dependencies)
         local pending=false
         eachInput(function(input)
             if input.held or input.released or input.active and next(input.active)then pending=true end
+            for _,state in pairs(input.active or {})do if type(state)=='table'then state.ambiguous=true end end
             if input.held then input.held.anonymousSafe=false end
             if input.released then input.released.anonymousSafe=false end
         end)
         return pending
     end
+    local function originEvidence(input,origin)
+        local active=input.active[origin]
+        if active~=nil then return active end
+        for _,name in ipairs({'held','released'})do
+            local token=input[name]
+            if tokenOrigin(token)==origin then return token.originState end
+        end
+    end
+    local function retireConsumedOrigin()
+        local origin=ownership.releasedDragTouch
+        if origin==nil then return end
+        -- This is the existing named release proof, never a history of touch IDs.
+        for _,input in pairs(ownership.enemyInputs or {})do
+            local evidence=originEvidence(input,origin)
+            if type(evidence)=='table' and evidence.endedMarker~=origin then retireOrigin(input,origin)end
+        end
+    end
     local function beginOrigin(input,event)
         -- A fresh named Down owns a new physical sequence, including reused IDs.
         if event and event.touchId~=nil then retireOrigin(input,touchKey(event))end
+        retireConsumedOrigin() -- Run before registering this Down; same-ID reclaim stays a new sequence.
         return revokeAnonymous()
     end
     local function anonymousToken(input)
+        retireConsumedOrigin()
         local token=input.released
-        if not token or not token.cardTarget or token.aim then return end
+        if not token or not(token.cardTarget or token.tapAim) then return end
         input.released=nil -- even a blocked anonymous Click cannot replay after recovery
-        if not token.anonymousSafe or owner.potionMenu or owner.gesture then return end
+        if not token.anonymousSafe or owner.potionMenu or owner.gesture or token.aim and token.aim.moving then return end
         local ambiguous=eachInput(function(other)
             return other.active and next(other.active) or other~=input and (other.held or other.released)
         end)
@@ -94,9 +114,11 @@ function M.install(owner, ownership, host, dependencies)
         input.active[touchKey(event)]=nil
         return dependencies.enemyReady(released)
     end
-    local function anonymousDownReady(ambiguous)
+    local function anonymousDownReady(ambiguous,input,event,originState)
         return not ambiguous and not Controller.pointerBlocked(host.controller)
+            and not originState.ambiguous and input.active[touchKey(event)]==originState
     end
+    local function tapAim(aim)return aim and not aim.moving end
     local function bindAnonymousDrag(control,input)
         if not host.cursor.CursorDrag then return end
         control:AddCursorEventListener(host.cursor.CursorDrag,function(event)
@@ -214,8 +236,10 @@ function M.install(owner, ownership, host, dependencies)
                     if not entryAt() then return false end
                     ownership.enemyPointerObserved = true
                     local ambiguous=beginOrigin(input,event)
-                    input.active[touchKey(event)]=true
+                    local originState={endedMarker=ownership.releasedDragTouch}
+                    input.active[touchKey(event)]=originState
                     local dismissed = dependencies.down(event)
+                    originState.endedMarker=ownership.releasedDragTouch
                     input.held, input.released = nil, nil
                     if dismissed then return end
                     local run, battle = owner.run, owner.run and owner.run.combat
@@ -224,8 +248,8 @@ function M.install(owner, ownership, host, dependencies)
                     if not actor then return end
                     local g = {slot=entry.index,screenSlot=screenSlot, actor=actor, run=run, battle=battle,
                         uid=owner.selected, selectionEpoch=owner.selectionEpoch,aim=owner.potionAim,
-                        turn=battle.turn, touch=event and event.touchId,
-                        anonymousSafe=anonymousDownReady(ambiguous)}
+                        turn=battle.turn, touch=event and event.touchId,originState=originState,tapAim=tapAim(owner.potionAim),
+                        anonymousSafe=anonymousDownReady(ambiguous,input,event,originState)}
                     if dependencies.enemyReady(g) then
                         input.held = g
                         previewEnemy(g,false)
