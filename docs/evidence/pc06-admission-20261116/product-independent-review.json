@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "pc06-settings-icon-independent-product-review-20261116-21d48c4e",
+  "reviewer": "/root/pc06_product_review",
+  "reviewedAt": "2026-11-15T20:29:24.236Z",
+  "reviewedBaseSha": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "reviewedHeadSha": "21d48c4e41d0f2879acd4824a60e251c739433e8",
+  "reviewedTreeSha": "22bb3246cc90a468ffff6eeaf1f03f4bb47cb90b",
+  "conclusion": "pass",
+  "scope": "Independent product and test review of the native settings icon facet only. This is not delivery admission, CI approval, PC06 colour/style acceptance, or device acceptance.",
+  "unresolved": [],
+  "findings": [],
+  "bindings": [
+    {
+      "path": "scripts/official-battle-hud.mjs",
+      "before": {
+        "gitBlob": "c64acc72ffa6ee3e22bf2f74b6a90c61a00be9c0",
+        "sha256": "05f1bc955d40f60ed295f9a7441ac45bed4c109fc9b7d61f384dae0137126e0c",
+        "bytes": 7694
+      },
+      "after": {
+        "gitBlob": "2494d0a304f7cf7c4c63a50fb9d99eb1f133e99e",
+        "sha256": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+        "bytes": 7778
+      },
+      "worktree": {
+        "sha256": "0f3af4ff06652b0ea008e08cfc849fa99b72c29900f5ec4aa840d6ba9ea4e6ea",
+        "bytes": 7896,
+        "normalization": "CRLF checkout normalized to LF equals exact HEAD git blob"
+      }
+    },
+    {
+      "path": "tests/official-run-chrome.test.mjs",
+      "before": {
+        "gitBlob": "81f14d24b974576f0a42163dcdbf71f2c08a1f3c",
+        "sha256": "4cac72f1f00f361e6f4ce5fe91c37cf2a1dab86645cce63eeb631ad6fa54f159",
+        "bytes": 17548
+      },
+      "after": {
+        "gitBlob": "c11d705cada45cade6692a9ba68cfa9e78ed65b9",
+        "sha256": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+        "bytes": 21984
+      },
+      "worktree": {
+        "sha256": "5f275c9b1503d6968c443459b637096c347efa1e022d829f237c946b6ce1aaba",
+        "bytes": 22319,
+        "normalization": "CRLF checkout normalized to LF equals exact HEAD git blob"
+      }
+    }
+  ],
+  "authorSourceSha": "9c1fb9513422d67b89966a4b15fb8e1f01125e78",
+  "authorProductByteEqual": true,
+  "changedPathCount": 20,
+  "changedExecutingPaths": [
+    "scripts/official-battle-hud.mjs",
+    "tests/official-run-chrome.test.mjs"
+  ],
+  "allOldTestSourcePreserved": true,
+  "productAssessment": [
+    "The only production diff replaces the exitEntry Unicode gear text with the existing theme.icon.settings=100161 image at 28x28. The complete product after-blob equals the existing #672 author product blob.",
+    "The shared normal/pressed #D6CBA5, hover #FFF3CE and disabled #8F918B palette is retained. No Theme, Lua, geometry, HP/gold, source epoch, workflow or timing/budget changes are included.",
+    "deckEntry symbol/count semantics, original 48x48 hit, state mapping, scale and position identity remain. Existing runtime retains activation ownership: hidden generated overlay is shown only under the unchanged official-assets-first guard; command/input owner remains unchanged.",
+    "This is reuse of an existing approved HUD component, with no new asset or settings page. It does not establish the cause of the user-observed brown colour or prove first-frame rendering."
+  ],
+  "testAssessment": [
+    "The three added facets execute real production layout/decorator/buildUI modules. They assert native image/no-text in all states, retain original controls after removing the overlays, preserve deck symbol/count, and exercise official/default/candidate-art/v25 profile generation.",
+    "The temporary generator outputs use mkdtemp and t.after cleanup. No skip, loosened assertion, copied production implementation, retry, sleep, new parent test module or framework is added.",
+    "Exact LF source comparison after removing only the new facets and necessary imports equals the entire baseline test source; all existing assertions remain.",
+    "The author mixed-scope mobile HUD tests require other Theme/HP/gold/foreground changes and are not represented as migrated or passing here. The archived narrow RED proves text!=image on both Release bases; this reviewer inspected those results rather than rerunning the 3+7/Host suites."
+  ],
+  "independentExecution": {
+    "node": "v24.18.0",
+    "command": "TEMP/TMP=.artifacts/release-pc-qa-20261115/pc06-review-temp; build/tools/node-v24.18.0-win-x64/node.exe .artifacts/release-pc-qa-20261115/pc06-review-probe.mjs",
+    "status": "passed",
+    "profiles": [
+      {
+        "profile": "official",
+        "status": "pass",
+        "states": [
+          {
+            "state": "normal",
+            "image": 100161,
+            "size": [
+              28,
+              28
+            ],
+            "colour": "#D6CBA5"
+          },
+          {
+            "state": "hover",
+            "image": 100161,
+            "size": [
+              28,
+              28
+            ],
+            "colour": "#FFF3CE"
+          },
+          {
+            "state": "pressed",
+            "image": 100161,
+            "size": [
+              28,
+              28
+            ],
+            "colour": "#D6CBA5"
+          },
+          {
+            "state": "disabled",
+            "image": 100161,
+            "size": [
+              28,
+              28
+            ],
+            "colour": "#8F918B"
+          }
+        ],
+        "entryPosition": [
+          576,
+          316
+        ],
+        "hitSize": [
+          48,
+          48
+        ]
+      },
+      {
+        "profile": "v25",
+        "status": "pass",
+        "states": [],
+        "entryPosition": [
+          576,
+          316
+        ],
+        "hitSize": [
+          48,
+          48
+        ]
+      }
+    ],
+    "archiveVerification": {
+      "checked": 16,
+      "compressedAndRawHashes": "all match manifest",
+      "sourceManifestSha256": "ac5f3621514092c98904d22974f136bd30dc988b781928a33381e816ef72eefc"
+    },
+    "probeScriptSha256": "5d66d849e1c60bcc5f07199447dd547ce18963601c15f9445b2823fe3b0c3005",
+    "probeResultSha256": "3b3e513a60e96b4e3a0a08fa0ab4ee81e670e2ff0e3fc2d67a5f8fc318b7607c",
+    "attempts": [
+      {
+        "result": "environment unavailable",
+        "detail": "Default sandbox launch of existing Node24 --version silently exited1; used authorized escalation for the same offline workspace-only probe."
+      },
+      {
+        "result": "failed reviewer assumption, corrected",
+        "detail": "First probe required raw checkout bytes to equal Git LF blob; core.autocrlf=true yields clean CRLF checkout. git ls-files --eol and git diff confirmed this. Corrected probe records both raw checkout and Git LF hashes, requires LF-normalized identity, then passed."
+      },
+      {
+        "result": "passed",
+        "detail": "Node24.18.0; all static assertions and two real generated profile probes passed, no suite rerun."
+      }
+    ]
+  },
+  "authorCurrentEvidence": {
+    "redRelease36": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "reason": "text != image"
+    },
+    "redRelease1cc": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "reason": "text != image"
+    },
+    "iconFacets": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "menuRelated": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "completeProductionSource": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "buildData": "exit0 author log",
+    "buildUI": "exit0 author log",
+    "ciSource": {
+      "tests": 3,
+      "pass": 2,
+      "fail": 1,
+      "reason": "fresh complete integration source: tests/official-run-chrome.test.mjs",
+      "expectedSha256": "4cac72f1f00f361e6f4ce5fe91c37cf2a1dab86645cce63eeb631ad6fa54f159",
+      "actualSha256": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+      "status": "OPEN; requires separate precise CI continuation and validation before delivery"
+    }
+  },
+  "remainingBoundaries": [
+    {
+      "id": "CI_SOURCE_BINDING",
+      "scope": "delivery",
+      "status": "OPEN",
+      "detail": "The exact frozen head retains a real 1fail/2pass CI-source result. Scoped product review cannot clear it or approve merge. A continuation commit requires new exact-source validation and applicable review."
+    },
+    {
+      "id": "INHERITED_MENU_GEOMETRY",
+      "scope": "product follow-up outside icon facet",
+      "status": "UNRESOLVED_NOT_CHANGED",
+      "hudMenu": [
+        594,
+        338.5,
+        1
+      ],
+      "topHitEdge": 362.5,
+      "designYMax": 360,
+      "overrun": 2.5,
+      "detail": "Release HUD menu y338.5 plus half hit24 reaches362.5 against360. Author y335 geometry was deliberately not imported; no canvas assertion is deleted or weakened."
+    },
+    {
+      "id": "PC06_VISUAL_ACCEPTANCE",
+      "status": "UNVERIFIED",
+      "detail": "Original PC candidate/profile/build and observed brown state are not proven. The icon patch does not complete PC06 colour/style or first-frame acceptance."
+    },
+    {
+      "id": "OFFICIAL_AND_DEVICE",
+      "status": "NOT_RUN",
+      "detail": "No candidate build/write/readback, official import, fresh ready/logs, current PC/mobile/controller screenshots or interaction, Full/Fast, CI polling, GUI/MCP or publishing in this review."
+    }
+  ],
+  "evidenceSources": {
+    "directory": "docs/evidence/pc06-settings-icon-20261116",
+    "archives": [
+      {
+        "name": "icon-red.log.gz",
+        "sha256": "f94d4284792251c1b927ca56d32cf9ae297d9801c5face0a22eda64f139f4522",
+        "rawSha256": "8c81fbdc052eb9566b6f6b0f5119bba001e640d43f1608e465403752e4f8b2d5",
+        "rawBytes": 1111,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/icon-red.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "icon-red-release1cc.log.gz",
+        "sha256": "933f5f9f4c60fd1192fc3903f9530050d4a2f2ba897c66f3313a0c0820b4ad1b",
+        "rawSha256": "83c48ef52d9d301d422ece382577552926f238410fd651b824f893433d4a5d0a",
+        "rawBytes": 1111,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/icon-red-release1cc.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "icon-green.log.gz",
+        "sha256": "d2d91de421e189f4c8e062501c4c4c0b8f138187af0d00e32ccc5172edd905de",
+        "rawSha256": "0b6627231aa34acae34a3111249117f52aacfa79d6fbb1c8c350c87616554859",
+        "rawBytes": 476,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/icon-green.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "existing-ci-source.log.gz",
+        "sha256": "d1866e45dfa2e38364694912f203fd2fa275ac35058a33b9ec6213179411dfb1",
+        "rawSha256": "fe7b91d332f590acb1a256238562e92faa834ef24dbdaf9a2d9e51115a9cc007",
+        "rawBytes": 1774,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/existing-ci-source.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "existing-production-source.log.gz",
+        "sha256": "194e91348f3f570f5a39af3c01bcf2d941f5fb199f33180735cb1a3ce78fb20a",
+        "rawSha256": "079152aed6f5165edda977d7e584173747b4637995194a12c66e9da6853bfd33",
+        "rawBytes": 208,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/existing-production-source.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "build-data.log.gz",
+        "sha256": "a06d2fec4a80ec9070d2d037ad36278f409116401bc400f2d50d57268c46b04f",
+        "rawSha256": "795fb7fb8bc4b08a404b8264a87d3ad9625090c8d5d92668a11f15d90ed687a5",
+        "rawBytes": 34,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/build-data.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "build-ui.log.gz",
+        "sha256": "7c5cf678236ff3f04c9568e10a3f8a029c85bdd56a96be1d45da66116cc61b74",
+        "rawSha256": "0d69c17c4ec2190832766c94be6842d45295ab03bb8138faca3b3f62e2711dc2",
+        "rawBytes": 53,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/build-ui.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "menu-related.log.gz",
+        "sha256": "8bb875e90d8dd1be7435d00dd61b306acf7e24835eebb5ddf9752c520068472f",
+        "rawSha256": "5483ceb88aa8fc0bee6ba2adbab4b703575d9846227f44b5751d77146af618dc",
+        "rawBytes": 824,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-product/menu-related.log",
+        "role": "current product evidence"
+      },
+      {
+        "name": "pc06-source-intake.json.gz",
+        "sha256": "8dd7e3acf0f2b97a3c71555e1dab1bb96639e63899338c4397bbd1c144f9d4f4",
+        "rawSha256": "8c6a6d70f7d653dc125a0ae66c34f0b8aded944300edde1d31d33fbeb0409da7",
+        "rawBytes": 48518,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-source-intake.json",
+        "role": "current product evidence"
+      },
+      {
+        "name": "pc06-source-intake.md.gz",
+        "sha256": "2bec9310f21047b506e4069eee4fda44c1f928325791769f1e091f64b8f9b3eb",
+        "rawSha256": "938044b13bcd260443b201eb5241a2aad40c837fd1de2d3ee40b73ef479b3fc5",
+        "rawBytes": 4923,
+        "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc06-source-intake.md",
+        "role": "current product evidence"
+      },
+      {
+        "name": "author-mobile-hud-receipt.json.gz",
+        "sha256": "83ffc64cf639e46568c6df96ede7fa889aa212cb88c6f9692941e7e1a9e80c98",
+        "rawSha256": "c14e1133286b4a1e2070dee2d83b7a471ddde0af0717335958e25c155999d0a6",
+        "rawBytes": 2109,
+        "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-receipt.json",
+        "role": "Prior author evidence; not rerun or claimed as current acceptance"
+      },
+      {
+        "name": "author-mobile-hud-red.log.gz",
+        "sha256": "657115b35b209dcbeb670e25d8884a2dd9cfe54bfc264a0ea2e65c1d5acd81ee",
+        "rawSha256": "975eb185be13ec0e38eb1e1b85739efa9c1f351a92c2a9c4a001848a254867de",
+        "rawBytes": 3477,
+        "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-red.log",
+        "role": "Prior author evidence; not rerun or claimed as current acceptance"
+      },
+      {
+        "name": "author-mobile-hud-order-red.log.gz",
+        "sha256": "a4459087c3e6224fafdb45a3006875b77b7c8fe0d3a0b3fc35117d0793273a91",
+        "rawSha256": "42695a1a48c19ad26ee44f87b0b560ed4563da692295119bd1aead39281a848e",
+        "rawBytes": 1366,
+        "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-order-red.log",
+        "role": "Prior author evidence; not rerun or claimed as current acceptance"
+      },
+      {
+        "name": "author-mobile-hud-green.log.gz",
+        "sha256": "ad1f21f8afd1787993f46c6e59e7dfc356c6ad7176e23b3eb60c96cd4fbc048a",
+        "rawSha256": "3def4a32da2a58492a2c7cf9ce62e619e09cda872c958f172d44d7b02dc3cbbe",
+        "rawBytes": 2749,
+        "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-green.log",
+        "role": "Prior author evidence; not rerun or claimed as current acceptance"
+      },
+      {
+        "name": "author-mobile-hud-final.log.gz",
+        "sha256": "2b20873c35766dd9258247a4529e172acd200d3d268aebebf2a892a3e5d3bdf1",
+        "rawSha256": "11f7a6229bd8fac09f65d036087e6ac7855f2321bb55b576083ce03b875cffcb",
+        "rawBytes": 878,
+        "sourceRelativePath": ".artifacts/mobile-1115-ci/mobile-hud-final.log",
+        "role": "Prior author evidence; not rerun or claimed as current acceptance"
+      },
+      {
+        "name": "author-review-hud-9c1fb951.json.gz",
+        "sha256": "0f36a7c77a64ba90ac2961fec54d4d8dc528fce6be2dafca155dae0ec0fda0f8",
+        "rawSha256": "fc202f52c5bde81f4121cdb798e676985e1a6f83f7f92685abb10e7e384cfb05",
+        "rawBytes": 1467,
+        "sourceRelativePath": ".artifacts/mobile-1115-ci/review-hud-9c1fb951.json",
+        "role": "Prior author evidence; not rerun or claimed as current acceptance"
+      }
+    ],
+    "intakes": [
+      {
+        "name": "pc06-source-intake.json",
+        "sha256": "8c6a6d70f7d653dc125a0ae66c34f0b8aded944300edde1d31d33fbeb0409da7",
+        "bytes": 48518
+      },
+      {
+        "name": "pc06-source-intake.md",
+        "sha256": "938044b13bcd260443b201eb5241a2aad40c837fd1de2d3ee40b73ef479b3fc5",
+        "bytes": 4923
+      },
+      {
+        "name": "pc06-product-intake.json",
+        "sha256": "fbbe0889de59100d2986e636b309c484fae55394a36682e1ce97fab06ee36d39",
+        "bytes": 12468
+      },
+      {
+        "name": "pc06-product-intake.md",
+        "sha256": "2674590192b138f5a75ced89e7dba23d23c059c1687215d25eb5f450eaabf0fa",
+        "bytes": 2741
+      }
+    ],
+    "sourceIntakeCorrection": {
+      "earlierMessage": "I initially said #672 had not changed this style chain before exact hash comparison.",
+      "corrected": "False: #672/9c1fb does replace Unicode gear with native picture100161. The shared palette/runtime cleanup is unchanged; this icon replacement must not be presented as colour acceptance."
+    },
+    "priorAuthorEvidencePolicy": "author-* archives and previous 3/3 or 11/11 runs remain historical provenance only, never current reviewer/device acceptance"
+  },
+  "ownership": {
+    "implementationChanged": false,
+    "backlogChanged": false,
+    "pushed": false,
+    "prCreated": false,
+    "productTreeStatus": "M \"backlog/tasks/task-4.16 - \\346\\224\\271\\345\\226\\204\\345\\217\\263\\344\\270\\212\\350\\247\\222\\350\\217\\234\\345\\215\\225\\344\\270\\216\\346\\223\\215\\344\\275\\234\\350\\257\\264\\346\\230\\216\\347\\232\\204\\344\\272\\244\\344\\272\\222\\345\\222\\214\\344\\277\\241\\346\\201\\257\\345\\261\\202\\347\\272\\247.md\"",
+    "note": "Only review artifacts and generated probe UI under the main evidence directory were written. The existing TASK-4.16 unstaged Backlog file was retained."
+  }
+}
