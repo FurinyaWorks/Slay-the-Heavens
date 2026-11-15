@@ -1,0 +1,782 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "release-pc-item-icons-bca8c5f1-20261115",
+  "reviewer": "/root/release_final_review",
+  "role": "Independent code reviewer; no implementation authorship",
+  "reviewedAt": "2026-11-15T15:17:26.081Z",
+  "reviewedHeadSha": "bca8c5f18684f301378e5b9c12e85a16321bbc2f",
+  "reviewedBaseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "conclusion": "pass",
+  "result": "CODE_PASS_SCOPED",
+  "unresolved": [],
+  "findings": [],
+  "scope": "Exact local PC18 semantic potion/relic icons plus reviewed fallback and source-alias fixes. Code and evidence review only; excludes final release-combination source/CI admission, official/client/device/capacity acceptance.",
+  "changedFileCoverage": {
+    "files": 59,
+    "productionFiles": 12,
+    "testPaths": [
+      {
+        "path": "tests/helpers/potion-art-runtime.lua",
+        "blob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f"
+      },
+      {
+        "path": "tests/helpers/relic-fallback-runtime.lua",
+        "blob": "52761f2213762948ecbd18a1d78cf2b682d26d12"
+      },
+      {
+        "path": "tests/helpers/reward-alias-runtime.lua",
+        "blob": "415e4531d15c526bc3c7e75b8e3999abf402442c"
+      },
+      {
+        "path": "tests/helpers/reward-art-runtime.lua",
+        "blob": "efdbb25c6932427b88e2a10519bc0c8386cf103d"
+      },
+      {
+        "path": "tests/lowcost-art.test.mjs",
+        "blob": "119724bfa4b28655838c2d54c13f2802e9a0ce26"
+      },
+      {
+        "path": "tests/potion-art-runtime.test.mjs",
+        "blob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8"
+      },
+      {
+        "path": "tests/potion-art.test.mjs",
+        "blob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1"
+      }
+    ],
+    "allPathsAndCanonicalGitBlobs": [
+      {
+        "path": "config/luacheck-baseline.json",
+        "blob": "7cd83759c66e9c0b988c826845594b3b172c0e45"
+      },
+      {
+        "path": "data/presentation/lowcost-potion-art.json",
+        "blob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91"
+      },
+      {
+        "path": "data/presentation/lowcost-relic-art.json",
+        "blob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc"
+      },
+      {
+        "path": "docs/backlog-details/RELEASE-PC-ITEM-ICONS-20261115.md",
+        "blob": "5af92b65a9560bbcf1ccc301dadc0f85716cc5d9"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/build-data.log.gz",
+        "blob": "a67685d2bcc660d6d86c4cb4329833955910af04"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/build-ui.log.gz",
+        "blob": "8782a92e765e9e49db2d8877e0a99ce2e1710adb"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/engineering-green.log.gz",
+        "blob": "bc0050014d47dae2e725b72dfc2f015b6b4ecb4d"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/engineering.log.gz",
+        "blob": "242d1a6fb7e3ec3d8ee1aaa2637489189fa6f8ff"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/fallback-source.json",
+        "blob": "6ef53bee00f14ffe996dae105c075cabd42265a7"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/green.tap.gz",
+        "blob": "2326242110da3763b6c45b5035f21dd86857524b"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/license-current.log.gz",
+        "blob": "f2bf7123545c1152a6b38d36063e9357f7ac707d"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/lowcost.tap.gz",
+        "blob": "0371466c4446806afd35aed8b9a589370cd3e4c1"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/native-contract.tap.gz",
+        "blob": "7af39bb4796b386707ca1f43e4b2e8509fd743fb"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/production-source.json",
+        "blob": "5290451c1286bd573f9f51d76ba0a3b7e131324a"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/raw-output-identities.json",
+        "blob": "431e51082ccbd412647c23e28ba8ece7914873d0"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/recipe-counts.json",
+        "blob": "347f1c4ec56a8647f380116d3613a100205f3fec"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/red-with-dependencies.tap.gz",
+        "blob": "481a72ba79f21d79899d1451c2194355819fb2e6"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/red.tap.gz",
+        "blob": "f8ffcd84b19a5cb51f23293f87919277b22f3ab4"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-and-regression-green.tap.gz",
+        "blob": "0f5f423b8b29ba702d12e40514305d3e42afd8a8"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-engineering.log.gz",
+        "blob": "bc0050014d47dae2e725b72dfc2f015b6b4ecb4d"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-final-engineering.log.gz",
+        "blob": "bc0050014d47dae2e725b72dfc2f015b6b4ecb4d"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-final-green.tap.gz",
+        "blob": "6702e1424a38b47dc172ec4beefac7e896c27e84"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-fixture-error.tap.gz",
+        "blob": "f40b4fdb200dc8f445ab08fb9477fa2ff2791d9a"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-red.tap.gz",
+        "blob": "518d3f08b42ce24ea1d8df5c0be83ffae4b170ce"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-gold-fallback-red.tap.gz",
+        "blob": "22f6297295b8b93db7c6e40d49826c4c4dfdf3a6"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-source-coverage-probe.lua.txt",
+        "blob": "9127932880dc72963866680d72954a3295231f9f"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-source-coverage-raw.log.gz",
+        "blob": "aaf7d2104ceacf8c2ad0d896c49d2a15c6da89ea"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/relic-source-coverage.json",
+        "blob": "9c1826cd96a1224caed384cea653d6f01c0bbfcb"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-details-fallback-probe.log.gz",
+        "blob": "a7d7f53e728c46015760c82e98b46a642d1d5ac6"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-details-fallback-probe.lua.gz",
+        "blob": "a5c45b06f704c51e3549aea39f7ec2310a4784b7"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-details-probe-fixture-error.log.gz",
+        "blob": "6a9891ad95a103f90dbd6357571e8e132f0d95b3"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-reward-alias-probe.log.gz",
+        "blob": "495a7700cee53037271c68a3ddca832ee693c9e2"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-reward-alias-probe.lua.gz",
+        "blob": "2e19d2fcb4fbb5f86a5cb025e4a7f3bea14f8ba9"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-shop-fallback-probe.log.gz",
+        "blob": "05ed895e5a8c4c08a54e12ce02027d25e8be6389"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-shop-fallback-probe.lua.gz",
+        "blob": "c732b233b946c4148e037fbad4c57fcfe36a2832"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-and-regression-green.tap.gz",
+        "blob": "830b3ac8c683b8f52f456b8b45700ffbd9cc08e6"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-engineering.log.gz",
+        "blob": "b19294530683c74a6679dbba470c2b4fc7dd6faf"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-license.log.gz",
+        "blob": "f2bf7123545c1152a6b38d36063e9357f7ac707d"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-red.tap.gz",
+        "blob": "c236d10c9a0dc2b86edf72cb258f7ab299881f04"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-source.json",
+        "blob": "5b1862cea624b2e6ae75fa3b2b4f573e24f8b84e"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-verification.json",
+        "blob": "bbcee5af1543507609b50e383db5c95ceff967ee"
+      },
+      {
+        "path": "docs/evidence/release-pc-item-icons-20261115/source-contract-current.tap.gz",
+        "blob": "5e05e80b0a86da90db83a44a3798f73b3ebf4a15"
+      },
+      {
+        "path": "docs/legal/assets.json",
+        "blob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59"
+      },
+      {
+        "path": "scripts/lowcost-art.mjs",
+        "blob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2"
+      },
+      {
+        "path": "scripts/potion-art.mjs",
+        "blob": "404b2cd4884ff959f18b4e7fd6f16355212bae50"
+      },
+      {
+        "path": "src/lua/abyss_battle_render_actors.lua",
+        "blob": "38be4d83cb2092f52031ea44385bc2c34d95e081"
+      },
+      {
+        "path": "src/lua/abyss_battle_reward_layout.lua",
+        "blob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a"
+      },
+      {
+        "path": "src/lua/abyss_node_ui.lua",
+        "blob": "3097771f47b4a0737413779aacd7d8746898bb84"
+      },
+      {
+        "path": "src/lua/abyss_node_ui_shop.lua",
+        "blob": "ff2f909819eebf072e7eefcecf4d93e92a653084"
+      },
+      {
+        "path": "src/lua/abyss_potion_discard_ui.lua",
+        "blob": "9325264ba034e7deee43c071c8efd08632b3d488"
+      },
+      {
+        "path": "src/lua/abyss_relic_view_ui.lua",
+        "blob": "8300b2554904df8bf88b68fc66f2bf8065045393"
+      },
+      {
+        "path": "src/lua/abyss_shop_ui.lua",
+        "blob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e"
+      },
+      {
+        "path": "tests/helpers/potion-art-runtime.lua",
+        "blob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f"
+      },
+      {
+        "path": "tests/helpers/relic-fallback-runtime.lua",
+        "blob": "52761f2213762948ecbd18a1d78cf2b682d26d12"
+      },
+      {
+        "path": "tests/helpers/reward-alias-runtime.lua",
+        "blob": "415e4531d15c526bc3c7e75b8e3999abf402442c"
+      },
+      {
+        "path": "tests/helpers/reward-art-runtime.lua",
+        "blob": "efdbb25c6932427b88e2a10519bc0c8386cf103d"
+      },
+      {
+        "path": "tests/lowcost-art.test.mjs",
+        "blob": "119724bfa4b28655838c2d54c13f2802e9a0ce26"
+      },
+      {
+        "path": "tests/potion-art-runtime.test.mjs",
+        "blob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8"
+      },
+      {
+        "path": "tests/potion-art.test.mjs",
+        "blob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1"
+      }
+    ],
+    "auditPath": "F:/New folder/.artifacts/release-pc-qa-20261115/audit-item-icons-final-bca8c5f1.json",
+    "auditSha256": "3ad27d045efdc415911821ed983e4a482e2f532059bd5701dd20ef883adeb2b2",
+    "notes": "Initial30-path slice independently reviewed;034 fallback delta reviewed;4431 immutable coverage evidence audited;final4431..bca13-path delta reviewed. No runtime/source/test path is exempted."
+  },
+  "productionIdentity": {
+    "upstreamSourceCommit": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+    "original10FilesAt53cd": "all exact LF/source blob; original manifest retained as historical identity",
+    "finalOriginalSourceBindings": [
+      {
+        "path": "config/luacheck-baseline.json",
+        "sha256": "95fcb537282d97cbb3d9ae643ed0a63381eb81aa8e6656984a0ad069fe213f8a",
+        "gitBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "data/presentation/lowcost-potion-art.json",
+        "sha256": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+        "gitBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "data/presentation/lowcost-relic-art.json",
+        "sha256": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526",
+        "gitBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "scripts/lowcost-art.mjs",
+        "sha256": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32",
+        "gitBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "scripts/potion-art.mjs",
+        "sha256": "a57f7fc51c24d001f24d2617992b6a87ffc873ecbd326e5141572fd5e7b0a63f",
+        "gitBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "src/lua/abyss_battle_render_actors.lua",
+        "sha256": "6955f2abc927133348efd803c8f0542adad0f1e32fc2ed677f6b56fb4e007b3f",
+        "gitBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "src/lua/abyss_battle_reward_layout.lua",
+        "sha256": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d",
+        "gitBlob": "3be6065def6b7cb95e80620361edc996431567f7",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a",
+        "unchangedFromOriginal": false
+      },
+      {
+        "path": "src/lua/abyss_node_ui_shop.lua",
+        "sha256": "6f7838454477ae2f4348f4b53977e673c54e83c4b9518b4d666aab879c797bc8",
+        "gitBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "src/lua/abyss_potion_discard_ui.lua",
+        "sha256": "ebaa819919dc8abee3299f3aca240ee89433973b86179e6e9234b6379a2f3f55",
+        "gitBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+        "unchangedFromOriginal": true
+      },
+      {
+        "path": "src/lua/abyss_shop_ui.lua",
+        "sha256": "ba900d8edf9ce62f2648bd6436287a4fab2544f5b82928e9247c74556c1a6f14",
+        "gitBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+        "source": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+        "exactLfMatch": true,
+        "actualBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+        "unchangedFromOriginal": true
+      }
+    ],
+    "finalUnmodifiedUpstreamBindings": 9,
+    "localIndependentFixBindings": [
+      {
+        "path": "src/lua/abyss_node_ui.lua",
+        "beforeCommit": "53cd798679678257202d8679a9801fb5c399dfa3",
+        "beforeSha256": "93afa0ae2dbe98a08caeaa101e13775df3fea3fd0ddc48c0f16546c5eb5f5061",
+        "afterSha256": "8c684f538b250298526856096281dab20359e5793417e810cee1dba65eb669a7",
+        "afterGitBlob": "3097771f47b4a0737413779aacd7d8746898bb84"
+      },
+      {
+        "path": "src/lua/abyss_relic_view_ui.lua",
+        "beforeCommit": "53cd798679678257202d8679a9801fb5c399dfa3",
+        "beforeSha256": "acb7c4480c4cad44b83aa95a9b25825db217d8b98484ca5d2c88d47b8b366ebf",
+        "afterSha256": "78cb4964bf94f7dfa19ace1440139194866ec8a6ccc5bb50442468219c5965a5",
+        "afterGitBlob": "8300b2554904df8bf88b68fc66f2bf8065045393"
+      },
+      {
+        "schemaVersion": 1,
+        "normalization": "LF",
+        "path": "src/lua/abyss_battle_reward_layout.lua",
+        "beforeCommit": "4431cc914f3ce5de3b5c83db475134b4217ce63a",
+        "beforeSha256": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d",
+        "afterSha256": "459089b0deb28d878031e9eb9d56700c95aa98c7f378dfb53cf8ae96c18ea631",
+        "afterGitBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a"
+      }
+    ],
+    "fullFinalProductionFiles": 12,
+    "detail": "Only original reward_layout changed after initial10-path source match; its final local alias delta separately bound. Two fallback owner paths added. No gameplay, RNG, pool, sampler, data definitions, theme/layout or source archive/CI threshold changes in follow-ups."
+  },
+  "resolvedFindings": [
+    {
+      "id": "ITEM-ICONS-FALLBACK-1",
+      "severity": "P2",
+      "status": "resolved",
+      "firstFailingHead": "53cd798679678257202d8679a9801fb5c399dfa3",
+      "resolvedBy": "0345006e7d4d1cd39549a1479036fd7cb38f9be6",
+      "checks": "Shared node relicPicture restores native visibility before ID branch, including treasure relic→gold; relicView shared picture restores single/list. Original2 independent red probes passed unchanged at034.25-case four-surface original88/new33×missing/dead/throw plus gold boundary retained in final related10/10."
+    },
+    {
+      "id": "ITEM-ICONS-ALIAS-2",
+      "severity": "P1",
+      "status": "resolved",
+      "firstFailingHead": "0345006e7d4d1cd39549a1479036fd7cb38f9be6",
+      "resolvedBy": "bca8c5f18684f301378e5b9c12e85a16321bbc2f",
+      "checks": "One reward-layout helper reuses unchanged RelicRewards.definition when run.data exists. Authoritative sourceId-or-id preserved; native and semantic branches share canonical identity; unknown source cannot borrow contradictory item.id; no-data previews retain preexisting Hooks behavior.",
+      "independentOriginalProbeGreen": {
+        "path": "F:/New folder/.artifacts/release-pc-qa-20261115/item-icons-reward-alias-probe-green.log",
+        "sha256": "cf8a78fb4080985b68f67be7e2c9fef13d6804d29df892ce23e9fdd7a8b42f5f",
+        "node": "v22.22.1",
+        "cases": 2,
+        "passed": 2
+      }
+    }
+  ],
+  "checks": {
+    "baseToHeadWhitespace": "git diff--check exit0",
+    "evidenceLogs": 30,
+    "allRawAndGzipIdentitiesMatch": true,
+    "originalIndependentAliasRedPreservedExact": true,
+    "independentAliasGreen": {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/item-icons-reward-alias-probe-green.log",
+      "sha256": "cf8a78fb4080985b68f67be7e2c9fef13d6804d29df892ce23e9fdd7a8b42f5f",
+      "node": "v22.22.1",
+      "cases": 2,
+      "passed": 2
+    },
+    "aliasMatrix": {
+      "aliases": 13,
+      "recipeAliases": 6,
+      "nativeAliases": 7,
+      "rewardRows": 2,
+      "states": 4,
+      "aliasFaceAssertions": 104,
+      "sourceFirstConflictUnknownIdOnlyAssertions": 32,
+      "noRunDataPreviews": 3,
+      "totalAssertions": 139,
+      "result": "PASS; exact Lua denominator and JS marker/assertions required by actual green test"
+    },
+    "recordedRelatedTests": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "scope": "runtime,art guards,lowcost; includes original25 fallback and all42 potion/121 relic/42 enemy imported pools",
+      "notFull": true
+    },
+    "recordedEngineering": {
+      "modules": 351,
+      "measurements": 6166,
+      "measuredFunctions": 6166,
+      "edges": 1993,
+      "newDiagnostics": 0,
+      "explicitHistoricalWarnings": 6,
+      "notFull": true
+    },
+    "recordedLicenseGuard": "offlinePASS,existingIP/GPL/unknown limitations unchanged; not rights clearance",
+    "runAndRng": "Recursive complete Run snapshot compared after every Host refresh in alias matrix; only fixture-selected reward tuples changed in both expected/actual. Rendering has no writes to game rules,inventory orRNG.",
+    "sharedResolverUnchanged": true,
+    "sourceAndCiContinuationChanges": [],
+    "worktree": "Only two implementer-owned Backlog task files dirty, excluded from committed review and untouched by reviewer."
+  },
+  "publicRelicCoverage": {
+    "evidenceCommit": "4431cc914f3ce5de3b5c83db475134b4217ce63a",
+    "evidenceProductHead": "0345006e7d4d1cd39549a1479036fd7cb38f9be6",
+    "auditedHistoricalProof": "F:/New folder/.artifacts/release-pc-qa-20261115/audit-item-icons-coverage-0345006e.json",
+    "auditedHistoricalProofSha256": "a5d1331825ae6852d11ba75e6fe213e8b8bfc01c6d56d131fa645a589568673e",
+    "sourceInputsAuthenticated": 13,
+    "eligible": 149,
+    "formalQueueSources": 130,
+    "starterSpecialFallback": 19,
+    "canonicalRecipes": 120,
+    "nativeOnly": 29,
+    "nativeOnlyDistinctImageIds": 29,
+    "noCanonicalRecipeOrNativeMapping": [],
+    "recipeOutsideScope": [
+      "mark_of_bloom"
+    ],
+    "afterAliasMatrix": {
+      "eligibleSame149": true,
+      "canonicalRecipe": 120,
+      "canonicalNativeOnly": 29,
+      "sourceAliasMatrix": [
+        {
+          "id": "anchor",
+          "sourceId": "Anchor",
+          "canonicalNativeImage": 105065,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "bag_of_preparation",
+          "sourceId": "Bag of Preparation",
+          "canonicalNativeImage": 105043,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "black_blood",
+          "sourceId": "Black Blood",
+          "canonicalNativeImage": 105045,
+          "canonicalRecipe": true,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "black_star",
+          "sourceId": "Black Star",
+          "canonicalNativeImage": 102028,
+          "canonicalRecipe": true,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "bronze_scales",
+          "sourceId": "Bronze Scales",
+          "canonicalNativeImage": 105055,
+          "canonicalRecipe": true,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "courier",
+          "sourceId": "The Courier",
+          "canonicalNativeImage": 102007,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "lantern",
+          "sourceId": "Lantern",
+          "canonicalNativeImage": 105131,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "membership_card",
+          "sourceId": "Membership Card",
+          "canonicalNativeImage": 102026,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "oddly_smooth_stone",
+          "sourceId": "Oddly Smooth Stone",
+          "canonicalNativeImage": 105071,
+          "canonicalRecipe": true,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "slavers_collar",
+          "sourceId": "SlaversCollar",
+          "canonicalNativeImage": 102028,
+          "canonicalRecipe": true,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "smiling_mask",
+          "sourceId": "Smiling Mask",
+          "canonicalNativeImage": 105023,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "sozu",
+          "sourceId": "Sozu",
+          "canonicalNativeImage": 102028,
+          "canonicalRecipe": true,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "vajra",
+          "sourceId": "Vajra",
+          "canonicalNativeImage": 105058,
+          "canonicalRecipe": false,
+          "states": [
+            "normal",
+            "hover",
+            "pressed",
+            "disabled"
+          ],
+          "rows": [
+            1,
+            2
+          ]
+        }
+      ],
+      "recipeAliases": 6,
+      "nativeAliases": 7,
+      "totalCheckedFaces": 104,
+      "sourceFirstFaces": 32,
+      "noDataPreviews": 3,
+      "totalAssertions": 139,
+      "observedMissingAliasMappingsAfter": [],
+      "fullRunAndRng": "recursive full Run snapshot compared after each Host refresh; only fixture-specified reward tuples are changed in both expected and actual snapshots"
+    },
+    "notes": "The original13 aliases remain unchanged in Hooks globally; reward projection now resolves them through the existing canonical definition adapter.149 is not149 vector recipes;29 native-only IDs are retained. Controlled Host matrix is not natural campaign/drop or pixel evidence."
+  },
+  "semanticVisualReview": {
+    "sourceCommit": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+    "inspected": "both64px named sheets plus potion/relic24px neutral and32px gray;6 source images extracted with exact Git blob/hash in audit",
+    "assessment": "42药水和新增33遗物在离线小尺寸图中具有不同主形，力量/肌肉、敏捷/速度、护盾/钢铁之心/钢之精华及14遗物重复组未见明显同图。文字可辅助命名，但不据几何唯一或离线图宣称官方可辨性。",
+    "officialPixelAcceptance": false
+  },
+  "recipeCounts": {
+    "potion": {
+      "ids": 42,
+      "shapes": 353,
+      "maxShapes": 10,
+      "capacity": 10
+    },
+    "relic": {
+      "ids": 121,
+      "shapes": 935,
+      "maxShapes": 14,
+      "capacity": 16
+    },
+    "enemy": {
+      "ids": 42,
+      "shapes": 689,
+      "maxShapes": 28,
+      "capacity": 32
+    }
+  },
+  "licenseScope": "LICENSE unchanged; existing assets record retained, only provenance category added. No new textures/font binaries; project noncommercial/reserved-rights/IP limits remain.",
+  "integration": {
+    "hardRuntimeDependencyOn684": false,
+    "changedProductionPathOverlap": [
+      "src/lua/abyss_battle_render_actors.lua"
+    ],
+    "detail": "All runtime dependencies exist at36b9.684 sleep/intent changes and this slice potion paint changes are disjoint in the shared actors file;684 theme/shop/popup output still requires exact combined generation and affected-path verification. No develop future/mobile/idle or full672 source chain imported.",
+    "sourceAdmission": "NOT_PASSED: initialsource-contract-current40/44 is preserved historical failing result. It was not rerun or upgraded for finalbca8. New shared owners and reward delta still require one exact final combination source/CI continuation after684, independent review and original requiredFull.",
+    "releaseAdmission": false
+  },
+  "preservedFailedReviews": [
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-icons-53cd7986.json",
+      "sha256": "c814c8ce2816c526cfbf4cfdbf7e8908c73da7e24a7175499527c580afe7cc1f"
+    },
+    {
+      "path": "F:/New folder/.artifacts/release-pc-qa-20261115/review-item-icons-0345006e.json",
+      "sha256": "d6c2dc4ac9ee6af8ea56cc233ac798d31d3b3772bf617605c579db59985edaf7"
+    }
+  ],
+  "pendingGates": [
+    "FinalRelease combination with684 and exact source/CI owner closure,then all original required hostedFull/repository checks.",
+    "No complete candidateGIL or strictcandidate readback/audit for this slice; official import,realready,20MBlevel/3MBserver and static/dynamic capacity remain unverified.",
+    "Same finalsource/build/payload PC two-act and affectedphone acceptance remain unverified. PC18 and original deviceAC remain open.",
+    "Offline/native mock fixture and distinct nativeimageIDs do not prove actual small-screen pixels,latency,capacity or naturaldrop occurrence. Existing old9b20.1781capacityFAIL belongs to that oldcandidate and cannot be retired by thiscode review."
+  ],
+  "limits": [
+    "No Full rerun and no repeated entire passing behavioral suite by independent reviewer; original minimal alias2-case red assertion rerun once atfinalsource, GREEN.",
+    "Two originalBacklog dirty files untouched. No source/product/Backlog edits,PR/push,GUI,liveMCPwrite,systemconfiguration orrelease operations by reviewer.",
+    "Initial53cd and034request_changes evidence is preserved with hashes; finalpass records resolvedfindings without overwriting those failures."
+  ]
+}

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 15:19'
 labels:
   - playtest-20261030
   - p1
@@ -17,6 +17,7 @@ dependencies: []
 references:
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/684'
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -43,6 +44,8 @@ Owner截图：肌肉药水描述末尾在「人工」附近截断；两种不同
 2026-10-31：从7adc71b6独立短修，先以实际生成字号/换行容量和药水重复视觉证红；仅修药水弹层与区分语义，不改HP、药水规则或美术开关；定向回归并交主线程独审，设备验收保持未完成。
 
 2026-10-31 接续PR433全池辨识：复用既有每槽label，固定唯一双字中文短名竖排与瓶图左右并列，保留圆壳/tint和五物理槽点击。严格检查药水主目录与职业可得池短名无碰撞，瓶/标签矩形无交叠、原生子控件数量不增加、槽交换/空槽及旧tap行为。独立树pc-potion-identity，仍需同候选设备可读性复验。
+
+2026-11-15 PC18 Release独立移植：基于36b9，只复用#672已审语义配方/既有painter与固定池，先真实生成树和Host RED再GREEN；覆盖战斗槽、地图/节点、商店、战后奖励与fallback/回收，不引入手机布局/idle。产品切片独审及工程后保存，待#684实际落地再统一组合来源/Release CI；官方容量/ready/PC手机仍未验。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -61,4 +64,8 @@ Owner截图：肌肉药水描述末尾在「人工」附近截断；两种不同
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+PC18当前执行树feat/release-pc-item-icons-1115，复用a27449ec范围，不新建任务。第一批PC修复已提交#684（目标release/v2.0.0、HEADd396abb2），初次Quality43723889389为queued，不轮询。32/55为图形池容器，不是ID数；配方42药水=33比赛+9保留full-source，遗物121=原88+新增33，敌人42保持。已取得真实RED→GREEN6/6，仍须独审/工程/正式候选验收，AC不勾。
+
+PC18修后产品bca8c5f1（独立Release36切片）已完成代码scope独审PASS，59文件/12生产覆盖。初审发现fallback消失与13正式source alias漏绘，均真实RED后修；fallback25、13alias双行四态+边界139、统一相关10/10、工程及offline license通过，完整Run/RNG不变。公开图标集合149=120recipe+29各自native-only，非149矢量全覆盖；mark_of_bloom仅Act3full-source保留。原40/44来源失败保持原提交身份，最终#684组合/一次来源接续/Release Full/正式候选容量ready及PC手机仍待，不开PR、不勾AC。
 <!-- SECTION:NOTES:END -->
