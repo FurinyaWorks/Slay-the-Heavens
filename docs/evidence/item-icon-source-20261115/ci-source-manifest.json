@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15T04:33:30.220Z",
+  "sourceAnchor": "45c4df21506a7f901b01bfbdef2ab36f73867431",
+  "sourceAnchorRole": "Reviewed icon/source continuation ancestor, not final delivery HEAD; final root amend remains pending.",
+  "reviewedProductionAfter": "5e63b5c5697d7ce567ec896eff2d3a768a58e072",
+  "ciFiles": [
+    {
+      "path": "tests/helpers/item-semantic-icons-ci.mjs",
+      "lfSha256": "74ea98826e6e6486b0d06b2b9805224475760a27522440b8060374d8ddc08484",
+      "lfBytes": 7357
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "lfSha256": "040eb09c4b83f5b83524fbdf15186a501d466ceebd94c7c33cbee6fbe95a88f9",
+      "lfBytes": 6427
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "lfSha256": "aa7bf6e06a6b9ebd9d8b129cc1bcd5d54df49722a5a4a30324bb1c2a3804b98b",
+      "lfBytes": 19926
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "lfSha256": "6ad4a10485f2919ca0a2f5127a9659f54695cf77c8001a0d5491f02aacf90318",
+      "lfBytes": 6808
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "lfSha256": "a38e5933813409d68d6d835f046edf70b2207952aa38bb67c05e589b4da6bb02",
+      "lfBytes": 190419
+    },
+    {
+      "path": "tests/helpers/replay-reviewed-selection.mjs",
+      "lfSha256": "279d5b77263cc68a7c80fac5828b9e80daf4a73e4010ed3239c93a6a4128e46c",
+      "lfBytes": 4024
+    }
+  ],
+  "sourceGuardChange": {
+    "path": "tests/integration-source-epoch.test.mjs",
+    "lfSha256": "ed5fd98af1eec7ceb93b67ab162aa6162527229026be4f5e74bf561ea713b373",
+    "scope": "Previously approved source guard only: when proof no longer matches the exact five before rows, use original per-row current equality. Other six source continuation files unchanged."
+  },
+  "knownGitVariants": {
+    "base": "e65d9b98fbec69442047650254238cd9244df805",
+    "next": "d3783cd17be21dedcffd22f391cecc6455ce9a50",
+    "baseArchiveSha256": "813333fabb5d6ace681503dfc8aee87b14d3586dc1b983969b324e86a50fe6bd",
+    "nextArchiveSha256": "b8d43f4e2c5872c5bcdce28c1a24d6dfbc6ab60650b99f059539b5123b758816",
+    "method": "Exact Git/local-LFS originals; bounded icon hunks applied only to build-side d378 copies. Three context overlaps resolved using the exact unchanged assertion/import hunks and a keywise legal three-way merge rejecting conflicting edits. Every resulting after SHA is fixed below. No runtime transformation or automatic future trust.",
+    "legalAfterVariant": "Superseded only for docs/legal/assets.json by the verified clean actual merge-tree d1defc4b71a7d963d72d4445bac26afa6450fda7; other eleven fixed alias records unchanged."
+  },
+  "aliases": {
+    "data/presentation/lowcost-relic-art.json": [
+      {
+        "before": "1735a5f8dfca4b28220825aa163d8b9dc4d8a1aceba0244eb6e11ae6198963b3",
+        "after": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526"
+      }
+    ],
+    "docs/legal/assets.json": [
+      {
+        "before": "b87da8f51d74160958db06f8f4e17eee84174d3ab9ec9960c925ccc82969f871",
+        "after": "aa344735337481007635250a075d5fc8a47c8354219233ece1bee2bcf61a5a09"
+      },
+      {
+        "before": "47609edf4d016d4f83091cde721138556c0185d01ec9ef30a54a65371bc9f9bd",
+        "after": "f56b56683045e475d22f143a1d8f5de9f5b019ed06bb05ef8a7c4e946982b2b9"
+      }
+    ],
+    "scripts/lowcost-art.mjs": [
+      {
+        "before": "eb06982af04f2f09aad86580803a92426240da205c26b8287f661a12b32e40a8",
+        "after": "7a1246e6a37bd5041258feccb7b2501cd7874434a0cf19f6f21acb93c1f3cf32"
+      }
+    ],
+    "tests/helpers/closeout-source-epoch.mjs": [
+      {
+        "before": "552e5980a76b46fcd030fcafe516d5b7673021dce0a7b0c23072bfb67dcf1e40",
+        "after": "aa943b070906e85c7adb23b2019728886d83bcfb2f80b19266931b23c3f98ffc"
+      },
+      {
+        "before": "163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7",
+        "after": "3471ca3ce9f2f0f1ddeb87d21c201cf83a4c41592744de068696812af9154dc8"
+      }
+    ],
+    "tests/helpers/copy-integration-source-closure.mjs": [
+      {
+        "before": "17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0",
+        "after": "009ce6fc36f821911275f61a8d5a2a67749567d981f57b1bec878c6a2d098681"
+      }
+    ],
+    "tests/integration-source-epoch.test.mjs": [
+      {
+        "before": "f557ed773b0b3c811a12a2eedadf3678112c97d47ad6a1a2db2f7d7570a1d4a9",
+        "after": "ed5fd98af1eec7ceb93b67ab162aa6162527229026be4f5e74bf561ea713b373"
+      }
+    ],
+    "tests/lowcost-art.test.mjs": [
+      {
+        "before": "3f2641d7d9576f535e6c9f99783b1989deb5a2f3b63208072609b17b64c86cdc",
+        "after": "0d3c29f4b6058b715dec0d60f35323ec62d3bb746ef7f81c0d43190dcd32f4c5"
+      }
+    ],
+    "tests/helpers/integrated-ci-source.mjs": [
+      {
+        "before": "85aafbc1e178e281489eb959f816a7d3ced883395d58baa41d39c67e0cc26e8e",
+        "after": "040eb09c4b83f5b83524fbdf15186a501d466ceebd94c7c33cbee6fbe95a88f9"
+      },
+      {
+        "before": "2c5f69104518ae70185f98b6329bbc85a395e4d89c24fbae0d6def614cf584cf",
+        "after": "2f33e04816202529fcd3a37d17eea28429cc81493691d8837b4932aaec3ea7cd"
+      }
+    ],
+    "tests/sts-style-source-epoch.test.mjs": [
+      {
+        "before": "68857b76da46773eef18fecd866aa9a718b2102f41b7a3f63efb93878bc21bf1",
+        "after": "aa7bf6e06a6b9ebd9d8b129cc1bcd5d54df49722a5a4a30324bb1c2a3804b98b"
+      },
+      {
+        "before": "e07efc666c0fc2c2d956b621d7e770ee47a4a900256fdf891360534f8b7b36be",
+        "after": "d05dfa36d20e6ad2bc5287b2974cba5d571ab7fc823d0afb7978ed64510db043"
+      }
+    ],
+    "tests/integrated-ci-source.cases.mjs": [
+      {
+        "before": "2dd0201a30f3307dfcc0351902050f9bc268a1e802aaf1a181b5c92117b5a664",
+        "after": "6ad4a10485f2919ca0a2f5127a9659f54695cf77c8001a0d5491f02aacf90318"
+      }
+    ],
+    "tests/ci-complete-calibration.test.mjs": [
+      {
+        "before": "4459d2b61e96a1ffbcf89f10bff6e03fae6847361cf02dc5ea9c744701a0f03a",
+        "after": "a38e5933813409d68d6d835f046edf70b2207952aa38bb67c05e589b4da6bb02"
+      }
+    ],
+    "tests/helpers/replay-reviewed-selection.mjs": [
+      {
+        "before": "f6f7684c8c71beefd28bc7af625bcbdc4758ae8a7dedfd91ff91121674b387cc",
+        "after": "279d5b77263cc68a7c80fac5828b9e80daf4a73e4010ed3239c93a6a4128e46c"
+      },
+      {
+        "before": "44b65f1d067478b61ca5262722771513d37cce7194a109d5a31df325e96003b5",
+        "after": "b9d4ef3e997699edca580431c52053d42708ef268d4e38a7ad2cb384a730f1e0"
+      }
+    ]
+  },
+  "added": {
+    "js": {
+      "tests/item-semantic-icons-source.test.mjs": "516400fd4fcb04e60d980afeeb0f0776398f61597a5f991d4454885de95117ea",
+      "tests/potion-art-runtime.test.mjs": "48e2a21951f0162e2f7ab5ba10b27fb130bf941dc985da59310c5e2b9cd2d540",
+      "tests/potion-art.test.mjs": "786ee6a5964199ef66b6be9a576dd158d2d027bfef567d39e1658acc86a87270"
+    },
+    "lua": {}
+  },
+  "jsOnlyRuntimeSupport": {
+    "tests/helpers/potion-art-runtime.lua": "1bacb6318c747f21885db36a749bb6a44c9b9166fc98bfbb8c6fdda00da3a86e",
+    "tests/helpers/reward-art-runtime.lua": "e4d44b67bd9f905f237b5541980ce45a6e12520aee86000012c5f270e1e365d3"
+  },
+  "inventoryBaseHashes": {
+    "js": [
+      "210f8b9060ba2f90ff76e3c75443187680b1679b7667d267cb74b0429a845be7",
+      "4bbf63f570d50ad04f1e4c9a42070ea62851208cd78e0cdb4c528d5e42496e06"
+    ],
+    "lua": [
+      "86a16eeead2e6fc6874e921d84660e339ce52b4b7ca22f51351dab5fc5f6a4e3",
+      "5e31f374c21e3623655a8babbb2cad1984cc561ec4d1d99c22cf19d38a2a2d3b"
+    ]
+  },
+  "planning": {
+    "rawJs": 875,
+    "rawStandaloneLua": 1421,
+    "addedJs": 3,
+    "addedStandaloneLua": 0,
+    "win32ForecastMs": 1754000,
+    "win32LimitMs": 1800000,
+    "linuxForecastMs": 1188967,
+    "linuxLimitMs": 1200000,
+    "unknownJsMs": 10000,
+    "unknownLuaMs": 10000,
+    "budgetsRunnersRoutesUnchanged": true,
+    "earlierRuntimeReportedByRootSeconds": 34.235,
+    "p2RuntimeReportedByRootSeconds": 15.362,
+    "relocatedRuntimeReportedByImplementationSeconds": 21.62,
+    "note": "Planning forecasts are not runtime capacity evidence. The two Lua files are support fixtures executed by the isolated JS wrapper, not extra standalone Full workload."
+  },
+  "commands": [
+    {
+      "command": "node --test --test-name-pattern='release additions remain in raw Full' tests/sts-style-source-epoch.test.mjs",
+      "result": "Original code RED saved in ci-before-red.tap.gz; first restricted attempt produced spawn EPERM and is not presented as code evidence."
+    },
+    {
+      "command": "node --test tests/integrated-ci-source.cases.mjs",
+      "result": "final 3/3 pass"
+    },
+    {
+      "command": "node --test --test-name-pattern='release additions remain in raw Full|real style source retains' tests/sts-style-source-epoch.test.mjs",
+      "result": "final 2/2 pass"
+    },
+    {
+      "command": "node --test --test-name-pattern='shop/deck continuation retains|combined epoch authenticates' tests/integration-source-epoch.test.mjs",
+      "result": "final 2/2 pass; previous 42/42 archive retained, only changed guards rerun"
+    },
+    {
+      "command": "node --test --test-name-pattern='menu current complete JS and Lua workload' tests/ci-complete-calibration.test.mjs",
+      "result": "final 1/1 pass"
+    },
+    {
+      "command": "node --test tests/sts-character-reference.test.mjs",
+      "result": "historical wrapper 1/1 and original inner 5/5 pass; no replay repeat after equivalent current-true retirement branch changes"
+    }
+  ],
+  "logs": [
+    {
+      "path": "ci-before-red.tap.gz",
+      "scope": "original one-second CI identity rejection; superseded by the bounded continuation",
+      "rawBytes": 1577,
+      "rawSha256": "ab18743ffb1aef17756d64f01665833cf3c7c2a7223730e6fe1f700eaf92d409",
+      "gzipBytes": 741,
+      "gzipSha256": "756e96fb33eaf3afbf82254263d25adb0584b49a456cddab7285a7e65aebb2fd",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "ci-alias-final.tap.gz",
+      "scope": "final 3/3 CI aliases/inventory/support/retirement/unknown-target contracts",
+      "rawBytes": 925,
+      "rawSha256": "b4e34bf57bc006d5461315f722dc980950f5be1b604a5da4d32bbb0539966cbb",
+      "gzipBytes": 359,
+      "gzipSha256": "e579d71bfde001f1cfc579ceceab105428823280ef2251b3f00c5f5dd75bc928",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "ci-sts-final.tap.gz",
+      "scope": "final 2/2 raw inventory and source-current style guards",
+      "rawBytes": 710,
+      "rawSha256": "69bb700631e4f186fd080802de9eccc8af93c9b55ca7e0ae6ea6b3a5ed562d6f",
+      "gzipBytes": 317,
+      "gzipSha256": "f466c415858bf8e9ebb9965428621a7ec37653bce8abfb6abff0c43f07740515",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "source-current-final.tap.gz",
+      "scope": "final 2/2 current corpus guards; earlier remaining 40 inverse cases not repeated",
+      "rawBytes": 592,
+      "rawSha256": "9eced94ba360bbf9873df4bdc9bd3136997552f9653374a4d19b76260c2b633b",
+      "gzipBytes": 274,
+      "gzipSha256": "bb79662d399a08d2248a1354bfbc2aa23aae5c7cb96dafcbadc9324868373c6f",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "ci-budget-final.tap.gz",
+      "scope": "final 1/1 raw 875 JS /1421 Lua original-budget workload contract",
+      "rawBytes": 499,
+      "rawSha256": "8a8d266e7d2fb47548dfbb21b7bc966a18cf97e080503e8180c774f3b2260840",
+      "gzipBytes": 280,
+      "gzipSha256": "d35552e31294f0de48d26956b4fc70115f98d65582bfbc80dbe12b576696eb2d",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "ci-selection-historical-green.tap.gz",
+      "scope": "historical replay wrapper 1/1, original five contracts; before later retirement/support-only changes, not rerun",
+      "rawBytes": 1877,
+      "rawSha256": "ab0bc1449a5dd0b4a20a6ad60219b4e8dba9cb530d6da635a51ac94f268ef448",
+      "gzipBytes": 617,
+      "gzipSha256": "35b163f34d6d0382d0dea739068453aff3713fcda251814d4b5c23f20af36c01",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "ci-budget-label-red.tap.gz",
+      "scope": "intermediate negative error-label mismatch, corrected without changing its assertion",
+      "rawBytes": 2820,
+      "rawSha256": "6fbe197314939a2ac29ac2cd87bed2526059f258b958263f04f9f279849d6835",
+      "gzipBytes": 863,
+      "gzipSha256": "24492e367bf0709ab36c0ac5a8abb7b5ef0d4525b7b981f3bbc0aa388bb24a3f",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "ci-budget-two-standalone-historical-green.tap.gz",
+      "scope": "superseded historical 875 JS /1423 Lua budget PASS before JS-only fixture relocation",
+      "rawBytes": 500,
+      "rawSha256": "93cdc5f822514ecc8dea756ba222fddc8182425ade9369f7a7ad682f02ac9ffc",
+      "gzipBytes": 281,
+      "gzipSha256": "8c6285d131254ba7dc33c0352b4d516cff8858884522ff70dc6c2b6e37911ef1",
+      "losslessRoundTrip": true
+    }
+  ],
+  "boundaries": [
+    "Old integratedCiProof object, every archive/GZ, historical target and old closure JSON remain unchanged.",
+    "Only twelve fixed before-to-after identities are recognized; a target without a view remains opaque and unknown target rejects before raw reads.",
+    "All three added JS tests remain in raw Full and original workload budgets; no added standalone Lua tests.",
+    "JS-only support hashes are freshly checked while the bridge owns them; formal base adoption of runtime JS plus both support identities retires stale bridge locks.",
+    "Five-source current guards use the witness only for the exact before tuple; otherwise original per-row current bytes remain mandatory.",
+    "CI trust leaf is not copied into production source-projector closures. Only this new leaf was staged with authorization; no commit, push, PR or desktop action."
+  ],
+  "environmentNote": "One parallel permission-approval review timed out before starting the budget command; the permitted sequential retry ran. This timeout is not represented as a product failure.",
+  "legalMergePreflight": {
+    "kind": "isolated merge-tree preflight; no branch/index/release merge",
+    "base": "d3783cd17be21dedcffd22f391cecc6455ce9a50",
+    "tree": "d1defc4b71a7d963d72d4445bac26afa6450fda7",
+    "beforeB": "47609edf4d016d4f83091cde721138556c0185d01ec9ef30a54a65371bc9f9bd",
+    "currentA": "aa344735337481007635250a075d5fc8a47c8354219233ece1bee2bcf61a5a09",
+    "afterB": "f56b56683045e475d22f143a1d8f5de9f5b019ed06bb05ef8a7c4e946982b2b9",
+    "semanticPreservation": true,
+    "actualMergeTreeObjectVerified": true,
+    "changedAliasPaths": [
+      "docs/legal/assets.json"
+    ],
+    "otherElevenAliasRecordsUnchanged": true,
+    "verification": [
+      {
+        "path": "build/item-icon-ci-legal-cases-final.tap",
+        "command": "node --test tests/integrated-ci-source.cases.mjs",
+        "result": "3/3 pass",
+        "rawSha256": "655fc9b3d48ddffb7932e21bd5b5fe0c812a750506a87b2c30afa1c429e9c321",
+        "rawBytes": 926
+      },
+      {
+        "path": "build/item-icon-ci-legal-guard-final.tap",
+        "command": "node --test --test-name-pattern='release additions remain in raw Full' tests/sts-style-source-epoch.test.mjs",
+        "result": "1/1 pass",
+        "rawSha256": "a613e0d23c37e134ee0e5c08c4ebc4123d996ae2298cab64568641d08d2ce317",
+        "rawBytes": 401
+      }
+    ]
+  }
+}

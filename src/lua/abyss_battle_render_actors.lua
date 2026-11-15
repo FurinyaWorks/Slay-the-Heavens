@@ -371,7 +371,8 @@ function M.install(owner, ownership, host, dependencies)
             dependencies.picture(bottle,Theme.icon.potion[item.id] or Theme.icon.intent.unknown)
             dependencies.tint(bottle,(Theme.icon.potionTint or {})[item.id]
                 or (item.id=='fire_potion' and tones.fire.ink or tones.normal.ink))
-        end
+            LowCostArt.paint(bottle,'potion',item.id,L.battlePotions.bottleSize,host.platform)
+        else LowCostArt.hide(bottle,false) end
     end
     local function paintPotionShell(slot,item)
         local selected=item~=nil and potionSelected(slot)==true

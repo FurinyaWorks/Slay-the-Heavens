@@ -1,0 +1,47 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
+import {battleLayout} from '../scripts/ui-layout.mjs';
+import {gameLayout} from '../scripts/game-ui-layout.mjs';
+import {withViewport} from '../scripts/viewport-layout.mjs';
+import {officialAssetsTheme,applyOfficialAssets} from '../scripts/official-assets-layout.mjs';
+import {nativeTheme} from '../scripts/native-ui-theme.mjs';
+import {attachLowCostArt,loadLowCostArt} from '../scripts/lowcost-art.mjs';
+import {buildUI} from '../scripts/build-ui.mjs';
+import {buildLuaData} from '../scripts/build-lua-data.mjs';
+const require=createRequire(import.meta.url);
+const children=n=>n.controls??n.children??[];
+function pools(tree){const found=[];function walk(n,path=''){path+='/'+n.name;
+ if(['bottleArt','rewardIconArt'].includes(n.name)||n.name==='iconArt'&&/\/potion\d\//.test(path))found.push({path,node:n});
+ for(const c of children(n))walk(c,path);
+}walk(tree);return found;}
+
+test('potion pools are bounded to live owners, leave the default profile and old registries unchanged',t=>{
+ const plain=[battleLayout(),gameLayout()];assert.deepEqual(plain.map(pools).map(p=>p.length),[0,0]);
+ const trees=[battleLayout(),withViewport(gameLayout(),nativeTheme)];applyOfficialAssets(trees,officialAssetsTheme(nativeTheme));
+ assert.deepEqual(trees.map(pools).map(p=>p.length),[24,47]);
+ for(const tree of trees){const before=JSON.stringify(tree);attachLowCostArt(tree);assert.equal(JSON.stringify(tree),before,'idempotent imported pools');
+  for(const {path,node}of pools(tree)){assert.equal(node.children.length,10,path);assert.equal(node.raycastTarget,false);assert(node.children.every(n=>n.raycastTarget===false));assert(!path.includes('potionHelp1/'));}
+ }
+ const art=loadLowCostArt();assert.equal(Object.keys(art.relic.assets).length,88);assert.equal(Object.keys(art.enemy.assets).length,42);assert.equal(Object.keys(art.potion.assets).length,42);
+ for(const [kind,sha]of [['relic','1735a5f8dfca4b28220825aa163d8b9dc4d8a1aceba0244eb6e11ae6198963b3'],['enemy','0244dc45e5bc69f5c912c89469f2f5025073c6e7dd706d47da0754c60907f89f']])
+  assert.equal(createHash('sha256').update(readFileSync(`data/presentation/lowcost-${kind}-art.json`,'utf8').replaceAll('\r\n','\n')).digest('hex'),sha);
+ t.diagnostic('official complete Host +47 pools/+517 controls; standalone battle +24/+264; default +0. Offline counts, not FPS.');
+});
+
+test('real official Host paints all 42 recipes through four paths and clears stale art without rewriting cached shapes',()=>{
+ const directory=mkdtempSync(join(tmpdir(),'abyss-potion-runtime-'));
+ try{
+  buildLuaData('data',join(directory,'abyss_data.lua'));buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
+  const cli=require.resolve('fengari-node-cli/src/lua-cli.js');
+  const result=spawnSync(process.execPath,[cli,'-e',"dofile('tests/lua/potion_art_runtime.lua')"],{
+   encoding:'utf8',timeout:60000,maxBuffer:1024*1024,env:{...process.env,LUA_PATH:directory.replaceAll('\\','/')+'/?.lua;./src/lua/?.lua;;'},
+  });
+  assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));assert.match(result.stdout,/POTION_ART_RUNTIME_PASS 42 4/);
+ }finally{rmSync(directory,{recursive:true,force:true});}
+});

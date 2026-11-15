@@ -1,6 +1,7 @@
 -- Physical slots follow capacity; outside-combat use and discard are explicit.
 local Run=require('abyss_run')
 local Theme=require('abyss_theme')
+local Art=require('abyss_lowcost_art')
 local integer=require('abyss_numbers').integer
 local M={}
 local Controller=require('abyss_controller')
@@ -16,10 +17,12 @@ end
 -- Read-only shared entry paint. Keep the existing management button and its
 -- binding; a slot silhouette never consumes a potion or changes selection.
 local function refreshBottle(bottle,id,platform)
-    bottle:SetVisible(id~=nil);if not id then return end
+    bottle:SetVisible(id~=nil);if not id then Art.hide(bottle,false);return end
     bottle:SetImage(platform.imageSource,Theme.icon.potion[id] or Theme.icon.intent.unknown)
     local colour=(Theme.icon.potionTint or {})[id] or (id=='fire_potion' and Theme.color.potionShell.fire or Theme.color.potionShell.normal).ink
     bottle.imageColor=platform.color(colour.r,colour.g,colour.b,colour.a)
+    local size=Theme.presentationProfile=='official-assets-first' and Theme.layout.battlePotions.bottleSize or Theme.layout.potionDiscard.entryVisual.bottleSize
+    Art.paint(bottle,'potion',id,size,platform)
 end
 function M.refreshEntry(hit,run,platform,mapSlots)
     local capacity=run and Run.potionCapacity(run) or 0

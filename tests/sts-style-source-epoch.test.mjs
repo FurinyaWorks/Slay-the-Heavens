@@ -1,5 +1,6 @@
 import test from 'node:test';
-import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
+import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent,integratedCurrentInventory} from './helpers/integrated-ci-source.mjs';
+import {itemIconProofMatches,itemIconPaths,itemIconSourceState} from './helpers/item-semantic-icons-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
@@ -26,7 +27,7 @@ function fixture(){
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
- assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
+ assert.deepEqual(rawJs,integratedCurrentInventory());assert.deepEqual(rawLua,integratedCurrentInventory('lua'));
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
   if(target==='release'&&kind==='js'&&added.length===0){
@@ -82,7 +83,12 @@ test('real style source retains the complete CI-repair and every older target wh
  assert.deepEqual(Object.keys(p.current).sort(),actual);
  for(const [path,row]of Object.entries(before.current))assert.deepEqual(p.targets.stsStylePrior.files[path],row,path+' complete prior');
  for(const [name,target]of Object.entries(before.targets))for(const [path,row]of Object.entries(target.files))assert.deepEqual(p.targets[name].files[path],row,name+'/'+path);
- for(const path of actual)assert.equal(read(path).replaceAll('\r\n','\n'),p.current[path].source,path+' raw complete current');
+ const iconContinuation=itemIconProofMatches(p),iconStates=[];
+ for(const path of actual){const source=read(path).replaceAll('\r\n','\n');
+  if(iconContinuation&&itemIconPaths.includes(path)){const state=itemIconSourceState(path,source);assert(state,path);iconStates.push(state);}
+  else assert.equal(source,p.current[path].source,path+' raw complete current');
+ }
+ if(iconContinuation)assert(iconStates.every(state=>state===iconStates[0]),'complete unmixed five UI tuple');
  const config='config/architecture.json',raw=read(config),prior=p.targets.stsStylePrior.files[config].source;
  assert.equal(sourceEpoch.preCombinedSource(config,raw,{target:'stsStylePrior',readSource:read}),prior);
  for(const owner of p.owners.filter(path=>!before.owners.includes(path)))for(const missing of [null,read(owner)+'\n'])

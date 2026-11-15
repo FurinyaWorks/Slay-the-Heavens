@@ -1,0 +1,56 @@
+{
+  "tool": {
+    "asset": "luacheck.exe",
+    "sha256": "0f1c69c4d09f1ebb4d8df14c215e4553e2e639bd4cb7bf3c639b0daa6198317b",
+    "version": "1.2.0",
+    "file": "F:\\New folder\\.worktrees\\potion-semantic-icons\\build\\tools\\luacheck\\luacheck.exe",
+    "url": "https://github.com/lunarmodules/luacheck/releases/download/v1.2.0/luacheck.exe"
+  },
+  "diagnostics": [
+    {
+      "file": "src/lua/abyss_acid_slime_s_ai.lua",
+      "line": 19,
+      "column": 20,
+      "code": "W212",
+      "message": "unused argument 'state'"
+    },
+    {
+      "file": "src/lua/abyss_bgm.lua",
+      "line": 21,
+      "column": 18,
+      "code": "W431",
+      "message": "shadowing upvalue 'self' on line 20"
+    },
+    {
+      "file": "src/lua/abyss_looter_ai.lua",
+      "line": 40,
+      "column": 24,
+      "code": "W212",
+      "message": "unused argument 'state'"
+    },
+    {
+      "file": "src/lua/abyss_potion_discard_ui.lua",
+      "line": 80,
+      "column": 18,
+      "code": "W431",
+      "message": "shadowing upvalue 'self' on line 51"
+    },
+    {
+      "file": "src/lua/abyss_potion_discard_ui.lua",
+      "line": 101,
+      "column": 18,
+      "code": "W431",
+      "message": "shadowing upvalue 'self' on line 51"
+    },
+    {
+      "file": "src/lua/abyss_potion_discard_ui.lua",
+      "line": 106,
+      "column": 18,
+      "code": "W431",
+      "message": "shadowing upvalue 'self' on line 51"
+    }
+  ],
+  "exitCode": 1,
+  "unexpected": [],
+  "hard": []
+}

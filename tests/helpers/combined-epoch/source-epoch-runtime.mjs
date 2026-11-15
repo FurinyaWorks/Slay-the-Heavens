@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
+import {itemIconProofMatches,itemIconPaths,itemIconSourceState} from '../item-semantic-icons-source.mjs';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -89,6 +90,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   }
  }
  freeze(proof);
+ const itemIcons=itemIconProofMatches(proof);
  const sameConfigLayout=allowConfigLayout&&proof.current['config/architecture.json']
   ?configLayoutMatcher(proof.current['config/architecture.json'].source):()=>false;
  const readers=new WeakMap(),readLive=path=>{
@@ -98,15 +100,22 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  const iconInput=itemIcons?itemIconSourceState(path,source):null;
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof source!=='string'||!current||!before||(iconInput!=='after'&&(current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
+  const iconStates=[];
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];
-   assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
+   if(itemIcons&&itemIconPaths.includes(owner)){
+    const state=itemIconSourceState(owner,actual);
+    assert(state,'combined linked owner identity: '+owner);iconStates.push(state);
+   }else assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
+  if(itemIcons)assert(iconStates.every(state=>state===iconStates[0]),'combined linked owner identity: mixed icon tuple');
+  if(iconInput)assert.equal(iconStates[0],iconInput,'combined linked owner identity: icon parameter/raw tuple');
   return before.source;
  }
  function combinedReader(readSource=readLive,target){

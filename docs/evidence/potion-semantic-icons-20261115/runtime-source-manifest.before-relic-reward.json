@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "base": "e65d9b98fbec69442047650254238cd9244df805",
+  "normalization": "LF",
+  "profile": {
+    "officialAssets": true,
+    "nativePageLifecycle": true
+  },
+  "production": {
+    "scripts/lowcost-art.mjs": "5bea8b69b8f27a8f20c4f5813db80966dd18f34d3bd198df5166f88f9286ee58",
+    "src/lua/abyss_battle_render_actors.lua": "6955f2abc927133348efd803c8f0542adad0f1e32fc2ed677f6b56fb4e007b3f",
+    "src/lua/abyss_battle_reward_layout.lua": "7d9025deb70ce54733124ea3babdbbc3fd651f07a60f2646f288b923ef57625b",
+    "src/lua/abyss_node_ui_shop.lua": "6f7838454477ae2f4348f4b53977e673c54e83c4b9518b4d666aab879c797bc8",
+    "src/lua/abyss_potion_discard_ui.lua": "ebaa819919dc8abee3299f3aca240ee89433973b86179e6e9234b6379a2f3f55",
+    "src/lua/abyss_shop_ui.lua": "12b5ecb5587c0a8652e064e69d22db8232e80165052c2380ebea137d9af90e22"
+  },
+  "runtimeTests": {
+    "tests/potion-art-runtime.test.mjs": "9274bb2136023644d692f3bf67a4c5586a06b288cea45a3492bdf7465a528c2b",
+    "tests/lua/potion_art_runtime.lua": "48a7bdadbf3e890611b9b4c373b3778a3f9595e5e8bcbd056914c964ed3e938a"
+  },
+  "potionRegistrySha256": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+  "runtime": {
+    "passed": 2,
+    "failed": 0,
+    "totalDurationMs": 58605.7754,
+    "hostTestDurationMs": 56491.8252,
+    "luaTimeoutMs": 60000
+  },
+  "priorContracts": {
+    "passed": 6,
+    "failed": 0,
+    "totalDurationMs": 21951.2462,
+    "relics": 88,
+    "enemies": 42,
+    "relicOriginal88SortedAssetsSha256": "1f8732b6833e137e19bcf76ddff08e1ec91dba99e3320f7d9b874aa2089fd115"
+  },
+  "controls": {
+    "defaultAdded": 0,
+    "completeHost": {
+      "pools": 47,
+      "shapesPerPool": 10,
+      "added": 517
+    },
+    "standaloneBattle": {
+      "pools": 24,
+      "shapesPerPool": 10,
+      "added": 264
+    },
+    "notDeviceFps": true
+  },
+  "earlierFailures": [
+    "sandbox spawn EPERM; rerun escalated",
+    "LF hash fixture used raw CRLF hash; and exact pool whitelist missed production viewport stage; corrected",
+    "reward fixture omitted gold=0; corrected without product change",
+    "shop owner swap fixture omitted nodeUI.run/map synchronization; corrected without product change",
+    "scope assertion confused raw34 (historical poison) with actual production33; corrected to both exact counts"
+  ],
+  "notRun": [
+    "official import",
+    "ready",
+    "device measurements"
+  ],
+  "commitPushOrPR": false,
+  "static": {
+    "architecture": "PASS 349 modules, 1980 edges",
+    "javascriptSyntax": "PASS all scripts/tests",
+    "modifiedLuaSyntax": "PASS 5 files",
+    "luacheck": "PASS pinned1.2.0;6 historical warnings;2190 governed responsibility measurements",
+    "coordinateOnlyChanges": [
+      {
+        "before": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 77,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 48"
+        },
+        "after": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 80,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 51"
+        }
+      },
+      {
+        "before": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 98,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 48"
+        },
+        "after": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 101,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 51"
+        }
+      },
+      {
+        "before": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 103,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 48"
+        },
+        "after": {
+          "file": "src/lua/abyss_potion_discard_ui.lua",
+          "line": 106,
+          "column": 18,
+          "code": "W431",
+          "message": "shadowing upvalue 'self' on line 51"
+        }
+      }
+    ],
+    "baselineLfSha256": "95fcb537282d97cbb3d9ae643ed0a63381eb81aa8e6656984a0ad069fe213f8a"
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "scope": "offline same-recipe primitive projection; no SDK texture/device claim",
+  "sourceSha256": "295bfb008cb131dc2f312b19f0f7f9e74cde5bc6ad83bd947ec00b02fd539b08",
+  "order": [
+    "attack_potion",
+    "skill_potion",
+    "power_potion",
+    "colorless_potion",
+    "blood_potion",
+    "block_potion",
+    "strength_potion",
+    "flex_potion",
+    "dexterity_potion",
+    "speed_potion",
+    "energy_potion",
+    "swift_potion",
+    "fire_potion",
+    "explosive_potion",
+    "weak_potion",
+    "fear_potion",
+    "ancient_potion",
+    "liquid_bronze",
+    "regen_potion",
+    "heart_of_iron",
+    "essence_of_steel",
+    "cultist_potion",
+    "elixir",
+    "gamblers_brew",
+    "liquid_memories",
+    "snecko_oil",
+    "duplication_potion",
+    "distilled_chaos",
+    "smoke_bomb",
+    "entropic_brew",
+    "fruit_juice",
+    "blessing_of_the_forge",
+    "fairy_in_a_bottle",
+    "poison_potion",
+    "cunning_potion",
+    "ghost_in_a_jar",
+    "focus_potion",
+    "potion_of_capacity",
+    "essence_of_darkness",
+    "bottled_miracle",
+    "stance_potion",
+    "ambrosia"
+  ],
+  "files": [
+    {
+      "file": "potions-24px-colour.png",
+      "iconPixels": 24,
+      "mode": "colour",
+      "width": 308,
+      "height": 264,
+      "sha256": "2c32662cc3154c38bed363124d0ab13ed52291769a537e21f8a1663a8958a9f7"
+    },
+    {
+      "file": "potions-24px-gray.png",
+      "iconPixels": 24,
+      "mode": "gray",
+      "width": 308,
+      "height": 264,
+      "sha256": "f89e85460e2377feeeaeb0dbcede2b17dc30bd33802936e0f3aec902807689fc"
+    },
+    {
+      "file": "potions-24px-neutral.png",
+      "iconPixels": 24,
+      "mode": "neutral",
+      "width": 308,
+      "height": 264,
+      "sha256": "0225ef6e8ba678b475f0140a2a55bca744f39f777b807fee0c3cdae2430478d0"
+    },
+    {
+      "file": "potions-32px-colour.png",
+      "iconPixels": 32,
+      "mode": "colour",
+      "width": 364,
+      "height": 312,
+      "sha256": "27f1bd8c1eeb8fb829406aac1c221e6f112a34b5d044a2f2c6d6287e100b01b2"
+    },
+    {
+      "file": "potions-32px-gray.png",
+      "iconPixels": 32,
+      "mode": "gray",
+      "width": 364,
+      "height": 312,
+      "sha256": "851ed983b0f13b24c0a91456f25929c876a15d59802846b2b08a909943a1f8f1"
+    },
+    {
+      "file": "potions-32px-neutral.png",
+      "iconPixels": 32,
+      "mode": "neutral",
+      "width": 364,
+      "height": 312,
+      "sha256": "475bb4eb0ec0a44359f1a3c056a69f210f16b6f462f8b48af868e427762059e0"
+    },
+    {
+      "file": "potions-48px-colour.png",
+      "iconPixels": 48,
+      "mode": "colour",
+      "width": 476,
+      "height": 408,
+      "sha256": "66fb4feffd36c7a40c744182c7abd20544ced3cd931a5be1b068d944bc26e64f"
+    },
+    {
+      "file": "potions-48px-gray.png",
+      "iconPixels": 48,
+      "mode": "gray",
+      "width": 476,
+      "height": 408,
+      "sha256": "3bc57a143ffac173865de18cd9bfc02d0b6b21e39517814ffb4b7205c73c46b1"
+    },
+    {
+      "file": "potions-48px-neutral.png",
+      "iconPixels": 48,
+      "mode": "neutral",
+      "width": 476,
+      "height": 408,
+      "sha256": "fed47a1042f71a990557821b71510dd757e1b62e4c011fa64183676b60973126"
+    },
+    {
+      "file": "potions-64px-colour.png",
+      "iconPixels": 64,
+      "mode": "colour",
+      "width": 588,
+      "height": 504,
+      "sha256": "8445d1cb5c1a9cae4e1a8aaf649419fa28cc62f760bece9fd4833d41ed9458b2"
+    },
+    {
+      "file": "potions-64px-gray.png",
+      "iconPixels": 64,
+      "mode": "gray",
+      "width": 588,
+      "height": 504,
+      "sha256": "bfca125d6cdb781d7f8fa940964f15cec07b0f92b2485ee2f072a283b31094c2"
+    },
+    {
+      "file": "potions-64px-neutral.png",
+      "iconPixels": 64,
+      "mode": "neutral",
+      "width": 588,
+      "height": 504,
+      "sha256": "27080811169874995604583ae119abf139c2297ea10e6e09707f596c249dda8a"
+    },
+    {
+      "file": "potions-named-64px.png",
+      "iconPixels": 64,
+      "mode": "named",
+      "sha256": "d760589ff76418ff8799f5fa8afae3ad3dc5399d26b10c884324b8fe056f7ed3"
+    }
+  ],
+  "neutral24ExactDuplicatePairs": []
+}

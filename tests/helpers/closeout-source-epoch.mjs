@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';
+import {isItemIconAfter} from './item-semantic-icons-source.mjs';
 import {extendStsStyleEpoch} from './sts-style-source-epoch-runtime.mjs';
 import {stsStylePatch} from './sts-style-source-proof.mjs';
 import {extendFeedbackSourceEpoch} from './sts-feedback-source-runtime.mjs';
@@ -53,6 +54,7 @@ const proof=sourceEpoch.proof;
 // per invocation; neither live reads nor authorization are cached.
 export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
+ if(isItemIconAfter(proof,path,source))return sourceEpoch.preCombinedSource(path,source,{target,readSource});
  const row=Object.hasOwn(proof.current,path)?proof.current[path]:null;
  if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
  const before=proof.targets[target].files[path];
