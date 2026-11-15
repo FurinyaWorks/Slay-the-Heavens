@@ -1,0 +1,381 @@
+{
+  "schema": 1,
+  "source_blob": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+  "method": "Source-derived deterministic starter shuffle only; not execution of HutaoGame or a combat A/B trial",
+  "training": {
+    "seeds": 512,
+    "openingE": 317,
+    "E_and_heavy": 144,
+    "E_and_Q": 206,
+    "E_no_attack": 15,
+    "E_no_attack_next_attack": 11,
+    "E_one_attack_next_attack": 74,
+    "E_two_or_more_attacks_next_attack": 62,
+    "E_next_draw_attack": 147,
+    "E_next_draw_guard": 110,
+    "E_next_draw_q": 29,
+    "E_next_draw_caution": 31,
+    "E_and_Q_no_attack": 14,
+    "firstExamples": {
+      "E_no_attack_next_attack": [
+        {
+          "seed": 40004,
+          "hand": [
+            "e",
+            "caution",
+            "q",
+            "guard",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40094,
+          "hand": [
+            "e",
+            "q",
+            "guard",
+            "guard",
+            "caution"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40192,
+          "hand": [
+            "q",
+            "e",
+            "guard",
+            "guard",
+            "guard"
+          ],
+          "next": "heavy"
+        },
+        {
+          "seed": 40198,
+          "hand": [
+            "q",
+            "guard",
+            "guard",
+            "guard",
+            "e"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40199,
+          "hand": [
+            "q",
+            "guard",
+            "guard",
+            "caution",
+            "e"
+          ],
+          "next": "heavy"
+        }
+      ],
+      "E_and_Q_no_attack": [
+        {
+          "seed": 40004,
+          "hand": [
+            "e",
+            "caution",
+            "q",
+            "guard",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40094,
+          "hand": [
+            "e",
+            "q",
+            "guard",
+            "guard",
+            "caution"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40192,
+          "hand": [
+            "q",
+            "e",
+            "guard",
+            "guard",
+            "guard"
+          ],
+          "next": "heavy"
+        },
+        {
+          "seed": 40198,
+          "hand": [
+            "q",
+            "guard",
+            "guard",
+            "guard",
+            "e"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40199,
+          "hand": [
+            "q",
+            "guard",
+            "guard",
+            "caution",
+            "e"
+          ],
+          "next": "heavy"
+        }
+      ],
+      "E_two_or_more_attacks_next_attack": [
+        {
+          "seed": 40007,
+          "hand": [
+            "e",
+            "normal",
+            "caution",
+            "guard",
+            "heavy"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40008,
+          "hand": [
+            "e",
+            "normal",
+            "guard",
+            "guard",
+            "normal"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40012,
+          "hand": [
+            "e",
+            "guard",
+            "normal",
+            "guard",
+            "normal"
+          ],
+          "next": "heavy"
+        },
+        {
+          "seed": 40015,
+          "hand": [
+            "e",
+            "caution",
+            "guard",
+            "heavy",
+            "normal"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 40018,
+          "hand": [
+            "e",
+            "normal",
+            "guard",
+            "heavy",
+            "q"
+          ],
+          "next": "normal"
+        }
+      ]
+    }
+  },
+  "holdout": {
+    "seeds": 512,
+    "openingE": 373,
+    "E_and_heavy": 223,
+    "E_and_Q": 165,
+    "E_no_attack": 18,
+    "E_no_attack_next_attack": 14,
+    "E_one_attack_next_attack": 65,
+    "E_two_or_more_attacks_next_attack": 88,
+    "E_next_draw_attack": 167,
+    "E_next_draw_guard": 131,
+    "E_next_draw_q": 37,
+    "E_next_draw_caution": 38,
+    "E_and_Q_no_attack": 12,
+    "firstExamples": {
+      "E_no_attack_next_attack": [
+        {
+          "seed": 50242,
+          "hand": [
+            "e",
+            "guard",
+            "caution",
+            "q",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50246,
+          "hand": [
+            "e",
+            "caution",
+            "guard",
+            "guard",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50269,
+          "hand": [
+            "e",
+            "caution",
+            "guard",
+            "q",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50299,
+          "hand": [
+            "e",
+            "guard",
+            "caution",
+            "guard",
+            "q"
+          ],
+          "next": "heavy"
+        },
+        {
+          "seed": 50353,
+          "hand": [
+            "e",
+            "guard",
+            "caution",
+            "guard",
+            "guard"
+          ],
+          "next": "normal"
+        }
+      ],
+      "E_and_Q_no_attack": [
+        {
+          "seed": 50242,
+          "hand": [
+            "e",
+            "guard",
+            "caution",
+            "q",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50269,
+          "hand": [
+            "e",
+            "caution",
+            "guard",
+            "q",
+            "guard"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50299,
+          "hand": [
+            "e",
+            "guard",
+            "caution",
+            "guard",
+            "q"
+          ],
+          "next": "heavy"
+        },
+        {
+          "seed": 50303,
+          "hand": [
+            "e",
+            "q",
+            "guard",
+            "guard",
+            "guard"
+          ],
+          "next": "caution"
+        },
+        {
+          "seed": 50380,
+          "hand": [
+            "e",
+            "q",
+            "guard",
+            "caution",
+            "guard"
+          ],
+          "next": "normal"
+        }
+      ],
+      "E_two_or_more_attacks_next_attack": [
+        {
+          "seed": 50004,
+          "hand": [
+            "heavy",
+            "e",
+            "q",
+            "guard",
+            "normal"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50011,
+          "hand": [
+            "heavy",
+            "guard",
+            "caution",
+            "e",
+            "normal"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50015,
+          "hand": [
+            "heavy",
+            "e",
+            "guard",
+            "normal",
+            "q"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50023,
+          "hand": [
+            "heavy",
+            "guard",
+            "e",
+            "normal",
+            "normal"
+          ],
+          "next": "normal"
+        },
+        {
+          "seed": 50030,
+          "hand": [
+            "heavy",
+            "normal",
+            "caution",
+            "guard",
+            "e"
+          ],
+          "next": "normal"
+        }
+      ]
+    }
+  }
+}
