@@ -2,7 +2,7 @@
 // Read-only. Requires local files from the pinned implementation source; verifies SHA1 Git blobs.
 const fs=require('node:fs'),vm=require('node:vm'),crypto=require('node:crypto');
 const expected={A:'364e1d3e8c8559e2fcb26276b9ae8a2813f21735',B1:'3da512df7e62afdbfe49c7a8d47a781bebe65786'};
-function load(file,sha){if(!file)throw Error('Require source file paths as CLI args');const b=fs.readFileSync(file);const actual=crypto.createHash('sha1').update('blob '+b.length+'\\0').update(b).digest('hex');if(actual!==sha)throw Error('SOURCE_MISMATCH '+actual+' expected '+sha);const match=b.toString('utf8').match(/<script>([\\s\\S]*?)<\\/script>/);if(!match)throw Error('No first script');return vm.runInNewContext(match[1]+'\\n({HutaoGame,CARDS,STARTER,REWARD_POOL,ENCOUNTERS})',Object.create(null),{timeout:3000});}
+function load(file,sha){if(!file)throw Error('Require source file paths as CLI args');const b=fs.readFileSync(file);const actual=crypto.createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');if(actual!==sha)throw Error('SOURCE_MISMATCH '+actual+' expected '+sha);const match=b.toString('utf8').match(/<script>([\s\S]*?)<\/script>/);if(!match)throw Error('No first script');return vm.runInNewContext(match[1]+'\n({HutaoGame,CARDS,STARTER,REWARD_POOL,ENCOUNTERS})',Object.create(null),{timeout:3000});}
 
 const results=(function audit(A,B){
  const results={schema:1,review:"胡桃机制独立评审",candidate:"v6-e-draw1-b1-20261115",blobs:{B1:"3da512df7e62afdbfe49c7a8d47a781bebe65786",A:"364e1d3e8c8559e2fcb26276b9ae8a2813f21735"},method:"Exact frozen first-script HutaoGame executed in isolated synchronous V8; diagnostic state setups; not browser or natural campaign",checks:[]};
