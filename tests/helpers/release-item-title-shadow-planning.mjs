@@ -11,7 +11,10 @@ export const retirementPlanningReceipt=JSON.parse(bytes);
 export function assertRetirementPlanningCurrent(read=readFileSync){
  const p=retirementPlanningReceipt;
  assert.equal(hash(norm(read(retirementPlanningReceiptPath))),hash(bytes),'fresh local planning receipt');
- for(const row of p.closure)assert.equal(hash(norm(read(row.path))),row.lfSha256,'fresh retirement execution input: '+row.path);
+ for(const row of p.closure){
+  const content=read(row.path),text=/\.(?:mjs|js|json|lua|md|txt|yml|yaml)$/.test(row.path);
+  assert.equal(hash(text?norm(content):content),text?row.lfSha256:row.sha256,'fresh retirement execution input: '+row.path);
+ }
  for(const row of p.dependencies)assert.equal(hash(read(row.path)),row.sha256,'fresh retirement dependency input: '+row.path);
  const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
  for(const prefix of ['src/lua/','data/'])assert.deepEqual(walk(prefix.slice(0,-1)).filter(path=>prefix==='data/'||path.endsWith('.lua')).sort(),p.closure.filter(r=>r.path.startsWith(prefix)).map(r=>r.path),'complete retirement execution corpus: '+prefix);

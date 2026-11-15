@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-title-shadow-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'046fc09581d9435e0f89a9a423eeb41a4d5b17b1a33e1f570010970768808d10','complete release item-title-shadow CI continuation');
+assert.equal(hash(bytes),'a7c4a4d3e3e1cc3c0ced443c96d0f6a2afa474a1611f654dc6fcf38ce4b38578','complete release item-title-shadow CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
