@@ -38,8 +38,12 @@ for _=1,5 do tick();assert(cover.visible and host.pageReveal:covered())end
 assert(host:closeDeck())
 assert(not cover.visible and not host.pageReveal:covered(),'closing pending modal immediately restores its ready base');held=false
 assert(host:openDeck('draw'));assert(not host.pageReveal:covered() and not cover.visible,'warm synchronous modal publishes in the same paint')
+local geometryWrites=0;local setSize=veil.SetSizeDelta
+veil.SetSizeDelta=function(self,...)geometryWrites=geometryWrites+1;return setSize(self,...)end
 for i=1,100 do assert(host.deckUI:setPileSort(i%2==0 and 'name' or 'cost'))end
 assert(not cover.visible,'sorting must not flash the global veil')
+assert(geometryWrites==0,'ready sorting redundantly rewrote cover geometry')
+veil.SetSizeDelta=setSize
 assert(host:closeDeck() and not cover.visible,'closing a ready modal must not flash the global veil')
 assert(host.run==run and host.run.combat==run.combat,'modal transitions preserve current run')
 assert(host.run.combat.turn==before.combat.turn and host.run.rng==before.rng,'modal transitions preserve rules/RNG')

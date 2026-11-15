@@ -83,10 +83,14 @@ function M.new(cover,ready,onIntent,frames)
         if not frames or not sameBase(intent,gate.published)then return end
         return frames[intent.page] or previous and frames[previous.page]
     end
+    local paintedFrame
     local function paintFrame()
         if not frames then return end
         local veil=cover:GetChild('veil');local frame=gate.localFrame or frames.full
-        veil:SetAnchoredPosition(frame[1],frame[2]);veil:SetSizeDelta(frame[3],frame[4])
+        if frame==paintedFrame then return end
+        assert(veil:SetAnchoredPosition(frame[1],frame[2])~=false,'page cover position rejected')
+        assert(veil:SetSizeDelta(frame[3],frame[4])~=false,'page cover size rejected')
+        paintedFrame=frame
     end
     function gate:covered()return self.state~='visible' end
     function gate:request(intent)
