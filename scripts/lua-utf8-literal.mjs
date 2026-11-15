@@ -15,7 +15,9 @@ export function utf8ToLua(value,{nullAsNil=false}={}){
   if(item===null&&nullAsNil)return 'nil';
   if(typeof item==='string')return utf8LuaString(item);
   if(typeof item==='boolean')return String(item);
-  if(typeof item==='number'&&Number.isFinite(item))return String(item);
+  // Lua accepts .5 and -.5 with the same numeric token value; keep every
+  // remaining digit, exponent and the existing String(-0) behavior unchanged.
+  if(typeof item==='number'&&Number.isFinite(item))return String(item).replace(/^(-?)0\./,'$1.');
   if(Array.isArray(item))return `{${item.map(encode).join(',')}}`;
   if(item!==null&&typeof item==='object')return `{${Object.keys(item).sort().map(key=>`${luaKey(key)}=${encode(item[key])}`).join(',')}}`;
   throw new TypeError(`Unsupported Lua data value: ${String(item)}`);
