@@ -49,6 +49,13 @@ local fresh={grid:recycle(0,0),grid:recycle(1,1)}
 for _,cell in ipairs(fresh)do
  assert(not cell.visible and not modes:templateReady(cell),'fresh template published before mode readback')
 end
+local art=require('abyss_card_art_runtime');local artReady=art.presentationReady
+art.presentationReady=function(page)if page=='deckPanel'then return false end;return artReady(page)end
+before=modes.writes
+for _=1,3 do OnUpdate(.01);assert(updates)end
+assert(modes.writes==before,'fresh-cell modes bypassed the existing serial art readiness')
+for _,cell in ipairs(fresh)do assert(not cell.visible,'unprepared art published a fresh cell')end
+art.presentationReady=artReady
 for _=1,20 do
  OnUpdate(.01);assert(updates,'fresh-cell preparation failed native entry')
  assert(modes.lastRequests<=64,'fresh-cell preparation increased the shared frame budget')

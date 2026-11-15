@@ -184,10 +184,9 @@ local function prepareVisibleDeckModes()
     local intent=require('abyss_page_reveal').intent(view)
     if intent.page~='deckPanel' then return end
     -- Native scrolling can create new cells without changing page intent.
-    -- Share this frame's existing mode budget; publish only readback-ready cells.
-    local _,reason=imageModes:step(intent.page)
+    -- Retain the existing serial art/portrait/texture readiness and frame budget.
+    local _,reason=presentationReady(intent)
     assert(not reason,reason)
-    deckPending(intent)
 end
 function OnStart()
     if attempted then return end
