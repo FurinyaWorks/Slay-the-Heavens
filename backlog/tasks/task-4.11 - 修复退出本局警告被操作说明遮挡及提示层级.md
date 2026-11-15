@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 18:36'
+updated_date: '2026-11-15 21:00'
 labels:
   - playtest-20261030
   - p0
@@ -59,4 +59,6 @@ PC38产品提交a9425afa50e2a1dd10e83634a3e5fc0d24633917，真实旧代码4项�
 导航来源初审NAVSRC-1/P2已修：1e7c1c52→0f5b8dcb补当前forecast<target，guard及原预算不动，旧7ad packet原字节保留。来源组合独审a942→1e7 CODE_PASS_SCOPED/unresolved=[]（SHA0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77），初request_changes保留。main69a9实际集成新鲜4/4，Win1757923<1800000/POSIX1191630<1200000。23执行输入逐blob匹配两份独审覆盖，准备正常Release PR；HostedCI/官方PC手机与容量仍未验。
 
 2026-11-16 代码38fa3277/绑定dc50bea8已按docs/CI.md168纠正新增预测硬门槛，forecast仅诊断，实际workflow45/30/local75仍硬验；产品a942不动。当前5/5，独立policy增审CODE_PASS_SCOPED/12个直接job负控通过，原REQ与错误建议原文保留并更正。CI packet只单after+leaf，其他22行/before/93归档/库存保持，不重73/44/Full。共同前置PR692尚未合，后继须按新Release接续，未把代码独审当设备或发版许可。
+
+2026-11-16 本轮追加：共同前置#692已合，实际Release新base为1cc5479b713edab6fd26db4e20f8eb22b7401cb2；PR690代码独审HEAD 685d3ace14598a093a8e710042264b4a0780b944限定通过，Source/CI9/9、raw硬guard4/4、copy/corpus3/3，原独审报告和同reviewer支持bundle见docs/evidence/release-navigation-bootstrap-1116/independent-review.json及manifest。本轮仅归档和CLI附记；Source约20.6秒、每正投影123读约33MB是重复fresh成本限制，不是性能PASS。当前Hosted Full、同候选官方导入/ready/PC手机/容量仍未验；PC06色调/资源解释等产品要求未验，保留旧notes与所有checked（含#676不新勾），status保持In Progress，不授合并或发布许可。
 <!-- SECTION:NOTES:END -->

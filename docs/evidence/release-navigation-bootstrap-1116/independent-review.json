@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "independent-navigation-release1cc-/root/navigation_release1cc_review-20261116",
+  "reviewer": "/root/navigation_release1cc_review",
+  "reviewedAt": "2026-11-15T20:52:49.053Z",
+  "reviewedHeadSha": "685d3ace14598a093a8e710042264b4a0780b944",
+  "reviewedBaseSha": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "reviewedTreeSha": "b1967249c2db38bf6653e34f6936a78eddd07e33",
+  "reviewedSlicePriorSha": "8129bd8684a7ccf420ba0a8ec5fe077372050708",
+  "reviewedReleaseParentSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "mergeParents": [
+    "8129bd8684a7ccf420ba0a8ec5fe077372050708",
+    "1cc5479b713edab6fd26db4e20f8eb22b7401cb2"
+  ],
+  "conclusion": "pass",
+  "classification": "CODE_PASS_SCOPED",
+  "findings": [],
+  "unresolved": [],
+  "scope": {
+    "pr": 690,
+    "bootstrapPr": 692,
+    "fullDiffPaths": 89,
+    "bootstrapIncrementPaths": 23,
+    "fullReview": "Original navigation product/source/policy evidence and full resulting Git path inventory inspected; independent mechanical probes focus on the actual bootstrap merge delta. Existing product/Host suites were deliberately not repeated.",
+    "originalProductProducer": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+    "productPreserved": true,
+    "workingTreeClean": true
+  },
+  "coverage": {
+    "current": 28,
+    "gitViewBindings": 78,
+    "navigationBindings": 23,
+    "bootstrapBindings": 10,
+    "immutableArchives": 95,
+    "archiveBytes": 32810148,
+    "productionBaseGitBlobs": 352,
+    "independentIntegratedMappings": 66,
+    "frozenProductionAndRawTestBlobs": 3070,
+    "frozenManifestCompressedSha256": "46de85eb033b94cd01fb5787f81a5085f487296858b1a12b731f052069b1a661",
+    "frozenManifestRawSha256": "77df72f348b600d46ce6b50dd390d826966dd1aedb8834b86d36d6d0e61dc7e5",
+    "originalCiNavigationSha256": "e496eff66fdbcfd86b60c455c7332f841ba62a17e50e9e53b4e8a5677dec34d1",
+    "bootstrapCiSha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6",
+    "outerCiSha256": "1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9",
+    "inventory": {
+      "current": {
+        "js": 879,
+        "lua": 1424
+      },
+      "original": {
+        "js": 876,
+        "lua": 1423
+      },
+      "negativeCases": 16
+    },
+    "routingFullCases": 5,
+    "actualJobGuardNegatives": 12,
+    "evidenceGzipAndRawHashes": 7,
+    "assertions": [
+      "all outer current/slicePrior/bootstrapView and both original current/before views match exact Git blobs; both original helpers/packets and 93 old archives retained",
+      "all production, raw Lua, workflows, timings, costs and original production epoch unchanged from slicePrior; exactly 23 changed files",
+      "independent late-owner null/undefined/Buffer/number/missing and late-archive drift rejected; warm success rechecks; foreign bytes/paths opaque and production bypass intact",
+      "independent raw current/original inventories and deletion/duplicate/foreign rejection; integrated composition mappings; isolated production source closure imports without CI leaves"
+    ]
+  },
+  "verification": {
+    "independentProbe": {
+      "status": "pass",
+      "durationMs": 23373.1863,
+      "node": "v24.18.0",
+      "temp": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-1cc-review-temp",
+      "script": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\navigation-1cc-review-temp\\review-probe.mjs",
+      "result": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\navigation-1cc-review-temp\\probe-result.json"
+    },
+    "guardAndEvidenceProbe": {
+      "status": "pass",
+      "routingFullCases": 5,
+      "actualJobGuardNegatives": 12,
+      "evidenceGzipAndRawHashes": 7,
+      "authorLogsRead": {
+        "source": "9/9 20566.907ms",
+        "raw": "4/4 26401.6764ms",
+        "copy": "3/3 22927.5279ms"
+      },
+      "scope": "direct current guard extraction plus routing/evidence only; no Full/Fast/product/repeated suite",
+      "script": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\navigation-1cc-review-temp\\guard-evidence-probe.mjs",
+      "result": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\navigation-1cc-review-temp\\guard-evidence-result.json"
+    },
+    "finalReadback": "3070 frozen records match both Git trees; original four product files match a942; exact HEAD unchanged and worktree clean"
+  },
+  "evidenceReviewed": [
+    "docs/evidence/release-navigation-bootstrap-1116/merge-validation.json",
+    "docs/evidence/release-navigation-bootstrap-1116/README.md",
+    "docs/evidence/release-pc-navigation-20261115/independent-review.md",
+    "docs/evidence/release-navigation-source-20261115/independent-review-final.md",
+    "docs/evidence/release-navigation-source-20261115/independent-current-target.md",
+    "docs/evidence/release-pc-navigation-source-20261115/independent-owner-policy.md",
+    "docs/evidence/release-pc-navigation-source-20261115/owner-policy-correction.md",
+    "F:/New folder/.artifacts/release-pc-qa-20261115/bootstrap-merged/intake.json"
+  ],
+  "performanceLimitations": {
+    "freshPositiveProjection": {
+      "reads": 123,
+      "bytesRead": 33227142
+    },
+    "archivesBytes": 32810148,
+    "note": "Every accepted non-production view conversion re-authenticates all 28 live sources and 95 archives (123 reads, 33,227,142 bytes in this checkout). Repeated chained views multiply this cost. The author Source/CI run took 20,566.907ms, and the independent mixed Git/probe run took 23,373.1863ms. These are local diagnostics, not hosted timing calibration, execution limits, or evidence of completed Full.",
+    "policy": "Owner 2026-11-07: forecasts/30m Win/20m POSIX targets/60s reserve are diagnostic. Physical job limits remain Win45/POSIX30/local75. Frozen historical assertions retain their original meaning."
+  },
+  "notRun": [
+    "product/Host regression suites",
+    "Fast/Full or complete 9+4+3 rerun",
+    "hosted CI or polling",
+    "GUI/MCP/keyboard/mouse",
+    "Backlog mutations",
+    "push/PR update/merge:auto"
+  ],
+  "releaseAcceptance": {
+    "officialCandidate": "UNVERIFIED",
+    "officialImport": "UNVERIFIED",
+    "ready": "UNVERIFIED",
+    "officialCapacity": "UNVERIFIED",
+    "pc": "UNVERIFIED",
+    "phone": "UNVERIFIED",
+    "hostedFull": "UNVERIFIED",
+    "releasePermission": "NOT_GRANTED_BY_THIS_REVIEW"
+  }
+}

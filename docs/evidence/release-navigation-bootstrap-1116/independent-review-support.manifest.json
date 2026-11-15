@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "independent-navigation-release1cc-/root/navigation_release1cc_review-20261116",
+  "reviewer": "/root/navigation_release1cc_review",
+  "codeReviewHead": "685d3ace14598a093a8e710042264b4a0780b944",
+  "actualReleaseBase": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "reportCopies": [
+    {
+      "path": "independent-review.json",
+      "source": "review-navigation-release1cc.json",
+      "sha256": "0465f8a0deb5b8e36f7f8d7935d3c1e997f3e9f5ac9716206cf40c0e75cb2f19",
+      "sizeBytes": 6324
+    },
+    {
+      "path": "independent-review.md",
+      "source": "review-navigation-release1cc.md",
+      "sha256": "f36b7f92890d8104b303ab3844db715c0f6da328292c1444131b965554fbf238",
+      "sizeBytes": 2146
+    }
+  ],
+  "bundle": {
+    "path": "independent-review-support.bundle.json.gz",
+    "sha256": "36547aa02997a497c9f5fa900b09dca985624d11fb929c48d0afc01e5f659b72",
+    "sizeBytes": 12901,
+    "rawSha256": "f08e962b35d28d2dfb6bd2f46b2f3de8846a9bdac302f1d9fc116b7176755ebd",
+    "rawBytes": 31776
+  },
+  "members": [
+    {
+      "source": "navigation-1cc-review-temp/review-probe.mjs",
+      "role": "same-reviewer probe source snapshot, not executed in this task",
+      "sha256": "e4dca08a6c80234e34e58ac817f4ef2283c5e7612bcab2dadb855a6a0177f991",
+      "sizeBytes": 9714,
+      "roundTripVerified": true
+    },
+    {
+      "source": "navigation-1cc-review-temp/probe-result.json",
+      "role": "same-reviewer saved probe result",
+      "sha256": "6879ad0900d7c40f6ccdc497efb02c23b0c342ca567d45a4eb11fd96dadd2cfd",
+      "sizeBytes": 1522,
+      "roundTripVerified": true
+    },
+    {
+      "source": "navigation-1cc-review-temp/guard-evidence-probe.mjs",
+      "role": "same-reviewer probe source snapshot, not executed in this task",
+      "sha256": "9968371d23b1e924da63a03526a680b745cd7c820ea6e560d2fd8aa8601298f6",
+      "sizeBytes": 3023,
+      "roundTripVerified": true
+    },
+    {
+      "source": "navigation-1cc-review-temp/guard-evidence-result.json",
+      "role": "same-reviewer saved probe result",
+      "sha256": "0c8c2b3ff476d54df8de0bcba11628b1767d5ae408b1816ba406b8504c2ff09e",
+      "sizeBytes": 346,
+      "roundTripVerified": true
+    },
+    {
+      "source": "navigation-1cc-review-temp/finalize-report.mjs",
+      "role": "same-reviewer report assembly source",
+      "sha256": "e6e5220acc11f108aeebc6ee7e175016b895606f24ae9d463e2652e8800947a2",
+      "sizeBytes": 8021,
+      "roundTripVerified": true
+    }
+  ],
+  "whitelistPolicy": "Only these exact same-reviewer files are archived. No recursive directory traversal, generated UI, copy temp trees, private PNG, unrelated source or earlier foreign-reviewer probes. No independent log file was present in this exact whitelist; existing author logs remain at their original committed paths.",
+  "verification": "Exact original report bytes copied; gzip decoded, every member hash/size and original bytes read back; probes not executed."
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "BACKLOG_CLI_APPEND_ONLY_READBACK",
+  "codeReviewHead": "685d3ace14598a093a8e710042264b4a0780b944",
+  "actualReleaseBase": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "taskSelection": "Only parent explicitly authorized existing task IDs, all already modified in this PR; no guessed/new task.",
+  "beforeSnapshotSha256": "37ee9d945532c938eff8d15c1f66040020efe5c6a7f5d6d28f5508b68fdd9b00",
+  "afterSnapshotSha256": "a4028c867a08bcc8d02aed118546482d6957696abb5c98dcaceba6d0c1c9cd3f",
+  "tasks": [
+    {
+      "id": "TASK-4.16",
+      "path": "backlog/tasks/task-4.16 - 改善右上角菜单与操作说明的交互和信息层级.md",
+      "statusBefore": "In Progress",
+      "statusAfter": "In Progress",
+      "oldNotesSha256": "ccaa0c0a5a0ca35b994af8a54e068083341328164f7b150c663c5cdf1ae323af",
+      "newNotesSha256": "c163de4596b539f69c5c83ceb783322a1e907dff6282a346946857349803eb44",
+      "oldNotesPrefixPreserved": true,
+      "acceptanceCriteriaBefore": [
+        {
+          "index": 1,
+          "text": "菜单可通过非破坏性的直观操作关闭，不误触后台游戏/放弃本局。",
+          "checked": false
+        },
+        {
+          "index": 2,
+          "text": "未启程地图入口不误导玩家；已可用时正常进入。",
+          "checked": false
+        },
+        {
+          "index": 3,
+          "text": "操作说明层次清楚、能快速找到出牌/取消/详情/药水/地图等信息；基础资源含义易获知。",
+          "checked": false
+        },
+        {
+          "index": 4,
+          "text": "QA-R2-06本地真实Host回归：地图模式隐藏并拒绝查看同一地图；战斗或节点的只读路线预览一次返回即恢复原页面，无残留菜单，旧触点与手柄取消不穿透。",
+          "checked": true
+        },
+        {
+          "index": 5,
+          "text": "#676 旧任务 TASK-4.16 AC5：核对顶栏地图与设置菜单重复地图入口、右上角齿轮样式、返回/关闭后的菜单层级；只保留符合当前状态的单一清晰导航，任何取消/返回都不覆盖原运行状态；按当前原版参照与最终设备复核。",
+          "checked": false
+        }
+      ],
+      "acceptanceCriteriaAfter": [
+        {
+          "index": 1,
+          "text": "菜单可通过非破坏性的直观操作关闭，不误触后台游戏/放弃本局。",
+          "checked": false
+        },
+        {
+          "index": 2,
+          "text": "未启程地图入口不误导玩家；已可用时正常进入。",
+          "checked": false
+        },
+        {
+          "index": 3,
+          "text": "操作说明层次清楚、能快速找到出牌/取消/详情/药水/地图等信息；基础资源含义易获知。",
+          "checked": false
+        },
+        {
+          "index": 4,
+          "text": "QA-R2-06本地真实Host回归：地图模式隐藏并拒绝查看同一地图；战斗或节点的只读路线预览一次返回即恢复原页面，无残留菜单，旧触点与手柄取消不穿透。",
+          "checked": true
+        },
+        {
+          "index": 5,
+          "text": "#676 旧任务 TASK-4.16 AC5：核对顶栏地图与设置菜单重复地图入口、右上角齿轮样式、返回/关闭后的菜单层级；只保留符合当前状态的单一清晰导航，任何取消/返回都不覆盖原运行状态；按当前原版参照与最终设备复核。",
+          "checked": false
+        }
+      ],
+      "definitionOfDonePreserved": true,
+      "allOtherTaskFieldsPreservedExceptUpdatedAt": true,
+      "cli": "backlog task edit TASK-4.16 --append-notes <本轮新base与证据摘要>"
+    },
+    {
+      "id": "TASK-4.11",
+      "path": "backlog/tasks/task-4.11 - 修复退出本局警告被操作说明遮挡及提示层级.md",
+      "statusBefore": "In Progress",
+      "statusAfter": "In Progress",
+      "oldNotesSha256": "6fb69981f024b036a8d4bf1f864ea4052ef8b1a73c7a52afffefe97c689c48ef",
+      "newNotesSha256": "a67101574cc3d3072ac080e9ca1ed67296c6e47728132a11879e3bc81a89ab84",
+      "oldNotesPrefixPreserved": true,
+      "acceptanceCriteriaBefore": [
+        {
+          "index": 1,
+          "text": "退出本局的风险说明完整可读，「操作说明」及其它按钮不会遮挡正文。",
+          "checked": false
+        },
+        {
+          "index": 2,
+          "text": "取消与确认的含义清楚，操作不穿透；与本轮 #21 精确追加文案各自核对。",
+          "checked": false
+        },
+        {
+          "index": 3,
+          "text": "#676 旧任务 TASK-4.11 AC3：按2026-11-15 PC用户最新要求，退出界面彻底移除多余操作说明及其失效触点/状态残留，同时保留放弃确认、取消继续和平台退出的准确操作；在当前最终GIL实测。",
+          "checked": false
+        }
+      ],
+      "acceptanceCriteriaAfter": [
+        {
+          "index": 1,
+          "text": "退出本局的风险说明完整可读，「操作说明」及其它按钮不会遮挡正文。",
+          "checked": false
+        },
+        {
+          "index": 2,
+          "text": "取消与确认的含义清楚，操作不穿透；与本轮 #21 精确追加文案各自核对。",
+          "checked": false
+        },
+        {
+          "index": 3,
+          "text": "#676 旧任务 TASK-4.11 AC3：按2026-11-15 PC用户最新要求，退出界面彻底移除多余操作说明及其失效触点/状态残留，同时保留放弃确认、取消继续和平台退出的准确操作；在当前最终GIL实测。",
+          "checked": false
+        }
+      ],
+      "definitionOfDonePreserved": true,
+      "allOtherTaskFieldsPreservedExceptUpdatedAt": true,
+      "cli": "backlog task edit TASK-4.11 --append-notes <本轮新base与证据摘要>"
+    }
+  ],
+  "checkedPreserved": true,
+  "notesPreserved": true,
+  "statusPreserved": true
+}
