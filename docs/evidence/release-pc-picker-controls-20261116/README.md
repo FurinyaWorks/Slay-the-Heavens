@@ -39,6 +39,8 @@
 
 中间静态检查曾捕获 `ctx.paintButton` 复杂度16超过15，提取本模块 `sharedButtonChrome` 后原门槛通过；未增加预算。原失败没有通过放宽阈值处理。
 
+Node断言diff的空白行含空格，完整base..HEAD diff-check将其报告为尾随空白。两份失败日志的原始字节另存 `official-contracts.txt.raw.gz` 与 `frozen-source.txt.raw.gz`；对应可读txt仅清理行尾空格，原失败内容与断言保留。
+
 复现命令均在本工作树，`node`指上述现有Node24：
 
 ```text
