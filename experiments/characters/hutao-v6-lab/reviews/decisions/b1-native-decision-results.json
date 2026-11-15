@@ -1,0 +1,801 @@
+{
+  "schema": 1,
+  "review": "胡桃机制独立评审",
+  "candidate": "v6-e-draw1-b1-20261115",
+  "blobs": {
+    "B1": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+    "A": "364e1d3e8c8559e2fcb26276b9ae8a2813f21735"
+  },
+  "method": "Exact frozen first-script HutaoGame executed in isolated synchronous V8; diagnostic state setups; not browser or natural campaign",
+  "checks": [
+    {
+      "id": "boot",
+      "scenario": "Natural engine constructor(seed=20261112)",
+      "observed": {
+        "cards": 75,
+        "upgrades": 150,
+        "starter": 10,
+        "rewards": 69,
+        "encounters": 5,
+        "starterIds": [
+          "normal",
+          "normal",
+          "normal",
+          "guard",
+          "guard",
+          "guard",
+          "heavy",
+          "e",
+          "q",
+          "caution"
+        ],
+        "initial": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 72,
+          "energy": 3,
+          "block": 0,
+          "butterfly": 0,
+          "enemyHp": [
+            35
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [
+            "guard",
+            "guard",
+            "heavy",
+            "normal",
+            "guard"
+          ],
+          "draw": 5,
+          "relicUsed": false,
+          "healUsed": 0,
+          "markKillBlock": 0
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "75 IDs, 150 form definitions, 10 starter, 69 reward, 72HP/3 energy/5 draw"
+      }
+    },
+    {
+      "id": "e-heavy-guard",
+      "scenario": "Synthetic same E + heavy + guard; top-of-pile normal, both source engines; perform E/heavy/guard",
+      "observed": {
+        "A": {
+          "before": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 72,
+            "energy": 3,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [
+              "e",
+              "heavy",
+              "guard"
+            ],
+            "draw": 1,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 0
+          },
+          "playE": {
+            "ok": true
+          },
+          "afterE": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 66,
+            "energy": 2,
+            "block": 4,
+            "butterfly": 2,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [
+              "heavy",
+              "guard"
+            ],
+            "draw": 1,
+            "relicUsed": true,
+            "healUsed": 0,
+            "markKillBlock": 0
+          },
+          "heavy": {
+            "ok": true
+          },
+          "guard": {
+            "ok": true
+          },
+          "afterCards": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 66,
+            "energy": 0,
+            "block": 9,
+            "butterfly": 2,
+            "enemyHp": [
+              25
+            ],
+            "enemyMark": [
+              2
+            ],
+            "hand": [],
+            "draw": 1,
+            "relicUsed": true,
+            "healUsed": 0,
+            "markKillBlock": 0
+          }
+        },
+        "B1": {
+          "before": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 72,
+            "energy": 3,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [
+              "e",
+              "heavy",
+              "guard"
+            ],
+            "draw": 1,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 0
+          },
+          "playE": {
+            "ok": true
+          },
+          "afterE": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 66,
+            "energy": 2,
+            "block": 4,
+            "butterfly": 2,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [
+              "heavy",
+              "guard",
+              "normal"
+            ],
+            "draw": 0,
+            "relicUsed": true,
+            "healUsed": 0,
+            "markKillBlock": 0
+          },
+          "heavy": {
+            "ok": true
+          },
+          "guard": {
+            "ok": true
+          },
+          "afterCards": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 66,
+            "energy": 0,
+            "block": 9,
+            "butterfly": 2,
+            "enemyHp": [
+              25
+            ],
+            "enemyMark": [
+              2
+            ],
+            "hand": [
+              "normal"
+            ],
+            "draw": 0,
+            "relicUsed": true,
+            "healUsed": 0,
+            "markKillBlock": 0
+          }
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "B1 extra draw offers option but cannot be an extra paid action after same E/heavy/guard 3-energy line"
+      }
+    },
+    {
+      "id": "e-6-7-hp",
+      "scenario": "Synthetic first-encounter hand E alone; HP6 reject vs HP7 allow then end-turn attack7",
+      "observed": {
+        "hp6": {
+          "before": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 6,
+            "energy": 3,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [
+              "e"
+            ],
+            "draw": 1,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 0
+          },
+          "play": {
+            "ok": false,
+            "reason": "生命支付后必须至少剩1点生命"
+          },
+          "after": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 6,
+            "energy": 3,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [
+              "e"
+            ],
+            "draw": 1,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 0
+          }
+        },
+        "hp7": {
+          "play": {
+            "ok": true
+          },
+          "afterE": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 1,
+            "energy": 2,
+            "block": 4,
+            "butterfly": 2,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [],
+            "draw": 0,
+            "relicUsed": true,
+            "healUsed": 0,
+            "markKillBlock": 0
+          },
+          "endTurn": {
+            "ok": true
+          },
+          "after": {
+            "phase": "lose",
+            "floor": 1,
+            "turn": 1,
+            "hp": 0,
+            "energy": 2,
+            "block": 0,
+            "butterfly": 2,
+            "enemyHp": [
+              35
+            ],
+            "enemyMark": [
+              0
+            ],
+            "hand": [],
+            "draw": 0,
+            "relicUsed": true,
+            "healUsed": 0,
+            "markKillBlock": 0
+          }
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "Cannot-pay is safe; E at 7HP is legally playable but dies to 7 attack after relic block4"
+      }
+    },
+    {
+      "id": "e-empty-piles",
+      "scenario": "Synthetic E alone, both drawPile and discardPile empty",
+      "observed": {
+        "play": {
+          "ok": true
+        },
+        "after": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 66,
+          "energy": 2,
+          "block": 4,
+          "butterfly": 2,
+          "enemyHp": [
+            35
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [],
+          "draw": 0,
+          "relicUsed": true,
+          "healUsed": 0,
+          "markKillBlock": 0
+        },
+        "lastLog": {
+          "floor": 1,
+          "turn": 1,
+          "msg": "进入彼岸蝶舞：攻击牌首个命中额外+3，半血以下+5，持续2次己方结束阶段；立即抽1张牌（受手牌上限与牌堆规则限制）。"
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "E still costs 6HP and 1 energy, but attempts draw with zero available cards"
+      }
+    },
+    {
+      "id": "seed-50242",
+      "scenario": "Actual starter shuffle/real opening hand from seed 50242, play natural E",
+      "observed": {
+        "before": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 72,
+          "energy": 3,
+          "block": 0,
+          "butterfly": 0,
+          "enemyHp": [
+            35
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [
+            "e",
+            "guard",
+            "caution",
+            "q",
+            "guard"
+          ],
+          "draw": 5,
+          "relicUsed": false,
+          "healUsed": 0,
+          "markKillBlock": 0
+        },
+        "playE": {
+          "ok": true
+        },
+        "after": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 66,
+          "energy": 2,
+          "block": 4,
+          "butterfly": 2,
+          "enemyHp": [
+            35
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [
+            "guard",
+            "caution",
+            "q",
+            "guard",
+            "normal"
+          ],
+          "draw": 4,
+          "relicUsed": true,
+          "healUsed": 0,
+          "markKillBlock": 0
+        },
+        "normalCanPlay": {
+          "ok": true
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "A natural opening with no attack may gain an immediately playable normal attack via B1 draw"
+      }
+    },
+    {
+      "id": "u10-single-foe",
+      "scenario": "Synthetic one enemy marked and 1HP; compare u10(2energy)->normal vs normal alone",
+      "observed": {
+        "treated": {
+          "u10": {
+            "ok": true
+          },
+          "afterU10": {
+            "phase": "combat",
+            "floor": 1,
+            "turn": 1,
+            "hp": 72,
+            "energy": 1,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              1
+            ],
+            "enemyMark": [
+              2
+            ],
+            "hand": [
+              "normal"
+            ],
+            "draw": 0,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 5
+          },
+          "kill": {
+            "ok": true
+          },
+          "afterKill": {
+            "phase": "reward",
+            "floor": 1,
+            "turn": 1,
+            "hp": 72,
+            "energy": 0,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              0
+            ],
+            "enemyMark": [
+              2
+            ],
+            "hand": [],
+            "draw": 0,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 5
+          }
+        },
+        "control": {
+          "kill": {
+            "ok": true
+          },
+          "after": {
+            "phase": "reward",
+            "floor": 1,
+            "turn": 1,
+            "hp": 72,
+            "energy": 2,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              0
+            ],
+            "enemyMark": [
+              2
+            ],
+            "hand": [],
+            "draw": 0,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 0
+          }
+        },
+        "relatedLogs": [
+          {
+            "floor": 1,
+            "turn": 1,
+            "msg": "战斗胜利，剩余72生命。"
+          },
+          {
+            "floor": 1,
+            "turn": 1,
+            "msg": "石颚兽受到6点攻击伤害，实际失血1。"
+          },
+          {
+            "floor": 1,
+            "turn": 1,
+            "msg": "敌人带血梅香阵亡：获得5格挡。"
+          },
+          {
+            "floor": 1,
+            "turn": 1,
+            "msg": "打出「普通攻击」，支付1能量。"
+          },
+          {
+            "floor": 1,
+            "turn": 1,
+            "msg": "带梅敌人被击败时追加防护生效。"
+          },
+          {
+            "floor": 1,
+            "turn": 1,
+            "msg": "打出「归于安宁」，支付2能量。"
+          }
+        ]
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "On the final enemy, u10 kill-block triggers then checkWin resets block to zero, with no HP benefit"
+      }
+    },
+    {
+      "id": "u10-multi-foe",
+      "scenario": "Synthetic fourth encounter: marked first enemy1HP, surviving second enemy attacks9",
+      "observed": {
+        "treated": {
+          "twoU": {
+            "ok": true
+          },
+          "twoK": {
+            "ok": true
+          },
+          "beforeTurn": {
+            "phase": "combat",
+            "floor": 4,
+            "turn": 1,
+            "hp": 72,
+            "energy": 0,
+            "block": 5,
+            "butterfly": 0,
+            "enemyHp": [
+              0,
+              39
+            ],
+            "enemyMark": [
+              2,
+              0
+            ],
+            "hand": [],
+            "draw": 0,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 5
+          },
+          "endTurn": {
+            "ok": true
+          },
+          "after": {
+            "phase": "combat",
+            "floor": 4,
+            "turn": 2,
+            "hp": 68,
+            "energy": 3,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              0,
+              39
+            ],
+            "enemyMark": [
+              2,
+              0
+            ],
+            "hand": [
+              "normal"
+            ],
+            "draw": 0,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 5
+          }
+        },
+        "control": {
+          "twoK": {
+            "ok": true
+          },
+          "endTurn": {
+            "ok": true
+          },
+          "after": {
+            "phase": "combat",
+            "floor": 4,
+            "turn": 2,
+            "hp": 63,
+            "energy": 3,
+            "block": 0,
+            "butterfly": 0,
+            "enemyHp": [
+              0,
+              39
+            ],
+            "enemyMark": [
+              2,
+              0
+            ],
+            "hand": [
+              "normal"
+            ],
+            "draw": 0,
+            "relicUsed": false,
+            "healUsed": 0,
+            "markKillBlock": 0
+          }
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "u10 can prevent 5 real HP against another still-alive attacking foe, so not globally useless"
+      }
+    },
+    {
+      "id": "q-heal-order",
+      "scenario": "Synthetic HP36, butterfly2, Q + normal, first foe35 HP; compare order",
+      "observed": {
+        "qThenAttack": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 43,
+          "energy": 0,
+          "block": 0,
+          "butterfly": 2,
+          "enemyHp": [
+            12
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [],
+          "draw": 0,
+          "relicUsed": false,
+          "healUsed": 7,
+          "markKillBlock": 0
+        },
+        "attackThenQ": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 43,
+          "energy": 0,
+          "block": 0,
+          "butterfly": 2,
+          "enemyHp": [
+            10
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [],
+          "draw": 0,
+          "relicUsed": false,
+          "healUsed": 7,
+          "markKillBlock": 0
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "Healing before attack crosses half HP and reduces first-hit butterfly bonus by 2; both end at same HP"
+      }
+    },
+    {
+      "id": "u18-pause-order",
+      "scenario": "Synthetic HP34, butterfly2; u18 + normal, two energy; order",
+      "observed": {
+        "u18ThenAttack": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 37,
+          "energy": 0,
+          "block": 8,
+          "butterfly": 0,
+          "enemyHp": [
+            29
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [],
+          "draw": 0,
+          "relicUsed": false,
+          "healUsed": 3,
+          "markKillBlock": 0
+        },
+        "attackThenU18": {
+          "phase": "combat",
+          "floor": 1,
+          "turn": 1,
+          "hp": 37,
+          "energy": 0,
+          "block": 8,
+          "butterfly": 0,
+          "enemyHp": [
+            24
+          ],
+          "enemyMark": [
+            0
+          ],
+          "hand": [],
+          "draw": 0,
+          "relicUsed": false,
+          "healUsed": 3,
+          "markKillBlock": 0
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "Attack then voluntarily end butterfly deals 5 more vs same HP/block, a real tactical order decision"
+      }
+    },
+    {
+      "id": "wildfire-target-order",
+      "scenario": "Synthetic two 50HP enemies, butterfly2, selected second enemy before playing wildfire",
+      "observed": {
+        "play": {
+          "ok": true
+        },
+        "after": {
+          "phase": "combat",
+          "floor": 2,
+          "turn": 1,
+          "hp": 72,
+          "energy": 2,
+          "block": 0,
+          "butterfly": 2,
+          "enemyHp": [
+            42,
+            45
+          ],
+          "enemyMark": [
+            0,
+            0
+          ],
+          "hand": [],
+          "draw": 0,
+          "relicUsed": false,
+          "healUsed": 0,
+          "markKillBlock": 0
+        }
+      },
+      "assertion": {
+        "pass": true,
+        "claim": "Butterfly's first-hit +3 goes to first internal enemy, not selected target; UI needs to make this ordering clear"
+      }
+    }
+  ],
+  "total": 10,
+  "assertionsPassed": 10
+}
