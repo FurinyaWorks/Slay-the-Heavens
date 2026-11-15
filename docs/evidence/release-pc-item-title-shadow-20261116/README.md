@@ -18,7 +18,7 @@
 
 实际缺口是当前owner在pool查找missing/dead/throw或替换时，仅恢复native图，没有隐藏此前仍alive且仍归本owner的旧pool。真实生成Host首反例已失败；独立只读审查以当前生产Lua和synthetic handle重证missing/throw RED，并用689同条件GREEN对照，见 `pr689-item-icon-overlap-audit.*`。这项审查绑定原组合c41，不作为新产品独审。
 
-最小产品接续只在reward owner选择性逐字复用689 `hidePool` / `paintShared` 两helper，以同一canonical `relicId(item,run)` 调用；相对c41为14行新增、2行删除。保留原potion分支、bca source优先/unknown语义、每态32/55池拓扑及16槽容量，不新增素材，不移植689共享root布局或任务文件。后续任一分支先合，另一分支须在新Release基线上合成单一正确binding，重新核源/测试；本轮不接管TASK-38.8。
+最小产品接续只在reward owner选择性逐字复用689 `hidePool` / `paintShared` 两helper，以同一canonical `relicId(item,run)` 调用；相对c41为14行新增、2行删除。保留原potion分支、bca source优先/unknown语义及每态装配：全树32个药水池/55个遗物池是容器数，每池容量为药水10、遗物16图元；敌人池32图元。不新增素材，不移植689共享root布局或任务文件，选择依据是本片最小范围，并非其16槽容量不足。后续任一分支先合，另一分支须在新Release基线上合成单一正确binding，重新核源/测试；本轮不接管TASK-38.8。
 
 新增回归采用当前生成Host的真实每态控件，首次真实Host刷新后逐故障直接调用当前生产reward painter。每个fixture同时保留两行；每次调用还比较另一行icon、pool及全部16图元的可见性/几何/颜色前后快照，防止两行相互污染。两行×四态×（同/换图各3种失查+替换/恢复+owner转属+真实fixture destroy不可访问）共72项；每次调用递归比较完整Run/data/RNG，fixture只同步自己写入的rewards，无字段排除。测试按两行分两个新鲜Lua进程，每进程保留60000ms预算；这是生成控件上的painter合同，不能称完整Host压力矩阵或设备结果。
 
@@ -40,6 +40,16 @@ Node24.18.0与固定Luacheck物理复用既有安装，未npm install。TEMP/TMP
 
 最终输入收据包含5320个tracked输入、684个物理依赖文件及1个固定Luacheck文件。`continuation.json` 证明原29路径中28个仍与对应源blob相等，唯一reward owner新增补丁仅为689两helper与一处调用：逆向删除这两helper并恢复原两行即逐LF等于c41前驱。`retirement-source-bytes.json.gz` 为Git来源LF正文，实际工作区原字节身份另在输入收据和逐运行 `*.source-inputs.json.gz`。可运行 `node docs/evidence/release-pc-item-title-shadow-20261116/verify.mjs` 只读重验归档hash；不触发产品测试、CI或设备。
 
-两个新用例由一个新增 `.test.mjs` 文件发现，保守本轮成本约80秒合计、每个子进程原上限60秒；CI实际新target库存/分片与source接续交主线程专片核对，本片没有修改时间预算或用新库存冒称原CI准入。
+两个新用例由一个新增 `.test.mjs` 文件发现，本地实际观测约80秒合计、每个子进程原上限60秒；这不是Hosted或跨平台耗时上界。CI实际新target库存/分片与source接续交主线程专片核对，本片没有修改时间预算或用新库存冒称原CI准入。
+
+## 独立组合审查与接续状态
+
+`release_items_product_review` 对精确产品 `df5ad3dc` 及证据后继 `2cb6206e` 的组合审查为 **CODE_SCOPE_PASS_WITH_LIMITS**，findings/unresolved为空。32项非证据路径和3个可执行证据验证器均明确覆盖，194项原变更路径/blob列清；28项源blob、689两helper逐字相同和逆移等价均复核。报告 `independent-review.json` SHA256 为 `cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d`。
+
+独立探针以精确c41的missing/throw RED对照df5 GREEN；使用真实生产Reward/Art与synthetic原生句柄，不能冒充Host/设备画面。另保留一项继承边界：人为使当前GetChild索引仍返回已转属foreign parent的同池时，before/current均有写入；现有reward固定池没有自然reparent入口，未找到现有native合同允许该不一致，因此不列为确认新增回归。新增72用例证明的是旧缓存句柄转属且当前索引换新池，不是所有foreign-current lookup均通过。17份独立原始探针、初次依赖路径失败、许可及归档核验输出无损保存在 `independent-probes.json.gz`，摘要见对应receipt。
+
+主线程通过Backlog CLI补回PC18/21/01来源AC、实施与未验记录，维护原状态和已验历史；并记录PR684/690与并行685–689真实归属，没有复制Task38.8或重复性能PR。当前完整38项接续见 [台账](../../backlog-details/PC-QA-20261115-CONTINUATION.md)。这些说明/任务修改未改变df5执行输入。
+
+来源专片核对发现retirement父JS默认未知成本10秒低于本轮约80秒观察；在既有分配中代入真实样本会使POSIX预测越原20分钟target。正在使用既有localLowerBounds精确绑定当前样本/执行闭包并重排，原target、guard、timings旧条目、用例与分片数不改；未把原默认预测通过当当前准入。原5项源FAIL、旧单进程超时以及后续补验将分别保留身份。
 
 source/CI接续、原路由Full、正式GIL/候选写入、官方导入、新ready、PC/实体手机实测、同候选官方20MB关卡/3MB服务器容量和正式RC静态/动态负载均UNVERIFIED。未访问私图、无新字体/纹理、未操作GUI/MCP、未推送/开PR/调用merge:auto、未修改master/Tag或发布。普通日常负载PASS不代表这些产品验收或发布许可。

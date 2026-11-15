@@ -1,0 +1,1440 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "/root/release_items_product_review",
+  "independent": true,
+  "authoredProduction": false,
+  "reviewedAt": "2026-11-15T16:56:25.723Z",
+  "result": "CODE_SCOPE_PASS_WITH_LIMITS",
+  "findings": [],
+  "unresolved": [],
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "productTree": "39c6802faf6c7cc7156f4aa04ea00e3b08ebaed7",
+  "archiveHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+  "archiveTree": "962c58f7dae35ea401829d81bc8935380c033e4a",
+  "branch": "feat/release-pc-item-title-shadow-1116",
+  "worktree": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+  "target": "release/v2.0.0",
+  "scope": "All32 non-evidence changed paths + all3 executable evidence harnesses; exact3-source combination plus single reward retirement production increment. Source/CI continuation from other tree excluded.",
+  "coverage": [
+    {
+      "path": "config/luacheck-baseline.json",
+      "blob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "source": "PC18",
+      "sourceBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Only three pre-existing W431 diagnostics relocate +3 lines/upvalue 48->51. Same warning identity/count, no threshold/config relaxation."
+    },
+    {
+      "path": "data/presentation/lowcost-potion-art.json",
+      "blob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "source": "PC18",
+      "sourceBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Exact reviewed PC18 full-source42 recipes (competition33 + preserved9); bounded native primitive geometry, no source-pool expansion."
+    },
+    {
+      "path": "data/presentation/lowcost-relic-art.json",
+      "blob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "source": "PC18",
+      "sourceBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Exact PC18 original88 +33 recipes; 121 recipes preserve full-source content; source149 public IDs=120 recipe-backed +29 native IDs, not121 current-pool IDs."
+    },
+    {
+      "path": "data/presentation/menu-title-mark.json",
+      "blob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "source": "PC01",
+      "sourceBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Exact reviewed static title triangles; no new font file/private raster. Source physical SHA retained in source evidence."
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "blob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "source": "PC01",
+      "sourceBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Only five approved menu tokens changed: labelX, hoverSeconds, leaveSeconds, lineRestAlpha, accent. Other palette/gameplay state untouched."
+    },
+    {
+      "path": "docs/backlog-details/RELEASE-PC-ITEM-ICONS-20261115.md",
+      "blob": "5af92b65a9560bbcf1ccc301dadc0f85716cc5d9",
+      "sourceBlob": null,
+      "sourceEqual": null,
+      "kind": "description",
+      "review": "Source-only receipt/integration description; pool-container vs recipe vs official capacity distinction and source/fallback/alias limitations preserved."
+    },
+    {
+      "path": "docs/legal/assets.json",
+      "blob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "source": "PC18",
+      "sourceBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Adds provenance category only; explicitly retains project noncommercial license and game IP limits. No clearance claim or hash-rule weakening."
+    },
+    {
+      "path": "scripts/build-ui.mjs",
+      "blob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "source": "PC21",
+      "sourceBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Pass actual officialAssets flag into existing portrait attach; default flags preserved."
+    },
+    {
+      "path": "scripts/lowcost-art.mjs",
+      "blob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "source": "PC18",
+      "sourceBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Adds potion registry and only existing potion/reward owners; separate four-state reward owners retained; all glyph pools non-input, capacity10/16/32."
+    },
+    {
+      "path": "scripts/official-portraits.mjs",
+      "blob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "source": "PC21",
+      "sourceBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "One groundShadow first child of original officialFigure only officialAssets+battlePortrait; approved solid foot [1.5,-93],127x15.875; reuses lagavulin oval/palette."
+    },
+    {
+      "path": "scripts/potion-art.mjs",
+      "blob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "source": "PC18",
+      "sourceBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Validates exact registered42/current33 scope, colour-independent geometry uniqueness, rotated bounds and10-slot capacity."
+    },
+    {
+      "path": "scripts/v25-menu-layout.mjs",
+      "blob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "source": "PC01",
+      "sourceBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Static mark/backing beneath existing hit/label owners; immediate four-state arrows/rule; idempotent; original background and transactions preserved."
+    },
+    {
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "blob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "source": "PC18",
+      "sourceBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Only potion bottle art paint/empty cleanup; prior item selection, tint, gestures and command state unchanged."
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "blob": "53a0fa60abbffce415dfab781384094879241c93",
+      "source": "PC18",
+      "sourceBlob": "bd3eb2c9841c5e966f1f9717850f97b65c457a0a",
+      "sourceEqual": false,
+      "kind": "production_or_policy",
+      "review": "Authority-first sourceId resolver remains exact PC18; unknown/no-data fallback retained, potion branch unchanged. Only new production delta is689 verbatim hidePool/paintShared + one relic call; cached same-owner alive old pool retires on lookup loss/replacement; native fallback exposed."
+    },
+    {
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "blob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "source": "PC21",
+      "sourceBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Player-only ground-shadow tint shares existing alpha; parent already owns transforms, readiness, pause/death/restart/release lifecycle; no enemy host access."
+    },
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "blob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "source": "PC18",
+      "sourceBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Restore native relic fallback visible before optional Art.paint; no gameplay command writes."
+    },
+    {
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "blob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "source": "PC18",
+      "sourceBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Forward existing options to shop painter only."
+    },
+    {
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "blob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "source": "PC18",
+      "sourceBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Potion entry paints current recipe at profile size, hides art for empty slot; no consumption/selection changes."
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "blob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "source": "PC18",
+      "sourceBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Native picture visibility restored on every refresh before optional art, supporting missing/failed same-ID fallback."
+    },
+    {
+      "path": "src/lua/abyss_shop_ui.lua",
+      "blob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "source": "PC18",
+      "sourceBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "sourceEqual": true,
+      "kind": "production_or_policy",
+      "review": "Potion native unknown fallback + optional semantic paint; transaction logic untouched."
+    },
+    {
+      "path": "tests/helpers/potion-art-runtime.lua",
+      "blob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "source": "PC18",
+      "sourceBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Real generated pool42 full recipes + six representatives across four existing potion paths; failure/cache/fallback boundaries, source-equivalent."
+    },
+    {
+      "path": "tests/helpers/relic-fallback-runtime.lua",
+      "blob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "source": "PC18",
+      "sourceBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "25 checks across shop/treasure/single/list and gold transition; proves fallback restoration, not lookup-lost old pool retirement."
+    },
+    {
+      "path": "tests/helpers/reward-alias-runtime.lua",
+      "blob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "source": "PC18",
+      "sourceBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "13 authority aliases x2rows x4states, source-first conflicts/unknowns/no-data previews =>139 checks; full Run/data/RNG deep equality."
+    },
+    {
+      "path": "tests/helpers/reward-art-runtime.lua",
+      "blob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "source": "PC18",
+      "sourceBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Real Host reward2rows x4states, potion binding/same atlas recipe switch, caches, failed setter/native fallback, unknown/empty; gold/key/card isolation."
+    },
+    {
+      "path": "tests/helpers/reward-pool-retirement-runtime.lua",
+      "blob": "617da012ba50c6b5eaa875538aac06baf7cf5fbe",
+      "sourceBlob": null,
+      "sourceEqual": null,
+      "kind": "test",
+      "review": "New36 cases per row:4states x(6 same/change missing/dead/throw +replacement +cached foreign old handle +destroyed inaccessible old handle); peer16shape visibility/geometry/color deep snapshot and complete Run/data/RNG equality."
+    },
+    {
+      "path": "tests/lowcost-art.test.mjs",
+      "blob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "source": "PC18",
+      "sourceBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Preserves88/enemy data identities, exact recipe set/capacity/rotated bounds; real painter/cache/reentry contract uses unchanged existing Art."
+    },
+    {
+      "path": "tests/lua/player_ground_shadow.lua",
+      "blob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "source": "PC21",
+      "sourceBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Generated real portrait7303 rows; anchor/idle/action geometry, alpha, enemy isolation, pause/continue/new-run/release/destroy and Run/RNG invariance."
+    },
+    {
+      "path": "tests/menu-red-background.cases.mjs",
+      "blob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "source": "PC01",
+      "sourceBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Existing hits preserved, static title/batching budget/idempotence, backing order, immediate four states and triangle affine vertices; does not assert Continue dynamic accent animation."
+    },
+    {
+      "path": "tests/player-ground-shadow.test.mjs",
+      "blob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+      "source": "PC21",
+      "sourceBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Exact +1 non-input child, original other-tree equivalence, disabled flags, source geometry/palette and actual portrait Host fixture."
+    },
+    {
+      "path": "tests/potion-art-runtime.test.mjs",
+      "blob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "source": "PC18",
+      "sourceBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Five current combination cases: pool counts/default+0, real rewards,42recipessixsamples,25fallback,139alias; original timeouts retained."
+    },
+    {
+      "path": "tests/potion-art.test.mjs",
+      "blob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "source": "PC18",
+      "sourceBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "sourceEqual": true,
+      "kind": "test",
+      "review": "Exact sampler/definition42 vs33, metadata and high-confusion colour-independent geometry negative controls."
+    },
+    {
+      "path": "tests/reward-pool-retirement-runtime.test.mjs",
+      "blob": "123929273b864971f5f48799c5af8cc892cdd59b",
+      "sourceBlob": null,
+      "sourceEqual": null,
+      "kind": "test",
+      "review": "Two fresh generated Host/Fengari VMs, one existing row each. Each retains60s; final37.75s/41.86s. Split lowers per-VM unrelated work, not deadline relaxation; old72-case timeout retained."
+    }
+  ],
+  "executableEvidence": [
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/verify.mjs",
+      "review": "Read entire verifier; executed archive-only. Hash+decompression and old scoped review/result validation; full required_not_run explicit. Not a fresh product rerun.",
+      "blob": "12ded2bb31b926e195757a9a9bfc91835626dfca"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles.mjs",
+      "review": "Read entire executable harness; uses current buildUI,3profiles generated full trees, exact menuRedScene background, existing unmodified C-tier session fixture; real existing luaTimeoutMs.default. Writes build outputs and chosen evidence dir. Archived current run was inspected; not rerun here.",
+      "blob": "d37f39811474c88406ac55d823910b3b96d14e12"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/verify.mjs",
+      "review": "Read entire verifier; executed archive-only. Verifies72gzip/24run; checks receipt counts/statements, explicitly prints ARCHIVE_HASH_PASS_ONLY and sourceCi UNVERIFIED. It trusts continuation booleans; independent git blob/reversal check here supplies that missing derivation.",
+      "blob": "5761509ec872a7aabcd77054f5e3f18615720b0d"
+    }
+  ],
+  "allChangedPaths": [
+    {
+      "path": "config/luacheck-baseline.json",
+      "blob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "data/presentation/lowcost-potion-art.json",
+      "blob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "data/presentation/lowcost-relic-art.json",
+      "blob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "data/presentation/menu-title-mark.json",
+      "blob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "blob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "docs/backlog-details/RELEASE-PC-ITEM-ICONS-20261115.md",
+      "blob": "9b226f2b7b198bb23bd34a18ff1cddc7206f9a33",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/README.md",
+      "blob": "2222ecb53900ab6d8c302e508cc81b24222ff6f3",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/engineering.log.gz",
+      "blob": "9482d85707dfd427af48742d58443908985bfddd",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/fast-plan.json.gz",
+      "blob": "b2a2f214b9963a0b66fb4ed2d5853fab74e74dcf",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/green-boundaries-final.log.gz",
+      "blob": "30d10a04dfaca79cecc4581ee06d07afdd0c853d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/green-boundaries.log.gz",
+      "blob": "896f1fd4211b51542031b541d48e05cef254d902",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/green-source-test.log.gz",
+      "blob": "06aa2abb5b2bd3419b05bfe40a15adc9b78432be",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/platform-load-fresh.json.gz",
+      "blob": "401492ecf253af8559a1e34a870103d7d5a66c07",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/platform-load-receipt.json",
+      "blob": "f80a99aa12f6ee328b147c6ffd64bb0884c7879a",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/receipt.json",
+      "blob": "dc622fd67521cd88a039d291424be94eb45a7ba2",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/red-source-test.log.gz",
+      "blob": "b8ed7c4bb79efca99baef3ad9a3ca77fe51d9e9b",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/review.json",
+      "blob": "679eda910b8c016bf9ba1e88f588f9b55599c0c5",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/review.md",
+      "blob": "84e1cd037ff3882f249411b227d6f9d92874407f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/targeted.log.gz",
+      "blob": "61ccbb5b603d882296132a4e703698f23ff29eaa",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/verify.mjs",
+      "blob": "12ded2bb31b926e195757a9a9bfc91835626dfca",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/build-data.log.gz",
+      "blob": "a67685d2bcc660d6d86c4cb4329833955910af04",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/build-ui.log.gz",
+      "blob": "8782a92e765e9e49db2d8877e0a99ce2e1710adb",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/engineering-green.log.gz",
+      "blob": "bc0050014d47dae2e725b72dfc2f015b6b4ecb4d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/engineering.log.gz",
+      "blob": "242d1a6fb7e3ec3d8ee1aaa2637489189fa6f8ff",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/fallback-source.json",
+      "blob": "6ef53bee00f14ffe996dae105c075cabd42265a7",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/green.tap.gz",
+      "blob": "2326242110da3763b6c45b5035f21dd86857524b",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/independent-review-final.json",
+      "blob": "07c3928e830c3468df940f8ffa6f09131015549b",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/license-current.log.gz",
+      "blob": "f2bf7123545c1152a6b38d36063e9357f7ac707d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/lowcost.tap.gz",
+      "blob": "0371466c4446806afd35aed8b9a589370cd3e4c1",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/native-contract.tap.gz",
+      "blob": "7af39bb4796b386707ca1f43e4b2e8509fd743fb",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/production-source.json",
+      "blob": "5290451c1286bd573f9f51d76ba0a3b7e131324a",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/raw-output-identities.json",
+      "blob": "431e51082ccbd412647c23e28ba8ece7914873d0",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/recipe-counts.json",
+      "blob": "347f1c4ec56a8647f380116d3613a100205f3fec",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/red-with-dependencies.tap.gz",
+      "blob": "481a72ba79f21d79899d1451c2194355819fb2e6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/red.tap.gz",
+      "blob": "f8ffcd84b19a5cb51f23293f87919277b22f3ab4",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-and-regression-green.tap.gz",
+      "blob": "0f5f423b8b29ba702d12e40514305d3e42afd8a8",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-engineering.log.gz",
+      "blob": "bc0050014d47dae2e725b72dfc2f015b6b4ecb4d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-final-engineering.log.gz",
+      "blob": "bc0050014d47dae2e725b72dfc2f015b6b4ecb4d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-final-green.tap.gz",
+      "blob": "6702e1424a38b47dc172ec4beefac7e896c27e84",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-fixture-error.tap.gz",
+      "blob": "f40b4fdb200dc8f445ab08fb9477fa2ff2791d9a",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-fallback-red.tap.gz",
+      "blob": "518d3f08b42ce24ea1d8df5c0be83ffae4b170ce",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-gold-fallback-red.tap.gz",
+      "blob": "22f6297295b8b93db7c6e40d49826c4c4dfdf3a6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-source-coverage-probe.lua.txt",
+      "blob": "9127932880dc72963866680d72954a3295231f9f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-source-coverage-raw.log.gz",
+      "blob": "aaf7d2104ceacf8c2ad0d896c49d2a15c6da89ea",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/relic-source-coverage.json",
+      "blob": "9c1826cd96a1224caed384cea653d6f01c0bbfcb",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-details-fallback-probe.log.gz",
+      "blob": "a7d7f53e728c46015760c82e98b46a642d1d5ac6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-details-fallback-probe.lua.gz",
+      "blob": "a5c45b06f704c51e3549aea39f7ec2310a4784b7",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-details-probe-fixture-error.log.gz",
+      "blob": "6a9891ad95a103f90dbd6357571e8e132f0d95b3",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-reward-alias-probe.log.gz",
+      "blob": "495a7700cee53037271c68a3ddca832ee693c9e2",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-reward-alias-probe.lua.gz",
+      "blob": "2e19d2fcb4fbb5f86a5cb025e4a7f3bea14f8ba9",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-shop-fallback-probe.log.gz",
+      "blob": "05ed895e5a8c4c08a54e12ce02027d25e8be6389",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/review-item-icons-shop-fallback-probe.lua.gz",
+      "blob": "c732b233b946c4148e037fbad4c57fcfe36a2832",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-and-regression-green.tap.gz",
+      "blob": "830b3ac8c683b8f52f456b8b45700ffbd9cc08e6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-engineering.log.gz",
+      "blob": "b19294530683c74a6679dbba470c2b4fc7dd6faf",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-license.log.gz",
+      "blob": "f2bf7123545c1152a6b38d36063e9357f7ac707d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-red.tap.gz",
+      "blob": "c236d10c9a0dc2b86edf72cb258f7ab299881f04",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-source.json",
+      "blob": "5b1862cea624b2e6ae75fa3b2b4f573e24f8b84e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/reward-alias-verification.json",
+      "blob": "bbcee5af1543507609b50e383db5c95ceff967ee",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-icons-20261115/source-contract-current.tap.gz",
+      "blob": "5e05e80b0a86da90db83a44a3798f73b3ebf4a15",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/README.md",
+      "blob": "8bb01596e819eb25a1966b840b6ec353a95207ca",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/architecture-final-report.json.gz",
+      "blob": "10992d91f1ba7d8bcc5283f1c383d5158a5c57ef",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/build-data.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/build-data.stdout.gz",
+      "blob": "b878c5288aa52dfaa7b05e76d14bfbe257aa8281",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/build-theme.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/build-theme.stdout.gz",
+      "blob": "8c414a54a44ceb2787977fdf8ea09d36ff34f633",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/build-ui.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/build-ui.stdout.gz",
+      "blob": "4ce8351e6da88b16cd2ec61b1d0a38f56bd69237",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/compressed-inventory.json",
+      "blob": "0f359251f4994d08cb1c9da45ead7388c38c78ef",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/continuation.json",
+      "blob": "cf39a8e4c0939aed2c225a7481a18677cc81e578",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/diff-check.source-inputs.json.gz",
+      "blob": "fea5388e7ad1e9228a46ab84a0cd7ae011dd92d8",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/diff-check.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/diff-check.stdout.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/engineering-after-retirement.source-inputs.json.gz",
+      "blob": "c140a8b3f58e3f018518d0e6fc4e68f20eadb5d6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/engineering-after-retirement.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/engineering-after-retirement.stdout.gz",
+      "blob": "63048fba6b45bbb1b9886110adda3be750085844",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/engineering-final-report.json.gz",
+      "blob": "e3e7f35c6fb4541c1a9968426230a4f2010b19ea",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/engineering.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/engineering.stdout.gz",
+      "blob": "b6327ce57e33afce0f576256361f0ae56186853d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/frozen-preview-contract.source-inputs.json.gz",
+      "blob": "c140a8b3f58e3f018518d0e6fc4e68f20eadb5d6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/frozen-preview-contract.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/frozen-preview-contract.stdout.gz",
+      "blob": "173f4c9c6a922fe37f8f91faeba5a18f871778dd",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/generated-host-official.log.gz",
+      "blob": "1cc1bf047091dd129012752afe68f0ece5136ab0",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/generated-host-v25.log.gz",
+      "blob": "1cc1bf047091dd129012752afe68f0ece5136ab0",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/icons-after-retirement.source-inputs.json.gz",
+      "blob": "c140a8b3f58e3f018518d0e6fc4e68f20eadb5d6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/icons-after-retirement.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/icons-after-retirement.stdout.gz",
+      "blob": "a434f9fc9577e89f30b79500b13c2ed19b710e72",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/icons.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/icons.stdout.gz",
+      "blob": "2063f5d9c156540a6e4642564ca0fc1a7930191d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-art.lua.gz",
+      "blob": "a72a6b735441a79b57358b7fe395300601574e71",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-combo-missing.log.gz",
+      "blob": "12dfab25cc3dd2d14396313cb02174429d7ee26f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-combo-reward.lua.gz",
+      "blob": "5d913993037bab7405accbc672c727c56e3d20cb",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-combo-throw.log.gz",
+      "blob": "9ebb337341e219c789edc9f20c8a3d49ade1808f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-pr689-missing.log.gz",
+      "blob": "556e3f755c181f5b709b9c4420ad2355117db5b5",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-pr689-reward.lua.gz",
+      "blob": "23332a9418ac5556a3e3ceb71ce48f69f8f1027e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-pr689-throw.log.gz",
+      "blob": "d37fa2f0354a2337ea8338404ee0d75924130486",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/independent-overlap-probe.lua.gz",
+      "blob": "ac1dee58bc6b0747cdb8ad93de17461f90b1d464",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/input-receipt-before-retirement.json.gz",
+      "blob": "e4ed855ede766c55aa3668dd0408fcb4f14161ac",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/input-receipt.json.gz",
+      "blob": "54efb1f8cf6977297ba9914e7851fd0ad5db0627",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/lua-static-final-report.json.gz",
+      "blob": "aa8edbdac03a2a9688fe0f843b17745fe0e3c549",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-current.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-current.stdout.gz",
+      "blob": "1888b39ecdb9b04112510d7de632efddd0d69cfe",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-hover.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-hover.stdout.gz",
+      "blob": "34428ce87c217045aacbb2123c6e88ab0c63a103",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-profiles.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-profiles.stdout.gz",
+      "blob": "23ccd4f59ddbd320d011acd7123d18d4980ec519",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-states.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/menu-states.stdout.gz",
+      "blob": "f5cf35a15d2261359c98ff342345e1fc926ab13f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/platform-load-after-retirement.source-inputs.json.gz",
+      "blob": "c140a8b3f58e3f018518d0e6fc4e68f20eadb5d6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/platform-load-after-retirement.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/platform-load-after-retirement.stdout.gz",
+      "blob": "8a647126ea4801af6fa5be60a7b7abb3337305f5",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/platform-load-daily.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/platform-load-daily.stdout.gz",
+      "blob": "a946ef5b9fd824b4c170607800a39a22c6fe283f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/platform-load-final-report.json.gz",
+      "blob": "ae8971ce632719594d5903a5a18a0639eae6846d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/pr689-item-icon-overlap-audit.json",
+      "blob": "d55ba75435902bb11511353c1e35a9c1d1f9f2e5",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/pr689-item-icon-overlap-audit.md",
+      "blob": "e89bde7f5a17dab1834c746e2e6d54f4739d3fc2",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/profiles.json",
+      "blob": "1dbf82a043de333741d78842eb385b356866c29d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/provenance.json",
+      "blob": "66da4c7e56a628f8054d3e565dee82f31e17a6b1",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/receipt.json",
+      "blob": "f7969fa54ff681c3f36f9c2a4657855212cb1ec9",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/related-plan.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/related-plan.stdout.gz",
+      "blob": "827d28a1383d0eea455e7b64cee7066e607ea3a2",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/retirement-source-bytes.json.gz",
+      "blob": "44b8df86262523149874e2d922f9285b8430a8ad",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green-peer.source-inputs.json.gz",
+      "blob": "fea5388e7ad1e9228a46ab84a0cd7ae011dd92d8",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green-peer.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green-peer.stdout.gz",
+      "blob": "bf3e939cdfb4a2acbc440c1b74f65570bf8ac9f8",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green-rows.source-inputs.json.gz",
+      "blob": "c140a8b3f58e3f018518d0e6fc4e68f20eadb5d6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green-rows.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green-rows.stdout.gz",
+      "blob": "f78bc246ddd09f01a1afecf15fddda43ea9deb98",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-green.stdout.gz",
+      "blob": "11656b27bd3629e1a4af4d7195bc463460ba9cfe",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red-bounded.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red-bounded.stdout.gz",
+      "blob": "757d57ecacf8dea1ecdc8705c6581c28a136cd89",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red-final.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red-final.stdout.gz",
+      "blob": "3f639bc1fa407a2abaa19b9a9efb8dd86677fb37",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red-oracle.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red-oracle.stdout.gz",
+      "blob": "941d837fa92f9e008d9787578933f95eea9d224f",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/reward-pool-retirement-red.stdout.gz",
+      "blob": "dab3e2006312b00e65c26436d1240318fb78795e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/runs.json",
+      "blob": "50fe91fb866fe4b3dedb88e04b201932d10b7331",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/shadow.stderr.gz",
+      "blob": "eb3294b92bbbb8d6f74dcde4761b99de8226581e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/shadow.stdout.gz",
+      "blob": "2ac186315e7f021ea2a1dc51f7f126917c85c4b6",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/verify.mjs",
+      "blob": "5761509ec872a7aabcd77054f5e3f18615720b0d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/README.md",
+      "blob": "5cb2a0ccff25a1038983dca328d8f21f6ae7da31",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/approved-source-audit.md",
+      "blob": "bf94e5769a6ddcc6dd83a09946a9e29c958f5558",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/base-build-data.log.gz",
+      "blob": "32a33ae86e0c4da728bd23a50164a933b36d3771",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/base-build-ui.log.gz",
+      "blob": "fa91aa856b2db1054b2f44bb82f616d511950623",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/build-theme.log.gz",
+      "blob": "31dd998132d2e513075ef713a6dff43255a42caa",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/four-state.log.gz",
+      "blob": "48293d5adc7ae7375ba871923e92ba58248eee6b",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/frozen-contract.log.gz",
+      "blob": "369537d4d18a18756e43222336826fddb727f974",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/generated-host-official-initial-theme-mismatch.log.gz",
+      "blob": "97353e1b76223bdcf08fbf9f3145186c70d30383",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/generated-host-official.log.gz",
+      "blob": "1cc1bf047091dd129012752afe68f0ece5136ab0",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/generated-host-v25.log.gz",
+      "blob": "1cc1bf047091dd129012752afe68f0ece5136ab0",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/green-build-default.log.gz",
+      "blob": "fa91aa856b2db1054b2f44bb82f616d511950623",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/green-title.log.gz",
+      "blob": "0674735f6d44d2b73b61f9b976ccd578842df14a",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/hover-continuity.log.gz",
+      "blob": "50c80dbd9be750162895723af6d6aa9e83741d5d",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/hover-initial-cli-usage.log.gz",
+      "blob": "cceffb1dea781e6c01c09fa80977e641607eca10",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/independent-probes.json",
+      "blob": "9ee56f6e73dfb47eb2aebd152d931bb810250c42",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/independent-review.json",
+      "blob": "9272e228842b0348a348fac36621459eecab295b",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/independent-review.md",
+      "blob": "c9d9816cd6467e6f8a8a0065e94d0d8806f4649a",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/log-inventory.json",
+      "blob": "568b71a7980a4d6ce5ac66af48e84c219b8bffca",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/pc01-continue-writer-probe.log.gz",
+      "blob": "5650de2ca2e080ec3dbba0bc3f3e568cecacb56b",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/pc01-continue-writer-probe.lua.gz",
+      "blob": "e0e73330723599e9346b0665ddc341cb06e57128",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles-initial-theme-mismatch.log.gz",
+      "blob": "bd97c4803c219e0f0b3e1715709149c9019eac43",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles.json",
+      "blob": "743214a5082bfbfbe65df23e6207a211afa81656",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles.log.gz",
+      "blob": "50c99fd5a38e3d068d6ca24cbef15de3499c8fc5",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles.mjs",
+      "blob": "d37f39811474c88406ac55d823910b3b96d14e12",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/red-title.log.gz",
+      "blob": "a26ef31e5d58e84be2b42c020c47ab7e81b26cb3",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/source-bytes.json.gz",
+      "blob": "e8e4ee8ba2fda47d862b40967723e0fa5862a86e",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/targeted-host.log.gz",
+      "blob": "88a01c32db4fc6ade8d1bb1b0762cf6663e4ca20",
+      "coverage": "source/current evidence archive read and classified; three executable .mjs reviewed explicitly"
+    },
+    {
+      "path": "docs/legal/assets.json",
+      "blob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "scripts/build-ui.mjs",
+      "blob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "scripts/lowcost-art.mjs",
+      "blob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "scripts/official-portraits.mjs",
+      "blob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "scripts/potion-art.mjs",
+      "blob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "scripts/v25-menu-layout.mjs",
+      "blob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "blob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "blob": "53a0fa60abbffce415dfab781384094879241c93",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "blob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "blob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "blob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "blob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "blob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "src/lua/abyss_shop_ui.lua",
+      "blob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/helpers/potion-art-runtime.lua",
+      "blob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/helpers/relic-fallback-runtime.lua",
+      "blob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/helpers/reward-alias-runtime.lua",
+      "blob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/helpers/reward-art-runtime.lua",
+      "blob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/helpers/reward-pool-retirement-runtime.lua",
+      "blob": "617da012ba50c6b5eaa875538aac06baf7cf5fbe",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/lowcost-art.test.mjs",
+      "blob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/lua/player_ground_shadow.lua",
+      "blob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/menu-red-background.cases.mjs",
+      "blob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/player-ground-shadow.test.mjs",
+      "blob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/potion-art-runtime.test.mjs",
+      "blob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/potion-art.test.mjs",
+      "blob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "coverage": "individual review above"
+    },
+    {
+      "path": "tests/reward-pool-retirement-runtime.test.mjs",
+      "blob": "123929273b864971f5f48799c5af8cc892cdd59b",
+      "coverage": "individual review above"
+    }
+  ],
+  "sourceEquivalence": {
+    "PC18": "9fc7e700fdf5df415db62d2fa6c9d3050d92e0a5",
+    "PC21": "bb4771f4cb1d26365ec57b3decffef5cad6e358d",
+    "PC01": "6750950f23f5b437388072977256ee8389489c96",
+    "inheritedMappedPaths": 29,
+    "exactSourceBlobs": 28,
+    "onlyDifferentInheritedPath": "src/lua/abyss_battle_reward_layout.lua",
+    "sourceThreeProductPathOverlap": [],
+    "helpersSource": "23bed75c642f8f4af5c2783526a5afc4a57f471f",
+    "helpersVerbatim": true,
+    "helpersLfSha256": "b9ffd09971084d4a3b417e357948e5c031193e20c9b50ba6f0b387b7ab413d4e",
+    "reversingOnlyHelpersAndOneCallEqualsC41": true,
+    "noRootSharedLayout": true,
+    "retirementChangedPaths": [
+      "src/lua/abyss_battle_reward_layout.lua",
+      "tests/helpers/reward-pool-retirement-runtime.lua",
+      "tests/reward-pool-retirement-runtime.test.mjs"
+    ]
+  },
+  "independentExecution": {
+    "engine": "Node v24.18.0 + existing physical Fengari",
+    "artifactDirectory": "combined-independent",
+    "cases": [
+      {
+        "variant": "before",
+        "mode": "missing",
+        "status": 1,
+        "error": "",
+        "stdout": "OBSERVATION variant=before mode=missing fallback=true oldPool=true oldPoolStillOwned=true\n",
+        "stderr": "...ts/release-pc-qa-20261115/combined-independent/probe.lua:49: live old glyph remains visible over fallback after lookup loss\nstack traceback:\n\t[JS]: in function 'assert'\n\t...ts/release-pc-qa-20261115/combined-independent/probe.lua:49: in main chunk\n\t[JS]: in function 'dofile'\n\t(command line):1: in main chunk\n"
+      },
+      {
+        "variant": "before",
+        "mode": "throw",
+        "status": 1,
+        "error": "",
+        "stdout": "OBSERVATION variant=before mode=throw fallback=true oldPool=true oldPoolStillOwned=true\n",
+        "stderr": "...ts/release-pc-qa-20261115/combined-independent/probe.lua:49: live old glyph remains visible over fallback after lookup loss\nstack traceback:\n\t[JS]: in function 'assert'\n\t...ts/release-pc-qa-20261115/combined-independent/probe.lua:49: in main chunk\n\t[JS]: in function 'dofile'\n\t(command line):1: in main chunk\n"
+      },
+      {
+        "variant": "before",
+        "mode": "foreignLookup",
+        "status": 1,
+        "error": "",
+        "stdout": "OBSERVATION variant=before mode=foreignLookup fallback=true oldPool=false oldPoolStillOwned=false\nFOREIGN_LOOKUP_WRITES 2\n",
+        "stderr": "...ts/release-pc-qa-20261115/combined-independent/probe.lua:48: foreign current lookup must not receive writes\nstack traceback:\n\t[JS]: in function 'assert'\n\t...ts/release-pc-qa-20261115/combined-independent/probe.lua:48: in main chunk\n\t[JS]: in function 'dofile'\n\t(command line):1: in main chunk\n"
+      },
+      {
+        "variant": "current",
+        "mode": "missing",
+        "status": 0,
+        "error": "",
+        "stdout": "OBSERVATION variant=current mode=missing fallback=true oldPool=false oldPoolStillOwned=true\nLOOKUP_LOSS_RETIREMENT_PASS\n",
+        "stderr": ""
+      },
+      {
+        "variant": "current",
+        "mode": "throw",
+        "status": 0,
+        "error": "",
+        "stdout": "OBSERVATION variant=current mode=throw fallback=true oldPool=false oldPoolStillOwned=true\nLOOKUP_LOSS_RETIREMENT_PASS\n",
+        "stderr": ""
+      },
+      {
+        "variant": "current",
+        "mode": "foreignLookup",
+        "status": 1,
+        "error": "",
+        "stdout": "OBSERVATION variant=current mode=foreignLookup fallback=true oldPool=false oldPoolStillOwned=false\nFOREIGN_LOOKUP_WRITES 2\n",
+        "stderr": "...ts/release-pc-qa-20261115/combined-independent/probe.lua:48: foreign current lookup must not receive writes\nstack traceback:\n\t[JS]: in function 'assert'\n\t...ts/release-pc-qa-20261115/combined-independent/probe.lua:48: in main chunk\n\t[JS]: in function 'dofile'\n\t(command line):1: in main chunk\n"
+      }
+    ],
+    "negativeControlConclusion": "Exact c41 production missing/throw each RED with fallback=true oldPool=true; exactdf5 missing/throw each GREEN with fallback=true oldPool=false. Real production Reward/Art; synthetic Theme/identity/native handles, no official pixels/Host/device claim.",
+    "initialAttempt": "Wrong root node_modules path caused6 MODULE_NOT_FOUND results, retained result-initial-dependency-path-error.json; not behavioral RED.",
+    "archiveHashVerification": {
+      "compressedFiles": 72,
+      "runs": 24,
+      "physicalInputs": 5320,
+      "physicalDependencies": 684,
+      "physicalTools": 1,
+      "totalPhysicalFiles": 6005,
+      "productPathsStillEqualHead": true
+    },
+    "license": {
+      "command": "node scripts/check-license.mjs",
+      "status": 0,
+      "artifact": "combined-independent/license-current.log",
+      "limits": "Original inventory unchanged; existing GPL/IP/unknown risks open, no commercial clearance"
+    },
+    "archiveVerifiers": [
+      "shadow ARCHIVE_PASS",
+      "combination ARCHIVE_HASH_PASS_ONLY"
+    ]
+  },
+  "inspectedCurrentEvidence": {
+    "icons": "5/5 after retirement; alias139 and fallback25 real Host included",
+    "shadow": "2/2 before retirement; all shadow production blobs unchanged bydf5",
+    "menu": "6/6 + hover +41 four-state/result assertions +3profiles generated full trees; no dynamic Continue-accent proof",
+    "retirement": "Final two fresh VMs36 each,2/2,37.753/41.862s; peer sixteen-shape snapshots/fullRun-data-RNG equality read in actual helper and input-bound archive",
+    "engineering": "351modules,6169measurements,1993edges,no new diagnostics,6historicalwarnings",
+    "daily": "0errors+5growthwarnings; offline control/json/Lua counts only",
+    "preview": "16total,10PASS/5FAIL/1optionalSKIP; frozen source contracts not green",
+    "timeouts": "Prior singleVM72-case60stimeouts retained. No wholeHost stress/performance pass claimed."
+  },
+  "inheritedBoundaries": [
+    {
+      "id": "FOREIGN_CURRENT_LOOKUP_SYNTHETIC_ONLY",
+      "status": "NOT_A_CONFIRMED_NEW_REGRESSION",
+      "fact": "Manually reparent pool but leave old owner children index unchanged: exactbefore/current Art both write foreign pool SetVisible twice. New caller helper itself guards cached old handles; unchanged Art current lookup is broader inherited boundary.",
+      "reachabilityAudit": "Bounded read: game_ui_fixture Control.GetChild returns children index; recycle reuses item under same grid or destroys/recreates under same grid. Reward pools are fixed authored sibling owners; no production reward-pool reparent path or natural existing recycle reproduction found. This artificial inconsistent parent/index setup is not official reachable evidence.",
+      "testClaimLimit": "New foreign-owner case proves cached OLD pool transferred to foreign owner while CURRENT lookup returns another valid pool; it does not prove all current foreign lookup cases are write-free.",
+      "action": "Keep probe/evidence and limitation; do not expand shared Art in this frozen slice absent real reachable failure."
+    },
+    {
+      "id": "CONTINUE_DYNAMIC_ACCENT",
+      "status": "EXISTING_UNCHANGED",
+      "fact": "Existing Continue dynamic menuAccent phase did not advance in original independent source probe (startAlpha255/resumeAlpha0/staticHover true). This slice did not introduce/fix it;41 assertions cannot be described as Continue animation acceptance."
+    }
+  ],
+  "safetyAndScope": {
+    "LICENSEUnchanged": true,
+    "licenseCheckerUnchanged": true,
+    "luacheckOnlyThreeRelocatedWarnings": true,
+    "defaultFlagsPreserved": true,
+    "noNewInputSurface": true,
+    "noCoreRunOrBalanceChanges": true,
+    "noBacklogChange": true,
+    "noSourceCiAdapterChange": true,
+    "noOtherPc20IdleHealthPainter": true,
+    "noPrivateImagesAccessed": true,
+    "noGuiOrMcp": true,
+    "noCandidateOrExternalMutation": true,
+    "task38_8": "Remains PR689/unmerged673 ownership, not claimed or Done",
+    "future689": "Whichever lands first requires new-baseline single-binding integration; +28 root-shared count cannot certify per-state topology."
+  },
+  "limits": [
+    "CODE_SCOPE only, not whole PASS/merge/release permission",
+    "Source/CI remains UNVERIFIED with5frozen contract failures; HostedFull not run; other agent continuation not reviewed",
+    "Official candidate write/readback, import, newready,PC/mobile checks not performed",
+    "Official20MBlevel/3MBserver,static/dynamic/RCcapacity not verified;32/55pool containers are not IDs/recipes/capacity",
+    "149 public relicIDs=120recipe-backed+29native;121 registry recipes preserve Act3 full-source;42potions=33current+9full-source; original88relic/enemy42 retained",
+    "Private reference pixels not accessed; JSON geometry/source hashes do not certify visual fidelity or readability",
+    "6005physical hash checks/72archive integrity checks do not rerun product tests; prior67/10source test results not rebranded current combination results",
+    "No new all-surface/wholeHost stress performance evidence; old timeout must remain visible"
+  ]
+}

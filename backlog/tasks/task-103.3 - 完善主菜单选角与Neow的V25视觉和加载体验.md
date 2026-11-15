@@ -5,12 +5,14 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-15 16:58'
 labels:
   - 待验
   - delivery-verify
 milestone: m-8
 dependencies: []
+references:
+  - docs/evidence/release-pc-item-title-shadow-20261116/README.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 171000
@@ -27,6 +29,8 @@ ordinal: 171000
 - [ ] #1 三页对照批准V25完成真实画面与交互黑盒评审，差异和未验项有证据
 - [ ] #2 复用官方素材现有组件和生命周期，保留同源性能基线及回归证据
 - [ ] #3 同候选贯通菜单到选角祝福地图战斗，交付可试玩入口和独立审查PR
+- [ ] #4 #676 旧任务 TASK-103.3 AC4：同候选PC选角的半透明信息区应仅覆盖批准HUD位置、不误蒙角色及背景；截图06与用户00:02:45/30:52不直接证明蒙层实现根因，必须做原版/批准稿位置对照。
+- [ ] #5 #676 旧任务 TASK-103.3 AC5：主菜单标题、开始及退出按钮与最新批准方案一致：核对旧#650“移除标题”与本轮00:12用户要求“主标题去哪了”的明确冲突，不能自动恢复旧稿；最终决策及真实画面保存。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -77,4 +81,6 @@ R7最终复验：SDK28项、实际浏览器HP21+Lament9项通过，20次暖选�
 2026-11-13最新用户决定覆盖旧选角稿：使用初代PC选角构图、共享旗帜token及同一battleApprovedIdle半身；初始牌组复用正式DeckUI，删除旧12槽writer。祝福选项按固定原作参照，人物仍按批准guide SVG修复兜帽遮挡与HUD金缝。显式page readiness防隐藏selection/menuScene阻挡当前卡组；独审及定向证据见本轮evidence，最终集成与实机未完成。
 
 最终组合祝福6帧、选角/共享初始牌组5帧均完成实际SDK渲染和独审；兜帽暗面按批准稿对照99.34%，旧身体遮挡负控62.66%，顶部旧金色缝已消除。CI修复后新closure b1271f18与原52b6582b的25生成物及全部3份完整SDK输入逐字节相同，保留原截图身份，见两目录ci-storage-runtime-equivalence.json。官方编译受本机脚本签名策略阻断，未更改策略，设备验收保持未完成。
+
+PC01原product8ee已基Release36组合至df5ad3dc，三产品路径逐blob保持：源title JSON、五theme字段与标题/双按钮。组合menu6/6+hover/结果四态41+default/official/V25配对Host及限定独审通过；Continue动态line既有P2未修，不泛称动画PASS。选角PC04/Neow及最终画面仍未验，源合同5FAIL接续中，正式容量/ready/PC手机AC不勾。
 <!-- SECTION:NOTES:END -->

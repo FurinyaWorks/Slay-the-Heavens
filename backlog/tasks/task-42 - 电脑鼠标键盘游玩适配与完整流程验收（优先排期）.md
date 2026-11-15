@@ -1,11 +1,11 @@
 ---
 id: TASK-42
 title: 在电脑上用鼠标和键盘完整玩一遍
-status: To Do
+status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 12:23'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 17:02'
 labels:
   - awaiting-live
 milestone: m-8
@@ -18,6 +18,9 @@ references:
   - docs/backlog-details/TASK-42.md
   - docs/DELIVERY-CLOSEOUT.md
   - docs/BACKLOG-AUDIT-20261026.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/684'
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/690'
+  - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
 priority: medium
 type: feature
 ordinal: 40000
@@ -37,7 +40,18 @@ ordinal: 40000
 - [ ] #4 保存电脑实测结果，有限制或没做好的地方写清楚。
 - [ ] #5 同一候选实测跨战斗首次点牌、旧触点、药水、奖励、弹窗和取消退出的真实事件派发；已完成本地手势切片不能代替电脑验收。
 - [ ] #6 同一候选两职业覆盖两幕、换幕、胜败与重开，保存真实设备证据及通关耗时；预览不能替代。
+- [ ] #7 PC01–PC38逐项对应实现、PR、提交、回归与当前正式候选设备验收，未验、待判、延期分别记录。
+- [ ] #8 #676 拟议 TASK-16.1.6 AC1：按真实分裂触发生成两个可分别辨识的敌人实体；视觉位置/生命值/意图/点击命中区对应各自实体，无重叠和不可选目标。
+- [ ] #9 #676 拟议 TASK-16.1.6 AC2：同场已有敌人时、第一/最后一列、不同可用宽度及反复遭遇下布局稳定，无遮挡重要战斗HUD。
+- [ ] #10 #676 拟议 TASK-16.1.6 AC3：核心分裂数量、HP、RNG/行动顺序和死亡奖励规则不改；用真实Lua/Host复现并保留旧错误RED和新行为GREEN。
+- [ ] #11 #676 拟议 TASK-16.1.6 AC4：复核 #672 的 slime-split-positions 回归与实际正式GIL布局；同候选PC和相关手机实测未完成前不得标记Done。
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+2026-11-16 Release继续按38条原文收口：既有P0选择性修复PR684、新PC11/38 PR690及独立PC18/21/01组合逐项关联。只使用Release基线，不复制develop未来功能；保留并行PR685–689已有归属，重叠按真实来源最小复用，统一source/CI/正式候选各自核验。
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
@@ -55,4 +69,6 @@ ordinal: 40000
 2026-11-03 赛后调整：m-5 → M7（产品体验与核心特色）；保留状态和未验 AC；旧截止日期 '2026-10-28' 已移除，不设新期限。
 
 2026-11-14第二轮逐项核对，保留To Do：本项要求同一当前候选的完整PC鼠标键盘操作矩阵，未找到本项已执行的设备记录；源码输入支持不等于该整轮实测已经开始。
+
+已实际提交PR684@ae5194a7（初读Quality43734648153 queued、其余in_progress）与PR690@11ec36bf（首次Quality43735642603/Quick43735642541/Licenses43735642720 queued），均目标release/v2.0.0；只初读不轮询，不标CI完成/不调用Develop merge:auto。完整38台账现据690接续至本分支，软件/设备缺口分别保留。PC18+21+01组合df5/证据2cb产品独审有界通过，原29路径28等源、唯一689退休helper补丁；当前source/CI5FAIL与新回归约80s成本重排尚待，正式候选仍无GIL/ready/容量/PC手机结果，任务不Done。
 <!-- SECTION:NOTES:END -->

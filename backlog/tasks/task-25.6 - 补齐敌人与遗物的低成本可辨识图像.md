@@ -5,10 +5,12 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 02:48'
-updated_date: '2026-11-14 05:36'
+updated_date: '2026-11-15 16:58'
 labels: []
 milestone: m-8
 dependencies: []
+references:
+  - docs/evidence/release-pc-item-title-shadow-20261116/README.md
 parent_task_id: TASK-25
 priority: medium
 type: bug
@@ -33,6 +35,8 @@ Owner反馈最新候选仍有敌人缺图、遗物同箱占位，要求先有可
 
 <!-- SECTION:PLAN:BEGIN -->
 1.核对最新PR与42敌人、153遗物映射并保存缺图清单。2.为缺项制作有界原生简图，复用现有图标/Actor宿主，不开启旧600图元池。3.生成图集与真实Lua接线、缓存及清理证据。4.离线前后资源测量、相关回归和独审，官方设备未测保留。
+
+2026-11-16 Release完整物品图标按既有c931/034/bca组合，不新绘素材或改变敌人原注册；公共集合和native-only映射独立审计，新增退休句柄保护只复用PR689两helper。source/CI、官方映射可读性和容量分别验，不把生成控件计数当MB。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -49,4 +53,6 @@ Owner已审阅并批准简图，完整88/42覆盖与生产接线证据齐，AC2�
 PR654已完成推送/创建，明确ci:full、Depends-on:none及精确独审；GitHub首个impact作业持续QUEUED，原merge:auto仍明确拒绝Full CI routing is not ready，尚未获得auto-merge-requested，不可报告已入自动合并队列。无新源码失败或审批缺失，不绕过入口。接续命令：在 .worktrees/lowcost-missing-art 运行 npm run merge:auto -- 654 .artifacts/lowcost-art/independent-review.json；若BASE变化须先重新独审，不沿用旧记录。保持In Progress及工作树/证据。
 
 当前单主角版集成接续：原PR654完整纳入integration-next，保留42敌人/88遗物源图、原精绘及许可；组合功能与共享页面定向验证通过。仅集成，不将离线/旧图当官方手机或发布验收。
+
+PC18组合df5ad3dc及2cb证据，配方42药水=33比赛+9full-source；121遗物recipe=120当前公开来源+1Act3保留，149公开ID=120recipe+29不同native，原88relic/42enemy完整。组合icons5/5含139alias/boundary与25fallback、独审限定代码scope通过；缺失/查找异常旧pool退休72用例覆盖两行/四态/owner/destroy/完整Run-data-RNG。未经官方候选/容量/PC实体手机，源/CI5FAIL正在严格接续，不改旧档案/预算、不Done。
 <!-- SECTION:NOTES:END -->

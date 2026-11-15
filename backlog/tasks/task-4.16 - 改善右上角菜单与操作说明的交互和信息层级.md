@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 17:02'
 labels:
   - playtest-20261030
   - p1
@@ -19,6 +19,7 @@ references:
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/backlog-details/TASK-4.16-map-menu-return-20261101.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/690'
 parent_task_id: TASK-4
 priority: medium
 type: enhancement
@@ -36,6 +37,7 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 - [ ] #2 未启程地图入口不误导玩家；已可用时正常进入。
 - [ ] #3 操作说明层次清楚、能快速找到出牌/取消/详情/药水/地图等信息；基础资源含义易获知。
 - [x] #4 QA-R2-06本地真实Host回归：地图模式隐藏并拒绝查看同一地图；战斗或节点的只读路线预览一次返回即恢复原页面，无残留菜单，旧触点与手柄取消不穿透。
+- [ ] #5 #676 旧任务 TASK-4.16 AC5：核对顶栏地图与设置菜单重复地图入口、右上角齿轮样式、返回/关闭后的菜单层级；只保留符合当前状态的单一清晰导航，任何取消/返回都不覆盖原运行状态；按当前原版参照与最终设备复核。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -62,4 +64,6 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已有1/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+PC11去重/退出说明已在Release PR690@11ec36bf，默认回退/四态几何/旧输入/手柄焦点软件通过；PC06样式与资源说明仍未验。本组不重复实现导航，旧AC3说明页部分被最新PC38移除要求覆盖，历史AC保留未勾，其余有效资源含义/设备要求不变。
 <!-- SECTION:NOTES:END -->

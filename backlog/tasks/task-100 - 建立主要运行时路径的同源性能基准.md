@@ -5,12 +5,14 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:12'
+updated_date: '2026-11-15 17:02'
 labels:
   - 待验
   - delivery-verify
 milestone: m-8
 dependencies: []
+references:
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/688'
 documentation:
   - docs/backlog-details/M7-SCOPE-GAP-20261105.md
   - docs/backlog-details/TASK-100.md
@@ -31,6 +33,7 @@ ordinal: 163000
 - [ ] #1 同一源码、输入及种子下覆盖冷暖启动、战斗回合、地图菜单奖励切换，记录模块加载、原生写入、快照、内存和总耗时
 - [ ] #2 至少三组可复现配对样本报告P50/P95与调用次数，原静止300帧重复提交有绝对计数；整体路径无未解释回退
 - [ ] #3 优化以行为等价、独立审查和实际合后Full验收；无官方候选设备证据保持UNVERIFIED并明确交接TASK-4.21
+- [ ] #4 #676 拟议 TASK-42.1 AC4：对战斗重载、持续内存/控件增长、资源释放及其他应用干扰进行单因素取证；区分系统卡顿、游戏卡顿和真正进程崩溃，未证实不得定性。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -63,4 +66,6 @@ PR #523 首份离线Host全路径基线已实现：固定实际seed、源摘要�
 2026-11-14逐项对账：同源Host基准、visibility样本及原SDK结果均已交付，复用现有工具；未覆盖当前生产候选完整冷暖路径的测量继续保留，不把旧样本当当前，也不重造基准工具。
 
 2026-11-14第二轮状态纠正：已有Host基准、visibility配对与SDK阶段记录，当前候选完整覆盖待补；工具及研究已开展，不应标To Do。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+新实际Release draft PR688@61bdf6c069f8e30e6aa3ff44d3ecddd25c159ee2由TASK-4.21跟踪同b56/be41坐标剪枝，预热90+300帧计数900→0；不代表PC20卡顿/疑似闪退根因已证实。私有e046条件不同记录2700→0与VM不利P50/P95继续保留，不再新提同补丁PR、不把代码计数或CI当PC性能实测。PC20仍待同条件系统负载/进程、同候选PC及受影响手机结果。
 <!-- SECTION:NOTES:END -->
