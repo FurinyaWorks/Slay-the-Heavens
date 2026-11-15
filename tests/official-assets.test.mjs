@@ -105,7 +105,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  const current=new Map([...paths(layout),...paths(template)]);
  const retiredDeckPrefix='/SlayTheAbyss/characterPanel/deckView/';
  const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
- const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[3-9]|10)(?:\/|$)/.test(path);
+ const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[4-9]|10)(?:\/|$)/.test(path);
  const retiredDeck=child(child(layout,'characterPanel'),'deckView');
  assert.equal(retiredDeck.visible,false);assert.deepEqual(retiredDeck.children,[],
   'selection must use the shared deck browser instead of keeping twelve independent card slots');
@@ -205,10 +205,10 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.deepEqual(node,merchant.get(path),path+' shared merchant projection');continue;
    }
    for(const key of Object.keys(before)){
-    const choiceSlot=/^\/SlayTheAbyss\/choicePanel\/card([12])$/.exec(path);
+    const choiceSlot=/^\/SlayTheAbyss\/choicePanel\/card([123])$/.exec(path);
     if(choiceSlot&&key==='position'){
      const page=theme.layout.combatChoice,index=Number(choiceSlot[1])-1;
-     assert.deepEqual(node.position,[page.origin[0]+index%page.columns*page.step[0],page.origin[1]+Math.floor(index/page.columns)*page.step[1]],path+' two-card page position');continue;
+     assert.deepEqual(node.position,[page.origin[0]+index%page.columns*page.step[0],page.origin[1]+Math.floor(index/page.columns)*page.step[1]],path+' three-card page position');continue;
     }
     if(key==='scale'&&/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)$/.test(path)){
      assert.deepEqual(node.scale,[1,1],path+' battle slot states already own their scale');continue;
@@ -227,10 +227,10 @@ test('approved pages keep live input identities while unrelated pages retain the
  const retiredChoiceCards=nodes.filter(([path,node])=>retiredChoice(path)&&cardHosts.has(node)).map(([,node])=>node);
  assert.equal(retiredDeckCards.length,12,'the duplicated twelve-card selection modal is retired');
  assert.equal(retiredPickerCards.length,3,'only picker faces four through six are retired');
- assert.equal(retiredChoiceCards.length,8,'only choice faces three through ten are retired');
+ assert.equal(retiredChoiceCards.length,7,'only choice faces four through ten are retired');
  const retiredCards=[...retiredDeckCards,...retiredPickerCards,...retiredChoiceCards];
  assert.equal(result.cardHosts,cardHosts.size-retiredPickerCards.length-retiredChoiceCards.length,'composition authenticates all capacity-bounded hosts before retiring the duplicate modal');
- assert.equal(cards.length,cardHosts.size-retiredCards.length);assert.equal(cards.length,38);assert(result.removedControls>500);
+ assert.equal(cards.length,cardHosts.size-retiredCards.length);assert.equal(cards.length,39);assert(result.removedControls>500);
  for(const face of cardHosts)assert.equal(cards.includes(face),!retiredCards.includes(face),'retain every active original card host');
  assertOfficialRunContracts([layout,template]);
  for(const card of cards){

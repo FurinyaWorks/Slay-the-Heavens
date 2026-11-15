@@ -78,7 +78,7 @@ export function exitControls(theme = nativeTheme) {
       button('help', menu.help, '操作说明'),
       // 未启程时整颗隐藏，不留灰色空头承诺；启程后出现并可进入。
       button('map', menu.map, '查看地图'),
-      { ...button('mainMenu', menu.mainMenu, '返回主菜单'), visible: false },
+      { ...button('mainMenu', menu.mainMenu, '返回标题'), visible: false },
       plate('rule', menu.rule, c.goldDim),
       button('abandon', menu.abandon, '放弃本局'),
       { ...button('quit', menu.quit, '退出游戏'), visible: false },

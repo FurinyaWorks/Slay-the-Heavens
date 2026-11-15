@@ -129,8 +129,17 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             or kind=="discard" and "选择 "..limit().." 张手牌弃置。" or "选择 1 张手牌。"
         child("hint").text=hint.." 已选 "..#view.selected..(kind=='potion'and ' 种。'or " 张。")
         child("status").text=view.error and "选择未提交，请重新确认。" or ""
+        local pages=math.ceil(#view.cards/PAGE_SIZE)
+        child('pageHint').text=tostring(view.page)..' / '..pages
+        child('pageHint'):SetVisible(pages>1)
+        local layout=Theme.layout.combatChoice
+        local remaining=math.min(PAGE_SIZE,#view.cards-(view.page-1)*PAGE_SIZE)
         for slot=1,PAGE_SIZE do
             local box=child("card"..slot)
+            local row=math.floor((slot-1)/layout.columns)
+            local count=math.min(layout.columns,remaining-row*layout.columns)
+            box:SetAnchoredPosition(((slot-1)%layout.columns-(count-1)/2)*layout.step[1],
+                layout.origin[2]+row*layout.step[2])
             local card=view.cards[(view.page-1)*PAGE_SIZE+slot]
             box:SetVisible(card~=nil)
             local hit=box:GetChild("hit");hit.interactable=card~=nil and not view.confirming;hit.raycastTarget=hit.interactable

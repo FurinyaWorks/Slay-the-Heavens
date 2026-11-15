@@ -129,6 +129,7 @@ export function experimentalCharacterControls(theme = nativeTheme) {
         return control;
       }),
       text('status', q.status, '', f.label, c.textDim),
+      text('pageHint', [440, q.title[1], 120, 32], '', f.small, c.textDim),
       button('before', q.before, '上一页', q), button('after', q.after, '下一页', q),
       button('confirm', q.confirm, '确认', q),
     ]),

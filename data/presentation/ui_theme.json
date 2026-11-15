@@ -14,7 +14,7 @@
     "quit": [-450,-234,280,56]
   },
   "officialAssets": {
-    "choicePage": {"columns": 2, "rows": 1, "origin": [-108, 0]},
+    "choicePage": {"columns": 3, "rows": 1, "origin": [-216, 0]},
     "pickerPage": {"columns":[-246,0,246]},
     "neowGuide": {
       "scale":0.945,"origin":[739,61.5],
@@ -533,7 +533,7 @@
   },
   "icon": {
     "eventArt": {
-      "default":111049,"big_fish":111027,"lab":111046,"woman_in_blue":111048,
+      "default":111049,"goop":105077,"big_fish":111027,"lab":111046,"woman_in_blue":111048,
       "we_meet_again":111050,"the_library":111053,"cursed_tome":111055,
       "mushrooms":111003,"upgrade_shrine":111065,"accursed_blacksmith":111065,
       "dead_adventurer":111065,"golden_idol":111064,"golden_shrine":111064,

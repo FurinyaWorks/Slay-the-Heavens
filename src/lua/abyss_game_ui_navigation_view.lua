@@ -32,7 +32,7 @@ local function compact(menu,routeEnabled,mainEnabled)
     local R=Theme.layout.runMenu
     local step=R.help[2]-R.map[2]
     local upperGap=(routeEnabled and 0 or step)+(mainEnabled and 0 or step)
-    local gap=upperGap+(mainEnabled and 0 or step)
+    local gap=upperGap+step
     local function at(name,spec,dy)menu:GetChild(name):SetAnchoredPosition(spec[1],spec[2]+dy)end
     at('rule',R.rule,upperGap);at('abandon',R.abandon,upperGap);at('dismissHint',R.dismissHint,gap)
     at('mainMenu',R.mainMenu,routeEnabled and 0 or step)
@@ -48,7 +48,9 @@ function M.runMenu(self,menu,routeEnabled)
     local hasRun=Navigation.hasRun(self)
     local mainEnabled=hasRun and not self.sessionPaused
     menu:GetChild('mainMenu'):SetVisible(mainEnabled)
-    menu:GetChild('quit'):SetVisible(mainEnabled)
+    -- Leaving the platform belongs to the title; returning there preserves
+    -- this session and exposes its explicit loss warning before exit.
+    menu:GetChild('quit'):SetVisible(false)
     for _,state in ipairs({'normal','hover','pressed','disabled'})do
         menu:GetChild('abandon'):GetChild('hit'):GetChild(state):GetChild('label').text=hasRun and '放弃本局' or '退出游戏'
     end

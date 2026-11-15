@@ -15,13 +15,13 @@ const parts=n=>n.controls??n.children??[];
 const all=n=>[n,...parts(n).flatMap(all)];
 const cards=theme=>experimentalCharacterControls(theme).find(n=>n.name==='choicePanel').children.filter(n=>/^card\d+$/.test(n.name));
 
-test('official choice profile keeps two unchanged faces while default retains ten and Match retains twelve',()=>{
+test('official choice profile keeps three unchanged faces while default retains ten and Match retains twelve',()=>{
  const snapshot=structuredClone(nativeTheme),official=officialAssetsTheme(nativeTheme);
  assert.equal(cards(nativeTheme).length,10);
- assert.equal(cards(official).length,2);
- assert.deepEqual(cards(official).map(n=>n.position),[[-108,0],[108,0]]);
+ assert.equal(cards(official).length,3);
+ assert.deepEqual(cards(official).map(n=>n.position),[[-216,0],[0,0],[216,0]]);
  const legacy=structuredClone(official);legacy.layout.combatChoice=structuredClone(nativeTheme.layout.combatChoice);
- for(let i=0;i<2;i++){
+ for(let i=0;i<3;i++){
   assert.deepEqual(cards(official)[i].size,cards(legacy)[i].size);
   assert.deepEqual(cards(official)[i].children,cards(legacy)[i].children,'only host count/position may change');
  }
@@ -30,13 +30,13 @@ test('official choice profile keeps two unchanged faces while default retains te
  assert.deepEqual(nativeTheme,snapshot);
 });
 
-test('generated official two-face choice pages ten real discard candidates with ordered commit and stale guards',t=>{
+test('generated official three-face choice pages ten real discard candidates with ordered commit and stale guards',t=>{
  const root=resolve('.artifacts/test-tmp');mkdirSync(root,{recursive:true});
  const dir=mkdtempSync(join(root,'official-choice-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  buildLuaData('data',join(dir,'abyss_data.lua'));
  buildUI(dir,undefined,{officialAssets:true,nativePageLifecycle:true});
  const layout=JSON.parse(readFileSync(join(dir,'game-ui.json'),'utf8'));
- assert.equal(parts(all(layout).find(n=>n.name==='choicePanel')).filter(n=>/^card\d+$/.test(n.name)).length,2);
+ assert.equal(parts(all(layout).find(n=>n.name==='choicePanel')).filter(n=>/^card\d+$/.test(n.name)).length,3);
  const picker=all(layout).find(n=>n.name==='pickerView');
  const slots=parts(picker).filter(n=>/^card\d+$/.test(n.name));
  assert.equal(slots.length,6,'six semantic parents remain for camp and Match');

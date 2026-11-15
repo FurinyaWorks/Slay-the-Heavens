@@ -4,7 +4,8 @@ local Combat=require('abyss_combat')
 local Discard=require('abyss_discard')
 local Choice=require('abyss_choice_ui')
 local Theme=require('abyss_theme')
-assert(Theme.layout.combatChoice.columns*Theme.layout.combatChoice.rows==2)
+local pageSize=Theme.layout.combatChoice.columns*Theme.layout.combatChoice.rows
+assert(pageSize==3)
 local spec
 for _,layer in ipairs(F.Layout)do for _,panel in ipairs(layer.children or {})do if panel.name=='choicePanel'then spec=panel end end end
 local function setup()
@@ -31,25 +32,27 @@ end
 local view,root,battle,run,tap,event,calls=setup()
 local candidates={};for i,card in ipairs(battle.hand)do candidates[i]=card.uid end
 assert(not tap('before')and not tap('confirm')and calls()==0)
-assert(not view:select(3),'unbuilt slot accepted')
+assert(not view:select(pageSize+1),'unbuilt slot accepted')
 local expected={}
-for page=1,5 do
+local pages=math.ceil(#candidates/pageSize)
+for page=1,pages do
  assert(view.page==page and #view.selected==#expected)
- assert(tap('card2'));expected[#expected+1]=candidates[page*2]
- if page<5 then assert(tap('card1'));expected[#expected+1]=candidates[page*2-1]end
+ if page<pages then for _,slot in ipairs({2,3,1})do
+  assert(tap('card'..slot));expected[#expected+1]=candidates[(page-1)*pageSize+slot]
+ end end
  if page==1 then event('confirm','down',9);event('confirm','up',9)end
- if page<5 then
+ if page<pages then
   assert(tap('after'));assert(event('confirm','click',9)==false and calls()==0,'old physical confirm survived paging')
  end
 end
 assert(#view.selected==9 and root:GetChild('confirm'):GetChild('hit').interactable)
 local ok,why=tap('card1');assert(not ok and why=='too_many_choices')
-assert(not tap('after'),'sixth page accepted')
-assert(tap('before')and view.page==4 and tap('after')and view.page==5)
+assert(not tap('after'),'page after last accepted')
+assert(tap('before')and view.page==pages-1 and tap('after')and view.page==pages)
 for i,uid in ipairs(expected)do assert(view.selected[i]==uid,'page return changed UID selection order')end
 assert(#battle.hand==10 and #battle.discard==0,'preview mutated Core')
 assert(tap('confirm')and calls()==1 and battle.pendingDiscard==nil)
-assert(not view.visible and #battle.hand==1 and battle.hand[1].uid==candidates[9])
+assert(not view.visible and #battle.hand==1 and battle.hand[1].uid==candidates[10])
 for i,uid in ipairs(expected)do assert(battle.discard[i].uid==uid,'real discard commit changed selection order')end
 assert(not tap('confirm')and calls()==1,'duplicate confirmation committed')
 for _,change in ipairs({'generation','candidate','pending'})do
@@ -78,7 +81,7 @@ local u,r,b,click=sourceChoice(scry,function(m,s)return m.begin(s,10)end,
  function(m,s,uids,token)return m.choose(s,uids,token)end)
 local top=b.draw[#b.draw];local size=#b.draw
 assert(#u.cards==10 and r:GetChild('confirm'):GetChild('hit').interactable,'Scry lost zero-selection confirmation')
-for page=2,5 do assert(click('after')and u.page==page)end
+for page=2,math.ceil(#u.cards/pageSize)do assert(click('after')and u.page==page)end
 assert(click('before')and click('after')and #u.selected==0)
 assert(click('confirm')and not u.visible and b.pendingScry==nil and #b.draw==size and b.draw[#b.draw]==top and #b.discard==0)
 local pile=require('abyss_pile_choice')
@@ -88,7 +91,7 @@ assert(#u.cards>10,'large pile fixture lost candidates')
 local first=u.cards[2].uid
 assert(click('card2')and click('after')and click('after')and click('after')and click('after')and click('after'))
 assert(u.page==6)
-local later=u.cards[11].uid
+local later=u.cards[(u.page-1)*pageSize+1].uid
 assert(click('card1')and click('before')and click('after'))
 assert(u.selected[1]==first and u.selected[2]==later and click('confirm')and not u.visible and b.pendingPileChoice==nil)
 assert(b.hand[#b.hand-1].uid==first and b.hand[#b.hand].uid==later,'pile retrieval lost cross-page order')
