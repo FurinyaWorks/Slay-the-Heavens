@@ -38,6 +38,13 @@ function M.install(owner, _ownership, host, dependencies)
             local label=hit:GetChild(state):GetChild('label')
             label.fontSize=mobile.footerFont;label.minimumFontSize=mobile.footerFont
         end
+        local heading=stage:GetChild('rewardStage')
+        heading:GetChild('title'):SetAnchoredPosition(R.title[1],mobile.rewardTitleY)
+        heading:GetChild('v25RewardPaper'):SetAnchoredPosition(R.title[1],mobile.rewardTitleY)
+        local subtitle=heading:GetChild('subtitle')
+        subtitle:SetAnchoredPosition(R.subtitle[1],mobile.rewardSubtitleY)
+        subtitle:SetSizeDelta(R.subtitle[3],44)
+        subtitle.fontSize=mobile.footerFont;subtitle.minimumFontSize=mobile.footerFont
     end
     local function renderStartControls(frame)
         local run = frame.run

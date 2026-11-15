@@ -82,6 +82,15 @@ for _,touch in ipairs({false,true})do
   ui:setHover(2);host:update(10)
   local half=Theme.layout.card.size[2]*card.localScaleY/2
   local skip=panel:GetChild('skip');local hit=skip
+  local heading=panel:GetChild('rewardStage')
+  local subtitle=heading:GetChild('subtitle');local title=heading:GetChild('title')
+  local paper=heading:GetChild('v25RewardPaper');near(title.y,paper.y)
+  local titleSpec=findSpec('title',findSpec('rewardStage').children)
+  assert(title.y-titleSpec.size[2]/2>subtitle.y+subtitle.sizeDeltaY/2,'reward title overlaps subtitle')
+  assert(title.y+titleSpec.size[2]/2<312,'reward title overlaps shared run HUD')
+  local disc=findSpec('costDisc',findSpec('card2',findSpec('battlePanel').children).children)
+  local top=card.y+math.max(Theme.layout.card.size[2]/2,disc.position[2]+disc.size[2]/2)*card.localScaleY
+  assert(top<subtitle.y-subtitle.sizeDeltaY/2,'reward cost disc overlaps subtitle')
   assert(card.y-half>skip.y+hit.sizeDeltaY/2,'reward card overlaps skip receiver')
   assert(Theme.layout.card.size[1]*card.localScaleX<Theme.layout.rewardPick.step,'hover reward overlaps neighbours')
   assert(skip.y-hit.sizeDeltaY/2>=-316 and hit.sizeDeltaY*points>=44)

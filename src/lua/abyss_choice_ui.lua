@@ -153,7 +153,8 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             local box=child("card"..slot)
             local row=math.floor((slot-1)/layout.columns)
             local count=math.min(layout.columns,remaining-row*layout.columns)
-            box:SetAnchoredPosition(((slot-1)%layout.columns-(count-1)/2)*(mobile and mobile.choiceStep or layout.step[1]),
+            local step=mobile and kind~='potion' and mobile.choiceStep or layout.step[1]
+            box:SetAnchoredPosition(((slot-1)%layout.columns-(count-1)/2)*step,
                 layout.origin[2]+row*layout.step[2])
             local scale=mobile and kind~='potion' and mobile.choiceScale or 1
             box:SetLocalScale(scale,scale,1)
