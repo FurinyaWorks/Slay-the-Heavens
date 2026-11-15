@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 03:47'
-updated_date: '2026-11-15 06:58'
+updated_date: '2026-11-15 13:15'
 labels:
   - 待验
   - delivery-verify
@@ -56,6 +56,8 @@ ordinal: 120000
 2026-11-09 辅助切片：在已公开#571组合上定位#564 Full暴露的三个历史来源合同慢测，仅优化可证明等价的重复计算；完整断言、鲜读owner、原预算与矩阵保持，定向前后测量和独立审查后及时发布，不重复Full或占用用户电脑。
 
 2026-11-15协助切片：从origin/develop独立feat/source-proof-cost-followup-1115，仅将relic-query来源合同的不可变expected按consume/host派生一次；先做同源有界读序与防护差分，再只跑原owner-matrix命名合同一次。全部实际fresh-reader、失败恢复、nested及same-call混读断言保持；不改生产、CI权重、并发、预算、超时，不提交或发PR。
+
+2026-11-15 用户明确接管本地非release接续：独立树.worktrees/source-proof-integration-1115、分支feat/source-proof-integration-1115，以origin/develop c2409ad750c15124b7b843c6bbfa5b222537cb75承接ef42f018f34f34e12df06364e780ad0c8fe89251（cherry-pick -x）。核对原始成本/逐字节证据，选最小现有专项合同及Backlog/diff检查，保留原矩阵与完整向量未重跑的边界；本轮独审由主控另发。保持In Progress/Furinya及未验AC，不新领、不推送、不建PR。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -113,4 +115,6 @@ PR269合后Windows日志确认两类合同错误：新快反馈工作流CRLF未�
 2026-11-15 主控收尾独审通过：/root/engineering_queue_audit:task75-pure-expected-hoist:20261115，绑定LF SHA603020d5d29e8c3d66886609f2dd7e3a142321ec63bb7465c23adf575db4a77e，unresolved=[]。原始源码/探针/named日志逐字节归档于docs/evidence/task75-source-proof-cost-20261115/raw-evidence.json.gz并有hash清单。只保全现有单点切片，不新增优化、不建PR或入发版队列，TASK75及稳定Full目标保持未完成。
 
 2026-11-15 收尾检查：原依赖junction指向空的根node_modules，Backlog检查报缺luaparse；仅保留本树junction到.artifacts/dependency-link-before-closeout，再离线npm ci恢复锁定11包，未改根目录。精确Node24.18.0执行verify:backlog及git diff --check通过；不重复named测试或Full。
+
+2026-11-15 用户明确接管的非release本地接续：独立树F:/New folder/.worktrees/source-proof-integration-1115，分支feat/source-proof-integration-1115；基线origin/develop c2409ad750c15124b7b843c6bbfa5b222537cb75，经cherry-pick -x ef42f018f34f34e12df06364e780ad0c8fe89251生成f4df9d124dfbd141bdcaeb13e33826775e9e9634，无冲突。原树只读保留，保持IP/Furinya，不新领、不改AC。已核原run43615128387整文件584077.3832ms成本与10份原始证据全部字节/hash；当前测试LF SHA603020d5d29e8c3d66886609f2dd7e3a142321ec63bb7465c23adf575db4a77e仍等同原独审版本。必要npm ci --ignore-scripts后，Node24.18.0现有来源身份/负例/当前facade专项7/7通过、0fail/0skip、27054.4309ms，Backlog/语法/diff检查通过。Fast仅规划因TASK75未建模输入要求Full，本轮按授权未执行Full、长期named、完整detached/current矩阵及其余历史向量；69条probe及原named测量只核原档不重跑，不声称新墙钟提速或稳定Full目标完成。技术证据与完整命令见docs/evidence/task75-source-proof-cost-20261115/README.md接续节。只保留原5文件，无helper摘要级联；新精确HEAD/base独审、Required CI与准入待主控，本轮仅本地提交，不推送/建PR/合并或改release。
 <!-- SECTION:NOTES:END -->
