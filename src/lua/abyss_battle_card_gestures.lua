@@ -95,15 +95,21 @@ function M.install(owner, ownership, host, dependencies)
         if g.moving then host.cardView.renderDrag() end
         return true
     end
-    local function down(event)
-        if owner.potionAim and owner.potionAim.moving and owner.potionAim.touch~=(event and event.touchId) then return true end
-        retireInterruptedPress(event)
-        ownership.pointerObserved = true
-        owner.help=nil
+    local function reclaimPointer(event)
         if owner.active and not owner.busy and not owner.gesture and event and event.touchId == ownership.releasedDragTouch then
             ownership.releasedDragTouch = nil -- a new physical sequence owns this touch again
         end
         if not owner.gesture then owner.suppressClick = false end
+    end
+    local function down(event)
+        -- The popup owns dismissal as well as Use/Discard. A lower native
+        -- callback must not close it before its own action receives this Down.
+        if owner.potionMenu then return true end
+        if owner.potionAim and owner.potionAim.moving and owner.potionAim.touch~=(event and event.touchId) then return true end
+        retireInterruptedPress(event)
+        ownership.pointerObserved = true
+        owner.help=nil
+        reclaimPointer(event)
         owner.swallow = nil
         if owner.gesture then return false end
         local closed,automaticCard=dependencies.closeInfo()
@@ -113,6 +119,7 @@ function M.install(owner, ownership, host, dependencies)
         return true
     end
     local function swallowed(event)
+        if owner.potionMenu then return true end
         local swallow = owner.swallow
         if swallow and swallow.touch == (event and event.touchId) then owner.swallow = nil return true end
         local closed,automaticCard=dependencies.closeInfo()

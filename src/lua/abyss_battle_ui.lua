@@ -315,6 +315,12 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         pointerClick=function(event)
             return not services.consumeReleasedDragClick(event) and not self.suppressClick and not self.gesture
         end,
+        pointerConsumed=function(event)
+            -- Reuse the finite release barrier after the popup command closes
+            -- its menu; a trailing click must retain this popup's origin.
+            local touch=event and event.touchId
+            ownership.releasedDragTouch=touch;self.suppressClick={touch=touch}
+        end,
         item=function(slot)return Run.potionSlotView(self.run,slot)end,
         text=function(item,battle)return potionText(item,battle,true):match("\n(.*)") or ''end,
         use=function(slot)return self:usePotion(slot)end,
