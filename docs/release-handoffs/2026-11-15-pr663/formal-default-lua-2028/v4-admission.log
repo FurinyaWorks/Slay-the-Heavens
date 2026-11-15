@@ -1,0 +1,208 @@
+b5ec29f2b7718b0d4b6564afea03144a3f14a81e
+v24.22.1
+19989127f817f2659be6a29661a916ddf04a2961f43d48a1e35367d95efd01c1  src/lua/abyss_ui.lua
+53f84adc19b77af6157aa10ee9ac96b61fbd7809e588e845523779d333c9e2c1  src/lua/abyss_character_select.lua
+fb50790452127f2bae3821d4f8cc249cf71f9c7850e97906e65626dafc2cb9d4  src/lua/abyss_original_v4_profiles.lua
+932b94763870fdff25485f90a4ef98078a74b2567762c610203e59564967bad5  build/lua/abyss_ui_layout.lua
+63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb  build/lua/abyss_original_v4_data.lua
+a42b47dc84a649ee51346d2131356ded144738aa8cb84b8cb3acec25c745c333  tests/lua/geo_public_entry.lua
+082e773f0d55812da937129302dd2b42c600d6d264a00392d16c36cf9f749597  tests/lua/competition_character_admission.lua
+WITH V4: Geo public
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+GEO_PUBLIC_ENTRY_PASS 4; controlled native entry; live device NOT_RUN
+WITH V4: development and competition contract
+ABYSS_RUN seed=1 source=explicit
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_UI ready
+COMPETITION_CHARACTER_ADMISSION_PASS 5
+WITHOUT V4: Geo public
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_TRANSITION ready elapsed=0.35
+ABYSS_PAGE_REVEAL visible page=nodePanel epoch=3
+ABYSS_TRANSITION complete elapsed=1.15
+ABYSS_TRANSITION end elapsed=1.75
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=4
+ABYSS_PAGE_REVEAL updated page=nodePanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=battlePanel epoch=7
+GEO_PUBLIC_ENTRY_PASS 4; controlled native entry; live device NOT_RUN
+WITHOUT V4: development and competition contract (expected failure)
+./src/lua/abyss_original_v4_profiles.lua:22: module 'abyss_original_v4_data' not found:
+	no field package.preload['abyss_original_v4_data']
+	no file './build/lua/abyss_original_v4_data.lua'
+	no file './src/lua/abyss_original_v4_data.lua'
+	no file '/usr/local/share/lua/5.3/abyss_original_v4_data.lua'
+	no file '/usr/local/share/lua/5.3/abyss_original_v4_data/init.lua'
+	no file '/usr/share/lua/5.3/abyss_original_v4_data.lua'
+	no file '/usr/share/lua/5.3/abyss_original_v4_data/init.lua'
+	no file './abyss_original_v4_data.lua'
+	no file './abyss_original_v4_data/init.lua'
+	no file '/usr/local/share/lua/5.3/abyss_original_v4_data.js'
+	no file '/usr/local/share/lua/5.3/loadall.js'
+	no file '/usr/share/lua/5.3/abyss_original_v4_data.js'
+	no file '/usr/share/lua/5.3/loadall.js'
+	no file './abyss_original_v4_data.js'
+stack traceback:
+	[JS]: in function 'require'
+	./src/lua/abyss_original_v4_profiles.lua:22: in function 'abyss_original_v4_profiles.prepare'
+	./src/lua/abyss_character_select.lua:34: in function 'abyss_character_select.preview'
+	./src/lua/abyss_character_select.lua:90: in method 'select'
+	tests/lua/competition_character_admission.lua:23: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
+./src/lua/abyss_original_v4_profiles.lua:22: module 'abyss_original_v4_data' not found:

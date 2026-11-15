@@ -1,0 +1,117 @@
+diff --git a/scripts/build-lua-data.mjs b/scripts/build-lua-data.mjs
+index f418dbea..5367c8e3 100644
+--- a/scripts/build-lua-data.mjs
++++ b/scripts/build-lua-data.mjs
+@@ -3,6 +3,7 @@ import { mkdirSync, realpathSync, statSync, writeFileSync, existsSync } from 'no
+ import { dirname, resolve, join, basename } from 'node:path';
+ import { pathToFileURL } from 'node:url';
+ import { contentFiles, loadContent, validateContent } from './validate-data.mjs';
++import {utf8ToLua} from './lua-utf8-literal.mjs';
+ 
+ function rejectInputOutputAlias(inputDirectory, output) {
+   let outputStat;
+@@ -58,7 +59,7 @@ export function buildLuaData(inputDirectory = 'data', output = 'build/lua/abyss_
+     if (basename(output).toLowerCase()==='abyss_original_v4_data.lua') throw new Error('Output collides with generated Original V4 module');
+     loadOriginalV4(originalDirectory);
+   }
+-  const source = `-- Generated from validated JSON. Do not edit.\nreturn ${toLua(data)}\n`;
++  const source = `-- Generated from validated JSON. Do not edit.\nreturn ${utf8ToLua(data)}\n`;
+   mkdirSync(dirname(output), { recursive: true });
+   writeFileSync(output, source, 'utf8');
+   if (original) buildOriginalV4(originalDirectory,join(dirname(output),'abyss_original_v4_data.lua'));
+diff --git a/scripts/build-original-v4.mjs b/scripts/build-original-v4.mjs
+index 8b9384aa..3dfdc882 100644
+--- a/scripts/build-original-v4.mjs
++++ b/scripts/build-original-v4.mjs
+@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
+ import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+ import { dirname, resolve } from 'node:path';
+ import { pathToFileURL } from 'node:url';
++import {utf8ToLua} from './lua-utf8-literal.mjs';
+ 
+ export const ORIGINAL_V4_HASHES = Object.freeze({
+   'cards_v4.json': '89229cdd7f6c1640d47bca95338f5e7887fbfd8720af181f7561d6eb45a45fca',
+@@ -134,7 +135,7 @@ function rejectInputOutputAlias(directory, output) {
+ export function buildOriginalV4(directory = 'data/original_v4', output = 'build/lua/abyss_original_v4_data.lua') {
+   const data = loadOriginalV4(directory);
+   rejectInputOutputAlias(directory, output);
+-  const source = `-- Generated from frozen Original V4 JSON. Do not edit.\nreturn ${originalV4ToLua(data)}\n`;
++  const source = `-- Generated from frozen Original V4 JSON. Do not edit.\nreturn ${utf8ToLua(data,{nullAsNil:true})}\n`;
+   mkdirSync(dirname(output), { recursive: true });
+   writeFileSync(output, source, 'utf8');
+   return source;
+diff --git a/scripts/build-ui-theme.mjs b/scripts/build-ui-theme.mjs
+index af957f1d..10cd9d2c 100644
+--- a/scripts/build-ui-theme.mjs
++++ b/scripts/build-ui-theme.mjs
+@@ -1,7 +1,7 @@
+ import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+ import { dirname, resolve } from 'node:path';
+ import { pathToFileURL } from 'node:url';
+-import { toLua } from './build-lua-data.mjs';
++import {utf8ToLua} from './lua-utf8-literal.mjs';
+ import { contentFiles, loadContent } from './validate-data.mjs';
+ 
+ // Id ranges of the platform picture library (image_catalog of the miliastra MCP, photographed 2026-10-13).
+@@ -99,7 +99,7 @@ export function buildUiTheme(themeFile = 'data/presentation/ui_theme.json', data
+   const { note, ...runtime } = theme;
+   runtime.icon = { ...runtime.icon, status: Object.fromEntries(
+     Object.entries(runtime.icon.status).map(([key, value]) => [key, iconId(value)])) };
+-  const source = `-- Generated from data/presentation/ui_theme.json. Do not edit.\nreturn ${toLua(convertColours(runtime))}\n`;
++  const source = `-- Generated from data/presentation/ui_theme.json. Do not edit.\nreturn ${utf8ToLua(convertColours(runtime))}\n`;
+   mkdirSync(dirname(output), { recursive: true });
+   writeFileSync(output, source, 'utf8');
+   return source;
+diff --git a/scripts/build-ui.mjs b/scripts/build-ui.mjs
+index 7ba54146..e6cb5777 100644
+--- a/scripts/build-ui.mjs
++++ b/scripts/build-ui.mjs
+@@ -12,6 +12,7 @@ import { mkdirSync, existsSync, lstatSync, readdirSync, readFileSync, realpathSy
+ import { resolve, join } from 'node:path';
+ import { fileURLToPath, pathToFileURL } from 'node:url';
+ import { toLua } from './build-lua-data.mjs';
++import {utf8ToLua} from './lua-utf8-literal.mjs';
+ import { battleLayout, enemyPowerTemplate } from './ui-layout.mjs';
+ import { gameLayout } from './game-ui-layout.mjs';
+ import { withViewport } from './viewport-layout.mjs';
+@@ -220,8 +221,8 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
+   writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),`-- Generated from the bounded native monster registry.\nreturn ${toLua(monsterArt??{})}\n`);
+   const narrative = JSON.parse(readFileSync('data/presentation/narrative.zh-CN.json', 'utf8'));
+   narrative.codeVersion = releaseNotes.build.version;
+-  writeFileSync(join(outputDirectory, 'abyss_narrative.lua'), `-- Generated from the approved narrative copy source.\nreturn ${toLua(narrative)}\n`, 'utf8');
+-  writeFileSync(join(outputDirectory, 'abyss_presentation.lua'), `-- Generated from the checked Traveler presentation.\nreturn ${toLua(cards)}\n`, 'utf8');
++  writeFileSync(join(outputDirectory, 'abyss_narrative.lua'), `-- Generated from the approved narrative copy source.\nreturn ${utf8ToLua(narrative)}\n`, 'utf8');
++  writeFileSync(join(outputDirectory, 'abyss_presentation.lua'), `-- Generated from the checked Traveler presentation.\nreturn ${utf8ToLua(cards)}\n`, 'utf8');
+   writeFileSync(join(outputDirectory, 'battle-ui.json'), JSON.stringify(battle, null, 2) + '\n', 'utf8');
+   writeFileSync(join(outputDirectory, 'game-ui.json'), JSON.stringify(layout, null, 2) + '\n', 'utf8');
+   writeFileSync(join(outputDirectory, 'abyss_ui_layout.lua'), `-- Native layout fixture generated from the import tree.\nreturn ${toLua(layout.controls)}\n`, 'utf8');
+diff --git a/scripts/lua-utf8-literal.mjs b/scripts/lua-utf8-literal.mjs
+new file mode 100644
+index 00000000..22b94ce8
+--- /dev/null
++++ b/scripts/lua-utf8-literal.mjs
+@@ -0,0 +1,24 @@
++// Lua source is UTF-8, as are the authored runtime modules. Preserve the exact
++// UTF-8 string bytes without expanding each non-ASCII byte into four ASCII bytes.
++// Quotes, backslashes and ASCII controls retain fixed-width byte escapes.
++export function utf8LuaString(value){
++ if(typeof value!=='string'||!value.isWellFormed())throw new TypeError('Lua strings require well-formed Unicode');
++ return '"'+[...value].map(character=>{
++  const code=character.codePointAt(0);
++  return code>=32&&code!==127&&code!==34&&code!==92?character:`\\${String(code).padStart(3,'0')}`;
++ }).join('')+'"';
++}
++const quotedKeys=new Set('and break do else elseif end false for function goto if in local nil not or repeat return then true until while __proto__ constructor prototype'.split(' '));
++const luaKey=key=>/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)&&!quotedKeys.has(key)?key:`[${utf8LuaString(key)}]`;
++export function utf8ToLua(value,{nullAsNil=false}={}){
++ const encode=item=>{
++  if(item===null&&nullAsNil)return 'nil';
++  if(typeof item==='string')return utf8LuaString(item);
++  if(typeof item==='boolean')return String(item);
++  if(typeof item==='number'&&Number.isFinite(item))return String(item);
++  if(Array.isArray(item))return `{${item.map(encode).join(',')}}`;
++  if(item!==null&&typeof item==='object')return `{${Object.keys(item).sort().map(key=>`${luaKey(key)}=${encode(item[key])}`).join(',')}}`;
++  throw new TypeError(`Unsupported Lua data value: ${String(item)}`);
++ };
++ return encode(value);
++}
