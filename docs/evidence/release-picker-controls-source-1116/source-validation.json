@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "product": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+  "productFreeze": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+  "sourceScope": "One exact Lua owner and the picker current CI/execution-source continuation; original frozen production and CI archives remain unchanged.",
+  "packets": {
+    "tests/helpers/release-picker-controls-source.json.gz": "8846606fcc1f08c98923d51c6a23f58820f9ee74b95c64d018584dd02a808ba4",
+    "tests/helpers/release-picker-controls-ci-source.json.gz": "550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f"
+  },
+  "productFiles": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "producer": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "expectedGitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "currentGitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e"
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "producer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "expectedGitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "currentGitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624"
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "producer": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "expectedGitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "currentGitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "producer": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "expectedGitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "currentGitBlob": "e6caa9a86bab022830c2e924e616108f53644c08"
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "producer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "expectedGitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "currentGitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab"
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "producer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "expectedGitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "currentGitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4"
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "producer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "expectedGitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "currentGitBlob": "628ad8365caed6ceed95192b865417503143e679"
+    }
+  ],
+  "inventories": {
+    "before": {
+      "js": 876,
+      "lua": 1423
+    },
+    "current": {
+      "js": 878,
+      "lua": 1423
+    },
+    "addedJs": [
+      "tests/release-picker-controls-source.test.mjs",
+      "tests/release-picker-controls.test.mjs"
+    ],
+    "addedLua": []
+  },
+  "immutableArchiveCount": 92,
+  "productionOwner": [
+    "src/lua/abyss_node_ui_feedback.lua"
+  ],
+  "producer": {
+    "src/lua/abyss_node_ui_feedback.lua": {
+      "commit": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "parents": [
+        "36b9b157ee6f05b65eb9f1da7e2978647d36c210"
+      ]
+    }
+  },
+  "textNormalization": "LF; gzip and other binary reads use actual bytes",
+  "node": "v24.18.0",
+  "checks": {
+    "sourceFinal": {
+      "passed": 6,
+      "failed": 0,
+      "log": "source-final-green.log.gz"
+    },
+    "existingOwnersAndIsolatedCopy": {
+      "passed": 7,
+      "failed": 0,
+      "log": "owners-copy.log.gz"
+    },
+    "historicalTargets": {
+      "passed": 5,
+      "failed": 0,
+      "childApprovedPageTests": 6,
+      "log": "historical-targeted.log.gz"
+    },
+    "rawCurrentCi": {
+      "passed": 1,
+      "failed": 0,
+      "log": "ci-raw-final.log.gz",
+      "forecastsDiagnosticOnly": true,
+      "windowsMs": 1756639,
+      "posixMs": 1190964
+    },
+    "whitespace": "git diff --check exit 0"
+  },
+  "preservedFailedAttempts": [
+    {
+      "log": "source-small.log.gz",
+      "reason": "Test scaffolding initially treated opaque historical Lua arrays as raw current although this slice adds no top-level Lua test; corrected without weakening explicit raw inventory checks."
+    },
+    {
+      "log": "source-final.log.gz",
+      "reason": "A route mutation changed an earlier matching expression rather than the actual rules job; negative controls now replace every matching instance and verify the real job-scoped guard rejects the change."
+    }
+  ],
+  "integrationDependency": {
+    "pr": 692,
+    "head": "b6722694",
+    "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+    "status": "parent reported formal PR exists and not merged at this checkpoint",
+    "action": "After its Release merge, rebind this slice from the new exact Release before sources. Do not copy its after packets or claim this adapter solves its bootstrap failures."
+  },
+  "notRun": [
+    "Full/Fast suite",
+    "all 73 CI calibration cases",
+    "hosted Quality",
+    "official import",
+    "ready",
+    "PC or mobile playtest",
+    "GUI/MCP input"
+  ],
+  "evidence": {
+    "source-small.log.gz": {
+      "sha256": "48be4da776219c7c6f17c2f6fc0eb8beb64c45705faeb003a05ae01ad19c781a",
+      "rawSha256": "452dc1bef89498bc066a1d8ac8a29808e26034effa204a62de694cbb26b490ba",
+      "rawBytes": 72967
+    },
+    "source-small-final.log.gz": {
+      "sha256": "5fead9645349a66e1413c88cb65b9c07630f9ec76170bbfab26517943c307f05",
+      "rawSha256": "9cb989a38ce4c99db3bbc6edb769e696dbb16f92f9c338ac2ffbcd82fa08d45d",
+      "rawBytes": 739
+    },
+    "ci-raw1.log.gz": {
+      "sha256": "13f75216a89a2206db6f85a04fa9be162e48c2676e14f7540dc5ceaa623b07ec",
+      "rawSha256": "6f7d5900f0bf0739842caee63b0932772ee34fc245c1f386b88b204c06257036",
+      "rawBytes": 541
+    },
+    "owners-copy.log.gz": {
+      "sha256": "eaf7ba292ecd278a3cab3fafb01ecfa30a0ef09695aeb2e272fe320e3454b30c",
+      "rawSha256": "d879dc65d5db5f7658f3f991ff0820fbf3070b5a621597e54e3101f5ac6c667e",
+      "rawBytes": 881
+    },
+    "historical-targeted.log.gz": {
+      "sha256": "32bc488dfa171105eff4ea0db281941895e5b41d0d9777afb2848c2799053819",
+      "rawSha256": "32e8fd732bbe74c0331046652af10199accd88bf05e67f8061965a817583a7c2",
+      "rawBytes": 2381
+    },
+    "source-final.log.gz": {
+      "sha256": "3e5ba932542e878a8c66b691c7995c049814979e9971b08c7d16c4bf87794e51",
+      "rawSha256": "c1ff89ba53eb6d85edde374addbb21c1874ea564e9f6eee307e4eee815f16991",
+      "rawBytes": 1825
+    },
+    "source-final-green.log.gz": {
+      "sha256": "8ff47f1f5dfec099a638bc5d439890a289e60a23763954557e76c7b1b34a0642",
+      "rawSha256": "dda16f1a5454bb51ee004a8a6041b27de8925a4bc6a5a39da7fabaf33ed05e55",
+      "rawBytes": 846
+    },
+    "ci-raw-final.log.gz": {
+      "sha256": "ef23897e9d192be51ac761324a5630152c9d467cc3ae5088ed4130ec634e1458",
+      "rawSha256": "4daaaa552080e2a280717f868be68d5422a9d12a2b5fc499a811e3fac28798f6",
+      "rawBytes": 542
+    }
+  }
+}
