@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-23 00:59'
-updated_date: '2026-11-15 13:51'
+updated_date: '2026-11-15 14:13'
 labels:
   - ui
   - combat
@@ -89,6 +89,8 @@ ordinal: 36000
 2026-11-15 Release接续：仅修复真实Host已复现的目标Down/Up带ID而Click缺ID不提交；匿名Click只认已Up且唯一当前目标token，保持原带ID路径、忙碌/手柄/旧身份拒绝。补1/2/3敌、并发触点、旧回调与重入RED/GREEN；不将离线兼容性当手机根因。
 
 实证补充：新增active记账在resize缺Up路径留下恢复阻塞，Owner批准仅在battle_details.resize及cancelControllerPointers既有retire路径清空；覆盖Controller/覆盖页/隐藏/旧尾事件/fresh Down恢复。
+
+独审c165补证：匿名Exit/EndDrag缺Up及P0弹窗lower缺Up后同ID复用留下孤儿active。按本控件唯一origin退役、并发未知只撤匿名资格、fresh命名Down先退同ID旧origin协议纠偏；补旧尾Click拒绝/其它手指保留/多指未知终止与fresh恢复矩阵，旧HEAD不作准入。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -171,4 +173,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 本轮按Owner授权协助既有In Progress任务，不重新认领或复制PR673未合AC。新树fix/mobile-target-response-v2-1115基于release/v2.0.0@36b9b157；只读矩阵8项通过、1/2/3敌匿名Click三项RED，设备仍为Owner确认iPhone14Pro，本slice尚未同候选实测。
 
 2026-11-15 Release离线切片：1/2/3敌Down/Up带ID而Click缺ID的三项RED已修，唯一已Up目标牌token才可匿名提交，命名路径/忙碌/手柄/旧身份保护保留；新增16组真实Host回归与原点击/入场专项通过。新active在resize缺Up时留下阻塞的RED经批准沿两处既有retire清理修复。Fast执行10JS+3Lua为分层反馈、未跑Full；详情见docs/backlog-details/TASK-30-ANONYMOUS-TARGET-20261115.md。无本轮GIL/官方/手机验收，全部设备AC保持未勾，独审与组合待交接。
+
+独审拒绝c165：未知Exit/EndDrag无Up残留active及P0缺lowerUp后的同IDreclaim阻塞均留RED。已按本控件唯一origin退役、多active不猜归属、未知Up只取消而noTouch完整序列保留协议修正，新增7组参数矩阵通过；旧尾Click拒绝与fresh恢复、命名foreign/其它控件归属保留。原16组与静态定向重验，独立新HEAD/组合仍待复核，设备AC不变。
 <!-- SECTION:NOTES:END -->
