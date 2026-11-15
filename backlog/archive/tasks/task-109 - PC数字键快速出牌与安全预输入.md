@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 11:43'
-updated_date: '2026-11-15 11:43'
+updated_date: '2026-11-15 08:01'
 labels:
   - pc
   - combat-input
@@ -57,4 +57,6 @@ ordinal: 175000
 现有abyss_battle_actions.lua的busy前置会在反馈播放期间拒绝提交；abyss_action_queue.lua管理规则动作延续而非玩家预输入。本任务负责这一新缺口，TASK-42继续负责整套PC操作与两幕流程验收。不得将已有点选/拖牌或原规则队列误记成已经支持预输入。
 
 本项不进入当前2.0.0发布清单，不改变release/master、不绑定当前发版日期、不绕过独立评审或平台性能/输入门禁；相关改动须待当前发版完成后单独实施与PR。
+
+2026-11-15 身份迁移：本项从PR #670原PC快速出牌TASK-109迁至TASK-42.1，避免与根手机专项TASK-109冲突。保留原7项未验AC、To Do、medium、post-release及TASK-42父项；不是新增功能、开工或发版批准。原记录通过CLI archive保留，源head f2b96b0d89966be897c80964114809b451dacafb。TASK-110中旧TASK-109引用沿归档映射指向本项，TASK-110正文未改。
 <!-- SECTION:NOTES:END -->
