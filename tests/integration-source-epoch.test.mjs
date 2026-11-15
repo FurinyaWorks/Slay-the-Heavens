@@ -11,7 +11,7 @@ const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
 const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];
 
 test('runtime helper copy continuation retains every old view and rejects stale predecessor identity',async()=>{
- const {integratedCiProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');
+ const {priorIntegratedCiProof:integratedCiProof,integratedCiProof:currentProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');
  const {feedbackCiPatch}=await import('./helpers/sts-feedback-ci.mjs');
  const {extendFeedbackHelperClosure}=await import('./helpers/sts-feedback-source-runtime.mjs');
  const {createHash}=await import('node:crypto');
@@ -26,7 +26,8 @@ test('runtime helper copy continuation retains every old view and rejects stale 
   assert.equal(createHash('sha256').update(view.source).digest('hex'),row.before);
  }
  const predecessor=extendFeedbackHelperClosure(original,feedbackCiPatch.helperClosure);
- assert.equal(extendIntegratedHelperClosure(predecessor)[path],row.after);
+ assert.equal(extendIntegratedHelperClosure(predecessor)[path],currentProof.closure[path].after);
+ assert.equal(currentProof.files[path].oldSource.sha256,row.after,'retain the exact old live runtime source');
  assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'0'.repeat(64)}),/exact integration copy predecessor/);
 });
 
@@ -88,7 +89,7 @@ test('shop/deck source slices reject unknown drift without I/O and freshly rejec
  for(const owner of proof.owners){
   let bad=false,reads=0;
   const reader=p=>{reads++;return bad&&p===owner?raw(p)+'\n':raw(p);};
-  assert.equal(sourceSlice(path,source,target,reader),before);assert.equal(reads,proof.owners.length);bad=true;
+  assert.equal(sourceSlice(path,source,target,reader),before);assert.equal(reads,proof.owners.length+1,'fresh UI continuation recheck');bad=true;
   assert.throws(()=>sourceSlice(path,source,target,reader),/linked owner identity/,owner);
   for(const missing of [null,undefined,17])assert.throws(()=>sourceSlice(path,source,target,p=>p===owner?missing:raw(p)),/linked owner identity/,owner);
   assert.throws(()=>sourceSlice(path,source,target,p=>{if(p===owner)throw Error('removed');return raw(p);}),/linked owner missing/,owner);

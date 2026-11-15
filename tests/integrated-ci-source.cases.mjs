@@ -10,11 +10,11 @@ test('integration validates complete raw sources and leaves every foreign byte a
  assertIntegratedCurrent();assert.deepEqual(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
  for(const [path,row]of Object.entries(proof.files))for(const target of Object.keys(proof.sources)){
   const source=raw(path),production=path.startsWith('src/')||path==='config/architecture.json';
-  const expected=production?source:row.views[target]?.source??source;
+  const expected=production?source:row.views[target]?.source??row.oldSource?.source??source;
   assert.equal(integratedSource(path,source,target),expected);
-  if(!production&&row.views[target]){
+  if(!production&&(row.views[target]??row.oldSource)){
    const crlf=source.replaceAll('\n','\r\n');
-   assert.equal(integratedSource(path,crlf,target),row.views[target].sha256===row.current.sha256?crlf:expected);
+   assert.equal(integratedSource(path,crlf,target),(row.views[target]??row.oldSource).sha256===row.current.sha256?crlf:expected);
   }
   for(const input of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(integratedSource(path,input,target),input);
   for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);

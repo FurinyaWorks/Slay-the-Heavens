@@ -1,5 +1,6 @@
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
+import {projectFatalBgmSource,authorizeFatalBgmSource} from '../fatal-bgm-source-continuation.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
@@ -108,16 +109,21 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
+  const inputSource=source;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  source=projectFatalBgmSource(path,source,current);
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return inputSource;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
+  const samples=[];
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-   const binding=proof.current[owner];
+   const binding=proof.current[owner];samples.push([owner,actual,binding]);
+   actual=projectFatalBgmSource(owner,actual,binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
+  authorizeFatalBgmSource(path,inputSource,current,samples,readSource);
   return before.source;
  }
  function combinedReader(readSource=readLive,target){
