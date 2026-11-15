@@ -76,10 +76,25 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     assert(type(onConfirm)=="function","missing choice command callback")
     local view={root=root,visible=false,generation=0,selected={},page=1}
     local cursor=platform.cursorEvents or {}
+    local mobile=Theme.presentationProfile=='official-assets-first' and platform.touchScreen
+        and platform.touchScreen() and Theme.officialAssets.mobileCards
     local pointerObserved=false
     local function child(name) return assert(root:GetChild(name),"missing choice control "..name) end
     local function caption(box,value)
         for _,state in ipairs(states) do box:GetChild("hit"):GetChild(state):GetChild("label").text=value end
+    end
+    if mobile then
+        for _,name in ipairs({'before','after','confirm'})do
+            local box=child(name)
+            box:SetAnchoredPosition(Theme.layout.combatChoice[name][1],mobile.footerY)
+            local hit=box:GetChild('hit')
+            hit:SetSizeDelta(Theme.layout.combatChoice[name][3],mobile.footerHit)
+            for _,state in ipairs(states)do
+                local label=hit:GetChild(state):GetChild('label')
+                label.fontSize=mobile.footerFont;label.minimumFontSize=mobile.footerFont
+            end
+        end
+        child('status'):SetAnchoredPosition(0,mobile.statusY)
     end
     local function colour(c) return platform.color(c.r,c.g,c.b,c.a) end
     local function fresh(duringConfirm)
@@ -138,8 +153,10 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             local box=child("card"..slot)
             local row=math.floor((slot-1)/layout.columns)
             local count=math.min(layout.columns,remaining-row*layout.columns)
-            box:SetAnchoredPosition(((slot-1)%layout.columns-(count-1)/2)*layout.step[1],
+            box:SetAnchoredPosition(((slot-1)%layout.columns-(count-1)/2)*(mobile and mobile.choiceStep or layout.step[1]),
                 layout.origin[2]+row*layout.step[2])
+            local scale=mobile and kind~='potion' and mobile.choiceScale or 1
+            box:SetLocalScale(scale,scale,1)
             local card=view.cards[(view.page-1)*PAGE_SIZE+slot]
             box:SetVisible(card~=nil)
             local hit=box:GetChild("hit");hit.interactable=card~=nil and not view.confirming;hit.raycastTarget=hit.interactable

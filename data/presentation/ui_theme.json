@@ -14,6 +14,20 @@
     "quit": [-450,-234,280,56]
   },
   "officialAssets": {
+    "mobileCards": {
+      "note": "触屏保留静止扇形手牌，只放大已有抬牌阅读态；iPhone14Pro默认393pt高参考，14号正文乘1.72约13.1pt。44安全下沿约24pt。不是系统DPI检测或真机验收。",
+      "hoverScale": 1.72,
+      "safeBottom": 44,
+      "choiceScale": 1.72,
+      "choiceStep": 280,
+      "rewardScale": 1.72,
+      "rewardHoverScale": 1.78,
+      "rewardY": -32,
+      "footerY": -272,
+      "footerHit": 88,
+      "footerFont": 24,
+      "statusY": -224
+    },
     "choicePage": {"columns": 3, "rows": 1, "origin": [-216, 0]},
     "pickerPage": {"columns":[-246,0,246]},
     "neowGuide": {

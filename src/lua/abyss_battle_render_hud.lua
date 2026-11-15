@@ -27,7 +27,18 @@ end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, dependencies)
     local R = L.rewardPick
+    local mobile = Theme.presentationProfile=='official-assets-first' and host.platform.touchScreen
+        and host.platform.touchScreen() and Theme.officialAssets.mobileCards
     local rewardSizeOwner = {}
+    if mobile then
+        local stage=host.options.embedded and host.root or host.root:GetChild('stage')
+        local hit=stage:GetChild('skip')
+        hit:SetSizeDelta(R.skip[3],mobile.footerHit)
+        for _,state in ipairs({'normal','hover','pressed','disabled'})do
+            local label=hit:GetChild(state):GetChild('label')
+            label.fontSize=mobile.footerFont;label.minimumFontSize=mobile.footerFont
+        end
+    end
     local function renderStartControls(frame)
         local run = frame.run
         dependencies.show("start", not owner.busy and not host.options.embedded and (not run or run.phase == "defeat"))
@@ -42,7 +53,7 @@ function M.install(owner, _ownership, host, dependencies)
         frame.pendingPotion = frame.potionReward and not frame.potionReward.resolved
         dependencies.show("skip", frame.picking and not run.rewards.cardResolved)
         dependencies.show("continue", frame.manual or not host.options.embedded and run and run.phase == "map")
-        dependencies.child("skip"):SetAnchoredPosition(R.skip[1], R.skip[2])
+        dependencies.child("skip"):SetAnchoredPosition(R.skip[1], mobile and mobile.footerY or R.skip[2])
         dependencies.child("continue"):SetAnchoredPosition(
             frame.manual and L.battleRewards.continue[1] or 0,
             frame.manual and L.battleRewards.continue[2] or -S.xxl * 3)

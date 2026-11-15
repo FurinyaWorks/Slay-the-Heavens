@@ -28,8 +28,10 @@ local function renderPotionRows(run)
     return Run.potionView(run)
 end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
-function M.install(owner, ownership, _host, dependencies)
+function M.install(owner, ownership, host, dependencies)
     local R = L.rewardPick
+    local mobile = Theme.presentationProfile=='official-assets-first' and host.platform.touchScreen
+        and host.platform.touchScreen() and Theme.officialAssets.mobileCards
     local function pruneInputs(inputs, ready)
         for _, input in ipairs(inputs) do
             if input.held and not ready(input.held) then input.held = nil end
@@ -120,7 +122,8 @@ function M.install(owner, ownership, _host, dependencies)
         if frame.picking and (not owner.rewardView or owner.rewardView.rewards ~= frame.run.rewards) then
             owner.rewardView = {rewards = frame.run.rewards, cards = {}}
             for i = 1, 10 do
-                owner.rewardView.cards[i] = {scale = R.scale * R.enterScale, lift = 0, rise = -R.enterRise}
+                owner.rewardView.cards[i] = {scale = (mobile and mobile.rewardScale or R.scale) * R.enterScale,
+                    lift = 0, rise = -R.enterRise}
             end
         elseif not frame.picking then
             owner.rewardView = nil

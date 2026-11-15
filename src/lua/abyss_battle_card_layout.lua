@@ -6,19 +6,23 @@ local L = Theme.layout
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, _dependencies)
     local R = L.rewardPick
+    local mobile = Theme.presentationProfile=='official-assets-first' and host.platform.touchScreen
+        and host.platform.touchScreen() and Theme.officialAssets.mobileCards
+    local hoverScale = mobile and mobile.hoverScale or Theme.motion.hoverScale
+    local safeBottom = mobile and mobile.safeBottom or Theme.canvas.safe.y
     local function placeHandHit(box, w, h, restAngle, baseY, y, scale, laneWidth)
         local r = restAngle * math.pi / 180
         local c,s = math.abs(math.cos(r)),math.abs(math.sin(r))
         local restH,restW = (h*c+w*s)/2,(w*c+h*s)/2
-        local hotH = h*Theme.motion.hoverScale/2
-        local hotY = math.max(baseY+Theme.motion.hoverLift,-Theme.canvas.base[2]/2+Theme.canvas.safe.y+hotH)
+        local hotH = h*hoverScale/2
+        local hotY = math.max(baseY+Theme.motion.hoverLift,-Theme.canvas.base[2]/2+safeBottom+hotH)
         local low = math.min(baseY-restH,hotY-hotH)
         local high = math.max(baseY+restH,hotY+hotH)
         local dy,a = (low+high)/2-y,box.localRotationZ*math.pi/180
         local hit = box:GetChild('hit')
         -- Inverse the card transform: one world-space hit rectangle covers both poses.
         hit:SetAnchoredPosition(math.sin(a)*dy/scale,math.cos(a)*dy/scale)
-        local width=math.max(restW*2,w*Theme.motion.hoverScale)
+        local width=math.max(restW*2,w*hoverScale)
         -- Adjacent hand centres own disjoint horizontal lanes. Keeping a full
         -- hover-width receiver here lets a later sibling steal the initial press.
         hit:SetSizeDelta(math.min(width,laneWidth or width)/scale,(high-low)/scale)
@@ -34,20 +38,21 @@ function M.install(owner, _ownership, host, _dependencies)
         local halfHeight = (h * math.cos(radians) + w * math.sin(radians)) / 2
         local floor = -Theme.canvas.base[2] / 2 + Theme.canvas.safe.y + halfHeight - (L.hand.overhang or 0)
         local baseY = math.max(floor,L.hand.y-math.abs(distance)*L.hand.arcDrop)
-        local hotY = math.max(baseY+Theme.motion.hoverLift,-Theme.canvas.base[2]/2+Theme.canvas.safe.y+h*Theme.motion.hoverScale/2)
+        local hotY = math.max(baseY+Theme.motion.hoverLift,-Theme.canvas.base[2]/2+safeBottom+h*hoverScale/2)
         local x, y = distance * spacing, selected and hotY or baseY
         box:SetAnchoredPosition(x, y)
-        local scale = selected and Theme.motion.hoverScale or 1
+        local scale = selected and hoverScale or 1
         box:SetLocalScale(scale, scale, 1)
         box.localRotationZ = selected and 0 or angle
         local laneWidth=count>1 and spacing or nil
         placeHandHit(box,w,h,angle,baseY,y,scale,laneWidth)
         box:GetChild("glow"):SetVisible(selected)
         box:SetAsLastSibling()
-        return {x, y, baseY=baseY,hitWidth=laneWidth}
+        return {x, y, baseY=baseY,hitWidth=laneWidth,hoverScale=hoverScale,safeBottom=safeBottom}
     end
     local function rewardTarget(slot)
         local hot = owner.hover == slot
+        if mobile then return hot and mobile.rewardHoverScale or mobile.rewardScale,0 end
         return hot and R.hoverScale or R.scale, hot and R.hoverLift or 0
     end
     local function placeReward(box, count, index, anim, hot)
@@ -57,13 +62,14 @@ function M.install(owner, _ownership, host, _dependencies)
         hit:SetLocalScale(1,1,1)
         hit.localRotationZ = 0
         local x = (index - 1 - (count - 1) / 2) * R.step
-        box:SetAnchoredPosition(x, R.y + anim.lift + anim.rise)
+        local y = mobile and mobile.rewardY or R.y
+        box:SetAnchoredPosition(x, y + anim.lift + anim.rise)
         box:SetLocalScale(anim.scale, anim.scale, 1)
         box.localRotationZ = 0
         box:GetChild("glow"):SetVisible(hot)
         -- Later siblings draw on top: neighbours first, the hovered card last.
         if not hot then box:SetAsLastSibling() end
-        return {x, R.y}
+        return {x, y}
     end
     local function canHover()
         return owner.active and not owner.busy and not owner.gesture and not owner.carry

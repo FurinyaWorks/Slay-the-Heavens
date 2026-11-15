@@ -52,9 +52,9 @@ local function handTarget(count, index, hot, point)
     local restAngle=-(index-(count-1)/2)*L.hand.arcDegrees
     -- The safe-area clamp can lift the selected pose farther than hoverLift.
     -- Keep the real idle anchor so hover cannot shift its world hit rectangle.
-    return {x=point[1],y=point[2],scale=hot and Theme.motion.hoverScale or 1,
+    return {x=point[1],y=point[2],scale=hot and point.hoverScale or 1,
         angle=hot and 0 or restAngle,restAngle=restAngle,
-        baseY=point.baseY,hitWidth=point.hitWidth}
+        baseY=point.baseY,hitWidth=point.hitWidth,hoverScale=point.hoverScale,safeBottom=point.safeBottom}
 end
 
 -- Successful geometry belongs to the last binding of a native handle. No view
@@ -65,12 +65,12 @@ local function handValues(pose, target)
     local r=target.restAngle*math.pi/180
     local c,s=math.abs(math.cos(r)),math.abs(math.sin(r))
     local restH,restW=(h*c+w*s)/2,(w*c+h*s)/2
-    local hotH=h*Theme.motion.hoverScale/2
-    local hotY=math.max(target.baseY+Theme.motion.hoverLift,-Theme.canvas.base[2]/2+Theme.canvas.safe.y+hotH)
+    local hotH=h*target.hoverScale/2
+    local hotY=math.max(target.baseY+Theme.motion.hoverLift,-Theme.canvas.base[2]/2+target.safeBottom+hotH)
     local low=math.min(target.baseY-restH,hotY-hotH)
     local high=math.max(target.baseY+restH,hotY+hotH)
     local dy,a=(low+high)/2-pose.y,pose.angle*math.pi/180
-    local width=math.max(restW*2,w*Theme.motion.hoverScale)
+    local width=math.max(restW*2,w*target.hoverScale)
     return {pose.x,pose.y,pose.scale,pose.angle,
         math.sin(a)*dy/pose.scale,math.cos(a)*dy/pose.scale,
         math.min(width,target.hitWidth or width)/pose.scale,(high-low)/pose.scale}
