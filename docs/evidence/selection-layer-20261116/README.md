@@ -18,7 +18,7 @@ TASK-103.3 保持 In Progress / AC4 未验收。源基线为 `release/v2.0.0@36b
 - 定向回归8/8：现有非战斗组合4项、默认官方背景1项、新增生成树/真实Portrait生命周期/opt-out3项。正常building/ready/pause/reentry与模板创建返回nil的failed路径，遗留shade均为false；failed时fallback=true/art=false；缓存重入没有新增或销毁控件。日志 `pc04-related-green.log`。`onEngineDestroy`只用于观察遗留层不复活，不声明原生art teardown验收。
 - 四个真实profile生成树：official唯一差异是上述shade的visible；default、candidate-art、v25三个`game-ui.json`与干净Release36逐字节相同，哈希在 `pc04-profile-comparison.json`。批准1600图元、93命之座及现有组件测试保持。
 - 真实Host输入：菜单→选角→选择旅行者/岩→查看牌组→原有pileReturn→菜单放弃→取消→选角返回→重入确认地图通过；牌组与退出覆盖期间确认不能创建Run。`pc04-host-probe.log`。这份Host未装官方客户端presentationReady，原生Portrait ready由独立真实模块回归覆盖；不能合称官方ready。
-- 新增测试初稿flags读取文件名错误、Host探针初稿漏选角色/误用退休deck veil和close入口均作为夹具失败保留在本目录；修正实际入口后通过，没有改产品交互来迁就探针。
+- 新增测试初稿flags读取文件名错误已在本轮工具输出中报告。Host探针初稿漏选角色、误用退休deck veil和close入口的三份失败日志只保留在主仓库 `.artifacts/release-pc-qa-20261115/pc04-host-*-failure.log`，未纳入本归档目录；修正实际入口后通过，没有改产品交互来迁就探针。
 
 没有重复Full、Bootstrap或触发CI；`test-affected --base 36b9… --plan`返回full=false，实际只跑上述定向集与Host。候选写入/严格读回/官方导入/新ready/PC/手机均未执行，禁止用本证据关闭AC4。没有GUI、鼠键、切前台或MCP操作。
 
