@@ -9,18 +9,30 @@ import {luaString,toLua} from '../scripts/build-lua-data.mjs';
 import {originalV4ToLua} from '../scripts/build-original-v4.mjs';
 import {utf8LuaString,utf8ToLua} from '../scripts/lua-utf8-literal.mjs';
 const require=createRequire(import.meta.url);
+const luaKeywords='and break do else elseif end false for function goto if in local nil not or repeat return then true until while'.split(' ');
+test('safe identifier keys shorten without quoting reserved, numeric, prototype or non-ASCII keys unsafely',()=>{
+ const blocked=[...luaKeywords,'__proto__','constructor','prototype','','0','01','1.5','a-b','a b','a.b','中文','é','x\nq','x"q','\\'];
+ const value=Object.fromEntries([...blocked,'safe','_safe9','A0'].map((key,i)=>[key,i]));
+ const source=utf8ToLua(value);
+ for(const key of blocked)assert(source.includes(`[${utf8LuaString(key)}]=`),'quoted exceptional key: '+key);
+ for(const key of ['safe','_safe9','A0'])assert(source.includes(key+'=')&&!source.includes(`["${key}"]=`),'compact ASCII identifier: '+key);
+ assert.equal(utf8ToLua({b:2,a:1}),'{a=1,b=2}','deterministic original key order');
+ assert.equal(toLua({b:2,a:1}),'{["a"]=1,["b"]=2}','legacy serializer remains unchanged');
+});
 test('UTF-8 literals preserve all Lua string bytes, keys, controls and numeric values',()=>{
  const directory=mkdtempSync(join(tmpdir(),'abyss-utf8-literal-'));
  try{
   const strings=['中文，易伤 88/88→9999/9999','🙂旅行者🗺️','\\230\\1"\'\n\r\t\0'+'9]=]--',
    Array.from({length:256},(_,code)=>String.fromCharCode(code)).join(''),'\u2028\u2029\ufeff'];
-  const value={strings,中文:{'复杂键\\\n"':strings[2]},numbers:[0,-0,1,-2,1.2345678901234567,1e-300,1e300],yes:true,no:false};
+  const value={strings,中文:{'复杂键\\\n"':strings[2]},numbers:[0,-0,1,-2,1.2345678901234567,1e-300,1e300],yes:true,no:false,
+   exceptional:Object.fromEntries([...luaKeywords,'__proto__','constructor','prototype','','0','01','1.5','a-b','a b','a.b','中文','é','x\nq','x"q','\\','safe','_safe9','A0'].map((key,i)=>[key,[i,strings[i%strings.length]]]))};
   const program=`local a=${toLua(value)}\nlocal b=${utf8ToLua(value)}\nlocal function equal(x,y)\n assert(type(x)==type(y),'type')\n if type(x)~='table'then assert(x==y,'value');if type(x)=='string'then assert(#x==#y,'bytes')end;return end\n for k,v in pairs(x)do equal(v,y[k])end;for k in pairs(y)do assert(x[k]~=nil,'extra key')end\nend\nequal(a,b)\nequal(${originalV4ToLua({missing:null,nested:[null,'中文']})},${utf8ToLua({missing:null,nested:[null,'中文']},{nullAsNil:true})})\nprint('UTF8_LITERAL_BYTE_EQUAL')\n`;
   const file=join(directory,'check.lua');writeFileSync(file,program);
   const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),file],{encoding:'utf8',timeout:30000,windowsHide:true});
   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/UTF8_LITERAL_BYTE_EQUAL/);
   assert(Buffer.byteLength(utf8LuaString(strings[0]))<Buffer.byteLength(luaString(strings[0])));
   for(const broken of ['\ud800','\udfff'])assert.throws(()=>utf8LuaString(broken),/well-formed/);
+  for(const broken of ['\ud800','\udfff'])assert.throws(()=>utf8ToLua({[broken]:1}),/well-formed/);
   for(const unsupported of [null,undefined,NaN,Infinity])assert.throws(()=>utf8ToLua(unsupported),/Unsupported/);
  }finally{rmSync(directory,{recursive:true,force:true});}
 });
