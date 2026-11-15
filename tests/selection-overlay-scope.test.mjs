@@ -54,9 +54,10 @@ local function install(control)
  for _,c in pairs(control.children)do install(c)end
 end
 install(root)
-local created,destroyed=0,0
+local created,destroyed,rejectCreation=0,0,false
 game={InstantiateClientUIControl=function(index,parent)
  assert(index==41 or index==73 or index==99)
+ if rejectCreation then return nil end
  created=created+1;return setmetatable({parent=parent,alive=true},{__index=methods})
 end,DestroyClientUIControl=function()destroyed=destroyed+1 end}
 local portraits=require('abyss_traveler_portraits').new(root,nil,{selectionAvatar=true,battlePortrait=true})
@@ -75,6 +76,10 @@ portraits:sync('menu',false,false,'ironclad');assert(not art.visible and fallbac
 portraits:sync('menu',true,false,'ironclad');portraits:tick()
 assert(art.visible and not fallback.visible and created==total and destroyed==0);scope('reentry')
 assert(panel:GetChild('blocker').visible,'input barrier was removed with legacy paint')
+assert(portraits:release());rejectCreation=true
+portraits:sync('menu',true,false,'ironclad');portraits:tick()
+assert(portraits:status().selection.phase=='failed' and not art.visible and fallback.visible)
+scope('failed')
 portraits:onEngineDestroy();portraits:tick();scope('destroyed')
 assert(#covered==0,'inherited full-screen shade covers the approved selection art: '..table.concat(covered,','))
 print('SELECTION_OVERLAY_SCOPE_PASS created='..created)
