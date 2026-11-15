@@ -2,7 +2,12 @@ local view, Viewport, background, cardArt, portraits, v25Textures, nativeStage, 
 local artFailures={}
 local canvasWidth, canvasHeight
 local attempted = false
+local fatalMusic
 local function failed(phase, reason)
+    -- The independent server music graph survives a disabled Lua UI. Retire
+    -- this live signal port before cleanup; failure must never retry it.
+    local stopMusic=fatalMusic;fatalMusic=nil
+    if stopMusic then pcall(stopMusic,"ABYSS_BGM_STOP") end
     pcall(function()require('abyss_card_skin').clearSurface()end)
     if v25Textures then pcall(function()v25Textures:clear()end)end
     print("ABYSS_UI failed " .. phase .. ": " .. tostring(reason))
@@ -203,6 +208,7 @@ function OnStart()
                 game.ServerSignal(signal):SendSignal()
                 print("ABYSS_BGM_REQUEST " .. signal)
             end
+            fatalMusic=music
         end
         local isTest, testPlay = pcall(function()return game.IsTestPlay()end)
         local uiProfile=require('abyss_ui_profile')
@@ -301,6 +307,7 @@ function OnUpdate(dt)
 end
 
 function OnDestroy()
+    fatalMusic=nil -- Engine teardown only forgets ownership; no native signals.
     pcall(function()require('abyss_card_skin').destroySurface()end)
     if v25Textures then pcall(function()v25Textures:onDestroy()end)end
     if view then pcall(function()view:onEngineDestroy()end) end

@@ -1,0 +1,62 @@
+[
+  {
+    "source": ".artifacts/late-source-validation/integration-source.log",
+    "file": ".artifacts_late-source-validation_integration-source.log.gz",
+    "bytes": 4424,
+    "sha256": "152a545f430d2532afe2b695a06722a586be754b0726a27c005498975a0d6a38"
+  },
+  {
+    "source": ".artifacts/late-source-validation/post-head-fix-green.log",
+    "file": ".artifacts_late-source-validation_post-head-fix-green.log.gz",
+    "bytes": 886,
+    "sha256": "d98f88d83dd093c67593a69adee8ffbe1feb60279dca9a9ad05eaadef63d3f28"
+  },
+  {
+    "source": ".artifacts/late-source-validation/post-head-fix-repro.log",
+    "file": ".artifacts_late-source-validation_post-head-fix-repro.log.gz",
+    "bytes": 413,
+    "sha256": "e601fd197939da664f85dbf22c015bb61fb71505335892847cfe0ac4c8708531"
+  },
+  {
+    "source": ".artifacts/late-source-validation/post-head-fix-workload.log",
+    "file": ".artifacts_late-source-validation_post-head-fix-workload.log.gz",
+    "bytes": 353,
+    "sha256": "5319e9e5acc91b2c5fb798f065d4204bfc411b195b13e77534204c9c215987f8"
+  },
+  {
+    "source": ".artifacts/late-source-validation/post-head-fix-red.log",
+    "file": ".artifacts_late-source-validation_post-head-fix-red.log.gz",
+    "bytes": 6185,
+    "sha256": "ad3587efa2762e64016c832274cdb300db4a0f429db71b63a1bb48c3cc9674a5"
+  },
+  {
+    "source": ".artifacts/late-source-validation/post-head-fix-index-fixture-red.log",
+    "file": ".artifacts_late-source-validation_post-head-fix-index-fixture-red.log.gz",
+    "bytes": 339128,
+    "sha256": "9073f7a28927eea97dee10ca45d49668e38495e76ce2cac04272270212be3152"
+  },
+  {
+    "source": ".artifacts/late-source-validation/summary.json",
+    "file": ".artifacts_late-source-validation_summary.json.gz",
+    "bytes": 2025,
+    "sha256": "dca05fd617d273807f0d586bfc9ad7750d34d81d396331f3b4c94b8d4fe19704"
+  },
+  {
+    "source": ".artifacts/late-source-validation/post-head-fix-summary.json",
+    "file": ".artifacts_late-source-validation_post-head-fix-summary.json.gz",
+    "bytes": 1770,
+    "sha256": "b773bdd243cc7a2a6f155d327195ce327b56107ffa933299ad22fb5d39d2bece"
+  },
+  {
+    "source": "build/fatal-bgm-followup/red.log",
+    "file": "build_fatal-bgm-followup_red.log.gz",
+    "bytes": 1194,
+    "sha256": "6f99682cb98aa6da73d33307a8dc566ec213a1c9c7d7ff0b1b48f7484e63e10b"
+  },
+  {
+    "source": "build/fatal-bgm-followup/green.log",
+    "file": "build_fatal-bgm-followup_green.log.gz",
+    "bytes": 6226,
+    "sha256": "2bcb116c96c51ec27660663e928396b2109b8f26f92f72b0e25d2264de133a0f"
+  }
+]

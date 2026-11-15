@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
-import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
+import {integratedCiProof as proof,priorIntegratedCiProof as priorProof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
@@ -20,18 +20,18 @@ test('integration validates complete raw sources and leaves every foreign byte a
   for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);
  }
  for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])
-  assert.throws(()=>assertIntegratedCurrent((p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete integration source/);
+  assert.throws(()=>assertIntegratedCurrent((p,e)=>p===path?readFileSync(p,e)+'\n':readFileSync(p,e)),/fresh complete (?:integration|late CI) source/);
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
  assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');
 });
 
 test('integration copy closure requires its complete exact predecessor and current dependency bytes',()=>{
- const predecessor=Object.fromEntries(Object.entries(proof.closure).filter(([,row])=>row.before!==null).map(([p,row])=>[p,row.before]));
+ const predecessor=Object.fromEntries(Object.entries(priorProof.closure).filter(([,row])=>row.before!==null).map(([p,row])=>[p,row.before]));
  predecessor['tests/helpers/retained.mjs']='a'.repeat(64);
  const result=extendIntegratedHelperClosure(predecessor);assert.equal(result['tests/helpers/retained.mjs'],predecessor['tests/helpers/retained.mjs']);
- for(const [path,row]of Object.entries(proof.closure)){
+ for(const [path,row]of Object.entries(priorProof.closure)){
   assert.equal(result[path],row.after);
-  assert.equal(hash(path.endsWith('.gz')?readFileSync(path):raw(path)),row.after);
+  assert.equal(hash(path.endsWith('.gz')?readFileSync(path):raw(path)),proof.closure[path].after);
   assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'f'.repeat(64)}),/copy predecessor/);
  }
 });

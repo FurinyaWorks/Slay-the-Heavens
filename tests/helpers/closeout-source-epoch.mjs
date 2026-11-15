@@ -10,6 +10,7 @@ import {extendFeedbackSourceEpoch} from './sts-feedback-source-runtime.mjs';
 import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
+import {extendLateSourceEpoch} from './late-source-epoch.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -47,15 +48,12 @@ export const stsStyleEpoch=extendStsStyleEpoch(ciRepairSourceEpoch,stsStylePatch
 export const menuRedPriorEpoch=extendFeedbackSourceEpoch(stsStyleEpoch,feedbackProductionPatch);
 export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
-export const sourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
+export const e65SourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
+export const sourceEpoch=extendLateSourceEpoch(e65SourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
 export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
- const row=Object.hasOwn(proof.current,path)?proof.current[path]:null;
- if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
- const before=proof.targets[target].files[path];
- if(!before||before.sha256===row.sha256)return source;
  return sourceEpoch.preCombinedSource(path,source,{target,readSource});
 }
