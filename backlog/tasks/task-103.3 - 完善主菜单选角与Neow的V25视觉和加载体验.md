@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-15 16:11'
 labels:
   - 待验
   - delivery-verify
@@ -27,6 +27,8 @@ ordinal: 171000
 - [ ] #1 三页对照批准V25完成真实画面与交互黑盒评审，差异和未验项有证据
 - [ ] #2 复用官方素材现有组件和生命周期，保留同源性能基线及回归证据
 - [ ] #3 同候选贯通菜单到选角祝福地图战斗，交付可试玩入口和独立审查PR
+- [ ] #4 #676 旧任务 TASK-103.3 AC4：同候选PC选角的半透明信息区应仅覆盖批准HUD位置、不误蒙角色及背景；截图06与用户00:02:45/30:52不直接证明蒙层实现根因，必须做原版/批准稿位置对照。
+- [ ] #5 #676 旧任务 TASK-103.3 AC5：主菜单标题、开始及退出按钮与最新批准方案一致：核对旧#650“移除标题”与本轮00:12用户要求“主标题去哪了”的明确冲突，不能自动恢复旧稿；最终决策及真实画面保存。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -39,6 +41,8 @@ ordinal: 171000
 6.按用户控制变量要求，官方选角直接复用战斗同一battlePixel57；原立绘保留不再优化，显式生成标记防旧候选误报。R7干净构建后重验完整黑盒与首次ready，来源证明和独审绑定最终生产提交。
 
 7.按用户拒收意见纠正原命之座与红青旗帜按钮；只保留角色57和背景暂缓例外。修复实际Hosted Full失败（Windows字节来源换行/历史reader层等），完整画面对照与黑盒重验，精确独审后按merge:auto送Merge Queue。
+
+2026-11-15 PC01 Release接续：已只读定位未入Release的3cf8b502→65ceb74e→fbfc3dfd既有批准标题/双按钮，最新转写00:12要求该设计呈现。只移植静态描摹JSON、v25布局标题/四态hunks与menuPresentation五字段，保留#663 continueRun/导航/结算及当前背景，不自动打开旧legacy文字标题。三profile生成与当前Host定向后独审，source/CI和正式同候选验收继续未完成。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -77,4 +81,8 @@ R7最终复验：SDK28项、实际浏览器HP21+Lament9项通过，20次暖选�
 2026-11-13最新用户决定覆盖旧选角稿：使用初代PC选角构图、共享旗帜token及同一battleApprovedIdle半身；初始牌组复用正式DeckUI，删除旧12槽writer。祝福选项按固定原作参照，人物仍按批准guide SVG修复兜帽遮挡与HUD金缝。显式page readiness防隐藏selection/menuScene阻挡当前卡组；独审及定向证据见本轮evidence，最终集成与实机未完成。
 
 最终组合祝福6帧、选角/共享初始牌组5帧均完成实际SDK渲染和独审；兜帽暗面按批准稿对照99.34%，旧身体遮挡负控62.66%，顶部旧金色缝已消除。CI修复后新closure b1271f18与原52b6582b的25生成物及全部3份完整SDK输入逐字节相同，保留原截图身份，见两目录ci-storage-runtime-equivalence.json。官方编译受本机脚本签名策略阻断，未更改策略，设备验收保持未完成。
+
+PC01产品8ee25feb4857092ad0458b8890bebe7cc988c3c7，分支feat/release-pc-menu-title-1115。原有效回归RED（2项1失败：缺titleMark）→GREEN2/2，当前Host12/12、四态/结果41断言、default/official/V25真实生成及对应全树controller会话通过。preview合同16=13PASS/2冻结源FAIL/1可选浏览器SKIP，不称Full。原profile混配与LuaCLI误用失败均留docs/evidence/release-pc-menu-title-20261115。私图未访问、无新字体/Lua/玩法，独审进行中，正式画面/ready/PC手机/容量未验，PC04蒙层仍未证实；AC不勾。
+
+PC01精确8ee25feb由pc_backport_audit独审PASS_SCOPED：3产品+1测试+21证据覆盖，原title JSON/5theme字段/背景/Continue静态四态及事务不退化。原16日志和11源码binding身份核对通过。既有Continue动态menuAccent线条未推进为未引入P2，真实探针exit1留据（startAlpha255/resumeAlpha0/static hover=true）；不把41断言说成Continue动画通过，不扩本片Lua。source/CI冻结2FAIL、Full/画面/容量未验，所有AC保持未勾。
 <!-- SECTION:NOTES:END -->

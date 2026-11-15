@@ -19,3 +19,7 @@
 `source-bytes.json.gz` 无损保存基线、完整来源和本轮执行源码（含原换行）；`log-inventory.json` 给出每份原日志解压字节长度与SHA256。提交时Git按仓库规则规范文本换行，源码存档保留的是实际执行字节，不冒称工作区原字节与提交blob完全相同。`profiles.mjs` 是可从工作树根执行的离线复核器，不是正式候选构建器。
 
 本轮没有生成正式GIL、没有SDK画面或官方导入、新ready、PC/手机实测、官方容量读数；没有访问私人原图或发布。PC01产品定向回归通过不等于用户视觉终验，TASK-103.3不据此标Done或勾实机AC。独立评审与冻结源接续由主线程办理。
+
+主线程通过Backlog CLI把原PC04/PC01来源AC、最小恢复依据、精确产品和结果记录到TASK-103.3，保留原AC、历史和In Progress。只读采用审计为 `approved-source-audit.md`；不是恢复旧legacy标题或重画背景。
+
+`pc_backport_audit` 对精确 `8ee25feb` 的限定产品独审 PASS_SCOPED，见 `independent-review.json/md`。其独立反例发现旧有 Continue 动态 `menuAccent` 线条未被动画writer推进（start alpha255、continue alpha0，而静态hover face=true）；该Lua字节与Release基线相同，本片不扩此P2。`independent-probes.json` 保留原失败探针的无损日志/源码摘要。这里的四态与41断言只证明本片开始/结束反馈、结果恢复及Continue静态状态/事务保留，不能泛称Continue动画通过。来源/CI、正式画面和容量仍未验。
