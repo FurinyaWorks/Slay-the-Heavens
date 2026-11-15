@@ -37,7 +37,8 @@ local function dump(c,s)
         children=children}
 end
 local scenes={}
-local ui,root=F.fixture()
+local settlements=0
+local ui,root=F.fixture(nil,function()settlements=settlements+1;return true end)
 local function capture(name)
     local controls={}
     for _,s in ipairs(Layout)do controls[#controls+1]=dump(root:GetChild(s.name),s)end
@@ -45,10 +46,17 @@ local function capture(name)
 end
 capture('menu')
 assert(ui:openExit());capture('exit')
-root:GetChild('exitPanel'):GetChild('help'):GetChild('hit').click();capture('controls')
-assert(ui:closeExit()and ui:closeExit()and ui:start());capture('map-start')
+assert(ui:closeExit());capture('exit-cancelled')
+assert(ui:openMenu());capture('pause')
+assert(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit').click())
+assert(not ui.exitOpen and not ui.menuOpen and settlements==0)
+assert(F.start(ui) and ui.mode=='map');capture('map-start')
 assert(ui:openDeck());for _=1,3 do ui:update(0)end;capture('deck');assert(ui:closeDeck())
 assert(ui.mapUI:choose(F.Nodes.available(ui.run,ui.map)[1].id));F.win(ui,root);capture('rewards')
 F.click(root,'battlePanel','cardReward');F.click(root,'battlePanel','skip')
 F.click(root,'battlePanel','continue');capture('map-current')
+assert(ui:openExit());capture('exit-confirm')
+assert(root:GetChild('exitPanel'):GetChild('confirm'):GetChild('hit').click())
+assert(settlements==1 and ui.settlementRequested);capture('exit-requested')
+assert(not ui:confirmExit() and settlements==1)
 print('PARITY_SCENES '..encode(scenes))
