@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "VERBATIM_LOG_BASE64",
+  "originalFile": "green.log",
+  "bytes": 340,
+  "sha256": "ca16c6a12e65b78391d40051ebfea8cf07781a1abcc11005eec593fcacf6aeba",
+  "encoding": "base64",
+  "content": "4pyUIG9mZmljaWFsIGNob2ljZSBwcm9maWxlIGtlZXBzIHR3byB1bmNoYW5nZWQgZmFjZXMgd2hpbGUgZGVmYXVsdCByZXRhaW5zIHRlbiBhbmQgTWF0Y2ggcmV0YWlucyB0d2VsdmUgKDQ3LjgzMzFtcykNCuKclCBkZWZhdWx0IHByb2ZpbGUgcmV0YWlucyBpdHMgb3JpZ2luYWwgc2lkZS1hcnJvdyBnZW9tZXRyeSBhbmQgZGlyZWN0IG5hdGl2ZSByZWNlaXZlcnMgKDQxLjEyMDZtcykNCuKEuSB0ZXN0cyAyDQrihLkgc3VpdGVzIDANCuKEuSBwYXNzIDINCuKEuSBmYWlsIDANCuKEuSBjYW5jZWxsZWQgMA0K4oS5IHNraXBwZWQgMA0K4oS5IHRvZG8gMA0K4oS5IGR1cmF0aW9uX21zIDM5OC44MDkNCg=="
+}

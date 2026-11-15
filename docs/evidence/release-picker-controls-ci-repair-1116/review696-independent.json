@@ -1,0 +1,70 @@
+{
+  "reviewer": "/root/pc695_ci_fixture_repair",
+  "role": "independent PC696 reviewer; did not implement PC696",
+  "baseline": "45008d10feb08b9c4d44ea26c1e35205583761b2",
+  "verdict": "PASS",
+  "blockingFindings": [],
+  "checks": [
+    "exact frozen HEAD45008d",
+    "complete old8f63 packet byte-exact at HEAD",
+    "25 to26 union and24 complete old rows unchanged",
+    "new fixture before is the actual complete1cc source and Gitblob",
+    "all26 current physical sources and both before/current hash identities exact",
+    "all96 old archives unchanged, only complete old packet added; all97 on disk exact",
+    "capturefalse and historical producer role honest; all other metadata unchanged",
+    "trust leaf logic unchanged except digest and capture assertions",
+    "pagination all old unrelated assertions retained verbatim",
+    "actual official footer outcome exact while complete default theme stays immutable",
+    "Source original complete cases kept and new case has no runtime Git/network",
+    "only test bindings/evidence/task changed; zero product workflow timing changes",
+    "green.log evidence count and no skip",
+    "outer-contracts.log evidence count and no skip",
+    "independent full fresh current physical guard"
+  ],
+  "files": {
+    "tests/official-choice-pagination.test.mjs": {
+      "sha256": "3e7b0f95667c1328fefa6327e4676a2a7ded18ba721eff04bcb53c9f6c5090f8",
+      "lfSha256": "070ca40dafd34739c920daf897035789e9147b6bdb4676895dccb2df2e4af47d"
+    },
+    "tests/release-picker-controls-source.test.mjs": {
+      "sha256": "96c86c79cabcc50faffb0e67aa15ac7fb440bcc4808519eb9f7a9d94bfe58455",
+      "lfSha256": "57af9e5a2338b86e8392c494aee50e962a3fff8eca06871b0353ec4b7c2aad11"
+    },
+    "tests/helpers/release-picker-controls-ci-source.mjs": {
+      "sha256": "1b1751a0351a471e48df19d634a0dad2c4a44c9b797481194dc2642c776fdab2",
+      "lfSha256": "1b1751a0351a471e48df19d634a0dad2c4a44c9b797481194dc2642c776fdab2"
+    },
+    "tests/helpers/release-picker-controls-ci-source.json.gz": {
+      "sha256": "6e63658fe5a050f3972a90fc08d296fcd2eefaa35e1d5c1250d3effa391141ac"
+    },
+    "tests/helpers/release-picker-controls-ci-before-pagination-repair-source.json.gz": {
+      "sha256": "8f63e3cb7ee9b5a81139b4193589ce6f098e423d43b576d190925411681776fe"
+    }
+  },
+  "logs": {
+    "green.log": {
+      "sha256": "ca16c6a12e65b78391d40051ebfea8cf07781a1abcc11005eec593fcacf6aeba",
+      "bytes": 340,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    "outer-contracts.log": {
+      "sha256": "abd722223a5d202e4f595660e2ad62a8806507744f2248839ad8ea75b2623e35",
+      "bytes": 1022,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "notRun": [
+    "repeated2/2 pagination/default tests",
+    "repeated5/5 Source contracts",
+    "Host",
+    "Full",
+    "CI",
+    "commit",
+    "push"
+  ],
+  "scope": "read-only review plus independent bounded structural/provenance/actual-theme/current-guard probes"
+}

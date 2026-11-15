@@ -25,8 +25,17 @@ test('official choice profile keeps two unchanged faces while default retains te
   assert.deepEqual(cards(official)[i].size,cards(legacy)[i].size);
   assert.deepEqual(cards(official)[i].children,cards(legacy)[i].children,'only host count/position may change');
  }
- assert.deepEqual(official.layout.nativeNode.forge,nativeTheme.layout.nativeNode.forge);
- assert.deepEqual(official.layout.nativeNode.picker,{...nativeTheme.layout.nativeNode.picker,columns:[-246,0,246]});
+ const {previous:forgePrevious,next:forgeNext,...forge}=official.layout.nativeNode.forge;
+ const {previous:defaultForgePrevious,next:defaultForgeNext,...defaultForge}=nativeTheme.layout.nativeNode.forge;
+ assert.deepEqual(forge,defaultForge,'all non-footer forge fields retain their original contract');
+ const {previous,next,...picker}=official.layout.nativeNode.picker;
+ const {previous:defaultPrevious,next:defaultNext,...defaultPicker}=nativeTheme.layout.nativeNode.picker;
+ assert.deepEqual(picker,{...defaultPicker,columns:[-246,0,246]},'all non-footer picker fields retain their original contract');
+ // PC26/30 reuses the approved Deck footer below the hovered forge cards.
+ assert.deepEqual({previous:forgePrevious,next:forgeNext},{previous:[-430,-245.4,200,48],next:[430,-245.4,200,48]});
+ assert.deepEqual({previous,next},{previous:[-430,-245.4,200,48],next:[430,-245.4,200,48]});
+ assert.deepEqual({previous:defaultForgePrevious,next:defaultForgeNext},{previous:[-490,-236,56,44],next:[490,-236,56,44]},'default forge keeps its original footer');
+ assert.deepEqual({previous:defaultPrevious,next:defaultNext},{previous:[-530,116,44,208],next:[530,116,44,208]},'default profile keeps its original side arrows');
  assert.deepEqual(nativeTheme,snapshot);
 });
 

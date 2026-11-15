@@ -1,0 +1,55 @@
+{
+  "node": "v24.18.0",
+  "head": "45008d10feb08b9c4d44ea26c1e35205583761b2",
+  "oldPacket": {
+    "path": "tests/helpers/release-picker-controls-ci-before-pagination-repair-source.json.gz",
+    "sha256": "8f63e3cb7ee9b5a81139b4193589ce6f098e423d43b576d190925411681776fe",
+    "bytes": 279417
+  },
+  "newPacket": {
+    "path": "tests/helpers/release-picker-controls-ci-source.json.gz",
+    "sha256": "6e63658fe5a050f3972a90fc08d296fcd2eefaa35e1d5c1250d3effa391141ac",
+    "bytes": 282192
+  },
+  "oldBindings": 25,
+  "newBindings": 26,
+  "unchangedOldBindings": 24,
+  "changedOldAfter": [
+    "tests/release-picker-controls-source.test.mjs"
+  ],
+  "added": [
+    "tests/official-choice-pagination.test.mjs"
+  ],
+  "oldArchives": 96,
+  "newArchives": 97,
+  "metadataChanges": [
+    "currentTreeCommitted=false",
+    "currentCommitRole=explicit worktree after capture; old currentCommit historical basis"
+  ],
+  "oldBeforeBindingsPreserved": true,
+  "oldOtherMetadataPreserved": true,
+  "actualGitPreimage": {
+    "path": "tests/official-choice-pagination.test.mjs",
+    "commit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+    "gitBlob": "c059649d949ead8e31665da238842ea35949a4d3",
+    "sha256": "a2349c18f29837a21700151336403536cb033a41a8a02ca98a07a61fb1ff5546"
+  },
+  "currentBindings": {
+    "tests/official-choice-pagination.test.mjs": {
+      "sha256": "070ca40dafd34739c920daf897035789e9147b6bdb4676895dccb2df2e4af47d",
+      "gitBlob": "abd872d888161e6c97ec42c01ef846b3e83b6130"
+    },
+    "tests/release-picker-controls-source.test.mjs": {
+      "sha256": "57af9e5a2338b86e8392c494aee50e962a3fff8eca06871b0353ec4b7c2aad11",
+      "gitBlob": "d3592b5a79c4ef1f587176f1f653a1e86411ef42"
+    }
+  },
+  "notRun": [
+    "Full",
+    "Host",
+    "product",
+    "push",
+    "PR",
+    "commit"
+  ]
+}

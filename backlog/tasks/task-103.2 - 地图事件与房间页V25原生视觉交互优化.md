@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-10 11:46'
-updated_date: '2026-11-15 20:58'
+updated_date: '2026-11-15 22:38'
 labels:
   - 待验
   - delivery-verify
@@ -19,6 +19,11 @@ references:
     docs/evidence/release-picker-controls-release1cc-1116/independent-review.json
   - >-
     docs/evidence/release-picker-controls-release1cc-1116/metadata-only-receipt.json
+  - >-
+    https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/43762495111/job/132966457131
+  - docs/evidence/release-picker-controls-ci-repair-1116/README.md
+  - >-
+    docs/evidence/release-picker-controls-ci-repair-1116/review696-independent.json
 parent_task_id: TASK-103
 priority: medium
 ordinal: 169000
@@ -50,6 +55,8 @@ Owner明确追加授权接续地图优化，打磨两幕剧情事件及商店营
 1.核查现有完整事件及#588范围，继承#603独立树。2.沿用V25左右叙事与四选项结构，先做真实剧情事件视觉身份、长文与禁用说明，再覆盖商店营地宝箱和选牌房间已有面。3.复用SDK/GameUI保存与浏览器Pixi真实渲染，逐屏查看并进行选择/返回/20次连续操作释放。4.保持规则与RNG，既有事件/房间回归、独审、独立PR和可交互入口，官方设备未测列明。
 
 2026-11-16 PC30接续：核查现有正式浏览器与已批准Deck分页/操作按钮，最小复用4分页与2底部按钮，不替换动作/同局/数量规则；真实Host验证只读/删牌/营地与hover，独审后接续当前来源/CI与正常Release PR。
+
+接续PR696当前45008d的真实CI失败：先定向复现official-choice-pagination旧整张picker布局断言；保留双卡面/锻造/columns等所有原字段断言，分别精确保护批准的共享Deck分页footer与default旧布局。只改既有测试及最外层CI after绑定，保全旧完整packet、before、全部archive并新增旧outer不可变pin；定向GREEN及独审后交主线程，不改产品/时限/workflow/清单，不勾新AC。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -86,4 +93,8 @@ PC30产品93ae7376/证据707da8ff，default44x208/56x44与原触点不变；offi
 PC30产品/来源双层独审现均通过，组合20项输入coverage无遗漏，报告分别见product independent-review与release-picker-controls-source independent-review。原3项历史checked保留，新#676视觉/正式PC手机条件仍未勾。原共有前置692尚未合，本片先保全并等待实际新Release before接续，不重复造任务或草稿占位。
 
 2026-11-16 #692已实际合入Release 1cc5479b（父36b9）；本片4bfcc426/base1cc新来源独审SOURCE_CI_REVIEW_PASS，25 before/after、10 bootstrap、352来源及96 pin均核对。当前raw878JS/1423Lua与历史876JS/1423Lua分开；Source8/owner7/raw2为本轮原验证，本次仅归档不重跑。见本轮README、independent-review.json及metadata-only-receipt.json。原失败/P2 RED、历史已勾与全部新#676未勾保持；正式PC手机、官方ready及容量仍未验，不给发布PASS。
+
+PR696 CI有界修复已定向GREEN待独审：原official-choice首项因两页old previous/next整体比较RED；保留锻造/删牌全部非页脚字段、双卡面与nativeTheme快照，分别精确断言批准200x48 footer及default原56x44/44x208。首项+default2/2，outer当前/旧包/库存/硬门槛5/5；中间两次fixture RED如实保留。新CI包6e63658f，26绑定/97archive；旧8f63全包原字节另存pin，24/25旧绑定完整不变，全部before/旧archive/元数据库存保全；新after honest worktree capture(false)，旧producer只历史基点。生产/时限/workflow未动，无新Host/Full/官方设备或截图实测，不扩认此前独审7cases为本轮。待主线程独立复审与正常原PR新CI，旧checked与新#676未勾保持。
+
+PR696分页fixture接续独立复审PASS：未参与实现的pc695 reviewer完成15项结构/实际Git前像/物理绑定/档案/主题/任务状态检查，26当前绑定与97档案一致，旧8f63整包及24旧after/全部before保全，未改产品/工作流/耗时，保原全部AC与In Progress。评审凭据已归档docs/evidence/release-picker-controls-ci-repair-1116/review696-independent.json；裸log被既有*.log忽略，5份原日志用base64 .log.json原字节封装，manifest按实际LF待提交字节记录。原2/2与5/5测试仅复用本轮日志未重跑；新SHA CI及正式候选/设备/ready/容量仍待验。
 <!-- SECTION:NOTES:END -->

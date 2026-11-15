@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "PENDING_COMMIT_LF_EVIDENCE_MANIFEST",
+  "normalization": "LF for all listed UTF-8 artifacts; embedded log content preserves original bytes",
+  "excludes": [
+    "manifest.json itself",
+    "ignored original *.log"
+  ],
+  "files": {
+    "README.md": {
+      "bytes": 5222,
+      "sha256": "4dc365d4fb64a57e18350554b71fbf3845ac0e96581cbda68d28c62e30b79540",
+      "gitBlob": "0689aa214ebfb97a4178a33e4a867ff77ba1df93"
+    },
+    "before.log.json": {
+      "bytes": 3228,
+      "sha256": "314e1e1111a34fe17ef62851dadfa54b0a2cf3ad85d09cc9eec29d324f4a512b",
+      "gitBlob": "38c5eedf4ecdf2c40f7ac09d2f343ee0a7070fba"
+    },
+    "binding-receipt.json": {
+      "bytes": 1796,
+      "sha256": "39d438686dc60986e5d1b0ea77a8309ce3410f9eb06b4ed60a02252453f45c25",
+      "gitBlob": "31e531ba54a08f3b03acd35921e34b594a3a8612"
+    },
+    "green.log.json": {
+      "bytes": 682,
+      "sha256": "4514bdef2070b509d8a063f52c248a18e9cfaf34966e3bb4ae1f51cf515acce4",
+      "gitBlob": "2f8ef7a4d01e736980c69034d573349904fcd075"
+    },
+    "iteration-default-assumption.log.json": {
+      "bytes": 2382,
+      "sha256": "cb226d6c3e78f45cac1e6d8d894dd68e25ae9de7b349aae37a6f365cc347ec9d",
+      "gitBlob": "c65a5ac78095086be80788af898396cafe83e7f5"
+    },
+    "iteration-picker-only.log.json": {
+      "bytes": 3375,
+      "sha256": "27ee293fe573471188f935caf42aae4260675fbafe707e835da2aee5ec715417",
+      "gitBlob": "2f10bd387be24412a428c0a173eaa7bc265c9517"
+    },
+    "outer-contracts.log.json": {
+      "bytes": 1601,
+      "sha256": "4afd8837ace3d342580cdffa8b659545564e5789939c0e0c92ae676c9a56cb2e",
+      "gitBlob": "b5d9299bd5575f3837074fecc8fab72e4171951b"
+    },
+    "review696-independent.json": {
+      "bytes": 2953,
+      "sha256": "962a963a188d9bc8954de3a564d0c9347c5f5d40f8a4f4ad5ce6c3c247d73710",
+      "gitBlob": "5f874ad85d97ff0f609b7a803c004eb132305b77"
+    }
+  }
+}

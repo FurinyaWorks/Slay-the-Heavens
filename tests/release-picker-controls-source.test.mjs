@@ -86,3 +86,32 @@ test('release picker controls raw workflow checks each real execution deadline a
   assert.throws(()=>assertReleasePickerControlsExecutionGuards(workflow.replaceAll(before,after)),/raw Quality/,before);
  }
 });
+
+test('picker pagination CI repair retains its complete committed predecessor and exact actual Release before',()=>{
+ const archive='tests/helpers/release-picker-controls-ci-before-pagination-repair-source.json.gz';
+ const bytes=readFileSync(archive),expected='8f63e3cb7ee9b5a81139b4193589ce6f098e423d43b576d190925411681776fe';
+ assert.equal(hash(bytes),expected,'complete prior outer packet remains immutable');
+ const prior=JSON.parse(gunzipSync(bytes)),current=releasePickerControlsCiPacket;
+ assert.equal(prior.currentTreeCommitted,true);assert.equal(Object.keys(prior.files).length,25);
+ assert.equal(Object.keys(prior.immutableArchives).length,96);
+ assert.equal(current.currentTreeCommitted,false);
+ assert.match(current.currentCommitRole,/historical basis only; not the repair after producer/);
+ for(const key of Object.keys(prior).filter(k=>!['files','immutableArchives','currentTreeCommitted','currentCommitRole'].includes(k)))
+  assert.deepEqual(current[key],prior[key],'unchanged prior packet metadata: '+key);
+ for(const [path,row]of Object.entries(prior.files)){
+  if(path==='tests/release-picker-controls-source.test.mjs'){
+   assert.deepEqual(current.files[path].before,row.before);assert.equal(current.files[path].beforeCommit,row.beforeCommit);
+   assert.notEqual(current.files[path].current.sha256,row.current.sha256);
+  }else assert.deepEqual(current.files[path],row,'unchanged complete prior binding: '+path);
+ }
+ assert.deepEqual(Object.keys(current.files).filter(path=>!Object.hasOwn(prior.files,path)),['tests/official-choice-pagination.test.mjs']);
+ const row=current.files['tests/official-choice-pagination.test.mjs'];
+ assert.equal(row.beforeCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
+ assert.equal(row.before.gitBlob,'c059649d949ead8e31665da238842ea35949a4d3');
+ assert.equal(row.current.source,norm(readFileSync('tests/official-choice-pagination.test.mjs','utf8')));
+ assert.equal(Object.keys(current.files).length,26);assert.equal(Object.keys(current.immutableArchives).length,97);
+ assert.deepEqual(current.immutableArchives,{...prior.immutableArchives,[archive]:expected});
+ assert.throws(()=>assertReleasePickerControlsCiCurrent((path,encoding)=>{
+  const source=readFileSync(path,encoding);return path===archive?Buffer.concat([source,Buffer.from('\n')]):source;
+ }),/retained complete immutable release predecessor/,'a changed complete old packet cannot authorize the repair');
+});
