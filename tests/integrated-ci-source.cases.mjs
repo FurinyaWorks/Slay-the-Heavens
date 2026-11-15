@@ -1,13 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualDiskReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualSerializationReadFileSync,readdirSync} from 'node:fs';
+import {serializationHistoricalRead,serializationCiRead,serializationCiPacket,serializationCiSource,serializationPriorInventory,assertSerializationCiCurrent,assertSerializationRawInventory} from './helpers/lua-serialization-ci-source.mjs';
+const actualDiskReadFileSync=serializationHistoricalRead(actualSerializationReadFileSync);
 import {releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {potionBootstrapCiPacket,potionBootstrapCiSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent,assertPotionBootstrapRawInventory} from './helpers/potion-bootstrap-ci-source.mjs';
 const rawReadFileSync=potionBootstrapHistoricalRead('potion',actualDiskReadFileSync);
 const rawBootstrapReadFileSync=potionBootstrapHistoricalRead('bootstrap',actualDiskReadFileSync);
 import {mobilePotionCiRead,mobilePotionPriorInventory,mobilePotionCiPacket,mobilePotionCiSource,assertMobilePotionCiCurrent,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 import {createHash} from 'node:crypto';
-import {discoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualSerializationDiscoverJs} from '../scripts/ci-shards.mjs';
+const discoverJs=()=>serializationPriorInventory(actualSerializationDiscoverJs(),'js',actualSerializationReadFileSync);
+const beforeSerializationLua=()=>serializationPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualSerializationReadFileSync);
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
@@ -28,7 +32,7 @@ test('integration validates complete raw sources and leaves every foreign byte a
  }
  for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])
   assert.throws(()=>assertIntegratedCurrent((p,e)=>{
-   const value=actualDiskReadFileSync(p,e);
+   const value=actualSerializationReadFileSync(p,e);
    return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
   }),error=>{assert.match(error.message,/fresh complete integration source/);assert(error.message.includes(path),'the intended after owner must reject');return true;});
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
@@ -111,7 +115,7 @@ test('potion bootstrap combination authenticates raw union before either histori
  }
  for(const path of Object.keys(potionBootstrapCiPacket.immutableArchives))
   assert.throws(()=>assertPotionBootstrapCiCurrent((p,e)=>p===path?actualDiskReadFileSync(p).subarray(1):actualDiskReadFileSync(p,e)),/immutable.*predecessor/);
- const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ const inventories={js:discoverJs(),lua:beforeSerializationLua()};
  for(const [kind,paths]of Object.entries(inventories)){
   assertPotionBootstrapRawInventory(paths,kind);
   for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
@@ -125,7 +129,7 @@ test('potion bootstrap combination authenticates raw union before either histori
 });
 
 test('mobile potion raw inventories retain every new test and reject missing duplicate foreign or changed additions',()=>{
- const all={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ const all={js:discoverJs(),lua:beforeSerializationLua()};
  for(const [kind,paths]of Object.entries(all)){
   assertMobilePotionRawInventory(paths,kind);
   assert.deepEqual(mobilePotionPriorInventory(paths,kind),mobilePotionCiPacket.priorInventory[kind]);
@@ -159,7 +163,7 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  }
  const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?rawBootstrapReadFileSync(p).subarray(1):rawBootstrapReadFileSync(p,e)),/immutable bootstrap predecessor/);
- const inventories={js:mobilePotionPriorInventory(discoverJs()),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ const inventories={js:mobilePotionPriorInventory(discoverJs()),lua:beforeSerializationLua()};
  inventories.lua=mobilePotionPriorInventory(inventories.lua,'lua');
  for(const [kind,paths]of Object.entries(inventories)){
   assertReleaseBootstrapRawInventory(paths,kind);
@@ -172,4 +176,59 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  assert.equal(leaf.split(marker).length,2);
  const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
  await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete Release bootstrap CI continuation/);
+});
+
+test('serialization composition preserves f85 builders while the P0 Lua epoch remains independent',async()=>{
+ assertSerializationCiCurrent(actualSerializationReadFileSync);
+ const builders=['scripts/build-lua-data.mjs','scripts/build-original-v4.mjs','scripts/build-ui-theme.mjs','scripts/build-ui.mjs','scripts/lua-utf8-literal.mjs'];
+ assert.deepEqual(Object.keys(serializationCiPacket.builderInputs).sort(),builders.sort());
+ for(const path of builders){
+  const row=serializationCiPacket.files[path];
+  assert.equal(row.current.gitBlob,serializationCiPacket.builderInputs[path],'exact original f85 builder');
+  assert.equal(hash(actualSerializationReadFileSync(path,'utf8').replaceAll('\r\n','\n')),row.current.sha256);
+ }
+ const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ assert.equal(sourceEpoch.proof.currentCommit,'551677b7966437e07a95fc3b08ef8747d48a1a10','unchanged P0 Lua epoch is separate from the builder checkpoint');
+ for(const [path,row]of Object.entries(sourceEpoch.proof.current))if(row!==null)
+  assert.equal(actualSerializationReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,'fresh inherited raw owner '+path);
+ assert.notEqual(serializationCiPacket.currentCommit,sourceEpoch.proof.currentCommit);
+});
+
+test('serialization composition CI keeps the bootstrap packet and rejects missing drift and incomplete after bytes',async()=>{
+ assertSerializationCiCurrent(actualSerializationReadFileSync);
+ assert.equal(serializationCiPacket.currentTreeCommitted,false);
+ assert.equal(serializationCiPacket.baseCommit,'f564aea6a3c517b71a85534a81be5e2e36278baf');
+ assert.equal(hash(actualSerializationReadFileSync('tests/helpers/release-bootstrap-ci-source.json.gz')),'868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6');
+ for(const [path,row]of Object.entries(serializationCiPacket.files)){
+  const source=actualSerializationReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const production=path.startsWith('src/')||path==='config/architecture.json';
+  assert.equal(serializationCiSource(path,source),production?source:row.before?.source??source,path);
+  for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(serializationCiSource(path,foreign),foreign);
+  for(const key of ['__proto__','constructor','foreign/'+path])assert.equal(serializationCiSource(key,source),source);
+  assert.throws(()=>assertSerializationCiCurrent((p,e)=>{
+   const value=actualSerializationReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+  }),error=>{assert(error.message.includes(path));return true;});
+  assert.throws(()=>assertSerializationCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return actualSerializationReadFileSync(p,e);}),/missing/);
+ }
+ const bytes=actualSerializationReadFileSync('tests/helpers/lua-serialization-ci-source.json.gz');
+ const leaf=actualSerializationReadFileSync('tests/helpers/lua-serialization-ci-source.mjs','utf8');
+ const marker="const bytes=readFileSync(new URL('./lua-serialization-ci-source.json.gz',import.meta.url));";assert.equal(leaf.split(marker).length,2);
+ const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
+ await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete serialization CI continuation/);
+});
+
+test('serialization composition raw JS and Lua inventory rejects missing duplicate foreign and source drift',()=>{
+ const inventories={js:actualSerializationDiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ for(const [kind,paths]of Object.entries(inventories)){
+  assertSerializationRawInventory(paths,kind);
+  assert.deepEqual(serializationPriorInventory(paths,kind,actualSerializationReadFileSync),serializationCiPacket.priorInventory[kind]);
+  const noAdded=paths.filter(p=>serializationCiPacket.priorInventory[kind].includes(p));
+  if(noAdded.length===paths.length)assertSerializationRawInventory(noAdded,kind);
+  else assert.throws(()=>assertSerializationRawInventory(noAdded,kind),/raw discovery inventory/);
+  for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
+   assert.throws(()=>assertSerializationRawInventory(bad,kind),/raw discovery inventory/);
+  for(const path of paths.filter(p=>!noAdded.includes(p)))assert.throws(()=>serializationPriorInventory(paths,kind,(p,e)=>{
+   const value=actualSerializationReadFileSync(p,e);return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
+  }),/fresh serialization added inventory source/);
+ }
 });
