@@ -99,8 +99,10 @@ test('foreign, original, partial, duplicate and escaped-token sources retain the
 
 test('each direct and common source call freshly binds all thirty-five raw owners after warm successes, failures and reader wrapping',()=>{
  const prior=inverse(),originals={...old,[config]:prior(config,read(config))};
- for(const consume of [prior,publicPrior])for(const host of paths)for(const linked of owners){
-  const source=read(host),expected=consume(host,source);let mode='good',reads=[];
+ for(const consume of [prior,publicPrior])for(const host of paths){
+  const source=read(host),expected=consume(host,source);
+  for(const linked of owners){
+  let mode='good',reads=[];
   const readSource=p=>{reads.push(p);if(p===linked){if(mode==='throw')throw Error('reader sentinel');if(mode==='missing')return undefined;if(mode==='null')return null;if(mode==='drift')return read(p)+'\n';if(mode==='old')return originals[p];}return read(p);};
   assert.equal(consume(host,source,{readSource}),expected);assert.deepEqual(consume===prior?reads:reads.slice(0,35),owners);
   for(mode of ['throw','missing','null','drift','old']){
@@ -110,6 +112,7 @@ test('each direct and common source call freshly binds all thirty-five raw owner
   const nested=epoch.relicQueryReader(epoch.relicQueryReader(readSource));
   assert.equal(prior(host,source,{readSource:nested}),originals[host]);
   mode='drift';assert.throws(()=>prior(host,source,{readSource:nested}),/relic query linked/);
+  }
  }
  assert.throws(()=>prior(paths[0],read(paths[0]),{readSource:null}),/linked reader/);
  const actor='src/lua/abyss_actor.lua',source=read(actor);
