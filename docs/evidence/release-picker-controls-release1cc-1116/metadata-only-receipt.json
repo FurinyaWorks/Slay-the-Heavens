@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "kind": "metadata-only-delivery",
+  "codeReviewHead": "4bfcc4266ef22111740354bbc86ffa889d027e40",
+  "codeReviewTree": "9f885340be7ea53d82832e98feffb1dec943df99",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "reviewId": "picker-release1cc-independent-20261116",
+  "reviewedHeadPreserved": "4bfcc4266ef22111740354bbc86ffa889d027e40",
+  "independentReview": {
+    "json": "independent-review.json",
+    "jsonBytes": 73051,
+    "jsonSha256": "51a847b2446a4f50b5434c31126a3e147c48769249abab65174248e7364bd220",
+    "markdown": "independent-review.md",
+    "markdownBytes": 2119,
+    "markdownSha256": "2ba8d807df552a7a11236c84d602526119be76b376a98cef4058e882199d6c8d",
+    "copiedOriginalBytes": true
+  },
+  "support": {
+    "manifest": "independent-review-support-manifest.json",
+    "manifestSha256": "f97a4cad2bb1f0117b3c5a47999b9beccbd3cf01947fd2232131458d044ab6f9",
+    "archive": "independent-review-support.json.gz",
+    "archiveSha256": "6016391b28f815a65df5f91dd5f8b0602b7d1ff497ecadce59040fa85f5b3dea",
+    "rawSha256": "b08f33310fd654b5ba4aedfebbee827ba85acdd8e9a592ad098c1642ea118a28"
+  },
+  "nonMetadataChangesRelativeBase": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "baseGitBlob": "c1421b71cd85dd3c11d60b037c52161d3f6e4060",
+      "reviewedGitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e"
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624"
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "baseGitBlob": "ad2580f20e0dc92c6718d0897b30e94090e65050",
+      "reviewedGitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "baseGitBlob": "a19ad1cffd2cf975f3b07ddda1dda22da94bdbdc",
+      "reviewedGitBlob": "e6caa9a86bab022830c2e924e616108f53644c08"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "baseGitBlob": "a6753dcc9e77d6166b9fd1d530f511eb4d178523",
+      "reviewedGitBlob": "eef72d02c34f42e11ebafc981dc1fea49d293f5f"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "baseGitBlob": "e7d0fad2be2808eac7ff18d2477d007c36dae98a",
+      "reviewedGitBlob": "83d85eef34a18ea0145af58e97149bce39f14483"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "baseGitBlob": "90ee0583dc0ecf1ce2dc732065af7a18daf565e3",
+      "reviewedGitBlob": "5f06d5a82631b262d743c05f55b766835ee02c7d"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "baseGitBlob": "f913526930596b85d6e10963a4b7bcb1804af31f",
+      "reviewedGitBlob": "72831a23b442b01b52fa7052927607c1b3922164"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-base-source.json.gz",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "4bd41eea2aa7e685a51ce7ded06f074cec3ccd27"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-before-release1cc-source.json.gz",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "54dc8c1d09be790629266d214f38dc586025f9d8"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.json.gz",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "eb77ad25abef5be6f942cb2260058c27fc16124e"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.mjs",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "104f93ba3f3e9284c61eff72cee5783dda62f52c"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "48ab104c88285705370f3a0955038699ec8f9375"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.mjs",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "baseGitBlob": "74a96bdfb647a7f7d27673ef87df4e52121ceb2c",
+      "reviewedGitBlob": "c32662ff36547b13848b57c069cffbdc234ef39c"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "baseGitBlob": "6693fb1206d302c7fecfb0677c6a32730d349782",
+      "reviewedGitBlob": "dba13a2b55f490a3aee8cbed6024719db909fc6a"
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "628ad8365caed6ceed95192b865417503143e679"
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "baseGitBlob": "18cef470d592939ad53786e615fc7f5057e030a5",
+      "reviewedGitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab"
+    },
+    {
+      "path": "tests/release-picker-controls-source.test.mjs",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "e9d7d3df11c67ffd3fa536822550103e56de6b35"
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "baseGitBlob": null,
+      "reviewedGitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "baseGitBlob": "941ebaacf4473878991633141fc8fda5205dbfda",
+      "reviewedGitBlob": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "baseGitBlob": "dfb3119ddbaf2d0ee9661a8eaff1f2b601e30017",
+      "reviewedGitBlob": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c"
+    }
+  ],
+  "allNonMetadataInventoryCount": 5443,
+  "allNonMetadataInventorySha256": "5ed400543cbeaf851abc762b06b36ee379f0f7d48c97bf37d49e710d2b9d82ce",
+  "contract": "This subsequent metadata commit may change only the explicitly staged docs/backlog evidence and CLI records. Every non-docs/backlog file and reviewed blob above must remain identical to codeReviewHead; reviewedHeadSha in the original review is not rewritten to the metadata commit.",
+  "taskCliReadback": [
+    {
+      "id": "TASK-103.2",
+      "path": "backlog/tasks/task-103.2 - 地图事件与房间页V25原生视觉交互优化.md",
+      "statusBefore": "In Progress",
+      "statusAfter": "In Progress",
+      "assigneesBefore": [
+        "Furinya"
+      ],
+      "assigneesAfter": [
+        "Furinya"
+      ],
+      "checkedBefore": [
+        2,
+        3,
+        4
+      ],
+      "checkedAfter": [
+        2,
+        3,
+        4
+      ],
+      "new676Unchecked": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "acceptanceCriteriaUnchanged": true,
+      "referencesBefore": [
+        "docs/evidence/release-pc-picker-controls-20261116/README.md",
+        "docs/evidence/release-picker-controls-source-1116/independent-review.json"
+      ],
+      "referencesAfter": [
+        "docs/evidence/release-pc-picker-controls-20261116/README.md",
+        "docs/evidence/release-picker-controls-source-1116/independent-review.json",
+        "docs/evidence/release-picker-controls-release1cc-1116/README.md",
+        "docs/evidence/release-picker-controls-release1cc-1116/independent-review.json",
+        "docs/evidence/release-picker-controls-release1cc-1116/metadata-only-receipt.json"
+      ],
+      "mutation": "Backlog CLI --append-notes and --add-ref only; no status/AC/owner changes"
+    },
+    {
+      "id": "TASK-103",
+      "path": "backlog/tasks/task-103 - 移植V25原生2D并交付两幕可玩候选.md",
+      "statusBefore": "In Progress",
+      "statusAfter": "In Progress",
+      "assigneesBefore": [
+        "Furinya"
+      ],
+      "assigneesAfter": [
+        "Furinya"
+      ],
+      "checkedBefore": [],
+      "checkedAfter": [],
+      "new676Unchecked": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "acceptanceCriteriaUnchanged": true,
+      "referencesBefore": [
+        "https://github.com/FurinyaWorks/Slay-the-Abyss/pull/588",
+        "docs/evidence/release-pc-picker-controls-20261116/README.md"
+      ],
+      "referencesAfter": [
+        "https://github.com/FurinyaWorks/Slay-the-Abyss/pull/588",
+        "docs/evidence/release-pc-picker-controls-20261116/README.md",
+        "docs/evidence/release-picker-controls-release1cc-1116/README.md",
+        "docs/evidence/release-picker-controls-release1cc-1116/independent-review.json",
+        "docs/evidence/release-picker-controls-release1cc-1116/metadata-only-receipt.json"
+      ],
+      "mutation": "Backlog CLI --append-notes and --add-ref only; no status/AC/owner changes"
+    }
+  ],
+  "validationThisDelivery": [
+    "original review bytes/hash/identity verified and copied",
+    "support gzip round-trip and every whitelisted source byte/hash read back",
+    "task CLI before/after AC/status/owner/dependency conservation",
+    "non-docs/backlog delta stays unchanged"
+  ],
+  "notRun": [
+    "independent probes or test suites",
+    "product Host/Fast/Full",
+    "CI polling/push/PR",
+    "GUI/MCP/device/official candidate"
+  ],
+  "acceptanceBoundary": "Source/CI only. Original failure and RED evidence retained; official ready/capacity/PC/mobile and all new #676 acceptance criteria remain unverified."
+}

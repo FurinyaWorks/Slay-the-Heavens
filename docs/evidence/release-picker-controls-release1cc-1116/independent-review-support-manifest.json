@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "explicit-whitelist-independent-review-and-metadata-support",
+  "codeReviewHead": "4bfcc4266ef22111740354bbc86ffa889d027e40",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "reviewId": "picker-release1cc-independent-20261116",
+  "archive": "independent-review-support.json.gz",
+  "archiveBytes": 99460,
+  "archiveSha256": "6016391b28f815a65df5f91dd5f8b0602b7d1ff497ecadce59040fa85f5b3dea",
+  "rawBytes": 292732,
+  "rawSha256": "b08f33310fd654b5ba4aedfebbee827ba85acdd8e9a592ad098c1642ea118a28",
+  "fileCount": 11,
+  "files": [
+    {
+      "path": "review-picker-release1cc.json",
+      "bytes": 73051,
+      "sha256": "51a847b2446a4f50b5434c31126a3e147c48769249abab65174248e7364bd220"
+    },
+    {
+      "path": "review-picker-release1cc.md",
+      "bytes": 2119,
+      "sha256": "2ba8d807df552a7a11236c84d602526119be76b376a98cef4058e882199d6c8d"
+    },
+    {
+      "path": "picker-1cc-review-temp/probe-release1cc.mjs",
+      "bytes": 17740,
+      "sha256": "351f65e4d35904e9736d56bc54625357d51c7b3c6037cf8585f86e9589ea47d4"
+    },
+    {
+      "path": "picker-1cc-review-temp/finalize-review.mjs",
+      "bytes": 4315,
+      "sha256": "07bcae4224f5058c7cf276befbe0747d2510e6a2a839bb83138fe5aa79c4bc52"
+    },
+    {
+      "path": "picker-metadata-delivery/task-103.2-before.json",
+      "bytes": 11141,
+      "sha256": "d8546ed677c913ca47664c0b47cb21a7e4c937e5c996652ef1595201147dcf2d"
+    },
+    {
+      "path": "picker-metadata-delivery/task-103.2-after.json",
+      "bytes": 11907,
+      "sha256": "09744d2f028e07f4efdf6e1fd9e4f66932ef74ac2b81d548263a96f4a9af542c"
+    },
+    {
+      "path": "picker-metadata-delivery/task-103-before.json",
+      "bytes": 25125,
+      "sha256": "65f0bec9dcdaccd020c33b6cbedb55737c6e16f12dbf10e9e54ca939c806fd2d"
+    },
+    {
+      "path": "picker-metadata-delivery/task-103-after.json",
+      "bytes": 25891,
+      "sha256": "53491d5f39c9dc09ec7e1451f6a888c2ed7c88eb9ce9918e5c0c53caff280337"
+    },
+    {
+      "path": "picker-metadata-delivery/task-103.2-edit.log",
+      "bytes": 10357,
+      "sha256": "baa60ae4066e1c5ecb87c02f75cafa0a5662e2128150fb3e4a0c90ca42e518fb"
+    },
+    {
+      "path": "picker-metadata-delivery/task-103-edit.log",
+      "bytes": 23900,
+      "sha256": "05aead52b22c5e2e0956ae50c62fa799c32eb5e13ac9247e3eefc9c68f52fb59"
+    },
+    {
+      "path": "picker-metadata-delivery/save-metadata.mjs",
+      "bytes": 11738,
+      "sha256": "640d5ed5a46966cdd0e8635cce5c2b528c2f7b3fd03f747858db9a4f90c8db77"
+    }
+  ],
+  "readback": "gzip raw payload plus every base64 file length/hash/original byte equality verified",
+  "exclusions": [
+    "temporary isolated copies",
+    "generated test/product outputs",
+    "images or private originals",
+    "unrelated root files"
+  ],
+  "probeExecutionThisDelivery": false
+}
