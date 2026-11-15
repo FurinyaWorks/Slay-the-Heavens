@@ -1,0 +1,159 @@
+{
+  "type": "POST_HOC_EXPLORATORY_NEGATIVE_CONTROL",
+  "warning": "This was added after seeing main results; not preregistered. Not to be interpreted as holdout or independent causal randomized comparison.",
+  "source_blob": "364e1d3e8c8559e2fcb26276b9ae8a2813f21735",
+  "seeds": {
+    "a": "2001-2032",
+    "b": "3001-3032"
+  },
+  "policies": [
+    "guard",
+    "ignite"
+  ],
+  "runs": {
+    "natural": {
+      "training/guard": {
+        "n": 32,
+        "wins": 32,
+        "deaths": 0,
+        "timeouts": 0,
+        "meanPaid": 0,
+        "meanEnemyLoss": 54.813,
+        "meanHeal": 14.375,
+        "meanRest": 16.219,
+        "examples": []
+      },
+      "training/ignite": {
+        "n": 32,
+        "wins": 23,
+        "deaths": 9,
+        "timeouts": 0,
+        "meanPaid": 38.625,
+        "meanEnemyLoss": 60.656,
+        "meanHeal": 23,
+        "meanRest": 16.875,
+        "examples": [
+          {
+            "seed": 2002,
+            "floor": 4,
+            "turn": 2,
+            "reason": "death"
+          },
+          {
+            "seed": 2004,
+            "floor": 5,
+            "turn": 4,
+            "reason": "death"
+          }
+        ]
+      },
+      "holdout/guard": {
+        "n": 32,
+        "wins": 32,
+        "deaths": 0,
+        "timeouts": 0,
+        "meanPaid": 0,
+        "meanEnemyLoss": 59.719,
+        "meanHeal": 14.313,
+        "meanRest": 17.188,
+        "examples": []
+      },
+      "holdout/ignite": {
+        "n": 32,
+        "wins": 22,
+        "deaths": 10,
+        "timeouts": 0,
+        "meanPaid": 36,
+        "meanEnemyLoss": 67,
+        "meanHeal": 22.406,
+        "meanRest": 16.313,
+        "examples": [
+          {
+            "seed": 3006,
+            "floor": 5,
+            "turn": 4,
+            "reason": "death"
+          },
+          {
+            "seed": 3009,
+            "floor": 5,
+            "turn": 5,
+            "reason": "death"
+          }
+        ]
+      }
+    },
+    "noReward": {
+      "training/guard": {
+        "n": 32,
+        "wins": 32,
+        "deaths": 0,
+        "timeouts": 0,
+        "meanPaid": 0,
+        "meanEnemyLoss": 57.219,
+        "meanHeal": 12.531,
+        "meanRest": 18.313,
+        "examples": []
+      },
+      "training/ignite": {
+        "n": 32,
+        "wins": 12,
+        "deaths": 20,
+        "timeouts": 0,
+        "meanPaid": 39.938,
+        "meanEnemyLoss": 68.219,
+        "meanHeal": 22.938,
+        "meanRest": 15.188,
+        "examples": [
+          {
+            "seed": 2002,
+            "floor": 4,
+            "turn": 4,
+            "reason": "death"
+          },
+          {
+            "seed": 2004,
+            "floor": 5,
+            "turn": 5,
+            "reason": "death"
+          }
+        ]
+      },
+      "holdout/guard": {
+        "n": 32,
+        "wins": 32,
+        "deaths": 0,
+        "timeouts": 0,
+        "meanPaid": 0,
+        "meanEnemyLoss": 56.906,
+        "meanHeal": 12,
+        "meanRest": 18.5,
+        "examples": []
+      },
+      "holdout/ignite": {
+        "n": 32,
+        "wins": 14,
+        "deaths": 18,
+        "timeouts": 0,
+        "meanPaid": 42.375,
+        "meanEnemyLoss": 67.188,
+        "meanHeal": 23.688,
+        "meanRest": 16.875,
+        "examples": [
+          {
+            "seed": 3002,
+            "floor": 5,
+            "turn": 4,
+            "reason": "death"
+          },
+          {
+            "seed": 3003,
+            "floor": 5,
+            "turn": 4,
+            "reason": "death"
+          }
+        ]
+      }
+    }
+  }
+}
