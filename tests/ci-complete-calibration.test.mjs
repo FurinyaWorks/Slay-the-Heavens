@@ -44,7 +44,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releasePickerControlsCiRead,releasePickerControlsPriorInventory,assertReleasePickerControlsCiCurrent,releasePickerControlsCiPacket,assertReleasePickerControlsExecutionGuards} from './helpers/release-picker-controls-ci-source.mjs';
-const liveDiskReadFileSync=releasePickerControlsCiRead(rawReleaseReadFileSync);
+import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+const rawBootstrapReadFileSync=releasePickerControlsCiRead(rawReleaseReadFileSync);
+const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
@@ -2025,5 +2027,41 @@ test('release picker controls raw Full inventory retains all tests, diagnostic f
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
   // Owner 2026-11-07: forecasts and reserve are advisory. The job-scoped
   // raw workflow deadlines above remain hard assertions.
+ }
+});
+
+test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
+ assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
+ const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
+ const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ for(const path of ['.github/workflows/quality.yml','.github/workflows/licenses.yml']){
+  const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+  assert.match(source,/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+  assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
+  assert.match(source,/permissions:\n  contents: read/);
+ }
+ const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
+ assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
+ assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
+ assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical execution guard ${guard}ms; prediction is not admission`);
  }
 });
