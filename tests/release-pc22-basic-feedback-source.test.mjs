@@ -7,11 +7,30 @@ import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releasePc22BasicFeedbackSourcePacket,extendReleasePc22BasicFeedbackSource} from './helpers/release-pc22-basic-feedback-source.mjs';
 import {releasePc22BasicFeedbackCiPacket,releasePc22BasicFeedbackCiSource,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackRawInventory,assertReleasePc22BasicFeedbackCiCurrent,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+
+test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
+ const bytes=readFileSync('tests/helpers/release-pc22-basic-feedback-base-source.json.gz');
+ assert.equal(hash(bytes),'4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa');
+ const proof=JSON.parse(gunzipSync(bytes)),prior=preReleasePc22BasicFeedbackSourceEpoch.proof;
+ assert.equal(proof.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
+ assert.deepEqual(proof.baseParents,['36b9b157ee6f05b65eb9f1da7e2978647d36c210']);
+ assert.equal(proof.equivalentCommit,releasePc22BasicFeedbackSourcePacket.baseCommit);
+ assert.equal(proof.sourceCount,352);assert.equal(proof.ownerCount,116);
+ assert.deepEqual(Object.keys(proof.files).sort(),Object.keys(prior.current).filter(path=>prior.current[path]!==null).sort());
+ for(const [path,row]of Object.entries(proof.files)){
+  assert.equal(row.gitBlob,row.oldGitBlob,path+' unchanged exact Git blob');
+  assert.equal(hash(row.source),row.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.source)}\0`).update(row.source).digest('hex'),row.gitBlob,path);
+  assert.equal(row.source,prior.current[path].source,path+' complete authenticated prior source');
+ }
+ assert.equal(releasePc22BasicFeedbackSourcePacket.currentCommit,'1b272ab7f57f2a8bde67fe8796d3a894445ae052');
+});
 
 test('release PC22 basic feedback production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
  const p=sourceEpoch.proof,prior=preReleasePc22BasicFeedbackSourceEpoch.proof;
