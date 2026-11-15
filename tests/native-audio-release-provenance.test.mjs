@@ -29,6 +29,7 @@ function fixture(t, mutate = () => {}) {
     writeFileSync(mapPath, 'complete game');
     full = { mapPath, receiptPath, artFeatures:artFeatureReceipt(options.artFeatures), buildId: '7cf6f22e-2f12-44bb-9f01-aad514071a5f', candidate: fileRecord(mapPath), ...gitSourceIdentity(root),
       payloadDigest: payloadDigest(sourceInputs(root)),
+      imageModes:{schemaVersion:1,bindingSha256:'a'.repeat(64),writer:{sha256:'b'.repeat(64)},staticRequests:1637,templateRequests:86},
       monsterActors:{...monsterActorInventory(monsterActorTemplate(null)),templateIndex:1470123460,containerTemplateIndex:1470123458,powerTemplateIndex:1470123461},
       ...(options.artFeatures.menuBackground?{officialBackground: {templateIndex:1470123456,peakDynamicControls:13201,inputs:[{sha256:'c'.repeat(64)}]}}:{}),
       ...(options.artFeatures.selectionAvatar||options.artFeatures.battlePortrait||options.artFeatures.cards||options.artFeatures.menuBackground?{officialPortraits: {...portraitInventory(options.artFeatures),imageTemplateIndex:1470123457,containerTemplateIndex:1470123458,inputs:portraitSourceInputs(options.artFeatures).map(path=>({path,sha256:'d'.repeat(64),bytes:1}))}}:{}),
@@ -45,7 +46,7 @@ function fixture(t, mutate = () => {}) {
     mkdirSync(directory, { recursive: true }); const mapPath = join(directory, 'audio.gil');
     writeFileSync(mapPath, 'complete game plus music');
     const audio = { mapPath, artFeatures:full.artFeatures, sha256: fileRecord(mapPath).sha256, baseMap,
-      candidate: fileRecord(mapPath), buildId: full.buildId,
+      candidate: fileRecord(mapPath), buildId: full.buildId,imageModes:full.imageModes,
       baseSha256: full.candidate.sha256, baseAfter: full.candidate.sha256,
       liveWriteEnabled: false, officialImport: 'NOT_TESTED', playtest: 'NOT_TESTED', listening: 'NOT_TESTED' };
     mutate({ audio, full, root, mapPath });
@@ -67,6 +68,7 @@ test('actual audio entrypoint follows UUID full receipt and binds FINAL audio ha
   assert.deepEqual(result.officialBackground,f.full.officialBackground,'final audio candidate retains exact runtime binding/provenance');
   assert.deepEqual(result.officialPortraits,f.full.officialPortraits,'final audio candidate retains exact portrait binding/provenance');
   assert.deepEqual(result.artFeatures,f.full.artFeatures);
+  assert.deepEqual(result.imageModes,f.full.imageModes,'final audio candidate retains the exact source/lowered/runtime proof');
   assert.deepEqual(result.monsterActors,f.full.monsterActors,'audio receipt must retain full candidate actor/group/power binding and inventory');
   assert.deepEqual(JSON.parse(readFileSync(result.receiptPath)).monsterActors,f.full.monsterActors);
   assert.deepEqual(result.readyCardArt,f.full.readyCardArt,'final audio candidate retains all75 artwork binding/provenance');
@@ -117,11 +119,13 @@ for (const [name, mutate] of [
   ['pre-audio acceptance hash', ({ audio, full }) => { audio.candidate = full.candidate; }],
   ['missing startup build marker', ({ audio }) => { delete audio.buildId; }],
   ['changed art feature config', ({audio})=>{audio.artFeatures={...audio.artFeatures,configSha256:'0'.repeat(64)};}],
+  ['missing image mode proof', ({audio})=>{delete audio.imageModes;}],
+  ['changed image mode proof', ({audio})=>{audio.imageModes={...audio.imageModes,bindingSha256:'0'.repeat(64)};}],
   ['changed source input', ({ root }) => { writeFileSync(join(root, 'data/input.json'), '{"changed":true}'); }],
   ['new untracked source identity', ({ root }) => { writeFileSync(join(root, 'untracked.txt'), 'dirty'); }],
 ]) test(`audio candidate cannot inherit trusted release provenance with ${name}`, async t => {
   const f = fixture(t, mutate);
-  await assert.rejects(f.run({ releaseCandidate: true }), /artifact|Source changed|provenance changed|art feature configuration/);
+  await assert.rejects(f.run({ releaseCandidate: true }), /artifact|Source changed|provenance changed|art feature configuration|image mode proof/);
   const receipt = JSON.parse(readFileSync(join(f.root, 'build/native-audio-game/audio/candidate.json')));
   assert.equal('sourceReceipt' in receipt, false, 'failed packaging must not claim full-source provenance');
 });

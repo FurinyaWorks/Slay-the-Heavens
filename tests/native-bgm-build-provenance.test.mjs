@@ -49,7 +49,7 @@ function fixture(t, corrupt, existing=false, official=false) {
     put(`full/payload/${name}.lua`, source); return [name, sha256(source)];
   }));
   const base = put('full/candidate.gil', 'full pre-audio candidate');
-  const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId, ...(official?{officialAssetsProfile,uiProfile:uiProfileReceipt(true)}:{}),artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
+  const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId, imageModes:{schemaVersion:1,source:{layout:'a'.repeat(64)},bindingSha256:'b'.repeat(64),writer:{sha256:'c'.repeat(64)},staticRequests:1637,templateRequests:86}, ...(official?{officialAssetsProfile,uiProfile:uiProfileReceipt(true)}:{}),artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
   const tool = join(root, 'tool');
   put('tool/package.json', '{"type":"module","version":"fixture"}');
   put('tool/node_modules/@modelcontextprotocol/sdk/package.json', '{"type":"module"}');
@@ -80,6 +80,7 @@ test('real BGM CLI preserves exact packaged startup marker and all entry paramet
   assert.equal(receipt.mapPath, join(f.output, 'candidate.gil'));
   assert.deepEqual(receipt.candidate, fileRecord(receipt.mapPath));
   assert.deepEqual(receipt.officialBackground,{templateIndex:1470123456,peakDynamicControls:13201});
+  assert.deepEqual(receipt.imageModes,JSON.parse(readFileSync(join(f.root,'full/candidate.json'),'utf8')).imageModes,'BGM must preserve the entire exact full-image-mode proof');
   assert.equal(receipt.buildId, f.buildId); assert.equal(receipt.sha256, receipt.candidate.sha256);
   assert.notEqual(receipt.candidate.sha256, fileRecord(f.base).sha256);
   assert.equal(receipt.officialImport, 'NOT_TESTED'); assert.equal(receipt.playtest, 'NOT_TESTED');

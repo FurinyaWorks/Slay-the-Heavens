@@ -71,11 +71,13 @@ export async function buildNativeAudioGame({ baseMap, output = 'build/native-aud
   }
   if(JSON.stringify(audio.officialAssetsProfile)!==JSON.stringify(full.officialAssetsProfile)||JSON.stringify(audio.uiProfile)!==JSON.stringify(full.uiProfile))throw Error('Audio UI profile differs from full candidate');
   if(JSON.stringify(audio.artFeatures)!==JSON.stringify(full.artFeatures))throw Error('Audio art feature configuration differs from full candidate');
+  if(JSON.stringify(audio.imageModes)!==JSON.stringify(full.imageModes))throw Error('Audio image mode proof differs from full candidate');
   Object.assign(audio, { artFeatures:full.artFeatures, sourceCommit: full.sourceCommit, sourceDirty: full.sourceDirty, payloadDigest: full.payloadDigest,
     startedAt: full.startedAt, productionManifest: full.productionManifest,
     monsterActors: full.monsterActors,
     ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}),
     ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
+    ...(full.imageModes ? {imageModes:full.imageModes} : {}),
     ...(full.toolchainIdentity ? {toolchainIdentity:full.toolchainIdentity} : {}),
     sourceReceipt: fileRecord(full.receiptPath), ...(full.release ? { release: full.release } : {}),
     ...(full.nativeMonsterArt ? {nativeMonsterArt:full.nativeMonsterArt} : {}),
