@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { toLua } from './build-lua-data.mjs';
+import {utf8ToLua} from './lua-utf8-literal.mjs';
 import { contentFiles, loadContent } from './validate-data.mjs';
 
 // Id ranges of the platform picture library (image_catalog of the miliastra MCP, photographed 2026-10-13).
@@ -99,7 +99,7 @@ export function buildUiTheme(themeFile = 'data/presentation/ui_theme.json', data
   const { note, ...runtime } = theme;
   runtime.icon = { ...runtime.icon, status: Object.fromEntries(
     Object.entries(runtime.icon.status).map(([key, value]) => [key, iconId(value)])) };
-  const source = `-- Generated from data/presentation/ui_theme.json. Do not edit.\nreturn ${toLua(convertColours(runtime))}\n`;
+  const source = `-- Generated from data/presentation/ui_theme.json. Do not edit.\nreturn ${utf8ToLua(convertColours(runtime))}\n`;
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(output, source, 'utf8');
   return source;
