@@ -59,7 +59,7 @@ function energyChrome(icon,theme){
   image('warmLight',[size*.64,size*.64],106056,'#FFF3A6',[-size*.05,size*.08],{imageType:'basic'}),
  ]);
  // The runtime-owned light sits above the new ornament and still hides at 0 energy.
- light.image=100002;light.feather={pixels:[14,14]};
+ light.image=100002;delete light.imageType;light.feather={pixels:[14,14]};
  icon.children=[chrome,ring,light,core,requireChild(icon,'valueShadow')];
 }
 

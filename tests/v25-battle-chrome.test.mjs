@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {battleLayout} from '../scripts/ui-layout.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
-import {assertNativeUiCapacity} from '../scripts/build-ui.mjs';
+import {assertNativeUiCapacity,buildUI} from '../scripts/build-ui.mjs';
+import {mkdirSync,mkdtempSync,readFileSync,rmSync} from 'node:fs';
+import {resolve,join} from 'node:path';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {applyV25BattleChrome} from '../scripts/v25-battle-chrome.mjs';
@@ -11,6 +13,22 @@ const children=node=>node.controls??node.children??[];
 const find=(node,name)=>children(node).find(child=>child.name===name);
 const stage=layout=>find(layout,'stage');
 const all=node=>[node,...children(node).flatMap(all)];
+
+test('generated native energy light drops gallery mode after becoming a basic circle',t=>{
+ const root=resolve('.artifacts/test-tmp');mkdirSync(root,{recursive:true});
+ const out=mkdtempSync(join(root,'primitive-image-mode-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
+ buildUI(out,undefined,{officialAssets:true});
+ for(const file of ['battle-ui.json','game-ui.json']){
+  const tree=JSON.parse(readFileSync(join(out,file),'utf8'));
+  const battle=all(tree).find(n=>n.name==='battlePanel')??stage(tree);
+  const light=find(find(battle,'energyIcon'),'light');
+  assert.equal(light.image,100002);assert.equal(Object.hasOwn(light,'imageType'),false,
+   file+' basic shapes do not expose the gallery image mode');
+  assert.deepEqual(light.feather,{pixels:[14,14]});
+  const galleryModes=new Set(all(tree).filter(n=>n.kind==='image'&&n.image>100006).map(n=>n.imageType).filter(Boolean));
+  assert(galleryModes.has('basic')&&galleryModes.has('stretch'),'gallery requests must remain explicit and unchanged');
+ }
+});
 
 test('V25 chrome retains live energy, pile counts, labels, hit areas and all ten cards',()=>{
  const layout=battleLayout(),root=stage(layout);
