@@ -6,6 +6,8 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releaseNavigationCiSource,releaseNavigationCiCheckedSource,releaseNavigationPriorInventory,releaseNavigationCiPacket,assertReleaseNavigationCiCurrent} from './release-navigation-ci-source.mjs';
+import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
+import {releaseMergeRead,releaseMergeSource,assertReleaseMergeCurrent} from './release-bootstrap-merge-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -19,7 +21,9 @@ export function integratedSource(path,source,target){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
+ source=releaseMergeSource(path,source,'slicePrior');
  source=releaseNavigationCiSource(path,source,row?.current);
+ source=releaseBootstrapCiSource(path,source,row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
@@ -34,9 +38,11 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertReleaseNavigationCiCurrent(read);
- for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseNavigationCiCheckedSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
- for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseNavigationCiSource(path,read(path,'utf8'),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
+ assertReleaseMergeCurrent(read);
+ assertReleaseBootstrapCiCurrent(releaseMergeRead('bootstrapView',read));
+ assertReleaseNavigationCiCurrent(releaseMergeRead('slicePrior',read));
+ for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseNavigationCiCheckedSource(path,releaseMergeRead('slicePrior',read)(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseNavigationCiSource(path,releaseMergeRead('slicePrior',read)(path,'utf8'),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
 }
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return [...releaseNavigationCiPacket.currentInventory[kind]];}
 export function extendIntegratedHelperClosure(original){
@@ -50,7 +56,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
- paths=releaseNavigationPriorInventory(paths,kind,read);
+ paths=releaseNavigationPriorInventory(paths,kind,releaseMergeRead('slicePrior',read));
  // New standalone reviewed views consume raw discovery. Older chained views
  // retain their existing idempotent prior-inventory contract.
  if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
@@ -64,7 +70,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
  for(const path of added){
   const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-  assert.equal(hash(norm(releaseNavigationCiSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+  assert.equal(hash(norm(releaseNavigationCiSource(path,releaseMergeRead('slicePrior',read)(path,'utf8'),row.current))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
 }

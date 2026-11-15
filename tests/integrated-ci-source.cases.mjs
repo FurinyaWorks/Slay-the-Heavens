@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as rawReadFileSync} from 'node:fs';
+import {readFileSync as physicalReadFileSync,readdirSync} from 'node:fs';
+import {releaseMergeRead,assertReleaseMergeCurrent} from './helpers/release-bootstrap-merge-ci-source.mjs';
+const rawReadFileSync=releaseMergeRead('slicePrior',physicalReadFileSync);
+const bootstrapReadFileSync=releaseMergeRead('bootstrapView',physicalReadFileSync);
+import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {releaseNavigationCiRead,releaseNavigationPriorInventory} from './helpers/release-navigation-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
@@ -38,4 +42,37 @@ test('integration copy closure requires its complete exact predecessor and curre
   assert.equal(hash(path.endsWith('.gz')?readFileSync(path):raw(path)),row.after);
   assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'f'.repeat(64)}),/copy predecessor/);
  }
+});
+
+test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
+ assertReleaseMergeCurrent(physicalReadFileSync);assertReleaseBootstrapCiCurrent(bootstrapReadFileSync);
+ for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
+  const source=bootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  assert.equal(releaseBootstrapCiSource(path,source),row.before.source,path);
+  for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(releaseBootstrapCiSource(path,foreign),foreign);
+  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseBootstrapCiSource(foreignPath,source),source);
+  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{
+   const value=bootstrapReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+  }),error=>{assert(error.message.includes(path));return true;});
+  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return bootstrapReadFileSync(p,e);}),/missing/);
+  if(path.startsWith('.github/')){
+   for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(releaseBootstrapWorkflowBefore(path,input),row.before.source);
+   for(const foreign of [source+'\n',source.slice(1),source.replace('release/**','foreign/**')])
+    assert.throws(()=>releaseBootstrapWorkflowBefore(path,foreign),/fresh complete Release bootstrap workflow/);
+  }
+ }
+ const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
+ assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?bootstrapReadFileSync(p).subarray(1):bootstrapReadFileSync(p,e)),/immutable bootstrap predecessor/);
+ const inventories={js:releaseNavigationPriorInventory(discoverJs(),'js',rawReadFileSync),lua:releaseNavigationPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',rawReadFileSync)};
+ for(const [kind,paths]of Object.entries(inventories)){
+  assertReleaseBootstrapRawInventory(paths,kind);
+  for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
+   assert.throws(()=>assertReleaseBootstrapRawInventory(bad,kind),/raw discovery inventory/);
+ }
+ const leaf=bootstrapReadFileSync('tests/helpers/release-bootstrap-ci-source.mjs','utf8');
+ const bytes=bootstrapReadFileSync('tests/helpers/release-bootstrap-ci-source.json.gz');
+ const marker="const bytes=readFileSync(new URL('./release-bootstrap-ci-source.json.gz',import.meta.url));";
+ assert.equal(leaf.split(marker).length,2);
+ const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
+ await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete Release bootstrap CI continuation/);
 });

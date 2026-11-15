@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "pr": 690,
+  "backup": "backup/release-pc-navigation-pre-bootstrap-1116",
+  "priorHead": "8129bd8684a7ccf420ba0a8ec5fe077372050708",
+  "actualRelease": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "releaseParent": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "releaseTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "bootstrapProducer": "b67226945c2be47c8fff31f1362412b973f68875",
+  "mergeParents": [
+    "8129bd8684a7ccf420ba0a8ec5fe077372050708",
+    "1cc5479b713edab6fd26db4e20f8eb22b7401cb2"
+  ],
+  "mergeMethod": "merge --no-commit --no-ff; actual conflict text preserved; no rebase/history rewrite",
+  "scope": "Both original Source/CI assertion sets retained through explicit complete target views; production, original packets, all 93 old archives, workflows/timings/costs/thresholds unchanged.",
+  "changedReleasePaths": [
+    "backlog/tasks/task-81.2 - 让安全Fast PR进入完整合并队列.md",
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/ci-posix-concurrency.test.mjs",
+    "tests/engineering-quality.test.mjs",
+    "tests/full-quality.test.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/helpers/release-bootstrap-ci-source.json.gz",
+    "tests/helpers/release-bootstrap-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/quick-feedback.test.mjs"
+  ],
+  "releaseProductionEquivalence": {
+    "count": 352,
+    "before": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+    "after": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+    "comparison": "all source/config Git blob records identical; primary Git provenance test passed",
+    "bootstrapGitBindingCount": 10
+  },
+  "composition": {
+    "helper": "tests/helpers/release-bootstrap-merge-ci-source.mjs",
+    "packet": "tests/helpers/release-bootstrap-merge-ci-source.json.gz",
+    "sha256": "1656049e4539b353628590e920a0bbb76fab2a23651caf0037aaf981fcc629a9",
+    "currentBindings": 28,
+    "targets": [
+      "slicePrior",
+      "bootstrapView"
+    ],
+    "targetCommits": {
+      "slicePrior": "8129bd8684a7ccf420ba0a8ec5fe077372050708",
+      "bootstrapView": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2"
+    },
+    "originalBranchPacketSha256": "e496eff66fdbcfd86b60c455c7332f841ba62a17e50e9e53b4e8a5677dec34d1",
+    "bootstrapPacketSha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6",
+    "pinnedArchiveCount": 95
+  },
+  "retained": {
+    "originalArchiveCount": 93,
+    "physicalGitGzip": 91,
+    "lfs": [
+      {
+        "path": "tests/helpers/closeout-ci-source.json.gz",
+        "oid": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+        "sizeBytes": 2848271
+      },
+      {
+        "path": "tests/helpers/release-source-epoch.json.gz",
+        "oid": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+        "sizeBytes": 2587324
+      }
+    ],
+    "originalProductionProjectorUnchanged": true,
+    "originalCiPacketAndBootstrapPacketUnchanged": true
+  },
+  "frozenProduct": {
+    "files": 3070,
+    "manifest": "frozen-product-blobs.json.gz",
+    "sha256": "46de85eb033b94cd01fb5787f81a5085f487296858b1a12b731f052069b1a661",
+    "rawSha256": "77df72f348b600d46ce6b50dd390d826966dd1aedb8834b86d36d6d0e61dc7e5",
+    "allProductionAndRawLuaDiffsEmpty": true,
+    "topLevelSourceCiOnlyChanges": [
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/ci-posix-concurrency.test.mjs",
+      "tests/engineering-quality.test.mjs",
+      "tests/full-quality.test.mjs",
+      "tests/quick-feedback.test.mjs",
+      "tests/release-navigation-source.test.mjs"
+    ]
+  },
+  "node": "v24.18.0",
+  "temp": "F:/New folder/.artifacts/release-pc-qa-20261115/bootstrap-merged/navigation/tmp",
+  "checks": {
+    "source-after-semantic-before.log": {
+      "tests": 6,
+      "pass": 3,
+      "fail": 3,
+      "durationMs": 3335.6486
+    },
+    "source-small-r1.log": {
+      "tests": 9,
+      "pass": 7,
+      "fail": 2,
+      "durationMs": 18078.2055
+    },
+    "source-small-r2.log": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "durationMs": 20566.907
+    },
+    "raw-ci-small-r1.log": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "durationMs": 26401.6764
+    },
+    "copy-source-small.log": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "durationMs": 22927.5279
+    }
+  },
+  "forecasts": {
+    "win32": {
+      "js": 879,
+      "lua": 1424,
+      "forecastMs": 1757923
+    },
+    "linux": {
+      "js": 879,
+      "lua": 1424,
+      "forecastMs": 1191630
+    }
+  },
+  "status": "bounded Source/CI verified; independent exact-HEAD review and PR update remain root responsibility",
+  "negativeControls": "Both old validators keep complete original before/current; outer fresh/current missing/Buffer/throw/foreign/warm-late drift and truncated-copy controls pass. Old guard/route negatives and original Git/LFS archives retained.",
+  "performance": "Source/CI case time is measured in logs; forecast remains diagnostic under Owner policy. No timing calibration or workflow/cost/threshold change.",
+  "notRun": [
+    "product or Host regressions",
+    "Fast/Full",
+    "hosted CI or polling",
+    "GUI/MCP/keyboard/mouse",
+    "Backlog CLI mutation",
+    "push/PR update/merge:auto"
+  ],
+  "evidence": {
+    "merge-conflict.log.gz": {
+      "rawBytes": 456,
+      "rawSha256": "b93b30870f488829d0ffe0d25bfc8d540860063f7841d5c84bb715a66b3b8df7",
+      "sha256": "e32541fe485b211aa0aefe521fcaad2c18ba087856efe37273a1a090771f25dc"
+    },
+    "merge-conflicts.diff.gz": {
+      "rawBytes": 13973,
+      "rawSha256": "26ad0edd272bcf9a337f9fe837efc5a043130664a14839aeb1e92fc2e2ce46fd",
+      "sha256": "30aec7e1af6523484bcf0fa70c9f7b6c4a3ae7d22ed50ca41db2cb9f37fcf299"
+    },
+    "source-after-semantic-before.log.gz": {
+      "rawBytes": 5207,
+      "rawSha256": "a1f641a54676c4ce03fe41b223780029cd8a79c72e808939c78ca2518d6ed46e",
+      "sha256": "27e1336c1172e1adf6ff75dc10e6b70e357c199ef3c5cfbdb3f8e4007e7052d6"
+    },
+    "source-small-r1.log.gz": {
+      "rawBytes": 4131,
+      "rawSha256": "7873007d2c44255620d2103a2b319f8aa9a56777acf2705c3b03692ce4f693ba",
+      "sha256": "ffd5252b01293602443999e77518226d015eb8d2a35261cdfad5d7a1d03a586c"
+    },
+    "source-small-r2.log.gz": {
+      "rawBytes": 1197,
+      "rawSha256": "2a2602c1d653bd7ab5e535e8a2c753e356a6760757869c4849f82e005b826e42",
+      "sha256": "0496e7187acda58d7a86d705dcc5d98aec133af2c766836dbc7b682af48f47ab"
+    },
+    "raw-ci-small-r1.log.gz": {
+      "rawBytes": 1315,
+      "rawSha256": "e0be2357d8c21607c8f4e47d81f6702b6659fee75e442fb7b7d185041feb8104",
+      "sha256": "23c74530293d1477a58dcae5bbe24e8daf4288fa5550ba7859976ffebeee2fd0"
+    },
+    "copy-source-small.log.gz": {
+      "rawBytes": 427,
+      "rawSha256": "8a579e10c17342f75a7b583a4c3da37c2e39c7e2146e77a1aea600cec26c8a83",
+      "sha256": "4f2954e2d6dfa2eb8162ea35c6178264e85977aca8aaf58991b0b69704aa1a42"
+    }
+  }
+}
