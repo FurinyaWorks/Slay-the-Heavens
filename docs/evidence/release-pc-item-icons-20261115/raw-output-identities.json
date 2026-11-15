@@ -169,6 +169,48 @@
       "gzipSha256": "2ba644c8420b596b194430e9f3cb1fe04663a2944868b0030f74b77d5d2d114f",
       "rawBytes": 104,
       "gzipBytes": 112
+    },
+    {
+      "file": "reward-alias-and-regression-green.tap.gz",
+      "rawSha256": "031266c4f39c9685c7086b4b607b00a74cf93664dae8e3d537960b34dc269dd2",
+      "gzipSha256": "9dfe00bce2d0d4c75865bc9f7cf95be0954829b61d1234bb1273931f66558400",
+      "rawBytes": 2931,
+      "gzipBytes": 930
+    },
+    {
+      "file": "reward-alias-engineering.log.gz",
+      "rawSha256": "5ed427501cde1020ea91f6f54ab06b20a2fa3fdf7001b45d4f2865aedee7b579",
+      "gzipSha256": "7e115088be94db3aaa9628dff7301374d51f0fae3b1982d78a2471067ed22cab",
+      "rawBytes": 377,
+      "gzipBytes": 279
+    },
+    {
+      "file": "reward-alias-license.log.gz",
+      "rawSha256": "9a8a240e70a35bec1599c938bdcf60767e063b0b16b8622c6980f342d4390bfb",
+      "gzipSha256": "2ba644c8420b596b194430e9f3cb1fe04663a2944868b0030f74b77d5d2d114f",
+      "rawBytes": 104,
+      "gzipBytes": 112
+    },
+    {
+      "file": "reward-alias-red.tap.gz",
+      "rawSha256": "91e2ccbc59c5da6108a3c8978c8724ef6e03774508c58de45083f7080b8b7b71",
+      "gzipSha256": "60244e9ba0f03c387b6acde673d62254cd79717a6fd62e0bcd67511857fb331b",
+      "rawBytes": 28203,
+      "gzipBytes": 1860
+    },
+    {
+      "file": "review-item-icons-reward-alias-probe.lua.gz",
+      "rawSha256": "363b22bdc50b24c0646d5cf0699b490a2b265e4c942a3f327b8f6067f13279e9",
+      "gzipSha256": "89ccc866b05c52fee504a88393bfc44e4ac56d57916577637515785179e34c0f",
+      "rawBytes": 1373,
+      "gzipBytes": 687
+    },
+    {
+      "file": "review-item-icons-reward-alias-probe.log.gz",
+      "rawSha256": "b81a20860da00eea29dc931022ff0a88532f6ed72be9166043ff6a1916352f33",
+      "gzipSha256": "a7136ca34d75cb50c5dead5d211cef755447e6a52f24decf2cec1af1af727756",
+      "rawBytes": 655,
+      "gzipBytes": 357
     }
   ]
 }

@@ -73,3 +73,14 @@ test('relic native fallback survives unavailable pools in shop, treasure, single
   assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));assert.match(result.stdout,/RELIC_FALLBACK_CASES 25 0/);assert.match(result.stdout,/RELIC_FALLBACK_RUNTIME_PASS 4_SURFACES 2_SETS 3_FAILURES/);
  }finally{rmSync(directory,{recursive:true,force:true});}
 });
+
+test('formal relic source aliases share canonical native and semantic reward mapping without state writes',()=>{
+ const directory=mkdtempSync(join(tmpdir(),'abyss-reward-alias-'));
+ try{
+  buildLuaData('data',join(directory,'abyss_data.lua'));buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
+  const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',"dofile('tests/helpers/reward-alias-runtime.lua')"],{
+   encoding:'utf8',timeout:60000,maxBuffer:1024*1024,env:{...process.env,LUA_PATH:directory.replaceAll('\\','/')+'/?.lua;./src/lua/?.lua;;'},
+  });
+  assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));assert.match(result.stdout,/REWARD_ALIAS_FULL_RUN_RNG_UNCHANGED/);assert.match(result.stdout,/REWARD_ALIAS_RUNTIME_PASS 13_ALIASES 2_ROWS 4_STATES 139_CHECKS/);
+ }finally{rmSync(directory,{recursive:true,force:true});}
+});

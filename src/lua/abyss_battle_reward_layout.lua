@@ -7,6 +7,12 @@ local rowFaces=setmetatable({},{__mode='k'})
 local names={'goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward'}
 local rowNames={};for _,name in ipairs(names)do rowNames[name]=true end
 local function iconId(value)return type(value)=='table'and value.id or value end
+local function relicId(item,run)
+ if not item then return nil end
+ local source=item.sourceId or item.id
+ local definition=run and run.data and require('abyss_relic_rewards').definition(run,source)
+ return definition and definition.id or require('abyss_relic_hooks').localId(source)
+end
 local function rewardIcon(name,run)
  if name=='goldReward'or name=='stolenGold'then return iconId(Theme.icon.gold)end
  if name=='cardReward'then return iconId(Theme.icon.deck)end
@@ -15,7 +21,7 @@ local function rewardIcon(name,run)
  if name=='claimPotion'then return Theme.icon.potion[rewards and rewards.potion and rewards.potion.id]or Theme.icon.potion.empty end
  local index=tonumber(name:match('^relicReward(%d)$'))
  local item=rewards and rewards.relics and rewards.relics[index]
- return item and RelicView.icon(item.sourceId or item.id,true)or iconId(Theme.icon.node.treasure)
+ return item and RelicView.icon(relicId(item,run),true)or iconId(Theme.icon.node.treasure)
 end
 local function paintIcon(cached,name,run,platform)
  local id=rewardIcon(name,run)
@@ -27,7 +33,7 @@ local function paintIcon(cached,name,run,platform)
  elseif name=='relicReward1'or name=='relicReward2'then
   local rewards=run and run.rewards
   local item=rewards and rewards.relics and rewards.relics[tonumber(name:sub(-1))]
-  local localId=item and require('abyss_relic_hooks').localId(item.sourceId or item.id)
+  local localId=relicId(item,run)
   cached.icon:SetVisible(true)
   Art.paint(cached.icon,'relic',localId,Theme.officialAssets.rewardRows.iconSize,platform)
  end

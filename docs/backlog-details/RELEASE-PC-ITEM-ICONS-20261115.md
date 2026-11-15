@@ -48,3 +48,15 @@
 - 已额外运行既有 `node scripts/check-license.mjs`，原offline SBOM/资产来源guard PASS，原输出 `license-current.log.gz` 保留。原已知GPL/IP/unknown风险仍开放，PASS不是商业使用许可或新原图授权。
 
 本次提交只增加审计说明/JSON/探针与raw证据，不改产品、获取规则、素材或source/CI packet。
+
+## 独审 alias 漏绘修正（4431cc91 之后）
+
+独审 `ITEM-ICONS-ALIAS-2` 另以原resolver生成的正式tuple在真实Host断言0/2 RED；原probe/log以 `review-item-icons-reward-alias-probe.*gz` 保存。0345006e已修的失效池P2保持，新增alias漏绘单独修正，不覆盖前述历史集合/失败表。
+
+- 生产仅修改 `abyss_battle_reward_layout` 一个共享owner：`relicId(item,run)` 保留 `sourceId or id` 的权威次序，存在run.data时调用既有 `RelicRewards.definition(run,source)`；解析出的同一canonical ID用于native image与语义recipe。无data预览仍兼容旧Hooks别名回退；未知source不偷用相矛盾的已知item.id。没有新增平行alias表、素材或获取/RNG规则。before/after见 `reward-alias-source.json`。
+- RED由真实Geo队列动态提取13个未被Hooks单独归一的source，不另列实现别名：两个奖励行 × normal/hover/pressed/disabled = **104/104按预期失败**；源优先相关失败另保留，完整Run/RNG快照始终不变，见 `reward-alias-red.tap.gz`。13包括6个应绘recipe与7个应显示各自native image，不能仅补两个common遗物。
+- GREEN：同13 × 2 × 4 =104，以及32个source优先/冲突ID/unknown source/id-only、3个无run.data预览，共 **139/139** 精确断言通过。每次真实Host刷新后递归比较完整Run（含所有RNG），无渲染状态写入；空奖励清理与原fallback路径保留。13项ID/source/image/recipe全矩阵及149原集合见 `reward-alias-verification.json`。
+- 本轮统一定向 `potion-art-runtime` / `potion-art` / `lowcost-art` **10/10通过**，包含原25场景fallback、全部42药水配方与四入口、121遗物/42敌人旧绘制和资源负例；原断言未删。日志 `reward-alias-and-regression-green.tap.gz`。
+- 工程 `reward-alias-engineering.log.gz`：351模块、6166/6166测量、1993依赖边、无新增诊断，6条历史告警。`reward-alias-license.log.gz` 原offline许可证guard再次PASS，既有GPL/IP/unknown风险边界不变。
+
+前述149合法集合仍是120 recipe +29既有native-only，而非149矢量配方；mark_of_bloom等非当前来源仍保留。当前代码层alias缺口经受控Host修正，仍待增量独审与最终组合source续接/CI；不宣称PC18设备、容量或发布验收闭合。本次不做source/CI packet，不推送或开PR。
