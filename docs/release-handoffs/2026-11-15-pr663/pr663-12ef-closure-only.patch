@@ -1,0 +1,33 @@
+diff --git a/tests/helpers/generate-integrated-ci-source.mjs b/tests/helpers/generate-integrated-ci-source.mjs
+index bc607d6d..164fe8f9 100644
+--- a/tests/helpers/generate-integrated-ci-source.mjs
++++ b/tests/helpers/generate-integrated-ci-source.mjs
+@@ -38,8 +38,13 @@ for(const ref of requests){
+ assert.equal(offset,payload.length,'complete Git batch response');
+ const files={};for(const p of paths){const views={};for(const [name,revision]of Object.entries(sources))views[name]=viewsByRef.get(revision+':'+p);
+  files[p]={current:bind(norm(readFileSync(p,'utf8'))),views};}
+-const closure={};for(const p of ['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz'])
+- closure[p]={before:feedback.helperClosure[p]?.after??null,after:hash(p.endsWith('.gz')?readFileSync(p):norm(readFileSync(p,'utf8')))};
++const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
++const closeoutBindingBytes=readFileSync('tests/helpers/closeout-source-closure.json');
++assert.equal(hash(closeoutBindingBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','immutable runtime copy predecessor manifest');
++const runtimeBefore=JSON.parse(closeoutBindingBytes)[runtime];
++assert.match(runtimeBefore,/^[a-f0-9]{64}$/,'exact frozen runtime copy predecessor');
++const closure={};for(const p of ['tests/helpers/closeout-source-epoch.mjs',runtime,'tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz'])
++ closure[p]={before:feedback.helperClosure[p]?.after??(p===runtime?runtimeBefore:null),after:hash(p.endsWith('.gz')?readFileSync(p):norm(readFileSync(p,'utf8')))};
+ const binaryViews={'tests/helpers/menu-red-production-source.json.gz':{current:closure['tests/helpers/menu-red-production-source.json.gz'].after,
+  views:{menu:{path:'tests/helpers/menu-red-before-integration-production-source.json.gz',sha256:'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae'}}}};
+ const inventories=Object.fromEntries(Object.entries(sources).map(([name,revision])=>[name,{
+diff --git a/tests/helpers/integrated-ci-source.mjs b/tests/helpers/integrated-ci-source.mjs
+index 1d4cd004..11458a06 100644
+--- a/tests/helpers/integrated-ci-source.mjs
++++ b/tests/helpers/integrated-ci-source.mjs
+@@ -37,7 +37,7 @@ export function assertIntegratedCurrent(read=readFileSync){
+ }
+ export function extendIntegratedHelperClosure(original){
+  const current={...original},patch=integratedCiProof.closure;
+- assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
++ assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
+  for(const [path,row]of Object.entries(patch)){assert.equal(row.before,original[path]??null,'exact integration copy predecessor: '+path);assert.match(row.after,/^[a-f0-9]{64}$/);current[path]=row.after;}
+  return freeze(current);
+ }
