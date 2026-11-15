@@ -29,6 +29,19 @@ import {prepareV25CardTemplates} from './v25-card-templates.mjs';
 import {v25CardModule,v25PrivateInputs,writeV25CardBinding,assertV25CardPreparation} from './v25-card-binding.mjs';
 import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
 import {prepareComponentControlLayout,assertComponentControlOutput,componentBindingSource} from './native-component-profile.mjs';
+import {applyOfficialAssets,officialAssetsTheme} from './official-assets-layout.mjs';
+
+export function assertCandidateMonsterActorTemplate(templates,monster,{officialAssets=false,componentWidgets,root=process.cwd()}={}){
+  const actual=templates.filter(template=>template.name===monsterActorTemplateName);
+  const raw=monsterActorTemplate(monster);
+  const expected=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[raw],componentWidgets).templates[0]:raw;
+  // Match the same official-only presentation transform used by buildUI.
+  if(officialAssets){
+    const sourceTheme=JSON.parse(readFileSync(join(root,'data/presentation/ui_theme.json'),'utf8').replace(/^\uFEFF/,''));
+    applyOfficialAssets([expected],officialAssetsTheme(sourceTheme));
+  }
+  if(actual.length!==1||JSON.stringify(actual[0])!==JSON.stringify(expected))throw Error('Monster actor template differs from candidate features or source');
+}
 
 export const generatedRuntimeModules = {
   abyss_component_binding:'scripts/build-ui.mjs',
@@ -209,9 +222,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
           capacity:monster.poolCapacity,allocation:'per-drawable-actor-instance',
           inputs:records.map(({path})=>({...fileRecord(join(root,path),root),path}))};
       }
-      const actorTemplates=templates.filter(template=>template.name===monsterActorTemplateName);
-      const expectedActor=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[monsterActorTemplate(monster)],componentWidgets).templates[0]:monsterActorTemplate(monster);
-      if(actorTemplates.length!==1||JSON.stringify(actorTemplates[0])!==JSON.stringify(expectedActor))throw Error('Monster actor template differs from candidate features or source');
+      assertCandidateMonsterActorTemplate(templates,monster,{officialAssets,componentWidgets,root});
       const expected=`-- Generated from the bounded native monster registry.\nreturn ${toLua(monster??{})}\n`;
       if(readFileSync(join(generated,'abyss_monster_art_data.lua'),'utf8')!==expected)throw Error('Monster artwork payload differs from candidate features or source');
     }
