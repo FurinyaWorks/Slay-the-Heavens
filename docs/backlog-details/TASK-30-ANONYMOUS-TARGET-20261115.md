@@ -32,3 +32,11 @@
 原始探针、失败、纠偏和最终输出在本独立树 `.artifacts/target-response-1115/`；新增回归为可提交重放入口。最初 Fast 计划因沙箱 Git 子进程不能解析存在的基线失败，提升执行权限后按原入口完成；测试 Controller 夹具缺 directions 的初次环境失败也保留，未当产品缺陷或跳过断言。
 
 未运行本地 Full、未创建 PR 或触发托管 Full；按本轮要求只推送独立候选分支交协调者决定验证时机。未构建新 GIL、未官方导入/ready/容量或同候选手机实测，未修改发布候选、master、Tag、版本或平衡。本任务的设备要求保持未完成；精确 HEAD/BASE 独立评审与组合验证另行交接。
+
+## c165 独审后的未知终止纠偏
+
+独立评审明确拒绝 `c1658838097b8c4decc34ec9341f6046345ce0b4`：命名 Down2 后无 ID 的 Exit 或 EndDrag 没有 Up，只清 noTouch 而残留 active2，新的确认点击仍被阻挡。两份独立原始 probe 在本树分别复现 exit=1/endDrag=1，失败日志保留。独立 P0 药水组合另发现 popupFirst/lower 缺 Up 时，同 ID 的新物理序列也被误当并发；含 Up 的原两轨迹通过，不能据此给整个组合 PASS。
+
+统一协议只作用于当前敌控件：未知终止先撤匿名资格，active 超过一个时不猜结束者，保留各自命名归属；单 active 必须与现存 pending 的 origin 一致，没有 active 才用唯一 pending 兜底。可唯一归属时同步退 active/held/released 及对应预览，旧尾 Click 不能冒领。未知 Up 也只取消命名 origin，不产生“已确认 Up”；完整 noTouch Down/Up/Click 保留。fresh 命名 Down 先退本控件同 ID 的旧序列，再检查真正其它活指，不能清他人控件或其它手指。
+
+新增 `target_anonymous_terminal.lua` 七组参数化回归覆盖 nil/空表的 Exit/EndDrag/Up、唯一 pending、完整 noTouch、多 active 优先级、同 ID 复用、晚未知/命名尾事件及本控件局部性。两份原独立 RED、这七组与原十六组定向重放分别留证；CC15 静态、JS 语法及 Backlog/空白检查另验。没有重复全量或把自测当独审，新 HEAD 仍须独立七组及 P0 四轨迹组合重新核实，旧 c165 不作准入。
