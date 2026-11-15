@@ -256,6 +256,17 @@ local function writeOption(ctx, box, row, id)
     ctx.ink(box:GetChild('description'), descriptionInk(row.enabled))
 end
 
+-- Choose the opening body without changing event state or reward explanations.
+-- Only the Neow intro uses the reviewed presentation copy; other stages keep
+-- their original node/result text, including failed or completed outcomes.
+local function initialEventBody(node,result,id,copy)
+    local body=result and result.text or node.event and node.event.body or copy.body
+    if not result and id=='neow' and node.event and node.event.stage=='neow_intro' then
+        return Narrative.flow.intro.full
+    end
+    return body
+end
+
 -- Installs the events responsibility on one node UI instance.
 function M.install(ctx)
     function ctx.renderEvent(view, node, result)
@@ -273,10 +284,7 @@ function M.install(ctx)
         renderEventArt(ctx, event, id)
         local body
         local function eventOutcomeBody()
-            body=result and result.text or node.event and node.event.body or copy.body
-            if not result and id=='neow' and node.event and node.event.stage=='neow_intro' then
-                body=Narrative.flow.intro.full
-            end
+            body=initialEventBody(node,result,id,copy)
             if not result and node.event and node.event.stage=='result' and node.event.obtainedRelicId then
                 body=body..'\n获得遗物：'..ctx.relicName(node.event.obtainedRelicId)..'。'
             end
