@@ -155,6 +155,20 @@
       "gzipSha256": "7cadf5b6bb5f295b880c1c27600629f95b23bc1639a53e46ece5ec34a461259e",
       "rawBytes": 1524,
       "gzipBytes": 761
+    },
+    {
+      "file": "relic-source-coverage-raw.log.gz",
+      "rawSha256": "fb66d5780604670fde73514b15689401254e6334184cde7638a8ec8278f17108",
+      "gzipSha256": "fed7de8479b5a4b15a9fb798ddf40824045552c87f5018d9b6bc71e5408739f8",
+      "rawBytes": 52151,
+      "gzipBytes": 5642
+    },
+    {
+      "file": "license-current.log.gz",
+      "rawSha256": "9a8a240e70a35bec1599c938bdcf60767e063b0b16b8622c6980f342d4390bfb",
+      "gzipSha256": "2ba644c8420b596b194430e9f3cb1fe04663a2944868b0030f74b77d5d2d114f",
+      "rawBytes": 104,
+      "gzipBytes": 112
     }
   ]
 }

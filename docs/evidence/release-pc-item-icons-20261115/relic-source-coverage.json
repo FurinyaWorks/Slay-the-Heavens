@@ -1,0 +1,3676 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "0345006e7d4d1cd39549a1479036fd7cb38f9be6",
+  "scope": {
+    "campaignProfile": "competition-two-act",
+    "character": "ironclad",
+    "eventMode": "full",
+    "publicRelicCount": 149,
+    "queueCount": 130
+  },
+  "method": "Existing Run.new ironclad competition-two-act actual relicPool.catalog queues + existing productionCompendium.list(relics); resolve source queues with existing RelicRewards.definition, inspect Hooks.localId and RelicView.icon against actual official generated Theme. No draws, rules, acquisition filters, or artwork changed. Controlled two-tuple Host projection is explicitly not natural drop evidence.",
+  "counts": {
+    "eligible": 149,
+    "formalQueueSourceIds": 130,
+    "publicStarterSpecialFallbackIds": 19,
+    "recipeRegistryIds": 121,
+    "recipeCoveredEligible": 120,
+    "nativeOnlyEligible": 29,
+    "nativeOnlyDistinctImageIds": 29,
+    "eligibleWithoutRecipeOrMappedNative": 0,
+    "recipeOutsideCurrentScope": 1,
+    "observedMissingRewardSemanticBindings": 2
+  },
+  "eligible": [
+    "akabeko",
+    "anchor",
+    "ancient_tea_set",
+    "art_of_war",
+    "astrolabe",
+    "bag_of_marbles",
+    "bag_of_preparation",
+    "bird_faced_urn",
+    "black_blood",
+    "black_star",
+    "blood_vial",
+    "bloody_idol",
+    "blue_candle",
+    "boot",
+    "bottled_flame",
+    "bottled_lightning",
+    "bottled_tornado",
+    "brimstone",
+    "bronze_scales",
+    "burning_blood",
+    "busted_crown",
+    "calipers",
+    "calling_bell",
+    "captains_wheel",
+    "cauldron",
+    "centennial_puzzle",
+    "ceramic_fish",
+    "champion_belt",
+    "charons_ashes",
+    "chemical_x",
+    "circlet",
+    "clockwork_souvenir",
+    "coffee_dripper",
+    "courier",
+    "cultist_mask",
+    "cursed_key",
+    "darkstone_periapt",
+    "dead_branch",
+    "dollys_mirror",
+    "dream_catcher",
+    "du_vu_doll",
+    "ectoplasm",
+    "empty_cage",
+    "enchiridion",
+    "eternal_feather",
+    "face_of_cleric",
+    "fossilized_helix",
+    "frozen_egg",
+    "frozen_eye",
+    "fusion_hammer",
+    "gambling_chip",
+    "ginger",
+    "girya",
+    "golden_idol",
+    "gremlin_horn",
+    "gremlin_mask",
+    "hand_drill",
+    "happy_flower",
+    "horn_cleat",
+    "ice_cream",
+    "incense_burner",
+    "ink_bottle",
+    "juzu_bracelet",
+    "kunai",
+    "lantern",
+    "lees_waffle",
+    "letter_opener",
+    "lizard_tail",
+    "magic_flower",
+    "mango",
+    "mark_of_pain",
+    "matryoshka",
+    "maw_bank",
+    "meal_ticket",
+    "meat_on_the_bone",
+    "medical_kit",
+    "membership_card",
+    "mercury_hourglass",
+    "molten_egg",
+    "mummified_hand",
+    "mutagenic_strength",
+    "necronomicon",
+    "neows_lament",
+    "nilrys_codex",
+    "nloths_gift",
+    "nloths_mask",
+    "nunchaku",
+    "odd_mushroom",
+    "oddly_smooth_stone",
+    "old_coin",
+    "omamori",
+    "orange_pellets",
+    "orichalcum",
+    "ornamental_fan",
+    "orrery",
+    "pandoras_box",
+    "pantograph",
+    "paper_frog",
+    "peace_pipe",
+    "pear",
+    "pen_nib",
+    "philosophers_stone",
+    "pocketwatch",
+    "potion_belt",
+    "prayer_wheel",
+    "preserved_insect",
+    "prismatic_shard",
+    "question_card",
+    "red_mask",
+    "red_skull",
+    "regal_pillow",
+    "runic_cube",
+    "runic_dome",
+    "runic_pyramid",
+    "sacred_bark",
+    "self_forming_clay",
+    "shovel",
+    "shuriken",
+    "singing_bowl",
+    "slavers_collar",
+    "sling",
+    "smiling_mask",
+    "snecko_eye",
+    "sozu",
+    "spirit_poop",
+    "ssserpent_head",
+    "stone_calendar",
+    "strange_spoon",
+    "strawberry",
+    "strike_dummy",
+    "sundial",
+    "the_abacus",
+    "thread_and_needle",
+    "tiny_chest",
+    "tiny_house",
+    "toolbox",
+    "torii",
+    "toxic_egg",
+    "toy_ornithopter",
+    "tungsten_rod",
+    "turnip",
+    "unceasing_top",
+    "vajra",
+    "velvet_choker",
+    "war_paint",
+    "warped_tongs",
+    "whetstone",
+    "white_beast_statue",
+    "winged_greaves"
+  ],
+  "covered": {
+    "recipe": [
+      "art_of_war",
+      "astrolabe",
+      "bird_faced_urn",
+      "black_blood",
+      "black_star",
+      "blood_vial",
+      "bloody_idol",
+      "blue_candle",
+      "boot",
+      "bottled_flame",
+      "bottled_lightning",
+      "bottled_tornado",
+      "brimstone",
+      "bronze_scales",
+      "burning_blood",
+      "busted_crown",
+      "calipers",
+      "calling_bell",
+      "captains_wheel",
+      "cauldron",
+      "centennial_puzzle",
+      "champion_belt",
+      "charons_ashes",
+      "chemical_x",
+      "circlet",
+      "clockwork_souvenir",
+      "coffee_dripper",
+      "cultist_mask",
+      "cursed_key",
+      "darkstone_periapt",
+      "dead_branch",
+      "dollys_mirror",
+      "du_vu_doll",
+      "ectoplasm",
+      "empty_cage",
+      "enchiridion",
+      "eternal_feather",
+      "face_of_cleric",
+      "fossilized_helix",
+      "frozen_egg",
+      "frozen_eye",
+      "fusion_hammer",
+      "gambling_chip",
+      "ginger",
+      "girya",
+      "golden_idol",
+      "gremlin_horn",
+      "gremlin_mask",
+      "hand_drill",
+      "horn_cleat",
+      "incense_burner",
+      "ink_bottle",
+      "lees_waffle",
+      "letter_opener",
+      "lizard_tail",
+      "magic_flower",
+      "mango",
+      "mark_of_pain",
+      "matryoshka",
+      "maw_bank",
+      "medical_kit",
+      "molten_egg",
+      "mummified_hand",
+      "mutagenic_strength",
+      "necronomicon",
+      "nilrys_codex",
+      "nloths_gift",
+      "nloths_mask",
+      "odd_mushroom",
+      "oddly_smooth_stone",
+      "old_coin",
+      "omamori",
+      "orange_pellets",
+      "orichalcum",
+      "ornamental_fan",
+      "orrery",
+      "pandoras_box",
+      "pantograph",
+      "paper_frog",
+      "peace_pipe",
+      "pear",
+      "pen_nib",
+      "philosophers_stone",
+      "pocketwatch",
+      "potion_belt",
+      "prayer_wheel",
+      "prismatic_shard",
+      "question_card",
+      "red_mask",
+      "runic_cube",
+      "runic_dome",
+      "runic_pyramid",
+      "sacred_bark",
+      "self_forming_clay",
+      "shovel",
+      "singing_bowl",
+      "slavers_collar",
+      "sling",
+      "snecko_eye",
+      "sozu",
+      "spirit_poop",
+      "ssserpent_head",
+      "stone_calendar",
+      "strange_spoon",
+      "strike_dummy",
+      "the_abacus",
+      "thread_and_needle",
+      "tiny_house",
+      "toolbox",
+      "torii",
+      "toxic_egg",
+      "toy_ornithopter",
+      "turnip",
+      "unceasing_top",
+      "velvet_choker",
+      "war_paint",
+      "warped_tongs",
+      "whetstone",
+      "white_beast_statue",
+      "winged_greaves"
+    ],
+    "nativeOnly": [
+      {
+        "id": "akabeko",
+        "image": 105073
+      },
+      {
+        "id": "anchor",
+        "image": 105065
+      },
+      {
+        "id": "ancient_tea_set",
+        "image": 105090
+      },
+      {
+        "id": "bag_of_marbles",
+        "image": 105076
+      },
+      {
+        "id": "bag_of_preparation",
+        "image": 105043
+      },
+      {
+        "id": "ceramic_fish",
+        "image": 105194
+      },
+      {
+        "id": "courier",
+        "image": 102007
+      },
+      {
+        "id": "dream_catcher",
+        "image": 105114
+      },
+      {
+        "id": "happy_flower",
+        "image": 105127
+      },
+      {
+        "id": "ice_cream",
+        "image": 105070
+      },
+      {
+        "id": "juzu_bracelet",
+        "image": 105182
+      },
+      {
+        "id": "kunai",
+        "image": 105217
+      },
+      {
+        "id": "lantern",
+        "image": 105131
+      },
+      {
+        "id": "meal_ticket",
+        "image": 105246
+      },
+      {
+        "id": "meat_on_the_bone",
+        "image": 105204
+      },
+      {
+        "id": "membership_card",
+        "image": 102026
+      },
+      {
+        "id": "mercury_hourglass",
+        "image": 105215
+      },
+      {
+        "id": "neows_lament",
+        "image": 100114
+      },
+      {
+        "id": "nunchaku",
+        "image": 105099
+      },
+      {
+        "id": "preserved_insect",
+        "image": 105191
+      },
+      {
+        "id": "red_skull",
+        "image": 102034
+      },
+      {
+        "id": "regal_pillow",
+        "image": 105067
+      },
+      {
+        "id": "shuriken",
+        "image": 102001
+      },
+      {
+        "id": "smiling_mask",
+        "image": 105023
+      },
+      {
+        "id": "strawberry",
+        "image": 105068
+      },
+      {
+        "id": "sundial",
+        "image": 105214
+      },
+      {
+        "id": "tiny_chest",
+        "image": 105078
+      },
+      {
+        "id": "tungsten_rod",
+        "image": 102036
+      },
+      {
+        "id": "vajra",
+        "image": 105058
+      }
+    ]
+  },
+  "missing": {
+    "recipeWithoutNativeMapping": [],
+    "observedRewardSemanticBindings": [
+      "bronze_scales",
+      "oddly_smooth_stone"
+    ]
+  },
+  "queueSourceAliasNotNormalizedByHooks": [
+    {
+      "canonicalLocalId": "anchor",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Anchor",
+      "id": "anchor",
+      "officialFallbackImage": 105065,
+      "queueSourceId": "Anchor",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Anchor",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#anchor"
+    },
+    {
+      "canonicalLocalId": "bag_of_preparation",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Bag of Preparation",
+      "id": "bag_of_preparation",
+      "officialFallbackImage": 105043,
+      "queueSourceId": "Bag of Preparation",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Bag of Preparation",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bag_of_preparation"
+    },
+    {
+      "canonicalLocalId": "black_blood",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "Black Blood",
+      "id": "black_blood",
+      "officialFallbackImage": 105045,
+      "queueSourceId": "Black Blood",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Black Blood",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#black_blood"
+    },
+    {
+      "canonicalLocalId": "black_star",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "Black Star",
+      "id": "black_star",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Black Star",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Black Star",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#black_star"
+    },
+    {
+      "canonicalLocalId": "bronze_scales",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Bronze Scales",
+      "id": "bronze_scales",
+      "officialFallbackImage": 105055,
+      "queueSourceId": "Bronze Scales",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Bronze Scales",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bronze_scales"
+    },
+    {
+      "canonicalLocalId": "courier",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "The Courier",
+      "id": "courier",
+      "officialFallbackImage": 102007,
+      "queueSourceId": "The Courier",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "The Courier",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure"
+      ],
+      "inventorySource": "data/relics.json#courier"
+    },
+    {
+      "canonicalLocalId": "lantern",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Lantern",
+      "id": "lantern",
+      "officialFallbackImage": 105131,
+      "queueSourceId": "Lantern",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Lantern",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#lantern"
+    },
+    {
+      "canonicalLocalId": "membership_card",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "Membership Card",
+      "id": "membership_card",
+      "officialFallbackImage": 102026,
+      "queueSourceId": "Membership Card",
+      "rarity": "shop",
+      "recipe": false,
+      "sourceId": "Membership Card",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#membership_card"
+    },
+    {
+      "canonicalLocalId": "oddly_smooth_stone",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Oddly Smooth Stone",
+      "id": "oddly_smooth_stone",
+      "officialFallbackImage": 105071,
+      "queueSourceId": "Oddly Smooth Stone",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Oddly Smooth Stone",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#oddly_smooth_stone"
+    },
+    {
+      "canonicalLocalId": "slavers_collar",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "SlaversCollar",
+      "id": "slavers_collar",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "SlaversCollar",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "SlaversCollar",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#slavers_collar"
+    },
+    {
+      "canonicalLocalId": "smiling_mask",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Smiling Mask",
+      "id": "smiling_mask",
+      "officialFallbackImage": 105023,
+      "queueSourceId": "Smiling Mask",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Smiling Mask",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure"
+      ],
+      "inventorySource": "data/relics.json#smiling_mask"
+    },
+    {
+      "canonicalLocalId": "sozu",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "Sozu",
+      "id": "sozu",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Sozu",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Sozu",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#sozu"
+    },
+    {
+      "canonicalLocalId": "vajra",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Vajra",
+      "id": "vajra",
+      "officialFallbackImage": 105058,
+      "queueSourceId": "Vajra",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Vajra",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#vajra"
+    }
+  ],
+  "excludedDefinitions": [
+    {
+      "id": "damaru",
+      "reason": "foreign class pool, not current Geo production source"
+    },
+    {
+      "id": "data_disk",
+      "reason": "foreign class pool, not current Geo production source"
+    },
+    {
+      "id": "mark_of_bloom",
+      "reason": "Act3 MindBloom"
+    },
+    {
+      "id": "snake_skull",
+      "reason": "foreign class pool, not current Geo production source"
+    }
+  ],
+  "recipeOutsideCurrentScope": [
+    "mark_of_bloom"
+  ],
+  "rows": [
+    {
+      "canonicalLocalId": "akabeko",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "akabeko",
+      "id": "akabeko",
+      "officialFallbackImage": 105073,
+      "queueSourceId": "Akabeko",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Akabeko",
+      "sourceIdFallbackImage": 105073,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#akabeko"
+    },
+    {
+      "canonicalLocalId": "anchor",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Anchor",
+      "id": "anchor",
+      "officialFallbackImage": 105065,
+      "queueSourceId": "Anchor",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Anchor",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#anchor"
+    },
+    {
+      "canonicalLocalId": "ancient_tea_set",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "ancient_tea_set",
+      "id": "ancient_tea_set",
+      "officialFallbackImage": 105090,
+      "queueSourceId": "Ancient Tea Set",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Ancient Tea Set",
+      "sourceIdFallbackImage": 105090,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#ancient_tea_set"
+    },
+    {
+      "canonicalLocalId": "art_of_war",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "art_of_war",
+      "id": "art_of_war",
+      "officialFallbackImage": 105207,
+      "queueSourceId": "Art of War",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Art of War",
+      "sourceIdFallbackImage": 105207,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#art_of_war"
+    },
+    {
+      "canonicalLocalId": "astrolabe",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "astrolabe",
+      "id": "astrolabe",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Astrolabe",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Astrolabe",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#astrolabe"
+    },
+    {
+      "canonicalLocalId": "bag_of_marbles",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "bag_of_marbles",
+      "id": "bag_of_marbles",
+      "officialFallbackImage": 105076,
+      "queueSourceId": "Bag of Marbles",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Bag of Marbles",
+      "sourceIdFallbackImage": 105076,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bag_of_marbles"
+    },
+    {
+      "canonicalLocalId": "bag_of_preparation",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Bag of Preparation",
+      "id": "bag_of_preparation",
+      "officialFallbackImage": 105043,
+      "queueSourceId": "Bag of Preparation",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Bag of Preparation",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bag_of_preparation"
+    },
+    {
+      "canonicalLocalId": "bird_faced_urn",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "bird_faced_urn",
+      "id": "bird_faced_urn",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Bird Faced Urn",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Bird Faced Urn",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bird_faced_urn"
+    },
+    {
+      "canonicalLocalId": "black_blood",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "Black Blood",
+      "id": "black_blood",
+      "officialFallbackImage": 105045,
+      "queueSourceId": "Black Blood",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Black Blood",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#black_blood"
+    },
+    {
+      "canonicalLocalId": "black_star",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "Black Star",
+      "id": "black_star",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Black Star",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Black Star",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#black_star"
+    },
+    {
+      "canonicalLocalId": "blood_vial",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "blood_vial",
+      "id": "blood_vial",
+      "officialFallbackImage": 105243,
+      "queueSourceId": "Blood Vial",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Blood Vial",
+      "sourceIdFallbackImage": 105243,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#blood_vial"
+    },
+    {
+      "canonicalLocalId": "bloody_idol",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "bloody_idol",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Bloody Idol",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:forgotten_altar:offer_idol"
+      ],
+      "inventorySource": "data/relics.json#bloody_idol"
+    },
+    {
+      "canonicalLocalId": "blue_candle",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "blue_candle",
+      "id": "blue_candle",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Blue Candle",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Blue Candle",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#blue_candle"
+    },
+    {
+      "canonicalLocalId": "boot",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "boot",
+      "id": "boot",
+      "officialFallbackImage": 105055,
+      "queueSourceId": "Boot",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Boot",
+      "sourceIdFallbackImage": 105055,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#boot"
+    },
+    {
+      "canonicalLocalId": "bottled_flame",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "bottled_flame",
+      "id": "bottled_flame",
+      "officialFallbackImage": 105048,
+      "queueSourceId": "Bottled Flame",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Bottled Flame",
+      "sourceIdFallbackImage": 105048,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bottled_flame"
+    },
+    {
+      "canonicalLocalId": "bottled_lightning",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "bottled_lightning",
+      "id": "bottled_lightning",
+      "officialFallbackImage": 105243,
+      "queueSourceId": "Bottled Lightning",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Bottled Lightning",
+      "sourceIdFallbackImage": 105243,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bottled_lightning"
+    },
+    {
+      "canonicalLocalId": "bottled_tornado",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "bottled_tornado",
+      "id": "bottled_tornado",
+      "officialFallbackImage": 105243,
+      "queueSourceId": "Bottled Tornado",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Bottled Tornado",
+      "sourceIdFallbackImage": 105243,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bottled_tornado"
+    },
+    {
+      "canonicalLocalId": "brimstone",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "brimstone",
+      "id": "brimstone",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Brimstone",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Brimstone",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#brimstone"
+    },
+    {
+      "canonicalLocalId": "bronze_scales",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Bronze Scales",
+      "id": "bronze_scales",
+      "officialFallbackImage": 105055,
+      "queueSourceId": "Bronze Scales",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Bronze Scales",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#bronze_scales"
+    },
+    {
+      "canonicalLocalId": "burning_blood",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "burning_blood",
+      "officialFallbackImage": 105045,
+      "rarity": "starter",
+      "recipe": true,
+      "sourceId": "Burning Blood",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "starting_relic"
+      ],
+      "inventorySource": "data/relics.json#burning_blood"
+    },
+    {
+      "canonicalLocalId": "busted_crown",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "busted_crown",
+      "id": "busted_crown",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Busted Crown",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Busted Crown",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#busted_crown"
+    },
+    {
+      "canonicalLocalId": "calipers",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "calipers",
+      "id": "calipers",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Calipers",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Calipers",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#calipers"
+    },
+    {
+      "canonicalLocalId": "calling_bell",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "calling_bell",
+      "id": "calling_bell",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Calling Bell",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Calling Bell",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#calling_bell"
+    },
+    {
+      "canonicalLocalId": "captains_wheel",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "captains_wheel",
+      "id": "captains_wheel",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "CaptainsWheel",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "CaptainsWheel",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#captains_wheel"
+    },
+    {
+      "canonicalLocalId": "cauldron",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "cauldron",
+      "id": "cauldron",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Cauldron",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Cauldron",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#cauldron"
+    },
+    {
+      "canonicalLocalId": "centennial_puzzle",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "centennial_puzzle",
+      "id": "centennial_puzzle",
+      "officialFallbackImage": 105046,
+      "queueSourceId": "Centennial Puzzle",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Centennial Puzzle",
+      "sourceIdFallbackImage": 105046,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#centennial_puzzle"
+    },
+    {
+      "canonicalLocalId": "ceramic_fish",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "ceramic_fish",
+      "id": "ceramic_fish",
+      "officialFallbackImage": 105194,
+      "queueSourceId": "CeramicFish",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "CeramicFish",
+      "sourceIdFallbackImage": 105194,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#ceramic_fish"
+    },
+    {
+      "canonicalLocalId": "champion_belt",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "champion_belt",
+      "id": "champion_belt",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Champion Belt",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Champion Belt",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#champion_belt"
+    },
+    {
+      "canonicalLocalId": "charons_ashes",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "charons_ashes",
+      "id": "charons_ashes",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Charon's Ashes",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Charon's Ashes",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#charons_ashes"
+    },
+    {
+      "canonicalLocalId": "chemical_x",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "chemical_x",
+      "id": "chemical_x",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Chemical X",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Chemical X",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#chemical_x"
+    },
+    {
+      "canonicalLocalId": "circlet",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "circlet",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Circlet",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:bonfire:repeat_curse_offer",
+        "explicit_event:golden_idol:repeat_take",
+        "explicit_event:mushrooms:repeat_fight",
+        "explicit_event:cursed_tome:claim",
+        "explicit_event:forgotten_altar:offer_idol",
+        "explicit_event:drug_dealer:mutagens",
+        "explicit_event:face_trader:trade",
+        "explicit_event:nloth:trade_1",
+        "explicit_event:nloth:trade_2",
+        "explicit_event:masked_bandits:fight"
+      ],
+      "inventorySource": "data/relics.json#circlet"
+    },
+    {
+      "canonicalLocalId": "clockwork_souvenir",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "clockwork_souvenir",
+      "id": "clockwork_souvenir",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "ClockworkSouvenir",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "ClockworkSouvenir",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#clockwork_souvenir"
+    },
+    {
+      "canonicalLocalId": "coffee_dripper",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "coffee_dripper",
+      "id": "coffee_dripper",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Coffee Dripper",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Coffee Dripper",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#coffee_dripper"
+    },
+    {
+      "canonicalLocalId": "courier",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "The Courier",
+      "id": "courier",
+      "officialFallbackImage": 102007,
+      "queueSourceId": "The Courier",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "The Courier",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure"
+      ],
+      "inventorySource": "data/relics.json#courier"
+    },
+    {
+      "canonicalLocalId": "cultist_mask",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "cultist_mask",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "CultistMask",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:face_trader:trade"
+      ],
+      "inventorySource": "data/relics.json#cultist_mask"
+    },
+    {
+      "canonicalLocalId": "cursed_key",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "cursed_key",
+      "id": "cursed_key",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Cursed Key",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Cursed Key",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#cursed_key"
+    },
+    {
+      "canonicalLocalId": "darkstone_periapt",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "darkstone_periapt",
+      "id": "darkstone_periapt",
+      "officialFallbackImage": 102031,
+      "queueSourceId": "Darkstone Periapt",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Darkstone Periapt",
+      "sourceIdFallbackImage": 102031,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#darkstone_periapt"
+    },
+    {
+      "canonicalLocalId": "dead_branch",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "dead_branch",
+      "id": "dead_branch",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Dead Branch",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Dead Branch",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#dead_branch"
+    },
+    {
+      "canonicalLocalId": "dollys_mirror",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "dollys_mirror",
+      "id": "dollys_mirror",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "DollysMirror",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "DollysMirror",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#dollys_mirror"
+    },
+    {
+      "canonicalLocalId": "dream_catcher",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "dream_catcher",
+      "id": "dream_catcher",
+      "officialFallbackImage": 105114,
+      "queueSourceId": "Dream Catcher",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Dream Catcher",
+      "sourceIdFallbackImage": 105114,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#dream_catcher"
+    },
+    {
+      "canonicalLocalId": "du_vu_doll",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "du_vu_doll",
+      "id": "du_vu_doll",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Du-Vu Doll",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Du-Vu Doll",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#du_vu_doll"
+    },
+    {
+      "canonicalLocalId": "ectoplasm",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "ectoplasm",
+      "id": "ectoplasm",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Ectoplasm",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Ectoplasm",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#ectoplasm"
+    },
+    {
+      "canonicalLocalId": "empty_cage",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "empty_cage",
+      "id": "empty_cage",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Empty Cage",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Empty Cage",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#empty_cage"
+    },
+    {
+      "canonicalLocalId": "enchiridion",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "enchiridion",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Enchiridion",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:cursed_tome:claim"
+      ],
+      "inventorySource": "data/relics.json#enchiridion"
+    },
+    {
+      "canonicalLocalId": "eternal_feather",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "eternal_feather",
+      "id": "eternal_feather",
+      "officialFallbackImage": 105242,
+      "queueSourceId": "Eternal Feather",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Eternal Feather",
+      "sourceIdFallbackImage": 105242,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#eternal_feather"
+    },
+    {
+      "canonicalLocalId": "face_of_cleric",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "face_of_cleric",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "FaceOfCleric",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:face_trader:trade"
+      ],
+      "inventorySource": "data/relics.json#face_of_cleric"
+    },
+    {
+      "canonicalLocalId": "fossilized_helix",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "fossilized_helix",
+      "id": "fossilized_helix",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "FossilizedHelix",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "FossilizedHelix",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#fossilized_helix"
+    },
+    {
+      "canonicalLocalId": "frozen_egg",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "frozen_egg",
+      "id": "frozen_egg",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Frozen Egg 2",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Frozen Egg 2",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#frozen_egg"
+    },
+    {
+      "canonicalLocalId": "frozen_eye",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "frozen_eye",
+      "id": "frozen_eye",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Frozen Eye",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Frozen Eye",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#frozen_eye"
+    },
+    {
+      "canonicalLocalId": "fusion_hammer",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "fusion_hammer",
+      "id": "fusion_hammer",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Fusion Hammer",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Fusion Hammer",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#fusion_hammer"
+    },
+    {
+      "canonicalLocalId": "gambling_chip",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "gambling_chip",
+      "id": "gambling_chip",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Gambling Chip",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Gambling Chip",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#gambling_chip"
+    },
+    {
+      "canonicalLocalId": "ginger",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "ginger",
+      "id": "ginger",
+      "officialFallbackImage": 105197,
+      "queueSourceId": "Ginger",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Ginger",
+      "sourceIdFallbackImage": 105197,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#ginger"
+    },
+    {
+      "canonicalLocalId": "girya",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "girya",
+      "id": "girya",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Girya",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Girya",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#girya"
+    },
+    {
+      "canonicalLocalId": "golden_idol",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "golden_idol",
+      "officialFallbackImage": 105077,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Golden Idol",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "explicit_event:golden_idol:take"
+      ],
+      "inventorySource": "data/relics.json#golden_idol"
+    },
+    {
+      "canonicalLocalId": "gremlin_horn",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "gremlin_horn",
+      "id": "gremlin_horn",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Gremlin Horn",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Gremlin Horn",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#gremlin_horn"
+    },
+    {
+      "canonicalLocalId": "gremlin_mask",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "gremlin_mask",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "GremlinMask",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:face_trader:trade"
+      ],
+      "inventorySource": "data/relics.json#gremlin_mask"
+    },
+    {
+      "canonicalLocalId": "hand_drill",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "hand_drill",
+      "id": "hand_drill",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "HandDrill",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "HandDrill",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#hand_drill"
+    },
+    {
+      "canonicalLocalId": "happy_flower",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "happy_flower",
+      "id": "happy_flower",
+      "officialFallbackImage": 105127,
+      "queueSourceId": "Happy Flower",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Happy Flower",
+      "sourceIdFallbackImage": 105127,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#happy_flower"
+    },
+    {
+      "canonicalLocalId": "horn_cleat",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "horn_cleat",
+      "id": "horn_cleat",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "HornCleat",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "HornCleat",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#horn_cleat"
+    },
+    {
+      "canonicalLocalId": "ice_cream",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "ice_cream",
+      "id": "ice_cream",
+      "officialFallbackImage": 105070,
+      "queueSourceId": "Ice Cream",
+      "rarity": "rare",
+      "recipe": false,
+      "sourceId": "Ice Cream",
+      "sourceIdFallbackImage": 105070,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#ice_cream"
+    },
+    {
+      "canonicalLocalId": "incense_burner",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "incense_burner",
+      "id": "incense_burner",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Incense Burner",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Incense Burner",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#incense_burner"
+    },
+    {
+      "canonicalLocalId": "ink_bottle",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "ink_bottle",
+      "id": "ink_bottle",
+      "officialFallbackImage": 105243,
+      "queueSourceId": "InkBottle",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "InkBottle",
+      "sourceIdFallbackImage": 105243,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#ink_bottle"
+    },
+    {
+      "canonicalLocalId": "juzu_bracelet",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "juzu_bracelet",
+      "id": "juzu_bracelet",
+      "officialFallbackImage": 105182,
+      "queueSourceId": "Juzu Bracelet",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Juzu Bracelet",
+      "sourceIdFallbackImage": 105182,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#juzu_bracelet"
+    },
+    {
+      "canonicalLocalId": "kunai",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "kunai",
+      "id": "kunai",
+      "officialFallbackImage": 105217,
+      "queueSourceId": "Kunai",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "Kunai",
+      "sourceIdFallbackImage": 105217,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#kunai"
+    },
+    {
+      "canonicalLocalId": "lantern",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Lantern",
+      "id": "lantern",
+      "officialFallbackImage": 105131,
+      "queueSourceId": "Lantern",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Lantern",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#lantern"
+    },
+    {
+      "canonicalLocalId": "lees_waffle",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "lees_waffle",
+      "id": "lees_waffle",
+      "officialFallbackImage": 102005,
+      "queueSourceId": "Lee's Waffle",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Lee's Waffle",
+      "sourceIdFallbackImage": 102005,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#lees_waffle"
+    },
+    {
+      "canonicalLocalId": "letter_opener",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "letter_opener",
+      "id": "letter_opener",
+      "officialFallbackImage": 105216,
+      "queueSourceId": "Letter Opener",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Letter Opener",
+      "sourceIdFallbackImage": 105216,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#letter_opener"
+    },
+    {
+      "canonicalLocalId": "lizard_tail",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "lizard_tail",
+      "id": "lizard_tail",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Lizard Tail",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Lizard Tail",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#lizard_tail"
+    },
+    {
+      "canonicalLocalId": "magic_flower",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "magic_flower",
+      "id": "magic_flower",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Magic Flower",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Magic Flower",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#magic_flower"
+    },
+    {
+      "canonicalLocalId": "mango",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "mango",
+      "id": "mango",
+      "officialFallbackImage": 102005,
+      "queueSourceId": "Mango",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Mango",
+      "sourceIdFallbackImage": 102005,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#mango"
+    },
+    {
+      "canonicalLocalId": "mark_of_pain",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "mark_of_pain",
+      "id": "mark_of_pain",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Mark of Pain",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Mark of Pain",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#mark_of_pain"
+    },
+    {
+      "canonicalLocalId": "matryoshka",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "matryoshka",
+      "id": "matryoshka",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Matryoshka",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Matryoshka",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#matryoshka"
+    },
+    {
+      "canonicalLocalId": "maw_bank",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "maw_bank",
+      "id": "maw_bank",
+      "officialFallbackImage": 105077,
+      "queueSourceId": "MawBank",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "MawBank",
+      "sourceIdFallbackImage": 105077,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#maw_bank"
+    },
+    {
+      "canonicalLocalId": "meal_ticket",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "meal_ticket",
+      "id": "meal_ticket",
+      "officialFallbackImage": 105246,
+      "queueSourceId": "MealTicket",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "MealTicket",
+      "sourceIdFallbackImage": 105246,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#meal_ticket"
+    },
+    {
+      "canonicalLocalId": "meat_on_the_bone",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "meat_on_the_bone",
+      "id": "meat_on_the_bone",
+      "officialFallbackImage": 105204,
+      "queueSourceId": "Meat on the Bone",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "Meat on the Bone",
+      "sourceIdFallbackImage": 105204,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#meat_on_the_bone"
+    },
+    {
+      "canonicalLocalId": "medical_kit",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "medical_kit",
+      "id": "medical_kit",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Medical Kit",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Medical Kit",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#medical_kit"
+    },
+    {
+      "canonicalLocalId": "membership_card",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "Membership Card",
+      "id": "membership_card",
+      "officialFallbackImage": 102026,
+      "queueSourceId": "Membership Card",
+      "rarity": "shop",
+      "recipe": false,
+      "sourceId": "Membership Card",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#membership_card"
+    },
+    {
+      "canonicalLocalId": "mercury_hourglass",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "mercury_hourglass",
+      "id": "mercury_hourglass",
+      "officialFallbackImage": 105215,
+      "queueSourceId": "Mercury Hourglass",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "Mercury Hourglass",
+      "sourceIdFallbackImage": 105215,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#mercury_hourglass"
+    },
+    {
+      "canonicalLocalId": "molten_egg",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "molten_egg",
+      "id": "molten_egg",
+      "officialFallbackImage": 102031,
+      "queueSourceId": "Molten Egg 2",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Molten Egg 2",
+      "sourceIdFallbackImage": 102031,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#molten_egg"
+    },
+    {
+      "canonicalLocalId": "mummified_hand",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "mummified_hand",
+      "id": "mummified_hand",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Mummified Hand",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Mummified Hand",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#mummified_hand"
+    },
+    {
+      "canonicalLocalId": "mutagenic_strength",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "mutagenic_strength",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "MutagenicStrength",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:drug_dealer:mutagens"
+      ],
+      "inventorySource": "data/relics.json#mutagenic_strength"
+    },
+    {
+      "canonicalLocalId": "necronomicon",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "necronomicon",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Necronomicon",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:cursed_tome:claim"
+      ],
+      "inventorySource": "data/relics.json#necronomicon"
+    },
+    {
+      "canonicalLocalId": "neows_lament",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "neows_lament",
+      "officialFallbackImage": 100114,
+      "rarity": "special",
+      "recipe": false,
+      "sourceId": "NeowsBlessing",
+      "sourceIdFallbackImage": 100114,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "explicit:Nodes.beginNeow:THREE_ENEMY_KILL"
+      ],
+      "inventorySource": "data/relics.json#neows_lament"
+    },
+    {
+      "canonicalLocalId": "nilrys_codex",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "nilrys_codex",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Nilry's Codex",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:cursed_tome:claim"
+      ],
+      "inventorySource": "data/relics.json#nilrys_codex"
+    },
+    {
+      "canonicalLocalId": "nloths_gift",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "nloths_gift",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Nloth's Gift",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:nloth:trade_1",
+        "explicit_event:nloth:trade_2"
+      ],
+      "inventorySource": "data/relics.json#nloths_gift"
+    },
+    {
+      "canonicalLocalId": "nloths_mask",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "nloths_mask",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "NlothsMask",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:face_trader:trade"
+      ],
+      "inventorySource": "data/relics.json#nloths_mask"
+    },
+    {
+      "canonicalLocalId": "nunchaku",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "nunchaku",
+      "id": "nunchaku",
+      "officialFallbackImage": 105099,
+      "queueSourceId": "Nunchaku",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Nunchaku",
+      "sourceIdFallbackImage": 105099,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#nunchaku"
+    },
+    {
+      "canonicalLocalId": "odd_mushroom",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "odd_mushroom",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Odd Mushroom",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "explicit_event:mushrooms:fight"
+      ],
+      "inventorySource": "data/relics.json#odd_mushroom"
+    },
+    {
+      "canonicalLocalId": "oddly_smooth_stone",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Oddly Smooth Stone",
+      "id": "oddly_smooth_stone",
+      "officialFallbackImage": 105071,
+      "queueSourceId": "Oddly Smooth Stone",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Oddly Smooth Stone",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#oddly_smooth_stone"
+    },
+    {
+      "canonicalLocalId": "old_coin",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "old_coin",
+      "id": "old_coin",
+      "officialFallbackImage": 105077,
+      "queueSourceId": "Old Coin",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Old Coin",
+      "sourceIdFallbackImage": 105077,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#old_coin"
+    },
+    {
+      "canonicalLocalId": "omamori",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "omamori",
+      "id": "omamori",
+      "officialFallbackImage": 105207,
+      "queueSourceId": "Omamori",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Omamori",
+      "sourceIdFallbackImage": 105207,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#omamori"
+    },
+    {
+      "canonicalLocalId": "orange_pellets",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "orange_pellets",
+      "id": "orange_pellets",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "OrangePellets",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "OrangePellets",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#orange_pellets"
+    },
+    {
+      "canonicalLocalId": "orichalcum",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "orichalcum",
+      "id": "orichalcum",
+      "officialFallbackImage": 105071,
+      "queueSourceId": "Orichalcum",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Orichalcum",
+      "sourceIdFallbackImage": 105071,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#orichalcum"
+    },
+    {
+      "canonicalLocalId": "ornamental_fan",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "ornamental_fan",
+      "id": "ornamental_fan",
+      "officialFallbackImage": 105046,
+      "queueSourceId": "Ornamental Fan",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Ornamental Fan",
+      "sourceIdFallbackImage": 105046,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#ornamental_fan"
+    },
+    {
+      "canonicalLocalId": "orrery",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "orrery",
+      "id": "orrery",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Orrery",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Orrery",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#orrery"
+    },
+    {
+      "canonicalLocalId": "pandoras_box",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "pandoras_box",
+      "id": "pandoras_box",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Pandora's Box",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Pandora's Box",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#pandoras_box"
+    },
+    {
+      "canonicalLocalId": "pantograph",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "pantograph",
+      "id": "pantograph",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Pantograph",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Pantograph",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#pantograph"
+    },
+    {
+      "canonicalLocalId": "paper_frog",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "paper_frog",
+      "id": "paper_frog",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Paper Frog",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Paper Frog",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#paper_frog"
+    },
+    {
+      "canonicalLocalId": "peace_pipe",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "peace_pipe",
+      "id": "peace_pipe",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Peace Pipe",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Peace Pipe",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#peace_pipe"
+    },
+    {
+      "canonicalLocalId": "pear",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "pear",
+      "id": "pear",
+      "officialFallbackImage": 102005,
+      "queueSourceId": "Pear",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Pear",
+      "sourceIdFallbackImage": 102005,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#pear"
+    },
+    {
+      "canonicalLocalId": "pen_nib",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "pen_nib",
+      "id": "pen_nib",
+      "officialFallbackImage": 105301,
+      "queueSourceId": "Pen Nib",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Pen Nib",
+      "sourceIdFallbackImage": 105301,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#pen_nib"
+    },
+    {
+      "canonicalLocalId": "philosophers_stone",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "philosophers_stone",
+      "id": "philosophers_stone",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Philosopher's Stone",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Philosopher's Stone",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#philosophers_stone"
+    },
+    {
+      "canonicalLocalId": "pocketwatch",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "pocketwatch",
+      "id": "pocketwatch",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Pocketwatch",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Pocketwatch",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#pocketwatch"
+    },
+    {
+      "canonicalLocalId": "potion_belt",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "potion_belt",
+      "id": "potion_belt",
+      "officialFallbackImage": 105048,
+      "queueSourceId": "Potion Belt",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Potion Belt",
+      "sourceIdFallbackImage": 105048,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#potion_belt"
+    },
+    {
+      "canonicalLocalId": "prayer_wheel",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "prayer_wheel",
+      "id": "prayer_wheel",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Prayer Wheel",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Prayer Wheel",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#prayer_wheel"
+    },
+    {
+      "canonicalLocalId": "preserved_insect",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "preserved_insect",
+      "id": "preserved_insect",
+      "officialFallbackImage": 105191,
+      "queueSourceId": "PreservedInsect",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "PreservedInsect",
+      "sourceIdFallbackImage": 105191,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#preserved_insect"
+    },
+    {
+      "canonicalLocalId": "prismatic_shard",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "prismatic_shard",
+      "id": "prismatic_shard",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "PrismaticShard",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "PrismaticShard",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#prismatic_shard"
+    },
+    {
+      "canonicalLocalId": "question_card",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "question_card",
+      "id": "question_card",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Question Card",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Question Card",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#question_card"
+    },
+    {
+      "canonicalLocalId": "red_mask",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "red_mask",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Red Mask",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:tomb_red_mask:pay",
+        "explicit_event:masked_bandits:fight"
+      ],
+      "inventorySource": "data/relics.json#red_mask"
+    },
+    {
+      "canonicalLocalId": "red_skull",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "red_skull",
+      "id": "red_skull",
+      "officialFallbackImage": 102034,
+      "queueSourceId": "Red Skull",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Red Skull",
+      "sourceIdFallbackImage": 102034,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#red_skull"
+    },
+    {
+      "canonicalLocalId": "regal_pillow",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "regal_pillow",
+      "id": "regal_pillow",
+      "officialFallbackImage": 105067,
+      "queueSourceId": "Regal Pillow",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Regal Pillow",
+      "sourceIdFallbackImage": 105067,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#regal_pillow"
+    },
+    {
+      "canonicalLocalId": "runic_cube",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "runic_cube",
+      "id": "runic_cube",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Runic Cube",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Runic Cube",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#runic_cube"
+    },
+    {
+      "canonicalLocalId": "runic_dome",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "runic_dome",
+      "id": "runic_dome",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Runic Dome",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Runic Dome",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#runic_dome"
+    },
+    {
+      "canonicalLocalId": "runic_pyramid",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "runic_pyramid",
+      "id": "runic_pyramid",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Runic Pyramid",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Runic Pyramid",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#runic_pyramid"
+    },
+    {
+      "canonicalLocalId": "sacred_bark",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "sacred_bark",
+      "id": "sacred_bark",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "SacredBark",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "SacredBark",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#sacred_bark"
+    },
+    {
+      "canonicalLocalId": "self_forming_clay",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "self_forming_clay",
+      "id": "self_forming_clay",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Self Forming Clay",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Self Forming Clay",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#self_forming_clay"
+    },
+    {
+      "canonicalLocalId": "shovel",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "shovel",
+      "id": "shovel",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Shovel",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Shovel",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#shovel"
+    },
+    {
+      "canonicalLocalId": "shuriken",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "shuriken",
+      "id": "shuriken",
+      "officialFallbackImage": 102001,
+      "queueSourceId": "Shuriken",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "Shuriken",
+      "sourceIdFallbackImage": 102001,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#shuriken"
+    },
+    {
+      "canonicalLocalId": "singing_bowl",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "singing_bowl",
+      "id": "singing_bowl",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Singing Bowl",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Singing Bowl",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#singing_bowl"
+    },
+    {
+      "canonicalLocalId": "slavers_collar",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "SlaversCollar",
+      "id": "slavers_collar",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "SlaversCollar",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "SlaversCollar",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#slavers_collar"
+    },
+    {
+      "canonicalLocalId": "sling",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "sling",
+      "id": "sling",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Sling",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Sling",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#sling"
+    },
+    {
+      "canonicalLocalId": "smiling_mask",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Smiling Mask",
+      "id": "smiling_mask",
+      "officialFallbackImage": 105023,
+      "queueSourceId": "Smiling Mask",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Smiling Mask",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure"
+      ],
+      "inventorySource": "data/relics.json#smiling_mask"
+    },
+    {
+      "canonicalLocalId": "snecko_eye",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "snecko_eye",
+      "id": "snecko_eye",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Snecko Eye",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Snecko Eye",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#snecko_eye"
+    },
+    {
+      "canonicalLocalId": "sozu",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "Sozu",
+      "id": "sozu",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Sozu",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Sozu",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#sozu"
+    },
+    {
+      "canonicalLocalId": "spirit_poop",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "spirit_poop",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "Spirit Poop",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:bonfire:curse_offer"
+      ],
+      "inventorySource": "data/relics.json#spirit_poop"
+    },
+    {
+      "canonicalLocalId": "ssserpent_head",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "ssserpent_head",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "SsserpentHead",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:face_trader:trade"
+      ],
+      "inventorySource": "data/relics.json#ssserpent_head"
+    },
+    {
+      "canonicalLocalId": "stone_calendar",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "stone_calendar",
+      "id": "stone_calendar",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "StoneCalendar",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "StoneCalendar",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#stone_calendar"
+    },
+    {
+      "canonicalLocalId": "strange_spoon",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "strange_spoon",
+      "id": "strange_spoon",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Strange Spoon",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Strange Spoon",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#strange_spoon"
+    },
+    {
+      "canonicalLocalId": "strawberry",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "strawberry",
+      "id": "strawberry",
+      "officialFallbackImage": 105068,
+      "queueSourceId": "Strawberry",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Strawberry",
+      "sourceIdFallbackImage": 105068,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#strawberry"
+    },
+    {
+      "canonicalLocalId": "strike_dummy",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "strike_dummy",
+      "id": "strike_dummy",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "StrikeDummy",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "StrikeDummy",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#strike_dummy"
+    },
+    {
+      "canonicalLocalId": "sundial",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "sundial",
+      "id": "sundial",
+      "officialFallbackImage": 105214,
+      "queueSourceId": "Sundial",
+      "rarity": "uncommon",
+      "recipe": false,
+      "sourceId": "Sundial",
+      "sourceIdFallbackImage": 105214,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#sundial"
+    },
+    {
+      "canonicalLocalId": "the_abacus",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "the_abacus",
+      "id": "the_abacus",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "TheAbacus",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "TheAbacus",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#the_abacus"
+    },
+    {
+      "canonicalLocalId": "thread_and_needle",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "thread_and_needle",
+      "id": "thread_and_needle",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Thread and Needle",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Thread and Needle",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#thread_and_needle"
+    },
+    {
+      "canonicalLocalId": "tiny_chest",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "tiny_chest",
+      "id": "tiny_chest",
+      "officialFallbackImage": 105078,
+      "queueSourceId": "Tiny Chest",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Tiny Chest",
+      "sourceIdFallbackImage": 105078,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#tiny_chest"
+    },
+    {
+      "canonicalLocalId": "tiny_house",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "tiny_house",
+      "id": "tiny_house",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Tiny House",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Tiny House",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#tiny_house"
+    },
+    {
+      "canonicalLocalId": "toolbox",
+      "channels": [
+        "source-queue:shop"
+      ],
+      "hooksSourceAlias": "toolbox",
+      "id": "toolbox",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Toolbox",
+      "rarity": "shop",
+      "recipe": true,
+      "sourceId": "Toolbox",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#toolbox"
+    },
+    {
+      "canonicalLocalId": "torii",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "torii",
+      "id": "torii",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Torii",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Torii",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#torii"
+    },
+    {
+      "canonicalLocalId": "toxic_egg",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "toxic_egg",
+      "id": "toxic_egg",
+      "officialFallbackImage": 102031,
+      "queueSourceId": "Toxic Egg 2",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "Toxic Egg 2",
+      "sourceIdFallbackImage": 102031,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#toxic_egg"
+    },
+    {
+      "canonicalLocalId": "toy_ornithopter",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "toy_ornithopter",
+      "id": "toy_ornithopter",
+      "officialFallbackImage": 105242,
+      "queueSourceId": "Toy Ornithopter",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Toy Ornithopter",
+      "sourceIdFallbackImage": 105242,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#toy_ornithopter"
+    },
+    {
+      "canonicalLocalId": "tungsten_rod",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "tungsten_rod",
+      "id": "tungsten_rod",
+      "officialFallbackImage": 102036,
+      "queueSourceId": "TungstenRod",
+      "rarity": "rare",
+      "recipe": false,
+      "sourceId": "TungstenRod",
+      "sourceIdFallbackImage": 102036,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#tungsten_rod"
+    },
+    {
+      "canonicalLocalId": "turnip",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "turnip",
+      "id": "turnip",
+      "officialFallbackImage": 105197,
+      "queueSourceId": "Turnip",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Turnip",
+      "sourceIdFallbackImage": 105197,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#turnip"
+    },
+    {
+      "canonicalLocalId": "unceasing_top",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "unceasing_top",
+      "id": "unceasing_top",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Unceasing Top",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "Unceasing Top",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#unceasing_top"
+    },
+    {
+      "canonicalLocalId": "vajra",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "Vajra",
+      "id": "vajra",
+      "officialFallbackImage": 105058,
+      "queueSourceId": "Vajra",
+      "rarity": "common",
+      "recipe": false,
+      "sourceId": "Vajra",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": false,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#vajra"
+    },
+    {
+      "canonicalLocalId": "velvet_choker",
+      "channels": [
+        "source-queue:boss"
+      ],
+      "hooksSourceAlias": "velvet_choker",
+      "id": "velvet_choker",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "Velvet Choker",
+      "rarity": "boss",
+      "recipe": true,
+      "sourceId": "Velvet Choker",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "boss_treasure:floor17"
+      ],
+      "inventorySource": "data/relics.json#velvet_choker"
+    },
+    {
+      "canonicalLocalId": "war_paint",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "war_paint",
+      "id": "war_paint",
+      "officialFallbackImage": 105301,
+      "queueSourceId": "War Paint",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "War Paint",
+      "sourceIdFallbackImage": 105301,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#war_paint"
+    },
+    {
+      "canonicalLocalId": "warped_tongs",
+      "channels": [
+        "production-compendium:two-act-special/starter/fallback"
+      ],
+      "id": "warped_tongs",
+      "officialFallbackImage": 102028,
+      "rarity": "special",
+      "recipe": true,
+      "sourceId": "WarpedTongs",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "explicit_event:accursed_blacksmith:rummage"
+      ],
+      "inventorySource": "data/relics.json#warped_tongs"
+    },
+    {
+      "canonicalLocalId": "whetstone",
+      "channels": [
+        "source-queue:common"
+      ],
+      "hooksSourceAlias": "whetstone",
+      "id": "whetstone",
+      "officialFallbackImage": 105216,
+      "queueSourceId": "Whetstone",
+      "rarity": "common",
+      "recipe": true,
+      "sourceId": "Whetstone",
+      "sourceIdFallbackImage": 105216,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#whetstone"
+    },
+    {
+      "canonicalLocalId": "white_beast_statue",
+      "channels": [
+        "source-queue:uncommon"
+      ],
+      "hooksSourceAlias": "white_beast_statue",
+      "id": "white_beast_statue",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "White Beast Statue",
+      "rarity": "uncommon",
+      "recipe": true,
+      "sourceId": "White Beast Statue",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#white_beast_statue"
+    },
+    {
+      "canonicalLocalId": "winged_greaves",
+      "channels": [
+        "source-queue:rare"
+      ],
+      "hooksSourceAlias": "winged_greaves",
+      "id": "winged_greaves",
+      "officialFallbackImage": 102028,
+      "queueSourceId": "WingedGreaves",
+      "rarity": "rare",
+      "recipe": true,
+      "sourceId": "WingedGreaves",
+      "sourceIdFallbackImage": 102028,
+      "sourceIdRecipe": true,
+      "inventoryChannels": [
+        "treasure",
+        "shop_relic"
+      ],
+      "inventorySource": "data/relics.json#winged_greaves"
+    }
+  ],
+  "controlledRewardObservations": [
+    {
+      "canonicalRecipe": true,
+      "iconImage": 102028,
+      "iconVisible": true,
+      "id": "bronze_scales",
+      "naturalDropEvidence": false,
+      "semanticPoolVisible": false,
+      "sourceAlias": "Bronze Scales",
+      "sourceId": "Bronze Scales"
+    },
+    {
+      "canonicalRecipe": true,
+      "iconImage": 102028,
+      "iconVisible": true,
+      "id": "oddly_smooth_stone",
+      "naturalDropEvidence": false,
+      "semanticPoolVisible": false,
+      "sourceAlias": "Oddly Smooth Stone",
+      "sourceId": "Oddly Smooth Stone"
+    }
+  ],
+  "boundaries": [
+    "Membership/native image IDs do not prove pixel distinctness or device readability.",
+    "Public/source eligibility is not a claim that every item naturally appears in one run or that PC/mobile acceptance passed.",
+    "Current source alias reward defect keeps PC18 open despite registry/native mapping completeness."
+  ],
+  "inputs": [
+    {
+      "path": "src/lua/abyss_compendium_catalog.lua",
+      "sha256": "d6594b4d276ab2f02983429227102282e51565acceca266c8971adfa9e32706a"
+    },
+    {
+      "path": "src/lua/abyss_run_initialization.lua",
+      "sha256": "1b6779a80523c03c14bafdd399215190cadf04437d76a6db6e86a3f768fc73f9"
+    },
+    {
+      "path": "src/lua/abyss_run_admission.lua",
+      "sha256": "7a57fd9c9c11770f51f642df85180a4caddf5999901b7467c44eb8c52bd79992"
+    },
+    {
+      "path": "src/lua/abyss_relic_rewards.lua",
+      "sha256": "1a6afee50885e2e56065b05058e5e632745ba88ce202bd4fbea7ff47c54ec405"
+    },
+    {
+      "path": "src/lua/abyss_relic_queries.lua",
+      "sha256": "a9ede443094115bdf31363d530ac89fa9ab011211ee68bfac866f99e4f2dd214"
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "sha256": "78cb4964bf94f7dfa19ace1440139194866ec8a6ccc5bb50442468219c5965a5"
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "sha256": "96f6fa0acb63171f453488dbc3f78754da3259a48dd9cb3baf55f1aac10cd52d"
+    },
+    {
+      "path": "data/release/launch-content.json",
+      "sha256": "6462c4e6bf213dcecb067732561bf5e408d336bf8eb0fadccda3b1fb1dc744c2"
+    },
+    {
+      "path": "data/release/m3-campaign.json",
+      "sha256": "22f1dad90ddd0dbe13ce2038917539bfedf4b4ce3beb3a9c32a9325921590c0c"
+    },
+    {
+      "path": "data/catalogs/sts1-relic-queues.json",
+      "sha256": "bc7fd8c34ff0f85689ff9dee391b69a44d3b6c42860c85cc2ad9668c640126ae"
+    },
+    {
+      "path": "data/relics.json",
+      "sha256": "7d24c341aa4737cace076144a02f52e054fbe191b06c6eaebb30500e728486ef"
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "sha256": "6e2fbf19879f05a1efa79c8f8d0533c1cce8c2c407c588d05e439d57f9c59f64"
+    },
+    {
+      "path": "data/presentation/lowcost-relic-art.json",
+      "sha256": "9d6f50f624250fb05511aac086adf2bcb4487485416b56c4c44cdff7fc8e8526"
+    }
+  ]
+}
