@@ -58,7 +58,11 @@ export function runLua(script = 'tests/lua/combat.lua', { timeout, cwd = process
   const selection = caseName === undefined ? '' : `ABYSS_MUTATION_CASE=${luaString(caseName)};`;
   const jawTail = normalizedScript === 'tests/lua/jaw_worm_ai_slice_3.lua' && caseName === undefined
     && resolve(cwd) === resolve(fileURLToPath(new URL('..', import.meta.url)));
-  const args = jawTail
+  const terminal = normalizedScript === 'tests/lua/target_anonymous_terminal.lua' && caseName === undefined
+    && resolve(cwd) === resolve(fileURLToPath(new URL('..', import.meta.url)));
+  const args = terminal
+    ? [fileURLToPath(new URL('../tests/helpers/terminal-isolation.mjs', import.meta.url)), String(Date.now() + timeout), String(maxBuffer)]
+    : jawTail
     ? [fileURLToPath(new URL('../tests/helpers/jaw-worm-parallel.mjs', import.meta.url)), String(Date.now() + timeout), String(maxBuffer)]
     : [cli, '-e', `${selection}${frozenHand}dofile(${luaString(temporary || resolve(cwd, script))})`];
   try {

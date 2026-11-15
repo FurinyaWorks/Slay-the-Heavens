@@ -1,0 +1,13 @@
+✔ terminal partition preserves each original body and rejects source drift (7.26692ms)
+✔ terminal aggregate receipts reject missing duplicate and out-of-order groups (2.248508ms)
+✔ terminal aggregate propagates Lua assertion failure (193.146649ms)
+✔ terminal aggregate enforces total deadline and does not renew per worker (3310.411613ms)
+✔ terminal aggregate rejects output overflow and invalid partitions (109.729748ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3810.476457

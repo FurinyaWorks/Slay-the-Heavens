@@ -1,0 +1,9 @@
+✔ unknown target terminals retire only attributable origins and fresh named Down reclaims its own ID (36945.748785ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 37171.224789
