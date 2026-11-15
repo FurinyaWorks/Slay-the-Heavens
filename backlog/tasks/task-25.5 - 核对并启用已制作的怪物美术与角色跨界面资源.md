@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 15:44'
 labels:
   - playtest-20261030
   - p1
@@ -32,12 +32,15 @@ Owner说明：**怪物自制美术目前在实际战斗中一点也没用起来*
 - [ ] #1 已有且获准的自制怪物美术在指定候选中得到真实绑定和展示，尚缺的明确列出；不把官方图库回退当作自制素材。
 - [ ] #2 已在战斗可见的旅行者形象保持不退化；选角/开局的自制资产身份与配置可核验。
 - [ ] #3 开发开关/候选来源、性能和实际设备验收分开报告，不擅自改变用户已批准的发布安全边界。
+- [ ] #4 #676 旧任务 TASK-25.5 AC4：旅行者战斗角色需有与现有怪物一致且低成本的接地阴影，角色与场景不显悬空；截图12与27:42反馈为观察，不自动推断性能开销，需同候选PC/实体手机对照。
 <!-- AC:END -->
 
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
 1. 保留完整18资产注册表，候选运行白名单仅acid_slime_m r02。2. prepareMonsterArt先全量合法性校验再按名单派生，统一输入清单、装配和收据，缺省美术关闭。3. 负例与未选零装配定向验证，交主线程集成；官方导入、设备与最终画质仍未验。
+
+2026-11-15 Release PC21：基于36b9b157，选择性移植8b1a591b的脚底阴影五路径，复用批准idle足位与现有怪物阴影Token，figure父变换/生命周期复用。未导入来源health painter或idle后续；保留所有美术flags默认值。source/CI组合后再准入，同候选PC/手机与官方容量仍未验。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -48,4 +51,6 @@ Owner说明：**怪物自制美术目前在实际战斗中一点也没用起来*
 2026-11-07 看板核对（develop 2c85bc61）：未发现实现提交或在途 PR，状态由 In Progress 归 To Do（未开始）；范围与原 AC 不变。
 
 2026-11-14第二轮状态纠正：原notes已记录Alpha资产白名单、55项相关回归及CLI-MCP装配切片；11/7未发现实现的结论与这些证据矛盾。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+PC21产品862c3f2a8988b1af21fc897d6de1d65650798a0d，证据1fd948e0b17b7164358ca08731c77c6b2cce0c72，分支feat/release-pc-ground-shadow-1115。RED2→GREEN2，最终增强2/2、既有67/67、工程351模块无新增诊断，独立pc_backport_audit PASS_SCOPED/findings=[]。证据docs/evidence/release-pc-ground-shadow-20261115；7份原日志无损hash留存。Full原路由要求但未运行，source/CI组合未验，不开未成熟PR；官方候选/ready/PC/实体手机像素与容量全未验，PC09美术精修继续延期，AC不勾。
 <!-- SECTION:NOTES:END -->
