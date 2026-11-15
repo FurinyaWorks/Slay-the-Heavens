@@ -594,7 +594,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             if previous and cells[previous]==control then cells[previous]=nil end
             indices[control]=nil
             if index>=1 and index<=#cards then cells[index],indices[control]=control,index end
-            if not wasComplete then self.gridReady() end
+            if not wasComplete or platform.imageModes then self.gridReady() end
         end
         grid:RefreshItems(#cards,function(control,index)
             if not self.visible or self.generation~=generation then return end

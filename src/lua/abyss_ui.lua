@@ -179,6 +179,16 @@ local function presentationPage(page)
     require('abyss_card_art_runtime').setPresentationPage(page)
     if v25Textures then v25Textures:setPresentationPage(page)end
 end
+local function prepareVisibleDeckModes()
+    if not imageModes or not view.pageReveal or view.pageReveal.state~='visible' or not view.deckUI.pendingGrid then return end
+    local intent=require('abyss_page_reveal').intent(view)
+    if intent.page~='deckPanel' then return end
+    -- Native scrolling can create new cells without changing page intent.
+    -- Share this frame's existing mode budget; publish only readback-ready cells.
+    local _,reason=imageModes:step(intent.page)
+    assert(not reason,reason)
+    deckPending(intent)
+end
 function OnStart()
     if attempted then return end
     attempted = true
@@ -348,6 +358,7 @@ function OnUpdate(dt)
         presentationPage(require('abyss_page_reveal').intent(view).page)
         view:update(dt)
         presentationPage(require('abyss_page_reveal').intent(view).page)
+        prepareVisibleDeckModes()
         if componentBridge then componentBridge:step()end
         if v25Textures then
             v25Textures:syncMask(nativeStage)

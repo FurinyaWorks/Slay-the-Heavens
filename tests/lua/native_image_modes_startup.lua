@@ -41,5 +41,30 @@ local before=modes.writes
 assert(view.deckUI:setSort('name'));assert(view.pageReveal.state=='visible','cached sort covered the already complete grid')
 OnUpdate(.01)
 assert(view.pageReveal.state=='visible'and modes.writes==before,'cached sort repeated mode initialization')
+-- Native scrolling can destroy a slot and instantiate a fresh template even
+-- while the deck's presentation intent and its already visible page stay put.
+local grid=stage:GetChild('deckPanel'):GetChild('pileGrid')
+grid.destroyOnRecycle=true
+local fresh={grid:recycle(0,0),grid:recycle(1,1)}
+for _,cell in ipairs(fresh)do
+ assert(not cell.visible and not modes:templateReady(cell),'fresh template published before mode readback')
+end
+for _=1,20 do
+ OnUpdate(.01);assert(updates,'fresh-cell preparation failed native entry')
+ assert(modes.lastRequests<=64,'fresh-cell preparation increased the shared frame budget')
+ assert(view.pageReveal.state=='visible','fresh-cell preparation covered the completed deck')
+end
+for _,cell in ipairs(fresh)do
+ assert(cell.visible and modes:templateReady(cell),'fresh recycled cell remains hidden on visible unchanged deck page')
+end
+before=modes.writes
+for _=1,3 do OnUpdate(.01)end
+assert(modes.writes==before,'stable recycled templates repeated mode writes')
+local cancelled=grid:recycle(0,0)
+assert(not cancelled.visible and not modes:templateReady(cancelled))
+assert(view.deckUI:close())
+for _=1,3 do OnUpdate(.01)end
+assert(not cancelled.visible and not modes:templateReady(cancelled),'closed deck revived a fresh-cell lease')
 OnDestroy();assert(modes.dead and not updates)
-print('NATIVE_IMAGE_MODES_STARTUP_PASS withoutPortraitOwner=true readyBeforePublish=true')
+before=modes.writes;OnUpdate(.01);assert(modes.writes==before,'released host continued mode writes')
+print('NATIVE_IMAGE_MODES_STARTUP_PASS withoutPortraitOwner=true readyBeforePublish=true freshRecycle=true cancellation=true')
