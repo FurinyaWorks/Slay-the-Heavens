@@ -534,3 +534,17 @@ test('frozen proof reuse still rejects mutable inherited source and optional Git
   }
  }
 });
+
+test('frozen Proxy bindings retain fresh validation of virtual optional Git identity',async()=>{
+ const {createSourceEpochProjector}=await import('./helpers/combined-epoch/source-epoch-runtime.mjs');
+ const proof=reusableProofFixture(),path='src/lua/reuse_probe.lua',binding=proof.current[path];
+ let gitIdentity=createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex');
+ proof.current[path]=new Proxy(Object.freeze(binding),{
+  get(target,key,receiver){return key==='gitBlob'?gitIdentity:Reflect.get(target,key,receiver);},
+  has(target,key){return key==='gitBlob'?false:Reflect.has(target,key);},
+ });
+ const frozen=freezeProofData(proof);
+ createSourceEpochProjector(frozen,{reuseFrozenInput:true});
+ gitIdentity='0'.repeat(40);
+ assert.throws(()=>createSourceEpochProjector(frozen,{reuseFrozenInput:true}),/source identity Git blob/);
+});

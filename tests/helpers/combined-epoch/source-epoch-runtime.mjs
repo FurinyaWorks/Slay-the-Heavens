@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
+import {types} from 'node:util';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 // Only pure computations over complete immutable strings are memoized. Readers,
@@ -43,7 +44,7 @@ function validateBinding(binding){
  if(binding===null)return;
  // Freezing an object does not freeze Object.prototype. Inherited identity
  // fields must retain fresh validation even after an earlier successful call.
- const cacheable=typeof binding==='object'&&Object.isFrozen(binding)
+ const cacheable=typeof binding==='object'&&!types.isProxy(binding)&&Object.isFrozen(binding)
   &&Object.hasOwn(binding,'source')&&Object.hasOwn(binding,'sha256')
   &&(Object.hasOwn(binding,'gitBlob')||!('gitBlob' in binding));
  if(cacheable&&validatedFrozenBindings.has(binding))return;
