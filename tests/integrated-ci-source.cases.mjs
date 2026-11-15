@@ -62,7 +62,7 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  }
  const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?pickerBeforeRead(p).subarray(1):pickerBeforeRead(p,e)),/immutable bootstrap predecessor/);
- const inventories={js:releasePc22BasicFeedbackPriorInventory(discoverJs(),'js',rawReadFileSync),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ const inventories={js:releasePc22BasicFeedbackPriorInventory(discoverJs(),'js',rawReadFileSync),lua:releasePc22BasicFeedbackPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',rawReadFileSync)};
  for(const [kind,paths]of Object.entries(inventories)){
   assertReleaseBootstrapRawInventory(paths,kind);
   for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])

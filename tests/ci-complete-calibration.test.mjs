@@ -2032,7 +2032,7 @@ test('release PC22 basic feedback raw Full inventory retains all tests, diagnost
 
 test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
- const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const js=liveDiscoverJs(),lua=releasePc22BasicFeedbackPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',rawReleaseReadFileSync);
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
