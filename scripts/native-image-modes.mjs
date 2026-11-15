@@ -20,18 +20,33 @@ function entries(tree,scope){
  return result;
 }
 function lower(tree){
- const copy=structuredClone(tree);
- const visit=node=>{delete node.imageType;for(const child of node.children??[])visit(child);};
- copy.forEach(visit);return copy;
+ const copy=structuredClone(tree);let flagBounds=0;
+ function visit(node,path=[]){
+  const next=[...path,node.name];
+  // Flag layout has already consumed these bounds to size and center the
+  // native triangles. They describe construction, not an SDK control field.
+  if(Object.hasOwn(node,'flagBounds')){
+   const bounds=node.flagBounds;
+   assert(node.kind==='container'&&/(?:^|\/)characterPanel\/(cancel|confirm)\/hit\/(normal|hover|pressed|disabled)\/v25Flag(?:\/(rim|cloth))?$/.test(next.join('/'))
+    &&Array.isArray(bounds)&&bounds.length===2&&bounds.every(Number.isFinite)&&bounds[0]<bounds[1],
+   'invalid or unknown flagBounds producer: '+next.join('/'));
+   delete node.flagBounds;flagBounds++;
+  }
+  delete node.imageType;
+  for(const child of node.children??[])visit(child,next);
+ }
+ copy.forEach(node=>visit(node));return {tree:copy,flagBounds};
 }
 export function compileImageModes(layout,templates){
  const staticModes=entries(layout.controls,'static');
  const templateModes=templates.flatMap(template=>entries([template],template.name));
- const loweredLayout={...structuredClone(layout),controls:lower(layout.controls)},loweredTemplates=lower(templates);
+ const staticProjection=lower(layout.controls),templateProjection=lower(templates);
+ const loweredLayout={...structuredClone(layout),controls:staticProjection.tree},loweredTemplates=templateProjection.tree;
  const binding={schemaVersion:1,static:staticModes,templates:templateModes,templateNames:templates.map(row=>row.name)};
  const proof={schemaVersion:1,route:'documented-runtime-imageType-v1',
   source:{layout:imageModeDigest(layout),templates:imageModeDigest(templates)},
   lowered:{layout:imageModeDigest(loweredLayout),templates:imageModeDigest(loweredTemplates)},
+  nativeProjection:{consumedFlagBounds:{static:staticProjection.flagBounds,templates:templateProjection.flagBounds}},
   bindingSha256:imageModeDigest(binding),staticRequests:staticModes.length,templateRequests:templateModes.length,
   compiler:sourceRecord(new URL(import.meta.url),'scripts/native-image-modes.mjs'),
   writer:sourceRecord(new URL('../src/lua/abyss_image_modes.lua',import.meta.url),'src/lua/abyss_image_modes.lua'),
