@@ -7,7 +7,7 @@ import {sourceSlice} from './closeout-source-epoch.mjs';
 import {preRunHudCiSource,runHudPriorRead,runHudPriorInventory} from './run-hud-ci-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const capacityRoadmapBytes=readFileSync(new URL('./role-capacity-roadmap-source.json',import.meta.url));
-assert.equal(hash(capacityRoadmapBytes.toString('utf8').replaceAll('\r\n','\n')),'e0c27a383c57f64071a4c9b78fd027588ac2998d53f49119a2a8e99bb65fcd02');
+assert.equal(hash(capacityRoadmapBytes.toString('utf8').replaceAll('\r\n','\n')),'7b3e29eb24252c265bbde8121d4787200ccd1786ee8ba78843ac4b1fb8566217');
 const capacityRoadmapBinding=JSON.parse(capacityRoadmapBytes);
 assert.equal(hash(capacityRoadmapBinding.source),capacityRoadmapBinding.before);
 const namingBytes=readFileSync(new URL('./naming-package-source.json',import.meta.url),'utf8').replaceAll('\r\n','\n');

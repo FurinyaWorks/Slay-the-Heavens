@@ -401,8 +401,9 @@ test('unfinished tasks cannot keep retired M7 while Done history keeps its ident
   assert.deepEqual(verifyBacklogRoadmap(done),[]);
 });
 
-const role=(status='To Do',dependencies=['TASK-105'])=>({id:'TASK-97',status,dependencies});
+const role=(status='To Do',dependencies=['TASK-96','TASK-105'])=>({id:'TASK-97',status,dependencies});
 const capacity=(status='To Do')=>({id:'TASK-105',status});
+const design=(status='Done')=>({id:'TASK-96',status});
 
 test('Backlog CLI block list parses the role expansion dependency',()=>{
   const source='---\nid: TASK-97\nstatus: To Do\nassignee:\n  - Furinya\ndependencies:\n  - TASK-105\n---\n';
@@ -414,15 +415,45 @@ test('mass character rollout requires the exact capacity task, even when still q
   assert.match(auditRoleCapacityGate([role('To Do',[]),capacity()]).join('\n'),/显式依赖/);
   assert.match(auditRoleCapacityGate([role()]).join('\n'),/缺少/);
 });
-test('mass rollout cannot start or complete before capacity GO',()=>{
+test('mass rollout cannot start or complete before its concrete prerequisites close',()=>{
   for(const s of ['In Progress','Done'])
-    assert.match(auditRoleCapacityGate([role(s),capacity('To Do')]).join('\n'),/未取得GO/);
-  assert.deepEqual(auditRoleCapacityGate([role('In Progress'),capacity('Done')]),[]);
-  assert.deepEqual(auditRoleCapacityGate([role('Done'),capacity('Done')]),[]);
+    assert.match(auditRoleCapacityGate([role(s),capacity('To Do'),design()]).join('\n'),/尚未完成/);
+  assert.deepEqual(auditRoleCapacityGate([role('In Progress'),capacity('Done'),design()]),[]);
+  assert.deepEqual(auditRoleCapacityGate([role('Done'),capacity('Done'),design()]),[]);
+  assert.match(auditRoleCapacityGate([role('In Progress'),capacity('Done'),design('Blocked')]).join('\n'),/设计前置TASK-96尚未完成/);
 });
 test('unrelated release, single-character experiment and other milestones remain unblocked',()=>{
   assert.deepEqual(auditRoleCapacityGate([{id:'TASK-85',status:'In Progress'},{id:'TASK-103',status:'To Do'}]),[]);
   assert.deepEqual(auditRoleCapacityGate([role('Blocked'),capacity('To Do')]),[]);
+});
+
+test('mass rollout must retain the explicit design dependency, independently of capacity',()=>{
+  assert.match(auditRoleCapacityGate([role('Blocked',['TASK-105']),capacity(),design('Blocked')]).join('\n'),/TASK-96.*设计|设计.*TASK-96/);
+  assert.deepEqual(auditRoleCapacityGate([role('Blocked'),capacity(),design('Blocked')]),[]);
+});
+
+test('the existing backlog entrypoint rejects a broken graph but permits pending prerequisites',t=>{
+  const root=backlogFixture(t,[
+    ['backlog/tasks/task-1.md','TASK-1','To Do','assignee: [Furinya]\ndependencies: [TASK-2]\n'],
+    ['backlog/tasks/task-2.md','TASK-2','Blocked','assignee: [Furinya]\ndependencies: []\n'],
+  ]);
+  assert.deepEqual(verifyBacklogRoadmap(root),[]);
+  const target=join(root,'backlog/tasks/task-2.md');
+  for(const [field,reason] of [['[TASK-99]',/missing/],['[TASK-1]',/cycle/],['TASK-1',/malformed/]]) {
+    writeFileSync(target,`---\nid: TASK-2\nstatus: Blocked\npriority: medium\nassignee: [Furinya]\ndependencies: ${field}\n---\n`);
+    assert.match(verifyBacklogRoadmap(root).join('\n'),reason,field);
+  }
+});
+
+test('a malformed Done scalar cannot satisfy the design gate in the backlog entrypoint',t=>{
+  for(const status of ['Done\n  Blocked','Done\nstatus : Blocked']) {
+    const root=backlogFixture(t,[
+      ['backlog/tasks/task-97.md','TASK-97','In Progress','assignee: [Furinya]\ndependencies: [TASK-96, TASK-105]\n'],
+      ['backlog/tasks/task-96.md','TASK-96',status],
+      ['backlog/completed/task-105.md','TASK-105','Done'],
+    ]);
+    assert.match(verifyBacklogRoadmap(root).join('\n'),/TASK-96.*metadata|TASK-96.*元数据/,status);
+  }
 });
 
 
