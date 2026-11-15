@@ -1,0 +1,43 @@
+{
+  "productCommit": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "adapterCommit": "10200974517708427be5f8ae7f95ed73044da40e",
+  "adapterTree": "f97be0bae8643567da2e86ebfbdd6363a7afe734",
+  "baseCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "node": "v24.18.0",
+  "layer": "OFFLINE_SOURCE_AND_CI_CONTRACTS",
+  "results": {
+    "smallAndMenu": {
+      "tests": 9,
+      "pass": 9
+    },
+    "originalSourceIsolated": {
+      "tests": 44,
+      "pass": 44
+    },
+    "ciComplete": {
+      "tests": 73,
+      "pass": 73
+    }
+  },
+  "originalSourceCopyRoot": "F:/New folder/.artifacts/release-pc-navigation-source-20261115/contract-copy-8d647c21-ace6-4c4b-9dda-9a293e0d7ac3",
+  "notHostedFull": true,
+  "notOfficialCandidate": true,
+  "files": {
+    "ci-calibration-complete.log.gz": {
+      "bytes": 3333,
+      "sha256": "daaa01ecefc30f097f560c59c3da5e3fa4e3270993817cadd04480871c7302e8"
+    },
+    "integration-source-isolated.log.gz": {
+      "bytes": 1123,
+      "sha256": "6dc121b5af0b5353768c935f8ae06a39d299482ab2918fbd79f5efa979d95a1a"
+    },
+    "product-related-before-source.log.gz": {
+      "bytes": 4229,
+      "sha256": "400ffce467bd5e18397baba3a2ccd60a5eb5e5d459d07ffa453dc7bd2cc74caa"
+    },
+    "source-and-menu-small.log.gz": {
+      "bytes": 568,
+      "sha256": "c089867db878a409b7f52c97dff1f005f4b95cb81c9f671da5634cb0b142492e"
+    }
+  }
+}
