@@ -65,6 +65,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     end
     function ctx.relicPicture(control,id,size)
         local art=require('abyss_lowcost_art')
+        control:SetVisible(true)
         if id then
             ctx.picture(control,require('abyss_relic_view_ui').icon(id,Theme.presentationProfile=='official-assets-first'))
             art.paint(control,'relic',id,size,ctx.options)

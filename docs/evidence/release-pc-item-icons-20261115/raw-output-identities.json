@@ -71,6 +71,90 @@
       "gzipSha256": "64aef71bf37acc234fbaa09c27bb4b24e9a7247f3d50447b8d0a1ad2d0c07d14",
       "rawBytes": 95979,
       "gzipBytes": 13501
+    },
+    {
+      "file": "relic-fallback-and-regression-green.tap.gz",
+      "rawSha256": "c6964bd89516edf580a208a210d2d246a9308c8702dedafacd253405c2fbfc51",
+      "gzipSha256": "671f6f01bfc75df4aaf41c4e67edef617bac4fb2bc509f807ef1f00a55154ad1",
+      "rawBytes": 1859,
+      "gzipBytes": 667
+    },
+    {
+      "file": "relic-fallback-engineering.log.gz",
+      "rawSha256": "2e66c23c80829a0d4d00cf2075811e8b278ed283f0800953560e1e0d9d77c82c",
+      "gzipSha256": "25ebfd9836cd099aebf163245cdf4f12f8451c842a63561cc57394c83a7d6af0",
+      "rawBytes": 377,
+      "gzipBytes": 278
+    },
+    {
+      "file": "relic-fallback-final-engineering.log.gz",
+      "rawSha256": "2e66c23c80829a0d4d00cf2075811e8b278ed283f0800953560e1e0d9d77c82c",
+      "gzipSha256": "25ebfd9836cd099aebf163245cdf4f12f8451c842a63561cc57394c83a7d6af0",
+      "rawBytes": 377,
+      "gzipBytes": 278
+    },
+    {
+      "file": "relic-fallback-final-green.tap.gz",
+      "rawSha256": "78603ce07a70f313500ca12e7e6a56b23d0e427103a8560e00b0b94b3552db01",
+      "gzipSha256": "a4cd22e4b727065ca50b655d6112410beb4bcab4dc805b8f5ce1be7fb2642a8c",
+      "rawBytes": 385,
+      "gzipBytes": 226
+    },
+    {
+      "file": "relic-fallback-red.tap.gz",
+      "rawSha256": "e8c0a2f8fa0075a014075a5a24d54d4faa24890947908f3d7cbd4f754e423cf4",
+      "gzipSha256": "f8f6f51d890b9b7a1806bd873babe3c183e54dfc5b7669b1f690ab455a4c7792",
+      "rawBytes": 5281,
+      "gzipBytes": 906
+    },
+    {
+      "file": "relic-gold-fallback-red.tap.gz",
+      "rawSha256": "4154a4c8c79c019f60f01562f56232f766a673ed298f3d285286dae528ed81f1",
+      "gzipSha256": "bc8eca43c6efa72d1e3c1e88f921dfe2886cf6c9f09897dc5b1ae6688ffa5835",
+      "rawBytes": 1647,
+      "gzipBytes": 745
+    },
+    {
+      "file": "review-item-icons-shop-fallback-probe.lua.gz",
+      "rawSha256": "caade07c734841b2ca652ec540d6c45efdf004a4af7dca7ec593bad32b290a8f",
+      "gzipSha256": "c347237bcb673710c9925f92abe5d59f187bb829538f88af44b38510094a869a",
+      "rawBytes": 1225,
+      "gzipBytes": 618
+    },
+    {
+      "file": "review-item-icons-shop-fallback-probe.log.gz",
+      "rawSha256": "901d64ef884a5796bb05b320f5a556f5267746798498fe3ec0289146b80573ab",
+      "gzipSha256": "b6fa3cd91f5b3c7359c073e79f14f7e499476fecfc789467bd81301aa91287b1",
+      "rawBytes": 453,
+      "gzipBytes": 302
+    },
+    {
+      "file": "review-item-icons-details-fallback-probe.lua.gz",
+      "rawSha256": "bf621c2542e6db0dbced6774a56665a993687405739d0a58a160ab96f24db36c",
+      "gzipSha256": "25c12f491cbb3beffe39c0a5778a8af92e3245f35b2c61c07e6837bd73572918",
+      "rawBytes": 1039,
+      "gzipBytes": 565
+    },
+    {
+      "file": "review-item-icons-details-fallback-probe.log.gz",
+      "rawSha256": "930e88f39513cb5207ab0cd18b5d98e0c631089deab1d5179624c5ac2dbceca3",
+      "gzipSha256": "b54f0d552105077509cc52fc26d6924d00244b866b3d7cfa4d69abd77cb97115",
+      "rawBytes": 426,
+      "gzipBytes": 282
+    },
+    {
+      "file": "review-item-icons-details-probe-fixture-error.log.gz",
+      "rawSha256": "a184629091650fc0dd285c56a6153ec5e12e84ac441a32f907b6cb090164b5b0",
+      "gzipSha256": "53a35d254ca8f5c44bf5a38da39828c59e125469ff9981b8015abb1a84769166",
+      "rawBytes": 448,
+      "gzipBytes": 288
+    },
+    {
+      "file": "relic-fallback-fixture-error.tap.gz",
+      "rawSha256": "a80e00e59437ec92ec2726ae1530e6a141daed513f180818615f77b07ffb488d",
+      "gzipSha256": "7cadf5b6bb5f295b880c1c27600629f95b23bc1639a53e46ece5ec34a461259e",
+      "rawBytes": 1524,
+      "gzipBytes": 761
     }
   ]
 }
