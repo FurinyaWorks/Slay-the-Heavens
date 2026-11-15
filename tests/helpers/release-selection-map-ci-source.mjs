@@ -5,15 +5,25 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-selection-map-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'ab9597d0237daaf530f609ca6772576e170d0785e1fd66852c7e54800909fd66','complete release selection map CI continuation');
+assert.equal(hash(bytes),'8f63e3cb7ee9b5a81139b4193589ce6f098e423d43b576d190925411681776fe','complete release selection map CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
-assert.equal(packet.baseCommit,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
+assert.equal(packet.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
+assert.equal(packet.priorBaseCommit,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
 assert.equal(packet.bootstrapPredecessorCommit,'c2409ad750c15124b7b843c6bbfa5b222537cb75');
 assert.match(packet.currentCommit,/^[a-f0-9]{40}$/);
 const bootstrap=['.github/workflows/licenses.yml','.github/workflows/quality.yml','.github/workflows/quick-feedback.yml'];
 assert.deepEqual(Object.keys(packet.files).filter(p=>p.startsWith('.github/')).sort(),bootstrap);
-for(const [path,row]of Object.entries(packet.files))assert.equal(row.beforeCommit,bootstrap.includes(path)?packet.bootstrapPredecessorCommit:packet.baseCommit,'exact release selection map CI predecessor: '+path);
+for(const [path,row]of Object.entries(packet.files))assert.equal(row.beforeCommit,packet.baseCommit,'exact actual Release selection map CI predecessor: '+path);
+assert.equal(packet.currentTreeCommitted,true);
+assert.deepEqual(packet.priorSlicePacket,{path:'tests/helpers/release-selection-map-ci-before-release1cc-source.json.gz',sha256:'ab9597d0237daaf530f609ca6772576e170d0785e1fd66852c7e54800909fd66'});
+assert.deepEqual(Object.keys(packet.bootstrapCurrentBindings).sort(),[
+ '.github/workflows/licenses.yml','.github/workflows/quality.yml','.github/workflows/quick-feedback.yml',
+ 'tests/ci-complete-calibration.test.mjs','tests/ci-posix-concurrency.test.mjs','tests/engineering-quality.test.mjs',
+ 'tests/full-quality.test.mjs','tests/helpers/integrated-ci-source.mjs','tests/integrated-ci-source.cases.mjs','tests/quick-feedback.test.mjs',
+],'complete ten actual Release bootstrap current sources');
+for(const [path,row]of Object.entries(packet.bootstrapCurrentBindings))
+ assert.deepEqual(packet.files[path].before,row.current,'exact actual Release bootstrap current predecessor: '+path);
 for(const [path,row]of Object.entries(packet.files))for(const binding of [row.before,row.current].filter(Boolean)){
  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
