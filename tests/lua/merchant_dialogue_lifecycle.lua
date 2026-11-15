@@ -76,12 +76,23 @@ test('all encounter pages remain readable and idle waits for the long text to fi
  assert(merchant:tap());ui:update(.1)
  assert(ui:press('confirm') and not ui:holding(),'farewell must not delay leaving')
 end)
-test('automatic encounter pagination is not cut short by the idle deadline',function()
+test('short encounter reaches greeting; a genuinely long narration still blocks premature idle',function()
  local ui=setup();local merchant=ui.merchant
  for _=1,150 do ui:update(.1) end
- assert(merchant.current.kind=='encounter' and not merchant.idleUsed,'idle interrupted the complete encounter narration')
+ assert(merchant.current.kind=='greet' and not merchant.idleUsed,'short approved encounter should reach greeting before idle')
  for _=1,500 do ui:update(.1) end
- assert(merchant.current.kind=='idle' and merchant.idleUsed,'automatic pages never reached greeting and idle')
+ assert(merchant.current.kind=='idle' and merchant.idleUsed,'short encounter never reached greeting and idle')
+ -- Long text is an explicit test input, not a replacement for approved production copy.
+ local longUi=setup();local longMerchant=longUi.merchant;local current=longMerchant.current
+ local text=string.rep(Narrative.merchant.encounter,20)
+ current.chars=require('abyss_prologue').chars(text)
+ current.ends=require('abyss_merchant_pages').ends(current.chars,Theme.layout.merchant.pageCharacters)
+ assert(#current.ends>20,'long negative control must span the idle deadline')
+ for _=1,150 do longUi:update(.1) end
+ assert(longMerchant.current==current and current.kind=='encounter' and not longMerchant.idleUsed,
+     'idle interrupted an unfinished long narration')
+ for _=1,200 do longUi:update(1) end
+ assert(longMerchant.current.kind=='idle' and longMerchant.idleUsed,'long narration did not finish its queued greeting and idle')
 end)
 test('a hidden or map-covered shop pauses its bubble timer and pose follows the head',function()
  local ui,root=setup();local merchant=ui.merchant;local box=root:GetChild('merchant')
@@ -97,14 +108,28 @@ test('a hidden or map-covered shop pauses its bubble timer and pose follows the 
 end)
 test('production merchant uses semantic pages in both existing budgets',function()
  local budget=Theme.layout.merchant.pageCharacters
- for _,limit in ipairs({9,12})do
-  Theme.layout.merchant.pageCharacters=limit
-  local ui,root=setup();assert(ui.merchant:tap())
-  assert(root:GetChild('merchant'):GetChild('line').text=='转过一道石廊，','production entry still uses fixed offsets')
-  ui.merchant:react('buy');assert(ui.merchant:tap())
-  assert(root:GetChild('merchant'):GetChild('line').text=='「眼光不错。」')
- end
+ local ok,err=pcall(function()
+  for _,limit in ipairs({9,12})do
+   Theme.layout.merchant.pageCharacters=limit
+   local ui,root=setup();local merchant=ui.merchant;local current=merchant.current
+   local pages={}
+   while true do
+    assert(merchant:tap())
+    pages[#pages+1]=root:GetChild('merchant'):GetChild('line').text
+    assert(utf8.len(pages[#pages])<=limit,'dialogue page exceeds the unchanged budget')
+    if current.ends[current.page]==#current.chars then break end
+    assert(merchant:tap())
+   end
+   assert(#pages==(limit==9 and 3 or 2),'reviewed encounter must retain its semantic page count')
+   assert(pages[1]==(limit==9 and '旧毯上摆着几件货' or '旧毯上摆着几件货物。'),
+       'reviewed encounter page must not inherit the retired corridor copy')
+   assert(table.concat(pages)==Narrative.merchant.encounter,'paged encounter lost original characters')
+   merchant:react('buy');assert(merchant:tap())
+   assert(root:GetChild('merchant'):GetChild('line').text=='「眼光不错。」')
+  end
+ end)
  Theme.layout.merchant.pageCharacters=budget
+ assert(ok,err)
 end)
 test('manual and automatic sentence boundaries agree without losing characters',function()
  local function read(auto)
