@@ -48,3 +48,15 @@
 - 统一工程入口、JavaScript 语法、原生控件合同及 Backlog 完整性分别执行；精确结果以本轮日志与 PR 说明为准。`test:related --plan` 是路由计划，不冒称已执行完整受影响集合或 Full。
 - 未修改游戏规则、平衡、版本、master、发布候选或发布记录。未构建/导入新 GIL，未取得官方 ready、容量或同候选手机实测；本切片不代表当前发布容量合格。
 - TASK-38.6 的手机与实际设备要求全部保持未完成；待 #673 正式落地后，使用 Backlog CLI 同步真实进展与证据，不直接编辑任务文件。
+
+## 迁移到 2.0.0 Release
+
+Owner 将本轮必要修复改为 Release 收口后，旧树冻结在未推送的 `4c62817239da4bd9c2e7dc822b27af7e0b4cd8bc`，未向 Develop 创建 PR 或授权合并。
+
+新分支 `fix/mobile-shop-v2-1115` 从 `origin/release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210` 建独立树，读取新 AGENTS 与 V2-RELEASE-HANDOFF 后，以 `cherry-pick -x` 保留旧修复来源。此基线相对原 c240 只变更五个 CI/指引文件，`src/`、`scripts/`、`tests/` 无差异。迁移不合并整个 Develop，不改原分支、候选、master 或 Tag。
+
+本次另修正旧提交 `tests/lua/shop_dismiss.lua` 末尾多余空行；旧 `diff --check` 的失败保留，不将旧提交宣称为空白检查已通过。其余五个源码/测试文件与旧修复逐 Git blob 相同，Lua 测试去除末尾空白后逐字相同，未改变输入行为或测试断言。
+
+Release 树重建数据/UI 后，重新运行完整十二组商店生命周期矩阵与原节点布局，并完成改动 JS 的语法、Backlog 与空白检查；新日志位于 `.artifacts/mobile-shop-v2-1115/`。先前四项独审 RED、纠偏 GREEN、工程与正式生成树记录保留为原基线历史，不迁移旧独审 PASS 到 Release。最终 HEAD/BASE 由原独立评审者重新核实。
+
+PR 目标为 `release/v2.0.0`。Release 保护与 Full CI 依新发版合同核实，由主协调者处理；不套用 Develop 的 Fast/自动队列，不重复本地 Full 或整套工程采集。#673 未合入本树时仍不伪造任务状态。官方导入、ready、iPhone 14 Pro 同候选实测与发布容量仍未验证。
