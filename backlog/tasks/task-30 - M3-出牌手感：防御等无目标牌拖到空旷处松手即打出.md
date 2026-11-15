@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-23 00:59'
-updated_date: '2026-11-15 14:13'
+updated_date: '2026-11-15 15:16'
 labels:
   - ui
   - combat
@@ -91,6 +91,10 @@ ordinal: 36000
 实证补充：新增active记账在resize缺Up路径留下恢复阻塞，Owner批准仅在battle_details.resize及cancelControllerPointers既有retire路径清空；覆盖Controller/覆盖页/隐藏/旧尾事件/fresh Down恢复。
 
 独审c165补证：匿名Exit/EndDrag缺Up及P0弹窗lower缺Up后同ID复用留下孤儿active。按本控件唯一origin退役、并发未知只撤匿名资格、fresh命名Down先退同ID旧origin协议纠偏；补旧尾Click拒绝/其它手指保留/多指未知终止与fresh恢复矩阵，旧HEAD不作准入。
+
+独审aa3组合补证：P0明确消费ID2而lower无Up，fresh新ID4仍受旧active2阻挡；仅复用现有releasedDragTouch命名消费证明，在并发判定前退同ID旧enemy记录/匿名资格，不清其它控件或真实其它活指，不新增历史集合。P0证明来自#679，仅组合验证此依赖。
+
+Owner追加批准P0目标链条：显式Fire Use形成已捕获的非moving tapAim，其唯一已Up token也可匿名Click；仍经enemyReady/aimReady核对同aim、slot/id/run/battle/actor/epoch/turn，moving/foreign/stale及A→B拒绝，药水恰一次不打手牌。P0菜单修复本身不在本slice冒认，Task38.4由原合同/执行者同步。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -175,4 +179,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-15 Release离线切片：1/2/3敌Down/Up带ID而Click缺ID的三项RED已修，唯一已Up目标牌token才可匿名提交，命名路径/忙碌/手柄/旧身份保护保留；新增16组真实Host回归与原点击/入场专项通过。新active在resize缺Up时留下阻塞的RED经批准沿两处既有retire清理修复。Fast执行10JS+3Lua为分层反馈、未跑Full；详情见docs/backlog-details/TASK-30-ANONYMOUS-TARGET-20261115.md。无本轮GIL/官方/手机验收，全部设备AC保持未勾，独审与组合待交接。
 
 独审拒绝c165：未知Exit/EndDrag无Up残留active及P0缺lowerUp后的同IDreclaim阻塞均留RED。已按本控件唯一origin退役、多active不猜归属、未知Up只取消而noTouch完整序列保留协议修正，新增7组参数矩阵通过；旧尾Click拒绝与fresh恢复、命名foreign/其它控件归属保留。原16组与静态定向重验，独立新HEAD/组合仍待复核，设备AC不变。
+
+aa3既定矩阵通过后仍被P0组合新ID4轨迹RED拒绝。当前候选复用post-Down命名消费证明局部退旧origin，旧marker+busy新按压/真实多指仍拒绝，重入不复活匿名资格。按协调者扩scope，显式Use的非moving药水tapAim仅接受唯一已Up匿名Click；A到B/slot/inventory/actor/turn/moving及旧尾保护保留。最终定向7JS/37组通过，原Fire52到32/瓶子消耗与新ID单轨迹GREEN，静态CC15/Backlog通过；详情与历史RED见TASK-30-ANONYMOUS-TARGET-20261115.md。未PR/Full/官方/手机，8/15历史AC和状态不变，精确新HEAD独审及组合另交。
 <!-- SECTION:NOTES:END -->
