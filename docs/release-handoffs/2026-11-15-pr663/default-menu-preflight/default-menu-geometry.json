@@ -1,0 +1,109 @@
+{
+  "layoutSha256": "a9d4869474d5b46e600208644ee0640f5f3a970f8742badbf46c7f0fe650c6ff",
+  "layoutStage": [
+    1280,
+    720
+  ],
+  "menuCentre": [
+    576,
+    316
+  ],
+  "menuHit": [
+    48,
+    48
+  ],
+  "distToStageEdges": [
+    40.0,
+    20.0
+  ],
+  "states": [
+    {
+      "name": "normal",
+      "colours": [
+        "#C9BDA4",
+        "#C9BDA4",
+        "#C9BDA4"
+      ],
+      "logicalStrokes": [
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "hover",
+      "colours": [
+        "#F6DFA4",
+        "#F6DFA4",
+        "#F6DFA4"
+      ],
+      "logicalStrokes": [
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "pressed",
+      "colours": [
+        "#F3ECDD",
+        "#F3ECDD",
+        "#F3ECDD"
+      ],
+      "logicalStrokes": [
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "disabled",
+      "colours": [
+        "#A9A595",
+        "#A9A595",
+        "#A9A595"
+      ],
+      "logicalStrokes": [
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          14,
+          1
+        ]
+      ]
+    }
+  ]
+}

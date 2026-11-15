@@ -1,0 +1,4 @@
+ABYSS_RUN seed=1 source=explicit
+PASS PC Host scale=1.5000 three menu strokes and click/cancel on menu, map, battle
+ABYSS_RUN seed=1 source=explicit
+PASS phone-size Host scale=1.6375 three menu strokes and click/cancel on menu, map, battle

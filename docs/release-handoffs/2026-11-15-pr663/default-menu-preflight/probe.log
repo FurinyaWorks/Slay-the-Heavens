@@ -1,0 +1,20 @@
+EXPECTED RED: PC01: intended static title missing from default output
+{
+  "sourceHead": "73da2626d37fb52f90e71cd65838c08a1b9cae7c",
+  "sourceFileSha256": "00c8902e05fc6c7e475d06fb344483d86632479b231353c4593a4b471f6de6f3",
+  "titleAssetSha256": "e1b8e8b19b881465f80d9ae7d96f4e857ff2d5f70f5835788d5ff15252f77698",
+  "defaultUiSha256": "0798f272cba727cf099dd7676b80c0cdf15cd4c4f447904f35e01d44c4c0a7bf",
+  "exactTitleSha256": "3f359c36e65df5916983cac1a4e5bc3c814ce63f3390fcd4a98f9e857e958ec0",
+  "nodeCount": 416,
+  "nodeKinds": {
+    "container": 19,
+    "image": 397
+  },
+  "sourceOnlyExport": true,
+  "matchedOfficialGeometry": true,
+  "allExistingNodesPreserved": true,
+  "defaultRedReproduced": true,
+  "modeHelperOnly": true,
+  "noProductionPatch": true,
+  "noPixelDeviceApproval": true
+}
