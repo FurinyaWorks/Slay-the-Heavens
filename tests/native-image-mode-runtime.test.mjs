@@ -5,10 +5,17 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
-import {compileImageModes,verifyImageModes} from '../scripts/native-image-modes.mjs';
+import {compileImageModes,verifyImageModes,imageModeCodeRecord} from '../scripts/native-image-modes.mjs';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
+
+test('compiler and writer identities retain only the existing optional BOM/CRLF normalization',()=>{
+ const original=imageModeCodeRecord(Buffer.from('local mode="stretch"\nreturn mode\n'),'writer.lua');
+ assert.deepEqual(imageModeCodeRecord(Buffer.from('\uFEFFlocal mode="stretch"\r\nreturn mode\r\n'),'writer.lua'),original);
+ for(const changed of ['local mode="basic"\nreturn mode\n','local mode="stretch"\rreturn mode\n','local mode="stretch" \nreturn mode\n'])
+  assert.notEqual(imageModeCodeRecord(Buffer.from(changed),'writer.lua').sha256,original.sha256);
+});
 
 test('generated official UI and Deck preserve every mode intent with explicit native lowering and runtime binding',t=>{
  const dir=mkdtempSync(join(tmpdir(),'image-modes-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));

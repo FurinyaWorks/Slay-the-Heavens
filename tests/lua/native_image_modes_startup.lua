@@ -23,7 +23,7 @@ for _=1,160 do
  if modes.page=='nodePanel'and modes.lastRequests>0 then
   assert(modes.lastRequests<=64);covered=covered or view.pageReveal:covered()
  end
- if view.mode=='node'and view.pageReveal.state=='visible'then break end
+ if view.mode=='node'and view.pageReveal.state=='visible'and not(view.prologue and view.prologue:covering())then break end
 end
 assert(covered,'mode requests escaped the existing page cover')
 assert(view.mode=='node'and view.pageReveal.state=='visible','native entry never published prepared node page')

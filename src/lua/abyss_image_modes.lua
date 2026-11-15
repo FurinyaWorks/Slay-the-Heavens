@@ -25,12 +25,15 @@ function M.new(stage,binding,enums,clock)
     local function live(row)
         if self.dead then return false end
         self.aliveReads=self.aliveReads+1
-        if stage.alive==false then return false end
+        local stageAlive=stage.alive
+        if self.dead or stageAlive==false then return false end
         if row.root~=stage then
             self.aliveReads=self.aliveReads+1
-            if row.root.alive==false then return false end
+            local rootAlive=row.root.alive
+            if self.dead or rootAlive==false then return false end
         end
-        return (not row.page or row.page==self.page) and (not row.valid or row.valid())
+        local valid=(not row.page or row.page==self.page) and (not row.valid or row.valid())
+        return not self.dead and valid
     end
     local function write(row,spec)
         local version=row.version

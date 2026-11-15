@@ -8,6 +8,7 @@ local function hook(node)
  local old=getmetatable(node);local row={value=enums.basic,writes=0};state[node]=row
  setmetatable(node,{__index=function(c,key)
   if key=='imageType'then totals.reads=totals.reads+1;if row.onRead then row.onRead()end;return row.value end
+  if key=='alive'and row.onAlive then row.onAlive()end
   return old.__index(c,key)
  end,__newindex=function(c,key,value)
   if key=='imageType'then totals.writes=totals.writes+1;row.writes=row.writes+1
@@ -126,5 +127,9 @@ lookupRoot.GetChild=function(control,name)
 end
 lookupOwner:beginFrame();assert(not lookupOwner:step(first.path[2]))
 assert(callsAfterRetirement==0,'continued native path traversal after retirement')
+local aliveRoot=canvas();local aliveOwner=Modes.new(aliveRoot,Binding,enums,function()return 0 end);local aliveCalls=0
+state[aliveRoot].onAlive=function()aliveCalls=aliveCalls+1;if aliveCalls==3 then aliveOwner:release()end end
+aliveOwner:beginFrame();assert(not aliveOwner:step(first.path[2]))
+assert(aliveOwner.lookups==0 and aliveOwner.reads==0,'alive getter retirement escaped the pre-call guard')
 print('IMAGE_MODE_CALLS staticReads='..staticReads..' staticWrites='..staticWrites..' staticGetChild='..staticLookups..' staticAliveReads='..staticAlive..' ownerGetChild='..owner.lookups..' totalReads='..totals.reads..' totalWrites='..totals.writes)
 print('NATIVE_IMAGE_MODES_PASS static=1637 templates=86 controlsAdded=0')

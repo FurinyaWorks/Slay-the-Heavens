@@ -38,7 +38,13 @@ export function compileImageModes(layout,templates){
   nativeControlsAdded:0};
  return {layout:loweredLayout,templates:loweredTemplates,binding,proof};
 }
-function sourceRecord(url,path){const bytes=readFileSync(url);return {path,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')};}
+export function imageModeCodeRecord(raw,path){
+ const bytes=Buffer.from(Buffer.from(raw).toString('utf8').replace(/^\uFEFF/,'').replace(/\r\n/g,'\n'));
+ return {path,normalization:'optional-utf8-bom-and-crlf-lf-only',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')};
+}
+// SourceInputs/moduleDigests retain physical bytes. This portable code identity
+// must also authenticate the same pinned Git archive on Windows and POSIX.
+function sourceRecord(url,path){return imageModeCodeRecord(readFileSync(url),path);}
 // Recompute from immutable intent. Missing, extra, reordered or stale rows fail;
 // the lowered tree is only a static codec input, never a replacement intent tree.
 export function verifyImageModes(layout,templates,compiled){
