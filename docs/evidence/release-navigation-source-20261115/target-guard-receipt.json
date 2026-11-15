@@ -1,0 +1,44 @@
+{
+  "reviewedBeforeCommit": "196de2e19a802cae93746c0fa6fc8d13f637273f",
+  "productCommit": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "initialPacket": {
+    "bytes": 146735,
+    "sha256": "7ad26184ab70cd0eeab6151610f29a6a6aa29f859a971d8ef573291c697715bd"
+  },
+  "currentPacket": {
+    "bytes": 147200,
+    "sha256": "28da29c324f35d1884451672bf48df51ba405a8add44c0393b074611d652556a"
+  },
+  "fix": {
+    "reviewedBeforeCommit": "196de2e19a802cae93746c0fa6fc8d13f637273f",
+    "priorPacketSha256": "7ad26184ab70cd0eeab6151610f29a6a6aa29f859a971d8ef573291c697715bd",
+    "path": "tests/ci-complete-calibration.test.mjs",
+    "priorTestSha256": "4f823aa3d23659941eb27b47be0ba173bba8ecbcbdf7413a803fe565afe1c20d",
+    "currentTestSha256": "9d0b2c9a9f212db45438525bcd3bf88cf1012809b3835dd90c73cead5ebdd3ba",
+    "currentTestGitBlob": "f8a375450c3b782e774867c774bcea9ae1706478",
+    "kind": "preserve existing 30/20-minute targets for complete raw current workload; hard guards retained"
+  },
+  "onlyOneAfterBindingChanged": true,
+  "initialPacketPhysicalReconstruction": true,
+  "other22BindingsAndBeforeInventoryBudgetUnchanged": true,
+  "original92ArchivesNotChanged": true,
+  "initial73NotRerun": true,
+  "fixCommit": "1e7c1c526de68557522e237405acb6f6bf15a285",
+  "fixTree": "142fad3243ec5208090eab5ad8d65e8ca7e0145e",
+  "incrementalTests": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0
+  },
+  "realRegisteredCallbackSensitivity": "prior guard-only accepts target+1; corrected target plus guard rejects",
+  "logs": {
+    "target-guard-incremental.log.gz": {
+      "bytes": 468,
+      "sha256": "165de18e4256a2bcad93657a58cb039922b184c27c17126eb22b1ddf0ea15eb9"
+    },
+    "target-guard-sensitivity.log.gz": {
+      "bytes": 105,
+      "sha256": "4bedfe7d0564e030a9db64bbb4ec34925c31e7c4fca01319e121ae2cf6468e55"
+    }
+  }
+}

@@ -12,7 +12,15 @@
 | packet | 字节 | SHA256 |
 |---|---:|---|
 | `tests/helpers/release-navigation-source.json.gz` | 14432 | `83b69705480776eb130b3487f09af79c50625410925e76bba958644093c91f31` |
-| `tests/helpers/release-navigation-ci-source.json.gz` | 146735 | `7ad26184ab70cd0eeab6151610f29a6a6aa29f859a971d8ef573291c697715bd` |
+| `tests/helpers/release-navigation-ci-source.json.gz` | 147200 | `28da29c324f35d1884451672bf48df51ba405a8add44c0393b074611d652556a` |
+
+## 独审 request_changes 与最小修正
+
+初次适配的 raw 当前用例仅硬断言45/30分钟执行上限，原30/20分钟目标断言只在876/1423前驱上执行；当前879/1424目标只是日志。这是实际门禁缺口，初次73项通过不证明该目标约束仍覆盖当前工作量。
+
+`1e7c1c526de68557522e237405acb6f6bf15a285` 仅新增当前 `forecast<target` 硬断言，原执行 guard、全部历史断言和预算保持。CI packet 仅更新 `ci-complete-calibration.test.mjs` 的 after 及复审身份元数据（精确 test SHA256/Git blob），其他22项、所有 before、库存、预算及92旧档案不变。初次146735字节/`7ad26184…`完整快照保存在同目录证据的 `initial-ci-source.json.gz`；恢复该单项并移除修正元数据可逐字节重构原物理 gzip。
+
+修后只补验新鲜来源/库存负例与当前 target+guard合同 **4/4 PASS**，日志 `target-guard-incremental.log.gz`。实际旧/新注册回调分别仅将 forecast 改为 target+1：初次 guard-only 接受，修后明确拒绝，探针 **PASS**，日志 `target-guard-sensitivity.log.gz`；未改任何预算或配置。下述9/44/73结果保留初次输入身份，没有转写为修后重跑；本修正未重复73/44或产品Host。初次独审 request_changes 保留，由独立审查者针对修正另行复核。
 
 ## 本轮验证
 
