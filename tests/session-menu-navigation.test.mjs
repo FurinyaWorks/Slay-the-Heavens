@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,releaseSourceEpoch,preMobileUiSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch,releaseSourceEpoch,preMobileUiSourceEpoch,prePortraitIdleSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {mobileUiPacket,extendMobileUiEpoch} from './helpers/mobile-ui-source-epoch.mjs';
+import {portraitIdlePacket,extendPortraitIdleEpoch} from './helpers/portrait-idle-source-epoch.mjs';
 import './helpers/mobile-ui-prior.cases.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
@@ -158,6 +159,27 @@ test('seven independent mobile owners preserve every P0 layer and reject fresh p
   }
  }
  for(const path of Object.keys(proof.current))assert.equal(read(path),proof.current[path].source,'complete final current '+path);
+});
+
+test('approved idle eighth owner preserves the exact seven-owner corpus and rejects fresh producer or source drift',()=>{
+ const prior=prePortraitIdleSourceEpoch.proof,proof=sourceEpoch.proof,packet=portraitIdlePacket;
+ const path='src/lua/abyss_traveler_portraits.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ assert.equal(proof.currentTreeCommitted,false);assert.equal(Object.keys(proof.current).length,352);
+ assert.deepEqual(proof.targets.portraitIdlePrior,{commit:packet.baseCommit,files:prior.current});
+ for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(proof.targets[name],target,'unchanged complete prior '+name);
+ assert.deepEqual(proof.mobileUiProducers,prior.mobileUiProducers);
+ assert.deepEqual(proof.portraitIdleProducer,{path,commit:packet.currentCommit,parent:packet.baseCommit});
+ assert.equal(packet.before[path].gitBlob,'3046e3ba9443517d9254d8001b7b5acc6db8d847');
+ assert.equal(read(path),packet.current[path].source);
+ assert.equal(sourceEpoch.preCombinedSource(path,read(path),{target:'portraitIdlePrior',readSource:read}),packet.before[path].source);
+ for(const owner of [...Object.keys(prior.mobileUiProducers),path])for(const bad of [null,read(owner)+'\n'])
+  assert.throws(()=>sourceEpoch.preCombinedSource(path,read(path),{target:'portraitIdlePrior',readSource:p=>p===owner?bad:read(p)}),/linked owner identity/);
+ for(const mutate of [p=>p.currentCommit='f'.repeat(40),p=>p.baseCommit='f'.repeat(40),
+  p=>p.before[path].source+='\n',p=>p.current[path].source+='\n',p=>delete p.current[path],
+  p=>p.current['src/lua/foreign.lua']=p.current[path]]){
+  const invalid=structuredClone(packet);mutate(invalid);assert.throws(()=>extendPortraitIdleEpoch(prePortraitIdleSourceEpoch,invalid));
+ }
+ for(const p of Object.keys(proof.current))assert.equal(read(p),proof.current[p].source,'complete current owner '+p);
 });
 
 test('reward and mandatory card choices resume with their original live tokens',()=>{
