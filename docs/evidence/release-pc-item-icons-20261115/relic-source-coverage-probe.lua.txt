@@ -1,0 +1,68 @@
+-- Read-only existing production catalogue + source queue identity audit.
+local Data,Theme=require('abyss_data'),require('abyss_theme')
+local Run,Rewards=require('abyss_run'),require('abyss_relic_rewards')
+local Hooks,View=require('abyss_relic_hooks'),require('abyss_relic_view_ui')
+local run=Run.new(Data,42,{character='ironclad',experimental=true,campaign=true,campaignProfile='competition-two-act'})
+assert(run.character=='ironclad' and run.campaignProfile=='competition-two-act')
+local catalogue=require('abyss_compendium_catalog').new(Data,require('abyss_presentation'))
+local rows=catalogue:list('relics')
+local json
+json=function(value)
+ if type(value)=='string'then return '"'..value:gsub('\\','\\\\'):gsub('"','\\"'):gsub('\n','\\n')..'"'end
+ if type(value)~='table'then return tostring(value)end
+ local parts={}
+ if #value>0 then for _,v in ipairs(value)do parts[#parts+1]=json(v)end;return '['..table.concat(parts,',')..']'end
+ local keys={};for k in pairs(value)do keys[#keys+1]=k end;table.sort(keys)
+ for _,k in ipairs(keys)do parts[#parts+1]=json(k)..':'..json(value[k])end
+ return '{'..table.concat(parts,',')..'}'
+end
+local byId,queueCount={},0
+for _,row in ipairs(rows)do byId[row.id]={id=row.id,rarity=row.rarity,sourceId=Rewards.sourceId(run,row.id),channels={}}
+end
+for tier,queue in pairs(run.relicPool.catalog.queues)do for _,sourceId in ipairs(queue)do
+ local definition=assert(Rewards.definition(run,sourceId),'unresolved real queue source '..sourceId)
+ local row=assert(byId[definition.id],'real queue source absent from public compendium '..sourceId)
+ row.channels[#row.channels+1]='source-queue:'..tier;row.queueSourceId=sourceId
+ row.hooksSourceAlias=Hooks.localId(sourceId);row.canonicalLocalId=Hooks.localId(definition.id)
+ queueCount=queueCount+1
+end end
+for _,row in ipairs(rows)do
+ local result=byId[row.id]
+ if #result.channels==0 then result.channels={'production-compendium:two-act-special/starter/fallback'}end
+ result.canonicalLocalId=Hooks.localId(row.id)
+ result.recipe=Theme.lowCostArt.relic.assets[result.canonicalLocalId]~=nil
+ result.officialFallbackImage=View.icon(row.id,true)
+ result.sourceIdFallbackImage=View.icon(result.sourceId,true)
+ result.sourceIdRecipe=Theme.lowCostArt.relic.assets[Hooks.localId(result.sourceId)]~=nil
+ table.sort(result.channels)
+ print('RELIC_COVERAGE_ROW\t'..json(result))
+end
+local EventPool=require('abyss_event_pool')
+for act=1,2 do
+ local pool=EventPool.new('full',false,act)
+ for _,kind in ipairs({'act','shrine','once'})do for _,sourceId in ipairs(pool[kind])do
+  print('RELIC_COVERAGE_EVENT\t'..json({act=act,pool=kind,sourceId=sourceId,id=EventPool.contentId[sourceId]or ''}))
+ end end
+end
+print('RELIC_COVERAGE_META\t'..json({character=run.character,campaignProfile=run.campaignProfile,
+ eventMode=run.unknown.pools.mode,queueCount=queueCount,publicRelicCount=#rows}))
+-- Controlled actual Host projection of formal source tuples, not natural drops.
+local F=dofile('tests/lua/support/game_ui_fixture.lua')
+local host,root=F.fixture();assert(F.start(host))
+local rewardRun=host.run;rewardRun.nodeFlow=nil;rewardRun.phase='map';assert(Run.startCombat(rewardRun,'cultist_solo'))
+rewardRun.phase='reward';rewardRun.rewards={manualContinue=true,gold=0,goldClaimed=true,cardResolved=true,cards={},relics={}}
+local index=0
+for _,sourceId in ipairs({'Bronze Scales','Oddly Smooth Stone'})do
+ local definition=assert(Rewards.definition(rewardRun,sourceId));index=index+1
+ rewardRun.rewards.relics[index]={id=definition.id,sourceId=sourceId}
+end
+host:refresh()
+for i,item in ipairs(rewardRun.rewards.relics)do
+ local face=root:GetChild('battlePanel'):GetChild('potionHelp'):GetChild('relicReward'..i):GetChild('normal')
+ local icon,pool=face:GetChild('rewardIcon'),face:GetChild('rewardIconArt')
+ print('RELIC_COVERAGE_REWARD_PROBE\t'..json({id=item.id,sourceId=item.sourceId,
+  iconVisible=icon.visible,iconImage=icon.imageId,semanticPoolVisible=pool.visible,
+  canonicalRecipe=Theme.lowCostArt.relic.assets[item.id]~=nil,
+  sourceAlias=Hooks.localId(item.sourceId),naturalDropEvidence=false}))
+end
+print('RELIC_SOURCE_COVERAGE_PASS')

@@ -37,3 +37,14 @@
 - 两处最小恢复后，新增三面矩阵和原 runtime/lowcost 共6/6通过，见 `relic-fallback-and-regression-green.tap.gz`。随后扩展真实 Nodes 宝箱为第四面，并发现 relic→gold 且缺池在只恢复非空 ID 时仍失败：24通过、1失败保留于 `relic-gold-fallback-red.tap.gz`；将 node 恢复放到 ID 分支前修复。未删任何旧断言。
 - 最终四面 × 两组代表 × 三故障共24场景，加宝箱遗物→金币1场景，**25/25通过**，JS和Lua都断言精确分母。每场景覆盖同物品、切物品、非法 ID 的原图映射及池恢复重绘，另覆盖关闭重开；见 `relic-fallback-final-green.tap.gz`。原始生成 Host 使用 mock 原生 API，并非设备证据。
 - 最终工程 `relic-fallback-final-engineering.log.gz` 再次通过：351模块、6165/6165测量、1992边、无新静态诊断。未重跑 Full、未新增来源/CI packet，最终组合与来源续接仍由主线程完成；待独立复审。所有设备、ready、容量及 AC 保持未验。
+
+## 合法来源集合只读核实（0345006e）
+
+[完整集合/ID/image/alias报告](../evidence/release-pc-item-icons-20261115/relic-source-coverage.json)从现有实际 `Run.new(ironclad,competition-two-act)` 的 relicPool.catalog 和 Production compendium 取集，经现有 `RelicRewards.definition` 解析 source ID，而非由121配方反推。运行探针与raw输出保存在同目录；来源SHA绑定0345006e产品。
+
+- Geo两幕当前公开集合149：正式五来源队列130 + 既有starter/特殊事件/耗尽fallback19。120个有语义recipe，29个使用29种互不重复的既有native image；149都具有canonical层recipe或native映射。29不是缺美术，不自行补图，也不以不同image ID证明实际像素可辨。
+- 121配方另1个 `mark_of_bloom` 为Act3保留。153原定义中不在149集合的是 `mark_of_bloom`、`damaru`、`data_disk`、`snake_skull`；后三者为其它职业池，不作为本版必须掉落。原full-source均保留。
+- 集合核实发现当前实际奖励alias漏绘：13个正式队列source alias没有被Hooks.localId归一，不能跳过现有definition resolver而直接取recipe。受控真实Host将合法common来源 tuple `bronze_scales/Bronze Scales` 与 `oddly_smooth_stone/Oddly Smooth Stone` 投入战后奖励：两者canonical recipe存在，但实际semanticPoolVisible=false，原icon均为102028。这是现有界面映射缺口，**PC18仍未闭**；不是把29个native映射误当缺图。该观察不声称自然掉落或设备验收。
+- 已额外运行既有 `node scripts/check-license.mjs`，原offline SBOM/资产来源guard PASS，原输出 `license-current.log.gz` 保留。原已知GPL/IP/unknown风险仍开放，PASS不是商业使用许可或新原图授权。
+
+本次提交只增加审计说明/JSON/探针与raw证据，不改产品、获取规则、素材或source/CI packet。
