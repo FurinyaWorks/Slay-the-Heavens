@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 18:17'
 labels:
   - 待验
   - delivery-verify
@@ -48,6 +48,8 @@ ordinal: 136000
 2026-11-02 fresh单槽药水查询：拒绝跨hover和跨native渲染间隔复用frame缓存，不引全模型revision改造；将原药水row构造抽为共用helper，完整potionView保持原槽序与候选规则，仅popup每次open/render/act改为fresh单槽查询，实际使用前完整重验不变。覆盖全药水parity、非法/空/第五槽、后续合法目标、busy、原地状态改变、真实Host重入与使用；按465合入后的最新develop组合TASK81输入路径切片，保留全部历史证据和未验实机AC。
 
 2026-11-02 牌库注册生命周期小切片：先用真实 DeckUI/Controller 与原生 Grid 销毁语义复现记录累积；只对确认销毁的牌面保存 hit 并调用现有 Controller.unbind，覆盖关闭后的及时释放及存活复用。新增重复开关、翻页/过滤/排序、刷新销毁/回收、原生失效、键鼠/手柄和旧回调回归；先红后绿、定向检查及独审，不改设计/Controller 架构，不推断手机性能，AC3 保持未验。
+
+2026-11-16经Owner批准窄分配切片，独立Release36b9树。去重684ae/69011ec与9mobile drafts的card_view均同base。实际Host300静止帧分别证实1500新cardPositions snapshot(保留g.origin语义)与1500 cache-hit前handValues八值临时表；仅后者拟用原私有函数多返回值消除，现有成功缓存、owner/hit/alive、false/throw/重入重验及公式不变，无新cache或输入行为变更。先RED后局部等价/Host静止hover-drag-resize/RunRNG/原缓存失败重入合同，独审后独立提交，不Full/客户端/GIL/AC完成，手机性能未验，状态Owner保持。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -81,4 +83,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-08 PR558冻结311089f9精确Full与源码独审通过，C官方首房闭环与C60正式startup分层留证，完整UI仍未过。独立sourceDirty E1两隐藏页native SetActive得到PC菜单51.70/选角53.65 FPS短窗与合法新Run恢复、Neow/首战拖牌证据；只支持继续实验，未声称稳定60或手机改善。显式开关源码接入与E2边界实测继续，To Do、负责人及手机AC3未验保持；入口experiments/native-2d-vertical-slice/IMPLEMENTATION.md。
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-16 handValues窄分配片：实际Release Host分别确认300帧1500个两值cardPositions snapshot与1500个八值临时返回表，前者完整保留g.origin语义，只有后者1500到0。原私有函数改多返回值，不新增cache、不减公式计算，owner/hit/alive/false/throw/reentry原保护保留。243数值组合和当前官方profile实际Host静止/hover-drag-resize/RunRNG两入口通过；原缓存合同+七精确负控及pattern实际匹配的3近邻负控合计11/11，静态CC15通过。独立源码评审待交；原9mobile/684/690 card_view均同base无重复。证据docs/backlog-details/TASK-4.21-HAND-VALUES-20261116.md；未Full/PR/GIL/官方/手机或FPS结论，状态Owner/AC不变。
 <!-- SECTION:NOTES:END -->
