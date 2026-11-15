@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/release_navigation_source_review",
+  "reviewedBaseSha": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "reviewedHeadSha": "1e7c1c526de68557522e237405acb6f6bf15a285",
+  "reviewedTree": "142fad3243ec5208090eab5ad8d65e8ca7e0145e",
+  "conclusion": "pass",
+  "status": "CODE_PASS_SCOPED",
+  "unresolved": [],
+  "generatedAt": "2026-11-15T16:18:35.350Z",
+  "scope": "Combined independent source/CI review only: initial full12path review plus bounded correction review; product review is separate",
+  "coveredPaths": [
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/helpers/closeout-source-epoch.mjs",
+    "tests/helpers/copy-integration-source-closure.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/helpers/release-navigation-ci-source.json.gz",
+    "tests/helpers/release-navigation-ci-source.mjs",
+    "tests/helpers/release-navigation-source.json.gz",
+    "tests/helpers/release-navigation-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/integration-source-epoch.test.mjs",
+    "tests/release-navigation-source.test.mjs",
+    "tests/session-menu-navigation.test.mjs"
+  ],
+  "evidenceOnlyPaths": [
+    "docs/backlog-details/RELEASE-NAVIGATION-SOURCE-20261115.md",
+    "docs/evidence/release-navigation-source-20261115/ci-calibration-complete.log.gz",
+    "docs/evidence/release-navigation-source-20261115/integration-source-isolated.log.gz",
+    "docs/evidence/release-navigation-source-20261115/product-related-before-source.log.gz",
+    "docs/evidence/release-navigation-source-20261115/receipt.json",
+    "docs/evidence/release-navigation-source-20261115/source-and-menu-small.log.gz"
+  ],
+  "evidenceOnlySuccessor": "b6d862a8ae7c3cee2d50bdce7b2538548221efd1",
+  "reviewChain": [
+    {
+      "file": "review-navigation-source.json",
+      "sha256": "a14dda8195f020162f2753b9c9d9d2903ed499bb2216aa4494ca0a4b86753c07",
+      "base": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "head": "10200974517708427be5f8ae7f95ed73044da40e",
+      "conclusion": "request_changes",
+      "finding": "NAVSRC-1"
+    },
+    {
+      "base": "10200974517708427be5f8ae7f95ed73044da40e",
+      "head": "196de2e19a802cae93746c0fa6fc8d13f637273f",
+      "scope": "evidence-only hop; every path under docs",
+      "paths": [
+        "docs/backlog-details/RELEASE-NAVIGATION-SOURCE-20261115.md",
+        "docs/evidence/release-navigation-source-20261115/ci-calibration-complete.log.gz",
+        "docs/evidence/release-navigation-source-20261115/integration-source-isolated.log.gz",
+        "docs/evidence/release-navigation-source-20261115/product-related-before-source.log.gz",
+        "docs/evidence/release-navigation-source-20261115/receipt.json",
+        "docs/evidence/release-navigation-source-20261115/source-and-menu-small.log.gz"
+      ]
+    },
+    {
+      "file": "review-navigation-current-target.json",
+      "sha256": "3c7357164ee80fd545010e62b0120c09cb48f24fe93df1b8ab18351f03a2e8e8",
+      "base": "196de2e19a802cae93746c0fa6fc8d13f637273f",
+      "head": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "conclusion": "pass"
+    }
+  ],
+  "resolvedFindings": [
+    {
+      "id": "NAVSRC-1",
+      "resolution": "Explicit current forecast<target now precedes retained hard guard. Actual callback and real shard calculations reject target-overrun controls separately on Windows/Linux; old callback accepts the same controls.",
+      "codeCommit": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "newAfterGitBlob": "f8a375450c3b782e774867c774bcea9ae1706478"
+    }
+  ],
+  "initialCoreChecks": {
+    "completeDiff": "10 source files plus both binary packet contents checked; all 12 changed paths are tests only",
+    "production": "Exact three changed owners; all 352 current sources read in new tests; 116 prior owners and 64 existing complete targets retained; Git producer and parent identities match a942",
+    "ci": "All 23 before/current full text and Git blob identities match exact commits; bootstrap before is c2409ad; production mapping bypass retained",
+    "archives": "All 92 old archives retain physical byte SHA256 and committed blob bytes; both LFS pointer OIDs and sizes unchanged",
+    "inventory": "Raw879JS/1424Lua covers all prior876JS/1423Lua plus3JS/1Lua; missing, duplicate, unknown, deleted-all-additions and changed additions rejected",
+    "isolation": "Copied production helper closure loads without new CI trust leaf; actual helper/archive edits and deletion rejected after warm copy",
+    "foreignBefore": "Release36 producer packet rejects a changed predecessor; does not authorize future #684 overlap"
+  },
+  "independentInitialTests": {
+    "selectedTests": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "skipped": 0,
+      "log": "review-navigation-source-small-tests.log",
+      "sha256": "d446c1a0015357fba73fc20938f188c72ff25d0a3862abfc06320014918ce1d9"
+    },
+    "probeGroups": [
+      {
+        "name": "exact code commit tree and scope",
+        "status": "PASS"
+      },
+      {
+        "name": "three production before/current bytes and producer parents agree with Git",
+        "status": "PASS"
+      },
+      {
+        "name": "23 complete CI binding rows agree with explicit predecessor and current Git blobs",
+        "status": "PASS"
+      },
+      {
+        "name": "all 92 predecessor archives retain physical byte hashes and Git LFS identities",
+        "status": "PASS"
+      },
+      {
+        "name": "fresh warm production projection rejects each missing/foreign/old current owner",
+        "status": "PASS"
+      },
+      {
+        "name": "CI drift and wrong predecessor stay visible; production never enters CI mapping",
+        "status": "PASS"
+      },
+      {
+        "name": "raw current inventory and each added file are independently authenticated",
+        "status": "PASS"
+      },
+      {
+        "name": "isolated production helper closure loads without either new CI trust leaf",
+        "status": "PASS"
+      },
+      {
+        "name": "physical isolated helper edit/deletion and archive corruption are rejected after warm copy",
+        "status": "PASS"
+      },
+      {
+        "name": "author retained result evidence has exact receipt hashes and original red result",
+        "status": "PASS"
+      }
+    ],
+    "probeJson": "review-navigation-source-probes.json",
+    "probeSha256": "ffa209ac9c892a5920093a9b230f555c14b3240844e4d6e62eb2247241c27eb8",
+    "physicalNegativeCases": 4,
+    "productionOwnerNegativeCases": 9,
+    "inventoryNegativeCases": 12
+  },
+  "incrementalChecks": {
+    "exactOneAssertionAndLeafHashOnly": true,
+    "allOtherPacketFieldsDeepEqual": true,
+    "all93PhysicalArchiveHashesAndCommittedBytesUnchanged": true,
+    "newLiveCiCurrentPass": true,
+    "removedTargetAssertionFailsCurrentSourceBinding": true,
+    "actualCurrentCallbackDiagnostics": [
+      "win32: raw 879 JS / 1424 Lua; forecast 1757923ms; target 1800000ms; overrun 0ms; unchanged execution guard 2700000ms; not hosted completion",
+      "linux: raw 879 JS / 1424 Lua; forecast 1191630ms; target 1200000ms; overrun 0ms; unchanged execution guard 1800000ms; not hosted completion"
+    ],
+    "targetSensitivity": [
+      {
+        "platform": "win32",
+        "surchargeMs": 60000,
+        "oldCallback": "ACCEPTED",
+        "currentCallback": "REJECTED_BY_PERFORMANCE_TARGET",
+        "withinUnchangedHardGuard": true
+      },
+      {
+        "platform": "linux",
+        "surchargeMs": 60000,
+        "oldCallback": "ACCEPTED",
+        "currentCallback": "REJECTED_BY_PERFORMANCE_TARGET",
+        "withinUnchangedHardGuard": true
+      }
+    ],
+    "authorFourTestEvidenceHashesVerified": true
+  },
+  "currentPacket": {
+    "beforeSha256": "7ad26184ab70cd0eeab6151610f29a6a6aa29f859a971d8ef573291c697715bd",
+    "afterSha256": "28da29c324f35d1884451672bf48df51ba405a8add44c0393b074611d652556a",
+    "totalInputs": 23,
+    "unchangedOtherInputs": 22,
+    "changedInput": "tests/ci-complete-calibration.test.mjs",
+    "beforeBindingUnchanged": true,
+    "priorAndCurrentInventoriesUnchanged": true,
+    "immutableArchivesUnchanged": 93,
+    "retainedBeforeExactBytes": true,
+    "currentCommit": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+    "currentCommitRole": "exact committed product checkpoint; CI adapter bindings collected from working tree",
+    "newAfterGitBlob": "f8a375450c3b782e774867c774bcea9ae1706478"
+  },
+  "layers": {
+    "productCode": "Not re-reviewed; parent supplied independent product CODE_PASS_SCOPED for36b9→a942",
+    "sourceAndCiContract": "CODE_PASS_SCOPED for a942→1e7; no unresolved findings",
+    "hostedFull": "NOT_ASSESSED; local callback forecasts and tests do not prove hosted Full",
+    "officialCandidate": "NOT_RUN; no new GIL/import/ready/capacity",
+    "pcDevice": "NOT_RUN",
+    "mobileDevice": "NOT_RUN",
+    "releaseAdmission": "NOT_GRANTED"
+  },
+  "preservedInitialReview": true,
+  "sourceMutation": false,
+  "backlogMutation": false,
+  "guiOrMcpUsed": false
+}

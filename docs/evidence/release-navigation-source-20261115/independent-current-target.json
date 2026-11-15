@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/release_navigation_source_review",
+  "reviewedBaseSha": "196de2e19a802cae93746c0fa6fc8d13f637273f",
+  "reviewedHeadSha": "1e7c1c526de68557522e237405acb6f6bf15a285",
+  "reviewedTree": "142fad3243ec5208090eab5ad8d65e8ca7e0145e",
+  "conclusion": "pass",
+  "status": "CODE_PASS_SCOPED",
+  "unresolved": [],
+  "generatedAt": "2026-11-15T16:13:50.856Z",
+  "scope": "incremental current-target correction only; complete original product/source review remains separately scoped",
+  "coveredPaths": [
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/helpers/release-navigation-ci-source.json.gz",
+    "tests/helpers/release-navigation-ci-source.mjs"
+  ],
+  "packet": {
+    "beforeSha256": "7ad26184ab70cd0eeab6151610f29a6a6aa29f859a971d8ef573291c697715bd",
+    "afterSha256": "28da29c324f35d1884451672bf48df51ba405a8add44c0393b074611d652556a",
+    "totalInputs": 23,
+    "unchangedOtherInputs": 22,
+    "changedInput": "tests/ci-complete-calibration.test.mjs",
+    "beforeBindingUnchanged": true,
+    "priorAndCurrentInventoriesUnchanged": true,
+    "immutableArchivesUnchanged": 93,
+    "retainedBeforeExactBytes": true,
+    "currentCommit": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+    "currentCommitRole": "exact committed product checkpoint; CI adapter bindings collected from working tree",
+    "newAfterGitBlob": "f8a375450c3b782e774867c774bcea9ae1706478"
+  },
+  "verification": {
+    "exactOneAssertionAndLeafHashOnly": true,
+    "allOtherPacketFieldsDeepEqual": true,
+    "all93PhysicalArchiveHashesAndCommittedBytesUnchanged": true,
+    "newLiveCiCurrentPass": true,
+    "removedTargetAssertionFailsCurrentSourceBinding": true,
+    "actualCurrentCallbackDiagnostics": [
+      "win32: raw 879 JS / 1424 Lua; forecast 1757923ms; target 1800000ms; overrun 0ms; unchanged execution guard 2700000ms; not hosted completion",
+      "linux: raw 879 JS / 1424 Lua; forecast 1191630ms; target 1200000ms; overrun 0ms; unchanged execution guard 1800000ms; not hosted completion"
+    ],
+    "targetSensitivity": [
+      {
+        "platform": "win32",
+        "surchargeMs": 60000,
+        "oldCallback": "ACCEPTED",
+        "currentCallback": "REJECTED_BY_PERFORMANCE_TARGET",
+        "withinUnchangedHardGuard": true
+      },
+      {
+        "platform": "linux",
+        "surchargeMs": 60000,
+        "oldCallback": "ACCEPTED",
+        "currentCallback": "REJECTED_BY_PERFORMANCE_TARGET",
+        "withinUnchangedHardGuard": true
+      }
+    ],
+    "authorFourTestEvidenceHashesVerified": true
+  },
+  "boundaries": {
+    "sourceAndCiContract": "PASS_SCOPED",
+    "product": "not re-reviewed",
+    "hostedFull": "not assessed",
+    "officialCandidate": "not run",
+    "pcDevice": "not run",
+    "mobileDevice": "not run",
+    "releaseAdmission": "not granted"
+  },
+  "notes": [
+    "Original navigation REQUEST_CHANGES report remains unchanged.",
+    "No source implementation, Backlog mutation, GUI/MCP, candidate write, PR push or CI polling.",
+    "The negative control executes the actual checked-in callback with real shard logic; a +60000ms conservative load surcharge exceeds target while remaining below guard. Old callback accepts it and corrected callback rejects it on each platform."
+  ]
+}

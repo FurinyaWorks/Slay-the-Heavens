@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/release_navigation_source_review",
+  "reviewerRole": "independent source/CI reviewer; not implementation author",
+  "reviewedBaseSha": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "reviewedHeadSha": "10200974517708427be5f8ae7f95ed73044da40e",
+  "reviewedTree": "f97be0bae8643567da2e86ebfbdd6363a7afe734",
+  "evidenceOnlySuccessorSha": "196de2e19a802cae93746c0fa6fc8d13f637273f",
+  "conclusion": "request_changes",
+  "status": "REQUEST_CHANGES_SCOPED",
+  "generatedAt": "2026-11-15T16:07:28.661Z",
+  "coveredPaths": [
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/helpers/closeout-source-epoch.mjs",
+    "tests/helpers/copy-integration-source-closure.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/helpers/release-navigation-ci-source.json.gz",
+    "tests/helpers/release-navigation-ci-source.mjs",
+    "tests/helpers/release-navigation-source.json.gz",
+    "tests/helpers/release-navigation-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/integration-source-epoch.test.mjs",
+    "tests/release-navigation-source.test.mjs",
+    "tests/session-menu-navigation.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "NAVSRC-1",
+      "severity": "P2",
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "line": 2025,
+      "title": "当前完整库存只校验执行上限，丢失原预测目标硬断言",
+      "evidence": "旧 menu current 的 forecast<budget 仍保留，但 liveDiscoverJs/liveCloseoutLua 已映射至876JS/1423Lua前驱。新增879JS/1424Lua raw current 仅 assert(forecast<guard)，target1800000/1200000只输出；因此目标至guard之间的当前预测被接受。",
+      "impact": "未改变实际workflow timeout，但当前完整库存失去原Win1800000/POSIX1200000预测目标的可执行约束。",
+      "requestedChange": "在新增raw current测试中明确assert(forecast<target)，保留原guard、旧断言、旧归档与原73项结果；只增量更新必要CI绑定并执行新合同。",
+      "observedCurrentForecastMs": {
+        "win32": 1757923,
+        "linux": 1191630
+      },
+      "performanceTargetMs": {
+        "win32": 1800000,
+        "linux": 1200000
+      },
+      "hardExecutionGuardMs": {
+        "win32": 2700000,
+        "linux": 1800000
+      }
+    }
+  ],
+  "unresolved": [
+    "NAVSRC-1"
+  ],
+  "verified": {
+    "completeDiff": "10 source files plus both binary packet contents checked; all 12 changed paths are tests only",
+    "production": "Exact three changed owners; all 352 current sources read in new tests; 116 prior owners and 64 existing complete targets retained; Git producer and parent identities match a942",
+    "ci": "All 23 before/current full text and Git blob identities match exact commits; bootstrap before is c2409ad; production mapping bypass retained",
+    "archives": "All 92 old archives retain physical byte SHA256 and committed blob bytes; both LFS pointer OIDs and sizes unchanged",
+    "inventory": "Raw879JS/1424Lua covers all prior876JS/1423Lua plus3JS/1Lua; missing, duplicate, unknown, deleted-all-additions and changed additions rejected",
+    "isolation": "Copied production helper closure loads without new CI trust leaf; actual helper/archive edits and deletion rejected after warm copy",
+    "foreignBefore": "Release36 producer packet rejects a changed predecessor; does not authorize future #684 overlap"
+  },
+  "independentExecution": {
+    "selectedTests": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "skipped": 0,
+      "log": "review-navigation-source-small-tests.log",
+      "sha256": "d446c1a0015357fba73fc20938f188c72ff25d0a3862abfc06320014918ce1d9"
+    },
+    "probeGroups": [
+      {
+        "name": "exact code commit tree and scope",
+        "status": "PASS"
+      },
+      {
+        "name": "three production before/current bytes and producer parents agree with Git",
+        "status": "PASS"
+      },
+      {
+        "name": "23 complete CI binding rows agree with explicit predecessor and current Git blobs",
+        "status": "PASS"
+      },
+      {
+        "name": "all 92 predecessor archives retain physical byte hashes and Git LFS identities",
+        "status": "PASS"
+      },
+      {
+        "name": "fresh warm production projection rejects each missing/foreign/old current owner",
+        "status": "PASS"
+      },
+      {
+        "name": "CI drift and wrong predecessor stay visible; production never enters CI mapping",
+        "status": "PASS"
+      },
+      {
+        "name": "raw current inventory and each added file are independently authenticated",
+        "status": "PASS"
+      },
+      {
+        "name": "isolated production helper closure loads without either new CI trust leaf",
+        "status": "PASS"
+      },
+      {
+        "name": "physical isolated helper edit/deletion and archive corruption are rejected after warm copy",
+        "status": "PASS"
+      },
+      {
+        "name": "author retained result evidence has exact receipt hashes and original red result",
+        "status": "PASS"
+      }
+    ],
+    "probeJson": "review-navigation-source-probes.json",
+    "probeSha256": "ffa209ac9c892a5920093a9b230f555c14b3240844e4d6e62eb2247241c27eb8",
+    "physicalNegativeCases": 4,
+    "productionOwnerNegativeCases": 9,
+    "inventoryNegativeCases": 12
+  },
+  "retainedAuthorEvidence": {
+    "validatedReceiptHashes": true,
+    "smallAndMenu": "9/9",
+    "originalSourceIsolated": "44/44",
+    "completeCi": "73/73",
+    "originalFailure": "16/20; four named menu source failures retained in product-related-before-source.log.gz",
+    "directory": "docs/evidence/release-navigation-source-20261115",
+    "reranCompleteSuites": false
+  },
+  "layers": {
+    "productCode": "Outside this review; parent supplied independent CODE_PASS_SCOPED for36b9→a942",
+    "sourceAndCiContract": "REQUEST_CHANGES_SCOPED due only to NAVSRC-1; core provenance/fail-closed checks PASS",
+    "hostedFull": "NOT_ASSESSED; local forecasts and73 local tests are not hosted Full",
+    "officialCandidate": "NOT_RUN; no new GIL/import/ready/capacity proof",
+    "pcDevice": "NOT_RUN",
+    "mobileDevice": "NOT_RUN",
+    "releaseAdmission": "NOT_GRANTED"
+  },
+  "probeCorrection": "Initial independent probe compared physical CRLF checkout text against LF Git object and failed. Corrected reviewer probe to documented LF text normalization; binary archives always compared exact physical bytes. This was not a repository defect.",
+  "sourceMutation": false,
+  "backlogMutation": false,
+  "guiOrMcpUsed": false
+}

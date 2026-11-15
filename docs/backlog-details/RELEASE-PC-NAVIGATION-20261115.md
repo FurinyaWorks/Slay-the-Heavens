@@ -22,6 +22,14 @@ TASK-4.16 原 AC3 的“整理操作说明”与本轮 PC38 明确移除该入�
 
 ## 剩余准入与验收
 
+来源适配 `10200974`（本树 `eea1b85d`）和证据 `196de2e1`（本树 `fb293c10`）已接续：9/9 小绑定及菜单源、44/44 原完整来源、73/73 完整 CI 合同通过。实际集成树另核当前352项生产全集、879 JS/1424 Lua原始库存和全部当前绑定；此前4个失败的菜单源用例本轮4/4通过。没有据此声称重新执行了整个20项产品集合。原92份归档及 before/target/预算不动，三份 Release bootstrap workflow 前驱显式区分；细节见 [来源附件](RELEASE-NAVIGATION-SOURCE-20261115.md)。
+
+独立来源初审指出当前库存只硬验 guard、未硬验原 target（NAVSRC-1/P2），`1e7c1c52`（本树 `0f5b8dcb`）已补回 `forecast < target` 并仅重绑该 after。初始 packet、REQUEST_CHANGES 与旧9/44/73结果均保留；新4/4及真实回调“超target但未超guard，旧接受/新拒绝”分别留证，没有转记旧绿灯。来源组合最终独审 a942→1e7 CODE_PASS_SCOPED、unresolved=[]，报告 `independent-review-final.json` SHA256 `0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77`。
+
+实际集成 `69a9f344` 再验新鲜4/4，Windows1757923<1800000、POSIX1191630<1200000，原 guard2700000/1800000不变。`admission-coverage.json` 逐Git blob核对全部23项执行输入均匹配产品/来源两份独审，未覆盖项为空；后续说明与任务记录不改变这些输入。
+
+日常平台负载按原入口重新生成 data/UI 后采集通过，旧基线控件增长警告仍保留；这是离线输入/控件计数，不是官方 MB、内存或帧率。原始新鲜采集与集成核对在 `integrated-checks.json` 的无损归档索引中。
+
 产品独审、来源/CI 接续与当前 Release 必要检查须各自留据；普通源码切片通过不等于发版许可。这里没有完整 GIL、官方导入/ready、PC 两幕或实体手机实测，也没有同候选官方容量/静动态负载结果。不得复用旧候选 19.78MB 或把代码/测试字节换算为官方容量。正式退出结算及 PC11 层级可用性最终仍需同一候选实测。
 
 仅允许目标 `release/v2.0.0`；不使用 Develop 专用自动合并入口，不改 develop/master、Tag 或执行发布。

@@ -1,0 +1,25 @@
+{
+  "head": "fb293c1000e3ad05fa88fd65afb7021420539ed3",
+  "sourceAdapter": "10200974517708427be5f8ae7f95ed73044da40e",
+  "product": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "rows": [
+    {
+      "path": "integrated-current.json.gz",
+      "rawBytes": 270,
+      "rawSha256": "9a15c016725c392484432af4d9acea3f321ffc70f313f1566197a48cca219398",
+      "gzipSha256": "bce8a2093779a434104af12c3873ebcaddaf60540484a69e3fff5dda40f50d7e"
+    },
+    {
+      "path": "menu-source-final.log.gz",
+      "rawBytes": 569,
+      "rawSha256": "121bdc0fcfd79591c6a2a2cd5caecfc0a5ac753b03836a062bab981aaef1541f",
+      "gzipSha256": "87fe68b643bbc93f97e287b0937a816e44dcd24596fab79db4bf30481bfdd313"
+    },
+    {
+      "path": "platform-load-fresh.json.gz",
+      "rawBytes": 2730,
+      "rawSha256": "61b7a2c5d0b3e8286c970b6ddda23d68e7d3aa24020ff6749071d3c8e808abf1",
+      "gzipSha256": "9b0e6816c23d98ad307c9e88609f1a95fb15d842ef958b9a6e5c81eee3e38b04"
+    }
+  ]
+}

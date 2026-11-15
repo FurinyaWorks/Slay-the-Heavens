@@ -1,0 +1,150 @@
+{
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "verifiedExecutableCheckpoint": "69a9f344a3d55eb388f59eb8b8f80ee4c6404726",
+  "productReview": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "sourceReview": "1e7c1c526de68557522e237405acb6f6bf15a285",
+  "changedExecutableInputs": 23,
+  "uncovered": [],
+  "rows": [
+    {
+      "path": "scripts/exit-ui-layout.mjs",
+      "gitBlob": "22ed19b2272ddb3a946184978b468237d302f0a2",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_input.lua",
+      "gitBlob": "83f1bd154e4c1f7d3680be83251a9c1ad925bf08",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_navigation_view.lua",
+      "gitBlob": "920f8a6d0b185e224f783e614239c060a3ec4410",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_overlays.lua",
+      "gitBlob": "6322844bac989218107d89c02c20ec15602dcfb9",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "gitBlob": "f8a375450c3b782e774867c774bcea9ae1706478",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/exit-menu-closeout.test.mjs",
+      "gitBlob": "b4850687cb5f530fffedc3e77424ef91438f4088",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/exit-ui-layout.test.mjs",
+      "gitBlob": "ea119dda5b45a1394ba98fb859f3d3ca23e4a483",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "gitBlob": "c263892005f330cfe959f3d8a4d280333e020a56",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "gitBlob": "5aac740389fe3dc70c4e1c7ec9d0263bf95a105a",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "gitBlob": "0221d6a2c55724571f7927f1195c4d996cf2414b",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/helpers/release-navigation-ci-source.json.gz",
+      "gitBlob": "3f2b043f795a4debbd6d162d999e2023ac110e95",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/helpers/release-navigation-ci-source.mjs",
+      "gitBlob": "d54081ceead6f9077e6839e222a6b63fc7f9b545",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/helpers/release-navigation-source.json.gz",
+      "gitBlob": "061b5c4dc5fa59ebcd0908e038f3cb4ec700ae9c",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/helpers/release-navigation-source.mjs",
+      "gitBlob": "f273c9e3c8d5eedeb02ccc534a5b30d1cacca057",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "gitBlob": "c8d402bad6bece07fd5e303727aba5160e197e65",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "gitBlob": "00e8e6012cc324ea3e8eeaab4450c6c78546ee4f",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/lua/exit_menu_closeout.lua",
+      "gitBlob": "a460edc487075ae8871312035ec591aff98ff168",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/lua/menu_input_boundaries_current.lua",
+      "gitBlob": "2c53afbf6a6870f14e61d843a6ed27830a71c8a5",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/lua/support/session_menu_v25.lua",
+      "gitBlob": "72df5fc8059d172c867cde0fa9094a2c4ee97013",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/lua/ui_final_menu.lua",
+      "gitBlob": "19a52cb2a11e56cff77794174004eb501bb3fe5f",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/pause-route-entry.test.mjs",
+      "gitBlob": "57e62f218e641ea21f775b8ff0b31d56001e6f8f",
+      "reviewHead": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+      "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf"
+    },
+    {
+      "path": "tests/release-navigation-source.test.mjs",
+      "gitBlob": "9cfca630d65a0180fd471c850975fb5931b5cb07",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "gitBlob": "5c00fe45cdc95e433c99ebd10251aced58f20f9f",
+      "reviewHead": "1e7c1c526de68557522e237405acb6f6bf15a285",
+      "reviewSha256": "0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77"
+    }
+  ],
+  "notHostedFull": true,
+  "notOfficialAcceptance": true
+}

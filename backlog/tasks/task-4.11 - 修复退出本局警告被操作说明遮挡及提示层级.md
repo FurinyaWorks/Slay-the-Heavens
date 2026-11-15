@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 15:50'
+updated_date: '2026-11-15 16:21'
 labels:
   - playtest-20261030
   - p0
@@ -53,4 +53,8 @@ Owner截图：放弃本局确认框中的「操作说明」入口直接压住失
 PC38产品提交a9425afa50e2a1dd10e83634a3e5fc0d24633917，真实旧代码4项来源回归失败中含说明控件/模态残留，移植后退出3项与布局5项通过。相关完整运行16/20：4冻结来源合同未接续，保持失败；首次缺生成文件失败另留。独立复审与源/CI接续在执行，未开PR、未生成GIL、无官方/设备验收，不标Done。
 
 产品a9425afa独立release_final_review CODE_PASS_SCOPED/unresolved=[]；报告docs/evidence/release-pc-navigation-20261115/independent-review.json（SHA256 28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf），32几何/C焦点/旧回调与完整Run保持独立探针通过。4来源FAIL正接续，仍不代表Full或设备验收。
+
+导航源适配10200974已以eea1b85d接入，证据196de2e1→fb293c10；9/9小绑定、44/44旧来源、73/73CI合同通过。实际集成树新鲜352生产/879JS/1424Lua全库存与当前绑定通过，原4个源FAIL已本轮4/4通过，不冒称整20项重跑或Hosted Full；来源独审仍在执行。
+
+导航来源初审NAVSRC-1/P2已修：1e7c1c52→0f5b8dcb补当前forecast<target，guard及原预算不动，旧7ad packet原字节保留。来源组合独审a942→1e7 CODE_PASS_SCOPED/unresolved=[]（SHA0379c4e867cdd5aeaa580c9acdaabae4be97f7560e44921a95237fdc6265ad77），初request_changes保留。main69a9实际集成新鲜4/4，Win1757923<1800000/POSIX1191630<1200000。23执行输入逐blob匹配两份独审覆盖，准备正常Release PR；HostedCI/官方PC手机与容量仍未验。
 <!-- SECTION:NOTES:END -->
