@@ -502,6 +502,7 @@ test("native lifecycle loads every composed control and registers its listeners 
     local oldScript, oldEnum, oldStart, oldUpdate, oldGame, oldColor = script, Enum, OnStart, OnUpdate, game, Color
     script = { object = canvas, EnableUpdate = function(self, value) self.updating = value end }
     Enum = { CursorEventType = { CursorClick = "click" }, ImageSource = { StaticReference = "static" },
+        ImageType={Basic='basic',Stretch='stretch'},
         Device={Controller='controller',MobileController='mobileController',Mobile='mobile'} }
     Color = setmetatable({ FromRGB = function() end }, {
         __call = function(_,r,g,b,a) return {r=r,g=g,b=b,a=a} end,
@@ -557,6 +558,7 @@ test("startup failure is visible without log subscription and hides the dead sta
     NativeGameUI.new = function() error("INJECTED_STARTUP_FAILURE") end
     script = {object=canvas, EnableUpdate=function(self,value) self.updating=value end}
     Enum = {CursorEventType={CursorClick="click"},ImageSource={StaticReference="static"},
+        ImageType={Basic='basic',Stretch='stretch'},
         Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
     local previousBinding=package.loaded.abyss_monster_actor_binding
     local actors=F.monsterActors()
