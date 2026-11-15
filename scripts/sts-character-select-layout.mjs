@@ -45,6 +45,27 @@ function action(button,name,theme,t){
   const backing=child(state,'officialButtonBacking');if(backing)backing.visible=false;
  }
 }
+// Reuse the measured StS actions without replacing the project's background,
+// constellation roster or their existing runtime ownership.
+export function applyStsCharacterActions(panel,theme){
+ const t=theme.layout.stsCharacter;
+ action(child(panel,'cancel'),'cancel',theme,t);
+ action(child(panel,'confirm'),'confirm',theme,t);
+ for(const name of ['cancel','confirm'])for(const state of parts(child(child(panel,name),'hit'))){
+  const label=child(state,'label');label.text.minFontSize=label.text.fontSize;
+  label.text.colour=state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk;
+ }
+ const deck=child(child(panel,'details'),'deckOpen'),box=[...t.rectangles.deckOpen];
+ box[3]=Math.max(box[3],theme.layout.exitMenu.entry[3]);
+ Object.assign(deck,rect(box));const hit=child(deck,'hit');hit.size=[...deck.size];
+ for(const state of parts(hit)){
+  state.size=[...deck.size];
+  for(const part of parts(state))part.visible=part.name==='label';
+  const label=child(state,'label');label.position=[0,0];label.size=[...deck.size];
+  label.text.fontSize=Math.max(t.font.deckOpen,theme.font.label);
+  label.text.minFontSize=label.text.fontSize;label.text.colour=t.colour.name;
+ }
+}
 export function applyStsCharacterLayout(layout,theme){
  const stage=child(layout,'stage')??layout,panel=child(stage,'characterPanel'),details=child(panel,'details'),t=theme.layout.stsCharacter;
  if(!t)throw Error('Missing original STS character reference tokens');

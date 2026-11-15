@@ -15,15 +15,16 @@ function assertFlagInk(panel,theme){
   const button=child(panel,key),hit=child(button,'hit');
   // The approved full-background V25 selection supersedes the old idle layout.
   // Keep its native hit and readable labels checked independently of the adapter.
-  assert.deepEqual(button.size,[180,60],'approved selection button bounds');
-  assert.deepEqual(hit.size,[180,60],'original native hit remains aligned');
+  const size=theme.layout.stsCharacter.rectangles[key].slice(2);
+  assert.deepEqual(button.size,size,'measured StS selection button bounds');
+  assert.deepEqual(hit.size,size,'original native hit remains aligned');
   for(const name of ['normal','hover','pressed']){
    const face=child(hit,name),flag=child(face,'v25Flag'),label=child(face,'label');
    assert(flag&&child(flag,'cloth')&&child(flag,'rim'),'shared irregular flag material');
    assert.equal(child(face,'plate').visible,false);assert.equal(child(face,'border').visible,false);
    assert.equal(label.text.colour,theme.officialAssets.buttonInk,'shared character ink token');
    assert.equal(label.text.minFontSize,24);assert(label.text.minFontSize>=Math.max(14,theme.font.minimum),'native reading minimum');
-   assert.equal(label.text.fontSize,24);assert.equal(label.text.content,key==='cancel'?'返回':'开始挑战');
+   assert.equal(label.text.fontSize,24);assert.equal(label.text.content,key==='cancel'?'返回':'启程');
   }
  }
 }

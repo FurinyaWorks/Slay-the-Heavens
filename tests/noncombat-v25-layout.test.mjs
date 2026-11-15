@@ -30,7 +30,8 @@ test('official menu and selection reuse live inputs with bounded native decorati
  for(const key of ['confirm','cancel'])for(const state of parts(child(child(panel,key),'hit'))){
   const flag=child(state,'v25Flag'),cloth=child(flag,'cloth'),rim=child(flag,'rim');
   assert(rim&&cloth,'smooth buttons retain separate rim and cloth');
-  assert.equal(parts(cloth).length,1);assert.equal(parts(rim).length,1);
+  assert(parts(cloth).length>1&&parts(rim).length>1,'reference flag must retain its curved silhouette instead of two rectangles');
+  assert(new Set(all(cloth).filter(n=>n.kind==='image').map(n=>n.size[0])).size>1,'flag width follows its measured silhouette');
   assert(all(cloth).filter(n=>n.kind==='image').every(n=>[theme.image.rect,theme.image.disc].includes(n.image)));
   assert.equal(child(state,'label').text.colour,state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk,'shared official button ink preserves disabled distinction');
   assert.equal(child(state,'plate').visible,false);assert.equal(child(state,'border').visible,false);
@@ -58,7 +59,7 @@ test('integrated selection retains the shared deck input below its summary witho
  const deck=child(details,'deckOpen'),hit=child(deck,'hit');
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(child(child(details,'deckOpen'),'hit'),hit,'reuse the live shared-browser input');
- assert.deepEqual(deck.size,[160,36]);assert.deepEqual(hit.size,[160,36]);
+ assert.deepEqual(deck.size,[180,48]);assert.deepEqual(hit.size,[180,48]);
  const overlaps=(a,b)=>Math.abs(a.position[0]-b.position[0])*2<a.size[0]+b.size[0]
   &&Math.abs(a.position[1]-b.position[1])*2<a.size[1]+b.size[1];
  for(const other of [child(details,'deckSummary'),selectedSlot(panel),child(panel,'cancel')])
