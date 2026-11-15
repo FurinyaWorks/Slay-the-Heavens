@@ -300,7 +300,7 @@ function M.install(owner, ownership, host, dependencies)
         local aim=owner.potionAim
         if aim and aim.moving then ownership.releasedDragTouch=aim.touch end
         dependencies.cancelCardInputs();dependencies.cancelActionInputs();dependencies.cancelPotionInputs()
-        for _,input in ipairs(ownership.enemyInputs)do input.held,input.released=nil,nil end
+        for _,input in ipairs(ownership.enemyInputs)do input.held,input.released,input.active=nil,nil,{} end
     end
     local function controllerReady()
         return owner.active and not owner.busy and not owner.gesture and not owner.potionMenu and owner.run
