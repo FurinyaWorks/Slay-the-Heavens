@@ -41,12 +41,17 @@ function freeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value
 const validatedFrozenBindings=new WeakSet();
 function validateBinding(binding){
  if(binding===null)return;
- if(Object.isFrozen(binding)&&validatedFrozenBindings.has(binding))return;
+ // Freezing an object does not freeze Object.prototype. Inherited identity
+ // fields must retain fresh validation even after an earlier successful call.
+ const cacheable=typeof binding==='object'&&Object.isFrozen(binding)
+  &&Object.hasOwn(binding,'source')&&Object.hasOwn(binding,'sha256')
+  &&(Object.hasOwn(binding,'gitBlob')||!('gitBlob' in binding));
+ if(cacheable&&validatedFrozenBindings.has(binding))return;
  assert.equal(typeof binding?.source,'string','source identity text');
  assert.equal(normalize(binding.source),binding.source,'source identity LF');
  assert.equal(hash(binding.source),binding.sha256,'source identity SHA256');
  if(binding.gitBlob)assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,'source identity Git blob');
- if(Object.isFrozen(binding))validatedFrozenBindings.add(binding);
+ if(cacheable)validatedFrozenBindings.add(binding);
 }
 // A composed proof can share previously validated immutable source strings.
 // Reuse is explicit and accepts only an already deeply frozen JSON data graph;

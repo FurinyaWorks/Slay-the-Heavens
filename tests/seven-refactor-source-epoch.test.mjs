@@ -515,3 +515,22 @@ test('reused flattened proofs freshly read each declared owner once and stop at 
   reads=[];assert.equal(project(foreign),foreign);assert.deepEqual(reads,[]);
  }
 });
+
+test('frozen proof reuse still rejects mutable inherited source and optional Git identity',async()=>{
+ const {createSourceEpochProjector}=await import('./helpers/combined-epoch/source-epoch-runtime.mjs');
+ for(const field of ['source','gitBlob']){
+  const previous=Object.getOwnPropertyDescriptor(Object.prototype,field);
+  const proof=reusableProofFixture(),path='src/lua/reuse_probe.lua';
+  const expected=proof.current[path].source;
+  if(field==='source')delete proof.current[path].source;
+  try{
+   if(field==='source')Object.defineProperty(Object.prototype,field,{value:expected,writable:true,configurable:true});
+   const frozen=freezeProofData(proof);
+   createSourceEpochProjector(frozen,{reuseFrozenInput:true});
+   Object.defineProperty(Object.prototype,field,{value:field==='source'?expected+'-- inherited drift\n':'0'.repeat(40),writable:true,configurable:true});
+   assert.throws(()=>createSourceEpochProjector(frozen,{reuseFrozenInput:true}),field==='source'?/source identity SHA256/:/source identity Git blob/);
+  }finally{
+   if(previous)Object.defineProperty(Object.prototype,field,previous);else delete Object.prototype[field];
+  }
+ }
+});
