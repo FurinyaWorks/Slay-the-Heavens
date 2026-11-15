@@ -127,7 +127,9 @@ function M.new(root,owner,platform,clickEvent,actions)
                 if not ready(token)then return false end
             elseif not ready()then return false end
             if actions.pointerClick and not actions.pointerClick(event)then return false end
-            return act(name)
+            local accepted,reason=act(name)
+            if actions.pointerConsumed then actions.pointerConsumed(event)end
+            return accepted,reason
         end)
     end
     for _,name in ipairs({'use','discard','dismiss'})do bind(name)end
