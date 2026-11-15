@@ -1,0 +1,172 @@
+{
+  "status": "PASS_RELEASE_PAIRED_GENERATORS",
+  "nodeVersion": "v24.18.0",
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "head": "d48bb642fb45fedfeb3b55417d0e120e0e69e8e9",
+  "originalSources": [
+    "94e3c5ef83e5d98bf86614c25f2dedd049d0bf9a",
+    "d009c8d504d8c8769cb7efc3e2ffc5ff97b85240"
+  ],
+  "profile": {
+    "officialAssets": true,
+    "nativePageLifecycle": true
+  },
+  "method": "One fresh output per side; actual Lua C API parse/evaluation; keys keep primitive type, strings raw byte hex, numbers integer/float plus IEEE754 bits. No old9b outputs or performance sampling reused.",
+  "modules": [
+    {
+      "name": "abyss_data",
+      "beforeBytes": 212819,
+      "afterBytes": 116943,
+      "saved": 95876,
+      "beforeSha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+      "afterSha256": "93dca4b269fbd5bcdc55c786bf606eb8f39662619842c9711aa3a5b33f4eca46",
+      "canonicalSha256": "ebdf2c5e04ff5cbcbbe86b1b2c725141479995588f3893fb2ea8d6a2d02b62c2"
+    },
+    {
+      "name": "abyss_original_v4_data",
+      "beforeBytes": 577904,
+      "afterBytes": 229355,
+      "saved": 348549,
+      "beforeSha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+      "afterSha256": "409b9ed28a7a4be6f050b842962ad4f0455a2c4658d2228f13b8b13b032bb269",
+      "canonicalSha256": "3dafde3464a80ce3057d35a2d89e6234ff1ab379d40bc3895fc12acf84f0e132"
+    },
+    {
+      "name": "abyss_theme",
+      "beforeBytes": 375853,
+      "afterBytes": 233552,
+      "saved": 142301,
+      "beforeSha256": "0b4dccd04f0ab2667f052ab4c267a8a48a6cc8d800c0aaaa5ca60d6182991b83",
+      "afterSha256": "e7765b6235bb94b2ce19de5ad78bed0a38ed32f078aed2287577e1109749cdc2",
+      "canonicalSha256": "78021ce16cb6cf62fdc694f2cedd77141554ac803c610e91c79e115d4e95bd91"
+    },
+    {
+      "name": "abyss_narrative",
+      "beforeBytes": 7823,
+      "afterBytes": 2528,
+      "saved": 5295,
+      "beforeSha256": "f34b7f3fb2977492be3d967db8c77ffa57a08313635aec5d8ad3d3aae93bb48a",
+      "afterSha256": "723fb7634734e75a91f6f3919e753c3618b88f8df04c3c4c6021b64b816e4f18",
+      "canonicalSha256": "f1ff17e77f6776d46667d2a417c94120e783ad6419c7f9a530c6ba1962c2dd42"
+    },
+    {
+      "name": "abyss_presentation",
+      "beforeBytes": 74514,
+      "afterBytes": 26449,
+      "saved": 48065,
+      "beforeSha256": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+      "afterSha256": "d44c47e72a56503a1690dd743219375b9d270e08aedf3092b79d9c577fb61a41",
+      "canonicalSha256": "f409d92d192184ac81fd5512e6d6f7366c265013f2782ed0b539bca33bec7a07"
+    }
+  ],
+  "totals": {
+    "tables": 11388,
+    "scalars": 35542,
+    "strings": 10883,
+    "keys": 46925
+  },
+  "saved": 640086,
+  "unchanged": [
+    {
+      "name": "abyss_art_features.lua",
+      "bytes": 200,
+      "sha256": "30c57fdb2a8d739ae6d523973f10ebbc1d7e2c55915fef669af56cb86cf74d9b"
+    },
+    {
+      "name": "abyss_component_binding.lua",
+      "bytes": 83,
+      "sha256": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8"
+    },
+    {
+      "name": "abyss_map_controls.lua",
+      "bytes": 102846,
+      "sha256": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507"
+    },
+    {
+      "name": "abyss_map_layout.lua",
+      "bytes": 612,
+      "sha256": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3"
+    },
+    {
+      "name": "abyss_menu_background_asset.lua",
+      "bytes": 69,
+      "sha256": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03"
+    },
+    {
+      "name": "abyss_monster_actor_binding.lua",
+      "bytes": 176,
+      "sha256": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de"
+    },
+    {
+      "name": "abyss_monster_art_data.lua",
+      "bytes": 65,
+      "sha256": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb"
+    },
+    {
+      "name": "abyss_ready_card_assets.lua",
+      "bytes": 81,
+      "sha256": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9"
+    },
+    {
+      "name": "abyss_ready_card_binding.lua",
+      "bytes": 149,
+      "sha256": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086"
+    },
+    {
+      "name": "abyss_traveler_portrait_assets.lua",
+      "bytes": 1323220,
+      "sha256": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb"
+    },
+    {
+      "name": "abyss_ui_layout.lua",
+      "bytes": 4367158,
+      "sha256": "e171dd02d368614c322c2abdcb9078ea4611be7a6137f70434c0c90670340e66"
+    },
+    {
+      "name": "abyss_ui_profile.lua",
+      "bytes": 109,
+      "sha256": "18dca490638f500f0e97c6e1463310b4f2e88f59c1754de8faad49ac140d3e8a"
+    },
+    {
+      "name": "abyss_ui_templates.lua",
+      "bytes": 152535,
+      "sha256": "3baf7555847ae548d7fe9ca78fd28c6093ad5d2e29da2d4a14aadbf192260974"
+    },
+    {
+      "name": "abyss_v25_card_assets.lua",
+      "bytes": 72,
+      "sha256": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503"
+    },
+    {
+      "name": "art-render-v2.json",
+      "bytes": 80,
+      "sha256": "b6d991b0e9d37abfdfde58d6c7beacd035d70eca1881fdc3f47c6f77fbcd77ec"
+    },
+    {
+      "name": "battle-ui.json",
+      "bytes": 3796746,
+      "sha256": "c515b794ca1768af9d3926e9a61657965ad06f02c49d173c9cac866e52c61e8e"
+    },
+    {
+      "name": "game-ui-templates.json",
+      "bytes": 509186,
+      "sha256": "8b604aa0bea5db9927226c8a942e289c8275bda328becbdd84c1aed9c1b44334"
+    },
+    {
+      "name": "game-ui.json",
+      "bytes": 18321967,
+      "sha256": "72725f195d15431b1edfc557c8208cceda93a68d350ca59c83e7b1cdb61d4a31"
+    },
+    {
+      "name": "map-ui.json",
+      "bytes": 334229,
+      "sha256": "9819abe824097acf9e339ec84f81981e73a34bacccef29f234488b7147d9b7a2"
+    },
+    {
+      "name": "official-assets-theme.json",
+      "bytes": 234399,
+      "sha256": "201c5c2b1bb0b934f20e1c4b6ed134b559360d0435b7ceeb7e20ce65061f823a"
+    }
+  ],
+  "boundary": "Offline generated source/input-tree equivalence only. No GIL, external SDK projection, official capacity, ready, GUI/device, Full or startup/performance measurement."
+}
