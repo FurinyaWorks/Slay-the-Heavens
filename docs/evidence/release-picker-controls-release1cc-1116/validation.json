@@ -1,0 +1,3643 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE_CI_VERIFIED_PENDING_NEW_INDEPENDENT_REVIEW",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "originalBranchHead": "bcca699509a159f21555d870f96fdfeca7191856",
+  "backupRef": "refs/heads/backup/picker-controls-before-release1cc-20261116",
+  "mergeCommit": "afacf12a9e72182fbd31efcbf0968e6f618d39a1",
+  "mergeParents": [
+    "bcca699509a159f21555d870f96fdfeca7191856",
+    "1cc5479b713edab6fd26db4e20f8eb22b7401cb2"
+  ],
+  "packetInputCodeCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+  "codeAndPacketsCommit": "ffd8905ea415c04dc6e3f1125743e78963809234",
+  "codeAndPacketsTree": "c7f69be6265657e7b61c095f6949651f83ad10aa",
+  "productCommit": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+  "originalSourceReviewCommit": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+  "appliedSourceCommit": "2a3f836f",
+  "productionEpochChanged": false,
+  "productFiles": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "gitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "originalProducer": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "gitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "originalProducer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "gitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "originalProducer": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "unchanged": true
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "gitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "originalProducer": "a925ce43bda10030d7dfd7fe7b96c450c17f8702",
+      "unchanged": true
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "gitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "originalProducer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "unchanged": true
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "gitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "originalProducer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "unchanged": true
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "gitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "originalProducer": "93ae73760ecbe6540fac49d96c2309345d6b7824",
+      "unchanged": true
+    }
+  ],
+  "projectionOrder": [
+    "fresh live picker current bindings",
+    "exact actual Release 1cc before bindings",
+    "complete immutable bootstrap current bindings",
+    "complete bootstrap original before bindings",
+    "existing integrated historical target"
+  ],
+  "packets": [
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.json.gz",
+      "bytes": 279417,
+      "sha256": "8f63e3cb7ee9b5a81139b4193589ce6f098e423d43b576d190925411681776fe"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-before-release1cc-source.json.gz",
+      "bytes": 159888,
+      "sha256": "550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f"
+    },
+    {
+      "path": "tests/helpers/release-bootstrap-ci-source.json.gz",
+      "bytes": 132956,
+      "sha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-base-source.json.gz",
+      "bytes": 816458,
+      "sha256": "4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "bytes": 2729,
+      "sha256": "8846606fcc1f08c98923d51c6a23f58820f9ee74b95c64d018584dd02a808ba4"
+    }
+  ],
+  "trustLeaf": {
+    "path": "tests/helpers/release-picker-controls-ci-source.mjs",
+    "bytes": 6857,
+    "sha256": "1df1b78e27c7de35b6e1c7d8df831e8e8d732b4e249d9a8768f1e7edce674ee6",
+    "gitBlob": "104f93ba3f3e9284c61eff72cee5783dda62f52c",
+    "excludedFromOwnPacket": true,
+    "independence": "A ten-key completeness assertion does not self-authenticate the trust leaf. New independent review must compare its frozen Git blob, fixed packet pin and every committed before/current binding."
+  },
+  "bindings": [
+    {
+      "path": ".github/workflows/licenses.yml",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "405aed5365a6bd6f1239a2d3f85395e158535aca",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "405aed5365a6bd6f1239a2d3f85395e158535aca",
+      "currentSha256": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1"
+    },
+    {
+      "path": ".github/workflows/quality.yml",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "68fdb599eb1d917b455d002927395b64b56e09ae",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "68fdb599eb1d917b455d002927395b64b56e09ae",
+      "currentSha256": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a"
+    },
+    {
+      "path": ".github/workflows/quick-feedback.yml",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "02106c6f1c07bb63cfb1aee45e9206da4e08d1da",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "02106c6f1c07bb63cfb1aee45e9206da4e08d1da",
+      "currentSha256": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248"
+    },
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "c1421b71cd85dd3c11d60b037c52161d3f6e4060",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "currentSha256": "09332935e3d280a02c1cf2b61e1d8a58c70b1c72d3b9717d814af8778081afc4"
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": null,
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "currentSha256": "a3a675d9a6e92b0d03de1c3ac9b6acd9ec7b7b839b83091b24f76ffe486a9963"
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "ad2580f20e0dc92c6718d0897b30e94090e65050",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "currentSha256": "3a4d7977718b220207095586986967968738584c558855fdecf45da35acfe178"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "a19ad1cffd2cf975f3b07ddda1dda22da94bdbdc",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "currentSha256": "86043453252c36a7b3dc4c5f108b7856d88935b8deeb68e00904dc258bf59e86"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "a6753dcc9e77d6166b9fd1d530f511eb4d178523",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "eef72d02c34f42e11ebafc981dc1fea49d293f5f",
+      "currentSha256": "9c451056777287cdc62122a7a8575ce1bca472ac81f0bbee91d3e9e640d30ea2"
+    },
+    {
+      "path": "tests/ci-posix-concurrency.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "f9aabeeabec3569ff03d35011626fa7bd8a0f8a5",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "f9aabeeabec3569ff03d35011626fa7bd8a0f8a5",
+      "currentSha256": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd"
+    },
+    {
+      "path": "tests/engineering-quality.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "6c1212184d799bdfd4c34174c7ae9745954dcb34",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "6c1212184d799bdfd4c34174c7ae9745954dcb34",
+      "currentSha256": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b"
+    },
+    {
+      "path": "tests/full-quality.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "a73701f1519cca2e417eee202db6f2ca3a33023b",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "a73701f1519cca2e417eee202db6f2ca3a33023b",
+      "currentSha256": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "e7d0fad2be2808eac7ff18d2477d007c36dae98a",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "83d85eef34a18ea0145af58e97149bce39f14483",
+      "currentSha256": "ec29bc6fe60fb8559c0a20ff45243a594cf36b68743a8d37c0b7898b5cdccb0d"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "90ee0583dc0ecf1ce2dc732065af7a18daf565e3",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "5f06d5a82631b262d743c05f55b766835ee02c7d",
+      "currentSha256": "694fc8060f9345c28cb27d453d7f94f22552c61cc918c9ff73a410e05ed4f9df"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "f913526930596b85d6e10963a4b7bcb1804af31f",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "72831a23b442b01b52fa7052927607c1b3922164",
+      "currentSha256": "d6807b1bb21e3bd35d7e81457989dd94b31d45d190f10d8cac332bc3543a7e31"
+    },
+    {
+      "path": "tests/helpers/release-bootstrap-ci-source.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "df6b69f495d50971ef12dc25a9af8e7dd1f769d0",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "df6b69f495d50971ef12dc25a9af8e7dd1f769d0",
+      "currentSha256": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08"
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": null,
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11",
+      "currentSha256": "50a07ccd4a23a9c638716da314aef74588a6b3583280e655cefa25c883571cdf"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "74a96bdfb647a7f7d27673ef87df4e52121ceb2c",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "c32662ff36547b13848b57c069cffbdc234ef39c",
+      "currentSha256": "7f2ac8aa1536612df23e1690dcc03c9956b9ee5118154986d42f81606e7d8f22"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "6693fb1206d302c7fecfb0677c6a32730d349782",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "dba13a2b55f490a3aee8cbed6024719db909fc6a",
+      "currentSha256": "16b3a9a8fe62553f9043a1504fb22e4ac85f6ba23dbe908348d3a0c310c95404"
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": null,
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "currentSha256": "d0fc814f0b33bc6aa898efc8bd28a2eee0a3ef27857d3edc040aced6c7f2610f"
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "18cef470d592939ad53786e615fc7f5057e030a5",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "currentSha256": "af4899650b8a329794d693c359a7f28e8807b290cb77e3c2af94b0658cead073"
+    },
+    {
+      "path": "tests/quick-feedback.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "7853d6a6094b2d53c22adf64aca1ff8fb486341f",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "7853d6a6094b2d53c22adf64aca1ff8fb486341f",
+      "currentSha256": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9"
+    },
+    {
+      "path": "tests/release-picker-controls-source.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": null,
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "e9d7d3df11c67ffd3fa536822550103e56de6b35",
+      "currentSha256": "451645dcd5d8c26754b42680c5a30a1ed619a8fd86d59a5f9c26cc37f82f7b30"
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": null,
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "currentSha256": "de254aff6addb0fd3b047578088ca5637c9bb89c562073683e633f00765c2806"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "941ebaacf4473878991633141fc8fda5205dbfda",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2",
+      "currentSha256": "d19999ab115259018e472729d6245b8502d5f8022e529eebf94e3223ebac2235"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "beforeCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "beforeGitBlob": "dfb3119ddbaf2d0ee9661a8eaff1f2b601e30017",
+      "currentCommit": "2f522633ac7a2c8c6feb6fbb8ca08910cc519564",
+      "currentGitBlob": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c",
+      "currentSha256": "dd9783d26fc84cf5c04223c2da2959cc048c5188997db5935e2098e54fe1819b"
+    }
+  ],
+  "bootstrapViews": [
+    {
+      "path": ".github/workflows/licenses.yml",
+      "actualReleaseGitBlob": "405aed5365a6bd6f1239a2d3f85395e158535aca",
+      "sourceSha256": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1",
+      "originalBeforeGitBlob": "229dcb8ffb28444c49aef42abbbf2d8bab0ca331"
+    },
+    {
+      "path": ".github/workflows/quality.yml",
+      "actualReleaseGitBlob": "68fdb599eb1d917b455d002927395b64b56e09ae",
+      "sourceSha256": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a",
+      "originalBeforeGitBlob": "155b7f78c23dd9ec0a32c1fdfc0e31b85104c429"
+    },
+    {
+      "path": ".github/workflows/quick-feedback.yml",
+      "actualReleaseGitBlob": "02106c6f1c07bb63cfb1aee45e9206da4e08d1da",
+      "sourceSha256": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248",
+      "originalBeforeGitBlob": "ef9fabf756d032b8bb6ac2c4bddb74aa83875115"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "actualReleaseGitBlob": "a6753dcc9e77d6166b9fd1d530f511eb4d178523",
+      "sourceSha256": "24b94a9c5d510161e787e67c549cdda69f2bf1f0d40ca6e7b3668c471c8082cb",
+      "originalBeforeGitBlob": "8265d01699d40037de616ec9dc3c1f61becf6c18"
+    },
+    {
+      "path": "tests/ci-posix-concurrency.test.mjs",
+      "actualReleaseGitBlob": "f9aabeeabec3569ff03d35011626fa7bd8a0f8a5",
+      "sourceSha256": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd",
+      "originalBeforeGitBlob": "89349674ae4b52cdb6da2b50480708a0c57846a0"
+    },
+    {
+      "path": "tests/engineering-quality.test.mjs",
+      "actualReleaseGitBlob": "6c1212184d799bdfd4c34174c7ae9745954dcb34",
+      "sourceSha256": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+      "originalBeforeGitBlob": "103cc26021bd3519b3b55283d90063c23d916cfd"
+    },
+    {
+      "path": "tests/full-quality.test.mjs",
+      "actualReleaseGitBlob": "a73701f1519cca2e417eee202db6f2ca3a33023b",
+      "sourceSha256": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+      "originalBeforeGitBlob": "d94975a64eec6333351816b2328b7c84e77be453"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "actualReleaseGitBlob": "f913526930596b85d6e10963a4b7bcb1804af31f",
+      "sourceSha256": "65c09f7410a7a22ef3588a9806a8ac79d26fd7d78fe9fb326705e0273d34e6d9",
+      "originalBeforeGitBlob": "11458a062966283e2a43adcb7443e0c32c653420"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "actualReleaseGitBlob": "74a96bdfb647a7f7d27673ef87df4e52121ceb2c",
+      "sourceSha256": "a2b0c603a5a1ea3ac45f6cdd003024d86180c0f25a5456822fa8402fdf64b733",
+      "originalBeforeGitBlob": "0081f878661e6a27fdf6272c5f46b705ceca75ac"
+    },
+    {
+      "path": "tests/quick-feedback.test.mjs",
+      "actualReleaseGitBlob": "7853d6a6094b2d53c22adf64aca1ff8fb486341f",
+      "sourceSha256": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
+      "originalBeforeGitBlob": "fc947d6655241c2ed33ca23248a43bd4c405590f"
+    }
+  ],
+  "sourceEquivalence": [
+    {
+      "path": "config/architecture.json",
+      "oldReleaseGitBlob": "9d6cc5c34a85a6c2ed1e0342ca2468cb7f4cb46a",
+      "actualReleaseGitBlob": "9d6cc5c34a85a6c2ed1e0342ca2468cb7f4cb46a",
+      "sha256": "7d0b25ebcbd323e633fad7bcf8e618966450c60dde9671185226f1e6cef8fbd1"
+    },
+    {
+      "path": "src/lua/abyss_acid_slime_m_ai.lua",
+      "oldReleaseGitBlob": "062223f54dfb3f53c11723f7a86977bce254f85c",
+      "actualReleaseGitBlob": "062223f54dfb3f53c11723f7a86977bce254f85c",
+      "sha256": "972d81f4e3ed017249796267d242ab73f7bdac93945efb6a441ed53b603a90e6"
+    },
+    {
+      "path": "src/lua/abyss_acid_slime_s_ai.lua",
+      "oldReleaseGitBlob": "051ccdcce9768f0db03542e39de5fa13168bbcd2",
+      "actualReleaseGitBlob": "051ccdcce9768f0db03542e39de5fa13168bbcd2",
+      "sha256": "b3063719126444d01ec18bc7878d4ca614dda13dc0ddcc7599304e24b3703769"
+    },
+    {
+      "path": "src/lua/abyss_act1_bosses.lua",
+      "oldReleaseGitBlob": "302ebe9d1cf75ffca8821e8af346a7b4cda15cae",
+      "actualReleaseGitBlob": "302ebe9d1cf75ffca8821e8af346a7b4cda15cae",
+      "sha256": "9a3db2a6bb7e4625765cdb212172e940225a3b7c1a2f0bedae164acc3f7df1be"
+    },
+    {
+      "path": "src/lua/abyss_act1_events.lua",
+      "oldReleaseGitBlob": "1caee9e0c589bec580d8e9799394cc30ffd68781",
+      "actualReleaseGitBlob": "1caee9e0c589bec580d8e9799394cc30ffd68781",
+      "sha256": "987a96604109beac3365a8f8daf478b8bf45286921deccc865c96102ae2590c5"
+    },
+    {
+      "path": "src/lua/abyss_act2_ai.lua",
+      "oldReleaseGitBlob": "e4290d45bd6129dd2bc813139599e96eb3f68d95",
+      "actualReleaseGitBlob": "e4290d45bd6129dd2bc813139599e96eb3f68d95",
+      "sha256": "aba682db573572693cf60f613bcd5ce3f1f0b11f2116610f23cacf285f89bad3"
+    },
+    {
+      "path": "src/lua/abyss_act2_ai_moves.lua",
+      "oldReleaseGitBlob": "fb98f3880b34bcc6353593fa16c492483783f8b9",
+      "actualReleaseGitBlob": "fb98f3880b34bcc6353593fa16c492483783f8b9",
+      "sha256": "794f0bfdd215c57440b19c3d132efdac425b58a4b92ae3f11c62780a5d3570a4"
+    },
+    {
+      "path": "src/lua/abyss_act2_enemies.lua",
+      "oldReleaseGitBlob": "70107b1d6a8661b44f9095eedc04a6f6eafbfda7",
+      "actualReleaseGitBlob": "70107b1d6a8661b44f9095eedc04a6f6eafbfda7",
+      "sha256": "11d8b679c711ebff5a5a34609a8f4da737552377c556cfce63c8812c14329777"
+    },
+    {
+      "path": "src/lua/abyss_act2_event_relics.lua",
+      "oldReleaseGitBlob": "783b5c7aa8cb73ab7eed8be18e56cf9734399b67",
+      "actualReleaseGitBlob": "783b5c7aa8cb73ab7eed8be18e56cf9734399b67",
+      "sha256": "fbad6fda867e0dbc2b9347e9698bba6b66d1acdc208a3c966f222ec286f3af92"
+    },
+    {
+      "path": "src/lua/abyss_act2_events.lua",
+      "oldReleaseGitBlob": "d111e849086c9ad360985ea49f0e1425f572c259",
+      "actualReleaseGitBlob": "d111e849086c9ad360985ea49f0e1425f572c259",
+      "sha256": "75d8578d7cf4a3feaa0bfb6c4a0fd162625b3a0ce8dc6ad42d6f5b0520aacad6"
+    },
+    {
+      "path": "src/lua/abyss_act2_powers.lua",
+      "oldReleaseGitBlob": "158eae2c77f3a69d0991e6644770002a8320d86c",
+      "actualReleaseGitBlob": "158eae2c77f3a69d0991e6644770002a8320d86c",
+      "sha256": "966f9906c9fd03d306424c9ea430e3aa8840fdf6e852d13cecd274c0a3aa3629"
+    },
+    {
+      "path": "src/lua/abyss_act2_stasis.lua",
+      "oldReleaseGitBlob": "b2df81099b92aabd6d503a0fbf9121e1c5ced52c",
+      "actualReleaseGitBlob": "b2df81099b92aabd6d503a0fbf9121e1c5ced52c",
+      "sha256": "0a1b6da54329fe7c00cfb45bb57dfc1ff53663cd7437e1bb17b35f702181466a"
+    },
+    {
+      "path": "src/lua/abyss_act2_summons.lua",
+      "oldReleaseGitBlob": "e1e9cae2b0b87eac4163d8ce9c46c375605b8193",
+      "actualReleaseGitBlob": "e1e9cae2b0b87eac4163d8ce9c46c375605b8193",
+      "sha256": "f8075f8c6891a8c9dc5ec789cc427c599a5729f5f9b155080d6d6ecf8627ad66"
+    },
+    {
+      "path": "src/lua/abyss_act3_ai.lua",
+      "oldReleaseGitBlob": "c333d0bb59826afa6032ae417be45b1b36a8b5d0",
+      "actualReleaseGitBlob": "c333d0bb59826afa6032ae417be45b1b36a8b5d0",
+      "sha256": "c7dbab631b1b4ceb5f6949f8446660cd088eb1372c7e170a1688c78b75d291b2"
+    },
+    {
+      "path": "src/lua/abyss_act3_bosses.lua",
+      "oldReleaseGitBlob": "e35873fb54cf948909f7e53180a2531b25772702",
+      "actualReleaseGitBlob": "e35873fb54cf948909f7e53180a2531b25772702",
+      "sha256": "e99bde5cc595bf0a3dac968a7ea61ee96faf7c8afd313464b52b653daba0d404"
+    },
+    {
+      "path": "src/lua/abyss_act3_enemies.lua",
+      "oldReleaseGitBlob": "feafb2d7a107a919e9bc19b7cbc3abbdbb15c376",
+      "actualReleaseGitBlob": "feafb2d7a107a919e9bc19b7cbc3abbdbb15c376",
+      "sha256": "c810114c966767fcdc9c04a37fb835577337a18799288c7f4b57c2214b7fdd74"
+    },
+    {
+      "path": "src/lua/abyss_act3_events.lua",
+      "oldReleaseGitBlob": "acb5e71613b81b9ba6a1d14dacc865377deaf8b5",
+      "actualReleaseGitBlob": "acb5e71613b81b9ba6a1d14dacc865377deaf8b5",
+      "sha256": "e30d2820eb81359f9112c4b32b36b1af61db1a294151407526b9c658316f2c9a"
+    },
+    {
+      "path": "src/lua/abyss_act3_powers.lua",
+      "oldReleaseGitBlob": "59b9055893c67023706d0784335bc585ba1ebf66",
+      "actualReleaseGitBlob": "59b9055893c67023706d0784335bc585ba1ebf66",
+      "sha256": "07064486b2bb60c770c748e503b5209ede5559619be946ccb00c192fe9c88365"
+    },
+    {
+      "path": "src/lua/abyss_act4_enemies.lua",
+      "oldReleaseGitBlob": "72bd3f05a10010da8631752240b3eaa3be7ea0a4",
+      "actualReleaseGitBlob": "72bd3f05a10010da8631752240b3eaa3be7ea0a4",
+      "sha256": "6c18570819c4f0a918bf51e04644f2f998fad696614a8f86cdd54493fb49f710"
+    },
+    {
+      "path": "src/lua/abyss_action_queue.lua",
+      "oldReleaseGitBlob": "19c9d23efe516a1e001e0572e814a8616b5abc00",
+      "actualReleaseGitBlob": "19c9d23efe516a1e001e0572e814a8616b5abc00",
+      "sha256": "5053ad084fee0bc15277ccbd9bc614c2acaa8e2b8d70bcb91f1bf4a01499cb2d"
+    },
+    {
+      "path": "src/lua/abyss_actor.lua",
+      "oldReleaseGitBlob": "437cf78b984ac355b7e69e0bb21c443b947598f3",
+      "actualReleaseGitBlob": "437cf78b984ac355b7e69e0bb21c443b947598f3",
+      "sha256": "0435754ce97e731da0abaa1aafdbbd035988c09b411c47c192bb3e6ab0133c7a"
+    },
+    {
+      "path": "src/lua/abyss_actor_motion.lua",
+      "oldReleaseGitBlob": "9846ae9de4a8717c3db346543fc16554a80cd1a7",
+      "actualReleaseGitBlob": "9846ae9de4a8717c3db346543fc16554a80cd1a7",
+      "sha256": "c5bd7f59379629cd6c8a0523e1449f4a59267617a81c0fb0e9ebd426f2558687"
+    },
+    {
+      "path": "src/lua/abyss_actor_power_rules.lua",
+      "oldReleaseGitBlob": "d9b1245cbebea29327f64403fc93826bd1a95f36",
+      "actualReleaseGitBlob": "d9b1245cbebea29327f64403fc93826bd1a95f36",
+      "sha256": "ff5ee7976332e9e3a01a62c121d7a7246ad59ae5eae27f0cd4bb5bee5be6051a"
+    },
+    {
+      "path": "src/lua/abyss_actor_presence.lua",
+      "oldReleaseGitBlob": "1292b042c9754ed62933b2b5faa8f6e59527d3df",
+      "actualReleaseGitBlob": "1292b042c9754ed62933b2b5faa8f6e59527d3df",
+      "sha256": "780975ab1e274168e19a8f04cbe27d2e95ab796ab72474fad35a1d8f1ecd440a"
+    },
+    {
+      "path": "src/lua/abyss_acts.lua",
+      "oldReleaseGitBlob": "9d45b715a8c55321ab409d7b4e9a41d6555643ec",
+      "actualReleaseGitBlob": "9d45b715a8c55321ab409d7b4e9a41d6555643ec",
+      "sha256": "06307170ce3ee1627c9ea5ebe45f9042a4857ad153f7f92e625f2e9856cc8150"
+    },
+    {
+      "path": "src/lua/abyss_awakened_one.lua",
+      "oldReleaseGitBlob": "dcd6816638d64a653949298fe90e91fe15bb1503",
+      "actualReleaseGitBlob": "dcd6816638d64a653949298fe90e91fe15bb1503",
+      "sha256": "0d8fbb76c5db90539e995aabd2f02660184481463b842045b5687b38ab42de36"
+    },
+    {
+      "path": "src/lua/abyss_back_to_basics.lua",
+      "oldReleaseGitBlob": "8c54a876b9b1df3bc01c3114100d1b74445737fc",
+      "actualReleaseGitBlob": "8c54a876b9b1df3bc01c3114100d1b74445737fc",
+      "sha256": "5d83af37dc3bffcd16f61627e164dcb41b654647ed753aa7cdd0058c10926571"
+    },
+    {
+      "path": "src/lua/abyss_battle_action_bindings.lua",
+      "oldReleaseGitBlob": "0033b496eff67c79ae959e7d1bfb704a7c7837f2",
+      "actualReleaseGitBlob": "0033b496eff67c79ae959e7d1bfb704a7c7837f2",
+      "sha256": "84d11f396803b5bcd202aa6226e9d0b67a56fef6956b3e6bf167e089de933bd7"
+    },
+    {
+      "path": "src/lua/abyss_battle_actions.lua",
+      "oldReleaseGitBlob": "613b53efecb936aad8e759a451b00f622a551b92",
+      "actualReleaseGitBlob": "613b53efecb936aad8e759a451b00f622a551b92",
+      "sha256": "11222422d46898fdc10f26eb5cc17fc700f8bbb3d4aaba375ab53721206af5e0"
+    },
+    {
+      "path": "src/lua/abyss_battle_aim_arrow.lua",
+      "oldReleaseGitBlob": "20d95d19069637ad6411b32cb37da14edf03b3d9",
+      "actualReleaseGitBlob": "20d95d19069637ad6411b32cb37da14edf03b3d9",
+      "sha256": "c34d675b16718da3ad31af1204a04b1f9942328c01ef95400d3832257590ef95"
+    },
+    {
+      "path": "src/lua/abyss_battle_card_bindings.lua",
+      "oldReleaseGitBlob": "af9561f79c59834549a3114f5ebb99a843f0b2fd",
+      "actualReleaseGitBlob": "af9561f79c59834549a3114f5ebb99a843f0b2fd",
+      "sha256": "add73e13c968039d9eee32dacd3d7d866c21ec6e2ccc89182d4f199d2ee9b7e7"
+    },
+    {
+      "path": "src/lua/abyss_battle_card_gestures.lua",
+      "oldReleaseGitBlob": "81eed260f3ad33aa042f3aecfbab0cf650ee5634",
+      "actualReleaseGitBlob": "81eed260f3ad33aa042f3aecfbab0cf650ee5634",
+      "sha256": "de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153"
+    },
+    {
+      "path": "src/lua/abyss_battle_card_glow.lua",
+      "oldReleaseGitBlob": "510b9a45da4506681d668b08e166133b4d3d545f",
+      "actualReleaseGitBlob": "510b9a45da4506681d668b08e166133b4d3d545f",
+      "sha256": "921f0f46d30add572a84aea2b68864e642233f0d73fca3c598a3d7e98c721cce"
+    },
+    {
+      "path": "src/lua/abyss_battle_card_layout.lua",
+      "oldReleaseGitBlob": "0617ebfbcb42893996aeffe3f6fc6f0d74d7f5e3",
+      "actualReleaseGitBlob": "0617ebfbcb42893996aeffe3f6fc6f0d74d7f5e3",
+      "sha256": "c2fa8d4037eba23644a0b5e8f3b6f5b8b60e10f5ee75e52a7cb0524770da3f62"
+    },
+    {
+      "path": "src/lua/abyss_battle_card_view.lua",
+      "oldReleaseGitBlob": "d8d419fddb6089040a7f146a2e5abb1b31be9bf8",
+      "actualReleaseGitBlob": "d8d419fddb6089040a7f146a2e5abb1b31be9bf8",
+      "sha256": "269d8787ad09f28b6068a3535ba3f3adeda9a13fca776ab2ebd9452f2b17067a"
+    },
+    {
+      "path": "src/lua/abyss_battle_damage_view.lua",
+      "oldReleaseGitBlob": "c4913d408d759ae4282161c7bfb176edc27c7f60",
+      "actualReleaseGitBlob": "c4913d408d759ae4282161c7bfb176edc27c7f60",
+      "sha256": "0fdde0bd08f4d94f1a95b30a4236cca9b062fcfb3cafdd3df513c5599699df29"
+    },
+    {
+      "path": "src/lua/abyss_battle_detail_bindings.lua",
+      "oldReleaseGitBlob": "ea833c9e661538de6d3b3a405c14f6c6fa813552",
+      "actualReleaseGitBlob": "ea833c9e661538de6d3b3a405c14f6c6fa813552",
+      "sha256": "2eee30b903e8d41618cfd320da89ea57ccdf7470d31e33e1a0617228e054a9bd"
+    },
+    {
+      "path": "src/lua/abyss_battle_details.lua",
+      "oldReleaseGitBlob": "fd7ccb2abdd9691be8d3ef7f75aff204a34f9e1b",
+      "actualReleaseGitBlob": "fd7ccb2abdd9691be8d3ef7f75aff204a34f9e1b",
+      "sha256": "23d5e423b607b9f4ec86b9544931180eab71b74af95a944670a02c5c79d1a5b3"
+    },
+    {
+      "path": "src/lua/abyss_battle_ending_intent.lua",
+      "oldReleaseGitBlob": "173a47e43a4d3949ce565b5fbe4984d125771cd9",
+      "actualReleaseGitBlob": "173a47e43a4d3949ce565b5fbe4984d125771cd9",
+      "sha256": "fd7c1b135604fe71fefaabc5caedf107d22cefa4889bd2f109b5d4a30f06b466"
+    },
+    {
+      "path": "src/lua/abyss_battle_enemy_view.lua",
+      "oldReleaseGitBlob": "f2a059e90c2c35c2f5a93404460af7539a490476",
+      "actualReleaseGitBlob": "f2a059e90c2c35c2f5a93404460af7539a490476",
+      "sha256": "25894f61ea8084bf59db4f948d1a5ad9644c08e0d35ffb7cf651cbc335a171df"
+    },
+    {
+      "path": "src/lua/abyss_battle_info_content.lua",
+      "oldReleaseGitBlob": "5284cef0a567deb36a3ec49e26a3b193404bb561",
+      "actualReleaseGitBlob": "5284cef0a567deb36a3ec49e26a3b193404bb561",
+      "sha256": "344a4f1c50aa88594aab2062a36ed0319ce818ac22bc1a22a6494f2313ec8275"
+    },
+    {
+      "path": "src/lua/abyss_battle_info_view.lua",
+      "oldReleaseGitBlob": "0f214498bb56686496cc2a7b32619529b4ebfd81",
+      "actualReleaseGitBlob": "0f214498bb56686496cc2a7b32619529b4ebfd81",
+      "sha256": "1dcee05980b5a29696fe9c5223965cbd8a94cd7808a471bc7f817bd364762f18"
+    },
+    {
+      "path": "src/lua/abyss_battle_input_state.lua",
+      "oldReleaseGitBlob": "3495300b49f0e8c372462832d5b48531e6042f1e",
+      "actualReleaseGitBlob": "3495300b49f0e8c372462832d5b48531e6042f1e",
+      "sha256": "f5ca34c51e6599284d574b8053297c429b4f14d7a1951395f5a4decfbb87cd3d"
+    },
+    {
+      "path": "src/lua/abyss_battle_intent_view.lua",
+      "oldReleaseGitBlob": "5c2d36e83785e60e3a38884d340722f4ecb0800a",
+      "actualReleaseGitBlob": "5c2d36e83785e60e3a38884d340722f4ecb0800a",
+      "sha256": "491d92710d2e269d98ef850ffc100631897fdfc0572e2da7e754776b653634e0"
+    },
+    {
+      "path": "src/lua/abyss_battle_potion_bindings.lua",
+      "oldReleaseGitBlob": "ebac1e694a1cafd139fd5dcb149b372fc4ddfa21",
+      "actualReleaseGitBlob": "ebac1e694a1cafd139fd5dcb149b372fc4ddfa21",
+      "sha256": "4d0529fe8b74cdf1807676dbf1c64d0913b27bb1348fbdd13069274ca006db64"
+    },
+    {
+      "path": "src/lua/abyss_battle_potion_popup.lua",
+      "oldReleaseGitBlob": "7e858fd11141927cf6a5004b34ef018cff0e0f60",
+      "actualReleaseGitBlob": "7e858fd11141927cf6a5004b34ef018cff0e0f60",
+      "sha256": "705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd"
+    },
+    {
+      "path": "src/lua/abyss_battle_potion_view.lua",
+      "oldReleaseGitBlob": "63411ebe24ce6794cae5e32a525f44b9bcb0e53e",
+      "actualReleaseGitBlob": "63411ebe24ce6794cae5e32a525f44b9bcb0e53e",
+      "sha256": "c14001f467b8abd9efa98bd550b183266c97a2a2292154d7c97f374064f65a92"
+    },
+    {
+      "path": "src/lua/abyss_battle_render.lua",
+      "oldReleaseGitBlob": "db374b76c98cab0e34f4942e2a3a0ac9b21ac553",
+      "actualReleaseGitBlob": "db374b76c98cab0e34f4942e2a3a0ac9b21ac553",
+      "sha256": "6ab3653f406287abd50cfd6773410fff2c9a64b238810390ee3fce509881daba"
+    },
+    {
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "oldReleaseGitBlob": "4da4eb463738063f161b9094f791114be08e4b50",
+      "actualReleaseGitBlob": "4da4eb463738063f161b9094f791114be08e4b50",
+      "sha256": "dfa8d897365b7224cda5e02be448b87334fb7c3160dc672b08940f09a9477845"
+    },
+    {
+      "path": "src/lua/abyss_battle_render_hud.lua",
+      "oldReleaseGitBlob": "3dd18e202bb57994038d9cf19d06858488d243e2",
+      "actualReleaseGitBlob": "3dd18e202bb57994038d9cf19d06858488d243e2",
+      "sha256": "8b97b84a7d9d58e6fe9d207891aa98bf1b41198fdf47fd08a3903b40879f9f08"
+    },
+    {
+      "path": "src/lua/abyss_battle_render_state.lua",
+      "oldReleaseGitBlob": "1ee7624407ed29f82a7d6ca98678e585ecb02945",
+      "actualReleaseGitBlob": "1ee7624407ed29f82a7d6ca98678e585ecb02945",
+      "sha256": "1f839edce94f4ace6b59b2c53225e06aee9ce20a650bf505ff88a1b367176e6a"
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "oldReleaseGitBlob": "94bc42403f9cdbd37851a1c92127d78a04bb274e",
+      "actualReleaseGitBlob": "94bc42403f9cdbd37851a1c92127d78a04bb274e",
+      "sha256": "7a62389ebc5e053bd32ef3f95d7552d89c67a4f20346c81d1ed603f500622e3d"
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_owner.lua",
+      "oldReleaseGitBlob": "4670e49dd16e390095c4c1f3d50fb1b6a7748ed7",
+      "actualReleaseGitBlob": "4670e49dd16e390095c4c1f3d50fb1b6a7748ed7",
+      "sha256": "cb73427a6fdf4b952f5cf134eb59364f8af95db334dec6d2388d35cde8f5887a"
+    },
+    {
+      "path": "src/lua/abyss_battle_status_view.lua",
+      "oldReleaseGitBlob": "408c426fb8934284610993f06cb38e8e29fe7cd0",
+      "actualReleaseGitBlob": "408c426fb8934284610993f06cb38e8e29fe7cd0",
+      "sha256": "615fc1275429bef0ad4e1bc9a834d76c1aaac9e7c2baf53e284b06c7cf159b87"
+    },
+    {
+      "path": "src/lua/abyss_battle_target_bindings.lua",
+      "oldReleaseGitBlob": "31c62f613f74d5b49951e517e598ca6a2f5b258e",
+      "actualReleaseGitBlob": "31c62f613f74d5b49951e517e598ca6a2f5b258e",
+      "sha256": "430762c548eaecda576bb4edb8b85081501a5fc59d93ba11c8e7f2d192048b5b"
+    },
+    {
+      "path": "src/lua/abyss_battle_targeting.lua",
+      "oldReleaseGitBlob": "95c986a631bdf9cdb58073f150852c50f0ff1c8a",
+      "actualReleaseGitBlob": "95c986a631bdf9cdb58073f150852c50f0ff1c8a",
+      "sha256": "50922018fca25cbaf2ea7645b4ca9657b667c1f5e446edd52dd33b5103ae099f"
+    },
+    {
+      "path": "src/lua/abyss_battle_ui.lua",
+      "oldReleaseGitBlob": "1dfefb14189dc33d34967aef98390a7f7e925ec2",
+      "actualReleaseGitBlob": "1dfefb14189dc33d34967aef98390a7f7e925ec2",
+      "sha256": "c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481"
+    },
+    {
+      "path": "src/lua/abyss_battle_unit_view.lua",
+      "oldReleaseGitBlob": "07d8f49ba51fccca7a5e32e39ab534588fe4b2d6",
+      "actualReleaseGitBlob": "07d8f49ba51fccca7a5e32e39ab534588fe4b2d6",
+      "sha256": "e723f9d6f1d696cc317947935a1e9a04e10f0046311a4034712c1ec133eea74e"
+    },
+    {
+      "path": "src/lua/abyss_bgm.lua",
+      "oldReleaseGitBlob": "c18e9e1cbcaa7de65ca408848f5077ba7e7c74be",
+      "actualReleaseGitBlob": "c18e9e1cbcaa7de65ca408848f5077ba7e7c74be",
+      "sha256": "adcc610892b2c068e2c37a0f067080ec44e3b233e78d7799ac9371e1ddce39ec"
+    },
+    {
+      "path": "src/lua/abyss_blue_slaver_ai.lua",
+      "oldReleaseGitBlob": "fcdadec44bb2094b09dc800f73aa3d7a5acb39a7",
+      "actualReleaseGitBlob": "fcdadec44bb2094b09dc800f73aa3d7a5acb39a7",
+      "sha256": "f600520998bd33a13716e71ff93be6937db4d323a55aa1721ab6ce8e5be8108c"
+    },
+    {
+      "path": "src/lua/abyss_boss_relics.lua",
+      "oldReleaseGitBlob": "d7ccbb35e21540ba8348c9e072f4f392e40929ee",
+      "actualReleaseGitBlob": "d7ccbb35e21540ba8348c9e072f4f392e40929ee",
+      "sha256": "07202773300b3808fb154d473769f3c2c1ba9733141b2a6411f20748c88b147e"
+    },
+    {
+      "path": "src/lua/abyss_build_actions.lua",
+      "oldReleaseGitBlob": "730be81e3d8d48cfc3334e7b2de529e73a63d0ff",
+      "actualReleaseGitBlob": "730be81e3d8d48cfc3334e7b2de529e73a63d0ff",
+      "sha256": "77a03a52e8f07324605cb97017111023593e6497fe0cf66158807d73290f0ea7"
+    },
+    {
+      "path": "src/lua/abyss_card_actions.lua",
+      "oldReleaseGitBlob": "b80bfc9c79e85622e96bb53fda94ae0502678274",
+      "actualReleaseGitBlob": "b80bfc9c79e85622e96bb53fda94ae0502678274",
+      "sha256": "8248d11eb5ab15c46763ef722b72aff3ac5dbde2c5e6b4da7b3103f5066ae4f4"
+    },
+    {
+      "path": "src/lua/abyss_card_art_runtime.lua",
+      "oldReleaseGitBlob": "02d3c6c9f6d5967ec31ad662481533391ef257dd",
+      "actualReleaseGitBlob": "02d3c6c9f6d5967ec31ad662481533391ef257dd",
+      "sha256": "843e37d8c7ac783573129a0b782c63825e3b764ec4787b63d350bb8d6ff60ff8"
+    },
+    {
+      "path": "src/lua/abyss_card_capability.lua",
+      "oldReleaseGitBlob": "de89e7b56a6097b544a01a2686f54063e00589d6",
+      "actualReleaseGitBlob": "de89e7b56a6097b544a01a2686f54063e00589d6",
+      "sha256": "819de22b64a601386d8600eadac4b3fe0ca4b48b74bf2b4a8ca585dd0ebe2a79"
+    },
+    {
+      "path": "src/lua/abyss_card_display.lua",
+      "oldReleaseGitBlob": "fe84e89f76f49c952a158474c1ad3d36e65450c6",
+      "actualReleaseGitBlob": "fe84e89f76f49c952a158474c1ad3d36e65450c6",
+      "sha256": "58109fde0c8cee368355ee41366d8da558dd70218cdeabeeb9bb368094b694fa"
+    },
+    {
+      "path": "src/lua/abyss_card_flow.lua",
+      "oldReleaseGitBlob": "d79e3a6823b8f137d2cedc32ccd5fea3d18de4c6",
+      "actualReleaseGitBlob": "d79e3a6823b8f137d2cedc32ccd5fea3d18de4c6",
+      "sha256": "65dcdf5306c4a4a3665d934843f10974224b4b876189b0c0b0fa387458bec5fb"
+    },
+    {
+      "path": "src/lua/abyss_card_input.lua",
+      "oldReleaseGitBlob": "e81c8f05bd4cb62ac69062d50b277e7c1139c7f3",
+      "actualReleaseGitBlob": "e81c8f05bd4cb62ac69062d50b277e7c1139c7f3",
+      "sha256": "2bdbf7ef08346979524c336bd80a44e2e0b4c2c00998fcb8cf54efbf631f54e5"
+    },
+    {
+      "path": "src/lua/abyss_card_origin.lua",
+      "oldReleaseGitBlob": "c88c9edccef8257028269407665437241c4276ba",
+      "actualReleaseGitBlob": "c88c9edccef8257028269407665437241c4276ba",
+      "sha256": "44f4891881c0f9c982930298620dd789d49f5d87347ca6782e088af916099d06"
+    },
+    {
+      "path": "src/lua/abyss_card_origin_view.lua",
+      "oldReleaseGitBlob": "c2fefc1e564ffed5fcfff193ccb8e7600eb0e4e2",
+      "actualReleaseGitBlob": "c2fefc1e564ffed5fcfff193ccb8e7600eb0e4e2",
+      "sha256": "10ffbb328bf0660568f0e79bf439c93a61a44f739c5f1078ffc82a89ee96a285"
+    },
+    {
+      "path": "src/lua/abyss_card_pool.lua",
+      "oldReleaseGitBlob": "2ce7be9f6d8283efa322ae79f2102415655a6096",
+      "actualReleaseGitBlob": "2ce7be9f6d8283efa322ae79f2102415655a6096",
+      "sha256": "dfc3a89f7df686a677b960430b8ad1be5a8042fcb4ae9a29537659795a2d0f90"
+    },
+    {
+      "path": "src/lua/abyss_card_random.lua",
+      "oldReleaseGitBlob": "445c581eeeed0670035a404a3994e41f2558dc2f",
+      "actualReleaseGitBlob": "445c581eeeed0670035a404a3994e41f2558dc2f",
+      "sha256": "fe5890f5ea37f9cd32905321fe8a8245c25b90c527196f67bb6ff111ca962cb9"
+    },
+    {
+      "path": "src/lua/abyss_card_skin.lua",
+      "oldReleaseGitBlob": "a9ee6c4126e6fddabfaf088540f935ef38e7ecc4",
+      "actualReleaseGitBlob": "a9ee6c4126e6fddabfaf088540f935ef38e7ecc4",
+      "sha256": "03dff0cec1876dcd9f2c9d7b2bbf7050c9dcb2bdb7752a41699f19db52da9b22"
+    },
+    {
+      "path": "src/lua/abyss_card_triggers.lua",
+      "oldReleaseGitBlob": "6232892d1c725c3f7837ca85cc69dddcb100d1ab",
+      "actualReleaseGitBlob": "6232892d1c725c3f7837ca85cc69dddcb100d1ab",
+      "sha256": "0fa45d814d1d1773e46358c2a7ea81b4ae2c8a823f330189609624485e2050bd"
+    },
+    {
+      "path": "src/lua/abyss_character_presentation.lua",
+      "oldReleaseGitBlob": "638eedc28b261d0b4f14404c95ad0b095d88433d",
+      "actualReleaseGitBlob": "638eedc28b261d0b4f14404c95ad0b095d88433d",
+      "sha256": "832d7871d48a9816f0285a30eacef48cbdbd4c4e8f394bf6eda0ee3425778bcf"
+    },
+    {
+      "path": "src/lua/abyss_character_presentation_text.lua",
+      "oldReleaseGitBlob": "c809837529ab983e879601c6de431495e1481eb3",
+      "actualReleaseGitBlob": "c809837529ab983e879601c6de431495e1481eb3",
+      "sha256": "c57e30f30c35ee7b7d8cc654a848e8ff9fea2be2fe1fa958cf48df23c21e8311"
+    },
+    {
+      "path": "src/lua/abyss_character_profiles.lua",
+      "oldReleaseGitBlob": "655f00d88510f6d070e0dd36f1bade2b3cdd3632",
+      "actualReleaseGitBlob": "655f00d88510f6d070e0dd36f1bade2b3cdd3632",
+      "sha256": "65a255630ead2887a58b34c37f3de1e25a636d3c02412774055e5294401b2a10"
+    },
+    {
+      "path": "src/lua/abyss_character_select.lua",
+      "oldReleaseGitBlob": "b74dde6740aa2f4bf009fc5eee1b7d97c4ebeb76",
+      "actualReleaseGitBlob": "b74dde6740aa2f4bf009fc5eee1b7d97c4ebeb76",
+      "sha256": "53f84adc19b77af6157aa10ee9ac96b61fbd7809e588e845523779d333c9e2c1"
+    },
+    {
+      "path": "src/lua/abyss_character_select_view.lua",
+      "oldReleaseGitBlob": "57f65df53d6892abd3255b694600e503d1e062ae",
+      "actualReleaseGitBlob": "57f65df53d6892abd3255b694600e503d1e062ae",
+      "sha256": "01b673f7d9a360e9ec2e42dc69ff8e75b746101cb5411e8ed4698a496679d447"
+    },
+    {
+      "path": "src/lua/abyss_choice_ui.lua",
+      "oldReleaseGitBlob": "9e5fc09b40cf66c9830066083e8ac7ef79f9c9de",
+      "actualReleaseGitBlob": "9e5fc09b40cf66c9830066083e8ac7ef79f9c9de",
+      "sha256": "e0a6dc3040f211c743b16c0a03f9f6076ac8d143cb959c58279ef03560e7e6f5"
+    },
+    {
+      "path": "src/lua/abyss_class_card_pools.lua",
+      "oldReleaseGitBlob": "cac400db7511e9862a28254c5df8033ae89933c6",
+      "actualReleaseGitBlob": "cac400db7511e9862a28254c5df8033ae89933c6",
+      "sha256": "f9e6bf8162f964f6e28915c9add89b56ad514e3d436097f726370233fd8ac708"
+    },
+    {
+      "path": "src/lua/abyss_class_potions.lua",
+      "oldReleaseGitBlob": "0ad657423237539dc2db3edc0c402cf937a4ddf8",
+      "actualReleaseGitBlob": "0ad657423237539dc2db3edc0c402cf937a4ddf8",
+      "sha256": "4cb57fc32fef1c086c5ee726008ce016fcb85b0f5b1c60a3c69a7a34180fd5b9"
+    },
+    {
+      "path": "src/lua/abyss_codex_relic.lua",
+      "oldReleaseGitBlob": "ce2dd9d1a14290a9a2311d034a895ce505ef3ce0",
+      "actualReleaseGitBlob": "ce2dd9d1a14290a9a2311d034a895ce505ef3ce0",
+      "sha256": "fbfdc03e939bd40d39178b887b65db37af16ca6e6edbfcfaa35e0d2d0dd6e339"
+    },
+    {
+      "path": "src/lua/abyss_colorless_cards.lua",
+      "oldReleaseGitBlob": "e0e26d913cdee29aea6d522dc7cd15373fc7e34d",
+      "actualReleaseGitBlob": "e0e26d913cdee29aea6d522dc7cd15373fc7e34d",
+      "sha256": "3c5fd5496278bac496fd737ef77cef383c41e3c350e46d3de66a8c99b7bed580"
+    },
+    {
+      "path": "src/lua/abyss_colorless_catalog.lua",
+      "oldReleaseGitBlob": "fbd13a519bc85a054ce1d9b894b76dfdcfb01de2",
+      "actualReleaseGitBlob": "fbd13a519bc85a054ce1d9b894b76dfdcfb01de2",
+      "sha256": "59783bedd0d0ca45774e25c76753a39783f6f8299dbdc90b00e9328878b54f9a"
+    },
+    {
+      "path": "src/lua/abyss_colosseum_event.lua",
+      "oldReleaseGitBlob": "63379eefee28100c1ec490abd4fb206b21d34731",
+      "actualReleaseGitBlob": "63379eefee28100c1ec490abd4fb206b21d34731",
+      "sha256": "a4d3d339d10b0f56ed97a95237d630fda8cb46f9d125dfa21c70fc5218627058"
+    },
+    {
+      "path": "src/lua/abyss_combat.lua",
+      "oldReleaseGitBlob": "2f0c4d6ca051f2df93f386e300e6b28c79bdf943",
+      "actualReleaseGitBlob": "2f0c4d6ca051f2df93f386e300e6b28c79bdf943",
+      "sha256": "609e75ba6e83da7b2311629adfdc2fd101c8167d3d17dbb1cdc0748baa9b1d1c"
+    },
+    {
+      "path": "src/lua/abyss_combat_catalog.lua",
+      "oldReleaseGitBlob": "8299d941fe848401a642210f696d6d05c85a59ba",
+      "actualReleaseGitBlob": "8299d941fe848401a642210f696d6d05c85a59ba",
+      "sha256": "875a7d22de4c868c584389c2c66bc98bc6e25c82720157d71c164bbb3fa5d7dd"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_cards.lua",
+      "oldReleaseGitBlob": "ca2c991a5be433c811e71d11ad60cdf7413b73cf",
+      "actualReleaseGitBlob": "ca2c991a5be433c811e71d11ad60cdf7413b73cf",
+      "sha256": "ad516e63bfa3528104d42a49bb7e8b5c446c2d0d6e4c855b984bcc524f2733e5"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_choice.lua",
+      "oldReleaseGitBlob": "866be776deaa0327ae315814b57aceb78d6f0822",
+      "actualReleaseGitBlob": "866be776deaa0327ae315814b57aceb78d6f0822",
+      "sha256": "28f6dc9c18cb44b172858bc5be388ace2aa727609402d2478529b5536d9c086f"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_damage.lua",
+      "oldReleaseGitBlob": "52702a38473279c44ac000d22276ad79dd993da2",
+      "actualReleaseGitBlob": "52702a38473279c44ac000d22276ad79dd993da2",
+      "sha256": "b8ff07660d5d8e4b2348082678a3e83dd17d70994ef78652435c19dcbb5ff044"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_dispatch.lua",
+      "oldReleaseGitBlob": "b53baa5f33059faffaf767f0729080d30df3053b",
+      "actualReleaseGitBlob": "b53baa5f33059faffaf767f0729080d30df3053b",
+      "sha256": "5bf02c9a8800e10abed38f7718f62f77c150ff6739132bf57a4127846d1d0ca7"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_powers.lua",
+      "oldReleaseGitBlob": "43e1f9619638280b86852da741eaaa3a765b0f37",
+      "actualReleaseGitBlob": "43e1f9619638280b86852da741eaaa3a765b0f37",
+      "sha256": "abff029055d1ec47be657fb5a938c928309a925043796eb860e492df93b47afa"
+    },
+    {
+      "path": "src/lua/abyss_combat_enemy_setup.lua",
+      "oldReleaseGitBlob": "d1ff79c4d7af6c79b4bdfbcfadf2415cbb104c57",
+      "actualReleaseGitBlob": "d1ff79c4d7af6c79b4bdfbcfadf2415cbb104c57",
+      "sha256": "76c8aa93a85a272b80ff4ae74645bc26fe33b7f6d18eb733d8c54d904b9331da"
+    },
+    {
+      "path": "src/lua/abyss_combat_native_play.lua",
+      "oldReleaseGitBlob": "dd44b25127223152d394f9a957f5370b3d6063dc",
+      "actualReleaseGitBlob": "dd44b25127223152d394f9a957f5370b3d6063dc",
+      "sha256": "539c3a339016f9497b77f11daed7e0db0378f3e2fcb0923a2ebd39547881c6ec"
+    },
+    {
+      "path": "src/lua/abyss_combat_queued_play.lua",
+      "oldReleaseGitBlob": "9206a06083a99088c325ad6d865e365112c470f1",
+      "actualReleaseGitBlob": "9206a06083a99088c325ad6d865e365112c470f1",
+      "sha256": "30c181220820118b505bee3fe5c94eaaac3b0e542bc8bb519f05c8fff22fd728"
+    },
+    {
+      "path": "src/lua/abyss_combat_reactions.lua",
+      "oldReleaseGitBlob": "5526c95f135e3406ff96a497f861b97b32ea4678",
+      "actualReleaseGitBlob": "5526c95f135e3406ff96a497f861b97b32ea4678",
+      "sha256": "2772aa238ce72d7628958bcf625602cd40b437cc6c24570d48dcacd578ddb06d"
+    },
+    {
+      "path": "src/lua/abyss_compendium_catalog.lua",
+      "oldReleaseGitBlob": "77fb3513aeac1f6ca89da454a7f164ede0cc1ac2",
+      "actualReleaseGitBlob": "77fb3513aeac1f6ca89da454a7f164ede0cc1ac2",
+      "sha256": "d6594b4d276ab2f02983429227102282e51565acceca266c8971adfa9e32706a"
+    },
+    {
+      "path": "src/lua/abyss_component_bridge.lua",
+      "oldReleaseGitBlob": "0f36c45e9dbf4f93301fe2b11f8a56a24e56168f",
+      "actualReleaseGitBlob": "0f36c45e9dbf4f93301fe2b11f8a56a24e56168f",
+      "sha256": "55bd6e0c423a94bc8c9091b32fa44aa08be8101831504b2885d662703a0c192b"
+    },
+    {
+      "path": "src/lua/abyss_component_pages.lua",
+      "oldReleaseGitBlob": "8321f077925ef28cf570e6cbaf153e1e364470f7",
+      "actualReleaseGitBlob": "8321f077925ef28cf570e6cbaf153e1e364470f7",
+      "sha256": "a1196b2f3d4bcfa69772cd626dc9063db1a8c4a6d6194667cb4ab894b688fd0f"
+    },
+    {
+      "path": "src/lua/abyss_controller.lua",
+      "oldReleaseGitBlob": "9409d5a80a67c1cb3e53ab3c04c16f0241fa4847",
+      "actualReleaseGitBlob": "9409d5a80a67c1cb3e53ab3c04c16f0241fa4847",
+      "sha256": "dd0766ff3724f04a2bdc2cfc07d198e2ba2a046fac519b77f394cccd988c0481"
+    },
+    {
+      "path": "src/lua/abyss_copy.lua",
+      "oldReleaseGitBlob": "d64c7602df9f3389e2a0c359b6bdcfe1339db0c3",
+      "actualReleaseGitBlob": "d64c7602df9f3389e2a0c359b6bdcfe1339db0c3",
+      "sha256": "099de1e77e190d4e61ababe30916b93656e7dbceb489755a121a021657911cc9"
+    },
+    {
+      "path": "src/lua/abyss_corrupt_heart.lua",
+      "oldReleaseGitBlob": "fdfaa6b2390913060488f352c7a0db734149c12a",
+      "actualReleaseGitBlob": "fdfaa6b2390913060488f352c7a0db734149c12a",
+      "sha256": "a9b65915db69f66b9dc8a2be670ad2fb18f46f7e9fa254a406816b49cea496ac"
+    },
+    {
+      "path": "src/lua/abyss_corruption.lua",
+      "oldReleaseGitBlob": "e47692b6d021d4e8bf59c2f2147dd01822db556e",
+      "actualReleaseGitBlob": "e47692b6d021d4e8bf59c2f2147dd01822db556e",
+      "sha256": "a4ec793a0568245f32b79b0a6e074348b59d627b71fe2da8faa345fea2ef2f14"
+    },
+    {
+      "path": "src/lua/abyss_cursed_tome_event.lua",
+      "oldReleaseGitBlob": "17a70c3ab6d579f268edceb64522318d9e1ea76c",
+      "actualReleaseGitBlob": "17a70c3ab6d579f268edceb64522318d9e1ea76c",
+      "sha256": "6055e253d9af199bb0e263b9460238c835107cde7cf704c5923e98220af2a411"
+    },
+    {
+      "path": "src/lua/abyss_curses.lua",
+      "oldReleaseGitBlob": "448b1c28d9b58f03ed2818122f638d5e8403f04e",
+      "actualReleaseGitBlob": "448b1c28d9b58f03ed2818122f638d5e8403f04e",
+      "sha256": "65d912f1d2dbd5245bb4734103c762eb9667c5161c33e4c850062e35572c3642"
+    },
+    {
+      "path": "src/lua/abyss_darklings.lua",
+      "oldReleaseGitBlob": "1a3a412e1c22d321b986212f929cbdee8659a44b",
+      "actualReleaseGitBlob": "1a3a412e1c22d321b986212f929cbdee8659a44b",
+      "sha256": "4cf5255fd3ba000fb5e9d94468a74685a2ca37fbb15d0c3f5d2efd9c90fec22e"
+    },
+    {
+      "path": "src/lua/abyss_dead_adventurer_event.lua",
+      "oldReleaseGitBlob": "51e73a0f2b1fa590c83e20d0185b59932844984b",
+      "actualReleaseGitBlob": "51e73a0f2b1fa590c83e20d0185b59932844984b",
+      "sha256": "2d225ea8e6852a4ccee55f8e1d794c111bf09f61b553d294c26c95753c76bc5c"
+    },
+    {
+      "path": "src/lua/abyss_deck_ui.lua",
+      "oldReleaseGitBlob": "55d1b8d4926fe027e22d090de9fc0fd57c2bf1c7",
+      "actualReleaseGitBlob": "55d1b8d4926fe027e22d090de9fc0fd57c2bf1c7",
+      "sha256": "081875a171ffb00d25036fc98713540880d237f6b67933713453bf3fe75e7673"
+    },
+    {
+      "path": "src/lua/abyss_defect_cards.lua",
+      "oldReleaseGitBlob": "09d0bd677c2127dbe0d0e53520bacdae8461255e",
+      "actualReleaseGitBlob": "09d0bd677c2127dbe0d0e53520bacdae8461255e",
+      "sha256": "7844025e58ffcf345243d29a8e24b21268f728e833456389acbd764bcbb8d6a3"
+    },
+    {
+      "path": "src/lua/abyss_defect_engine_cards.lua",
+      "oldReleaseGitBlob": "33420d6ed74220a2bf6053fbc0d4f414f0b1e1ec",
+      "actualReleaseGitBlob": "33420d6ed74220a2bf6053fbc0d4f414f0b1e1ec",
+      "sha256": "4d9a0281fdd42f853d6a836f485d56d0693996577287ba2ec5283c222cd17ac7"
+    },
+    {
+      "path": "src/lua/abyss_defect_final_cards.lua",
+      "oldReleaseGitBlob": "c3b0ccafe1c5f5576378a265c71e1ba64f5ee797",
+      "actualReleaseGitBlob": "c3b0ccafe1c5f5576378a265c71e1ba64f5ee797",
+      "sha256": "77abe4a82a37118273585830e1bd4c49e07b0367de77f06dc388b7ca862f5544"
+    },
+    {
+      "path": "src/lua/abyss_defect_utility_cards.lua",
+      "oldReleaseGitBlob": "8a5829f337326386cca5758a546847c2ba46ad3a",
+      "actualReleaseGitBlob": "8a5829f337326386cca5758a546847c2ba46ad3a",
+      "sha256": "59d054c36752cdf0eb20cf037e51f4b6909222d2e11620fae42de06748342db2"
+    },
+    {
+      "path": "src/lua/abyss_designer_event.lua",
+      "oldReleaseGitBlob": "539680ec4b4bffdc3cf5e53ccc5f151a72421621",
+      "actualReleaseGitBlob": "539680ec4b4bffdc3cf5e53ccc5f151a72421621",
+      "sha256": "8597b051e23c7ad62276c3fa868f652ddb82f33dc6a9aa6bc0e5009935b852cc"
+    },
+    {
+      "path": "src/lua/abyss_discard.lua",
+      "oldReleaseGitBlob": "67db31f147d082c5057d9481a8811b093533435c",
+      "actualReleaseGitBlob": "67db31f147d082c5057d9481a8811b093533435c",
+      "sha256": "5742fbad7b6daf65b324ff9c0143d458f1fb864c006237ef5b150f4e34524265"
+    },
+    {
+      "path": "src/lua/abyss_drug_dealer_event.lua",
+      "oldReleaseGitBlob": "3bd23b9a658acdcaa520e44333e56df321554062",
+      "actualReleaseGitBlob": "3bd23b9a658acdcaa520e44333e56df321554062",
+      "sha256": "050e3ff36e02d4abf878248f4fac2a4bff3b6b8fbb3021965156f67cb901ff83"
+    },
+    {
+      "path": "src/lua/abyss_duplicator_event.lua",
+      "oldReleaseGitBlob": "dfb765f779be49c42950afda5e03846250087eae",
+      "actualReleaseGitBlob": "dfb765f779be49c42950afda5e03846250087eae",
+      "sha256": "12be2e5ebb7f0d54464d159d03829275cb1a9bfd30f46fd5d9b2912e97c6386b"
+    },
+    {
+      "path": "src/lua/abyss_effects.lua",
+      "oldReleaseGitBlob": "4c860972de6187d872dec91e324caaae325f0825",
+      "actualReleaseGitBlob": "4c860972de6187d872dec91e324caaae325f0825",
+      "sha256": "0856df7af9ce8c7c43e35a84301c2359b672887e6ca4ca4640578e4c9e562228"
+    },
+    {
+      "path": "src/lua/abyss_effects_cards.lua",
+      "oldReleaseGitBlob": "debd856c8f5f97e569a05c990753b24439c65bb5",
+      "actualReleaseGitBlob": "debd856c8f5f97e569a05c990753b24439c65bb5",
+      "sha256": "28bb3255c8d038d905bcdbe1b8e5164b787223747ec20d0c15fb33a5ab989bc1"
+    },
+    {
+      "path": "src/lua/abyss_effects_damage.lua",
+      "oldReleaseGitBlob": "0ec1a5cd6bdde91e7e77387a85ddb2aeee6ff2e3",
+      "actualReleaseGitBlob": "0ec1a5cd6bdde91e7e77387a85ddb2aeee6ff2e3",
+      "sha256": "ae24c9ddd57d7ac2bac8c65d8f1f1768fad750ada74262501b9bad074d03ca41"
+    },
+    {
+      "path": "src/lua/abyss_effects_enemy.lua",
+      "oldReleaseGitBlob": "11da712fd74220bd8531770f7baf32fc10561507",
+      "actualReleaseGitBlob": "11da712fd74220bd8531770f7baf32fc10561507",
+      "sha256": "afa4d9172f210a5b459bbd38df18718babc3993477ffbc12ddd2615eb4f2f12a"
+    },
+    {
+      "path": "src/lua/abyss_effects_powers.lua",
+      "oldReleaseGitBlob": "01e203d90a6c52fad5add534c2ae470f657c2e49",
+      "actualReleaseGitBlob": "01e203d90a6c52fad5add534c2ae470f657c2e49",
+      "sha256": "323319953426476692bd7388526a249537651c46beb6b01c6e1877ceb4e70e36"
+    },
+    {
+      "path": "src/lua/abyss_emerald_elite.lua",
+      "oldReleaseGitBlob": "cde12ab5111a4dcdd17bc5204ffd301b2de26c03",
+      "actualReleaseGitBlob": "cde12ab5111a4dcdd17bc5204ffd301b2de26c03",
+      "sha256": "66f04ab348236f17a61125d8b76c7098b4fdf79607ae44b634892bff89be3d46"
+    },
+    {
+      "path": "src/lua/abyss_emerald_rewards.lua",
+      "oldReleaseGitBlob": "797094f674d927dac7bcd8ff1ad6f6735dc2049e",
+      "actualReleaseGitBlob": "797094f674d927dac7bcd8ff1ad6f6735dc2049e",
+      "sha256": "800a19f3a9f3c6e4dac423ac62d90ccb5ac4ddf6a23a255f12572b040490c83c"
+    },
+    {
+      "path": "src/lua/abyss_encounter_formation.lua",
+      "oldReleaseGitBlob": "d35935c941cb5fda2700efa79da4ca2208f2aece",
+      "actualReleaseGitBlob": "d35935c941cb5fda2700efa79da4ca2208f2aece",
+      "sha256": "c31b3aa4711fcd53613e00e689c5e2ede15ecb0ba2fb89d9fa16b6fb8d3abd63"
+    },
+    {
+      "path": "src/lua/abyss_encounter_queue.lua",
+      "oldReleaseGitBlob": "6075478d0ad91b9a468991a9ae919bf923cd18f6",
+      "actualReleaseGitBlob": "6075478d0ad91b9a468991a9ae919bf923cd18f6",
+      "sha256": "3fe80c7f00add3170c5bc3d2053889ac197e8a96e83aee1ab428b809baa4f7f8"
+    },
+    {
+      "path": "src/lua/abyss_end_turn_powers.lua",
+      "oldReleaseGitBlob": "a8cdc3c6100674948bfe8c1913d3f1eb22ec143e",
+      "actualReleaseGitBlob": "a8cdc3c6100674948bfe8c1913d3f1eb22ec143e",
+      "sha256": "3124970981b679dd4964a7805a6b28277a286cf83b1dc0601e1e0e79ca4de527"
+    },
+    {
+      "path": "src/lua/abyss_ending_actions.lua",
+      "oldReleaseGitBlob": "d0028ce7bdef985a5c7949400153a1084124800b",
+      "actualReleaseGitBlob": "d0028ce7bdef985a5c7949400153a1084124800b",
+      "sha256": "2a2ada3efd984aec9b4a28cd5e60f5f18bb22f16ba44cec95afc1538ade5dd4a"
+    },
+    {
+      "path": "src/lua/abyss_ending_history.lua",
+      "oldReleaseGitBlob": "2bf97e45231cd57821a0fef3ec15e55f57671964",
+      "actualReleaseGitBlob": "2bf97e45231cd57821a0fef3ec15e55f57671964",
+      "sha256": "65c718fc07c01542e4aee1911d347d017e97b6ec3df4a789fcc3d8f09fb7ba9d"
+    },
+    {
+      "path": "src/lua/abyss_enemy_ai.lua",
+      "oldReleaseGitBlob": "1b1e7048c326c75813bf76326ad975af85890fe7",
+      "actualReleaseGitBlob": "1b1e7048c326c75813bf76326ad975af85890fe7",
+      "sha256": "5823224e9286ae0de64acd7d04bc6ed05857841ba143cbc219bb1bb4367e7ed9"
+    },
+    {
+      "path": "src/lua/abyss_enemy_random.lua",
+      "oldReleaseGitBlob": "50c19825b5a752633246d1259a293aea5298e3ff",
+      "actualReleaseGitBlob": "50c19825b5a752633246d1259a293aea5298e3ff",
+      "sha256": "6e85867185aa114af1b0dd5faf38bc0a59a7292f1bfc39e513460909e22621cd"
+    },
+    {
+      "path": "src/lua/abyss_event_card_sampling.lua",
+      "oldReleaseGitBlob": "ba8531ed034a1ccaf278f2061cbdf9a11768cd44",
+      "actualReleaseGitBlob": "ba8531ed034a1ccaf278f2061cbdf9a11768cd44",
+      "sha256": "8ec3dcdbd2519f8d06d66ed96124178d0eab515c4c8d3cc6504d55c85739ae02"
+    },
+    {
+      "path": "src/lua/abyss_event_combat.lua",
+      "oldReleaseGitBlob": "934f74a06baa4751bf709af6978310a5ffd0df2d",
+      "actualReleaseGitBlob": "934f74a06baa4751bf709af6978310a5ffd0df2d",
+      "sha256": "818e322fbaa74f9fabc0608793ffa7edb8493db8de331e655b0776000f13b550"
+    },
+    {
+      "path": "src/lua/abyss_event_combat_enemies.lua",
+      "oldReleaseGitBlob": "01093732160b6aa4d361d4da85d809566205cf13",
+      "actualReleaseGitBlob": "01093732160b6aa4d361d4da85d809566205cf13",
+      "sha256": "730ec209b7b4808789ab90cd255697850c36cd0c3de6d63caec18bc7b2e105da"
+    },
+    {
+      "path": "src/lua/abyss_event_combat_routes.lua",
+      "oldReleaseGitBlob": "edf67283791ac65b9c18b4a815adb3e412cb2929",
+      "actualReleaseGitBlob": "edf67283791ac65b9c18b4a815adb3e412cb2929",
+      "sha256": "0165cced88e1c8d2144944b03c5538051dc28da17defd4011f6748e465a1d859"
+    },
+    {
+      "path": "src/lua/abyss_event_pool.lua",
+      "oldReleaseGitBlob": "3a4da236a366bb7b5e50df540c219cb304b90424",
+      "actualReleaseGitBlob": "3a4da236a366bb7b5e50df540c219cb304b90424",
+      "sha256": "2b3511baabf92f3007515de4d6707fe9b60c281d3c46ee04547109543f1219ca"
+    },
+    {
+      "path": "src/lua/abyss_event_transform_context.lua",
+      "oldReleaseGitBlob": "3a17382da27e182272a0b9416d527bae9aa71081",
+      "actualReleaseGitBlob": "3a17382da27e182272a0b9416d527bae9aa71081",
+      "sha256": "38c827ae2eb69dac8d0a7b9dc3f7d11d0964e2bf48d2157c23dc91d24eb4af44"
+    },
+    {
+      "path": "src/lua/abyss_events.lua",
+      "oldReleaseGitBlob": "25525ca76e9f2192b2ba18f17c082bbb15ad8453",
+      "actualReleaseGitBlob": "25525ca76e9f2192b2ba18f17c082bbb15ad8453",
+      "sha256": "82a1fd4f5903454220e95d55639bbb547ec13d00257051b703bf22464fd1968c"
+    },
+    {
+      "path": "src/lua/abyss_exhaust.lua",
+      "oldReleaseGitBlob": "d16510f06c5ce98de7f0c75d657ed794142f712f",
+      "actualReleaseGitBlob": "d16510f06c5ce98de7f0c75d657ed794142f712f",
+      "sha256": "a896da79d8206d763a28622ba5544920d14ee9e9b33d6fef9b11d72d8491de48"
+    },
+    {
+      "path": "src/lua/abyss_external_random.lua",
+      "oldReleaseGitBlob": "72b488f58eb211eedaef13a1b558861502605c33",
+      "actualReleaseGitBlob": "72b488f58eb211eedaef13a1b558861502605c33",
+      "sha256": "e328762910a732b84bd20b1d800f7372e0295156a8e66fae146acf758e834702"
+    },
+    {
+      "path": "src/lua/abyss_face_trader_event.lua",
+      "oldReleaseGitBlob": "1cf8455483a906f89887da1048e07790275dcc51",
+      "actualReleaseGitBlob": "1cf8455483a906f89887da1048e07790275dcc51",
+      "sha256": "cb82eb38e4d69656dc23f170ee197618123f887f83539074199030289f0dd66a"
+    },
+    {
+      "path": "src/lua/abyss_feedback.lua",
+      "oldReleaseGitBlob": "070b1bceda0a8749d113ff86c535f4985e410021",
+      "actualReleaseGitBlob": "070b1bceda0a8749d113ff86c535f4985e410021",
+      "sha256": "7d009bec730f1e1b2407bf77a4243e055224c2392f6fb25ecc3d355d95440fa4"
+    },
+    {
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "oldReleaseGitBlob": "d9a0b5bf5643977baf69940c79f1c62c1c5f5361",
+      "actualReleaseGitBlob": "d9a0b5bf5643977baf69940c79f1c62c1c5f5361",
+      "sha256": "3c3d306e8892be43ecdaf1ba4d8035ca369a8b5ecfd5295bfd23aff22a1b7caf"
+    },
+    {
+      "path": "src/lua/abyss_flow_actions.lua",
+      "oldReleaseGitBlob": "50c209237d460eb87c2030e8680fb5da4db4875f",
+      "actualReleaseGitBlob": "50c209237d460eb87c2030e8680fb5da4db4875f",
+      "sha256": "d1ce62d0481da5fef3c25fa835d4dd4c3a4d16d2ee4aefc6402bd01b4d7b3759"
+    },
+    {
+      "path": "src/lua/abyss_focus.lua",
+      "oldReleaseGitBlob": "1fa64aeb4d8a436bbe89de9e9e1531e9dad7531b",
+      "actualReleaseGitBlob": "1fa64aeb4d8a436bbe89de9e9e1531e9dad7531b",
+      "sha256": "a4cead026d11ade7e97e68190a77d4d12661a8119daaf6ecac14a31eca3c94ad"
+    },
+    {
+      "path": "src/lua/abyss_forgotten_altar_event.lua",
+      "oldReleaseGitBlob": "8e667470fe0adfaea65c157f7ab9dca82e950fdb",
+      "actualReleaseGitBlob": "8e667470fe0adfaea65c157f7ab9dca82e950fdb",
+      "sha256": "e353015785d8cbe3eefe1c181c160f17ad1bd58b124fc80202c1782a777db003"
+    },
+    {
+      "path": "src/lua/abyss_fountain.lua",
+      "oldReleaseGitBlob": "fc23d16e87f6fcfa9e57d9bf4786fd0f67e25596",
+      "actualReleaseGitBlob": "fc23d16e87f6fcfa9e57d9bf4786fd0f67e25596",
+      "sha256": "cedc147d608a7fe39020d494dc96a3326f0fc3a1c0473741b5e9031d069a97d5"
+    },
+    {
+      "path": "src/lua/abyss_fungi_beast_ai.lua",
+      "oldReleaseGitBlob": "3550e6d363a9b11c77d7f8f86242f24070ce6fba",
+      "actualReleaseGitBlob": "3550e6d363a9b11c77d7f8f86242f24070ce6fba",
+      "sha256": "2b9d1aea3c91a0570ef60e7b35ea7038c385b12c945c4058babafb71d65992e4"
+    },
+    {
+      "path": "src/lua/abyss_game_ui.lua",
+      "oldReleaseGitBlob": "48e5a3a03d85e8efb79ab460079103dc62b3c30d",
+      "actualReleaseGitBlob": "48e5a3a03d85e8efb79ab460079103dc62b3c30d",
+      "sha256": "04456f26110addedb28d3109910091e18011902c3ef6a028e0b61a16aca56ed0"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_input.lua",
+      "oldReleaseGitBlob": "b4b3ed7060a2e42b70452cb520ef36966b98dcfa",
+      "actualReleaseGitBlob": "b4b3ed7060a2e42b70452cb520ef36966b98dcfa",
+      "sha256": "b3e87c57b5b8940ae3ccf5bba323074d4f0cad1d978233105c772f2035d8db47"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_lifecycle.lua",
+      "oldReleaseGitBlob": "72c3e39f2f32b6d6b814a56ead8458f61d50ec72",
+      "actualReleaseGitBlob": "72c3e39f2f32b6d6b814a56ead8458f61d50ec72",
+      "sha256": "459511320dee4684638a9a80dd585f3d915f2171add31577b883f58e1b753aba"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_menu_view.lua",
+      "oldReleaseGitBlob": "497038bf80da305759f44bea182be42d0a043750",
+      "actualReleaseGitBlob": "497038bf80da305759f44bea182be42d0a043750",
+      "sha256": "58a8e01638a62a38ba8f7019c524c5f82280b0f5f4907dbed713173852248e3d"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_navigation.lua",
+      "oldReleaseGitBlob": "6ad5519c0c19a24de1dca3c19a84ed117f4035c5",
+      "actualReleaseGitBlob": "6ad5519c0c19a24de1dca3c19a84ed117f4035c5",
+      "sha256": "64b82d27acda5505908dde1d2e0cb46b5d8dacc1dede480b4c434043833e1e4e"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_navigation_view.lua",
+      "oldReleaseGitBlob": "a94f5fc632af8f053e57e589f82a163b26eeaf1f",
+      "actualReleaseGitBlob": "a94f5fc632af8f053e57e589f82a163b26eeaf1f",
+      "sha256": "5f1011667a49bf2726250be24949a411efc0b3747a57b4207f168edc47578b2d"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_overlays.lua",
+      "oldReleaseGitBlob": "6bfe8fce1768e81fce4f672e8c648effd4c5b2ad",
+      "actualReleaseGitBlob": "6bfe8fce1768e81fce4f672e8c648effd4c5b2ad",
+      "sha256": "c576f46a30c8e954a856fc91a38f25f8abb576a5423378e3a4fc28c9e3aa6b00"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_run.lua",
+      "oldReleaseGitBlob": "9f452b8368462dcc7a9f76e33e802f984bdc74bb",
+      "actualReleaseGitBlob": "9f452b8368462dcc7a9f76e33e802f984bdc74bb",
+      "sha256": "596dab6fd323581b74d22e5f3bb8837ee1bca64391d5b2c172c9e4780c231210"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_view.lua",
+      "oldReleaseGitBlob": "f28eaed6242ddbb87069fff951a71da38a208033",
+      "actualReleaseGitBlob": "f28eaed6242ddbb87069fff951a71da38a208033",
+      "sha256": "92e6936729549fef3b1e794e5cb8eccf616d0e562f49d5583d7f3bba3e2150aa"
+    },
+    {
+      "path": "src/lua/abyss_ghosts_event.lua",
+      "oldReleaseGitBlob": "7132f217af92b487a97745a297e9692d1f3d1398",
+      "actualReleaseGitBlob": "7132f217af92b487a97745a297e9692d1f3d1398",
+      "sha256": "d7fb720f4fd19f95bb1315a41eee54329227ead858c8dd58cd5f663ab8b1661c"
+    },
+    {
+      "path": "src/lua/abyss_giant_head.lua",
+      "oldReleaseGitBlob": "596c3dacd67f66ffd48feb83c15e8501cae6edbb",
+      "actualReleaseGitBlob": "596c3dacd67f66ffd48feb83c15e8501cae6edbb",
+      "sha256": "5806525b4634c5396e71e7c590bc00fc0047d81e6b3a612e417f889eba79f1b2"
+    },
+    {
+      "path": "src/lua/abyss_gold_rewards.lua",
+      "oldReleaseGitBlob": "8784f7c8f920407ea7015143a5c22b7710d81bf3",
+      "actualReleaseGitBlob": "8784f7c8f920407ea7015143a5c22b7710d81bf3",
+      "sha256": "8cb4b578939c8093917e521e7114ce7a8bfc53da71692cd2db1df71c78dbb5fb"
+    },
+    {
+      "path": "src/lua/abyss_golden_idol_event.lua",
+      "oldReleaseGitBlob": "522f5c8c721643b52e38857a49ce38385fc4678e",
+      "actualReleaseGitBlob": "522f5c8c721643b52e38857a49ce38385fc4678e",
+      "sha256": "96a6c25fde12de016eb631e11325349d45c10794c9259f243fa42fc0e8129e0f"
+    },
+    {
+      "path": "src/lua/abyss_gremlin_nob_ai.lua",
+      "oldReleaseGitBlob": "e2c82e357dbd856ef5bc2d3ea1f81e12a0cdb952",
+      "actualReleaseGitBlob": "e2c82e357dbd856ef5bc2d3ea1f81e12a0cdb952",
+      "sha256": "b6739284fccfb553e229ce4f228cc8db602decbd9ee3ef4f93340ba39eeaa7e2"
+    },
+    {
+      "path": "src/lua/abyss_guardian_ai.lua",
+      "oldReleaseGitBlob": "79fffb8f7b4d976f86f6063a28e7c6b1ff35c74e",
+      "actualReleaseGitBlob": "79fffb8f7b4d976f86f6063a28e7c6b1ff35c74e",
+      "sha256": "f75fb008b6ddfffec6adaa49890c192d89b459f3119e3e8baf4d9b03a7c92eb3"
+    },
+    {
+      "path": "src/lua/abyss_hand_choice.lua",
+      "oldReleaseGitBlob": "a245d22fa82de2e264dd0b4f4971be4427960029",
+      "actualReleaseGitBlob": "a245d22fa82de2e264dd0b4f4971be4427960029",
+      "sha256": "4779464a8dbdb4e8531071e3c61b2217a8ed99aec3788275aba10e054a0e2d76"
+    },
+    {
+      "path": "src/lua/abyss_hp_loss.lua",
+      "oldReleaseGitBlob": "2c8e519f89d4c00716b7c5c14451cc80b99b74f9",
+      "actualReleaseGitBlob": "2c8e519f89d4c00716b7c5c14451cc80b99b74f9",
+      "sha256": "c850a947b868859d6fc522ccf547e76253473f29d4ebe762da0507ec9d9331ed"
+    },
+    {
+      "path": "src/lua/abyss_inventory.lua",
+      "oldReleaseGitBlob": "f4362552e440416c1d8d3add2f889decbd8a03c7",
+      "actualReleaseGitBlob": "f4362552e440416c1d8d3add2f889decbd8a03c7",
+      "sha256": "caf1e1b1aa8b61a3b3c3388aae0163eebce63df68e598710857f26d064204c8a"
+    },
+    {
+      "path": "src/lua/abyss_jaw_worm_ai.lua",
+      "oldReleaseGitBlob": "c18d9efef89e373d8c303009cd962ae12dde05cd",
+      "actualReleaseGitBlob": "c18d9efef89e373d8c303009cd962ae12dde05cd",
+      "sha256": "c8408c9ebfdf3198db3a70e63ece71a89a642dee64548d907c64cf64208252e9"
+    },
+    {
+      "path": "src/lua/abyss_joust_event.lua",
+      "oldReleaseGitBlob": "4c43333138e427484b8faf34b316d2721293d8f0",
+      "actualReleaseGitBlob": "4c43333138e427484b8faf34b316d2721293d8f0",
+      "sha256": "fde9993e1b625fb8d98645cf3bebfe995fbc3cf4c92a5c6e477c1b1776d616a9"
+    },
+    {
+      "path": "src/lua/abyss_knowing_skull_event.lua",
+      "oldReleaseGitBlob": "3cb9888a6b541490d7046f3ef4c6bdc757b42ab8",
+      "actualReleaseGitBlob": "3cb9888a6b541490d7046f3ef4c6bdc757b42ab8",
+      "sha256": "fefcadeecba9b0f47fc1a7d7467585cfad81fe5645b885a73bae148b9ae293ec"
+    },
+    {
+      "path": "src/lua/abyss_library_event.lua",
+      "oldReleaseGitBlob": "1096b5dc00ab4dd6d6f000c67c52c0696db7d79b",
+      "actualReleaseGitBlob": "1096b5dc00ab4dd6d6f000c67c52c0696db7d79b",
+      "sha256": "10d0f6970d478ca4adb58cd287dfe5d17e8d779138bfea72ce413f3b5aa79c4b"
+    },
+    {
+      "path": "src/lua/abyss_living_wall.lua",
+      "oldReleaseGitBlob": "79b6e309a8e032c7620575db4f4cdaf6127207f0",
+      "actualReleaseGitBlob": "79b6e309a8e032c7620575db4f4cdaf6127207f0",
+      "sha256": "9fdf91e1b9ae66511b6c6e80d0e2b250b7245d2077452095c32c8515d281432a"
+    },
+    {
+      "path": "src/lua/abyss_lizard_tail.lua",
+      "oldReleaseGitBlob": "375e69770d01c60f3b3b6cd530e627cd40ccb60d",
+      "actualReleaseGitBlob": "375e69770d01c60f3b3b6cd530e627cd40ccb60d",
+      "sha256": "c4dbfaeb1049dd90eda158a02713977e5e968ee5e478f6986bb7fc74081ce299"
+    },
+    {
+      "path": "src/lua/abyss_looter_ai.lua",
+      "oldReleaseGitBlob": "52ece96dd11787d935422f5fec11749cab499cc5",
+      "actualReleaseGitBlob": "52ece96dd11787d935422f5fec11749cab499cc5",
+      "sha256": "c754cac73612052a71475d7a209cfe97634e6d134773a93475069245143b0d48"
+    },
+    {
+      "path": "src/lua/abyss_louse_ai.lua",
+      "oldReleaseGitBlob": "84309aaac3702a59c7e70e77dea0c2d562b6877b",
+      "actualReleaseGitBlob": "84309aaac3702a59c7e70e77dea0c2d562b6877b",
+      "sha256": "8e3201c61d29992883784b6165eb79512b2e4e974de5008fba8f227e6c7776f4"
+    },
+    {
+      "path": "src/lua/abyss_lowcost_art.lua",
+      "oldReleaseGitBlob": "77acdacc76b74288076e11ac2a4a6eac1f49479e",
+      "actualReleaseGitBlob": "77acdacc76b74288076e11ac2a4a6eac1f49479e",
+      "sha256": "3d57972c5f3fe0aacb80d1103a97605f0eb3628e65ff132cae4f3c576692cd39"
+    },
+    {
+      "path": "src/lua/abyss_lumine_idle.lua",
+      "oldReleaseGitBlob": "8d08f895f2e600cba5a87028e6172baa1c2c6629",
+      "actualReleaseGitBlob": "8d08f895f2e600cba5a87028e6172baa1c2c6629",
+      "sha256": "33afde23ea4deb5ead52db329a6f43b5aa359e18fbeffba6d47358f48d123abc"
+    },
+    {
+      "path": "src/lua/abyss_mantra.lua",
+      "oldReleaseGitBlob": "808b2d1cfa528bdfef2c842ce293fa005db3131c",
+      "actualReleaseGitBlob": "808b2d1cfa528bdfef2c842ce293fa005db3131c",
+      "sha256": "767b0c41782ce159b549fbbe163c1d3022bc416d0f06fa8de8d555910dc0c375"
+    },
+    {
+      "path": "src/lua/abyss_map.lua",
+      "oldReleaseGitBlob": "5375d7e16059fc1967efa1826c2ffe9ac9f37ccc",
+      "actualReleaseGitBlob": "5375d7e16059fc1967efa1826c2ffe9ac9f37ccc",
+      "sha256": "52d311bc4a863303906dfa3a29d65bc11606eda30759a560ed80266381900810"
+    },
+    {
+      "path": "src/lua/abyss_map_rooms.lua",
+      "oldReleaseGitBlob": "332d3ad29eb23bd1f9dd3cfb0716c0034c58c579",
+      "actualReleaseGitBlob": "332d3ad29eb23bd1f9dd3cfb0716c0034c58c579",
+      "sha256": "eef10661bd77af2e9464e4eab7199c0d487f72b1ba412cf0867f970169569e2c"
+    },
+    {
+      "path": "src/lua/abyss_map_topology.lua",
+      "oldReleaseGitBlob": "8496da670d3402ade2c5b21ec06ac491b22a1bcf",
+      "actualReleaseGitBlob": "8496da670d3402ade2c5b21ec06ac491b22a1bcf",
+      "sha256": "0b07a3269a9110c82a3a88b9fdd25313555a5e44d6121d86606f70ed654ed788"
+    },
+    {
+      "path": "src/lua/abyss_map_ui.lua",
+      "oldReleaseGitBlob": "518a25da0b3cacc6891170184ca6d80de960cd28",
+      "actualReleaseGitBlob": "518a25da0b3cacc6891170184ca6d80de960cd28",
+      "sha256": "f71c09ef038edcb90cf258a5faac64abb44bbf3fc9367c1893101298e2f33234"
+    },
+    {
+      "path": "src/lua/abyss_masked_bandits_event.lua",
+      "oldReleaseGitBlob": "f25787977777f0a3766cb2c145f4ee405cbdcc18",
+      "actualReleaseGitBlob": "f25787977777f0a3766cb2c145f4ee405cbdcc18",
+      "sha256": "e094fb78b5836742f1c55b00aaeb71face17f8c4af66c63f9ef5860c9ba45a80"
+    },
+    {
+      "path": "src/lua/abyss_match_event.lua",
+      "oldReleaseGitBlob": "e1d7c53a593eeea3bb9960bb8aef63b7c17b164f",
+      "actualReleaseGitBlob": "e1d7c53a593eeea3bb9960bb8aef63b7c17b164f",
+      "sha256": "c8e76f8be6640926de79b14cf435eb71688485072d174833f64a4fbe68361596"
+    },
+    {
+      "path": "src/lua/abyss_match_event_ui.lua",
+      "oldReleaseGitBlob": "bd84ffdc4e39f8ea46cd4cb664f3ec921eef8e76",
+      "actualReleaseGitBlob": "bd84ffdc4e39f8ea46cd4cb664f3ec921eef8e76",
+      "sha256": "0bd0aa80c86aab562b84b2283c4ea90716ae486f0577e8bafd38c7c3d2d9606b"
+    },
+    {
+      "path": "src/lua/abyss_max_hp_relics.lua",
+      "oldReleaseGitBlob": "b08b9757da03e5ece79deb16fa172c5c47ac6192",
+      "actualReleaseGitBlob": "b08b9757da03e5ece79deb16fa172c5c47ac6192",
+      "sha256": "be64e570ab9ca4ab28acf79b474531714e41fe93d7a04a284b88a79e683dc0d6"
+    },
+    {
+      "path": "src/lua/abyss_menu_background.lua",
+      "oldReleaseGitBlob": "22f2a7dfed4ccf5ff78e541da6bdcad4f948e381",
+      "actualReleaseGitBlob": "22f2a7dfed4ccf5ff78e541da6bdcad4f948e381",
+      "sha256": "343d0e5dad14423edc2bd5495c70632a2ff4b91e04c7102cc5eab397ef27d4f4"
+    },
+    {
+      "path": "src/lua/abyss_merchant.lua",
+      "oldReleaseGitBlob": "33afc656e7f5279a8cb0df37a3036fff63109f57",
+      "actualReleaseGitBlob": "33afc656e7f5279a8cb0df37a3036fff63109f57",
+      "sha256": "e6e88e409e6d5b1c91f4fc4811205410aa6c1bce961e94daa270a14642be8747"
+    },
+    {
+      "path": "src/lua/abyss_merchant_pages.lua",
+      "oldReleaseGitBlob": "1119aabe05e79de3e7ac9101c6e93cab3eb8948d",
+      "actualReleaseGitBlob": "1119aabe05e79de3e7ac9101c6e93cab3eb8948d",
+      "sha256": "9fc35034fea420896584aac1d973ba5521b5fb4ab4c2a894093c2451099e7515"
+    },
+    {
+      "path": "src/lua/abyss_mind_bloom_event.lua",
+      "oldReleaseGitBlob": "2615b07cefefd9b5db62039c81a936765524f18d",
+      "actualReleaseGitBlob": "2615b07cefefd9b5db62039c81a936765524f18d",
+      "sha256": "90839bb4c97a29e8294f3ac97481c8d3851f079f5088570c48fd885a641b2bb8"
+    },
+    {
+      "path": "src/lua/abyss_moai_event.lua",
+      "oldReleaseGitBlob": "c50d96f07c15996e2f32faacb3a5259af4b2bccc",
+      "actualReleaseGitBlob": "c50d96f07c15996e2f32faacb3a5259af4b2bccc",
+      "sha256": "5e91422199049347db4c33429235023180cdc3ae6fda7b4645bbf2643e0c8026"
+    },
+    {
+      "path": "src/lua/abyss_monster_art.lua",
+      "oldReleaseGitBlob": "a28504c7cccb762acd9387308d6853c41ac175cb",
+      "actualReleaseGitBlob": "a28504c7cccb762acd9387308d6853c41ac175cb",
+      "sha256": "af776e697821870dd7c06b86862b4096262f9879ae66af3f8bbebb125d63644b"
+    },
+    {
+      "path": "src/lua/abyss_monster_displayed_intent.lua",
+      "oldReleaseGitBlob": "d28f0b3b34a9b9babf8fca5bd2ea1614ebb99eca",
+      "actualReleaseGitBlob": "d28f0b3b34a9b9babf8fca5bd2ea1614ebb99eca",
+      "sha256": "03ffebc6575d6ee7bca229b239276a452bec5e5800737238745ae129ead6e358"
+    },
+    {
+      "path": "src/lua/abyss_monster_escape.lua",
+      "oldReleaseGitBlob": "a7ba25b253cbcc48f6acade18edd58bc2e1c5022",
+      "actualReleaseGitBlob": "a7ba25b253cbcc48f6acade18edd58bc2e1c5022",
+      "sha256": "f5fa35cd7aa2f62fe1540d14b732647e79014e8266f64e28b4671d688c3f34a2"
+    },
+    {
+      "path": "src/lua/abyss_monster_intent_particle_view.lua",
+      "oldReleaseGitBlob": "82096aa9fa148f0975e78a45d1b1cc3a9dd44b64",
+      "actualReleaseGitBlob": "82096aa9fa148f0975e78a45d1b1cc3a9dd44b64",
+      "sha256": "8117dd827ff947880d410f19fc5999fdce6cbd8caeb0b8e2b2cdb11b9db3dd70"
+    },
+    {
+      "path": "src/lua/abyss_monster_intent_particles.lua",
+      "oldReleaseGitBlob": "0bd58f0c67fea624a5e3090c0188326a2869f2b7",
+      "actualReleaseGitBlob": "0bd58f0c67fea624a5e3090c0188326a2869f2b7",
+      "sha256": "53bc76d7bd0296944fff253e4d021e2319253acda758c48e8eb673878dc3aa5f"
+    },
+    {
+      "path": "src/lua/abyss_monster_power_surfaces.lua",
+      "oldReleaseGitBlob": "78eda022f52e2595c33e8d473a8e41ddb7d9a02c",
+      "actualReleaseGitBlob": "78eda022f52e2595c33e8d473a8e41ddb7d9a02c",
+      "sha256": "e9e81ea8648f22f3d2b6b2a489f72eda194304cc164a52f8cebbed9859bff15e"
+    },
+    {
+      "path": "src/lua/abyss_monster_power_view.lua",
+      "oldReleaseGitBlob": "d2bebff91e5a8fac53cb1ee89ac2047034f01b9f",
+      "actualReleaseGitBlob": "d2bebff91e5a8fac53cb1ee89ac2047034f01b9f",
+      "sha256": "64b7815f4256d908a8514ab768359730dfc18974916d62444bda0df09c42fe15"
+    },
+    {
+      "path": "src/lua/abyss_monster_source_geometry.lua",
+      "oldReleaseGitBlob": "184ca637b1ba8d74974019554fc64949d9237807",
+      "actualReleaseGitBlob": "184ca637b1ba8d74974019554fc64949d9237807",
+      "sha256": "72e5b5b88b3788f88597fb84d9e8df8c7369dbb38c75d2f99e9e81866f597d47"
+    },
+    {
+      "path": "src/lua/abyss_monster_source_intents.lua",
+      "oldReleaseGitBlob": "50181cc1f74d692524d64a1ede82a0d10f72cb35",
+      "actualReleaseGitBlob": "50181cc1f74d692524d64a1ede82a0d10f72cb35",
+      "sha256": "8992382ce56ae66c54194686160bfac78c035f545a50410557d02e8ae6820675"
+    },
+    {
+      "path": "src/lua/abyss_monster_source_positions.lua",
+      "oldReleaseGitBlob": "cf6d25f7ae6be831bbaf561638a78196426854a9",
+      "actualReleaseGitBlob": "cf6d25f7ae6be831bbaf561638a78196426854a9",
+      "sha256": "451aba7cc747b2ea24bcc26b646206f0c3da72be1784621e0024de2a96a8d755"
+    },
+    {
+      "path": "src/lua/abyss_monster_surfaces.lua",
+      "oldReleaseGitBlob": "9db4fe0c1648c645e4ef4b5cae4be66f8ea16238",
+      "actualReleaseGitBlob": "9db4fe0c1648c645e4ef4b5cae4be66f8ea16238",
+      "sha256": "217ea8492fb72867ef635d674987891e5a85a1d71dda7b70b52db6a0e53f0d8e"
+    },
+    {
+      "path": "src/lua/abyss_mushrooms_event.lua",
+      "oldReleaseGitBlob": "d49f39da7200d66dce5f4a8c42aa962a97210bf5",
+      "actualReleaseGitBlob": "d49f39da7200d66dce5f4a8c42aa962a97210bf5",
+      "sha256": "4cc7a98b481c4600cfbe497ad1b44e5a7fe18c08d14498b52b47225c559c25a5"
+    },
+    {
+      "path": "src/lua/abyss_mysterious_sphere_event.lua",
+      "oldReleaseGitBlob": "9c63ebf2389806394997646fb42976978ecec18c",
+      "actualReleaseGitBlob": "9c63ebf2389806394997646fb42976978ecec18c",
+      "sha256": "9532b65d22f0849ca4da946abe27c99ab48f06e2f902a30d39b1ce5b1d4c71a4"
+    },
+    {
+      "path": "src/lua/abyss_native_pages.lua",
+      "oldReleaseGitBlob": "f34aeb379736abc864e869ed6a8d6b7ce9184058",
+      "actualReleaseGitBlob": "f34aeb379736abc864e869ed6a8d6b7ce9184058",
+      "sha256": "ce0e2d6c5bbfaef501812fafe9ac688a764ffafc475d32250afeac8e51cb06be"
+    },
+    {
+      "path": "src/lua/abyss_necronomicurse.lua",
+      "oldReleaseGitBlob": "e0093ba41e741b6004d81eb68e36f168b59a5e72",
+      "actualReleaseGitBlob": "e0093ba41e741b6004d81eb68e36f168b59a5e72",
+      "sha256": "173812f59fb1ae31decb2904785291b12c53a7b64f9eaca12d229ace07c5bbc8"
+    },
+    {
+      "path": "src/lua/abyss_nemesis.lua",
+      "oldReleaseGitBlob": "c7b5c2344f36c9ee50427bc488a476cb3730eb84",
+      "actualReleaseGitBlob": "c7b5c2344f36c9ee50427bc488a476cb3730eb84",
+      "sha256": "0aee581d8fef52d08d4318ca4ff3f8656970936d0690d5705c7036405e8fbe6b"
+    },
+    {
+      "path": "src/lua/abyss_neow.lua",
+      "oldReleaseGitBlob": "cdaa780099326e6b2928082e64e7e93bca4a587a",
+      "actualReleaseGitBlob": "cdaa780099326e6b2928082e64e7e93bca4a587a",
+      "sha256": "6d7c62735bcaae2b188c497b1b756216125ca85670141fb8a4c7e440a0b877d6"
+    },
+    {
+      "path": "src/lua/abyss_neow_history.lua",
+      "oldReleaseGitBlob": "aee81aaa3f5468e5504f81cfad9123469db489ca",
+      "actualReleaseGitBlob": "aee81aaa3f5468e5504f81cfad9123469db489ca",
+      "sha256": "6fe9d6b915f155a1edbd2581cc13af530b3fa7277aeab10c3249429a2d200b16"
+    },
+    {
+      "path": "src/lua/abyss_nest_event.lua",
+      "oldReleaseGitBlob": "eca3658cb808249b8acb1cde96b02482d44e8737",
+      "actualReleaseGitBlob": "eca3658cb808249b8acb1cde96b02482d44e8737",
+      "sha256": "5fe3c845db3520c0c91c43307b723b7c0a5f7b0c2acf6954758f6b31b68ad936"
+    },
+    {
+      "path": "src/lua/abyss_new_run_seed.lua",
+      "oldReleaseGitBlob": "efae54fdb70149e3f085fe9fc5b23810e4d9fa75",
+      "actualReleaseGitBlob": "efae54fdb70149e3f085fe9fc5b23810e4d9fa75",
+      "sha256": "3d22d46f72cae9cbeacf534091442d8e3205701bc1b118599c181e5adb981755"
+    },
+    {
+      "path": "src/lua/abyss_nloth_event.lua",
+      "oldReleaseGitBlob": "0a145f7277b12dc7c9b068b4fd1126a78033708d",
+      "actualReleaseGitBlob": "0a145f7277b12dc7c9b068b4fd1126a78033708d",
+      "sha256": "89395ef63c0876b09097b051941e0560e5788ba9b8f863066e02ac146c790605"
+    },
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "oldReleaseGitBlob": "e9d9aa76b4d042f37e7b8f336a7f2701541a8ade",
+      "actualReleaseGitBlob": "e9d9aa76b4d042f37e7b8f336a7f2701541a8ade",
+      "sha256": "93afa0ae2dbe98a08caeaa101e13775df3fea3fd0ddc48c0f16546c5eb5f5061"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_camp.lua",
+      "oldReleaseGitBlob": "646ef37c73ed2b1ca7135badbd838884180d874d",
+      "actualReleaseGitBlob": "646ef37c73ed2b1ca7135badbd838884180d874d",
+      "sha256": "e67ee265250e0182f551c35b114abb39b539943caa346bbae5ea5f491fe20478"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_camp_actions.lua",
+      "oldReleaseGitBlob": "da08b98ba097db0825b42eb3c8a4df3a968289a4",
+      "actualReleaseGitBlob": "da08b98ba097db0825b42eb3c8a4df3a968289a4",
+      "sha256": "cfc7a17942f4c5770a06b38fe67b04183e673d890285fc50f950810130a04252"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_ending.lua",
+      "oldReleaseGitBlob": "74e0fb64424a51a5b3625b3cecb8e5e65ca96d1f",
+      "actualReleaseGitBlob": "74e0fb64424a51a5b3625b3cecb8e5e65ca96d1f",
+      "sha256": "b53dacef061da3574578cf1b7f623b5ade64a3fa80ccb464f4085deb72d052f3"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_event_cards.lua",
+      "oldReleaseGitBlob": "71fc8e491e2df4d2a786da57f2ce343ef5bae482",
+      "actualReleaseGitBlob": "71fc8e491e2df4d2a786da57f2ce343ef5bae482",
+      "sha256": "d87d2401a475451aa11505c46a04f90147f7772e128099bde934dc4a5ba63242"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_event_ownership.lua",
+      "oldReleaseGitBlob": "5b55d05dd73dd7967e149fd8a8ed435a734326a5",
+      "actualReleaseGitBlob": "5b55d05dd73dd7967e149fd8a8ed435a734326a5",
+      "sha256": "a9d0ebe3d0f9973274bfe0734c14881c90a5947ece6955770e27c15fb507af58"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_events.lua",
+      "oldReleaseGitBlob": "a66f75428bd5fea753d54bafa306eefbd1a2bd11",
+      "actualReleaseGitBlob": "a66f75428bd5fea753d54bafa306eefbd1a2bd11",
+      "sha256": "c3d425e0c65b57fedc5d9d6f63a412403b4197c7b42bfaec407d91fa710c54cc"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_faces.lua",
+      "oldReleaseGitBlob": "da24d6442fd281ba2b075f45b26c360f09355828",
+      "actualReleaseGitBlob": "da24d6442fd281ba2b075f45b26c360f09355828",
+      "sha256": "415b7c3230b172e00c39861d797dd814bd668196fe0e7f0132f7ea1cfc60100b"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "oldReleaseGitBlob": "a19ad1cffd2cf975f3b07ddda1dda22da94bdbdc",
+      "actualReleaseGitBlob": "a19ad1cffd2cf975f3b07ddda1dda22da94bdbdc",
+      "sha256": "7df89c485223820f2eccc68dffc0b53b1319e090a4cb7f2b57a29ff16a682f4c"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_input.lua",
+      "oldReleaseGitBlob": "2536846bc35319c2865b4a08fc2b16e93c8fb760",
+      "actualReleaseGitBlob": "2536846bc35319c2865b4a08fc2b16e93c8fb760",
+      "sha256": "c7aa8771c045dbdb24f7d36589f8671b548cca7c5bf55d0f5dcefddecac882ad"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_lifecycle.lua",
+      "oldReleaseGitBlob": "24b2c8e175c9f5cc7400643f5f5e6086848fc46b",
+      "actualReleaseGitBlob": "24b2c8e175c9f5cc7400643f5f5e6086848fc46b",
+      "sha256": "141c1a4ec43dd139b05cd6ef1de666d8ec19d990add01d2371a0afea108ce516"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_motion.lua",
+      "oldReleaseGitBlob": "7f893176904e2f8adfdf982c90ff7a1c189d286e",
+      "actualReleaseGitBlob": "7f893176904e2f8adfdf982c90ff7a1c189d286e",
+      "sha256": "3673190f95c5bf81a68c7a671942fb13549267114d702bfe40e36869057bc18f"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_reward_detail.lua",
+      "oldReleaseGitBlob": "3f60d3ef8a91c8f278809a58bf207c42a26ddc2a",
+      "actualReleaseGitBlob": "3f60d3ef8a91c8f278809a58bf207c42a26ddc2a",
+      "sha256": "ab58e5dbd7827620b1f978d8a33581afbe9741f4e94e7d0c450bbc3a88c27b2b"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_rewards.lua",
+      "oldReleaseGitBlob": "4a7d8ff5487529b8456760159271d64c4c77e7e9",
+      "actualReleaseGitBlob": "4a7d8ff5487529b8456760159271d64c4c77e7e9",
+      "sha256": "b9b321752c45bdf2800d3d9f1be68484cc3ea2e58b27f2803bf789404ad85bb2"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "oldReleaseGitBlob": "4c354d707473c460644a68a9faaa723e65b5906d",
+      "actualReleaseGitBlob": "4c354d707473c460644a68a9faaa723e65b5906d",
+      "sha256": "56723361a9ff0b243800599cafcf15ef3f869daa4bd8aad37af43ad778e69d51"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_treasure.lua",
+      "oldReleaseGitBlob": "d51d3b2b3f0993df97ff1282def1d2270ab2c38d",
+      "actualReleaseGitBlob": "d51d3b2b3f0993df97ff1282def1d2270ab2c38d",
+      "sha256": "8d7d5b61c32fe993510423a3b2ffc7baa7434169895d810d59305cefa05b2c81"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_treasure_list.lua",
+      "oldReleaseGitBlob": "7d61b411c5495b46cc47a0400ed1d226212be26c",
+      "actualReleaseGitBlob": "7d61b411c5495b46cc47a0400ed1d226212be26c",
+      "sha256": "58b6453e6d86b98e9eb462de02324af73bfed61d73a3a411ae9fa6e418ce50bd"
+    },
+    {
+      "path": "src/lua/abyss_nodes.lua",
+      "oldReleaseGitBlob": "3833625544cccd1a785476b530fa0f5eb0dcd9a5",
+      "actualReleaseGitBlob": "3833625544cccd1a785476b530fa0f5eb0dcd9a5",
+      "sha256": "f685e7a59b57f66721e3c2f8143b99aa37efd05be77371bbda61fd6e4a4a4d9f"
+    },
+    {
+      "path": "src/lua/abyss_nodes_common.lua",
+      "oldReleaseGitBlob": "ac00506857352e14b5214bb48701010dd14ae8df",
+      "actualReleaseGitBlob": "ac00506857352e14b5214bb48701010dd14ae8df",
+      "sha256": "584d9e65ce3ae76df830bc3603b2a2f815312dd336774c5d69a7f767f344bb4b"
+    },
+    {
+      "path": "src/lua/abyss_nodes_entry.lua",
+      "oldReleaseGitBlob": "98c5fdbc5b8c00f853d82a57e0eff53b9872444b",
+      "actualReleaseGitBlob": "98c5fdbc5b8c00f853d82a57e0eff53b9872444b",
+      "sha256": "b966569a6c79b03cf7734238fe516183be412cfbd0a3db9adeef2dd32ec95447"
+    },
+    {
+      "path": "src/lua/abyss_nodes_events.lua",
+      "oldReleaseGitBlob": "140a17610e06f5bb803e56e19636d1813b82d57c",
+      "actualReleaseGitBlob": "140a17610e06f5bb803e56e19636d1813b82d57c",
+      "sha256": "596ec0802d0df72c3e3a431051a16e225a434ffc43b0464d267891c9eafdc4a4"
+    },
+    {
+      "path": "src/lua/abyss_nodes_rare_camp.lua",
+      "oldReleaseGitBlob": "9c5c30cf2d5ee79680abf4ea036e1dbb687fbbcf",
+      "actualReleaseGitBlob": "9c5c30cf2d5ee79680abf4ea036e1dbb687fbbcf",
+      "sha256": "af58260d9f6ce43190589ba78ad46dae73485450a725d02b490644ed255bdfdf"
+    },
+    {
+      "path": "src/lua/abyss_nodes_sources.lua",
+      "oldReleaseGitBlob": "ec76fa74a844e1d3e348b834f6adcbdb5540aa39",
+      "actualReleaseGitBlob": "ec76fa74a844e1d3e348b834f6adcbdb5540aa39",
+      "sha256": "daf8bf82db53dc1fd1c8ef38d0356cc2c226d223d60d4883c8a27c96ff9ac310"
+    },
+    {
+      "path": "src/lua/abyss_numbers.lua",
+      "oldReleaseGitBlob": "80763d45a36c1ea978e2f823fc40abb55041f578",
+      "actualReleaseGitBlob": "80763d45a36c1ea978e2f823fc40abb55041f578",
+      "sha256": "857c071eefa67b128b5d8aaf16fb4ae04374ac3f80ba2eddb13b324382953c80"
+    },
+    {
+      "path": "src/lua/abyss_opening_hand.lua",
+      "oldReleaseGitBlob": "b2bcad0f1a8a79e629863dabc8ffe5e91c6e20b0",
+      "actualReleaseGitBlob": "b2bcad0f1a8a79e629863dabc8ffe5e91c6e20b0",
+      "sha256": "4b81ec5f9bfaf28f7f8c127db4df7f87de1455e5639a98ddf0162d830a664d28"
+    },
+    {
+      "path": "src/lua/abyss_orb_powers.lua",
+      "oldReleaseGitBlob": "a2aa7cb53f21ca7f9c20d81a63c089d0cb903219",
+      "actualReleaseGitBlob": "a2aa7cb53f21ca7f9c20d81a63c089d0cb903219",
+      "sha256": "7fd3fe6cad6a519c352403f65276caaae6eccc49c2a59bae64fd58de3a3ab811"
+    },
+    {
+      "path": "src/lua/abyss_orbs.lua",
+      "oldReleaseGitBlob": "49c1c22665a6847b534d5de195455cc7e95151dc",
+      "actualReleaseGitBlob": "49c1c22665a6847b534d5de195455cc7e95151dc",
+      "sha256": "8db88dc31db3e60e779e737cbb49b776f817ba3fdc945b8f7779fbb35b3442bf"
+    },
+    {
+      "path": "src/lua/abyss_original_v4.lua",
+      "oldReleaseGitBlob": "f36890a3376fe7a369a878c45f2cb436096291b5",
+      "actualReleaseGitBlob": "f36890a3376fe7a369a878c45f2cb436096291b5",
+      "sha256": "4728b4ab4838e664d7b2fe4efa6b55c089417c79428e4362412b682a84cd927f"
+    },
+    {
+      "path": "src/lua/abyss_original_v4_display.lua",
+      "oldReleaseGitBlob": "57b631384138dd081e9f6c344280ce0c06fdd1c0",
+      "actualReleaseGitBlob": "57b631384138dd081e9f6c344280ce0c06fdd1c0",
+      "sha256": "51f6f3bd0a93acb728a9c2a10c8d52041d4ac1133714ddb48758124f7cdc0711"
+    },
+    {
+      "path": "src/lua/abyss_original_v4_health.lua",
+      "oldReleaseGitBlob": "7dce6ea3ffd6ec5b95d77e418950f7af12d3a01a",
+      "actualReleaseGitBlob": "7dce6ea3ffd6ec5b95d77e418950f7af12d3a01a",
+      "sha256": "ed0efdbcf41527cf87b5e9b53d6afb08d73e3462e7a1528a4f1f4a33008849bd"
+    },
+    {
+      "path": "src/lua/abyss_original_v4_profiles.lua",
+      "oldReleaseGitBlob": "88b39a1226cbe9a9d821dd9a461751a6dafe07ee",
+      "actualReleaseGitBlob": "88b39a1226cbe9a9d821dd9a461751a6dafe07ee",
+      "sha256": "fb50790452127f2bae3821d4f8cc249cf71f9c7850e97906e65626dafc2cb9d4"
+    },
+    {
+      "path": "src/lua/abyss_page_reveal.lua",
+      "oldReleaseGitBlob": "0c6bf33668283ccd996b41d4ecedc8d3f59564bc",
+      "actualReleaseGitBlob": "0c6bf33668283ccd996b41d4ecedc8d3f59564bc",
+      "sha256": "5b93f48110bdf0d520191deb037e2abdde67f50c1218c788229618c815165230"
+    },
+    {
+      "path": "src/lua/abyss_pile_choice.lua",
+      "oldReleaseGitBlob": "5881d3f3f33440297260cfe67a066329668fd985",
+      "actualReleaseGitBlob": "5881d3f3f33440297260cfe67a066329668fd985",
+      "sha256": "a0d0e6cec6cc92b3e1d59425e712cdf1c0fb183fb2cc88653daf8931ba39edb5"
+    },
+    {
+      "path": "src/lua/abyss_plated_armor.lua",
+      "oldReleaseGitBlob": "673923e604a6ce841e65fc46639134c1cc54ca32",
+      "actualReleaseGitBlob": "673923e604a6ce841e65fc46639134c1cc54ca32",
+      "sha256": "dd80bf7c574748759fea2eb4dfc168b05f312f8d81b630cbb8e3b4fa18125813"
+    },
+    {
+      "path": "src/lua/abyss_player_revive.lua",
+      "oldReleaseGitBlob": "cb827f231e2a92eb145bebd4ed81d8b4bb9b3020",
+      "actualReleaseGitBlob": "cb827f231e2a92eb145bebd4ed81d8b4bb9b3020",
+      "sha256": "735fe7d5b055c5ddd66335b45273e920282cd891c4814e1c13afb9ab0a3b0d92"
+    },
+    {
+      "path": "src/lua/abyss_poison.lua",
+      "oldReleaseGitBlob": "2ff6e00c8ee4fc24ae74efcda7bf613dfd66e9c3",
+      "actualReleaseGitBlob": "2ff6e00c8ee4fc24ae74efcda7bf613dfd66e9c3",
+      "sha256": "c739ba6e3958531a0148752b46566963b69a315cf38dfd8fa27eecb701ac8e78"
+    },
+    {
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "oldReleaseGitBlob": "a9d10e9aca2b5c6c599ed32ac3aace34bcb76afb",
+      "actualReleaseGitBlob": "a9d10e9aca2b5c6c599ed32ac3aace34bcb76afb",
+      "sha256": "023c094dee526f520794fcb8d14b70d53b823fc24049a6946cdb23bda1668426"
+    },
+    {
+      "path": "src/lua/abyss_potion_discovery.lua",
+      "oldReleaseGitBlob": "7e9b5af12dfcfa233e65faef9ee316f76acd31ec",
+      "actualReleaseGitBlob": "7e9b5af12dfcfa233e65faef9ee316f76acd31ec",
+      "sha256": "27350b4591b352d28aae66ca4236b3c7301bf8363d02fb7c94592bf5f5d34e38"
+    },
+    {
+      "path": "src/lua/abyss_potion_events.lua",
+      "oldReleaseGitBlob": "966ea46723cb1eeccc7d2dafc44e98576f21d253",
+      "actualReleaseGitBlob": "966ea46723cb1eeccc7d2dafc44e98576f21d253",
+      "sha256": "2ff64303e05e625ce592f42797aef95f0c3d3b157e89b25ebd29ebf26c7dfb54"
+    },
+    {
+      "path": "src/lua/abyss_potion_fairy.lua",
+      "oldReleaseGitBlob": "df26f95d1517d635589840479551cafc32a47ffb",
+      "actualReleaseGitBlob": "df26f95d1517d635589840479551cafc32a47ffb",
+      "sha256": "fe6a3d984f7387ef1f5a52a65e3874634022d9cab86f6b17576a89720607194e"
+    },
+    {
+      "path": "src/lua/abyss_potion_generation.lua",
+      "oldReleaseGitBlob": "e39ebe014a1337d127c84db080473eb0dcc1d71e",
+      "actualReleaseGitBlob": "e39ebe014a1337d127c84db080473eb0dcc1d71e",
+      "sha256": "3f6c2b85cbc01a77199402cd9bdf5efd943461b42d9883bb7196cd198752b766"
+    },
+    {
+      "path": "src/lua/abyss_potion_health.lua",
+      "oldReleaseGitBlob": "6f15459fe8a2831b10f7b6600874aa0cacae1370",
+      "actualReleaseGitBlob": "6f15459fe8a2831b10f7b6600874aa0cacae1370",
+      "sha256": "8fa0f204f39258f80c6b63770d7138a5b267a193b35923d7b7020ec7466558bb"
+    },
+    {
+      "path": "src/lua/abyss_potion_random.lua",
+      "oldReleaseGitBlob": "0070e6d47a96ddc8e03560e10be847bf67d5e5cc",
+      "actualReleaseGitBlob": "0070e6d47a96ddc8e03560e10be847bf67d5e5cc",
+      "sha256": "9c2f9f9beaa848af047306215e1b36d6d2d93bcd156ef54c56531c3c78342dde"
+    },
+    {
+      "path": "src/lua/abyss_potion_rewards.lua",
+      "oldReleaseGitBlob": "3009a4d79986e7479bc3d21989e8c53600eaeb83",
+      "actualReleaseGitBlob": "3009a4d79986e7479bc3d21989e8c53600eaeb83",
+      "sha256": "4874abc2834147eca3b7676214b4f99278dd78c56ae570875e67a49a63913914"
+    },
+    {
+      "path": "src/lua/abyss_potion_stance.lua",
+      "oldReleaseGitBlob": "851ae6e3b5befb8da48bdf21e0734baeb1879916",
+      "actualReleaseGitBlob": "851ae6e3b5befb8da48bdf21e0734baeb1879916",
+      "sha256": "8ac4826598d8d3e3eca5706420d1acce9d9b05f6852f2505affb9866d957eca6"
+    },
+    {
+      "path": "src/lua/abyss_potion_text.lua",
+      "oldReleaseGitBlob": "d47d46a381022e5003055fd796c942032a119a52",
+      "actualReleaseGitBlob": "d47d46a381022e5003055fd796c942032a119a52",
+      "sha256": "8c2907f1102699c59ea2167919e43a39e1c1be188756b104d5f64bf228369d59"
+    },
+    {
+      "path": "src/lua/abyss_power_order.lua",
+      "oldReleaseGitBlob": "1477e9a2600b2fd5231333368c21e288258a9ac9",
+      "actualReleaseGitBlob": "1477e9a2600b2fd5231333368c21e288258a9ac9",
+      "sha256": "7ce009e48cc6eaa9a67fbb713388e01d36fb587249ceb9353efc2fd114ac1cea"
+    },
+    {
+      "path": "src/lua/abyss_power_schedule.lua",
+      "oldReleaseGitBlob": "2136362e8765b7e2a9c03e40502a95e32d221aa4",
+      "actualReleaseGitBlob": "2136362e8765b7e2a9c03e40502a95e32d221aa4",
+      "sha256": "eb8fe768a1f161b8dc5ecbdff9e5e12fc38730048cefe2afc67aa125c4e275cf"
+    },
+    {
+      "path": "src/lua/abyss_prologue.lua",
+      "oldReleaseGitBlob": "e97b4a56ac45a48c34ce51023016064f38439c7a",
+      "actualReleaseGitBlob": "e97b4a56ac45a48c34ce51023016064f38439c7a",
+      "sha256": "3fe5547bd4859a3b714d35304b8c6fa1f73e3470f9a9734c90eeeeb52e2cf941"
+    },
+    {
+      "path": "src/lua/abyss_purge_candidates.lua",
+      "oldReleaseGitBlob": "e3ffdf5635f82e623c25de173035a3af52dc08ed",
+      "actualReleaseGitBlob": "e3ffdf5635f82e623c25de173035a3af52dc08ed",
+      "sha256": "a1ab5102f39adf7f44159a45d9611458e67d3ee49a9c8aa6fa50432bee4ca592"
+    },
+    {
+      "path": "src/lua/abyss_random.lua",
+      "oldReleaseGitBlob": "b423a6e7b1c185a83de6c2bdbb9cfe18112cffec",
+      "actualReleaseGitBlob": "b423a6e7b1c185a83de6c2bdbb9cfe18112cffec",
+      "sha256": "a052a4996c3b7090b1d79112f18630400f21df4318afe68041a2167d1c92e09d"
+    },
+    {
+      "path": "src/lua/abyss_randomxs128.lua",
+      "oldReleaseGitBlob": "6d745648c4d78a71e03b0b0c490e9471c45dcb44",
+      "actualReleaseGitBlob": "6d745648c4d78a71e03b0b0c490e9471c45dcb44",
+      "sha256": "73af699eb931d4134c81db9bc980f0fa8cabbcf3c587c9031c85ce6886fe9777"
+    },
+    {
+      "path": "src/lua/abyss_rare_relics.lua",
+      "oldReleaseGitBlob": "ecfb3701cbe32edd196dcbf7232d7e19bc822375",
+      "actualReleaseGitBlob": "ecfb3701cbe32edd196dcbf7232d7e19bc822375",
+      "sha256": "2b05387c8d77ef9818d38a43c2d1b1f9fcd2f69f930db47a919df75744f74788"
+    },
+    {
+      "path": "src/lua/abyss_red_slaver_ai.lua",
+      "oldReleaseGitBlob": "fc560a07530ca7b4e819acf50d4385171afb936b",
+      "actualReleaseGitBlob": "fc560a07530ca7b4e819acf50d4385171afb936b",
+      "sha256": "7b785a5f8c9b14199f7907fe7e71ad1a1992144d2c168e58e251c462f4474457"
+    },
+    {
+      "path": "src/lua/abyss_relic_card_rewards.lua",
+      "oldReleaseGitBlob": "dcc69d8137369b0c1556149b1f2b267b77f42a19",
+      "actualReleaseGitBlob": "dcc69d8137369b0c1556149b1f2b267b77f42a19",
+      "sha256": "316d218a6b2922547c37a5ad5b94c1b8b7a41a757fe0aaa1779893230afa26a6"
+    },
+    {
+      "path": "src/lua/abyss_relic_choices.lua",
+      "oldReleaseGitBlob": "c8edf17604061cad24c2a6a2b32c2eaedecdec07",
+      "actualReleaseGitBlob": "c8edf17604061cad24c2a6a2b32c2eaedecdec07",
+      "sha256": "2d9e764deb17171cacdcd7821f60c28cc34c141e03acd9c5d2ca5de3b941692d"
+    },
+    {
+      "path": "src/lua/abyss_relic_combat_hooks.lua",
+      "oldReleaseGitBlob": "24163d7d418edbebbf51e2752bfbc84d32d83ecd",
+      "actualReleaseGitBlob": "24163d7d418edbebbf51e2752bfbc84d32d83ecd",
+      "sha256": "fda7e14cf4b4704ba30ca79f3fa8b3ed3c933f9d391887227ed463350f8755a9"
+    },
+    {
+      "path": "src/lua/abyss_relic_end_turn.lua",
+      "oldReleaseGitBlob": "1da9a61302686711cabd4ee56b11383f5a6dd508",
+      "actualReleaseGitBlob": "1da9a61302686711cabd4ee56b11383f5a6dd508",
+      "sha256": "0b28bacfb03f92e399c12b19e02ec880f70774d9ec56bf4993c9de7bc1a93ecd"
+    },
+    {
+      "path": "src/lua/abyss_relic_family_combat.lua",
+      "oldReleaseGitBlob": "a126651ff57d53601839acee22af07dc6a58ceaa",
+      "actualReleaseGitBlob": "a126651ff57d53601839acee22af07dc6a58ceaa",
+      "sha256": "2e001da46754b81afda1dc592beaf8519a0f308fef65ca47c5779b2ae3607e4c"
+    },
+    {
+      "path": "src/lua/abyss_relic_hooks.lua",
+      "oldReleaseGitBlob": "792504a367f4488fb08942e0030d5376ea4de73c",
+      "actualReleaseGitBlob": "792504a367f4488fb08942e0030d5376ea4de73c",
+      "sha256": "19b0ba4fcd2c5ca37219623868b8cdd978787e8861e50e2e43fefb8c70be2f2f"
+    },
+    {
+      "path": "src/lua/abyss_relic_loss.lua",
+      "oldReleaseGitBlob": "ec6baec9fce5b27044f8821eb6c520901233f1bd",
+      "actualReleaseGitBlob": "ec6baec9fce5b27044f8821eb6c520901233f1bd",
+      "sha256": "8a3196cd5838a838b47856703d9cc69c17b5bb61052b314ac68001508b2c964e"
+    },
+    {
+      "path": "src/lua/abyss_relic_names.lua",
+      "oldReleaseGitBlob": "e27eec83582650721ce485d7877a4a5eb7d5033f",
+      "actualReleaseGitBlob": "e27eec83582650721ce485d7877a4a5eb7d5033f",
+      "sha256": "285807a606fd02b31605cfd54950163a76c9ed2a8d94ebf83f471c9fe1901733"
+    },
+    {
+      "path": "src/lua/abyss_relic_pending.lua",
+      "oldReleaseGitBlob": "b407967b40c36de00b678e4d0581d84981a184e0",
+      "actualReleaseGitBlob": "b407967b40c36de00b678e4d0581d84981a184e0",
+      "sha256": "0d81d862c3afebb7a857440d0366e4feabeb6f8ee49f53239c4486a533941c7f"
+    },
+    {
+      "path": "src/lua/abyss_relic_pending_ui.lua",
+      "oldReleaseGitBlob": "077cb1c0d81a8716dd40b4f00a136cf2a5ad8611",
+      "actualReleaseGitBlob": "077cb1c0d81a8716dd40b4f00a136cf2a5ad8611",
+      "sha256": "a1d5ba5d2d81ef63209651b571d91de24d967e12e144f3b454a5f9439cf2fe23"
+    },
+    {
+      "path": "src/lua/abyss_relic_pool.lua",
+      "oldReleaseGitBlob": "6ee148bb07a6af6207bb99191203af3482bda663",
+      "actualReleaseGitBlob": "6ee148bb07a6af6207bb99191203af3482bda663",
+      "sha256": "25ff5c96bf6ed5c35a77aba3d0664193211167e90de9cc478691f8da02e2f51c"
+    },
+    {
+      "path": "src/lua/abyss_relic_potion_hooks.lua",
+      "oldReleaseGitBlob": "18b72f5c904cc64930833e869dea56c648649a61",
+      "actualReleaseGitBlob": "18b72f5c904cc64930833e869dea56c648649a61",
+      "sha256": "e8618af244ee85b8013050c6849c57fd951cad52b44ca7599e57b1f6f066cdcd"
+    },
+    {
+      "path": "src/lua/abyss_relic_queries.lua",
+      "oldReleaseGitBlob": "dd0efc8a3dc22b73d22f8c5245712ae8d015e7fe",
+      "actualReleaseGitBlob": "dd0efc8a3dc22b73d22f8c5245712ae8d015e7fe",
+      "sha256": "a9ede443094115bdf31363d530ac89fa9ab011211ee68bfac866f99e4f2dd214"
+    },
+    {
+      "path": "src/lua/abyss_relic_rarity.lua",
+      "oldReleaseGitBlob": "56747a24d5be254e95c34c1e0c75d45c93048a30",
+      "actualReleaseGitBlob": "56747a24d5be254e95c34c1e0c75d45c93048a30",
+      "sha256": "6c92a5ede225452073ed8b283a0ce2bbe24bfc37d4651ebabc47dbef8fd8c8d4"
+    },
+    {
+      "path": "src/lua/abyss_relic_rewards.lua",
+      "oldReleaseGitBlob": "7007a3eebb4193b6fe4fd4d7058ff9750cb09504",
+      "actualReleaseGitBlob": "7007a3eebb4193b6fe4fd4d7058ff9750cb09504",
+      "sha256": "1a6afee50885e2e56065b05058e5e632745ba88ce202bd4fbea7ff47c54ec405"
+    },
+    {
+      "path": "src/lua/abyss_relic_text.lua",
+      "oldReleaseGitBlob": "15e3959114d143c8637c11929eeaec9d19f1445d",
+      "actualReleaseGitBlob": "15e3959114d143c8637c11929eeaec9d19f1445d",
+      "sha256": "b0c64b6f06ece16b2f3ddbc39d2b0e6ba0f78b2b67c4836c4829ded94c69fe79"
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "oldReleaseGitBlob": "0ef94744f8674d3a13460f446d8f71a4b119fb43",
+      "actualReleaseGitBlob": "0ef94744f8674d3a13460f446d8f71a4b119fb43",
+      "sha256": "acb7c4480c4cad44b83aa95a9b25825db217d8b98484ca5d2c88d47b8b366ebf"
+    },
+    {
+      "path": "src/lua/abyss_reptomancer.lua",
+      "oldReleaseGitBlob": "43c2c7db3a4541d0b49d150a688130aefe935966",
+      "actualReleaseGitBlob": "43c2c7db3a4541d0b49d150a688130aefe935966",
+      "sha256": "43eb35c06a1b1fae67e51319416a58febdf524f470c851db4641b8d2e27b7ebd"
+    },
+    {
+      "path": "src/lua/abyss_retained_cards.lua",
+      "oldReleaseGitBlob": "f7b5b7d229351ed89ac72d0e59be21016cbbc68c",
+      "actualReleaseGitBlob": "f7b5b7d229351ed89ac72d0e59be21016cbbc68c",
+      "sha256": "62f43f6c006b6a5400dcb401e08edb9701404b885012fa30df38426e2da3ffe0"
+    },
+    {
+      "path": "src/lua/abyss_retrieval_cards.lua",
+      "oldReleaseGitBlob": "e2959b20f27c6e158b743967303eed1478edc345",
+      "actualReleaseGitBlob": "e2959b20f27c6e158b743967303eed1478edc345",
+      "sha256": "25f54d3bc35ae4e91ed336e2565c94b8c41f0613a9b93ac4c73b47bb93d26fa2"
+    },
+    {
+      "path": "src/lua/abyss_room_encounters.lua",
+      "oldReleaseGitBlob": "00d5132ca942d580c8e96c9f5743cad451e7a9ad",
+      "actualReleaseGitBlob": "00d5132ca942d580c8e96c9f5743cad451e7a9ad",
+      "sha256": "f2e377c002ead24bdcf1ec71eece13290445980d2cd5ac142abc100ed560d73e"
+    },
+    {
+      "path": "src/lua/abyss_run.lua",
+      "oldReleaseGitBlob": "54e6faaa0a6bfa15793d626b324d7618e1f2e19b",
+      "actualReleaseGitBlob": "54e6faaa0a6bfa15793d626b324d7618e1f2e19b",
+      "sha256": "189e4a36804ec74f9dcc8c54a07ea5401fb07d81a44ef08d44153b15bac89030"
+    },
+    {
+      "path": "src/lua/abyss_run_admission.lua",
+      "oldReleaseGitBlob": "14e590b069773072f146deb1e4f21c31023a9cf8",
+      "actualReleaseGitBlob": "14e590b069773072f146deb1e4f21c31023a9cf8",
+      "sha256": "7a57fd9c9c11770f51f642df85180a4caddf5999901b7467c44eb8c52bd79992"
+    },
+    {
+      "path": "src/lua/abyss_run_card_catalog.lua",
+      "oldReleaseGitBlob": "008c3667ffd415a9cffe428a3c9537a07edb58a2",
+      "actualReleaseGitBlob": "008c3667ffd415a9cffe428a3c9537a07edb58a2",
+      "sha256": "e6a005a33e95fda500f6ecefecfe1591b9a8054270995975d4b53be1a1eafe3f"
+    },
+    {
+      "path": "src/lua/abyss_run_initialization.lua",
+      "oldReleaseGitBlob": "7a934b8dc311d127aaa8f6169052d2b9ab188ef3",
+      "actualReleaseGitBlob": "7a934b8dc311d127aaa8f6169052d2b9ab188ef3",
+      "sha256": "1b6779a80523c03c14bafdd399215190cadf04437d76a6db6e86a3f768fc73f9"
+    },
+    {
+      "path": "src/lua/abyss_run_potion_candidate.lua",
+      "oldReleaseGitBlob": "c94530f9fb779f36df9cdfa424612cf166fb9707",
+      "actualReleaseGitBlob": "c94530f9fb779f36df9cdfa424612cf166fb9707",
+      "sha256": "30bbe0a7cbfc698990943569b9b3da5d6c51a3a0e9dc0f0680449830fb60ed81"
+    },
+    {
+      "path": "src/lua/abyss_run_potions.lua",
+      "oldReleaseGitBlob": "896c0ab72e33b3d10dd75e76a85046298ba2013f",
+      "actualReleaseGitBlob": "896c0ab72e33b3d10dd75e76a85046298ba2013f",
+      "sha256": "59434df0d36cecd33dbe58fc9c3be19aa42700011e0440c3e568390a68ba5be1"
+    },
+    {
+      "path": "src/lua/abyss_run_red_card_contract.lua",
+      "oldReleaseGitBlob": "40c07b54ca06fab18d924cf48a6d098d1b29c86f",
+      "actualReleaseGitBlob": "40c07b54ca06fab18d924cf48a6d098d1b29c86f",
+      "sha256": "933b9b7855e99736474cdff4c051a12a4613750bfe322061f3b3604aedf86397"
+    },
+    {
+      "path": "src/lua/abyss_run_rooms.lua",
+      "oldReleaseGitBlob": "aec84fd2254115c7fc5b08973f4969a7bb1354b9",
+      "actualReleaseGitBlob": "aec84fd2254115c7fc5b08973f4969a7bb1354b9",
+      "sha256": "0c8a3ff96133c6217abcfcb4b7287052b3929eb2e890d8aa2b7354b5f6de86d1"
+    },
+    {
+      "path": "src/lua/abyss_run_score.lua",
+      "oldReleaseGitBlob": "f670a9247df7f6c09d3fa1befe8b9892b64f4c2e",
+      "actualReleaseGitBlob": "f670a9247df7f6c09d3fa1befe8b9892b64f4c2e",
+      "sha256": "417229ed8d4b836761e4d001465cfc7739ed932f81ec41ed55ddedc480023685"
+    },
+    {
+      "path": "src/lua/abyss_run_scoring.lua",
+      "oldReleaseGitBlob": "b9423ba6f0ea8418e7cc2c68b373050329554d9b",
+      "actualReleaseGitBlob": "b9423ba6f0ea8418e7cc2c68b373050329554d9b",
+      "sha256": "3fca7eb3bb4c5149b4c2b9ac975386393de5c8ae5151ffd97503dca0eb76e03a"
+    },
+    {
+      "path": "src/lua/abyss_run_seed.lua",
+      "oldReleaseGitBlob": "d1d4ba6b5ec8e3d8709d84d206d25001f9a75932",
+      "actualReleaseGitBlob": "d1d4ba6b5ec8e3d8709d84d206d25001f9a75932",
+      "sha256": "d94d44a66d183f6ffd5b1e082f7a14de66cc6969b0257b4920bc8c94616a576c"
+    },
+    {
+      "path": "src/lua/abyss_run_settlement.lua",
+      "oldReleaseGitBlob": "8d1f9dbec1929368f2d0e7b073e2e5dbd8dcad0b",
+      "actualReleaseGitBlob": "8d1f9dbec1929368f2d0e7b073e2e5dbd8dcad0b",
+      "sha256": "65c4ebaea52e996ef6dc129baa145a24b11ff4a728ffa4eab04f8eab38ce4ec1"
+    },
+    {
+      "path": "src/lua/abyss_run_transition.lua",
+      "oldReleaseGitBlob": "5af3451db1bc5d8d986c01899a4678d45378e771",
+      "actualReleaseGitBlob": "5af3451db1bc5d8d986c01899a4678d45378e771",
+      "sha256": "7f4136e52c4bd7fe4ceb71958830cbbe90d79ecbcedb998703e1897bbf2d2120"
+    },
+    {
+      "path": "src/lua/abyss_scry.lua",
+      "oldReleaseGitBlob": "434e3e4110bb1d18a059e782f088e4032691b503",
+      "actualReleaseGitBlob": "434e3e4110bb1d18a059e782f088e4032691b503",
+      "sha256": "5bad4886300de2d8a46105185f49869ac8b0c61114cb109b1243932f3cfca6c4"
+    },
+    {
+      "path": "src/lua/abyss_sensory_stone_event.lua",
+      "oldReleaseGitBlob": "67a9cfbde42cb3ff852b271fffa6e3063fbbbea4",
+      "actualReleaseGitBlob": "67a9cfbde42cb3ff852b271fffa6e3063fbbbea4",
+      "sha256": "3df3cc4708f6d2704b503c9805b8e9bdf130afc60a348519ffdac152aa3dc890"
+    },
+    {
+      "path": "src/lua/abyss_sentry_ai.lua",
+      "oldReleaseGitBlob": "cf291d04fe10b159482c92b4e9f0b6c76273cef0",
+      "actualReleaseGitBlob": "cf291d04fe10b159482c92b4e9f0b6c76273cef0",
+      "sha256": "c174f622e36a645a8e989d1162fc1bbbc7c52f7a3e60d503638eebb85995265d"
+    },
+    {
+      "path": "src/lua/abyss_shivs.lua",
+      "oldReleaseGitBlob": "001ee223eb5252fd6f669d1ed7fcbbb8023fd68c",
+      "actualReleaseGitBlob": "001ee223eb5252fd6f669d1ed7fcbbb8023fd68c",
+      "sha256": "d5c2216d3069c6bdb65c9e0e030b050db18e596a6b55b840a45b09e13688c565"
+    },
+    {
+      "path": "src/lua/abyss_shop.lua",
+      "oldReleaseGitBlob": "cbdc8d53901028fa5948bceb73195d4ffd2357ce",
+      "actualReleaseGitBlob": "cbdc8d53901028fa5948bceb73195d4ffd2357ce",
+      "sha256": "562effbddab2b0e5e7e921eb9a94be12940fdabd7799c5d829fee524bd5ae5f6"
+    },
+    {
+      "path": "src/lua/abyss_shop_price.lua",
+      "oldReleaseGitBlob": "11a57631de01eee2762a96e8228bb730dec66a96",
+      "actualReleaseGitBlob": "11a57631de01eee2762a96e8228bb730dec66a96",
+      "sha256": "c882362aba486ae139b1d0bec7e67b5bd1b85f4cf812c3d365573a2ac7b45a1f"
+    },
+    {
+      "path": "src/lua/abyss_shop_relics.lua",
+      "oldReleaseGitBlob": "d0c228dbe38a37b74dcef12894facec7f1e24fc1",
+      "actualReleaseGitBlob": "d0c228dbe38a37b74dcef12894facec7f1e24fc1",
+      "sha256": "4d193801023eb938b4a25878b61c0210ab3023f1133ab395daadbcdf11f810ba"
+    },
+    {
+      "path": "src/lua/abyss_shop_selection.lua",
+      "oldReleaseGitBlob": "64fe14d2e84bf65bfe32c4610634a9f4b9fda49c",
+      "actualReleaseGitBlob": "64fe14d2e84bf65bfe32c4610634a9f4b9fda49c",
+      "sha256": "66ac3deb3029d761fea245cc1a37e9d6096ae13a7a06e18223490ce8253efb20"
+    },
+    {
+      "path": "src/lua/abyss_shop_ui.lua",
+      "oldReleaseGitBlob": "b610805ca654e82b9f67f56b32b875ae78a85163",
+      "actualReleaseGitBlob": "b610805ca654e82b9f67f56b32b875ae78a85163",
+      "sha256": "b2eb4bf26b0423c7aece0dd8b88eab7ad8f89f3f568ece13402fb8c5a66e8fdd"
+    },
+    {
+      "path": "src/lua/abyss_silent.lua",
+      "oldReleaseGitBlob": "e0cd3cb4a968fddd7f7404e48de54e61a2261054",
+      "actualReleaseGitBlob": "e0cd3cb4a968fddd7f7404e48de54e61a2261054",
+      "sha256": "32705c37dbe7dd4123663d9eb985f11c6fcc700fc92e07f1726903fcacccccd5"
+    },
+    {
+      "path": "src/lua/abyss_silent_attack_cards.lua",
+      "oldReleaseGitBlob": "910fde0e3f4dae056832b631e3e7406ad0309db9",
+      "actualReleaseGitBlob": "910fde0e3f4dae056832b631e3e7406ad0309db9",
+      "sha256": "4b2efb9f0724c958d4a22aae8fef1e5bd0b3ae74f4af34e375c79640fe740efa"
+    },
+    {
+      "path": "src/lua/abyss_silent_discard_cards.lua",
+      "oldReleaseGitBlob": "ee443f40f34de2ffe7393e2f4dd2acd6b2aa23d8",
+      "actualReleaseGitBlob": "ee443f40f34de2ffe7393e2f4dd2acd6b2aa23d8",
+      "sha256": "13d1b7f47480e3110ddf47cb8dcda80f42c5730b792ae5d4ea61c2db575a33bc"
+    },
+    {
+      "path": "src/lua/abyss_silent_final_cards.lua",
+      "oldReleaseGitBlob": "f576ba0b1b232a35d3d8e612d835381e50bc8b3d",
+      "actualReleaseGitBlob": "f576ba0b1b232a35d3d8e612d835381e50bc8b3d",
+      "sha256": "21766502d620d7fb9885cc3884d79c557739bac3bf750b5105fe34aa18bf8fdb"
+    },
+    {
+      "path": "src/lua/abyss_silent_potions.lua",
+      "oldReleaseGitBlob": "0451199ea98b4706759897b292139b2f9b85629e",
+      "actualReleaseGitBlob": "0451199ea98b4706759897b292139b2f9b85629e",
+      "sha256": "ec5a9c8cdc398211d0e4e25f9ac737e012d2103315350daa534bac770b44d292"
+    },
+    {
+      "path": "src/lua/abyss_silent_tactics_cards.lua",
+      "oldReleaseGitBlob": "752acaf44f8c4cc86724a8f0f248ea68e28683aa",
+      "actualReleaseGitBlob": "752acaf44f8c4cc86724a8f0f248ea68e28683aa",
+      "sha256": "dc60eda7b81c0bb7386a3c30653a13e982c307646451807ade10c69e4e19b641"
+    },
+    {
+      "path": "src/lua/abyss_skill_feedback.lua",
+      "oldReleaseGitBlob": "7a8fa98578b07df6172f2d08839d88dcd6ccac44",
+      "actualReleaseGitBlob": "7a8fa98578b07df6172f2d08839d88dcd6ccac44",
+      "sha256": "9c7f717225fead5379871fbe8e2d42e1c252a53e7ff131416cb73271861aa0bb"
+    },
+    {
+      "path": "src/lua/abyss_snapshot.lua",
+      "oldReleaseGitBlob": "446db705ac66a87450bf32bf9d6cff2bbaec7d1e",
+      "actualReleaseGitBlob": "446db705ac66a87450bf32bf9d6cff2bbaec7d1e",
+      "sha256": "8952ff07bea54c924d9a04200acce11be26cbb4bc66096de72a1b6a39e079b63"
+    },
+    {
+      "path": "src/lua/abyss_spike_slime_m_ai.lua",
+      "oldReleaseGitBlob": "425fa064dc34cc3f56c747b602a0c718a53209f2",
+      "actualReleaseGitBlob": "425fa064dc34cc3f56c747b602a0c718a53209f2",
+      "sha256": "941795ae786277e32c0382c785063a241f9dc4ae3f93dba595b346bef329dd2e"
+    },
+    {
+      "path": "src/lua/abyss_spire_pair.lua",
+      "oldReleaseGitBlob": "9d69f6007509ad8e066bcf2f43fdce648539b831",
+      "actualReleaseGitBlob": "9d69f6007509ad8e066bcf2f43fdce648539b831",
+      "sha256": "42aaa7b747edd6a717a4be3051974d77c4dd236fd61cfe78d2ea7570ae2d62e5"
+    },
+    {
+      "path": "src/lua/abyss_stances.lua",
+      "oldReleaseGitBlob": "29bad1102f0102e1c95ab9929aa3050cdd2699e5",
+      "actualReleaseGitBlob": "29bad1102f0102e1c95ab9929aa3050cdd2699e5",
+      "sha256": "c88a7c42694836b921b10bc791161ef0e0deca62f8545974f57b0aeb11ca6610"
+    },
+    {
+      "path": "src/lua/abyss_sts_random.lua",
+      "oldReleaseGitBlob": "00d059441a1e2263884c420c74535d5d91a6927b",
+      "actualReleaseGitBlob": "00d059441a1e2263884c420c74535d5d91a6927b",
+      "sha256": "1e0e0f64fe6a7d2edfe8609419080266c554b763fd71b9565b52eed99aaa42b9"
+    },
+    {
+      "path": "src/lua/abyss_time_eater.lua",
+      "oldReleaseGitBlob": "b8213107920ea3db9c0907fa305cc3b6fb8602b3",
+      "actualReleaseGitBlob": "b8213107920ea3db9c0907fa305cc3b6fb8602b3",
+      "sha256": "678c77192bce317778f4ef9447b29632446babb69a5d0b86645182ed25f3f0f7"
+    },
+    {
+      "path": "src/lua/abyss_tomb_red_mask_event.lua",
+      "oldReleaseGitBlob": "a733169b8d256bac4c8ddbdbb30a38ba173647fc",
+      "actualReleaseGitBlob": "a733169b8d256bac4c8ddbdbb30a38ba173647fc",
+      "sha256": "190184898fdaa23de61c1bd9d8739d1d7569d2cac416c691c91654b189c8e4b4"
+    },
+    {
+      "path": "src/lua/abyss_trade_event.lua",
+      "oldReleaseGitBlob": "bf98b57745a62d3d140406f03d722c0c0269715e",
+      "actualReleaseGitBlob": "bf98b57745a62d3d140406f03d722c0c0269715e",
+      "sha256": "e512ecc1e8b1fecd181da0401d5f8819e6af96d9fde3881fb0bb41acaf1f29b2"
+    },
+    {
+      "path": "src/lua/abyss_transform_card.lua",
+      "oldReleaseGitBlob": "f2ad42dd904065b95093ebe8c7cb9d1163b4a620",
+      "actualReleaseGitBlob": "f2ad42dd904065b95093ebe8c7cb9d1163b4a620",
+      "sha256": "6fe97f0ed053616db17834ca25ec52551e1dfda898a404ba0c8f0e14d8b0a5b9"
+    },
+    {
+      "path": "src/lua/abyss_traveler_portraits.lua",
+      "oldReleaseGitBlob": "3046e3ba9443517d9254d8001b7b5acc6db8d847",
+      "actualReleaseGitBlob": "3046e3ba9443517d9254d8001b7b5acc6db8d847",
+      "sha256": "95e3ab2064d416d4ba82c122f7af0c91c72a17423e427c5ea3c3b4bb32d1c363"
+    },
+    {
+      "path": "src/lua/abyss_treasure.lua",
+      "oldReleaseGitBlob": "76ac99e63db7e76419a42507f22a3c9b6a87610b",
+      "actualReleaseGitBlob": "76ac99e63db7e76419a42507f22a3c9b6a87610b",
+      "sha256": "ced731d340e84dcc340926ad2b320f9bbcbec464d720d6a7065cad1f297d778e"
+    },
+    {
+      "path": "src/lua/abyss_treasure_source.lua",
+      "oldReleaseGitBlob": "59c934e1dcf59569f9d8152506aa963e2d601bba",
+      "actualReleaseGitBlob": "59c934e1dcf59569f9d8152506aa963e2d601bba",
+      "sha256": "44ae73c0d996c4f336d18f225a44466c73db6db85921f1eca28c00865f8601da"
+    },
+    {
+      "path": "src/lua/abyss_treasure_ui.lua",
+      "oldReleaseGitBlob": "869b9199bc6df150cd584c97f493129c1e6b2b5b",
+      "actualReleaseGitBlob": "869b9199bc6df150cd584c97f493129c1e6b2b5b",
+      "sha256": "f9a88352cca516abcd6a243bb7ffc73b96280876e11a4aad081038e7c4146dd5"
+    },
+    {
+      "path": "src/lua/abyss_turn_power_phases.lua",
+      "oldReleaseGitBlob": "94fc15731985ca93bcca5c675e44a9470b84403f",
+      "actualReleaseGitBlob": "94fc15731985ca93bcca5c675e44a9470b84403f",
+      "sha256": "7ac6b71d7f54c871cb992af2fe02dade51557b84446f03e54e59f14d3d92e93b"
+    },
+    {
+      "path": "src/lua/abyss_turn_powers.lua",
+      "oldReleaseGitBlob": "1c98f888908a491929ef6dec79df4bbba08b9506",
+      "actualReleaseGitBlob": "1c98f888908a491929ef6dec79df4bbba08b9506",
+      "sha256": "1708245a6366e94ffabae72d9ff3af48c0d578815307a022dcc82f3e4e475ac8"
+    },
+    {
+      "path": "src/lua/abyss_ui.lua",
+      "oldReleaseGitBlob": "27e431ab37ebb4490ec61d536a81f47b0688f076",
+      "actualReleaseGitBlob": "27e431ab37ebb4490ec61d536a81f47b0688f076",
+      "sha256": "19989127f817f2659be6a29661a916ddf04a2961f43d48a1e35367d95efd01c1"
+    },
+    {
+      "path": "src/lua/abyss_uncommon_relics.lua",
+      "oldReleaseGitBlob": "ce2b69add5b10483ef6267481c464fba2e4e691c",
+      "actualReleaseGitBlob": "ce2b69add5b10483ef6267481c464fba2e4e691c",
+      "sha256": "8e260bd5c52f8ca90f61281858099afbf98d7ec91a5f82a3c7b8f9e74108093c"
+    },
+    {
+      "path": "src/lua/abyss_unknown.lua",
+      "oldReleaseGitBlob": "5b46b6f65134ecc444b9da8142ed7f07f412cae5",
+      "actualReleaseGitBlob": "5b46b6f65134ecc444b9da8142ed7f07f412cae5",
+      "sha256": "1a35af89546437350e32caaf12ab64ca379f37c06f636348933d5f5f4840b69c"
+    },
+    {
+      "path": "src/lua/abyss_v25_card_surface.lua",
+      "oldReleaseGitBlob": "7ad14161bc8d8e221c7f2839d0f4e1a50a4fecb2",
+      "actualReleaseGitBlob": "7ad14161bc8d8e221c7f2839d0f4e1a50a4fecb2",
+      "sha256": "7b1c98cc9617969a02d50a47da396bf321ccf8138aa163ebedee5428d8d04e1a"
+    },
+    {
+      "path": "src/lua/abyss_v25_menu_view.lua",
+      "oldReleaseGitBlob": "9ce5e707bc34f7ecbe675dc8a30f013f64dfc587",
+      "actualReleaseGitBlob": "9ce5e707bc34f7ecbe675dc8a30f013f64dfc587",
+      "sha256": "ce1f1d72be3acee9f11213ce3a7abd8b48f405b7543ec9210f8fbde5d83e8fc4"
+    },
+    {
+      "path": "src/lua/abyss_v25_texture_runtime.lua",
+      "oldReleaseGitBlob": "d6597707b61e4c8c40ec89ec65bc885570b99f88",
+      "actualReleaseGitBlob": "d6597707b61e4c8c40ec89ec65bc885570b99f88",
+      "sha256": "6da11cb9ac92b48d0aecaf71ef06c82f5cf5dfef58bfcb25f116eb714d52896a"
+    },
+    {
+      "path": "src/lua/abyss_v25_turn_notice.lua",
+      "oldReleaseGitBlob": "f32e6c99f278fc8d76ed03a4b24d2ba9fd53e0d0",
+      "actualReleaseGitBlob": "f32e6c99f278fc8d76ed03a4b24d2ba9fd53e0d0",
+      "sha256": "395bf91869cfc89e0d8df6d52d974892009730b87f5db1d601f0ce9df4828fea"
+    },
+    {
+      "path": "src/lua/abyss_vampires_event.lua",
+      "oldReleaseGitBlob": "73063057fb0a00f026a6b28013e1d9c86ddbd30c",
+      "actualReleaseGitBlob": "73063057fb0a00f026a6b28013e1d9c86ddbd30c",
+      "sha256": "53270489c6ac1ca6e9b97fc7cc43efaa2cad992a79872d9f37c574032bea4c53"
+    },
+    {
+      "path": "src/lua/abyss_victory_easter_egg.lua",
+      "oldReleaseGitBlob": "5d13b88e703d845665886ffdc230dc99aa02103b",
+      "actualReleaseGitBlob": "5d13b88e703d845665886ffdc230dc99aa02103b",
+      "sha256": "53fa603781dff67b44deb317e3ed212b714785475dc7bdd02606c22c05fa256e"
+    },
+    {
+      "path": "src/lua/abyss_viewport.lua",
+      "oldReleaseGitBlob": "f0bb1c05cb74df7d34773085a42e5ccd9ee2a3f3",
+      "actualReleaseGitBlob": "f0bb1c05cb74df7d34773085a42e5ccd9ee2a3f3",
+      "sha256": "14b9a3f0ac0dd4873d7735cacc2daa7b96ac41fcef4a41692194a16e437092fb"
+    },
+    {
+      "path": "src/lua/abyss_warrior_cards.lua",
+      "oldReleaseGitBlob": "20659ab12839239694afa11dc6524e906c9f50f1",
+      "actualReleaseGitBlob": "20659ab12839239694afa11dc6524e906c9f50f1",
+      "sha256": "cf9fe3d1aa038be990b1ab47ad0b1ed7898b952a6ef5f49feb931764d0d9dabb"
+    },
+    {
+      "path": "src/lua/abyss_warrior_exhaust_cards.lua",
+      "oldReleaseGitBlob": "ad835d41e10ec3b39a00bdfc895467a5de2bb78c",
+      "actualReleaseGitBlob": "ad835d41e10ec3b39a00bdfc895467a5de2bb78c",
+      "sha256": "5b425f3cfc4c7d94128cc5a0a77a856a1a44edfe1dbd5abf427a8444f4bc4a1b"
+    },
+    {
+      "path": "src/lua/abyss_warrior_status_cards.lua",
+      "oldReleaseGitBlob": "11fd44163182c2b205cd9910b7108b0d40a38fbf",
+      "actualReleaseGitBlob": "11fd44163182c2b205cd9910b7108b0d40a38fbf",
+      "sha256": "554181c678d5387ca7de54095db78a37225c04acc23878bce0392d21acc33a63"
+    },
+    {
+      "path": "src/lua/abyss_warrior_strength_cards.lua",
+      "oldReleaseGitBlob": "0d76e5c5217e706f1048da4eb4bccdd989d48a41",
+      "actualReleaseGitBlob": "0d76e5c5217e706f1048da4eb4bccdd989d48a41",
+      "sha256": "222eca8efdd2568cd81dd21c1cb3b2f738e7326ac5d37ae33f66cca3be6176da"
+    },
+    {
+      "path": "src/lua/abyss_watcher_attack_cards.lua",
+      "oldReleaseGitBlob": "1211a9da2325ee0022b7f5888c14a879bb0626cf",
+      "actualReleaseGitBlob": "1211a9da2325ee0022b7f5888c14a879bb0626cf",
+      "sha256": "f34c4b292fa104724b98a05324ed931448ee21d9cf58ca946c8e33f6b22b4f00"
+    },
+    {
+      "path": "src/lua/abyss_watcher_cards.lua",
+      "oldReleaseGitBlob": "b25f5fdd6d42a7dca2ea45932f0f68d12dcf875c",
+      "actualReleaseGitBlob": "b25f5fdd6d42a7dca2ea45932f0f68d12dcf875c",
+      "sha256": "c93259044790a3e3d6d257d21355707c5879417ea65cc833bfd17ee6f6f5ad3c"
+    },
+    {
+      "path": "src/lua/abyss_watcher_final_cards.lua",
+      "oldReleaseGitBlob": "6001d336b98e2217332882c3bcd6316725610f0c",
+      "actualReleaseGitBlob": "6001d336b98e2217332882c3bcd6316725610f0c",
+      "sha256": "ec2ef8388b777de5dccfce1df602ac0981dfd112bbd8b63d2e188d345f0c03cd"
+    },
+    {
+      "path": "src/lua/abyss_watcher_flow_cards.lua",
+      "oldReleaseGitBlob": "207ba6450f0d332af23e0f26547112094c491b43",
+      "actualReleaseGitBlob": "207ba6450f0d332af23e0f26547112094c491b43",
+      "sha256": "019fc60e728ffad81405b24323545b05718f452ae20c756f67fc6f56ce9e0217"
+    },
+    {
+      "path": "src/lua/abyss_watcher_foreign_pool.lua",
+      "oldReleaseGitBlob": "35ec97438f64435bc87decb4eb8306f51c6a4b3c",
+      "actualReleaseGitBlob": "35ec97438f64435bc87decb4eb8306f51c6a4b3c",
+      "sha256": "5bd9c29d05fe493053b03a4c8272b7a55cc774dc357968899bbdd7d8724bcd01"
+    },
+    {
+      "path": "src/lua/abyss_wheel_event.lua",
+      "oldReleaseGitBlob": "5dfd5811ebc91d6e54e92c0e3f7e30564d19b48b",
+      "actualReleaseGitBlob": "5dfd5811ebc91d6e54e92c0e3f7e30564d19b48b",
+      "sha256": "f775746a95c2f33eeb9a5d7c688c536b3dd0b6b3ddefeb3455fbd28468f6bc2c"
+    },
+    {
+      "path": "src/lua/abyss_winding_event.lua",
+      "oldReleaseGitBlob": "58c3b7d0d1d02060b605dda644579d65bb327d03",
+      "actualReleaseGitBlob": "58c3b7d0d1d02060b605dda644579d65bb327d03",
+      "sha256": "1f3a5d5f40847660638443ac9c553065b1e8cec03bb523882d235d4271daebaa"
+    },
+    {
+      "path": "src/lua/abyss_writhing_mass.lua",
+      "oldReleaseGitBlob": "ebd8806d01ae182254469213aed79d6309059c80",
+      "actualReleaseGitBlob": "ebd8806d01ae182254469213aed79d6309059c80",
+      "sha256": "fc362d8be41e3744169067903fc979ad8bc671eda47c754e4c67f8fe6a7d2d4f"
+    }
+  ],
+  "archives": [
+    {
+      "path": "tests/helpers/battle-queue-ci-source-epoch.json.gz",
+      "bytes": 303023,
+      "sha256": "4f5966d2b04fbdd564d0455aa318c3947468906581b6fa7a6a8d334f18f44db4",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/battle-queue-source-epoch.json.gz",
+      "bytes": 157852,
+      "sha256": "e82f3c47155271784ed25d87abcf19306e7a752fe1cb5aab5f3d269d26fdd42d",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/closeout-ci-source.json.gz",
+      "bytes": 2848271,
+      "sha256": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.json.gz",
+      "bytes": 2240696,
+      "sha256": "36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "bytes": 738042,
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/combined-epoch/source-epoch.json.gz",
+      "bytes": 1127284,
+      "sha256": "2085260a5aabde4476411172eb0b2e6fd3afcaa991a3cafc52f3ab0e98755c73",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/component-alias-ci-source-epoch.json.gz",
+      "bytes": 51070,
+      "sha256": "3d11025b87ec35e234f99eb3df53dd862a69b75778c88a714db9b694a9c2f93d",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/component-ui-ci-source-epoch.json.gz",
+      "bytes": 436099,
+      "sha256": "498384c890d22428b10a9c19f6720712d3e568cf871179e447c69fd8b92ea520",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/component-ui-source-epoch.json.gz",
+      "bytes": 1538232,
+      "sha256": "df2a27ff146ecbee4fb01054eb1071458ffe491ece1bb50fa6fb33d19df74d4a",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/defect-actor-ci-source-epoch.json.gz",
+      "bytes": 193713,
+      "sha256": "c7962302aa0363004b6d4c8e6afcb5a27431bf47b2eac2f2d3fdc2463566d638",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/defect-actor-source-epoch.json.gz",
+      "bytes": 28029,
+      "sha256": "c41e28bf8a5d51f0e29f80b48f31cc5d416741ec8d54f4f6c03ce924d1027e17",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/defect-final-ci-source-epoch.json.gz",
+      "bytes": 80331,
+      "sha256": "88894fcfdcc23ba6383ea5decd456c920dc296aadde209fc58ee8406480d7f75",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/defect-final-source-epoch.json.gz",
+      "bytes": 6804,
+      "sha256": "a656584db182a608b75f66a46a8d31ae4d4bbaba6c64d376d1d47a011c7833ce",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/effects-target-group-source-epoch.json.gz",
+      "bytes": 5195,
+      "sha256": "f22d0328aedd7b7e9c785482271483f9f083c5c6abd7cd55d19933b24a48c0c2",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/encounter-formation-ci-source-epoch.json.gz",
+      "bytes": 173703,
+      "sha256": "cd039ffe6b0f7fd2959776b84cf199290b3621b8a82266bc6929876e1ce46fbf",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/encounter-formation-source-epoch.json.gz",
+      "bytes": 2719,
+      "sha256": "6d082e4f921213a60a41ab1f0a4109a49645c1014cc83f315178937ca0885132",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/actor/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "bytes": 738042,
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/colorless/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "bytes": 738042,
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/fixtures/ci-complete-calibration.json.gz",
+      "bytes": 308165,
+      "sha256": "c0b66bf5ffd13baaea0f9a035dd43636f7419a0b607cc4eab3f0c1f73155d5ab",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/fixtures/ci-host-timing-calibration.json.gz",
+      "bytes": 80775,
+      "sha256": "70cf6cbf502ed85cf7884095cb603a92f910e9b6cb5b311cee2b4b0f1118659f",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/fixtures/delivery-source-composition.json.gz",
+      "bytes": 900350,
+      "sha256": "d7bf28b224aaec821ac215f81adcef436fff51b009c21ef8b75d50bd16c2fa4b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/helpers/m7-core-final-before.json.gz",
+      "bytes": 32990,
+      "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+      "bytes": 738555,
+      "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/helpers/relic-query-baseline-391306af.json.gz",
+      "bytes": 19460,
+      "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/native/tests/helpers/m7-core-final-before.json.gz",
+      "bytes": 32990,
+      "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/native/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+      "bytes": 738555,
+      "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/native/tests/helpers/relic-query-baseline-391306af.json.gz",
+      "bytes": 19460,
+      "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/potion/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "bytes": 738042,
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/epochs/powerShop/tests/helpers/power-shop-before-2c85.json.gz",
+      "bytes": 13460,
+      "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/foundation-fix-ci-source-epoch.json.gz",
+      "bytes": 59704,
+      "sha256": "bb40135a5ef6a5286f75cdf3035a451702f79cdcc36dca90d071d85f09ce30a3",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/golden-idol-ci-source-epoch.json.gz",
+      "bytes": 183683,
+      "sha256": "04f512415676b3110285c40f6c19324010c1f5ecf7ffe68e063bf6aedd17b24a",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/golden-idol-current-ci-source-epoch.json.gz",
+      "bytes": 327638,
+      "sha256": "c422925a6eed65e71973693175391884442636d28a583cd1633f4937a5102216",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/golden-idol-current-source-epoch.json.gz",
+      "bytes": 2099,
+      "sha256": "b46c8ed0a17d8dcfa442861b4452cae2250b9ce2da31ef0bb1619be7e416fc46",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/golden-idol-source-epoch.json.gz",
+      "bytes": 2087,
+      "sha256": "567be86608fc6c7f9f29a42d81f80ee77b3f769367720501f4ecbac55c1be313",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.json.gz",
+      "bytes": 3222350,
+      "sha256": "f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/joint-ui-ci-source-epoch.json.gz",
+      "bytes": 851319,
+      "sha256": "9fee4e85665d37746b68368fced892a316db490c8e01273328391bc57acfd840",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/joint-ui-source-epoch.json.gz",
+      "bytes": 212019,
+      "sha256": "67777c3571d86bc82427fbb6ac5cd2254ed480b58285f41aa17d05d7490413f9",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/joust-ci-source-epoch.json.gz",
+      "bytes": 72918,
+      "sha256": "12bcdf820c12b4aa5abc94ee5eaca48962c536cd0c77f604ca8a632c8828839b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/joust-source-epoch.json.gz",
+      "bytes": 1780,
+      "sha256": "fa0c3a6e28217ca6c5c7731c399f911cb6008b84c2c6d1afa5f3c042dee47a0d",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/m7-core-final-before.json.gz",
+      "bytes": 32990,
+      "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/menu-presentation-source.json.gz",
+      "bytes": 3387,
+      "sha256": "abcc561be5a49560684b70bc68a1b320485f8084039a64910d05ff9810fc8e9b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/menu-red-before-integration-production-source.json.gz",
+      "bytes": 27364,
+      "sha256": "ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/menu-red-ci-source.json.gz",
+      "bytes": 397203,
+      "sha256": "c56d05ae2533f27a4d083c5331b54539851c69ba6535783da83c7965261c9486",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/menu-red-production-source.json.gz",
+      "bytes": 27928,
+      "sha256": "eac84b07c06da9afb0f37a63ac8b57ea4b88e825ec57f6efe50a00d9c2bae5d7",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/native-preview-ci-source.json.gz",
+      "bytes": 9076,
+      "sha256": "3929e00baeed8de4f56845930c224c67c27e0a5cc98d18ea5097bfd9f8e4b39b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/noncombat-ci-source-epoch.json.gz",
+      "bytes": 100690,
+      "sha256": "4ec323d272d519731a8e6f8848cb6a3b0985d57b560834fff75062ce856da90c",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/noncombat-demand-ci-source-epoch.json.gz",
+      "bytes": 106427,
+      "sha256": "05ef031199d3504977cf07bb78a476a19accf4a37cf9882a5a7762e2eb8e1efb",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/noncombat-demand-source-epoch.json.gz",
+      "bytes": 21526,
+      "sha256": "152c60444fc95fbf5b5aa68f5eaf82547cab9051dd9845eb0512dd2125c8ade1",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/noncombat-source-epoch.json.gz",
+      "bytes": 13929,
+      "sha256": "748b7965ddf39f1e297da92094f1ed865204177ca344aacca7e78a826d78f279",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-assets-ci-source-epoch.json.gz",
+      "bytes": 189787,
+      "sha256": "bc5079ac224d1090c0f7761ca5808003160a5b2d1a0eb79e32c52bcd6f92da1b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-assets-flow-ci-source-epoch.json.gz",
+      "bytes": 136110,
+      "sha256": "2efc7dc0e787d86f49c27863cd936be82fbd90f1902331345528936335b516c8",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-banner-source-epoch.json.gz",
+      "bytes": 8809,
+      "sha256": "3f1f13b24b1fd05e01706937f14e905c7003d193b446b2133e8ec25548e91628",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-alignment-source-epoch.json.gz",
+      "bytes": 45795,
+      "sha256": "f834dafca07c62a1b807cbc7df3ae8619f3043a1627b8fb5dee5f464c420d458",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-feedback-source-epoch.json.gz",
+      "bytes": 55265,
+      "sha256": "f9afdd64e5af540072b468709bda9523b2cd58d4c308692a9b10ee339ac176eb",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-interaction-source-epoch.json.gz",
+      "bytes": 37916,
+      "sha256": "47ea3088416992ca43c97adab9ac5c724bcc4ccac1d415ec8a7d4a5328d34505",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-local-render-source-epoch.json.gz",
+      "bytes": 38013,
+      "sha256": "d7c993c86bcb8c2b40b68e5ec127ae774f64f43b3a87e883ad32fa3c6d766b35",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-mouse-aim-source-epoch.json.gz",
+      "bytes": 10715,
+      "sha256": "8816765be73763e6172bb022f40118dfdfe239b449dfa0617b4b6400750d4c71",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-pile-source-epoch.json.gz",
+      "bytes": 27857,
+      "sha256": "2fbf3dba8ff4992cae4eccef2d8c27af70fc7a22c726fa72ece6fe5dfb3a1ccd",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-potion-hud-source-epoch.json.gz",
+      "bytes": 32558,
+      "sha256": "873e1d2eb7352ba984d180141f04ef8167ff89ecce097a2ae7986a2d5c274a75",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-response-source-epoch.json.gz",
+      "bytes": 29357,
+      "sha256": "9af7515d8fae9402c8751a8efdcaadc1a5d1142c095fa2e11f34ec6d92f30137",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-shell-source-epoch.json.gz",
+      "bytes": 12881,
+      "sha256": "6184f4e377056b5e9c8a25ab4282556c152f1228a1436fa2cfa67196697dde22",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-source-epoch.json.gz",
+      "bytes": 36743,
+      "sha256": "5e74438e077be47b5b176287b6ceeb71e69447fa32ceedf2b0e595c4499d3c80",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-battle-target-source-epoch.json.gz",
+      "bytes": 7388,
+      "sha256": "52696fada35693712594a228b94ae5bf17f949049b47c01d95e5b16de5ba3c43",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/official-ui-repair-source-epoch.json.gz",
+      "bytes": 188582,
+      "sha256": "7acca01bc985f6bb6bea90361374f360d7ef3e746583bd8a8da7c459951f0765",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/posix15-shape-source-epoch.json.gz",
+      "bytes": 468,
+      "sha256": "9f75ddcfc0b6b5ef19c1750efab7d7a5360d9da4825a93de3c9cfe9e702e9b06",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/power-shop-before-2c85.json.gz",
+      "bytes": 13460,
+      "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/purge-query-baseline-a27b86a5.json.gz",
+      "bytes": 5372,
+      "sha256": "7ddb2bf87ff3d7a56a80f34a4bb06e6249e7dd7d0811afd391afad16a5f39dee",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/release-source-epoch.json.gz",
+      "bytes": 2587324,
+      "sha256": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/relic-equip-ci-source-epoch.json.gz",
+      "bytes": 74390,
+      "sha256": "541ff621ffe4b9413b90a284949dfb496cdfbe06cb05826307b56b0ac044fd47",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/relic-equip-source-epoch.json.gz",
+      "bytes": 3289,
+      "sha256": "c7f30e9773f4f08d3cf33e1ece1a1be425fa04389d0144bb285ff70643d06863",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+      "bytes": 738555,
+      "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/relic-lifecycle-baseline-a27b86a5.json.gz",
+      "bytes": 739353,
+      "sha256": "68112b06f51194a9523ea287549c29c2871eec56164fa21ace64a1f576efaaac",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/relic-query-baseline-391306af.json.gz",
+      "bytes": 19460,
+      "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/room-ui-source-epoch.json.gz",
+      "bytes": 221173,
+      "sha256": "0b3cb34acf85e814bd3e7d82254e9586a6a60c78e20fd95603b2e96e877d7bfc",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/run-hud-before-ci-repair-ci-source.json.gz",
+      "bytes": 280679,
+      "sha256": "fa385b20797f37ca5a8c0a406d6ecdad6b4c0539c27a825e751b7eadeb4f5408",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/run-hud-ci-source.json.gz",
+      "bytes": 292579,
+      "sha256": "685bddcc6bed77545eadc456f82ed4de10a75402cfcf597533190eb1732cbe3b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/selection-ci-source.json.gz",
+      "bytes": 128931,
+      "sha256": "02ba563b57383e8ab328051dfa29a3a0d57769a60b94cb4a265cb8ff7514881e",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/session-menu-source-epoch.json.gz",
+      "bytes": 84697,
+      "sha256": "b6b8f7f14c7f541fcd686b881258c6f625f1a0bfc32239e9d15dc6aa5eb33d8b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/session-reward-before.json.gz",
+      "bytes": 5816,
+      "sha256": "d0a42f51486f79bca22b34a8f0457ca0f78e4917310ad72e70ef89c836a9b57c",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/seven-refactor-source-epoch.json.gz",
+      "bytes": 107170,
+      "sha256": "98ce5a13a217c5b20bbbddf93811d5fc2dda4117bb465c33c5ad4c979608c4bd",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/shop-deck-before-ci-repair-source-epoch.json.gz",
+      "bytes": 39331,
+      "sha256": "94d6f85a83a1593bbbaf34ae13986ddfbca97312e183b4e7f6b08ca58b8d911b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/shop-deck-four-source-epoch.json.gz",
+      "bytes": 34735,
+      "sha256": "51034e9da34cbe0ab153f00ab66a16918db1097ef7173932ab326cc6c2076f2b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/shop-deck-source-epoch.json.gz",
+      "bytes": 39459,
+      "sha256": "f5546b3bd0264af9e4fff867637fe217e4e7c32482e72104d7d3c1f3cc43a03b",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/silent-final-ci-source-epoch.json.gz",
+      "bytes": 74632,
+      "sha256": "061f63eb40dd03dfecb8bdaf60ecc722f49da40ed75645568666fa29bddf8c2e",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/silent-final-source-epoch.json.gz",
+      "bytes": 6705,
+      "sha256": "8d70652c025b8075e2a03936f12c2509dbca427abd555e472f197b1ac4850b49",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/silent-tactics-source-epoch.json.gz",
+      "bytes": 5902,
+      "sha256": "046c798aed3ded45bf29ad696c777551102f74066a262174af3d9990bdabb1c7",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/sts-feedback-ci.json.gz",
+      "bytes": 280213,
+      "sha256": "c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/sts-feedback-production.json.gz",
+      "bytes": 115080,
+      "sha256": "3acda15f5db142eeabb48f9a494d1526bde5565eb7e2272d5a36277b7394ec39",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/sts-style-ci-source.json.gz",
+      "bytes": 632971,
+      "sha256": "4dc022273fd7ca381b1de6bca1fdd1c9eb49ceb94df292d9e490b4ab2abc80f5",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/sts-style-prior-runtime.json.gz",
+      "bytes": 4216851,
+      "sha256": "10bf3b7d960e4c02ae2d64e26d8d5f16824439b9396949973f08ccec1c9d9330",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/sts-style-source-epoch.json.gz",
+      "bytes": 195169,
+      "sha256": "cc47fd96c79d7a604d2c5c269b012354d887762aecbe2990ac89fbf2ac74c1a9",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/watcher-flow-source-epoch.json.gz",
+      "bytes": 7194,
+      "sha256": "9e81602d086a81680830cf179a5d9f9f041bd56e0938b2d82eb196e50f73c015",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "bytes": 2729,
+      "sha256": "8846606fcc1f08c98923d51c6a23f58820f9ee74b95c64d018584dd02a808ba4",
+      "originalImmutableArchive": true
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-before-release1cc-source.json.gz",
+      "bytes": 159888,
+      "sha256": "550daa97c0f2e9d96a965dbfb51ed49111fc8ebc4f92cb78f09c8eb0c745fc4f",
+      "originalImmutableArchive": false
+    },
+    {
+      "path": "tests/helpers/release-bootstrap-ci-source.json.gz",
+      "bytes": 132956,
+      "sha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6",
+      "originalImmutableArchive": false
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-base-source.json.gz",
+      "bytes": 816458,
+      "sha256": "4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa",
+      "originalImmutableArchive": false
+    }
+  ],
+  "original92ArchiveCount": 92,
+  "retainedPriorEvidence": [
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/README.md",
+      "bytes": 10017,
+      "sha256": "2bc10a12599af8b0cf14b063969ee26b2a075479d1189ca927bd57f946070d42",
+      "gitBlob": "2c53d9189f5a6b36199920dd58e8af32a9f66f4a"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/admission-coverage.json",
+      "bytes": 6731,
+      "sha256": "70a6d344d602c2495c5908905644666dcad3e8395ca60ebfba8b651f1aca31bc",
+      "gitBlob": "b89728eeda09b979db7fa307b974eeb21c2a937f"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/architecture.txt",
+      "bytes": 71,
+      "sha256": "75eca73fbfec93346fe0d3f058d90cd4c521e67b93139cb5f7dd0c90331bf501",
+      "gitBlob": "f2a76e733eb8a7a36580f37483ac3c0de57217fe"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/current-contracts.txt",
+      "bytes": 1126,
+      "sha256": "b83fb207a1cfbad1f30e972b49b9ca2dc5956b26c44fe6ad3f77755efdef5158",
+      "gitBlob": "f8f2fe8daafc9fa8df5356fea5ecaadaeb3e9297"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/fast.txt",
+      "bytes": 35307,
+      "sha256": "cdff487feb6e5a7a9b6edf6a0c4bb0ede097e0df81a13b224246c6299b4d86bb",
+      "gitBlob": "1343b7e66ad30699ce27e03dbe0f28e13bb70c17"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/frozen-source.txt",
+      "bytes": 1672,
+      "sha256": "72c7a5a944a7d7d29094dfe2ae83f707cb40fea9cb3215d65b2bab4324120b4b",
+      "gitBlob": "ccc79d9fcb59f6e3d6e0611059e9110a13344149"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/frozen-source.txt.raw.gz",
+      "bytes": 752,
+      "sha256": "eb712c6faaccf609a440da37ad8b8c4e1fb1c064d4b9d66e7e759077939dcbd8",
+      "gitBlob": "7edc90e9b137e8f3bff5df742ec48a15ac9bca3b"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/green-host.txt",
+      "bytes": 694,
+      "sha256": "c850900b822b16732d05b3464d84460d06b5643e70c3930a16b2304182ca93e7",
+      "gitBlob": "13f479bc354976f783b01718f69b31f196a623c5"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/green-layout.txt",
+      "bytes": 361,
+      "sha256": "fd8b61c664c8d6c796df276378a0204a3b7624774798e50c64b063f5edbd6884",
+      "gitBlob": "93238daf15f09d281bce8cadd7c30d8ba5eac65b"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/hover-fix-identity.json",
+      "bytes": 1371,
+      "sha256": "38ae928b6e228d0312c7b847d4dbdb938d6c81d1ab2ce5b7eabdcbd23061206f",
+      "gitBlob": "3b0ced7ad5c7989e21539e560ec2983f4b0bd443"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/identity.json",
+      "bytes": 1827,
+      "sha256": "87dc85230783f07a61990b8ad74be1fc44b0c9c51d551e1789cd50f47ef94eea",
+      "gitBlob": "c968b7d664afe5bdf3161f0c32a76eaea2da3860"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/independent-review-initial.json",
+      "bytes": 6561,
+      "sha256": "5e1ce1539875d6370b82f872dcd19d0313e934b3e8b415087acd250c13a2a119",
+      "gitBlob": "afdeda8330b0f1244fbd7d2e41be240b9beeac21"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/independent-review-initial.md",
+      "bytes": 2475,
+      "sha256": "09863180cf731267b4c3616af634d89901474d63dedf0f27495ad907a64e1c02",
+      "gitBlob": "4ec75d695589db4745d65583a5b1a2dddb4ffc3c"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/independent-review.json",
+      "bytes": 13603,
+      "sha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "gitBlob": "f960811767db318332345e608a17fbd619d10bae"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/independent-review.md",
+      "bytes": 2647,
+      "sha256": "ad3a1956ea3cdeede283cb4b4b4689e50112255e2dcb6d32ddffb1a39d545bc7",
+      "gitBlob": "1728f03d831c6f494a3413573979ba5af30e5368"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/lua-static.txt",
+      "bytes": 182,
+      "sha256": "adcc7467afa59bd664ff57ca172d0940127753399014d98e48998f9682f2c1c8",
+      "gitBlob": "f487f1e6e55df05b96e3b58da3e932f4ae3dc3fc"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/official-contracts.txt",
+      "bytes": 3252,
+      "sha256": "fcca364a89cad30ce681e00c2cb9256e5a338c5cc182e58c76363de64e04f4a5",
+      "gitBlob": "f6bc862a3cc882979e8dc8ef0c6f128e830486d0"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/official-contracts.txt.raw.gz",
+      "bytes": 1146,
+      "sha256": "98205b8882a76044536644b17d65c78dc66db0022f3718a1eb56d2ba16a6d554",
+      "gitBlob": "f1dd9a22668ec3bcbebea4aa1218b4b01362768e"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/official-host.txt",
+      "bytes": 623,
+      "sha256": "c9ccc9a4c399b73327f8bc1d38998318540c048c130ee031c178efaf24b8f986",
+      "gitBlob": "83074d6170227594e7efe0f2bfc0d4ea7e8cb193"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/red-layout.txt",
+      "bytes": 2134,
+      "sha256": "e96c0fb41c363ff2577295729e758c551763de4da00ca317b828e94fd5c3e91f",
+      "gitBlob": "150c1246135363424449e9d8b4077d839ef7f352"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/review-hover-green.txt",
+      "bytes": 801,
+      "sha256": "b17cf75dc43ed5205729eb7e91c162f25f02e2c7699a327f4fbea124582713f4",
+      "gitBlob": "ba900ab91677af761bde8f46f1a82081c5d06bf2"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/review-hover-independent-before.json",
+      "bytes": 3249,
+      "sha256": "47347f62dd24325d903a981c9cd01c17ec932a0d62e954cad1a650e1f372e597",
+      "gitBlob": "53023b43ac0ff137fd24e312992f591dcf83fde5"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/review-hover-independent-host.log",
+      "bytes": 101,
+      "sha256": "e47349dadce03f08a0d4d8bddcd9aec2c4c109150db123b3b5c4a104c6b70fed",
+      "gitBlob": "9634cc972d7b7ec79bb114d7dd5deb27cb314344"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/review-hover-red.txt",
+      "bytes": 1574,
+      "sha256": "cb3cd7ae555b13f6785705b89fef8b1a4eae9936116f563c71f6f8cafdd1f877",
+      "gitBlob": "502d84f47fdbcda1b18f515314e08b9b63073947"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/review-hover-red.txt.raw.gz",
+      "bytes": 712,
+      "sha256": "031add81a1e901761ce4ee487fc97cb8e7566afeb5331e9d614d7263f1ceb812",
+      "gitBlob": "8abf888006842ea640d484ecaf1272152354e35e"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/syntax.txt",
+      "bytes": 34,
+      "sha256": "40d79311ae96cfef736d1c33aa3ae49c6ddbbff15bca59f750661aec9ea1983f",
+      "gitBlob": "9fcb567439091df7c69fbd8da992fa6951e0fc23"
+    },
+    {
+      "path": "docs/evidence/release-pc-picker-controls-20261116/targeted-layout.txt",
+      "bytes": 2924,
+      "sha256": "83461eb211e5aab1fd004e9cc7be0b980606dbf0abe20c94244da6817f37605e",
+      "gitBlob": "3b008128380b9267ada47c083711a88fd47319b7"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/README.md",
+      "bytes": 2612,
+      "sha256": "960d5336226c7b18357ee87fbe65e3ea83fbaf6b0130195d2945858dedf9d76c",
+      "gitBlob": "960359b6ce60d60165ede56a974b5fe8be1ca7fa"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/ci-raw-final.log.gz",
+      "bytes": 300,
+      "sha256": "ef23897e9d192be51ac761324a5630152c9d467cc3ae5088ed4130ec634e1458",
+      "gitBlob": "0cd159723e4ce23fcbaa8f04a19dd6fd5d9e54fb"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/ci-raw1.log.gz",
+      "bytes": 304,
+      "sha256": "13f75216a89a2206db6f85a04fa9be162e48c2676e14f7540dc5ceaa623b07ec",
+      "gitBlob": "dd0903f1411b04471bae93a3556d867c209728b3"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/historical-targeted.log.gz",
+      "bytes": 854,
+      "sha256": "32bc488dfa171105eff4ea0db281941895e5b41d0d9777afb2848c2799053819",
+      "gitBlob": "c1a30eeae2e368140ff73f104244c388b0a24aac"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/independent-review.json",
+      "bytes": 47571,
+      "sha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "gitBlob": "5515146de9763ebf035fb9f68bc367cb59cc1b29"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/independent-review.md",
+      "bytes": 2682,
+      "sha256": "4c879dc11cb3f300e219bb4d89b6bbaa950d57b49b674a72204af4c75eeb4e0f",
+      "gitBlob": "bb764c12709e5f54d9c11dd67de9442c50ab25f7"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/owners-copy.log.gz",
+      "bytes": 466,
+      "sha256": "eaf7ba292ecd278a3cab3fafb01ecfa30a0ef09695aeb2e272fe320e3454b30c",
+      "gitBlob": "c2ec099fabf94946bd0fddc2be31175300a87571"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/picker-independent-evidence-receipt.json",
+      "bytes": 2890,
+      "sha256": "a0cf45b1553241dadf9acaf723fc141e2b72530847b11f231be6600293ffde28",
+      "gitBlob": "f9640fed9ba4f6dd9a55cf062a960207be46d105"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/picker-independent-evidence.json.gz",
+      "bytes": 52952,
+      "sha256": "5b19f38b5f2ca02b2195fa0345e00f4628dc1c80512a3e9653d2824dea11451d",
+      "gitBlob": "d8e738b7a5a1ff31c0780e6f208b74bf61cce80d"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/source-final-green.log.gz",
+      "bytes": 449,
+      "sha256": "8ff47f1f5dfec099a638bc5d439890a289e60a23763954557e76c7b1b34a0642",
+      "gitBlob": "f854a030d26271f106973c7946ba968536f81bca"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/source-final.log.gz",
+      "bytes": 823,
+      "sha256": "3e5ba932542e878a8c66b691c7995c049814979e9971b08c7d16c4bf87794e51",
+      "gitBlob": "63fca2689fd2645ea9fca68be2fb799d39a562e9"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/source-small-final.log.gz",
+      "bytes": 407,
+      "sha256": "5fead9645349a66e1413c88cb65b9c07630f9ec76170bbfab26517943c307f05",
+      "gitBlob": "0d6bc871b58134a2b9eeecee1d58c2a6c39504db"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/source-small.log.gz",
+      "bytes": 10802,
+      "sha256": "48be4da776219c7c6f17c2f6fc0eb8beb64c45705faeb003a05ae01ad19c781a",
+      "gitBlob": "893684a01fc546e2c43e52c69beae17f5e40d603"
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-source-1116/source-validation.json",
+      "bytes": 7020,
+      "sha256": "22023773d7d580621b057537f3223ba5eaecda0e96cd98a877f5d3de418ca0db",
+      "gitBlob": "68f46fad5d772c462fa0c9203e81b0920d1c5718"
+    }
+  ],
+  "inherited20InputCoverage": [
+    {
+      "path": "scripts/official-assets-layout.mjs",
+      "gitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "currentGitBlob": "f9e16d82a5806f9b10326bd5d09ebfcfbbdbd02e",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "scripts/official-picker-controls.mjs",
+      "gitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "currentGitBlob": "15b1f0b0756b5825b44b8e9f1c178969c8afa624",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "gitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "currentGitBlob": "d18969baf154ba682ca57357f17af3bef8640f6b",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "src/lua/abyss_node_ui_feedback.lua",
+      "gitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "currentGitBlob": "e6caa9a86bab022830c2e924e616108f53644c08",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "gitBlob": "516e5f9a428824ee3c8f5f20521c41931f480da4",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "516e5f9a428824ee3c8f5f20521c41931f480da4",
+      "currentGitBlob": "eef72d02c34f42e11ebafc981dc1fea49d293f5f",
+      "unchanged": false,
+      "reviewCarryoverOnly": false,
+      "requiresNewIndependentReview": true
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "gitBlob": "83d85eef34a18ea0145af58e97149bce39f14483",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "83d85eef34a18ea0145af58e97149bce39f14483",
+      "currentGitBlob": "83d85eef34a18ea0145af58e97149bce39f14483",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "gitBlob": "5f06d5a82631b262d743c05f55b766835ee02c7d",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "5f06d5a82631b262d743c05f55b766835ee02c7d",
+      "currentGitBlob": "5f06d5a82631b262d743c05f55b766835ee02c7d",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "gitBlob": "cf059cc57fd7555c58d026495eebb954251ae9dd",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "cf059cc57fd7555c58d026495eebb954251ae9dd",
+      "currentGitBlob": "72831a23b442b01b52fa7052927607c1b3922164",
+      "unchanged": false,
+      "reviewCarryoverOnly": false,
+      "requiresNewIndependentReview": true
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.json.gz",
+      "gitBlob": "54dc8c1d09be790629266d214f38dc586025f9d8",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "54dc8c1d09be790629266d214f38dc586025f9d8",
+      "currentGitBlob": "eb77ad25abef5be6f942cb2260058c27fc16124e",
+      "unchanged": false,
+      "reviewCarryoverOnly": false,
+      "requiresNewIndependentReview": true
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-ci-source.mjs",
+      "gitBlob": "e025c1809d4bb252194f1875678a98993afa0ff7",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "e025c1809d4bb252194f1875678a98993afa0ff7",
+      "currentGitBlob": "104f93ba3f3e9284c61eff72cee5783dda62f52c",
+      "unchanged": false,
+      "reviewCarryoverOnly": false,
+      "requiresNewIndependentReview": true
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.json.gz",
+      "gitBlob": "48ab104c88285705370f3a0955038699ec8f9375",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "48ab104c88285705370f3a0955038699ec8f9375",
+      "currentGitBlob": "48ab104c88285705370f3a0955038699ec8f9375",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/helpers/release-picker-controls-source.mjs",
+      "gitBlob": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11",
+      "currentGitBlob": "d3eb2d3584c1bb2e905ecdb0342b83d9d407ea11",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "gitBlob": "a582ea68c002fba1f8a3cc765296cc559abc4d71",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "a582ea68c002fba1f8a3cc765296cc559abc4d71",
+      "currentGitBlob": "c32662ff36547b13848b57c069cffbdc234ef39c",
+      "unchanged": false,
+      "reviewCarryoverOnly": false,
+      "requiresNewIndependentReview": true
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "gitBlob": "dba13a2b55f490a3aee8cbed6024719db909fc6a",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "dba13a2b55f490a3aee8cbed6024719db909fc6a",
+      "currentGitBlob": "dba13a2b55f490a3aee8cbed6024719db909fc6a",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/lua/support/release_picker_controls.lua",
+      "gitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "currentGitBlob": "628ad8365caed6ceed95192b865417503143e679",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/official-assets.test.mjs",
+      "gitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "currentGitBlob": "5c73088541450102ffc23c64d5e5f7cbb92682ab",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/release-picker-controls-source.test.mjs",
+      "gitBlob": "1a16605782cf794056b59ab04bf3bbd79f472bae",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "1a16605782cf794056b59ab04bf3bbd79f472bae",
+      "currentGitBlob": "e9d7d3df11c67ffd3fa536822550103e56de6b35",
+      "unchanged": false,
+      "reviewCarryoverOnly": false,
+      "requiresNewIndependentReview": true
+    },
+    {
+      "path": "tests/release-picker-controls.test.mjs",
+      "gitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "kind": "product",
+      "reviewHead": "707da8ff6a7658afe353eb8a48bbf1139023a706",
+      "reviewSha256": "05762cc67e7aafa3f18d82d9efbf819ce3a751473ed48d11a146b85f8c2cee87",
+      "preMergeGitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "currentGitBlob": "11ea2377eb3ee1dfe66f0c39dd4609ccbab3d0c4",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "gitBlob": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2",
+      "currentGitBlob": "a6da3619ce2a6240089f1ca18ccb83e4e21848e2",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "gitBlob": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c",
+      "kind": "source",
+      "reviewHead": "9ff8c89f707e7f6882711f9929a1210574a960d7",
+      "reviewSha256": "f140f71536d276f00135e9b9096f3151f5fa023e70b37dbfdfa08c72ea3a4f6a",
+      "preMergeGitBlob": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c",
+      "currentGitBlob": "b20da2c0f2365c13cd2f7226f21c1d1926b7d89c",
+      "unchanged": true,
+      "reviewCarryoverOnly": true,
+      "requiresNewIndependentReview": false
+    }
+  ],
+  "logs": [
+    {
+      "path": "docs/evidence/release-picker-controls-release1cc-1116/owners-copy-release1cc-green.log.gz",
+      "bytes": 688,
+      "sha256": "98f013f8a83b43bd604760ec763bbbb1652d2aa01465dacb6fcd76ab9bd4dd2e",
+      "rawSha256": "b6495e06810c28439b041be876eb76b680462a66beb5d5f43c2055fdda1853f8",
+      "rawBytes": 2142,
+      "exitCode": 0
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-release1cc-1116/raw-ci-release1cc-green.log.gz",
+      "bytes": 557,
+      "sha256": "9105b04269612b6b3da4e137fa2f76bbaeb10ecf58888383dc9021cffb471072",
+      "rawSha256": "2ed5d7d863dbcdd35a0ec5fb874643fb9380bb963a7ff2bc9113b426a35d8682",
+      "rawBytes": 1481,
+      "exitCode": 0
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-release1cc-1116/source-post-merge-red.log.gz",
+      "bytes": 1044,
+      "sha256": "f8b1e8c9c9a190ea6482e7702b757f5ad1ee5709a2315c41866269f397fd9210",
+      "rawSha256": "0af9f41fca3cf37e169eca7425eade2aeeca84f3811cb506775bc856ffed61b8",
+      "rawBytes": 2763,
+      "exitCode": 1
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-release1cc-1116/source-release1cc-final-green.log.gz",
+      "bytes": 777,
+      "sha256": "efe6f4570df0b9e63ca1e754db163d5d8b3a718e41d03106e1397db5a615ef30",
+      "rawSha256": "8623f9b63674578b6aa590a3037db412de74711e7427450a300db8ca994fe75c",
+      "rawBytes": 2523,
+      "exitCode": 0
+    },
+    {
+      "path": "docs/evidence/release-picker-controls-release1cc-1116/source-release1cc-green.log.gz",
+      "bytes": 773,
+      "sha256": "98e6b1e7bbb2077f8cf79d65caea5021d9b93467e017ec72f5174caa0e89cdd1",
+      "rawSha256": "0bbe66c9bb395a8146e74a511bf38614575a2e09381fdcd4fbf915013984eb1e",
+      "rawBytes": 2523,
+      "exitCode": 0
+    }
+  ],
+  "checks": {
+    "initialPostMergeSource": {
+      "pass": 3,
+      "fail": 1,
+      "failedInput": "tests/ci-complete-calibration.test.mjs",
+      "expectedOldSha256": "42d4f7c71b71699037b94d5cf1f9e63d2dc08b726fa2f89d28aec001de947d13",
+      "actualMergeSha256": "9c451056777287cdc62122a7a8575ce1bca472ac81f0bbee91d3e9e640d30ea2"
+    },
+    "sourceAndBothIntegrationContracts": {
+      "pass": 8,
+      "fail": 0
+    },
+    "ownerAndIsolatedCopy": {
+      "pass": 7,
+      "fail": 0
+    },
+    "bothRawCiContracts": {
+      "pass": 2,
+      "fail": 0
+    },
+    "inventories": {
+      "currentJs": 878,
+      "bootstrapPriorJs": 876,
+      "lua": 1423
+    },
+    "physicalGuards": {
+      "fastWindowsMinutes": 45,
+      "fastPosixMinutes": 30,
+      "fullWindowsHostedMinutes": 45,
+      "fullWindowsTrustedLocalMinutes": 75,
+      "fullPosixMinutes": 30,
+      "dispatchRefGuardsRetained": true
+    },
+    "forecastOnly": true,
+    "workflowTimingsCostsChanged": false
+  },
+  "boundaries": [
+    "No product Host, Fast or Full suite was rerun.",
+    "No CI polling, push, PR, Backlog edit, GUI, MCP or input action.",
+    "No production source epoch, product behavior or seven reviewed product blobs changed.",
+    "Official candidate/import/readback/ready/capacity and PC/mobile acceptance remain unverified.",
+    "Prior 93ae product and 9ff source reviews remain historical exact-blob evidence; this new source/CI continuation requires new independent review."
+  ],
+  "environment": {
+    "node": "v24.18.0",
+    "temp": "F:/New folder/.artifacts/release-pc-qa-20261115/picker-release1cc-temp",
+    "tempOutsideProductWorktree": true,
+    "noProxyOrInstallChanges": true
+  }
+}
