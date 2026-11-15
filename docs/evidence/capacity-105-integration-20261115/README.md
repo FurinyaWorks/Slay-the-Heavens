@@ -4,7 +4,7 @@
 工作树：`F:/New folder/.worktrees/capacity-integration-1115`；短分支：`feat/capacity-integration-1115`。
 来源：`feat/backlog-continuation-1115@92e794247566d27025e48d0073a9e502f2881eb0`，实现提交 `2e8d5d95`。
 
-仅选择导入三个 `experiments/capacity-105/*.mjs`、容量附件、原研究报告和重放证据目录。来源提交的其他任务/计划/治理改动没有纳入。Backlog 状态、计划和依赖通过 CLI 接续；TASK-105 保持全部六项 AC 未验、负责人 Furinya，纠正过时 To Do 为 In Progress；TASK-97 保持 Blocked，保留 TASK-96 设计确认、TASK-105 容量 GO 及 Owner 单独批准。主控 TASK-87.2 负责依赖机制和最终关系适配。
+仅选择导入三个 `experiments/capacity-105/*.mjs`、容量附件、原研究报告和重放证据目录。来源提交的其他任务/计划/治理改动没有纳入。TASK-105 通过 CLI 接续，保持全部六项 AC 未验、负责人 Furinya，纠正过时 To Do 为 In Progress。TASK-97 的设计依赖纠偏由独立的 TASK-87.2 / PR #682 交付；最终容量切片不重复修改该任务文件，避免两个执行者写同一任务。设计确认、适用容量 GO 及 Owner 批准要求照常；离线合同集成本身不依赖正式角色开放。
 
 ## 证据体积与恢复
 
@@ -32,5 +32,7 @@ tar -xzf .artifacts/capacity-105-integration-20261115/recovery.tar.gz -C <新的
 当前基线仅验证合同和证据保全，不运行旧矩阵或生成本轮候选。历史 g 数值、旧 candidate/buildId、Lua/gzip/GIL 字节均不冒充当前正式 B0 或官方 MB。官方容量、当前候选导入/ready、PC/手机加载与释放、长期量产 GO 均未验证。六项容量 AC 均不足以完成。
 
 Git 检出使 helper/test 的换行由历史 LF 变为 CRLF；`run.mjs` 与 g 原字节一致。三个脚本在 Git 换行归一化后逐字节相同，当前与历史原始 hash 分列于归档索引，未把当前 hash 写回历史 input-manifest。无需为非 production 合同导入还原 LFS 或重做生产装配实验。
+
+初始候选 `fa8231bf` 曾包含 CLI 对 TASK-97 的同义纠偏；最终选片排除该文件，仅恢复为已受审基线版本，初始提交仍可恢复。`verification.json` 的 TASK-97 读回属于该初始候选，不能当最终切片的写入内容。
 
 结论：可交主控评审的非 production 最小离线切片。独立审查、Hosted CI 与托管交付待主控；本地提交不代表上述准入通过。

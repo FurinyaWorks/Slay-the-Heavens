@@ -77,6 +77,12 @@
       "ownerApproval": "still_required"
     }
   },
+  "finalSelection": {
+    "initialCandidate": "fa8231bf46679f7abdfe572ce87e7ec9b06e247b",
+    "excludedTaskFile": "backlog/tasks/task-97 - 分批正式开放其余三套 V4 自研职业.md",
+    "reason": "TASK-87.2 / PR #682 owns the design dependency correction; avoid concurrent writes to that task",
+    "task97ReadbackAppliesTo": "initial candidate only; the final capacity slice has no TASK-97 diff"
+  },
   "failedAttemptsAndResolution": [
     {
       "operation": "first Backlog edit invocation",
