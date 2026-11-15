@@ -1,0 +1,29 @@
+{
+  "executionCheckpoint": "867254303584073bc82192aab0548f22879e6fa8",
+  "sourceAdapter": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+  "testExecutions": 16,
+  "uniqueTestNames": 12,
+  "pass": 16,
+  "fail": 0,
+  "skip": 0,
+  "originalFiveSourceFailuresRechecked": true,
+  "duplicateExecutionReason": "Four existing case registrations execute both as explicit files and through their preview parent import; do not report them as sixteen independent requirements.",
+  "uniqueNames": [
+    "release item-title-shadow raw Full retains all costs and physical guards while forecasts remain diagnostic",
+    "integration validates complete raw sources and leaves every foreign byte and production owner visible",
+    "red menu production preserves every prior owner and target and freshly rejects each changed owner drift",
+    "menu presentation continuation preserves the exact reviewed menu and rejects incomplete predecessors",
+    "red menu CI requires complete exact source and retains unknown or drifted inputs",
+    "reviewed selection slice authenticates every complete source and rejects unknown drift",
+    "retirement observed local floor authenticates its execution inputs and preserves every original cost",
+    "corrected shadow floor accepts only complete execution inputs and projects only its own new config record",
+    "raw Release physical job guards reject missing changed duplicate step-only and wrong-job timeouts",
+    "release item-title-shadow production preserves every complete prior target and freshly authenticates the committed source tree",
+    "release item-title-shadow CI validates complete live bindings while unknown or changed bytes stay visible",
+    "release item-title-shadow raw JS and Lua inventories reject missing duplicate foreign and changed additions"
+  ],
+  "rawSha256": "7d80b38a835caa9ab0f6df254a02a9f5e766721ce2d6209119e670a339d39edb",
+  "gzipSha256": "f51c76b5c8b29a90187e83f420a058347ec0d46e798108afe65bf6c840b5e1e4",
+  "notRerunOf73": true,
+  "notProductOrHostedOrDeviceAcceptance": true
+}

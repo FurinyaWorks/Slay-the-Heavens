@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 16:58'
+updated_date: '2026-11-15 18:58'
 labels:
   - playtest-20261030
   - p1
@@ -18,6 +18,8 @@ references:
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/evidence/release-pc-item-title-shadow-20261116/README.md
+  - >-
+    docs/evidence/release-item-title-shadow-source-1116/independent-increment.json
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -67,4 +69,6 @@ Owner截图：肌肉药水描述末尾在「人工」附近截断；两种不同
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
 组合产品df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9，证据2cb6206e，分支feat/release-pc-item-title-shadow-1116。149公开ID/121recipe及32药水池/55遗物池是不同计数；每池relic16/enemy32/potion10。新真实Host旧pool RED、689对照GREEN，最小+14/-2退休helper后两进程各36=72通过，原单VM60s超时保留；原alias139/fallback25所在icons5/5不退化。组合产品独审CODE_SCOPE_PASS_WITH_LIMITS，无新增确认回归，人工foreign-currentLookup继承边界无已知原生可达证据留存；不是所有foreign场景/设备PASS。当前源合同10PASS/5FAIL/1可选SKIP，source接续及约80s新JS成本目标重排进行中；PC16弹窗样式仍由PR684另片，所有正式AC不勾。
+
+最终Release36组合：source6cc、harness216/c344、成本/物理guard增量e2eb与证据aac各自保留身份；最后增审SOURCE_CI_COST_INCREMENT_PASS_WITH_LIMITS无遗留。当前58项code/policy/trust逐Gitblob覆盖；目标树原5来源失败+source6+raw1共12唯一合同通过（父导入重复使实际16执行，未虚计独立要求）。原72退休矩阵不重跑，79,861ms原floor不降，shadow新floor22,235ms有778真实样本。forecast只诊断；47CI packet与全部before/旧档守恒。PR692前置未合，先保全分支，正式图标映射/PC手机/容量AC不勾。
 <!-- SECTION:NOTES:END -->

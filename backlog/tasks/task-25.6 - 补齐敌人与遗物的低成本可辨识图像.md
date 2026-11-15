@@ -5,12 +5,14 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 02:48'
-updated_date: '2026-11-15 16:58'
+updated_date: '2026-11-15 18:58'
 labels: []
 milestone: m-8
 dependencies: []
 references:
   - docs/evidence/release-pc-item-title-shadow-20261116/README.md
+  - >-
+    docs/evidence/release-item-title-shadow-source-1116/independent-increment.json
 parent_task_id: TASK-25
 priority: medium
 type: bug
@@ -55,4 +57,6 @@ PR654已完成推送/创建，明确ci:full、Depends-on:none及精确独审；G
 当前单主角版集成接续：原PR654完整纳入integration-next，保留42敌人/88遗物源图、原精绘及许可；组合功能与共享页面定向验证通过。仅集成，不将离线/旧图当官方手机或发布验收。
 
 PC18组合df5ad3dc及2cb证据，配方42药水=33比赛+9full-source；121遗物recipe=120当前公开来源+1Act3保留，149公开ID=120recipe+29不同native，原88relic/42enemy完整。组合icons5/5含139alias/boundary与25fallback、独审限定代码scope通过；缺失/查找异常旧pool退休72用例覆盖两行/四态/owner/destroy/完整Run-data-RNG。未经官方候选/容量/PC实体手机，源/CI5FAIL正在严格接续，不改旧档案/预算、不Done。
+
+组合df5产品限定独审、6cc来源与e2eb/aac增审均通过，58输入逐blob覆盖无遗漏；149公开ID/121配方/药水42与原42敌人注册保持已记录范围，未重绘素材或改许可。目标树最终12唯一合同通过（16执行按原日志区分），原失败/REQ/旧错误forecast门槛更正均保留。当前仍Release36，#692实际落地后共享来源须重绑；官方容量/PC实体手机未验，旧2项checked不变。
 <!-- SECTION:NOTES:END -->

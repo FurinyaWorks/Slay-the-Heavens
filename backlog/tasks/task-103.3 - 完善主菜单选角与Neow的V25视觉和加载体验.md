@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-15 16:58'
+updated_date: '2026-11-15 18:58'
 labels:
   - 待验
   - delivery-verify
@@ -13,6 +13,8 @@ milestone: m-8
 dependencies: []
 references:
   - docs/evidence/release-pc-item-title-shadow-20261116/README.md
+  - >-
+    docs/evidence/release-item-title-shadow-source-1116/independent-increment.json
 parent_task_id: TASK-103
 priority: medium
 ordinal: 171000
@@ -83,4 +85,6 @@ R7最终复验：SDK28项、实际浏览器HP21+Lament9项通过，20次暖选�
 最终组合祝福6帧、选角/共享初始牌组5帧均完成实际SDK渲染和独审；兜帽暗面按批准稿对照99.34%，旧身体遮挡负控62.66%，顶部旧金色缝已消除。CI修复后新closure b1271f18与原52b6582b的25生成物及全部3份完整SDK输入逐字节相同，保留原截图身份，见两目录ci-storage-runtime-equivalence.json。官方编译受本机脚本签名策略阻断，未更改策略，设备验收保持未完成。
 
 PC01原product8ee已基Release36组合至df5ad3dc，三产品路径逐blob保持：源title JSON、五theme字段与标题/双按钮。组合menu6/6+hover/结果四态41+default/official/V25配对Host及限定独审通过；Continue动态line既有P2未修，不泛称动画PASS。选角PC04/Neow及最终画面仍未验，源合同5FAIL接续中，正式容量/ready/PC手机AC不勾。
+
+PC01标题/批准按钮恢复产品8ee在df5组合、6cc来源/harness c344/e2eb增量均完成限定独审；58当前输入逐blob匹配，原5来源失败已补验，最终16执行12唯一合同PASS。原文观察栏仅纠正混入的旧PR决定推断，实际询问既有设计未呈现的事实与TaskAC5源核对保持；不倒退成未决方案。Continue旧动态线条P2仍未修，不冒称41断言覆盖它；角色蒙层PC04/正式画面与手机容量仍未验，AC未勾。
 <!-- SECTION:NOTES:END -->

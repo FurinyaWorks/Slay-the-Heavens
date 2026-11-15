@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 18:19'
+updated_date: '2026-11-15 18:58'
 labels:
   - playtest-20261030
   - p1
@@ -54,4 +54,6 @@ Owner说明：**怪物自制美术目前在实际战斗中一点也没用起来*
 PC21原product862c已基Release36组合到df5ad3dc，源脚位/椭圆/flags及painter逐blob保持。组合shadow2/2、工程351/6169/1993无新诊断与日常负载0（5增长warning保留），组合独审限定CODE_SCOPE_PASS_WITH_LIMITS；独立源旧67只保留源身份。最终同源GIL/PC手机画面及官方容量未验，Task原美术替换范围不扩，AC不勾。
 
 2026-11-16 原5个source失败在c46输入已实测补验，与新源4+raw成本1合计10/10；该结论不外推后继。实际Full raw discovery发现阴影夹具缺正式profile，2167162e增加隔离数据/UI配置及有效入口回归；独审SHADOW-H01纠正真实布局快照为abyss_ui_layout，c34443bc后3/3通过（18,851.0625ms）。根raw-shadow-profile日志保留原nilfigure及TEMP父目录缺失失败，非产品新失败或全局runner缺陷。harness独审限定通过，47CI输入/已知父测成本正在最小接续；同候选官方画面、容量及PC手机仍未验，AC不勾。
+
+阴影raw Full入口最终增量e2eb/aac现已SOURCE_CI_COST_INCREMENT_PASS_WITH_LIMITS、findings/unresolved空；当前47CI与778样本物理前后核验，shadow仅自身floor投影、原retirement79,861ms及全部旧cost/receipt不变。新鲜shadow3/3 wall22,235ms，旧nilfigure/TEMP失败与快照修正证据保持。最终58输入覆盖；实际workflow超时及负控硬验，预测仅诊断，不授设备或发布许可。#692新基线接续/同候选官方PC手机仍未验。
 <!-- SECTION:NOTES:END -->

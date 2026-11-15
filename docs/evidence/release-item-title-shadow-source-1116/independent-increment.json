@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE_CI_COST_INCREMENT_PASS_WITH_LIMITS",
+  "reviewer": "/root/release_items_source_review",
+  "reviewIndependence": "Reviewer did not author the harness or source/cost increment; no source mutation performed.",
+  "target": "release/v2.0.0",
+  "baseRelease": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "previousReviewedCode": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+  "previousEvidence": "6f3b3ce2a55abcb7f68c93407298a9c775a46258",
+  "codeHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+  "codeTree": "613981177db2f75c38668a1ab5aed62541e02bc5",
+  "evidenceHead": "aac67e517d3acb1926e06034ddb5ff33717c8e2d",
+  "evidenceTree": "b3640a65776c64721f4dfda30e8ba6400f1e33b5",
+  "scope": {
+    "adapterBase": "851ab14d",
+    "adapterPaths": [
+      "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.json.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stderr.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stdout.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json",
+      "scripts/ci-test-timings.json",
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/helpers/release-item-title-shadow-ci-source.json.gz",
+      "tests/helpers/release-item-title-shadow-ci-source.mjs",
+      "tests/helpers/release-item-title-shadow-planning.mjs",
+      "tests/release-item-title-shadow-source.test.mjs"
+    ],
+    "adapterPathCount": 10,
+    "harnessOriginalCommits": [
+      "2167162ef8fd5cc58e79ce9b713a2f1f4aa55f98",
+      "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb"
+    ],
+    "harnessEquivalentSourceCommits": [
+      "04c19e13",
+      "851ab14d"
+    ],
+    "harnessPaths": [
+      "scripts/test-lua.mjs",
+      "tests/player-ground-shadow.test.mjs"
+    ],
+    "harnessReview": "review-raw-shadow-harness.json",
+    "combinedChangedExecutionAndTrustPaths": 12,
+    "evidenceOnlyPaths": [
+      "docs/evidence/release-item-title-shadow-source-1116/README.md",
+      "docs/evidence/release-item-title-shadow-source-1116/ci-shadow-policy-raw.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow-command.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/item-title-shadow-raw-shadow-discovery.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/raw-shadow-profile-correct-path-green.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/raw-shadow-profile-correct-path.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/raw-shadow-profile-green.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/raw-shadow-profile-red.log.gz",
+      "docs/evidence/release-item-title-shadow-source-1116/raw-shadow-source-continuation.json",
+      "docs/evidence/release-item-title-shadow-source-1116/source-shadow-policy.log.gz"
+    ],
+    "coverage": "Every one of the ten new source/cost/policy paths, four cost-trust sample/receipt documents, two previously reviewed exact-equivalent harness paths, and ten evidence-only successor paths was inspected. No previous 6cc conclusion is silently extended to new input."
+  },
+  "packet": {
+    "production": {
+      "owners": 8,
+      "bytes": 54697,
+      "sha256": "e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba",
+      "status": "UNCHANGED"
+    },
+    "ci": {
+      "bindings": 47,
+      "bytes": 688106,
+      "sha256": "29ed620cf9e562a382d50a9722397579b0c0523196a582e9a41c8a52f6ffa18f",
+      "added": [
+        "scripts/test-lua.mjs"
+      ],
+      "changedExistingCurrent": [
+        "scripts/ci-test-timings.json",
+        "tests/ci-complete-calibration.test.mjs",
+        "tests/helpers/release-item-title-shadow-planning.mjs",
+        "tests/player-ground-shadow.test.mjs",
+        "tests/release-item-title-shadow-source.test.mjs"
+      ],
+      "otherCurrentUnchanged": 41,
+      "allExistingBeforeUnchanged": true,
+      "allInventoriesUnchanged": true,
+      "immutableArchivesUnchanged": 93,
+      "note": "93 entries comprise all 92 predecessor archives plus this continuation’s unchanged production packet."
+    }
+  },
+  "costTrustDocuments": [
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.json.gz",
+      "bytes": 76411,
+      "sha256": "d6e2dd5c924f12ecb2f3ce1494e29fe5d9648d0c95be610b443354b6331b2e7b"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stderr.gz",
+      "bytes": 20,
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stdout.gz",
+      "bytes": 317,
+      "sha256": "2cbfbe7ed3c24888bd06feca182c3d70e32a91a8c0afaed6b7f04ffd33c97274"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json",
+      "bytes": 658222,
+      "sha256": "bde02bd9f6f0990e608766e471d43cd012553babe49c352bffadcdd59c52f719"
+    }
+  ],
+  "shadowCost": {
+    "entry": "tests/player-ground-shadow.test.mjs",
+    "freezeCommit": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+    "sampleArgs": [
+      "--test",
+      "--test-concurrency=1",
+      "--test-reporter=spec",
+      "tests/player-ground-shadow.test.mjs"
+    ],
+    "node": "v24.18.0",
+    "nodeSha256": "9a4eb5f1c29c6a2e93852ead46b999e284a6a5ca8bab4d4e241d587d025a52de",
+    "sourceInputs": 487,
+    "localStaticImports": 87,
+    "staticImportPaths": [
+      "scripts/art-features.mjs",
+      "scripts/art/converted-card-data.mjs",
+      "scripts/art/lightweight-2d-assets.mjs",
+      "scripts/art/performance-pack.mjs",
+      "scripts/art/ready-card-registry.mjs",
+      "scripts/art/ready-card-runtime.mjs",
+      "scripts/build-lua-data.mjs",
+      "scripts/build-original-v4.mjs",
+      "scripts/build-ui-theme.mjs",
+      "scripts/build-ui.mjs",
+      "scripts/card-art-samples.mjs",
+      "scripts/card-face.mjs",
+      "scripts/card-lightning.mjs",
+      "scripts/character-selection-composition.mjs",
+      "scripts/character-ui-layout.mjs",
+      "scripts/ci-media-lfs.mjs",
+      "scripts/ci-reviewed-lfs.mjs",
+      "scripts/ci-shards.mjs",
+      "scripts/ci-timeout-policy.mjs",
+      "scripts/cinematic-ui-layout.mjs",
+      "scripts/constellation-geometry.mjs",
+      "scripts/controls-guide-layout.mjs",
+      "scripts/deck-ui-layout.mjs",
+      "scripts/evidence-files.mjs",
+      "scripts/exit-ui-layout.mjs",
+      "scripts/game-ui-layout.mjs",
+      "scripts/lightweight-2d-profile.mjs",
+      "scripts/lightweight-card-layout.mjs",
+      "scripts/lowcost-art.mjs",
+      "scripts/lua-workers.mjs",
+      "scripts/lumine-selection-background.mjs",
+      "scripts/map-ui-layout.mjs",
+      "scripts/match-event-layout.mjs",
+      "scripts/menu-flat-triangle.mjs",
+      "scripts/menu-red-scene.mjs",
+      "scripts/monster-art.mjs",
+      "scripts/native-ui-theme.mjs",
+      "scripts/node-ui-layout.mjs",
+      "scripts/noncombat-neow-layout.mjs",
+      "scripts/noncombat-v25-layout.mjs",
+      "scripts/official-assets-layout.mjs",
+      "scripts/official-assets-profile.mjs",
+      "scripts/official-backdrop-layout.mjs",
+      "scripts/official-background.mjs",
+      "scripts/official-battle-card-chrome.mjs",
+      "scripts/official-battle-hud.mjs",
+      "scripts/official-battle-pile-chrome.mjs",
+      "scripts/official-portraits.mjs",
+      "scripts/official-run-hud-components.mjs",
+      "scripts/official-run-layout.mjs",
+      "scripts/potion-discard-layout.mjs",
+      "scripts/potion-slot-visual.mjs",
+      "scripts/release-notes.mjs",
+      "scripts/relic-view-layout.mjs",
+      "scripts/sts-card-reference-profile.mjs",
+      "scripts/sts-neow-choice-layout.mjs",
+      "scripts/sts-neow-guide-layout.mjs",
+      "scripts/sts-reward-row-layout.mjs",
+      "scripts/test-lua.mjs",
+      "scripts/ui-layout.mjs",
+      "scripts/ui-profile.mjs",
+      "scripts/v25-battle-chrome.mjs",
+      "scripts/v25-battle-scene.mjs",
+      "scripts/v25-card-binding.mjs",
+      "scripts/v25-card-templates.mjs",
+      "scripts/v25-character-layout.mjs",
+      "scripts/v25-layout.mjs",
+      "scripts/v25-map-layout.mjs",
+      "scripts/v25-menu-layout.mjs",
+      "scripts/v25-node-layout.mjs",
+      "scripts/v25-portrait-profile.mjs",
+      "scripts/v25-private-card-assets.mjs",
+      "scripts/v25-profile.mjs",
+      "scripts/v25-result-layout.mjs",
+      "scripts/v25-turn-notice-layout.mjs",
+      "scripts/v25-ui-mask-assets.mjs",
+      "scripts/validate-data.mjs",
+      "scripts/victory-easter-egg-layout.mjs",
+      "scripts/viewport-layout.mjs",
+      "tests/helpers/battle-life-frozen-hand.mjs",
+      "tests/helpers/event-combat-route-input.mjs",
+      "tests/helpers/historical-card-input.mjs",
+      "tests/helpers/historical-monster-ui-runner.mjs",
+      "tests/helpers/historical-presentation-runner.mjs",
+      "tests/helpers/historical-sts-style-runner.mjs",
+      "tests/helpers/v25-texture-binding-fixture.mjs",
+      "tests/player-ground-shadow.test.mjs"
+    ],
+    "sourceTextInputs": 485,
+    "pngPhysicalInputs": 2,
+    "installedDependencyInputs": 290,
+    "configInputs": 1,
+    "physicalBeforeAfterInputs": 778,
+    "allPhysicalBeforeAfterEqual": true,
+    "allPhysicalSourceDependencyRowsMatchFreshDisk": true,
+    "actualTests": 3,
+    "actualPass": 3,
+    "actualFail": 0,
+    "actualSkip": 0,
+    "actualWallMs": 22235,
+    "nodeReportedMs": 22146.1864,
+    "registeredFloorMs": 22235,
+    "priorObservedMinimumMs": 18852,
+    "sourceLogSha256": "2cbfbe7ed3c24888bd06feca182c3d70e32a91a8c0afaed6b7f04ffd33c97274",
+    "observationSha256": "d6e2dd5c924f12ecb2f3ce1494e29fe5d9648d0c95be610b443354b6331b2e7b",
+    "receiptLfSha256": "bde02bd9f6f0990e608766e471d43cd012553babe49c352bffadcdd59c52f719",
+    "selfReferenceProjection": "Delete only tests/player-ground-shadow.test.mjs from jsPlanning.localLowerBounds. The resulting complete planning JSON must match the sampled config. The new record is authenticated separately in full.",
+    "oldConfigCostsAndRetirementFloorUnchanged": true,
+    "retirementFloorMs": 79861,
+    "retirementReceiptGitBytesUnchanged": true,
+    "metadataExcludedExactly": [
+      "data/README.md",
+      "data/SOURCES.md"
+    ],
+    "sampleWasReexecutedByReviewer": false
+  },
+  "policyCorrection": {
+    "source": "docs/CI.md:168",
+    "ownerDate": "2026-11-07",
+    "previousAdviceWithdrawn": true,
+    "reason": "The reviewer's insistence that the newly added current raw forecast must be below target and below guard as hard assertions was incorrect. Those added forecast comparisons conflict with the explicit existing Owner policy. The recommendation is withdrawn.",
+    "classification": "Restores existing Owner policy; does not relax an Owner gate.",
+    "originalFrozenBudgetAssertions": "UNCHANGED; all text before the newly added current-raw contract is byte-equivalent except its exact added helper import.",
+    "currentForecastRole": "Diagnostic only, including the 60-second reserve. No comparison of current forecast against target or execution timeout is an admission assertion.",
+    "physicalWorkflowGuards": {
+      "fast": "${{ matrix.os == 'windows-2025' && 45 || 30 }}",
+      "rules": "${{ inputs.runner_pool == 'local-special' && 75 || 45 }}",
+      "engineeringPosixShards": "30"
+    },
+    "guardVerification": "Reads unprojected physical quality.yml. Each named top-level job must occur once and contain exactly one four-space timeout-minutes property; step-level lookalikes cannot satisfy it.",
+    "independentNegativeControls": [
+      "missing timeout for each relevant job",
+      "changed timeout for each relevant job",
+      "duplicate timeout for each relevant job",
+      "step-only timeout for each relevant job",
+      "wrong job for each relevant job",
+      "duplicated top-level job"
+    ],
+    "actualWorkflowsAndRuntimePolicyFilesUnchanged": true,
+    "oldReportsPreserved": true,
+    "correctionArtifact": "review-ci-policy-correction.json"
+  },
+  "independentFreshTests": [
+    {
+      "command": "node24 --test --test-concurrency=1 tests/release-item-title-shadow-source.test.mjs",
+      "codeHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 3798.5049
+    }
+  ],
+  "independentProbeGroups": [
+    {
+      "name": "exact code and evidence identity; ten adapter paths plus two previously reviewed equivalent harness paths",
+      "status": "PASS"
+    },
+    {
+      "name": "new forty-seventh CI input and only five existing after bindings; every old before archive and inventory retained",
+      "status": "PASS"
+    },
+    {
+      "name": "retirement receipt bytes unchanged and only the new shadow timing record is added",
+      "status": "PASS"
+    },
+    {
+      "name": "all 778 original physical sample rows are unchanged and exactly match 487 source 290 dependency and one config records",
+      "status": "PASS"
+    },
+    {
+      "name": "every actual local static import and shadow Lua dependency source stays inside authenticated execution closure",
+      "status": "PASS"
+    },
+    {
+      "name": "self-reference projection is exact: old timing costs budgets retirement and own floor evidence drift all reject",
+      "status": "PASS"
+    },
+    {
+      "name": "live code fixture data release versions dependency bytes PNG and receipt/gzip corruption reject; metadata is unread",
+      "status": "PASS"
+    },
+    {
+      "name": "all shadow text closure and receipt accept LF CRLF; binary rows remain physical",
+      "status": "PASS"
+    },
+    {
+      "name": "new JSON Lua and unknown Markdown discovery reject independently in an artifact shadow",
+      "status": "PASS"
+    },
+    {
+      "name": "physical guard parser independently rejects per-job missing changed duplicate step-only wrong-job and duplicate-job guards",
+      "status": "PASS"
+    },
+    {
+      "name": "policy correction only changes newly added raw forecast admission; old frozen assertions workflow and runtime policies remain exact",
+      "status": "PASS"
+    },
+    {
+      "name": "all continuation evidence gzip bytes uncompressed hashes and exact-input claims are authentic",
+      "status": "PASS"
+    }
+  ],
+  "additionalOldCostControls": {
+    "windowsJsObservationDriftRejected": true,
+    "posixJsObservationDriftRejected": true,
+    "luaObservationDriftRejected": true,
+    "luaShardCostDriftRejected": true
+  },
+  "independentDiagnosticPlanning": [
+    {
+      "platform": "win32",
+      "shards": 18,
+      "js": 881,
+      "lua": 1424,
+      "forecastMs": 1763488,
+      "targetMs": 1800000,
+      "overrunMs": 0,
+      "role": "Diagnostic only; no forecast threshold is used as admission."
+    },
+    {
+      "platform": "linux",
+      "shards": 15,
+      "js": 881,
+      "lua": 1424,
+      "forecastMs": 1198438,
+      "targetMs": 1200000,
+      "overrunMs": 0,
+      "role": "Diagnostic only; no forecast threshold is used as admission."
+    }
+  ],
+  "sourceBoundaryControls": [
+    "existing parent/runtime/fixture/data/version/dependency inputs: mutation and missing reject",
+    "both PNGs: signature-byte corruption rejects through physical hashes",
+    "receipt trailing-content change rejects",
+    "gzip trailing-byte addition rejects",
+    "all 485 active source texts and receipt accept LF/CRLF; dependencies/binaries stay physical",
+    "two known data descriptions and Backlog are never read as execution dependencies",
+    "new JSON, production Lua and unknown Markdown additions independently reject in artifact shadow corpora",
+    "complete old platform timings, unknown costs, initial load, retirement floor and foreign config fields reject changes",
+    "own shadow floor missing/mutated/forged receipt hash rejects"
+  ],
+  "rootRegressionEvidence": {
+    "path": "item-title-shadow-final-contracts.log",
+    "sha256": "7d80b38a835caa9ab0f6df254a02a9f5e766721ce2d6209119e670a339d39edb",
+    "executions": 16,
+    "uniqueTestNames": 12,
+    "pass": 16,
+    "fail": 0,
+    "skip": 0,
+    "includesEarlierNamedFailures": true,
+    "note": "Inspected root result, not an independent rerun. Four names occur twice because cases and a parent test were both listed; 16 executions are not claimed as 16 independent requirements."
+  },
+  "findings": [],
+  "unresolved": [],
+  "resolvedHistory": [
+    {
+      "id": "SHADOW-H01",
+      "status": "RESOLVED",
+      "fixedCommit": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+      "resolution": "Snapshot corrected to actual abyss_ui_layout.lua; equivalent source-tree harness bytes verified."
+    },
+    {
+      "id": "CI-POLICY-01",
+      "status": "PRIOR_REVIEW_ADVICE_WITHDRAWN",
+      "resolution": "Removed only reviewer-added current forecast target/guard admission assertions; retains all original frozen oracles and real workflow timeouts, as Owner had already required."
+    }
+  ],
+  "acceptance": {
+    "sourceCIAndCostIncrement": "PASS_WITH_LIMITS; this exact increment is acceptable for source integration.",
+    "hostedFull": "UNVERIFIED",
+    "bootstrapPR692": "NOT_COVERED; a separate slice and any later composition require fresh exact bindings.",
+    "formalCandidateGIL": "NOT_PERFORMED",
+    "officialImportReady": "UNVERIFIED",
+    "PCDevice": "UNVERIFIED",
+    "mobileDevice": "UNVERIFIED",
+    "officialCapacity": "UNVERIFIED",
+    "releaseGo": "NO_GO"
+  },
+  "limitations": [
+    "The new 22.235-second three-case shadow observation was authenticated from saved physical snapshots and command/log evidence, not reexecuted by reviewer.",
+    "The reviewer did not repeat 22s/80s/73/44/Fast/Full matrices or the root’s 16-execution selected contract run.",
+    "No local cost floor or forecast is a Hosted upper bound, actual Hosted completion, or official device/capacity evidence.",
+    "The 17.134s initial green and 18.851s corrected green retain their original identities; the first corrected-path TEMP failure and raw nil-figure failure remain authentic archived failures.",
+    "The custom alternate-cwd builder source lookup remains existing process.cwd behavior; actual raw Full uses the repository cwd. No arbitrary alternate-cwd parity is claimed.",
+    "No GUI, keyboard/mouse, MCP, candidate, tag, push, PR/CI mutation, CI polling or source-tree mutation was performed."
+  ]
+}

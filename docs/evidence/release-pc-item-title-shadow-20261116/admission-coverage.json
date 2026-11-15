@@ -1,10 +1,15 @@
 {
   "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
-  "verifiedExecutableCheckpoint": "c46f5c6bfdba86e799d2934e0d5569f3d3cff01a",
-  "codeAndPolicyAndTrustInputs": 53,
+  "verifiedExecutableCheckpoint": "9c49fa1e5a8fa70cd136a1ed930b53ed3fb2a3cf",
+  "codeAndPolicyAndTrustInputs": 58,
   "uncovered": [],
   "product": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
-  "source": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+  "originalSource": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+  "harness": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+  "sourceIncrement": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+  "previousCheckpoint": "c46f5c6bfdba86e799d2934e0d5569f3d3cff01a",
+  "previousCoverageBlob": "c6fdb76d04d736d3574a02e4c1813537fad4e92e",
+  "reviewNormalization": "LF",
   "rows": [
     {
       "path": "config/luacheck-baseline.json",
@@ -63,11 +68,39 @@
       "kind": "sourceCIcost"
     },
     {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.json.gz",
+      "gitBlob": "22b5fa9f4270218f933433771f8e1065d4a42e8e",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stderr.gz",
+      "gitBlob": "ae211a2cb77f6830fe3b183a87963fc514435a29",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stdout.gz",
+      "gitBlob": "a169a31b698add100721a02478145d20594beb34",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
+    },
+    {
       "path": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
       "gitBlob": "b0e826934ae1aea58f37dd8e8885c78296468af8",
       "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
       "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
       "kind": "sourceCIcost"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json",
+      "gitBlob": "afa3916b3f8e26befa5adea75873e2df6b229796",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "docs/evidence/release-pc-ground-shadow-20261115/verify.mjs",
@@ -106,10 +139,10 @@
     },
     {
       "path": "scripts/ci-test-timings.json",
-      "gitBlob": "c413f675e27c6b45bde7210f427b4bc474529a55",
-      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
-      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
-      "kind": "sourceCIcost"
+      "gitBlob": "422463819895c4f66dac22b6b371b166f2c0b2e5",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "scripts/lowcost-art.mjs",
@@ -131,6 +164,13 @@
       "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
       "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
       "kind": "product"
+    },
+    {
+      "path": "scripts/test-lua.mjs",
+      "gitBlob": "45373c3118b12e7fb9c9fe4526d2fa132e11b3f2",
+      "reviewHead": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+      "reviewSha256": "66eae80bf2701ba224c2f0e218ef9cc30d925469e2ed66bcb735bbbaf9458506",
+      "kind": "rawShadowHarness"
     },
     {
       "path": "scripts/v25-menu-layout.mjs",
@@ -197,10 +237,10 @@
     },
     {
       "path": "tests/ci-complete-calibration.test.mjs",
-      "gitBlob": "9a73aa95810c4fe9df62b284ce2193d4004069ef",
-      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
-      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
-      "kind": "sourceCIcost"
+      "gitBlob": "85b0af325f6bd6655cdd977b49dedc09f0c4125a",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "tests/helpers/closeout-source-epoch.mjs",
@@ -232,24 +272,24 @@
     },
     {
       "path": "tests/helpers/release-item-title-shadow-ci-source.json.gz",
-      "gitBlob": "f366540c8fe5f3da9acf29fafb64aeeee691a685",
-      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
-      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
-      "kind": "sourceCIcost"
+      "gitBlob": "61570b48ebe235f52a3c058432f6920dfc7ec696",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "tests/helpers/release-item-title-shadow-ci-source.mjs",
-      "gitBlob": "713d97d6c939e38e245a28baf44dd0c2395c36f7",
-      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
-      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
-      "kind": "sourceCIcost"
+      "gitBlob": "20b3bf01b90be2185faf9a8c206ad6063d2b37f0",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "tests/helpers/release-item-title-shadow-planning.mjs",
-      "gitBlob": "38944a2aed9f0b703077da16f1c78503737bd622",
-      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
-      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
-      "kind": "sourceCIcost"
+      "gitBlob": "a7a6deabaa5aee130d560fb279156796eebf6a70",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "tests/helpers/release-item-title-shadow-source.json.gz",
@@ -330,10 +370,10 @@
     },
     {
       "path": "tests/player-ground-shadow.test.mjs",
-      "gitBlob": "a9d40d786696b36e7f44e360f3331c1f50248b12",
-      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
-      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
-      "kind": "product"
+      "gitBlob": "04ceba6a9adbb1a0b56c5bf732cd791774470f2d",
+      "reviewHead": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+      "reviewSha256": "66eae80bf2701ba224c2f0e218ef9cc30d925469e2ed66bcb735bbbaf9458506",
+      "kind": "rawShadowHarness"
     },
     {
       "path": "tests/potion-art-runtime.test.mjs",
@@ -351,10 +391,10 @@
     },
     {
       "path": "tests/release-item-title-shadow-source.test.mjs",
-      "gitBlob": "18d477b8d3f12fbe2d922e8cfdf9edf2f27c34d7",
-      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
-      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
-      "kind": "sourceCIcost"
+      "gitBlob": "b96c06845dc62d91fbf2e552f31ab9c66d213818",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement"
     },
     {
       "path": "tests/reward-pool-retirement-runtime.test.mjs",
@@ -378,6 +418,8 @@
       "kind": "sourceCIcost"
     }
   ],
-  "notHostedFull": true,
-  "notOfficialAcceptance": true
+  "limits": [
+    "Exact current sources only; no future PR692 base accepted.",
+    "No Hosted or official/device/release acceptance inferred."
+  ]
 }

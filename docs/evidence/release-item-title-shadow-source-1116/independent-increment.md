@@ -1,0 +1,11 @@
+# Independent source / CI / cost increment — PASS WITH LIMITS
+
+Code `e2eb0d75097be343f1e86efc4c02e5a3c8110540`, tree `613981177db2f75c38668a1ab5aed62541e02bc5`; evidence-only successor `aac67e517d3acb1926e06034ddb5ff33717c8e2d`, tree `b3640a65776c64721f4dfda30e8ba6400f1e33b5`. Findings and unresolved items: none. All ten increment paths and the two exact-equivalent harness paths were reviewed; previous 6cc and harness reports remain separate.
+
+- Independent final source contracts passed 6/6; twelve independent probe groups passed. All 87 local static imports are bound. The original 778 physical snapshots (487 source, 290 dependencies, one config) are identical before/after and match their measured input identities. The three-case 22,235 ms observation is authenticated; the reviewer did not repeat it.
+- New CI packet is `29ed620cf9e562a382d50a9722397579b0c0523196a582e9a41c8a52f6ffa18f` (688,106 B): one added input, five changed existing after bindings, 41 unchanged after bindings; all before bindings, inventories and 93 archives remain exact. Production packet e52c and its eight owners are unchanged.
+- The new 22,235 ms floor projects out only its own record. Old JS/Lua costs, config, retirement 79,861 ms floor and receipt remain exact; real code/fixture/data/version/dependency/PNG drift and unknown corpus additions reject. LF/CRLF text portability and physical binary checks passed; the two non-executable data descriptions remain outside live execution authentication.
+- Earlier advice to make current forecasts hard admission gates is withdrawn under the existing Owner policy in `docs/CI.md:168`. All old frozen assertions remain. Predictions 1,763,488 / 1,198,438 ms are diagnostic only. Unprojected physical Fast45/30, rules hosted45/local75 and POSIX30 job timeouts passed independent per-job missing/changed/duplicate/step-only/wrong-job/duplicate-job controls.
+- Root's selected regression log records 16 passing executions / 12 unique test names. Duplicated names are disclosed; this is inspected root evidence, not an independent rerun.
+
+This exact source increment is acceptable for integration. Hosted Full, separate PR692 composition, formal GIL/import/ready, PC/mobile and official capacity remain unverified; release remains NO_GO. No 22s/80s/73/44/Fast/Full rerun or source mutation was performed by this reviewer.

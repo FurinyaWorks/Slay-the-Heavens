@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "reviewKind": "INDEPENDENT_BOUNDED_TRACE_EVIDENCE",
+  "result": "PASS_SCOPED_EVIDENCE",
+  "productAcceptance": "UNVERIFIED",
+  "taskDone": false,
+  "sourceIdentity": {
+    "release": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+    "baseline": "03beb581e0799744df90e34a81e1a730ddf2d878",
+    "comparison": "8a44cd2f1a7abb41dcf9fd8e3623f1e046aeb181",
+    "freeze": "5bd55d7691480b10d00e947076e15c8870640474",
+    "listedOwnerBlobPairsVerified": 11,
+    "fixtureBlob": "4bdec81ca4a2756172f83f96a81108ffd498fc52",
+    "productionOnUpdateBlob": "27e431ab37ebb4490ec61d536a81f47b0688f076",
+    "comparisonToFreezeSrcScriptsDataDiff": "EMPTY",
+    "fullDependencyClosureVerified": false
+  },
+  "hashesVerified": {
+    "script": "3d36ec1916f030038b01920c7f1b24454a8bae5b3e041023445ae7d2eac03524",
+    "baselineLog": "9b468410778d6bfb4cfa435f89113d20edb6a005c32fcdf196e21848bd2c9bca",
+    "comparisonLog": "ac99849aee4f5ea93b82e3df58321edba443b813132e2e161f3e8500e918a43d"
+  },
+  "independentLogAnalysis": {
+    "rows": 728,
+    "continuousFrames": true,
+    "illegalRewardFrames": 0,
+    "cases": [
+      {"source":"baseline","mode":"normal","rows":228,"coverFrames":[1,225],"coverTransitions":4,"death":62,"actorHidden":171,"rewardMounted":225,"rewardUncovered":226},
+      {"source":"baseline","mode":"fast","rows":138,"coverFrames":[1,135],"coverTransitions":4,"death":21,"actorHidden":81,"rewardMounted":135,"rewardUncovered":136},
+      {"source":"comparison","mode":"normal","rows":226,"coverFrames":[],"coverTransitions":0,"death":61,"actorHidden":170,"rewardMounted":224,"rewardUncovered":224},
+      {"source":"comparison","mode":"fast","rows":136,"coverFrames":[],"coverTransitions":0,"death":20,"actorHidden":80,"rewardMounted":134,"rewardUncovered":134}
+    ],
+    "coverOracle": "Independent log comparison; Lua trace itself does not assert zero cover",
+    "rewardOracle": "Lua per-frame assertions for not busy and empty feedback.dying; log independently corroborates busy plus sampled dying ID"
+  },
+  "conclusion": "PR684 covers this deterministic ready-best-case Host page-cover path; no evidence here requires an additional death/reward delay.",
+  "supplementReview": {
+    "initialRetained": ["review-pc13-trace.initial.md", "review-pc13-trace.initial.json"],
+    "input": "pc13-settlement-intake.json::provenanceSupplement",
+    "inputJsonSha256": "4d8609603b1889a1774b5e2e53e59d6b747d7aab2ee550aec969fe60164aa581",
+    "inputMdSha256": "6e1dd30bf56173dedfc746ebaf91ea5fd6cdb7a257f44aed56f710ca4999271e",
+    "mode": "READ_ONLY_METADATA_REVIEW_NO_RERUN",
+    "helperBlob": "a816eee3dd93cca12552887f2b43ca412c169d01",
+    "helperLoadOrderVerified": "private generated directory first, require all generated Lua before dofile trace",
+    "actualInvocationMetadata": "Author reconstructed from actual tool invocations; both cwd, fixed Node24 executable, --input-type=module stdin and officialAssets:true now recorded",
+    "currentReadbackSourceBlobAndLfHashPairsVerified": 18,
+    "currentNodeAndTwoCliHashesVerified": true,
+    "verbatimOrigin676BlobVerified": "4c91ae24feb13adc3abdd8944537ec66e9d2cd2e",
+    "historicalGeneratedOutputs": "NOT_SAVED; random temporary directory deleted in finally; hashes remain null",
+    "inheritedTmpTempAtRun": "NOT_CAPTURED",
+    "coreResultChanged": false
+  },
+  "findings": [],
+  "evidenceLimitations": [
+    "No trace rerun this review; read code, verified Git/file hashes and independently parsed all logs",
+    "Constant-true presentationReady, success settlement callback and synthetic native handles/actor API",
+    "Deterministic manually initialized one-card one-enemy combat; natural production lethal command and feedback thereafter",
+    "Core update/gate order matches OnUpdate but native presentation/texture/component/cardArt bridges are omitted",
+    "Only logical visibility/alpha, no GPU pixels, official ready, device, capacity or candidate",
+    "Invocation cwd/Node/stdin/options and helper load order now documented and reviewed; historical generated Theme/Layout/Templates bytes, hashes and random directory suffix not saved; no replay or retrospective hash claim",
+    "No multi-enemy, overkill, chain/death-trigger, multi-hit, reward-return or initial-game pacing comparison"
+  ],
+  "mutations": {"source":false,"backlog":false,"gui":false,"pr":false}
+}

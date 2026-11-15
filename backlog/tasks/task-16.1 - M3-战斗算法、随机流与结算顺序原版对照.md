@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 01:57'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 18:49'
 labels:
   - required
   - rule-parity
@@ -26,6 +26,7 @@ references:
   - docs/backlog-details/MOBILE-QA-20261028.md
   - docs/reviews/M3-RULES-CONSUMER-CHAIN-20261031.md
   - docs/evidence/m3-completion-20261031/
+  - docs/evidence/release-pc-settlement-trace-20261116/independent-review.json
 parent_task_id: TASK-16
 priority: medium
 type: enhancement
@@ -46,6 +47,11 @@ ordinal: 43000
 - [x] #4 现有测试与客户端专项证据已按版本留档；本地、候选、导入和实机没有混算。
 - [x] #5 完整职业和遗物药水补齐后，逐项验证新增及跨域组合的原版数值、先后顺序和同一共享结算入口。
 - [ ] #6 验证完整来源池的随机抽取、流初始化与全部消费顺序，并保留对应实际游戏记录；未接入内容不能以现有子集测试替代。
+- [ ] #7 #676 拟议 TASK-103.6 AC3：末击到死亡/奖励的切换不得重复遮幕；分别保留视觉时序和真实业务状态的自动回归、反例及截图/帧序列。
+- [ ] #8 #676 拟议 TASK-16.1.5 AC1：固定源敌人死亡、末击命中、状态结算、Victory/奖励揭幕的事实顺序；对可见帧作真实观察，不能只凭业务日志或仅测试最后存活敌人的HP。
+- [ ] #9 #676 拟议 TASK-16.1.5 AC2：敌人死亡/消失后才按正式时序稳定呈现奖励；无重复全屏遮挡、奖励先出现再撤回或错误返回战斗。
+- [ ] #10 #676 拟议 TASK-16.1.5 AC3：覆盖多敌、过量伤害、死亡触发、连锁伤害、多段、战斗结束前旧事件以及奖励返回地图；不改RNG/数值和奖励内容。
+- [ ] #11 #676 拟议 TASK-16.1.5 AC4：核对 #672 原死亡路径测试并新增确实检验可见转场顺序的RED/GREEN，最终官方PC及移动端同候选录像/帧证据通过后再完成。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -64,6 +70,8 @@ ordinal: 43000
 2026-10-31 M3整批收口：对照完整效果与随机消费账本复核新增消费者组合，保留全来源和实玩差集。
 
 2026-10-31 剩余唯一离线RNG差集：独立完整Prismatic320身份池向量验证每次身份及重复重试前long、公开跨幕setCounter和Act2正常/精英同流、旧owner拒绝，保留原93向量；实际平台记录仍不替代。
+
+2026-11-16 PC13继续：在已有PR684加载修复与Release时序等价源之间，用可控初始化后自然末击的真实Host逐帧对照，先区分全幕脉冲与结算逻辑；没有新反例不插delay或重做#672死亡链。独审诊断证据，正式候选/ready/原版帧序及复杂场景保持未验。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -150,4 +158,6 @@ ordinal: 43000
 2026-11-14清理旧窗口日期：原due_date=2026-10-28保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已有5/6项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+PC13自然末击正常/fast两档的728连续帧记录已独立PASS_SCOPED_EVIDENCE：旧路径各2个单帧cover脉冲（4开关），PR684产品等价路径均0；全部reward可见帧notbusy且dying为空，actor逻辑退场先于reward。支持该ready最佳情形离线路径由现有加载片覆盖，无新delay依据，不重复新建修复/PR。证据docs/evidence/release-pc-settlement-trace-20261116/含12原文件无损bundle及独审；11x4owner与脚本/日志身份已核。platform presentationReady固定true，末击前可控初始化、native可见为mock；历史随机profile目录已删除、Theme/Layout/Templates过去SHA未保存，现在入口/Node/CLI hash仅current-readback，不能冒充完整运行闭包或官方ready。复杂多敌/多段/死亡触发/领奖返回地图、原版/正式PC视频及手机仍未验，原5历史checked保留、新AC7-11未勾。
 <!-- SECTION:NOTES:END -->

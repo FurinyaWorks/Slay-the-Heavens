@@ -1,0 +1,69 @@
+{
+  "archive": "pc13-independent-evidence.json.gz",
+  "sha256": "ee832744d0c1593621deb3bcd4bc9da55d81292b1ba98973f1fe7440ccf9a829",
+  "bytes": 43386,
+  "files": [
+    {
+      "path": "pc13-settlement-intake.json",
+      "bytes": 25113,
+      "sha256": "4d8609603b1889a1774b5e2e53e59d6b747d7aab2ee550aec969fe60164aa581"
+    },
+    {
+      "path": "pc13-settlement-intake.md",
+      "bytes": 3866,
+      "sha256": "6e1dd30bf56173dedfc746ebaf91ea5fd6cdb7a257f44aed56f710ca4999271e"
+    },
+    {
+      "path": "pc13/harness-fast-setting-baseline.log",
+      "bytes": 36160,
+      "sha256": "43aec609134fe9588ab636289f29fa276ac60746b0a1d01baf4004084b2ca8eb"
+    },
+    {
+      "path": "pc13/harness-fast-setting-pr684.log",
+      "bytes": 35796,
+      "sha256": "0234ad950b92f9c6ae7c5ae840a6ec9496307bf818b3aec2f9454f4ee9271fc1"
+    },
+    {
+      "path": "pc13/harness-return-value-error.log",
+      "bytes": 968,
+      "sha256": "c14cbc189c231ccb704f49d10799362c53e2ee631b50fff5a08d746548c87a96"
+    },
+    {
+      "path": "pc13/host-settlement-trace.lua",
+      "bytes": 3730,
+      "sha256": "3d36ec1916f030038b01920c7f1b24454a8bae5b3e041023445ae7d2eac03524"
+    },
+    {
+      "path": "pc13/pr684-product-timing.log",
+      "bytes": 29133,
+      "sha256": "ac99849aee4f5ea93b82e3df58321edba443b813132e2e161f3e8500e918a43d"
+    },
+    {
+      "path": "pc13/release-timing-baseline.log",
+      "bytes": 29497,
+      "sha256": "9b468410778d6bfb4cfa435f89113d20edb6a005c32fcdf196e21848bd2c9bca"
+    },
+    {
+      "path": "review-pc13-trace.json",
+      "bytes": 4355,
+      "sha256": "159ceeda4a5bfe87b3559ab2290c1573c49ab7f7829d44d2ddd08d868fed0ed4"
+    },
+    {
+      "path": "review-pc13-trace.md",
+      "bytes": 8672,
+      "sha256": "fc471e6c8c9511e69524dff2fb4f1e94d6bbb86f492490e6499e8a85550dc703"
+    },
+    {
+      "path": "review-pc13-trace.initial.json",
+      "bytes": 3133,
+      "sha256": "e84420016fd20c685448a675000fec2f834c97a6ae2b779ecad34fba6c510cc7"
+    },
+    {
+      "path": "review-pc13-trace.initial.md",
+      "bytes": 6417,
+      "sha256": "34467b3884e36caf5a3a7891002ec43d6683a8eed587b23bd5ac45678fed87db"
+    }
+  ],
+  "preservationOnly": true,
+  "notNewRuntimeEvidence": true
+}
