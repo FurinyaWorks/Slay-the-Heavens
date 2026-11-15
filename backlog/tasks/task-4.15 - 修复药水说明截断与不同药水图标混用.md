@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 20:14'
 labels:
   - playtest-20261030
   - p1
@@ -15,6 +15,7 @@ labels:
 milestone: m-8
 dependencies: []
 references:
+  - docs/backlog-details/PC-QA-20261115.md
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
 parent_task_id: TASK-4
@@ -33,6 +34,7 @@ Owner截图：肌肉药水描述末尾在「人工」附近截断；两种不同
 - [ ] #1 肌肉药水及其余长描述均完整显示，文本真实含义和使用/丢弃控件不被裁剪。
 - [ ] #2 不同药水可通过正确的图形/语义可靠区分，保持原有效果和点击确认规则。
 - [ ] #3 顶部生命等数值完整显示；裁剪问题与真实数值异常作出区分。
+- [ ] #4 同一最终候选在战斗顶部、商店、奖励及药水使用弹窗中显示正确且可区分的不同药水语义图标；药水标题、描述、价格与使用/丢弃逻辑一致，不因图标共用让玩家选错物品。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -61,4 +63,5 @@ Owner截图：肌肉药水描述末尾在「人工」附近截断；两种不同
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+2026-11-15 PC截图03、08及23:00、46:31用户指出图标混同；#672已提交语义图标候选，但该PR未合入且真实PC/手机观察未通过，不能勾新AC。
 <!-- SECTION:NOTES:END -->
