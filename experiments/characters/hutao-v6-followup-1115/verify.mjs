@@ -2,9 +2,10 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 const dir='experiments/characters/hutao-v6-followup-1115';
 const sha=b=>createHash('sha256').update(b).digest('hex');
-const read=p=>fs.readFileSync(dir+'/'+p);
+const read=p=>{const bytes=fs.readFileSync(dir+'/'+p);return p.endsWith('.gz')?gunzipSync(bytes):bytes;};
 const source=JSON.parse(read('source-manifest.json')),patch=JSON.parse(read('patch-manifest.json'));
 const old=read('baseline/source.html'),candidate=read('candidate.html');
 assert.equal(sha(old),source.sourceSha256);assert.equal(sha(candidate),patch.candidateSha256);
@@ -20,12 +21,12 @@ for(const test of source.tests){
  assert.equal(sha(read('tests/'+test.name+'.test.mjs')),test.adaptedSha256);
  assert.equal(sha(read('baseline/'+test.name+'.test.mjs.txt')),test.sourceSha256);
 }
-const red=read('evidence/red-r02.tap').toString(),green=read('evidence/green-final.tap').toString();
+const red=read('evidence/red-r02.tap.gz').toString(),green=read('evidence/green-final.tap.gz').toString();
 assert.match(red,/# tests 5\r?\n# suites 0\r?\n# pass 1\r?\n# fail 4/);
 assert.match(green,/# tests 29\r?\n# suites 0\r?\n# pass 29\r?\n# fail 0\r?\n# cancelled 0\r?\n# skipped 0/);
 const report={status:'pass',sourceGitBlob:source.sourceGitBlob,sourceSha256:source.sourceSha256,candidateSha256:patch.candidateSha256,
  changedStringOccurrences:patch.edits.reduce((n,e)=>n+e.count,0),engineByteIdentical:true,cardIdentitiesAndMechanics:'29-test-suite includes per-card 75-entry comparison',
  checks:['exact-source-Git-blob','only-seven-listed-text-occurrences','complete-engine-identical','two-inline-script-syntax','prior-test-path-only-adaptation','red-four-copy-failures','29-green-no-skip'],
- evidence:{redSha256:sha(read('evidence/red-r02.tap')),greenSha256:sha(read('evidence/green-final.tap')),truthfulCopyTestSha256:sha(read('tests/truthful-copy.test.mjs'))},
+ evidence:{redSha256:sha(read('evidence/red-r02.tap.gz')),greenSha256:sha(read('evidence/green-final.tap.gz')),truthfulCopyTestSha256:sha(read('tests/truthful-copy.test.mjs'))},
  namingGate:'HOLD',task96:'Blocked: specific Liyue role/version undecided',productionEnabled:false,officialPc:'UNVERIFIED',physicalMobile:'UNVERIFIED',fullCi:'NOT_RUN'};
 fs.writeFileSync(dir+'/evidence/verification.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
