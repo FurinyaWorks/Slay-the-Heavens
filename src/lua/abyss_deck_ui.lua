@@ -296,16 +296,22 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         close.interactable=self.optional==true or not choice.required or #choice.selected==choice.required
         close.raycastTarget=close.interactable
     end
-    local function retainedChoice(control,binding,callback,choice)
+    local function retainedChoice(binding,callback,choice)
         local generation,run,battle,uid=self.generation,self.run,self.battle,binding.uid
         callback(self.choiceToken,uid)
         -- A callback can close/reopen the view or replace its owner. Only the
         -- same mandatory choice may publish an in-place selection marker.
-        if control.alive==false or binding.uid~=uid or not self.visible or self.generation~=generation or self.run~=run or self.battle~=battle
+        if not self.visible or self.generation~=generation or self.run~=run or self.battle~=battle
             or run.combat~=battle or battle.pendingChoice~=choice then return end
         self.choiceToken,self.choiceSelected=choice.token,choice.selected
         paintChoiceCount(choice)
-        paintChoice(control,binding.instance,self.catalog)
+        -- A native recycle can retire or rebind the clicked cell during the
+        -- callback. Keep its committed token, then paint live cells by UID.
+        for control,current in pairs(self.bindings)do
+            if control.alive~=false and current.generation==generation and current.uid==uid then
+                paintChoice(control,current.instance,self.catalog)
+            end
+        end
     end
     local function currentChoice(binding)
         if not self.visible or not self.choiceToken or binding.generation~=self.generation
@@ -322,7 +328,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local choice=currentChoice(binding)
         if not choice then return end
         local callback,token,uid=self.onPick,self.choiceToken,binding.uid
-        if self.multiple and callback then return retainedChoice(control,binding,callback,choice)end
+        if self.multiple and callback then return retainedChoice(binding,callback,choice)end
         self:close()
         if callback then return callback(token,uid)end
     end
