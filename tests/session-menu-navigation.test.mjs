@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,releaseSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch,releaseSourceEpoch,preMobileUiSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {mobileUiPacket,extendMobileUiEpoch} from './helpers/mobile-ui-source-epoch.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
@@ -10,6 +11,13 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertPriorSessionMenuWitness,extendMobileSessionMenuEpoch,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
+function requiredMobileUiPrior(){
+ const prior=sourceEpoch.proof.targets.mobileUiPrior;
+ assert(prior,'complete frozen P0 view is required for original layer assertions');
+ assert.equal(prior.commit,'1a62b5e517e138b825b8b663a973065c62ad89ec');
+ assert.deepEqual(prior.files,preMobileUiSourceEpoch.proof.current);
+ return preMobileUiSourceEpoch.proof;
+}
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -32,7 +40,7 @@ test('deck notification continuation preserves immutable menu sources and authen
  const changed=structuredClone(menu),owner=Object.keys(changed.current)[0];
  changed.current[owner].source+='\n';
  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
- const proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=requiredMobileUiPrior(),read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  assert.equal(proof.targets.mobilePrior.commit,'aa2060671da1bfd5b7151c48ae8babf7b38d5640');
  assert.equal(proof.currentCommit,neowRetirementStaticContinuation.currentCommit);
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);
@@ -52,7 +60,7 @@ test('deck notification continuation preserves immutable menu sources and authen
 
 test('mobile continuation preserves both prior packets and every old target while freshly rejecting owner drift',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),mobile=packet.mobileContinuation;
- const proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=requiredMobileUiPrior(),read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  const changed=['src/lua/abyss_ui.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_view.lua'];
  assert.deepEqual(Object.keys(mobile.current),changed);
  assert.equal(mobile.currentCommit,'ca103dedb636ad064951c33f207a01bad93bbef8');
@@ -85,7 +93,7 @@ test('mobile continuation preserves both prior packets and every old target whil
 test('Neow retirement continuation keeps the complete prior corpus and rejects fresh owner drift',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),retirement=packet.neowRetirementContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=requiredMobileUiPrior(),path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  const {navigationRetirementPrior,mobileRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
  assert.deepEqual(navigationRetirementPrior.files,proof.targets.mobilePrior.files);
  assert.equal(mobileRetirementPrior.commit,packet.mobileContinuation.currentCommit);
@@ -113,7 +121,7 @@ test('Neow retirement continuation keeps the complete prior corpus and rejects f
 test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=requiredMobileUiPrior(),path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
  const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
  assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);
@@ -129,6 +137,28 @@ test('optional Neow flow helper retains the exact first fix and rejects changed 
   const invalid=structuredClone(extension);mutate(invalid);assert.throws(()=>extendNeowStaticEpoch(prior,invalid));
  }
 });
+test('seven independent mobile owners preserve every P0 layer and reject fresh producer or source drift',()=>{
+ const prior=requiredMobileUiPrior(),proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ assert.equal(proof.currentTreeCommitted,false);
+ for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(proof.targets[name],target,'complete original target '+name);
+ const paths=mobileUiPacket.groups.flatMap(g=>Object.keys(g.current));assert.equal(paths.length,7);
+ for(const group of mobileUiPacket.groups)for(const path of Object.keys(group.current)){
+  assert.deepEqual(group.before[path],prior.current[path]);assert.equal(read(path),group.current[path].source);
+  assert.deepEqual(proof.mobileUiProducers[path],{commit:group.producerCommit,parent:group.parentCommit});
+  assert.equal(sourceEpoch.preCombinedSource(path,read(path),{target:'mobileUiPrior',readSource:read}),group.before[path].source);
+  for(const owner of paths)for(const bad of [null,read(owner)+'\n'])
+   assert.throws(()=>sourceEpoch.preCombinedSource(path,read(path),{target:'mobileUiPrior',readSource:p=>p===owner?bad:read(p)}),/linked owner identity/);
+  for(const mutate of [p=>p.groups.find(g=>g.current[path]).producerCommit='f'.repeat(40),
+   p=>p.groups.find(g=>g.current[path]).parentCommit='f'.repeat(40),
+   p=>p.groups.find(g=>g.current[path]).before[path].source+='\n',
+   p=>p.groups.find(g=>g.current[path]).current[path].source+='\n',
+   p=>delete p.groups.find(g=>g.current[path]).current[path]]){
+   const invalid=structuredClone(mobileUiPacket);mutate(invalid);assert.throws(()=>extendMobileUiEpoch(preMobileUiSourceEpoch,invalid));
+  }
+ }
+ for(const path of Object.keys(proof.current))assert.equal(read(path),proof.current[path].source,'complete final current '+path);
+});
+
 test('reward and mandatory card choices resume with their original live tokens',()=>{
  const r=runLua('tests/lua/session_menu_choices.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/SESSION_MENU_CHOICES_PASS 2/);
