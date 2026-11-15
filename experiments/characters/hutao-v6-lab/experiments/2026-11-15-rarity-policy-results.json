@@ -1,0 +1,236 @@
+{
+  "method": "source-anchored deterministic reward-only simulation (not HutaoGame 5-battle)",
+  "sourceGitBlob": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+  "seedSplits": {
+    "training": [
+      40001,
+      50000
+    ],
+    "holdout": [
+      50001,
+      60000
+    ]
+  },
+  "rarityPools": {
+    "common": 26,
+    "uncommon": 25,
+    "rare": 18
+  },
+  "screenTypes": [
+    "normal",
+    "normal",
+    "elite",
+    "normal"
+  ],
+  "policies": {
+    "baseline": "original B1 Fisher-Yates pool shuffle, no replacement in screen",
+    "weighted": "rarity first (normal 60/37/3, elite 50/40/10), STS1-style offset -5/+common1/reset on rare; uniform ID within selected tier; no duplicate IDs"
+  },
+  "expectedOriginalRareSlotRate": 0.2608695652173913,
+  "expectedOriginalRareScreenRate": 0.6025308241401688,
+  "splits": {
+    "training": {
+      "baseline": {
+        "screens": 40000,
+        "slots": 120000,
+        "duplicates": 0,
+        "missing": 0,
+        "rareScreens": 23929,
+        "multiRareScreens": 6562,
+        "byType": {
+          "normal": {
+            "screens": 30000,
+            "slots": 90000,
+            "common": 33921,
+            "uncommon": 32888,
+            "rare": 23191,
+            "rareScreens": 17879,
+            "rareSlotRate": 0.257678,
+            "rareScreenRate": 0.595967
+          },
+          "elite": {
+            "screens": 10000,
+            "slots": 30000,
+            "common": 11319,
+            "uncommon": 10768,
+            "rare": 7913,
+            "rareScreens": 6050,
+            "rareSlotRate": 0.263767,
+            "rareScreenRate": 0.605
+          }
+        },
+        "perCardByRarity": {
+          "common": {
+            "min": 1656,
+            "max": 1814,
+            "zero": 0
+          },
+          "uncommon": {
+            "min": 1646,
+            "max": 1830,
+            "zero": 0
+          },
+          "rare": {
+            "min": 1655,
+            "max": 1832,
+            "zero": 0
+          }
+        },
+        "rareScreenRate": 0.598225
+      },
+      "weighted": {
+        "screens": 40000,
+        "slots": 120000,
+        "duplicates": 0,
+        "missing": 0,
+        "rareScreens": 3644,
+        "multiRareScreens": 139,
+        "byType": {
+          "normal": {
+            "screens": 30000,
+            "slots": 90000,
+            "common": 56054,
+            "uncommon": 32880,
+            "rare": 1066,
+            "rareScreens": 1066,
+            "rareSlotRate": 0.011844,
+            "rareScreenRate": 0.035533
+          },
+          "elite": {
+            "screens": 10000,
+            "slots": 30000,
+            "common": 15366,
+            "uncommon": 11914,
+            "rare": 2720,
+            "rareScreens": 2578,
+            "rareSlotRate": 0.090667,
+            "rareScreenRate": 0.2578
+          }
+        },
+        "perCardByRarity": {
+          "common": {
+            "min": 2698,
+            "max": 2804,
+            "zero": 0
+          },
+          "uncommon": {
+            "min": 1755,
+            "max": 1823,
+            "zero": 0
+          },
+          "rare": {
+            "min": 192,
+            "max": 229,
+            "zero": 0
+          }
+        },
+        "rareScreenRate": 0.0911
+      }
+    },
+    "holdout": {
+      "baseline": {
+        "screens": 40000,
+        "slots": 120000,
+        "duplicates": 0,
+        "missing": 0,
+        "rareScreens": 24257,
+        "multiRareScreens": 6558,
+        "byType": {
+          "normal": {
+            "screens": 30000,
+            "slots": 90000,
+            "common": 33902,
+            "uncommon": 32529,
+            "rare": 23569,
+            "rareScreens": 18189,
+            "rareSlotRate": 0.261878,
+            "rareScreenRate": 0.6063
+          },
+          "elite": {
+            "screens": 10000,
+            "slots": 30000,
+            "common": 11262,
+            "uncommon": 10843,
+            "rare": 7895,
+            "rareScreens": 6068,
+            "rareSlotRate": 0.263167,
+            "rareScreenRate": 0.6068
+          }
+        },
+        "perCardByRarity": {
+          "common": {
+            "min": 1672,
+            "max": 1798,
+            "zero": 0
+          },
+          "uncommon": {
+            "min": 1637,
+            "max": 1794,
+            "zero": 0
+          },
+          "rare": {
+            "min": 1693,
+            "max": 1831,
+            "zero": 0
+          }
+        },
+        "rareScreenRate": 0.606425
+      },
+      "weighted": {
+        "screens": 40000,
+        "slots": 120000,
+        "duplicates": 0,
+        "missing": 0,
+        "rareScreens": 3626,
+        "multiRareScreens": 135,
+        "byType": {
+          "normal": {
+            "screens": 30000,
+            "slots": 90000,
+            "common": 56057,
+            "uncommon": 32881,
+            "rare": 1062,
+            "rareScreens": 1062,
+            "rareSlotRate": 0.0118,
+            "rareScreenRate": 0.0354
+          },
+          "elite": {
+            "screens": 10000,
+            "slots": 30000,
+            "common": 15385,
+            "uncommon": 11910,
+            "rare": 2705,
+            "rareScreens": 2564,
+            "rareSlotRate": 0.090167,
+            "rareScreenRate": 0.2564
+          }
+        },
+        "perCardByRarity": {
+          "common": {
+            "min": 2710,
+            "max": 2814,
+            "zero": 0
+          },
+          "uncommon": {
+            "min": 1745,
+            "max": 1833,
+            "zero": 0
+          },
+          "rare": {
+            "min": 194,
+            "max": 222,
+            "zero": 0
+          }
+        },
+        "rareScreenRate": 0.09065
+      }
+    }
+  },
+  "invariants": {
+    "sampleBaselineDeterministic": true,
+    "sampleWeightedDeterministic": true,
+    "allOffersThree": true,
+    "noDuplicatesOrMissing": true,
+    "everyCardSeen": true
+  }
+}
