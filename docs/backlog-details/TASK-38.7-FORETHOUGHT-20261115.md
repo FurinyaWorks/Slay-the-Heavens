@@ -23,4 +23,10 @@
 
 本地新日志位于 `.artifacts/forethought-v2-1115/`；原只读三次重建/盖层对照探针保留在旧树 `.artifacts/forethought-triage/`。独立评审由协调者绑定最终 HEAD/BASE，本文件不提前宣称审查或合并通过。
 
+## 独审发现的控件回收边界
+
+独审在 `8f720cad` 取得 RED：核心接受选择后，callback 内 Grid 回收/销毁所点 cell，而会话身份不变；原控件检查提前返回，使 view 保留旧 token，后续选择与确认被拒绝。现拆开两种身份：先核对 run/battle/pendingChoice/generation 并同步合法会话的新 token、selected 表及计数；再只对当前 generation、存活且匹配已提交 UID 的绑定画选择标记。旧 cell 退役不否决已提交会话，也不向退役 cell 写入。
+
+新增回归保留该失败，并覆盖 recycle/destroy × 同 UID/换 UID 四组；真实 Liquid Memories 的 selected 表被核心替换且同 UID cell 销毁重建时，新 cell 也接纳最新标记。原 owner 切换、菜单重入、旧 token、上限及零重建负控保留，不通过全量 Grid 刷新修复。最终定向回归 1/1 通过（14339ms），静态工程仍为 351/6170/1988、CC15/Luacheck 通过。该追加只做定向回归与原静态门槛，不触发 Full。
+
 Owner 已确认设备为 iPhone 14 Pro，IMG_1405 原图 SHA 前缀 `3de12207a53c`；不提交含标识的原图。未生成本切片 GIL、未官方导入/ready、未同候选手机实测，不将源码即时反馈或文字框量测当作手机验收。全部相关手机 AC 保持未勾，未修改候选、master、Tag 或发布记录。

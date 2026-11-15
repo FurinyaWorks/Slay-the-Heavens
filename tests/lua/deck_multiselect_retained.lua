@@ -53,6 +53,28 @@ assert(not deck.visible and not b.pendingChoice and deck.openSession==oldSession
 local found;for _,c in ipairs(b.draw)do if c.uid==chosen then found=c.freeToPlayOnce end end
 assert(found)
 
+-- Native Grid may recycle the clicked cell while the command callback runs.
+-- Its accepted token belongs to the session, independent of that cell's life.
+for _,destroy in ipairs({false,true})do
+ for _,index in ipairs({0,1})do
+  b,deck,grid=forethought(true)
+  session=deck.openSession
+  local before=grid.items[0]
+  local picked=deck.bindings[before].uid
+  local callback=deck.onPick
+  grid.destroyOnRecycle=destroy
+  deck.onPick=function(token,id)
+   callback(token,id);grid:recycle(0,index)
+  end
+  before:GetChild('hit').listeners.click({touchId=22})
+  assert(deck.openSession==session and deck.choiceToken==b.pendingChoice.token,'recycle cannot strand the committed session token')
+  assert(#b.pendingChoice.selected==1 and b.pendingChoice.selected[1]==picked)
+  assert((grid.items[0]:GetChild('uid').text=='已选择')==(index==0),'live replacement cell reflects its actual UID')
+  deck.onPick=callback;grid.destroyOnRecycle=false
+  deck:back();drain();assert(not b.pendingChoice and not deck.visible,'recycled selection can still confirm')
+ end
+end
+
 -- Source Forethought+ explicitly permits zero selected cards.
 b,deck,grid=forethought(true)
 local zeroHand,zeroRng=#b.hand,b.cardRandomRng.counter
@@ -84,7 +106,12 @@ grid=deck.root:GetChild('grid');local close=deck.root:GetChild('close'):GetChild
 assert(b.pendingChoice.required==2 and not close.interactable)
 session=deck.openSession
 local first,second,third=grid.items[0],grid.items[1],grid.items[2]
-first:GetChild('hit').listeners.click({touchId=30});assert(not close.interactable)
+local requiredPick=deck.onPick
+grid.destroyOnRecycle=true
+deck.onPick=function(token,id)requiredPick(token,id);grid:recycle(0,0)end
+first:GetChild('hit').listeners.click({touchId=30})
+first=grid.items[0];deck.onPick=requiredPick;grid.destroyOnRecycle=false
+assert(not close.interactable and first:GetChild('uid').text=='已选择','replacement cell adopts the new selected table')
 second:GetChild('hit').listeners.click({touchId=31});assert(close.interactable and #b.pendingChoice.selected==2)
 local limited=b.pendingChoice.token
 third:GetChild('hit').listeners.click({touchId=32})
