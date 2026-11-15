@@ -20,6 +20,28 @@ export function assertNavigationRetirementPredecessor(packet){
  assert.equal(hash(bytes),'a01740a49c5e118391a852344365df664c85b06b2c550093b868dc1dac0418c6','immutable complete navigation predecessor packet');
  const {continuation,...menu}=prior;assertOriginalSessionMenuWitness(menu);
 }
+export function assertNeowStaticPredecessor(packet){
+ const {neowRetirementStaticContinuation,...prior}=packet;
+ const bytes=gzipSync(JSON.stringify(prior));bytes[9]=10;
+ assert.equal(hash(bytes),'e5979e4e6edce1b42e4f8b342829d3c8ce8fcdff5831db99b10efcd9c60c70eb','immutable original one-owner Neow retirement packet');
+ assertNavigationRetirementPredecessor(prior);
+}
+export function extendNeowStaticEpoch(original,continuation){
+ const prior=original.proof,path='src/lua/abyss_node_ui_feedback.lua';
+ assert.equal(continuation.schemaVersion,1);
+ assert.equal(continuation.baseCommit,'b1c2cb0f1f0a15524c3c57734cc7efbc10ac319a');
+ assert.equal(continuation.currentCommit,'9783f9ed4fdf021270668b66c863b9dfeebc7150','exact optional-flow helper producer');
+ assert.deepEqual(Object.keys(continuation.before),[path]);assert.deepEqual(Object.keys(continuation.current),[path]);
+ assert.deepEqual(continuation.before[path],prior.current[path],'exact original Neow retirement source');
+ assert.notEqual(continuation.current[path].sha256,prior.current[path].sha256);
+ const current={...prior.current,...continuation.current},targets={...prior.targets};
+ assert(!Object.hasOwn(targets,'neowRetirementStaticPrior'));
+ targets.neowRetirementStaticPrior={commit:continuation.baseCommit,files:prior.current};
+ const owners=Object.keys(current).sort().filter(p=>Object.values(targets).some(t=>t.files[p]?.sha256!==current[p]?.sha256));
+ return createSourceEpochProjector(freeze({...prior,currentTreeCommitted:false,currentCommit:continuation.currentCommit,
+  currentCommitRole:'exact one-owner optional Neow flow helper producer; mobile sources retain their separately bound producer',current,targets,owners}),
+ {allowConfigLayout:true,reuseFrozenInput:true});
+}
 export function extendNeowRetirementEpoch(original,retirement){
  const prior=original.proof,path='src/lua/abyss_node_ui_feedback.lua';
  assert.equal(retirement.schemaVersion,1);
@@ -44,10 +66,10 @@ export function extendNeowRetirementEpoch(original,retirement){
 }
 export function extendSessionMenuEpoch(original){
  const bytes=readFileSync(new URL('./session-menu-source-epoch.json.gz',import.meta.url));
- assert.equal(hash(bytes),'e5979e4e6edce1b42e4f8b342829d3c8ce8fcdff5831db99b10efcd9c60c70eb','complete session menu and navigation retirement witness');
+ assert.equal(hash(bytes),'b6b8f7f14c7f541fcd686b881258c6f625f1a0bfc32239e9d15dc6aa5eb33d8b','complete session menu and navigation retirement witness');
  const patch=JSON.parse(gunzipSync(bytes)),prior=original.proof;
- assertNavigationRetirementPredecessor(patch);
- const {neowRetirementContinuation,continuation,...menu}=patch;
+ assertNeowStaticPredecessor(patch);
+ const {neowRetirementStaticContinuation,neowRetirementContinuation,continuation,...menu}=patch;
  assert.equal(patch.schemaVersion,1);assert.equal(patch.normalization,'LF');
  assert.equal(patch.menuCommit,'a0d3cd6cfe5e19f720837db2d39b1b69aa995bae');
  assert.equal(patch.baseCommit,'fbb455a502f436390a539f4d4f3181fb084be472');
@@ -77,5 +99,5 @@ export function extendSessionMenuEpoch(original){
  const menuEpoch=createSourceEpochProjector(freeze({...prior,currentTreeCommitted:false,
   currentCommit:continuation.currentCommit,currentCommitRole:'exact reviewed deck notification continuation over immutable menu sources',current,targets,owners}),
  {allowConfigLayout:true,reuseFrozenInput:true});
- return extendNeowRetirementEpoch(menuEpoch,neowRetirementContinuation);
+ return extendNeowStaticEpoch(extendNeowRetirementEpoch(menuEpoch,neowRetirementContinuation),neowRetirementStaticContinuation);
 }
