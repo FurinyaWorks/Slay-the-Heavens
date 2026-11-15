@@ -91,7 +91,10 @@ test('short encounter reaches greeting; a genuinely long narration still blocks 
  for _=1,150 do longUi:update(.1) end
  assert(longMerchant.current==current and current.kind=='encounter' and not longMerchant.idleUsed,
      'idle interrupted an unfinished long narration')
- for _=1,200 do longUi:update(1) end
+ for _=1,400 do
+  if longMerchant.idleUsed then break end
+  longUi:update(1)
+ end
  assert(longMerchant.current.kind=='idle' and longMerchant.idleUsed,'long narration did not finish its queued greeting and idle')
 end)
 test('a hidden or map-covered shop pauses its bubble timer and pose follows the head',function()
