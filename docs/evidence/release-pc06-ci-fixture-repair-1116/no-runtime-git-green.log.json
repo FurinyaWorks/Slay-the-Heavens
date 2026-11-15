@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "originalArtifact": "no-runtime-git-green.log",
+  "capture": "Original recorded log bytes; no separate stderr artifact was supplied",
+  "encoding": "base64",
+  "sha256": "62165310e6d77c3c5f7fb8e493fd6996a3dd9858e123f6416449858047b7f5d9",
+  "byteLength": 363,
+  "dataBase64": "4pyUIFBDMDYgQ0kgY29udGludWF0aW9uIGZyZXNobHkgYXV0aGVudGljYXRlcyBpdHMgc2l4IGV4YWN0IGlucHV0cyBhbmQgcHJlc2VydmVzIHVua25vd24gc291cmNlIGlkZW50aXRpZXMgKDIzMTMuMDk5NW1zKQ0K4pyUIFBDMDYgZml4dHVyZSBjb250aW51YXRpb24gcmV0YWlucyB0aGUgY29tcGxldGUgb3JpZ2luYWwgZm91ci1pbnB1dCBwYWNrZXQgYW5kIGV2ZXJ5IGV4YWN0IHByZWRlY2Vzc29yICg0LjEzMTNtcykNCuKEuSB0ZXN0cyAyDQrihLkgc3VpdGVzIDANCuKEuSBwYXNzIDINCuKEuSBmYWlsIDANCuKEuSBjYW5jZWxsZWQgMA0K4oS5IHNraXBwZWQgMA0K4oS5IHRvZG8gMA0K4oS5IGR1cmF0aW9uX21zIDI2MDcuNzg2Mw0K"
+}

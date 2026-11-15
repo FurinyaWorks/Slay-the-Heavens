@@ -1,0 +1,56 @@
+{
+  "pr": 695,
+  "base": "350c447c96dc65c1b48c48c3e0e24a3b627e4b2f",
+  "node": "v24.18.0",
+  "scope": "fixture-only, original PR product unchanged",
+  "committed": false,
+  "ciTriggered": false,
+  "tests": [
+    {
+      "log": "before.log",
+      "exit": 1,
+      "tests": 5,
+      "pass": 0,
+      "fail": 5,
+      "skip": 0,
+      "ms": 38344.9141,
+      "sha256": "cc1572670d72eaccd2b4261f58415fefe8b1fa801987d04adcf492e10460cd14",
+      "bytes": 56897
+    },
+    {
+      "log": "after.log",
+      "exit": 0,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "ms": 52070.5032,
+      "note": "Invocation also contained nonexistent integrated-ci-source.test.mjs; Node ignored it. These counts cover only the two actual fixture files. All cases were separately run by their correct cases.mjs path below.",
+      "sha256": "b0536a1267a51aa11b5556ffff4c3c9a2606a934005268d35f6c569f261e01d2",
+      "bytes": 1271
+    },
+    {
+      "log": "pc06-contracts.log",
+      "exit": 0,
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "ms": 6300.28,
+      "sha256": "4ad61736a1ae36d70baa4697771e4948e1d632d44ae214814a3520b28a014104",
+      "bytes": 833
+    },
+    {
+      "log": "integration-original.log",
+      "exit": 0,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "ms": 1137.2419,
+      "sha256": "5b990e98de9609fed49727ca59518873cabd2e99eea4921e98ed0b32b5dba695",
+      "bytes": 353
+    }
+  ],
+  "patchSha256": "5b3fe08e7dc8d58afb6be5479ca5d48ed0dc675ea83279c92776f05d3257c27b"
+}

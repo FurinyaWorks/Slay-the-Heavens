@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 20:49'
+updated_date: '2026-11-15 22:38'
 labels:
   - playtest-20261030
   - p1
@@ -20,6 +20,7 @@ references:
   - docs/backlog-details/TASK-4.16-map-menu-return-20261101.md
   - backlog/tasks/task-95 - 对照验证美术、交互与动效设计工具.md
   - docs/evidence/pc06-admission-20261116/README.md
+  - docs/evidence/release-pc06-ci-fixture-repair-1116/README.md
 parent_task_id: TASK-4
 priority: medium
 type: enhancement
@@ -48,6 +49,8 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 2026-11-01 QA-R2-06：1. 用真实GameUI回归复现地图菜单重复入口和两层返回。2. 地图模式隐藏且拒绝查看同一地图；其他上下文的只读地图返回一次即关闭整层菜单，保留触点代际隔离与节点只读。3. 定向菜单、路线返回、奖励和手柄回归；本地证据记录到附件，手机实测AC保持未勾。
 
 PC06接续：仅选择性复用#672作者9c1fb951中official-battle-hud设置符号→既有100161/28px原生图标的6行修复；先在Release36保留y338.5几何做独立图标facet RED，保留原命令/触点/主题和Lua，不带作者y335导航等其他差异。定向回归与独审、来源准入分开；色调症状与官方PC/手机未验不勾AC。
+
+PR695实跑CI五项fixture失败接续：保原PC06产品6行、历史包及断言；先定向复现official修复/战斗/HUD/closeout/bootstrap原合同，再显式增加经完整当前源码认证的pre-PC06读取边界，冻结旧合同同时单独保护当前图标。必要最外CI新绑定保留原包全字节和所有前像；定向回归后交独立复审，不勾设备AC。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -70,4 +73,10 @@ PC06接续：仅选择性复用#672作者9c1fb951中official-battle-hud设置符
 已核PC06原文；#690仅入口去重，不含#672原生设置图标。原作者证据与5562bfd纠正可用但测试混y335几何，不整条套用。新隔离树release-pc-settings-icon-1116从36b9，仅图标facet复用，旧棕面首帧暂不修、不当用户根因。根pc06-source-intake保留曾误称#672未改的纠正。
 
 PC06已从actualRelease1cc选择性复用#672/9c1fb的6行设置原生图标，产品21d48c4e与原作者对应文件逐字节相同；不带y335/HPgold/Theme/Lua。36和1cc同facet RED，3新facet及7相关菜单回归通过；产品与独立窄CI层a2d675均限定独审通过，x至e987，6输入逐blob覆盖。原Source1fail2pass与夹具首轮5/6均保留，最小4binding接续后原3+新3合同6/6，bootstrap868f及10真实1cc视图与原92档案不变，93pin/raw876JS1423Lua无新父文件。图标替换不代表用户深棕色调根因已验；原y338.5+24越2.5继承边界保留不顺带改。新候选/ready/PC手机/容量及Hosted Full未验，保持In Progress不勾#676 AC。
+
+PR695@350c447c实际CI五项失败已本地精确RED 0/5，根因是历史脚本/集成helper读取未经过PC06显式前像。仅修fixture与最外CI层，产品六行及原868f包未动；保Calibration全原body、Formation全原断言。新增pc06HistoricalRead每次先认证当前6输入/94档案再取真实1cc前像，普通pc06CiSource仍不拦截产品。原cef63四输入包全字节保留，新e35c93da六输入包只改必要after、增两fixture真Git前像；原93档案和全部旧before不变。原五case定向5/5、新及既有CI合同6/6、其余集成2/2，无skip；证据root.artifacts/ci-owner-repair-1116/pc695含原RED/GREEN/receipt/机械保全/patch。尚未独审或提交，Hosted CI与PC/手机/ready/容量仍未验，保原AC和In Progress。
+
+PR695独审纠正：新增包迁移case原用git show取1cc前像，会依赖Hosted浅clone不存在的历史对象；已改为本地确证的literal Git blob与完整before.source重算SHA1/SHA256，未联网/skip。仅重绑cases当前after，新包cebeefff8b88e89c3763879dfb56140d44f5a86b6e93f641088657293cca44df，其余5after、全部6before和94pins不变；e35中间包另存原字节。受改case及fresh六输入合同2/2 pass无skip 2.608s，final-freeze.json与最末patch已存pc695，交回独审，未提交或触发CI。
+
+2026-11-16 PR695 fixture修复最终独审PASS，未解决发现0；最终CI包cebeefff8b88e89c3763879dfb56140d44f5a86b6e93f641088657293cca44df，独审receipt eee3bd9fb2851b1efb3f8cfb422c28ac1e74aeb2a43b41e958b37491e3079f0e。证据已整理至docs/evidence/release-pc06-ci-fixture-repair-1116：原RED五项全失败；13GREEN为5+6+2分轮，去掉runtime Git依赖后只复验受影响2项通过。产品六行/blob及全部原断言、before、历史档案保持，候选/ready/PC手机/官方容量与Hosted Full仍未验；原AC不动，继续In Progress。本次仅准备材料，未提交推送。
 <!-- SECTION:NOTES:END -->

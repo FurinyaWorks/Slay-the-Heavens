@@ -4,7 +4,7 @@ import {readFileSync as rawReadFileSync,readdirSync,mkdtempSync,rmSync,writeFile
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {pc06CiPacket,pc06CiSource,pc06CiRead,assertPc06CiCurrent} from './helpers/pc06-settings-ci-source.mjs';
+import {pc06CiPacket,pc06CiSource,pc06CiRead,assertPc06CiCurrent,pc06HistoricalSource,pc06HistoricalRead} from './helpers/pc06-settings-ci-source.mjs';
 import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
@@ -82,7 +82,7 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete Release bootstrap CI continuation/);
 });
 
-test('PC06 CI continuation freshly authenticates its four exact inputs and preserves unknown source identities',()=>{
+test('PC06 CI continuation freshly authenticates its six exact inputs and preserves unknown source identities',()=>{
  assertPc06CiCurrent();assertIntegratedCurrent();
  for(const [path,row]of Object.entries(pc06CiPacket.files)){
   const source=rawReadFileSync(path,'utf8').replaceAll('\r\n','\n');
@@ -117,6 +117,65 @@ test('PC06 CI continuation freshly authenticates its four exact inputs and prese
  assertReleaseBootstrapRawInventory(js);assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(Object.keys(releaseBootstrapCiPacket.files).length,10);
  assert.equal(hash(rawReadFileSync('tests/helpers/release-bootstrap-ci-source.json.gz')),'868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6');
+});
+
+test('PC06 historical fixture view authenticates all live inputs afresh and keeps the product visible to ordinary readers',()=>{
+ const path='scripts/official-battle-hud.mjs',source=rawReadFileSync(path,'utf8'),expected=pc06CiPacket.files[path].before.source;
+ assert.notEqual(source.replaceAll('\r\n','\n'),expected);
+ assert.equal(pc06CiSource(path,source),source,'the CI seam never intercepts the current product');
+ assert.equal(pc06CiRead(rawReadFileSync)(path,'utf8'),source,'ordinary CI readers retain the current product');
+ for(const crlf of [false,true]){
+  let bad=null,missing=false;const reads=[];
+  const read=(p,e)=>{reads.push(p);if(p===bad&&missing)throw Error('missing '+p);const raw=rawReadFileSync(p,e);return p===bad?raw+'\n':raw;};
+  const input=crlf?source.replaceAll('\r\n','\n').replaceAll('\n','\r\n'):source;
+  const ordered=[...Object.keys(pc06CiPacket.files),...Object.keys(pc06CiPacket.immutableArchives),...Object.keys(pc06CiPacket.retainedSources)];
+  for(let repeat=0;repeat<2;repeat++){reads.length=0;assert.equal(pc06HistoricalSource(path,input,read),expected);assert.deepEqual(reads,ordered);}
+  for(const owner of Object.keys(pc06CiPacket.files)){
+   for(const absent of [false,true]){
+    bad=owner;missing=absent;reads.length=0;
+    assert.throws(()=>pc06HistoricalSource(path,input,read),error=>{assert(error.message.includes(owner));return true;});
+    assert.deepEqual(reads,Object.keys(pc06CiPacket.files).slice(0,Object.keys(pc06CiPacket.files).indexOf(owner)+1));
+   }
+   bad=null;reads.length=0;assert.equal(pc06HistoricalSource(path,input,read),expected);assert.deepEqual(reads,ordered);
+  }
+  for(const foreign of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),null,17,{},Buffer.from(source)]){
+   reads.length=0;assert.equal(pc06HistoricalSource(path,foreign,read),foreign);assert.deepEqual(reads,[]);
+  }
+ }
+ assert.equal(pc06HistoricalRead(rawReadFileSync)(path,'utf8'),expected);
+ const binary=Buffer.from(source);assert.equal(pc06HistoricalRead(()=>binary)(path,'utf8'),binary,'binary UTF-8 input stays opaque');
+});
+
+test('PC06 fixture continuation retains the complete original four-input packet and every exact predecessor',async()=>{
+ const {gunzipSync}=await import('node:zlib');
+ const path='tests/helpers/pc06-settings-before-fixture-repair-ci-source.json.gz',bytes=rawReadFileSync(path);
+ assert.equal(hash(bytes),'cef63cfac0c079e6f95a913c20a897464833bac8012404c4062fbb7ddebf87eb');
+ assert.equal(pc06CiPacket.immutableArchives[path],hash(bytes));
+ const prior=JSON.parse(gunzipSync(bytes));
+ assert.deepEqual(Object.keys(prior.files).sort(),['scripts/official-battle-hud.mjs','tests/helpers/integrated-ci-source.mjs','tests/integrated-ci-source.cases.mjs','tests/official-run-chrome.test.mjs']);
+ const added=['tests/ci-complete-calibration.test.mjs','tests/encounter-formation-source-epoch.test.mjs'];
+ assert.deepEqual(Object.keys(pc06CiPacket.files).sort(),[...Object.keys(prior.files),...added].sort());
+ for(const [path,row]of Object.entries(prior.files)){
+  const {current,...old}=row,{current:after,...now}=pc06CiPacket.files[path];assert.deepEqual(now,old,path);
+  if(path==='tests/integrated-ci-source.cases.mjs')assert.notEqual(after.sha256,current.sha256,path);
+  else assert.deepEqual(after,current,path);
+ }
+ // Read from actual 1cc locally; CI verifies the complete Git object identity
+ // without requiring historical commits in its shallow checkout.
+ const beforeGitBlobs={
+  'tests/ci-complete-calibration.test.mjs':'a6753dcc9e77d6166b9fd1d530f511eb4d178523',
+  'tests/encounter-formation-source-epoch.test.mjs':'d137ae680404eb393544e301c08d0b1f7589afb6',
+ };
+ for(const path of added){
+  const row=pc06CiPacket.files[path];
+  assert.equal(row.beforeCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
+  assert.equal(row.before.gitBlob,beforeGitBlobs[path],path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before.source)}\0`).update(row.before.source).digest('hex'),beforeGitBlobs[path],path);
+  assert.equal(hash(row.before.source),row.before.sha256,path);
+ }
+ assert.equal(Object.keys(prior.immutableArchives).length,93);assert.equal(Object.keys(pc06CiPacket.immutableArchives).length,94);
+ for(const [path,sha]of Object.entries(prior.immutableArchives))assert.equal(pc06CiPacket.immutableArchives[path],sha,path);
+ for(const field of Object.keys(prior).filter(k=>!['files','immutableArchives'].includes(k)))assert.deepEqual(pc06CiPacket[field],prior[field],field);
 });
 
 test('PC06 CI trust leaf rejects truncated or partial packets before accepting any binding',async()=>{

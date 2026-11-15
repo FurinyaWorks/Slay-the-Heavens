@@ -2,7 +2,8 @@ import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import test from 'node:test';
 import {officialUiRepairProof,preOfficialUiRepairSource} from './helpers/official-ui-repair-source-epoch.mjs';
 import {preOfficialUiRepairEpoch} from './helpers/combined-epoch/source-epoch.mjs';
-import {closeoutRead} from './helpers/closeout-ci-source.mjs';
+import {closeoutRead,closeoutRead as historicalCloseoutRead} from './helpers/closeout-ci-source.mjs';
+import {pc06HistoricalRead} from './helpers/pc06-settings-ci-source.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync as diskReadFileSync,mkdtempSync,rmSync,writeFileSync,unlinkSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
@@ -157,6 +158,7 @@ test('source and configuration reject unknown targets and malformed live readers
 });
 
 test('official repair adds exact complete-file identities without rewriting the battle predecessor',()=>{
+ const closeoutRead=target=>historicalCloseoutRead(target,pc06HistoricalRead());
  const files=officialUiRepairProof.files;
  for(const [file,row]of Object.entries(files)){
   const actual=closeoutRead('pr629')(file,'utf8').replaceAll('\r\n','\n');

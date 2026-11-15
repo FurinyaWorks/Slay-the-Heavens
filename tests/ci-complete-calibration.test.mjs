@@ -42,7 +42,11 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as rawBootstrapReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as physicalReadFileSync,readdirSync} from 'node:fs';
+import {pc06HistoricalRead} from './helpers/pc06-settings-ci-source.mjs';
+// These immutable receipts use the exact pre-PC06 corpus. The PC06 source
+// contracts authenticate the complete live after tree before every projection.
+const rawBootstrapReadFileSync=pc06HistoricalRead(physicalReadFileSync);
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
@@ -1993,7 +1997,7 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
-test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
+test('frozen pre-PC06 Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
  const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');

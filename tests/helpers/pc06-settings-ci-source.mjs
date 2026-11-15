@@ -5,13 +5,13 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./pc06-settings-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'cef63cfac0c079e6f95a913c20a897464833bac8012404c4062fbb7ddebf87eb','complete PC06 CI continuation');
+assert.equal(hash(bytes),'cebeefff8b88e89c3763879dfb56140d44f5a86b6e93f641088657293cca44df','complete PC06 CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
 assert.equal(packet.productCommit,'21d48c4e41d0f2879acd4824a60e251c739433e8');
 assert.equal(packet.currentTreeCommitted,false,'only the product is committed at collection');
-assert.deepEqual(Object.keys(packet.files).sort(),['scripts/official-battle-hud.mjs','tests/helpers/integrated-ci-source.mjs','tests/integrated-ci-source.cases.mjs','tests/official-run-chrome.test.mjs']);
+assert.deepEqual(Object.keys(packet.files).sort(),['scripts/official-battle-hud.mjs','tests/ci-complete-calibration.test.mjs','tests/encounter-formation-source-epoch.test.mjs','tests/helpers/integrated-ci-source.mjs','tests/integrated-ci-source.cases.mjs','tests/official-run-chrome.test.mjs']);
 assert.deepEqual(packet.inventory.js.length,876);assert.deepEqual(packet.inventory.lua.length,1423);
 for(const [path,row]of Object.entries(packet.files)){
  assert.equal(row.beforeCommit,packet.baseCommit,'exact PC06 CI predecessor: '+path);
@@ -34,6 +34,18 @@ export function pc06CiSource(path,source,before){
 export function pc06CiRead(read=readFileSync){
  assert.equal(typeof read,'function');
  return(path,encoding)=>{const raw=read(path,encoding);return typeof raw==='string'?pc06CiSource(path,raw):raw;};
+}
+// An explicit historical test view, separate from the CI seam projector above.
+// The current product remains visible to normal readers and current guards.
+export function pc06HistoricalSource(path,source,read=readFileSync){
+ const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ assertPc06CiCurrent(read);
+ return row.before.source;
+}
+export function pc06HistoricalRead(read=readFileSync){
+ assert.equal(typeof read,'function');
+ return(path,encoding)=>{const raw=read(path,encoding);return typeof raw==='string'?pc06HistoricalSource(path,raw,read):raw;};
 }
 export function assertPc06CiCurrent(read=readFileSync){
  for(const [path,row]of Object.entries(packet.files)){

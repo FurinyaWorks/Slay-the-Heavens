@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "originalArtifact": "integration-original.log",
+  "capture": "Original recorded log bytes; no separate stderr artifact was supplied",
+  "encoding": "base64",
+  "sha256": "5b990e98de9609fed49727ca59518873cabd2e99eea4921e98ed0b32b5dba695",
+  "byteLength": 353,
+  "dataBase64": "4pyUIGludGVncmF0aW9uIHZhbGlkYXRlcyBjb21wbGV0ZSByYXcgc291cmNlcyBhbmQgbGVhdmVzIGV2ZXJ5IGZvcmVpZ24gYnl0ZSBhbmQgcHJvZHVjdGlvbiBvd25lciB2aXNpYmxlICg4MjQuMjUxNG1zKQ0K4pyUIGludGVncmF0aW9uIGNvcHkgY2xvc3VyZSByZXF1aXJlcyBpdHMgY29tcGxldGUgZXhhY3QgcHJlZGVjZXNzb3IgYW5kIGN1cnJlbnQgZGVwZW5kZW5jeSBieXRlcyAoMzcuNDA4M21zKQ0K4oS5IHRlc3RzIDINCuKEuSBzdWl0ZXMgMA0K4oS5IHBhc3MgMg0K4oS5IGZhaWwgMA0K4oS5IGNhbmNlbGxlZCAwDQrihLkgc2tpcHBlZCAwDQrihLkgdG9kbyAwDQrihLkgZHVyYXRpb25fbXMgMTEzNy4yNDE5DQo="
+}
