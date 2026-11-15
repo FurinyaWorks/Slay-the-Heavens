@@ -62,13 +62,23 @@ local function entry(root,name,position,hud)
         else symbol:SetSizeDelta(36,36)end
     end
 end
+local function pileCount(panel,icon,kind,position,hud)
+    local offset=kind=='exhaust'and Theme.officialAssets.battleHud.exhaustPile.countOffset or Theme.layout.pileBadge.visual.offset
+    local x,y=position[1]+offset[1],position[2]+offset[2]
+    text(panel:GetChild(kind),{x,y,hud.count.size[1],hud.count.size[2]},hud.count.font)
+    if kind=='exhaust'then icon:GetChild('pileCountBadge'):SetSizeDelta(hud.count.badge,hud.count.badge)
+    else
+        for _,part in ipairs({{'BadgeRing',hud.count.ring},{'Badge',hud.count.badge}})do
+            frame(panel:GetChild(kind..part[1]),{x,y,part[2],part[2]})
+        end
+    end
+end
 local function piles(panel,hud)
     for _,kind in ipairs({'draw','discard','exhaust'})do
         local position=hud[kind];local icon=panel:GetChild(kind..'Icon')
         icon:SetAnchoredPosition(position[1],position[2])
         frame(icon:GetChild('hit'),{0,0,hud.hit,hud.hit})
-        local offset=kind=='exhaust'and Theme.officialAssets.battleHud.exhaustPile.countOffset or Theme.layout.pileBadge.visual.offset
-        panel:GetChild(kind):SetAnchoredPosition(position[1]+offset[1],position[2]+offset[2])
+        pileCount(panel,icon,kind,position,hud)
     end
     frame(panel:GetChild('endTurn'),hud.endTurn)
     local ratio=hud.endTurn[3]/Theme.layout.endTurn.size[1]
@@ -79,6 +89,23 @@ local function piles(panel,hud)
         label:SetLocalScale(1/ratio,1,1)
     end
     for _,name in ipairs({'energyIcon','energy'})do panel:GetChild(name):SetAnchoredPosition(hud.energy[1],hud.energy[2])end
+end
+local function readingButton(button,w,h,font)
+    button:GetChild('hit'):SetSizeDelta(w,h)
+    for _,state in ipairs({'normal','hover','pressed','disabled'})do
+        text(button:GetChild('hit'):GetChild(state):GetChild('label'),{0,0,w-8,52},font)
+    end
+end
+local function readingControls(root,reading)
+    local menu=root:GetChild('runMenu');local rows=reading.runMenu
+    for _,name in ipairs({'resume','help','map','mainMenu','abandon','quit'})do
+        local spec=rows[name];local button=menu:GetChild(name)
+        button:SetAnchoredPosition(spec[1],spec[2]);readingButton(button,spec[3],spec[4],reading.font)
+    end
+    local exit=root:GetChild('exitPanel')
+    for _,name in ipairs({'confirm','cancel'})do readingButton(exit:GetChild(name),320,88,reading.font)end
+    local help=exit:GetChild('help');help:SetAnchoredPosition(reading.exitHelp[1],reading.exitHelp[2])
+    readingButton(help,160,88,reading.font)
 end
 function M.apply(root,platform)
     local hud=M.profile(platform);if not hud then return end
@@ -95,6 +122,7 @@ function M.apply(root,platform)
     root:GetChild('relicBar'):SetAnchoredPosition(hud.relicOffset[1],hud.relicOffset[2])
     root:GetChild('relicEntry'):GetChild('open'):SetAnchoredPosition(hud.relicEntry[1],hud.relicEntry[2])
     piles(battle,hud)
-    return {deck=hud.deck,menu=hud.menu,routeBackText=Theme.officialAssets.battleHud.routeBackText}
+    local reading=Theme.officialAssets.mobileReading;readingControls(root,reading)
+    return {deck=hud.deck,menu=hud.menu,routeBackText=Theme.officialAssets.battleHud.routeBackText,reading=reading}
 end
 return M

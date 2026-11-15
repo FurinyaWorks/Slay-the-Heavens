@@ -28,8 +28,8 @@ function M.title(self,menu,outcome,v25)
     v25.button(resume,not self.disabled and not self.exitOpen and not self.characterOpen and not self.settlementBusy)
     menu:GetChild('sessionHint').text=not outcome and self.sessionPaused and sessionHint or ''
 end
-local function compact(menu,routeEnabled,mainEnabled)
-    local R=Theme.layout.runMenu
+local function compact(menu,routeEnabled,mainEnabled,reading)
+    local R=reading or Theme.layout.runMenu
     local step=R.help[2]-R.map[2]
     local upperGap=(routeEnabled and 0 or step)+(mainEnabled and 0 or step)
     local gap=upperGap+step
@@ -57,6 +57,6 @@ function M.runMenu(self,menu,routeEnabled)
     local route=menu:GetChild('map')
     route:SetVisible(routeEnabled)
     route:GetChild('hit').interactable,route:GetChild('hit').raycastTarget=routeEnabled,routeEnabled
-    compact(menu,routeEnabled,mainEnabled)
+    compact(menu,routeEnabled,mainEnabled,self.mobileHud and self.mobileHud.reading.runMenu)
 end
 return M

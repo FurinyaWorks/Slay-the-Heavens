@@ -11,9 +11,11 @@ for _,method in ipairs({'SetAnchoredPosition','SetSizeDelta','SetLocalScale'})do
 end
 local canvas=F.control({children=F.Layout})
 for _,s in ipairs(F.Layout)do hydrate(canvas:GetChild(s.name),s)end
-local root=F.Viewport.apply(canvas,2556/3,1179/3)
+local viewport=MOBILE_HUD_VIEWPORT or{852,393}
+local root=F.Viewport.apply(canvas,table.unpack(viewport))
 local originalFont=root:GetChild('battlePanel'):GetChild('player').fontSize
 local platform={seed=1,imageSource='static',touchScreen=MOBILE_HUD_TEST~=nil and function()return MOBILE_HUD_TEST end or nil,
+ cursorEvents={CursorDown='down',CursorUp='up'},
  color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end}
 local Mobile=require('abyss_mobile_hud');local apply=Mobile.apply;local initializations=0
 Mobile.apply=function(...)initializations=initializations+1;return apply(...)end
@@ -27,6 +29,11 @@ if not active then
  print('MOBILE_PHYSICAL_HUD_PASS unmodified');return
 end
 assert(battle:GetChild('player').fontSize==24,'phone HP is still 18UI (~9.8pt)')
+for _,kind in ipairs({'draw','discard','exhaust'})do
+ local number=battle:GetChild(kind)
+ assert(number.fontSize==24 and number.minimumFontSize==24 and number.adaptiveFontSize==false,'pile number still tiny')
+ assert(number.sizeDeltaX>=24*.6*3+4 and number.sizeDeltaY>=42,'999 does not fit count box')
+end
 for _,state in ipairs({'normal','hover','pressed','disabled'})do
  local face=battle:GetChild('endTurn'):GetChild(state);local label=face:GetChild('label')
  assert(math.abs(face.scale[1]*label.scale[1]-face.scale[2]*label.scale[2])<.000001,'End Turn font horizontally compressed')
@@ -73,6 +80,38 @@ local function verify()
  end
 end
 assert(F.start(ui));ui.run.hp,ui.run.maxHp,ui.run.gold=9999,9999,999999;ui:refresh();verify()
+local function tap(c)
+ local e={touchId=7};assert(c.listeners.down and c.listeners.up,'missing native touch lifecycle')
+ c.listeners.down(e);c.listeners.up(e);return c.listeners.click(e)
+end
+local function menuTargets(expected)
+ local visible={}
+ for _,name in ipairs({'resume','help','map','mainMenu','abandon'})do
+  local button=at('runMenu/'..name)
+  if button.visible then
+   local hit=button:GetChild('hit');local a=bounds(hit)
+   assert(hit.sizeDeltaY==88,'pause target not88')
+   assert(a[1]>=-600 and a[3]<=600 and a[2]>=-316 and a[4]<=360,'pause outside safe area')
+   for _,other in ipairs(visible)do assert(clear(a,other),'pause targets overlap')end
+   visible[#visible+1]=a
+  end
+ end
+ assert(#visible==expected)
+end
+assert(ui:openMenu());menuTargets(4);local sameRun=ui.run
+assert(tap(at('runMenu/abandon/hit')) and ui.exitOpen and not ui.menuOpen)
+for _,name in ipairs({'confirm','cancel','help'})do assert(at('exitPanel/'..name..'/hit').sizeDeltaY==88,'exit target not88')end
+local dialog={}
+for _,name in ipairs({'confirm','cancel','help'})do
+ local a=bounds(at('exitPanel/'..name..'/hit'))
+ assert(a[1]>=-600 and a[3]<=600 and a[2]>=-316 and a[4]<=360)
+ for _,prior in ipairs(dialog)do assert(clear(a,prior),'exit targets overlap')end
+ dialog[#dialog+1]=a
+end
+for _,name in ipairs({'title','message','whyText'})do assert(clear(dialog[3],bounds(at('exitPanel/'..name))),'help target covers dialog text')end
+assert(at('exitPanel/whyText').text:find('退出奇域后无法继续',1,true),'session warning changed')
+assert(tap(at('exitPanel/cancel/hit')) and ui.run==sameRun)
+assert(ui:openMenu());assert(tap(at('runMenu/resume/hit')) and ui.run==sameRun and not ui.exitOpen)
 for _,path in ipairs(targets)do local a=bounds(at(path));print('HUD_WORLD '..path..' '..table.concat(a,','))end
 for _,slot in ipairs(at('relicBar'):GetChildren())do
  local hit=slot:GetChild('hit')
@@ -108,6 +147,12 @@ assert(entered);eventRun.hp,eventRun.maxHp,eventRun.gold=9999,9999,999999
 ui.run,ui.map=eventRun,eventMap;ui:refresh();assert(ui.mode=='node');verify()
 ui.run,ui.map=savedRun,savedMap;ui:refresh()
 F.click(root,'mapPanel','node1');assert(ui.mode=='battle');verify()
+assert(ui:openMenu());menuTargets(5);assert(tap(at('runMenu/resume/hit')))
+local b=ui.run.combat;local saved={b.draw,b.discard,b.exhaust}
+local cards={};for i=1,999 do cards[i]={uid=10000+i,cardId='defend'}end
+b.draw,b.discard,b.exhaust=cards,cards,cards;ui:refresh()
+for _,kind in ipairs({'draw','discard','exhaust'})do assert(at('battlePanel/'..kind).text=='999')end
+b.draw,b.discard,b.exhaust=table.unpack(saved);ui:refresh()
 local function handClear()
  for _=1,20 do ui:update(.05)end
  for i=1,#ui.run.combat.hand do
@@ -117,7 +162,8 @@ local function handClear()
   end
  end
 end
-handClear();F.Combat.draw(ui.run.combat,5);ui:refresh();assert(#ui.run.combat.hand==10);handClear()
+handClear();local full=ui.run.combat.hand;ui.run.combat.hand={full[1]};ui:refresh();handClear()
+ui.run.combat.hand=full;ui:refresh();F.Combat.draw(ui.run.combat,5);ui:refresh();assert(#ui.run.combat.hand==10);handClear()
 for _,i in ipairs({1,10})do F.click(root,'battlePanel','card'..i);handClear()end
 local energy=bounds(at('battlePanel/energyIcon'));assert(clear(energy,bounds(at('battlePanel/drawIcon'))),'energy ring covers shifted draw icon')
 assert(at('battlePanel/energy').y==at('battlePanel/energyIcon').y,'energy text left behind')
