@@ -5,7 +5,7 @@ status: Blocked
 assignee:
   - Furinya
 created_date: '2026-11-03 02:45'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 06:21'
 labels:
   - design
 milestone: m-8
@@ -41,6 +41,8 @@ ordinal: 138000
 1. 定向核对当前生产入口、岩旅牌组/遗物/资源/生成数据与 Ironclad 来源，形成可重算事实审计。
 2. 基于现有冻结 V4 提供 2–3 个最小方向、首十分钟特征、UI/资产/入口依赖与分层验证出口，等待 Owner 决定。
 3. 仅写 TASK-96 专属附件及必要事实 JSON，轻量 guidance/backlog/diff 校验后交主控独审；AC1 不自行勾选，AC2–4 保持未完成。
+
+2026-11-15 无方向依赖的隔离实验维护：以7c3abce0完整胡桃HTML为精确源，只在experiments/characters/hutao-v6-followup-1115复现并修正文案真实性（血之灶火+半血条件、本回合临时强化、最近100条战报），保留复制/键盘/焦点修复，先红后绿。不改数值、卡名、冻结V4或生产入口，不提交推送PR；具体璃月角色/版本仍待Owner决定，本任务保持Blocked。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -57,4 +59,8 @@ ordinal: 138000
 2026-11-07 看板核对（develop 2c85bc61）：按 config/sprint-intake.json 属 blockedUntilOwnerApproval，当前无在途 PR；状态归 To Do（待 Owner 定方向），不勾 AC。
 
 2026-11-14第二轮状态纠正：已有75映射与独立身份审计，AC1已完成；差异化方案待Owner明确确认，不能标成尚未开始或自行继续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+本轮协助执行者/root/content_queue_audit，唯一树.worktrees/hutao-lab-truthful-copy-1115，feat/hutao-lab-truthful-copy-1115，基线e65d9b98；旧V5/V6及发版树只读。
+
+2026-11-15 胡桃无方向依赖的隔离呈现维护已完成待独审：精确保全7c3abce0 HTML（blob d4b97370fa5e314c725edc3a1136fb1523790c78；实际SHA97b9e631…），仅7处文案替换：升级血之灶火补已有半血条件、c14/u15补本回合、三个战报按钮/导出头/结算提示明确最近100条。原3组24合同仅改输入路径，另5合同，最终29/29无skip；原source同组4真实RED+1数据一致性PASS，失败及u15测试预期纠正均保留。完整引擎逐字、75卡身份/数值/效果/来源不变，PRES01基线7c已修不重复。入口experiments/characters/hutao-v6-followup-1115/README.md；生产/冻结V4/命名不改，具体璃月角色/版本仍待答，TASK96保持Blocked和G3 HOLD。不Full、不提交推送PR。
 <!-- SECTION:NOTES:END -->

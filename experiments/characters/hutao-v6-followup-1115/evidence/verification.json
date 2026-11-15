@@ -1,0 +1,29 @@
+{
+  "status": "pass",
+  "sourceGitBlob": "d4b97370fa5e314c725edc3a1136fb1523790c78",
+  "sourceSha256": "97b9e6313278e98e8868b71387ac962b7ff1116b3f0974ae51638426e3ed2c54",
+  "candidateSha256": "045d6e8bfc335216f819f1a93b90f0f292e714965bf904a2ccd70b1e00927777",
+  "changedStringOccurrences": 7,
+  "engineByteIdentical": true,
+  "cardIdentitiesAndMechanics": "29-test-suite includes per-card 75-entry comparison",
+  "checks": [
+    "exact-source-Git-blob",
+    "only-seven-listed-text-occurrences",
+    "complete-engine-identical",
+    "two-inline-script-syntax",
+    "prior-test-path-only-adaptation",
+    "red-four-copy-failures",
+    "29-green-no-skip"
+  ],
+  "evidence": {
+    "redSha256": "95a5dd8df2a0736bf39954dcab1e9af727cd9da9a38bf791c2003d536eb78cfc",
+    "greenSha256": "70770aba240c7098343e1fa892facc075060541b645a2ea1582146888d78a77c",
+    "truthfulCopyTestSha256": "112daed1d52ee79d0c95003ba128f6b9c4c77fd06d3de772ae7d8793a7184e1c"
+  },
+  "namingGate": "HOLD",
+  "task96": "Blocked: specific Liyue role/version undecided",
+  "productionEnabled": false,
+  "officialPc": "UNVERIFIED",
+  "physicalMobile": "UNVERIFIED",
+  "fullCi": "NOT_RUN"
+}

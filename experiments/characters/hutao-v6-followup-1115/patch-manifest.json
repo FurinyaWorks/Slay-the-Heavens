@@ -1,0 +1,46 @@
+{
+  "sourceSha256": "97b9e6313278e98e8868b71387ac962b7ff1116b3f0974ae51638426e3ed2c54",
+  "candidateSha256": "045d6e8bfc335216f819f1a93b90f0f292e714965bf904a2ccd70b1e00927777",
+  "candidateBytes": 100506,
+  "edits": [
+    {
+      "before": "每张攻击牌首个命中额外+3伤。",
+      "after": "本战半血及以下时，每张攻击牌首个命中额外+3伤。",
+      "count": 1,
+      "issue": "M-01: disclose existing half-HP condition"
+    },
+    {
+      "before": "case 'prepAttack':line=`下一张攻击的首次命中额外+${e.n}伤害`;break;",
+      "after": "case 'prepAttack':line=`本回合下一张攻击的首次命中额外+${e.n}伤害`;break;",
+      "count": 1,
+      "issue": "PRES-02: disclose existing turn expiry"
+    },
+    {
+      "before": "复制完整战报",
+      "after": "复制最近100条战报",
+      "count": 1,
+      "issue": "PRES-03: end-screen request label"
+    },
+    {
+      "before": "复制战报",
+      "after": "复制最近100条战报",
+      "count": 2,
+      "issue": "PRES-03: other report request labels"
+    },
+    {
+      "before": "胡桃 V5 五战战报 · 种子2",
+      "after": "胡桃 V5 五战战报（仅含最近100条日志） · 种子2",
+      "count": 1,
+      "issue": "PRES-03: exported header"
+    },
+    {
+      "before": "提示：战报可以直接发给 AI 帮助分析卡牌和跨战生命经济。",
+      "after": "提示：战报仅含最近100条日志，之前的日志未保留；可以发给 AI 帮助分析卡牌和跨战生命经济。",
+      "count": 1,
+      "issue": "PRES-03: explain omitted history"
+    }
+  ],
+  "scope": "Text strings only; same card IDs/names/effects/numbers, HP rules, 100-log array cap and prior interaction handlers",
+  "namingGate": "HOLD",
+  "productionEnabled": false
+}
