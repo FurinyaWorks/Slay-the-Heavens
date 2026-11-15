@@ -82,6 +82,11 @@ itemIconHelperCopies.push(
  {path:'tests/helpers/pc-after-fix-source.json.gz',versions:[{before:null,after:'548900839627458b6ff40378143c7d69f208d95ff55482a52fce253b5fb291e4'}]},
  {path:'tests/helpers/pc-final-source-epoch.mjs',versions:[{before:null,after:'e63d06bca56c511f3575d546b220189d9da7e9636b447fd15d7ebf2f2561a085'}]},
  {path:'tests/helpers/pc-final-source-epoch.json.gz',versions:[{before:null,after:'fc811b3d3f93e0f7dc9a01189349a1d94c6a241231d290031b55de7bab2af5df'}]});
+itemIconHelperCopies.find(row=>row.path==='tests/helpers/closeout-source-epoch.mjs').versions.push(
+ {before:'80ce66997b851f9e9e4b7df26adcc7fcb895d6149bc70aff7b5efb13bf607982',after:'47e39952fc4ce51fca74ef54a2f1e87dd0bb4ce48fe5c71be9097210bea2229c'});
+itemIconHelperCopies.push(
+ {path:'tests/helpers/perf-final-source.mjs',versions:[{before:null,after:'e2d31ba8ab123552bc43a1f763e1af2b2f74939c68bd19fa007d3e661d02117c'}]},
+ {path:'tests/helpers/perf-final-source.json.gz',versions:[{before:null,after:'8508b6cae05983cb2465a5ea6c91a382f199a72db3dd7270773c0a7b476f2f44'}]});
 for(const row of itemIconHelperCopies){
  let version=row.versions.find(version=>version.before===(files[row.path]??null)),steps=0;
  assert(version,'exact item icon helper-copy predecessor: '+row.path);

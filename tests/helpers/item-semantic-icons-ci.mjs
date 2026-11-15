@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {pcFinalCiSource,pcFinalCurrentInventory,pcFinalPriorInventory} from './pc-final-ci-source.mjs';
 import {pcAfterFixCiPacket} from './pc-after-fix-ci-source.mjs';
+import {perfFinalCiPacket} from './perf-final-ci-source.mjs';
 const norm=s=>s.replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 // Filled once from the two reviewed Git snapshots after the bounded code changes.
@@ -163,7 +164,7 @@ export function itemIconPriorInventory(paths,base,kind,read,proof){
  const added=Object.keys(itemIconCi.added[kind]).filter(path=>!base.includes(path));
  // An adopted complete current base is already its own historical identity.
  // This mapping does not replace assertIntegratedCurrent's unconditional gate.
- if(JSON.stringify([...base].sort())===JSON.stringify(pcAfterFixCiPacket.currentInventory[kind])&&JSON.stringify([...paths].sort())===JSON.stringify([...base].sort()))return [...paths];
+ if(JSON.stringify([...base].sort())===JSON.stringify(perfFinalCiPacket.currentInventory[kind])&&JSON.stringify([...paths].sort())===JSON.stringify([...base].sort()))return [...paths];
  paths=pcFinalPriorInventory(paths,kind,read);
  if(added.length===0)return [...paths];
  if(!added.some(path=>paths.includes(path)))return [...paths];

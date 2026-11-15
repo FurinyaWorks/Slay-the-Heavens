@@ -1,3 +1,4 @@
+import {extendPerfFinalSource} from './perf-final-source.mjs';
 // One exact current production closure; original slices and archives stay immutable.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -58,7 +59,8 @@ export const preMobileUiSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
 export const prePortraitIdleSourceEpoch=extendMobileUiEpoch(preMobileUiSourceEpoch);
 export const prePcFinalSourceEpoch=extendPortraitIdleEpoch(prePortraitIdleSourceEpoch);
 export const pcBeforeFixEpoch=extendPcFinalSourceEpoch(prePcFinalSourceEpoch);
-export const sourceEpoch=extendPcAfterFixSource(pcBeforeFixEpoch);
+export const perfBeforeEpoch=extendPcAfterFixSource(pcBeforeFixEpoch);
+export const sourceEpoch=extendPerfFinalSource(perfBeforeEpoch);
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
 function sliceFrom(epoch,path,source,target,readSource){

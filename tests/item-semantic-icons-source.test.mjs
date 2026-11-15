@@ -81,8 +81,9 @@ test('unknown, appended, foreign, nonstring and absent-target inputs remain opaq
  assert.equal(absent.preCombinedSource(path,witness.after[path].source,{target,readSource:read}),witness.after[path].source);assert.equal(reads,0);
 });
 test('copy closure pins both reviewed closeout compositions and copies the new witness/helper with fresh owner checks',()=>{
- const entry=itemIconHelperCopies.find(row=>row.path==='tests/helpers/closeout-source-epoch.mjs');assert.equal(entry.versions.length,5);
+ const entry=itemIconHelperCopies.find(row=>row.path==='tests/helpers/closeout-source-epoch.mjs');assert.equal(entry.versions.length,6);
  assert.deepEqual(entry.versions[4],{before:'ca1375c9dfab0d93f78afc8b80e86e8930f92057a201e48e946d7d6a7b350c42',after:'80ce66997b851f9e9e4b7df26adcc7fcb895d6149bc70aff7b5efb13bf607982'},'only the explicit final source continuation is appended');
+ assert.deepEqual(entry.versions[5],{before:'80ce66997b851f9e9e4b7df26adcc7fcb895d6149bc70aff7b5efb13bf607982',after:'47e39952fc4ce51fca74ef54a2f1e87dd0bb4ce48fe5c71be9097210bea2229c'},'performance continuation appends one exact tuple');
  const sha=text=>createHash('sha256').update(text.replaceAll('\r\n','\n')).digest('hex');
  const current=readFileSync('tests/helpers/item-icon-reviewed-closeout.mjs.txt','utf8').replaceAll('\r\n','\n');assert.equal(sha(current),'aa943b070906e85c7adb23b2019728886d83bcfb2f80b19266931b23c3f98ffc');assert.equal(sha(current),entry.versions[0].after);
  assert.equal(sha(readFileSync(entry.path,'utf8')),entry.versions.at(-1).after,'final current helper is authenticated separately from the original two reviewed snapshots');

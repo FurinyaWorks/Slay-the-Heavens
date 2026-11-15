@@ -4,6 +4,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {pcAfterFixCiPacket as packet,pcAfterFixCiSource,pcAfterFixHistoricalCiSource,pcAfterFixCurrentInventory,pcAfterFixPriorInventory,assertPcAfterFixCiCurrent} from './helpers/pc-after-fix-ci-source.mjs';
 import {preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {preRunHudCiSource,runHudCiProof} from './helpers/run-hud-ci-source.mjs';
+import {perfFinalPriorInventory} from './helpers/perf-final-ci-source.mjs';
 import {assertIntegratedCurrent,integratedCurrentInventory} from './helpers/integrated-ci-source.mjs';
 const raw=path=>readFileSync(path,'utf8');
 
@@ -12,10 +13,10 @@ test('final appended CI keeps complete raw discovery, old inventories, and uncon
  assert(Object.isFrozen(packet));
  const actual={js:readdirSync('tests').filter(path=>path.endsWith('.test.mjs')).map(path=>'tests/'+path).sort(),lua:readdirSync('tests/lua').filter(path=>path.endsWith('.lua')).map(path=>'tests/lua/'+path).sort()};
  for(const kind of ['js','lua']){
-  assert.deepEqual(actual[kind],packet.currentInventory[kind]);assert.deepEqual(actual[kind],integratedCurrentInventory(kind));
+  assert.deepEqual(perfFinalPriorInventory(actual[kind],kind,readFileSync),packet.currentInventory[kind]);assert.deepEqual(actual[kind],integratedCurrentInventory(kind));
   assert.deepEqual(pcAfterFixCurrentInventory(packet.priorInventory[kind],kind),actual[kind]);
   assert.deepEqual(pcAfterFixPriorInventory(actual[kind],kind,readFileSync),packet.priorInventory[kind]);
-  const added=actual[kind].filter(path=>!packet.priorInventory[kind].includes(path));
+  const added=packet.currentInventory[kind].filter(path=>!packet.priorInventory[kind].includes(path));
   for(const path of added){
    assert.throws(()=>pcAfterFixPriorInventory(actual[kind],kind,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh appended raw test source/);
    if(added.length>1)assert.throws(()=>pcAfterFixPriorInventory(actual[kind].filter(p=>p!==path),kind,readFileSync),/inventory/);
