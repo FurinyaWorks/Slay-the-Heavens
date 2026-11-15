@@ -29,7 +29,7 @@
     "independent_reviews": {
       "decisions": "PENDING_NEW_CANDIDATE",
       "economy": "PENDING_NEW_CANDIDATE",
-      "presentation": "PENDING_NEW_CANDIDATE"
+      "presentation": "CHANGES_REQUESTED_B1_SOURCE_3da512df7e62afdbfe49c7a8d47a781bebe65786"
     },
     "human_approval": "PENDING",
     "ready_for_owner_playtest": false
@@ -64,11 +64,11 @@
     }
   ],
   "next_actions": [
-    "Obtain three independent reviews tied to B1 git blob",
-    "Investigate conflicting E draw-one effects with same-seed strategies and unchanged reward policy",
-    "Fix and validate realistic rarity weights in a separately preregistered experiment",
-    "Resolve 35/75 original-name provenance and card-by-card roles",
-    "Run real browser UI and exhaustive extreme-combo probes before user playtest"
+    "Mechanics and economy B1 independent reports pending; presentation B1 independent review requests changes for 18 legacy hand-maintained text paths, provenance ledger, and B1 browser evidence",
+    "Keep frozen B1 unchanged until reviewers complete; next isolated candidate must explicitly address independent findings and invalidate old review approvals",
+    "Use preregistered rarity-weight probe to implement an isolated weighted-reward draft, then test natural five-battle strategies against fixed baseline under new preregistration",
+    "Resolve 35/75 original-name provenance and card-by-card roles without relabeling unverified as official",
+    "Run real browser UI and exhaustive extreme-combo probes before owner playtest"
   ],
   "not_claimed": [
     "Independent review passed for B1",
@@ -76,7 +76,10 @@
     "Browser interaction and manual report fallback verified in real Chromium",
     "Natural campaign difficulty or official reward rate calibrated",
     "User taste or human approval",
-    "Official platform acceptance"
+    "Official platform acceptance",
+    "Reward rarity fixed in active B1 candidate",
+    "Weighted reward policy improves actual five-battle HP or player enjoyment",
+    "B1 independent presentation review passed"
   ],
   "baseline": {
     "candidate_id": "baseline-pr640-99cc1e0",
@@ -88,5 +91,22 @@
       "presentation": "CHANGES_REQUESTED"
     },
     "chat_attachment_difference": "single trailing LF only"
+  },
+  "supporting_experiments": {
+    "reward_rarity_weighted_probe": {
+      "status": "ISOLATED_RESULT_COMPLETE_NOT_APPLIED_TO_B1",
+      "preregistered_commit": "8574ea1be466153433ec2d921c5e4b6a9c1e67dd",
+      "result_commit": "d59676236dbb4219fb84c115ec13016de3fccdff",
+      "source_git_blob_sha": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+      "paths": [
+        "experiments/characters/hutao-v6-lab/experiments/2026-11-15-rarity-policy-prereg.md",
+        "experiments/characters/hutao-v6-lab/experiments/2026-11-15-rarity-policy-probe.cjs",
+        "experiments/characters/hutao-v6-lab/experiments/2026-11-15-rarity-policy-results.json",
+        "experiments/characters/hutao-v6-lab/experiments/2026-11-15-rarity-policy-findings.md"
+      ],
+      "heldout_rare_offer_screen_rate_original": 0.606425,
+      "heldout_rare_offer_screen_rate_experimental_weighted": 0.09065,
+      "limitation": "Only reward-only deterministic simulation; not HutaoGame natural 5-battle HP/win/playability. New weighted policy not in frozen B1; requires new preregistered gameplay candidate and three fresh reviews."
+    }
   }
 }
