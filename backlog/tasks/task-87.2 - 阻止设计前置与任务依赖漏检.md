@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 13:10'
-updated_date: '2026-11-15 13:39'
+updated_date: '2026-11-15 14:48'
 labels: []
 dependencies: []
 references:
@@ -42,4 +42,6 @@ ordinal: 178000
 2026-11-15 Owner明确要求根因纠偏、轻量机制并及时集成既有成熟feature。执行树dependency-intake-1115，基线c2409ad7；现有87.1为状态对账，87.2仅补依赖漏检，避免重做。
 
 2026-11-15已落本地机制：task:pick与verify:backlog共用轻量依赖检查，97经CLI补回96且保留105。未完成依赖旧入口ALLOW、97删设计边旧门禁空错误均先RED后GREEN；独审另发现宽松Done标量会误认证设计完成，已加两条入口反例并复用严格解析修复。6文件定向153/153通过（含冷进程无npm发布器与delivery合同），verify:backlog、syntax、guidance、diff检查通过。Fast规划因未建模Backlog要求Full，未重复本地全套或额外ci:full；托管与合后仍待。独审会话ses_e20966779ffeZw2jHWCrHnMhuR待修复后读回。源码通过不证明任何设计/容量/设备GO；AC4保留。
+
+2026-11-15继续执行：补查跨模块合同发现metadata未登记当前CI原文，已通过merge:auto暂停PR682并读回；153项仅为当轮定向结果，不是Full通过。现同批纳入TASK34七行永久故障音乐清理，单UI后继接最新session/Neow，原大archive/六源views不改，新增精确小后继与实际复制闭包。48项epoch+80项依赖/Backlog+20pass1既有renderer能力skip通过。独审ses_e2058991bffe7LK6jit0BB7vj0另检出生成器依赖未合侧分支Git对象，已用对象不可用反例先红后绿并改为认证托管fixture，最终5/5通过。详见docs/evidence/dependency-bgm-source-contract-20261115.md；AC4仍待最终独审、正常CI/合后，不记Done。
 <!-- SECTION:NOTES:END -->

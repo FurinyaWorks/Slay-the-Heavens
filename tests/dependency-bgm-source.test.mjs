@@ -3,9 +3,32 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {spawnSync} from 'node:child_process';
 import {sourceEpoch,sessionMenuSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 const norm=s=>s.replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const path='src/lua/abyss_ui.lua',raw=p=>sourceEpoch.proof.current[p]?.source??null;
+
+test('successor reproduction does not require the retired side-branch producer object',()=>{
+ const script=String.raw`
+  import assert from 'node:assert/strict';
+  import childProcess from 'node:child_process';
+  import {syncBuiltinESMExports} from 'node:module';
+  const original=childProcess.execFileSync;
+  childProcess.execFileSync=(command,args,options)=>{
+   if(command==='git'&&args.some(arg=>String(arg).includes('158c492a')))
+    throw Error('retired side-branch object unavailable');
+   return original(command,args,options);
+  };
+  syncBuiltinESMExports();
+  process.argv[2]='--check';
+  await import('./tests/helpers/generate-dependency-ci-source.mjs');
+  console.log('SELF_CONTAINED_SUCCESSOR_PASS');
+ `;
+ const result=spawnSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8',timeout:30000,windowsHide:true});
+ assert.ifError(result.error);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/SELF_CONTAINED_SUCCESSOR_PASS/);
+});
 
 test('one UI successor authenticates actual current bytes after the latest menu/Neow epoch',()=>{
  assert.equal(raw(path),norm(readFileSync(path,'utf8')));

@@ -10,10 +10,11 @@ const bind=source=>({source,sha256:hash(source),gitBlob:createHash('sha1').updat
 const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:32*1024*1024});
 const baseCommit=git(['rev-parse','c2409ad7^{commit}']).trim();
 function output(path,value){if(mode==='--write')writeFileSync(path,value);else assert(readFileSync(path).equals(value),'reproducible exact successor: '+path);}
-// Reuse only the one-owner complete source pair, byte-for-byte from its producer.
+// The producer is provenance, not a runtime dependency on an unmerged branch.
+// Authenticate the committed immutable pair already delivered in this checkout.
 const fixture='tests/fixtures/fatal-bgm-e65-source.json.gz';
-const fixtureBytes=execFileSync('git',['show','158c492a3f8a6e8d3bfc85b79634b06d2f4b3056:'+fixture],{maxBuffer:1024*1024});
-assert.equal(hash(fixtureBytes),'3e560e461232785753f5a574732ec834b19c51cfd700f09cce212009dd4a22fb');output(fixture,fixtureBytes);
+const fixtureBytes=readFileSync(fixture);
+assert.equal(hash(fixtureBytes),'3e560e461232785753f5a574732ec834b19c51cfd700f09cce212009dd4a22fb');
 const prior=JSON.parse(gunzipSync(readFileSync('tests/helpers/integrated-ci-source.json.gz')));
 const oldPaths=new Set(git(['ls-tree','-r','--name-only',baseCommit]).trim().split('\n'));
 const paths=new Set([...git(['diff','--name-only',baseCommit,'--','scripts','src/lua','tests']).trim().split('\n'),...git(['ls-files','--others','--exclude-standard','tests']).trim().split('\n')]);

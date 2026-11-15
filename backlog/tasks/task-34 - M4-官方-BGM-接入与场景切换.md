@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 07:34'
-updated_date: '2026-11-15 14:23'
+updated_date: '2026-11-15 14:48'
 labels:
   - P1
   - bgm
@@ -92,4 +92,6 @@ ordinal: 46000
 本轮证据：docs/backlog-details/TASK-34-FATAL-BGM-INTEGRATION-20261115.md。原缺陷红→绿，Node定向30/30、失败退出7组、原BGM3组/Host2组及原生启动负控通过。source-epoch完整当前源码认证在基线通过、补丁后拒绝入口；保持BLOCKED，不宣称可合入。#672精确HEAD只读内存叠加通过imageModes运行时及启动/回收/销毁用例，非本分支已集成证明。额外monster模板失败已在原基线同条件复现；TEMP权限失败与定向恢复均记录。状态仍In Progress，AC3–6无官方/设备听验继续未勾；不推送/PR/合并/release。
 
 本地最小代码提交 1fdad7300a93778a4431edd7a546a28efebcae94（3文件127行，生产7行）；待主控独审/source-epoch接续，不是可合入绿灯。补充 Node 两文件语法检查及 Lua 两文件5.3解析通过；所有源码/测试改动仅在指定新树。
+
+2026-11-15主控继续：将fatal STOP窄切片及证据接至PR682受检组合，已补齐单UI精确后继、旧/新混期拒绝与CI原文/发现集合/复制闭包，原来源门禁阻塞已由定向回归解除。保留原BGM八场景与设备未验边界；独审发现自包含生成问题已修复，待最终HEAD复核及PR重新授权，未宣称Hosted、实际声音、官方候选或设备通过。原树b3a4637e保留，不携入TASK76输入。
 <!-- SECTION:NOTES:END -->

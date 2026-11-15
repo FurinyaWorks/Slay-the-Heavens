@@ -2,7 +2,7 @@
 
 ## 交付状态
 
-**运行时窄切片已验证；来源门禁 BLOCKED，未达到可合入状态。** 交主控接续独立复审与来源合同，不推送、不建 PR、不合并、不改 release。TASK-34 保持 In Progress，AC3–6 未勾；无本轮官方候选、导入、ready、设备录像或实际听验。
+初始移植轮为**运行时窄切片已验证、来源门禁 BLOCKED**，下文保留当时红例及边界。随后主控将它纳入 PR #682 的受检组合，补齐精确单 UI 后继、CI 原文/发现清单和复制闭包；当前原文与来源负控已通过，独审接续见[来源合同附件](../evidence/dependency-bgm-source-contract-20261115.md)。TASK-34 保持 In Progress，AC3–6 未勾；无本轮官方候选、导入、ready、设备录像或实际听验，托管准入及合后另验。
 
 - 工作树：`.worktrees/fatal-bgm-integration-1115`，分支 `feat/fatal-bgm-integration-1115`。
 - 最新已 fetch 基线：`c2409ad750c15124b7b843c6bbfa5b222537cb75`。
