@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productCommit": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+  "finalCodeCommit": "bcac5c7c12ae6847b0373a2675e03076ec7c358a",
+  "finalCodeTree": "f0a9b0b613ea7a9576165d6d3402d79e21921bbc",
+  "codeChangedPaths": 19,
+  "production": {
+    "sha256": "e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba",
+    "bytes": 54697,
+    "owners": 8
+  },
+  "initialCi": {
+    "sha256": "805a5c4aec2e2fec4ba11c15f9f6473dbae297caaf8beecb1f35b482e7fb0798",
+    "bytes": 680454,
+    "bindings": 46,
+    "calibration": {
+      "tests": 73,
+      "pass": 73,
+      "log": "ci-complete.log.gz"
+    },
+    "sourceAndSession": {
+      "tests": 8,
+      "pass": 8
+    }
+  },
+  "finalCi": {
+    "sha256": "a7c4a4d3e3e1cc3c0ced443c96d0f6a2afa474a1611f654dc6fcf38ce4b38578",
+    "bytes": 680954,
+    "bindings": 46,
+    "sourceTests": 4,
+    "sourcePass": 4,
+    "rawTargetTests": 1,
+    "rawTargetPass": 1,
+    "js": 881,
+    "lua": 1424,
+    "windowsForecastMs": 1762741,
+    "posixForecastMs": 1197621,
+    "unchangedTargetsMs": {
+      "win32": 1800000,
+      "linux": 1200000
+    },
+    "unchangedGuardsMs": {
+      "win32": 2700000,
+      "linux": 1800000
+    },
+    "changedCurrentRowsSinceInitial": [
+      "scripts/ci-test-timings.json",
+      "tests/helpers/release-item-title-shadow-planning.mjs",
+      "tests/release-item-title-shadow-source.test.mjs"
+    ]
+  },
+  "planning": {
+    "preservedFloorMs": 79861,
+    "freshWallMs": 73696,
+    "freshNodeMs": 73618.8019,
+    "executableClosure": 475,
+    "textInputs": 473,
+    "binaryPngInputs": 2,
+    "installedJsDependencies": 290,
+    "physicalSnapshots": 765,
+    "initialReceiptMissingPhysicalInputs": [
+      ".release-please-manifest.json",
+      "CHANGELOG.md"
+    ],
+    "freshTestCount": 2,
+    "freshPass": 2,
+    "hostedCompletion": false
+  },
+  "limitations": [
+    "Original 73/73 belongs only to initial 805a inputs; no final 73 or whole-repository Full was rerun.",
+    "Original pre-adapter source failures remain in the product evidence; the former 44-case source suite was not repeated.",
+    "Official candidate, PC/mobile ready and capacity acceptance are separate and unverified by these contracts.",
+    "The 79861ms local floor is neither a Hosted upper bound nor a guarantee; POSIX forecast margin is 2379ms."
+  ],
+  "logs": [
+    {
+      "path": "source-small.log.gz",
+      "rawSha256": "0bc00fab02b150a7570d2020c66fe16766612e89b8421c8c85b34a65d14ac547",
+      "sha256": "10c0e3e46f184f9f3caea69c7d73d389690161947efb8fe30a1de9836d084ef2",
+      "bytes": 372
+    },
+    {
+      "path": "source-session.log.gz",
+      "rawSha256": "95deecabea8c09821e05501bec2491c2bcaf0bb1c13d0ec7501effe35035dc60",
+      "sha256": "b66a24e0d02f1cbec16e441a3727fabf90354991c8fcc8840fed832c53a7041f",
+      "bytes": 327
+    },
+    {
+      "path": "ci-complete.log.gz",
+      "rawSha256": "8a805e6644e5c1de6d801bbc2931a8cf9df926cd52b465cc33b0e234872e39b0",
+      "sha256": "54cc4d44f166519a8c7ff5708328e6c2989ca67ce894cc2aac0c7a8bdeca547c",
+      "bytes": 3321
+    },
+    {
+      "path": "source-final-small.log.gz",
+      "rawSha256": "f0bb6cd8c05b4bd5b0aab0646c7d86957f354777c858068bffa4dd4d34eebcc8",
+      "sha256": "6471192464ffd5a80ea437d2a1b10ea334399524b06d99277d2d1af4377cba81",
+      "bytes": 374
+    },
+    {
+      "path": "ci-final-target.log.gz",
+      "rawSha256": "9b83609e37eb514f5a263f758af33c78c96a228d3500b543c23f09a593936fd6",
+      "sha256": "4e4c8f4582244fa7326c17a5fb3296e55f6ebba6af703038bfb36df5450cdd85",
+      "bytes": 309
+    },
+    {
+      "path": "source-final-lf.log.gz",
+      "rawSha256": "0047d098418e1f1a05c74806c8b22ec26c5ba198a9fad926c2b3a95bdda6a628",
+      "sha256": "10029baadc93637b752bb3a788354c445b249029b0ca0ec36b7497d9bb467dc9",
+      "bytes": 373
+    },
+    {
+      "path": "ci-final-lf-target.log.gz",
+      "rawSha256": "d8d8c2fc198373f7f39071e4f31ec283a0a7f5159160869c08225334419256b7",
+      "sha256": "db3c2282a7ada4dd771414303d327d8c7250f85523d3e9602131ecae5ca1995d",
+      "bytes": 308
+    },
+    {
+      "path": "source-final-binary.log.gz",
+      "rawSha256": "fff3d0cad92402712445d18ed16991d5c2c763f9561a01ca4c5336bc56f9144d",
+      "sha256": "5019b9727f06c5049757aa88cb24013a304f07674ed72884270e5ace47766861",
+      "bytes": 372
+    },
+    {
+      "path": "ci-final-binary-target.log.gz",
+      "rawSha256": "76afb4b374a95c548ee333866448e3a35b00d7d16334fec8bca19861e0800bac",
+      "sha256": "c8f7ea568968091ac28cd907baab4e841843b5b3e5d74590454654c1533bfc97",
+      "bytes": 309
+    },
+    {
+      "path": "planning-final-text-binary.log.gz",
+      "rawSha256": "9296a2f7d695bf1b00d696114050676b175b888a581a2a1821e79700c5e26f98",
+      "sha256": "432905b82a04262656bd7aefe893b1c517630bcf25ad04ebf0bb501d1a478fdb",
+      "bytes": 290
+    },
+    {
+      "path": "planning-lf-crlf-command-error.log.gz",
+      "rawSha256": "5572aaac51ba8fdfe5f68c6d686242abd1c752df66b2dd9fb72da591a7c5afff",
+      "sha256": "061db45bf954647b553cdd82699e808ef64ade9db9ea40d479c6e47e5c1f5479",
+      "bytes": 786
+    },
+    {
+      "path": "planning-lf-crlf.log.gz",
+      "rawSha256": "2c40722d5915dd9d02bbf7b24d6a330e44f9a589e6e11ca81484ecc3338c4357",
+      "sha256": "2897857c4f4686b0d5f70ff485651e7dcd65ed28e6508c0c2360abd17234d5de",
+      "bytes": 156
+    },
+    {
+      "path": "fresh-retirement-command.log.gz",
+      "rawSha256": "6998bde9a52c99883706b2b3e0143aa1ba5949a15550900968562b06a0d40123",
+      "sha256": "dc7d78c2c44715d590dc37669625230c24b6da56e2c1f788aa4ccbf82c716abf",
+      "bytes": 646
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "platform": "linux",
+  "js": 881,
+  "test": "tests/reward-pool-retirement-runtime.test.mjs",
+  "defaultWeightMs": 10000,
+  "observedSameFileWallMs": 79861,
+  "assignedShard": 13,
+  "defaultForecastMs": 1192964,
+  "samePlacementWithObservedFileMs": 1262824,
+  "targetMs": 1200000,
+  "guardMs": 1800000,
+  "notAnUpperBound": true,
+  "notNewMeasurement": true,
+  "notHosted": true
+}
