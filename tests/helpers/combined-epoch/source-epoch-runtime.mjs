@@ -35,13 +35,18 @@ function configLayoutMatcher(current){
  });
 }
 const validPath=p=>p==='config/architecture.json'||/^src\/lua\/[A-Za-z0-9_-]+\.lua$/.test(p);
-function freeze(value){if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;}
+function freeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;}
+// Immutable proof records are shared by complete historical targets. Their
+// byte/hash validation is pure; live owner reads below always run afresh.
+const validatedFrozenBindings=new WeakSet();
 function validateBinding(binding){
  if(binding===null)return;
+ if(Object.isFrozen(binding)&&validatedFrozenBindings.has(binding))return;
  assert.equal(typeof binding?.source,'string','source identity text');
  assert.equal(normalize(binding.source),binding.source,'source identity LF');
  assert.equal(hash(binding.source),binding.sha256,'source identity SHA256');
  if(binding.gitBlob)assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,'source identity Git blob');
+ if(Object.isFrozen(binding))validatedFrozenBindings.add(binding);
 }
 // A composed proof can share previously validated immutable source strings.
 // Reuse is explicit and accepts only an already deeply frozen JSON data graph;
