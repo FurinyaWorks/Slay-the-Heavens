@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 03:53'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 19:58'
 labels:
   - enhancement
   - awaiting-live
@@ -49,6 +49,8 @@ ordinal: 44000
 2026-10-29实际接受330后的剩余修复：以actualdevelop1dc33fe7（等同330999d）新建本地线性候选，已接受的死亡演出/5+5/共享drain/11输入见证及helper完全冻结。仅补共享结算入口缺失的已提交defeat且busy保护，带回已审查14项触摸/手柄与生命周期回归。添加只绑定GameUI的一文件精确逆层，顺序guard→accepteddeath→旧层；只在现有中央入口及两个直接证明读点接线，所有原断言/种子/30秒不变。强保全和远端2bc未知输入证明以独立加法测试保留，cd104/2bc/ee39恢复引用不删。先在实际新基线重现独立RED，再本地focused/工程验证；根任务负责新head/base独立审查和既有331发布，无push/force/newPR或实机声明。
 
 2026-10-30 用户授权自主研发并合入：先修卡牌真实去向，再补旅行者与两类怪物待机和差异技能。四个独立工作树，生产路径回归、最终完整Quality和完整GIL；平台/实体手机/听验未测继续保留。
+
+2026-11-16 PC22基础反馈复验：按原UID观察自然合法命令的抽牌入手、弃牌回抽洗牌、出牌命中后入弃牌/消耗路径，核已有CardFlow是否完整接入。先证实真实缺口再最小复用，不加任意延迟、不改规则RNG或重绘装饰；灰烬/流光精修继续延期，基础反馈不整体延期。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -72,4 +74,8 @@ ordinal: 44000
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已有5/6项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+原36:28–37:03及50:13–50:35已逐字核对，Release有既有CardFlow/card_flow_feedback回归，现由独立worker补自然Host接入与轨迹，不重复PC13/684加载或PC12输入；无原图12与正式候选窗口，不能将mock计数称PC画面/FPS，未证实前不改产品或勾AC。
+
+PC22确认自然seed1 Strike UID5命中点y=-0.6667到同UID入弃牌起点47.3333跳48；playedCard/cardTrail同父同canvas且旋转0，非几何父层错觉。冻结1b272ab7生产单行CardFlow.playing使用现有ty-stop，另新增三路径回归（Strike/无stop Defend/受控Shockwave消耗）3/3；既有CardFlow与默认polish17通过，Fast10JS+37Lua通过。原探针fixture错误、官方profile旧polish2失败与原基线同失败、Fast内调用npm事实保留。独立产品复审/来源接续正在执行，不能称完整CI或实机验收；装饰流光灰烬延期，基础轨迹已修未验。
 <!-- SECTION:NOTES:END -->

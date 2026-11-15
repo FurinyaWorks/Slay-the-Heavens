@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "archiveKind": "BOUNDED_EXISTING_DIAGNOSTICS_NO_RERUN",
+  "sourceRoot": ".artifacts/release-pc-qa-20261115",
+  "sourceRootAtCollection": "F:\\New folder\\.artifacts\\release-pc-qa-20261115",
+  "targetRoot": "docs/evidence/pc07-pc19-bounded-20261116",
+  "inclusion": "Explicit 33-file whitelist only; no generated directories, images, private PNG bytes, product source collection or executable rerun. JSON may retain original generated-path and source hash metadata without collecting those referenced files.",
+  "pc19SourceIntake": "No separate source-intake was provided in the approved whitelist; scope is existing independent review, three probe versions, two runner versions, four saved receipt/log groups.",
+  "missingEvidence": "The first dependency-environment failure had no saved receipt/log supplied. Its existence is handoff context only; no synthetic failure log or reconstructed receipt is created.",
+  "bundles": [
+    {
+      "path": "pc07-raw.tar.gz",
+      "entryCount": 14,
+      "rawPayloadBytes": 3971125,
+      "uncompressedTarBytes": 3983360,
+      "sizeBytes": 238757,
+      "sha256": "3d402321fb86bbac1af6100983f6763c5c3c013be27bd24d66bb81f79c2fb75d",
+      "readback": "PASS; gzip decompressed and every exact regular member name, count, byte length, SHA256 and full bytes verified; original source bytes freshly unchanged during archive"
+    },
+    {
+      "path": "pc19-raw.tar.gz",
+      "entryCount": 19,
+      "rawPayloadBytes": 798266,
+      "uncompressedTarBytes": 819200,
+      "sizeBytes": 264965,
+      "sha256": "658a89a56b437c4945c64bea0da655d3273edd545aaa5cb31fd55bb7fec9cbeb",
+      "readback": "PASS; gzip decompressed and every exact regular member name, count, byte length, SHA256 and full bytes verified; original source bytes freshly unchanged during archive"
+    }
+  ],
+  "entries": [
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-audit.lua",
+      "memberPath": "pc07-audit.lua",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 3930,
+      "sha256": "891502b60126002a5b998289a804fed84ea0e31201750dfeff12a3acedb7b972"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-audit.mjs",
+      "memberPath": "pc07-audit.mjs",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 7918,
+      "sha256": "c08301d2e5bf71cef335fb7049b3f6a5f0410fc8d54a668f148b11cfe128930f"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-audit.stderr.log",
+      "memberPath": "pc07-audit.stderr.log",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-audit.stdout.tsv",
+      "memberPath": "pc07-audit.stdout.tsv",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 3737172,
+      "sha256": "f3fd3cdf73ace08695fb53a770333ed58b433e6753d9f06ec0d269d3e5e11f1c"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-interpretation.mjs",
+      "memberPath": "pc07-interpretation.mjs",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 7213,
+      "sha256": "fd70fab8bcaae449994101ac55a70339c8b1ab0039ebb42270b19655a2d38223"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-open-prs.json",
+      "memberPath": "pc07-open-prs.json",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 6178,
+      "sha256": "3e3acb67147d43abe81454e44a2f63debb7f82dcd0c9538352d922783f2a16b3"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-pr672.json",
+      "memberPath": "pc07-pr672.json",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 12140,
+      "sha256": "c506a0dfd713b17e185d93c51ca24cafaebfa996f3e8e4bf366b3d1dd76928bf"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-pr684.json",
+      "memberPath": "pc07-pr684.json",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 12942,
+      "sha256": "c07a943ad431f7f3cce1c92cff4927da4452d6fecc966b243285e92c7d309026"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-release684-map.diff",
+      "memberPath": "pc07-release684-map.diff",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 996,
+      "sha256": "9b0a000352dbfd1e514350acedb9d1a767c6a20dea05c7440f04dd2bf2f93c09"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-source-intake.json",
+      "memberPath": "pc07-source-intake.json",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 156775,
+      "sha256": "68bab899604974cdff0bb631e2c8eaf1c5b7626b405754b7e24ba163219ebc14"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-source-intake.md",
+      "memberPath": "pc07-source-intake.md",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 6196,
+      "sha256": "36eeb2e0df4652b2b2c8f4525db53dc47061019f879a3107b4007db7b44a8fd6"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-topology.lua",
+      "memberPath": "pc07-topology.lua",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 526,
+      "sha256": "df088e0f95f344b0efc0bbbf97b133759526f13547a57d9c4e35bb95b2a89443"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-topology.stderr.log",
+      "memberPath": "pc07-topology.stderr.log",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc07-topology.stdout.tsv",
+      "memberPath": "pc07-topology.stdout.tsv",
+      "bundle": "pc07-raw.tar.gz",
+      "sizeBytes": 19139,
+      "sha256": "b968c0b2fd39ef4909b380d7b1a67c77675bf7bdcddc1dadecb7ae4131d23768"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19-event-continue.initial.lua",
+      "memberPath": "pc19-event-continue.initial.lua",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 2798,
+      "sha256": "3780e26ee291722794e46f197d7c9f50752b8b37ead49b2670e1195512156228"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19-event-continue.lua",
+      "memberPath": "pc19-event-continue.lua",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 3335,
+      "sha256": "7732c34ec915c95ffced2b82944a89c6eab46f4b807d93f00c25150a521425fd"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19-event-continue.trace-v2.lua",
+      "memberPath": "pc19-event-continue.trace-v2.lua",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 3226,
+      "sha256": "d05417208f40728aa3b4ffbf2641573241cfa1513830d8d20b9ebe04788f7bec"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca-native.json",
+      "memberPath": "pc19/picker-bcca-native.json",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 193425,
+      "sha256": "e87e7a5e95dbc86c73b0a7c054281cb21e3a9767e905fbb9f38b3f64218441ec"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca-native.stderr.log",
+      "memberPath": "pc19/picker-bcca-native.stderr.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca-native.stdout.log",
+      "memberPath": "pc19/picker-bcca-native.stdout.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 733,
+      "sha256": "9f874f375153ba6dfe75f5960ca42383b8248254a038921affbc7572c66365ce"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca-trace.json",
+      "memberPath": "pc19/picker-bcca-trace.json",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 193422,
+      "sha256": "59e59dfd101c80e305c573ce775cd31fd116a048312666f0ae730431d0212a98"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca-trace.stderr.log",
+      "memberPath": "pc19/picker-bcca-trace.stderr.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 285,
+      "sha256": "4ff0b6fcdc486e64d878dc57832a6dd355d850880344d6fe5c6d14a06ae9fb92"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca-trace.stdout.log",
+      "memberPath": "pc19/picker-bcca-trace.stdout.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 534,
+      "sha256": "4f3279af338c5af12ab422a9059b162c158dcf726c15edcd4646f9a817e2a17c"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca.json",
+      "memberPath": "pc19/picker-bcca.json",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 193404,
+      "sha256": "eca0c70241a8767f2cd14dc68df520f37e52e278ca7f34b1382ba9fe09305d39"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca.stderr.log",
+      "memberPath": "pc19/picker-bcca.stderr.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 297,
+      "sha256": "f8578daf0632d30d9e3f0dddfa9228dd1baeee4772720c3103782f375485e22b"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/picker-bcca.stdout.log",
+      "memberPath": "pc19/picker-bcca.stdout.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 33,
+      "sha256": "6c1e3926cbde1c7a08fcdbbd78798043b93b7108d215e935312a7876e12d1e01"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/release36-native-external-cli.json",
+      "memberPath": "pc19/release36-native-external-cli.json",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 193153,
+      "sha256": "84b3f9947a28411dd856309ca9ccb69d78c1dbd74cd557c934298c4ce9936640"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/release36-native-external-cli.stderr.log",
+      "memberPath": "pc19/release36-native-external-cli.stderr.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/pc19/release36-native-external-cli.stdout.log",
+      "memberPath": "pc19/release36-native-external-cli.stdout.log",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 734,
+      "sha256": "88b5c3bd15be6dc0182888d480eb2858a1b1fe2b3538079b6310f3cbd173db2e"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/review-pc19-existing-footer.json",
+      "memberPath": "review-pc19-existing-footer.json",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 1995,
+      "sha256": "6d2aaf1c011966d367bebeed0e8e7edf2a139284ec8a72d434fd2ebffd237421"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/review-pc19-existing-footer.md",
+      "memberPath": "review-pc19-existing-footer.md",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 4099,
+      "sha256": "ee084e70aa6112df484b0d1e9ae6326706f4ae990ab16c35e3f962d9c5b3f051"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/run-pc19-event-continue.initial.mjs",
+      "memberPath": "run-pc19-event-continue.initial.mjs",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 3390,
+      "sha256": "a60a82c1d162a979e88b9e78360174ecb87d1ff3cd203d6a3d66c46268988f17"
+    },
+    {
+      "sourceRelativePath": ".artifacts/release-pc-qa-20261115/run-pc19-event-continue.mjs",
+      "memberPath": "run-pc19-event-continue.mjs",
+      "bundle": "pc19-raw.tar.gz",
+      "sizeBytes": 3403,
+      "sha256": "9112d03e9483b2e8c6b9ae1d502150fd4ad2ef5ec4328cc72a9bc3634796eea5"
+    }
+  ],
+  "totals": {
+    "fileCount": 33,
+    "rawPayloadBytes": 4769391,
+    "compressedBundleBytes": 503722,
+    "emptyRawFiles": 4
+  }
+}

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-15 18:58'
+updated_date: '2026-11-15 19:58'
 labels:
   - 待验
   - delivery-verify
@@ -45,6 +45,8 @@ ordinal: 171000
 6.按用户控制变量要求，官方选角直接复用战斗同一battlePixel57；原立绘保留不再优化，显式生成标记防旧候选误报。R7干净构建后重验完整黑盒与首次ready，来源证明和独审绑定最终生产提交。
 
 7.按用户拒收意见纠正原命之座与红青旗帜按钮；只保留角色57和背景暂缓例外。修复实际Hosted Full失败（Windows字节来源换行/历史reader层等），完整画面对照与黑盒重验，精确独审后按merge:auto送Merge Queue。
+
+2026-11-16 PC04接续：沿正式生成/组合与ready边界核所有实际可见遮罩，先证明旧层是否仍压在已批准人物/背景上；如证实只退休该旧层，保留独立输入blocker、默认profile与已有fallback，不新造无批准HUD几何。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -87,4 +89,8 @@ R7最终复验：SDK28项、实际浏览器HP21+Lament9项通过，20次暖选�
 PC01原product8ee已基Release36组合至df5ad3dc，三产品路径逐blob保持：源title JSON、五theme字段与标题/双按钮。组合menu6/6+hover/结果四态41+default/official/V25配对Host及限定独审通过；Continue动态line既有P2未修，不泛称动画PASS。选角PC04/Neow及最终画面仍未验，源合同5FAIL接续中，正式容量/ready/PC手机AC不勾。
 
 PC01标题/批准按钮恢复产品8ee在df5组合、6cc来源/harness c344/e2eb增量均完成限定独审；58当前输入逐blob匹配，原5来源失败已补验，最终16执行12唯一合同PASS。原文观察栏仅纠正混入的旧PR决定推断，实际询问既有设计未呈现的事实与TaskAC5源核对保持；不倒退成未决方案。Continue旧动态线条P2仍未修，不冒称41断言覆盖它；角色蒙层PC04/正式画面与手机容量仍未验，AC未勾。
+
+新源码假设已具体到characterPanel/officialBackdropVeil：attachOfficialBackdrops插入旧全屏层，正式applyV25CharacterLayout未列入隐藏集合，可能位于已批准人物背景之上；runtime ready仅管理v25Background及details。独立Release36 Host RED核验进行中，不能先称私图06根因或实机修复，不改角色/平衡/标题或造新蒙层。
+
+PC04产品0a56仅退休officialBackdropVeil旧全屏层，a3b最终回归与evidence9b0已组合74a598。精确Release逆放2RED/1默认PASS、原8定向、独立失败回退探针及组合5/5通过；正式生成仅一个visible字段变化，其它3profile字节不变。旧层缺陷不是私图06唯一根因证明；独立HUD半透明区批准位置/正式画面AC4未验。来源565cb735与21+1输入独审通过，保留fallback与输入blocker，未勾新AC。
 <!-- SECTION:NOTES:END -->
