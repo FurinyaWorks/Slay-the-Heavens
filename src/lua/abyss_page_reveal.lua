@@ -66,20 +66,42 @@ local function readiness(ready,intent)
     local ok,value,reason=pcall(ready,intent)
     return ok and value==true and not reason,not ok and tostring(value) or reason
 end
-function M.new(cover,ready,onIntent)
+local function sameBase(a,b)
+    if not a or not b then return false end
+    for _,key in ipairs({'mode','run','battle','nodeId','nodeFloor','mapSeed','mapSignature','roomGeneration','eventId','characterOpen','character','act','floor'})do
+        if a[key]~=b[key]then return false end
+    end
+    if a.node~=b.node and (a.nodeId==nil or a.nodeFloor==nil or a.roomGeneration==nil or a.mapSignature==nil)then return false end
+    if a.phase==b.phase then return true end
+    local battlePhases={combat=true,reward=true}
+    return a.mode=='battle' and a.battle~=nil and battlePhases[a.phase] and battlePhases[b.phase] or false
+end
+function M.new(cover,ready,onIntent,frames)
     assert(cover and type(ready)=='function','page reveal requires cover and readiness source')
     local gate={epoch=0,state='preparing',tick=0}
+    local function localFrame(intent,previous)
+        if not frames or not sameBase(intent,gate.published)then return end
+        return frames[intent.page] or previous and frames[previous.page]
+    end
+    local function paintFrame()
+        if not frames then return end
+        local veil=cover:GetChild('veil');local frame=gate.localFrame or frames.full
+        veil:SetAnchoredPosition(frame[1],frame[2]);veil:SetSizeDelta(frame[3],frame[4])
+    end
     function gate:covered()return self.state~='visible' end
     function gate:request(intent)
         if same(intent,self.intent)then return false end
+        self.localFrame=localFrame(intent,self.intent)
         self.painting=nil
         self.epoch=self.epoch+1;self.intent=intent;self.state='preparing';self.armed=nil;self.error=nil
         if onIntent then onIntent(self.epoch)end
         print('ABYSS_PAGE_REVEAL preparing page='..tostring(intent.page)..' epoch='..self.epoch)
-        cover:SetVisible(true);cover:SetAsLastSibling();return true
+        paintFrame();cover:SetVisible(true);cover:SetAsLastSibling();return true
     end
     function gate:begin(intent)
-        local fast=self.state=='visible' and canUpdate(intent,self.intent)
+        local localChange=localFrame(intent,self.intent)~=nil
+        local fast=self.state=='visible' and (canUpdate(intent,self.intent) or localChange)
+            or localChange and same(intent,self.published)
         if not fast then self:request(intent)end
         self.painting={epoch=self.epoch,intent=intent,fast=fast,changed=not same(intent,self.intent)}
     end
@@ -97,12 +119,14 @@ function M.new(cover,ready,onIntent)
             if reason then return reject(self,tostring(reason))end
             return false
         end
-        self.epoch=self.epoch+1;self.intent=intent;self.armed=nil;self.error=nil
+        self.epoch=self.epoch+1;self.intent=intent;self.published=intent;self.armed=nil;self.error=nil
+        self.state='visible';cover:SetVisible(false)
         if onIntent then onIntent(self.epoch)end
         print('ABYSS_PAGE_REVEAL updated page='..tostring(intent.page)..' epoch='..self.epoch)
         return true
     end
     function gate:paint(raise)
+        paintFrame()
         cover:SetVisible(self:covered())
         if self:covered() and raise then cover:SetAsLastSibling()end
         local message=cover:GetChild('message')
@@ -116,9 +140,10 @@ function M.new(cover,ready,onIntent)
         if ticket~=self.epoch then return false end
         if reason then return reject(self,tostring(reason))end
         if value~=true then self.state='preparing';self.armed=nil;return false end
-        -- Confirm on the next real scheduler turn, after asynchronous owners ran.
-        if self.armed and self.armed.epoch==ticket and self.armed.tick<self.tick then
-            self.state='visible';self.armed=nil;self.error=nil;cover:SetVisible(false)
+        -- New base pages confirm on another scheduler turn. A retained base's
+        -- local work publishes as soon as this turn's real owners report ready.
+        if self.localFrame or self.armed and self.armed.epoch==ticket and self.armed.tick<self.tick then
+            self.state='visible';self.published=intent;self.armed=nil;self.error=nil;cover:SetVisible(false)
             print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..ticket);return true
         end
         self.state='ready';self.armed={epoch=ticket,tick=self.tick};return false

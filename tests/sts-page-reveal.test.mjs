@@ -130,7 +130,7 @@ host:refresh();assert(host.choiceUI.visible and reveal:covered())
 assert(not Art.presentationReady('choicePanel'),'first choice native-art owner missing')
 assert(not textureRuntime:presentationReady('choicePanel')and not textureRuntime:presentationReady('battlePanel'))
 assert(not reveal:step(require('abyss_page_reveal').intent(host)),'empty choice readiness skipped first leases')
-Art.update();textureRuntime:update();assert(not reveal:step(require('abyss_page_reveal').intent(host)));assert(reveal:step(require('abyss_page_reveal').intent(host)))
+Art.update();textureRuntime:update();assert(reveal:step(require('abyss_page_reveal').intent(host)),'same-base choice did not publish its genuinely ready leases in the current scheduler turn')
 host:refresh();local choiceEpoch=reveal.epoch;local generation=host.choiceUI.generation
 for i=1,10 do host:refresh();host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));assert(not reveal:covered()and reveal.epoch==choiceEpoch,'choice idle refresh restarted cover')end
 assert(host.choiceUI.generation==generation,'idle refresh unexpectedly changed choice input generation')

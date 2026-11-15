@@ -128,6 +128,12 @@ local C=F.Combat;local Gate=require('abyss_page_reveal')
 package.loaded.abyss_art_features={schemaVersion=2,flags={cards=false,menuBackground=false,selectionAvatar=false,battlePortrait=false,monsters=false}}
 Color=setmetatable({FromRGBA=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end},{__call=function(_,r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},CursorEventType={CursorClick='click'},Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
+-- This is a native-cell lifecycle contract, not a wall-clock benchmark. Keep
+-- the original 64 requests/frame deterministic; the separate runtime budget
+-- tests retain the real 8ms-clock boundary and overshoot assertions.
+local Modes=require('abyss_image_modes');local createModes=Modes.new
+Modes.new=function(stage,binding,enums)return createModes(stage,binding,enums,function()return 0 end)end
+local activeHost,activePlatform
 local function boot(amount,origin)
  local canvas=F.control({children=F.Layout});local host,p;local actors=F.monsterActors()
  package.loaded.abyss_monster_actor_binding={enabled=true,templateIndex=actors.templateIndex,containerTemplateIndex=actors.containerTemplateIndex,powerTemplateIndex=actors.powerTemplateIndex}
@@ -146,9 +152,19 @@ local function boot(amount,origin)
  local original=C.copy(host.run.deck);host.run.deck={}
  for i=1,amount do local card=C.copy(original[(i-1)%#original+1]);card.uid=1000+i;host.run.deck[i]=card end
  local grid=host.root:GetChild('deckPanel'):GetChild('pileGrid');grid.indexBase=origin;grid.deferRefresh=true
- assert(host:openDeck());return host,p,grid,update
+ assert(host:openDeck());activeHost,activePlatform=host,p;return host,p,grid,update
 end
-local function turns(update)for i=1,3 do update(1/60)end end
+local function turns(update)
+ local binding=require('abyss_image_mode_binding');local static,perCell=0,0
+ local page=Gate.intent(activeHost).page
+ for _,row in ipairs(binding.static)do if row.path[2]==page then static=static+1 end end
+ for _,row in ipairs(binding.templates)do if page=='deckPanel' and row.scope=='AbyssBattlePileCard'then perCell=perCell+1 end end
+ local maximum=2+math.ceil((static+perCell*#(activeHost.deckUI.cards or {}))/64)
+ for _=1,maximum do
+  update(1/60);assert(activePlatform.imageModes.lastRequests<=64,'native mode request budget changed')
+  if not activeHost.pageReveal:covered() and not activeHost.deckUI.pendingGrid then return end
+ end
+end
 local function fill(grid,first,last)for i=first,last do grid:recycle(i-1,i-1+grid.indexBase)end end
 for _,origin in ipairs({0,1})do
  local host,p,grid,update=boot(10,origin);local deck=host.deckUI
@@ -157,7 +173,7 @@ for _,origin in ipairs({0,1})do
  grid:recycle(0,origin);turns(update)
  assert(deck.pendingGrid and not p.presentationReady(Gate.intent(host)) and host.pageReveal:covered(),'cold first cell revealed an incomplete native page')
  fill(grid,1,9);assert(deck.pendingGrid);fill(grid,10,10);turns(update)
- assert(not deck.pendingGrid and p.presentationReady(Gate.intent(host)) and not host.pageReveal:covered())
+ local ready,why=p.presentationReady(Gate.intent(host));assert(not deck.pendingGrid and ready and not host.pageReveal:covered(),'completed cold cells pending='..tostring(deck.pendingGrid)..' ready='..tostring(ready)..' reason='..tostring(why)..' state='..tostring(host.pageReveal.state)..' gate='..tostring(host.pageReveal.error))
  for i=1,10 do assert(deck.bindings[grid.items[i-1]].uid==1000+i,'cold origin mapped wrong UID')end
 end
 -- A fresh small visible set cannot become the readiness limit of a larger list.
@@ -180,7 +196,8 @@ fill(grid,1,1);turns(update);assert(not deck.pendingGrid and not host.pageReveal
 grow(100);fill(grid,1,14);turns(update);assert(deck.pendingGrid and host.pageReveal:covered())
 fill(grid,15,15);turns(update);assert(not deck.pendingGrid and not host.pageReveal:covered(),'virtualized hundred-card list waited for offscreen entries')
 local callback=grid.refreshCallback;local cell=grid.items[0];grid.scrollProgress=.6
-grid:recycle(0,50);assert(deck.bindings[cell].uid==2051 and not deck.pendingGrid and not host.pageReveal:covered(),'scroll recycling lost the current UID or reopened preparation')
+grid:recycle(0,50);assert(deck.bindings[cell].uid==2051 and deck.pendingGrid and not host.pageReveal:covered(),'scroll recycling lost the current UID or incorrectly certified the whole new viewport')
+fill(grid,51,65);turns(update);assert(not deck.pendingGrid and not host.pageReveal:covered(),'the complete recycled viewport must become ready without reopening preparation')
 assert(deck:setSort('cost'));local current=grid.refreshCallback;local uid=deck.bindings[cell].uid;callback(cell,0);assert(grid.refreshCallback==current and deck.bindings[cell].uid==uid,'late callback changed the owned refresh or UID')
 fill(grid,1,15);turns(update);assert(not deck.pendingGrid)
 -- Exact intersection: the next row at the viewport edge is excluded; one
