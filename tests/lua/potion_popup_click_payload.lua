@@ -43,6 +43,53 @@ for _,name in ipairs({'use','discard','hit'})do
   send('use','click',21);used(b)
  end
 end
+-- Competition revokes this press's anonymous capability monotonically.
+-- Neither terminal ordering nor later cleanup can prove a delayed Click's ID.
+for _,a in ipairs({'use','discard'})do
+ for _,same in ipairs({true,false})do
+  local other=same and a or (a=='use'and'discard'or'use')
+  for _,bFirst in ipairs({true,false})do
+   for _,clickFirst in ipairs({true,false})do
+    local b=start();send(a,'down',121);send(other,'down',122)
+    if bFirst then send(other,'up',122);send(a,'up',121)
+    else send(a,'up',121);send(other,'up',122)end
+    if clickFirst then send(other,'click')end
+    send(a,'click');unchanged(b)
+    if not clickFirst then send(other,'click');unchanged(b)end
+    if same then
+     send(other,'click',122);send(a,'click');unchanged(b)
+    end
+    send(a,'click',121);drain()
+    assert(not h.run.potions[1]and b.energy==(a=='use'and 5 or 3),'named owner retains its action')
+   end
+  end
+ end
+end
+for _,a in ipairs({'use','discard'})do
+ for _,same in ipairs({true,false})do
+  local other=same and a or (a=='use'and'discard'or'use')
+  local b=start();press(a,125);press(other,126)
+  send(a,'click');unchanged(b)
+  send(a,'click',125);drain()
+  assert(not h.run.potions[1]and b.energy==(a=='use'and 5 or 3),'released A cannot borrow anonymous identity after B starts')
+ end
+end
+for _,dragged in ipairs({false,true})do
+ local b=start();send('use','down',131)
+ for touch=132,133 do
+  send('use','down',touch)
+  if dragged then local drag=control('use').listeners.drag;if drag then drag({touchId=touch})end end
+  send('use','up',touch)
+ end
+ send('use','click',133);send('use','up',131);send('use','click');unchanged(b)
+ send('use','click',131);used(b)
+end
+for _,other in ipairs({'use','discard','hit'})do
+ local b=start();send('use','down',141);send(other,'down',142)
+ send('use','up',141);send(other,'up',142)
+ send(other,'exit',142);send('use','click');unchanged(b)
+ send('use','exit',141);press('use',141);send('use','click');used(b)
+end
 do
  local b=start();press('use',25);send('discard','click');unchanged(b)
  send('use','click',99);unchanged(b);send('use','click');used(b)

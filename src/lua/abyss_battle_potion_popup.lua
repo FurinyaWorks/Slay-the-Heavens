@@ -113,8 +113,14 @@ function M.new(root,owner,platform,clickEvent,actions)
         if not valid(owner.potionMenu) or root.activeInHierarchy==false then return end
         pointerSeen=true
         if actions.pointerDown then actions.pointerDown(event)end
+        local touch=event and event.touchId
+        pointers[pointerKey(touch)]=nil
+        -- A fresh same-ID Down reclaims itself. Competition permanently revokes
+        -- each overlapping press's anonymous capability, even after cleanup.
+        local competing=false
+        for _,other in pairs(pointers)do other.anonymousBlocked=true;competing=true end
         local pointer={selection=owner.potionMenu,generation=popup.generation,control=control,
-            touch=event and event.touchId,active=true}
+            touch=touch,active=true,anonymousBlocked=competing}
         pointers[pointerKey(pointer.touch)]=pointer
         return pointer
     end
@@ -126,9 +132,9 @@ function M.new(root,owner,platform,clickEvent,actions)
         pointer.active,pointer.released=false,true
         -- A rejected foreign press is still a physical competitor. Keep only
         -- its latest unconsumed release per control, not a touch history.
-        for _,old in pairs(pointers)do
+        if not pointer.action then for _,old in pairs(pointers)do
             if old~=pointer and old.control==control and not old.active and not old.action then forget(old)end
-        end
+        end end
         return pointer
     end
     local function cancelPointer(control,event)
@@ -138,7 +144,7 @@ function M.new(root,owner,platform,clickEvent,actions)
         if not token or not token.released then return false end
         local touch=event and event.touchId
         if touch~=nil then return token.touch==touch end
-        return uniquePointer(control)==token
+        return not token.anonymousBlocked and uniquePointer(control)==token
     end
     local function forgetReleased(control,event)
         local touch=event and event.touchId
