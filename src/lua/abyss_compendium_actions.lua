@@ -22,6 +22,7 @@ function M.attach(browser,root,event,options,bind,command,canList,enabled,grid)
     for _,color in ipairs(Model.colors)do
         add('color'..color,root:GetChild('color'..color),function()
             if browser.kind~='cards'then return false end
+            if browser.color==color then return true end
             browser.color=color;browser.sortMode,browser.ascending='rarity',true
             browser.activeSort=nil
             browser.sortDirections={rarity=false,type=false,cost=false}

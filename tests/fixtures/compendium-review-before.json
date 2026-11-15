@@ -1,0 +1,21 @@
+{
+  "scope": "Exact own previous commit; negative controls for authenticated recycle and same-tab source behavior",
+  "rows": [
+    {
+      "file": "compendium-ui-before-review-fcf04d.lua.gz",
+      "path": "src/lua/abyss_compendium_ui.lua",
+      "sourceCommit": "fcf04d67831567f78a7542518132cea70e4cf411",
+      "bytes": 19636,
+      "sha256": "e97be03f2a41f7bc6f0d091eab9072aba762ce5c3e52b6336ae61e368362e92d",
+      "gzipSha256": "c7327b8ffce2135d5298904ca6b87fea870b5409fe1f7f01114e94daac12a459"
+    },
+    {
+      "file": "compendium-actions-before-review-fcf04d.lua.gz",
+      "path": "src/lua/abyss_compendium_actions.lua",
+      "sourceCommit": "fcf04d67831567f78a7542518132cea70e4cf411",
+      "bytes": 4701,
+      "sha256": "8190f3babb4f2daa72e0788f62599bc1721114b2264f46f017d46c74d59e5906",
+      "gzipSha256": "50a642f986f1130ddcdfb9aed0710b0c89b092a68bd95abf137cf7ce1fdab7ca"
+    }
+  ]
+}

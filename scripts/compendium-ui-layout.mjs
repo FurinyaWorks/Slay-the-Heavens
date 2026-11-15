@@ -38,9 +38,9 @@ export function attachCompendium(layout,theme,templates){
   plate('shade',[0,0,...theme.canvas.base],'#080B12E8'),
   {name:'dismiss',kind:'cursorArea',size:[...theme.canvas.base]},
   face,previewFace,{name:'cardHit',kind:'cursorArea',position:[0,0],size:[366.6666666666667,513.3333333333334]},
-  {name:'relicIcon',kind:'image',position:[0,130],size:[160,160],image:theme.image.rect,colour:'#FFFFFF'},
-  text('detailTitle',[0,242,500,48],'',theme.font.heading),text('detail',[0,-130,500,240],'',theme.font.body),
-  text('rarity',[0,0,360,44],'',theme.font.label),
+  {name:'relicIcon',kind:'image',position:l.relicPopup.icon.slice(0,2),size:l.relicPopup.icon.slice(2),image:theme.image.rect,colour:'#FFFFFF'},
+  text('detailTitle',l.relicPopup.title,'',l.relicPopup.titleFont),text('detail',l.relicPopup.detail,'',l.relicPopup.bodyFont),
+  text('rarity',l.relicPopup.rarity,'',l.relicPopup.rarityFont),
   ...tips,action('tipNext',[520,-316,160,48],'关键词翻页'),
   action('popupPrevious',[-266.6666666666667,0,64,64],'◀'),action('popupNext',[266.6666666666667,0,64,64],'▶'),
   action('popupClose',[-514,-316,200,52],'返回'),action('upgrade',[0,-316,200,52],'查看升级'),
@@ -63,6 +63,7 @@ export function attachCompendium(layout,theme,templates){
   ...['rarity','type','cost'].map((id,i)=>action('sort'+id,[-353.3333333333333+i*150.66666666666666,235.2,140,48],['稀有度','类型','费用'][i])),
   action('viewUpgrade',[300,235.2,240,48],'查看升级'),hoverHints,tooltip,popup];
  for(const node of [popup.children.find(n=>n.name==='detail'),...tips.filter(n=>n.kind==='text'),tooltip.children.find(n=>n.name==='name'),tooltip.children.find(n=>n.name==='body')])Object.assign(node.text,{align:'left',valign:'top'});
+ popup.children.find(n=>n.name==='detail').text.valign='middle';
  stage.children.push(entries,{name:'compendiumPanel',kind:'container',size:[...theme.canvas.base],visible:false,children});
  if(templates)templates.push(compendiumIconTemplate(theme));
  return layout;

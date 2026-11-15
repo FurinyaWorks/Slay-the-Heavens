@@ -190,6 +190,22 @@ for _,kind in ipairs({'relics','potions'})do
  assert(b.selected.id==group[1].id and b.selectedGroup==group,'icon selection escaped rarity group')
  if kind=='relics'then
   assert(b.popup and popup:GetChild('relicIcon').visible and not face.visible)
+  local relic=F.Theme.layout.compendium.relicPopup
+  local icon_=popup:GetChild('relicIcon');local detail=popup:GetChild('detail');local inner=popup:GetChild('cardHit')
+  assert(math.abs(relic.icon[2]-76*2/3)<.0001 and math.abs(icon_.sizeDeltaX-128*2*2/3)<.0001,'relic source icon geometry drift')
+  assert(inner.visible and math.abs(inner.sizeDeltaY-680*2/3)<.0001,'relic inner hit block missing')
+  assert(inner.click()and b.popup,'inside relic block dismissed popup')
+  assert(math.abs(relic.detail[1]-detail.sizeDeltaX/2+200*2/3)<.0001 and relic.bodyFont==18,'relic source body left anchor or native font drift')
+  local Display=require('abyss_card_display')
+  for _,row in ipairs(b.rows)do
+   local pages=Model.pages(row.text,F.Theme.layout.compendium)
+   assert(table.concat(pages)==row.text,'relic paging lost text')
+   for _,page in ipairs(pages)do
+    local font_,fits=Display.fit(page,18,relic.detail[3],128,1.3)
+    assert(font_==18 and fits,'relic page overflowed source width or icon clearance')
+   end
+  end
+  assert(relic.detail[2]+128/2<relic.icon[2]-icon_.sizeDeltaY/2,'relic body ink intersects enlarged icon')
   assert(b.commands.popupNext()and b.selected.id==group[2].id);assert(b:back()and not b.popup)
  else
   assert(not b.popup and b.tooltip and panel:GetChild('tooltip').visible,'potion hover was replaced with a full popup')

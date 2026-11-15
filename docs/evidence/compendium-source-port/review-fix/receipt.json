@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "previousRejectedCommit": "fcf04d67831567f78a7542518132cea70e4cf411",
+  "rejectedCandidatePrefix": "d3e4f548",
+  "fixes": [
+    "source Relic popup geometry and physical text capacity",
+    "local retained-binding identity revision",
+    "current color no-op"
+  ],
+  "uiFreeze": {
+    "scope": "normalized LF six UI modules frozen after three independent P2 fixes; previous head fcf04d rejected",
+    "rows": [
+      {
+        "file": "src/lua/abyss_compendium_ui.lua",
+        "sha256": "e4e8a745939cc79de0757e05609c5195331857a9a3dc242b945c957a6f1bc808",
+        "gitBlob": "5dcc739e49003f6fafcda02c8bc6bb70b74f677f",
+        "bytes": 20902
+      },
+      {
+        "file": "src/lua/abyss_compendium_host.lua",
+        "sha256": "c13f6c4d5cb66dd62557f88df298fcaf43841817d5e58ecffda62f175771d75e",
+        "gitBlob": "ab2b271e12d0c73e255be0653bb94b04924471ca",
+        "bytes": 6141
+      },
+      {
+        "file": "src/lua/abyss_compendium_model.lua",
+        "sha256": "7816b1a82e952185f72e7838877bbc41577790c096beb268da67e51b0c34957f",
+        "gitBlob": "7ca3120221731604322ba8f4f6cf8ba498217c34",
+        "bytes": 8078
+      },
+      {
+        "file": "src/lua/abyss_compendium_input.lua",
+        "sha256": "e415c63211f576815211180eab1fa3fe64e84be188215daebb5094fb14f9691c",
+        "gitBlob": "8dec19cae8528d5997f79d1b09fa301b8d1c526e",
+        "bytes": 2101
+      },
+      {
+        "file": "src/lua/abyss_compendium_card.lua",
+        "sha256": "ebac313d044ce4548c8848242e044bcd0d99946d5c84a38b5b1f65ba1cbee0a0",
+        "gitBlob": "30766001a634cd26bbb6c34884d0c2c6b2e9ce78",
+        "bytes": 5019
+      },
+      {
+        "file": "src/lua/abyss_compendium_actions.lua",
+        "sha256": "c717d13f78301a429e37915429db914b2b430fadb84de65f05a6d54125563b2d",
+        "gitBlob": "195fbd338c210d74ab0dd9e7bdc01274c9a58072",
+        "bytes": 4758
+      }
+    ]
+  },
+  "measurements": 128,
+  "maxComplexity": 15,
+  "results": {
+    "fullUi": "8/8; 22.409s",
+    "extendedSameRarity": "3/3; 6.308s",
+    "negativeControls": "exact previous UI/actions reject at expected original assertion",
+    "initialVerificationFailure": "first new Lua assertions read undeclared runtime layout fields; corrected to imported descriptor size getters and rebuilt default layout; original logs retained"
+  },
+  "evidence": [
+    {
+      "source": "build/compendium-review-fix-ui.log",
+      "file": "compendium-review-fix-ui.log.gz",
+      "bytes": 4172,
+      "sha256": "15f56ae293d86edf1e2a987ef1d97affafdb5b7fff17a7bf89f806fd45d35c06",
+      "gzipSha256": "03d49b2228b9d1737b8e7eb53f7a1033f3203b8e53b65b40cd992cf751c09794"
+    },
+    {
+      "source": "build/compendium-review-fix-positive-r2.log",
+      "file": "compendium-review-fix-positive-r2.log.gz",
+      "bytes": 1581,
+      "sha256": "e34e729d163ed4dabfd4b1cd252b00c7a7ac9e57a06d23ca4c2249fa71c29c40",
+      "gzipSha256": "8e6e09d0df61d6e7c37c6de1fc99cffd12acc006793009b89c9b5a3de09b3c91"
+    },
+    {
+      "source": "build/compendium-review-fix-ui-r3.log",
+      "file": "compendium-review-fix-ui-r3.log.gz",
+      "bytes": 1912,
+      "sha256": "96f4abbe3bea687f211619244e8119b08ba795e31d341975a17bc3783157e45c",
+      "gzipSha256": "723a189d12b255500f442e0857c9bd04d77335cb356547eb595284ad046d2b5c"
+    },
+    {
+      "source": "build/compendium-review-fix-recycle-r5.log",
+      "file": "compendium-review-fix-recycle-r5.log.gz",
+      "bytes": 792,
+      "sha256": "4180adb38d56ebacf69ba647f6dbc620f03ecf9b971b3d7ffd9dc47c91e4cf98",
+      "gzipSha256": "ca7926189ff25e59c4fc64479eac02618de65768ac3cfcb4b2054bc5f0d11f94"
+    },
+    {
+      "source": "build/compendium-review-fix-full-page-positive.log",
+      "file": "compendium-review-fix-full-page-positive.log.gz",
+      "bytes": 624,
+      "sha256": "b5c221f768aae23b8c70c88580bfdaf52a35e00e8748c4ccfc6ac3456130feec",
+      "gzipSha256": "28665bfe6b4f29057c78e0793871f4c08d22e0848ff2b389e93354c098ee2817"
+    },
+    {
+      "source": "build/compendium-review-previous-ui-red.log",
+      "file": "compendium-review-previous-ui-red.log.gz",
+      "bytes": 354,
+      "sha256": "250e93b61cd82884a7df68f201082a81722984167f692565a0b1b202266c1f3c",
+      "gzipSha256": "10bcbc5be21c8e44ed27fe5bfb0ad51523f7724c9b9dce14ff956105fdc9685c"
+    },
+    {
+      "source": "build/compendium-review-previous-actions-red.log",
+      "file": "compendium-review-previous-actions-red.log.gz",
+      "bytes": 365,
+      "sha256": "0f7f842d0dd2769660f25dfddf4c96273681f161799aa9a7090f840959ce16ce",
+      "gzipSha256": "f9a6b702a15fdbe231b78e00444429a992a22e5b148dc1c46e8f3e1d541291a8"
+    },
+    {
+      "source": "build/compendium-review-retained-green.log",
+      "file": "compendium-review-retained-green.log.gz",
+      "bytes": 101,
+      "sha256": "90c0dda4b2ead4e3736124ad2c542cc4062e88ee2b3125863abeb0882fceb04d",
+      "gzipSha256": "42b29cf60263ce12f4a6ff2f62491f8dcd1f7485bc11e461673025bb27d59547"
+    },
+    {
+      "source": "build/compendium-review-fix-static.log",
+      "file": "compendium-review-fix-static.log.gz",
+      "bytes": 265,
+      "sha256": "ee488a93c8ec45aa975ebc244deb3c9a03c409d1db56aaa15f241e612b22d343",
+      "gzipSha256": "dc41c56bc60b223c8309bd001b3e9eda9aea0546b2756c3f12f25dfe8c5f6367"
+    },
+    {
+      "source": "build/compendium-review-fix-architecture.log",
+      "file": "compendium-review-fix-architecture.log.gz",
+      "bytes": 157,
+      "sha256": "d7d688552c1c31b6f6c8cf255968003e8d18146d3cc968887ca529b3a40f7065",
+      "gzipSha256": "8bd9edbf215556a8363636a25eeb75d07503a1fe278a50dfc10d9a47acccef6d"
+    },
+    {
+      "source": "build/compendium-review-fix-preview.log",
+      "file": "compendium-review-fix-preview.log.gz",
+      "bytes": 137,
+      "sha256": "37c3e02ff6efa4cce478d5a09bf7c33e2368254bf29a123b113ea7a2ce48b9c2",
+      "gzipSha256": "da3a09f3223d67faec33bfd14c5c22f4039b5e1c5df2db932236efabb4c6a774"
+    },
+    {
+      "source": "build/compendium-review-fix-complexity.json",
+      "file": "compendium-review-fix-complexity.json.gz",
+      "bytes": 21320,
+      "sha256": "261f9f02ae3b35235edcdadd464217c74834881480e355ea2f819f8937f605fe",
+      "gzipSha256": "17eecacef540eab065d7826c0c4fd5e445f6793192f42206f0d196dcebcd4da9"
+    },
+    {
+      "source": "build/compendium-frozen-ui-review-fix-20261115.json",
+      "file": "compendium-frozen-ui-review-fix-20261115.json.gz",
+      "bytes": 1511,
+      "sha256": "571db2a4bc9a7288dae54d53af5069b384c7668725b2ab3ed3a2eda2e7d44441",
+      "gzipSha256": "3011637d4b8f644165f1270aa2e5506c5305463a18ac55cd23a040793b44b412"
+    },
+    {
+      "source": "build/compendium-preview/scenes.json",
+      "file": "scenes.json.gz",
+      "bytes": 18787507,
+      "sha256": "3bd680ffd2be4159720f96403edfa5f9cb9d0a7cce8d7fafb8d84a20d06f3b0e",
+      "gzipSha256": "4307bcd1e714885f7e916652db15c05f7712c19f2ef1c2274655bf7943601e16"
+    }
+  ],
+  "unverified": [
+    "new candidate official import/ready",
+    "physical native glyph metrics and actual hit-test",
+    "PC/mobile/controller",
+    "official capacity",
+    "Owner source experience acceptance"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "featureParentCommit": "6d4c477cb7586ce7062e14a728c0a89ae3e72737",
+  "snapshotParentCommit": "fcf04d67831567f78a7542518132cea70e4cf411",
+  "scope": "Refresh only the exact identities of the two UI modules changed by review fixes. The seven reviewed bridge files and complete old core remain unchanged.",
+  "files": {
+    "tests/integration-source-epoch.test.mjs": "db7bcd519e3858873c3b9c4416c907f67ec331f7419dad4602d2890677a72672",
+    "tests/fixtures/compendium-source-port-current-owners.json": "e8a8ee9b3c36d0edb723f97b8cef01817c6170d459a84cb753a04f3a8f6ec31a"
+  },
+  "frozenModules": [
+    {
+      "file": "src/lua/abyss_compendium_ui.lua",
+      "sha256": "e4e8a745939cc79de0757e05609c5195331857a9a3dc242b945c957a6f1bc808",
+      "gitBlob": "5dcc739e49003f6fafcda02c8bc6bb70b74f677f",
+      "bytes": 20902
+    },
+    {
+      "file": "src/lua/abyss_compendium_host.lua",
+      "sha256": "c13f6c4d5cb66dd62557f88df298fcaf43841817d5e58ecffda62f175771d75e",
+      "gitBlob": "ab2b271e12d0c73e255be0653bb94b04924471ca",
+      "bytes": 6141
+    },
+    {
+      "file": "src/lua/abyss_compendium_model.lua",
+      "sha256": "7816b1a82e952185f72e7838877bbc41577790c096beb268da67e51b0c34957f",
+      "gitBlob": "7ca3120221731604322ba8f4f6cf8ba498217c34",
+      "bytes": 8078
+    },
+    {
+      "file": "src/lua/abyss_compendium_input.lua",
+      "sha256": "e415c63211f576815211180eab1fa3fe64e84be188215daebb5094fb14f9691c",
+      "gitBlob": "8dec19cae8528d5997f79d1b09fa301b8d1c526e",
+      "bytes": 2101
+    },
+    {
+      "file": "src/lua/abyss_compendium_card.lua",
+      "sha256": "ebac313d044ce4548c8848242e044bcd0d99946d5c84a38b5b1f65ba1cbee0a0",
+      "gitBlob": "30766001a634cd26bbb6c34884d0c2c6b2e9ce78",
+      "bytes": 5019
+    },
+    {
+      "file": "src/lua/abyss_compendium_actions.lua",
+      "sha256": "c717d13f78301a429e37915429db914b2b430fadb84de65f05a6d54125563b2d",
+      "gitBlob": "195fbd338c210d74ab0dd9e7bdc01274c9a58072",
+      "bytes": 4758
+    }
+  ],
+  "log": {
+    "sha256": "a42a410849820018b56abea609e1487124f7d98e5883454b62762b0e55e80b9f",
+    "gzipSha256": "1afdeeaa76cca6cc6677f31907a0e14208ceee28bbe7f2d2d0e40bab8be9cb80",
+    "result": "2/2 passed",
+    "durationMs": 10710.9931
+  },
+  "priorReview": {
+    "id": "/root/batch_review:4.19-source-port:fcf04d678315:20261115",
+    "disposition": "REQUIRES_CHANGES",
+    "issues": [
+      "retained Grid control could accept a stale gesture for a new row",
+      "relic popup geometry was not source-based",
+      "same color tab reset sort and scroll"
+    ]
+  },
+  "candidateDisposition": {
+    "buildId": "d3e4f548-ce16-4aba-9ddc-02296a391f8a",
+    "deliveryAllowed": false,
+    "reason": "Bound to the prior rejected UI head; requires a new buildId after review-fix commit."
+  }
+}

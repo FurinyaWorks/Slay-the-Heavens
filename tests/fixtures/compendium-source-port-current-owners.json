@@ -9,8 +9,8 @@
     "src/lua/abyss_compendium_actions.lua": {
       "before": null,
       "after": {
-        "sha256": "8190f3babb4f2daa72e0788f62599bc1721114b2264f46f017d46c74d59e5906",
-        "gitBlob": "e381df51090ac5f4a6c5a2e0dc7cbb704dc5b583"
+        "sha256": "c717d13f78301a429e37915429db914b2b430fadb84de65f05a6d54125563b2d",
+        "gitBlob": "195fbd338c210d74ab0dd9e7bdc01274c9a58072"
       }
     },
     "src/lua/abyss_compendium_card.lua": {
@@ -44,8 +44,8 @@
     "src/lua/abyss_compendium_ui.lua": {
       "before": null,
       "after": {
-        "sha256": "e97be03f2a41f7bc6f0d091eab9072aba762ce5c3e52b6336ae61e368362e92d",
-        "gitBlob": "fb129d4cc99bd24c459589303c5833d8f3403250"
+        "sha256": "e4e8a745939cc79de0757e05609c5195331857a9a3dc242b945c957a6f1bc808",
+        "gitBlob": "5dcc739e49003f6fafcda02c8bc6bb70b74f677f"
       }
     }
   }

@@ -28,8 +28,8 @@ function M.new(root,data,presentation,event,options)
             if binding.face and binding.face.alive~=false then Card.clear(binding.face)end
         end
     end
-    local function bind(control,action,valid,order,hover)
-        return Input.bind(control,event,options,valid or enabled,version,action,order,hover)
+    local function bind(control,action,valid,order,hover,itemVersion)
+        return Input.bind(control,event,options,valid or enabled,itemVersion or version,action,order,hover)
     end
     local function command(name,control,action,valid,order)
         browser.commands[name]=bind(control:GetChild('hit'),action,valid,order)
@@ -42,7 +42,7 @@ function M.new(root,data,presentation,event,options)
         local binding=browser.bindings[control]
         if not binding then
             local hit=control:GetChild('hit')
-            binding={hit=hit};browser.bindings[control]=binding
+            binding={hit=hit,revision=0};browser.bindings[control]=binding
             local function hover(scale)
                 if control.alive==false then return end
                 local b=browser.bindings[control]
@@ -61,20 +61,30 @@ function M.new(root,data,presentation,event,options)
             end,function()
                 local b=browser.bindings[control]
                 return control.alive~=false and canList()and b and b.generation==version()and b.row~=nil
-            end,20,{enter=function()hover(browser.kind=='cards'and 4/3 or 1.25)end,exit=function()hover(1)end})
+            end,20,{enter=function()hover(browser.kind=='cards'and 4/3 or 1.25)end,exit=function()hover(1)end},
+                function()return version()..':'..binding.revision end)
         end
+        if binding.row~=row or binding.index~=index or binding.group~=group then binding.revision=binding.revision+1 end
         binding.row,binding.index,binding.group,binding.generation=row,index,group,version()
+    end
+    local function retireItem(control)
+        local binding=browser.bindings[control]
+        if not binding then return end
+        binding.revision=binding.revision+1
+        binding.row,binding.index,binding.group=nil,nil,nil
+        if binding.face and binding.face.alive~=false then Card.clear(binding.face)end
     end
     local function fillCard(control,index)
         clearBindings()
         local row=browser.rows[index+1]
-        if not row then control:SetVisible(false);return end
+        if not row then retireItem(control);control:SetVisible(false);return end
+        bindItem(control,row,index+1,browser.rows)
         control:GetChild('uid'):SetVisible(false)
         control:GetChild('hit'):SetVisible(true)
         local face=control:GetChild('face');face:SetAnchoredPosition(0,0);face:SetLocalScale(1,1,1)
         control:GetChild('hit'):SetAnchoredPosition(0,0)
         Card.write(face,cardRow(row,browser.listUpgraded),platform,(presentation[row.id]or{}).nativeArt)
-        bindItem(control,row,index+1,browser.rows);control:SetVisible(true)
+        control:SetVisible(true)
         browser.bindings[control].face=face
         if browser.hovered and browser.hovered.control==control then browser:hoverCard(control,row,index+1,true)end
     end
@@ -85,13 +95,16 @@ function M.new(root,data,presentation,event,options)
     local function fillIcons(control,index)
         clearBindings()
         local line=browser.lines[index+1]
-        if not line then control:SetVisible(false);return end
+        if not line then
+            for i=1,10 do retireItem(control:GetChild('slot'..i))end
+            control:SetVisible(false);return
+        end
         local heading=control:GetChild('heading');heading:SetVisible(line.heading~=nil);heading.text=line.heading or ''
         for i=1,10 do
             local slot=control:GetChild('slot'..i)
             local entry=line.entries and line.entries[i]
-            slot:SetVisible(entry~=nil)
             if entry then
+                bindItem(slot,entry.row,entry.index,browser.groups[line.rarity])
                 slot:GetChild('icon'):SetImage(platform.imageSource or'static',icon(entry.row))
                 local size=browser.kind=='potions'and 51.2 or 42.666666666666664
                 slot:GetChild('icon'):SetSizeDelta(size,size)
@@ -101,8 +114,8 @@ function M.new(root,data,presentation,event,options)
                     tint=tint or{r=255,g=255,b=255,a=255}
                     slot:GetChild('icon').imageColor=platform.color(tint.r,tint.g,tint.b,tint.a or 255)
                 end
-                bindItem(slot,entry.row,entry.index,browser.groups[line.rarity])
-            elseif browser.bindings[slot]then browser.bindings[slot].row=nil end
+            else retireItem(slot)end
+            slot:SetVisible(entry~=nil)
         end
         control:SetVisible(true)
     end
@@ -226,6 +239,19 @@ function M.new(root,data,presentation,event,options)
         Card.hover(face,cardRow(row,browser.listUpgraded),platform,(presentation[row.id]or{}).nativeArt)
         hoverHints:SetVisible(true);hoverHints:SetAsLastSibling();return browser:updateHover(0)
     end
+    local function popupHit(cards)
+        local hit=popup:GetChild('cardHit');hit:SetVisible(true)
+        hit:SetSizeDelta(366.6666666666667,cards and 513.3333333333334 or 453.3333333333333)
+    end
+    local function relicRarity(row)
+        local control=popup:GetChild('rarity')
+        control.text=(Model.rarityNames[row.rarity]or row.rarity)..'遗物'
+        if platform.color then
+            local colors={boss=Theme.color.danger,rare=Theme.color.goldBright,uncommon=Theme.color.rarity.uncommon}
+            local color=colors[row.rarity]or Theme.color.text
+            control.fontColor=platform.color(color.r,color.g,color.b,color.a or 255)
+        end
+    end
     local function renderPopup()
         popup:SetVisible(browser.popup==true)
         if not browser.popup then return end
@@ -233,17 +259,16 @@ function M.new(root,data,presentation,event,options)
         local row=browser.selected;local cards=browser.kind=='cards'
         popup:GetChild('face'):SetAnchoredPosition(0,0)
         popup:GetChild('face'):SetLocalScale(Theme.layout.compendium.popupScale,Theme.layout.compendium.popupScale,1)
-        popup:GetChild('face'):SetVisible(cards);popup:GetChild('cardHit'):SetVisible(cards)
+        popup:GetChild('face'):SetVisible(cards);popupHit(cards)
         popup:GetChild('relicIcon'):SetVisible(not cards)
         popup:GetChild('rarity'):SetVisible(not cards)
         if cards then
             local display=cardRow(row,browser.upgraded)
             local page={};for key,value in pairs(display)do page[key]=value end
             page.text=browser.pages[browser.detailPage];Card.popup(popup:GetChild('face'),page,platform,(presentation[row.id]or{}).nativeArt)
-        else popup:GetChild('relicIcon'):SetImage(platform.imageSource or'static',icon(row))end
+        else popup:GetChild('relicIcon'):SetImage(platform.imageSource or'static',icon(row));relicRarity(row)end
         popup:GetChild('detailTitle'):SetVisible(not cards);popup:GetChild('detail'):SetVisible(not cards)
         popup:GetChild('detailTitle').text=row.name
-        popup:GetChild('rarity').text=Model.rarityNames[row.rarity]or row.rarity
         popup:GetChild('detail').text=browser.pages[browser.detailPage]or''
         popup:GetChild('detailCount').text=browser.detailPage..' / '..#browser.pages
         renderKeywords(row)
@@ -290,7 +315,7 @@ function M.new(root,data,presentation,event,options)
     end
     function browser.closeDetails(_)
         if not browser.popup and not browser.tooltip then return false end
-        browser.popup,browser.tooltip,browser.upgraded,browser.listUpgraded=false,false,false,false
+        browser.popup,browser.tooltip,browser.upgraded,browser.listUpgraded,browser.tooltipPinned=false,false,false,false,false
         browser.generation=browser.generation+1;popup:SetVisible(false);tooltip:SetVisible(false)
         Card.clear(popup:GetChild('face'));Card.clear(popup:GetChild('previewFace'))
         if enabled()then browser:refreshGrid();browser:render()end
@@ -315,7 +340,7 @@ function M.new(root,data,presentation,event,options)
         return browser:project()
     end
     function browser.close(_)
-        local was=browser.visible;browser.visible=false;browser.popup,browser.tooltip=false,false
+        local was=browser.visible;browser.visible=false;browser.popup,browser.tooltip,browser.tooltipPinned=false,false,false
         browser.generation=browser.generation+1
         browser:clearHover()
         clearArt()

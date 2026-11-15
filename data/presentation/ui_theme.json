@@ -3319,12 +3319,13 @@
       "popupCostFont": 51,
       "popupTypeFont": 23,
       "hoverFonts": {"body":18,"name":18,"cost":25,"type":18},
+      "relicPopup": {"icon":[0,50.666666666666664,170.66666666666666,170.66666666666666],"title":[0,186.66666666666666,600,48],"titleFont":29,"rarity":[0,160,360,32],"rarityFont":18,"detail":[6,-98.66666666666667,278.6666666666667,200],"bodyFont":18,"sourceBodyBaseline":-93.33333333333333,"sourceBodyLineStep":20},
       "tip": {"width":213.33333333333334,"bodyWidth":186.66666666666666,"font":18,"headerHeight":32,"top":21.333333333333332,"textX":14.666666666666666,"headerY":8,"bodyY":-13.333333333333334,"relicAnchor":[-520,144],"potionAnchor":[-540,173.33333333333334]},
       "colors": [-460,-276,184,52],
       "sorts": [-270,260,180,44],
       "detailCharacters": 160,
       "detailColumns": 14,
-      "detailLines": 7
+      "detailLines": 5
     },
     "runMenu": {
       "panel": [460, 154, 280, 384],

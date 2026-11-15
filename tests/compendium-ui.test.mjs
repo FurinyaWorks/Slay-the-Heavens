@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,unlinkSync,mkdirSync,readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {luaString,toLua} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
@@ -16,6 +17,26 @@ import {v25Theme} from '../scripts/v25-layout.mjs';
 import {deckCardTemplate} from '../scripts/deck-ui-layout.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData} from '../scripts/build-lua-data.mjs';
+
+test('retained native Grid bindings reject old gestures and current color tab preserves source state',()=>{
+ const result=runLua('tests/lua/compendium_recycled_binding.lua');
+ writeFileSync('build/compendium-review-retained-green.log',result.stdout+result.stderr);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
+for(const [module,expected] of [['ui','recycled card accepted old gesture'],['actions','same color tab reset source sorting or scroll']]){
+ test(`exact previous ${module} reproduces independent review regression`,()=>{
+  const manifest=JSON.parse(readFileSync('tests/fixtures/compendium-review-before.json','utf8'));
+  const row=manifest.rows.find(row=>row.path.endsWith(`_${module}.lua`));
+  const compressed=readFileSync(join('tests/fixtures',row.file)),raw=gunzipSync(compressed);
+  assert.equal(createHash('sha256').update(compressed).digest('hex'),row.gzipSha256);
+  assert.equal(raw.length,row.bytes);assert.equal(createHash('sha256').update(raw).digest('hex'),row.sha256);
+  const entry=join(tmpdir(),`compendium-review-${randomUUID()}.lua`);
+  writeFileSync(entry,`package.preload.abyss_compendium_${module}=assert(load(${luaString(raw.toString('utf8'))}))\ndofile('tests/lua/compendium_recycled_binding.lua')\n`);
+  try{const result=runLua(entry);writeFileSync(`build/compendium-review-previous-${module}-red.log`,result.stdout+result.stderr);
+   assert.notEqual(result.status,0);assert.ok((result.stdout+result.stderr).includes(expected),result.stdout+result.stderr);}
+  finally{unlinkSync(entry);}
+ });
+}
 
 test('real generated Production catalogue UI browses without a Run or RNG',()=>{
  const result=runLua('tests/lua/compendium_ui.lua');
@@ -38,6 +59,16 @@ test('bounded catalogue layout composes with native and official themes',()=>{
   attachCompendium(layout,theme);assertNativeUiCapacity(layout);
   const panel=stage.children.find(n=>n.name==='compendiumPanel');
   const popupFace=panel.children.find(n=>n.name==='popup').children.find(n=>n.name==='face');
+  const popup=panel.children.find(n=>n.name==='popup');
+  const part=name=>popup.children.find(n=>n.name===name);
+  const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
+  close(part('relicIcon').position[1],76*2/3);close(part('relicIcon').size[0],128*2*2/3);
+  close(part('detailTitle').position[1],280*2/3);close(part('rarity').position[1],240*2/3);
+  close(part('detail').size[0],418*2/3);
+  close(part('detail').position[0]-part('detail').size[0]/2,-200*2/3);
+  // Chinese smartHeight is negative; centered glyph baseline adds half its height.
+  close(part('detail').position[1],(-140-8)*2/3);
+  assert.equal(part('detail').text.valign,'middle');assert.ok(part('detail').text.fontSize>=18);
   const previewFace=panel.children.find(n=>n.name==='popup').children.find(n=>n.name==='previewFace');
   const hoverFace=panel.children.find(n=>n.name==='hoverHints').children.find(n=>n.name==='hoverFace');
   const shared=deckCardTemplate(theme).children.find(n=>n.name==='face').children;
