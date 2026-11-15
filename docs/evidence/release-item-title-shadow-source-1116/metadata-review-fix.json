@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "reviewCorrection": "P2: two sampled data descriptions were not executable builder inputs",
+  "codeCommit": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+  "codeTree": "f502256b63cfc5b6317b8b95303c18e3a9d53854",
+  "changedPaths": 6,
+  "productionPacketUnchanged": "e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba",
+  "ciPacketSha256": "218781a78b9790f666ba04c2b22ac304c47efb91d7d577953221f47e5146efac",
+  "ciPacketBytes": 681244,
+  "activeExecutionInputs": 473,
+  "activeTextInputs": 471,
+  "activePngInputs": 2,
+  "activeDependencies": 290,
+  "activeTotal": 763,
+  "sampledMetadata": [
+    "data/README.md",
+    "data/SOURCES.md"
+  ],
+  "originalPhysicalSampleCount": 765,
+  "originalPhysicalSampleSha256": "923ad6c577f62acfbf0e60b1b6eec3dc6c27e9bb34bd2ebbe91127acd596c738",
+  "originalPhysicalSampleUnchanged": true,
+  "observedFloorUnchangedMs": 79861,
+  "changedCurrentCiRows": [
+    "scripts/ci-test-timings.json",
+    "tests/helpers/release-item-title-shadow-planning.mjs",
+    "tests/release-item-title-shadow-source.test.mjs"
+  ],
+  "allBeforeArchivesInventoriesOtherCurrentRowsUnchanged": true,
+  "tests": {
+    "source": {
+      "tests": 4,
+      "pass": 4
+    },
+    "rawTargetGuard": {
+      "tests": 1,
+      "pass": 1
+    },
+    "windowsForecastMs": 1762741,
+    "posixForecastMs": 1197621,
+    "realMetadataChangesAccepted": 2,
+    "realUnknownJsonAssetCodeAdditionsRejected": 3,
+    "binarySingleByteChangesRejected": 2,
+    "lfCrLfTextInputs": 471,
+    "versionDataFixtureSingleByteChangesRejected": 4
+  },
+  "logs": [
+    {
+      "path": "source-metadata-fixed.log.gz",
+      "sha256": "bce796965800ddeb25f75ce486172c0d41c4ea3f3dd242509bd646ce8e5c97ee",
+      "rawSha256": "2ebbf5e18db2d1ffdc108808ed4d5deda0554247eb062e5c0be65fdca92ec1fe",
+      "bytes": 376
+    },
+    {
+      "path": "ci-metadata-fixed-target.log.gz",
+      "sha256": "20f94068f6956ec5b2519f37db470eb9244a086b40a250493b1cdc93c366080f",
+      "rawSha256": "fdc46bb38bd157b948f40327a136aa479852dcc4af17af44728fbad7d63d4b84",
+      "bytes": 309
+    },
+    {
+      "path": "planning-metadata-fixed-probes.log.gz",
+      "sha256": "27520ba0f2a1f0c350c893c138acb4a45c0690ca286c2843a714b0cf968762ea",
+      "rawSha256": "35e37866e3fdb41643b70235df1a2847cdc86325075c3aefb48d44e15025ac09",
+      "bytes": 433
+    }
+  ],
+  "limitations": [
+    "Initial REQUEST_CHANGES remains valid historical evidence; this is the incremental correction.",
+    "The source reviewer encountered the deliberately temporary unknown JSON probe during independent source4; its rejection is a real fail-closed observation, not a product defect. Probe files were removed and both descriptions restored byte-for-byte before reviewer rerun.",
+    "No new 80s runtime measurement, historical73, full44 or Hosted run was performed for this fix."
+  ]
+}
