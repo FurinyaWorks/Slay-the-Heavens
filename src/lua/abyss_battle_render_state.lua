@@ -123,7 +123,7 @@ function M.install(owner, ownership, host, dependencies)
             owner.rewardView = {rewards = frame.run.rewards, cards = {}}
             for i = 1, 10 do
                 owner.rewardView.cards[i] = {scale = (mobile and mobile.rewardScale or R.scale) * R.enterScale,
-                    lift = 0, rise = -R.enterRise}
+                    lift = 0, rise = mobile and 0 or -R.enterRise}
             end
         elseif not frame.picking then
             owner.rewardView = nil

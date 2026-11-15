@@ -75,6 +75,22 @@ for _,touch in ipairs({false,true})do
   cardResolved=false,cards={'strike','defend','bash'}}
  host:refresh();panel:GetChild('cardReward').click()
  assert(ui.rewardView)
+ if touch then
+  -- A scale can snap before rise finishes easing. Test every entrance frame,
+  -- including immediate hover, rather than only the two settled poses.
+  ui:setHover(2)
+  for _=0,40 do
+   local card=panel:GetChild('card2');local skip=panel:GetChild('skip')
+   local bottom=card.y-Theme.layout.card.size[2]*card.localScaleY/2
+   assert(bottom>skip.y+skip.sizeDeltaY/2,'reward entrance crosses skip receiver')
+   local disc=findSpec('costDisc',findSpec('card2',findSpec('battlePanel').children).children)
+   local top=card.y+(disc.position[2]+disc.size[2]/2)*card.localScaleY
+   local subtitle=panel:GetChild('rewardStage'):GetChild('subtitle')
+   assert(top<subtitle.y-subtitle.sizeDeltaY/2,'reward entrance crosses subtitle')
+   host:update(1/60)
+  end
+  ui:setHover(nil)
+ end
  host:update(10)
  local card=panel:GetChild('card2')
  if touch then
