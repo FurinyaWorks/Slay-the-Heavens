@@ -134,20 +134,6 @@
       "producer": "original-complete-input-receipt"
     },
     {
-      "path": "data/README.md",
-      "sha256": "6ef3ddb32ad5963c4de28542db569d096dbbe30da3edcce78bd2f504111595c7",
-      "lfSha256": "dac6b4dd5e3ffb8fb91aed8d9bee270183105ec75e60d7a747a66d81b70ceb20",
-      "bytes": 9840,
-      "producer": "original-complete-input-receipt"
-    },
-    {
-      "path": "data/SOURCES.md",
-      "sha256": "ac6b69783a2ce2d483d6585a64d3c32dcfd6f7165dc323152a24c9e73454bada",
-      "lfSha256": "c9f13114a14b238e52142cc427490822fe189b5547fada52bef77c4d07e1a78d",
-      "bytes": 21266,
-      "producer": "original-complete-input-receipt"
-    },
-    {
       "path": "data/cards.json",
       "sha256": "3fe9b00be159631bdbd292cdb24cf7bd3af6ae6b236616b478c466a6d5ecd983",
       "lfSha256": "9f71d4f84795dbbd364b6ea4f82e8e0265ace3020b0b07815b33c5e316d6a47b",
@@ -4844,7 +4830,7 @@
     "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stdout.gz": "2b05214dccada06f6d559a8b095243596368279ee0f557368014b8500f607f90",
     "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stderr.gz": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e"
   },
-  "scope": "Exact sampled official-assets build/data setup, static builder dependency closure, complete production Lua/data and installed JS dependency corpus. Backlog, non-executable docs and CI-only adapters are outside execution scope; full original receipts retained.",
+  "scope": "473 actual executable inputs and 290 installed JS dependencies are authenticated live. The two non-executable data descriptions remain sampledMetadata in the unchanged original 765 physical before/after sample. Only those two explicit data paths are outside active discovery; unknown JSON, asset, code and fixture inputs remain fail-closed. CHANGELOG.md and .release-please-manifest.json are actually read and remain active.",
   "priorObservedFloor": {
     "durationMs": 79861,
     "environment": "local Windows Node 24.18.0; not Hosted",
@@ -4864,5 +4850,21 @@
     "nodeReportedDurationMs": 73618.8019,
     "wallDurationMs": 73696,
     "scope": "New complete executable input snapshots close the two omissions from the original broad physical scope; original peer measurement remains historical."
-  }
+  },
+  "sampledMetadata": [
+    {
+      "path": "data/README.md",
+      "sha256": "6ef3ddb32ad5963c4de28542db569d096dbbe30da3edcce78bd2f504111595c7",
+      "lfSha256": "dac6b4dd5e3ffb8fb91aed8d9bee270183105ec75e60d7a747a66d81b70ceb20",
+      "bytes": 9840,
+      "producer": "original-complete-input-receipt"
+    },
+    {
+      "path": "data/SOURCES.md",
+      "sha256": "ac6b69783a2ce2d483d6585a64d3c32dcfd6f7165dc323152a24c9e73454bada",
+      "lfSha256": "c9f13114a14b238e52142cc427490822fe189b5547fada52bef77c4d07e1a78d",
+      "bytes": 21266,
+      "producer": "original-complete-input-receipt"
+    }
+  ]
 }

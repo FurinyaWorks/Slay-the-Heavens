@@ -6,7 +6,7 @@ import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=b=>b.toString().replaceAll('\r\n','\n');
 export const retirementPlanningReceiptPath='docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json';
 const bytes=Buffer.from(norm(readFileSync(new URL('../../'+retirementPlanningReceiptPath,import.meta.url))));
-assert.equal(hash(bytes),'c2683273e948613338618d60755a55c2a56a164a643d7a626cc0d6926314b1b7','immutable observed local planning receipt');
+assert.equal(hash(bytes),'9c1148f4042dd123b1b2e0a2be95c5dfd83c62cadb56cddd06bd252834d98a55','immutable observed local planning receipt');
 export const retirementPlanningReceipt=JSON.parse(bytes);
 export function assertRetirementPlanningCurrent(read=readFileSync){
  const p=retirementPlanningReceipt;
@@ -17,7 +17,11 @@ export function assertRetirementPlanningCurrent(read=readFileSync){
  }
  for(const row of p.dependencies)assert.equal(hash(read(row.path)),row.sha256,'fresh retirement dependency input: '+row.path);
  const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
- for(const prefix of ['src/lua/','data/'])assert.deepEqual(walk(prefix.slice(0,-1)).filter(path=>prefix==='data/'||path.endsWith('.lua')).sort(),p.closure.filter(r=>r.path.startsWith(prefix)).map(r=>r.path),'complete retirement execution corpus: '+prefix);
+ const sampledMetadata=['data/README.md','data/SOURCES.md'];
+ assert.deepEqual(p.sampledMetadata.map(row=>row.path),sampledMetadata,'only the two confirmed non-executable descriptions are sample-only');
+ // Keep discovery fail-closed for every other path, including newly added
+ // JSON, asset or executable inputs; do not broadly ignore document suffixes.
+ for(const prefix of ['src/lua/','data/'])assert.deepEqual(walk(prefix.slice(0,-1)).filter(path=>prefix==='data/'?!sampledMetadata.includes(path):path.endsWith('.lua')).sort(),p.closure.filter(r=>r.path.startsWith(prefix)).map(r=>r.path),'complete retirement execution corpus: '+prefix);
  for(const [path,sha]of Object.entries(p.evidence))assert.equal(hash(read(path)),sha,'original local planning evidence: '+path);
  const get=suffix=>JSON.parse(gunzipSync(read(Object.keys(p.evidence).find(path=>path.endsWith(suffix)))));
  const before=get('input-receipt-before-retirement.json.gz'),after=get('/input-receipt.json.gz');
@@ -30,8 +34,9 @@ export function assertRetirementPlanningCurrent(read=readFileSync){
  assert.equal(hash(peerLog),p.run.stdout.rawSha256);assert.match(peerLog.toString(),/ℹ duration_ms 79767\.5945/);
  const fresh=JSON.parse(gunzipSync(read(p.freshObservation.path)));
  assert.deepEqual(fresh.before,fresh.after,'complete new executable snapshots stay unchanged throughout the fresh measurement');
- assert.deepEqual(fresh.before.map(row=>row.path),[...p.closure,...p.dependencies].map(row=>row.path),'complete fresh observation input inventory');
- for(const [i,row]of fresh.before.entries())assert.equal(row.sha256,[...p.closure,...p.dependencies][i].sha256,'new physical sample input binding: '+row.path);
+ const sampledInputs=[...[...p.closure,...p.sampledMetadata].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0),...p.dependencies];
+ assert.deepEqual(fresh.before.map(row=>row.path),sampledInputs.map(row=>row.path),'complete original physical observation inventory includes its sample-only metadata');
+ for(const [i,row]of fresh.before.entries())assert.equal(row.sha256,sampledInputs[i].sha256,'new physical sample input binding: '+row.path);
  assert.equal(fresh.status,0);assert.equal(fresh.error,null);assert.equal(fresh.signal,null);assert.equal(fresh.node,'v24.18.0');
  assert.equal(fresh.nodeSha256,'9a4eb5f1c29c6a2e93852ead46b999e284a6a5ca8bab4d4e241d587d025a52de');
  const log=gunzipSync(read(p.floor.sourceLog));assert.equal(hash(log),p.floor.sourceLogUncompressedSha256);

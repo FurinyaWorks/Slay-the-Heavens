@@ -13,13 +13,16 @@ test('retirement observed local floor authenticates its execution inputs and pre
  const p=assertRetirementPlanningCurrent(),prior=JSON.parse(releaseItemTitleShadowCiPacket.files['scripts/ci-test-timings.json'].before.source),current=JSON.parse(readFileSync('scripts/ci-test-timings.json','utf8'));
  delete current.jsPlanning.localLowerBounds[p.entry];assert.deepEqual(current,prior,'only the new observed lower bound is appended');
  assert.equal(p,retirementPlanningReceipt);
- for(const path of [p.entry,'tests/helpers/reward-pool-retirement-runtime.lua','tests/lua/support/game_ui_fixture.lua','src/lua/abyss_battle_reward_layout.lua','scripts/build-ui.mjs','data/presentation/ui_theme.json',p.closure.find(row=>row.path.endsWith('.png')).path,p.dependencies[0].path]){
+ for(const path of [p.entry,'tests/helpers/reward-pool-retirement-runtime.lua','tests/lua/support/game_ui_fixture.lua','src/lua/abyss_battle_reward_layout.lua','scripts/build-ui.mjs','data/presentation/ui_theme.json','.release-please-manifest.json','CHANGELOG.md',p.closure.find(row=>row.path.endsWith('.png')).path,p.dependencies[0].path]){
   for(const change of ['append','missing'])assert.throws(()=>assertRetirementPlanningCurrent((file,encoding)=>{
    if(file===path){if(change==='missing')throw Error('missing retirement execution input');const b=readFileSync(file,encoding);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);}
    return readFileSync(file,encoding);
   }),/fresh retirement|missing retirement/,'execution drift is rejected: '+path);
  }
  assertRetirementPlanningCurrent((path,encoding)=>{assert(!path.startsWith('backlog/'),'task metadata is outside execution authentication');return readFileSync(path,encoding);});
+ for(const metadata of ['data/README.md','data/SOURCES.md'])assertRetirementPlanningCurrent((path,encoding)=>{
+  const b=readFileSync(path,encoding);return path===metadata?typeof b==='string'?b+'\nmetadata-only change':Buffer.concat([b,Buffer.from('\nmetadata-only change')]):b;
+ });
 });
 
 test('release item-title-shadow production preserves every complete prior target and freshly authenticates the committed source tree',()=>{

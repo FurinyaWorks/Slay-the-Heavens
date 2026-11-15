@@ -6296,7 +6296,7 @@
         "sourceLogUncompressedSha256": "3b35cdea57f7fb2b8ddaac98262f9eb00845240136cd4583b729c485d0b4e2ee",
         "testSha256": "6b739f076f55383db4df6c3c6f7997b154904483b8db1219b1a1a9577513313d",
         "sourceReceipt": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
-        "sourceReceiptSha256": "c2683273e948613338618d60755a55c2a56a164a643d7a626cc0d6926314b1b7"
+        "sourceReceiptSha256": "9c1148f4042dd123b1b2e0a2be95c5dfd83c62cadb56cddd06bd252834d98a55"
       }
     }
   },
