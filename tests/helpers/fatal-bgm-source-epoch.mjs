@@ -8,7 +8,7 @@ export function extendFatalBgmEpoch(original){
  assert(!Object.hasOwn(prior.targets,'fatalBgmPrior'));
  const current={...prior.current,[path]:after};
  const targets={...prior.targets,fatalBgmPrior:{commit:prior.currentCommit,files:prior.current}};
- const owners=Object.keys(current).filter(p=>Object.values(targets).some(t=>t.files[p]?.sha256!==current[p]?.sha256));
+ const owners=Object.keys(current).sort().filter(p=>Object.values(targets).some(t=>t.files[p]?.sha256!==current[p]?.sha256));
  return createSourceEpochProjector({...prior,currentTreeCommitted:false,currentCommit:'b0466187e2727d6b044e90c131d95154c309c55a',
   currentCommitRole:'one UI BGM producer over the complete latest menu/Neow predecessor',current,targets,owners},{allowConfigLayout:true});
 }

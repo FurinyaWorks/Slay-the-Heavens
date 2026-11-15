@@ -9,7 +9,13 @@ const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll(
 const bind=source=>({source,sha256:hash(source),gitBlob:createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex')});
 const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:32*1024*1024});
 const baseCommit=git(['rev-parse','c2409ad7^{commit}']).trim();
-function output(path,value){if(mode==='--write')writeFileSync(path,value);else assert(readFileSync(path).equals(value),'reproducible exact successor: '+path);}
+function output(path,value){
+ if(mode==='--write')writeFileSync(path,value);
+ else {
+  const bytes=readFileSync(path),actual=path.endsWith('.mjs')?Buffer.from(norm(bytes.toString('utf8'))):bytes;
+  assert(actual.equals(value),'reproducible exact successor: '+path);
+ }
+}
 // The producer is provenance, not a runtime dependency on an unmerged branch.
 // Authenticate the committed immutable pair already delivered in this checkout.
 const fixture='tests/fixtures/fatal-bgm-e65-source.json.gz';

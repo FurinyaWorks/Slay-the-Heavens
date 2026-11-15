@@ -18,11 +18,12 @@ const exact=(binding,expected)=>binding?.source===expected.source&&binding?.sha2
 export function projectFatalBgmSource(path,source,binding){
  return path===packet.path&&exact(binding,fatalBgmPair.before)&&same(source,fatalBgmPair.after)?packet.before:source;
 }
-// Check the raw input and sampled owner together, then re-read this single owner.
-// Both before->after and after->before drift fail, including across warm calls.
+// Only a historical before-bound compatibility projection needs a second UI
+// read. Current after-bound owners keep their original strict once-in-order
+// admission; the normal closure already authenticates their exact raw bytes.
 export function authorizeFatalBgmSource(path,input,binding,samples,read){
  const entries=[[path,input,binding],...samples].filter(([p,,b])=>p===packet.path&&(exact(b,fatalBgmPair.before)||exact(b,fatalBgmPair.after)));
- if(!entries.length)return;
+ if(!entries.some(([, ,b])=>exact(b,fatalBgmPair.before)))return;
  const expected=same(entries[0][1],fatalBgmPair.after)?fatalBgmPair.after:fatalBgmPair.before;
  const message='combined linked owner identity: fatal BGM entry changed during owner validation';
  for(const [,source]of entries)assert(same(source,expected),message);

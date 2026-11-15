@@ -12,6 +12,7 @@ test('successor reproduction uses authenticated predecessor bytes in a shallow c
  const script=String.raw`
   import assert from 'node:assert/strict';
   import childProcess from 'node:child_process';
+  import fs from 'node:fs';
   import {syncBuiltinESMExports} from 'node:module';
   import {dependencyCiProof as patch} from './tests/helpers/dependency-ci-source.mjs';
   const original=childProcess.execFileSync;
@@ -19,6 +20,13 @@ test('successor reproduction uses authenticated predecessor bytes in a shallow c
   const changedPaths=[...Object.keys(patch.files),...Object.keys(patch.binary)].sort();
   const reply=(text,options)=>options?.encoding?text:Buffer.from(text);
   let historicalReads=0;
+  const read=fs.readFileSync;
+  fs.readFileSync=(file,options)=>{
+   const value=read(file,options);
+   if(process.env.ABYSS_SOURCE_TEST_EOL!=='crlf'||!String(file).endsWith('.mjs'))return value;
+   const text=(typeof value==='string'?value:value.toString('utf8')).replace(/\r?\n/g,'\r\n');
+   return typeof value==='string'?text:Buffer.from(text);
+  };
   childProcess.execFileSync=(command,args,options)=>{
    if(command!=='git')return original(command,args,options);
    if(args.some(arg=>String(arg).includes('158c492a')))
@@ -47,10 +55,13 @@ test('successor reproduction uses authenticated predecessor bytes in a shallow c
   assert(historicalReads>0,'exercise complete before/after collection');
   console.log('SELF_CONTAINED_SUCCESSOR_PASS');
  `;
- const result=spawnSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8',timeout:30000,windowsHide:true});
- assert.ifError(result.error);
- assert.equal(result.status,0,result.stdout+result.stderr);
- assert.match(result.stdout,/SELF_CONTAINED_SUCCESSOR_PASS/);
+ for(const checkout of ['native','crlf']) {
+  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8',timeout:30000,windowsHide:true,
+   env:{...process.env,ABYSS_SOURCE_TEST_EOL:checkout}});
+  assert.ifError(result.error);
+  assert.equal(result.status,0,checkout+'\n'+result.stdout+result.stderr);
+  assert.match(result.stdout,/SELF_CONTAINED_SUCCESSOR_PASS/);
+ }
 });
 
 test('one UI successor authenticates actual current bytes after the latest menu/Neow epoch',()=>{
