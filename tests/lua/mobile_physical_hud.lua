@@ -86,7 +86,7 @@ local function tap(c)
 end
 local function menuTargets(expected)
  local visible={}
- for _,name in ipairs({'resume','help','map','mainMenu','abandon'})do
+ for _,name in ipairs({'resume','map','mainMenu','abandon'})do
   local button=at('runMenu/'..name)
   if button.visible then
    local hit=button:GetChild('hit');local a=bounds(hit)
@@ -98,17 +98,19 @@ local function menuTargets(expected)
  end
  assert(#visible==expected)
 end
-assert(ui:openMenu());menuTargets(4);local sameRun=ui.run
+assert(ui:openMenu());menuTargets(3);local sameRun=ui.run
 assert(tap(at('runMenu/abandon/hit')) and ui.exitOpen and not ui.menuOpen)
-for _,name in ipairs({'confirm','cancel','help'})do assert(at('exitPanel/'..name..'/hit').sizeDeltaY==88,'exit target not88')end
+for _,name in ipairs({'confirm','cancel'})do assert(at('exitPanel/'..name..'/hit').sizeDeltaY==88,'exit target not88')end
 local dialog={}
-for _,name in ipairs({'confirm','cancel','help'})do
+for _,name in ipairs({'confirm','cancel'})do
  local a=bounds(at('exitPanel/'..name..'/hit'))
  assert(a[1]>=-600 and a[3]<=600 and a[2]>=-316 and a[4]<=360)
  for _,prior in ipairs(dialog)do assert(clear(a,prior),'exit targets overlap')end
  dialog[#dialog+1]=a
 end
-for _,name in ipairs({'title','message','whyText'})do assert(clear(dialog[3],bounds(at('exitPanel/'..name))),'help target covers dialog text')end
+for _,action in ipairs(dialog)do
+ for _,name in ipairs({'title','message','whyText'})do assert(clear(action,bounds(at('exitPanel/'..name))),'exit target covers dialog text')end
+end
 assert(at('exitPanel/whyText').text:find('退出奇域后无法继续',1,true),'session warning changed')
 assert(tap(at('exitPanel/cancel/hit')) and ui.run==sameRun)
 assert(ui:openMenu());assert(tap(at('runMenu/resume/hit')) and ui.run==sameRun and not ui.exitOpen)
@@ -147,7 +149,7 @@ assert(entered);eventRun.hp,eventRun.maxHp,eventRun.gold=9999,9999,999999
 ui.run,ui.map=eventRun,eventMap;ui:refresh();assert(ui.mode=='node');verify()
 ui.run,ui.map=savedRun,savedMap;ui:refresh()
 F.click(root,'mapPanel','node1');assert(ui.mode=='battle');verify()
-assert(ui:openMenu());menuTargets(5);assert(tap(at('runMenu/resume/hit')))
+assert(ui:openMenu());menuTargets(4);assert(tap(at('runMenu/resume/hit')))
 local b=ui.run.combat;local saved={b.draw,b.discard,b.exhaust}
 local cards={};for i=1,999 do cards[i]={uid=10000+i,cardId='defend'}end
 b.draw,b.discard,b.exhaust=cards,cards,cards;ui:refresh()

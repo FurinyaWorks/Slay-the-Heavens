@@ -118,7 +118,6 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 if menuAction and self.motion.deathReveal then return false end
                 if kind == 'routeClose' then return self.exitOpen and self.routeOpen == true end
                 if mapReturn then return M.mapReturnAvailable(self) end
-                if kind == 'helpClose' then return self.exitOpen and self.controlsOpen == true end
                 if self.controlsOpen then return false end
                 return runMenuAvailable()
             end
@@ -180,7 +179,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 if kind=='egg_close' then return 'easterEgg'end
                 if characterAction then return 'characters' end
                 if mapReturn then return self.routeOpen and 'exit' or 'map' end
-                if runMenuAction or kind=='routeClose' or kind=='cancel' or kind=='confirm' or kind=='help' or kind=='helpClose' then return 'exit' end
+                if runMenuAction or kind=='routeClose' or kind=='cancel' or kind=='confirm' then return 'exit' end
                 return self.mode
             end,action,available,order or (kind=='cancel' and 1 or kind=='open' and 200 or 100),group,onFocus)
             local function click(event)
@@ -258,7 +257,7 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
     bindCommand(exitPanel:GetChild("confirm"), "confirm", function() return self:confirmExit() end)
 end
 
-function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside,runMenu,canViewRoute,child,owner)
+function M.installGuide(self,_exitPanel,_clickEvent,bindCommand,_dismissFromOutside,runMenu,canViewRoute,child,owner)
     local bar=Theme.presentationProfile=='official-assets-first' and child('battlePanel'):GetChild('topBar')
     local function openRoute()
         if not self:openMenu()then return false end
@@ -268,29 +267,6 @@ function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside
     if shortcut then bindCommand(shortcut,'battleRoute',openRoute,canViewRoute)end
     local nodeShortcut=Theme.presentationProfile=='official-assets-first' and child('nodePanel'):GetChild('runRoute')
     if nodeShortcut then bindCommand(nodeShortcut,'runRoute',openRoute,canViewRoute)end
-    local guide = exitPanel:GetChild('guide')
-    if guide then
-        bindCommand(exitPanel:GetChild('help'), 'help', function()
-            owner.exitGeneration = owner.exitGeneration + 1
-            self.controlsOpen = true
-            guide:SetVisible(true)
-            self:refresh()
-            return true
-        end)
-        bindCommand(guide:GetChild('close'), 'helpClose', function() return self:closeExit() end)
-        guide:GetChild('blocker'):AddCursorEventListener(clickEvent, function()
-            if self.exitOpen and self.controlsOpen then return dismissFromOutside() end
-            return true
-        end)
-        guide:GetChild('catch'):AddCursorEventListener(clickEvent, function() return true end)
-    end
-    bindCommand(runMenu:GetChild('help'), 'run_help', function()
-        owner.exitGeneration = owner.exitGeneration + 1
-        self.controlsOpen = true
-        guide:SetVisible(true)
-        self:refresh()
-        return true
-    end)
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)
     bindCommand(runMenu:GetChild('mainMenu'),'run_mainMenu',function()return self:returnToMainMenu()end,
         function()return require('abyss_game_ui_navigation').hasRun(self) and not self.sessionPaused end)

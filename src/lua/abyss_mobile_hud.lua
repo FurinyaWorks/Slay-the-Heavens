@@ -98,14 +98,12 @@ local function readingButton(button,w,h,font)
 end
 local function readingControls(root,reading)
     local menu=root:GetChild('runMenu');local rows=reading.runMenu
-    for _,name in ipairs({'resume','help','map','mainMenu','abandon','quit'})do
+    for _,name in ipairs({'resume','map','mainMenu','abandon','quit'})do
         local spec=rows[name];local button=menu:GetChild(name)
         button:SetAnchoredPosition(spec[1],spec[2]);readingButton(button,spec[3],spec[4],reading.font)
     end
     local exit=root:GetChild('exitPanel')
     for _,name in ipairs({'confirm','cancel'})do readingButton(exit:GetChild(name),320,88,reading.font)end
-    local help=exit:GetChild('help');help:SetAnchoredPosition(reading.exitHelp[1],reading.exitHelp[2])
-    readingButton(help,160,88,reading.font)
 end
 function M.apply(root,platform)
     local hud=M.profile(platform);if not hud then return end
