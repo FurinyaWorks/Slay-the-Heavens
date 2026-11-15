@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 15:51'
 labels:
   - 待验
   - delivery-verify
@@ -48,6 +48,8 @@ ordinal: 136000
 2026-11-02 fresh单槽药水查询：拒绝跨hover和跨native渲染间隔复用frame缓存，不引全模型revision改造；将原药水row构造抽为共用helper，完整potionView保持原槽序与候选规则，仅popup每次open/render/act改为fresh单槽查询，实际使用前完整重验不变。覆盖全药水parity、非法/空/第五槽、后续合法目标、busy、原地状态改变、真实Host重入与使用；按465合入后的最新develop组合TASK81输入路径切片，保留全部历史证据和未验实机AC。
 
 2026-11-02 牌库注册生命周期小切片：先用真实 DeckUI/Controller 与原生 Grid 销毁语义复现记录累积；只对确认销毁的牌面保存 hit 并调用现有 Controller.unbind，覆盖关闭后的及时释放及存活复用。新增重复开关、翻页/过滤/排序、刷新销毁/回收、原生失效、键鼠/手柄和旧回调回归；先红后绿、定向检查及独审，不改设计/Controller 架构，不推断手机性能，AC3 保持未验。
+
+2026-11-15经Owner协调授权迁移已保存b56e1c39/be41ed0b敌人坐标statusView剪枝至release/v2.0.0@36b9b157；不重新认领既有InProgress。先核对672/684只涉及相邻sleep呈现、无重复剪枝；原计数fixture在本基线先RED再GREEN，确认几何字段/全量状态宽度/Run与RNG等价，独立评审后再协调PR。只改三runtime及原专用测试/隔离helper，不Full、不推断手机性能。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -81,4 +83,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-08 PR558冻结311089f9精确Full与源码独审通过，C官方首房闭环与C60正式startup分层留证，完整UI仍未过。独立sourceDirty E1两隐藏页native SetActive得到PC菜单51.70/选角53.65 FPS短窗与合法新Run恢复、Neow/首战拖牌证据；只支持继续实验，未声称稳定60或手机改善。显式开关源码接入与E2边界实测继续，To Do、负责人及手机AC3未验保持；入口experiments/native-2d-vertical-slice/IMPLEMENTATION.md。
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-15 Release接续旧b56/be41坐标剪枝：基线36b9原专项RED，真实Host预热后300帧statusView精确900到0；原专项及相邻官方状态/命中/三布局负控通过，三runtime增量patch-id同旧片。672/684未带此剪枝，render_actors不同区叠加检查通过。仅迁三runtime/原测试/21行隔离helper，既有性能树保留；证据TASK-4.21-ENEMY-GEOMETRY-20261115.md。未Full/设备/候选，状态与3/4AC不变，精确新HEAD独审另交。
 <!-- SECTION:NOTES:END -->
