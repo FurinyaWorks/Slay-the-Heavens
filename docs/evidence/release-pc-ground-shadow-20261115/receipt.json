@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE_HOST_SCOPED_ONLY",
+  "baseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productSha": "862c3f2a8988b1af21fc897d6de1d65650798a0d",
+  "sourceCommit": "8b1a591b2972d2184db82be3802557891a2f25af",
+  "independentReview": {
+    "result": "PASS_SCOPED",
+    "reviewer": "/root/pc_backport_audit",
+    "file": "review.json",
+    "scope": "exact five-path product slice only; no integration or merge admission"
+  },
+  "node": "v24.18.0",
+  "files": [
+    {
+      "file": "red-source-test.log.gz",
+      "sha256": "36ad91ced8ec43e6ca0a8e07e95994ee24b141247dea759172c96303a2c331df",
+      "rawSha256": "b0f6c0542a4ff407c01fabf2746d0e17017465af8d89bbc945253bfdd3961f1b",
+      "rawBytes": 2312
+    },
+    {
+      "file": "green-source-test.log.gz",
+      "sha256": "537298da7df148e2575643d59f25fb33b9dabdac833a92e882b0ef7bf819fcd5",
+      "rawSha256": "69d9daed388d4feb0ddf978808e738a37b958211ac5f417ea7c048ae6c5b5e69",
+      "rawBytes": 349
+    },
+    {
+      "file": "green-boundaries.log.gz",
+      "sha256": "c896b0fbb9cc9c0e7f867bc6267675d5ecd180adde15555bc877520a1d66a297",
+      "rawSha256": "635e61947b0feef53fd2e1d0f40e62df7e05ce39031b69f4ce8fc557130ee869",
+      "rawBytes": 350
+    },
+    {
+      "file": "green-boundaries-final.log.gz",
+      "sha256": "f5a7fe2243b35976709fdd77d7279ef02cc315d0777aff5de05bbe16941f5701",
+      "rawSha256": "656f5cb5f85a0949f35c609990f68e43713401c85fb83680e526846cab248ae3",
+      "rawBytes": 349
+    },
+    {
+      "file": "targeted.log.gz",
+      "sha256": "d6df157c36605b08bf3bddc416136a07b47fd7890e03fe179ba84b5488398bb2",
+      "rawSha256": "2d70f7e3469cd1194560c6f049446e9dfcbb80e35bf0c2434fc4923196b3eea1",
+      "rawBytes": 7243
+    },
+    {
+      "file": "engineering.log.gz",
+      "sha256": "c2a1a602973672e92ee7a9c7c8af7de82bfed1112a8e4b9a4ae05011dce9449b",
+      "rawSha256": "a3842a4ac5a9c843be6f6f5d42ab1b5826bdd291956f952363785a855a6dccc8",
+      "rawBytes": 377
+    },
+    {
+      "file": "fast-plan.json.gz",
+      "sha256": "ce5368cbba722d898704dfdfe7dd5848013e4d92e0d3e6d778e3f41065e80ec4",
+      "rawSha256": "f813231edd8accb5ef0de8220b1533eeeab5981ffd3befd15c50cea1c6d64d0e",
+      "rawBytes": 2838
+    }
+  ],
+  "inputs": [
+    {
+      "path": "scripts/build-ui.mjs",
+      "physicalSha256": "f5f6fafe174af1f4c828385809b4e32f0e229f3624690c18ca279243e789aeaf"
+    },
+    {
+      "path": "scripts/official-portraits.mjs",
+      "physicalSha256": "80616facd7442a332c0b91826958830adb614a58bfc1d4b68ba47c3e8eb56d6c"
+    },
+    {
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "physicalSha256": "0da3137650be770a2b90bea77b30c52049fc5ab91258eac3cbce936a456e979e"
+    },
+    {
+      "path": "tests/player-ground-shadow.test.mjs",
+      "physicalSha256": "0ae906156c3a0e20663bc74f97903292ad3af6fb849a54d48062092bcdd4612c"
+    },
+    {
+      "path": "tests/lua/player_ground_shadow.lua",
+      "physicalSha256": "b2a9abbc6b3b241610fc0969d33e64cdfcd09f2517afdfd85e61ba056feffe99"
+    },
+    {
+      "path": "art/characters/traveler-geo/idle-approved-v1/native-idle-210.json",
+      "physicalSha256": "caa7505c9485ae46555c130088c7d486542865c4ae694090935843d5e0b41af5"
+    },
+    {
+      "path": "data/presentation/lowcost-enemy-art.json",
+      "physicalSha256": "a2b7c8c76458e0d6ad1d0c0e472dfcaa5f516bd61159b7f2ade597a7e2b82e18"
+    }
+  ],
+  "results": {
+    "sourceRed": {
+      "passed": 0,
+      "failed": 2
+    },
+    "sourceGreen": {
+      "passed": 2,
+      "failed": 0
+    },
+    "finalBoundaryGreen": {
+      "passed": 2,
+      "failed": 0
+    },
+    "existingTargeted": {
+      "passed": 67,
+      "failed": 0
+    },
+    "engineering": "pass",
+    "diffCheck": "pass",
+    "full": "required_not_run",
+    "ci": "not_run",
+    "officialImport": "not_run",
+    "ready": "not_run",
+    "officialCapacity": "not_measured",
+    "pc": "not_run",
+    "phone": "not_run",
+    "originalScreenshot": "private_not_accessible"
+  }
+}
