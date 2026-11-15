@@ -34,3 +34,13 @@
 ## 未完成验收
 
 独立复审与精确 HEAD 的远端 CI/自动合并按 PR 准入另记。没有新 GIL、候选写入/读回、官方导入/ready 或本轮候选 iPhone 14 Pro 实测；AC 保持未勾。当前成果为可独立合并的源码与离线回归修复，不代表手机问题已实机关闭。未修改 master、发布候选或发布记录。
+
+## 2.0.0 Release 迁移追加记录
+
+Owner 将本版必要修复转到 `release/v2.0.0`，未来功能留在 Develop。原 PR #675 已由协调者暂停读回，保留来源分支 `feat/mobile-cottage-p0-1115@bec410d63bcdcaa70f680055edbdff4d90ec09cc`；没有改写旧提交或覆盖上述旧轮证据。
+
+本次在独立 `fix/mobile-cottage-v2-1115` / `mobile-cottage-v2-1115` 工作树，以 `origin/release/v2.0.0@36b9b157ee6f05b65eb9f1da7e2978647d36c210` 为基线，`cherry-pick -x` 原提交。Release 基线相对原 `c2409ad7` 仅变更三份 CI 工作流、AGENTS 与 Release 交接说明，运行时无差异。移植后源码、测试、构建脚本、数据、美术、配置与 package/lock 逐 Git blob 核对原修复版本完全相等；本文件仅追加本节。
+
+本轮实际重跑：`node --test tests/tiny-house-pending-ui.test.mjs` 默认/官方2/2通过；`verify:backlog`、`check:guidance`、`git diff --check`通过。本地收据和日志在 `.artifacts/mobile-cottage-v2-1115/`。旧完整工程/变异/回归结果保持旧轮身份；本轮不重复 Full、不借用 Develop CI 绿灯。新 Release HEAD/BASE 须重新独审，托管 Release 沿现有 Full 规则验证。
+
+本版交接文件明确 Release 保护/CI/合并准入须由协调者实际读回，不假定 Develop 的 `merge:auto` 可用于 Release。此次只推送独立修复分支，PR base 由协调者统一设为 `release/v2.0.0`，不直接合入 Release 或 master。#672 的 reading/footer 后续整合边界继续有效，其实验代码未移植；尚未生成新候选、官方导入/ready 或新候选 iPhone 14 Pro 实测，AC 仍未勾。
