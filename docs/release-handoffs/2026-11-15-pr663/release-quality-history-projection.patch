@@ -1,0 +1,79 @@
+--- a/tests/ci-summary-runners.test.mjs
++++ b/tests/ci-summary-runners.test.mjs
+@@ -8,6 +8,7 @@
+ import { beforePlatformWorkflow } from './helpers/platform-load-wiring.mjs';
+ import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';
+ import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpers/auto-merge-workflow.mjs';
++import {beforeReleaseQualityWorkflow,releaseQualityPriorRead} from './helpers/release-quality-workflow.mjs';
+ import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
+ import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
+ 
+@@ -75,7 +76,7 @@
+ });
+ 
+ test('[historical PR620 workflow] complete Draft/Fast projection restores exact develop workflow bytes with LF and CRLF', () => {
+-  const workflow=closeoutRead('pr620')('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
++  const workflow=closeoutRead('pr620',releaseQualityPriorRead())('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+   // Git blob 2d41d729 at develop 1eb28847, independently obtained before #584.
+   const expected = 'aeb022f9209eda1311f3893acefc2c55a8d75c497b3b950a276d609964ea7535';
+   for (const eol of ['\n', '\r\n']) {
+@@ -199,7 +200,7 @@
+ 
+ import {beforeQualityRatchetWorkflow,qualityRatchetWorkflowGates} from './helpers/quality-ratchet-workflow.mjs';
+ test('[historical ratchet integration workflow] ratchet gates project only their exact complete placements and preserve current execution',()=>{
+- const workflow=beforeHostedCheckoutWorkflow(closeoutRead('qualityRatchetIntegrated')('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
++ const workflow=beforeHostedCheckoutWorkflow(closeoutRead('qualityRatchetIntegrated',releaseQualityPriorRead())('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
+  const beforeSha='28957431693a0c07dedcda5a1b8ffff031f94f93ca838203d65661343b46709d';
+  for(const eol of ['\n','\r\n']){
+   const live=workflow.replaceAll('\r\n','\n').replaceAll('\n',eol),prior=beforeQualityRatchetWorkflow(live);
+@@ -227,3 +228,21 @@
+  for(const path of ['src/lua/abyss_game_ui.lua','config/architecture.json','data/relics.json'])assert.strictEqual(read(path),raw,path);
+  assert.throws(()=>closeoutInventory(['tests/current.test.mjs'],'qualityRatchetIntegrated'),/workflow-only/);
+ });
++
++// Release trigger support is current policy; only immutable historical views invert it.
++test('release workflow projection authenticates complete LF/CRLF input and fails closed',()=>{
++ const hash=value=>createHash('sha256').update(value).digest('hex');
++ for(const eol of ['\n','\r\n']){
++  const current=workflow.replaceAll('\n',eol),prior=beforeReleaseQualityWorkflow(current);
++  assert.notEqual(prior,current);
++  assert.equal(hash(prior.replaceAll('\r\n','\n')),'427d7578284ef86a85b994a5df140a328847fb990b368a798200e082cb4e26ab');
++  assert.equal(beforeReleaseQualityWorkflow(prior),prior);
++ }
++ for(const bad of [workflow.replace(", 'release/**'",''),workflow+'# drift\n',workflow.replace('branches: [develop, master','branches: [develop, develop, master'),workflow.replace('\n','\r\n'),workflow.replaceAll('\n','\r\r\n')])
++  assert.equal(beforeReleaseQualityWorkflow(bad),bad);
++ const buffer=Buffer.from(workflow),read=releaseQualityPriorRead((path,encoding)=>encoding?workflow:buffer);
++ assert.equal(read('src/lua/untouched.lua','utf8'),workflow);
++ assert.equal(read('tests/untouched.mjs'),buffer);
++ assert.equal(read('.github/workflows/quality.yml','utf8'),beforeReleaseQualityWorkflow(workflow));
++ assert.equal(read('.github/workflows/quality.yml').toString(),beforeReleaseQualityWorkflow(workflow));
++});
+--- /dev/null
++++ b/tests/helpers/release-quality-workflow.mjs
+@@ -0,0 +1,26 @@
++// Only the complete approved release-trigger wrapper may project to its predecessor.
++import {createHash} from 'node:crypto';
++import {readFileSync} from 'node:fs';
++const hash=value=>createHash('sha256').update(value).digest('hex');
++const current='1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a';
++const previous='427d7578284ef86a85b994a5df140a328847fb990b368a798200e082cb4e26ab';
++export function beforeReleaseQualityWorkflow(source){
++ if(typeof source!=='string')return source;
++ const normalized=source.replaceAll('\r\n','\n');
++ if(hash(normalized)!==current)return source;
++ const prior=normalized.replaceAll("branches: [develop, master, 'release/**']",'branches: [develop, master]');
++ if(hash(prior)!==previous)return source;
++ // Reject mixed line endings, rather than silently repairing malformed input.
++ const crlf=source.includes('\r\n');
++ if(crlf&&source!==normalized.replaceAll('\n','\r\n'))return source;
++ return crlf?prior.replaceAll('\n','\r\n'):prior;
++}
++export function releaseQualityPriorRead(read=readFileSync){
++ return (path,encoding)=>{
++  const value=read(path,encoding);
++  if(path!=='.github/workflows/quality.yml')return value;
++  const source=typeof value==='string'?value:value.toString('utf8');
++  const prior=beforeReleaseQualityWorkflow(source);
++  return prior===source?value:typeof value==='string'?prior:Buffer.from(prior);
++ };
++}
