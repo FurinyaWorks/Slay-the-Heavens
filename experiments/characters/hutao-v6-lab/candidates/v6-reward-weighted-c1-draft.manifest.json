@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "candidate_id": "v6-reward-weighted-c1-20261115-DRAFT",
+  "stage": "DRAFT_NOT_FROZEN_UNVERIFIED",
+  "frozen": false,
+  "review_eligible": false,
+  "parent_b1": {
+    "path": "experiments/characters/hutao-v6-lab/candidates/v6-e-draw1-b1.html",
+    "git_blob_sha": "3da512df7e62afdbfe49c7a8d47a781bebe65786"
+  },
+  "source": {
+    "path": "experiments/characters/hutao-v6-lab/candidates/v6-reward-weighted-c1-draft.html",
+    "git_blob_sha": "62385bed410b29aba731de3a429eb1fbe875036a",
+    "source_bytes_utf8_not_claimed": true
+  },
+  "changes": {
+    "mechanical": [
+      "HutaoGame.rewardRarityOffset starts -5",
+      "reward rarity bucket first; normal 60/37/3 elite 50/40/10 with STS1-style offset, no replacement in reward screen"
+    ],
+    "presentation": [
+      "title/kicker/report label only updated to C1 draft"
+    ]
+  },
+  "invariants": {
+    "strict_reversible_text_change": true,
+    "card_count": 75,
+    "reward_pool_count": 69,
+    "start_deck_count": 10,
+    "encounters_unchanged": true,
+    "relic_unchanged": true,
+    "all_card_effects_unchanged": true
+  },
+  "targeted_method_test": {
+    "invoked_exact_offerRewards_function": true,
+    "seed_splits": {
+      "training": [
+        40001,
+        50000
+      ],
+      "holdout": [
+        50001,
+        60000
+      ]
+    },
+    "screens": 80000,
+    "slots": 240000,
+    "duplicate_screens": 0,
+    "invalid_cards": 0,
+    "counts_match_prior_standalone_probe": true,
+    "counts_by_rarity": {
+      "training": {
+        "normal": {
+          "common": 56054,
+          "uncommon": 32880,
+          "rare": 1066
+        },
+        "elite": {
+          "common": 15366,
+          "uncommon": 11914,
+          "rare": 2720
+        }
+      },
+      "holdout": {
+        "normal": {
+          "common": 56057,
+          "uncommon": 32881,
+          "rare": 1062
+        },
+        "elite": {
+          "common": 15385,
+          "uncommon": 11910,
+          "rare": 2705
+        }
+      }
+    }
+  },
+  "unverified": [
+    "Full HutaoGame first script execution",
+    "Natural five battle A/B across multiple strategies",
+    "HP/heal/energy after altered reward offers",
+    "Headless browser click and mobile narrow-screen",
+    "Three independent new-source reviews",
+    "Human approval",
+    "Official Miliastra integration"
+  ],
+  "pre_registration": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-reward-c1-draft-prereg.md",
+  "prior_policy_experiment": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-rarity-policy-findings.md",
+  "merge_authorized": false,
+  "release_authorized": false,
+  "pr_authorized": false,
+  "note": "Do not replace current STATUS.json.candidate B1. C1 is a code draft only. Cannot inherit B1 review or treat reward probe as game balance validation."
+}
