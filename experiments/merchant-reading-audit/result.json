@@ -1,0 +1,236 @@
+{
+  "sourceCommit": "e65d9b98fbec69442047650254238cd9244df805",
+  "sourceHashes": {
+    "src/lua/abyss_merchant_pages.lua": "9fc35034fea420896584aac1d973ba5521b5fb4ab4c2a894093c2451099e7515",
+    "src/lua/abyss_merchant.lua": "e6e88e409e6d5b1c91f4fc4811205410aa6c1bce961e94daa270a14642be8747",
+    "data/presentation/narrative.zh-CN.json": "40d4aa7b9e7a627ce52abdbad043c953bd1d38798a0bb288151141401921c1f7",
+    "data/presentation/ui_theme.json": "674b2b8bf0c97f68019b3902d89a7a4832c96085638be7e3d75b5efb9ce12cbb"
+  },
+  "holdSeconds": 2.6,
+  "typeRate": 40,
+  "boundary": "Actual production Lua pagination; theoretical timer sum, not runtime/device measurement. No interaction, interruptions, pauses or frame rounding included.",
+  "rows": [
+    {
+      "key": "encounter",
+      "profile": "default",
+      "budget": 9,
+      "text": "转过一道石廊，旅行者看到一块旧毯子，上面摆着卷册和古物。毯子后坐着一位老人，像是早就知道会有客人来到这里。",
+      "pages": [
+        "转过一道石廊，",
+        "旅行者看到一块旧毯",
+        "子，",
+        "上面摆着卷册和古",
+        "物。",
+        "毯子后坐着一位老",
+        "人，",
+        "像是早就知道会有客",
+        "人来到这里。"
+      ],
+      "lengths": [
+        7,
+        9,
+        2,
+        8,
+        2,
+        8,
+        2,
+        9,
+        6
+      ],
+      "shortPages": [
+        "子，",
+        "物。",
+        "人，"
+      ],
+      "minimumAutomaticSeconds": 24.73
+    },
+    {
+      "key": "encounter",
+      "profile": "official",
+      "budget": 12,
+      "text": "转过一道石廊，旅行者看到一块旧毯子，上面摆着卷册和古物。毯子后坐着一位老人，像是早就知道会有客人来到这里。",
+      "pages": [
+        "转过一道石廊，",
+        "旅行者看到一块旧毯子，",
+        "上面摆着卷册和古物。",
+        "毯子后坐着一位老人，",
+        "像是早就知道会有客人来到",
+        "这里。"
+      ],
+      "lengths": [
+        7,
+        11,
+        10,
+        10,
+        12,
+        3
+      ],
+      "shortPages": [
+        "这里。"
+      ],
+      "minimumAutomaticSeconds": 16.93
+    },
+    {
+      "key": "greet",
+      "profile": "default",
+      "budget": 9,
+      "text": "「路不好走吧？来，看看有没有用得上的。」",
+      "pages": [
+        "「路不好走吧？来，",
+        "看看有没有用得上",
+        "的。」"
+      ],
+      "lengths": [
+        9,
+        8,
+        3
+      ],
+      "shortPages": [
+        "的。」"
+      ],
+      "minimumAutomaticSeconds": 8.3
+    },
+    {
+      "key": "greet",
+      "profile": "official",
+      "budget": 12,
+      "text": "「路不好走吧？来，看看有没有用得上的。」",
+      "pages": [
+        "「路不好走吧？来，",
+        "看看有没有用得上的。」"
+      ],
+      "lengths": [
+        9,
+        11
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 5.7
+    },
+    {
+      "key": "purchaseSuccess",
+      "profile": "default",
+      "budget": 9,
+      "text": "「眼光不错。」",
+      "pages": [
+        "「眼光不错。」"
+      ],
+      "lengths": [
+        7
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 2.77
+    },
+    {
+      "key": "purchaseSuccess",
+      "profile": "official",
+      "budget": 12,
+      "text": "「眼光不错。」",
+      "pages": [
+        "「眼光不错。」"
+      ],
+      "lengths": [
+        7
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 2.77
+    },
+    {
+      "key": "insufficientGold",
+      "profile": "default",
+      "budget": 9,
+      "text": "「这可不够啊，小姑娘。」",
+      "pages": [
+        "「这可不够啊，",
+        "小姑娘。」"
+      ],
+      "lengths": [
+        7,
+        5
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 5.5
+    },
+    {
+      "key": "insufficientGold",
+      "profile": "official",
+      "budget": 12,
+      "text": "「这可不够啊，小姑娘。」",
+      "pages": [
+        "「这可不够啊，小姑娘。」"
+      ],
+      "lengths": [
+        12
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 2.9
+    },
+    {
+      "key": "originHint",
+      "profile": "default",
+      "budget": 9,
+      "text": "「做生意嘛，总得知道哪条路安全。」",
+      "pages": [
+        "「做生意嘛，",
+        "总得知道哪条路安",
+        "全。」"
+      ],
+      "lengths": [
+        6,
+        8,
+        3
+      ],
+      "shortPages": [
+        "全。」"
+      ],
+      "minimumAutomaticSeconds": 8.23
+    },
+    {
+      "key": "originHint",
+      "profile": "official",
+      "budget": 12,
+      "text": "「做生意嘛，总得知道哪条路安全。」",
+      "pages": [
+        "「做生意嘛，",
+        "总得知道哪条路安全。」"
+      ],
+      "lengths": [
+        6,
+        11
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 5.63
+    },
+    {
+      "key": "leave",
+      "profile": "default",
+      "budget": 9,
+      "text": "「前面可不像这里太平。一路小心。」",
+      "pages": [
+        "「前面可不像这里太",
+        "平。一路小心。」"
+      ],
+      "lengths": [
+        9,
+        8
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 5.63
+    },
+    {
+      "key": "leave",
+      "profile": "official",
+      "budget": 12,
+      "text": "「前面可不像这里太平。一路小心。」",
+      "pages": [
+        "「前面可不像这里太平。",
+        "一路小心。」"
+      ],
+      "lengths": [
+        11,
+        6
+      ],
+      "shortPages": [],
+      "minimumAutomaticSeconds": 5.63
+    }
+  ]
+}
