@@ -239,7 +239,14 @@ local function splitEnemy(state, parent)
     local children, hp = {}, parent.hp -- capture before the non-triggering death
     for i = 1, ai.splitCount do
         children[i] = makeEnemy(state, ai.splitEnemies and ai.splitEnemies[i] or ai.splitEnemy, state.nextEnemyId, hp)
-        if ai.splitPositions then children[i].sourcePosition=copy(ai.splitPositions[i]) end
+        if ai.splitPositions then children[i].sourcePosition=copy(ai.splitPositions[i])
+        else
+            -- Large slime constructors retain their parent's source origin.
+            -- Source takeTurn separates medium children by +/-134 source px;
+            -- retain the floor without consuming combat RNG for cosmetic jitter.
+            local origin=parent.sourcePosition or {x=0,y=0}
+            children[i].sourcePosition={x=origin.x+(i==1 and -134 or 134),y=origin.y}
+        end
         state.nextEnemyId = state.nextEnemyId + 1
     end
     -- Suicide(false): no damage, death Power, relic callback or extra reward.
