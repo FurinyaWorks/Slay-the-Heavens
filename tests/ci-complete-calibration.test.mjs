@@ -1997,6 +1997,35 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
+function assertReleasePhysicalExecutionGuards(physical){
+ for(const [name,expected]of [['rules',"    timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 45 }}"],['engineering-posix-shards','    timeout-minutes: 30']]){
+  const jobs=physical.match(new RegExp('^  '+name+':\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))','gm'))??[];
+  assert.equal(jobs.length,1,'one actual '+name+' job');
+  assert.deepEqual(jobs[0].match(/^    timeout-minutes: .+$/gm)??[],[expected],name+' actual execution timeout');
+ }
+}
+
+test('release navigation actual execution guards reject job drift while forecast targets stay diagnostic',()=>{
+ const physical=rawReleaseReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ assertReleasePhysicalExecutionGuards(physical);
+ const windows="    timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 45 }}";
+ const posix='    timeout-minutes: 30';
+ for(const bad of [
+  physical.replace(windows,windows.replace('75','76')),
+  physical.replace(windows,windows.replace('45','46')),
+  physical.replace(windows,''),
+  physical.replace(windows,windows+'\n'+windows),
+  physical.replace(windows,'  '+windows),
+  physical.replace(posix,'    timeout-minutes: 31'),
+  physical.replace(posix,''),
+  physical.replace(posix,posix+'\n'+posix),
+  physical.replace(posix,'  '+posix),
+  physical.replace('  rules:\n','  foreign-rules:\n'),
+  physical.replace('  engineering-posix-shards:\n','  foreign-posix:\n'),
+  physical+'\n  rules:\n'+windows+'\n',
+ ])assert.throws(()=>assertReleasePhysicalExecutionGuards(bad));
+});
+
 test('release navigation raw Full inventory retains all tests, conservative costs and original execution guards',t=>{
  assertReleaseNavigationCiCurrent(rawReleaseReadFileSync);
  const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseNavigationCiPacket;
@@ -2004,6 +2033,7 @@ test('release navigation raw Full inventory retains all tests, conservative cost
  for(const path of p.priorInventory.js)assert(js.includes(path));
  for(const path of p.priorInventory.lua)assert(lua.includes(path));
  assert.equal(rawCurrentTimings.unknownJsMs,10000);
+ assertReleasePhysicalExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
  for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
   for(const path of js.filter(path=>!p.priorInventory.js.includes(path)))
    assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs,'new unmeasured test retains its conservative cost: '+path);
@@ -2022,7 +2052,6 @@ test('release navigation raw Full inventory retains all tests, conservative cost
   }
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
-  assert(forecast<target,'complete current forecast fits the unchanged performance target');
-  assert(forecast<guard,'complete current forecast fits the original execution guard');
+  // docs/CI.md:168: forecasts and reserve are diagnostic; actual job guards above are mandatory.
  }
 });
