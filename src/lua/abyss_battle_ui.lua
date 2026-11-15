@@ -312,14 +312,16 @@ function M.new(root, data, presentation, clickEvent, platform, options)
                 self.suppressClick=false
             end
         end,
-        pointerClick=function(event)
-            return not services.consumeReleasedDragClick(event) and not self.suppressClick and not self.gesture
+        pointerClick=function(event,token)
+            local origin=token and {touchId=token.touch} or event
+            return not services.consumeReleasedDragClick(origin) and not self.suppressClick and not self.gesture
         end,
-        pointerConsumed=function(event)
+        pointerConsumed=function(event,token)
             -- Reuse the finite release barrier after the popup command closes
-            -- its menu; a trailing click must retain this popup's origin.
-            local touch=event and event.touchId
-            ownership.releasedDragTouch=touch;self.suppressClick={touch=touch}
+            -- its menu. Keep the owned ID and the native Click's one ambiguous
+            -- tail separately when that Click omitted its ID.
+            local touch=token and token.touch or event and event.touchId
+            ownership.releasedDragTouch=touch;self.suppressClick={touch=event and event.touchId}
         end,
         item=function(slot)return Run.potionSlotView(self.run,slot)end,
         text=function(item,battle)return potionText(item,battle,true):match("\n(.*)") or ''end,
