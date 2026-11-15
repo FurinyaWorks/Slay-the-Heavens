@@ -1,5 +1,6 @@
 -- Preserve the approved ordinary list; expand only independent multi-item rows.
 local Theme=require('abyss_theme')
+local Art=require('abyss_lowcost_art')
 local RelicView=require('abyss_relic_view_ui')
 local M={}
 local rowFaces=setmetatable({},{__mode='k'})
@@ -16,9 +17,32 @@ local function rewardIcon(name,run)
  local item=rewards and rewards.relics and rewards.relics[index]
  return item and RelicView.icon(item.sourceId or item.id,true)or iconId(Theme.icon.node.treasure)
 end
+local function hidePool(pool,owner)
+ if pool and pool.alive~=false and pool.parent==owner then pool:SetVisible(false)end
+end
+local function paintShared(cached,id,platform)
+ local icon=cached.icon;local owner=icon.parent
+ local ok,pool=pcall(owner.GetChild,owner,'rewardIconArt')
+ -- Retire only this row's previously observed real handle when lookup or
+ -- replacement loses it; Art cannot hide an unavailable pool by rediscovery.
+ if cached.pool~=pool then hidePool(cached.pool,owner)end
+ if ok and pool and pool.alive~=false then cached.pool=pool end
+ icon:SetVisible(true)
+ if not Art.paint(icon,'relic',id,Theme.officialAssets.rewardRows.iconSize,platform)then hidePool(cached.pool,owner)end
+end
 local function paintIcon(cached,name,run,platform)
  local id=rewardIcon(name,run)
  if platform.imageSource and cached.id~=id then cached.icon:SetImage(platform.imageSource,id);cached.id=id end
+ if cached.shared then
+  local rewards=run and run.rewards
+  local item=rewards and rewards.relics and rewards.relics[tonumber(name:sub(-1))]
+  local localId=item and require('abyss_relic_hooks').localId(item.sourceId or item.id)
+  paintShared(cached,localId,platform)
+ end
+end
+local function faceCache(name,part)
+ local shared=name:match('^relicReward[12]$') and part.parent and part.parent:GetChild('rewardIcon')
+ return {parts=part:GetChild('stsRewardFace'):GetChildren(),icon=shared or part:GetChild('rewardIcon'),shared=shared~=nil}
 end
 function M.paintButton(name,part,state,run,platform,tint,ink)
  local token=Theme.officialAssets and Theme.officialAssets.rewardRows
@@ -27,7 +51,7 @@ function M.paintButton(name,part,state,run,platform,tint,ink)
  if not rowNames[name]then return false end
  local cached=rowFaces[part]
  if not cached then
-  cached={parts=part:GetChild('stsRewardFace'):GetChildren(),icon=part:GetChild('rewardIcon')};rowFaces[part]=cached
+  cached=faceCache(name,part);rowFaces[part]=cached
  end
  local tone=token[state]or token.normal
  if cached.tone~=tone then for _,image in ipairs(cached.parts)do tint(image,tone)end;cached.tone=tone end

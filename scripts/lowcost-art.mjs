@@ -17,6 +17,17 @@ export function loadLowCostArt(){
 }
 function pool(icon,capacity){return {name:icon.name+'Art',kind:'container',position:[...(icon.position??[0,0])],size:[100,100],visible:false,raycastTarget:false,
  children:Array.from({length:capacity},(_,i)=>({name:'shape'+i,kind:'image',size:[1,1],image:100001,colour:'#FFFFFF',visible:false,raycastTarget:false}))};}
+function shareRewardIcon(node,children){
+ const states=['normal','hover','pressed','disabled'].map(name=>child(node,name));
+ const icons=states.map(state=>child(state,'rewardIcon'));
+ if(icons.some(icon=>!icon)||states.some(state=>state.position?.some(value=>value!==0)||state.scale?.some(value=>value!==1))||
+  icons.some(icon=>JSON.stringify(icon)!==JSON.stringify(icons[0])))throw Error('Reward relic states must share identical icon geometry');
+ for(let i=0;i<states.length;i++)states[i].children.splice(states[i].children.indexOf(icons[i]),1);
+ // One real native fallback and its sibling pool, above every state face.
+ // The existing Art ownership checks need no virtual parent or adapter.
+ const icon=icons[0];icon.raycastTarget=false;
+ children.push(icon,pool(icon,16));
+}
 export function attachLowCostArt(tree){
  function walk(node,path=''){
   path+='/'+node.name;const children=node.controls??node.children??[];
@@ -27,6 +38,9 @@ export function attachLowCostArt(tree){
   const relic= /\/relicBar\/slot\d+$/.test(path)||/\/relicPanel\/(row\d+\/slot|single)$/.test(path)||
    /\/shopView\/relic\d+$/.test(path)||/\/treasureView\/(reward|rewardItem\d+)$/.test(path);
   if(icon&&relic&&!child(node,'iconArt'))children.splice(children.indexOf(icon)+1,0,pool(icon,16));
+  // Reuse the reviewed reward binding without four identical recipe pools.
+  const rewardRelic=/^\/(?:AbyssBattle\/stage|SlayTheAbyss\/(?:stage\/)?battlePanel)\/potionHelp\/relicReward[12]$/.test(path);
+  if(rewardRelic&&!child(node,'rewardIconArt'))shareRewardIcon(node,children);
  }
  walk(tree);return tree;
 }
