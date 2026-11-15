@@ -1,0 +1,55 @@
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "slay-the-abyss",
+-  "version": "1.0.0",
++  "version": "2.0.0",
+   "private": true,
+   "license": "SEE LICENSE IN LICENSE",
+   "type": "module",
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "slay-the-abyss",
+-  "version": "1.0.0",
++  "version": "2.0.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "slay-the-abyss",
+-      "version": "1.0.0",
++      "version": "2.0.0",
+       "license": "SEE LICENSE IN LICENSE",
+       "devDependencies": {
+         "ajv": "8.20.0",
+--- a/.release-please-manifest.json
++++ b/.release-please-manifest.json
+@@ -1,3 +1,3 @@
+ {
+-  ".": "1.0.0"
++  ".": "2.0.0"
+ }
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -5,6 +5,18 @@
+ 历史版本目录：[docs/versions/README.md](docs/versions/README.md)。
+ 
+ `v1.0.0` 为正式参赛作品的待验收候选，与旧 Alpha 作品独立。2026-10-29用户确认旅行者已通关两幕并授权发布：本版只开放岩系旅行者，雷电将军移至下一版本。实际平台发布凭证尚未登记，以下版本日期不代表已经公开上线。
++
++## v2.0.0 (2026-11-15)
++
++### 优化
++
++* 调整主菜单与旅行者选择界面，恢复金色命之座，并加入璃月开场过渡。
++* 冒险中可以返回主菜单并继续本局。放弃本局和退出游戏会分别确认。
++
++### 修复
++
++* 修复放弃本局后再次开始时，部分界面不能正常清理的问题。
++* 改进选牌分页和排序刷新，切换选牌列表时不再重建整个页面。
+ 
+ ## v1.0.0 (2026-10-31)
+ 

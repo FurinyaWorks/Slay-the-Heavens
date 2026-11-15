@@ -1,0 +1,145 @@
+diff --git a/tests/epoch-binding-cache.test.mjs b/tests/epoch-binding-cache.test.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..39f8322f26fce80a50bf7cc91dba3935843afe2c
+--- /dev/null
++++ b/tests/epoch-binding-cache.test.mjs
+@@ -0,0 +1,51 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import crypto,{createHash} from 'node:crypto';
++import {syncBuiltinESMExports} from 'node:module';
++import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
++const path='src/lua/cache_proof.lua';
++const bind=source=>({source,sha256:createHash('sha256').update(source).digest('hex'),gitBlob:createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex')});
++function fixture(){return {schemaVersion:1,normalization:'LF',currentCommit:'a'.repeat(40),owners:[path],current:{[path]:bind('return "digest-current"\n')},targets:{prior:{commit:'b'.repeat(40),files:{[path]:bind('return "digest-prior"\n')}}}};}
++test('repeated binding text reuses pure digests but compares each declaration',()=>{
++ const input=fixture();const original=crypto.createHash;let calls=0;
++ try{
++  crypto.createHash=(...args)=>{calls++;return original(...args);};syncBuiltinESMExports();
++  createSourceEpochProjector(input);const first=calls;assert.ok(first>0);
++  createSourceEpochProjector(input);assert.equal(calls,first,'same complete texts do not repeat digest calculation');
++  for(const field of ['sha256','gitBlob']){
++   const invalid=structuredClone(input);invalid.current[path][field]='0'.repeat(field==='sha256'?64:40);
++   assert.throws(()=>createSourceEpochProjector(invalid),/source identity/);
++  }
++  const target=structuredClone(input);target.targets.prior.files[path].gitBlob='0'.repeat(40);
++  assert.throws(()=>createSourceEpochProjector(target),/source identity Git blob/);
++  const inherited=structuredClone(input);delete inherited.current[path].gitBlob;
++  const descriptor=Object.getOwnPropertyDescriptor(Object.prototype,'gitBlob');
++  try{
++   Object.defineProperty(Object.prototype,'gitBlob',{value:'0'.repeat(40),configurable:true});
++   assert.throws(()=>createSourceEpochProjector(inherited),/source identity Git blob/);
++  }finally{if(descriptor)Object.defineProperty(Object.prototype,'gitBlob',descriptor);else delete Object.prototype.gitBlob;}
++  const crlf=structuredClone(input);crlf.current[path].source=crlf.current[path].source.replaceAll('\n','\r\n');
++  assert.throws(()=>createSourceEpochProjector(crlf),/source identity LF/);
++  const project=createSourceEpochProjector(input);let actual=input.current[path].source,reads=0;
++  const run=()=>project.preCombinedSource(path,input.current[path].source,{target:'prior',readSource:()=>{reads++;return actual;}});
++  assert.equal(run(),input.targets.prior.files[path].source);actual+='-- drift';assert.throws(run,/linked owner identity/);assert.equal(reads,2);
++ }finally{crypto.createHash=original;syncBuiltinESMExports();}
++});
++
++test('binding digest cache evicts by both retained text and entry limits',()=>{
++ const proof=source=>({schemaVersion:1,normalization:'LF',currentCommit:'c'.repeat(40),owners:[],current:{[path]:bind(source)},targets:{}});
++ const first=proof('return "eviction-first"\n');
++ const small=Array.from({length:1024},(_,i)=>proof(`return "eviction-${i}"\n`));
++ const largeA=proof('a'.repeat(4*1024*1024+1)),largeB=proof('b'.repeat(4*1024*1024+1));
++ const oversized=proof('z'.repeat(8*1024*1024+1));
++ const original=crypto.createHash;let calls=0;
++ try{
++  crypto.createHash=(...args)=>{calls++;return original(...args);};syncBuiltinESMExports();
++  createSourceEpochProjector(first);const initial=calls;createSourceEpochProjector(first);assert.equal(calls,initial);
++  for(const input of small)createSourceEpochProjector(input);
++  let before=calls;createSourceEpochProjector(first);assert.equal(calls-before,2,'oldest entry recomputed');
++  createSourceEpochProjector(largeA);createSourceEpochProjector(largeB);
++  before=calls;createSourceEpochProjector(largeA);assert.equal(calls-before,2,'over-budget retained text evicts oldest');
++  before=calls;createSourceEpochProjector(oversized);createSourceEpochProjector(oversized);assert.equal(calls-before,4,'oversized complete text never retained');
++ }finally{crypto.createHash=original;syncBuiltinESMExports();}
++});
+diff --git a/tests/helpers/combined-epoch/source-epoch-runtime.mjs b/tests/helpers/combined-epoch/source-epoch-runtime.mjs
+index 5609ac1d4d3c4ea994b70e123276cb86e4cc139d..fc3a079dbba873fbc2b22ed87680a80ed0ec63e4 100644
+--- a/tests/helpers/combined-epoch/source-epoch-runtime.mjs
++++ b/tests/helpers/combined-epoch/source-epoch-runtime.mjs
+@@ -7,13 +7,13 @@ const normalize=s=>s.replaceAll('\r\n','\n');
+ const hash=s=>createHash('sha256').update(s).digest('hex');
+ // Only pure computations over complete immutable strings are memoized. Readers,
+ // owner authorization and projection results never enter these bounded caches.
+-function cacheStringCalculation(calculate){
+- const cache=new Map(),limit=2*1024*1024;let retained=0;
++function cacheStringCalculation(calculate,{limit=2*1024*1024,entries=256}={}){
++ const cache=new Map();let retained=0;
+  return source=>{
+   if(cache.has(source))return cache.get(source);
+   const result=calculate(source);
+   if(source.length<=limit){
+-   while(cache.size>=256||retained+source.length>limit){
++   while(cache.size>=entries||retained+source.length>limit){
+     const first=cache.keys().next().value;retained-=first.length;cache.delete(first);
+    }
+    cache.set(source,result);retained+=source.length;
+@@ -36,12 +36,21 @@ function configLayoutMatcher(current){
+ }
+ const validPath=p=>p==='config/architecture.json'||/^src\/lua\/[A-Za-z0-9_-]+\.lua$/.test(p);
+ function freeze(value){if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;}
++// Proof construction revisits complete text across hundreds of historical views.
++// Cache only pure text-derived values, never declarations, proof admission or reads.
++// The separate bound accommodates the source corpus without retaining proofs.
++const bindingIdentity=cacheStringCalculation(source=>({
++ lf:normalize(source)===source,
++ sha256:hash(source),
++ gitBlob:createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex')
++}),{limit:8*1024*1024,entries:1024});
+ function validateBinding(binding){
+  if(binding===null)return;
+  assert.equal(typeof binding?.source,'string','source identity text');
+- assert.equal(normalize(binding.source),binding.source,'source identity LF');
+- assert.equal(hash(binding.source),binding.sha256,'source identity SHA256');
+- if(binding.gitBlob)assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,'source identity Git blob');
++ const identity=bindingIdentity(binding.source);
++ assert(identity.lf,'source identity LF');
++ assert.equal(identity.sha256,binding.sha256,'source identity SHA256');
++ if(binding.gitBlob)assert.equal(identity.gitBlob,binding.gitBlob,'source identity Git blob');
+ }
+ // A composed proof can share previously validated immutable source strings.
+ // Reuse is explicit and accepts only an already deeply frozen JSON data graph;
+@@ -88,7 +97,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
+    if(binding?.sha256!==proof.current[path]?.sha256)assert(proof.owners.includes(path),'changed source closure');
+   }
+  }
+- freeze(proof);
++ if(!reuseFrozenInput)freeze(proof);
+  const sameConfigLayout=allowConfigLayout&&proof.current['config/architecture.json']
+   ?configLayoutMatcher(proof.current['config/architecture.json'].source):()=>false;
+  const readers=new WeakMap(),readLive=path=>{
+diff --git a/tests/helpers/generate-integrated-ci-source.mjs b/tests/helpers/generate-integrated-ci-source.mjs
+index bc607d6d1358bd217eaa41908aa09c34e6aecd03..164fe8f9cd523b50562b6f5add91eaa96d07d678 100644
+--- a/tests/helpers/generate-integrated-ci-source.mjs
++++ b/tests/helpers/generate-integrated-ci-source.mjs
+@@ -38,8 +38,13 @@ for(const ref of requests){
+ assert.equal(offset,payload.length,'complete Git batch response');
+ const files={};for(const p of paths){const views={};for(const [name,revision]of Object.entries(sources))views[name]=viewsByRef.get(revision+':'+p);
+  files[p]={current:bind(norm(readFileSync(p,'utf8'))),views};}
+-const closure={};for(const p of ['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz'])
+- closure[p]={before:feedback.helperClosure[p]?.after??null,after:hash(p.endsWith('.gz')?readFileSync(p):norm(readFileSync(p,'utf8')))};
++const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
++const closeoutBindingBytes=readFileSync('tests/helpers/closeout-source-closure.json');
++assert.equal(hash(closeoutBindingBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','immutable runtime copy predecessor manifest');
++const runtimeBefore=JSON.parse(closeoutBindingBytes)[runtime];
++assert.match(runtimeBefore,/^[a-f0-9]{64}$/,'exact frozen runtime copy predecessor');
++const closure={};for(const p of ['tests/helpers/closeout-source-epoch.mjs',runtime,'tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz'])
++ closure[p]={before:feedback.helperClosure[p]?.after??(p===runtime?runtimeBefore:null),after:hash(p.endsWith('.gz')?readFileSync(p):norm(readFileSync(p,'utf8')))};
+ const binaryViews={'tests/helpers/menu-red-production-source.json.gz':{current:closure['tests/helpers/menu-red-production-source.json.gz'].after,
+  views:{menu:{path:'tests/helpers/menu-red-before-integration-production-source.json.gz',sha256:'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae'}}}};
+ const inventories=Object.fromEntries(Object.entries(sources).map(([name,revision])=>[name,{
+diff --git a/tests/helpers/integrated-ci-source.mjs b/tests/helpers/integrated-ci-source.mjs
+index 1d4cd0049c2c6eee5f9556494acf3e11047bc2d4..11458a062966283e2a43adcb7443e0c32c653420 100644
+--- a/tests/helpers/integrated-ci-source.mjs
++++ b/tests/helpers/integrated-ci-source.mjs
+@@ -37,7 +37,7 @@ export function assertIntegratedCurrent(read=readFileSync){
+ }
+ export function extendIntegratedHelperClosure(original){
+  const current={...original},patch=integratedCiProof.closure;
+- assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
++ assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
+  for(const [path,row]of Object.entries(patch)){assert.equal(row.before,original[path]??null,'exact integration copy predecessor: '+path);assert.match(row.after,/^[a-f0-9]{64}$/);current[path]=row.after;}
+  return freeze(current);
+ }
