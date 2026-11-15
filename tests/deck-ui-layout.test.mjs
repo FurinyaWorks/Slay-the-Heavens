@@ -3,6 +3,21 @@ import assert from 'node:assert/strict';
 import { gameLayout } from '../scripts/game-ui-layout.mjs';
 import { deckCardTemplate } from '../scripts/deck-ui-layout.mjs';
 import { nativeTheme as theme } from '../scripts/native-ui-theme.mjs';
+import {runLua} from '../scripts/test-lua.mjs';
+
+test('multi-select keeps immediate UID feedback without rebuilding its modal or native cards',()=>{
+  const r=runLua('tests/lua/deck_multiselect_retained.lua');
+  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/DECK_MULTISELECT_RETAINED_PASS/);
+});
+
+test('the four-character choice confirmation fits the real minimum-size text frame',()=>{
+  const close=gameLayout().controls.find(c=>c.name==='deckPanel').children.find(c=>c.name==='close');
+  for(const state of close.children[0].children){
+    const label=state.children.find(c=>c.name==='label');
+    assert.ok(label.size[0]>=4*label.text.minFontSize,'确认选择 must fit without shrinking below the approved font');
+    assert.ok(label.size[1]>=theme.layout.nativeText.lineHeight);
+  }
+});
 
 test('battle piles reserve one hidden five-column native scroller and a black veil without replacing the browser', () => {
   const panel=gameLayout().controls.find(c=>c.name==='deckPanel');

@@ -281,6 +281,51 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
     local function picture(control,id) control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
+    local function paintChoice(control,instance,catalog,definition)
+        definition=definition or Combat.cardDefinition(self.battle or {catalog=catalog},instance)
+        local printed=catalog.cards[instance.cardId]
+        local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
+        local selected=false
+        for _,uid in ipairs(self.choiceSelected or {})do if uid==instance.uid then selected=true end end
+        CardSkin.apply(control:GetChild('face'),definition,platform,{cost=definition.cost,baseCost=base,selected=selected,surfaceScope=self.pileView and 'battle' or 'deck'})
+        control:GetChild('uid').text=selected and '已选择' or ''
+    end
+    local function paintChoiceCount(choice)
+        root:GetChild('title').text=self.choiceTitle..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '')
+        local close=root:GetChild('close'):GetChild('hit')
+        close.interactable=self.optional==true or not choice.required or #choice.selected==choice.required
+        close.raycastTarget=close.interactable
+    end
+    local function retainedChoice(control,binding,callback,choice)
+        local generation,run,battle,uid=self.generation,self.run,self.battle,binding.uid
+        callback(self.choiceToken,uid)
+        -- A callback can close/reopen the view or replace its owner. Only the
+        -- same mandatory choice may publish an in-place selection marker.
+        if control.alive==false or binding.uid~=uid or not self.visible or self.generation~=generation or self.run~=run or self.battle~=battle
+            or run.combat~=battle or battle.pendingChoice~=choice then return end
+        self.choiceToken,self.choiceSelected=choice.token,choice.selected
+        paintChoiceCount(choice)
+        paintChoice(control,binding.instance,self.catalog)
+    end
+    local function currentChoice(binding)
+        if not self.visible or not self.choiceToken or binding.generation~=self.generation
+            or not self.run or self.run.combat~=self.battle then return end
+        local choice=self.battle.pendingChoice
+        if choice and choice.token==self.choiceToken then return choice end
+    end
+    local function pickCard(control)
+        local binding=self.bindings[control]
+        if control.alive==false or not binding then return false end
+        if self.visible and not self.choiceToken and binding.generation==self.generation then
+            return self:showCardDetails(binding.instance)
+        end
+        local choice=currentChoice(binding)
+        if not choice then return end
+        local callback,token,uid=self.onPick,self.choiceToken,binding.uid
+        if self.multiple and callback then return retainedChoice(control,binding,callback,choice)end
+        self:close()
+        if callback then return callback(token,uid)end
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -308,35 +353,18 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         tint(face:GetChild("nameRule"), Theme.color.rarity[definition.rarity] or Theme.color.line)
         tint(face:GetChild("artPlate"), Theme.color.cardType[definition.type] or Theme.color.panelRaised)
         CardDisplay.writeArt(face:GetChild("art"), definition, picture,face);CardDisplay.writeNativeArt(face,definition,display.nativeArt,platform,face:GetChild('art'),instance.uid)
-        local printed=catalog.cards[instance.cardId]
-        local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
-        local selected=false
-        for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
-        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,surfaceScope=self.pileView and 'battle' or 'deck'})
+        paintChoice(control,instance,catalog,definition)
         if self.browserShell then
             face:GetChild('nativePlayableRim'):SetVisible(false)
             face:GetChild('glow'):SetVisible(false)
             face:GetChild('costHalo'):SetVisible(false)
         end
-        control:GetChild("uid").text = selected and '已选择' or ''
         local hit=control:GetChild('hit')
         hit:SetVisible(true)
         if not self.bindings[control] then
             -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
             self.bindings[control]={hit=hit}
-            local function pick()
-                local b=self.bindings[control]
-                if control.alive==false or not b then return false end
-                if self.visible and not self.choiceToken and b.generation==self.generation then
-                    return self:showCardDetails(b.instance)
-                end
-                if not self.visible or not self.choiceToken or b.generation~=self.generation
-                    or not self.run or self.run.combat~=self.battle
-                    or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
-                local callback,token,uid=self.onPick,self.choiceToken,b.uid
-                self:close()
-                if callback then callback(token,uid) end
-            end
+            local function pick()return pickCard(control)end
             hit:AddCursorEventListener(clickEvent,function(event)
                 if Controller.pointerBlocked(platform.controller) or scrollClick(event) then return false end
                 return pick()
@@ -525,7 +553,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle
             root:GetChild('pileReturn'):SetVisible(self.browserShell)
         end
-        if self.multiple then root:GetChild('title').text=root:GetChild('title').text..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '') end
+        self.choiceTitle=root:GetChild('title').text
+        if self.multiple then paintChoiceCount(choice)end
         root:GetChild("close"):SetVisible(not choice or self.multiple == true or self.optional==true)
         if self.browserShell then root:GetChild('close'):SetVisible(false)end
         local close=root:GetChild('close'):GetChild('hit')
@@ -636,7 +665,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.allCards,self.browseEnabled,self.typeFilter,self.sortMode=nil,nil,nil,nil
         self.choiceToken,self.onPick,self.battle=nil,nil,nil
         self.pileKind,self.listTitle=nil,nil
-        self.multiple,self.choiceSelected,self.optional=nil,nil,nil
+        self.multiple,self.choiceSelected,self.optional,self.choiceTitle=nil,nil,nil,nil
         self.detailPages,self.detailOnly,self.cardDetail=nil,nil,nil
         self.closeOnOutside=nil
         upgradePreview:SetVisible(false)
