@@ -562,11 +562,12 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled = enabled self:render()
     end
-    function self.setVisible(_, visible)
+    function self.setVisible(_, visible, retainPage)
         assert(type(visible) == "boolean", "map visibility must be boolean")
         if visible and not self.map then return false, "map_unbound" end
         if not visible then cancelDrag() end
-        self.visible = visible root:SetVisible(visible)
+        -- A modal suspends navigation but retains its already mounted backdrop.
+        self.visible = visible root:SetVisible(visible or retainPage==true)
         if visible then self:focusCurrent() end
     end
     function self.choose(_, nodeId)

@@ -169,6 +169,14 @@ test("invalid, locked, backward, disconnected, culled and hidden clicks never mu
     assert(not click(root, "node43")); assert(callbacks == 0)
     ui:setVisible(false)
     assert(not click(root, "node1")); click(root, "next"); assert(ui.scroll == 0)
+    ui:setVisible(false,true)
+    assert(root.visible and not ui.visible,'modal retains map drawing but suspends navigation')
+    assert(not click(root,'node1') and callbacks==0,'covered map click must not choose a room')
+    local floor=map.floor
+    for _=1,8 do ui:setVisible(false,true);assert(not ui:choose(Map.available(map)[1].id))end
+    assert(map.floor==floor and callbacks==0,'repeated modal refresh must not mutate route')
+    ui:setVisible(false)
+    assert(not root.visible,'leaving map must still hide its native page')
     local first=Map.available(map)[1].id
     ui:setVisible(true); assert(clickNode(root, map, first))
     ui:setNavigationEnabled(true)

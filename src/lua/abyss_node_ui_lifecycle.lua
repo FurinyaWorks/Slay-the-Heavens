@@ -78,13 +78,19 @@ function M.install(ctx)
 
     end
 
-    function ctx.self:setVisible(value)
+    function ctx.self:setVisible(value,retainPage)
         assert(type(value) == "boolean", "node visibility must be boolean")
         if value and not self.run then return false, "node_unbound" end
-        if not value then ctx.resetButtons();ctx.shopSelection:clear();ctx.roomMotion:cancel();for box in pairs(ctx.artFaces)do CardDisplay.clearNativeArt(box)end;ctx.artFaces={} end
+        if not value then
+            ctx.resetButtons();ctx.shopSelection:clear();ctx.roomMotion:cancel()
+            if not retainPage then
+                for box in pairs(ctx.artFaces)do CardDisplay.clearNativeArt(box)end;ctx.artFaces={}
+            end
+        end
         local wasVisible = self.visible
         if not value then self.pendingGeneration=(self.pendingGeneration or 0)+1 end
-        self.visible = value ctx.root:SetVisible(value)
+        -- Retaining the covered page must never keep its input controller live.
+        self.visible = value ctx.root:SetVisible(value or retainPage==true)
         if value and not wasVisible and require('abyss_relic_pending').owner(self.run)then self:render()end
         -- Let Match's own visibility guard retire its clock, retaining a failed
         -- pair's explicit-retry state across modal hide/show.
