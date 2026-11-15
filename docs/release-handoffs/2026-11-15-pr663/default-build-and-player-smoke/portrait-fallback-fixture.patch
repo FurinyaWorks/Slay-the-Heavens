@@ -1,0 +1,24 @@
+--- a/tests/lua/formal_campaign_entry.lua
++++ b/tests/lua/formal_campaign_entry.lua
+@@ -24,6 +24,21 @@
+         if characterProfile then args[5].characterProfile=characterProfile end -- explicit development-only coverage below
+         local function unavailableHistory()historyCalls=historyCalls+1;error('competition must not consult saved history')end
+         args[5].readNeowHistory,args[5].readEndingHistory,args[5].writeEndingHistory=unavailableHistory,unavailableHistory,unavailableHistory
++        -- The generated art in this offline fixture has not been bound by the SDK.
++        -- Match engine activation on only the static portrait hosts so the real
++        -- unbound-template fallback can hide/pause them and continue the run.
++        local stage=args[1]
++        local function portraitHost(...)
++            local control=stage
++            for _,name in ipairs({...}) do
++                if not control then return end
++                control=control:GetChild(name)
++            end
++            if control then control.SetActive=F.setEngineActive end
++        end
++        portraitHost('characterPanel','traveler','officialAvatar')
++        portraitHost('characterPanel','details','officialSelectionFigure')
++        portraitHost('battlePanel','hero','officialFigure')
+         host=new(table.unpack(args))
+         host.historyCalls=function()return historyCalls end
+         return host

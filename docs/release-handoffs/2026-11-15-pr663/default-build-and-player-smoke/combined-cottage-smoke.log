@@ -1,0 +1,3 @@
+ABYSS_RUN seed=1 source=explicit
+TINY_HOUSE_PENDING_UI_PASS Neow -> public boss claim -> readable rewards -> once-only -> Act2
+Lua fixture tests/lua/tiny_house_pending_ui.lua: 3951 ms

@@ -1,0 +1,9 @@
+{
+  "modules": 366,
+  "rawSourceBytes": 4411370,
+  "inventorySha256": "79269d37436c847fec644647d41259959b9eb5ce6b23a48aaafb003ab2c7f440",
+  "buildId": "5b7ac171-f8ba-4b10-b828-5debbdc07fcf",
+  "payloadDigest": "f8770bf7be64485c69e75ef9674c6fc7fef51db209cae63cff45d5d715c29088",
+  "noSDK": true,
+  "noCandidate": true
+}

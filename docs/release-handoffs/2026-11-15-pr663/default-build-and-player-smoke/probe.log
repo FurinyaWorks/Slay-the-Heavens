@@ -1,0 +1,29 @@
+PASS currently rejected before build: official Official assets require a separate non-release candidate
+PASS currently rejected before build: lifecycle Native page lifecycle requires an explicit bounded non-release experiment
+PASS currently rejected before build: official-lifecycle Official assets require a separate non-release candidate
+PASS default formal: actual generators + pre-SDK checks reached one local sentinel only
+{
+  "source": "e9dc6e265a04bfe28f92adc1e0b41cbf6a99d4b7",
+  "tree": "86efc2b069391b1467fa39afc504c2df70388b82",
+  "release": {
+    "version": "v2.0.0",
+    "workKey": "contest-2026",
+    "notesSha256": "1c95abd79bf1ea549c22726b4a8407a57d7c96f7e2676f3fc7d9326f44478dda"
+  },
+  "flags": {
+    "cards": false,
+    "menuBackground": true,
+    "selectionAvatar": true,
+    "battlePortrait": true,
+    "monsters": false
+  },
+  "uiProfile": {
+    "schemaVersion": 1,
+    "nativePageLifecycle": false,
+    "configSha256": "f162e53dcf4da6e3e0e92c80f947844d85fb45ff5a4c77ecf189ebf594adfeb1"
+  },
+  "generatedFiles": 24,
+  "narrativeSha256": "f8fa5457affa23c41edebad864a55c63e041873c5a032ce389f34f733609ff1c",
+  "noNativeSDK": true,
+  "noCandidate": true
+}

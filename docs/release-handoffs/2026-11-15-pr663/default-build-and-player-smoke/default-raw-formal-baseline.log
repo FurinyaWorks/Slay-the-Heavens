@@ -1,0 +1,26 @@
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_BGM_REQUEST ABYSS_BGM_STOP
+ABYSS_PORTRAIT selection phase=failed owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT avatar phase=failed owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT battle phase=idle owned=0 reason=nil
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL failed page=characterPanel epoch=2 reason=unbound portrait templateIndex
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_BGM_REQUEST ABYSS_BGM_MAP
+ABYSS_UI failed update: ./src/lua/abyss_prologue.lua:82: ./src/lua/abyss_game_ui_run.lua:159: ./src/lua/abyss_traveler_portraits.lua:337: attempt to call a nil value (method 'SetActive')
+ABYSS_PORTRAIT selection phase=released owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT avatar phase=released owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT battle phase=released owned=0 reason=nil
+tests/lua/formal_campaign_entry.lua:12: native opening did not finish
+stack traceback:
+	[JS]: in function 'error'
+	tests/lua/formal_campaign_entry.lua:12: in upvalue 'finishOpening'
+	tests/lua/formal_campaign_entry.lua:120: in local 'start'
+	tests/lua/formal_campaign_entry.lua:175: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

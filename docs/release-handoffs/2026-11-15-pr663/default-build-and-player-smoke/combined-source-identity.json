@@ -1,0 +1,83 @@
+{
+  "release": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "PR": {
+    "684": {
+      "head": "00ff9b272625942a4d1f22085722142baac9ee2f",
+      "paths": {
+        "scripts/official-assets-layout.mjs": "c25cb1440699d228c7ec6fa333e25a1997c6daf22b857fc6029a30f2863f9868",
+        "scripts/ui-layout.mjs": "c04c3d1bf28978716a14a0e9d8023deb40b24dc46acdcdea261ff5969a95b60e",
+        "src/lua/abyss_battle_card_bindings.lua": "73aaabd364058cc14f5fe1b539ec014cfdd62293e394b8ede097f0e5cb26a2ef",
+        "src/lua/abyss_battle_card_gestures.lua": "dae42c2bbd6b6223bc0548c6a5b714af0b7a7c43a27936483458c627299fddfe",
+        "src/lua/abyss_battle_render_actors.lua": "4b4819a62d6168ef1d3c8b892e957fba52b3bda21246cfa0a82569780187258f",
+        "src/lua/abyss_battle_unit_view.lua": "2f020af59e3e9a835fb41fec6a9f10680f05acbf6e7ab26e08d4315afed4f3e6",
+        "src/lua/abyss_combat.lua": "d8dceaabd56e937d80756579b45fbce4efbefcda4570702ac7d0e9c52e33f392",
+        "src/lua/abyss_game_ui.lua": "1ebcc412f18c51c41a943a648ebed487b8531618dc4ec7d8cef68b9657d303e9",
+        "src/lua/abyss_game_ui_view.lua": "d122d66ddf22b16da1ca060eb116aa9ed314476bb3ef0242c3c284c92a0fc3af",
+        "src/lua/abyss_map_ui.lua": "1aef3a4f67bcf40513b73d542d7a3722411d738ffaf98d64c0f1798e08c1793c",
+        "src/lua/abyss_node_ui_lifecycle.lua": "a3f90bcbfdbb96ff1321871c28da2d3a44562b3e7f7858cbac150ec0612d5cd9",
+        "src/lua/abyss_page_reveal.lua": "b735419988642a03f0edc062aa4e1e18c1d6505821a65eeecf8fb91dc7e78d5e"
+      }
+    },
+    "690": {
+      "head": "8129bd8684a7ccf420ba0a8ec5fe077372050708",
+      "paths": {
+        "scripts/exit-ui-layout.mjs": "1385056500bf09ae7db564844161afe27d1700d5ca8839334e59f1a034ffcbf6",
+        "src/lua/abyss_game_ui_input.lua": "b2394cff71e20fdc5490fca41718435b623b1b9971827df1b639a77abcc75086",
+        "src/lua/abyss_game_ui_navigation_view.lua": "dfbdd2ab195f05ddf400bf81db428a02d01e886a01a3a4f81469edc9091b4d74",
+        "src/lua/abyss_game_ui_overlays.lua": "d524f0fb95d207ccbe5cebadc5379d734eeca721967032c16ba620bc6045d26a"
+      }
+    },
+    "678": {
+      "head": "3eb212bd18e3af038f65ac67ed93049af70cc78e",
+      "paths": {
+        "src/lua/abyss_node_ui_events.lua": "179228741b235af825e308e4f46d2f30bb779671bb59d6b4b664110874592d99",
+        "src/lua/abyss_relic_pending_ui.lua": "3639a8355383430f6c0603a999f39d0c030006de3f82616f510b8ada366a7fda"
+      }
+    },
+    "679": {
+      "head": "f564aea6a3c517b71a85534a81be5e2e36278baf",
+      "paths": {
+        "src/lua/abyss_battle_card_gestures.lua": "8ba7680d8b2839d69cda0b5794e385e94621febe702f1a2d5a755145b3ce51cc",
+        "src/lua/abyss_battle_potion_popup.lua": "433834716e6059f51baba96c699a4f8594af0da1a187a5c70cc58b6020e14b5f",
+        "src/lua/abyss_battle_ui.lua": "51ce4aea76acef8e4676a87bf1236be00061cb0faed231ecd69b1a71bdcb2b78"
+      }
+    },
+    "691": {
+      "head": "f85f4e4435e8b128c16713ed23bcbb2559f4fd1e",
+      "paths": {
+        "scripts/build-lua-data.mjs": "415cefee6e474325549e5d1b12207a5ff8424ce8924bd8de0ed2cc8019b04820",
+        "scripts/build-original-v4.mjs": "3c95d876aeb3feca6364351d282822e0f26aa287c7bc4f0941898e6800866b94",
+        "scripts/build-ui-theme.mjs": "e21efa0295befd4a21511117fc32e01d402c130597e1d7e5b36a57c156ccb25e",
+        "scripts/build-ui.mjs": "74205a9228f3ac2867569932442782944b1d97bc749e1db719ddb72271d47969",
+        "scripts/lua-utf8-literal.mjs": "ee4f6203707250841df532d5e4607648bde234364c7a095a7883d53afa04ac02"
+      }
+    }
+  },
+  "combinedSha256": {
+    "scripts/build-lua-data.mjs": "415cefee6e474325549e5d1b12207a5ff8424ce8924bd8de0ed2cc8019b04820",
+    "scripts/build-original-v4.mjs": "3c95d876aeb3feca6364351d282822e0f26aa287c7bc4f0941898e6800866b94",
+    "scripts/build-ui-theme.mjs": "e21efa0295befd4a21511117fc32e01d402c130597e1d7e5b36a57c156ccb25e",
+    "scripts/build-ui.mjs": "74205a9228f3ac2867569932442782944b1d97bc749e1db719ddb72271d47969",
+    "scripts/exit-ui-layout.mjs": "1385056500bf09ae7db564844161afe27d1700d5ca8839334e59f1a034ffcbf6",
+    "scripts/lua-utf8-literal.mjs": "ee4f6203707250841df532d5e4607648bde234364c7a095a7883d53afa04ac02",
+    "scripts/official-assets-layout.mjs": "c25cb1440699d228c7ec6fa333e25a1997c6daf22b857fc6029a30f2863f9868",
+    "scripts/ui-layout.mjs": "c04c3d1bf28978716a14a0e9d8023deb40b24dc46acdcdea261ff5969a95b60e",
+    "src/lua/abyss_battle_card_bindings.lua": "73aaabd364058cc14f5fe1b539ec014cfdd62293e394b8ede097f0e5cb26a2ef",
+    "src/lua/abyss_battle_card_gestures.lua": "0ea46386d60b420c3b4c5ef9cb6d53006403ad98207295021ee2d7c03ce75404",
+    "src/lua/abyss_battle_potion_popup.lua": "433834716e6059f51baba96c699a4f8594af0da1a187a5c70cc58b6020e14b5f",
+    "src/lua/abyss_battle_render_actors.lua": "4b4819a62d6168ef1d3c8b892e957fba52b3bda21246cfa0a82569780187258f",
+    "src/lua/abyss_battle_ui.lua": "51ce4aea76acef8e4676a87bf1236be00061cb0faed231ecd69b1a71bdcb2b78",
+    "src/lua/abyss_battle_unit_view.lua": "2f020af59e3e9a835fb41fec6a9f10680f05acbf6e7ab26e08d4315afed4f3e6",
+    "src/lua/abyss_combat.lua": "d8dceaabd56e937d80756579b45fbce4efbefcda4570702ac7d0e9c52e33f392",
+    "src/lua/abyss_game_ui.lua": "1ebcc412f18c51c41a943a648ebed487b8531618dc4ec7d8cef68b9657d303e9",
+    "src/lua/abyss_game_ui_input.lua": "b2394cff71e20fdc5490fca41718435b623b1b9971827df1b639a77abcc75086",
+    "src/lua/abyss_game_ui_navigation_view.lua": "dfbdd2ab195f05ddf400bf81db428a02d01e886a01a3a4f81469edc9091b4d74",
+    "src/lua/abyss_game_ui_overlays.lua": "d524f0fb95d207ccbe5cebadc5379d734eeca721967032c16ba620bc6045d26a",
+    "src/lua/abyss_game_ui_view.lua": "d122d66ddf22b16da1ca060eb116aa9ed314476bb3ef0242c3c284c92a0fc3af",
+    "src/lua/abyss_map_ui.lua": "1aef3a4f67bcf40513b73d542d7a3722411d738ffaf98d64c0f1798e08c1793c",
+    "src/lua/abyss_node_ui_events.lua": "179228741b235af825e308e4f46d2f30bb779671bb59d6b4b664110874592d99",
+    "src/lua/abyss_node_ui_lifecycle.lua": "a3f90bcbfdbb96ff1321871c28da2d3a44562b3e7f7858cbac150ec0612d5cd9",
+    "src/lua/abyss_page_reveal.lua": "b735419988642a03f0edc062aa4e1e18c1d6505821a65eeecf8fb91dc7e78d5e",
+    "src/lua/abyss_relic_pending_ui.lua": "3639a8355383430f6c0603a999f39d0c030006de3f82616f510b8ada366a7fda"
+  }
+}
