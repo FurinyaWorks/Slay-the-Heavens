@@ -43,9 +43,17 @@ export function assertIntegratedCurrent(read=readFileSync){
 }
 export function integratedCurrentInventory(kind='js'){return itemIconCurrentInventory(kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory,kind);}
 export function integratedCurrentSource(path,source){return itemIconCiSource(path,source,integratedCiProof.files[path]?.current);}
-export function extendIntegratedHelperClosure(original){
- const current={...original},patch=integratedCiProof.closure;
- assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/mobile-ui-source-plan.mjs','tests/helpers/mobile-ui-source-epoch.mjs','tests/helpers/mobile-ui-source-epoch.json.gz','tests/helpers/portrait-idle-source-epoch.mjs','tests/helpers/portrait-idle-source-epoch.json.gz','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs'].sort());
+export function extendIntegratedHelperClosure(original,historical){
+ const current={...original};let patch=integratedCiProof.closure;
+ const currentPaths=['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/mobile-ui-source-plan.mjs','tests/helpers/mobile-ui-source-epoch.mjs','tests/helpers/mobile-ui-source-epoch.json.gz','tests/helpers/portrait-idle-source-epoch.mjs','tests/helpers/portrait-idle-source-epoch.json.gz','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs'];
+ let expected=currentPaths;
+ if(historical!==undefined){
+  const serialized=JSON.stringify(historical);
+  assert.equal(hash(serialized),'3f8b16b87379d4922c13326783492bca79cb3e9354387b6e8a3aa0f5bb6ebe9a','complete c240 historical registry');
+  patch=JSON.parse(serialized).closure;
+  expected=currentPaths.filter(path=>!path.includes('mobile-ui-')&&!path.includes('portrait-idle-')).concat('tests/helpers/combined-epoch/source-epoch-runtime.mjs');
+ }
+ assert.deepEqual(Object.keys(patch).sort(),expected.sort());
  for(const [path,row]of Object.entries(patch)){assert.equal(row.before,original[path]??null,'exact integration copy predecessor: '+path);assert.match(row.after,/^[a-f0-9]{64}$/);current[path]=row.after;}
  return freeze(current);
 }

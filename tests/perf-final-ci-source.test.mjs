@@ -5,6 +5,7 @@ import {perfFinalCiPacket as packet,perfFinalCiSource,perfFinalCurrentInventory,
 import {assertIntegratedCurrent,integratedCurrentInventory} from './helpers/integrated-ci-source.mjs';
 import {pcAfterFixCiPacket} from './helpers/pc-after-fix-ci-source.mjs';
 import {itemIconPriorInventory} from './helpers/item-semantic-icons-ci.mjs';
+import {reconciliationPriorInventory} from './helpers/reconciliation-ci-source.mjs';
 const raw=path=>readFileSync(path,'utf8');
 
 test('performance CI retains complete 1f before sources, all new raw tests and unconditional fresh current checks',()=>{
@@ -18,11 +19,11 @@ test('performance CI retains complete 1f before sources, all new raw tests and u
  for(const path of ['scripts/lua-utf8-literal.mjs','scripts/official-portraits.mjs'])assert(packet.files[path].before?.source,'an existing builder must not become historical absence: '+path);
  for(const kind of ['js','lua']){
   const actual=readdirSync(kind==='js'?'tests':'tests/lua').filter(path=>path.endsWith(kind==='js'?'.test.mjs':'.lua')).map(path=>(kind==='js'?'tests/':'tests/lua/')+path).sort();
-  assert.deepEqual(actual,packet.currentInventory[kind]);assert.deepEqual(actual,integratedCurrentInventory(kind));
+  assert.deepEqual(reconciliationPriorInventory(actual,kind,readFileSync),packet.currentInventory[kind]);assert.deepEqual(actual,integratedCurrentInventory(kind));
   assert.deepEqual(packet.priorInventory[kind],pcAfterFixCiPacket.currentInventory[kind]);
   assert.deepEqual(perfFinalCurrentInventory(packet.priorInventory[kind],kind),actual);
   assert.deepEqual(perfFinalPriorInventory(actual,kind,readFileSync),packet.priorInventory[kind]);
-  const added=actual.filter(path=>!packet.priorInventory[kind].includes(path));
+  const added=packet.currentInventory[kind].filter(path=>!packet.priorInventory[kind].includes(path));
   for(const path of added){
    assert.throws(()=>perfFinalPriorInventory(actual,kind,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh performance raw test source/);
    if(added.length>1)assert.throws(()=>perfFinalPriorInventory(actual.filter(p=>p!==path),kind,readFileSync),/inventory/);

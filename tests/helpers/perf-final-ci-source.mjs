@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {reconciliationCiSource,reconciliationCurrentInventory,reconciliationPriorInventory,assertReconciliationCiCurrent} from './reconciliation-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./perf-final-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'4c4d9ecb9f64c66cc5fbca4c84c3017e60c3908ca0fcda05b84cb6e9ee1aab56','complete performance CI checkpoint');
@@ -24,6 +25,7 @@ const identityRepair=freeze({
  'tests/perf-final-ci-source.test.mjs':'aa81989a48cb9c8d4924d6d7adcddde45261a6f073e7f3bb553271a021f5ce79'
 });
 export function perfFinalCiSource(path,source){
+ source=reconciliationCiSource(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(typeof source!=='string'||source.includes('\r\r\n')||!row?.before)return source;
  if(Object.hasOwn(identityRepair,path)&&hash(norm(source))===identityRepair[path])source=row.current.source;
@@ -33,23 +35,25 @@ export function perfFinalCurrentInventory(base,kind){
  assert(['js','lua'].includes(kind));
  const sorted=[...base].sort();
  if(JSON.stringify(sorted)!==JSON.stringify(packet.currentInventory[kind]))assert.deepEqual(sorted,packet.priorInventory[kind],'complete pre-performance raw inventory');
- return [...packet.currentInventory[kind]];
+ return reconciliationCurrentInventory(packet.currentInventory[kind],kind);
 }
 export function perfFinalPriorInventory(paths,kind,read){
+ paths=reconciliationPriorInventory(paths,kind,read);
  assert(['js','lua'].includes(kind));
  const before=packet.priorInventory[kind],current=packet.currentInventory[kind],added=current.filter(path=>!before.includes(path));
  if(!added.some(path=>paths.includes(path)))return [...paths];
  assert.deepEqual([...paths].sort(),current,'complete performance raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
  for(const path of added){
   const expected=Object.hasOwn(identityRepair,path)?identityRepair[path]:packet.files[path].current.sha256;
-  assert.equal(hash(norm(read(path,'utf8'))),expected,'fresh appended raw test source: fresh performance raw test source: '+path);
+  assert.equal(hash(norm(reconciliationCiSource(path,read(path,'utf8')))),expected,'fresh appended raw test source: fresh performance raw test source: '+path);
  }
  return [...before];
 }
 export function assertPerfFinalCiCurrent(read){
+ assertReconciliationCiCurrent(read);
  for(const [path,row]of Object.entries(packet.files)){
   const category=['tests/item-semantic-icons-source.test.mjs','tests/potion-art-runtime.test.mjs','tests/potion-art.test.mjs'].includes(path)?'added inventory source':/^tests\/helpers\/(potion-art-runtime|reward-art-runtime)\.lua$/.test(path)?'runtime support source':'complete integration source';
   const expected=Object.hasOwn(identityRepair,path)?identityRepair[path]:row.current.sha256;
-  assert.equal(hash(norm(read(path,'utf8'))),expected,'fresh '+category+': fresh appended CI source: fresh performance CI source: '+path);
+  assert.equal(hash(norm(reconciliationCiSource(path,read(path,'utf8')))),expected,'fresh '+category+': fresh appended CI source: fresh performance CI source: '+path);
  }
 }

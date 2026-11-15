@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {pcFinalStorageSource} from './pc-final-storage-source.mjs';
 import {perfFinalCiPacket} from './perf-final-ci-source.mjs';
+import {reconciliationCiPacket} from './reconciliation-ci-source.mjs';
 import {pcAfterFixCiPacket,pcAfterFixCiSource,pcAfterFixCurrentInventory,pcAfterFixPriorInventory,assertPcAfterFixCiCurrent} from './pc-after-fix-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./pc-final-ci-source.json.gz',import.meta.url));
@@ -27,6 +28,7 @@ export function pcFinalCiSource(path,source,before){
  return hash(norm(source))===row.current.sha256?row.before.source:raw;
 }
 export function pcFinalCurrentInventory(base,kind){
+ if(JSON.stringify([...base].sort())===JSON.stringify(reconciliationCiPacket.currentInventory[kind]))return [...base];
  if(JSON.stringify([...base].sort())===JSON.stringify(perfFinalCiPacket.currentInventory[kind]))return [...base];
  if(JSON.stringify([...base].sort())===JSON.stringify(pcAfterFixCiPacket.currentInventory[kind]))return [...base];
  if(JSON.stringify([...base].sort())!==JSON.stringify(packet.currentInventory[kind]))assert.deepEqual([...base].sort(),packet.priorInventory[kind],'complete pre-final CI inventory');
