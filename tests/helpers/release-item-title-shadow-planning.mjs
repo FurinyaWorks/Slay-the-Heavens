@@ -5,12 +5,12 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=b=>b.toString().replaceAll('\r\n','\n');
 export const retirementPlanningReceiptPath='docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json';
-const bytes=readFileSync(new URL('../../'+retirementPlanningReceiptPath,import.meta.url));
+const bytes=Buffer.from(norm(readFileSync(new URL('../../'+retirementPlanningReceiptPath,import.meta.url))));
 assert.equal(hash(bytes),'c2683273e948613338618d60755a55c2a56a164a643d7a626cc0d6926314b1b7','immutable observed local planning receipt');
 export const retirementPlanningReceipt=JSON.parse(bytes);
 export function assertRetirementPlanningCurrent(read=readFileSync){
  const p=retirementPlanningReceipt;
- assert.equal(hash(read(retirementPlanningReceiptPath)),hash(bytes),'fresh local planning receipt');
+ assert.equal(hash(norm(read(retirementPlanningReceiptPath))),hash(bytes),'fresh local planning receipt');
  for(const row of p.closure)assert.equal(hash(norm(read(row.path))),row.lfSha256,'fresh retirement execution input: '+row.path);
  for(const row of p.dependencies)assert.equal(hash(read(row.path)),row.sha256,'fresh retirement dependency input: '+row.path);
  const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
