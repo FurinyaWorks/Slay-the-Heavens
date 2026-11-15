@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "name": "merge-source-before",
+  "args": [
+    "--test",
+    "--test-concurrency=1",
+    "tests/release-item-title-shadow-source.test.mjs",
+    "tests/integrated-ci-source.cases.mjs"
+  ],
+  "cwd": "F:/New folder/.worktrees/release-pc-item-title-shadow-1116",
+  "node": "v24.18.0",
+  "startedAt": "2026-11-15T20:26:51.715Z",
+  "finishedAt": "2026-11-15T20:27:04.829Z",
+  "wallMs": 13106,
+  "status": 1,
+  "signal": null,
+  "error": null,
+  "inputs": [
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "sha256": "fade2f2c5971761f285b09038418a4fd679e0a922ce61ffad2ce9369a56c8f72"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "sha256": "14dc6246045908337d0178036e2387cb91a849ad76703ba6960048193f327ad3"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "sha256": "26b4f2dc6e93dc75b444872c89d1a735442072ad2b15f3b3069379a70ef9068f"
+    },
+    {
+      "path": "tests/release-item-title-shadow-source.test.mjs",
+      "sha256": "396beb39fc340a13f49821e8489391b3eb808b02d09d47ff574c75b16c45bf1e"
+    }
+  ],
+  "stdoutSha256": "cad28cb94399f09b834bdec624fbf1927f16543d53021e45d620f9bb1cc5e9c4",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

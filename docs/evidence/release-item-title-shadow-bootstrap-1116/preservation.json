@@ -1,0 +1,1080 @@
+{
+  "schemaVersion": 1,
+  "backupRef": "backup/item-title-shadow-before-bootstrap-1116-7e33dbf2",
+  "backupCommit": "7e33dbf2b536061e917c9e992ec4fa5109a8cbda",
+  "oldCoverageCheckpoint": "9c49fa1e5a8fa70cd136a1ed930b53ed3fb2a3cf",
+  "oldCoverageRowsPreserved": 58,
+  "unchangedCurrentRows": 54,
+  "changedCiCompatibilityRows": [
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/release-item-title-shadow-source.test.mjs"
+  ],
+  "oldCoverageFilePreserved": true,
+  "rows": [
+    {
+      "path": "config/luacheck-baseline.json",
+      "gitBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "7cd83759c66e9c0b988c826845594b3b172c0e45",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "data/presentation/lowcost-potion-art.json",
+      "gitBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "69a4f1aafb42e10cc6196c1f44f4e4c4370dfa91",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "data/presentation/lowcost-relic-art.json",
+      "gitBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "e97deecde18b03f53cef7fc8e8a3d81bb69478cc",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "data/presentation/menu-title-mark.json",
+      "gitBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "2f8026e2f84c2fe618b9cb9b9dff8365cff7f568",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "gitBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "6eac7bd73906fc062e5e491cdd993b5989dec295",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.json.gz",
+      "gitBlob": "fd9eed1df603f589549f4f5b70f5f4d7cfa8a02d",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "fd9eed1df603f589549f4f5b70f5f4d7cfa8a02d",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stderr.gz",
+      "gitBlob": "ae211a2cb77f6830fe3b183a87963fc514435a29",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "ae211a2cb77f6830fe3b183a87963fc514435a29",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-retirement.stdout.gz",
+      "gitBlob": "90f675d210e8f492d8495be66d5b655f83dfb81a",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "90f675d210e8f492d8495be66d5b655f83dfb81a",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.json.gz",
+      "gitBlob": "22b5fa9f4270218f933433771f8e1065d4a42e8e",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "22b5fa9f4270218f933433771f8e1065d4a42e8e",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stderr.gz",
+      "gitBlob": "ae211a2cb77f6830fe3b183a87963fc514435a29",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "ae211a2cb77f6830fe3b183a87963fc514435a29",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/fresh-shadow.stdout.gz",
+      "gitBlob": "a169a31b698add100721a02478145d20594beb34",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "a169a31b698add100721a02478145d20594beb34",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json",
+      "gitBlob": "b0e826934ae1aea58f37dd8e8885c78296468af8",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "b0e826934ae1aea58f37dd8e8885c78296468af8",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/shadow-planning-receipt.json",
+      "gitBlob": "afa3916b3f8e26befa5adea75873e2df6b229796",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "afa3916b3f8e26befa5adea75873e2df6b229796",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-pc-ground-shadow-20261115/verify.mjs",
+      "gitBlob": "12ded2bb31b926e195757a9a9bfc91835626dfca",
+      "reviewHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "executableEvidence",
+      "currentGitBlob": "12ded2bb31b926e195757a9a9bfc91835626dfca",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/verify.mjs",
+      "gitBlob": "5761509ec872a7aabcd77054f5e3f18615720b0d",
+      "reviewHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "executableEvidence",
+      "currentGitBlob": "5761509ec872a7aabcd77054f5e3f18615720b0d",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/evidence/release-pc-menu-title-20261115/profiles.mjs",
+      "gitBlob": "d37f39811474c88406ac55d823910b3b96d14e12",
+      "reviewHead": "2cb6206e608d972f3c3e876cfcd804bb04ff7da2",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "executableEvidence",
+      "currentGitBlob": "d37f39811474c88406ac55d823910b3b96d14e12",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "docs/legal/assets.json",
+      "gitBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "5cca2e1b2fd2d98aeedbb5907fbbd2f3ee044c59",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/build-ui.mjs",
+      "gitBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "ed2de044cda4e988bb88d393da835bffd934281b",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/ci-test-timings.json",
+      "gitBlob": "422463819895c4f66dac22b6b371b166f2c0b2e5",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "422463819895c4f66dac22b6b371b166f2c0b2e5",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/lowcost-art.mjs",
+      "gitBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "bfce0fc6d07dda6fcdc3b2ba437138526fe923b2",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/official-portraits.mjs",
+      "gitBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "3694315645751282c2f56251c8994e4d1970c0b4",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/potion-art.mjs",
+      "gitBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "404b2cd4884ff959f18b4e7fd6f16355212bae50",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/test-lua.mjs",
+      "gitBlob": "45373c3118b12e7fb9c9fe4526d2fa132e11b3f2",
+      "reviewHead": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+      "reviewSha256": "66eae80bf2701ba224c2f0e218ef9cc30d925469e2ed66bcb735bbbaf9458506",
+      "kind": "rawShadowHarness",
+      "currentGitBlob": "45373c3118b12e7fb9c9fe4526d2fa132e11b3f2",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "scripts/v25-menu-layout.mjs",
+      "gitBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "967282610ecb0aa1fc73707078fb80ef66aa728e",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_battle_render_actors.lua",
+      "gitBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "38be4d83cb2092f52031ea44385bc2c34d95e081",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_battle_reward_layout.lua",
+      "gitBlob": "53a0fa60abbffce415dfab781384094879241c93",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "53a0fa60abbffce415dfab781384094879241c93",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_feedback_actor_painter.lua",
+      "gitBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "900f424478b3dceb37cc49626b9d18214eae519a",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "gitBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "3097771f47b4a0737413779aacd7d8746898bb84",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_node_ui_shop.lua",
+      "gitBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "ff2f909819eebf072e7eefcecf4d93e92a653084",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_potion_discard_ui.lua",
+      "gitBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "9325264ba034e7deee43c071c8efd08632b3d488",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_relic_view_ui.lua",
+      "gitBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "8300b2554904df8bf88b68fc66f2bf8065045393",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "src/lua/abyss_shop_ui.lua",
+      "gitBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "86def92286a57cc40adfd0dbaf614bc9cf6b1d2e",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "gitBlob": "85b0af325f6bd6655cdd977b49dedc09f0c4125a",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "a8178f2292c2acc45f209a96d783fb202416e279",
+      "changedByThisMergeCompatibility": true
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "gitBlob": "641b928ef8c4983e3a9a808cf668998c2ade3683",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "641b928ef8c4983e3a9a808cf668998c2ade3683",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "gitBlob": "31aef09ed4bc0114e307e5d9f16d65f74f413640",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "31aef09ed4bc0114e307e5d9f16d65f74f413640",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "gitBlob": "62f35c171720a73070876ec99dd76ad7fa8be8a9",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "91249a6ea49f2d46982c025e66ed2e45fd7f9295",
+      "changedByThisMergeCompatibility": true
+    },
+    {
+      "path": "tests/helpers/potion-art-runtime.lua",
+      "gitBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "18bd5c6d3c717f916afe16e6a8878f4cfe658a4f",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-ci-source.json.gz",
+      "gitBlob": "61570b48ebe235f52a3c058432f6920dfc7ec696",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "61570b48ebe235f52a3c058432f6920dfc7ec696",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-ci-source.mjs",
+      "gitBlob": "20b3bf01b90be2185faf9a8c206ad6063d2b37f0",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "20b3bf01b90be2185faf9a8c206ad6063d2b37f0",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-planning.mjs",
+      "gitBlob": "a7a6deabaa5aee130d560fb279156796eebf6a70",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "a7a6deabaa5aee130d560fb279156796eebf6a70",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-source.json.gz",
+      "gitBlob": "37dd6413edec9e7b2fcbb57f98675400efd7b783",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "37dd6413edec9e7b2fcbb57f98675400efd7b783",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-source.mjs",
+      "gitBlob": "ca82b46cf9ba8b5c6a4e838fa2ad41568bf5e738",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "ca82b46cf9ba8b5c6a4e838fa2ad41568bf5e738",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/relic-fallback-runtime.lua",
+      "gitBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "52761f2213762948ecbd18a1d78cf2b682d26d12",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/reward-alias-runtime.lua",
+      "gitBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "415e4531d15c526bc3c7e75b8e3999abf402442c",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/reward-art-runtime.lua",
+      "gitBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "efdbb25c6932427b88e2a10519bc0c8386cf103d",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/helpers/reward-pool-retirement-runtime.lua",
+      "gitBlob": "617da012ba50c6b5eaa875538aac06baf7cf5fbe",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "617da012ba50c6b5eaa875538aac06baf7cf5fbe",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "gitBlob": "e50441ef0b6bfd87feda02f446dac108056f399c",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "2b068949c7c2b3da6e87fcf1c410cf73ec075131",
+      "changedByThisMergeCompatibility": true
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "gitBlob": "394f65e539cbc21cf6f6c0ee580e8eda73987309",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "394f65e539cbc21cf6f6c0ee580e8eda73987309",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/lowcost-art.test.mjs",
+      "gitBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "119724bfa4b28655838c2d54c13f2802e9a0ce26",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/lua/player_ground_shadow.lua",
+      "gitBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "4c23ec61f21aa36921ecb405869c98ca88c3a87d",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/menu-red-background.cases.mjs",
+      "gitBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "6d0afc2aa5a68b3d68f6418fe07f8b2702f08a99",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/player-ground-shadow.test.mjs",
+      "gitBlob": "04ceba6a9adbb1a0b56c5bf732cd791774470f2d",
+      "reviewHead": "c34443bcd56350fbe7a2bc9396bcdc9090d2dddb",
+      "reviewSha256": "66eae80bf2701ba224c2f0e218ef9cc30d925469e2ed66bcb735bbbaf9458506",
+      "kind": "rawShadowHarness",
+      "currentGitBlob": "04ceba6a9adbb1a0b56c5bf732cd791774470f2d",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/potion-art-runtime.test.mjs",
+      "gitBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "49aef5bc755ba4900c7f43f0f5f1a81972d41cc8",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/potion-art.test.mjs",
+      "gitBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "95c00b3a7a84bc1c619ed00e06835bdcb68a08c1",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/release-item-title-shadow-source.test.mjs",
+      "gitBlob": "b96c06845dc62d91fbf2e552f31ab9c66d213818",
+      "reviewHead": "e2eb0d75097be343f1e86efc4c02e5a3c8110540",
+      "reviewSha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9",
+      "kind": "sourceCiCostIncrement",
+      "currentGitBlob": "03575eef1d7b8fd5ffe25e5eae8ae21022978d61",
+      "changedByThisMergeCompatibility": true
+    },
+    {
+      "path": "tests/reward-pool-retirement-runtime.test.mjs",
+      "gitBlob": "123929273b864971f5f48799c5af8cc892cdd59b",
+      "reviewHead": "df5ad3dc3b8b02e56d93a4dfe394b103dc0498e9",
+      "reviewSha256": "cf8d881298d6d6fa9ebbaf588498ec2093f869fdb954c1a2b02d5cab94c1f33d",
+      "kind": "product",
+      "currentGitBlob": "123929273b864971f5f48799c5af8cc892cdd59b",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "gitBlob": "6b1f4a87f326d5a101d5f4c9e12cd98954376f64",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "6b1f4a87f326d5a101d5f4c9e12cd98954376f64",
+      "changedByThisMergeCompatibility": false
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "gitBlob": "1b4f1a6fa3b07d8adec38958adf51a1e5df0d4c2",
+      "reviewHead": "6cc75c1d70e61b0912598d5c60d3dfcdf4c72957",
+      "reviewSha256": "dd5fc5fe0d50229c42e3dd768c101af5a766d30b9a2d704d839a522221af98a9",
+      "kind": "sourceCIcost",
+      "currentGitBlob": "1b4f1a6fa3b07d8adec38958adf51a1e5df0d4c2",
+      "changedByThisMergeCompatibility": false
+    }
+  ],
+  "preservedRootMetadata": [
+    {
+      "path": "backlog/tasks/task-103.2 - 地图事件与房间页V25原生视觉交互优化.md",
+      "gitBlob": "e476606f9234672146f10b7ed148a81f438b88f4",
+      "sha256": "521ab107ff0274cf1148b3cf8ca9adfdde2f00740177500435595328e9b8c70d"
+    },
+    {
+      "path": "backlog/tasks/task-103.3 - 完善主菜单选角与Neow的V25视觉和加载体验.md",
+      "gitBlob": "3ad2513e8c3240f1b854fd71fb986a734320a588",
+      "sha256": "9f961f36589b2bb15cfd443aeae94a4c8a872d99dfcb9d652f43970b08479c90"
+    },
+    {
+      "path": "backlog/tasks/task-16.1 - M3-战斗算法、随机流与结算顺序原版对照.md",
+      "gitBlob": "ef8a632e3f0ba654a8f22449262c931680631786",
+      "sha256": "2430ab9cca305dc647556ee78c199bc3a663ec221b678152f161995cfc17f96a"
+    },
+    {
+      "path": "backlog/tasks/task-25.5 - 核对并启用已制作的怪物美术与角色跨界面资源.md",
+      "gitBlob": "7eb8fa8a0838eb9f1af2b43240b486663f231754",
+      "sha256": "3fe8e6b3b7d1e10621f1f24246a87d39a13a643ba6d7567ecd2bfd41be4ed412"
+    },
+    {
+      "path": "backlog/tasks/task-25.6 - 补齐敌人与遗物的低成本可辨识图像.md",
+      "gitBlob": "4a0cec188c094682899a4e4576d7d7853b99ac6d",
+      "sha256": "d167d4a1b9835de0a4c976639bc159e8b65019ca365c425e4736fda241363fdf"
+    },
+    {
+      "path": "backlog/tasks/task-29.1 - M1-战斗反馈打击感精修（命中停顿-攻击形态-敌方行动节奏）.md",
+      "gitBlob": "bf9d151f3922b79df3f953d1721a2ff186a7df1c",
+      "sha256": "1e791abea02e7460445bd4afe19c196359f8e26cf8635d97de01885ed6217c8c"
+    },
+    {
+      "path": "backlog/tasks/task-4.13 - 让地图一眼识别当前位置已走路径和可选路线.md",
+      "gitBlob": "d115e53fdfd01521f30234fe739cc886065bb4b3",
+      "sha256": "213d876aa07c6e2d4c961b20dc8cd953236887810333ef3e556d9876b78cfe26"
+    },
+    {
+      "path": "backlog/tasks/task-4.15 - 修复药水说明截断与不同药水图标混用.md",
+      "gitBlob": "ba865c4e6bda3ccab2108cd73d66bf4fb3d0f420",
+      "sha256": "ddb0aee1c5697247c4d26ee7732ea837e51386a20cad28a95936afb227847b5f"
+    },
+    {
+      "path": "backlog/tasks/task-42 - 电脑鼠标键盘游玩适配与完整流程验收（优先排期）.md",
+      "gitBlob": "7f65090e659ad5a9d7773bd7e10518559cdbfbb4",
+      "sha256": "a24dc129b918d30377b466f5555ff6ac9d6ba48e12979e6a0618d9df2b3b5838"
+    },
+    {
+      "path": "docs/backlog-details/PC-QA-20261115-CONTINUATION.md",
+      "gitBlob": "3b50dc7c888342f3bc70e9158e3f412584b73609",
+      "sha256": "6ee42c1f06a973ebb83cafca449a209284ea662666f971938b801e7290bfa27a"
+    },
+    {
+      "path": "docs/evidence/pc07-pc19-bounded-20261116/README.md",
+      "gitBlob": "c39364d4be5329235d0508c4b8662d7e8d40f13d",
+      "sha256": "209ef6e9842d5ad8c2bc895e3a8e1e49a57e45395596aeeb8f89dbd7a9d6b852"
+    },
+    {
+      "path": "docs/evidence/pc07-pc19-bounded-20261116/manifest.json",
+      "gitBlob": "154f42a2ace514cef5a991446306d55bb78bd370",
+      "sha256": "bd14c3faea5a961cec76e668d32966fc73835f80f1751e965357edee5d20d2c0"
+    },
+    {
+      "path": "docs/evidence/pc07-pc19-bounded-20261116/pc07-raw.tar.gz",
+      "gitBlob": "29651cbc787011edf2e617c102b66391aff40148",
+      "sha256": "3d402321fb86bbac1af6100983f6763c5c3c013be27bd24d66bb81f79c2fb75d"
+    },
+    {
+      "path": "docs/evidence/pc07-pc19-bounded-20261116/pc19-raw.tar.gz",
+      "gitBlob": "f5bf19ce540a231d8b181de9291ab144ceeb9a55",
+      "sha256": "658a89a56b437c4945c64bea0da655d3273edd545aaa5cb31fd55bb7fec9cbeb"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/independent-increment.json",
+      "gitBlob": "03fa4094d9018f891cda73f43749cff508f3e548",
+      "sha256": "ea3df94f44ee20ea29291e3b72019aedcf565d595c90d909f278f45cebdf90f9"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/independent-increment.md",
+      "gitBlob": "5f4ac9661c42168091d328d8fadcd4ecc119c6c3",
+      "sha256": "6bfb9b02ae1446bb2e7b154be2bb43b66ea5b623adf1e713fce3b20288aede40"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/integrated-final-contracts.json",
+      "gitBlob": "01cdbd6db8138ff82177dec4c0019f2aded49936",
+      "sha256": "5a95dfec4b622c17c09e5eabdffcc763bcbf36f2bc3b7199e548c78eb8d45c8c"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/integrated-final-contracts.log.gz",
+      "gitBlob": "d0f65e843591d2d3fd0b898143002c00a3d5e8a8",
+      "sha256": "f51c76b5c8b29a90187e83f420a058347ec0d46e798108afe65bf6c840b5e1e4"
+    },
+    {
+      "path": "docs/evidence/release-item-title-shadow-source-1116/owner-policy-recommendation-correction.md",
+      "gitBlob": "9c041388b54f00c0966b8f648d3b7fec7a64e174",
+      "sha256": "834dec71d55fa8b34eec92b81286cbaadc12aef74c8f75d3da430d708813ef33"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/README.md",
+      "gitBlob": "136ab1e482923792fedd943942c2080a2536c255",
+      "sha256": "f8718f7bd5ab62fe0a2ba3b20828b158ec4d9e9c59022b6e033325c3a6c15b20"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/admission-coverage.json",
+      "gitBlob": "d0484b29afec40d93844a3b5a66cf6891bc24340",
+      "sha256": "3c25dc730307b985dd09c6d365050f8d716744faa80c32c68a0418e3634f1e51"
+    },
+    {
+      "path": "docs/evidence/release-pc-item-title-shadow-20261116/ledger-continuation-check.json",
+      "gitBlob": "b31a994f90ca9300bc312b9e4b6aa4d299d8573f",
+      "sha256": "a498f9500e71ae1cf27e9c187bd438eceee8e0849b09079e2af6a3d2bb863a9e"
+    },
+    {
+      "path": "docs/evidence/release-pc-settlement-trace-20261116/README.md",
+      "gitBlob": "e2c6672ce91b28aa66b5e496ad7650b17e32bd9b",
+      "sha256": "d91038366cb1bd686c6476f1bcba5783143893b7f77f4d6b19d4582f778f416e"
+    },
+    {
+      "path": "docs/evidence/release-pc-settlement-trace-20261116/independent-review.json",
+      "gitBlob": "9debc867bb571e883c53808b4ced0c7b25cd259e",
+      "sha256": "159ceeda4a5bfe87b3559ab2290c1573c49ab7f7829d44d2ddd08d868fed0ed4"
+    },
+    {
+      "path": "docs/evidence/release-pc-settlement-trace-20261116/independent-review.md",
+      "gitBlob": "5bff65fc603716f4919297dcc7f05ef8a2bfbc4f",
+      "sha256": "fc471e6c8c9511e69524dff2fb4f1e94d6bbb86f492490e6499e8a85550dc703"
+    },
+    {
+      "path": "docs/evidence/release-pc-settlement-trace-20261116/pc13-independent-evidence-receipt.json",
+      "gitBlob": "b56d7d294ec0c565e96ef66c678325465d0d981c",
+      "sha256": "be62bc56908e39831204855eb3041844e730f23510ac09b0b5990755a44eb0f6"
+    },
+    {
+      "path": "docs/evidence/release-pc-settlement-trace-20261116/pc13-independent-evidence.json.gz",
+      "gitBlob": "a7af69e989dd42a079c5d52e52a882f29788e350",
+      "sha256": "ee832744d0c1593621deb3bcd4bc9da55d81292b1ba98973f1fe7440ccf9a829"
+    }
+  ],
+  "runtimePathsUnchanged": [
+    "config/luacheck-baseline.json",
+    "data/presentation/lowcost-potion-art.json",
+    "data/presentation/lowcost-relic-art.json",
+    "data/presentation/menu-title-mark.json",
+    "data/presentation/ui_theme.json",
+    "scripts/build-ui.mjs",
+    "scripts/ci-test-timings.json",
+    "scripts/lowcost-art.mjs",
+    "scripts/official-portraits.mjs",
+    "scripts/potion-art.mjs",
+    "scripts/test-lua.mjs",
+    "scripts/v25-menu-layout.mjs",
+    "src/lua/abyss_battle_render_actors.lua",
+    "src/lua/abyss_battle_reward_layout.lua",
+    "src/lua/abyss_feedback_actor_painter.lua",
+    "src/lua/abyss_node_ui.lua",
+    "src/lua/abyss_node_ui_shop.lua",
+    "src/lua/abyss_potion_discard_ui.lua",
+    "src/lua/abyss_relic_view_ui.lua",
+    "src/lua/abyss_shop_ui.lua"
+  ],
+  "immutableArchives": [
+    {
+      "path": "tests/helpers/battle-queue-ci-source-epoch.json.gz",
+      "sha256": "4f5966d2b04fbdd564d0455aa318c3947468906581b6fa7a6a8d334f18f44db4"
+    },
+    {
+      "path": "tests/helpers/battle-queue-source-epoch.json.gz",
+      "sha256": "e82f3c47155271784ed25d87abcf19306e7a752fe1cb5aab5f3d269d26fdd42d"
+    },
+    {
+      "path": "tests/helpers/closeout-ci-source.json.gz",
+      "sha256": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.json.gz",
+      "sha256": "36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a"
+    },
+    {
+      "path": "tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95"
+    },
+    {
+      "path": "tests/helpers/combined-epoch/source-epoch.json.gz",
+      "sha256": "2085260a5aabde4476411172eb0b2e6fd3afcaa991a3cafc52f3ab0e98755c73"
+    },
+    {
+      "path": "tests/helpers/component-alias-ci-source-epoch.json.gz",
+      "sha256": "3d11025b87ec35e234f99eb3df53dd862a69b75778c88a714db9b694a9c2f93d"
+    },
+    {
+      "path": "tests/helpers/component-ui-ci-source-epoch.json.gz",
+      "sha256": "498384c890d22428b10a9c19f6720712d3e568cf871179e447c69fd8b92ea520"
+    },
+    {
+      "path": "tests/helpers/component-ui-source-epoch.json.gz",
+      "sha256": "df2a27ff146ecbee4fb01054eb1071458ffe491ece1bb50fa6fb33d19df74d4a"
+    },
+    {
+      "path": "tests/helpers/defect-actor-ci-source-epoch.json.gz",
+      "sha256": "c7962302aa0363004b6d4c8e6afcb5a27431bf47b2eac2f2d3fdc2463566d638"
+    },
+    {
+      "path": "tests/helpers/defect-actor-source-epoch.json.gz",
+      "sha256": "c41e28bf8a5d51f0e29f80b48f31cc5d416741ec8d54f4f6c03ce924d1027e17"
+    },
+    {
+      "path": "tests/helpers/defect-final-ci-source-epoch.json.gz",
+      "sha256": "88894fcfdcc23ba6383ea5decd456c920dc296aadde209fc58ee8406480d7f75"
+    },
+    {
+      "path": "tests/helpers/defect-final-source-epoch.json.gz",
+      "sha256": "a656584db182a608b75f66a46a8d31ae4d4bbaba6c64d376d1d47a011c7833ce"
+    },
+    {
+      "path": "tests/helpers/effects-target-group-source-epoch.json.gz",
+      "sha256": "f22d0328aedd7b7e9c785482271483f9f083c5c6abd7cd55d19933b24a48c0c2"
+    },
+    {
+      "path": "tests/helpers/encounter-formation-ci-source-epoch.json.gz",
+      "sha256": "cd039ffe6b0f7fd2959776b84cf199290b3621b8a82266bc6929876e1ce46fbf"
+    },
+    {
+      "path": "tests/helpers/encounter-formation-source-epoch.json.gz",
+      "sha256": "6d082e4f921213a60a41ab1f0a4109a49645c1014cc83f315178937ca0885132"
+    },
+    {
+      "path": "tests/helpers/epochs/actor/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95"
+    },
+    {
+      "path": "tests/helpers/epochs/colorless/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95"
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/fixtures/ci-complete-calibration.json.gz",
+      "sha256": "c0b66bf5ffd13baaea0f9a035dd43636f7419a0b607cc4eab3f0c1f73155d5ab"
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/fixtures/ci-host-timing-calibration.json.gz",
+      "sha256": "70cf6cbf502ed85cf7884095cb603a92f910e9b6cb5b311cee2b4b0f1118659f"
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/fixtures/delivery-source-composition.json.gz",
+      "sha256": "d7bf28b224aaec821ac215f81adcef436fff51b009c21ef8b75d50bd16c2fa4b"
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/helpers/m7-core-final-before.json.gz",
+      "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318"
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+      "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067"
+    },
+    {
+      "path": "tests/helpers/epochs/develop/tests/helpers/relic-query-baseline-391306af.json.gz",
+      "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2"
+    },
+    {
+      "path": "tests/helpers/epochs/native/tests/helpers/m7-core-final-before.json.gz",
+      "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318"
+    },
+    {
+      "path": "tests/helpers/epochs/native/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+      "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067"
+    },
+    {
+      "path": "tests/helpers/epochs/native/tests/helpers/relic-query-baseline-391306af.json.gz",
+      "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2"
+    },
+    {
+      "path": "tests/helpers/epochs/potion/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+      "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95"
+    },
+    {
+      "path": "tests/helpers/epochs/powerShop/tests/helpers/power-shop-before-2c85.json.gz",
+      "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c"
+    },
+    {
+      "path": "tests/helpers/foundation-fix-ci-source-epoch.json.gz",
+      "sha256": "bb40135a5ef6a5286f75cdf3035a451702f79cdcc36dca90d071d85f09ce30a3"
+    },
+    {
+      "path": "tests/helpers/golden-idol-ci-source-epoch.json.gz",
+      "sha256": "04f512415676b3110285c40f6c19324010c1f5ecf7ffe68e063bf6aedd17b24a"
+    },
+    {
+      "path": "tests/helpers/golden-idol-current-ci-source-epoch.json.gz",
+      "sha256": "c422925a6eed65e71973693175391884442636d28a583cd1633f4937a5102216"
+    },
+    {
+      "path": "tests/helpers/golden-idol-current-source-epoch.json.gz",
+      "sha256": "b46c8ed0a17d8dcfa442861b4452cae2250b9ce2da31ef0bb1619be7e416fc46"
+    },
+    {
+      "path": "tests/helpers/golden-idol-source-epoch.json.gz",
+      "sha256": "567be86608fc6c7f9f29a42d81f80ee77b3f769367720501f4ecbac55c1be313"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.json.gz",
+      "sha256": "f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35"
+    },
+    {
+      "path": "tests/helpers/joint-ui-ci-source-epoch.json.gz",
+      "sha256": "9fee4e85665d37746b68368fced892a316db490c8e01273328391bc57acfd840"
+    },
+    {
+      "path": "tests/helpers/joint-ui-source-epoch.json.gz",
+      "sha256": "67777c3571d86bc82427fbb6ac5cd2254ed480b58285f41aa17d05d7490413f9"
+    },
+    {
+      "path": "tests/helpers/joust-ci-source-epoch.json.gz",
+      "sha256": "12bcdf820c12b4aa5abc94ee5eaca48962c536cd0c77f604ca8a632c8828839b"
+    },
+    {
+      "path": "tests/helpers/joust-source-epoch.json.gz",
+      "sha256": "fa0c3a6e28217ca6c5c7731c399f911cb6008b84c2c6d1afa5f3c042dee47a0d"
+    },
+    {
+      "path": "tests/helpers/m7-core-final-before.json.gz",
+      "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318"
+    },
+    {
+      "path": "tests/helpers/menu-presentation-source.json.gz",
+      "sha256": "abcc561be5a49560684b70bc68a1b320485f8084039a64910d05ff9810fc8e9b"
+    },
+    {
+      "path": "tests/helpers/menu-red-before-integration-production-source.json.gz",
+      "sha256": "ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae"
+    },
+    {
+      "path": "tests/helpers/menu-red-ci-source.json.gz",
+      "sha256": "c56d05ae2533f27a4d083c5331b54539851c69ba6535783da83c7965261c9486"
+    },
+    {
+      "path": "tests/helpers/menu-red-production-source.json.gz",
+      "sha256": "eac84b07c06da9afb0f37a63ac8b57ea4b88e825ec57f6efe50a00d9c2bae5d7"
+    },
+    {
+      "path": "tests/helpers/native-preview-ci-source.json.gz",
+      "sha256": "3929e00baeed8de4f56845930c224c67c27e0a5cc98d18ea5097bfd9f8e4b39b"
+    },
+    {
+      "path": "tests/helpers/noncombat-ci-source-epoch.json.gz",
+      "sha256": "4ec323d272d519731a8e6f8848cb6a3b0985d57b560834fff75062ce856da90c"
+    },
+    {
+      "path": "tests/helpers/noncombat-demand-ci-source-epoch.json.gz",
+      "sha256": "05ef031199d3504977cf07bb78a476a19accf4a37cf9882a5a7762e2eb8e1efb"
+    },
+    {
+      "path": "tests/helpers/noncombat-demand-source-epoch.json.gz",
+      "sha256": "152c60444fc95fbf5b5aa68f5eaf82547cab9051dd9845eb0512dd2125c8ade1"
+    },
+    {
+      "path": "tests/helpers/noncombat-source-epoch.json.gz",
+      "sha256": "748b7965ddf39f1e297da92094f1ed865204177ca344aacca7e78a826d78f279"
+    },
+    {
+      "path": "tests/helpers/official-assets-ci-source-epoch.json.gz",
+      "sha256": "bc5079ac224d1090c0f7761ca5808003160a5b2d1a0eb79e32c52bcd6f92da1b"
+    },
+    {
+      "path": "tests/helpers/official-assets-flow-ci-source-epoch.json.gz",
+      "sha256": "2efc7dc0e787d86f49c27863cd936be82fbd90f1902331345528936335b516c8"
+    },
+    {
+      "path": "tests/helpers/official-banner-source-epoch.json.gz",
+      "sha256": "3f1f13b24b1fd05e01706937f14e905c7003d193b446b2133e8ec25548e91628"
+    },
+    {
+      "path": "tests/helpers/official-battle-alignment-source-epoch.json.gz",
+      "sha256": "f834dafca07c62a1b807cbc7df3ae8619f3043a1627b8fb5dee5f464c420d458"
+    },
+    {
+      "path": "tests/helpers/official-battle-feedback-source-epoch.json.gz",
+      "sha256": "f9afdd64e5af540072b468709bda9523b2cd58d4c308692a9b10ee339ac176eb"
+    },
+    {
+      "path": "tests/helpers/official-battle-interaction-source-epoch.json.gz",
+      "sha256": "47ea3088416992ca43c97adab9ac5c724bcc4ccac1d415ec8a7d4a5328d34505"
+    },
+    {
+      "path": "tests/helpers/official-battle-local-render-source-epoch.json.gz",
+      "sha256": "d7c993c86bcb8c2b40b68e5ec127ae774f64f43b3a87e883ad32fa3c6d766b35"
+    },
+    {
+      "path": "tests/helpers/official-battle-mouse-aim-source-epoch.json.gz",
+      "sha256": "8816765be73763e6172bb022f40118dfdfe239b449dfa0617b4b6400750d4c71"
+    },
+    {
+      "path": "tests/helpers/official-battle-pile-source-epoch.json.gz",
+      "sha256": "2fbf3dba8ff4992cae4eccef2d8c27af70fc7a22c726fa72ece6fe5dfb3a1ccd"
+    },
+    {
+      "path": "tests/helpers/official-battle-potion-hud-source-epoch.json.gz",
+      "sha256": "873e1d2eb7352ba984d180141f04ef8167ff89ecce097a2ae7986a2d5c274a75"
+    },
+    {
+      "path": "tests/helpers/official-battle-response-source-epoch.json.gz",
+      "sha256": "9af7515d8fae9402c8751a8efdcaadc1a5d1142c095fa2e11f34ec6d92f30137"
+    },
+    {
+      "path": "tests/helpers/official-battle-shell-source-epoch.json.gz",
+      "sha256": "6184f4e377056b5e9c8a25ab4282556c152f1228a1436fa2cfa67196697dde22"
+    },
+    {
+      "path": "tests/helpers/official-battle-source-epoch.json.gz",
+      "sha256": "5e74438e077be47b5b176287b6ceeb71e69447fa32ceedf2b0e595c4499d3c80"
+    },
+    {
+      "path": "tests/helpers/official-battle-target-source-epoch.json.gz",
+      "sha256": "52696fada35693712594a228b94ae5bf17f949049b47c01d95e5b16de5ba3c43"
+    },
+    {
+      "path": "tests/helpers/official-ui-repair-source-epoch.json.gz",
+      "sha256": "7acca01bc985f6bb6bea90361374f360d7ef3e746583bd8a8da7c459951f0765"
+    },
+    {
+      "path": "tests/helpers/posix15-shape-source-epoch.json.gz",
+      "sha256": "9f75ddcfc0b6b5ef19c1750efab7d7a5360d9da4825a93de3c9cfe9e702e9b06"
+    },
+    {
+      "path": "tests/helpers/power-shop-before-2c85.json.gz",
+      "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c"
+    },
+    {
+      "path": "tests/helpers/purge-query-baseline-a27b86a5.json.gz",
+      "sha256": "7ddb2bf87ff3d7a56a80f34a4bb06e6249e7dd7d0811afd391afad16a5f39dee"
+    },
+    {
+      "path": "tests/helpers/release-source-epoch.json.gz",
+      "sha256": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780"
+    },
+    {
+      "path": "tests/helpers/relic-equip-ci-source-epoch.json.gz",
+      "sha256": "541ff621ffe4b9413b90a284949dfb496cdfbe06cb05826307b56b0ac044fd47"
+    },
+    {
+      "path": "tests/helpers/relic-equip-source-epoch.json.gz",
+      "sha256": "c7f30e9773f4f08d3cf33e1ece1a1be425fa04389d0144bb285ff70643d06863"
+    },
+    {
+      "path": "tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+      "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067"
+    },
+    {
+      "path": "tests/helpers/relic-lifecycle-baseline-a27b86a5.json.gz",
+      "sha256": "68112b06f51194a9523ea287549c29c2871eec56164fa21ace64a1f576efaaac"
+    },
+    {
+      "path": "tests/helpers/relic-query-baseline-391306af.json.gz",
+      "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2"
+    },
+    {
+      "path": "tests/helpers/room-ui-source-epoch.json.gz",
+      "sha256": "0b3cb34acf85e814bd3e7d82254e9586a6a60c78e20fd95603b2e96e877d7bfc"
+    },
+    {
+      "path": "tests/helpers/run-hud-before-ci-repair-ci-source.json.gz",
+      "sha256": "fa385b20797f37ca5a8c0a406d6ecdad6b4c0539c27a825e751b7eadeb4f5408"
+    },
+    {
+      "path": "tests/helpers/run-hud-ci-source.json.gz",
+      "sha256": "685bddcc6bed77545eadc456f82ed4de10a75402cfcf597533190eb1732cbe3b"
+    },
+    {
+      "path": "tests/helpers/selection-ci-source.json.gz",
+      "sha256": "02ba563b57383e8ab328051dfa29a3a0d57769a60b94cb4a265cb8ff7514881e"
+    },
+    {
+      "path": "tests/helpers/session-menu-source-epoch.json.gz",
+      "sha256": "b6b8f7f14c7f541fcd686b881258c6f625f1a0bfc32239e9d15dc6aa5eb33d8b"
+    },
+    {
+      "path": "tests/helpers/session-reward-before.json.gz",
+      "sha256": "d0a42f51486f79bca22b34a8f0457ca0f78e4917310ad72e70ef89c836a9b57c"
+    },
+    {
+      "path": "tests/helpers/seven-refactor-source-epoch.json.gz",
+      "sha256": "98ce5a13a217c5b20bbbddf93811d5fc2dda4117bb465c33c5ad4c979608c4bd"
+    },
+    {
+      "path": "tests/helpers/shop-deck-before-ci-repair-source-epoch.json.gz",
+      "sha256": "94d6f85a83a1593bbbaf34ae13986ddfbca97312e183b4e7f6b08ca58b8d911b"
+    },
+    {
+      "path": "tests/helpers/shop-deck-four-source-epoch.json.gz",
+      "sha256": "51034e9da34cbe0ab153f00ab66a16918db1097ef7173932ab326cc6c2076f2b"
+    },
+    {
+      "path": "tests/helpers/shop-deck-source-epoch.json.gz",
+      "sha256": "f5546b3bd0264af9e4fff867637fe217e4e7c32482e72104d7d3c1f3cc43a03b"
+    },
+    {
+      "path": "tests/helpers/silent-final-ci-source-epoch.json.gz",
+      "sha256": "061f63eb40dd03dfecb8bdaf60ecc722f49da40ed75645568666fa29bddf8c2e"
+    },
+    {
+      "path": "tests/helpers/silent-final-source-epoch.json.gz",
+      "sha256": "8d70652c025b8075e2a03936f12c2509dbca427abd555e472f197b1ac4850b49"
+    },
+    {
+      "path": "tests/helpers/silent-tactics-source-epoch.json.gz",
+      "sha256": "046c798aed3ded45bf29ad696c777551102f74066a262174af3d9990bdabb1c7"
+    },
+    {
+      "path": "tests/helpers/sts-feedback-ci.json.gz",
+      "sha256": "c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59"
+    },
+    {
+      "path": "tests/helpers/sts-feedback-production.json.gz",
+      "sha256": "3acda15f5db142eeabb48f9a494d1526bde5565eb7e2272d5a36277b7394ec39"
+    },
+    {
+      "path": "tests/helpers/sts-style-ci-source.json.gz",
+      "sha256": "4dc022273fd7ca381b1de6bca1fdd1c9eb49ceb94df292d9e490b4ab2abc80f5"
+    },
+    {
+      "path": "tests/helpers/sts-style-prior-runtime.json.gz",
+      "sha256": "10bf3b7d960e4c02ae2d64e26d8d5f16824439b9396949973f08ccec1c9d9330"
+    },
+    {
+      "path": "tests/helpers/sts-style-source-epoch.json.gz",
+      "sha256": "cc47fd96c79d7a604d2c5c269b012354d887762aecbe2990ac89fbf2ac74c1a9"
+    },
+    {
+      "path": "tests/helpers/watcher-flow-source-epoch.json.gz",
+      "sha256": "9e81602d086a81680830cf179a5d9f9f041bd56e0938b2d82eb196e50f73c015"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-source.json.gz",
+      "sha256": "e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba"
+    },
+    {
+      "path": "tests/helpers/release-item-title-shadow-ci-source.json.gz",
+      "sha256": "29ed620cf9e562a382d50a9722397579b0c0523196a582e9a41c8a52f6ffa18f"
+    },
+    {
+      "path": "tests/helpers/release-bootstrap-ci-source.json.gz",
+      "sha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6"
+    }
+  ]
+}
