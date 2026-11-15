@@ -256,6 +256,19 @@ local function writeOption(ctx, box, row, id)
     ctx.ink(box:GetChild('description'), descriptionInk(row.enabled))
 end
 
+-- Every owner of the reused event controls restores the same layout and ink.
+-- Neow changes visibility, geometry and text controls, not only their content.
+function M.renderChoices(ctx,event,id,rows)
+    renderEventFigure(event,id,ctx.options.textAlignments)
+    ctx.ink(event:GetChild('body'),id=='neow' and C.panelSunken or C.text)
+    if NEOW then placeOptions(event,id=='neow',rows) end
+    for i=1,OPTIONS do
+        local row,box=rows[i],event:GetChild('option'..i)
+        ctx.show(box,row)
+        if row then ctx.state(box,row.enabled);writeOption(ctx,box,row,id) end
+    end
+end
+
 -- Installs the events responsibility on one node UI instance.
 function M.install(ctx)
     function ctx.renderEvent(view, node, result)
