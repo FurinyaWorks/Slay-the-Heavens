@@ -1,0 +1,74 @@
+{
+  "base": "e65d9b98fbec69442047650254238cd9244df805",
+  "method": "existing build-performance-pack rectangles; sweep grids 4..64; alpha retained",
+  "generatorSha256": "9bec57e68225de1fb222d9a974377e953cc2d0367232a8aa8098964b7026fdb0",
+  "experimentSha256": "93aa0f55f51f291c666955fdd2d6d616052b365fda3e8d737624cb64f20173f4",
+  "results": [
+    {
+      "enemyId": "looter",
+      "budget": 100,
+      "grid": [
+        16,
+        16
+      ],
+      "primitiveCount": 97,
+      "premultipliedRgbaMAE": 11.3016
+    },
+    {
+      "enemyId": "looter",
+      "budget": 200,
+      "grid": [
+        23,
+        23
+      ],
+      "primitiveCount": 183,
+      "premultipliedRgbaMAE": 8.4909
+    },
+    {
+      "enemyId": "looter",
+      "budget": 400,
+      "grid": [
+        36,
+        36
+      ],
+      "primitiveCount": 398,
+      "premultipliedRgbaMAE": 5.9788
+    },
+    {
+      "enemyId": "bronze_orb",
+      "budget": 100,
+      "grid": [
+        19,
+        19
+      ],
+      "primitiveCount": 93,
+      "premultipliedRgbaMAE": 6.5997
+    },
+    {
+      "enemyId": "bronze_orb",
+      "budget": 200,
+      "grid": [
+        29,
+        29
+      ],
+      "primitiveCount": 197,
+      "premultipliedRgbaMAE": 4.9664
+    },
+    {
+      "enemyId": "bronze_orb",
+      "budget": 400,
+      "grid": [
+        42,
+        42
+      ],
+      "primitiveCount": 393,
+      "premultipliedRgbaMAE": 3.6157
+    }
+  ],
+  "limits": [
+    "Offline geometry reconstruction, not native engine screenshot.",
+    "Six outputs are not production bindings. No masks, hosts, hit targets or animation are implemented.",
+    "Primitive count is not official capacity, controls total, drawcalls or device performance.",
+    "Source roles remain candidate-only; owner/native/device approvals absent."
+  ]
+}

@@ -1,0 +1,7 @@
+looter 100 PASS provenance/budget/geometry/alpha/reproducibility
+looter 200 PASS provenance/budget/geometry/alpha/reproducibility
+looter 400 PASS provenance/budget/geometry/alpha/reproducibility
+bronze_orb 100 PASS provenance/budget/geometry/alpha/reproducibility
+bronze_orb 200 PASS provenance/budget/geometry/alpha/reproducibility
+bronze_orb 400 PASS provenance/budget/geometry/alpha/reproducibility
+6/6 candidate contracts passed; device/native/production UNVERIFIED
