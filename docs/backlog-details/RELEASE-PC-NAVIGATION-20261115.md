@@ -18,6 +18,8 @@ TASK-4.16 原 AC3 的“整理操作说明”与本轮 PC38 明确移除该入�
 
 原始失败和通过输出以无损 gzip 保存在 [证据目录](../evidence/release-pc-navigation-20261115/README.md)，索引记录解压前后 SHA256。没有改变原用例时限、旧来源归档、before/target 或库存门槛。
 
+`/root/release_final_review` 对精确产品 `a9425afa` 独审 CODE_PASS_SCOPED、unresolved=[]，覆盖全部 11 路径/4 生产路径。另用双 profile 的 32 组几何组合、4 条 C 档焦点路由、4 旧 pointer/4 旧 controller 回调拒绝验证，完整 Run 递归快照保持且结算调用为零；原始探针、初次夹具/时钟实验差异均保留。报告 `independent-review.json` SHA256 为 `28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf`，不覆盖后续来源/CI 或设备准入。
+
 ## 剩余准入与验收
 
 产品独审、来源/CI 接续与当前 Release 必要检查须各自留据；普通源码切片通过不等于发版许可。这里没有完整 GIL、官方导入/ready、PC 两幕或实体手机实测，也没有同候选官方容量/静动态负载结果。不得复用旧候选 19.78MB 或把代码/测试字节换算为官方容量。正式退出结算及 PC11 层级可用性最终仍需同一候选实测。

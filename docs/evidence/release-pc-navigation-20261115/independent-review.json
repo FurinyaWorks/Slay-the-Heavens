@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "release-pc-navigation-a9425afa-20261115",
+  "reviewer": "/root/release_final_review",
+  "role": "Independent reviewer; no implementation authorship",
+  "reviewedAt": "2026-11-15T15:49:20.280Z",
+  "reviewedHeadSha": "a9425afa50e2a1dd10e83634a3e5fc0d24633917",
+  "reviewedBaseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "conclusion": "pass",
+  "result": "CODE_PASS_SCOPED",
+  "unresolved": [],
+  "findings": [],
+  "scope": "PC11 repeated route entry andPC38 removed operation guide,11 changed paths/4 production paths at exacta942. Docs513 evidence read only after verifying no production/test drift. Excludes source/CI admission, official/client/device/capacity acceptance.",
+  "paths": [
+    {
+      "path": "scripts/exit-ui-layout.mjs",
+      "gitBlob": "22ed19b2272ddb3a946184978b468237d302f0a2",
+      "sha256": "1385056500bf09ae7db564844161afe27d1700d5ca8839334e59f1a034ffcbf6"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_input.lua",
+      "gitBlob": "83f1bd154e4c1f7d3680be83251a9c1ad925bf08",
+      "sha256": "b2394cff71e20fdc5490fca41718435b623b1b9971827df1b639a77abcc75086"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_navigation_view.lua",
+      "gitBlob": "920f8a6d0b185e224f783e614239c060a3ec4410",
+      "sha256": "dfbdd2ab195f05ddf400bf81db428a02d01e886a01a3a4f81469edc9091b4d74"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_overlays.lua",
+      "gitBlob": "6322844bac989218107d89c02c20ec15602dcfb9",
+      "sha256": "d524f0fb95d207ccbe5cebadc5379d734eeca721967032c16ba620bc6045d26a"
+    },
+    {
+      "path": "tests/exit-menu-closeout.test.mjs",
+      "gitBlob": "b4850687cb5f530fffedc3e77424ef91438f4088",
+      "sha256": "61c611e0cf68b2545f6b4dd90ac6df3ed57e7267878fc25fa462d0664a1b0f70"
+    },
+    {
+      "path": "tests/exit-ui-layout.test.mjs",
+      "gitBlob": "ea119dda5b45a1394ba98fb859f3d3ca23e4a483",
+      "sha256": "51f9a5af9074f1e242cebfdd27ec68bfe2df0211f275bd978c480b90f0083163"
+    },
+    {
+      "path": "tests/lua/exit_menu_closeout.lua",
+      "gitBlob": "a460edc487075ae8871312035ec591aff98ff168",
+      "sha256": "79e2194e981e7bcdafff322db21f963e2a1649d3b624e4258b879cf46959782c"
+    },
+    {
+      "path": "tests/lua/menu_input_boundaries_current.lua",
+      "gitBlob": "2c53afbf6a6870f14e61d843a6ed27830a71c8a5",
+      "sha256": "b2c5b21a4f8c61505bd5fec24ee070d2586b3c6fe06331dc63cd6077b8768d40"
+    },
+    {
+      "path": "tests/lua/support/session_menu_v25.lua",
+      "gitBlob": "72df5fc8059d172c867cde0fa9094a2c4ee97013",
+      "sha256": "b5a0dbcb7eb7edf00e21e22c555ba13a479c361ef2031e8dfe57681d48582f92"
+    },
+    {
+      "path": "tests/lua/ui_final_menu.lua",
+      "gitBlob": "19a52cb2a11e56cff77794174004eb501bb3fe5f",
+      "sha256": "713c2b6f0aec004d65855d90700aa0916f20d4dae45a58286d9ffaaaa100a9ab"
+    },
+    {
+      "path": "tests/pause-route-entry.test.mjs",
+      "gitBlob": "57e62f218e641ea21f775b8ff0b31d56001e6f8f",
+      "sha256": "42b1db629a27f417611f58b569c28d0b02b9dfebfa3ecfe8f41e8849c6bf4d4b"
+    }
+  ],
+  "sourceSelection": {
+    "commits": [
+      "cb1ea99afc84439e207af86d2c126a96943371e7",
+      "87fb97d88157df5d92cf7c5089b3275f54f106a4"
+    ],
+    "method": "Selective patch adaptation; no claim of entire upstream file identity.",
+    "assessments": [
+      "Remove generatedhelp/guide nodes and allcommand/native/controller bindings, not only labels. RetainedcontrolsOpen guards are unreachable from current public bindings and add no new flow.",
+      "Official battle/node reuse existing topbar route: duplicate pausemap hidden,raycast/interactablefalse,no nativeclick/noController record. Default profile retains menu route binding and direct-return preview.",
+      "NavigationView uses existingtheme row tokens and preserves Release quit/mainMenu visibility and spacing; no reading/mobile layout/phone quit policy imported.",
+      "Exit confirmation/cancel,run-resume,abandon/new confirmation andplatform settlement producers unchanged; removedguide close branch has no current producer.",
+      "Cursor generation/menu/run/map identity guards andController scope/eligibility remain, excluding removedguide bindings; no new game/RNG/inventory writes."
+    ],
+    "excludedFuturePaths": [
+      "src/lua/abyss_mobile_hud.lua",
+      "reading/mobile/menu quit policies"
+    ],
+    "unchangedCategories": [
+      "data",
+      "config",
+      "package manifests",
+      "workflows",
+      "CI/source archives",
+      "gameplay/RNG/acquisition rules"
+    ]
+  },
+  "checks": {
+    "auditPath": "F:/New folder/.artifacts/release-pc-qa-20261115/audit-navigation-a9425afa.json",
+    "auditSha256": "12ae9deca501a1f6701d984c88fe3164ca637ec7f13a63f009a1edfcedc09137",
+    "baseWhitespace": "git diff--check base..a942 exit0",
+    "all6RawAndGzipLogIdentitiesMatch": true,
+    "recordedEvidence": {
+      "initialBehaviorRed": {
+        "tests": 5,
+        "pass": 1,
+        "fail": 4,
+        "reason": "Actual oldhelp/guide/official duplicate route; defaultfallback retained"
+      },
+      "firstGreenAttempt": {
+        "tests": 11,
+        "pass": 10,
+        "fail": 1,
+        "reason": "missinggeneratedabyss_theme; preserved,notbehavior failure"
+      },
+      "related": {
+        "tests": 20,
+        "pass": 16,
+        "fail": 4,
+        "failures": "Four frozen-source identity contracts,all retained; not fullgreen"
+      },
+      "extendedRoute": {
+        "nodeTests": 2,
+        "pass": 2,
+        "paths": "default/official×PC/touch×battle/node=8actualHost paths"
+      },
+      "engineering": {
+        "initial": "Luacheck missing;preserved",
+        "final": "351modules,6160/6160measurements,1988edges,no new diagnostics,6historical warnings",
+        "notFull": true
+      }
+    },
+    "independent": {
+      "node": "v22.22.1",
+      "profile": "Real generateddefault+official Release layouts; no native lifecycle experiment option",
+      "geometryContexts": 32,
+      "geometry": "hasRun/sessionPaused/routeEnabled boolean matrix×PC/touch×2profiles; all visible rows inside resizedface with no overlaps",
+      "controllerRoutes": 4,
+      "stalePointerRejected": 4,
+      "staleControllerRejected": 4,
+      "currentRun": "same Run/map/combat references and recursive fullRun snapshot; settlementcalls0",
+      "results": [
+        {
+          "officialAssets": false,
+          "node": "v22.22.1",
+          "status": 0,
+          "stdout": "ABYSS_RUN seed=1 source=explicit\nABYSS_RUN seed=1 source=explicit\nNAVIGATION_INDEPENDENT_PASS geometry=16 controller_routes=2 stale_pointer=2 stale_controller=2\n",
+          "stderr": "",
+          "error": ""
+        },
+        {
+          "officialAssets": true,
+          "node": "v22.22.1",
+          "status": 0,
+          "stdout": "ABYSS_RUN seed=1 source=explicit\nABYSS_RUN seed=1 source=explicit\nNAVIGATION_INDEPENDENT_PASS geometry=16 controller_routes=2 stale_pointer=2 stale_controller=2\n",
+          "stderr": "",
+          "error": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-independent-probe.lua",
+          "sha256": "d3ea7ae982142cf6af27f156f2bd783d5a1a8f12cf6f1f6dd904f9cd722f32d3"
+        },
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-independent-runner.mjs",
+          "sha256": "9b6c8c9f9043cf9ea32c485d9b6ca25f3258d84293d6ffbac41d0a41e5ffb82f"
+        },
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-independent-results.json",
+          "sha256": "8df9b9f618059e0a39a50e392ec63ddf5c7035ad612f768e2c895062729adf0a"
+        },
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-independent-default.log",
+          "sha256": "f1e875b6dd254e5a6fc56f52965d9dfbb1dabe07525faf6a4602346a2cc019cf"
+        },
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-independent-official.log",
+          "sha256": "f1e875b6dd254e5a6fc56f52965d9dfbb1dabe07525faf6a4602346a2cc019cf"
+        },
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-probe-fixture-position-error.json",
+          "sha256": "95ac538f53fb1859216dd0a3f1144336ced00ec34a9ca9d559ecea1abff1b980"
+        },
+        {
+          "path": "F:/New folder/.artifacts/release-pc-qa-20261115/navigation-probe-clock-snapshot-failure.json",
+          "sha256": "c341b3f6b44501c62f97e1b5ef7a116dd161de7c50fcbf987c1cdc56248f59ab"
+        }
+      ],
+      "probeCorrections": "Initial probe requested unsupported native lifecycle fordefault profile (rejected by existingguard; tool transcript). Next constructor fixture lacks initialx/y: declaredtheme coordinates used for unchangedtitle/resume while dynamiccompact writes read fromcontrols,failedresult retained. Positive-dt probe legally advancedelapsedSeconds duringactiveofficialroute ticks: retained result; finalzero-dtcontroller ticks isolate command effects without changing production timing orassertinglatency."
+    }
+  },
+  "limits": [
+    "CODEscopePASS is notsource admission:4 frozen-source contractFAIL in20 remain pending finalcombination closure. No helper/oldtarget/budget assertion relaxed ormodified.",
+    "Final exactRelease combination with684/other slices needs unifiedsource/CI continuation,independent review and original requiredFull. NoFull rerun here.",
+    "No completedcandidateGIL/strictreadback,officialimport/ready,officialcapacity/static/dynamicload,PC two-act orphone acceptance. C/controllerfocus evidence is mockAPI eligibility/commands,notphysicalgamepad/device behavior.",
+    "No GUI,candidatewrite/liveMCP,source/Backlog edits,PR/push or684 polling performed. Failures andenvironment gaps remain visible."
+  ]
+}

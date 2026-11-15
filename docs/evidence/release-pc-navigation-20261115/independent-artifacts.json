@@ -1,0 +1,53 @@
+{
+  "reviewSha256": "28120836c86d7713573b7263695c6a28a9c521ba92e353bc5f5db52063237faf",
+  "rows": [
+    {
+      "path": "navigation-independent-probe.lua.gz",
+      "rawSha256": "d3ea7ae982142cf6af27f156f2bd783d5a1a8f12cf6f1f6dd904f9cd722f32d3",
+      "gzipSha256": "ae1a13d92baf584e02f38645b57353215862c9bded6266af6b49a11f17f1abf6",
+      "rawBytes": 4531
+    },
+    {
+      "path": "navigation-independent-runner.mjs.gz",
+      "rawSha256": "9b6c8c9f9043cf9ea32c485d9b6ca25f3258d84293d6ffbac41d0a41e5ffb82f",
+      "gzipSha256": "66268dc85c66009db1509e09750adce9eea2d05d3504b7810a176de5b36ee11e",
+      "rawBytes": 1508
+    },
+    {
+      "path": "navigation-independent-results.json.gz",
+      "rawSha256": "8df9b9f618059e0a39a50e392ec63ddf5c7035ad612f768e2c895062729adf0a",
+      "gzipSha256": "0c896541b29503a4e1dd86a539273bed3ebc9fa72002b6c3aadbd56d12bfafdf",
+      "rawBytes": 592
+    },
+    {
+      "path": "navigation-independent-default.log.gz",
+      "rawSha256": "f1e875b6dd254e5a6fc56f52965d9dfbb1dabe07525faf6a4602346a2cc019cf",
+      "gzipSha256": "4cddbb9a3f6f44a752d69301ba35e673a9035ca7e243299de109b4ec592086a4",
+      "rawBytes": 161
+    },
+    {
+      "path": "navigation-independent-official.log.gz",
+      "rawSha256": "f1e875b6dd254e5a6fc56f52965d9dfbb1dabe07525faf6a4602346a2cc019cf",
+      "gzipSha256": "4cddbb9a3f6f44a752d69301ba35e673a9035ca7e243299de109b4ec592086a4",
+      "rawBytes": 161
+    },
+    {
+      "path": "navigation-probe-fixture-position-error.json.gz",
+      "rawSha256": "95ac538f53fb1859216dd0a3f1144336ced00ec34a9ca9d559ecea1abff1b980",
+      "gzipSha256": "b5a2a42eed153519e99bcbeeb9638ea8dd9b42eb15cee6fb2887986e22f9c2c7",
+      "rawBytes": 1020
+    },
+    {
+      "path": "navigation-probe-clock-snapshot-failure.json.gz",
+      "rawSha256": "c341b3f6b44501c62f97e1b5ef7a116dd161de7c50fcbf987c1cdc56248f59ab",
+      "gzipSha256": "3a70f0cc8d1d9715545a2cdcbf7c016796e3d6533ebcef3cb9fda4a48b4cdcd8",
+      "rawBytes": 768
+    },
+    {
+      "path": "audit-navigation-a9425afa.json.gz",
+      "rawSha256": "12ae9deca501a1f6701d984c88fe3164ca637ec7f13a63f009a1edfcedc09137",
+      "gzipSha256": "c04c559b91ba8f4942358a8182c27beb1341d013821b8d382b25a2390d5d815d",
+      "rawBytes": 9851
+    }
+  ]
+}

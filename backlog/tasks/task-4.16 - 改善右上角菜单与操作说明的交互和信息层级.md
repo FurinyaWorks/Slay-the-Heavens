@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-15 15:41'
+updated_date: '2026-11-15 15:50'
 labels:
   - playtest-20261030
   - p1
@@ -69,4 +69,6 @@ Owner反馈：菜单只能点「继续游戏」关闭；未启程时仍显示不
 PC11产品a9425afa：原正式profile重复地图RED，修后默认/正式×PC/touch×战斗/营地8种真实Host路径通过；menu/route一次返回、旧触点、结算及V25/会话动态回归通过。4冻结来源合同仍失败，源/CI与独审进行中。PC06齿轮样式未在此片修复；官方ready、PC/实体手机画面未验。
 
 需求覆盖说明：原AC3的操作说明入口/内部信息层级与本轮PC38明确彻底移除该入口冲突，该部分按最新用户要求由TASK-4.11承接移除；历史AC原文与未勾状态保留，不伪称已整理说明页。原AC3中基础资源含义易获知、以及PC06样式/最终设备要求仍有效，继续未验。
+
+a9425afa独审CODE_PASS_SCOPED/unresolved=[]，双profile32组几何、4条C路由返回与4旧pointer/4旧controller回调拒绝通过，完整Run保持/结算0；独立探针初配置与正dt正常推进引起的实验差异也保留，未冒称产品RED。见导航证据independent-review.json。
 <!-- SECTION:NOTES:END -->
