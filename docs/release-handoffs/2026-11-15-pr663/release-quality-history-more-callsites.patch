@@ -1,0 +1,35 @@
+--- a/tests/ci-posix-concurrency.test.mjs
++++ b/tests/ci-posix-concurrency.test.mjs
+@@ -1,4 +1,5 @@
+ import test from 'node:test';
++import {beforeReleaseQualityWorkflow} from './helpers/release-quality-workflow.mjs';
+ import assert from 'node:assert/strict';
+ import {readFileSync} from 'node:fs';
+ import {createHash} from 'node:crypto';
+@@ -32,6 +33,9 @@
+ });
+ 
+ test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>{
++  // Authenticate the complete Release wrapper before constructing historical variants.
++  // Physical/current concurrency checks above retain their raw workflow input.
++  const current=beforeReleaseQualityWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
+   for(const eol of ['\n','\r\n']){
+     const old=current.replace(cap,'').replaceAll('\n',eol);
+     const capped=current.replaceAll('\n',eol);
+--- a/tests/ci-downloads.test.mjs
++++ b/tests/ci-downloads.test.mjs
+@@ -1,4 +1,5 @@
+ import test from 'node:test';
++import {releaseQualityPriorRead} from './helpers/release-quality-workflow.mjs';
+ import assert from 'node:assert/strict';
+ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, truncateSync, readdirSync } from 'node:fs';
+ import { tmpdir } from 'node:os';
+@@ -214,7 +215,7 @@
+ test('hosted workflow projection restores exact prior bytes and preserves partial, duplicate and unrelated drift', () => {
+   // This exact historical projection keeps its accepted source slice. Current
+   // checkout/whitespace/pointer safety is exercised against raw inputs above.
+-  const workflow=closeoutRead('pr620')('.github/workflows/quality.yml','utf8');
++  const workflow=closeoutRead('pr620',releaseQualityPriorRead())('.github/workflows/quality.yml','utf8');
+   // Exact quality.yml Git blob 6399aa1d from base 6a614fc8, not an updated oracle.
+   const baseline = '28957431693a0c07dedcda5a1b8ffff031f94f93ca838203d65661343b46709d';
+   const digest = text => createHash('sha256').update(text.replaceAll('\r\n', '\n')).digest('hex');
