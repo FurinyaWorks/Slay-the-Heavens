@@ -25,3 +25,13 @@ Owner 本轮确认设备为 iPhone 14 Pro，第一批原图为 2556×1179；IMG_
 本地原始日志位于本工作树 `.artifacts/mobile-potion-p0-1115/`，包括失败夹具、Fast 选集、Fast 输出、工程输出与最终药水回归输出。后续独审和精确提交 CI 由协调者绑定，不在正文预填成功。
 
 官方候选写入/读回、导入、真实 ready、手机热区量测及同候选手机回归均 UNVERIFIED。本切片只交付可回归的输入边界修复，不声称整个 TASK-38.4 或 M01/M02 产品验收已完成。
+
+## 2.0.0 Release 迁移（2026-11-15）
+
+Owner 后续将当前发版修复分流至 `release/v2.0.0`。以上是原 Develop 切片的历史证据，原 PR #674 的授权不延续到 Release。新分支 `fix/mobile-potion-v2-1115` 从 `36b9b157ee6f05b65eb9f1da7e2978647d36c210` 建立，使用 `cherry-pick -x 90b1d2022c43be5b78b505d47b00615597935428`，保留唯一修复来源，不重写旧分支。
+
+Release 基线相对原开发基线只修改三份工作流、AGENTS 与发版交接五个文件。移植后整棵 `src/lua` Git tree 为 `ed333c3638e49ccd68b762f26425637e11386478`，整棵 `tests` 为 `dcb80a92b3b1402007e4f146be9d7f830e022219`，均与原补丁提交逐 blob 相同。该等价核验只证明代码/测试未漂移，不替代新 HEAD/BASE 的独立评审与 Release Full。
+
+新树重新构建数据/UI，最终 `approved_main_potions.lua` 输出 `APPROVED_MAIN_POTIONS_PASS`，退出 0（83664ms）；迁移日志单独保存在 `.artifacts/mobile-potion-v2-1115/`，不将旧树的运行日志冒作新组合结果。未重复本地整仓 Full；Release 工作流与实际远端保护由协调者核实，禁止直接合入或套用仅支持 Develop 的旧自动合并授权。
+
+TASK-38.4 在本 Release 基线仍不存在，`task:pick` 为未知任务 HOLD；按 #673 只读合同和 Owner 明确迁移授权实施，认领同步待任务登记落地，AC 保持未勾。手机、官方候选、容量、ready 与发布状态均不因本次迁移改变；不修改候选、master 或 Tag。
