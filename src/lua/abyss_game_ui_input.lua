@@ -281,12 +281,12 @@ function M.installGuide(self,_exitPanel,_clickEvent,bindCommand,_dismissFromOuts
         self:refresh()
         return true
     end)
-    bindCommand(runMenu:GetChild('map'), 'run_map', function()
+    if not bar then bindCommand(runMenu:GetChild('map'), 'run_map', function()
         owner.exitGeneration = owner.exitGeneration + 1
         self.routeOpen = true
         self:refresh()
         return true
-    end, canViewRoute)
+    end, canViewRoute) end
     local v25=Theme.presentationProfile=='v25-reference'
     bindCommand(child('mapPanel'):GetChild('previewBack'),v25 and 'mapReturn' or 'routeClose',function()
         if v25 and not self.routeOpen then return self:openMenu() end

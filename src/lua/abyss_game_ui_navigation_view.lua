@@ -46,6 +46,9 @@ local function compact(menu,routeEnabled,mainEnabled,reading)
     end
 end
 function M.runMenu(self,menu,routeEnabled)
+    -- Official run pages already expose the shared top-bar route action.
+    -- Keep the menu fallback for profiles without those controls.
+    routeEnabled=routeEnabled and Theme.presentationProfile~='official-assets-first'
     local hasRun=Navigation.hasRun(self)
     local mainEnabled=hasRun and not self.sessionPaused
     menu:GetChild('mainMenu'):SetVisible(mainEnabled)
