@@ -1,11 +1,11 @@
 ---
 id: TASK-100.1
 title: 统一V25原生组件加载生命周期与性能防回退
-status: In Progress
+status: Done
 assignee:
   - Furinya
 created_date: '2026-11-09 11:10'
-updated_date: '2026-11-14 10:18'
+updated_date: '2026-11-15 06:05'
 labels: []
 milestone: m-8
 dependencies: []
@@ -13,6 +13,7 @@ references:
   - docs/backlog-details/TASK-100.1.md
   - docs/backlog-details/TASK-100.md
   - docs/backlog-details/TASK-4.21.md
+  - docs/evidence/backlog-closeout-20261115/delivery-661.json
 parent_task_id: TASK-100
 priority: medium
 type: bug
@@ -33,7 +34,7 @@ P0 技术阻塞：千星原生 V25 组件方案减少了运行时逐图元组装
 - [x] #2 以 RED/负控区分三项根因：运行时细粒度图元组装、全部页面 eager 挂载、代理重复查找/同值提交；每项单独 A/B 与原始记录，未证实不得硬写根因或追求虚假的 FPS 倍数。
 - [x] #3 用统一组件级生命周期接口实现 unprepared→preparing-hidden→ready→visible→cached/released，按屏/预算准备、READY 后一次展示，限定缓存容量及释放所有权；异常/取消/重入/旧回调均正确清理，不重建已存活组件、不在隐藏页继续高频工作；禁止未解释的逐图元渐进显示。
 - [x] #4 仅对实测热点应用稳定句柄缓存、失效与 dirty checking，维持输入事务、控件四态、动态内容、刷新、双宿主、失败重试及切页语义；至少包含旧引用、原生失效、重绑、重入、false/throw 的定向负例。
-- [ ] #5 将组件加载预算、重复创建、生命周期净残留和关键 UI 同源耗时阈值纳入项目现有验证入口，保留原始数据、源 SHA/GIL hash、基线及可审计阈值；对回归做 RED→GREEN/变异或负控与独立复审，不以删除断言、调松预算或关闭用例取绿。
+- [x] #5 将组件加载预算、重复创建、生命周期净残留和关键 UI 同源耗时阈值纳入项目现有验证入口，保留原始数据、源 SHA/GIL hash、基线及可审计阈值；对回归做 RED→GREEN/变异或负控与独立复审，不以删除断言、调松预算或关闭用例取绿。
 - [x] #6 V25 关键布局、卡框、字体、按钮、角色及背景不因性能优化被擅自删除或降质；同视觉候选可导出 GIL 并由模拟器完成菜单→选角→真战斗出牌/取消/奖励回图，留截图和输入轨迹。官方 PC/安卓 FPS/容量/内存如缺必须标 UNVERIFIED 并交接 TASK-4.21，不冒充本任务已实测。
 <!-- AC:END -->
 
@@ -71,4 +72,12 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 本轮组合a730已通过22个Lua精确提交棘轮0新增。遮罩只准备资源、暂停Match/战斗/计时，ready按显式页面owner；真实OnStart覆盖menuBackground=true隐藏旧页不阻塞。最终祝福6帧和选角5帧同闭包52b6582b…，错误/漂移0。完整工程、4个有效语义变异、6项原生合同及144项来源接续已通过；软件10卡PNG+RPC增加2.70%，不推断GPU/手机。官方导入及设备AC保持未验。
 
 2026-11-14逐项对账：PR634实际squash为903bf2a3，PR Full43211206190、原生队列43219327412及push43229600772均success；本轮原verify:delivery --merged真实返回merged_passed，证据build/delivery/bbd96f62-7d15-4932-9139-2b37f349166a。当前基线9f2f44e4保留该成果。此为交付记录收口，不新增平台或设备通过。 生命周期及预算负控已随607、634交付；原同源SDK证据和已勾AC保留，设备未验归103/4.21。
+
+2026-11-15 独立/root/engineering_queue_audit复核默认每帧4/隐藏缓存2、真实component_pages首次4创建与第四页驱逐、20次切换/失败取消、三实例20周期同源SDK创建上限19539与净残留0及身份/缺样本/超量负控；对应生产、脚本和测试自634到e65无变化，原3阶段P95均在1.25观察线内。耗时阈值仍REPORT_ONLY，创建量与净残留是硬门禁，不声称耗时硬拒绝。机制已由634交付并由本轮661 merged_passed/push Full覆盖，补AC5并收口。当前候选/GPU/手机/官方容量仍交TASK100、103、4.21未验，不用补勾冒充。
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+统一组件生命周期、预算、净残留与同源SDK观察证据和回归均已交付，六项原工程AC据独立复核完成；真实设备性能仍保持未验。
+<!-- SECTION:FINAL_SUMMARY:END -->

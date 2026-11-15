@@ -1,0 +1,68 @@
+{
+  "legacyBytes": 34571358.0,
+  "attempts": [
+    {
+      "reason": "Sandbox spawnSync git EPERM",
+      "directory": "replay-20261115-a",
+      "status": "failed",
+      "node": "v22.22.1"
+    },
+    {
+      "reason": "Invalid selection budget avatar96; required preview LFS pointers",
+      "directory": "replay-20261115-b",
+      "status": "failed",
+      "node": "v22.22.1"
+    },
+    {
+      "reason": "Background budget data changed; required background preview LFS pointer",
+      "directory": "replay-20261115-c",
+      "status": "failed",
+      "node": "v22.22.1"
+    },
+    {
+      "directory": "replay-20261115-d",
+      "note": "Before final mapped-module guard and fixture-capability reporting; not final source certification",
+      "elapsedMs": 132527.1167,
+      "status": "passed-historical",
+      "node": "v22.22.1"
+    },
+    {
+      "reason": "replay.test.mjs changed during execution; final result absent, raw files preserved",
+      "directory": "replay-20261115-e",
+      "note": "Overlapped final f replay in separate output directories after fixture diagnosis",
+      "status": "rejected-input-drift",
+      "node": "v24.18.0"
+    },
+    {
+      "directory": "replay-20261115-f",
+      "status": "passed-under-f-source-superseded",
+      "node": "v24.18.0",
+      "elapsedMs": 99744.253,
+      "note": "Independent review found missing row-coverage gate; exact source recovery and raw result retained in source-revision-f.json"
+    },
+    {
+      "directory": "replay-20261115-g",
+      "status": "passed-final-source",
+      "node": "v24.18.0",
+      "elapsedMs": 83618.6192,
+      "note": "Exact four schemes by seven numeric role counts checked before artifact readback and again after persistence"
+    }
+  ],
+  "legacyFilesUnchanged": 39,
+  "schemaVersion": 1,
+  "testEnvironment": {
+    "passed": 5,
+    "skipped": 1,
+    "skipReason": "Managed Windows reparse junction is not exposed as a Node symlink; lstat false/readlink EINVAL, no real symlink assertion claimed",
+    "node": "v24.18.0",
+    "guardRemovalNegativeControls": 4,
+    "cliOutputRejections": 2,
+    "contracts": 6,
+    "finalContracts": 7,
+    "finalPassed": 6,
+    "finalSkipped": 1,
+    "reviewCoverageRed": "coverage-before-red.txt",
+    "reviewCoverageGreen": "coverage-after-green.txt",
+    "finalGuardControls": "g-negative-controls.json"
+  }
+}

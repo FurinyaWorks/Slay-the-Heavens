@@ -1,11 +1,11 @@
 ---
 id: TASK-105
 title: 验证20MB下角色容量可扩展性与量产准入
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-13 09:23'
-updated_date: '2026-11-14 00:32'
+updated_date: '2026-11-15 05:58'
 labels:
   - capacity
   - scalability
@@ -16,6 +16,8 @@ references:
   - docs/art/UPLOAD-BUDGET-20261029.md
   - docs/art/READY_ASSET_INTEGRATION.md
   - docs/backlog-details/M7-CAPACITY-RECONCILIATION-20261113.md
+documentation:
+  - docs/backlog-details/TASK-105-CAPACITY.md
 priority: high
 type: task
 ordinal: 172000
@@ -43,10 +45,18 @@ ordinal: 172000
 
 <!-- SECTION:PLAN:BEGIN -->
 先确认B0官方容量身份；复用TASK-10.1.2的B0/B1与宿主成本实验口径，加上第二个角色B2；评估10/20/30名角色。如果NO-GO先定位共享/装配瓶颈，小规模整改和复测，直到有证据GO或明确长期架构路线不可行。真实设备与平台验证须依现有窗口权限，不假设能在无授权情况下取得。
+
+2026-11-15接续原task-105-offline与pr-641已开展成果；原树只读保留。先复现重放覆盖和来源缺口，复用原实验加入新输出目录、输入前后身份与结果读回保护；本轮新目录测量，不改旧证据、生产装配或正式发布。定向负例/验证后交独立复审；官方容量及手机仍UNVERIFIED，TASK-97不量产。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-11-13立项：以角色长期量产为目标，不为任何未参与的新赛事建立里程碑。现有TASK-10.1.2只覆盖精绘卡图/宿主的单实例和多实例容量，不能取代本任务的完整角色边际成本、章节点预留、未来角色池预测。
+
+对账：原pr-641已通过CLI认领In Progress，task-105-offline有2026-11-13完整离线实验及361模块B0审计，不是待新实施。此处同步原有状态，不重复认领；全部AC继续未勾。
+
+2026-11-15接续原903bf2a离线成果，旧39份证据34571358B逐hash不变。新容量附件TASK-105-CAPACITY.md纠正与108转场的历史编号碰撞，旧附件未改。重放脚本消除固定历史输出/本机交付路径，完整输入前后身份及非介入模块/压缩结果回读保护；Node24最终f轮99744.253ms，639输入、364模块、28档成功。6合同5过0失败1本机symlink能力跳过，4移除guard负控和2真实CLI拒绝通过；e轮真实输入漂移拒绝且无成功结果，旧失败全保留。仅精确本地缓存还原3必需PNG，无网络/桌面/MCP/Full。原始大档留build，摘要与来源在docs/evidence/capacity-105-replay-20261115；独立复审、提交和托管交付待，官方容量/PC手机/长期GO仍UNVERIFIED，全部AC未勾，TASK97继续禁止量产。
+
+独立评审发现P2：旧回读未拒绝空/缺档结果。保留f的精确源码与原始结果后，新增固定4方案×7人数完整集合及数字类型校验；新用例在f旧helper真实RED，修后Node24七组6通过1平台能力跳过。修后另用g新目录完成全28档重放，结果和未压缩payload与f相同；当前input-manifest/replay-summary只指向g，f历史来源单独保全。独立复核待主控读回，不自签独审通过，不改任何AC。
 <!-- SECTION:NOTES:END -->

@@ -1,0 +1,20 @@
+{
+  "sourceReceipt": {
+    "path": "F:/New folder/.worktrees/publishing-copy-draft/build/delivery/73f27a70-db64-4e90-8e11-a373f7fd9d47/evidence.json",
+    "bytes": 2531732,
+    "sha256": "4f2f6b1ad093628044179f281b095defb80810350fe0026a138b4cf8e6eebbaf"
+  },
+  "verification": {
+    "state": "merged_passed",
+    "errors": []
+  },
+  "prNumber": 661,
+  "reviewedHead": "58a30edfcb06cb34403ca71d04fcea9d3e4352ef",
+  "mergedCommit": "e65d9b98fbec69442047650254238cd9244df805",
+  "baseCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+  "qualityPushRun": 43615128387,
+  "qualityQueueRun": 43605179989,
+  "backlogSync": "not_applied_wrong_checkout_head_preserved_newer_records",
+  "reviewId": "/root/engineering_queue_audit:delivery-closeout-20261115",
+  "deviceAcceptance": "NOT_PROVEN"
+}

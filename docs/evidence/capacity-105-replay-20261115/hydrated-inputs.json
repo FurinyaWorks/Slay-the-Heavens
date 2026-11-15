@@ -1,0 +1,20 @@
+[
+  {
+    "path": "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png",
+    "bytes": 17710,
+    "oid": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+    "source": "existing local LFS cache; no network"
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png",
+    "bytes": 18329,
+    "oid": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+    "source": "existing local LFS cache; no network"
+  },
+  {
+    "bytes": 81155,
+    "path": "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+    "source": "existing local LFS cache; no network",
+    "oid": "e23d1daac5e7046f9119edbd6179fd16fa31abd245c24d395adfd1af31a91a43"
+  }
+]

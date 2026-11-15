@@ -1,15 +1,16 @@
 ---
 id: TASK-87.1
 title: 让任务领取与交付及时对账，阻止已交付工作重复开工
-status: In Progress
+status: Done
 assignee:
   - '@Furinya'
 created_date: '2026-11-14 06:09'
-updated_date: '2026-11-14 10:55'
+updated_date: '2026-11-15 06:05'
 labels: []
 dependencies: []
 references:
   - docs/evidence/backlog-reconcile-20261114.md
+  - docs/evidence/backlog-closeout-20261115/delivery-661.json
 parent_task_id: TASK-87
 priority: medium
 type: bug
@@ -28,7 +29,7 @@ ordinal: 174000
 - [x] #2 已交付但漏同步或仅待验收的任务不得作为新实现领取；旧行为负例失败，新检查提示或拒绝。
 - [x] #3 复用现有交付与Backlog入口校验明确的任务处置，不凭日期、文字猜测或CI绿灯自动勾AC。
 - [x] #4 核查重复建设风险，定向回归、Backlog检查及独立复审通过。
-- [ ] #5 当前机制改动提交并按正常独审、Hosted CI、原生队列及合后验收进入develop后再正式结项；本地完成不冒充已部署。
+- [x] #5 当前机制改动提交并按正常独审、Hosted CI、原生队列及合后验收进入develop后再正式结项；本地完成不冒充已部署。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -55,4 +56,12 @@ ordinal: 174000
 2026-11-14用户明确要求独审后先挂原生自动合并，不应守到Impact运行。原托管43571256496/job132375965323已读取实际失败：本轮delivery静态导入roadmap继而引入安装前luaparse，现机械抽出无依赖metadata解析并保留兼容导出；三个真实发布器在拒绝所有npm包的冷进程反例先红后绿。协调器仅在显式ci:full、严格原生Full队列及精确当前pending Impact身份可验证时先登记schema4；已知失败仍拒绝，握手中失败/Fast切换撤销，全部CI与队列Full门禁不变。8文件224/224及Backlog/doctor/guidance/syntax通过。继续按当前HEAD独审后授权，不把旧失败或入队当合后成功。
 
 本轮统一接续659/660/662至661：保留状态对账与M7迁移、105容量依赖，转场采用108；100.1/88.1仍有待验项保持进行中。独审发现并修复ready缺口、隐藏头像等待及牌组入口重叠，旧共享idle选角整套合同保留隔离重放，当前新构图另验。证据docs/evidence/pr-integration-cleanup-20261114.md；未宣称Hosted或产品设备通过。
+
+2026-11-15 本轮按实际合并事件复核：PR661精确独审58a30edf/base9f2的原生授权收据，经原verify:delivery --merged实际返回merged_passed，squash e65d9b98；原生队列43605179989与push Full43615128387均success。独立/root/engineering_queue_audit纯verifyMergedDelivery复算state=merged_passed/errors=[]，因此仅补末项机制交付AC5并结项。后续Backlog同步因调用树HEAD ec5非e65拒绝是正确保护，未覆盖较新任务；本轮以CLI按当前快照记录收口。设备、当前发行候选或其他任务不被此机制完成替代。
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+已有状态对账机制及独立复审、当前精确合并/原生队列/合后Full均已取证，5项AC完成；本轮只收口漏同步，不重写工具，不认证游戏设备。
+<!-- SECTION:FINAL_SUMMARY:END -->
