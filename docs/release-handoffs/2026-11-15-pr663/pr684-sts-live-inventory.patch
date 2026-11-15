@@ -1,0 +1,19 @@
+--- a/tests/sts-style-source-epoch.test.mjs
++++ b/tests/sts-style-source-epoch.test.mjs
+@@ -1,5 +1,5 @@
+ import test from 'node:test';
+-import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
++import {integratedRead,integratedCiProof,integratedPriorInventory,integratedCurrentInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
+ import assert from 'node:assert/strict';
+ import {createHash} from 'node:crypto';
+ import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
+@@ -26,7 +26,8 @@
+ test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
+  assertIntegratedCurrent();
+  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+- assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
++ // The authenticated outer Release inventory is live; integratedCiProof remains frozen.
++ assert.deepEqual(rawJs,integratedCurrentInventory('js'));assert.deepEqual(rawLua,integratedCurrentInventory('lua'));
+  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
+   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
+   if(target==='release'&&kind==='js'&&added.length===0){

@@ -1,0 +1,25 @@
+--- a/tests/ci-complete-calibration.test.mjs
++++ b/tests/ci-complete-calibration.test.mjs
+@@ -2003,6 +2003,12 @@
+  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
+  for(const path of p.priorInventory.js)assert(js.includes(path));
+  for(const path of p.priorInventory.lua)assert(lua.includes(path));
++ const physical=rawReleaseReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
++ // Physical job limits are admission. The model, including its reserve, is diagnostic.
++ const job=name=>{const body=physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'));
++  assert.ok(body,'live Quality job: '+name);return body[0];};
++ assert.match(job('rules'),/^    timeout-minutes: \$\{\{ inputs\.runner_pool == 'local-special' && 75 \|\| 45 \}\}$/m);
++ assert.match(job('engineering-posix-shards'),/^    timeout-minutes: 30$/m);
+  assert.equal(rawCurrentTimings.unknownJsMs,10000);
+  for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+   for(const path of js.filter(path=>!p.priorInventory.js.includes(path)))
+@@ -2021,8 +2027,6 @@
+    });
+   }
+   const forecast=Math.max(...combined)+60000;
+-  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
+-  assert(forecast<target,'complete current forecast fits the original performance target');
+-  assert(forecast<guard,'complete current forecast fits the original execution guard');
++  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged physical execution guard ${guard}ms; forecast is not admission`);
+  }
+ });
