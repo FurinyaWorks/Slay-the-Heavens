@@ -1,0 +1,688 @@
+{
+  "schemaVersion": 1,
+  "kind": "CI_ONLY_PC06_EXACT_CONTINUATION",
+  "actualReleaseBase": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "actualReleaseTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "actualReleaseParent": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "frozenProduct": "21d48c4e41d0f2879acd4824a60e251c739433e8",
+  "frozenProductTree": "22bb3246cc90a468ffff6eeaf1f03f4bb47cb90b",
+  "productBindings": [
+    {
+      "path": "scripts/official-battle-hud.mjs",
+      "sha256": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+      "sizeBytes": 7778,
+      "gitBlob": "2494d0a304f7cf7c4c63a50fb9d99eb1f133e99e"
+    },
+    {
+      "path": "tests/official-run-chrome.test.mjs",
+      "sha256": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+      "sizeBytes": 21984,
+      "gitBlob": "c11d705cada45cade6692a9ba68cfa9e78ed65b9"
+    }
+  ],
+  "packet": {
+    "path": "tests/helpers/pc06-settings-ci-source.json.gz",
+    "sha256": "cef63cfac0c079e6f95a913c20a897464833bac8012404c4062fbb7ddebf87eb",
+    "sizeBytes": 35880,
+    "records": 4,
+    "currentTreeCommitted": false,
+    "currentRole": "two frozen product files plus two worktree CI seams; no invented committed CI after"
+  },
+  "leaf": {
+    "path": "tests/helpers/pc06-settings-ci-source.mjs",
+    "sha256": "7401ad9996e6ef866ed539288df690cfbc0f0c1f1d76a58b5b84aed0bca36594",
+    "sizeBytes": 3386,
+    "gitBlob": "6dc5dff875cda90f27f2760234fc020b377ae214"
+  },
+  "changedExecutingPaths": [
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/helpers/pc06-settings-ci-source.mjs",
+    "tests/helpers/pc06-settings-ci-source.json.gz"
+  ],
+  "priorBootstrap": {
+    "packetSha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6",
+    "unchangedRawGitBytes": true,
+    "registeredViews": 10,
+    "allCurrentViewsMatchActual1ccGit": [
+      {
+        "path": ".github/workflows/licenses.yml",
+        "sha256": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1",
+        "sizeBytes": 1149,
+        "gitBlob": "405aed5365a6bd6f1239a2d3f85395e158535aca"
+      },
+      {
+        "path": ".github/workflows/quality.yml",
+        "sha256": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a",
+        "sizeBytes": 29241,
+        "gitBlob": "68fdb599eb1d917b455d002927395b64b56e09ae"
+      },
+      {
+        "path": ".github/workflows/quick-feedback.yml",
+        "sha256": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248",
+        "sizeBytes": 2405,
+        "gitBlob": "02106c6f1c07bb63cfb1aee45e9206da4e08d1da"
+      },
+      {
+        "path": "tests/ci-complete-calibration.test.mjs",
+        "sha256": "24b94a9c5d510161e787e67c549cdda69f2bf1f0d40ca6e7b3668c471c8082cb",
+        "sizeBytes": 193436,
+        "gitBlob": "a6753dcc9e77d6166b9fd1d530f511eb4d178523"
+      },
+      {
+        "path": "tests/ci-posix-concurrency.test.mjs",
+        "sha256": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd",
+        "sizeBytes": 5218,
+        "gitBlob": "f9aabeeabec3569ff03d35011626fa7bd8a0f8a5"
+      },
+      {
+        "path": "tests/engineering-quality.test.mjs",
+        "sha256": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+        "sizeBytes": 13757,
+        "gitBlob": "6c1212184d799bdfd4c34174c7ae9745954dcb34"
+      },
+      {
+        "path": "tests/full-quality.test.mjs",
+        "sha256": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+        "sizeBytes": 19875,
+        "gitBlob": "a73701f1519cca2e417eee202db6f2ca3a33023b"
+      },
+      {
+        "path": "tests/helpers/integrated-ci-source.mjs",
+        "sha256": "65c09f7410a7a22ef3588a9806a8ac79d26fd7d78fe9fb326705e0273d34e6d9",
+        "sizeBytes": 6198,
+        "gitBlob": "f913526930596b85d6e10963a4b7bcb1804af31f"
+      },
+      {
+        "path": "tests/integrated-ci-source.cases.mjs",
+        "sha256": "a2b0c603a5a1ea3ac45f6cdd003024d86180c0f25a5456822fa8402fdf64b733",
+        "sizeBytes": 6255,
+        "gitBlob": "74a96bdfb647a7f7d27673ef87df4e52121ceb2c"
+      },
+      {
+        "path": "tests/quick-feedback.test.mjs",
+        "sha256": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
+        "sizeBytes": 17817,
+        "gitBlob": "7853d6a6094b2d53c22adf64aca1ff8fb486341f"
+      }
+    ],
+    "leafUnchanged": {
+      "path": "tests/helpers/release-bootstrap-ci-source.mjs",
+      "sha256": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08",
+      "sizeBytes": 3932,
+      "gitBlob": "df6b69f495d50971ef12dc25a9af8e7dd1f769d0"
+    }
+  },
+  "archives": {
+    "count": 93,
+    "originalCompleteArchives": 92,
+    "bootstrapAddedPin": "tests/helpers/release-bootstrap-ci-source.json.gz",
+    "physicalGitGzipCount": 91,
+    "lfs": [
+      {
+        "path": "tests/helpers/closeout-ci-source.json.gz",
+        "oid": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+        "sizeBytes": 2848271
+      },
+      {
+        "path": "tests/helpers/release-source-epoch.json.gz",
+        "oid": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+        "sizeBytes": 2587324
+      }
+    ],
+    "entries": [
+      {
+        "path": "tests/helpers/battle-queue-ci-source-epoch.json.gz",
+        "sha256": "4f5966d2b04fbdd564d0455aa318c3947468906581b6fa7a6a8d334f18f44db4",
+        "sizeBytes": 303023
+      },
+      {
+        "path": "tests/helpers/battle-queue-source-epoch.json.gz",
+        "sha256": "e82f3c47155271784ed25d87abcf19306e7a752fe1cb5aab5f3d269d26fdd42d",
+        "sizeBytes": 157852
+      },
+      {
+        "path": "tests/helpers/closeout-ci-source.json.gz",
+        "sha256": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+        "sizeBytes": 2848271
+      },
+      {
+        "path": "tests/helpers/closeout-source-epoch.json.gz",
+        "sha256": "36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a",
+        "sizeBytes": 2240696
+      },
+      {
+        "path": "tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+        "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+        "sizeBytes": 738042
+      },
+      {
+        "path": "tests/helpers/combined-epoch/source-epoch.json.gz",
+        "sha256": "2085260a5aabde4476411172eb0b2e6fd3afcaa991a3cafc52f3ab0e98755c73",
+        "sizeBytes": 1127284
+      },
+      {
+        "path": "tests/helpers/component-alias-ci-source-epoch.json.gz",
+        "sha256": "3d11025b87ec35e234f99eb3df53dd862a69b75778c88a714db9b694a9c2f93d",
+        "sizeBytes": 51070
+      },
+      {
+        "path": "tests/helpers/component-ui-ci-source-epoch.json.gz",
+        "sha256": "498384c890d22428b10a9c19f6720712d3e568cf871179e447c69fd8b92ea520",
+        "sizeBytes": 436099
+      },
+      {
+        "path": "tests/helpers/component-ui-source-epoch.json.gz",
+        "sha256": "df2a27ff146ecbee4fb01054eb1071458ffe491ece1bb50fa6fb33d19df74d4a",
+        "sizeBytes": 1538232
+      },
+      {
+        "path": "tests/helpers/defect-actor-ci-source-epoch.json.gz",
+        "sha256": "c7962302aa0363004b6d4c8e6afcb5a27431bf47b2eac2f2d3fdc2463566d638",
+        "sizeBytes": 193713
+      },
+      {
+        "path": "tests/helpers/defect-actor-source-epoch.json.gz",
+        "sha256": "c41e28bf8a5d51f0e29f80b48f31cc5d416741ec8d54f4f6c03ce924d1027e17",
+        "sizeBytes": 28029
+      },
+      {
+        "path": "tests/helpers/defect-final-ci-source-epoch.json.gz",
+        "sha256": "88894fcfdcc23ba6383ea5decd456c920dc296aadde209fc58ee8406480d7f75",
+        "sizeBytes": 80331
+      },
+      {
+        "path": "tests/helpers/defect-final-source-epoch.json.gz",
+        "sha256": "a656584db182a608b75f66a46a8d31ae4d4bbaba6c64d376d1d47a011c7833ce",
+        "sizeBytes": 6804
+      },
+      {
+        "path": "tests/helpers/effects-target-group-source-epoch.json.gz",
+        "sha256": "f22d0328aedd7b7e9c785482271483f9f083c5c6abd7cd55d19933b24a48c0c2",
+        "sizeBytes": 5195
+      },
+      {
+        "path": "tests/helpers/encounter-formation-ci-source-epoch.json.gz",
+        "sha256": "cd039ffe6b0f7fd2959776b84cf199290b3621b8a82266bc6929876e1ce46fbf",
+        "sizeBytes": 173703
+      },
+      {
+        "path": "tests/helpers/encounter-formation-source-epoch.json.gz",
+        "sha256": "6d082e4f921213a60a41ab1f0a4109a49645c1014cc83f315178937ca0885132",
+        "sizeBytes": 2719
+      },
+      {
+        "path": "tests/helpers/epochs/actor/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+        "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+        "sizeBytes": 738042
+      },
+      {
+        "path": "tests/helpers/epochs/colorless/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+        "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+        "sizeBytes": 738042
+      },
+      {
+        "path": "tests/helpers/epochs/develop/tests/fixtures/ci-complete-calibration.json.gz",
+        "sha256": "c0b66bf5ffd13baaea0f9a035dd43636f7419a0b607cc4eab3f0c1f73155d5ab",
+        "sizeBytes": 308165
+      },
+      {
+        "path": "tests/helpers/epochs/develop/tests/fixtures/ci-host-timing-calibration.json.gz",
+        "sha256": "70cf6cbf502ed85cf7884095cb603a92f910e9b6cb5b311cee2b4b0f1118659f",
+        "sizeBytes": 80775
+      },
+      {
+        "path": "tests/helpers/epochs/develop/tests/fixtures/delivery-source-composition.json.gz",
+        "sha256": "d7bf28b224aaec821ac215f81adcef436fff51b009c21ef8b75d50bd16c2fa4b",
+        "sizeBytes": 900350
+      },
+      {
+        "path": "tests/helpers/epochs/develop/tests/helpers/m7-core-final-before.json.gz",
+        "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+        "sizeBytes": 32990
+      },
+      {
+        "path": "tests/helpers/epochs/develop/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+        "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+        "sizeBytes": 738555
+      },
+      {
+        "path": "tests/helpers/epochs/develop/tests/helpers/relic-query-baseline-391306af.json.gz",
+        "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+        "sizeBytes": 19460
+      },
+      {
+        "path": "tests/helpers/epochs/native/tests/helpers/m7-core-final-before.json.gz",
+        "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+        "sizeBytes": 32990
+      },
+      {
+        "path": "tests/helpers/epochs/native/tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+        "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+        "sizeBytes": 738555
+      },
+      {
+        "path": "tests/helpers/epochs/native/tests/helpers/relic-query-baseline-391306af.json.gz",
+        "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+        "sizeBytes": 19460
+      },
+      {
+        "path": "tests/helpers/epochs/potion/tests/helpers/colorless-catalog-before-2ad07111.json.gz",
+        "sha256": "88c0ab46a951aacc45a2cf8e4a2d2c7a6ac0b5ebc153dcdf87ac600ad6ee8a95",
+        "sizeBytes": 738042
+      },
+      {
+        "path": "tests/helpers/epochs/powerShop/tests/helpers/power-shop-before-2c85.json.gz",
+        "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c",
+        "sizeBytes": 13460
+      },
+      {
+        "path": "tests/helpers/foundation-fix-ci-source-epoch.json.gz",
+        "sha256": "bb40135a5ef6a5286f75cdf3035a451702f79cdcc36dca90d071d85f09ce30a3",
+        "sizeBytes": 59704
+      },
+      {
+        "path": "tests/helpers/golden-idol-ci-source-epoch.json.gz",
+        "sha256": "04f512415676b3110285c40f6c19324010c1f5ecf7ffe68e063bf6aedd17b24a",
+        "sizeBytes": 183683
+      },
+      {
+        "path": "tests/helpers/golden-idol-current-ci-source-epoch.json.gz",
+        "sha256": "c422925a6eed65e71973693175391884442636d28a583cd1633f4937a5102216",
+        "sizeBytes": 327638
+      },
+      {
+        "path": "tests/helpers/golden-idol-current-source-epoch.json.gz",
+        "sha256": "b46c8ed0a17d8dcfa442861b4452cae2250b9ce2da31ef0bb1619be7e416fc46",
+        "sizeBytes": 2099
+      },
+      {
+        "path": "tests/helpers/golden-idol-source-epoch.json.gz",
+        "sha256": "567be86608fc6c7f9f29a42d81f80ee77b3f769367720501f4ecbac55c1be313",
+        "sizeBytes": 2087
+      },
+      {
+        "path": "tests/helpers/integrated-ci-source.json.gz",
+        "sha256": "f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35",
+        "sizeBytes": 3222350
+      },
+      {
+        "path": "tests/helpers/joint-ui-ci-source-epoch.json.gz",
+        "sha256": "9fee4e85665d37746b68368fced892a316db490c8e01273328391bc57acfd840",
+        "sizeBytes": 851319
+      },
+      {
+        "path": "tests/helpers/joint-ui-source-epoch.json.gz",
+        "sha256": "67777c3571d86bc82427fbb6ac5cd2254ed480b58285f41aa17d05d7490413f9",
+        "sizeBytes": 212019
+      },
+      {
+        "path": "tests/helpers/joust-ci-source-epoch.json.gz",
+        "sha256": "12bcdf820c12b4aa5abc94ee5eaca48962c536cd0c77f604ca8a632c8828839b",
+        "sizeBytes": 72918
+      },
+      {
+        "path": "tests/helpers/joust-source-epoch.json.gz",
+        "sha256": "fa0c3a6e28217ca6c5c7731c399f911cb6008b84c2c6d1afa5f3c042dee47a0d",
+        "sizeBytes": 1780
+      },
+      {
+        "path": "tests/helpers/m7-core-final-before.json.gz",
+        "sha256": "430bd33b94081665bcaadfcc284cf4c4fd019b3f4c84f44195d898e4083c8318",
+        "sizeBytes": 32990
+      },
+      {
+        "path": "tests/helpers/menu-presentation-source.json.gz",
+        "sha256": "abcc561be5a49560684b70bc68a1b320485f8084039a64910d05ff9810fc8e9b",
+        "sizeBytes": 3387
+      },
+      {
+        "path": "tests/helpers/menu-red-before-integration-production-source.json.gz",
+        "sha256": "ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae",
+        "sizeBytes": 27364
+      },
+      {
+        "path": "tests/helpers/menu-red-ci-source.json.gz",
+        "sha256": "c56d05ae2533f27a4d083c5331b54539851c69ba6535783da83c7965261c9486",
+        "sizeBytes": 397203
+      },
+      {
+        "path": "tests/helpers/menu-red-production-source.json.gz",
+        "sha256": "eac84b07c06da9afb0f37a63ac8b57ea4b88e825ec57f6efe50a00d9c2bae5d7",
+        "sizeBytes": 27928
+      },
+      {
+        "path": "tests/helpers/native-preview-ci-source.json.gz",
+        "sha256": "3929e00baeed8de4f56845930c224c67c27e0a5cc98d18ea5097bfd9f8e4b39b",
+        "sizeBytes": 9076
+      },
+      {
+        "path": "tests/helpers/noncombat-ci-source-epoch.json.gz",
+        "sha256": "4ec323d272d519731a8e6f8848cb6a3b0985d57b560834fff75062ce856da90c",
+        "sizeBytes": 100690
+      },
+      {
+        "path": "tests/helpers/noncombat-demand-ci-source-epoch.json.gz",
+        "sha256": "05ef031199d3504977cf07bb78a476a19accf4a37cf9882a5a7762e2eb8e1efb",
+        "sizeBytes": 106427
+      },
+      {
+        "path": "tests/helpers/noncombat-demand-source-epoch.json.gz",
+        "sha256": "152c60444fc95fbf5b5aa68f5eaf82547cab9051dd9845eb0512dd2125c8ade1",
+        "sizeBytes": 21526
+      },
+      {
+        "path": "tests/helpers/noncombat-source-epoch.json.gz",
+        "sha256": "748b7965ddf39f1e297da92094f1ed865204177ca344aacca7e78a826d78f279",
+        "sizeBytes": 13929
+      },
+      {
+        "path": "tests/helpers/official-assets-ci-source-epoch.json.gz",
+        "sha256": "bc5079ac224d1090c0f7761ca5808003160a5b2d1a0eb79e32c52bcd6f92da1b",
+        "sizeBytes": 189787
+      },
+      {
+        "path": "tests/helpers/official-assets-flow-ci-source-epoch.json.gz",
+        "sha256": "2efc7dc0e787d86f49c27863cd936be82fbd90f1902331345528936335b516c8",
+        "sizeBytes": 136110
+      },
+      {
+        "path": "tests/helpers/official-banner-source-epoch.json.gz",
+        "sha256": "3f1f13b24b1fd05e01706937f14e905c7003d193b446b2133e8ec25548e91628",
+        "sizeBytes": 8809
+      },
+      {
+        "path": "tests/helpers/official-battle-alignment-source-epoch.json.gz",
+        "sha256": "f834dafca07c62a1b807cbc7df3ae8619f3043a1627b8fb5dee5f464c420d458",
+        "sizeBytes": 45795
+      },
+      {
+        "path": "tests/helpers/official-battle-feedback-source-epoch.json.gz",
+        "sha256": "f9afdd64e5af540072b468709bda9523b2cd58d4c308692a9b10ee339ac176eb",
+        "sizeBytes": 55265
+      },
+      {
+        "path": "tests/helpers/official-battle-interaction-source-epoch.json.gz",
+        "sha256": "47ea3088416992ca43c97adab9ac5c724bcc4ccac1d415ec8a7d4a5328d34505",
+        "sizeBytes": 37916
+      },
+      {
+        "path": "tests/helpers/official-battle-local-render-source-epoch.json.gz",
+        "sha256": "d7c993c86bcb8c2b40b68e5ec127ae774f64f43b3a87e883ad32fa3c6d766b35",
+        "sizeBytes": 38013
+      },
+      {
+        "path": "tests/helpers/official-battle-mouse-aim-source-epoch.json.gz",
+        "sha256": "8816765be73763e6172bb022f40118dfdfe239b449dfa0617b4b6400750d4c71",
+        "sizeBytes": 10715
+      },
+      {
+        "path": "tests/helpers/official-battle-pile-source-epoch.json.gz",
+        "sha256": "2fbf3dba8ff4992cae4eccef2d8c27af70fc7a22c726fa72ece6fe5dfb3a1ccd",
+        "sizeBytes": 27857
+      },
+      {
+        "path": "tests/helpers/official-battle-potion-hud-source-epoch.json.gz",
+        "sha256": "873e1d2eb7352ba984d180141f04ef8167ff89ecce097a2ae7986a2d5c274a75",
+        "sizeBytes": 32558
+      },
+      {
+        "path": "tests/helpers/official-battle-response-source-epoch.json.gz",
+        "sha256": "9af7515d8fae9402c8751a8efdcaadc1a5d1142c095fa2e11f34ec6d92f30137",
+        "sizeBytes": 29357
+      },
+      {
+        "path": "tests/helpers/official-battle-shell-source-epoch.json.gz",
+        "sha256": "6184f4e377056b5e9c8a25ab4282556c152f1228a1436fa2cfa67196697dde22",
+        "sizeBytes": 12881
+      },
+      {
+        "path": "tests/helpers/official-battle-source-epoch.json.gz",
+        "sha256": "5e74438e077be47b5b176287b6ceeb71e69447fa32ceedf2b0e595c4499d3c80",
+        "sizeBytes": 36743
+      },
+      {
+        "path": "tests/helpers/official-battle-target-source-epoch.json.gz",
+        "sha256": "52696fada35693712594a228b94ae5bf17f949049b47c01d95e5b16de5ba3c43",
+        "sizeBytes": 7388
+      },
+      {
+        "path": "tests/helpers/official-ui-repair-source-epoch.json.gz",
+        "sha256": "7acca01bc985f6bb6bea90361374f360d7ef3e746583bd8a8da7c459951f0765",
+        "sizeBytes": 188582
+      },
+      {
+        "path": "tests/helpers/posix15-shape-source-epoch.json.gz",
+        "sha256": "9f75ddcfc0b6b5ef19c1750efab7d7a5360d9da4825a93de3c9cfe9e702e9b06",
+        "sizeBytes": 468
+      },
+      {
+        "path": "tests/helpers/power-shop-before-2c85.json.gz",
+        "sha256": "9a0e812b775133a4052eaba470bbc6a82eb4b447b5d7cb0f05e4c0bdbb98a52c",
+        "sizeBytes": 13460
+      },
+      {
+        "path": "tests/helpers/purge-query-baseline-a27b86a5.json.gz",
+        "sha256": "7ddb2bf87ff3d7a56a80f34a4bb06e6249e7dd7d0811afd391afad16a5f39dee",
+        "sizeBytes": 5372
+      },
+      {
+        "path": "tests/helpers/release-source-epoch.json.gz",
+        "sha256": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+        "sizeBytes": 2587324
+      },
+      {
+        "path": "tests/helpers/relic-equip-ci-source-epoch.json.gz",
+        "sha256": "541ff621ffe4b9413b90a284949dfb496cdfbe06cb05826307b56b0ac044fd47",
+        "sizeBytes": 74390
+      },
+      {
+        "path": "tests/helpers/relic-equip-source-epoch.json.gz",
+        "sha256": "c7f30e9773f4f08d3cf33e1ece1a1be425fa04389d0144bb285ff70643d06863",
+        "sizeBytes": 3289
+      },
+      {
+        "path": "tests/helpers/relic-lifecycle-baseline-391306af.json.gz",
+        "sha256": "30c35c0b2298dc33ee3227a5dfc7aa32b5e0959fe11dbe30aef17a5af1ce5067",
+        "sizeBytes": 738555
+      },
+      {
+        "path": "tests/helpers/relic-lifecycle-baseline-a27b86a5.json.gz",
+        "sha256": "68112b06f51194a9523ea287549c29c2871eec56164fa21ace64a1f576efaaac",
+        "sizeBytes": 739353
+      },
+      {
+        "path": "tests/helpers/relic-query-baseline-391306af.json.gz",
+        "sha256": "df89de0002fee32b9300489b95432ce4287c467435af804f481241ee3c3bbdf2",
+        "sizeBytes": 19460
+      },
+      {
+        "path": "tests/helpers/room-ui-source-epoch.json.gz",
+        "sha256": "0b3cb34acf85e814bd3e7d82254e9586a6a60c78e20fd95603b2e96e877d7bfc",
+        "sizeBytes": 221173
+      },
+      {
+        "path": "tests/helpers/run-hud-before-ci-repair-ci-source.json.gz",
+        "sha256": "fa385b20797f37ca5a8c0a406d6ecdad6b4c0539c27a825e751b7eadeb4f5408",
+        "sizeBytes": 280679
+      },
+      {
+        "path": "tests/helpers/run-hud-ci-source.json.gz",
+        "sha256": "685bddcc6bed77545eadc456f82ed4de10a75402cfcf597533190eb1732cbe3b",
+        "sizeBytes": 292579
+      },
+      {
+        "path": "tests/helpers/selection-ci-source.json.gz",
+        "sha256": "02ba563b57383e8ab328051dfa29a3a0d57769a60b94cb4a265cb8ff7514881e",
+        "sizeBytes": 128931
+      },
+      {
+        "path": "tests/helpers/session-menu-source-epoch.json.gz",
+        "sha256": "b6b8f7f14c7f541fcd686b881258c6f625f1a0bfc32239e9d15dc6aa5eb33d8b",
+        "sizeBytes": 84697
+      },
+      {
+        "path": "tests/helpers/session-reward-before.json.gz",
+        "sha256": "d0a42f51486f79bca22b34a8f0457ca0f78e4917310ad72e70ef89c836a9b57c",
+        "sizeBytes": 5816
+      },
+      {
+        "path": "tests/helpers/seven-refactor-source-epoch.json.gz",
+        "sha256": "98ce5a13a217c5b20bbbddf93811d5fc2dda4117bb465c33c5ad4c979608c4bd",
+        "sizeBytes": 107170
+      },
+      {
+        "path": "tests/helpers/shop-deck-before-ci-repair-source-epoch.json.gz",
+        "sha256": "94d6f85a83a1593bbbaf34ae13986ddfbca97312e183b4e7f6b08ca58b8d911b",
+        "sizeBytes": 39331
+      },
+      {
+        "path": "tests/helpers/shop-deck-four-source-epoch.json.gz",
+        "sha256": "51034e9da34cbe0ab153f00ab66a16918db1097ef7173932ab326cc6c2076f2b",
+        "sizeBytes": 34735
+      },
+      {
+        "path": "tests/helpers/shop-deck-source-epoch.json.gz",
+        "sha256": "f5546b3bd0264af9e4fff867637fe217e4e7c32482e72104d7d3c1f3cc43a03b",
+        "sizeBytes": 39459
+      },
+      {
+        "path": "tests/helpers/silent-final-ci-source-epoch.json.gz",
+        "sha256": "061f63eb40dd03dfecb8bdaf60ecc722f49da40ed75645568666fa29bddf8c2e",
+        "sizeBytes": 74632
+      },
+      {
+        "path": "tests/helpers/silent-final-source-epoch.json.gz",
+        "sha256": "8d70652c025b8075e2a03936f12c2509dbca427abd555e472f197b1ac4850b49",
+        "sizeBytes": 6705
+      },
+      {
+        "path": "tests/helpers/silent-tactics-source-epoch.json.gz",
+        "sha256": "046c798aed3ded45bf29ad696c777551102f74066a262174af3d9990bdabb1c7",
+        "sizeBytes": 5902
+      },
+      {
+        "path": "tests/helpers/sts-feedback-ci.json.gz",
+        "sha256": "c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59",
+        "sizeBytes": 280213
+      },
+      {
+        "path": "tests/helpers/sts-feedback-production.json.gz",
+        "sha256": "3acda15f5db142eeabb48f9a494d1526bde5565eb7e2272d5a36277b7394ec39",
+        "sizeBytes": 115080
+      },
+      {
+        "path": "tests/helpers/sts-style-ci-source.json.gz",
+        "sha256": "4dc022273fd7ca381b1de6bca1fdd1c9eb49ceb94df292d9e490b4ab2abc80f5",
+        "sizeBytes": 632971
+      },
+      {
+        "path": "tests/helpers/sts-style-prior-runtime.json.gz",
+        "sha256": "10bf3b7d960e4c02ae2d64e26d8d5f16824439b9396949973f08ccec1c9d9330",
+        "sizeBytes": 4216851
+      },
+      {
+        "path": "tests/helpers/sts-style-source-epoch.json.gz",
+        "sha256": "cc47fd96c79d7a604d2c5c269b012354d887762aecbe2990ac89fbf2ac74c1a9",
+        "sizeBytes": 195169
+      },
+      {
+        "path": "tests/helpers/watcher-flow-source-epoch.json.gz",
+        "sha256": "9e81602d086a81680830cf179a5d9f9f041bd56e0938b2d82eb196e50f73c015",
+        "sizeBytes": 7194
+      },
+      {
+        "path": "tests/helpers/release-bootstrap-ci-source.json.gz",
+        "sha256": "868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6",
+        "sizeBytes": 132956
+      }
+    ]
+  },
+  "retainedSources": {
+    "tests/helpers/release-bootstrap-ci-source.mjs": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08",
+    "tests/helpers/copy-integration-source-closure.mjs": "17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0"
+  },
+  "rawInventory": {
+    "js": 876,
+    "lua": 1423,
+    "newRawParentFiles": 0,
+    "allPathsAndUniqueness": "asserted by unchanged bootstrap raw guard and new exact packet comparison, with missing/duplicate/foreign negatives preserved",
+    "forecast": "No new timing or workload budget; unknown10s/partition/workflow stay unchanged; forecasts remain diagnostic"
+  },
+  "productionEpoch": {
+    "paths": 352,
+    "owners": 116,
+    "status": "unchanged; real isolated copy imports complete exact proof and contains no new CI leaf/packet"
+  },
+  "checks": {
+    "source-initial.log": {
+      "tests": 6,
+      "pass": 5,
+      "fail": 1
+    },
+    "source-green.log": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0
+    }
+  },
+  "command": "FixedNode24 --test tests/integrated-ci-source.cases.mjs; only6 source/CI/copy cases, no product/Host replay",
+  "preservedOriginalFailure": {
+    "result": "product21d rawsource3 cases:1 failed2 passed",
+    "path": "product-existing-ci-source-failure.log.gz",
+    "reason": "Original completecurrent guard rejected frozen official-run-chrome test SHA2570e40d versus old4cac72f1"
+  },
+  "initialContinuationFailure": {
+    "path": "source-initial.log.gz",
+    "result": "5pass1fail",
+    "reason": "New retained-source negative callback appended empty string to non-target Buffer values, corrupting an earlier archive read. Corrected callback preserves non-target binary values; no guard or expectation weakened."
+  },
+  "originalAssertionsPreserved": "After removing only new tests/imports and exact old-view read plumbing, the complete original3-case source equals actual1cc bytes. All old packet before/current records remain untouched; after tree is freshly authenticated before old bootstrap/current checks receive their exact predecessor strings.",
+  "notChanged": [
+    "frozen2 productblobs",
+    "Lua/Theme/data/config/workflows",
+    "production sourceepoch",
+    "bootstrap868f packet and helper",
+    "copyIntegrationSourceClosure and production dependency list",
+    "old92 archive bytes/before/current views",
+    "CI timings/unknown/budgets/partition"
+  ],
+  "notRun": [
+    "3+7 product tests",
+    "product Host",
+    "Fast/Full",
+    "all CI calibration",
+    "official import/newready/PC/mobile",
+    "GUI/MCP",
+    "Backlog mutation",
+    "push/PR"
+  ],
+  "evidence": {
+    "source-initial.log.gz": {
+      "rawSha256": "22a5c7633a459c2ea9e7670f598d7dd788d5201ecd809b0a8808e08137f3f2c1",
+      "rawBytes": 2024,
+      "sha256": "e3a4b8bda53b01b303ebd10260526f97b3d27b21d0ac5686828c892e64d86508",
+      "sizeBytes": 898
+    },
+    "source-green.log.gz": {
+      "rawSha256": "f60f7a2d5c50695129a5c535ac86a4e95b8acfba7ee3d5381b8cedc8a6cac736",
+      "rawBytes": 814,
+      "sha256": "8dbb46fcae092102540a7b0bb771914bc62c1fde07a2377d9e74bfc57388d03e",
+      "sizeBytes": 455
+    },
+    "product-existing-ci-source-failure.log.gz": {
+      "source": "docs/evidence/pc06-settings-icon-20261116/existing-ci-source.log.gz",
+      "sha256": "d1866e45dfa2e38364694912f203fd2fa275ac35058a33b9ec6213179411dfb1",
+      "sizeBytes": 823,
+      "rawSha256": "fe7b91d332f590acb1a256238562e92faa834ef24dbdaf9a2d9e51115a9cc007",
+      "rawBytes": 1774
+    },
+    "product-independent-review.json.gz": {
+      "source": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\review-pc06-settings-icon.json",
+      "sha256": "1d1fb8916e53eca43fde2d4c476eae03e10a74a39426f563d3c1988e9a92b0c2",
+      "sizeBytes": 6151,
+      "rawSha256": "d63b0ba7edc9ca95542082944dc4742e66f261ddbec02d5f219afa6d70d4a986",
+      "rawBytes": 17793
+    }
+  }
+}
