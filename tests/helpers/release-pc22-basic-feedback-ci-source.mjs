@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-pc22-basic-feedback-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'4e03203eab393a895a40a894d26e505182dbc36107ff4c9658e396bde0d76f75','complete release PC22 basic feedback CI continuation');
+assert.equal(hash(bytes),'313d904add6bb891c377790c55f0e64b28f0b429d78da630c7b9d57ae2748790','complete release PC22 basic feedback CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
