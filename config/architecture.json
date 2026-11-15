@@ -1,5 +1,9 @@
 {
   "layers": {
+    "abyss_compendium_model": "ui",
+    "abyss_compendium_input": "ui",
+    "abyss_compendium_card": "ui",
+    "abyss_compendium_actions": "ui",
     "abyss_compendium_ui": "ui",
     "abyss_compendium_host": "ui",
     "abyss_component_pages": "ui",

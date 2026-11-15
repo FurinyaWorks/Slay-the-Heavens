@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "normalization": "LF",
+  "baseCommit": "9f2f44e4c79789fbcb64a515938765dbc240f830",
+  "parentCommit": "6d4c477cb7586ce7062e14a728c0a89ae3e72737",
+  "sourceTreeCommitted": false,
+  "scope": "Current feature snapshot only; does not update the historical epoch or authorize renderer/device behavior.",
+  "addedModules": {
+    "src/lua/abyss_compendium_actions.lua": {
+      "before": null,
+      "after": {
+        "sha256": "8190f3babb4f2daa72e0788f62599bc1721114b2264f46f017d46c74d59e5906",
+        "gitBlob": "e381df51090ac5f4a6c5a2e0dc7cbb704dc5b583"
+      }
+    },
+    "src/lua/abyss_compendium_card.lua": {
+      "before": null,
+      "after": {
+        "sha256": "ebac313d044ce4548c8848242e044bcd0d99946d5c84a38b5b1f65ba1cbee0a0",
+        "gitBlob": "30766001a634cd26bbb6c34884d0c2c6b2e9ce78"
+      }
+    },
+    "src/lua/abyss_compendium_host.lua": {
+      "before": null,
+      "after": {
+        "sha256": "c13f6c4d5cb66dd62557f88df298fcaf43841817d5e58ecffda62f175771d75e",
+        "gitBlob": "ab2b271e12d0c73e255be0653bb94b04924471ca"
+      }
+    },
+    "src/lua/abyss_compendium_input.lua": {
+      "before": null,
+      "after": {
+        "sha256": "e415c63211f576815211180eab1fa3fe64e84be188215daebb5094fb14f9691c",
+        "gitBlob": "8dec19cae8528d5997f79d1b09fa301b8d1c526e"
+      }
+    },
+    "src/lua/abyss_compendium_model.lua": {
+      "before": null,
+      "after": {
+        "sha256": "7816b1a82e952185f72e7838877bbc41577790c096beb268da67e51b0c34957f",
+        "gitBlob": "7ca3120221731604322ba8f4f6cf8ba498217c34"
+      }
+    },
+    "src/lua/abyss_compendium_ui.lua": {
+      "before": null,
+      "after": {
+        "sha256": "e97be03f2a41f7bc6f0d091eab9072aba762ce5c3e52b6336ae61e368362e92d",
+        "gitBlob": "fb129d4cc99bd24c459589303c5833d8f3403250"
+      }
+    }
+  }
+}

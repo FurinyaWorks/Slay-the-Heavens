@@ -186,7 +186,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     templates.push(battlePileCardTemplate(layout,templates[0]));
     assertOfficialRunContracts([battle,layout,...templates]);
   }
-  attachCompendium(layout,theme);
+  attachCompendium(layout,theme,templates);
   for (const tree of [battle, layout, ...templates]) assertNativeUiCapacity(tree);
   const rendered = spawnSync(python, ['tools/render_traveler_cards.py', 'data/cards.json', 'data/presentation/traveler.zh-CN.json'],
     { encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PYTHONUTF8: '1' } });

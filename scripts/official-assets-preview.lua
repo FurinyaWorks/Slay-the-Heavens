@@ -34,7 +34,7 @@ local function dump(c,s)
   end
  end
  local states={};if s.kind=='presetButton' then for _,v in ipairs(s.children or {})do states[#states+1]=v end end
- return {name=s.name,kind=s.kind,visible=c.visible,position={c.x or (s.position or {0,0})[1],c.y or (s.position or {0,0})[2]},size={c.sizeDeltaX or s.size[1],c.sizeDeltaY or s.size[2]},scale=c.scale,image=c.imageId or s.image,colour=hex(c.imageColor)or s.colour,rotation=c.localRotationZ or(c.rotation and c.rotation[3]),opacity=s.opacity,interactable=c.kind~='cursorArea' and c.interactable or nil,raycastTarget=c.raycastTarget,states=states,text=s.text and {content=c.text,fontSize=s.text.fontSize,minFontSize=s.text.minFontSize,colour=hex(c.fontColor)or s.text.colour,align=s.text.align,valign=s.text.valign},children=children}
+ return {name=s.name,kind=s.kind,visible=c.visible,position={c.x or (s.position or {0,0})[1],c.y or (s.position or {0,0})[2]},size={c.sizeDeltaX or s.size[1],c.sizeDeltaY or s.size[2]},scale=c.scale or s.scale,image=c.imageId or s.image,colour=hex(c.imageColor)or s.colour,rotation=c.localRotationZ or(c.rotation and c.rotation[3]),opacity=s.opacity,interactable=c.kind~='cursorArea' and c.interactable or nil,raycastTarget=c.raycastTarget,states=states,text=s.text and {content=c.text,fontSize=c.fontSize or s.text.fontSize,minFontSize=s.text.minFontSize,colour=hex(c.fontColor)or s.text.colour,align=s.text.align,valign=s.text.valign},children=children}
 end
 local M={scenes={}}
 function M.capture(name,ui,root,provenance)

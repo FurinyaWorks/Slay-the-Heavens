@@ -1,0 +1,58 @@
+{
+  "parentCommit": "6d4c477cb7586ce7062e14a728c0a89ae3e72737",
+  "files": {
+    "tests/helpers/combined-epoch/source-epoch-runtime.mjs": "cd0852f7a2ce4d3506265756ced4c3cfa3fce59ffc1a4f2eefd451821ea6df66",
+    "tests/helpers/closeout-source-epoch.mjs": "23005392077d6fc5b590d62073c5f4f4fa7cdd7e1c6936ad192325396659e2e4",
+    "tests/helpers/closeout-source-closure.json": "fc32135eac6c8bc2a00e70ef5226f7badfb8ddd8772d286b29c0f6f255ad5e5e",
+    "tests/helpers/copy-integration-source-closure.mjs": "d9252b598822963810d9aebee26bcba95062841cd7e9cbe3dd96aec31657d432",
+    "tests/fixtures/compendium-ui-registration-continuation.json": "716f7b83eb9757fa841d9a62414649e721c1577479431029ac51fe10a5f97685",
+    "tests/compendium-registration-source-epoch.test.mjs": "32976f4afe655e1dd050c8a29c41c5116ba2cdab793030fce718c046fd7d6340",
+    "tests/compendium-ui-source-slice.test.mjs": "7dec0a1527b51431b0233321ca1caf26ad52dafeaf4a775ac8ed58461e622988"
+  },
+  "logs": [
+    {
+      "file": "baseline-red.log",
+      "bytes": 124002,
+      "sha256": "7beb225d293a368dd4cc6aa8a8fb0ffa8d4fd95ececdfeaf40d6af4e6665614d",
+      "gzipSha256": "83b87bda394dad7bfe08d487487f0b20f859f18985fb4968beee700deb40030e"
+    },
+    {
+      "file": "baseline-final-red.log",
+      "bytes": 157533,
+      "sha256": "617f363a5b82753af1627aaf43211a2a79c8c185a943a8ac39bea854dff75958",
+      "gzipSha256": "0be60e845f8e76a9bc0bd048529f89eaf87d9d1d8efa76d62335296b33fd8952"
+    },
+    {
+      "file": "targeted-green.log",
+      "bytes": 11039,
+      "sha256": "f9a24f25aae5e03bd9bd96ef0b2e986efc8b6611049bec2097683a88b85782bb",
+      "gzipSha256": "38c900e08ae746c50298e14f3e8ff7d95265708b6f839750538145446460ce67"
+    },
+    {
+      "file": "paired-targeted.log",
+      "bytes": 4563,
+      "sha256": "6bce55058d18e1e69b20c4a1eac291927422fd67bd54060541fa1649b86b57e2",
+      "gzipSha256": "ce04f7c670331777eb50642a9327d88a7f62de605b537a730ef10af51cb2a933"
+    },
+    {
+      "file": "final-guards.log",
+      "bytes": 2624,
+      "sha256": "e38a7f478b763f04a0caf09bf4a72f43e1e2fdd50b00c6e81bcc164ae9601601",
+      "gzipSha256": "b495186be29bd37f2426b2f7243b8092c67694b416d026c05ffb81ea55262337"
+    }
+  ],
+  "results": {
+    "baselineFinal": {
+      "exit": 1,
+      "summary": [
+        "# tests 7",
+        "# pass 1",
+        "# fail 6"
+      ]
+    },
+    "pairedTargeted": "12/13 passed; warm failed fresh helper copy because files changed during the run; raw failure retained",
+    "finalGuards": "11/11 passed after freezing files: seven continuation guards, three real sourceSlice guards and the original warm Runtime case",
+    "historicalInverse": "The other five unchanged inverse cases passed in paired-targeted.log; not redundantly repeated"
+  },
+  "scope": "Source identity and old-proof preservation only; no official client/device/visual acceptance."
+}

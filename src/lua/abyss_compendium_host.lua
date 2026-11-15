@@ -35,7 +35,7 @@ function M.attach(host,root,data,presentation,event,platform)
         self:refresh()
         return true
     end
-    browser=UI.new(panel,data,presentation,event,{controller=host.controller,cursorEvents=platform.cursorEvents,
+    browser=UI.new(panel,data,presentation,event,{controller=host.controller,cursorEvents=platform.cursorEvents,platform=platform,
         disabled=function()return host.disabled end,onClose=function()return host:closeCompendium()end})
     host.compendium=browser
     function host:openMenu(...)
@@ -54,7 +54,7 @@ function M.attach(host,root,data,presentation,event,platform)
     end
     function host:syncController()
         if browser.visible then
-            if self.controller then self.controller:sync('compendium',function()return self:closeCompendium()end)end
+            if self.controller then self.controller:sync('compendium',function()return browser:back()end)end
         else previous.syncController(self)end
     end
     function host:refresh()
@@ -69,6 +69,8 @@ function M.attach(host,root,data,presentation,event,platform)
             if self.disabled then return false,'ui_disabled' end
             if type(dt)~='number' or dt~=dt or dt<0 or dt==math.huge then return false,'invalid_delta' end
             if self.controller then self.controller:tick()end
+            browser:tick()
+            browser:updateHover(dt)
             self:syncController();return true
         end
         return previous.update(self,dt)

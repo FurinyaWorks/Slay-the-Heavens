@@ -223,7 +223,7 @@ function OnStart()
                 return true
             end })
         require('abyss_compendium_host').attach(view,stage,Data,Presentation,Enum.CursorEventType.CursorClick,
-            {cursorEvents=Enum.CursorEventType})
+            {cursorEvents=Enum.CursorEventType,color=Color,imageSource=Enum.ImageSource.StaticReference})
         view:resize(width, height)
         canvasWidth, canvasHeight = width, height
         script:EnableUpdate(true)

@@ -1,0 +1,65 @@
+{
+  "before": [
+    {
+      "file": "diagnostic-before-root-official-cost-upgraded.png",
+      "sha256": "cc45c1a2ba7aad3e9cdbdeeae514665e218be1837d0fccc7cb6b54f69755549b",
+      "bytes": 273656,
+      "scope": "Old offline diagnostic; not official client pixels or current product acceptance"
+    },
+    {
+      "file": "diagnostic-before-root-calibrated-upgraded.png",
+      "sha256": "ad030481ca94219202738b608ea7ee4b694f98509e14c54c69b14c9b78ead5a5",
+      "bytes": 281157,
+      "scope": "Old offline diagnostic; not official client pixels or current product acceptance"
+    },
+    {
+      "file": "diagnostic-before-root-calibrated-potion-tip.png",
+      "sha256": "dddb8e4893c50ca4bf552b0335e7cbc5f42ce51706fef9a0ddd213bdd8413a2f",
+      "bytes": 66065,
+      "scope": "Old offline diagnostic; not official client pixels or current product acceptance"
+    }
+  ],
+  "observedByRoot": {
+    "oldDump": "Missing descriptor scale/runtime font made popup appear small",
+    "oldBrowserAutosize": {
+      "rawFontSize": 32,
+      "computedFontSize": 18,
+      "parentScale": 2.6666666666666665,
+      "bodyScale": 0.375,
+      "scope": "Read from root headless DOM; not native font output"
+    }
+  },
+  "currentRaw": {
+    "face": {
+      "size": [
+        150,
+        210
+      ],
+      "scale": [
+        2.6666666666667,
+        2.6666666666667,
+        1
+      ],
+      "position": [
+        0,
+        0
+      ]
+    },
+    "body": {
+      "size": [
+        330.66666666667,
+        245.33333333333
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        1
+      ],
+      "fontSize": 32,
+      "minFontSize": 14
+    },
+    "physicalFont": 32.0000000000004
+  },
+  "diagnosticPolicy": "Only compendium diagnostic HTML constrains span width and locks fixed SCP labels against browser autoshrink. Raw scenes preserve actual native min/adaptive metadata. No production font changed to fit browser.",
+  "nativeClient": "unverified"
+}

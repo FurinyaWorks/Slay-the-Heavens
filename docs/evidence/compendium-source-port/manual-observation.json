@@ -1,0 +1,24 @@
+{
+  "oldCandidate": "a0dfc8a3-f22a-418b-8ffa-eebc805ef74e",
+  "candidateSha256": "405b3666bd5cf862c8117b5d39f5edc6d1b7c970a05630f6e30b822ce3df7320",
+  "newLogFiles": 1,
+  "buildMatches": true,
+  "readyAfterLatestBuild": true,
+  "faults": [],
+  "manualOwnerReport": "三类图鉴到处能显示，但体验距原版太远，要求直接移植。",
+  "scope": "Only old candidate startup/manual display; not UX approval, device completeness, or runner startup evidence.",
+  "files": [
+    {
+      "file": "matching-0.gia",
+      "bytes": 1100,
+      "sha256": "0dba9e64e12262b3ef37f2ce35a5fd67bad3cdb00982e9471dce459466c7b31a",
+      "gzipSha256": "7fe7a830c4b33a778c2958c1c24012e18d7f9da992d5eeb0d4a691e66833f10b"
+    },
+    {
+      "file": "matching-0.parsed.json",
+      "bytes": 2246,
+      "sha256": "5b434f5133390ea21ff748f4ef768f5a9a45289df9119fa6d2555dc7ada05983",
+      "gzipSha256": "f7b28490fa34ab8cdd7f56e160ed8707f59f35ef9517792e91c228d9987e1d8a"
+    }
+  ]
+}

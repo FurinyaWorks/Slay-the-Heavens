@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "uiFreeze": {
+    "scope": "normalized LF production UI freeze before independent review",
+    "rows": [
+      {
+        "file": "src/lua/abyss_compendium_ui.lua",
+        "sha256": "e97be03f2a41f7bc6f0d091eab9072aba762ce5c3e52b6336ae61e368362e92d",
+        "gitBlob": "fb129d4cc99bd24c459589303c5833d8f3403250",
+        "bytes": 19636
+      },
+      {
+        "file": "src/lua/abyss_compendium_host.lua",
+        "sha256": "c13f6c4d5cb66dd62557f88df298fcaf43841817d5e58ecffda62f175771d75e",
+        "gitBlob": "ab2b271e12d0c73e255be0653bb94b04924471ca",
+        "bytes": 6141
+      },
+      {
+        "file": "src/lua/abyss_compendium_model.lua",
+        "sha256": "7816b1a82e952185f72e7838877bbc41577790c096beb268da67e51b0c34957f",
+        "gitBlob": "7ca3120221731604322ba8f4f6cf8ba498217c34",
+        "bytes": 8078
+      },
+      {
+        "file": "src/lua/abyss_compendium_input.lua",
+        "sha256": "e415c63211f576815211180eab1fa3fe64e84be188215daebb5094fb14f9691c",
+        "gitBlob": "8dec19cae8528d5997f79d1b09fa301b8d1c526e",
+        "bytes": 2101
+      },
+      {
+        "file": "src/lua/abyss_compendium_card.lua",
+        "sha256": "ebac313d044ce4548c8848242e044bcd0d99946d5c84a38b5b1f65ba1cbee0a0",
+        "gitBlob": "30766001a634cd26bbb6c34884d0c2c6b2e9ce78",
+        "bytes": 5019
+      },
+      {
+        "file": "src/lua/abyss_compendium_actions.lua",
+        "sha256": "8190f3babb4f2daa72e0788f62599bc1721114b2264f46f017d46c74d59e5906",
+        "gitBlob": "e381df51090ac5f4a6c5a2e0dc7cbb704dc5b583",
+        "bytes": 4701
+      }
+    ]
+  },
+  "results": {
+    "uiSuite": {
+      "passed": 5,
+      "failed": 0,
+      "wallMs": 16894.9655,
+      "scope": "all source interaction cases and two retained negative controls before pure hoverLayout extraction"
+    },
+    "frozenPositive": {
+      "passed": 2,
+      "failed": 0,
+      "wallMs": 16041.7318,
+      "scope": "both actual Lua Host profiles after exact six-file freeze"
+    },
+    "luaStatic": {
+      "newDiagnostics": 0,
+      "historicalWarnings": 14,
+      "governedResponsibilities": 2161
+    },
+    "newCompendiumResponsibilities": {
+      "measurements": 124,
+      "maxComplexity": 15,
+      "limit": 15,
+      "violations": []
+    },
+    "architecture": {
+      "modules": 352,
+      "edges": 1981
+    },
+    "visual": {
+      "scenes": 33,
+      "profiles": [
+        "native",
+        "official",
+        "v25"
+      ],
+      "scope": "actual offline Host controls, no official pixels or native hit-test claim"
+    }
+  },
+  "artifacts": [
+    {
+      "source": "build/compendium-port-ui-20261115-r2.log",
+      "file": "compendium-port-ui-20261115-r2.log.gz",
+      "bytes": 1252,
+      "sha256": "7f9cece6287e4391c69b72de92181daefa2f3606ba50ac69dfc09c4886e1920f",
+      "gzipSha256": "a16a9233ca7109bf797fe4e3348525d18fc7bac20f4fbfc43b01104cf1eb3647"
+    },
+    {
+      "source": "build/compendium-port-frozen-positive.log",
+      "file": "compendium-port-frozen-positive.log.gz",
+      "bytes": 625,
+      "sha256": "ab8daeeff0502b0850747c6484ea508b3192cd006dc0450d9734370a1dfdd7e2",
+      "gzipSha256": "da7ee83e83c66fbdaf1ab80b9d06133996022138697d54f6755d0cb6c6cfa92f"
+    },
+    {
+      "source": "build/compendium-complexity.json",
+      "file": "compendium-complexity.json.gz",
+      "bytes": 25545,
+      "sha256": "2815c8c36258da89747ad259f719cc04160038f40b6821eaf76757948cd3fcce",
+      "gzipSha256": "9985fbf00a5292190c30ae106af9c485612574ca38907fa7f42a1eff8e58333a"
+    },
+    {
+      "source": "build/compendium-frozen-ui-20261115.json",
+      "file": "compendium-frozen-ui-20261115.json.gz",
+      "bytes": 1471,
+      "sha256": "822ebe17c4dfa89347f0c8b722593a1d65bcadc278430381c044d41edd9ed232",
+      "gzipSha256": "93eb639b187e5a7b0a12be7895bc4f3fb703a51ffdc2925be10afbd1c57a4a05"
+    },
+    {
+      "source": "build/architecture.json",
+      "file": "architecture.json.gz",
+      "bytes": 306274,
+      "sha256": "9af82e70bc49af82217b01a9e8ed66fc85bba07962c95e503ee8c86cdda193e2",
+      "gzipSha256": "43b4d8269c7f422256494bee7112a3ac701186a36988dd34c4be3f779a6d83ee"
+    },
+    {
+      "source": "build/compendium-preview/scenes.json",
+      "file": "scenes.json.gz",
+      "bytes": 18786154,
+      "sha256": "8ce6b947b6e2e19c45cc912e1f190a93a6e23855266af0b7df6ea7c716e7ab74",
+      "gzipSha256": "8e9c2a4ac1423aadab6dd3fcd43a8e8607b4a5f6531ac41ae3cad1759643ff43"
+    }
+  ],
+  "unverified": [
+    "new official import/ready",
+    "real client mouse hit-test",
+    "native font metrics",
+    "PC/mobile/controller experience",
+    "official capacity",
+    "Owner source-experience acceptance"
+  ]
+}

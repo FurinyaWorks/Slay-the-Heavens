@@ -43,8 +43,9 @@ const proof=sourceEpoch.proof;
 export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
  const row=Object.hasOwn(proof.current,path)?proof.current[path]:null;
- if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
+ const continuation=sourceEpoch.isContinuationSource(path,source);
+ if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256&&!continuation)return source;
  const before=proof.targets[target].files[path];
- if(!before||before.sha256===row.sha256)return source;
+ if(!before||before.sha256===row.sha256&&!continuation)return source;
  return sourceEpoch.preCombinedSource(path,source,{target,readSource});
 }

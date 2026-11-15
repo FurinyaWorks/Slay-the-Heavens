@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
+import {createHash} from 'node:crypto';
 const sandbox=process.cwd();
 const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
 const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
@@ -97,10 +98,46 @@ test('fresh authorization covers the complete changed-owner union without cachin
  const required=Object.keys(proof.current).filter(path=>Object.values(proof.targets).some(target=>target.files[path]?.sha256!==proof.current[path]?.sha256));
  assert.deepEqual([...proof.owners].sort(),required.sort());
 });
+const compendiumAddedPaths=['actions','card','host','input','model','ui'].map(name=>'src/lua/abyss_compendium_'+name+'.lua');
+const corpusHash=(source,algorithm='sha256')=>createHash(algorithm).update(source).digest('hex');
+function assertCurrentCompendiumCorpus(files,readSource){
+ const receipt=JSON.parse(readFileSync('tests/fixtures/compendium-source-port-current-owners.json','utf8'));
+ const continuation=JSON.parse(readFileSync('tests/fixtures/compendium-ui-registration-continuation.json','utf8'));
+ assert.equal(receipt.schemaVersion,1);assert.equal(receipt.normalization,'LF');
+ assert.equal(receipt.baseCommit,continuation.baseCommit);assert.equal(receipt.parentCommit,continuation.parentCommit);
+ const added=receipt.addedModules;
+ const changed={[continuation.path]:continuation,...continuation.linkedOwners};
+ assert.deepEqual(Object.keys(added).sort(),compendiumAddedPaths,'only six detached UI modules extend the old corpus');
+ const original=Object.keys(proof.current).filter(path=>proof.current[path]!==null);
+ assert.deepEqual([...files].sort(),[...original,...compendiumAddedPaths].sort(),'complete current production path set');
+ for(const path of files){
+  const source=readSource(path).replaceAll('\r\n','\n');
+  if(Object.hasOwn(added,path)){
+   assert(!proof.current[path],'new UI module is absent from the old corpus: '+path);
+   assert.equal(added[path].before,null,'new UI module has no invented predecessor');
+   assert.match(added[path].after.sha256,/^[a-f0-9]{64}$/);assert.match(added[path].after.gitBlob,/^[a-f0-9]{40}$/);
+   assert.equal(corpusHash(source),added[path].after.sha256,'new UI source SHA256: '+path);
+   assert.equal(corpusHash(Buffer.concat([Buffer.from('blob '+Buffer.byteLength(source)+'\0'),Buffer.from(source)]),'sha1'),added[path].after.gitBlob,'new UI Git blob: '+path);
+  }else if(Object.hasOwn(changed,path)){
+   assert.equal(changed[path].before.source,raw(path),'unchanged historical predecessor: '+path);
+   assert.equal(source,changed[path].after.source,'exact read-only UI continuation: '+path);
+  }else assert.equal(source,raw(path),'unchanged core/other source: '+path);
+ }
+}
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
- assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
- for(const path of files)assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+ assertCurrentCompendiumCorpus(files,path=>readFileSync(path,'utf8'));
+});
+test('current compendium corpus rejects extra, missing, changed UI and changed core sources',()=>{
+ const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
+ const live=Object.fromEntries(files.map(path=>[path,readFileSync(path,'utf8')]));
+ assert.throws(()=>assertCurrentCompendiumCorpus([...files,'src/lua/unreviewed.lua'],path=>live[path]),/production path set/);
+ for(const path of compendiumAddedPaths){
+  assert.throws(()=>assertCurrentCompendiumCorpus(files.filter(p=>p!==path),p=>live[p]),/production path set/);
+  assert.throws(()=>assertCurrentCompendiumCorpus(files,p=>p===path?live[p]+'\n-- foreign\n':live[p]),/new UI source SHA256/);
+ }
+ for(const path of ['config/architecture.json','src/lua/abyss_ui.lua','src/lua/abyss_actor.lua'])
+  assert.throws(()=>assertCurrentCompendiumCorpus(files,p=>p===path?live[p]+'\n-- foreign\n':live[p]),/continuation|unchanged core/);
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

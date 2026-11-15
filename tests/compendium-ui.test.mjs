@@ -1,21 +1,34 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,unlinkSync} from 'node:fs';
+import {readFileSync,writeFileSync,unlinkSync,mkdirSync,readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join,resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {luaString,toLua} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
-import {attachCompendium} from '../scripts/compendium-ui-layout.mjs';
+import {attachCompendium,assertCompendiumDisplayOnly} from '../scripts/compendium-ui-layout.mjs';
 import {assertNativeUiCapacity} from '../scripts/build-ui.mjs';
 import {officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {v25Theme} from '../scripts/v25-layout.mjs';
+import {deckCardTemplate} from '../scripts/deck-ui-layout.mjs';
+import {buildUI} from '../scripts/build-ui.mjs';
+import {buildLuaData} from '../scripts/build-lua-data.mjs';
 
 test('real generated Production catalogue UI browses without a Run or RNG',()=>{
  const result=runLua('tests/lua/compendium_ui.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
+
+test('official native card materials and the complete compendium input lifecycle use the same source contract',()=>{
+ const generated=resolve('build/compendium-official-runtime',randomUUID());mkdirSync(generated,{recursive:true});
+ buildLuaData('data',join(generated,'abyss_data.lua'));buildUI(generated,undefined,{officialAssets:true});
+ const modules=readdirSync(generated).filter(name=>name.endsWith('.lua')).map(name=>name.slice(0,-4));
+ const script=join(generated,'run.lua');
+ writeFileSync(script,`for _,name in ipairs(${toLua(modules)})do package.preload[name]=assert(loadfile(${luaString(generated.replaceAll('\\','/'))}..'/'..name..'.lua'))end\ndofile('tests/lua/compendium_ui.lua')\n`);
+ const result=runLua(script);writeFileSync(join(generated,'run.log'),result.stdout+result.stderr);
  assert.equal(result.status,0,result.stdout+result.stderr);
 });
 test('bounded catalogue layout composes with native and official themes',()=>{
@@ -24,12 +37,28 @@ test('bounded catalogue layout composes with native and official themes',()=>{
   assert.equal(stage.children.find(n=>n.name==='compendiumEntries'),undefined,'baseline reproduction changed');
   attachCompendium(layout,theme);assertNativeUiCapacity(layout);
   const panel=stage.children.find(n=>n.name==='compendiumPanel');
+  const popupFace=panel.children.find(n=>n.name==='popup').children.find(n=>n.name==='face');
+  const previewFace=panel.children.find(n=>n.name==='popup').children.find(n=>n.name==='previewFace');
+  const hoverFace=panel.children.find(n=>n.name==='hoverHints').children.find(n=>n.name==='hoverFace');
+  const shared=deckCardTemplate(theme).children.find(n=>n.name==='face').children;
+  const popupExpected=structuredClone(shared);popupExpected.find(n=>n.name==='label').text.valign='middle';
+  assert.deepEqual(popupFace.children,popupExpected,'popup permits only source multiline centering over the shared renderer');
+  assert.deepEqual(previewFace.children,shared,'derived preview must use the shared native card renderer');
+  assert.deepEqual(hoverFace.children,shared,'unclipped hover must use the shared native card renderer');
+  const hoverLayer=panel.children.find(n=>n.name==='hoverHints');
+  assert.doesNotThrow(()=>assertCompendiumDisplayOnly(hoverLayer));
+  const hitStealing=structuredClone(hoverLayer);hitStealing.children.push({name:'hit-stealer',kind:'cursorArea',size:[400,560]});
+  assert.throws(()=>assertCompendiumDisplayOnly(hitStealing),/Interactive control in compendium hover display/);
   const nativeText=n=>{
+   // Shared card-face glyph frames have their own native card contracts.
+   if(['face','previewFace','hoverFace'].includes(n.name))return;
    if(n.kind==='text')assert.ok(n.text.minFontSize*1.45+4<=n.size[1],`${n.name}: no whole native text line`);
    for(const child of n.children??[])nativeText(child);
   };
   nativeText(panel);nativeText(stage.children.find(n=>n.name==='compendiumEntries'));
-  assert.equal(panel.children.filter(n=>/^row\d+$/.test(n.name)).length,6);
+  assert.equal(panel.children.filter(n=>/^row\d+$/.test(n.name)).length,0,'legacy text-list UI returned');
+  assert.equal(panel.children.find(n=>n.name==='cardGrid').kind,'grid');
+  assert.equal(panel.children.find(n=>n.name==='iconGrid').kind,'grid');
   for(const kind of ['cards','relics','potions'])assert(stage.children.find(n=>n.name==='compendiumEntries').children.some(n=>n.name===kind));
  }
  const host=readFileSync('src/lua/abyss_ui.lua','utf8');

@@ -43,6 +43,21 @@ function validateBinding(binding){
  assert.equal(hash(binding.source),binding.sha256,'source identity SHA256');
  if(binding.gitBlob)assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,'source identity Git blob');
 }
+// Retain the immutable core epoch while admitting only six detached UI layers.
+const compendiumRegistration=freeze(JSON.parse(readFileSync(new URL('../../fixtures/compendium-ui-registration-continuation.json',import.meta.url),'utf8')));
+assert.equal(compendiumRegistration.schemaVersion,1);
+assert.equal(compendiumRegistration.normalization,'LF');
+assert.equal(compendiumRegistration.path,'config/architecture.json');
+assert.equal(compendiumRegistration.before.sha256,'4aaf4e7db68b6e7c92f81799c0a9dcaf4817329666bf1dc58b1015792a7b0264');
+validateBinding(compendiumRegistration.before);validateBinding(compendiumRegistration.after);
+const compendiumSources=freeze({[compendiumRegistration.path]:{before:compendiumRegistration.before,after:compendiumRegistration.after},...compendiumRegistration.linkedOwners});
+assert.deepEqual(Object.keys(compendiumSources),['config/architecture.json','src/lua/abyss_ui.lua']);
+assert.equal(compendiumSources['src/lua/abyss_ui.lua'].before.sha256,'14ece0f2989116258357923edcada9a2eca8e14c78da198599a3e0367f343d53');
+for(const row of Object.values(compendiumSources)){validateBinding(row.before);validateBinding(row.after);}
+const sameCompendiumRegistrationLayout=configLayoutMatcher(compendiumRegistration.after.source);
+function isCompendiumContinuation(path,source,layout=false){
+ return typeof source==='string'&&!!compendiumSources[path]&&(sourceHash(source)===compendiumSources[path].after.sha256||layout&&path==='config/architecture.json'&&sameCompendiumRegistrationLayout(source));
+}
 // A composed proof can share previously validated immutable source strings.
 // Reuse is explicit and accepts only an already deeply frozen JSON data graph;
 // mutable containers, accessors and cycles cannot become an authorization input.
@@ -91,6 +106,9 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  freeze(proof);
  const sameConfigLayout=allowConfigLayout&&proof.current['config/architecture.json']
   ?configLayoutMatcher(proof.current['config/architecture.json'].source):()=>false;
+ const registrationCurrent=Object.entries(compendiumSources).every(([owner,row])=>proof.current[owner]?.sha256===row.before.sha256);
+ // Pure recognition is not authorization; projections still read every owner.
+ const isContinuationSource=(path,source)=>registrationCurrent&&isCompendiumContinuation(path,source);
  const readers=new WeakMap(),readLive=path=>{
   try{return readFileSync(resolve(root,path),'utf8');}catch(error){if(error.code==='ENOENT')return null;throw error;}
  };
@@ -98,12 +116,25 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  const registrationInput=registrationCurrent&&isCompendiumContinuation(path,source,allowConfigLayout);
+  const candidate=registrationInput?compendiumSources[path].before.source:source;
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof candidate!=='string'||!current||!before||current.sha256===before.sha256&&!registrationInput||(sourceHash(candidate)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(candidate))))return source;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
-  for(const owner of proof.owners){
-   let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+  const samples=new Map(),actualSource=owner=>{
+   if(!samples.has(owner)){
+    try{samples.set(owner,readSource(owner));}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+   }
+   return samples.get(owner);
+  };
+  const continuation=registrationCurrent&&Object.keys(compendiumSources).some(owner=>isCompendiumContinuation(owner,actualSource(owner)));
+  if(registrationInput)assert(isCompendiumContinuation(path,actualSource(path)),'compendium registration raw owner identity: '+path);
+  if(continuation)for(const owner of Object.keys(compendiumSources))assert(isCompendiumContinuation(owner,actualSource(owner)),'compendium continuation owner pair: '+owner);
+  const owners=registrationCurrent?[...new Set([...proof.owners,...Object.keys(compendiumSources)])]:proof.owners;
+  for(const owner of owners){
+   let actual=actualSource(owner);
+   if(continuation&&compendiumSources[owner])actual=compendiumSources[owner].before.source;
    const binding=proof.current[owner];
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
@@ -115,5 +146,5 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   const raw=rawReader(readSource),reader=path=>preCombinedSource(path,raw(path),{target,readSource:raw});
   readers.set(reader,{raw,target});return reader;
  }
- return Object.freeze({proof,preCombinedSource,combinedReader,readerTarget:reader=>readers.get(reader)?.target});
+ return Object.freeze({proof,preCombinedSource,combinedReader,isContinuationSource,readerTarget:reader=>readers.get(reader)?.target});
 }
