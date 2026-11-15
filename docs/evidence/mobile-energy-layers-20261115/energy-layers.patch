@@ -1,0 +1,15 @@
+diff --git a/src/lua/abyss_mobile_hud.lua b/src/lua/abyss_mobile_hud.lua
+index 7b5c7f68..34bba5c8 100644
+--- a/src/lua/abyss_mobile_hud.lua
++++ b/src/lua/abyss_mobile_hud.lua
+@@ -89,6 +89,10 @@ local function piles(panel,hud)
+         label:SetLocalScale(1/ratio,1,1)
+     end
+     for _,name in ipairs({'energyIcon','energy'})do panel:GetChild(name):SetAnchoredPosition(hud.energy[1],hud.energy[2])end
++    for _,name in ipairs({'energyRing','energyDisc'})do
++        local layer=panel:GetChild(name)
++        if layer then layer:SetAnchoredPosition(hud.energy[1],hud.energy[2])end
++    end
+ end
+ local function readingButton(button,w,h,font)
+     button:GetChild('hit'):SetSizeDelta(w,h)

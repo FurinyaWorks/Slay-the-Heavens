@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 14:56'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-15 15:07'
 labels:
   - ui
   - combat
@@ -14,6 +14,8 @@ labels:
   - delivery-verify
 milestone: m-8
 dependencies: []
+references:
+  - docs/backlog-details/TASK-4.22-MOBILE-ENERGY-LAYERS-20261115.md
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -37,6 +39,8 @@ ordinal: 172000
 
 <!-- SECTION:PLAN:BEGIN -->
 1. 对照批准V25与最终官方布局，复现能量大圆盘/粗边框/字号，先记录旧属性测试的盲点。2. 仅修盘面层次、边框与数字，保持位置安全区、能量规则及性能。3. 复用现有真实Simulator截图和UI验收，独立查看实际尺寸；官方客户端与手机标为待用户同候选复测。4. 与TASK30共用独立PR及最终正常入口GIL，排除626，实机视觉验收前不发布。
+
+2026-11-15 M17非发版Develop后续：核实最新develop尚无mobile_hud（依赖#672），只保留隔离窄补丁与定向几何附件，不复制整模块、不建PR。依赖落地后仅同步可选energyRing/Disc到原Icon/数字位置，验证Release/non-touch不变、手机world坐标、菜单返回/resize、缺可选控件和draw hit不变；不换样式资产规则，不勾手机AC。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -51,4 +55,8 @@ ordinal: 172000
 2026-11-14逐项对账：629/634已纳入源码和Simulator视觉修复，AC1/2已通过；AC3只缺当前同候选官方/手机验收，不重新画一套能量球。
 
 2026-11-14第二轮状态纠正：已有2/3项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+M17只读实证：Release36b9及#672非touch能量四层同心(-511,-233)；#672@1f7ce04c手机仅移动Icon/数字到(-511,-180)，可见旧Ring/Disc残留53设计单位。draw glyph/88×88 hit同心，不据此宣称操作阻塞。现按Owner指示移为Develop后续支持切片；develop c2409无依赖模块，PR暂不成熟，隔离补丁待依赖落地与独审。
+
+2026-11-15 M17隔离附件完成定向对照：精确#672@1f7ce04c Git导出，Release touch/非touch PASS、#672 touch修前精确RED、四行补丁后touch/非touch PASS（5/5符合预期）。真实生成树覆盖菜单返回/取消退出/resize、可选装饰层helper缺失、draw glyph与原hit、同一run与规则状态不变。develop仍无owner模块，附件非运行时实施；待依赖落地再复验独审和PR，原手机AC继续未验，不涉及Release。
 <!-- SECTION:NOTES:END -->

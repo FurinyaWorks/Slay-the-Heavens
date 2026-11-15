@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "head": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "dependencyRevision": "1f7ce04c53189db8c39b59c797a45d57a2c7bac1",
+  "rawBeforeBlob": "8be24dab48d50145dc3dc0d0c810b1f561b70374",
+  "beforeBlob": "7b5c7f688715773fedfd97400f16ea6d00d41b38",
+  "afterBlob": "34bba5c80c059d21f287d9be6987e4dbf5ed1cf3",
+  "results": [
+    {
+      "label": "release",
+      "touch": false,
+      "usePatch": false,
+      "expected": 0,
+      "status": 0,
+      "matched": true,
+      "log": ".artifacts\\mobile-energy-layers-develop-1115\\verification\\release-false-original.log"
+    },
+    {
+      "label": "release",
+      "touch": true,
+      "usePatch": false,
+      "expected": 0,
+      "status": 0,
+      "matched": true,
+      "log": ".artifacts\\mobile-energy-layers-develop-1115\\verification\\release-true-original.log"
+    },
+    {
+      "label": "pr672",
+      "touch": true,
+      "usePatch": false,
+      "expected": 1,
+      "status": 1,
+      "matched": true,
+      "log": ".artifacts\\mobile-energy-layers-develop-1115\\verification\\pr672-true-original.log"
+    },
+    {
+      "label": "pr672",
+      "touch": true,
+      "usePatch": true,
+      "expected": 0,
+      "status": 0,
+      "matched": true,
+      "log": ".artifacts\\mobile-energy-layers-develop-1115\\verification\\pr672-true-patched.log"
+    },
+    {
+      "label": "pr672",
+      "touch": false,
+      "usePatch": true,
+      "expected": 0,
+      "status": 0,
+      "matched": true,
+      "log": ".artifacts\\mobile-energy-layers-develop-1115\\verification\\pr672-false-patched.log"
+    }
+  ],
+  "executionNote": "HEAD identifies the runtime checkout at execution; patch/fixture/driver were uncommitted attachments bound by SHA256 below. Runtime src is unchanged. Dependency inputs were exported exactly from the stated Git revision.",
+  "inputSha256": {
+    "verify.mjs": "716c8fc361bbaf7c888347fbd9944696bf64efacb422523107543bf23cfa98e8",
+    "energy-layers.lua": "93473031a7db69e83ba4f3bb8677ad7da175b0aab26d0b36d15cba8d10a30989",
+    "energy-layers.patch": "27e47b83012e2c9c3597d72b95fe133b80a1c5d53281cbc8e9281e3b31fd1d12"
+  }
+}
