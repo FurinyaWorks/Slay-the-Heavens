@@ -1,0 +1,47 @@
+v24.22.1
+0d009f6df18a64d3d1b0b574d6bdfccf2c79f385e95d728126b10b18f81ed1f3  src/lua/abyss_battle_card_gestures.lua
+4d249f0bf63bf02a9631a4bdd79acda73fab1392bf9c85451164dd26f9d4fce4  src/lua/abyss_battle_ui.lua
+fa07a1756942191a6d193c6e26095eaa84ef55eadb7f3cc860b219ed9782919e  src/lua/abyss_battle_target_bindings.lua
+ab7a42fdb85713ff0b8a5bb9afb684bac7827fd0b88b0589385a1a1150b39701  tests/lua/battle_ui_potion_target_context.lua
+274a27b9ec40ea7335d4d7bdef36c5539d2d9c13f256b52b559b512bb898303d  tests/lua/battle_ui_potion_target_inventory.lua
+28bc77a8405abd510994bb799055fa4ca2a4f76c5a0cfc8325dd9b2c059e5ffa  tests/lua/target_anonymous_ownership.lua
+CASE battle_ui_potion_target_context
+PASS opening and closing Deck cancels pending
+PASS opening and closing Potions cancels pending
+PASS opening and closing Exit cancels pending
+PASS resize cancels pending even on click-only host
+LUA_POTION_TARGET_CONTEXT 4 passed; 0 failed
+POTION_TARGET_CONTEXT_PART 1 4 4
+PASS battle_ui_potion_target_context
+CASE battle_ui_potion_target_inventory
+ABYSS_FEEDBACK damage source=player target=acid_slime_m_2 amount=20
+ABYSS_FEEDBACK potion source=- target=2 amount=0
+PASS real discard/refill fire_potion cannot inherit old pending without redraw
+ABYSS_FEEDBACK block source=player target=player amount=12
+ABYSS_FEEDBACK potion source=- target=- amount=0
+PASS real discard/refill block_potion cannot inherit old pending without redraw
+PASS other-slot real use changes inventory and invalidates pending
+ABYSS_FEEDBACK damage source=player target=acid_slime_m_2 amount=20
+ABYSS_FEEDBACK potion source=- target=2 amount=0
+PASS switch same-ID bottle only arms new physical slot
+LUA_POTION_TARGET_INVENTORY 4 passed; 0 failed
+POTION_TARGET_INVENTORY_PART 1 4 4
+PASS battle_ui_potion_target_inventory
+CASE target_anonymous_ownership
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=2 amount=0
+PASS anonymous ownership - no Up, foreign active and concurrent releases cannot supply anonymous ownership
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+PASS anonymous ownership - same control multi-touch remains ambiguous until all fingers finish
+ABYSS_RUN seed=1 source=explicit
+PASS anonymous ownership - active card or action pointer cannot lend its anonymous Click to an enemy
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+PASS anonymous ownership - target terminal events invalidate anonymous releases without changing named compatibility
+TARGET_ANONYMOUS_OWNERSHIP_PASS 4
+PASS target_anonymous_ownership

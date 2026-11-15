@@ -1,0 +1,55 @@
+{
+  "head": "7bf42fc54d919a92db753ca07cb30547487304b8",
+  "files": {
+    "scripts/build-native-candidate.mjs": {
+      "before": "89765d7f50b3eb91333a59d2ada471bb1c818297a784c4e8f3e9ec96832b962d",
+      "equalsOldPrHead": true,
+      "after": "2102ac86f9aaf54862b9aa9ae667d5693ced28f355c6013f2a0e0da338674568",
+      "equalsPriorIntegrated1949": true
+    },
+    "scripts/build-ui.mjs": {
+      "before": "74205a9228f3ac2867569932442782944b1d97bc749e1db719ddb72271d47969",
+      "equalsOldPrHead": true,
+      "after": "ebfe7ca1f55fc26fbff3679beedbb7fb1cb702864ca4baffc4c70c6ac878ade0",
+      "equalsPriorIntegrated1949": true
+    },
+    "tests/build-ui-input-protection.test.mjs": {
+      "before": "03eb0e8ec175737874e8b572b6f91b60733b4af24193ad266a521c088e48d121",
+      "equalsOldPrHead": true,
+      "after": "2d5b561bd304eb5849976ce47bfa88caa497db62209f680fa6a94d9929f9e952",
+      "equalsPriorIntegrated1949": true
+    },
+    "tests/game-ui.test.mjs": {
+      "before": "06e365a0da679495296f090a771622474acadcd84f806b9220877ad102e6fa7a",
+      "equalsOldPrHead": true,
+      "after": "555fe1bda2925f1de9ae7a7229cf0f9e024f5e69b2db9e5ac4e2b86a5398036c",
+      "equalsPriorIntegrated1949": true
+    },
+    "tests/native-candidate.test.mjs": {
+      "before": "254279759260074fcf1050098845ec8685713d0762d313d0f71d41755a52f2d4",
+      "equalsOldPrHead": true,
+      "after": "32a5386c8d374ae9647fe8ddaf0d6a85fc23ac48f18ee9d04ff19ff24f8d625d",
+      "equalsPriorIntegrated1949": true
+    },
+    "tests/native-card-art-binding.test.mjs": {
+      "before": "da874fc9f536e85a352824b14b14f0b5a8e6a473b9caac64be4ba4713221b42d",
+      "equalsOldPrHead": true,
+      "after": "9bbd59f877eab62a39d8175b64ba7eb286da9f5ae38e428f9d9259dbf2d9ff5b",
+      "equalsPriorIntegrated1949": true
+    },
+    "tests/ready-card-production-build.test.mjs": {
+      "before": "d59a757ef69ca8de94d4fecb4bb43ab3bccd8d851d938a123f5bf1f58893232f",
+      "equalsOldPrHead": true,
+      "after": "773bfffed2d3d5208da033bdd99b53094d6f209a98f93ea1be6a10516a085bc6",
+      "equalsPriorIntegrated1949": true
+    }
+  },
+  "patches": {
+    "wake-1849/publish/pr691-rc-bundled-version.patch": "332783ff01f53a1a6216193e1124758bb1d2d2f713bbb190b79a4e124993db54",
+    "wake-1914/publish/pr691-selective-canonical-presentation.patch": "f790e527254975606f75889181fb9a707b6ce5ed43647765a919fa24bf5d6c5b"
+  },
+  "releaseObserved": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "preparedTree": "498c7571e96b0736aafecb61a5b7de736fdd9892",
+  "bothApplyCheck": true,
+  "patchedProductSyntaxCheck": true
+}
