@@ -292,6 +292,7 @@ function M.new(view, controls)
                 if pile=='discard'and recentDrawOrigins[instance.uid]then pile='draw'end
                 local start=pile=='discard'and L.discardPile.position
                     or pile=='exhaust'and{L.topBar.exhaustIcon[1],L.topBar.y}or L.drawPile.position
+                start=require('abyss_mobile_hud').handOrigin(controls.platform,pile,start)
                 entry.current={x=start[1],y=start[2],scale=0.12/0.75,angle=0}
             end
             handPoses[instance.uid]=entry

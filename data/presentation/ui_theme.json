@@ -184,6 +184,18 @@
     "costInk": "#403829",
     "battlePortraitDisplay": 210,
     "battlePortraitPosition": [0, 0],
+    "mobileHud": {
+      "hit": 88, "hitOffsetY": -22, "font": 24, "locationFont": 18,
+      "barY": 336, "barHeight": 48,
+      "hpIcon": [-582, 338, 16, 16], "hp": [-488, 338, 160, 42],
+      "goldIcon": [-390, 338, 16, 16], "gold": [-328, 338, 104, 42],
+      "hpHint": [-499, 338, 182, 42], "goldHint": [-337, 338, 122, 42],
+      "location": [112, 338, 320, 42], "route": [344, 338], "routeWidth": 112,
+      "deck": [456, 338, 1], "menu": [552, 338, 1],
+      "relicOffset": [20, 0], "relicEntry": [480, 240],
+      "draw": [-552, -272], "discard": [552, -272], "exhaust": [552, -176],
+      "endTurn": [454, -204, 104, 88], "energy": [-511, -180]
+    },
     "battleHud": {
       "y": 338.5,
       "barColour": "#30333B",

@@ -384,7 +384,7 @@ function M.exitEntryVisible(self)
 end
 
 function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVisible,exitPanel,exitDialogOwnsForeground,runMenu,canViewRoute,child,refreshExitDialog)
-    local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
+    local hud=self.mobileHud or Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
     local utilitiesReady=false
     local routeLabels={}
     local function routeCaption(back)

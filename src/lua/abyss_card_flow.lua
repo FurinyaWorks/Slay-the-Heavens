@@ -35,6 +35,8 @@ local function point(place)
     return L.player.position
 end
 function M.new(stage,platform)
+    local mobile=require('abyss_mobile_hud').profile(platform)
+    local function destination(place)return mobile and mobile[place.pile]or point(place)end
     local self={active={},waiting={},inPlay={},moving={}}
     local overlay=stage:GetChild('feedback')
     local function colour(c,alpha)return platform.color(c.r,c.g,c.b,math.floor((c.a or 255)*alpha))end
@@ -47,8 +49,8 @@ function M.new(stage,platform)
         self.inPlay[d.uid]={card={uid=d.uid,cardId=d.cardId},pile='play',position={flight.tx,flight.ty}}
     end
     local function enqueue(card,from,to,label)
-        local start=from.position or point(from)
-        local finish=point(to)
+        local start=from.position or destination(from)
+        local finish=destination(to)
         self.waiting[#self.waiting+1]={uid=card.uid,cardId=card.cardId,from=from.pile,to=to.pile,
             start={start[1],start[2]},finish={finish[1],finish[2]},age=0,label=label,
             order=to.pile=='discard'and #self.waiting or 0}

@@ -33,6 +33,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     -- A seed is an explicit replay/test override. Normal runs sample at Start,
     -- never while constructing the title screen or refreshing the UI.
     local self = { root = root, data = data, seed = platform.seed, mode = "menu" }
+    self.mobileHud=require('abyss_mobile_hud').apply(root,platform)
     local owner = {exitGeneration=0, menuGeneration=0, ready=false}
     local neowHistory=NeowHistory.new(platform.readNeowHistory)
     local endingHistory=EndingHistory.new({read=platform.readEndingHistory,write=platform.writeEndingHistory})
