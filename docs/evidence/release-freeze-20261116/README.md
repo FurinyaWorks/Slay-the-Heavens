@@ -47,4 +47,3 @@ node docs/evidence/release-freeze-20261116/reproduce-p0.mjs
 30/30规范/来源/指引测试；较广CI相关157/157；独审23/23及新增4/4、43项来源/EOL/漂移断言。来源延续只追加完整精确before/current包；旧archives、发现库存、Full/Required和预算不变。新增metadata/edited使一个旧bootstrap调用需要显式精确投影，原EOL及逆向断言全部保留。失败及后续GREEN日志分别保全。
 
 独审见independent-review.json。托管精确HEAD/BASE CI和远端保护未认证，不轮询；未运行本地Full。**规则须本PR正常合入后才在Release普遍生效**；没有自行合并、发版或操作窗口。TASK-112与TASK-30保持In Progress。manifest校验本目录其他文件，日志为原字节gzip（mtime=0）。
-
