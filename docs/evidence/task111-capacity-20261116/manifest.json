@@ -4,8 +4,8 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 4699,
-      "sha256": "2347fc41938390f6bf598e0480d8145168aff5e1c893b80fee276992a5ef7c51"
+      "bytes": 4935,
+      "sha256": "8c3e500c9d51921d2223e950eaa8c9d21110a8dd809b65771bb1043aba185f54"
     },
     {
       "path": "component-probes.json",
@@ -181,6 +181,11 @@
       "path": "logs/syntax-verified.log.gz",
       "bytes": 104,
       "sha256": "dbbd3908a13b5238e0c702067a9d46fa672320fb69af6fefc88717060dcd8d00"
+    },
+    {
+      "path": "raw-sample-preservation.json",
+      "bytes": 498,
+      "sha256": "6f0100b71ad5044879234de6025e3728ba50d5a0cc308ea694b8f379b5b174d7"
     },
     {
       "path": "role-art-breakdown.json",

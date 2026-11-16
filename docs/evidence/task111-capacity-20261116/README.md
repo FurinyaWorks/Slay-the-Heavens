@@ -34,9 +34,9 @@ node docs/evidence/task111-capacity-20261116/component-probes.mjs <C0-candidate.
 node docs/evidence/task111-capacity-20261116/same-source.mjs <C0-candidate.json> <new-experiment-directory>
 ```
 
-如从交付 ZIP 读回原始样本，可设置 `CAPACITY_CANDIDATE_FILE` 指向解压后的对应 GIL；脚本仍强制核对原始 receipt 的 candidate SHA，不修改收据。`inspect-gil` 需要收据旁的 `generated/game-ui.json` 和 `game-ui-templates.json`，ZIP 已包含。保存样本原 worktree 路径是历史 locator，不等于本机正式存档路径。压缩包大小只是传输量。
+接续者取得本轮云端保全的样本后，可设置 `CAPACITY_CANDIDATE_FILE` 指向对应 GIL；脚本仍强制核对原始 receipt 的 candidate SHA，不修改收据。`inspect-gil` 需要收据旁的 `generated/game-ui.json` 和 `game-ui-templates.json`，本轮 work/ 原始构建目录均包含。保存样本原 worktree 路径是历史 locator，不等于本机正式存档路径。压缩包大小只是传输量。
 
-原始实验在 work/ 下执行，本文保留等价的可移植入口（只重定位 imports/输入路径并增加禁止覆盖/hash 检查）。实验没有在用户客户端执行。原始构建/读回收据与 GIL 随离线样本包保留，未上传到公开 Git 仓库。
+原始实验在 work/ 下执行，本文保留等价的可移植入口（只重定位 imports/输入路径并增加禁止覆盖/hash 检查）。实验没有在用户客户端执行。原始构建/读回收据与 GIL 仅在本轮云端 work/ 及保全包中保留，**未作为公开 Git 仓库文件或下载附件交付**；可复核数据、hash、日志和脚本随 PR 交付。清理此云端工作区前，须保全这些原始诊断样本；不得把它们替换成别的构建。
 
 ## 验证状态
 
