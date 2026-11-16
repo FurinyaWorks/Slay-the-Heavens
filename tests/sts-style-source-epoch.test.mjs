@@ -11,6 +11,7 @@ import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {enemyGeometryPriorInventory,assertEnemyGeometryRawInventory} from './helpers/enemy-geometry-ci-source.mjs';
+import {enemyPost697PriorInventory,enemyPost697HistoricalRead,assertEnemyPost697RawInventory} from './helpers/enemy-post697-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -28,11 +29,13 @@ test('release additions remain in raw Full and exact historical inventories reje
  assertIntegratedCurrent();
  const currentRaw={js:discoverJs(),lua:readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort()},historical={};
  for(const [kind,paths]of Object.entries(currentRaw)){
-  assertEnemyGeometryRawInventory(paths,kind);
-  historical[kind]=enemyGeometryPriorInventory(paths,kind,readFileSync);
-  for(const path of paths.filter(path=>!historical[kind].includes(path))){
-   assert.throws(()=>assertEnemyGeometryRawInventory(paths.filter(p=>p!==path),kind),/inventory/);
-   for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>enemyGeometryPriorInventory(paths,kind,(p,e)=>p===path?value:readFileSync(p,e)),/fresh complete integration source|replaceAll/);
+  assertEnemyPost697RawInventory(paths,kind);
+  const legacy=enemyPost697PriorInventory(paths,kind,readFileSync),legacyRead=enemyPost697HistoricalRead('enemy',readFileSync);
+  assertEnemyGeometryRawInventory(legacy,kind);
+  historical[kind]=enemyGeometryPriorInventory(legacy,kind,legacyRead);
+  for(const path of legacy.filter(path=>!historical[kind].includes(path))){
+   assert.throws(()=>assertEnemyGeometryRawInventory(legacy.filter(p=>p!==path),kind),/inventory/);
+   for(const value of [null,legacyRead(path,'utf8')+'\n'])assert.throws(()=>enemyGeometryPriorInventory(legacy,kind,(p,e)=>p===path?value:legacyRead(p,e)),/fresh complete integration source|replaceAll/);
   }
  }
  const {js:rawJs,lua:rawLua}=historical;
@@ -47,7 +50,7 @@ test('release additions remain in raw Full and exact historical inventories reje
   for(const path of added){
    assert.throws(()=>integratedPriorInventory(current.filter(p=>p!==path),target,kind),/inventory/);
    for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>integratedPriorInventory(current,target,kind,
-    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+    (p,e)=>p===path?value:readFileSync(p,e)),error=>{assert.match(error.message,/added inventory source|fresh complete enemy post697 source|replaceAll/);if(value!==null)assert(error.message.includes(path),'reject the injected inventory owner');return true;});
   }
   for(const changed of [[...current,current[0]],[...current,'tests/foreign.'+kind]])assert.throws(()=>integratedPriorInventory(changed,target,kind),/inventory/);
  }

@@ -1,0 +1,63 @@
+{
+  "head": "bc106cce4f8fde5d1b0dec5ae9c0403cb5436a0c",
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "original": "13a3c70046391cadee86ecffb57ded3450906687",
+  "product": "bc106cce4f8fde5d1b0dec5ae9c0403cb5436a0c",
+  "gitObjects": 1092,
+  "production": 352,
+  "currentOwners": 117,
+  "legacyReleaseOwners": 116,
+  "legacyEnemyOwners": 117,
+  "targets": 68,
+  "newOwners": [],
+  "bindings": 30,
+  "archives": 100,
+  "oldArchivesUnchanged": 99,
+  "raw": {
+    "js": 880,
+    "lua": 1424
+  },
+  "kept": {
+    "src/lua/abyss_battle_enemy_view.lua": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "259d59ee5bc45079e215d52d478e8c8e6dad5873"
+    },
+    "src/lua/abyss_battle_render_actors.lua": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "97f9d1d2dcb8106decc25c8fdc9b66e82fa5b34c"
+    },
+    "src/lua/abyss_battle_targeting.lua": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "520cae04c060e33d65cc506339732f2575fda9af"
+    },
+    "tests/enemy-geometry-metrics.test.mjs": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "37500bc5140c03b6d626ecc51c69bbb561467241"
+    },
+    "tests/lua/enemy_geometry_metrics.lua": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "0799b37cd9a3a6daa007d30864e3a3641fc86b6a"
+    },
+    "tests/helpers/isolated-battle-regression.mjs": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "a816eee3dd93cca12552887f2b43ca412c169d01"
+    },
+    "tests/helpers/enemy-geometry-source.mjs": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "204bbedc265e37f9b5d12f955f0bad7295201c3c"
+    },
+    "tests/helpers/enemy-geometry-source.json.gz": {
+      "commit": "13a3c70046391cadee86ecffb57ded3450906687",
+      "blob": "b1ffdae6ff3808d64e88bed6cf6f56a2921d0c3f"
+    },
+    "src/lua/abyss_game_ui_input.lua": {
+      "commit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+      "blob": "640b899577b267b3a1c52d0354b652b0c2da2140"
+    },
+    "src/lua/abyss_game_ui_view.lua": {
+      "commit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+      "blob": "cfd5077f9716cd9d8841e2d60abdf777048689a6"
+    }
+  },
+  "packetSha256": "46b8f11973ff930fd8e884b9bd4b2ef154eff1a8424d779c63fc0110c4a71beb"
+}

@@ -1,0 +1,21 @@
+{
+  "sha256": "46b8f11973ff930fd8e884b9bd4b2ef154eff1a8424d779c63fc0110c4a71beb",
+  "bytes": 235394,
+  "bindings": 30,
+  "archives": 100,
+  "currentInventory": {
+    "js": 880,
+    "lua": 1424
+  },
+  "viewInventories": {
+    "enemy": {
+      "js": 877,
+      "lua": 1424
+    },
+    "selection": {
+      "js": 879,
+      "lua": 1423
+    }
+  },
+  "materialized": []
+}

@@ -1,0 +1,71 @@
+{
+  "bundleSha256": "c5d709a01623f866833c4a9c7648bc6d5d6e8bc67bd06dbb230af0f9d855c1ec",
+  "bundleBytes": 16070,
+  "files": {
+    "original-product-independent-review.json": {
+      "source": "F:\\New folder\\.worktrees\\review-enemy-geometry-v2-1115\\build\\review-geometry\\independent-review.json",
+      "sha256": "f967f9597f8c3ef06eb1153b7ca5bcf9b981a431d594bf46e6cc60e66c73728b",
+      "bytes": 6660
+    },
+    "original-actual13a-independent-review.json": {
+      "source": "F:\\New folder\\.artifacts\\pr688-final-review.json",
+      "sha256": "095ed4833d8c8d3faee994b4a80e209277057ff37384df2eea431036257db6ec",
+      "bytes": 5056
+    },
+    "review/provenance.json": {
+      "source": "F:\\New folder\\.worktrees\\review-enemy-geometry-v2-1115\\build\\review-geometry\\provenance.json",
+      "sha256": "6e62cfe11bedf50e8d7943b5e1fdc658de2dc27fa38515f6698df89ce3f7cd27",
+      "bytes": 1580
+    },
+    "review/positive-result.json": {
+      "source": "F:\\New folder\\.worktrees\\review-enemy-geometry-v2-1115\\build\\review-geometry\\positive-result.json",
+      "sha256": "d2953f4befb6a49faf9e16632d436492376f0cd273b3cb2cdc2fcd8731e826dc",
+      "bytes": 551
+    },
+    "review/base-negative.lua": {
+      "source": "F:\\New folder\\.worktrees\\review-enemy-geometry-v2-1115\\build\\review-geometry\\base-negative.lua",
+      "sha256": "4c5dacb36119e7ee2136a66c2c8fe1367fc40f815dcf2d57fadacea2d2200fe6",
+      "bytes": 7858
+    },
+    "review/base-negative-result.json": {
+      "source": "F:\\New folder\\.worktrees\\review-enemy-geometry-v2-1115\\build\\review-geometry\\base-negative-result.json",
+      "sha256": "bc2720514ef4dc0a05008df39ea114a9bae3359d8f54ada1891348a9409bddc0",
+      "bytes": 657
+    },
+    "author-metrics/baseline-red.log": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\baseline-red.log",
+      "sha256": "63146fc667cc610ba6992ef7369dada7f685b1e3a863b250875cb39084e6c165",
+      "bytes": 1505
+    },
+    "author-metrics/baseline-count.log": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\baseline-count.log",
+      "sha256": "c954bebf99972de8e9c643919a25c98896604f0ab62d9638442aef3b77e1879b",
+      "bytes": 84
+    },
+    "author-metrics/optimized-count.log": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\optimized-count.log",
+      "sha256": "d631c7c99157f0dfc5dc865458324f2f6d7cb82dc812eeaaf5296a1adf739acf",
+      "bytes": 82
+    },
+    "author-metrics/geometry-green.log": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\geometry-green.log",
+      "sha256": "0f0f42f66093f6a40b89649e67bd9785f6bfe69e784e8fee655afc3dd2ee5bc4",
+      "bytes": 414
+    },
+    "author-metrics/idle-count.lua": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\idle-count.lua",
+      "sha256": "af505da648266ef4cb7d514b5e0a966395ee9d9301fce5ffa977874dfccddb95",
+      "bytes": 525
+    },
+    "author-metrics/measure.mjs": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\measure.mjs",
+      "sha256": "43c1a04c946a5373d9f920a156af68a20ad1e8ef854a214747c5e80fee124061",
+      "bytes": 623
+    },
+    "author-metrics/equivalence.json": {
+      "source": "F:\\New folder\\.worktrees\\mobile-enemy-geometry-v2-1115\\.artifacts\\enemy-geometry-v2-1115\\equivalence.json",
+      "sha256": "0f38181e4313d63ff4951502711143bfedef3a6b062e1cdabeb9cd0018049629",
+      "bytes": 1767
+    }
+  }
+}

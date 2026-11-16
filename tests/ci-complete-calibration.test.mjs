@@ -42,7 +42,10 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualEnemyGeometryReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualEnemyPost697ReadFileSync,readdirSync} from 'node:fs';
+import {enemyPost697HistoricalRead,enemyPost697PriorInventory} from './helpers/enemy-post697-ci-source.mjs';
+import {enemyPost697CiPacket,assertEnemyPost697CiCurrent,assertEnemyPost697RawInventory} from './helpers/enemy-post697-ci-source.mjs';
+const actualEnemyGeometryReadFileSync=enemyPost697HistoricalRead('enemy',actualEnemyPost697ReadFileSync);
 import {enemyGeometryCiRead,enemyGeometryCiPacket,enemyGeometryPriorInventory,assertEnemyGeometryCiCurrent,assertEnemyGeometryRawInventory} from './helpers/enemy-geometry-ci-source.mjs';
 const rawBootstrapReadFileSync=enemyGeometryCiRead(actualEnemyGeometryReadFileSync);
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
@@ -59,7 +62,9 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as actualEnemyGeometryDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualEnemyPost697DiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const actualEnemyGeometryDiscoverJs=()=>enemyPost697PriorInventory(actualEnemyPost697DiscoverJs(),'js',actualEnemyPost697ReadFileSync);
+const enemyLegacyLua=()=>enemyPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualEnemyPost697ReadFileSync);
 const liveDiscoverJs=()=>enemyGeometryPriorInventory(actualEnemyGeometryDiscoverJs(),'js',actualEnemyGeometryReadFileSync);
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
@@ -167,7 +172,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const liveCloseoutLua=()=>enemyGeometryPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualEnemyGeometryReadFileSync);
+const liveCloseoutLua=()=>enemyGeometryPriorInventory(enemyLegacyLua(),'lua',actualEnemyGeometryReadFileSync);
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
 // inventories. Current Full below still discovers and checks every file.
@@ -2035,7 +2040,7 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
 
 test('enemy geometry composition raw Full retains complete discovery costs and real execution guards',t=>{
  assertEnemyGeometryCiCurrent(actualEnemyGeometryReadFileSync);
- const js=actualEnemyGeometryDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const js=actualEnemyGeometryDiscoverJs(),lua=enemyLegacyLua();
  assertEnemyGeometryRawInventory(js,'js');assertEnemyGeometryRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=actualEnemyGeometryReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
@@ -2062,5 +2067,63 @@ test('enemy geometry composition raw Full retains complete discovery costs and r
   }
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical guard ${guard}ms; prediction is not admission`);
+ }
+});
+
+test('enemy post697 current raw Full retains the actual 880 JS and 1424 Lua under original execution guards',async t=>{
+ assertEnemyPost697CiCurrent(actualEnemyPost697ReadFileSync);
+ const js=actualEnemyPost697DiscoverJs().sort(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ assertEnemyPost697RawInventory(js,'js');assertEnemyPost697RawInventory(lua,'lua');
+ assert.equal(js.length,880);assert.equal(lua.length,1424);
+ for(const kind of ['js','lua']){
+  const paths=kind==='js'?js:lua;
+  for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,'foreign']])assert.throws(()=>assertEnemyPost697RawInventory(bad,kind));
+ }
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
+ const {assertReleaseSelectionMapExecutionGuards}=await import('./helpers/release-selection-map-ci-source.mjs');
+ assertReleaseSelectionMapExecutionGuards(actualEnemyPost697ReadFileSync('.github/workflows/quality.yml','utf8'));
+ for(const [platform,count]of [['win32',18],['linux',15]]){
+  for(const path of js.filter(path=>!enemyPost697CiPacket.viewInventories.enemy.js.includes(path))){
+   assert.equal(rawCurrentTimings.js[platform][path],undefined,'no invented hosted observation');
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs);
+  }
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+ }
+ t.diagnostic('actual current 880 JS / 1424 Lua discovered; immutable legacy877/879 remain separate; unchanged guards, costs and raw safety; no Hosted completion or full-cost claim');
+});
+
+import {assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards,releaseSelectionMapCiPacket} from './helpers/release-selection-map-ci-source.mjs';
+test('legacy actual697 release selection map raw Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
+ const rawReleaseReadFileSync=enemyPost697HistoricalRead('selection',actualEnemyPost697ReadFileSync);
+ const rawReleaseDiscoverJs=()=>enemyPost697PriorInventory(actualEnemyPost697DiscoverJs(),'js',actualEnemyPost697ReadFileSync,'selection');
+ const rawReleaseLua=()=>enemyPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualEnemyPost697ReadFileSync,'selection');
+ assertReleaseSelectionMapCiCurrent(rawReleaseReadFileSync);
+ assertReleaseSelectionMapExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
+ const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseSelectionMapCiPacket;
+ assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
+ for(const path of p.priorInventory.js)assert(js.includes(path));
+ for(const path of p.priorInventory.lua)assert(lua.includes(path));
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  for(const path of js.filter(path=>!p.priorInventory.js.includes(path)))
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs,'new unmeasured test retains its conservative cost: '+path);
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
+  // Owner 2026-11-07: forecasts and reserve are advisory. The job-scoped
+  // raw workflow deadlines above remain hard assertions.
  }
 });

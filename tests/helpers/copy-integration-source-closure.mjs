@@ -28,6 +28,8 @@ export const enemyGeometryHelperCopies=[
  {path:'tests/helpers/enemy-geometry-source.json.gz',before:null,after:'af5ac18b5bb3346fe000d22a184e04b8d064d38e723bd328a06cdf1b37fecfae'}
 ];
 for(const row of enemyGeometryHelperCopies){assert.equal(files[row.path]??null,row.before,'exact enemy geometry helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const enemyPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"ba08a39270805524521cb4751ff2bfd8ba142713b688e01af803315c51339419","after":"4866898adebc7f798ab4c7f72d0f2cd2f6fbfc4d875ed4df97a9639a65d7182b"},{"path":"tests/helpers/release-selection-map-source.mjs","before":null,"after":"920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52"},{"path":"tests/helpers/release-selection-map-source.json.gz","before":null,"after":"0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62"},{"path":"tests/helpers/enemy-post697-source.mjs","before":null,"after":"d259ada3af2652b17cce15d633a1b3489afe00a65c59b2c3aa30d4426adb0555"},{"path":"tests/helpers/enemy-post697-source.json.gz","before":null,"after":"fdae2d3627b986b59c9a3a87470e36b7e46a59df99cf22ea45a3cab3467e6da7"}];
+for(const row of enemyPost697HelperCopies){assert.equal(files[row.path]??null,row.before,'exact post697 helper-copy predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

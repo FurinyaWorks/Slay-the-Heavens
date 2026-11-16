@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
+import {enemyPost697CiSource,enemyPost697HistoricalRead,enemyPost697PriorInventory,assertEnemyPost697CiCurrent} from './enemy-post697-ci-source.mjs';
 import {enemyGeometryCiSource,enemyGeometryCiCheckedSource,enemyGeometryCiRead,enemyGeometryPriorInventory,assertEnemyGeometryCiCurrent} from './enemy-geometry-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
@@ -20,7 +21,8 @@ export function integratedSource(path,source,target,read=readFileSync){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=enemyGeometryCiSource(path,source,undefined,read);
+ source=enemyPost697CiSource(path,source,undefined,read);
+ source=enemyGeometryCiSource(path,source,undefined,enemyPost697HistoricalRead('enemy',read));
  source=releaseBootstrapCiSource(path,source,row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
@@ -36,6 +38,8 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ assertEnemyPost697CiCurrent(read);
+ read=enemyPost697HistoricalRead('enemy',read);
  assertEnemyGeometryCiCurrent(read);
  const priorRead=enemyGeometryCiRead(read);
  assertReleaseBootstrapCiCurrent(priorRead);
@@ -53,6 +57,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
+ paths=enemyPost697PriorInventory(paths,kind,read);read=enemyPost697HistoricalRead('enemy',read);
  paths=enemyGeometryPriorInventory(paths,kind,read);read=enemyGeometryCiRead(read);
  // New standalone reviewed views consume raw discovery. Older chained views
  // retain their existing idempotent prior-inventory contract.

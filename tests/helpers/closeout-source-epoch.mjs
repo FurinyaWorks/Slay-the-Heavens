@@ -12,6 +12,8 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendEnemyGeometrySource} from './enemy-geometry-source.mjs';
+import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
+import {extendEnemyPost697Source} from './enemy-post697-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -51,7 +53,10 @@ export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preEnemyGeometrySourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
-export const sourceEpoch=extendEnemyGeometrySource(preEnemyGeometrySourceEpoch);
+export const preEnemyPost697SourceEpoch=extendEnemyGeometrySource(preEnemyGeometrySourceEpoch);
+export const preReleaseSelectionMapSourceEpoch=preEnemyGeometrySourceEpoch;
+export const releaseSelectionMapLegacyEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const sourceEpoch=extendEnemyPost697Source(preEnemyPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
