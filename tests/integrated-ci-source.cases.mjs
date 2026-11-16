@@ -243,7 +243,7 @@ test('potion click production closure authenticates new bytes and retains every 
  const {sourceEpoch,prePotionClickSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {potionClickSourcePacket:p,extendPotionClickSource}=await import('./helpers/potion-click-source.mjs');
  const prior=prePotionClickSourceEpoch.proof,current=sourceEpoch.proof;
- assert.equal(current.currentCommit,'94af046c80b1dd4f020d6f54406520f5a658a051');assert.equal(current.currentTreeCommitted,true);
+ assert.equal(current.currentCommit,'c126877c31b37396b6148e1101a8dba555d03feb');assert.equal(current.currentTreeCommitted,true);
  assert.deepEqual(current.owners,prior.owners,'117 owners; no newly owned path');
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(current.targets[name],target,name);
  assert.deepEqual(current.targets.potionClickPrior,{commit:p.baseCommit,files:prior.current});
@@ -282,4 +282,33 @@ test('potion click CI authenticates new bytes and rejects drift missing packets 
  const marker="const bytes=readFileSync(new URL('./potion-click-ci-source.json.gz',import.meta.url));";assert.equal(leaf.split(marker).length,2);
  const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
  await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete potion click CI continuation/);
+});
+
+test('potion click historical entry authenticates complete current bindings before replay and after warm success',()=>{
+ const path='src/lua/abyss_battle_ui.lua',expected=potionClickCiPacket.files[path].before.source;
+ const other='tests/helpers/closeout-source-epoch.mjs';let fault;
+ const read=(p,e)=>{
+  if(p===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+p);
+   if(fault.kind==='null')return null;
+   const raw=actualPotionClickReadFileSync(p,e);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualPotionClickReadFileSync(p,e);
+ };
+ const historical=potionClickHistoricalRead(read);
+ assert.equal(historical(path,'utf8'),expected);
+ for(const missing of ['missing','null','drift']){
+  fault={path:other,kind:missing};
+  assert.throws(()=>historical(path,'utf8'),undefined,'complete current must authenticate other binding '+missing);
+  fault=undefined;assert.equal(historical(path,'utf8'),expected);
+ }
+ const archive=Object.keys(potionClickCiPacket.immutableArchives)[0];
+ for(const kind of ['missing','drift']){
+  fault={path:archive,kind};assert.throws(()=>historical(path,'utf8'),undefined,'archive must authenticate before replay '+kind);
+  fault=undefined;assert.equal(historical(path,'utf8'),expected);
+ }
+ const reads=[];const tracked=potionClickHistoricalRead((p,e)=>{reads.push(p);return actualPotionClickReadFileSync(p,e);});
+ assert.equal(tracked(path,'utf8'),expected);
+ for(const required of [...Object.keys(potionClickCiPacket.files),...Object.keys(potionClickCiPacket.immutableArchives)])assert(reads.includes(required),'fresh complete read '+required);
 });

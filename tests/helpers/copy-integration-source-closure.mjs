@@ -36,8 +36,8 @@ export const potionRegressionHelperCopies=[
 for(const row of potionRegressionHelperCopies){assert.equal(files[row.path]??null,row.before,'exact potion regression helper-copy predecessor: '+row.path);files[row.path]=row.after;}
 export const potionClickHelperCopies=[
  {path:'tests/helpers/closeout-source-epoch.mjs',before:'c094647f798d6ca9c98c49b646cbd0ba034d90bd107d07e060c9d24396ec4a28',after:'b0260eb43becd74e52a8b5ed04e1909f52741d8cc9813c42ec5bc109f3c5723c'},
- {path:'tests/helpers/potion-click-source.mjs',before:null,after:'af8107cddca5654556fd8a512341ecc658b20552ca91c1bc2bc33fb4fdb32561'},
- {path:'tests/helpers/potion-click-source.json.gz',before:null,after:'2742b7d724213f7764d9603ea2276ffd9d85a910ab2b8b263d5a896ba94fe26e'}
+ {path:'tests/helpers/potion-click-source.mjs',before:null,after:'eb133eb610ed646a566bde84c1113083ef710f68ad6bb34cb219fd306837dc82'},
+ {path:'tests/helpers/potion-click-source.json.gz',before:null,after:'823ccaff8ee4d2d6e48fb94c758f9ae11a001c73872fef2a890109de0c8e0dbf'}
 ];
 for(const row of potionClickHelperCopies){assert.equal(files[row.path]??null,row.before,'exact potion click helper-copy predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};

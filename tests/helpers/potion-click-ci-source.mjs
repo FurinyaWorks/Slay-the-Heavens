@@ -5,13 +5,13 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./potion-click-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'e72587157ebe36bf1eda61ed23087a5bd5138f5e9f1defd09c76f0c9fa3f9336','complete potion click CI continuation');
+assert.equal(hash(bytes),'f4f85ac76b7d5682dcede88f5cb3215206327e4176221d67c7e31296b803760f','complete potion click CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'89dfc774b1c6bb146b91e6064039f4d648db0d33');
 assert.equal(packet.releaseBase,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
 assert.deepEqual(packet.prerequisites,[packet.baseCommit]);
-assert.equal(packet.currentCommit,'94af046c80b1dd4f020d6f54406520f5a658a051');
+assert.equal(packet.currentCommit,'c126877c31b37396b6148e1101a8dba555d03feb');
 assert.equal(packet.currentTreeCommitted,false,'auxiliary capture is separate from the committed product');
 assert.deepEqual(packet.currentInventory,packet.priorInventory,'no raw discovery additions or losses');
 for(const [path,row]of Object.entries(packet.files)){
@@ -36,7 +36,13 @@ export function potionClickCiSource(path,source,before){
 // Explicit historical epoch only, including production; raw guards use the actual reader.
 export function potionClickHistoricalRead(read=readFileSync){return(path,encoding)=>{
  const raw=read(path,encoding);if(raw===null||raw===undefined)return raw;
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=potionClickCiCheckedSource(path,text);
+ const text=typeof raw==='string'?raw:raw.toString('utf8');
+ const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
+ // Authenticate the entire fresh corpus before exposing any historical bytes.
+ // Unknown/already-historical bytes remain raw and gain no authorization.
+ if(row?.before&&row.before.sha256!==row.current.sha256&&hash(norm(text))===row.current.sha256)
+  assertPotionClickCiCurrent(read);
+ const prior=potionClickCiCheckedSource(path,text);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertPotionClickRawInventory(paths,kind='js'){

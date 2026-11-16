@@ -317,9 +317,9 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             return not services.consumeReleasedDragClick(origin) and not self.suppressClick and not self.gesture
         end,
         pointerConsumed=function(event,token)
-            -- Without a Down/Up capability, each Click is an independent action;
-            -- there is no physical release whose tail can be attributed here.
-            if not (host.cursor and host.cursor.CursorDown and host.cursor.CursorUp) then return end
+            -- Only a host with neither Down nor Up is truly click-only. Partial
+            -- pointer capabilities still need the attributed tail barrier.
+            if not (host.cursor and (host.cursor.CursorDown or host.cursor.CursorUp)) then return end
             -- Reuse the finite release barrier after the popup command closes
             -- its menu. Keep the owned ID and the native Click's one ambiguous
             -- tail separately when that Click omitted its ID.

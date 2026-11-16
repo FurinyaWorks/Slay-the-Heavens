@@ -50,3 +50,4 @@ end)
 print('POTION_TARGETING_CAPABILITY '..(pointer and 'paired' or 'click-only'))
 end
 finish()
+dofile('tests/lua/support/potion_partial_pointer.lua')

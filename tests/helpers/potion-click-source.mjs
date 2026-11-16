@@ -7,7 +7,7 @@ import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 const bytes=readFileSync(new URL('./potion-click-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'2742b7d724213f7764d9603ea2276ffd9d85a910ab2b8b263d5a896ba94fe26e','complete potion click production packet');
+assert.equal(hash(bytes),'823ccaff8ee4d2d6e48fb94c758f9ae11a001c73872fef2a890109de0c8e0dbf','complete potion click production packet');
 export const potionClickSourcePacket=freeze(JSON.parse(gunzipSync(bytes)));
 export function extendPotionClickSource(original,packet=potionClickSourcePacket){
  const prior=original.proof,paths=Object.keys(packet.current).sort();
@@ -15,7 +15,7 @@ export function extendPotionClickSource(original,packet=potionClickSourcePacket)
  assert.equal(packet.baseCommit,'89dfc774b1c6bb146b91e6064039f4d648db0d33');
  assert.equal(packet.releaseBase,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
  assert.deepEqual(packet.prerequisites,[packet.baseCommit]);assert.equal(packet.currentTreeCommitted,true);
- assert.equal(packet.currentCommit,'94af046c80b1dd4f020d6f54406520f5a658a051');
+ assert.equal(packet.currentCommit,'c126877c31b37396b6148e1101a8dba555d03feb');
  for(const key of ['current','before','producers','inheritedSources','combinedProducers'])
   assert.deepEqual(packet[key],potionClickSourcePacket[key],'exact potion click '+key);
  assert.deepEqual(paths,['src/lua/abyss_battle_ui.lua']);
