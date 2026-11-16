@@ -88,5 +88,3 @@ if(existsSync(new URL('./release-selection-map-ci-source.mjs',import.meta.url)))
   }
  });
 }
-
-
