@@ -1,0 +1,327 @@
+PASS 1 complete current candidate
+PASS 2 .github/workflows/quality.yml exact current
+PASS 3 .github/workflows/quality.yml exact Git freeze predecessor
+PASS 4 .github/workflows/quality.yml LF complete projection
+PASS 5 .github/workflows/quality.yml LF wrong before public source
+PASS 6 .github/workflows/quality.yml LF wrong before checked source
+PASS 7 .github/workflows/quality.yml LF wrong before public source
+PASS 8 .github/workflows/quality.yml LF wrong before checked source
+PASS 9 .github/workflows/quality.yml LF wrong before public source
+PASS 10 .github/workflows/quality.yml LF wrong before checked source
+PASS 11 .github/workflows/quality.yml CRLF complete projection
+PASS 12 .github/workflows/quality.yml CRLF wrong before public source
+PASS 13 .github/workflows/quality.yml CRLF wrong before checked source
+PASS 14 .github/workflows/quality.yml CRLF wrong before public source
+PASS 15 .github/workflows/quality.yml CRLF wrong before checked source
+PASS 16 .github/workflows/quality.yml CRLF wrong before public source
+PASS 17 .github/workflows/quality.yml CRLF wrong before checked source
+PASS 18 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 19 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 20 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 21 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 22 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 23 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 24 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 25 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 26 .github/workflows/quality.yml unknown path opaque
+PASS 27 .github/workflows/quality.yml unknown path opaque
+PASS 28 .github/workflows/quality.yml unknown path opaque
+PASS 29 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 30 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 31 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 32 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 33 .github/workflows/quality.yml current rejects missing owner
+PASS 34 tests/release-selection-map-source.test.mjs exact current
+PASS 35 tests/release-selection-map-source.test.mjs exact Git freeze predecessor
+PASS 36 tests/release-selection-map-source.test.mjs LF complete projection
+PASS 37 tests/release-selection-map-source.test.mjs LF wrong before public source
+PASS 38 tests/release-selection-map-source.test.mjs LF wrong before checked source
+PASS 39 tests/release-selection-map-source.test.mjs LF wrong before public source
+PASS 40 tests/release-selection-map-source.test.mjs LF wrong before checked source
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+... Skipped lines
+
+  "import test from 'node:test';\n" +
+    "import assert from 'node:assert/strict';\n" +
+    "import {readFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';\n" +
+    "import {join} from 'node:path';\n" +
+    "import {tmpdir} from 'node:os';\n" +
+...
+    "import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';\n" +
++   "import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';\n" +
+-   "import {beforeFastFreezeCombination,historicalSource,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';\n" +
+    "const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');\n" +
+    '\n' +
+    "test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{\n" +
+    " const bytes=readFileSync('tests/helpers/release-selection-map-base-source.json.gz');\n" +
+    " assert.equal(hash(bytes),'4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa');\n" +
+...
+    ' for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){\n' +
++   "  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);\n" +
+-   "  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(historicalSource(path,source)),row.current.sha256,path);\n" +
+    "  const production=path.startsWith('src/')||path==='config/architecture.json';\n" +
++   '  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??source,path);\n' +
+-   '  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??historicalSource(path,source),path);\n' +
+    "  for(const foreign of [source+'\\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);\n" +
+    "  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{\n' +
+    "   const raw=readFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\\n':Buffer.concat([raw,Buffer.from('\\n')]):raw;\n" +
+    '  }),/fresh complete integration source/);\n' +
+...
+    " assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target:'foreign'}),/unknown source target/);\n" +
++   " for(const mutate of [v=>{v.before[anchor].source+='\\n';},v=>{delete v.current[anchor];},v=>{v.currentCommit='f'.repeat(40);},v=>{v.producers[anchor].p"... 1368 more characters
+-   " for(const mutate of [v=>{v.before[anchor].source+='\\n';},v="... 2705 more characters
+
+    at file:///tmp/fast-freeze-review/controls.mjs:19:61
+    at ok (file:///tmp/fast-freeze-review/controls.mjs:10:32)
+    at file:///tmp/fast-freeze-review/controls.mjs:19:4 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: "import test from 'node:test';\n" +
+    "import assert from 'node:assert/strict';\n" +
+    "import {readFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';\n" +
+    "import {join} from 'node:path';\n" +
+    "import {tmpdir} from 'node:os';\n" +
+    "import {pathToFileURL} from 'node:url';\n" +
+    "import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';\n" +
+    "import {createHash} from 'node:crypto';\n" +
+    "import {gunzipSync} from 'node:zlib';\n" +
+    "import {discoverJs} from '../scripts/ci-shards.mjs';\n" +
+    "import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';\n" +
+    "import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';\n" +
+    "import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';\n" +
+    "const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');\n" +
+    '\n' +
+    "test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{\n" +
+    " const bytes=readFileSync('tests/helpers/release-selection-map-base-source.json.gz');\n" +
+    " assert.equal(hash(bytes),'4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa');\n" +
+    ' const proof=JSON.parse(gunzipSync(bytes)),prior=preReleaseSelectionMapSourceEpoch.proof;\n' +
+    " assert.equal(proof.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');\n" +
+    " assert.deepEqual(proof.baseParents,['36b9b157ee6f05b65eb9f1da7e2978647d36c210']);\n" +
+    ' assert.equal(proof.equivalentCommit,releaseSelectionMapSourcePacket.baseCommit);\n' +
+    ' assert.equal(proof.sourceCount,352);assert.equal(proof.ownerCount,116);\n' +
+    ' assert.deepEqual(Object.keys(proof.files).sort(),Object.keys(prior.current).filter(path=>prior.current[path]!==null).sort());\n' +
+    ' for(const [path,row]of Object.entries(proof.files)){\n' +
+    "  assert.equal(row.gitBlob,row.oldGitBlob,path+' unchanged exact Git blob');\n" +
+    '  assert.equal(hash(row.source),row.sha256,path);\n' +
+    "  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.source)}\\0`).update(row.source).digest('hex'),row.gitBlob,path);\n" +
+    "  assert.equal(row.source,prior.current[path].source,path+' complete authenticated prior source');\n" +
+    ' }\n' +
+    " assert.equal(releaseSelectionMapSourcePacket.currentCommit,'74a598a52a0b846bc1bec1ef57083b2fdb1bbc39');\n" +
+    '});\n' +
+    '\n' +
+    "test('release selection map production preserves every complete prior target and freshly authenticates the committed source tree',()=>{\n" +
+    ' const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;\n' +
+    ' for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);\n' +
+    ' assert.deepEqual(p.targets.releaseSelectionMapPrior.files,prior.current);\n' +
+    ' assert.equal(p.currentTreeCommitted,true);assert.equal(p.currentCommit,releaseSelectionMapSourcePacket.currentCommit);\n' +
+    " const files=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();\n" +
+    ' assert.deepEqual(files,Object.keys(p.current).filter(path=>p.current[path]!==null).sort());\n' +
+    " for(const path of files)assert.equal(norm(readFileSync(path,'utf8')),p.current[path].source,path);\n" +
+    ' for(const [path,before]of Object.entries(releaseSelectionMapSourcePacket.before))assert.deepEqual(before,prior.current[path]);\n' +
+    ' assert.throws(()=>extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch,{...releaseSelectionMapSourcePacket,current:{}}),/only the approved selection map owners advance/);\n' +
+    '});\n' +
+    '\n' +
+    "test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{\n" +
+    ' assertReleaseSelectionMapCiCurrent();\n' +
+    ' for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){\n' +
+    "  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);\n" +
+    "  const production=path.startsWith('src/')||path==='config/architecture.json';\n" +
+    '  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??source,path);\n' +
+    "  for(const foreign of [source+'\\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);\n" +
+    "  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{\n' +
+    "   const raw=readFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\\n':Buffer.concat([raw,Buffer.from('\\n')]):raw;\n" +
+    '  }),/fresh complete integration source/);\n' +
+    ' }\n' +
+    " for(const path of Object.keys(releaseSelectionMapSourcePacket.current))assert.equal(releaseSelectionMapCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');\n" +
+    '});\n' +
+    '\n' +
+    "test('release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{\n" +
+    " const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};\n" +
+    ' for(const [kind,paths]of Object.entries(inventories)){\n' +
+    '  assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);\n' +
+    '  assertReleaseSelectionMapRawInventory(paths,kind);\n' +
+    '  assert.deepEqual(releaseSelectionMapPriorInventory(paths,kind),releaseSelectionMapCiPacket.priorInventory[kind]);\n' +
+    "  const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];\n" +
+    "  assert.deepEqual(releaseSelectionMapPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');\n" +
+    '  const noAdditions=paths.filter(path=>releaseSelectionMapCiPacket.priorInventory[kind].includes(path));\n' +
+    "  if(paths.length!==noAdditions.length)assert.throws(()=>assertReleaseSelectionMapRawInventory(noAdditions,kind),/raw discovery inventory/,'deleting every release addition cannot pass raw Full validation');\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapRawInventory(opaque,kind),/raw discovery inventory/);\n' +
+    "  for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])\n" +
+    '   assert.throws(()=>assertReleaseSelectionMapRawInventory(bad,kind),/raw discovery inventory/);\n' +
+    '  for(const path of paths.filter(p=>!releaseSelectionMapCiPacket.priorInventory[kind].includes(p)))\n' +
+    "   assert.throws(()=>releaseSelectionMapPriorInventory(paths,kind,(p,e)=>readFileSync(p,e)+(p===path?'\\n':'')),/fresh release selection map added inventory source/);\n" +
+    ' }\n' +
+    '});\n' +
+    '\n' +
+    "test('release selection map raw workflow checks each real execution deadline and trusted local route',()=>{\n" +
+    " const workflow=norm(readFileSync('.github/workflows/quality.yml','utf8'));\n" +
+    ' assertReleaseSelectionMapExecutionGuards(workflow);\n' +
+    ' for(const [before,after]of [\n' +
+    `  ["matrix.os == 'windows-2025' && 45 || 30","matrix.os == 'windows-2025' && 30 || 30"],\n` +
+    `  ["local-special' && 75 || 45","local-special' && 75 || 30"],\n` +
+    `  ["local-special' && 75 || 45","local-special' && 76 || 45"],\n` +
+    "  ['runs-on: ubuntu-24.04\\n    timeout-minutes: 30','runs-on: ubuntu-24.04\\n    timeout-minutes: 20'],\n" +
+    `  ["github.event_name == 'workflow_dispatch' && inputs.runner_pool",'inputs.runner_pool'],\n` +
+    `  ["github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'",'true']]){\n` +
+    "  assert(workflow.includes(before),'negative control must change a real workflow input');\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapExecutionGuards(workflow.replaceAll(before,after)),/raw Quality/,before);\n' +
+    ' }\n' +
+    ' const fast="    timeout-minutes: ${{ matrix.os == \'windows-2025\' && 45 || 30 }}";\n' +
+    " const posix='    timeout-minutes: 30';\n" +
+    ' assert(workflow.includes(fast));assert(workflow.includes(posix));\n' +
+    " for(const bad of [workflow.replace(fast,''),workflow.replace(fast,fast+'\\n'+fast),\n" +
+    "  workflow.replace(fast,'      timeout-minutes: 45'),\n" +
+    "  workflow.replace(fast,'').replace(posix,posix+'\\n'+fast)])\n" +
+    "  assert.throws(()=>assertReleaseSelectionMapExecutionGuards(bad),/raw Quality/,'missing, duplicate, step-only and wrong-job guards fail');\n" +
+    '});\n' +
+    '\n' +
+    "test('release selection map production requires fresh complete owners and leaves foreign bytes visible',()=>{\n" +
+    ' const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;\n' +
+    ' assert.equal(Object.keys(p.current).length,352);assert.equal(p.owners.length,116);\n' +
+    ' assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,65);\n' +
+    " const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>readFileSync(path,'utf8');\n" +
+    ' const source=norm(raw(anchor)),expected=prior.current[anchor].source;\n' +
+    " for(const current of [source,source.replaceAll('\\n','\\r\\n')]){\n" +
+    "  const seen=[];assert.equal(sourceEpoch.preCombinedSource(anchor,current,{target:'releaseSelectionMapPrior',readSource:path=>{seen.push(path);return raw(path);}}),expected);\n" +
+    "  assert.deepEqual(seen,p.owners,'every invocation freshly authenticates all owners');\n" +
+    ' }\n' +
+    " for(const owner of p.owners)for(const mode of ['changed','missing','buffer','throw']){\n" +
+    "  const read=path=>{if(path!==owner)return raw(path);if(mode==='throw')throw Error('injected missing owner');if(mode==='missing')return null;if(mode==='buffer')return Buffer.from(raw(path));return raw(path)+'\\n';};\n" +
+    "  assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target:'releaseSelectionMapPrior',readSource:read}),/linked owner/);\n" +
+    ' }\n' +
+    " for(const foreign of [source+'\\n',source.slice(1),source.replaceAll('\\n','\\r\\r\\n'),Buffer.from(source),null,17]){\n" +
+    "  let reads=0;assert.equal(sourceEpoch.preCombinedSource(anchor,foreign,{target:'releaseSelectionMapPrior',readSource:()=>{reads++;throw Error('foreign bytes');}}),foreign);assert.equal(reads,0);\n" +
+    ' }\n' +
+    " assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target:'foreign'}),/unknown source target/);\n" +
+    " for(const mutate of [v=>{v.before[anchor].source+='\\n';},v=>{delete v.current[anchor];},v=>{v.currentCommit='f'.repeat(40);},v=>{v.producers[anchor].p"... 1368 more characters,
+  expected: "import test from 'node:test';\n" +
+    "import assert from 'node:assert/strict';\n" +
+    "import {readFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';\n" +
+    "import {join} from 'node:path';\n" +
+    "import {tmpdir} from 'node:os';\n" +
+    "import {pathToFileURL} from 'node:url';\n" +
+    "import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';\n" +
+    "import {createHash} from 'node:crypto';\n" +
+    "import {gunzipSync} from 'node:zlib';\n" +
+    "import {discoverJs} from '../scripts/ci-shards.mjs';\n" +
+    "import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';\n" +
+    "import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';\n" +
+    "import {beforeFastFreezeCombination,historicalSource,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';\n" +
+    "const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');\n" +
+    '\n' +
+    "test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{\n" +
+    " const bytes=readFileSync('tests/helpers/release-selection-map-base-source.json.gz');\n" +
+    " assert.equal(hash(bytes),'4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa');\n" +
+    ' const proof=JSON.parse(gunzipSync(bytes)),prior=preReleaseSelectionMapSourceEpoch.proof;\n' +
+    " assert.equal(proof.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');\n" +
+    " assert.deepEqual(proof.baseParents,['36b9b157ee6f05b65eb9f1da7e2978647d36c210']);\n" +
+    ' assert.equal(proof.equivalentCommit,releaseSelectionMapSourcePacket.baseCommit);\n' +
+    ' assert.equal(proof.sourceCount,352);assert.equal(proof.ownerCount,116);\n' +
+    ' assert.deepEqual(Object.keys(proof.files).sort(),Object.keys(prior.current).filter(path=>prior.current[path]!==null).sort());\n' +
+    ' for(const [path,row]of Object.entries(proof.files)){\n' +
+    "  assert.equal(row.gitBlob,row.oldGitBlob,path+' unchanged exact Git blob');\n" +
+    '  assert.equal(hash(row.source),row.sha256,path);\n' +
+    "  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.source)}\\0`).update(row.source).digest('hex'),row.gitBlob,path);\n" +
+    "  assert.equal(row.source,prior.current[path].source,path+' complete authenticated prior source');\n" +
+    ' }\n' +
+    " assert.equal(releaseSelectionMapSourcePacket.currentCommit,'74a598a52a0b846bc1bec1ef57083b2fdb1bbc39');\n" +
+    '});\n' +
+    '\n' +
+    "test('release selection map production preserves every complete prior target and freshly authenticates the committed source tree',()=>{\n" +
+    ' const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;\n' +
+    ' for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);\n' +
+    ' assert.deepEqual(p.targets.releaseSelectionMapPrior.files,prior.current);\n' +
+    ' assert.equal(p.currentTreeCommitted,true);assert.equal(p.currentCommit,releaseSelectionMapSourcePacket.currentCommit);\n' +
+    " const files=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();\n" +
+    ' assert.deepEqual(files,Object.keys(p.current).filter(path=>p.current[path]!==null).sort());\n' +
+    " for(const path of files)assert.equal(norm(readFileSync(path,'utf8')),p.current[path].source,path);\n" +
+    ' for(const [path,before]of Object.entries(releaseSelectionMapSourcePacket.before))assert.deepEqual(before,prior.current[path]);\n' +
+    ' assert.throws(()=>extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch,{...releaseSelectionMapSourcePacket,current:{}}),/only the approved selection map owners advance/);\n' +
+    '});\n' +
+    '\n' +
+    "test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{\n" +
+    ' assertReleaseSelectionMapCiCurrent();\n' +
+    ' for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){\n' +
+    "  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(historicalSource(path,source)),row.current.sha256,path);\n" +
+    "  const production=path.startsWith('src/')||path==='config/architecture.json';\n" +
+    '  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??historicalSource(path,source),path);\n' +
+    "  for(const foreign of [source+'\\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);\n" +
+    "  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{\n' +
+    "   const raw=readFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\\n':Buffer.concat([raw,Buffer.from('\\n')]):raw;\n" +
+    '  }),/fresh complete integration source/);\n' +
+    ' }\n' +
+    " for(const path of Object.keys(releaseSelectionMapSourcePacket.current))assert.equal(releaseSelectionMapCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');\n" +
+    '});\n' +
+    '\n' +
+    "test('release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{\n" +
+    " const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};\n" +
+    ' for(const [kind,paths]of Object.entries(inventories)){\n' +
+    '  assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);\n' +
+    '  assertReleaseSelectionMapRawInventory(paths,kind);\n' +
+    '  assert.deepEqual(releaseSelectionMapPriorInventory(paths,kind),releaseSelectionMapCiPacket.priorInventory[kind]);\n' +
+    "  const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];\n" +
+    "  assert.deepEqual(releaseSelectionMapPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');\n" +
+    '  const noAdditions=paths.filter(path=>releaseSelectionMapCiPacket.priorInventory[kind].includes(path));\n' +
+    "  if(paths.length!==noAdditions.length)assert.throws(()=>assertReleaseSelectionMapRawInventory(noAdditions,kind),/raw discovery inventory/,'deleting every release addition cannot pass raw Full validation');\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapRawInventory(opaque,kind),/raw discovery inventory/);\n' +
+    "  for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])\n" +
+    '   assert.throws(()=>assertReleaseSelectionMapRawInventory(bad,kind),/raw discovery inventory/);\n' +
+    '  for(const path of paths.filter(p=>!releaseSelectionMapCiPacket.priorInventory[kind].includes(p)))\n' +
+    "   assert.throws(()=>releaseSelectionMapPriorInventory(paths,kind,(p,e)=>readFileSync(p,e)+(p===path?'\\n':'')),/fresh release selection map added inventory source/);\n" +
+    ' }\n' +
+    '});\n' +
+    '\n' +
+    "test('release selection map raw workflow checks each real execution deadline and trusted local route',()=>{\n" +
+    " const workflow=norm(readFileSync('.github/workflows/quality.yml','utf8'));\n" +
+    ' assertReleaseSelectionMapExecutionGuards(workflow);\n' +
+    ' for(const [before,after]of [\n' +
+    `  ["matrix.os == 'windows-2025' && 45 || 30","matrix.os == 'windows-2025' && 30 || 30"],\n` +
+    `  ["local-special' && 75 || 45","local-special' && 75 || 30"],\n` +
+    `  ["local-special' && 75 || 45","local-special' && 76 || 45"],\n` +
+    "  ['runs-on: ubuntu-24.04\\n    timeout-minutes: 30','runs-on: ubuntu-24.04\\n    timeout-minutes: 20'],\n" +
+    `  ["github.event_name == 'workflow_dispatch' && inputs.runner_pool",'inputs.runner_pool'],\n` +
+    `  ["github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'",'true']]){\n` +
+    "  assert(workflow.includes(before),'negative control must change a real workflow input');\n" +
+    '  assert.throws(()=>assertReleaseSelectionMapExecutionGuards(workflow.replaceAll(before,after)),/raw Quality/,before);\n' +
+    ' }\n' +
+    ' const fast="    timeout-minutes: ${{ matrix.os == \'windows-2025\' && 45 || 30 }}";\n' +
+    " const posix='    timeout-minutes: 30';\n" +
+    ' assert(workflow.includes(fast));assert(workflow.includes(posix));\n' +
+    " for(const bad of [workflow.replace(fast,''),workflow.replace(fast,fast+'\\n'+fast),\n" +
+    "  workflow.replace(fast,'      timeout-minutes: 45'),\n" +
+    "  workflow.replace(fast,'').replace(posix,posix+'\\n'+fast)])\n" +
+    "  assert.throws(()=>assertReleaseSelectionMapExecutionGuards(bad),/raw Quality/,'missing, duplicate, step-only and wrong-job guards fail');\n" +
+    '});\n' +
+    '\n' +
+    "test('release selection map production requires fresh complete owners and leaves foreign bytes visible',()=>{\n" +
+    ' const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;\n' +
+    ' assert.equal(Object.keys(p.current).length,352);assert.equal(p.owners.length,116);\n' +
+    ' assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,65);\n' +
+    " const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>readFileSync(path,'utf8');\n" +
+    ' const source=norm(raw(anchor)),expected=prior.current[anchor].source;\n' +
+    " for(const current of [source,source.replaceAll('\\n','\\r\\n')]){\n" +
+    "  const seen=[];assert.equal(sourceEpoch.preCombinedSource(anchor,current,{target:'releaseSelectionMapPrior',readSource:path=>{seen.push(path);return raw(path);}}),expected);\n" +
+    "  assert.deepEqual(seen,p.owners,'every invocation freshly authenticates all owners');\n" +
+    ' }\n' +
+    " for(const owner of p.owners)for(const mode of ['changed','missing','buffer','throw']){\n" +
+    "  const read=path=>{if(path!==owner)return raw(path);if(mode==='throw')throw Error('injected missing owner');if(mode==='missing')return null;if(mode==='buffer')return Buffer.from(raw(path));return raw(path)+'\\n';};\n" +
+    "  assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target:'releaseSelectionMapPrior',readSource:read}),/linked owner/);\n" +
+    ' }\n' +
+    " for(const foreign of [source+'\\n',source.slice(1),source.replaceAll('\\n','\\r\\r\\n'),Buffer.from(source),null,17]){\n" +
+    "  let reads=0;assert.equal(sourceEpoch.preCombinedSource(anchor,foreign,{target:'releaseSelectionMapPrior',readSource:()=>{reads++;throw Error('foreign bytes');}}),foreign);assert.equal(reads,0);\n" +
+    ' }\n' +
+    " assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target:'foreign'}),/unknown source target/);\n" +
+    " for(const mutate of [v=>{v.before[anchor].source+='\\n';},v="... 2705 more characters,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

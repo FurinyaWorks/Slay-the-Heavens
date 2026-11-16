@@ -1,0 +1,120 @@
+node:internal/modules/package_json_reader:331
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'luaparse' imported from /workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/scripts/test-affected.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+    at packageResolve (node:internal/modules/esm/resolve:784:25)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.22.1
+✖ tests/ci-impact.test.mjs (137.782904ms)
+✔ physical Quality workflow caps concurrent POSIX shards at twelve (2.46545ms)
+✔ current twelve and historical six both restore the exact original source (2.05374ms)
+✔ exact concurrency inverse preserves old bytes and LF or CRLF endings (14.159432ms)
+✔ [historical 98fef source contract] cap inverse shares the platform and original whole-source guards without changing their hashes (708.567532ms)
+✔ only the lightweight impact planner and two required summaries use slim (2.659398ms)
+✔ draft Quality is deferred, Ready and integration retain the real gates (1.254873ms)
+✔ [historical PR620 workflow] complete Draft/Fast projection restores exact develop workflow bytes with LF and CRLF (10.200344ms)
+✔ Draft/Fast projection refuses every partial migration, duplicate and changed policy block (33.466616ms)
+✔ Draft/Fast projection preserves unrelated drift and never partially restores execution slack (4.315707ms)
+✔ [historical 98fef source contract] reviewed summary runner inverse retains the original complete workflow contract (296.713445ms)
+✔ [historical 98fef source contract] direct platform projection and layered replay share the same exact runner migration (277.792754ms)
+✔ [historical ratchet integration workflow] ratchet gates project only their exact complete placements and preserve current execution (2.212925ms)
+✔ workflow-only historical views cannot project production sources or test inventories (1.484875ms)
+✔ Release freeze fixture continuation rejects unknown paths and all byte drift (2.729773ms)
+✔ TASK-75.5 historical thirteen-to-fourteen source and exact 28-job shape remain intact behind the approved outer epoch (10.320952ms)
+✔ complete approved fourteen-shard source alone recovers the unchanged full historical thirteen-shard source (3.117859ms)
+✔ historical fourteen-slot budget retains its complete observed inventory while partition coverage includes every current file (298.235603ms)
+node:internal/modules/package_json_reader:331
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'luaparse' imported from /workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/scripts/lua-quality-metrics.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+    at packageResolve (node:internal/modules/esm/resolve:784:25)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.22.1
+✖ tests/engineering-quality.test.mjs (160.635758ms)
+{"state":"success","errors":[]}
+{"state":"failure","errors":["Checkout receipt/artifact is missing, expired or differs from the effective rules (1/18) identity","Actual checkout receipt differs from Full source: runId","Actual checkout receipt differs from Full source: head","Actual checkout receipt differs from Full source: base","Actual checkout receipt differs from Full source: tested","Actual checkout receipt differs from Full source: prNumber","Actual checkout receipt differs from Full source: event","Actual checkout parent order differs from Full source","Checkout receipt collection failed: Cannot prove first rules shard execution attempt"]}
+{"state":"pending","errors":[]}
+{"state":"success","errors":[]}
+✔ pre-install CI status publishers load without npm packages (157.750239ms)
+✔ Full gate accepts the exact running aggregate only after every actual shard succeeds (1.911948ms)
+✔ Full publisher cannot certify old 27/28/30/33/35/36/37-job shapes or a forged/missing current actual shard (13.615664ms)
+✔ Full publisher shares proven inherited receipt identity without rewriting raw attempts (3.523851ms)
+✔ Full publisher never borrows an ambiguous, failed, different or stale execution receipt (11.390771ms)
+✔ real Full entrypoint collects and publishes inherited receipt with only the current aggregate running (8.211831ms)
+✔ Full gate rejects Fast, missing, failed, cancelled and skipped dependencies (2.689012ms)
+✔ Full gate rejects stale run, attempt, head, target and merge parent identity (1.15853ms)
+✔ Full success requires the actual immutable receipt, not merely green job metadata (2.308287ms)
+✔ publisher posts failure for invalid evidence and never hides a transport failure (0.61943ms)
+✔ publisher binds success to reviewed head and current run URL and verifies response (0.449568ms)
+✔ superseded planner and aggregate never overwrite a newer run or attempt status (2.346874ms)
+✔ real publisher entrypoint preserves master and fork flows without status writes or API queries (1.052302ms)
+✔ real publisher entrypoint collects API identities before current pending and success publication (1.438165ms)
+✔ Full publication reuses existing jobs and grants status writes only to planner and final aggregate (0.926225ms)
+✔ reviewed workflow inverse rejects partial wiring and preserves original arbitrary source drift (8.692124ms)
+✔ execution slack restores only the complete approved workflow edit for historical guards (1.803809ms)
+✔ all thirty-three actual shard identities are mandatory for current Full admission (22.272821ms)
+✔ history tooling continuation preserves the immutable raw closeout identity and rejects drift (2.367896ms)
+✔ history receipt continuation authenticates complete source only in its official view (0.53905ms)
+✔ linear feature history remains valid and reports no merge commits (0.777424ms)
+✔ base sync and coordinated integration merges are valid history, not a quality waiver (0.293365ms)
+✔ incomplete, duplicated, malformed and wrong-head history still fails closed (0.971072ms)
+✔ missing, empty, invalid, repeated and self-parent identities are not accepted as merges (0.507583ms)
+✔ immutable comparison paginates and reports a merge on the last page without rejecting it (1.312839ms)
+✔ history lookup failure on either page is never a successful audit (1.318828ms)
+✔ comparison identity, page completeness and final head remain mandatory (1.807404ms)
+✔ release policy stays separate and missing PR events cannot pass (0.376799ms)
+✔ the existing required Quality checks history once before installing dependencies (0.359755ms)
+✔ real Git preserves multiple agent histories and conflict resolution while squash keeps develop linear (584.080327ms)
+✔ Release freeze requires explicit type, matching version and necessity without interpreting prose (3.767107ms)
+✔ Release freeze reads live metadata and binds repository, base and exact head (1.112702ms)
+✔ existing PR metadata gate enforces Release freeze and reruns when metadata is edited (0.206747ms)
+✔ actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch (33.391695ms)
+✔ release selection map production preserves every complete prior target and freshly authenticates the committed source tree (12.084932ms)
+✔ release selection map CI validates complete live bindings while unknown or changed bytes stay visible (100.389383ms)
+✔ release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions (82.420795ms)
+✔ release selection map raw workflow checks each real execution deadline and trusted local route (3.068966ms)
+✔ release selection map production requires fresh complete owners and leaves foreign bytes visible (1165.937324ms)
+✔ release selection map isolated production copy includes exact helper and packet without CI trust leaf (788.804678ms)
+✔ Release freeze CI continuation authenticates fresh owners before historical projection (542.614638ms)
+ℹ tests 60
+ℹ suites 0
+ℹ pass 58
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15844.360005
+
+✖ failing tests:
+
+test at tests/ci-impact.test.mjs:1:1
+✖ tests/ci-impact.test.mjs (137.782904ms)
+  'test failed'
+
+test at tests/engineering-quality.test.mjs:1:1
+✖ tests/engineering-quality.test.mjs (160.635758ms)
+  'test failed'

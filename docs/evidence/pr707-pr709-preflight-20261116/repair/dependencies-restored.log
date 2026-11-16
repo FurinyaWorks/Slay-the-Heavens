@@ -1,0 +1,36 @@
+✔ Release integration uses complete affected Fast without weakening develop or explicit Full (8.961695ms)
+✔ only exact frozen Release HEAD with complete latest Full permits publication (16.923336ms)
+✔ candidate verification rejects branch movement and a newer attempt during reads (1.235254ms)
+✔ publication requires immutable actual checkout, never green metadata alone (5.814633ms)
+✔ publication gate is in required impact and never removes foreign partial wiring (0.53201ms)
+✔ Release history accepts only the complete reviewed gate and push removal together (3.391025ms)
+✔ Release CI repair maps only complete reviewed helper and test bytes, retaining drift and foreign inputs (1.520658ms)
+✔ complete mapped set is eligible; unknown, deleted, core and release changes require full (0.919455ms)
+✔ prose allowlist cannot hide additional unmodelled changes (0.330511ms)
+✔ admission control changes require Full even with proven tiny affected tests (0.405141ms)
+✔ registered UI responsibilities share eligibility with their parent; unknown modules stay full (0.593701ms)
+✔ parallel platform costs are advisory and never expand the complete affected set (1.933571ms)
+✔ actual required gate commands reject every missing, failed, cancelled or skipped selected execution (191.145391ms)
+✔ actual impact CLI routes Full Fast unknown and merge-group through the complete current matrices (969.761886ms)
+✔ physical lines and inclusive function spans include comments, blank lines and nested bodies (14.420314ms)
+✔ CRLF and LF have identical canonical metrics and source hashes (1.256976ms)
+✔ every function and chunk needs exactly one matching Luacheck coordinate (3.827604ms)
+✔ Unicode codepoint columns map to UTF8 AST bytes, including emoji and combining marks (1.680406ms)
+✔ all files and extracted helpers are discovered recursively; empty scans fail (12.837293ms)
+✔ full graph reports reviewed deferred cycles, self cycles and disjoint SCCs deterministically (4.258754ms)
+✔ baseline diff keeps full metrics, exact warning multiplicity and changed/deleted/new modules visible (2.86884ms)
+✔ baseline contract/tool/scope mismatch and malformed snapshots cannot be treated as improvement (1.192792ms)
+✔ JSON object key ordering does not create false warning changes or contract mismatches (0.965934ms)
+✔ all new numeric metrics remain report-only, including high complexity and new helper hotspots (2.305834ms)
+✔ the frozen baseline covers every recorded module/function and is not an exemption configuration (25.236085ms)
+✔ dependency and cycle changes are visible even when total module and warning counts stay equal (0.880888ms)
+✔ quality reports are collected by the existing gate and uploaded on failed runs without changing older CI guards (10.05733ms)
+✔ historical package replay inverts only the exact quality entry and gate wiring without changing its old hash (272.001195ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18379.681186

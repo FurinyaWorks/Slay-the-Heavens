@@ -1,0 +1,11 @@
+✔ integration validates complete raw sources and leaves every foreign byte and production owner visible (3367.50863ms)
+✔ integration copy closure requires its complete exact predecessor and current dependency bytes (78.868569ms)
+✔ Release bootstrap exact sources retain every old byte and reject missing drift and partial packets (587.23784ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4493.263145
