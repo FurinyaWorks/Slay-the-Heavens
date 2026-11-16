@@ -1,0 +1,25 @@
+ABYSS_UI init Color=table
+ABYSS_UI viewport_ready
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PORTRAIT selection phase=failed owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT avatar phase=failed owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT battle phase=idle owned=0 reason=nil
+ABYSS_UI ready
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_TRANSITION begin
+ABYSS_PAGE_REVEAL failed page=characterPanel epoch=2 reason=unbound portrait templateIndex
+ABYSS_RUN seed=2 source=explicit
+ABYSS_PAGE_REVEAL preparing page=nodePanel epoch=3
+ABYSS_UI failed update: ...6a/task111-v4-omit-probe-0110/include/abyss_prologue.lua:82: ...task111-v4-omit-probe-0110/include/abyss_game_ui_run.lua:159: ...-v4-omit-probe-0110/include/abyss_traveler_portraits.lua:337: attempt to call a nil value (method 'SetActive')
+ABYSS_PORTRAIT selection phase=released owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT avatar phase=released owned=0 reason=unbound portrait templateIndex
+ABYSS_PORTRAIT battle phase=released owned=0 reason=nil
+
+tests/lua/geo_public_entry.lua:9: native opening did not finish
+stack traceback:
+	[JS]: in function 'error'
+	tests/lua/geo_public_entry.lua:9: in upvalue 'finishOpening'
+	tests/lua/geo_public_entry.lua:50: in local 'native'
+	tests/lua/geo_public_entry.lua:66: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

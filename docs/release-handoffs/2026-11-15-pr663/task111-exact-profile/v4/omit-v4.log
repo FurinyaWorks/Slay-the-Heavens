@@ -1,0 +1,9 @@
+V4_PREPARE	false	...1-v4-omit-probe-0110/omit/abyss_original_v4_profiles.lua:22: module 'abyss_original_v4_data' not found:
+	no field package.preload['abyss_original_v4_data']
+	no file '<isolated>/task111-v4-omit-probe-0110/omit/abyss_original_v4_data.lua'
+	no file '/usr/local/share/lua/5.3/abyss_original_v4_data.js'
+	no file '/usr/local/share/lua/5.3/loadall.js'
+	no file '/usr/share/lua/5.3/abyss_original_v4_data.js'
+	no file '/usr/share/lua/5.3/loadall.js'
+	no file './abyss_original_v4_data.js'
+

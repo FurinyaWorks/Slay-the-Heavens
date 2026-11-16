@@ -1,0 +1,50 @@
+{
+  "sourceCommit": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "generatedDirectory": "build/formal",
+  "include": 366,
+  "omit": 365,
+  "onlyOmitted": [
+    {
+      "name": "abyss_original_v4_data",
+      "bytes": 577904,
+      "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+    }
+  ],
+  "remainingEqual": true,
+  "sourceFilesUnchanged": true,
+  "testBridges": [
+    "abyss_ui_layout",
+    "abyss_ui_templates"
+  ],
+  "officialCapacity": "UNVERIFIED",
+  "results": [
+    {
+      "profile": "include",
+      "kind": "geo",
+      "status": 1,
+      "signal": null,
+      "ms": 5464
+    },
+    {
+      "profile": "include",
+      "kind": "v4",
+      "status": 0,
+      "signal": null,
+      "ms": 438
+    },
+    {
+      "profile": "omit",
+      "kind": "geo",
+      "status": 1,
+      "signal": null,
+      "ms": 4243
+    },
+    {
+      "profile": "omit",
+      "kind": "v4",
+      "status": 0,
+      "signal": null,
+      "ms": 392
+    }
+  ]
+}

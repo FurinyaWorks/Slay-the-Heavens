@@ -1,0 +1,4 @@
+ABYSS_RUN seed=1 source=explicit
+ABYSS_RUN seed=1 source=explicit
+SCOPED_PUBLIC_SELECTION_HOST_PASS; art adapters/native actual entry NOT_TESTED
+

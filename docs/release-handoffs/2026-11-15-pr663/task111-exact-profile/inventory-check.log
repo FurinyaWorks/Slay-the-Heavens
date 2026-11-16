@@ -1,0 +1,122 @@
+PASS project inventory and separate stage ownership accounting
+{
+  "lua": {
+    "modules": 366,
+    "bytes": 4977537,
+    "top": [
+      {
+        "name": "abyss_traveler_portrait_assets",
+        "bytes": 736760,
+        "sha256": "347c7ba0189fe2f7666d8438c83bb4e4f0eea849971507e3065255bcc4ff5bac"
+      },
+      {
+        "name": "abyss_original_v4_data",
+        "bytes": 577904,
+        "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+      },
+      {
+        "name": "abyss_menu_background_asset",
+        "bytes": 310011,
+        "sha256": "5b1239c98b8ffe174de3fc3351ca73142786fb0059088465bb319cd09b7ec33e"
+      },
+      {
+        "name": "abyss_data",
+        "bytes": 212819,
+        "sha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18"
+      },
+      {
+        "name": "abyss_theme",
+        "bytes": 140202,
+        "sha256": "bb81179d37b73c3fe7a707d929c645c68ec8fdf2993e493ea7891cb9e2a21ca1"
+      },
+      {
+        "name": "abyss_combat",
+        "bytes": 116002,
+        "sha256": "609e75ba6e83da7b2311629adfdc2fd101c8167d3d17dbb1cdc0748baa9b1d1c"
+      },
+      {
+        "name": "abyss_presentation",
+        "bytes": 74514,
+        "sha256": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c"
+      },
+      {
+        "name": "abyss_actor",
+        "bytes": 51893,
+        "sha256": "0435754ce97e731da0abaa1aafdbbd035988c09b411c47c192bb3e6ab0133c7a"
+      },
+      {
+        "name": "abyss_deck_ui",
+        "bytes": 46628,
+        "sha256": "081875a171ffb00d25036fc98713540880d237f6b67933713453bf3fe75e7673"
+      },
+      {
+        "name": "abyss_map_ui",
+        "bytes": 44074,
+        "sha256": "f71c09ef038edcb90cf258a5faac64abb44bbf3fc9367c1893101298e2f33234"
+      },
+      {
+        "name": "abyss_feedback",
+        "bytes": 40363,
+        "sha256": "7d009bec730f1e1b2407bf77a4243e055224c2392f6fb25ecc3d355d95440fa4"
+      },
+      {
+        "name": "abyss_traveler_portraits",
+        "bytes": 39259,
+        "sha256": "95e3ab2064d416d4ba82c122f7af0c91c72a17423e427c5ea3c3b4bb32d1c363"
+      }
+    ]
+  },
+  "ui": [
+    {
+      "name": "nodePanel",
+      "nodes": 4725,
+      "initialHidden": 4725,
+      "leafImages": 3413,
+      "jsonBytes": 526128
+    },
+    {
+      "name": "battlePanel",
+      "nodes": 2966,
+      "initialHidden": 2966,
+      "leafImages": 2140,
+      "jsonBytes": 372803
+    },
+    {
+      "name": "characterPanel",
+      "nodes": 2056,
+      "initialHidden": 2056,
+      "leafImages": 1437,
+      "jsonBytes": 227643
+    },
+    {
+      "name": "choicePanel",
+      "nodes": 1685,
+      "initialHidden": 1685,
+      "leafImages": 1170,
+      "jsonBytes": 187597
+    },
+    {
+      "name": "potionEntry",
+      "nodes": 775,
+      "initialHidden": 775,
+      "leafImages": 644,
+      "jsonBytes": 107287
+    },
+    {
+      "name": "mapPanel",
+      "nodes": 740,
+      "initialHidden": 740,
+      "leafImages": 429,
+      "jsonBytes": 91401
+    }
+  ],
+  "total": 14431,
+  "templates": 6,
+  "flags": {
+    "cards": false,
+    "menuBackground": true,
+    "selectionAvatar": true,
+    "battlePortrait": true,
+    "monsters": false
+  }
+}
