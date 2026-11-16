@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { luaString } from './lua-string.mjs';
 
 export const ORIGINAL_V4_HASHES = Object.freeze({
   'cards_v4.json': '89229cdd7f6c1640d47bca95338f5e7887fbfd8720af181f7561d6eb45a45fca',
@@ -110,7 +109,9 @@ export function loadOriginalV4(directory = 'data/original_v4') {
 export function originalV4ToLua(value) {
   if (value === null) return 'nil'; // JSON null is the absence of a Lua configuration value.
   if (typeof value === 'string') {
-    return luaString(value);
+    requireValue(value.isWellFormed(), 'Lua strings require well-formed Unicode');
+    return '"' + [...Buffer.from(value, 'utf8')].map(byte => byte >= 32 && byte <= 126 && byte !== 34 && byte !== 92
+      ? String.fromCharCode(byte) : `\\${String(byte).padStart(3, '0')}`).join('') + '"';
   }
   if (typeof value === 'boolean') return String(value);
   if (typeof value === 'number' && Number.isFinite(value)) return String(value);
