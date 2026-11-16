@@ -153,3 +153,17 @@ test('integrated public source and reader freshly reject map-only drift after wa
  }
  let reads=0;const foreign=source+'\n';assert.equal(integratedSource(path,foreign,'native',()=>{reads++;throw Error('foreign read');}),foreign);assert.equal(reads,0);
 });
+
+test('historical menu authorization uses the current raw closure afresh without accepting stale owners',async()=>{
+ const {assertNavigationDomainCurrent}=await import('./helpers/navigation-map-integration.mjs');
+ assertNavigationDomainCurrent();
+ const input='src/lua/abyss_game_ui_input.lua';
+ for(const replacement of [s=>s+'\n',()=>undefined,s=>Buffer.from(s)]){
+  const raw=(p,e)=>p===input?replacement(readFileSync(p,e)):readFileSync(p,e);
+  assert.throws(()=>assertNavigationDomainCurrent(raw),/navigation\/map.*abyss_game_ui_input/);
+ }
+ const crlf=(p,e)=>{const s=readFileSync(p,e);return typeof s==='string'?s.replaceAll('\n','\r\n'):s;};
+ assertNavigationDomainCurrent(crlf);
+ assertNavigationDomainCurrent();
+ assert.throws(()=>assertNavigationDomainCurrent((p,e)=>p===input?readFileSync(p,e)+'\n':readFileSync(p,e)),/navigation\/map.*abyss_game_ui_input/);
+});
