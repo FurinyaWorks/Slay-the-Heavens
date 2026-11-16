@@ -38,4 +38,3 @@ export function assertSettingsMapCurrent(read=readFileSync){
  assertPc06CiCurrent(settingsMapRead('settings',read));
  assertReleaseSelectionMapCiCurrent(settingsMapRead('selection',read));
 }
-
