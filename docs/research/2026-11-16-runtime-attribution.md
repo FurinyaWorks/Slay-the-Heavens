@@ -78,5 +78,5 @@ native 方法与 mock 属性计数会重叠，不能相加当作引擎调用总�
 - [完整报告JSON](../evidence/runtime-attribution-20261116/report.json)、[源码/工具/生成UI身份](../evidence/runtime-attribution-20261116/input-manifest.json)；同目录保留十次原始输出及计数、默认profile探针、原TASK100三样本。
 - `incomplete-experiments.json.gz` 保留首轮 Lua 插桩失败、早期校验误把地图准备/反馈退休和正常粒子生灭计为欠工作量/残留的过程。修正了测试模型，并新增绝对帧数、每轮资源、no-op/缺observer反例；没有放宽原项目验证或复写失败。
 - 协调者最终审计发现旧 c56dcd7 样本在首次呈现后改 raw intentIndex，实际只产生UNKNOWN，旧17,270→9,530数据现明确降为UNKNOWN-only；旧结论及采集代码封存于 `historical-unknown-only.json.gz`。已用旧真实Host夹具跑出“两类source未产生”的RED，改为首次呈现前设置，再新增缺类反例和实际类别census，重新执行整轮固定协议；不是补写成功标记。旧独审的联合覆盖结论同步撤回，新联合数据必须重新独审。
-- 两轮独审各自保留 request-changes 事实：运行时图片false/校验/插桩问题，来源层 raw/历史reader混用问题；均通过实际RED→GREEN处理。最终独审身份和本地验证收据在本PR证据目录接续。
+- 两轮独审各自保留 request-changes 事实：运行时图片false/校验/插桩问题，来源层 raw/历史reader混用问题；均通过实际RED→GREEN处理。最终两路独审均通过，绑定源码检查点 `ef9d60f237021d3f4cb5fadfc49d6f8f7cd657d4`，各自 unresolved=[]：[运行时/联合实测](../evidence/runtime-attribution-20261116/review-runtime-combined-final.json)、[来源/CI/历史保持](../evidence/runtime-attribution-20261116/review-provenance-combined-final.json)。随后只补交文档/收据；代码目录Git tree身份另存 delivery-source-identity.json，不循环伪造自身SHA。
 - SDK export、官方 `OnUpdate` 上层宿主成本、component bridge/GPU与原生portrait driver、当前同候选官方画面、手机帧时/温度/长帧/持续卡顿、官方容量/ready及Hosted Full/合后验收仍为 **UNVERIFIED**。没有官方手机数据，绝不宣称手机已不发热。
