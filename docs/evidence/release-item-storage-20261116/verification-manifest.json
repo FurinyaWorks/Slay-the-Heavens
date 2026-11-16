@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "sourceMigrationCommit": "5dc654219b734bcb9de90ee572e651f59ccba0c3",
+  "originalProducer": "51f5423660423d479e52cb22dc9f298a62d8dd73",
+  "baseCommit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "finalSourceBytes": {
+    "scripts/release-item-evidence.mjs": "a275111f6e49e92d050ef04d173e823de7adeb7445c24c1fdf18fb8145d95582",
+    "tests/ci-reviewed-lfs.test.mjs": "fd666f0df65e5bdddfef245410047f1e893d742eb6d5023bde149478017c1cb3",
+    "tests/helpers/item-post697-ci-source.mjs": "02f19da08e90d21d154198b9b159115c77b61db721af07ce7f778f00c4e27c6f",
+    "tests/helpers/item-post697-ci-source.json.gz": "49921955b486ce20f8b612c129f8288c2de5d8f22b84a3bfe597c540ff7031d9"
+  },
+  "files": [
+    {
+      "path": "699-canonical-cold.log.gz",
+      "rawSha256": "875b30c1ab9a450ce8c6e8a7513564e0407367f453882f5d47b95ee47f5b465a",
+      "gzipSha256": "41c99f517d85af4851a3d38526226377946856e567b9c379864040d140f92ae3",
+      "rawBytes": 646,
+      "bytes": 326
+    },
+    {
+      "path": "699-storage-contract-initial.log.gz",
+      "rawSha256": "a5ef0f5aa5258ccbbbf2b6b7f2ff42bddde8b6ad6a636b639039bbc03b85c6c9",
+      "gzipSha256": "89f41dfca3130b7a51c02793420932174bde0dc7a646d23485a14b93b2710893",
+      "rawBytes": 989,
+      "bytes": 571
+    },
+    {
+      "path": "699-storage-contract-corrected.log.gz",
+      "rawSha256": "6bd331c3f7b855023d6808297a2f35a8f69920202f08958950ed42eecad8f6fa",
+      "gzipSha256": "19a7c8b382b71451e43a5f0a94736f6bbc7e07e8d6ef60f84e543879ae867d6e",
+      "rawBytes": 24168,
+      "bytes": 1997
+    },
+    {
+      "path": "699-storage-contract-hydrated.log.gz",
+      "rawSha256": "8b189ffa38cc63d51b8f7d73ed0d1aff805095cef0f0f1ca143a8d6acc6e2f45",
+      "gzipSha256": "5cab19e45a3fadd4ae18f8c9a3f4d9a3b7c6d30d407b08f712bf1e45113a48c3",
+      "rawBytes": 1356,
+      "bytes": 644
+    },
+    {
+      "path": "699-storage-source-freshness.log.gz",
+      "rawSha256": "5245cb95153209c56d36a0b23a93e5035b1287207565bbb125b6a67c7ea219ef",
+      "gzipSha256": "a13ec66fd66fd74205522d584a75bb5ac44b66a06e9838aa7762b48dbb869ac8",
+      "rawBytes": 223,
+      "bytes": 178
+    },
+    {
+      "path": "699-storage-planning-source.log.gz",
+      "rawSha256": "31551fe04853dd91d326313af8e0794a86bf0439a72f6d3b97ea4cd7ed4d1cf4",
+      "gzipSha256": "038e570e441509d156a72f2ab136ac19918f4498ee9b0a9fad752986e5f9f22b",
+      "rawBytes": 7871,
+      "bytes": 1596
+    },
+    {
+      "path": "699-storage-planning-corrected.log.gz",
+      "rawSha256": "4c295f88c5aa7307988399120168d547851e81c0657156568497ebd3b6156d2c",
+      "gzipSha256": "a700d978636dfc5f412f19ff19bdd02c660f3ed53f02eed987b2119f10a9f36a",
+      "rawBytes": 698,
+      "bytes": 379
+    },
+    {
+      "path": "699-storage-crlf-red.log.gz",
+      "rawSha256": "abb683afbd7f222484a5111e84e1fcf827945921a8e395bb00486b3168fc8d04",
+      "gzipSha256": "20f75fd7127186e65fd88fbe00a97ca8c02d3476e5193b74ec33bc68a58a9fbb",
+      "rawBytes": 2424,
+      "bytes": 832
+    },
+    {
+      "path": "699-storage-crlf-green.log.gz",
+      "rawSha256": "6e358ddba993b06567fa1ce0833f31030e11e289f5f29657858a6a4ad7816ba9",
+      "gzipSha256": "e6800d2ac43ed2eb0122ebf47603ddd3429784a80199d012176ec13660bed68a",
+      "rawBytes": 538,
+      "bytes": 334
+    },
+    {
+      "path": "699-storage-utf8-green.log.gz",
+      "rawSha256": "80b4b60cdbc1cb3c16e975c9f2b46fb1b60ff4db5e43d308b5da4550862d9b0f",
+      "gzipSha256": "f9b6f9d90d7a87cb01f6f0a4c6e31e30affb3c2a73007b4a460502e32769d904",
+      "rawBytes": 225,
+      "bytes": 185
+    },
+    {
+      "path": "proof-699-storage-252.json.gz",
+      "rawSha256": "a17ad2eed0952246cbd7068d6675253490d0e5ad7216910a9042dde4501bcfdb",
+      "gzipSha256": "6d764c8608fdd620b7fd77f9a981fc708d4d8dfa60b8dc55f2e6d9059e3aeb8a",
+      "rawBytes": 168421,
+      "bytes": 37306
+    },
+    {
+      "path": "review-699-storage-precommit.json.gz",
+      "rawSha256": "2428bfaf480ee922082d231e99b0c30d521ed02ee1710725c1a11c5aa9e9eb26",
+      "gzipSha256": "c70605c66d02db792a9c45dbf058b9e9452a040772bf306ef571ed8b6a9c755a",
+      "rawBytes": 3495,
+      "bytes": 2011
+    },
+    {
+      "path": "hybrid-node24-exact-verification.json.gz",
+      "rawSha256": "92ce8f904b67250dce374a21f513a0ac4cc410208ce58868b3df784042d47cab",
+      "gzipSha256": "9032848f575867b1292df0215eef3c43fcb82246c7bf41a5ecfd1d7dc4ed8f81",
+      "rawBytes": 88535,
+      "bytes": 17349
+    },
+    {
+      "path": "linux-portability-availability.json.gz",
+      "rawSha256": "87e4efa6be61684e202fadd4b6a2626edf0b6f60b9350166551e92d67ba06961",
+      "gzipSha256": "02a49d7af192911b51cbd09b6ced7c894688c6bcf764669274239982a2451ceb",
+      "rawBytes": 601,
+      "bytes": 385
+    }
+  ],
+  "limits": "No final cold/Hosted/Linux/official/device assertion in this manifest; exact final HEAD belongs to final admission receipt"
+}

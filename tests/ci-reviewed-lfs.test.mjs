@@ -38,6 +38,15 @@ test('item evidence reused readers authenticate both complete physical inputs af
  assert.equal(calls.length,3);assert(calls.every(([p])=>p!==itemEvidenceManifestPath&&p!==itemEvidencePayloadPath));
  const owned=warm(path);owned[0]^=1;assert.deepEqual(warm(path),expected,'caller mutations never alter memoized decompression');
 });
+test('item evidence metadata accepts declared LF and CRLF without relaxing binary identities',()=>{
+ const metadata=readFileSync(itemEvidenceManifestPath,'utf8').replaceAll('\r\n','\n');
+ const reader=value=>(p,e)=>p===itemEvidenceManifestPath?Buffer.from(value):readFileSync(p,e);
+ const crlf=reader(metadata.replaceAll('\n','\r\n'));
+ assert.doesNotThrow(()=>assertReleaseItemEvidenceCurrent(crlf));
+ assert.deepEqual(readReleaseItemEvidence(itemEvidenceMembers[0],{read:crlf}),readReleaseItemEvidence(itemEvidenceMembers[0]));
+ for(const bad of [metadata+'\n','\ufeff'+metadata,metadata.replaceAll('\n','\r\r\n'),Buffer.concat([Buffer.from(metadata),Buffer.from([255])])])assert.throws(()=>assertReleaseItemEvidenceCurrent(reader(bad)));
+ assert.throws(()=>assertReleaseItemEvidenceCurrent((p,e)=>p===itemEvidencePayloadPath?Buffer.concat([readFileSync(p),Buffer.from('\n')]):crlf(p,e)),'binary storage never normalizes bytes');
+});
 test('post697 historical source authorization freshly binds the complete evidence storage',async()=>{
  const {itemPost697CiRead,itemPost697CiSource}=await import('./helpers/item-post697-ci-source.mjs');
  const path='tests/helpers/integrated-ci-source.mjs',raw=readFileSync(path,'utf8');let broken=null;

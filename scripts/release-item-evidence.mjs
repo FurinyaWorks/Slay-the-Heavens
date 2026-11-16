@@ -4,10 +4,17 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {brotliDecompressSync,gzipSync,gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex');
+// Only this UTF-8 JSON source declares LF identity. All gzip/Brotli bytes keep
+// their exact physical hashes, including empty original logs.
+const metadataBytes=bytes=>{
+ assert(Buffer.isBuffer(bytes),'exact evidence manifest bytes');
+ const text=bytes.toString('utf8');assert(Buffer.from(text).equals(bytes),'UTF8 evidence manifest');
+ return Buffer.from(text.replaceAll('\r\n','\n'));
+};
 export const itemEvidenceManifestPath='docs/evidence/release-item-storage-20261116/manifest.json';
 export const itemEvidencePayloadPath='docs/evidence/release-item-storage-20261116/receipts.br';
 const manifestSha='4a5a92a7e726201156b9eabb31de3057ba01da1d620c41ed86868cf70e77ef12';
-const manifestBytes=readFileSync(new URL('../'+itemEvidenceManifestPath,import.meta.url));
+const manifestBytes=metadataBytes(readFileSync(new URL('../'+itemEvidenceManifestPath,import.meta.url)));
 assert.equal(hash(manifestBytes),manifestSha,'complete original item evidence manifest');
 const manifest=JSON.parse(manifestBytes),members=new Map();
 assert.equal(manifest.schemaVersion,1);assert.equal(manifest.layer,'exact-original-gzip-evidence-storage');
@@ -36,7 +43,7 @@ assert.equal(offset,manifest.rawPayloadBytes);
 // freshly passed their fixed hashes. Caller input authorization is never cached.
 let decoded;
 function currentPayload(read){
- const metadata=read(itemEvidenceManifestPath);assert(Buffer.isBuffer(metadata),'exact evidence manifest bytes');
+ const metadata=metadataBytes(read(itemEvidenceManifestPath));
  assert.equal(hash(metadata),manifestSha,'fresh complete original item evidence manifest');
  const packed=read(itemEvidencePayloadPath);assert(Buffer.isBuffer(packed),'exact evidence payload bytes');
  assert.equal(packed.length,manifest.compressedBytes,'complete original item evidence storage size');

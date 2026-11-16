@@ -8,8 +8,14 @@
 
 本地固定Windows Node24.18.0已逐项恢复252/252原gzip、Git blob与内容身份，完整空日志也保留；Linux尚待现有托管门禁实际验证。Node22设计收据与Node24实际验证分别保留，不从相同zlib版本推断Linux成功。
 
+JSON索引明确使用UTF-8/LF源码身份，合法CRLF检出只在索引上归一；BOM、额外换行、双CR及非法UTF-8仍拒绝。Brotli存储与所有原gzip完全按物理字节校验，不归一。新增定向测试先复现CRLF失败，再校验两种合法检出及恶意/二进制变异。
+
 原逻辑路径由 `scripts/release-item-evidence.mjs` 的 `readReleaseItemEvidence(path)` 返回完整原gzip；`releaseItemEvidenceRead(read)`只处理固定252路径，其余原样交给调用方。不会写文件、改变旧receipt schema、跳过断言或增加网络请求。旧Git对象仍从固定producer及原分支历史恢复。
 
 CI来源继续保留两个完整父域及原发现集合，新current只绑定存储读取器与受影响合同。所有公开历史转换在原raw准入中也鲜读完整证据存储；复用reader后的manifest/payload漂移或缺失拒绝，恢复后通过。纯解压计算可复用，输入授权不缓存，返回Buffer由调用方独占。
 
 首次源码存储迁移提交的真实父51f仍包含旧gzip，不能用HEAD估算宣称冷检出通过。后续验证证据提交仍需按真实父与Release比较输入做原128MiB冷检出；不重包、删pack、抬限值或删比较输入。当前文档不是已通过最终冷检出或发版许可的声明。
+
+源码迁移固定为 `5dc654219b734bcb9de90ee572e651f59ccba0c3`，其父为原51f。独立252项Git原字节比较、两个Node版本实际恢复、旧102 helper身份与精确迁移集合均有完整收据。原18项定向存储/公开来源测试及新增源授权负控通过；历史合同先6/10通过，补齐已有LFS资产并固定捕获后，原4失败例4/4通过。首次空日志、LFS pointer及采集期间输入变动的失败日志均完整保留，不计通过。
+
+迁移后的Windows JSON换行缺陷有独立RED→GREEN：新4组通过，追加非法UTF-8单组通过。所有原证据内容、压缩字节身份和原有规划floor均保留；没有重新执行Full。`verification-manifest.json`记录每份本轮验证附件的原字节哈希与准确适用范围。最终冷检出与独审以PR正文绑定的最终精确HEAD为准，托管/Linux和官方设备仍单独验收。
