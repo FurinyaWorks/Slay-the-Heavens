@@ -27,6 +27,7 @@ particle.new=function(...)
  return v
 end
 local F=assert(load(FIXTURE,'@tests/lua/support/game_ui_fixture.lua'))()
+assert(#F.Templates.AbyssMonsterPower.children==6,'particle resource budget requires root plus six original children')
 local Run=require('abyss_run')
 local Surfaces=require('abyss_monster_surfaces')
 local Powers=require('abyss_monster_power_surfaces')
@@ -80,15 +81,19 @@ host.update=function(_,dt)
 end
 local function step(dt)assert(host:update(dt)~=false)end
 local function steps(n)for _=1,n do step(1/60)end end
-local function mark(name)
+local function inventory()
  local current=live+counts.created-counts.destroyed
- local effects,outputs=0,0
+ local effects,outputs,pages=0,0,0
  for _,v in ipairs(particleViews)do
   for _,s in pairs(v.states)do effects=effects+#s.effects end
-  for _,o in pairs(v.outputs)do for _,p in pairs(o)do p:each(function()outputs=outputs+1 end)end end
+  for _,o in pairs(v.outputs)do for _,p in pairs(o)do p:each(function()outputs=outputs+1 end);for _ in pairs(p.pages)do pages=pages+1 end end end
  end
+ return current,effects,outputs,pages
+end
+local function mark(name)
+ local current,effects,outputs,pages=inventory()
  CORE(host.run) -- same full Run/RNG graph, including aliases, via existing observer.
- MARK(name,counts,frames,current,effects,outputs)
+ MARK(name,counts,frames,current,effects,outputs,pages)
  live=current;frames=0
  for k in pairs(counts)do counts[k]=type(counts[k])=='table'and{}or 0 end
 end
@@ -121,13 +126,12 @@ local b=host.run.combat
 local function move(a,id)for i,intent in ipairs(a.intents)do if intent.id==id then a.intentIndex=i;return end end;error('missing source intent')end
 move(b.enemies[1],'spawn');move(b.enemies[2],'stunned');host:refresh();steps(120);mark('particle-warmup')
 steps(300);mark('particles-300')
-local baseline
 for cycle=1,20 do
  assert(host:openDeck());steps(15)
  local before=0;for _,v in ipairs(particleViews)do for _ in pairs(v.outputs)do before=before+1 end end
  assert(before==0,'hidden battle recreated particle outputs')
  host:closeDeck();steps(15)
- if cycle==1 then baseline=live+counts.created-counts.destroyed end
+ CYCLE(cycle,inventory())
 end
 mark('switch-20')
 -- 60 seconds of simulated foreground time, independent of host wall clock.

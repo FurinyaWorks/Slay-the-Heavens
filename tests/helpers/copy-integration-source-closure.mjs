@@ -21,7 +21,10 @@ const bytes=readFileSync(new URL('./integration-source-closure.json',import.meta
 assert.equal(hash(bytes),'800fcc9efd889f482259d0e1e9f1501f0e9597ac05552622ede00dd3dcdb4a94','complete integration helper closure identity');
 const currentBytes=readFileSync(new URL('./closeout-source-closure.json',import.meta.url));
 assert.equal(hash(currentBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','complete closeout source helper closure');
-const files=extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure)),inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
+const files={...extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure))};
+export const runtimeParticleHelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7","after":"c57ef7bc66a4c4e98a781ce32752718316266da41435b6ac9ed47c263f6d192c"},{"path":"tests/helpers/runtime-particle-source.mjs","before":null,"after":"00a50e3835bcfd6d4cfab153a9e92fdba666cd8de02c7a67539598a75dc054ab"},{"path":"tests/helpers/runtime-particle-source.json.gz","before":null,"after":"2cef28e3bd47c3638c421c9f152453b7e446501f69e32bdaac39417a3731ad6a"}];
+for(const row of runtimeParticleHelperCopies){assert.equal(files[row.path]??null,row.before);files[row.path]=row.after;}
+const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');

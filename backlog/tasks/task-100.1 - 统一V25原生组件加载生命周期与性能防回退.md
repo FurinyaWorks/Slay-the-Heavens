@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-09 11:10'
-updated_date: '2026-11-14 10:18'
+updated_date: '2026-11-16 03:11'
 labels: []
 milestone: m-8
 dependencies: []
@@ -71,4 +71,6 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 本轮组合a730已通过22个Lua精确提交棘轮0新增。遮罩只准备资源、暂停Match/战斗/计时，ready按显式页面owner；真实OnStart覆盖menuBackground=true隐藏旧页不阻塞。最终祝福6帧和选角5帧同闭包52b6582b…，错误/漂移0。完整工程、4个有效语义变异、6项原生合同及144项来源接续已通过；软件10卡PNG+RPC增加2.70%，不推断GPU/手机。官方导入及设备AC保持未验。
 
 2026-11-14逐项对账：PR634实际squash为903bf2a3，PR Full43211206190、原生队列43219327412及push43229600772均success；本轮原verify:delivery --merged真实返回merged_passed，证据build/delivery/bbd96f62-7d15-4932-9139-2b37f349166a。当前基线9f2f44e4保留该成果。此为交付记录收口，不新增平台或设备通过。 生命周期及预算负控已随607、634交付；原同源SDK证据和已勾AC保留，设备未验归103/4.21。
+
+2026-11-16运行时粒子切片复用既有source epoch及copy/CI读视图机制：单生产owner、352项完整真实Git来源、93旧gzip不变；879JS/1424Lua raw与876/1423历史分开，预算/分片/物理guard不改。缓存只承诺native完整成功且无强回指；false/throw/clear/engine退役、切屏重建与同源字段/RNG校验固化为轻量回归，长实验显式运行。报告 docs/research/2026-11-16-runtime-attribution.md。没有新SDK导出/官方手机，不能关闭原待验AC；状态Owner均保持。
 <!-- SECTION:NOTES:END -->

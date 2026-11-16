@@ -13,13 +13,15 @@ const digestPattern=/^[0-9a-f]{64}$/;
 function validate(run){
  assert(['counts','allocations','visual'].includes(run.mode));
  assert.deepEqual(run.rows.map(r=>r.phase),battlePhases,'incomplete/reordered workload');
+ assert.equal(run.cycles.length,20,'20 complete native lifecycle cycles required');
+ for(const [i,c]of run.cycles.entries()){assert.equal(c.cycle,i+1);assert.equal(c.effects,c.outputs);for(const k of ['liveControls','outputs','effects','particlePages'])assert(Number.isSafeInteger(c[k])&&c[k]>=0);if(i>0)assert.equal(c.liveControls-7*c.outputs-c.particlePages,run.cycles[1].liveControls-7*run.cycles[1].outputs-run.cycles[1].particlePages,'native lifecycle retained controls after warm cycle');}
  for(const [index,r]of run.rows.entries()){
   assert.equal(r.frames,frameBudget[index],'fixed frame budget');
   if(r.phase==='disable'){assert.equal(r.effects,0,'retained effects');assert.equal(r.outputs,0,'retained native output');}
-  else for(const key of ['GameUI.update','BattleUI.update','Feedback.update','nodeUI.update','mapUI.update'])assert.equal(r.counts.calls[key],r.frames,'missing required subsystem: '+key);
-  if(r.phase.startsWith('long-'))assert.equal(r.liveControls,run.rows[6].liveControls,'warm native controls accumulated');
+  else for(const key of ['GameUI.update','BattleUI.update','Feedback.update','nodeUI.update','mapUI.update'])assert.equal(r.counts.calls[key],r.frames+(key==='mapUI.update'&&r.phase==='warmup'?3:0)-(key==='Feedback.update'&&r.phase==='particle-warmup'?1:0),'missing required subsystem: '+key);
+  if(r.phase.startsWith('long-'))assert.equal(r.liveControls-7*r.outputs-r.particlePages,run.rows[6].liveControls-7*run.rows[6].outputs-run.rows[6].particlePages,'warm native controls accumulated outside live seven-control particle instances');
   assert(Number.isFinite(r.elapsedMs)&&r.elapsedMs>=0,'invalid duration');
-  for(const k of ['frames','liveControls','effects','outputs','visualFrames'])assert(Number.isSafeInteger(r[k])&&r[k]>=0,'invalid '+k);
+  for(const k of ['frames','liveControls','effects','outputs','particlePages','visualFrames'])assert(Number.isSafeInteger(r[k])&&r[k]>=0,'invalid '+k);
   assert(digestPattern.test(r.coreHash),'missing core/RNG identity');
   for(const k of ['rss','heapUsed'])assert(Number.isSafeInteger(r.memory[k])&&r.memory[k]>0,'missing VM memory');
   for(const k of ['nativeCalls','propertyWrites','created','destroyed'])assert(Number.isSafeInteger(r.counts[k])&&r.counts[k]>=0,'invalid count');
@@ -29,7 +31,7 @@ function validate(run){
  }
 }
 export function validateBattlePair(before,after){
- validate(before);validate(after);assert.equal(before.mode,after.mode);
+ validate(before);validate(after);assert.equal(before.mode,after.mode);assert.deepEqual(before.cycles,after.cycles,'lifecycle cycle mismatch');
  for(let i=0;i<before.rows.length;i++){
   const a=before.rows[i],b=after.rows[i];
   for(const k of ['phase','frames','coreHash','liveControls','effects','outputs'])assert.deepEqual(b[k],a[k],'changed workload/state: '+k);
@@ -38,6 +40,9 @@ export function validateBattlePair(before,after){
   if(before.mode==='visual')assert.equal(b.visualHash,a.visualHash,'visual field drift');
   assert(b.counts.nativeCalls<=a.counts.nativeCalls&&b.counts.propertyWrites<=a.counts.propertyWrites,'native publication regressed');
  }
+ const a=before.rows.find(r=>r.phase==='particles-300'),b=after.rows.find(r=>r.phase==='particles-300');
+ assert(b.counts.nativeCalls<a.counts.nativeCalls,'targeted particle native saving missing');
+ if(before.mode==='allocations'){const sum=r=>Object.values(r.counts.allocations).reduce((a,b)=>a+b,0);assert(sum(a)>0&&sum(b)>0&&sum(b)<sum(a),'targeted allocation observer/saving missing');}
  return true;
 }
 function identity(profile){
@@ -57,6 +62,7 @@ export function benchmarkBattleRuntime({beforeRef,profile,output}){
  writeFileSync(beforeFile,result.stdout);writeFileSync(afterFile,readFileSync(target));
  assert.notEqual(sha(readFileSync(beforeFile)),sha(readFileSync(afterFile)),'no runtime change');
  const source=identity(profile),runs=[];
+ writeFileSync(resolve(output,'input-manifest.json'),JSON.stringify({source,beforeRef,profile,changedRuntime:{path:target,beforeSha256:sha(readFileSync(beforeFile)),afterSha256:sha(readFileSync(afterFile))}},null,2)+'\n');
  const plan=[];for(let pair=1;pair<=3;pair++)for(const side of pair%2?['before','after']:['after','before'])plan.push({pair,side,mode:'counts'});
  for(const mode of ['allocations','visual'])for(const side of ['before','after'])plan.push({pair:1,side,mode});
  for(const spec of plan){

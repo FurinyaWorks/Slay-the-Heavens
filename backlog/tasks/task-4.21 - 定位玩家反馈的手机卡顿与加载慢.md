@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-16 03:11'
 labels:
   - 待验
   - delivery-verify
@@ -48,6 +48,8 @@ ordinal: 136000
 2026-11-02 fresh单槽药水查询：拒绝跨hover和跨native渲染间隔复用frame缓存，不引全模型revision改造；将原药水row构造抽为共用helper，完整potionView保持原槽序与候选规则，仅popup每次open/render/act改为fresh单槽查询，实际使用前完整重验不变。覆盖全药水parity、非法/空/第五槽、后续合法目标、busy、原地状态改变、真实Host重入与使用；按465合入后的最新develop组合TASK81输入路径切片，保留全部历史证据和未验实机AC。
 
 2026-11-02 牌库注册生命周期小切片：先用真实 DeckUI/Controller 与原生 Grid 销毁语义复现记录累积；只对确认销毁的牌面保存 hit 并调用现有 Controller.unbind，覆盖关闭后的及时释放及存活复用。新增重复开关、翻页/过滤/排序、刷新销毁/回收、原生失效、键鼠/手柄和旧回调回归；先红后绿、定向检查及独审，不改设计/Controller 架构，不推断手机性能，AC3 保持未验。
+
+2026-11-16 Owner授权独立Release运行时白盒归因。基1cc5479b，已查19个开放PR；688敌坐标状态派生与694手牌八值表不重复，703容量排除。先复用TASK100 Host观察器，固定seed/生成UI，计量300静止帧、真实连续出牌、20次切屏与长循环的调用、native写入、已知分配及VM耗时；依据热点做最小修复，原视觉/交互/规则/RNG逐帧等价，失败/重入回归及独审，独立PR只指Release，不合并发版。SDK原件/官方手机缺项如实UNVERIFIED。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -81,4 +83,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-08 PR558冻结311089f9精确Full与源码独审通过，C官方首房闭环与C60正式startup分层留证，完整UI仍未过。独立sourceDirty E1两隐藏页native SetActive得到PC菜单51.70/选角53.65 FPS短窗与合法新Run恢复、Neow/首战拖牌证据；只支持继续实验，未声称稳定60或手机改善。显式开关源码接入与E2边界实测继续，To Do、负责人及手机AC3未验保持；入口experiments/native-2d-vertical-slice/IMPLEMENTATION.md。
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-16 Owner授权Release白盒运行时切片：基1cc5479b，核对19在途PR，不重复688/694，不接703。唯一生产producer befd4808为意图粒子首次成功静态配置；正式美术同源三配对300帧native17270→9530、属性30860→20540，七UI模块表字面量16157→15297。5120更新所测字段及完整Run/RNG一致，20次切屏和3600帧循环驻留对账；普通待机/连续牌调用不变，部分墙钟样本升高保留。机制入口 scripts/benchmark-battle-runtime.mjs；报告 docs/research/2026-11-16-runtime-attribution.md。图片false/重入与来源raw/历史混用独审RED→GREEN，最终独审及PR接续。无官方SDK/同候选/ready/手机温度FPS数据，UNVERIFIED；状态/Owner/AC不改，不合并发版。
 <!-- SECTION:NOTES:END -->

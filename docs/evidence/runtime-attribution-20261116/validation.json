@@ -1,0 +1,31 @@
+{
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "runtimeProducer": "befd480817b0f7c875de189863d37e803704ad3a",
+  "benchmark": "OFFLINE_HOST_PAIR_VERIFIED",
+  "sourceClosure": {
+    "tests": 62,
+    "pass": 62
+  },
+  "calibration": {
+    "tests": 74,
+    "pass": 74
+  },
+  "runtimeAdjacent": {
+    "tests": 45,
+    "initialPass": 44,
+    "initialFail": 1,
+    "failure": "approved idle LFS source PNG/GIF were pointers; exact original SHA restored",
+    "failedCaseRerun": {
+      "tests": 1,
+      "pass": 1
+    }
+  },
+  "engineering": "351 modules / 6165 measurements / no new diagnostics; 6 retained historical warnings",
+  "syntax": "PASS",
+  "guidance": "PASS",
+  "backlog": "PASS",
+  "ordinaryFull": "UNVERIFIED, normal existing risk route remains required; not run locally",
+  "officialSdk": "UNVERIFIED",
+  "officialPhone": "UNVERIFIED",
+  "autoMerge": "not requested"
+}
