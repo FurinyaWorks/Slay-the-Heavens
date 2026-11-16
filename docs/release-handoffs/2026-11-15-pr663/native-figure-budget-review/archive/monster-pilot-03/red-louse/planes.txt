@@ -1,0 +1,40 @@
+# Stalk: orange curled stem, no invented legs
+9e4a29 55,67 70,67 67,86 72,100 88,111 79,122 64,108 58,93
+f7aa76 57,68 67,69 65,86 70,100 82,112 77,116 65,105 60,92
+ca7848 78,111 89,110 86,115
+b46337 79,116 86,114 83,121 79,124
+# Main bell silhouette
+b94114 24,70 48,41 65,60
+b94114 65,60 85,43 103,73
+b94114 34,68 50,50 89,69
+@f89508 65,42 43,48
+# Cap upper highlight
+@ffad0c 64,33 31,29
+# broad flame orange lower planes
+f87005 43,43 49,53 38,65
+f87005 65,32 78,48 65,61 53,47
+# angular pointed side fins
+a4401c 44,49 39,26 51,37
+fdb342 41,29 49,39 44,46
+ad431b 84,49 98,32 91,58
+f4a32a 86,43 96,35 89,51
+# dark lower bell facets
+752d20 35,68 46,53 56,62
+91341a 72,63 83,54 90,66
+9c3518 28,67 33,59 39,60
+6b2a20 90,58 101,72 91,67
+# underside orange lip
+f58b24 37,67 52,62 54,66
+e87820 74,66 80,63 89,69
+# forehead diamond flame
+ffce45 65,41 69,47 65,54 61,47
+# visible paired amber eyes tucked under bell
+@723421 63,67 10,7
+@ffbf3f 60,67 2.5,3
+@ffbf3f 66,67 2.5,3
+# central visor
+853021 63,56 71,64 57,65
+
+# two highlights, preserving sparse upper bell
+@ffcf3b 59,23 3,1.4
+@ffcf3b 68,24 5,1.8

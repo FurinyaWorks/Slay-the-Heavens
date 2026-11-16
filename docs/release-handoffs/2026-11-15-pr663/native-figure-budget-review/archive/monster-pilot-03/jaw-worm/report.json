@@ -1,0 +1,39 @@
+{
+  "graphics": 114,
+  "containersPredicted": 4,
+  "artControlsPredicted": 118,
+  "sourceSHA256": "5333c9798249b6c151a4e0b105356b5ed650556d844b5d86bdb24c71c5ef96c2",
+  "exactTransformMaxError": 5.684341886080802e-14,
+  "engineVerified": false,
+  "asset": "jaw_worm",
+  "displayName": "石颚兽",
+  "reference": "Geovishap Hatchling / 幼岩龙蜥",
+  "referencePage": "https://wiki.hoyolab.com/pc/genshin/entry/2144?lang=en-us",
+  "referenceImage": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/08/15/35428890/f6cfb60bc11b888e2c772887dc1e4f02_6592641396496602649.png",
+  "maskCount": 0,
+  "exactRelease": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "standaloneVM": {
+    "pass": true,
+    "images": 114,
+    "containers": 4,
+    "controls": 118,
+    "staticPoseFrames": 120,
+    "imageWrites": 0,
+    "liveAfterRelease": 0
+  },
+  "scope": "Standalone production portrait controller under VM mocks; not monster actor pool or device",
+  "visualAcceptance": "Pending owner review; not production-installed",
+  "sourceCaveat": "HoYoWiki displayed UGC CDN pixels, not a certified studio source or license grant",
+  "sha256": {
+    "comparison.png": "2349ee2df969bf6ac61acfc8253a9f70e557988f112412d087e298e9d49a64a6",
+    "official.png": "5333c9798249b6c151a4e0b105356b5ed650556d844b5d86bdb24c71c5ef96c2",
+    "native-layout.json": "7d29a27e6b0a9662c18142223929752b816548bad2c5a9c3b9161fd7a9095939",
+    "root-runtime-result.json": "5903fc009201ebfd5728f9381ee0798b42055b08ae0148bd8e09cbc8b0c79d75",
+    "planes.txt": "af47f64adba6c5b3a257991891bdd3d43c5890520aa43db9f7306d82bb8845ae",
+    "preview-127.png": "86be98bd6d2285b26e191c07552287e8dd22abb9154e562d466528068b998279",
+    "planes-high.txt": "9906210aa8289d5160f4018c5e71639f07cd85f1a0b45e41fc925b48e0fee8af",
+    "verify-preview.py": "9b9e374abbe3dc4c3231fac4d75de0515b621a1d6318a2ea714e6d09190502c3",
+    "render.py": "5034af29408e11b25dabf8000ce986031eb5429c7f20108a9e4669af65bc879b",
+    "native-reconstruction.png": "8511eead0f8c0b35fab726a08f696d7c8002ae41478590c18d98bdf1e4d908db"
+  }
+}

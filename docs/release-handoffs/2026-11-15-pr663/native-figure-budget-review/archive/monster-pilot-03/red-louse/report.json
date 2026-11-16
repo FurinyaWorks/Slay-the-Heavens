@@ -1,0 +1,33 @@
+{
+  "graphics": 41,
+  "containersPredicted": 3,
+  "artControlsPredicted": 44,
+  "sourceSHA256": "6dfffc54781ba443cf10c2d85a74fc4edb0b12df9cb3f391d41e90894c967a4c",
+  "exactTransformMaxError": 1.4210854715202004e-14,
+  "engineVerified": true,
+  "enemyId": "red_louse",
+  "reference": "Stretchy Pyro Fungus, HoYoWiki 2731 displayed header",
+  "referencePage": "https://wiki.hoyolab.com/pc/genshin/entry/2731?lang=en-us",
+  "referenceImage": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/6676a7e2c239faef2ab20e3cc7c834e3_524803526322218731.png",
+  "baseline": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "zeroMasks": true,
+  "strictRowsPassed": true,
+  "runtime": {
+    "images": 41,
+    "containers": 3,
+    "controls": 44,
+    "staticPoseFrames": 120,
+    "imageWrites": 0,
+    "liveAfterRelease": 0,
+    "scope": "Standalone production portrait controller under VM mocks; not monster actor pool or device",
+    "pass": true
+  },
+  "visualStatus": "proposal, awaiting owner review; no production modifications",
+  "anchors": [
+    "orange tapered bell",
+    "opposed upward triangular side fins",
+    "amber forehead diamond inside orange flame",
+    "dark angular lower cap and paired amber eyes",
+    "long bent peach stem and small curled end"
+  ]
+}

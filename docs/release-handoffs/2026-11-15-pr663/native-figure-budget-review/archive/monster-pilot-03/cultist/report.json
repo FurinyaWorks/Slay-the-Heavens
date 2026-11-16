@@ -1,0 +1,11 @@
+{
+  "graphics": 115,
+  "containersPredicted": 4,
+  "artControlsPredicted": 119,
+  "sourceSHA256": "43b15d6d5aee7895769fb30bbd074331d8b8016360878ec2f04f9f200603e541",
+  "exactTransformMaxError": 8.038873388460929e-14,
+  "engineVerified": true,
+  "engineCommit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "maskCount": 0,
+  "approval": "pending owner visual approval"
+}

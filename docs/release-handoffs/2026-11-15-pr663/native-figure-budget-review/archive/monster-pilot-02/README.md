@@ -1,5 +1,7 @@
 # 怪物量产 02：小型／中型史莱姆
 
+> 后续审阅：本批单眼小型棘刺团已撤出候选，见[双眼修订](../monster-slime-feedback-r2/README.md)。其他原稿照旧。本页原图和回执保留历史。
+
 ![试制新稿与五只同屏示意](native-review.png)
 
 沿用 [44／119 绘图入口](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/705)，按 Release 实际遭遇补齐小型／中型缺口。原型图仅留来源链接与字节哈希，不把图鉴画面作为游戏贴图或仓库附图。

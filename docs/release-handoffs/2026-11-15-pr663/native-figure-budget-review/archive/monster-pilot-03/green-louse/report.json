@@ -1,0 +1,25 @@
+{
+  "status": "pending owner visual acceptance; offline only",
+  "enemyId": "green_louse",
+  "officialEntry": 2732,
+  "source": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2732",
+  "referenceHeader": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/d4263c7a6d94dc1e6e9ffb14805a80db_9147417040645087238.png",
+  "images": 40,
+  "containers": 3,
+  "total": 43,
+  "masks": 0,
+  "identityAnchors": [
+    "broad conical brown cap",
+    "amber stone shards",
+    "cap crossing light marking",
+    "slender peach stalk and flared foot",
+    "both amber-rimmed pale eyes"
+  ],
+  "simplifications": [
+    "omits fine cap cracks and gill striations",
+    "compresses stalk mottling to one triangle"
+  ],
+  "scope": "standalone VM and strict converter only; not MonsterArt host/pool or production",
+  "releaseCommit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "nativeSha256": "1ce2bfef944b934202e579bcbaff0c299e950ab2e27bf6023e31467ef34d01dc"
+}

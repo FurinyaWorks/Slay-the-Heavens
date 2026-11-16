@@ -1,0 +1,13 @@
+43d9c148c0920f13d0c0aec342c8e72ec093e09b94252273e2b399f8d30307aa  ./README.md
+48c78dac71812434011b7f8e70e9d8e95718149189b5fb4eda34a369a324588e  ./run-revised-pilot.mjs
+199733844fda004a0616e4ef8f31de5908c0143d7faefb1a7ac8511a11017f53  ./spike-small/board.py
+8c47d70d56b4fad6b4998a55984176651ea29f7080e2a5fd0483b1599242ad2e  ./spike-small/comparison-native.png
+26251da9c147b151cd7d84442083d400355d029c36a657d24002abe9c732d805  ./spike-small/converter-result.json
+159ff29c90042e696c775763be80ab49fceb028edfd840b126837bffa2929cd1  ./spike-small/native-layout.json
+ff69b3a18837fa75637053fbe6de1bcf80d2daa454bca828feda7b656eff659a  ./spike-small/native-reconstruction.png
+c368bb95a351d74ff6fef5185e2a8897a58410daf2ed8b19cc37bbd375dbfe18  ./spike-small/planes.txt
+f90583681ffa2e3d0d195f13da79c0e9c68054990bb31956d0c1021f48e77892  ./spike-small/render.py
+a56ccd4c02aaf1e7b77d164ff3fa27cc6d4a02c8c135c80ec0cd4260db4e7fd5  ./spike-small/report.json
+0acf32f1d730f8e8e363c41edafd7a6aedb255dfbcff739fa477f58c2d8461ca  ./spike-small/runtime-result.json
+229b208eafc6dd7517a1b68ff8a142cd6d1bb17ae99059716a7fe063a57a1fe4  ./stock-pilot-raw.log
+d26f51cb647f41b5ae6bfba65e0b133c70641282aaf0d2b8824de94559fcdf62  ./stock-pilot-report.json

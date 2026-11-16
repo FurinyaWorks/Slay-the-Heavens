@@ -1,0 +1,58 @@
+[
+  {
+    "enemyId": "cultist",
+    "officialEntryId": 2213,
+    "identity": "Dendro Samachurl",
+    "pageUrl": "https://wiki.hoyolab.com/pc/genshin/entry/2213?lang=en-us",
+    "headerImageUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/08/35428890/b8ad56958a7e69b5da9bb8915b06e170_1502814972231730551.png",
+    "sourceSHA256": "43b15d6d5aee7895769fb30bbd074331d8b8016360878ec2f04f9f200603e541",
+    "mappingStatus": "新提案；原绑定为空",
+    "localReferenceFile": "official.png",
+    "images": 115,
+    "containers": 4,
+    "total": 119,
+    "nativeLayoutSHA256": "a5c561f10edd2983b4a76f89bbd8154e5ce61a34b9a76e40d967e8f2a8b7b0c5"
+  },
+  {
+    "enemyId": "red_louse",
+    "officialEntryId": 2731,
+    "identity": "Stretchy Pyro Fungus",
+    "pageUrl": "https://wiki.hoyolab.com/pc/genshin/entry/2731?lang=en-us",
+    "headerImageUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/6676a7e2c239faef2ab20e3cc7c834e3_524803526322218731.png",
+    "sourceSHA256": "6dfffc54781ba443cf10c2d85a74fc4edb0b12df9cb3f391d41e90894c967a4c",
+    "mappingStatus": "沿用已有绑定",
+    "localReferenceFile": "official.png",
+    "images": 41,
+    "containers": 3,
+    "total": 44,
+    "nativeLayoutSHA256": "71db00e47b127038d64d57f6c5758935f991739f7546fd08b1c12cee26170efe"
+  },
+  {
+    "enemyId": "green_louse",
+    "officialEntryId": 2732,
+    "identity": "Stretchy Geo Fungus",
+    "pageUrl": "https://wiki.hoyolab.com/pc/genshin/entry/2732?lang=en-us",
+    "headerImageUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/d4263c7a6d94dc1e6e9ffb14805a80db_9147417040645087238.png",
+    "sourceSHA256": "b4f8d87cf3facd0f10a892d51d89ee5ceec3582850e00269fcc8ffa565418928",
+    "mappingStatus": "沿用已有绑定",
+    "localReferenceFile": "official-reference.png",
+    "images": 40,
+    "containers": 3,
+    "total": 43,
+    "nativeLayoutSHA256": "1ce2bfef944b934202e579bcbaff0c299e950ab2e27bf6023e31467ef34d01dc"
+  },
+  {
+    "enemyId": "jaw_worm",
+    "officialEntryId": 2144,
+    "identity": "Geovishap Hatchling",
+    "pageUrl": "https://wiki.hoyolab.com/pc/genshin/entry/2144?lang=en-us",
+    "headerImageUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/08/15/35428890/f6cfb60bc11b888e2c772887dc1e4f02_6592641396496602649.png",
+    "sourceSHA256": "5333c9798249b6c151a4e0b105356b5ed650556d844b5d86bdb24c71c5ef96c2",
+    "mappingStatus": "沿用已有绑定",
+    "localReferenceFile": "official.png",
+    "images": 114,
+    "containers": 4,
+    "total": 118,
+    "nativeLayoutSHA256": "7d29a27e6b0a9662c18142223929752b816548bad2c5a9c3b9161fd7a9095939"
+  }
+]
