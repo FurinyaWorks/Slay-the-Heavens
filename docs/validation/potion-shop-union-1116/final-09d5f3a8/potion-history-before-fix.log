@@ -1,0 +1,154 @@
+✔ post697 union public CI source authenticates the same raw reader before every historical conversion (36292.02239ms)
+✖ post697 union current inventory authenticates the complete corpus before entering prior inventory (178.582048ms)
+✔ post697 union integrated reader and source forward the same raw reader before historical output (10836.330974ms)
+✔ post697 union production retains both complete real inputs and authenticates every current owner (8783.401486ms)
+✔ post697 union both explicit histories reject warm cross-input faults and preserve unchanged before bytes (889.547221ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58213.086661
+
+✖ failing tests:
+
+test at tests/integrated-ci-source.cases.mjs:401:1
+✖ post697 union current inventory authenticates the complete corpus before entering prior inventory (178.582048ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'tests/lua/acid_slime_l.lua',
+      'tests/lua/acid_slime_l_matrix_a.lua',
+      'tests/lua/acid_slime_l_matrix_b.lua',
+      'tests/lua/acid_slime_l_matrix_c.lua',
+  ...
+      'tests/lua/shop_complete_source.lua',
+  +   'tests/lua/shop_dismiss.lua',
+      'tests/lua/shop_relics_acquisition.lua',
+      'tests/lua/shop_relics_effects.lua',
+      'tests/lua/shop_relics_pending_ui.lua',
+      'tests/lua/shop_selection.lua',
+      'tests/lua/signed_status_caps.lua',
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/integrated-ci-source.cases.mjs:412:62)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [
+      'tests/lua/acid_slime_l.lua',                      'tests/lua/acid_slime_l_matrix_a.lua',
+      'tests/lua/acid_slime_l_matrix_b.lua',             'tests/lua/acid_slime_l_matrix_c.lua',
+      'tests/lua/acid_slime_m.lua',                      'tests/lua/acid_slime_s_ai.lua',
+      'tests/lua/acid_slime_split.lua',                  'tests/lua/acid_slime_split_ui.lua',
+      'tests/lua/act1_bosses.lua',                       'tests/lua/act1_event_content.lua',
+      'tests/lua/act1_event_ui.lua',                     'tests/lua/act2_calendar_codex_joint.lua',
+      'tests/lua/act2_enemies.lua',                      'tests/lua/act2_event_content.lua',
+      'tests/lua/act2_event_relic_acquisition.lua',      'tests/lua/act2_event_relic_bloody.lua',
+      'tests/lua/act2_event_relic_codex.lua',            'tests/lua/act2_event_relic_codex_ui.lua',
+      'tests/lua/act2_event_relic_necronomicon.lua',     'tests/lua/act2_event_relic_opening.lua',
+      'tests/lua/act2_event_ui.lua',                     'tests/lua/act2_event_ui_exchanges.lua',
+      'tests/lua/act2_event_ui_gestures.lua',            'tests/lua/act2_event_ui_hooks.lua',
+      'tests/lua/act2_intent_ui.lua',                    'tests/lua/act2_intent_ui_slice_2.lua',
+      'tests/lua/act2_necronomicurse_exhaust_order.lua', 'tests/lua/act2_party_snapshot.lua',
+      'tests/lua/act2_stasis_source_order.lua',          'tests/lua/act2_vampire_order.lua',
+      'tests/lua/act3_completion_seams.lua',             'tests/lua/act3_event_fruit_costs.lua',
+      'tests/lua/act3_event_fruit_ui.lua',               'tests/lua/act3_event_ui_ownership.lua',
+      'tests/lua/act3_falling_event.lua',                'tests/lua/act3_falling_natural.lua',
+      'tests/lua/act3_falling_ui.lua',                   'tests/lua/act3_maw_growth.lua',
+      'tests/lua/act3_moai_event.lua',                   'tests/lua/act3_moai_natural.lua',
+      'tests/lua/act3_moai_ui.lua',                      'tests/lua/act3_orb_walker.lua',
+      'tests/lua/act3_shapes.lua',                       'tests/lua/act3_shapes_defect_integration.lua',
+      'tests/lua/act3_transient.lua',                    'tests/lua/act3_transient_slice_2.lua',
+      'tests/lua/act3_transient_slice_3.lua',            'tests/lua/act3_winding_event.lua',
+      'tests/lua/act3_winding_natural.lua',              'tests/lua/act3_winding_outcomes.lua',
+      'tests/lua/act3_winding_rollback.lua',             'tests/lua/act3_winding_rounding.lua',
+      'tests/lua/act3_winding_ui.lua',                   'tests/lua/act3_writhing_mass.lua',
+      'tests/lua/act3_writhing_parasite.lua',            'tests/lua/action_queue.lua',
+      'tests/lua/actor_damage_pipeline.lua',             'tests/lua/actor_feedback_lifecycle.lua',
+      'tests/lua/actor_idle_feedback.lua',               'tests/lua/actor_lifecycle.lua',
+      'tests/lua/actor_lifecycle_rules.lua',             'tests/lua/actor_motion.lua',
+      'tests/lua/actor_presence_contract.lua',           'tests/lua/actor_status_view_differential.lua',
+      'tests/lua/addict_darkstone_interaction.lua',      'tests/lua/addict_event_content.lua',
+      'tests/lua/aim_visual_parity.lua',                 'tests/lua/approved_enemy_details.lua',
+      'tests/lua/approved_energy_orb.lua',               'tests/lua/approved_main_boss_slots.lua',
+      'tests/lua/approved_main_host_potions.lua',        'tests/lua/approved_main_potion_shell.lua',
+      'tests/lua/approved_main_potions.lua',             'tests/lua/approved_main_unit.lua',
+      'tests/lua/approved_opening.lua',                  'tests/lua/artifact_no_draw.lua',
+      'tests/lua/artifact_power.lua',                    'tests/lua/artifact_runtime.lua',
+      'tests/lua/astrolabe_upgrade_origin.lua',          'tests/lua/atomic_play.lua',
+      'tests/lua/autoplay_class_continuation.lua',       'tests/lua/autoplay_identity.lua',
+      'tests/lua/autoplay_lifecycle.lua',                'tests/lua/awakened_one.lua',
+      'tests/lua/awakened_one_presence.lua',             'tests/lua/awakened_one_ui.lua',
+      'tests/lua/back_to_basics_event.lua',              'tests/lua/back_to_basics_ui.lua',
+      'tests/lua/barricade_repeat.lua',                  'tests/lua/basic_curses.lua',
+      'tests/lua/basic_curses_ui.lua',                   'tests/lua/battle_card_motion.lua',
+      'tests/lua/battle_damage_view.lua',                'tests/lua/battle_draw_motion.lua',
+      'tests/lua/battle_hand_fan_swipe.lua',             'tests/lua/battle_info_readability.lua',
+      'tests/lua/battle_life_opening_input.lua',         'tests/lua/battle_life_regression.lua',
+      'tests/lua/battle_overlay_surface_retention.lua',  'tests/lua/battle_overlay_surface_safety.lua',
+      ... 1325 more items
+    ],
+    expected: [
+      'tests/lua/acid_slime_l.lua',                      'tests/lua/acid_slime_l_matrix_a.lua',
+      'tests/lua/acid_slime_l_matrix_b.lua',             'tests/lua/acid_slime_l_matrix_c.lua',
+      'tests/lua/acid_slime_m.lua',                      'tests/lua/acid_slime_s_ai.lua',
+      'tests/lua/acid_slime_split.lua',                  'tests/lua/acid_slime_split_ui.lua',
+      'tests/lua/act1_bosses.lua',                       'tests/lua/act1_event_content.lua',
+      'tests/lua/act1_event_ui.lua',                     'tests/lua/act2_calendar_codex_joint.lua',
+      'tests/lua/act2_enemies.lua',                      'tests/lua/act2_event_content.lua',
+      'tests/lua/act2_event_relic_acquisition.lua',      'tests/lua/act2_event_relic_bloody.lua',
+      'tests/lua/act2_event_relic_codex.lua',            'tests/lua/act2_event_relic_codex_ui.lua',
+      'tests/lua/act2_event_relic_necronomicon.lua',     'tests/lua/act2_event_relic_opening.lua',
+      'tests/lua/act2_event_ui.lua',                     'tests/lua/act2_event_ui_exchanges.lua',
+      'tests/lua/act2_event_ui_gestures.lua',            'tests/lua/act2_event_ui_hooks.lua',
+      'tests/lua/act2_intent_ui.lua',                    'tests/lua/act2_intent_ui_slice_2.lua',
+      'tests/lua/act2_necronomicurse_exhaust_order.lua', 'tests/lua/act2_party_snapshot.lua',
+      'tests/lua/act2_stasis_source_order.lua',          'tests/lua/act2_vampire_order.lua',
+      'tests/lua/act3_completion_seams.lua',             'tests/lua/act3_event_fruit_costs.lua',
+      'tests/lua/act3_event_fruit_ui.lua',               'tests/lua/act3_event_ui_ownership.lua',
+      'tests/lua/act3_falling_event.lua',                'tests/lua/act3_falling_natural.lua',
+      'tests/lua/act3_falling_ui.lua',                   'tests/lua/act3_maw_growth.lua',
+      'tests/lua/act3_moai_event.lua',                   'tests/lua/act3_moai_natural.lua',
+      'tests/lua/act3_moai_ui.lua',                      'tests/lua/act3_orb_walker.lua',
+      'tests/lua/act3_shapes.lua',                       'tests/lua/act3_shapes_defect_integration.lua',
+      'tests/lua/act3_transient.lua',                    'tests/lua/act3_transient_slice_2.lua',
+      'tests/lua/act3_transient_slice_3.lua',            'tests/lua/act3_winding_event.lua',
+      'tests/lua/act3_winding_natural.lua',              'tests/lua/act3_winding_outcomes.lua',
+      'tests/lua/act3_winding_rollback.lua',             'tests/lua/act3_winding_rounding.lua',
+      'tests/lua/act3_winding_ui.lua',                   'tests/lua/act3_writhing_mass.lua',
+      'tests/lua/act3_writhing_parasite.lua',            'tests/lua/action_queue.lua',
+      'tests/lua/actor_damage_pipeline.lua',             'tests/lua/actor_feedback_lifecycle.lua',
+      'tests/lua/actor_idle_feedback.lua',               'tests/lua/actor_lifecycle.lua',
+      'tests/lua/actor_lifecycle_rules.lua',             'tests/lua/actor_motion.lua',
+      'tests/lua/actor_presence_contract.lua',           'tests/lua/actor_status_view_differential.lua',
+      'tests/lua/addict_darkstone_interaction.lua',      'tests/lua/addict_event_content.lua',
+      'tests/lua/aim_visual_parity.lua',                 'tests/lua/approved_enemy_details.lua',
+      'tests/lua/approved_energy_orb.lua',               'tests/lua/approved_main_boss_slots.lua',
+      'tests/lua/approved_main_host_potions.lua',        'tests/lua/approved_main_potion_shell.lua',
+      'tests/lua/approved_main_potions.lua',             'tests/lua/approved_main_unit.lua',
+      'tests/lua/approved_opening.lua',                  'tests/lua/artifact_no_draw.lua',
+      'tests/lua/artifact_power.lua',                    'tests/lua/artifact_runtime.lua',
+      'tests/lua/astrolabe_upgrade_origin.lua',          'tests/lua/atomic_play.lua',
+      'tests/lua/autoplay_class_continuation.lua',       'tests/lua/autoplay_identity.lua',
+      'tests/lua/autoplay_lifecycle.lua',                'tests/lua/awakened_one.lua',
+      'tests/lua/awakened_one_presence.lua',             'tests/lua/awakened_one_ui.lua',
+      'tests/lua/back_to_basics_event.lua',              'tests/lua/back_to_basics_ui.lua',
+      'tests/lua/barricade_repeat.lua',                  'tests/lua/basic_curses.lua',
+      'tests/lua/basic_curses_ui.lua',                   'tests/lua/battle_card_motion.lua',
+      'tests/lua/battle_damage_view.lua',                'tests/lua/battle_draw_motion.lua',
+      'tests/lua/battle_hand_fan_swipe.lua',             'tests/lua/battle_info_readability.lua',
+      'tests/lua/battle_life_opening_input.lua',         'tests/lua/battle_life_regression.lua',
+      'tests/lua/battle_overlay_surface_retention.lua',  'tests/lua/battle_overlay_surface_safety.lua',
+      ... 1324 more items
+    ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

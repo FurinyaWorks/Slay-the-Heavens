@@ -1,0 +1,12 @@
+✔ potion/shop potion cold union rejects complete corpus faults (48021.72362ms)
+✔ potion/shop potion warm union rejects complete corpus faults (150221.502759ms)
+✔ potion/shop shop cold union rejects complete corpus faults (39109.566752ms)
+✔ potion/shop shop warm union rejects complete corpus faults (141942.744997ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 379723.070383

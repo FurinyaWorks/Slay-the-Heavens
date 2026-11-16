@@ -1,0 +1,55 @@
+✔ actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch (88.735235ms)
+✔ legacy landed697 release selection map production preserves every complete prior target and freshly authenticates the committed source tree (3909.607889ms)
+✖ legacy landed697 release selection map CI validates complete live bindings while unknown or changed bytes stay visible (6.525694ms)
+✔ legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions (6653.759747ms)
+✖ legacy landed697 release selection map raw workflow checks each real execution deadline and trusted local route (1.239207ms)
+✔ legacy landed697 release selection map production requires fresh complete owners and leaves foreign bytes visible (106.645214ms)
+✔ legacy landed697 release selection map isolated production copy includes exact helper and packet without CI trust leaf (1357.72262ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 5
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15650.106081
+
+✖ failing tests:
+
+test at tests/release-selection-map-source.test.mjs:53:1
+✖ legacy landed697 release selection map CI validates complete live bindings while unknown or changed bytes stay visible (6.525694ms)
+  Error: ENOENT: no such file or directory, open '.github/workflows/licenses.yml'
+      at readFileSync (node:fs:483:20)
+      at file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/helpers/potion-shop-ci-source.mjs:29:12
+      at file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/helpers/potion-post697-ci-source.mjs:43:12
+      at assertReleaseSelectionMapCiCurrent (file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/helpers/release-selection-map-ci-source.mjs:84:26)
+      at assertReleaseSelectionMapCiCurrent (file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/release-selection-map-source.test.mjs:20:63)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/release-selection-map-source.test.mjs:54:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '.github/workflows/licenses.yml'
+  }
+
+test at tests/release-selection-map-source.test.mjs:86:1
+✖ legacy landed697 release selection map raw workflow checks each real execution deadline and trusted local route (1.239207ms)
+  Error: ENOENT: no such file or directory, open '.github/workflows/quality.yml'
+      at readFileSync (node:fs:483:20)
+      at file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/helpers/potion-shop-ci-source.mjs:29:12
+      at file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/helpers/potion-post697-ci-source.mjs:43:12
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/potion-shop-integration/tests/release-selection-map-source.test.mjs:87:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '.github/workflows/quality.yml'
+  }
