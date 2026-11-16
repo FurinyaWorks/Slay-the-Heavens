@@ -15,6 +15,17 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
  assert.equal(binding.source,norm(binding.source),path);
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
 }
+// The new log has no frozen binary predecessor in the historical media manifest.
+// Preserve the original packet above, and authorize only removal of its accidental
+// whitespace exemption. LFS storage, pointer identity and every old input remain.
+export const itemCiRepairHistoricalAttributes=Object.freeze({...packet.files['.gitattributes'].current});
+const logAttribute='docs/evidence/release-item-ci-repair-20261116/source-boundary-green.log.gz filter=lfs diff=lfs merge=lfs -text';
+assert.equal(itemCiRepairHistoricalAttributes.sha256,'f7702ae2d584225a86ba4b8b5b5858fe4760ebf318ec9d7cffb2cc417bad168b');
+assert.equal(itemCiRepairHistoricalAttributes.source.split(logAttribute+' ci-immutable-media\n').length,2);
+const correctedAttributes=itemCiRepairHistoricalAttributes.source.replace(logAttribute+' ci-immutable-media\n',logAttribute+'\n');
+assert.equal(hash(correctedAttributes),'e64e037b08cb742811832dba786d4846a8d604bb5826f22291bcfa210baca4d2');
+packet.files['.gitattributes']={...packet.files['.gitattributes'],current:{source:correctedAttributes,
+ sha256:'e64e037b08cb742811832dba786d4846a8d604bb5826f22291bcfa210baca4d2',gitBlob:'c31770e2df91bf2c920abf2d0c9c4bab241834d0'}};
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const itemCiRepairPacket=freeze(packet);
 export function itemCiRepairSource(path,source,{read=readFileSync}={}){

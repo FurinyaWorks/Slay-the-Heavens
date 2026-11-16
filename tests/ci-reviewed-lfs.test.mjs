@@ -369,3 +369,16 @@ test('pre-setup comparison metadata imports without optional Node24 glob support
  const quality=readFileSync('.github/workflows/quality.yml','utf8');const presentation=quality.split('\n  presentation:')[1].split('\n  engineering-posix-shards:')[0];
  assert.match(presentation,/node-version: '24\.18\.0'/);assert(presentation.indexOf('actions/setup-node@')<presentation.indexOf('node scripts/ci-media-lfs.mjs'));
 });
+
+
+test('new item repair log retains LFS storage without inheriting the historical media whitespace exemption',()=>{
+ const path='docs/evidence/release-item-ci-repair-20261116/source-boundary-green.log.gz';
+ assert.equal(mediaFiles.some(row=>row.path===path),false,'the immutable historical media manifest stays closed');
+ const line=readFileSync('.gitattributes','utf8').split('\n').find(line=>line.startsWith(path+' '));
+ assert.equal(line,path+' filter=lfs diff=lfs merge=lfs -text');
+ const attrs=spawnSync('git',['check-attr','ci-immutable-media','--',path],{encoding:'utf8'});
+ assert.equal(attrs.status,0);assert.equal(attrs.stdout.trim(),path+': ci-immutable-media: unspecified');
+ const pointer=spawnSync('git',['show',':'+path],{encoding:'utf8'});
+ assert.equal(pointer.status,0);
+ assert.equal(pointer.stdout,'version https://git-lfs.github.com/spec/v1\noid sha256:b0db2ec18e50f8717791c374458f2f56684617836a765e6f525811b571a502c4\nsize 1398580\n');
+});
