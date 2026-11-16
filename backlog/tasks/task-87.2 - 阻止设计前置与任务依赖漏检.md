@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 13:10'
-updated_date: '2026-11-15 22:33'
+updated_date: '2026-11-16 02:53'
 labels: []
 dependencies: []
 references:
@@ -35,6 +35,8 @@ ordinal: 178000
 
 <!-- SECTION:PLAN:BEGIN -->
 1. 用97漏设计边与未完成依赖最小复现现有漏检。2. 在现有领取和Backlog入口共享轻量依赖校验，拒绝坏身份/未完成链；不从正文关键词猜审批。3. CLI修正97依赖并记录实验、设计、实施、验收边界。4. 定向回归与真实队列验证、独立复审后提交PR集成develop，release不改。
+
+2026-11-16 PR682失败定向接续：核对HEAD/评论/所有权后，在oc682-source-negative-1116树保留原PR历史；原样复现StS负控混用历史reader，隔离raw准入与历史投影输入，保留current漂移拒绝；用现有collector更新精确source/copy闭包并保护旧archive身份，执行小组RED/GREEN后仅本地提交交主控独审。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -49,4 +51,8 @@ ordinal: 178000
 2026-11-15实际Full43727819459/head04ebf5af已失败，保持未授权；已读取全部15个失败测试shard，归并10文件11例的四类合同衔接问题：current读取多一次、owner排序、旧session epoch绑定、Windows leaf EOL。当前路径恢复原116次排序鲜读，历史兼容才额外重读UI；六份原current断言未改。旧session provenance改查显式保留epoch，CRLF反例先红后绿。来源5/5，原失败例8通过，三份本机历史文件导入受临时目录/junction能力阻塞；独立当前准入探针116owner/348异常/116恢复/unknown零读通过，不称三整文件过。详见docs/evidence/pr682-full-correction-20261115.md，待独审与新HEAD正常CI。
 
 2026-11-15本批纠偏补验：独审又指出本PR新增的current +1读取断言漏回退，现原样恢复基线owners.length，完整来源/epoch/真实session三文件56/56通过、无跳过。当前准入仍116次排序鲜读，历史before兼容保留混期和热漂移拒绝。三份本机历史大文件导入能力阻塞不冒充整文件成功，等待新HEAD Hosted原测试；最终当前包与证据见pr682-full-correction附件。
+
+2026-11-16用户指定修PR682已失败Rules15/POSIX12。HEAD仍1b60f71c4733ced0c91dc814dc5c7a6644c8fe56，origin/develop仍c2409ad7；原PR树干净，comments/reviews无并发写入认领。新树从最新develop建立后FF保留原PR历史；写入范围仅StS负控测试、collector输出、对应证据及本任务记录。已读两job原始日志，并本地原样复现同一fresh added inventory source先于有意变异guard的RED。
+
+2026-11-16 PR682最小接续：StS负控历史reader遮蔽raw读取，导致菜单库存guard先拒绝；局部历史读取更名readSts，仅历史原文比较用投影视图，原负控regex与全部guard未改。原例RED，真实源码更新未采集仍被source guard拒绝，collector接续后GREEN；定向三文件最终60/60无跳过，28次探针变异精确命中各自路径guard，raw菜单漂移/缺失/历史reader继续拒绝。首次组测9pass4fail源于新树LFS pointer，恢复既有对象后重采集通过；历史包未改。新包96603字节/24源，旧23binding及6copy closure保持，sha293c36c61a5b14eb3bc069d2a6ae8e9357cba730e4b053ee0323b058aa279cbe。syntax/backlog/guidance/diff通过，证据见pr682-full-correction附件及同目录pr682-source-negative-20261116.mjs。仅本地候选交主控独审和既有PR集成，AC4保持未勾。
 <!-- SECTION:NOTES:END -->
