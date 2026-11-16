@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-ci-repair-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'fedeefa1dee8dc65312e94029848b2618ee84228ce7f4001fcd1b2cdc0dc1295','complete item CI repair packet');
+assert.equal(hash(bytes),'e3abc07e47dbe80599b2950b822a327b93ef75b024abbce06dcd89e2bf350c21','complete item CI repair packet');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.baseCommit,'73da2626d37fb52f90e71cd65838c08a1b9cae7c');
 assert.equal(packet.fixtureCommit,'e03736adbe11d6c49a0e07abc5234a9be972e1e8');

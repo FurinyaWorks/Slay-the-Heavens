@@ -1433,3 +1433,5 @@ docs/evidence/m9-ci-20261103/raw-ci.json.gz filter=lfs diff=lfs merge=lfs -text 
 docs/evidence/pr621-deck-sort-20261111/validation.tar.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 tests/helpers/closeout-ci-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 tests/helpers/release-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+
+docs/evidence/release-item-ci-repair-20261116/source-boundary-green.log.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media

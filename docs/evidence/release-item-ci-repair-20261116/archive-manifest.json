@@ -80,6 +80,14 @@
     "sha256": "97287c15229b37bff723c265ac2ff289464bb95ffbd1f36e8dbefebab024bdd9"
   },
   {
+    "path": "final-storage-audit.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 27,
+    "rawSha256": "2f5562ef2f090fa67a4bafbf7d6f0235f9222148958bad641ed7eb6a1f1f49d8",
+    "bytes": 47,
+    "sha256": "43bdda65ac3908ab701c66a45b16d71700661c5d5a062733010e028c9412dc82"
+  },
+  {
     "path": "integrated-source-final.log.gz",
     "source": "local bounded verification stdout/stderr",
     "rawBytes": 2046,
@@ -274,10 +282,10 @@
   {
     "path": "capture.mjs.gz",
     "source": "local collector",
-    "rawBytes": 1950,
-    "rawSha256": "d54f60a00a137ac353d760e582a22821e33d41af256d3297900d0b893485123d",
-    "bytes": 966,
-    "sha256": "c3e8dcbd2fbdec5a91491aff26644e782702aeb707101879f9b392e9e61a94b0"
+    "rawBytes": 2061,
+    "rawSha256": "bb5f03afc4a5be9077ebf07e04ee612538f55fe25ed68ff0b740b4c978593ea6",
+    "bytes": 990,
+    "sha256": "c7930187d96cd7f39b0be1988c0150ba14cff6ab47ea8f608e99ebf0f9fbc3d1"
   },
   {
     "path": "archive.mjs.gz",
