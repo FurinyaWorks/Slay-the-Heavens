@@ -15,6 +15,9 @@ export function applyOfficialNoncombatLayout(layout,theme){
  const characterTheme={...theme,v25Character:{...theme.v25Character,story:theme.v25Character?.story?.replaceAll('\\n','\n')}};
  applyV25CharacterLayout(layout,characterTheme);
  const panel=child(stage,'characterPanel'),selected=child(child(panel,'v25Roster'),'selected');
+ // The approved scene replaces the legacy backdrop. Its inherited full-screen
+ // shade would otherwise remain above the ready native artwork.
+ child(panel,'officialBackdropVeil').visible=false;
  // The static exact-alpha constellation replaces the release initial placeholder.
  selected.children.splice(selected.children.indexOf(child(selected,'v25Constellation')),1,constellationGeometry(theme));
  const background=child(panel,'v25Background');

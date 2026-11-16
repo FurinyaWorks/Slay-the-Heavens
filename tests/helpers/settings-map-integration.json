@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "normalization": "LF",
+  "head": "9cc1b85f49f49317824c6e6ef86f625dfa73c826",
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "files": {
+    ".github/workflows/licenses.yml": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1",
+    ".github/workflows/quality.yml": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a",
+    ".github/workflows/quick-feedback.yml": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248",
+    "scripts/noncombat-v25-layout.mjs": "e48115c39396240ac6911fc9495600eaba0e5a974845e5999bff423abc78458b",
+    "scripts/official-battle-hud.mjs": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+    "scripts/official-map-return-controls.mjs": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68",
+    "scripts/official-run-layout.mjs": "c84504418fc773445d982fc2f8e83b548d04ff2b35090fc3c854c816389b93b9",
+    "src/lua/abyss_game_ui_input.lua": "8476a62e295e72b065fd48642afccf4158c1b70a23aad52290d8ffd3dbee7c9d",
+    "src/lua/abyss_game_ui_view.lua": "34af7bc390792b5eb4b62f265edd10f9786ed153b21ad35b74662ace514db215",
+    "tests/ci-complete-calibration.test.mjs": "3adbe866987d545966dc80208bd23ccf8bb6a49237173e6d7a74667c69fe2993",
+    "tests/ci-posix-concurrency.test.mjs": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd",
+    "tests/encounter-formation-source-epoch.test.mjs": "5e547d5f9e706859c799d13fc99fc2f3d7c956ef4e96732d6bf7314b0f5f585a",
+    "tests/engineering-quality.test.mjs": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+    "tests/full-quality.test.mjs": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+    "tests/helpers/closeout-source-epoch.mjs": "9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1",
+    "tests/helpers/copy-integration-source-closure.mjs": "4732b6c6a58290cdd2e16f90e0f4bd68dd951c372ccece86f497ec6723914e39",
+    "tests/helpers/integrated-ci-source.mjs": "d694ab2532fa424a0e1508112d998d0402438b752ded25e3eba1443515b38902",
+    "tests/helpers/pc06-settings-ci-source.mjs": "9960aafa2e32a41e589a8002410e2462bba3977c54a18da6364861630d63c082",
+    "tests/helpers/release-bootstrap-ci-source.mjs": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08",
+    "tests/helpers/release-selection-map-ci-source.mjs": "a268ae4c8a8c838e219e497adf1effea22a71b0ab944a4d009537c94ab526b1d",
+    "tests/helpers/release-selection-map-source.mjs": "920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52",
+    "tests/integrated-ci-source.cases.mjs": "1d62118e1958129eeca0ecea87003d5b4f9401cb950b96afb80fcb3ddb3080e1",
+    "tests/integration-source-epoch.test.mjs": "be93d2a59ab76970c1226f404ec3702995a66a10ec70fceeab0981fab79c829e",
+    "tests/lua/support/official_map_return.lua": "2ebf4f45d3dbe6d0ef53c38febf3c7618c3c1c1f4dde8b2c560aff18fdfb7271",
+    "tests/official-map-return-controls.test.mjs": "a2e8dd6aa80a575c1c0ea8b6ff379fe456a4707e357c0589345f3cb236f30c6a",
+    "tests/official-run-chrome.test.mjs": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+    "tests/quick-feedback.test.mjs": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
+    "tests/release-selection-map-source.test.mjs": "9ceb9109de8f94097348fa046f4711e6d546836e8596525ce47f7620ea9cce11",
+    "tests/selection-overlay-scope.test.mjs": "e412e1173ae9d513b773546788feeea69ea4aae7f04ce98cbb0f7131c33b29f3",
+    "tests/session-menu-navigation.test.mjs": "4b750813d4b8b83569d318fad659e4bdd5b49976696b5fa0bd871055bcea5d23",
+    "tests/sts-style-source-epoch.test.mjs": "67b4cf15751d3b86bb7a1a32a8b18e145e708bdebf1a1b74aace74aa3def3221"
+  },
+  "archives": {
+    "tests/helpers/pc06-settings-ci-source.json.gz": "cebeefff8b88e89c3763879dfb56140d44f5a86b6e93f641088657293cca44df",
+    "tests/helpers/release-selection-map-ci-source.json.gz": "c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03"
+  }
+}

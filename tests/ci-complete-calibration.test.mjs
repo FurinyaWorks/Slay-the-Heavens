@@ -1,3 +1,5 @@
+import {settingsMapRead,assertSettingsMapCurrent} from './helpers/settings-map-integration.mjs';
+import {pc06HistoricalRead} from './helpers/pc06-settings-ci-source.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
 import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
@@ -42,12 +44,10 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as physicalReadFileSync,readdirSync} from 'node:fs';
-import {pc06HistoricalRead} from './helpers/pc06-settings-ci-source.mjs';
-// These immutable receipts use the exact pre-PC06 corpus. The PC06 source
-// contracts authenticate the complete live after tree before every projection.
-const rawBootstrapReadFileSync=pc06HistoricalRead(physicalReadFileSync);
+import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
+import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+const rawBootstrapReadFileSync=pc06HistoricalRead(settingsMapRead('settings',rawReleaseReadFileSync));
 const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
@@ -61,7 +61,8 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as rawReleaseDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const liveDiscoverJs=()=>releaseSelectionMapPriorInventory(rawReleaseDiscoverJs(),'js',settingsMapRead('selection',rawReleaseReadFileSync));
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
 import {shardLuaScripts} from '../scripts/test-lua.mjs';
@@ -168,7 +169,8 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const liveCloseoutLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+const rawReleaseLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+const liveCloseoutLua=()=>releaseSelectionMapPriorInventory(rawReleaseLua(),'lua',settingsMapRead('selection',rawReleaseReadFileSync));
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
 // inventories. Current Full below still discovers and checks every file.
@@ -1969,6 +1971,8 @@ test('run HUD continuation authenticates complete current sources and raw Full i
 });
 
 test('menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
+ // Preserve this complete original receipt; the appended Release contract
+ // below separately accounts for every raw current test and its cost.
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
  assert.deepEqual(js,integratedCiProof.inventory,'all combined current cases execute through complete raw Full discovery');
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);
@@ -1997,7 +2001,38 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
-test('frozen pre-PC06 Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
+test('release selection map raw Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
+ assertSettingsMapCurrent(rawReleaseReadFileSync);assertReleaseSelectionMapCiCurrent(settingsMapRead('selection',rawReleaseReadFileSync));
+ assertReleaseSelectionMapExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
+ const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseSelectionMapCiPacket;
+ assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
+ for(const path of p.priorInventory.js)assert(js.includes(path));
+ for(const path of p.priorInventory.lua)assert(lua.includes(path));
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  for(const path of js.filter(path=>!p.priorInventory.js.includes(path)))
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs,'new unmeasured test retains its conservative cost: '+path);
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
+  // Owner 2026-11-07: forecasts and reserve are advisory. The job-scoped
+  // raw workflow deadlines above remain hard assertions.
+ }
+});
+
+test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
  const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');

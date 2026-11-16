@@ -1,15 +1,18 @@
+import {settingsMapRead,settingsMapSource,settingsMapPriorInventory,settingsMapPacket,assertSettingsMapCurrent} from './helpers/settings-map-integration.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as rawReadFileSync,readdirSync,mkdtempSync,rmSync,writeFileSync,unlinkSync,existsSync,mkdirSync} from 'node:fs';
+import {readFileSync as physicalReadFileSync,readdirSync,mkdtempSync,rmSync,writeFileSync,unlinkSync,existsSync,mkdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {pc06CiPacket,pc06CiSource,pc06CiRead,assertPc06CiCurrent,pc06HistoricalSource,pc06HistoricalRead} from './helpers/pc06-settings-ci-source.mjs';
 import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {createHash} from 'node:crypto';
-import {discoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as physicalDiscoverJs} from '../scripts/ci-shards.mjs';
+const discoverJs=()=>settingsMapPriorInventory(physicalDiscoverJs());
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
+const rawReadFileSync=settingsMapRead('settings',physicalReadFileSync);
 const readFileSync=releaseBootstrapCiRead(pc06CiRead(rawReadFileSync));
 const pc06LiveReadFileSync=rawReadFileSync;
 
@@ -28,7 +31,7 @@ test('integration validates complete raw sources and leaves every foreign byte a
  }
  for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])
   assert.throws(()=>assertIntegratedCurrent((p,e)=>{
-   const value=rawReadFileSync(p,e);
+   const value=physicalReadFileSync(p,e);
    return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
   }),error=>{assert.match(error.message,/fresh complete integration source/);assert(error.message.includes(path),'reject the intended current owner');return true;});
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
@@ -83,7 +86,7 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
 });
 
 test('PC06 CI continuation freshly authenticates its six exact inputs and preserves unknown source identities',()=>{
- assertPc06CiCurrent();assertIntegratedCurrent();
+ assertPc06CiCurrent(rawReadFileSync);assertIntegratedCurrent();
  for(const [path,row]of Object.entries(pc06CiPacket.files)){
   const source=rawReadFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(hash(source),row.current.sha256);
@@ -101,7 +104,7 @@ test('PC06 CI continuation freshly authenticates its six exact inputs and preser
     if(mode==='missing')throw Error('missing '+p);
     const value=rawReadFileSync(p,e);return mode==='buffer'?Buffer.from(value):value+'\n';
    };
-   assert.throws(()=>assertIntegratedCurrent(read),error=>{assert(error.message.includes(path),'freshly reject intended input');return true;});
+   assert.throws(()=>assertPc06CiCurrent(read),error=>{assert(error.message.includes(path),'freshly reject intended input');return true;});
   }
  }
  for(const [path]of Object.entries(pc06CiPacket.immutableArchives))
@@ -210,4 +213,23 @@ test('PC06 CI continuation leaves the complete isolated production copy independ
  writeFileSync(helper,saved);
  const archive=join(directory,'tests/helpers/release-source-epoch.json.gz');unlinkSync(archive);
  assert.throws(()=>copyIntegrationSourceClosure(destination,{sourceRoot:directory}),/ENOENT/);
+});
+
+test('settings and landed map authenticate every actual current input and reject post-success drift',()=>{
+ assertSettingsMapCurrent();
+ for(const [path,sha]of Object.entries(settingsMapPacket.files)){
+  const source=physicalReadFileSync(path,'utf8');assert.equal(hash(source.replaceAll('\r\n','\n')),sha,path);
+  for(const mode of ['missing','changed','buffer'])assert.throws(()=>assertSettingsMapCurrent((p,e)=>{
+   if(p!==path)return physicalReadFileSync(p,e);if(mode==='missing')throw Error('missing '+p);
+   return mode==='buffer'?Buffer.from(source):source+'\n';
+  }),error=>{assert(error.message.includes(path));return true;});
+  for(const foreign of [source+'\n',source.slice(1),null,17,{},Buffer.from(source)])
+   for(const side of ['settings','selection'])assert.equal(settingsMapSource(path,foreign,side),foreign);
+ }
+ for(const path of Object.keys(settingsMapPacket.archives))assert.throws(()=>assertSettingsMapCurrent((p,e)=>p===path?physicalReadFileSync(p).subarray(1):physicalReadFileSync(p,e)),/immutable settings\/map predecessor/);
+ for(const kind of ['js','lua']){
+  const raw=kind==='js'?physicalDiscoverJs():readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+  assert.deepEqual(settingsMapPriorInventory(raw,kind),pc06CiPacket.inventory[kind]);
+  for(const bad of [raw.slice(1),[...raw,raw[0]],[...raw,'tests/forged.test.mjs']])assert.throws(()=>settingsMapPriorInventory(bad,kind));
+ }
 });

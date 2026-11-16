@@ -1,3 +1,4 @@
+import {settingsMapRead} from './helpers/settings-map-integration.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import test from 'node:test';
 import {officialUiRepairProof,preOfficialUiRepairSource} from './helpers/official-ui-repair-source-epoch.mjs';
@@ -158,7 +159,7 @@ test('source and configuration reject unknown targets and malformed live readers
 });
 
 test('official repair adds exact complete-file identities without rewriting the battle predecessor',()=>{
- const closeoutRead=target=>historicalCloseoutRead(target,pc06HistoricalRead());
+ const closeoutRead=target=>historicalCloseoutRead(target,pc06HistoricalRead(settingsMapRead('settings')));
  const files=officialUiRepairProof.files;
  for(const [file,row]of Object.entries(files)){
   const actual=closeoutRead('pr629')(file,'utf8').replaceAll('\r\n','\n');
