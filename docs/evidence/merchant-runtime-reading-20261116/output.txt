@@ -1,0 +1,26 @@
+LUA_NODE_UI_PASS 0
+PAGE 0.0167 encounter:1
+FULL 0.1833 encounter:1 转过一道石廊，
+PAGE 2.8000 encounter:2
+FULL 3.0333 encounter:2 旅行者看到一块旧毯
+PAGE 5.6500 encounter:3
+FULL 5.7000 encounter:3 子，
+PAGE 8.3167 encounter:4
+FULL 8.5167 encounter:4 上面摆着卷册和古
+PAGE 11.1333 encounter:5
+FULL 11.1833 encounter:5 物。
+PAGE 13.8000 encounter:6
+FULL 14.0167 encounter:6 毯子后坐着一位老
+PAGE 16.6333 encounter:7
+FULL 16.7000 encounter:7 人，
+PAGE 19.3167 encounter:8
+FULL 19.5500 encounter:8 像是早就知道会有客
+PAGE 22.1667 encounter:9
+FULL 22.3333 encounter:9 人来到这里。
+PAGE 24.9500 greet:1
+ACCELERATE current page complete
+BUY replaces greeting immediately
+POOR replaces purchase immediately
+HIDDEN preserves reading position
+RESUME advances same line
+ 

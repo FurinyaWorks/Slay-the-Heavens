@@ -1,0 +1,8 @@
+{
+  "src/lua/abyss_merchant.lua": "e6e88e409e6d5b1c91f4fc4811205410aa6c1bce961e94daa270a14642be8747",
+  "src/lua/abyss_merchant_pages.lua": "9fc35034fea420896584aac1d973ba5521b5fb4ab4c2a894093c2451099e7515",
+  "data/presentation/ui_theme.json": "6e2fbf19879f05a1efa79c8f8d0533c1cce8c2c407c588d05e439d57f9c59f64",
+  "data/presentation/narrative.zh-CN.json": "40d4aa7b9e7a627ce52abdbad043c953bd1d38798a0bb288151141401921c1f7",
+  "tests/lua/support/node_ui_cases.lua": "b25b95fea3597abd301ee0beb50628efabc70d6d95b3399778c62547478d1f2b",
+  "tests/lua/merchant_dialogue_lifecycle.lua": "d3f2401d7d3d134a74b0cb01a27c56bb92b6e62494fb3a6e61cbfe9bc926b5de"
+}

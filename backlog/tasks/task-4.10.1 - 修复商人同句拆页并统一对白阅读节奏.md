@@ -1,11 +1,11 @@
 ---
 id: TASK-4.10.1
 title: 修复商人同句拆页并统一对白阅读节奏
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 03:03'
-updated_date: '2026-11-14 05:36'
+updated_date: '2026-11-16 03:17'
 labels:
   - ui
   - text
@@ -36,8 +36,16 @@ ordinal: 175000
 - [ ] #5 真实问题有必要自动回归及反例，重复改坏的原因形成最小可执行防回退；官方PC和实体手机实测分层记录，未测项不宣称验收
 <!-- AC:END -->
 
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+离线验收接续：复用真实Merchant.update记录默认旁白60Hz连续页面和短尾停留，核验加速/交易/隐藏恢复，不改变批准台词或分页策略；独审后保留任务分支证据，设备与人工阅读AC不勾。
+<!-- SECTION:PLAN:END -->
+
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 源码候选PR655完整纳入当前单主角版integration-next并保留原独审与阅读回归；本次仅集中集成，实际连续画面/设备/人工阅读验收仍按原AC保留。
+
+2026-11-16 Release1cc精确默认源码逐帧诊断：旁白至问候24.95模拟秒；三个2字尾页完整显示至换页均2.6167秒。加速、购买、缺金、隐藏恢复断言通过。docs/evidence/merchant-runtime-reading-20261116/；不是实机、Full或AC完成。
 <!-- SECTION:NOTES:END -->
