@@ -90,3 +90,20 @@ if(existsSync(new URL('./release-bootstrap-ci-source.mjs',import.meta.url))) {
   }
  });
 }
+
+import {createHash} from 'node:crypto';
+import {releaseBootstrapCiSource,releaseBootstrapCiRead} from './release-bootstrap-ci-source.mjs';
+test('Release bootstrap helper continuation rejects drift, foreign inputs and preserves Buffer identity',()=>{
+ const hash=s=>createHash('sha256').update(s).digest('hex');
+ const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path,'utf8');
+ const priorSha='5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986';
+ for(const source of [raw,raw.replaceAll('\n','\r\n')]){
+  assert.equal(hash(releaseBootstrapCiSource(path,source)),priorSha);
+  assert.equal(hash(releaseBootstrapCiSource(path,source,{sha256:priorSha})),priorSha);
+  assert.equal(releaseBootstrapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
+ }
+ for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.equal(releaseBootstrapCiSource(path,source),source);
+ for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(releaseBootstrapCiSource(foreign,raw),raw);
+ const bytes=Buffer.from(raw),prior=releaseBootstrapCiRead(()=>bytes)(path);assert(Buffer.isBuffer(prior));assert.equal(hash(prior),priorSha);
+ const bad=Buffer.concat([bytes,Buffer.from('\n')]);assert.strictEqual(releaseBootstrapCiRead(()=>bad)(path),bad);
+});

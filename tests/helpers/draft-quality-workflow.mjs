@@ -32,8 +32,8 @@ export const draftQualityWorkflowEdits = Object.freeze([
 ].map(Object.freeze));
 
 export function beforeDraftQualityWorkflow(text) {
-  text = beforeReleaseFullGate(text);
   const original = text;
+  text = beforeReleaseFullGate(text);
   text = beforeHostedCheckoutWorkflow(text);
   text = beforeQualityRatchetWorkflow(text);
   const eol = text.includes('\r\n') ? '\r\n' : '\n';
