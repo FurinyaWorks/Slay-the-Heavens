@@ -6,7 +6,31 @@ import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./hand-enemy-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'846739b2262bae6420518f67c4515d01f3942fd64de0ebea71fa38d60d5d5eba','complete hand enemy CI packet');
-const packet=JSON.parse(gunzipSync(bytes));
+const originalPacket=JSON.parse(gunzipSync(bytes));
+const successorBytes=readFileSync(new URL('./hand-enemy-successor-ci.json.gz',import.meta.url));
+assert.equal(hash(successorBytes),'4a54b03723289875f50c5e4b9e3ecacac42486dcc3dceaba3097edccbefe0fa4','complete hand enemy successor packet');
+const successor=JSON.parse(gunzipSync(successorBytes));
+assert.equal(successor.schemaVersion,1);
+assert.equal(successor.baseCommit,'e3ba2c96bb5f57959b24b817a5df7b325cfa1afb');
+assert.equal(successor.successorCommit,'1508139e1918af4eeb455e4124241fd927c896b2');
+assert.equal(successor.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(successor.files),["scripts/test-lua.mjs", "tests/enemy-geometry-metrics.test.mjs", "tests/helpers/enemy-post697-ci-source.mjs", "tests/sts-style-source-epoch.test.mjs"]);
+const files={...originalPacket.files};
+for(const [path,row]of Object.entries(successor.files)){
+ assert(row.before&&row.current,'complete successor before/current');
+ assert.deepEqual(Object.keys(row.views),Object.keys(originalPacket.viewCommits),'complete successor historical domains');
+ if(files[path]){assert.deepEqual(row.before,files[path].current);assert.deepEqual(row.views,files[path].views);}
+ else assert.equal(row.before.gitBlob,'059255988db003a7eab7e49a9245cccb82d71577');
+ for(const item of [row.before,row.current,...Object.values(row.views)].filter(Boolean)){
+  assert.equal(item.source,norm(item.source));assert.equal(hash(item.source),item.sha256);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(item.source)}\0`).update(item.source).digest('hex'),item.gitBlob);
+ }
+ files[path]={current:row.current,views:row.views};
+}
+const packet={...originalPacket,files,immutableArchives:{...originalPacket.immutableArchives,
+ 'tests/helpers/hand-enemy-ci-source.json.gz':hash(bytes),
+ 'tests/helpers/hand-enemy-successor-ci.json.gz':hash(successorBytes),
+ 'tests/helpers/enemy-post697-ci-reader-repair.json.gz':'6498b91931c1d214c61d687ae5be3ec1816e0e1bb1685b414388f90dc1a45818'}};
 assert.equal(packet.schemaVersion,1);assert.equal(packet.currentTreeCommitted,false);
 assert.deepEqual(packet.viewCommits,{"hand": "e259ca49be9d2e3b3526a5efa762814ef96df1c9", "enemy": "4d40bdac703c80e51054d551f1512ff02fc0adbc"});
 assert.equal(packet.productCommit,'dff8e86a26f1b309f21bcc5999c2c1f750da3208');
