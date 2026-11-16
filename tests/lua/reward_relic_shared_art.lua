@@ -49,6 +49,24 @@ local function verify(index,id)
  return icon,pool
 end
 local before=streams();h:refresh()
+-- Direct Lua discovery runs the default tree. Verify that tree's existing
+-- text-only layout, real claim and RNG; the official wrapper still runs every
+-- shared-pool assertion below on its explicitly generated official tree.
+if Theme.presentationProfile~='official-assets-first'then
+ for _,row in ipairs(rows)do
+  assert(row.visible and not row:GetChild('rewardIcon') and not row:GetChild('rewardIconArt'),'default reward must remain text-only')
+  for _,state in ipairs({'normal','hover','pressed','disabled'})do
+   local face=row:GetChild(state)
+   assert(face:GetChild('label') and not face:GetChild('stsRewardFace'),'default state face remains generated')
+  end
+ end
+ assert(F.click(root,'battlePanel','potionHelp/relicReward1'))
+ assert(run.relics[#run.relics]=='blue_candle' and run.rewards.relics[1].claimed and not rows[1].visible)
+ assert(rows[2].visible and not run.rewards.relics[2].claimed)
+ same(streams(),before)
+ print('REWARD_RELIC_DEFAULT_PASS text-only states, one claim, unchanged RNG')
+ return
+end
 local icon,pool=verify(1,'blue_candle');verify(2,'strike_dummy');same(streams(),before)
 local writes=0
 for _,shape in pairs(pool.children)do
