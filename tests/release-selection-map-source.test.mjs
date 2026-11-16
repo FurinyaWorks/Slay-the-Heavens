@@ -1,16 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {readFileSync as actualHandPost697ReadFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {handPost697HistoricalRead,handPost697PriorInventory} from './helpers/hand-post697-ci-source.mjs';
+const readFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {discoverJs} from '../scripts/ci-shards.mjs';
-import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {discoverJs as actualHandPost697DiscoverJs} from '../scripts/ci-shards.mjs';
+const discoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
+import {sourceEpoch as activeHandPost697Epoch,preHandPost697SourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
-import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent as priorSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+const assertReleaseSelectionMapCiCurrent=(read=readFileSync)=>priorSelectionMapCiCurrent(read);
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
@@ -31,7 +35,7 @@ test('actual merged Release authenticates every unchanged Lua and architecture p
  assert.equal(releaseSelectionMapSourcePacket.currentCommit,'74a598a52a0b846bc1bec1ef57083b2fdb1bbc39');
 });
 
-test('release selection map production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
+test('legacy landed697 release selection map production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
  const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);
  assert.deepEqual(p.targets.releaseSelectionMapPrior.files,prior.current);
@@ -43,7 +47,7 @@ test('release selection map production preserves every complete prior target and
  assert.throws(()=>extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch,{...releaseSelectionMapSourcePacket,current:{}}),/only the approved selection map owners advance/);
 });
 
-test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
+test('legacy landed697 release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
  assertReleaseSelectionMapCiCurrent();
  for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
@@ -58,12 +62,12 @@ test('release selection map CI validates complete live bindings while unknown or
  for(const path of Object.keys(releaseSelectionMapSourcePacket.current))assert.equal(releaseSelectionMapCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');
 });
 
-test('release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
- const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+test('legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
+ const inventories={js:discoverJs(),lua:handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync)};
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);
   assertReleaseSelectionMapRawInventory(paths,kind);
-  assert.deepEqual(releaseSelectionMapPriorInventory(paths,kind),releaseSelectionMapCiPacket.priorInventory[kind]);
+  assert.deepEqual(releaseSelectionMapPriorInventory(paths,kind,readFileSync),releaseSelectionMapCiPacket.priorInventory[kind]);
   const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];
   assert.deepEqual(releaseSelectionMapPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');
   const noAdditions=paths.filter(path=>releaseSelectionMapCiPacket.priorInventory[kind].includes(path));
@@ -76,7 +80,7 @@ test('release selection map raw JS and Lua inventories reject missing duplicate 
  }
 });
 
-test('release selection map raw workflow checks each real execution deadline and trusted local route',()=>{
+test('legacy landed697 release selection map raw workflow checks each real execution deadline and trusted local route',()=>{
  const workflow=norm(readFileSync('.github/workflows/quality.yml','utf8'));
  assertReleaseSelectionMapExecutionGuards(workflow);
  for(const [before,after]of [
@@ -98,11 +102,12 @@ test('release selection map raw workflow checks each real execution deadline and
   assert.throws(()=>assertReleaseSelectionMapExecutionGuards(bad),/raw Quality/,'missing, duplicate, step-only and wrong-job guards fail');
 });
 
-test('release selection map production requires fresh complete owners and leaves foreign bytes visible',()=>{
+test('legacy landed697 release selection map production requires fresh complete owners and leaves foreign bytes visible',()=>{
  const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;
  assert.equal(Object.keys(p.current).length,352);assert.equal(p.owners.length,116);
  assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,65);
- const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>readFileSync(path,'utf8');
+ // Immutable landed697 projector domain; current118 is verified independently.
+ const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>p.current[path]?.source??null;
  const source=norm(raw(anchor)),expected=prior.current[anchor].source;
  for(const current of [source,source.replaceAll('\n','\r\n')]){
   const seen=[];assert.equal(sourceEpoch.preCombinedSource(anchor,current,{target:'releaseSelectionMapPrior',readSource:path=>{seen.push(path);return raw(path);}}),expected);
@@ -121,14 +126,15 @@ test('release selection map production requires fresh complete owners and leaves
  }
 });
 
-test('release selection map isolated production copy includes exact helper and packet without CI trust leaf',async t=>{
+test('legacy landed697 release selection map isolated production copy includes exact helper and packet without CI trust leaf',async t=>{
  const directory=mkdtempSync(join(tmpdir(),'release-selection-map-copy-'));
  t.after(()=>rmSync(directory,{recursive:true,force:true}));
  copyIntegrationSourceClosure(directory);
  for(const file of ['release-selection-map-source.mjs','release-selection-map-source.json.gz'])assert(existsSync(join(directory,'tests/helpers',file)));
  assert(!existsSync(join(directory,'tests/helpers/release-selection-map-ci-source.mjs')));
  const copied=await import(pathToFileURL(join(directory,'tests/helpers/closeout-source-epoch.mjs')).href);
- assert.deepEqual(copied.sourceEpoch.proof,sourceEpoch.proof);
+ assert.deepEqual(copied.preHandPost697SourceEpoch.proof,sourceEpoch.proof);
+ assert.deepEqual(copied.sourceEpoch.proof,activeHandPost697Epoch.proof);
  const sourceRoot=join(directory,'drift');mkdirSync(sourceRoot);
  // The original closure copier authenticates dependencies from a distinct root.
  copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory});

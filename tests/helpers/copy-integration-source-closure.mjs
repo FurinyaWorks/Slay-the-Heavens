@@ -36,6 +36,8 @@ for(const row of releaseSelectionMapHelperCopies){assert.equal(files[row.path]??
 // The original hand descriptor remains an immutable historical domain.
 // Current copies retain both production leaves; outer union owns closeout.
 for(const row of mobileHandHelperCopies.filter(row=>!row.path.endsWith('closeout-source-epoch.mjs'))){assert.equal(files[row.path]??null,row.before,'exact hand leaf copy predecessor: '+row.path);files[row.path]=row.after;}
+export const handPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1","after":"560d7e2746766f12267a93bc171a8e015b776cec9ae5e843dbd42c9f4616a381"},{"path":"tests/helpers/hand-post697-source.mjs","before":null,"after":"80caf6f9965921670a796992a747439217cfd2cee969e8e2fb2f238201d06d4c"},{"path":"tests/helpers/hand-post697-source.json.gz","before":null,"after":"7d531647cb94d560e821f63032ac123772a647c3f604578e2470412304cd8509"}];
+for(const row of handPost697HelperCopies){assert.equal(files[row.path]??null,row.before,'exact hand post697 helper predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

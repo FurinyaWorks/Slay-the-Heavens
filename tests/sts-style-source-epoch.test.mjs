@@ -12,6 +12,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {mobileHandPriorInventory,assertMobileHandRawInventory} from './helpers/mobile-hand-ci-source.mjs';
 import {releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
+import {handPost697PriorInventory,handPost697HistoricalRead,assertHandPost697RawInventory,handPost697CiPacket} from './helpers/hand-post697-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -27,21 +28,34 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
+ const currentJs=discoverJs(),currentLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ assertHandPost697RawInventory(currentJs,'js');assertHandPost697RawInventory(currentLua,'lua');
+ // These are the actual filesystem bytes, before either history is entered.
+ for(const [kind,paths]of [['js',currentJs],['lua',currentLua]])for(const target of ['release','hand']){
+  for(const added of paths.filter(path=>!handPost697CiPacket.viewInventories[target][kind].includes(path))){
+   for(const failure of ['missing','null','drift'])assert.throws(()=>handPost697PriorInventory(paths,kind,(path,encoding)=>{
+    if(path===added){if(failure==='missing')throw Error('missing '+path);if(failure==='null')return null;const b=readFileSync(path,encoding);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);}
+    return readFileSync(path,encoding);
+   },target),error=>{assert(error.message.includes(added)||/null/.test(error.message));return true;});
+  }
+ }
+
+ const handRead=handPost697HistoricalRead('hand',readFileSync),releaseRead=handPost697HistoricalRead('release',readFileSync);
  {
- const handDomainRaw={js:discoverJs(),lua:readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort()},historical={};
+ const handDomainRaw={js:handPost697PriorInventory(currentJs,'js',readFileSync,'hand'),lua:handPost697PriorInventory(currentLua,'lua',readFileSync,'hand')},historical={};
  for(const [kind,paths]of Object.entries(handDomainRaw)){
   assertMobileHandRawInventory(paths,kind);
-  historical[kind]=mobileHandPriorInventory(paths,kind,readFileSync);
+  historical[kind]=mobileHandPriorInventory(paths,kind,handRead);
   for(const path of paths.filter(path=>!historical[kind].includes(path))){
    assert.throws(()=>assertMobileHandRawInventory(paths.filter(p=>p!==path),kind),/inventory/);
-   for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>mobileHandPriorInventory(paths,kind,(p,e)=>p===path?value:readFileSync(p,e)),/fresh complete integration source|replaceAll/);
+   for(const value of [null,handRead(path,'utf8')+'\n'])assert.throws(()=>mobileHandPriorInventory(paths,kind,(p,e)=>p===path?value:handRead(p,e)),/fresh complete integration source|replaceAll/);
   }
  }
  const {js:rawJs,lua:rawLua}=historical;
  }
  // Keep the complete original receipt input; the selection map raw Full contract
  // independently hard-checks every current test and the unchanged budgets.
- const rawJs=releaseSelectionMapPriorInventory(discoverJs(),'js',readFileSync),rawLua=releaseSelectionMapPriorInventory(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'lua',readFileSync);
+ const rawJs=releaseSelectionMapPriorInventory(handPost697PriorInventory(currentJs,'js',readFileSync),'js',releaseRead),rawLua=releaseSelectionMapPriorInventory(handPost697PriorInventory(currentLua,'lua',readFileSync),'lua',releaseRead);
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));

@@ -1,0 +1,250 @@
+[
+  {
+    "path": "archive.py.gz",
+    "source": ".artifacts/hand-post697/archive.py",
+    "rawBytes": 796,
+    "rawSha256": "b4e0c81f744d7724cf2db2cf6bd6a173e9a8419da76ec28162b32e30836289bf",
+    "gitStoredBytes": 487,
+    "gitStoredSha256": "cd9363134e44277ed44c241413d31a9bcd5e5a1af5db4cb950fefa5a03eabfb0"
+  },
+  {
+    "path": "audit.json.gz",
+    "source": ".artifacts/hand-post697/audit.json",
+    "rawBytes": 1453,
+    "rawSha256": "00cd2604ac3d2170918f89588d4234d5215e4d01757ec7240ad7286077f3b82f",
+    "gitStoredBytes": 810,
+    "gitStoredSha256": "c09c00ac3e45efc3f0788f6f48def824c5fb562cb995a886870b036c46da1c52"
+  },
+  {
+    "path": "audit.log.gz",
+    "source": ".artifacts/hand-post697/audit.log",
+    "rawBytes": 1237,
+    "rawSha256": "af103a9f3ef9506faf2927cfe6e6db624caf9d0e9a80091b839859d19cee76d6",
+    "gitStoredBytes": 777,
+    "gitStoredSha256": "8a7aaa38268ef688f2a7ecd560d92ac4da7231a7bdc977307204a5c46749c591"
+  },
+  {
+    "path": "audit.mjs.gz",
+    "source": ".artifacts/hand-post697/audit.mjs",
+    "rawBytes": 7255,
+    "rawSha256": "b6f06dbb000be396040af55d0ce050ec6161330855e81b1f2261a79aa86b3f1b",
+    "gitStoredBytes": 2488,
+    "gitStoredSha256": "0899c6d9b60e5c8e723bf6e077a177f480b8fa3ef0be8c430ea839aaa7976176"
+  },
+  {
+    "path": "capture-template.py.gz",
+    "source": ".artifacts/hand-post697/capture-template.py",
+    "rawBytes": 3550,
+    "rawSha256": "979103f6f848e5288500f5b785782bbf1144d548c52caefca40ea017ccd27719",
+    "gitStoredBytes": 1586,
+    "gitStoredSha256": "8d3b24be0358bf898e57eb8c6d64ed20aecc993482246deeb339f046b8b07895"
+  },
+  {
+    "path": "capture.json.gz",
+    "source": ".artifacts/hand-post697/capture.json",
+    "rawBytes": 384,
+    "rawSha256": "9d0b0842162690def0309ea0ca05a98adae1731ca3809e8e9c729bfff246b756",
+    "gitStoredBytes": 229,
+    "gitStoredSha256": "284328c0a8815e4cc6d441d86ad232b35867a4210bd49b0636521a3effd729fe"
+  },
+  {
+    "path": "capture.py.gz",
+    "source": ".artifacts/hand-post697/capture.py",
+    "rawBytes": 3550,
+    "rawSha256": "979103f6f848e5288500f5b785782bbf1144d548c52caefca40ea017ccd27719",
+    "gitStoredBytes": 1586,
+    "gitStoredSha256": "8d3b24be0358bf898e57eb8c6d64ed20aecc993482246deeb339f046b8b07895"
+  },
+  {
+    "path": "ci-template.mjs.gz",
+    "source": ".artifacts/hand-post697/ci-template.mjs",
+    "rawBytes": 4267,
+    "rawSha256": "66764e8ec7c42d22deb0f9b760dd4f461d86c628a7e331fc0333c15888388b26",
+    "gitStoredBytes": 1617,
+    "gitStoredSha256": "6a6ab228d1b665566c00283ad809505ca8bff39196d2bc48a1eb21a1110984c7"
+  },
+  {
+    "path": "ci-tests-template.mjs.gz",
+    "source": ".artifacts/hand-post697/ci-tests-template.mjs",
+    "rawBytes": 10162,
+    "rawSha256": "c4592d7912c919b08ffa0683d20bd2975dce757bd597c1b2d3c2c1bdc181229a",
+    "gitStoredBytes": 2365,
+    "gitStoredSha256": "6849589cd66db8dd33064f6f3c3f48f9b44902a60bf7a9eeb064f662046bbb18"
+  },
+  {
+    "path": "conflict-resolution.json.gz",
+    "source": ".artifacts/hand-post697/conflict-resolution.json",
+    "rawBytes": 351,
+    "rawSha256": "edcdc657778a874b19ad9f79b8e2a8b6ca1cb41d6453e960da0d4befc32207a3",
+    "gitStoredBytes": 164,
+    "gitStoredSha256": "a207bf9ca1895a58bcf81eb1080f4625036dc19dd61bcfd0f90d3d3b23345f80"
+  },
+  {
+    "path": "consumer-fixes.py.gz",
+    "source": ".artifacts/hand-post697/consumer-fixes.py",
+    "rawBytes": 3213,
+    "rawSha256": "b1cca8df7640fe721653275330a26a897b3286a51b962a2c84704c29d7da6607",
+    "gitStoredBytes": 1381,
+    "gitStoredSha256": "c50bc8f9b0ff0ff6f1297cdd02ad2ed4c9f72f57558bba2f0322d3f40edb2c1c"
+  },
+  {
+    "path": "consumers-second.log.gz",
+    "source": ".artifacts/hand-post697/consumers-second.log",
+    "rawBytes": 1322,
+    "rawSha256": "787f58e093f10c4cf5d9417600f04013a47e722972754c0e4ef1e6262da09b00",
+    "gitStoredBytes": 609,
+    "gitStoredSha256": "8104348e99f225abff94e6e421ae6ccedfdd0ae88b16fe2db7c24c5c0f92c1f5"
+  },
+  {
+    "path": "consumers.py.gz",
+    "source": ".artifacts/hand-post697/consumers.py",
+    "rawBytes": 12085,
+    "rawSha256": "37a65d4b8869446885e9a64f0e69fa2ef48869ff0356d05f86133d741bb6276f",
+    "gitStoredBytes": 2497,
+    "gitStoredSha256": "d12e3bc1bae91a64bb50f23ad602552133df4c7c3a3f907ff423e250d2c871c7"
+  },
+  {
+    "path": "gameui-combo.test.mjs.gz",
+    "source": ".artifacts/hand-post697/gameui-combo.test.mjs",
+    "rawBytes": 2592,
+    "rawSha256": "e00d8de49f2edb3636d3b1a482955947e3f04746067d891a016b70c51183d6cb",
+    "gitStoredBytes": 1226,
+    "gitStoredSha256": "ea4ff936d31d58e136bed1ba9b1eb6fe324a48d120c305979347b8f8f15c1253"
+  },
+  {
+    "path": "gameui-first.log.gz",
+    "source": ".artifacts/hand-post697/gameui-first.log",
+    "rawBytes": 1218,
+    "rawSha256": "0eead28326271bbaf155ec89f12ffe9471c4fad09e82c71a7033a1b11af4b973",
+    "gitStoredBytes": 521,
+    "gitStoredSha256": "d017aa2668acad61fd4b31b531c308af3eaa770bb1bc95a2d585e14d640254c6"
+  },
+  {
+    "path": "gameui-second.log.gz",
+    "source": ".artifacts/hand-post697/gameui-second.log",
+    "rawBytes": 399,
+    "rawSha256": "d867a97afd84b119e46cc83abc4ac68b396185c996e995f10cef51eb6fe76827",
+    "gitStoredBytes": 304,
+    "gitStoredSha256": "bb1a409a07216c220f7eb0164294213a95e262d37e66bc9ee2f49c23ac37f4a8"
+  },
+  {
+    "path": "hydrate.py.gz",
+    "source": ".artifacts/hand-post697/hydrate.py",
+    "rawBytes": 743,
+    "rawSha256": "d36ca62b242f0d871ecf7a07be8ffd0f2d29f1e5d8d180a0f6d6183c162eedd3",
+    "gitStoredBytes": 484,
+    "gitStoredSha256": "c7014e961f644cdee705e4d2bfa9a26fc08e3d92f51b050cdeacc04c30ea41bd"
+  },
+  {
+    "path": "intake.json.gz",
+    "source": ".artifacts/hand-post697/intake.json",
+    "rawBytes": 1270,
+    "rawSha256": "d3cce77289517d150b55b00ebc13f442faef6ba8573f999bd46b223a7c18e707",
+    "gitStoredBytes": 616,
+    "gitStoredSha256": "a6d2016dcf6ea63bb205ba2f9c8ac2b63ab63dd48bcc3d4234ad2738e9d178e1"
+  },
+  {
+    "path": "live-first.log.gz",
+    "source": ".artifacts/hand-post697/live-first.log",
+    "rawBytes": 740,
+    "rawSha256": "42aea43414f2cfffce0c37e825ea1352338efd23669d8e6e877b1f96c809a3fd",
+    "gitStoredBytes": 426,
+    "gitStoredSha256": "a12ec5ca048f3605e73a45cc90f703c6bbe5eef468e3bb602d91ef7b044e51da"
+  },
+  {
+    "path": "live-red.log.gz",
+    "source": ".artifacts/hand-post697/live-red.log",
+    "rawBytes": 30260,
+    "rawSha256": "a511e249c374b2ce978a9b057ff5eae64815efa599ec0d7a41db261e900eae69",
+    "gitStoredBytes": 5438,
+    "gitStoredSha256": "cacc8342d8a1e337edb0b6bbae941f46f19afdb52919234f4b5036e8711feee5"
+  },
+  {
+    "path": "map-hand.lua.gz",
+    "source": ".artifacts/hand-post697/map-hand.lua",
+    "rawBytes": 2716,
+    "rawSha256": "f2a55da5c9ecfb00705366e0f57f9bb71a6a6e173cd08910e3b47c645adb31df",
+    "gitStoredBytes": 1225,
+    "gitStoredSha256": "9af86cb2a8e8bc087ea603273dd03e0bff839259d582d96cc38d11dd5d532bbd"
+  },
+  {
+    "path": "materialized.json.gz",
+    "source": ".artifacts/hand-post697/materialized.json",
+    "rawBytes": 345,
+    "rawSha256": "cc8fab76e862170f9795555e536fbf16108c575b73e4ec0545c4069012bbce5b",
+    "gitStoredBytes": 230,
+    "gitStoredSha256": "ea8854162a838a99a0ccf7364c7f09f96067d8f0f50e919cad4b25ba82ad9b23"
+  },
+  {
+    "path": "media-inputs.json.gz",
+    "source": ".artifacts/hand-post697/media-inputs.json",
+    "rawBytes": 396,
+    "rawSha256": "45b9fdbf5332e661568c3a54c63133d68e237b583eb3ab51d2fb91c7ca6092aa",
+    "gitStoredBytes": 241,
+    "gitStoredSha256": "570a6781c20859e70e99343a8d382b71cf942ef07c01a7891c0e94f8942f6713"
+  },
+  {
+    "path": "prepare.py.gz",
+    "source": ".artifacts/hand-post697/prepare.py",
+    "rawBytes": 6776,
+    "rawSha256": "7d179902cc6863e6edaf20c8eb626cf598275fbc1eea1b51785bfa43bcb0c5df",
+    "gitStoredBytes": 2590,
+    "gitStoredSha256": "f23b4c63227e07efce5bc191dc0a0fc8dd792e41e2689fecf337127204813ab4"
+  },
+  {
+    "path": "production-final.log.gz",
+    "source": ".artifacts/hand-post697/production-final.log",
+    "rawBytes": 226,
+    "rawSha256": "2f8c429fff03e91797b85d77089a05676b7f1ceb6c912f9b10b22858c94fa8b0",
+    "gitStoredBytes": 179,
+    "gitStoredSha256": "9a120523f78515b15c80838e4dcf3f8f66e165cf8f1e08fa90fb658053e33f58"
+  },
+  {
+    "path": "production.json.gz",
+    "source": ".artifacts/hand-post697/production.json",
+    "rawBytes": 276,
+    "rawSha256": "6c3d7e46f94231680cfc9e0175ed45693c596d60fc4c9f1682a6b9bf154414f0",
+    "gitStoredBytes": 207,
+    "gitStoredSha256": "8b8f8654f9352b87a1f243996622a041771c7e253775cad48c89d0f53beb823b"
+  },
+  {
+    "path": "resolve-conflicts.py.gz",
+    "source": ".artifacts/hand-post697/resolve-conflicts.py",
+    "rawBytes": 3155,
+    "rawSha256": "a0e2ac1bab6625a63135187063948b73f8f323f7606a3a9f76048743d99f5176",
+    "gitStoredBytes": 1292,
+    "gitStoredSha256": "071a463a07655cff4f4439c850df30fce5f5ce45e1939153ac93cd48d7159eca"
+  },
+  {
+    "path": "retain-producers.py.gz",
+    "source": ".artifacts/hand-post697/retain-producers.py",
+    "rawBytes": 1360,
+    "rawSha256": "344026cf9615bd090f5a7f44b180fdae60abc62f5156c66600b075e10a439a4d",
+    "gitStoredBytes": 507,
+    "gitStoredSha256": "18ab71bda7b5883de88afb6c812642608dde776e253f0d97fc1725baa7ab5242"
+  },
+  {
+    "path": "syntax-final.log.gz",
+    "source": ".artifacts/hand-post697/syntax-final.log",
+    "rawBytes": 483,
+    "rawSha256": "51921b970e9e9b2357bed0c80972c9568ef98e8d3166f22a15cb693f4ff188c7",
+    "gitStoredBytes": 181,
+    "gitStoredSha256": "4d3ccfc68b9da1832e593a9ca2204b253761da789890e8af6518053fe48ea44d"
+  },
+  {
+    "path": "tests.py.gz",
+    "source": ".artifacts/hand-post697/tests.py",
+    "rawBytes": 4495,
+    "rawSha256": "f087c1b31665f3f90fb42f6eb45295fc5c0fcf17d54797fb53a2c457e4541605",
+    "gitStoredBytes": 1550,
+    "gitStoredSha256": "0613fd2e70cf75660a27e61a63477759a2790336bddf9a8f0609502e817b0ba3"
+  },
+  {
+    "path": "union-first.log.gz",
+    "source": ".artifacts/hand-post697/union-first.log",
+    "rawBytes": 6111,
+    "rawSha256": "faf56cb6915d38ce953cc894b187d13e63fa088fd3600d2737c3511f382b022c",
+    "gitStoredBytes": 1874,
+    "gitStoredSha256": "3ed5d3d74babb683879e9b6f2ad0316d4eccea13a6ae7007c9635ca524ca0791"
+  }
+]

@@ -42,11 +42,14 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualHandPost697ReadFileSync,readdirSync} from 'node:fs';
+import {handPost697HistoricalRead,handPost697PriorInventory,handPost697CiPacket,assertHandPost697CiCurrent,assertHandPost697RawInventory} from './helpers/hand-post697-ci-source.mjs';
+const rawReleaseReadFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
-import {readFileSync as actualHandReadFileSync} from 'node:fs';
-import {mobileHandCiRead,mobileHandCiPacket,mobileHandPriorInventory,assertMobileHandCiCurrent,assertMobileHandRawInventory} from './helpers/mobile-hand-ci-source.mjs';
+const actualHandReadFileSync=handPost697HistoricalRead('hand',actualHandPost697ReadFileSync);
+import {mobileHandCiRead,mobileHandCiPacket,mobileHandPriorInventory,assertMobileHandCiCurrent as priorAssertMobileHandCiCurrent,assertMobileHandRawInventory} from './helpers/mobile-hand-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+const assertMobileHandCiCurrent=(read=actualHandReadFileSync)=>priorAssertMobileHandCiCurrent(read);
 const rawBootstrapReadFileSync=releaseSelectionMapCiRead(rawReleaseReadFileSync);
 const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
@@ -61,7 +64,10 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as rawReleaseDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualHandPost697DiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const rawReleaseDiscoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
+const actualHandDiscoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync,'hand');
+const handLegacyLua=()=>handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync,'hand');
 const liveDiscoverJs=()=>releaseSelectionMapPriorInventory(rawReleaseDiscoverJs(),'js',rawReleaseReadFileSync);
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
@@ -169,7 +175,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const rawReleaseLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+const rawReleaseLua=()=>handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync);
 const liveCloseoutLua=()=>releaseSelectionMapPriorInventory(rawReleaseLua(),'lua',rawReleaseReadFileSync);
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
@@ -2071,7 +2077,7 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
 
 test('hand composition raw Full retains complete discovery costs and real execution guards',t=>{
  assertMobileHandCiCurrent(actualHandReadFileSync);
- const js=actualHandDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const js=actualHandDiscoverJs(),lua=handLegacyLua();
  assertMobileHandRawInventory(js,'js');assertMobileHandRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=actualHandReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
@@ -2080,6 +2086,38 @@ test('hand composition raw Full retains complete discovery costs and real execut
  assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
  for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
   for(const path of js.filter(p=>!mobileHandCiPacket.priorInventory.js.includes(p))){
+   assert.equal(rawCurrentTimings.js[platform][path],undefined,'no fabricated hosted measurement');
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs);
+  }
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical guard ${guard}ms; prediction is not admission`);
+ }
+});
+
+test('hand post697 union raw Full retains complete actual discovery and physical execution guards',t=>{
+ assertHandPost697CiCurrent(actualHandPost697ReadFileSync);
+ const js=actualHandPost697DiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ assertHandPost697RawInventory(js,'js');assertHandPost697RawInventory(lua,'lua');
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
+ const physical=actualHandPost697ReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
+ assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
+ assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  for(const path of js.filter(p=>!handPost697CiPacket.viewInventories.release.js.includes(p))){
    assert.equal(rawCurrentTimings.js[platform][path],undefined,'no fabricated hosted measurement');
    assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs);
   }

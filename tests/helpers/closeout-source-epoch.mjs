@@ -12,6 +12,7 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendMobileHandSource} from './mobile-hand-source.mjs';
+import {extendHandPost697Source} from './hand-post697-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
@@ -54,7 +55,8 @@ export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preReleaseSelectionMapSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
 export const preMobileHandSourceEpoch=preReleaseSelectionMapSourceEpoch;
 export const handBeforeMapSourceEpoch=extendMobileHandSource(preMobileHandSourceEpoch);
-export const sourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const preHandPost697SourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const sourceEpoch=extendHandPost697Source(preHandPost697SourceEpoch,handBeforeMapSourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
