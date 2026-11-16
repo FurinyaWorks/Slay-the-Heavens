@@ -1,0 +1,9 @@
+ tests/lua/enemy_geometry_metrics.lua:53: full status layout must read the latest ordered list
+stack traceback:
+	[JS]: in function 'assert'
+	tests/lua/enemy_geometry_metrics.lua:53: in main chunk
+	[JS]: in function 'dofile'
+	...ture-check/build/battle-regression-xuBPPm/regression.lua:21: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
+
