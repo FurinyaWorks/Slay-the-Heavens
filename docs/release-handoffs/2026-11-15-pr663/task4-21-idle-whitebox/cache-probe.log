@@ -1,0 +1,17 @@
+lowpolyLand rows	362
+ABYSS_PORTRAIT selectScene phase=building owned=0 reason=nil
+ABYSS_PORTRAIT battleScene phase=idle owned=0 reason=nil
+ABYSS_PORTRAIT menuScene phase=building owned=0 reason=nil
+ABYSS_PORTRAIT selectScene phase=ready owned=370 reason=nil
+ABYSS_PORTRAIT menuScene phase=ready owned=370 reason=nil
+title+hidden-preload	370	370	0	4427	4427	0
+selection	370	370	0	4429	4427	0
+ABYSS_PORTRAIT battleScene phase=building owned=0 reason=nil
+ABYSS_PORTRAIT battleScene phase=ready owned=370 reason=nil
+battle	370	370	370	4429	4429	4427
+battle-300-stable-ticks	370	370	370	4429	4429	4427
+map-paused	370	370	370	4429	4429	4429
+ABYSS_PORTRAIT selectScene phase=released owned=0 reason=nil
+ABYSS_PORTRAIT battleScene phase=released owned=0 reason=nil
+ABYSS_PORTRAIT menuScene phase=released owned=0 reason=nil
+released	0	0	0	4430	4430	4430
