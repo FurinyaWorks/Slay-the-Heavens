@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {nativeTheme as theme} from '../scripts/native-ui-theme.mjs';
 import {releaseNavigationCiPacket} from './helpers/release-navigation-ci-source.mjs';
-import {assertReleaseMergeCurrent} from './helpers/release-bootstrap-merge-ci-source.mjs';
+import {assertNavigationDomainCurrent} from './helpers/navigation-map-integration.mjs';
 // Only the old menu-reading contract consumes the complete immutable layout predecessor.
 // Actual current controls are independently checked below without source projection.
 const oldExitSource=releaseNavigationCiPacket.files['scripts/exit-ui-layout.mjs'].before.source;
@@ -12,7 +12,7 @@ assert.equal(oldExitSource.split("'./controls-guide-layout.mjs'").length,2);
 const oldExitImports=oldExitSource.replace("'./native-ui-theme.mjs'",JSON.stringify(new URL('../scripts/native-ui-theme.mjs',import.meta.url).href)).replace("'./controls-guide-layout.mjs'",JSON.stringify(new URL('../scripts/controls-guide-layout.mjs',import.meta.url).href));
 const oldExitModule=await import('data:text/javascript;base64,'+Buffer.from(oldExitImports).toString('base64'));
 const historicalMenuTree=()=>{
- assertReleaseMergeCurrent();
+ assertNavigationDomainCurrent();
  const t=gameLayout(),old=new Map(oldExitModule.exitControls(theme).map(control=>[control.name,control]));
  t.controls=t.controls.map(control=>old.get(control.name)??control);return t;
 };
