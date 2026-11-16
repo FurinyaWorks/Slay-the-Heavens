@@ -8,7 +8,8 @@ const architectureLayers = JSON.parse(readFileSync(new URL('../config/architectu
 
 export function impact(changed, sources, event, timings) {
   const full = reason => ({ mode: 'full', reason, changed, js: [], lua: [] });
-  if (event.eventName !== 'pull_request' || event.base !== 'develop' || event.forceFull) return full('Integration, release or explicit full validation');
+  const release = /^release\/[\w][\w./-]*$/.test(event.base ?? '');
+  if (event.eventName !== 'pull_request' || event.base !== 'develop' && !release || event.forceFull) return full('Integration or explicit full validation');
   if (!changed.length) return full('Empty comparison');
   // Documentation is not generally inert: evidence, design, source ledgers and
   // backlog are consumed by gates. Only this explicit prose allowlist is inert.
@@ -18,7 +19,7 @@ export function impact(changed, sources, event, timings) {
   // Economic, RNG, persistence and combat changes require the complete suite.
   if (active.some(p => /^(?:data\/|config\/|\.github\/|package|vendor\/)/.test(p)
     || /^scripts\/(?:ci-(?:impact|fast|quality-shape|timeout-policy|shards|reviewed-lfs)|publish-(?:full-quality|pr-quality|merge-group)|arm-auto-merge|merge-queue-(?:admission|policy)|pr-quality-evidence|verify-delivery|repository-identity|write-ci-receipt|check-pr-history)\.mjs$/.test(p)
-    || p.startsWith('src/lua/') && architectureLayers[p.match(/^src\/lua\/([^/]+)\.lua$/)?.[1]] !== 'ui')) return full('High risk or shared infrastructure');
+    || !release && p.startsWith('src/lua/') && architectureLayers[p.match(/^src\/lua\/([^/]+)\.lua$/)?.[1]] !== 'ui')) return full('High risk or shared infrastructure');
   const plan = selectTests(active, sources);
   if (plan.full) return full(plan.reason);
   const js = [...new Set([...plan.fast, ...plan.integration])].sort(), lua = [...new Set(plan.lua)].sort();
