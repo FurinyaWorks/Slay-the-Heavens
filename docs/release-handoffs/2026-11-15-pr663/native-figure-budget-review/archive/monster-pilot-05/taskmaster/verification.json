@@ -1,0 +1,10 @@
+{
+  "pass_": true,
+  "graphics": 115,
+  "containers": 4,
+  "total": 119,
+  "rebuildByteExact": true,
+  "masks": 0,
+  "maxTransformError": 5.684341886080802e-14,
+  "scope": "Offline geometric validation only; runtime and device NOT run"
+}

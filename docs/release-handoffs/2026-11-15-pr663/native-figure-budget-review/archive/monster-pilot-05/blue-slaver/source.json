@@ -1,0 +1,14 @@
+{
+  "enemyId": "blue_slaver",
+  "displayName": "蓝衣束缚者",
+  "officialEntryId": 2200,
+  "identity": "Treasure Hoarders - Pugilist",
+  "pageUrl": "https://wiki.hoyolab.com/pc/genshin/entry/2200?lang=en-us",
+  "headerImageUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/b2058431fca479e880a97d3189d70c92_8049027867927658636.png",
+  "sourceSHA256": "1c51cb4b33f77d36084aabae52e2cf0beda2bca71761d4e8784705114a0f3400",
+  "mappingStatus": "沿用 roster treasure-hoarder-pugilist；低预算新稿待视觉确认",
+  "images": 115,
+  "containers": 4,
+  "total": 119,
+  "nativeLayoutSHA256": "911851e7ed4eda73223e217f90ef8f89602affd1f83fbc8b86f6ae1aa46a9bf1"
+}

@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+  "sourcePath": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/r5/ruin/native-layout-whole-119.json",
+  "sourceSHA256": "74c92b0f772c6911f7efdf675ef6fe88b56df2679859bd72d841a3839022380f",
+  "sourceSize": [
+    600,
+    600
+  ],
+  "rows": 115,
+  "standaloneDrawingContainers": 4,
+  "maskRowIndices": [
+    18,
+    19,
+    31,
+    32,
+    50,
+    51,
+    59,
+    60,
+    61,
+    62
+  ],
+  "conversion": "BLOCKED_MASKED_NATIVE_ROWS",
+  "sourceAppearance": "raw source preserved; not yet representable by strict slot renderer"
+}

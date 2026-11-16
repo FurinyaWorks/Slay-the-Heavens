@@ -1,0 +1,13 @@
+{
+  "size": [
+    600,
+    600
+  ],
+  "silhouetteIoU": 1.0,
+  "differentPixels": 469,
+  "totalPixels": 360000,
+  "sourceSHA256": "74c92b0f772c6911f7efdf675ef6fe88b56df2679859bd72d841a3839022380f",
+  "scope": "3x CPU polygon raster downsample; neither engine nor device",
+  "rowsBefore": 115,
+  "rowsAfter": 115
+}
