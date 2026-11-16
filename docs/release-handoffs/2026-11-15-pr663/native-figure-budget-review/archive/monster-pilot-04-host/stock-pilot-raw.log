@@ -1,0 +1,12 @@
+ABYSS_RUN seed=1 source=explicit
+TEMPLATE_CONTROLS	154
+CASE_PASS	Looter real room	1	113	115
+CASE_PASS	2 Fungi Beasts real room	2	228	230
+HUD_IDENTITY_PASS
+ABYSS_FEEDBACK play source=- target=2 amount=0
+ABYSS_FEEDBACK damage source=player target=fungi_beast_2 amount=6
+TARGET_INPUT_PASS
+RETIREMENT_PASS
+MOUNT_PASS
+CASE_PASS	Looter after fungi room replacement	1	113	115
+BATCH04_HOST_PASS	3

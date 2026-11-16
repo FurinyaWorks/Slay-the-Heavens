@@ -1,0 +1,11 @@
+ABYSS_RUN seed=1 source=explicit
+REAL_FORMATION_PASS	3 Louse red-red-red	3	123	123	345
+REAL_FORMATION_PASS	red louse + cultist	2	156	156	230
+ABYSS_NATIVE_ART rejected card_id=batch03-cultist lua_sha256=cd166b2117f14a4e859d1a5f3412168715ef08335abc60ab663a8f56ad468462 reason=...lot/batch02/exact-release/src/lua/abyss_card_display.lua:111: missing native art slot
+...er-batch-pilot/tier-allocation-probe/generated-fixed.lua:70: requested art not published at current tier
+stack traceback:
+	[JS]: in function 'assert'
+	...er-batch-pilot/tier-allocation-probe/generated-fixed.lua:70: in local 'verifyShape'
+	...er-batch-pilot/tier-allocation-probe/generated-fixed.lua:111: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

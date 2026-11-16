@@ -1,0 +1,8 @@
+ABYSS_RUN seed=1 source=explicit
+REAL_FORMATION_PASS	3 Louse red-red-red	3	123	123	345
+REAL_FORMATION_PASS	red louse + cultist	2	156	156	230
+SAME_SURFACE_SWAP_PASS	41	115	41	2
+ABYSS_FEEDBACK play source=- target=1 amount=0
+TARGET_ROUTE_PASS
+ABYSS_FEEDBACK recovered cancelled
+RETIREMENT_PASS
