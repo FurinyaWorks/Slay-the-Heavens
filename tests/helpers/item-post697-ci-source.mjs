@@ -31,6 +31,8 @@ export function decodeItemPost697Storage(storage){
   return{source,sha256:b.sha256,gitBlob:b.gitBlob};
  };
  const files=Object.fromEntries(Object.entries(storage.packet.files).map(([path,row])=>{
+  assert(row&&typeof row==='object'&&!Array.isArray(row),'exact post697 source row object');
+  assert.deepEqual(Object.keys(row).sort(),['current','views'],'exact post697 source row fields');
   assert(Object.hasOwn(row,'current')&&row.current!==null&&Object.hasOwn(row,'views'),'complete current and history record');
   assert.deepEqual(Object.keys(row.views).sort(),Object.keys(storage.packet.viewCommits).sort(),'explicit null or exact history domain');
   return[path,{current:binding(row.current),views:Object.fromEntries(Object.entries(row.views).map(([name,value])=>[name,binding(value)]))}];

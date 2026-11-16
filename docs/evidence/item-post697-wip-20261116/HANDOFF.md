@@ -13,3 +13,11 @@
 证据目录保留collector、测量、任务CLI与原始RED等，全部gzip无损归档，manifest记录raw与Git存储SHA/size。大的本地cold Git诊断目录不上传；node_modules仅复用原依赖junction不上传。两原helper gzip只按原OID材料化、未stage，原source-boundary-green.log.gz的LFS pointer/OID b0db2ec18e50f8717791c374458f2f56684617836a765e6f525811b571a502c4/1398580保持。
 
 无自有live测试/构建/writer进程；无GUI、GIL、官方ready、PC/手机或容量验收。恢复点：先审私有codec字段边界/存储方案及cold帽，再接续双历史域source/CI，真实当前RED→GREEN与新Map组合1例；另交新独立审查，作者不得自签PASS。最终推送的是独立WIP交接分支，原PR699不动。
+
+## 2026-11-16 本轮本地续接（未推送）
+
+先在原699头68a上完成最小空白门禁修复16cf4a2e：新日志的错误`ci-immutable-media`属性撤除，LFS/指针不变，旧repair gzip保留；29项定向、独立复审、819条精确空白门禁通过。随后在另一隔离树以正常双父merge97712afe组合16cf与本WIP3f715049，实际Release33d及旧249adac4历史均保留，未手改Backlog。
+
+本WIP已知codec额外row字段被忽略问题，本轮用真实Missing expected exception RED证明，再加精确普通对象与完整`current/views`键断言；20项LFS/codec定向GREEN，独立复审另验66有效row逐字节解码不变及null/array/number/string/extra-key拒绝。原661568B存储packet未改。
+
+本轮352生产当前源逐项与组合epoch一致，itemBeforeMap历史投影通过，完整68个target保留。真实本地空Git库depth1抓取精确merge97712afe的pack为134260024B，超过原134217728B帽42296B；不是Hosted/网络/官方读数。当前两侧production/CI/inventory消费者6项实际RED（0/6），完整日志在工作区`/workspace/branch-cleanup-20261116/pr699-post697-live-red.log`，不可声称已接线。outer guard首先拒绝旧f770属性binding与修正e64e的差异，随后repair helper及历史入口须显式续接。上述独立decoder修复不改变未准入状态；必须保留旧guard/负控，不删除任一侧断言或放宽帽。

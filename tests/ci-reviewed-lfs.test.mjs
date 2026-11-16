@@ -382,3 +382,11 @@ test('new item repair log retains LFS storage without inheriting the historical 
  assert.equal(pointer.status,0);
  assert.equal(pointer.stdout,'version https://git-lfs.github.com/spec/v1\noid sha256:b0db2ec18e50f8717791c374458f2f56684617836a765e6f525811b571a502c4\nsize 1398580\n');
 });
+
+
+test('post697 packet decoder rejects extra row fields instead of silently discarding them',async()=>{
+ const {decodeItemPost697Storage,itemPost697StoredPacket}=await import('./helpers/item-post697-ci-source.mjs');
+ const stored=structuredClone(itemPost697StoredPacket),path=Object.keys(stored.packet.files)[0];
+ stored.packet.files[path].foreignAuthorization='unexpected';
+ assert.throws(()=>decodeItemPost697Storage(stored),/exact post697 source row fields/);
+});
