@@ -1,3 +1,6 @@
+import {releaseEnemyArtCiPacket,releaseEnemyArtCiSource,assertReleaseEnemyArtCiCurrent} from './helpers/release-enemy-art-ci-source.mjs';
+import {sourceEpoch as liveEnemyArtEpoch} from './helpers/closeout-source-epoch.mjs';
+import {preReleaseEnemyArtSource,releaseEnemyArtSourcePacket,extendReleaseEnemyArtSource} from './helpers/release-enemy-art-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
@@ -8,7 +11,7 @@ import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-cl
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {discoverJs} from '../scripts/ci-shards.mjs';
-import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {preReleaseEnemyArtSourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
 import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
@@ -31,14 +34,14 @@ test('actual merged Release authenticates every unchanged Lua and architecture p
  assert.equal(releaseSelectionMapSourcePacket.currentCommit,'74a598a52a0b846bc1bec1ef57083b2fdb1bbc39');
 });
 
-test('release selection map production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
+test('historical release selection map production preserves complete targets through exact enemy-art source projection',()=>{
  const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);
  assert.deepEqual(p.targets.releaseSelectionMapPrior.files,prior.current);
  assert.equal(p.currentTreeCommitted,true);assert.equal(p.currentCommit,releaseSelectionMapSourcePacket.currentCommit);
  const files=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
  assert.deepEqual(files,Object.keys(p.current).filter(path=>p.current[path]!==null).sort());
- for(const path of files)assert.equal(norm(readFileSync(path,'utf8')),p.current[path].source,path);
+ for(const path of files)assert.equal(norm(preReleaseEnemyArtSource(path,readFileSync(path,'utf8'))),p.current[path].source,path);
  for(const [path,before]of Object.entries(releaseSelectionMapSourcePacket.before))assert.deepEqual(before,prior.current[path]);
  assert.throws(()=>extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch,{...releaseSelectionMapSourcePacket,current:{}}),/only the approved selection map owners advance/);
 });
@@ -46,9 +49,9 @@ test('release selection map production preserves every complete prior target and
 test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
  assertReleaseSelectionMapCiCurrent();
  for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){
-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
+  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(releaseEnemyArtCiSource(path,source)),row.current.sha256,'exact historical selection CI owner: '+path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
-  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??source,path);
+  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??releaseEnemyArtCiSource(path,source),path);
   for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);
   for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);
   assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{
@@ -102,7 +105,7 @@ test('release selection map production requires fresh complete owners and leaves
  const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;
  assert.equal(Object.keys(p.current).length,352);assert.equal(p.owners.length,116);
  assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,65);
- const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>readFileSync(path,'utf8');
+ const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>preReleaseEnemyArtSource(path,readFileSync(path,'utf8'));
  const source=norm(raw(anchor)),expected=prior.current[anchor].source;
  for(const current of [source,source.replaceAll('\n','\r\n')]){
   const seen=[];assert.equal(sourceEpoch.preCombinedSource(anchor,current,{target:'releaseSelectionMapPrior',readSource:path=>{seen.push(path);return raw(path);}}),expected);
@@ -128,10 +131,57 @@ test('release selection map isolated production copy includes exact helper and p
  for(const file of ['release-selection-map-source.mjs','release-selection-map-source.json.gz'])assert(existsSync(join(directory,'tests/helpers',file)));
  assert(!existsSync(join(directory,'tests/helpers/release-selection-map-ci-source.mjs')));
  const copied=await import(pathToFileURL(join(directory,'tests/helpers/closeout-source-epoch.mjs')).href);
- assert.deepEqual(copied.sourceEpoch.proof,sourceEpoch.proof);
+ assert.deepEqual(copied.preReleaseEnemyArtSourceEpoch.proof,sourceEpoch.proof);
  const sourceRoot=join(directory,'drift');mkdirSync(sourceRoot);
  // The original closure copier authenticates dependencies from a distinct root.
  copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory});
  const adapter=join(directory,'tests/helpers/release-selection-map-source.mjs');writeFileSync(adapter,readFileSync(adapter,'utf8')+'\n');
  assert.throws(()=>copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory}),/fresh helper copy identity/);
+});
+
+
+test('release enemy art advances one live Lua owner without rewriting historical selection contracts',()=>{
+ const p=liveEnemyArtEpoch.proof,prior=sourceEpoch.proof,packet=releaseEnemyArtSourcePacket,path='src/lua/abyss_lowcost_art.lua';
+ assert.equal(p.currentTreeCommitted,false,'capture does not pretend to be a source commit');
+ assert.equal(prior.currentTreeCommitted,true,'historical committed flag remains intact');
+ assert.deepEqual(p.targets.releaseEnemyArtPrior.files,prior.current);
+ for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);
+ for(const [key,row]of Object.entries(prior.current))assert.deepEqual(p.current[key],key===path?packet.current[path]:row);
+ const raw=key=>readFileSync(key,'utf8');
+ for(const [key,row]of Object.entries(p.current))if(row)assert.equal(norm(raw(key)),row.source,key+' live complete owner');
+ const seen=[];
+ assert.equal(liveEnemyArtEpoch.preCombinedSource(path,raw(path),{target:'releaseEnemyArtPrior',readSource:key=>{seen.push(key);return raw(key);}}),packet.before[path].source);
+ assert.deepEqual(seen,p.owners,'fresh complete linked owners');
+ for(const owner of p.owners)assert.throws(()=>liveEnemyArtEpoch.preCombinedSource(path,raw(path),{target:'releaseEnemyArtPrior',readSource:key=>raw(key)+(key===owner?'\n':'')}),/linked owner/);
+ for(const foreign of [raw(path)+'\n',raw(path).slice(1),null,17,Buffer.from(raw(path))]){
+  let reads=0;assert.equal(liveEnemyArtEpoch.preCombinedSource(path,foreign,{target:'releaseEnemyArtPrior',readSource:()=>{reads++;throw Error();}}),foreign);assert.equal(reads,0);
+  assert.equal(preReleaseEnemyArtSource(path,foreign),foreign);
+ }
+ for(const mutate of [v=>{v.before[path].source+='\n';},v=>{v.current[path].source+='\n';},v=>{delete v.current[path];},v=>{v.currentTreeCommitted=true;},v=>{v.baseCommit='f'.repeat(40);}]){
+  const bad=structuredClone(packet);mutate(bad);assert.throws(()=>extendReleaseEnemyArtSource(sourceEpoch,bad));
+ }
+});
+
+
+test('release enemy artwork CI authenticates full current closure and preserves exact historical sources',()=>{
+ assertReleaseEnemyArtCiCurrent();
+ const packet=releaseEnemyArtCiPacket;
+ assert.equal(packet.currentTreeCommitted,false);
+ for(const [path,row]of Object.entries(packet.files)){
+  const source=readFileSync(path,'utf8');
+  assert.equal(releaseEnemyArtCiSource(path,source),row.before.source);
+  assert.equal(releaseEnemyArtCiSource(path,source.replaceAll('\n','\r\n')),row.before.source);
+  for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])
+   assert.equal(releaseEnemyArtCiSource(path,foreign),foreign);
+  for(const unknown of ['__proto__','constructor','foreign/'+path])
+   assert.equal(releaseEnemyArtCiSource(unknown,source),source);
+ }
+ for(const path of [...Object.keys(packet.files),...Object.keys(packet.currentOwners),...Object.keys(packet.binaryOwners)]){
+  assert.throws(()=>assertReleaseEnemyArtCiCurrent((p,e)=>{
+   const raw=readFileSync(p,e);return p===path?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;
+  }),/fresh complete integration source/);
+  assert.throws(()=>assertReleaseEnemyArtCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return readFileSync(p,e);}),/missing/);
+ }
+ const lua='src/lua/abyss_lowcost_art.lua',raw=readFileSync(lua,'utf8');
+ assert.equal(releaseEnemyArtCiSource(lua,raw),raw,'CI does not intercept production source ownership');
 });

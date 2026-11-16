@@ -28,6 +28,24 @@ export const releaseSelectionMapHelperCopies=[
  {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
 ];
 for(const row of releaseSelectionMapHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release selection map helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const releaseEnemyArtHelperCopies=[
+  {
+    "path": "tests/helpers/closeout-source-epoch.mjs",
+    "before": "9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1",
+    "after": "cf7c0011138aa066d455be1994b1c9e6f5e3d1d73520165eb45e64573b8c0287"
+  },
+  {
+    "path": "tests/helpers/release-enemy-art-source.mjs",
+    "before": null,
+    "after": "4ae006a612f0604081c8135ce6f7ccad6459416232dad2f3cfccbf7ad02a2b65"
+  },
+  {
+    "path": "tests/helpers/release-enemy-art-source.json.gz",
+    "before": null,
+    "after": "b2c17392b591bc57ec0f8de9236cfc862d74fcfef76d13261baa746966e411a4"
+  }
+];
+for(const row of releaseEnemyArtHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release enemy art helper-copy predecessor');files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

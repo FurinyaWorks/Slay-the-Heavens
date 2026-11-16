@@ -1,3 +1,4 @@
+import {extendReleaseEnemyArtSource} from './release-enemy-art-source.mjs';
 // One exact current production closure; original slices and archives stay immutable.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -51,7 +52,8 @@ export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preReleaseSelectionMapSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
-export const sourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const preReleaseEnemyArtSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const sourceEpoch=extendReleaseEnemyArtSource(preReleaseEnemyArtSourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
