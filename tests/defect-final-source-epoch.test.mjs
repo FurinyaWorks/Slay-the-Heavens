@@ -1,3 +1,4 @@
+import {sourceEpoch as shopCurrentEpoch,preShopPost697SourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -168,7 +169,12 @@ test('pre-feedback production retains original68, exact28, merchant and all 104 
  for(const foreign of [source+'-- foreign',expected,null,undefined,{},17]){reads=[];assert.equal(project(foreign),foreign);assert.deepEqual(reads,[]);}
 });
 
+const priorShopRead=(file,...args)=>shopCurrentEpoch.preCombinedSource(file,diskReadFileSync(file,...args),
+ {target:'shopPost697Release',readSource:path=>diskReadFileSync(path,'utf8')});
 test('current raw production retains the exact power-view owner and complete release owner continuation',()=>{
+ // Keep this original 116-owner release contract in its explicit authenticated
+ // predecessor. The separate shop union case checks all 118 raw current owners.
+ const currentEpoch=preShopPost697SourceEpoch,diskReadFileSync=priorShopRead;
  const current=currentEpoch.proof,file='config/architecture.json',source=diskReadFileSync(file,'utf8'),owner='src/lua/abyss_monster_power_view.lua';
  const pad=files=>Object.fromEntries(Object.keys(current.current).map(path=>[path,files[path]??null]));
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current));
