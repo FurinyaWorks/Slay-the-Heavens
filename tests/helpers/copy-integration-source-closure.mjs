@@ -27,7 +27,16 @@ export const releaseItemTitleShadowHelperCopies=[
  {path:'tests/helpers/release-item-title-shadow-source.mjs',before:null,after:'46e4f395576748c302c41f32480acedb27ba77a7d6a889ba23853aa39b3d4e49'},
  {path:'tests/helpers/release-item-title-shadow-source.json.gz',before:null,after:'e52c64915c843339b2f18de6e56479d4cd7ae8b42956f2a9b18408ddb12af8ba'}
 ];
-for(const row of releaseItemTitleShadowHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release item-title-shadow helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const releaseSelectionMapHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
+ {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
+ {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
+];
+for(const row of releaseSelectionMapHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release selection map helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+// Original item descriptor is historical; retain both production leaves.
+for(const row of releaseItemTitleShadowHelperCopies.filter(row=>!row.path.endsWith('closeout-source-epoch.mjs'))){assert.equal(files[row.path]??null,row.before,'exact item leaf predecessor: '+row.path);files[row.path]=row.after;}
+export const itemPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1","after":"b8bb2d914f15a32f9d10c9f301ec8543d7c5625d1269c4a8c6de9822bd84fdd5"},{"path":"tests/helpers/item-post697-source.mjs","before":null,"after":"308a3d735cea31329dab8d9fbdb2ca8e2cf1b211b8e7603dd368d7f9e485cbef"},{"path":"tests/helpers/item-post697-source.json.gz","before":null,"after":"d8c95e170d3c4f70b1b8067c8e596fc4079742abc07adf6bb9ad0708389066e7"}];
+for(const row of itemPost697HelperCopies){assert.equal(files[row.path]??null,row.before,'exact item post697 helper predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

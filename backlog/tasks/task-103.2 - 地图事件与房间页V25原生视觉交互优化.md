@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-10 11:46'
-updated_date: '2026-11-15 21:28'
+updated_date: '2026-11-16 06:46'
 labels:
   - 待验
   - delivery-verify
@@ -13,6 +13,8 @@ milestone: m-8
 dependencies: []
 references:
   - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
+  - docs/evidence/release-selection-map-admission-1116/README.md
+  - docs/evidence/release-selection-map-release1cc-1116/README.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 169000
@@ -78,4 +80,10 @@ PC08原文明确选角复用，现v25-map styleReturn与最终characterSelection
 PC08最小产品70664a69/最终证据e7fa已组合74a598、来源565cb735；11定向、组合5/5与产品/来源独审通过，21+1输入逐blob对应。PC19只证明bcca共享按钮覆盖controlled golden_wing option3 leave held resultFooter，三态与公开输入旧触点保护通过；golden_idol双步无heldfooter，私图05事件身份歧义、黑底/其它结果未验。无重复产品补丁，仍In Progress。组合证据在另一Release隔离分支，诊断归档在本分支docs/evidence/pc07-pc19-bounded-20261116/；#692/正式候选/PC手机容量未过。
 
 PC08正常PR697@2c06753d共享选角旗帜；PC26/30正常PR696@45008d10统一分页/确认，均actual1cc来源及独审通过。PC19仅既有696中的controlled golden_wing leave heldContinue可复用，不代表golden_idol或私图05全覆盖。原checked[2,3,4]不动，新#676未勾；同候选PC手机未验。
+
+接续 actual Release 33d71575c5f186a1b54f7bf3e4f1826c145aa1d9 的既有历史记录；保留原PR699任务、状态和全部未验AC：
+
+PC08 Release36最小产品70664a69/证据e7fa已选择性组合至74a598；共享最终选角四态旗帜，保留旧命令、触点和焦点许可。11定向与独立对抗probe通过，PC04+PC08组合5/5通过；565cb735来源接续有独立复审，21项代码/合同加1项可执行证据逐blob核对。PC08像素/正式ready/PC手机与容量未验；PC19仅已有bcca切片的controlled golden_wing option3 leave held Continue已验证可复用，golden_idol双步无heldfooter，不代表私图05或所有事件已修。仍In Progress，不勾新AC。
+
+#692已实际合入Release1cc，PC04/08旧9b703分支保留history合流；代码eafcaeee/绑定80e1d3ec新base独立增审通过。352生产Git等价、26CI before/after+10bootstrap/96档案保全，产品8路径/旧production producer原样。原合流6pass3CI fail完整保留，来源10/10与两侧raw2/2通过，当前23代码/合同输入及原1可执行证据逐blob追踪。官方像素、PC04批准HUD backing位置、新ready/PC手机/容量及当前Hosted Full仍未验，不因#692合入勾AC。
 <!-- SECTION:NOTES:END -->
