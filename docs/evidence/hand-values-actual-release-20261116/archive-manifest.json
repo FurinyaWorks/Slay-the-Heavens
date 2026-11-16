@@ -1,0 +1,86 @@
+[
+  {
+    "path": "prepare.py.gz",
+    "sourceBytes": 1281,
+    "storedBytes": 574,
+    "sourceSha256": "8358e82f2301ddd41ee341d7248b949438b8147b473f7678894a08e28c91308f",
+    "storedSha256": "41bde0f7dbcb20f6eb2fce6bea35f503c7b6917a3dc6ae151f571a266d0a67f4"
+  },
+  {
+    "path": "capture.py.gz",
+    "sourceBytes": 2760,
+    "storedBytes": 1243,
+    "sourceSha256": "1c096afb4e9cfd33819cbd2e1dd80787bda3bce8b4f532e2a1a36cca2cebf12a",
+    "storedSha256": "4b31bcdaee6396ebbf38d2b35c9715dd61c47179dcc0ada236e7c7101e5a4d43"
+  },
+  {
+    "path": "live.py.gz",
+    "sourceBytes": 1334,
+    "storedBytes": 624,
+    "sourceSha256": "f395dee8d9d8c8af8d1726a66c2806c92d5b6016f44e63d6133d81246e6910bc",
+    "storedSha256": "357993a17527fa044a67d557b97278ba4262a54bf80ed92f9237287ec66acc2a"
+  },
+  {
+    "path": "audit.mjs.gz",
+    "sourceBytes": 5763,
+    "storedBytes": 1967,
+    "sourceSha256": "b38b28379454702bb089ce5374a2698ce1e91fa2446f480dea16116e0dc5a1cc",
+    "storedSha256": "65c344c21cf69ea22d772d726c74fddd11827a2e3b7658818e6f4afbf3bc8e1c"
+  },
+  {
+    "path": "capture.json",
+    "sourceBytes": 674,
+    "storedBytes": 674,
+    "sourceSha256": "e481e8765f499380810a417efe6e3a0da0cc73e1a11f784d3224015db70bdb3d",
+    "storedSha256": "e481e8765f499380810a417efe6e3a0da0cc73e1a11f784d3224015db70bdb3d"
+  },
+  {
+    "path": "audit.json",
+    "sourceBytes": 1608,
+    "storedBytes": 1608,
+    "sourceSha256": "f04a3b47238ecc8c24016303e0cd7fe97a8b12e839fd2be9d59c02772351dca1",
+    "storedSha256": "f04a3b47238ecc8c24016303e0cd7fe97a8b12e839fd2be9d59c02772351dca1"
+  },
+  {
+    "path": "owner-set.json",
+    "sourceBytes": 56,
+    "storedBytes": 56,
+    "sourceSha256": "7b086b7316781251f57c6df7e5566d6ccb20faeeacbae07e46f321b5967c5226",
+    "storedSha256": "7b086b7316781251f57c6df7e5566d6ccb20faeeacbae07e46f321b5967c5226"
+  },
+  {
+    "path": "boundaries-red.log.gz",
+    "sourceBytes": 4163,
+    "storedBytes": 867,
+    "sourceSha256": "deba56f78714f19c063f421b920893dfc78bf7fd7156ca17bfde91dd5a88df11",
+    "storedSha256": "76eb6c56a5220eb60e98a51178a9369668cfd3802cd5ced94e3eeee8530e99d6"
+  },
+  {
+    "path": "boundaries-live-green.log.gz",
+    "sourceBytes": 709,
+    "storedBytes": 377,
+    "sourceSha256": "42ea1805f33f6234dab53a7bdf8baf36a4dade48d4e58d4f4d2eb08ccdeb1b9d",
+    "storedSha256": "9b32d23808d4d0a501ff2e3e33a1f8232a25aa6b80380f14cd160df5e28a3388"
+  },
+  {
+    "path": "live-before.log.gz",
+    "sourceBytes": 11539,
+    "storedBytes": 1900,
+    "sourceSha256": "dbb97cdac9dfb6b0e85995c83c8fe865ba720ef920f3c10ed6aa7de43eb966b0",
+    "storedSha256": "fc15ff697d586fe76ef856235118f4cd3663c417d95bf326866ab38ddbde90f6"
+  },
+  {
+    "path": "audit.log.gz",
+    "sourceBytes": 1426,
+    "storedBytes": 812,
+    "sourceSha256": "1bb4962de7fc1f5389e6b3863bc65d589e1b14390dd027582912697296b2514d",
+    "storedSha256": "727496708aa5daaba99803a21e4827e0a1498286da510f3f388ee76793f18c85"
+  },
+  {
+    "path": "syntax.log.gz",
+    "sourceBytes": 232,
+    "storedBytes": 121,
+    "sourceSha256": "c6a6b0606ab26e0a3a56b97d112a93445be55e766729c198eef1da64861cccef",
+    "storedSha256": "35c71f9bc2de6579e35c6f743bf46020c0be494bf8391c67aea91ed0df19f288"
+  }
+]

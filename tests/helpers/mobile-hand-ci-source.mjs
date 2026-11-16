@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./mobile-hand-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'5ec529b66d3a1e9411e84145080b44bf05b26305882e82890db0a5a03a0f874b','complete mobile hand CI continuation');
+assert.equal(hash(bytes),'0402b7840b6b020b3b7e015a7569bfcac8e914f3db5364526f8ec2f7028fa8db','complete mobile hand CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'b67226945c2be47c8fff31f1362412b973f68875');
@@ -29,12 +29,15 @@ function checkedSource(path,source,before){
 // Only the explicit complete-CI validator may compare a production owner's
 // freshly checked after binding with its immutable CI predecessor record.
 export const mobileHandCiCheckedSource=checkedSource;
-export function mobileHandCiSource(path,source,before){
+export function mobileHandCiSource(path,source,before,read=readFileSync){
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
- return checkedSource(path,source,before);
+ const prior=checkedSource(path,source,before);
+ if(prior!==source)assertMobileHandCiCurrent(read);
+ return prior;
 }
 export function mobileHandCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=mobileHandCiSource(path,text);
+ const raw=read(path,encoding);if(raw===null||raw===undefined)return raw;
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=mobileHandCiSource(path,text,undefined,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function mobileHandPriorInventory(paths,kind='js',read=readFileSync){
@@ -45,6 +48,7 @@ export function mobileHandPriorInventory(paths,kind='js',read=readFileSync){
  // Their own immutable validators retain the original missing/duplicate checks.
  if(!current.some(path=>!before.includes(path)&&sorted.includes(path)))return [...paths];
  assert.deepEqual(sorted,current,'complete mobile hand raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
+ assertMobileHandCiCurrent(read);
  for(const path of current.filter(p=>!before.includes(p)))
   assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh mobile hand added inventory source: '+path);
  return [...before];

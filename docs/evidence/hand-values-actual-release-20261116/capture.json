@@ -1,0 +1,24 @@
+{
+  "originalPacketCommit": "a0bcfdfb9b1bfe1934da1ba5e46f861e90af1821",
+  "originalPacketSha256": "5ec529b66d3a1e9411e84145080b44bf05b26305882e82890db0a5a03a0f874b",
+  "currentPacketSha256": "0402b7840b6b020b3b7e015a7569bfcac8e914f3db5364526f8ec2f7028fa8db",
+  "currentPacketBytes": 137900,
+  "changedBindings": [
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs"
+  ],
+  "addedBindings": [
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "bindings": 14,
+  "archives": 94,
+  "materializedInputs": [],
+  "rawBefore": {
+    "js": 876,
+    "lua": 1423
+  },
+  "rawCurrent": {
+    "js": 877,
+    "lua": 1425
+  }
+}

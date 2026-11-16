@@ -133,3 +133,131 @@ test('hand composition raw JS and Lua inventory rejects missing duplicate foreig
   }),/fresh mobile hand added inventory source/);
  }
 });
+
+test('mobile hand historical CI reader reauthenticates every current binding and archive after warm success',()=>{
+ const anchor='tests/helpers/closeout-source-epoch.mjs',expected=mobileHandCiPacket.files[anchor].before.source;
+ const other='src/lua/abyss_battle_card_view.lua';let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const raw=actualHandReadFileSync(path,encoding);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualHandReadFileSync(path,encoding);
+ };
+ const reader=mobileHandCiRead(read);
+ assert.equal(reader(anchor,'utf8'),expected);
+ // The exact old implementation exposes the historical anchor without ever
+ // consulting this independent missing owner. Keep this first as the RED.
+ fault={path:other,kind:'missing'};
+ assert.throws(()=>reader(anchor,'utf8'),undefined,'the entire declared corpus must authenticate before history');
+ fault=undefined;assert.equal(reader(anchor,'utf8'),expected);
+ for(const path of Object.keys(mobileHandCiPacket.files).filter(path=>path!==anchor)){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(()=>reader(anchor,'utf8'),undefined,path+' '+kind);
+   fault=undefined;assert.equal(reader(anchor,'utf8'),expected);
+  }
+ }
+ for(const path of Object.keys(mobileHandCiPacket.immutableArchives)){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(()=>reader(anchor,'utf8'),undefined,path+' '+kind);
+   fault=undefined;assert.equal(reader(anchor,'utf8'),expected);
+  }
+ }
+ // The selected anchor must itself be exact; null and foreign data are raw,
+ // never authenticated historical output. Errors still propagate unchanged.
+ fault={path:anchor,kind:'missing'};assert.throws(()=>reader(anchor,'utf8'),/missing/);
+ fault={path:anchor,kind:'null'};assert.equal(reader(anchor,'utf8'),null);
+ fault={path:anchor,kind:'drift'};assert.equal(reader(anchor,'utf8'),actualHandReadFileSync(anchor,'utf8')+'\n');
+ fault=undefined;const binary=reader(anchor);assert(Buffer.isBuffer(binary));assert.equal(binary.toString('utf8'),expected);
+ const production='src/lua/abyss_battle_card_view.lua';fault={path:anchor,kind:'missing'};
+ assert.equal(mobileHandCiRead((p,e)=>p===production?actualHandReadFileSync(p,e):read(p,e))(production,'utf8'),actualHandReadFileSync(production,'utf8'),'CI reader never projects production');
+ fault=undefined;
+ const unknown=mobileHandCiRead(()=>null);assert.equal(unknown('foreign/source','utf8'),null);
+ const historical=mobileHandCiRead((p,e)=>p===anchor?(e?expected:Buffer.from(expected)):read(p,e));
+ fault={path:other,kind:'missing'};assert.equal(historical(anchor,'utf8'),expected,'already historical bytes stay raw and gain no fresh authorization');
+ fault=undefined;
+ const seen=[],tracked=mobileHandCiRead((p,e)=>{seen.push(p);return actualHandReadFileSync(p,e);});
+ assert.equal(tracked(anchor,'utf8'),expected);
+ for(const path of [...Object.keys(mobileHandCiPacket.files),...Object.keys(mobileHandCiPacket.immutableArchives)])assert(seen.includes(path),path+' checked before replay');
+});
+
+test('mobile hand public CI source authenticates the same raw reader before every historical conversion',()=>{
+ const anchor='tests/helpers/closeout-source-epoch.mjs',source=actualHandReadFileSync(anchor,'utf8');
+ const expected=mobileHandCiPacket.files[anchor].before.source;let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const raw=actualHandReadFileSync(path,encoding);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualHandReadFileSync(path,encoding);
+ };
+ const project=()=>mobileHandCiSource(anchor,source,undefined,read);
+ assert.equal(project(),expected);
+ for(const path of [...Object.keys(mobileHandCiPacket.files),...Object.keys(mobileHandCiPacket.immutableArchives)]){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(project,undefined,path+' '+kind);
+   fault=undefined;assert.equal(project(),expected);
+  }
+ }
+ const noRead=()=>{throw Error('foreign input cannot authorize a historical view');};
+ for(const value of [source+'\n',source.slice(1),null,{},17,expected])assert.equal(mobileHandCiSource(anchor,value,undefined,noRead),value);
+ assert.equal(mobileHandCiSource('foreign/source',source,undefined,noRead),source);
+ const production='src/lua/abyss_battle_card_view.lua',raw=actualHandReadFileSync(production,'utf8');
+ assert.equal(mobileHandCiSource(production,raw,undefined,noRead),raw);
+ assert.equal(mobileHandCiSource(anchor,source,{sha256:'0'.repeat(64)},noRead),source);
+});
+
+test('mobile hand current inventory authenticates the complete corpus before entering prior inventory',()=>{
+ const inventories={js:actualHandDiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const raw=actualHandReadFileSync(path,encoding);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualHandReadFileSync(path,encoding);
+ };
+ for(const [kind,paths]of Object.entries(inventories))assert.deepEqual(mobileHandPriorInventory(paths,kind,read),mobileHandCiPacket.priorInventory[kind]);
+ // Both kinds share the same corpus gate. Exercise all declared faults once,
+ // and retain separate positive JS/Lua and already-prior boundaries.
+ for(const path of [...Object.keys(mobileHandCiPacket.files),...Object.keys(mobileHandCiPacket.immutableArchives)]){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(()=>mobileHandPriorInventory(inventories.js,'js',read),undefined,path+' '+kind);
+   fault=undefined;assert.deepEqual(mobileHandPriorInventory(inventories.js,'js',read),mobileHandCiPacket.priorInventory.js);
+  }
+ }
+ fault={path:'src/lua/abyss_battle_card_view.lua',kind:'missing'};
+ for(const kind of ['js','lua'])assert.deepEqual(mobileHandPriorInventory(mobileHandCiPacket.priorInventory[kind],kind,read),mobileHandCiPacket.priorInventory[kind]);
+});
+
+test('mobile hand integrated reader and source forward the same raw reader before historical output',async()=>{
+ const {integratedRead}=await import('./helpers/integrated-ci-source.mjs');
+ const anchor='tests/helpers/closeout-source-epoch.mjs',other='src/lua/abyss_battle_card_view.lua';
+ const raw=actualHandReadFileSync(anchor,'utf8');let fault;const seen=[];
+ const read=(path,encoding)=>{
+  seen.push(path);
+  if(path===other&&fault){
+   if(fault==='missing')throw Error('missing '+path);
+   if(fault==='null')return null;
+   const bytes=actualHandReadFileSync(path,encoding);
+   return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+  }
+  return actualHandReadFileSync(path,encoding);
+ };
+ assertMobileHandCiCurrent(actualHandReadFileSync);
+ const reader=integratedRead('menu',{read}),expected=reader(anchor,'utf8');assert.notEqual(expected,raw,'the test must actually expose an older view');
+ for(const invoke of [()=>reader(anchor,'utf8'),()=>integratedSource(anchor,raw,'menu',read)]){
+  assert.equal(invoke(),expected);
+  for(const kind of ['missing','null','drift']){
+   fault=kind;assert.throws(invoke,undefined,'the integrated boundary must use the injected raw owner '+kind);
+   fault=undefined;assert.equal(invoke(),expected);
+  }
+ }
+ assert(seen.includes(other),'current owner must be read through this invocation reader');
+ const binary=reader(anchor);assert(Buffer.isBuffer(binary));assert.equal(binary.toString('utf8'),expected);
+});

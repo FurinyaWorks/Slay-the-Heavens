@@ -1,0 +1,44 @@
+{
+  "status": "pass",
+  "original": "12f0981ca55017ade6f7be24f50889373b7996f7",
+  "merged": "a0bcfdfb9b1bfe1934da1ba5e46f861e90af1821",
+  "release": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "originalTree": "e5d17b2d7585f2e2e39daa32bb938bb1d22d8357",
+  "mergeTree": "e5d17b2d7585f2e2e39daa32bb938bb1d22d8357",
+  "actualBootstrapTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "oldBootstrapTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "unchangedSourceTree": "e4cf256558cef39f749058c5b856a8f1e3734592",
+  "unchangedProductFiles": [
+    "backlog/tasks/task-4.21 - 定位玩家反馈的手机卡顿与加载慢.md",
+    "docs/backlog-details/TASK-4.21-HAND-VALUES-20261116.md",
+    "src/lua/abyss_battle_card_view.lua",
+    "tests/hand-layout-values.test.mjs",
+    "tests/helpers/isolated-battle-regression.mjs",
+    "tests/lua/hand_layout_host.lua",
+    "tests/lua/hand_layout_values.lua",
+    "tests/lua/support/hand_layout_values_fixture.lua"
+  ],
+  "productionBindings": 352,
+  "ownersBefore": 116,
+  "ownersCurrent": 116,
+  "newOwners": [],
+  "originalActivePacketSha256": "5ec529b66d3a1e9411e84145080b44bf05b26305882e82890db0a5a03a0f874b",
+  "changedBindings": [
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs"
+  ],
+  "addedBindings": [
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "bindings": 14,
+  "archives": 94,
+  "checkedCaller": "helpers/integrated-ci-source.mjs:assertIntegratedCurrent; complete same-raw-reader precondition",
+  "rawBefore": {
+    "js": 876,
+    "lua": 1423
+  },
+  "rawCurrent": {
+    "js": 877,
+    "lua": 1425
+  }
+}
