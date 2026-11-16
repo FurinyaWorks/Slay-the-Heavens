@@ -1,0 +1,22 @@
+{
+  "bundleSha256": "8f6da5f2da6f2f1cf8bb68a114909e8bab94d31e5972509900db00f15326131b",
+  "bundleBytes": 3500301,
+  "rawSha256": "5c1e5ff5ffe46178fecfbc5551123589213ef4cbbdd188debf106e8cb2d608fb",
+  "rawBytes": 6667115,
+  "originalHead": "5fe72de406f42ebbf406ac386d4c03a3a903373b",
+  "mergeHead": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "paths": 62,
+  "indexEntries": 80,
+  "objects": 80,
+  "conflicts": [
+    "backlog/tasks/task-103.2 - 地图事件与房间页V25原生视觉交互优化.md",
+    "backlog/tasks/task-103.3 - 完善主菜单选角与Neow的V25视觉和加载体验.md",
+    "tests/ci-complete-calibration.test.mjs",
+    "tests/helpers/closeout-source-epoch.mjs",
+    "tests/helpers/copy-integration-source-closure.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/integration-source-epoch.test.mjs",
+    "tests/session-menu-navigation.test.mjs"
+  ]
+}
