@@ -41,7 +41,7 @@
     "tests/lua/support/official_map_return.lua": "2ebf4f45d3dbe6d0ef53c38febf3c7618c3c1c1f4dde8b2c560aff18fdfb7271",
     "tests/official-map-return-controls.test.mjs": "a2e8dd6aa80a575c1c0ea8b6ff379fe456a4707e357c0589345f3cb236f30c6a",
     "tests/quick-feedback.test.mjs": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
-    "tests/release-runtime-integration.test.mjs": "00d167e58a1dfcad18b0c652ae6183eed1c9fc30b143b78d00a39e4db42b5fdc",
+    "tests/release-runtime-integration.test.mjs": "7126647943aa0937f25e813300f2a76fb7d7f6e744ca5c2910c1687cbfea15d6",
     "tests/release-selection-map-source.test.mjs": "ac194c0101f5386427306cdc35e05ef17ef69428d4bfad6094b470c521aa621c",
     "tests/runtime-particle-source.test.mjs": "1419a951aa42a12ec83844b249f51f0dbe21fb8707399699d72d78174b22e9a3",
     "tests/selection-overlay-scope.test.mjs": "e412e1173ae9d513b773546788feeea69ea4aae7f04ce98cbb0f7131c33b29f3",

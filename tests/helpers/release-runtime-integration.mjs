@@ -7,7 +7,7 @@ import {runtimeParticleCiPacket as particle,assertRuntimeParticleCiCurrent} from
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=norm(readFileSync(new URL('./release-runtime-integration.json',import.meta.url),'utf8'));
-assert.equal(hash(bytes),'7c82e03a78f243b053788c97800e0f107f514e0cb66f525e69fc9320c29b4f87','complete Release card-contact integration bindings');
+assert.equal(hash(bytes),'f7a0664aa24e803bc53cf2ebbe6a251f566ee3fb40b8cbe0e60760b1a013dfdb','complete Release card-contact integration bindings');
 export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'514de9a7b9641c7269ac81f9c7504ea7f21161e7');
 assert.equal(integrationPacket.base,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');

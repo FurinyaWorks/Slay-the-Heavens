@@ -24,7 +24,7 @@ test('joint Release authenticates the full live production corpus and retains bo
  assert.deepEqual(changed,['src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_view.lua','src/lua/abyss_monster_intent_particle_view.lua']);
  const card=p.current['src/lua/abyss_monster_intent_particle_view.lua'].source;
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(card)}\0`).update(card).digest('hex'),'99d26566968d77c8d014057bcf436cdc225aa98d');
- assert(card.includes('configured[control]=e')); 
+ assert(card.includes('configured[control]=e'));
  assert.equal(p.currentTreeCommitted,false,'historical producer commits are not relabelled as a committed joint corpus');
 });
 
