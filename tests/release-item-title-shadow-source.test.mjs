@@ -29,6 +29,26 @@ test('item CI repair authenticates every changed source and retains exact opaque
  }
 });
 
+test('item CI repair readers require fresh complete authorization after every warm conversion',()=>{
+ const anchor=Object.keys(itemCiRepairPacket.files)[0],before=itemCiRepairPacket.files[anchor].before.source;
+ let broken=null,mode=null;
+ const read=(path,encoding)=>{
+  if(path===broken){if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;const raw=actualReadFileSync(path,encoding);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);}
+  return actualReadFileSync(path,encoding);
+ };
+ const warm=itemCiRepairRead(read),source=actualReadFileSync(anchor,'utf8');
+ assert.equal(warm(anchor,'utf8'),before);
+ const others=[Object.keys(itemCiRepairPacket.files).find(p=>p!==anchor),Object.keys(itemCiRepairPacket.archives)[0],Object.keys(itemCiRepairPacket.production)[0]];
+ for(const path of others)for(const failure of ['missing','null','drift']){
+  broken=path;mode=failure;
+  assert.throws(()=>warm(anchor,'utf8'),'same warm reader must reauthenticate '+path+'/'+failure);
+  assert.throws(()=>itemCiRepairSource(anchor,source,{read}),'direct source conversion must reauthenticate '+path+'/'+failure);
+  assert.equal(itemCiRepairSource(anchor,before,{read}),before,'already historical source stays opaque');
+  assert.equal(itemCiRepairSource('foreign/path',source,{read}),source,'unknown path stays opaque');
+  broken=null;assert.equal(warm(anchor,'utf8'),before,'restored complete inputs authorize again');
+ }
+});
+
 test('retirement observed local floor authenticates its execution inputs and preserves every original cost',()=>{
  const p=assertRetirementPlanningCurrent(),prior=JSON.parse(releaseItemTitleShadowCiPacket.files['scripts/ci-test-timings.json'].before.source),current=JSON.parse(readFileSync('scripts/ci-test-timings.json','utf8'));
  delete current.jsPlanning.localLowerBounds[p.entry];delete current.jsPlanning.localLowerBounds[shadowPlanningReceipt.entry];assert.deepEqual(current,prior,'only the two exact new observed lower bounds are appended');

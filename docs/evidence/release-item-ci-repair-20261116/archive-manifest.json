@@ -88,6 +88,14 @@
     "sha256": "43bdda65ac3908ab701c66a45b16d71700661c5d5a062733010e028c9412dc82"
   },
   {
+    "path": "fresh-authorization-consumers.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 463,
+    "rawSha256": "7d76b7fa0442df9c886af224f39948d2153e61034162168f7e506db9232e6c5a",
+    "bytes": 310,
+    "sha256": "cf56046cbfe4e9269d6765da13997aaf2145321edd60a15dc76450b5cf6e6a49"
+  },
+  {
     "path": "integrated-source-final.log.gz",
     "source": "local bounded verification stdout/stderr",
     "rawBytes": 2046,
@@ -256,6 +264,22 @@
     "sha256": "7c66fa643d0e1a72b0ed530923a651f48851fdd4c083278a821fdebf6e1af849"
   },
   {
+    "path": "warm-authorization-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 228,
+    "rawSha256": "bcb2642364cf66b3881f187301075256f3ee1c9f6486efa68dc4fac06ff24649",
+    "bytes": 181,
+    "sha256": "480e641ebdcdf35afdb272750ad5d7ff01cabe63918315ad640c979337fad2e2"
+  },
+  {
+    "path": "warm-authorization-red.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 549,
+    "rawSha256": "844712cadbadf65e0f9f644bf5904c845edf6dac5b5fe1b8b8e8a85877a6a4fa",
+    "bytes": 407,
+    "sha256": "98153eba437d070dd9f992ceeccfbb22a4cba834cafd9f2cbb984b9100bf0ecf"
+  },
+  {
     "path": "job-132976717778.log.gz",
     "source": "gh api completed job logs",
     "rawBytes": 78694,
@@ -281,7 +305,7 @@
   },
   {
     "path": "capture.mjs.gz",
-    "source": "local collector",
+    "source": "local collector or exact historical RED probe",
     "rawBytes": 2061,
     "rawSha256": "bb5f03afc4a5be9077ebf07e04ee612538f55fe25ed68ff0b740b4c978593ea6",
     "bytes": 990,
@@ -289,10 +313,18 @@
   },
   {
     "path": "archive.mjs.gz",
-    "source": "local collector",
-    "rawBytes": 1487,
-    "rawSha256": "62a4dad02051fd28371d195be05f9ab720b409b0f746a75fd580402a049d99fb",
-    "bytes": 753,
-    "sha256": "3627d51ab8bcb31a59326b9728933e6bd0bf13d0edb47e617966c2261636f070"
+    "source": "local collector or exact historical RED probe",
+    "rawBytes": 1532,
+    "rawSha256": "d938fb4c201e09b7faf771794a4ead283cbf304bed6373aa8ecd021e3e19e2ce",
+    "bytes": 781,
+    "sha256": "111d290c44a152b75d93e9fd59b97e27b2b43b362b5c3d4b892dc269d31ffca9"
+  },
+  {
+    "path": "warm-red.mjs.gz",
+    "source": "local collector or exact historical RED probe",
+    "rawBytes": 1414,
+    "rawSha256": "20b003401f2e7749759894cca68c01eebe9bf23af58f08191edef431fdeabe8d",
+    "bytes": 652,
+    "sha256": "1381b87c2c7ce50c69acd11464e7023925ba9b8f882df69faaec662849b72ed5"
   }
 ]

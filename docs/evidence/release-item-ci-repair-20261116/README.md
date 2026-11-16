@@ -24,4 +24,10 @@ Windows采样hidden lock原SHA `85af46d8a792e54ee614844b4f8c0c90008231b25d152723
 
 首次source-boundary错误日志含大型data URL，gzip仍1398580B。为保留完整失败而不超过原128MiB冷Git门槛，仅对 `source-boundary-green.log.gz` 增加精确LFS属性；原gzip内容/hash不变，完整记录保持，非泛化忽略或放宽门槛。最后存储提交无产品或夹具行为变化，不重复原产品矩阵。
 
+## 独审 R699-1：历史转换前必须完整 fresh 授权
+
+独审指出第一版新增 reader 仅匹配当前 path 的hash，未在实际current→历史转换前读取其它输入。精确旧 `0b71b08e` probe真实RED：同reader先warm成功，再令另一binding抛MISSING，仍返回历史且otherBindingReads=0，原应拒绝的断言退出1；旧结果与脚本无损保留。
+
+修复后每次真实命中转换都先fresh认证13 current、96档案和352生产绑定，不缓存先前成功。Source API显式传read口；Read闭包始终使用同一个raw read口。只有未知path、foreign/current漂移或已历史输入按既有opaque规则透传，不伪授权转换。新负控使用同一warm reader与直接source API：另一binding、archive、production分别missing/null/drift均拒绝，恢复输入又能转换；已历史/unknown输入保持原值。该项1/1通过，原source/完整负控消费者的后续结果单列保存，fixture和产品矩阵不重跑。
+
 原边界probe首次因新增相对import在data URL无法解析而失败，修复probe的真实模块URL后仍验证原截断包拒绝；原暖copy、缺失、漂移、foreign/opaque边界保留。原source消费者与source/copy复验均有独立日志，失败不覆盖。没有重跑22s shadow/80s retirement产品矩阵、Full/check、Hosted或GUI。所有原始job/本轮stdout及collector gzip与身份见archive-manifest.json。正式Required、实际合并、官方导入/ready/容量与设备验收仍未完成。

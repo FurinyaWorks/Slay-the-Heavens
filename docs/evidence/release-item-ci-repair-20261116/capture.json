@@ -1,6 +1,6 @@
 {
-  "sha256": "e3abc07e47dbe80599b2950b822a327b93ef75b024abbce06dcd89e2bf350c21",
-  "bytes": 95811,
+  "sha256": "a0e4ebb49f81dbf0d59c4f80a0c1e4ed2588eb0051b7397206c6d79265efbbaa",
+  "bytes": 96158,
   "paths": [
     ".gitattributes",
     "tests/ci-runtime.test.mjs",
