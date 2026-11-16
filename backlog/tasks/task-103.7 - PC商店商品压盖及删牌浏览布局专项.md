@@ -1,11 +1,11 @@
 ---
 id: TASK-103.7
-title: undefined
+title: PC商店商品压盖及删牌浏览布局专项
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 20:14'
-updated_date: '2026-11-15 20:14'
+updated_date: '2026-11-16 08:21'
 labels: []
 milestone: m-8
 dependencies: []

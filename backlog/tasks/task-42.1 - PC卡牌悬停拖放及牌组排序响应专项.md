@@ -1,11 +1,11 @@
 ---
 id: TASK-42.1
-title: undefined
+title: PC卡牌悬停拖放及牌组排序响应专项
 status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 20:14'
-updated_date: '2026-11-15 20:14'
+updated_date: '2026-11-16 08:21'
 labels: []
 milestone: m-8
 dependencies: []
@@ -15,7 +15,7 @@ references:
   - TASK-30
   - TASK-100
   - TASK-100.1
-  - https://github.com/FurinyaWorks/Slay-the-Heavens/pull/670
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/670'
 parent_task_id: TASK-42
 priority: medium
 type: bug

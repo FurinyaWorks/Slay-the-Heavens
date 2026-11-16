@@ -1,11 +1,11 @@
 ---
 id: TASK-16.1.5
-title: undefined
+title: PC最后一击死亡与奖励出现顺序复验
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 20:14'
-updated_date: '2026-11-15 20:14'
+updated_date: '2026-11-16 08:21'
 labels: []
 milestone: m-8
 dependencies: []

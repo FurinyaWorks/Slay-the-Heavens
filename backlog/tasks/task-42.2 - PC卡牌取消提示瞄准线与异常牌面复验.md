@@ -1,11 +1,11 @@
 ---
 id: TASK-42.2
-title: undefined
+title: PC卡牌取消提示瞄准线与异常牌面复验
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 20:14'
-updated_date: '2026-11-15 20:14'
+updated_date: '2026-11-16 08:21'
 labels: []
 milestone: m-8
 dependencies: []
