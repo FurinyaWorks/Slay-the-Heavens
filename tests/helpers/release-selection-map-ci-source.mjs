@@ -28,9 +28,30 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
 }
+// Only authenticate this narrow freeze correction; keep all prior sources immutable.
+const freezeBytes=readFileSync(new URL('./release-freeze-ci-source.json.gz',import.meta.url));
+assert.equal(hash(freezeBytes),'3e6d2131fa47bfee542300e0eeab6b4a8f9df0f7e5c029946559f77c48e71cb3','complete Release freeze CI continuation');
+const freezePacket=JSON.parse(gunzipSync(freezeBytes));
+assert.equal(freezePacket.schemaVersion,1);assert.equal(freezePacket.normalization,'LF');
+assert.equal(freezePacket.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
+assert.deepEqual(Object.keys(freezePacket.files),['.github/workflows/quality.yml','scripts/check-release-scope.mjs','tests/pr-history.test.mjs','tests/release-selection-map-source.test.mjs','tests/ci-posix-concurrency.test.mjs']);
+for(const [path,row]of Object.entries(freezePacket.files)){
+ if(Object.hasOwn(packet.files,path))assert.deepEqual(row.before,packet.files[path].current,'exact Release freeze predecessor: '+path);
+ for(const b of [row.before,row.current].filter(Boolean)){
+  assert.equal(b.source,norm(b.source));assert.equal(hash(b.source),b.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(b.source)}\0`).update(b.source).digest('hex'),b.gitBlob,path);
+ }
+}
+export function releaseFreezeCiBefore(path,source){
+ const row=Object.hasOwn(freezePacket.files,path)?freezePacket.files[path]:null;
+ if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ return hash(norm(source))===row.current.sha256?row.before.source:source;
+}
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseSelectionMapCiPacket=freeze(packet);
+export const releaseFreezeCiPacket=freeze(freezePacket);
 function checkedSource(path,source,before){
+ source=releaseFreezeCiBefore(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
@@ -56,7 +77,7 @@ export function releaseSelectionMapPriorInventory(paths,kind='js',read=readFileS
  if(!current.some(path=>!before.includes(path)&&sorted.includes(path)))return [...paths];
  assert.deepEqual(sorted,current,'complete release selection map raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
  for(const path of current.filter(p=>!before.includes(p)))
-  assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh release selection map added inventory source: '+path);
+  assert.equal(hash(norm(releaseFreezeCiBefore(path,read(path,'utf8')))),packet.files[path].current.sha256,'fresh release selection map added inventory source: '+path);
  return [...before];
 }
 export function assertReleaseSelectionMapRawInventory(paths,kind='js'){
@@ -80,8 +101,9 @@ export function assertReleaseSelectionMapExecutionGuards(workflow){
  assert.deepEqual(runners,["${{ github.event_name == 'workflow_dispatch' && inputs.runner_pool == 'local-special' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && fromJSON('[\"self-hosted\", \"Windows\", \"X64\", \"slay-the-abyss\"]') || 'windows-2025' }}"],'raw Quality trusted local runner guard');
 }
 export function assertReleaseSelectionMapCiCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries(freezePacket.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: Release freeze '+path);
  for(const [path,row]of Object.entries(packet.files))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: release selection map '+path);
+  assert.equal(hash(norm(releaseFreezeCiBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: release selection map '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
   assert.equal(hash(read(path)),sha,'retained complete immutable release predecessor: '+path);
 }

@@ -2,6 +2,8 @@
 
 > 快照：2026-11-15（北京时间）；这是**分流入口与待验门禁**，不是实时 CI/PR 状态。每轮先读远端 refs、原生 Ruleset、当前 PR/Backlog 和准确候选身份。状态：**RELEASE_BRANCH_CREATED / RULESET_NOT_CONFIGURED / RC_NO_GO**。
 
+> 冻结规则唯一执行入口：[Release维护技能](../../.codebuddy/skills/release-maintenance/SKILL.md)。Quality元数据门禁要求类型/目标版本/发版必要性；Feature拒绝。TASK-42.1/#670的数字键、快捷键、预输入仅后续版本，不以调试便利等理由引入。声明不替代人工diff复审。
+
 ## 所有 Agent 的分流规则
 
 - **当前发版**：`release/v2.0.0` 从 `develop@c2409ad750c15124b7b843c6bbfa5b222537cb75` 冻结；只做岩系旅行者、第一/二幕的必要 Bug、稳定性、性能、玩家可见发布文案及发布元数据，不增新角色/新幕/非必需特性。基于最新 `origin/release/v2.0.0` 在**独立 worktree + fix/<slug>** 开发，PR **base=release/v2.0.0**；禁止直接提交 Release。
