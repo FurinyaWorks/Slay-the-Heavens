@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {itemTitleShadowBootstrapRead} from './release-item-title-shadow-bootstrap-source.mjs';
+import {itemPost697PriorInventory} from './item-post697-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-title-shadow-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'29ed620cf9e562a382d50a9722397579b0c0523196a582e9a41c8a52f6ffa18f','complete release item-title-shadow CI continuation');
@@ -39,6 +40,7 @@ export function releaseItemTitleShadowCiRead(read=readFileSync){return(path,enco
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseItemTitleShadowPriorInventory(paths,kind='js',read=readFileSync){
+ paths=itemPost697PriorInventory(paths,kind,read,'item');
  assert(['js','lua'].includes(kind));
  const before=packet.priorInventory[kind],current=packet.currentInventory[kind],sorted=[...paths].sort();
  if(JSON.stringify(sorted)===JSON.stringify(before))return [...paths];

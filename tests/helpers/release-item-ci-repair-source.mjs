@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {itemPost697CiSource,itemPost697HistoricalRead} from './item-post697-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-ci-repair-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'a0e4ebb49f81dbf0d59c4f80a0c1e4ed2588eb0051b7397206c6d79265efbbaa','complete item CI repair packet');
@@ -30,6 +31,7 @@ const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v
 export const itemCiRepairPacket=freeze(packet);
 export function itemCiRepairSource(path,source,{read=readFileSync}={}){
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ source=itemPost697CiSource(path,source,undefined,read,'item');
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  assertItemCiRepairCurrent(read);
@@ -41,6 +43,7 @@ export function itemCiRepairRead(read=readFileSync){return(path,encoding)=>{
  return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
 };}
 export function assertItemCiRepairCurrent(read=readFileSync){
+ read=itemPost697HistoricalRead('item',read);
  for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: item CI repair '+path);
  for(const [path,sha]of Object.entries(packet.archives))assert.equal(hash(read(path)),sha,'retained immutable item CI repair archive: '+path);
  for(const [path,sha]of Object.entries(packet.production)){

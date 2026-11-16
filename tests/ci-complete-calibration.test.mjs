@@ -43,9 +43,11 @@ import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningF
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
+import {itemPost697PriorInventory,itemPost697CiPacket,assertItemPost697CiCurrent} from './helpers/item-post697-ci-source.mjs';
+import {itemPost697CheckpointRead} from './helpers/item-post697-checkpoint-read.mjs';
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 import {releaseItemTitleShadowCiRead,releaseItemTitleShadowPriorInventory,assertReleaseItemTitleShadowCiCurrent,releaseItemTitleShadowCiPacket} from './helpers/release-item-title-shadow-ci-source.mjs';
-import {assertRetirementPlanningCurrent,assertShadowPlanningCurrent,assertReleaseItemTitleShadowPhysicalGuards} from './helpers/release-item-title-shadow-planning.mjs';
+import {retirementPlanningReceipt,shadowPlanningReceipt,assertRetirementPlanningCurrent,assertShadowPlanningCurrent,assertReleaseItemTitleShadowPhysicalGuards} from './helpers/release-item-title-shadow-planning.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {itemTitleShadowBootstrapRead,itemTitleShadowBootstrapInventory,assertItemTitleShadowBootstrapCurrent} from './helpers/release-item-title-shadow-bootstrap-source.mjs';
 const itemCheckpointRead=itemTitleShadowBootstrapRead('item',rawReleaseReadFileSync);
@@ -2003,10 +2005,10 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
-test('release selection map raw Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
+test('preserved release checkpoint Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
  assertReleaseSelectionMapCiCurrent(rawReleaseReadFileSync);
  assertReleaseSelectionMapExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
- const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseSelectionMapCiPacket;
+ const js=itemPost697PriorInventory(rawReleaseDiscoverJs(),'js',rawReleaseReadFileSync,'release'),lua=itemPost697PriorInventory(rawReleaseLua(),'lua',rawReleaseReadFileSync,'release'),p=releaseSelectionMapCiPacket;
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
  for(const path of p.priorInventory.js)assert(js.includes(path));
  for(const path of p.priorInventory.lua)assert(lua.includes(path));
@@ -2070,13 +2072,13 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
  }
 });
 
-test('release item-title-shadow raw Full retains all costs and physical guards while forecasts remain diagnostic',t=>{
+test('preserved item checkpoint Full retains all costs and physical guards while forecasts remain diagnostic',t=>{
  assertItemTitleShadowBootstrapCurrent(rawReleaseReadFileSync);
- assertRetirementPlanningCurrent();
- assertShadowPlanningCurrent();
+ assertRetirementPlanningCurrent(itemPost697CheckpointRead('item'));
+ assertShadowPlanningCurrent(itemPost697CheckpointRead('item'));
  assertReleaseItemTitleShadowPhysicalGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
  assertReleaseItemTitleShadowCiCurrent(itemCheckpointRead);
- const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseItemTitleShadowCiPacket;
+ const js=itemPost697PriorInventory(rawReleaseDiscoverJs(),'js',rawReleaseReadFileSync,'item'),lua=itemPost697PriorInventory(rawReleaseLua(),'lua',rawReleaseReadFileSync,'item'),p=releaseItemTitleShadowCiPacket;
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
  for(const path of p.priorInventory.js)assert(js.includes(path));
  for(const path of p.priorInventory.lua)assert(lua.includes(path));
@@ -2099,5 +2101,28 @@ test('release item-title-shadow raw Full retains all costs and physical guards w
   }
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; actual physical job execution guard ${guard}ms; prediction is diagnostic, not admission or hosted completion`);
+ }
+});
+
+test('post697 actual raw Full keeps complete unique coverage and every physical budget while prior observations stay historical',()=>{
+ assertItemPost697CiCurrent(rawReleaseReadFileSync);
+ const js=rawReleaseDiscoverJs(),lua=rawReleaseLua();
+ assert.deepEqual(js,itemPost697CiPacket.currentInventory.js);assert.deepEqual(lua,itemPost697CiPacket.currentInventory.lua);
+ const physical=rawReleaseReadFileSync('.github/workflows/quality.yml','utf8');
+ assertReleaseSelectionMapExecutionGuards(physical);assertReleaseItemTitleShadowPhysicalGuards(physical);
+ const planning=JSON.parse(rawReleaseReadFileSync('scripts/ci-test-timings.json','utf8'));
+ assert.equal(planning.jsPlanning.localLowerBounds[retirementPlanningReceipt.entry].durationMs,79861);
+ assert.equal(planning.jsPlanning.localLowerBounds[shadowPlanningReceipt.entry].durationMs,22235);
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);
+ assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
+ for(const [platform,count]of [['win32',18],['linux',15]]){
+  for(const path of js.filter(path=>!releaseItemTitleShadowCiPacket.priorInventory.js.includes(path)))
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs,path+' retains its conservative cost');
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:bins[0].loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+  }
  }
 });

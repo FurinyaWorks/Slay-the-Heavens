@@ -1,0 +1,65 @@
+[
+  {
+    "path": "source52.log.gz",
+    "rawBytes": 5946,
+    "rawSha256": "32287ef6322d525af17f8380ab778c68f192a6dfd81181dbc0fb32bbd6f36fba",
+    "storedBytes": 2287,
+    "storedSha256": "c0d11b85aea8baebb4195ac7e7061d849e02b3d99f1a8663a8bb05404d1e3558"
+  },
+  {
+    "path": "calibration76.log.gz",
+    "rawBytes": 11395,
+    "rawSha256": "7d6a91545d98047f6e24b1c7d31f64e412e6169801dd3395f68fbb7c139d043a",
+    "storedBytes": 3686,
+    "storedSha256": "73203e5c4c1ee50e861797762f470d962a9b6a44382a6ed201bd13b611ac52d6"
+  },
+  {
+    "path": "final-targeted17.log.gz",
+    "rawBytes": 1266,
+    "rawSha256": "65c11f3acff035819313263d5c1e943b0c41393f5861d8284075c82eaf6a5b7b",
+    "storedBytes": 618,
+    "storedSha256": "acb0951130c48b34ff71b7195e3a256792d191d76010af1dc7d1033347748eba"
+  },
+  {
+    "path": "product7pass1timeout.log.gz",
+    "rawBytes": 2718,
+    "rawSha256": "2fd4c70183a00c89275cac335447cc754b6e4fcfcac62eca3013076c37cb4600",
+    "storedBytes": 1219,
+    "storedSha256": "ec5869392232d368fd2c1c87c8bc4ee40d08a63030857f278bd8a1f1d7986472"
+  },
+  {
+    "path": "map-host-quiet1.log.gz",
+    "rawBytes": 1040,
+    "rawSha256": "ca6c631767997a278ef8f902bc991374d91df7ebc5554c92163f3cb3944e5f2b",
+    "storedBytes": 464,
+    "storedSha256": "0821fd270432b0eb90196bc380e788f8fc1098fae0dc8171fc5ac2679e11f92b"
+  },
+  {
+    "path": "consumer-intermediate64pass1null.log.gz",
+    "rawBytes": 8242,
+    "rawSha256": "3f997bea6eee07462a3c0aa75a98065c8e459c8449183e2caf82938685af62dd",
+    "storedBytes": 2567,
+    "storedSha256": "a9ec1e6a27426ae3275596b223271a4d23f4b9f9c1f8f3b423fe1dc386c62a4c"
+  },
+  {
+    "path": "codec-original-red.log.gz",
+    "rawBytes": 886,
+    "rawSha256": "ea4d64da1cabda0a454a30e546757e58082acb529773e3cd63d77bd3816d34e8",
+    "storedBytes": 489,
+    "storedSha256": "1aa4f104ffbae956f4cfbbee43a7de9d2515946163913863b98cc0c25cded0a5"
+  },
+  {
+    "path": "atom-codec-red.log.gz",
+    "rawBytes": 1013,
+    "rawSha256": "dc25f5e060694cfcc4f60f8cb14b249f0413fb9c457f54d3e8cfcd63d7a7373e",
+    "storedBytes": 540,
+    "storedSha256": "2805be99741497478da62e470b2a04882f5a335f8d16ba2e301051f94bb0b974"
+  },
+  {
+    "path": "public-adapter-original-red.log.gz",
+    "rawBytes": 336,
+    "rawSha256": "49f04af3302fbb186bab2869d1b8bc54d28e81b95ae5aefeb8aadba82e81eade",
+    "storedBytes": 171,
+    "storedSha256": "f1e36cf7e2e79643885d6ee0212949bbc0459b2495f6fb667b7964bdb0ff96fa"
+  }
+]

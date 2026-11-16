@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-11-16T11:58:40.815635+00:00",
+  "runtime": "Node24.18.0",
+  "command": "node --test --test-concurrency=1 --test-name-pattern=^generated official Host tests/official-map-return-controls.test.mjs",
+  "childTimeoutMs": 30000,
+  "cpuQuota": 4,
+  "background": "one CPU-bound calibration child PID31192; all other test/pack/compression workers held idle by root",
+  "productCommit": "249adac4baec43183e8c81fecda6047656b564c4",
+  "workingParent": "2e266b4d222e4aba6b039ae7a4e6ba90f6598679",
+  "finishedAt": "2026-11-16T11:59:17.958595+00:00",
+  "status": "PASS",
+  "tests": 1,
+  "pass": 1,
+  "hostAssertions": 3,
+  "nodeTestDurationMs": 12289.806259,
+  "timeoutChanged": false
+}

@@ -390,3 +390,89 @@ test('post697 packet decoder rejects extra row fields instead of silently discar
  stored.packet.files[path].foreignAuthorization='unexpected';
  assert.throws(()=>decodeItemPost697Storage(stored),/exact post697 source row fields/);
 });
+
+test('post697 archive atoms decode exact old bytes and reject unknown malformed or changed references',async()=>{
+ const {decodeItemPost697Storage,itemPost697StoredPacket}=await import('./helpers/item-post697-ci-source.mjs');
+ const {gunzipSync}=await import('node:zlib');
+ const refs=JSON.parse(gunzipSync(readFileSync('docs/evidence/item-post697-wip-20261116/immutable-reuse-measure.json.gz'))).references;
+ const stored=structuredClone(itemPost697StoredPacket),key=Object.keys(refs)[0],ref=refs[key];
+ stored.storageSchemaVersion=2;stored.codec='sha256-exact-utf8-with-archive-sources';stored.sourceTable[key]=ref;
+ const decoded=decodeItemPost697Storage(stored);
+ assert.deepEqual(decoded,decodeItemPost697Storage(itemPost697StoredPacket),'storage never changes the complete semantic packet');
+ for(const change of [
+  r=>{r.extra='unknown';},r=>{r.kind='foreign';},r=>{r.archive='tests/helpers/foreign.json.gz';},
+  r=>{r.archiveSha256='0'.repeat(64);},r=>{r.jsonPath=['__proto__'];},r=>{r.jsonPath=['files','foreign','current','source'];},
+  r=>{r.jsonPath=['files'];},r=>{r.jsonPath=[];}
+ ]){
+  const bad=structuredClone(stored);change(bad.sourceTable[key]);assert.throws(()=>decodeItemPost697Storage(bad),'unknown or malformed atom must fail');
+ }
+ assert.throws(()=>decodeItemPost697Storage(stored,{read:path=>{const b=readFileSync(path);return path===ref.archive?b.subarray(1):b;}}),/exact referenced archive/);
+ assert.throws(()=>decodeItemPost697Storage(stored,{read:path=>{if(path===ref.archive)throw Error('missing reference archive');return readFileSync(path);}}),/missing reference archive/);
+});
+
+test('post697 current union retains complete raw inventories, product histories and fresh cross-input authorization',async()=>{
+ const {itemPost697CiPacket:p,itemPost697CiRead,itemPost697CiSource,assertItemPost697CiCurrent,assertItemPost697RawInventory}=await import('./helpers/item-post697-ci-source.mjs');
+ const {sourceEpoch,itemBeforeMapSourceEpoch,preItemPost697SourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const inventories={js:readdirSync('tests').filter(n=>n.endsWith('.test.mjs')).map(n=>'tests/'+n).sort(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ for(const [kind,paths]of Object.entries(inventories)){
+  assertItemPost697RawInventory(paths,kind);
+  for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,'foreign']])assert.throws(()=>assertItemPost697RawInventory(bad,kind),/raw discovery inventory/);
+ }
+ assert.equal(Object.keys(sourceEpoch.proof.current).length,352);assert.equal(Object.keys(sourceEpoch.proof.targets).length,68);
+ assert.equal(sourceEpoch.proof.currentCommit,'249adac4baec43183e8c81fecda6047656b564c4');
+ for(const [path,row]of Object.entries(sourceEpoch.proof.current))if(row!==null)assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path+' actual production union');
+ for(const original of [itemBeforeMapSourceEpoch,preItemPost697SourceEpoch])for(const [name,target]of Object.entries(original.proof.targets))assert.deepEqual(sourceEpoch.proof.targets[name],target,name+' original target preserved');
+ const anchor='tests/helpers/integrated-ci-source.mjs',raw=readFileSync(anchor,'utf8');
+ let broken=null,mode=null;
+ const read=(path,encoding)=>{
+  const b=readFileSync(path,encoding);if(path!==broken)return b;
+  if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;
+  return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);
+ };
+ const warm=itemPost697CiRead(read,'release');assert.equal(warm(anchor,'utf8'),p.files[anchor].views.release.source);
+ for(const path of [Object.keys(p.files).find(path=>path!==anchor),Object.keys(p.immutableArchives)[0],'src/lua/abyss_combat.lua'])for(const failure of ['missing','null','drift']){
+  broken=path;mode=failure;
+  assert.throws(()=>warm(anchor,'utf8'),'warm source conversion authenticates '+path+'/'+failure);
+  assert.throws(()=>itemPost697CiSource(anchor,raw,undefined,read,'release'),'direct source conversion authenticates '+path+'/'+failure);
+  assert.equal(itemPost697CiSource(anchor,p.files[anchor].views.release.source,undefined,read,'release'),p.files[anchor].views.release.source,'historical bytes do not authorize reads');
+  assert.equal(itemPost697CiSource('foreign/path',raw,undefined,read,'release'),raw,'unknown paths stay opaque');
+  broken=null;assert.equal(warm(anchor,'utf8'),p.files[anchor].views.release.source,'restored inputs authorize again');
+ }
+ for(const path of ['src/lua/abyss_combat.lua','config/architecture.json'])assert.equal(itemPost697CiSource(path,'foreign'), 'foreign','CI projector never authorizes production');
+ assertItemPost697CiCurrent();
+});
+
+test('current post697 public adapters use the same fresh raw reader through both source and inventory domains',async t=>{
+ const repair=await import('./helpers/release-item-ci-repair-source.mjs');
+ const bootstrap=await import('./helpers/release-item-title-shadow-bootstrap-source.mjs');
+ const map=await import('./helpers/release-selection-map-ci-source.mjs');
+ const item=await import('./helpers/release-item-title-shadow-ci-source.mjs');
+ const integrated=await import('./helpers/integrated-ci-source.mjs');
+ const outer=await import('./helpers/item-post697-ci-source.mjs');
+ const anchor='tests/helpers/integrated-ci-source.mjs',raw=readFileSync(anchor,'utf8');
+ const paths=readdirSync('tests').filter(p=>p.endsWith('.test.mjs')).map(p=>'tests/'+p).sort();
+ let broken=null,mode=null;
+ const read=(path,encoding)=>{
+  if(path===broken){if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;
+   const b=readFileSync(path,encoding);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);}
+  return readFileSync(path,encoding);
+ };
+ const itemRead=repair.itemCiRepairRead(read),bootstrapItemRead=bootstrap.itemTitleShadowBootstrapRead('item',read),bootstrapReleaseRead=bootstrap.itemTitleShadowBootstrapRead('release',read);
+ const mapRead=map.releaseSelectionMapCiRead(read),integratedRead=integrated.integratedRead('release',{read});
+ const adapters={
+  itemSource:()=>repair.itemCiRepairSource(anchor,raw,{read}),itemReader:()=>itemRead(anchor,'utf8'),
+  bootstrapItemReader:()=>bootstrapItemRead(anchor,'utf8'),
+  bootstrapReleaseReader:()=>bootstrapReleaseRead(anchor,'utf8'),
+  mapSource:()=>map.releaseSelectionMapCiSource(anchor,raw,undefined,read),mapReader:()=>mapRead(anchor,'utf8'),
+  integratedSource:()=>integrated.integratedSource(anchor,raw,'release',{read}),integratedReader:()=>integratedRead(anchor,'utf8'),
+  mapInventory:()=>map.releaseSelectionMapPriorInventory(paths,'js',read),itemInventory:()=>item.releaseItemTitleShadowPriorInventory(paths,'js',read),
+  integratedInventory:()=>integrated.integratedPriorInventory(paths,'release','js',read),bootstrapInventory:()=>bootstrap.itemTitleShadowBootstrapInventory(paths,'item','js',read)
+ };
+ for(const [name,run]of Object.entries(adapters))await t.test(name,()=>{
+  const expected=run();
+  for(const path of ['docs/legal/assets.json',Object.keys(outer.itemPost697CiPacket.immutableArchives)[0],'src/lua/abyss_combat.lua'])for(const failure of ['missing','null','drift']){
+   broken=path;mode=failure;assert.throws(run,name+' rejects '+path+'/'+failure);
+   broken=null;assert.deepEqual(run(),expected,name+' restoration');
+  }
+ });
+});

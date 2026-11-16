@@ -1,42 +1,46 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as rawLiveReadFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {discoverJs} from '../scripts/ci-shards.mjs';
-import {sourceEpoch,preReleaseItemTitleShadowSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {discoverJs as liveDiscoverJs} from '../scripts/ci-shards.mjs';
+import {itemPost697HistoricalRead,itemPost697PriorInventory} from './helpers/item-post697-ci-source.mjs';
+import {itemPost697CheckpointRead} from './helpers/item-post697-checkpoint-read.mjs';
+const itemCheckpointReadFileSync=itemPost697CheckpointRead('item',rawLiveReadFileSync);
+const discoverJs=()=>itemPost697PriorInventory(liveDiscoverJs(),'js',rawLiveReadFileSync,'item');
+import {itemBeforeMapSourceEpoch as sourceEpoch,preReleaseItemTitleShadowSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseItemTitleShadowSourcePacket,extendReleaseItemTitleShadowSource} from './helpers/release-item-title-shadow-source.mjs';
 import {releaseItemTitleShadowCiPacket,releaseItemTitleShadowCiSource,releaseItemTitleShadowPriorInventory,assertReleaseItemTitleShadowRawInventory,assertReleaseItemTitleShadowCiCurrent} from './helpers/release-item-title-shadow-ci-source.mjs';
 import {retirementPlanningReceipt,assertRetirementPlanningCurrent,shadowPlanningReceipt,assertShadowPlanningCurrent,assertReleaseItemTitleShadowPhysicalGuards} from './helpers/release-item-title-shadow-planning.mjs';
 import {itemTitleShadowBootstrapPacket,itemTitleShadowBootstrapSource,itemTitleShadowBootstrapRead,itemTitleShadowBootstrapInventory,assertItemTitleShadowBootstrapCurrent,assertItemTitleShadowBootstrapRawInventory} from './helpers/release-item-title-shadow-bootstrap-source.mjs';
 import {releaseBootstrapCiPacket,assertReleaseBootstrapCiCurrent} from './helpers/release-bootstrap-ci-source.mjs';
 import {itemCiRepairPacket,itemCiRepairSource,itemCiRepairRead,assertItemCiRepairCurrent} from './helpers/release-item-ci-repair-source.mjs';
-const readFileSync=itemTitleShadowBootstrapRead('item',actualReadFileSync);
+const readFileSync=itemTitleShadowBootstrapRead('item',itemCheckpointReadFileSync);
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
-test('item CI repair authenticates every changed source and retains exact opaque boundaries',()=>{
- assertItemCiRepairCurrent(actualReadFileSync);
+test('preserved item checkpoint: item CI repair authenticates every changed source and retains exact opaque boundaries',()=>{
+ assertItemCiRepairCurrent(itemCheckpointReadFileSync);
  for(const [path,row]of Object.entries(itemCiRepairPacket.files)){
-  const raw=actualReadFileSync(path,'utf8');assert.equal(itemCiRepairSource(path,raw),row.before.source,path);
+  const raw=itemCheckpointReadFileSync(path,'utf8');assert.equal(itemCiRepairSource(path,raw,{read:itemCheckpointReadFileSync}),row.before.source,path);
   for(const foreign of [raw+'\n',raw.slice(1),null,{},17])assert.equal(itemCiRepairSource(path,foreign),foreign,path);
-  assert.throws(()=>assertItemCiRepairCurrent((p,e)=>{const b=actualReadFileSync(p,e);return p===path?typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]):b;}),/fresh complete integration source: item CI repair/);
-  assert.throws(()=>assertItemCiRepairCurrent((p,e)=>{if(p===path)throw Error('missing');return actualReadFileSync(p,e);}),/missing/);
+  assert.throws(()=>assertItemCiRepairCurrent((p,e)=>{const b=itemCheckpointReadFileSync(p,e);return p===path?typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]):b;}),/fresh complete integration source: item CI repair/);
+  assert.throws(()=>assertItemCiRepairCurrent((p,e)=>{if(p===path)throw Error('missing');return itemCheckpointReadFileSync(p,e);}),/missing/);
  }
  for(const path of ['src/lua/abyss_combat.lua','config/architecture.json','__proto__'])assert.equal(itemCiRepairSource(path,'foreign'),'foreign');
  for(const verify of [assertRetirementPlanningCurrent,assertShadowPlanningCurrent]){
-  const lf=(p,e)=>{const b=actualReadFileSync(p,e);if(p!=='node_modules/.package-lock.json')return b;const s=norm(b.toString());return typeof b==='string'?s:Buffer.from(s);};
+  const lf=(p,e)=>{const b=itemCheckpointReadFileSync(p,e);if(p!=='node_modules/.package-lock.json')return b;const s=norm(b.toString());return typeof b==='string'?s:Buffer.from(s);};
   verify(lf);
   assert.throws(()=>verify((p,e)=>{const b=lf(p,e);return p==='node_modules/.package-lock.json'?typeof b==='string'?b+' ':Buffer.concat([b,Buffer.from(' ')]):b;}),/dependency input/);
  }
 });
 
-test('item CI repair readers require fresh complete authorization after every warm conversion',()=>{
+test('preserved item checkpoint: item CI repair readers require fresh complete authorization after every warm conversion',()=>{
  const anchor=Object.keys(itemCiRepairPacket.files)[0],before=itemCiRepairPacket.files[anchor].before.source;
  let broken=null,mode=null;
  const read=(path,encoding)=>{
-  if(path===broken){if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;const raw=actualReadFileSync(path,encoding);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);}
-  return actualReadFileSync(path,encoding);
+  if(path===broken){if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;const raw=itemCheckpointReadFileSync(path,encoding);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);}
+  return itemCheckpointReadFileSync(path,encoding);
  };
- const warm=itemCiRepairRead(read),source=actualReadFileSync(anchor,'utf8');
+ const warm=itemCiRepairRead(read),source=itemCheckpointReadFileSync(anchor,'utf8');
  assert.equal(warm(anchor,'utf8'),before);
  const others=[Object.keys(itemCiRepairPacket.files).find(p=>p!==anchor),Object.keys(itemCiRepairPacket.archives)[0],Object.keys(itemCiRepairPacket.production)[0]];
  for(const path of others)for(const failure of ['missing','null','drift']){
@@ -49,8 +53,8 @@ test('item CI repair readers require fresh complete authorization after every wa
  }
 });
 
-test('retirement observed local floor authenticates its execution inputs and preserves every original cost',()=>{
- const p=assertRetirementPlanningCurrent(),prior=JSON.parse(releaseItemTitleShadowCiPacket.files['scripts/ci-test-timings.json'].before.source),current=JSON.parse(readFileSync('scripts/ci-test-timings.json','utf8'));
+test('preserved item checkpoint: retirement observed local floor authenticates its execution inputs and preserves every original cost',()=>{
+ const p=assertRetirementPlanningCurrent(itemCheckpointReadFileSync),prior=JSON.parse(releaseItemTitleShadowCiPacket.files['scripts/ci-test-timings.json'].before.source),current=JSON.parse(readFileSync('scripts/ci-test-timings.json','utf8'));
  delete current.jsPlanning.localLowerBounds[p.entry];delete current.jsPlanning.localLowerBounds[shadowPlanningReceipt.entry];assert.deepEqual(current,prior,'only the two exact new observed lower bounds are appended');
  assert.equal(p,retirementPlanningReceipt);
  for(const path of [p.entry,'tests/helpers/reward-pool-retirement-runtime.lua','tests/lua/support/game_ui_fixture.lua','src/lua/abyss_battle_reward_layout.lua','scripts/build-ui.mjs','data/presentation/ui_theme.json','.release-please-manifest.json','CHANGELOG.md',p.closure.find(row=>row.path.endsWith('.png')).path,p.dependencies[0].path]){
@@ -65,8 +69,8 @@ test('retirement observed local floor authenticates its execution inputs and pre
  });
 });
 
-test('corrected shadow floor accepts only complete execution inputs and projects only its own new config record',()=>{
- const p=assertShadowPlanningCurrent();assert.equal(p,shadowPlanningReceipt);
+test('preserved item checkpoint: corrected shadow floor accepts only complete execution inputs and projects only its own new config record',()=>{
+ const p=assertShadowPlanningCurrent(itemCheckpointReadFileSync);assert.equal(p,shadowPlanningReceipt);
  for(const path of [p.entry,'scripts/test-lua.mjs','tests/lua/player_ground_shadow.lua','tests/lua/support/game_ui_fixture.lua','data/presentation/ui_theme.json',...p.closure.filter(r=>r.path.endsWith('.png')).map(r=>r.path)])
   assert.throws(()=>assertShadowPlanningCurrent((file,encoding)=>{const b=readFileSync(file,encoding);return file===path?typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]):b;}),/fresh shadow execution input/);
  for(const change of [c=>c.unknownJsMs++,c=>c.initialMs.win32[0]++,c=>c.jsPlanning.localLowerBounds[retirementPlanningReceipt.entry].durationMs++,c=>{c.foreignBudget=2700001;}])
@@ -75,7 +79,7 @@ test('corrected shadow floor accepts only complete execution inputs and projects
  for(const metadata of p.sampledMetadataExcluded)assertShadowPlanningCurrent((path,encoding)=>{assert.notEqual(path,metadata,'non-executable description is never read');return readFileSync(path,encoding);});
 });
 
-test('raw Release physical job guards reject missing changed duplicate step-only and wrong-job timeouts',()=>{
+test('preserved item checkpoint: raw Release physical job guards reject missing changed duplicate step-only and wrong-job timeouts',()=>{
  const source=norm(readFileSync('.github/workflows/quality.yml','utf8'));assertReleaseItemTitleShadowPhysicalGuards(source);
  for(const value of ["${{ matrix.os == 'windows-2025' && 45 || 30 }}","${{ inputs.runner_pool == 'local-special' && 75 || 45 }}",'30']){
   const line='    timeout-minutes: '+value;
@@ -85,7 +89,7 @@ test('raw Release physical job guards reject missing changed duplicate step-only
  assert.throws(()=>assertReleaseItemTitleShadowPhysicalGuards(source.replace('  engineering-posix-shards:','  foreign-posix-shards:')),/physical guard job/);
 });
 
-test('release item-title-shadow production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
+test('preserved item checkpoint: release item-title-shadow production preserves every complete prior target and freshly authenticates the committed source tree',()=>{
  const p=sourceEpoch.proof,prior=preReleaseItemTitleShadowSourceEpoch.proof;
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);
  assert.deepEqual(p.targets.releaseItemTitleShadowPrior.files,prior.current);
@@ -97,7 +101,7 @@ test('release item-title-shadow production preserves every complete prior target
  assert.throws(()=>extendReleaseItemTitleShadowSource(preReleaseItemTitleShadowSourceEpoch,{...releaseItemTitleShadowSourcePacket,current:{}}),/only the eight approved item-title-shadow owners advance/);
 });
 
-test('release item-title-shadow CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
+test('preserved item checkpoint: release item-title-shadow CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
  assertReleaseItemTitleShadowCiCurrent(readFileSync);
  for(const [path,row]of Object.entries(releaseItemTitleShadowCiPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
@@ -112,8 +116,8 @@ test('release item-title-shadow CI validates complete live bindings while unknow
  for(const path of Object.keys(releaseItemTitleShadowSourcePacket.current))assert.equal(releaseItemTitleShadowCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');
 });
 
-test('release item-title-shadow raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
- const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+test('preserved item checkpoint: release item-title-shadow raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
+ const inventories={js:discoverJs(),lua:itemPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',rawLiveReadFileSync,'item')};
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseItemTitleShadowCiPacket.currentInventory[kind]);
   assertReleaseItemTitleShadowRawInventory(paths,kind);
@@ -130,11 +134,11 @@ test('release item-title-shadow raw JS and Lua inventories reject missing duplic
  }
 });
 
-test('actual Release composition preserves both complete source views and the unchanged production base',()=>{
+test('preserved item checkpoint: actual Release composition preserves both complete source views and the unchanged production base',()=>{
  const p=itemTitleShadowBootstrapPacket;
- assertItemTitleShadowBootstrapCurrent(actualReadFileSync);
- assertReleaseItemTitleShadowCiCurrent(itemTitleShadowBootstrapRead('item',actualReadFileSync));
- assertReleaseBootstrapCiCurrent(itemTitleShadowBootstrapRead('release',actualReadFileSync));
+ assertItemTitleShadowBootstrapCurrent(itemCheckpointReadFileSync);
+ assertReleaseItemTitleShadowCiCurrent(itemTitleShadowBootstrapRead('item',itemCheckpointReadFileSync));
+ assertReleaseBootstrapCiCurrent(itemTitleShadowBootstrapRead('release',itemCheckpointReadFileSync));
  assert.equal(releaseBootstrapCiPacket.currentCommit,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
  assert.equal(releaseBootstrapCiPacket.currentTreeCommitted,false,'original bootstrap capture metadata is retained');
  assert.deepEqual(Object.keys(p.productionEquivalence).sort(),Object.keys(sourceEpoch.proof.current).sort());
@@ -146,18 +150,18 @@ test('actual Release composition preserves both complete source views and the un
  for(const path of Object.keys(releaseItemTitleShadowSourcePacket.current))for(const view of ['item','release'])assert.equal(itemTitleShadowBootstrapSource(path,sourceEpoch.proof.current[path].source,view),sourceEpoch.proof.current[path].source,'composition does not authorize production projection');
 });
 
-test('actual Release composition rejects fresh source and binary drift without hiding foreign inputs',async()=>{
+test('preserved item checkpoint: actual Release composition rejects fresh source and binary drift without hiding foreign inputs',async()=>{
  const p=itemTitleShadowBootstrapPacket;
  for(const [path,row]of Object.entries(p.files)){
   for(const mode of ['changed','missing'])assert.throws(()=>assertItemTitleShadowBootstrapCurrent((file,encoding)=>{
-   if(file===path){if(mode==='missing')throw Error('missing '+path);const raw=actualReadFileSync(file,encoding);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);}
-   return actualReadFileSync(file,encoding);
+   if(file===path){if(mode==='missing')throw Error('missing '+path);const raw=itemCheckpointReadFileSync(file,encoding);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);}
+   return itemCheckpointReadFileSync(file,encoding);
   }),error=>{assert(error.message.includes(path),'reject the intended fresh current input');return true;});
   if(row.current.kind!=='text')continue;
-  const source=actualReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const source=itemCheckpointReadFileSync(path,'utf8').replaceAll('\r\n','\n');
   for(const view of ['item','release']){
    const production=path.startsWith('src/')||path==='config/architecture.json',expected=production?source:row.views[view]?.source??source;
-   for(const current of [source,source.replaceAll('\n','\r\n')])assert.equal(itemTitleShadowBootstrapSource(path,current,view),production||!row.views[view]?current:expected);
+   for(const current of [source,source.replaceAll('\n','\r\n')])assert.equal(itemTitleShadowBootstrapSource(path,current,view,{read:itemCheckpointReadFileSync}),production||!row.views[view]?current:expected);
    for(const foreign of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),Buffer.from(source),null,17])assert.equal(itemTitleShadowBootstrapSource(path,foreign,view),foreign);
    for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(itemTitleShadowBootstrapSource(foreign,source,view),source);
   }
@@ -165,12 +169,12 @@ test('actual Release composition rejects fresh source and binary drift without h
  for(const kind of ['js','lua']){
   assertItemTitleShadowBootstrapRawInventory(kind);
   const current=p.inventory.current[kind];
-  for(const view of ['item','release'])assert.deepEqual(itemTitleShadowBootstrapInventory(current,view,kind),p.inventory[view][kind]);
-  for(const bad of [[],current.slice(1),[...current,current[0]],[...current,'foreign']])assert.throws(()=>itemTitleShadowBootstrapInventory(bad,'release',kind),/raw inventory/);
+  for(const view of ['item','release'])assert.deepEqual(itemTitleShadowBootstrapInventory(current,view,kind,itemCheckpointReadFileSync),p.inventory[view][kind]);
+  for(const bad of [[],current.slice(1),[...current,current[0]],[...current,'foreign']])assert.throws(()=>itemTitleShadowBootstrapInventory(bad,'release',kind,itemCheckpointReadFileSync),/raw inventory/);
  }
  const archive=Object.keys(p.archives)[0];
- assert.throws(()=>assertItemTitleShadowBootstrapCurrent((path,encoding)=>path===archive?Buffer.concat([actualReadFileSync(path),Buffer.from('\n')]):actualReadFileSync(path,encoding)),/retained immutable/);
- const leaf=actualReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.mjs','utf8'),bytes=actualReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.json.gz');
+ assert.throws(()=>assertItemTitleShadowBootstrapCurrent((path,encoding)=>path===archive?Buffer.concat([itemCheckpointReadFileSync(path),Buffer.from('\n')]):itemCheckpointReadFileSync(path,encoding)),/retained immutable/);
+ const leaf=itemCheckpointReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.mjs','utf8'),bytes=itemCheckpointReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.json.gz');
  const marker="const bytes=readFileSync(new URL('./release-item-title-shadow-bootstrap-source.json.gz',import.meta.url));";
  assert.equal(leaf.split(marker).length,2);
  const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,-1).toString('base64'))},'base64');`)

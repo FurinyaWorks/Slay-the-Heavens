@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {itemPost697CiSource,itemPost697HistoricalRead,itemPost697PriorInventory} from './item-post697-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-selection-map-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03','complete release selection map CI continuation');
@@ -39,15 +40,17 @@ function checkedSource(path,source,before){
 // Only the explicit complete-CI validator may compare a production owner's
 // freshly checked after binding with its immutable CI predecessor record.
 export const releaseSelectionMapCiCheckedSource=checkedSource;
-export function releaseSelectionMapCiSource(path,source,before){
+export function releaseSelectionMapCiSource(path,source,before,read=readFileSync){
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ source=itemPost697CiSource(path,source,undefined,read,'release');
  return checkedSource(path,source,before);
 }
 export function releaseSelectionMapCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseSelectionMapCiSource(path,text);
+ const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseSelectionMapCiSource(path,text,undefined,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseSelectionMapPriorInventory(paths,kind='js',read=readFileSync){
+ paths=itemPost697PriorInventory(paths,kind,read,'release');read=itemPost697HistoricalRead('release',read);
  assert(['js','lua'].includes(kind));
  const before=packet.priorInventory[kind],current=packet.currentInventory[kind],sorted=[...paths].sort();
  if(JSON.stringify(sorted)===JSON.stringify(before))return [...paths];
@@ -80,6 +83,7 @@ export function assertReleaseSelectionMapExecutionGuards(workflow){
  assert.deepEqual(runners,["${{ github.event_name == 'workflow_dispatch' && inputs.runner_pool == 'local-special' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && fromJSON('[\"self-hosted\", \"Windows\", \"X64\", \"slay-the-abyss\"]') || 'windows-2025' }}"],'raw Quality trusted local runner guard');
 }
 export function assertReleaseSelectionMapCiCurrent(read=readFileSync){
+ read=itemPost697HistoricalRead('release',read);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: release selection map '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))

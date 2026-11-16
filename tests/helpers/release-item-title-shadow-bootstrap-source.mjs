@@ -5,6 +5,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {itemCiRepairSource,itemCiRepairRead,assertItemCiRepairCurrent} from './release-item-ci-repair-source.mjs';
+import {itemPost697PriorInventory} from './item-post697-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-title-shadow-bootstrap-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'dabab7788653b45eff7f570f2ab2ae3797b40e1d91a5fe9ea0a54d0354a45be8','complete item title shadow actual Release composition');
@@ -30,19 +31,19 @@ function text(raw){
  assert(Buffer.isBuffer(raw),'composition source bytes');const value=raw.toString('utf8');
  assert(Buffer.from(value).equals(raw),'composition source UTF-8');return value;
 }
-export function itemTitleShadowBootstrapSource(path,source,view){
+export function itemTitleShadowBootstrapSource(path,source,view,{read=readFileSync}={}){
  assert(['item','release'].includes(view),'explicit item or actual Release view');
  const original=source;
- source=itemCiRepairSource(path,source);
+ source=itemCiRepairSource(path,source,{read});
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,target=row?.views[view];
  if(row?.current.kind!=='text'||typeof target?.source!=='string'||typeof source!=='string'||source.includes('\r\r\n'))return original;
  return hash(norm(source))===row.current.sha256?target.source:source;
 }
-export function itemTitleShadowBootstrapRead(view,read=readFileSync){read=itemCiRepairRead(read);return(path,encoding)=>{
+export function itemTitleShadowBootstrapRead(view,read=readFileSync){const rawRead=read;read=itemCiRepairRead(read);return(path,encoding)=>{
  const raw=read(path,encoding),row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(row?.current.kind!=='text')return raw;
- const source=text(raw),prior=itemTitleShadowBootstrapSource(path,source,view);
+ const source=text(raw),prior=itemTitleShadowBootstrapSource(path,source,view,{read:rawRead});
  return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
 };}
 export function assertItemTitleShadowBootstrapCurrent(read=readFileSync){
@@ -53,13 +54,14 @@ export function assertItemTitleShadowBootstrapCurrent(read=readFileSync){
  }
  for(const [path,sha]of Object.entries(packet.archives))assert.equal(hash(read(path)),sha,'retained immutable item Release composition: '+path);
 }
-export function itemTitleShadowBootstrapInventory(paths,view,kind='js'){
+export function itemTitleShadowBootstrapInventory(paths,view,kind='js',read=readFileSync){
  assert(['item','release'].includes(view));assert(['js','lua'].includes(kind));
+ paths=itemPost697PriorInventory(paths,kind,read,'item');
  assert.deepEqual([...paths].sort(),packet.inventory.current[kind],'complete item Release raw inventory');
- assertItemTitleShadowBootstrapCurrent();
+ assertItemTitleShadowBootstrapCurrent(read);
  return [...packet.inventory[view][kind]];
 }
 export function assertItemTitleShadowBootstrapRawInventory(kind='js'){
  const paths=kind==='js'?readdirSync('tests').filter(p=>p.endsWith('.test.mjs')).map(p=>'tests/'+p):readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p);
- assert.deepEqual(paths.sort(),packet.inventory.current[kind],'complete item Release raw inventory');
+ assert.deepEqual(itemPost697PriorInventory(paths,kind,readFileSync,'item').sort(),packet.inventory.current[kind],'complete item Release raw inventory');
 }

@@ -5,19 +5,41 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./item-post697-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'6785f5fb56a5117f88d611319ff0322b0501141e8b231f93fbd24c156bacb40f','complete item post697 CI packet');
+assert.equal(hash(bytes),'ef77290b978b59f09c8bbe7243fd8f5bc38a62889c770201b83dbc66e3d142c1','complete item post697 CI packet');
+const atomArchives=Object.freeze({"tests/helpers/integrated-ci-source.json.gz":"f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35","tests/helpers/release-item-ci-repair-source.json.gz":"a0e4ebb49f81dbf0d59c4f80a0c1e4ed2588eb0051b7397206c6d79265efbbaa","tests/helpers/release-item-title-shadow-bootstrap-source.json.gz":"dabab7788653b45eff7f570f2ab2ae3797b40e1d91a5fe9ea0a54d0354a45be8","tests/helpers/release-selection-map-base-source.json.gz":"4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa","tests/helpers/release-selection-map-ci-before-release1cc-source.json.gz":"ab9597d0237daaf530f609ca6772576e170d0785e1fd66852c7e54800909fd66","tests/helpers/release-selection-map-ci-source.json.gz":"c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03"});
 // This one packet's storage encoding only. It does not authorize reads.
-export function decodeItemPost697Storage(storage){
- assert.equal(storage.storageSchemaVersion,1,'item packet storage schema');
- assert.equal(storage.codec,'sha256-exact-utf8','item packet storage codec');
+export function decodeItemPost697Storage(storage,{read=readFileSync}={}){
+ assert([1,2].includes(storage.storageSchemaVersion),'item packet storage schema');
+ assert.equal(storage.codec,storage.storageSchemaVersion===1?'sha256-exact-utf8':'sha256-exact-utf8-with-archive-sources','item packet storage codec');
  assert.deepEqual(Object.keys(storage).sort(),['codec','packet','sourceTable','storageSchemaVersion']);
  assert.equal(storage.packet?.schemaVersion,1,'item packet semantic schema');
  assert(storage.sourceTable&&typeof storage.sourceTable==='object'&&!Array.isArray(storage.sourceTable));
- const used=new Set();
- for(const [key,value]of Object.entries(storage.sourceTable)){
+ const used=new Set(),sources={},archives=new Map();
+ for(const [key,atom]of Object.entries(storage.sourceTable)){
+  let value=atom;
+  if(typeof atom!=='string'){
+   assert.equal(storage.storageSchemaVersion,2,'archive atoms require explicit storage schema');
+   assert(atom&&typeof atom==='object'&&!Array.isArray(atom),'exact archive source atom');
+   assert.deepEqual(Object.keys(atom).sort(),['archive','archiveSha256','jsonPath','kind'],'exact archive source fields');
+   assert.equal(atom.kind,'archive-source','explicit immutable archive source atom');
+   assert(Object.hasOwn(atomArchives,atom.archive),'known immutable source archive');
+   assert.equal(atom.archiveSha256,atomArchives[atom.archive],'fixed immutable source archive identity');
+   assert.equal(storage.packet.immutableArchives[atom.archive],atom.archiveSha256,'semantic packet retains referenced archive identity');
+   assert(Array.isArray(atom.jsonPath)&&atom.jsonPath.length>0&&atom.jsonPath.length<=8,'bounded exact archive field path');
+   if(!archives.has(atom.archive)){
+    const raw=read(atom.archive);assert.equal(hash(raw),atom.archiveSha256,'exact referenced archive bytes');
+    archives.set(atom.archive,JSON.parse(gunzipSync(raw)));
+   }
+   value=archives.get(atom.archive);
+   for(const part of atom.jsonPath){
+    assert(typeof part==='string'&&part!==''&&!['__proto__','constructor','prototype'].includes(part),'ordinary exact archive field');
+    assert(value&&typeof value==='object'&&Object.hasOwn(value,part),'existing exact archive field');value=value[part];
+   }
+  }
+
   assert.equal(typeof value,'string','source table exact UTF8 text');
   assert.equal(Buffer.from(value,'utf8').toString('utf8'),value,'source table UTF8 roundtrip');
-  assert.equal(hash(value),key,'source table same-hash bytes');
+  assert.equal(hash(value),key,'source table same-hash bytes');sources[key]=value;
  }
  const binding=b=>{
   if(b===null)return null;
@@ -25,7 +47,7 @@ export function decodeItemPost697Storage(storage){
   assert.deepEqual(Object.keys(b).sort(),['gitBlob','sha256','sourceKey']);
   assert.equal(b.sourceKey,b.sha256,'binding source reference hash');
   assert(Object.hasOwn(storage.sourceTable,b.sourceKey),'binding source reference exists');
-  const source=storage.sourceTable[b.sourceKey];used.add(b.sourceKey);
+  const source=sources[b.sourceKey];used.add(b.sourceKey);
   assert.equal(hash(source),b.sha256,'decoded binding exact hash');
   assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex'),b.gitBlob,'decoded binding exact Git blob');
   return{source,sha256:b.sha256,gitBlob:b.gitBlob};
@@ -44,7 +66,7 @@ const stored=JSON.parse(gunzipSync(bytes));
 const packet=decodeItemPost697Storage(stored);
 
 assert.equal(packet.schemaVersion,1);assert.equal(packet.currentTreeCommitted,false);
-assert.deepEqual(packet.viewCommits,{release:'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9',item:'68a17f53dd4e8ebd72f6dc146ddc1652eb8b8cdd'});
+assert.deepEqual(packet.viewCommits,{release:'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9',item:'16cf4a2e862ccfa0eaed06c5cf11cb8546e6095f'});
 assert.equal(packet.productCommit,'249adac4baec43183e8c81fecda6047656b564c4');
 for(const [path,row]of Object.entries(packet.files))for(const item of [row.current,...Object.values(row.views)].filter(Boolean)){
  assert.equal(item.source,norm(item.source));assert.equal(hash(item.source),item.sha256,path);
@@ -92,6 +114,14 @@ export function assertItemPost697RawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete post697 raw discovery inventory');
 }
 export function assertItemPost697CiCurrent(read=readFileSync){
- for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete item post697 source: '+path);
- for(const [path,sha]of Object.entries(packet.immutableArchives))assert.equal(hash(read(path)),sha,'immutable post697 predecessor: '+path);
+ const fresh=(path,encoding,label)=>{
+  let raw;try{raw=read(path,encoding);}catch(error){assert.fail(label+path+': '+String(error?.message??error));}
+  assert(encoding?typeof raw==='string':Buffer.isBuffer(raw),label+path+' exact input type');return raw;
+ };
+ for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(fresh(path,'utf8','fresh complete integration source: item post697 '))),row.current.sha256,'fresh complete integration source: item post697 '+path);
+ for(const [path,sha]of Object.entries(packet.immutableArchives))assert.equal(hash(fresh(path,undefined,'immutable post697 predecessor: ')),sha,'immutable post697 predecessor: '+path);
+ for(const [path,oid]of Object.entries(packet.production)){
+  const text=norm(fresh(path,'utf8','fresh complete post697 production: '));
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(text)}\0`).update(text).digest('hex'),oid,'fresh complete post697 production: '+path);
+ }
 }
