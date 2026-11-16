@@ -27,7 +27,15 @@ export const mobileHandHelperCopies=[
  {path:'tests/helpers/mobile-hand-source.mjs',before:null,after:'afb152f8e579c530b412319c3bcc2df6658e90bb9a13e4c6ccb02dbc38c6ce40'},
  {path:'tests/helpers/mobile-hand-source.json.gz',before:null,after:'f09812ac4f7c422d8a4530a8efa9ca0e35048eb1a2f4a7940495d76495f5ee4c'}
 ];
-for(const row of mobileHandHelperCopies){assert.equal(files[row.path]??null,row.before,'exact hand helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const releaseSelectionMapHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
+ {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
+ {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
+];
+for(const row of releaseSelectionMapHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release selection map helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+// The original hand descriptor remains an immutable historical domain.
+// Current copies retain both production leaves; outer union owns closeout.
+for(const row of mobileHandHelperCopies.filter(row=>!row.path.endsWith('closeout-source-epoch.mjs'))){assert.equal(files[row.path]??null,row.before,'exact hand leaf copy predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

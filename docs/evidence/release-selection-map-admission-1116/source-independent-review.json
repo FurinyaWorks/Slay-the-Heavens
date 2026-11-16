@@ -1,0 +1,431 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE_CI_PASS_WITH_LIMITS",
+  "reviewer": "/root/release_items_source_review",
+  "independence": "No implementation relationship with release_selection_map_source; no source-tree edits.",
+  "target": "release/v2.0.0",
+  "releaseBase": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productCheckpoint": "74a598a52a0b846bc1bec1ef57083b2fdb1bbc39",
+  "codeHead": "9c2c3dfd4158c6e2bdb967661ee470cd71f410e5",
+  "codeTree": "81a936c5727c84bd9956f14436f83a27788050db",
+  "scope": {
+    "allChangedPaths": [
+      "docs/evidence/release-selection-map-source-1116/README.md",
+      "docs/evidence/release-selection-map-source-1116/ci-raw-current.log.gz",
+      "docs/evidence/release-selection-map-source-1116/historical-seams.log.gz",
+      "docs/evidence/release-selection-map-source-1116/integrated-ci-seams.log.gz",
+      "docs/evidence/release-selection-map-source-1116/owners-copy.log.gz",
+      "docs/evidence/release-selection-map-source-1116/raw-before.log.gz",
+      "docs/evidence/release-selection-map-source-1116/raw-original-after.log.gz",
+      "docs/evidence/release-selection-map-source-1116/source-small.log.gz",
+      "docs/evidence/release-selection-map-source-1116/source-validation.json",
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/helpers/closeout-source-epoch.mjs",
+      "tests/helpers/copy-integration-source-closure.mjs",
+      "tests/helpers/integrated-ci-source.mjs",
+      "tests/helpers/release-selection-map-ci-source.json.gz",
+      "tests/helpers/release-selection-map-ci-source.mjs",
+      "tests/helpers/release-selection-map-source.json.gz",
+      "tests/helpers/release-selection-map-source.mjs",
+      "tests/integrated-ci-source.cases.mjs",
+      "tests/integration-source-epoch.test.mjs",
+      "tests/release-selection-map-source.test.mjs",
+      "tests/session-menu-navigation.test.mjs",
+      "tests/sts-style-source-epoch.test.mjs"
+    ],
+    "totalPaths": 22,
+    "sourceTestPaths": [
+      "tests/ci-complete-calibration.test.mjs",
+      "tests/helpers/closeout-source-epoch.mjs",
+      "tests/helpers/copy-integration-source-closure.mjs",
+      "tests/helpers/integrated-ci-source.mjs",
+      "tests/helpers/release-selection-map-ci-source.json.gz",
+      "tests/helpers/release-selection-map-ci-source.mjs",
+      "tests/helpers/release-selection-map-source.json.gz",
+      "tests/helpers/release-selection-map-source.mjs",
+      "tests/integrated-ci-source.cases.mjs",
+      "tests/integration-source-epoch.test.mjs",
+      "tests/release-selection-map-source.test.mjs",
+      "tests/session-menu-navigation.test.mjs",
+      "tests/sts-style-source-epoch.test.mjs"
+    ],
+    "sourceTestPathCount": 13,
+    "evidencePaths": [
+      "docs/evidence/release-selection-map-source-1116/README.md",
+      "docs/evidence/release-selection-map-source-1116/ci-raw-current.log.gz",
+      "docs/evidence/release-selection-map-source-1116/historical-seams.log.gz",
+      "docs/evidence/release-selection-map-source-1116/integrated-ci-seams.log.gz",
+      "docs/evidence/release-selection-map-source-1116/owners-copy.log.gz",
+      "docs/evidence/release-selection-map-source-1116/raw-before.log.gz",
+      "docs/evidence/release-selection-map-source-1116/raw-original-after.log.gz",
+      "docs/evidence/release-selection-map-source-1116/source-small.log.gz",
+      "docs/evidence/release-selection-map-source-1116/source-validation.json"
+    ],
+    "evidencePathCount": 9,
+    "coverage": "All changed source/test paths and all trusted evidence paths were read or physically authenticated. Review covers source/CI continuation; PC04 and PC08 product behavior remains supported by their separate product reviews and the inspected root combined product run."
+  },
+  "production": {
+    "packet": "tests/helpers/release-selection-map-source.json.gz",
+    "sha256": "0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62",
+    "bytes": 22279,
+    "changedOwners": [
+      "src/lua/abyss_game_ui_input.lua",
+      "src/lua/abyss_game_ui_view.lua"
+    ],
+    "beforeCurrentPaths": 352,
+    "beforeCurrentOwners": 116,
+    "priorTargets": 64,
+    "currentTargets": 65,
+    "addedTarget": "releaseSelectionMapPrior",
+    "completeBeforeMatchesReleaseGit": true,
+    "completeCurrentMatchesProductGit": true,
+    "allPriorTargetsAndOwnerSetPreserved": true,
+    "producersAndParentsMatchActualGit": true,
+    "productFilesUnchanged": [
+      {
+        "path": "scripts/noncombat-v25-layout.mjs",
+        "gitBlob": "e47cbdd5ce135b7c0aef96fa5cf4e580a3f968e2",
+        "sha256": "e48115c39396240ac6911fc9495600eaba0e5a974845e5999bff423abc78458b"
+      },
+      {
+        "path": "scripts/official-map-return-controls.mjs",
+        "gitBlob": "7b834ff79b3846d968212b9e424c25052c13887f",
+        "sha256": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68"
+      },
+      {
+        "path": "scripts/official-run-layout.mjs",
+        "gitBlob": "e4435c0aa55acec0c83e3d5adff0d50924ca4703",
+        "sha256": "c84504418fc773445d982fc2f8e83b548d04ff2b35090fc3c854c816389b93b9"
+      },
+      {
+        "path": "src/lua/abyss_game_ui_input.lua",
+        "gitBlob": "640b899577b267b3a1c52d0354b652b0c2da2140",
+        "sha256": "8476a62e295e72b065fd48642afccf4158c1b70a23aad52290d8ffd3dbee7c9d"
+      },
+      {
+        "path": "src/lua/abyss_game_ui_view.lua",
+        "gitBlob": "cfd5077f9716cd9d8841e2d60abdf777048689a6",
+        "sha256": "34af7bc390792b5eb4b62f265edd10f9786ed153b21ad35b74662ace514db215"
+      },
+      {
+        "path": "tests/lua/support/official_map_return.lua",
+        "gitBlob": "2b56af1dab0ca68ed1b57f9f3c40ac6acfb1d0d4",
+        "sha256": "2ebf4f45d3dbe6d0ef53c38febf3c7618c3c1c1f4dde8b2c560aff18fdfb7271"
+      },
+      {
+        "path": "tests/official-map-return-controls.test.mjs",
+        "gitBlob": "c9221e0483f5fcf8b32d3cdc40f70caf374488f9",
+        "sha256": "a2e8dd6aa80a575c1c0ea8b6ff379fe456a4707e357c0589345f3cb236f30c6a"
+      },
+      {
+        "path": "tests/selection-overlay-scope.test.mjs",
+        "gitBlob": "39f38cd1c0c80f60e378aa697685afa8503fe63c",
+        "sha256": "e412e1173ae9d513b773546788feeea69ea4aae7f04ce98cbb0f7131c33b29f3"
+      }
+    ]
+  },
+  "ci": {
+    "packet": "tests/helpers/release-selection-map-ci-source.json.gz",
+    "sha256": "ab9597d0237daaf530f609ca6772576e170d0785e1fd66852c7e54800909fd66",
+    "bytes": 154714,
+    "bindings": 21,
+    "allBeforeAndCurrentSourceAndBlobIdentitiesMatchGit": true,
+    "bootstrap": {
+      "paths": [
+        ".github/workflows/licenses.yml",
+        ".github/workflows/quality.yml",
+        ".github/workflows/quick-feedback.yml"
+      ],
+      "before": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+      "currentReleaseBase": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+      "workflowsUnmodified": true
+    },
+    "productionAuthorization": "CI translator leaves production owners visible; only the explicit complete-CI validator uses its checked predecessor translation.",
+    "foreignUnknownAndChangedInputs": "Remain visible; fresh complete current validation rejects missing or changed bytes. Text LF/CRLF and byte-returning read adapters were independently checked."
+  },
+  "immutableArchives": {
+    "priorArchives": 92,
+    "oldGitPhysicalGzip": 90,
+    "lfs": [
+      {
+        "path": "tests/helpers/closeout-ci-source.json.gz",
+        "oid": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+        "bytes": 2848271
+      },
+      {
+        "path": "tests/helpers/release-source-epoch.json.gz",
+        "oid": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+        "bytes": 2587324
+      }
+    ],
+    "newProductionPacketSeparatelyPinned": true,
+    "ciImmutableListTotal": 93,
+    "allPriorGitBytesAndLfsPointersUnchanged": true,
+    "allPhysicalPayloadHashesVerified": true
+  },
+  "copyAndSource": {
+    "copiedFiles": 172,
+    "productionCopyIncludesNewProductionHelperAndPacket": true,
+    "productionCopyExcludesNewCiLeaf": true,
+    "copiedSourceProofEqualsLiveSourceProof": true,
+    "helperCopyHashesAreFresh": true,
+    "linkedOwnerAuthentication": "Each accepted projection freshly reads all 116 owners. The final source6 run rejects changed/missing/Buffer/thrown reads for every owner (116 × 4 cases), and preserves foreign source inputs without initiating owner reads.",
+    "copyTempBoundary": "The definitive independent test used an explicitly created root .artifacts TEMP/TMP directory, outside the source worktree."
+  },
+  "inventory": {
+    "oldJs": 876,
+    "currentJs": 879,
+    "oldTopLevelLua": 1423,
+    "currentTopLevelLua": 1423,
+    "addedJs": [
+      "tests/official-map-return-controls.test.mjs",
+      "tests/release-selection-map-source.test.mjs",
+      "tests/selection-overlay-scope.test.mjs"
+    ],
+    "supportLua": "tests/lua/support/official_map_return.lua; fully executed by existing product parent JS; excluded from raw top-level Lua discovery as before",
+    "deletedAllAdditionsRejected": true,
+    "duplicatesForeignAndMissingRejected": true,
+    "oldHistoricalInventoriesPreserved": true
+  },
+  "independentFreshTests": [
+    {
+      "command": "node24 --test --test-concurrency=1 tests/release-selection-map-source.test.mjs",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "durationMs": 5258.7758,
+      "temp": "F:/New folder/.artifacts/release-pc-qa-20261115/selection-map-review-temp"
+    }
+  ],
+  "independentProbes": [
+    {
+      "name": "exact final scope and all eight product Git blobs remain unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "complete 352-file predecessor and committed current corpus preserve 116 owners and all 64 original targets",
+      "status": "PASS"
+    },
+    {
+      "name": "all twenty-one CI current and before Git sources and exact bootstrap c240-to36 workflow boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "all ninety-two old archives plus new production packet preserve Git gzip payloads or exact LFS pointers and physical OID size",
+      "status": "PASS"
+    },
+    {
+      "name": "CI text Buffer CRLF missing changed and foreign bytes remain freshly controlled",
+      "status": "PASS"
+    },
+    {
+      "name": "source projections freshly inspect complete owners and do not coerce foreign inputs",
+      "status": "PASS"
+    },
+    {
+      "name": "isolated production copy authenticates complete helper closure without CI trust leaves",
+      "status": "PASS"
+    },
+    {
+      "name": "raw inventory deleting every addition plus duplicates foreign and missing input reject, while old frozen assertions remain",
+      "status": "PASS"
+    },
+    {
+      "name": "actual execution deadlines and trusted local route reject direct timeout and routing bypasses independently of CI hash",
+      "status": "PASS"
+    },
+    {
+      "name": "trusted evidence gzip physical bytes and original menu failure are retained with accurate source boundaries",
+      "status": "PASS"
+    },
+    {
+      "name": "complete raw JS Lua workload diagnostics retain unknown cost and original scheduling",
+      "status": "PASS"
+    }
+  ],
+  "environmentObservation": {
+    "firstRun": {
+      "pass": 5,
+      "fail": 1,
+      "durationMs": 3693.4016,
+      "cause": "Sixth test could not create its isolated directory in the tool process default system TEMP: mkdtemp EPERM. It did not reach copy validation."
+    },
+    "correction": "Created an artifact-owned TEMP parent and set TEMP/TMP for the next test process; no code or assertion changed.",
+    "definitiveRun": "6/6 passed."
+  },
+  "workflowAndPlanning": {
+    "policySource": "docs/CI.md:168",
+    "forecastRole": "DIAGNOSTIC_ONLY; no forecast/target admission assertion was added.",
+    "plans": [
+      {
+        "platform": "win32",
+        "shards": 18,
+        "forecastMs": 1757264,
+        "targetMs": 1800000,
+        "role": "DIAGNOSTIC_ONLY"
+      },
+      {
+        "platform": "linux",
+        "shards": 15,
+        "forecastMs": 1191630,
+        "targetMs": 1200000,
+        "role": "DIAGNOSTIC_ONLY"
+      }
+    ],
+    "actualJobTimeoutMinutes": {
+      "fullWindowsHosted": 45,
+      "fullWindowsTrustedLocal": 75,
+      "fullPosix": 30,
+      "fastWindows": 45,
+      "fastPosix": 30
+    },
+    "trustedLocalRunner": "Exact workflow_dispatch, local-special input, and develop/master ref restriction independently checked on the actual rules runs-on property.",
+    "negativeControls": [
+      "changed/missing/duplicate/step-only timeout",
+      "wrong-job timeout placement",
+      "wrong hosted and local timeouts",
+      "dispatch restriction removed",
+      "trusted ref restriction bypassed"
+    ],
+    "timingsPartitionUnknownThresholdsWorkflowsAndRuntimePolicyFiles": "UNCHANGED exact Git bytes",
+    "oldFrozenAssertions": "Preserved. Changes only authenticate their exact prior inputs; current raw inventory and workflow contracts verify the new after tree separately.",
+    "unknownJsMs": 10000,
+    "newFloorsAdded": false,
+    "observedRuntime": {
+      "rootMapHostCaseMs": 17793.0508,
+      "rootCombinedTwoParentFilesMs": 25331.3211,
+      "rootCombinedTests": 5,
+      "rootCombinedPass": 5,
+      "rootLogSha256": "73ae446b4403e77541e4ad48277bd6181cacc17db9a6685d82a3e6f0ec4ad8b4",
+      "role": "Inspected root observations, not source-bound complete-input measurements or Hosted upper bounds. No reviewer product/Host rerun."
+    },
+    "limitation": "The new parent retains the original unknown 10s weight, so the forecast may underestimate real duration. README records the 17.793s observation and limitation; source-validation.json also records the 25.331s combined run. No unsupported floor is invented."
+  },
+  "trustedEvidence": [
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/README.md",
+      "sha256": "edd3a5efe3d40b13d0b9887b87c87f2146ffc02ca9cb2bcd51a792531c808439",
+      "bytes": 2162
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/ci-raw-current.log.gz",
+      "sha256": "66b51db2e077afcea948db208688e04b03953eea875aaa0f44ec5f03b212ad9f",
+      "bytes": 299
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/historical-seams.log.gz",
+      "sha256": "4b6721abb3aa01c1662f688de5097536ce52e437a7964304e5181721094352d8",
+      "bytes": 359
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/integrated-ci-seams.log.gz",
+      "sha256": "2db188240e650a72e5d61591438b54b3980cf7b00a9d6cad87860c77b292a9fd",
+      "bytes": 244
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/owners-copy.log.gz",
+      "sha256": "ede48863c7b2aaaf59420c2db8c87de3abaf8ac2ae83f9ab9d14c1f2702c8e81",
+      "bytes": 1126
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/raw-before.log.gz",
+      "sha256": "4fbbc54455fbf98edb3a72edd95887167a5c5e1cb4eae23eeb162f097fb8ecbc",
+      "bytes": 1871
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/raw-original-after.log.gz",
+      "sha256": "abfbe2cac9ff479acb07361123355472864b5a74f2eb2766b45b1311693510d8",
+      "bytes": 246
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/source-small.log.gz",
+      "sha256": "41953183a4f7a4d2d00e4d26879f8cb82cc87ced4460a65b7e8c6e39b64d9263",
+      "bytes": 455
+    },
+    {
+      "path": "docs/evidence/release-selection-map-source-1116/source-validation.json",
+      "sha256": "43e2cf21f70639c1b9b11bf900afd9644f78f37f66c9c0376afb1f148f4752ce",
+      "bytes": 10025
+    }
+  ],
+  "archivedChecks": {
+    "raw-before.log": {
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "durationMs": 16381.6217,
+      "log": "raw-before.log.gz",
+      "command": "node --test --test-name-pattern 'menu current complete JS and Lua workload' tests/ci-complete-calibration.test.mjs (before adapter)"
+    },
+    "source-small.log": {
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "durationMs": 8182.1106,
+      "log": "source-small.log.gz",
+      "command": "node --test tests/release-selection-map-source.test.mjs"
+    },
+    "ci-raw-current.log": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "durationMs": 16205.9124,
+      "log": "ci-raw-current.log.gz",
+      "command": "node --test --test-name-pattern 'release selection map raw Full inventory' tests/ci-complete-calibration.test.mjs"
+    },
+    "owners-copy.log": {
+      "tests": 44,
+      "passed": 44,
+      "failed": 0,
+      "durationMs": 18416.1413,
+      "log": "owners-copy.log.gz",
+      "command": "node --test tests/integration-source-epoch.test.mjs"
+    },
+    "raw-original-after.log": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "durationMs": 11413.8419,
+      "log": "raw-original-after.log.gz",
+      "command": "node --test --test-name-pattern 'menu current complete JS and Lua workload' tests/ci-complete-calibration.test.mjs (after adapter)"
+    },
+    "historical-seams.log": {
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "durationMs": 2223.2622,
+      "log": "historical-seams.log.gz",
+      "command": "node --test --test-name-pattern 'deck notification continuation|Neow retirement continuation|optional Neow flow helper|release additions remain in raw Full' tests/session-menu-navigation.test.mjs tests/sts-style-source-epoch.test.mjs"
+    },
+    "integrated-ci-seams.log": {
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "durationMs": 854.5627,
+      "log": "integrated-ci-seams.log.gz",
+      "command": "node --test tests/integrated-ci-source.cases.mjs"
+    }
+  },
+  "archivedCheckBoundary": "Seven gzip physical hashes, uncompressed hashes and raw lengths authenticated. Before menu-current failure remains real; source6/raw1/old-menu-after1/owner-copy44/historical4/CI2 are author evidence on this slice, not claimed as independent reviewer reruns. The 44 are 8 direct plus 36 dynamic source tests.",
+  "findings": [],
+  "unresolved": [],
+  "acceptance": {
+    "sourceCI": "PASS_WITH_LIMITS; this exact source/CI slice is acceptable for integration.",
+    "product": "Separate PC04/PC08 reviews and root combined 5/5 evidence; product suite not rerun by source reviewer.",
+    "bootstrapPr692": "NOT_INCLUDED; still a separate prerequisite according to parent. No borrowed bootstrap after. Release base changes require exact rebind and review.",
+    "hostedQualityLicenses": "UNVERIFIED",
+    "fullFast": "NOT_RERUN",
+    "formalGIL": "NOT_PERFORMED",
+    "officialImportReady": "UNVERIFIED",
+    "PCDevice": "UNVERIFIED",
+    "mobileDevice": "UNVERIFIED",
+    "officialCapacity": "UNVERIFIED",
+    "releaseGo": "NO_GO"
+  },
+  "limits": [
+    "No full44/73/all calibration, product/Host, Fast/Full or Hosted CI was rerun by reviewer.",
+    "No GUI, MCP, Backlog mutation, source-tree edit, push, PR action or CI polling was performed.",
+    "New source approval is bound only to 9c2c3dfd and its exact product checkpoint/base. It does not authenticate a future composition or changed Release base."
+  ]
+}

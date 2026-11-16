@@ -82,8 +82,10 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  for(const [path,binding]of Object.entries(shopDeckBeforeCiRepairPrior.current))assert.deepEqual(proof.targets.shopDeckBeforeCiRepairPrior.files[path],binding);
  for(const [name,target]of Object.entries(closeoutPriorEpoch.proof.targets))assert.deepEqual(frozen.targets[name],target,name);
  assert.deepEqual(Object.keys(frozen.current),Object.keys(closeoutPriorEpoch.proof.current));
+ const {preReleaseSelectionMapSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ assert.equal(preReleaseSelectionMapSourceEpoch.proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  const {preMobileHandSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
- assert.equal(preMobileHandSourceEpoch.proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
+ assert.equal(preMobileHandSourceEpoch.proof.currentTreeCommitted,false,'hand and landed Map share the complete original predecessor');
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
  for(const path of shopDeckPaths){
   assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);

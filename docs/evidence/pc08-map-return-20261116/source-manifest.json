@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "task": "TASK-103.2",
+  "item": "PC08/P2",
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "branch": "feat/release-pc-map-return-1116",
+  "scope": "official map return decoration/state adaptation only",
+  "transcript": {
+    "path": "F:/New folder/.worktrees/release-pc-closeout-1115/docs/qa/playtests/pc-20261115-verbatim.txt",
+    "sha256": "e4d906064530de90e8ccda6325a1f80a91c1b90e0dc1af13e845dc0ad53d2b63",
+    "range": "08:14–08:38",
+    "privateImage02Accessed": false
+  },
+  "source": [
+    {
+      "path": "scripts/official-map-return-controls.mjs",
+      "sha256": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68",
+      "baseSha256": null
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "sha256": "9657c3b40e9547a0b3b46215c490472b1eae2323ccb78c93122d9afbaf0b2542",
+      "baseSha256": "d21d275ac8a9572923cb1e89554889eab1439c48ec9bb76fd4f6234cdb9d9d70"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_input.lua",
+      "sha256": "fb9e3a285bff0f5f93f6c39146076375bd5619443339c6b7f876ff51e477e341",
+      "baseSha256": "b3e87c57b5b8940ae3ccf5bba323074d4f0cad1d978233105c772f2035d8db47"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_view.lua",
+      "sha256": "da1e05d18b8220bb88aec1020458d3b3843bfb362237bb0b115641d08450a33c",
+      "baseSha256": "92e6936729549fef3b1e794e5cb8eccf616d0e562f49d5583d7f3bba3e2150aa"
+    },
+    {
+      "path": "tests/official-map-return-controls.test.mjs",
+      "sha256": "a2e8dd6aa80a575c1c0ea8b6ff379fe456a4707e357c0589345f3cb236f30c6a",
+      "baseSha256": null
+    },
+    {
+      "path": "tests/lua/support/official_map_return.lua",
+      "sha256": "2ebf4f45d3dbe6d0ef53c38febf3c7618c3c1c1f4dde8b2c560aff18fdfb7271",
+      "baseSha256": null
+    }
+  ],
+  "logs": [
+    {
+      "path": "docs/evidence/pc08-map-return-20261116/material-red.tap",
+      "sha256": "e23fbb82d965900d357d7e064bd6c478aa4cd8ec0175418ceadb9913afe5a6ea"
+    },
+    {
+      "path": "docs/evidence/pc08-map-return-20261116/host-red.tap",
+      "sha256": "4f8d5e77da7c7c6565269d549332d27e5d17d045dff38c3c1d87c0e34b227166",
+      "form": "Whitespace-normalized readable copy; original bytes preserved in raw archive",
+      "raw": {
+        "path": "docs/evidence/pc08-map-return-20261116/host-red.tap.raw.gz",
+        "sha256": "915dc8512a2d6917f6201ff0ad2dc24d22e801a3e55cfc52968de4d872dcef64",
+        "sizeBytes": 732,
+        "uncompressedSha256": "94067b2de13d8e683de027ceea584f22d3e31729cdf39e31f5da315c274ad23d",
+        "uncompressedSizeBytes": 1571,
+        "verification": "gunzip bytes exactly match original frozen host-red.tap; non-whitespace readable content identical"
+      }
+    },
+    {
+      "path": "docs/evidence/pc08-map-return-20261116/final-targeted.tap",
+      "sha256": "0847de25e3e3ba1bae7eb4ee79c271ae3bd03b9971def1439ab99424e8db14e3"
+    },
+    {
+      "path": "docs/evidence/pc08-map-return-20261116/lua-static.tap",
+      "sha256": "adcc7467afa59bd664ff57ca172d0940127753399014d98e48998f9682f2c1c8"
+    }
+  ],
+  "validation": {
+    "targeted": "11 tests pass; 3 full generated official Host scenarios",
+    "architecture": "351 modules / 1989 edges pass",
+    "diffCheck": "PASS full candidate git diff --check 36b9b157ee6f05b65eb9f1da7e2978647d36c210 after evidence-only correction. Earlier worktree-only check missed whitespace in newly added host-red.tap; original failure bytes preserved in raw archive.",
+    "luaStatic": "PASS Luacheck 1.2.0; no new diagnostics; 6 historical warnings; 2215 governed responsibility measurements; existing binary sha256 0f1c69c4d09f1ebb4d8df14c215e4553e2e639bd4cb7bf3c639b0daa6198317b",
+    "fast": "plan only; full=false; no Fast execution",
+    "officialImport": "UNVERIFIED",
+    "ready": "UNVERIFIED",
+    "pc": "UNVERIFIED",
+    "mobile": "UNVERIFIED"
+  }
+}
