@@ -10,7 +10,7 @@ import {gunzipSync} from 'node:zlib';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
-import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards,capacityReleaseCiBefore} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
@@ -46,16 +46,45 @@ test('release selection map production preserves every complete prior target and
 test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
  assertReleaseSelectionMapCiCurrent();
  for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){
-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
+  const current=norm(readFileSync(path,'utf8')),source=capacityReleaseCiBefore(path,current);assert.equal(hash(source),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
-  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??source,path);
-  for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);
-  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);
+  assert.equal(releaseSelectionMapCiSource(path,current),production?source:row.before?.source??source,path);
+  for(const foreign of [current+'\n',current.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);
+  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,current),current);
   assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{
    const raw=readFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;
   }),/fresh complete integration source/);
  }
  for(const path of Object.keys(releaseSelectionMapSourcePacket.current))assert.equal(releaseSelectionMapCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');
+});
+
+test('capacity and latest Release CI views compose without accepting stale or foreign current owners',async()=>{
+ const adapter=await import('./helpers/release-selection-map-ci-source.mjs');
+ const integration=adapter.capacityReleaseCiPacket;
+ assert(integration,'complete exact merge continuation required');
+ assert.equal(integration.releaseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
+ assert.equal(integration.capacityCommit,'bf74c0c391a0700740fee9b7cb8695bff615366a');
+ assert.deepEqual(Object.keys(integration.files),['tests/helpers/release-bootstrap-ci-source.mjs','tests/release-selection-map-source.test.mjs']);
+ assertReleaseSelectionMapCiCurrent();
+ const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
+ assertIntegratedCurrent();
+ for(const [path,row]of Object.entries(integration.files)){
+  assert.deepEqual(row.before,releaseSelectionMapCiPacket.files[path].current,'complete committed Release predecessor');
+  const current=norm(readFileSync(path,'utf8'));
+  assert.equal(hash(current),row.current.sha256,path);
+  assert.equal(adapter.capacityReleaseCiBefore(path,current),row.before.source);
+  for(const input of [current,current.replaceAll('\n','\r\n')])assert.equal(releaseSelectionMapCiSource(path,input),row.before.source);
+  for(const foreign of [current+'\n',current.slice(1),current.replaceAll('\n','\r\r\n'),null,{},17]){
+   assert.equal(adapter.capacityReleaseCiBefore(path,foreign),foreign);
+   assert.equal(releaseSelectionMapCiSource(path,foreign),foreign);
+  }
+  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(adapter.capacityReleaseCiBefore(foreignPath,current),current);
+  // Success above must never cache authorization for a later changed/missing owner.
+  for(const changed of [current+'\n',current.slice(1),row.before.source])
+   assert.throws(()=>assertIntegratedCurrent((p,e)=>p===path?changed:readFileSync(p,e)),/fresh complete integration source/);
+  assert.throws(()=>assertIntegratedCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return readFileSync(p,e);}),/missing/);
+ }
+ assertIntegratedCurrent();
 });
 
 test('release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
