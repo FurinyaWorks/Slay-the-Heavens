@@ -1,4 +1,5 @@
 import {cursesPlanningFloors} from './helpers/curses-ci-planning.mjs';
+import {retirementPlanningReceipt,retirementPlanningReceiptPath,shadowPlanningReceipt,shadowPlanningReceiptPath} from './helpers/release-item-title-shadow-planning.mjs';
 import {defectActorPlanningKey,defectActorPlanningFloor} from './helpers/defect-actor-ci-source-inverse.mjs';
 import {preGoldenIdolCurrentCiSource,goldenIdolCurrentPlanningFloors} from './helpers/golden-idol-current-ci-source-inverse.mjs';
 import {encounterFormationPlanningFloors} from './helpers/encounter-formation-ci-source-inverse.mjs';
@@ -276,6 +277,11 @@ test('current timing records preserve all measured corrections without duplicate
    assert.deepEqual(entry,cursesPlanningFloors[file]);
   }else if(Object.hasOwn(goldenIdolCurrentPlanningFloors,file)){
    assert.deepEqual(entry,goldenIdolCurrentPlanningFloors[file]);
+  }else if(file===retirementPlanningReceipt.entry||file===shadowPlanningReceipt.entry){
+   const receipt=file===retirementPlanningReceipt.entry?retirementPlanningReceipt:shadowPlanningReceipt;
+   const path=file===retirementPlanningReceipt.entry?retirementPlanningReceiptPath:shadowPlanningReceiptPath;
+   const sourceReceiptSha256=createHash('sha256').update(readFileSync(path,'utf8').replaceAll('\r\n','\n')).digest('hex');
+   assert.deepEqual(entry,{...receipt.floor,sourceReceipt:path,sourceReceiptSha256},'two new complete measured floors retain their exact receipts');
   }else{
    assert.match(entry.environment,/local/);assert.match(entry.kind,/not .*hosted/);localFloorCount++;originalLocalFloorKeys.push(file);
   }
@@ -288,7 +294,7 @@ test('current timing records preserve all measured corrections without duplicate
   'tests/pr262-ui-fixture-budget.test.mjs','tests/pr372-integration-source.test.mjs',
   'tests/unknown-routing-partitions.test.mjs','tests/formal-campaign-entry.test.mjs',
  ].sort(),'the original eight floor members stay exact');
- const expectedFloorKeys=[...originalLocalFloorKeys,
+ const expectedFloorKeys=[...originalLocalFloorKeys,retirementPlanningReceipt.entry,shadowPlanningReceipt.entry,
   'tests/run-max-hp-config-inverse.test.mjs','tests/power-shop-boundaries.test.mjs',
   ...Object.keys(partialCasePlanningFloors),gameUiLocalPlanningKey,runCatalogFloorKey,potionCallbackFloorKey,endTurnFloorKey,
   'tests/actor-presence.test.mjs','tests/reward-query-boundary.test.mjs',defectUtilityPlanningKey,enemyAiPlanningKey,classPotionPlanningKey,watcherPlanningKey,

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {itemCiRepairSource,itemCiRepairRead,assertItemCiRepairCurrent} from './release-item-ci-repair-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-title-shadow-bootstrap-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'dabab7788653b45eff7f570f2ab2ae3797b40e1d91a5fe9ea0a54d0354a45be8','complete item title shadow actual Release composition');
@@ -31,18 +32,21 @@ function text(raw){
 }
 export function itemTitleShadowBootstrapSource(path,source,view){
  assert(['item','release'].includes(view),'explicit item or actual Release view');
+ const original=source;
+ source=itemCiRepairSource(path,source);
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,target=row?.views[view];
- if(row?.current.kind!=='text'||typeof target?.source!=='string'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ if(row?.current.kind!=='text'||typeof target?.source!=='string'||typeof source!=='string'||source.includes('\r\r\n'))return original;
  return hash(norm(source))===row.current.sha256?target.source:source;
 }
-export function itemTitleShadowBootstrapRead(view,read=readFileSync){return(path,encoding)=>{
+export function itemTitleShadowBootstrapRead(view,read=readFileSync){read=itemCiRepairRead(read);return(path,encoding)=>{
  const raw=read(path,encoding),row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(row?.current.kind!=='text')return raw;
  const source=text(raw),prior=itemTitleShadowBootstrapSource(path,source,view);
  return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
 };}
 export function assertItemTitleShadowBootstrapCurrent(read=readFileSync){
+ assertItemCiRepairCurrent(read);read=itemCiRepairRead(read);
  for(const [path,row]of Object.entries(packet.files)){
   let raw;try{raw=read(path);}catch(error){assert.fail('fresh complete integration source: item Release composition '+path+': '+String(error?.message??error));}
   assert.equal(hash(row.current.kind==='text'?norm(text(raw)):raw),row.current.sha256,'fresh complete integration source: item Release composition '+path);

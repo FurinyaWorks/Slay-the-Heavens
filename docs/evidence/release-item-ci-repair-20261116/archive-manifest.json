@@ -1,0 +1,290 @@
+[
+  {
+    "path": "battle-life-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 7397,
+    "rawSha256": "4a11766542f129173cc9a00623140503fd2d34c308c2232435bb027accd92932",
+    "bytes": 785,
+    "sha256": "1c96ded75acd4211f399451023b3bc80bf35afd4286e458fcb3b4dd580f75926"
+  },
+  {
+    "path": "build-data.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 34,
+    "rawSha256": "795fb7fb8bc4b08a404b8264a87d3ad9625090c8d5d92668a11f15d90ed687a5",
+    "bytes": 54,
+    "sha256": "f24899772b77ac5a333c2622a45f76548af252aa4839194e5146e3cebc1e7bcf"
+  },
+  {
+    "path": "build-theme.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 28,
+    "rawSha256": "ed1ddcad564d886d7266081c09922b13cdab5c74d20cf4b70311c89930143bbd",
+    "bytes": 48,
+    "sha256": "db52d8941695431048ae183b1fb6cd6de79a0c3eb395e01e1c3fd67c625094f8"
+  },
+  {
+    "path": "build-ui.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 53,
+    "rawSha256": "0d69c17c4ec2190832766c94be6842d45295ab03bb8138faca3b3f62e2711dc2",
+    "bytes": 73,
+    "sha256": "4afb332b9e54ef2694850ec5501697e6267e9dce694cfdf8571c48c8688b89f0"
+  },
+  {
+    "path": "card-feedback-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 1752,
+    "rawSha256": "3017e09761f78bbed9c32f0f579175cefaf637d97a7e3257de0c69acdb3b1152",
+    "bytes": 583,
+    "sha256": "86e4ff0bbca837785fa786fd0846e186a25ff21b966be268aefa50cd266caae9"
+  },
+  {
+    "path": "card-flow-feedback-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 1110,
+    "rawSha256": "e222c08dbc99d74430595a864b2eb1ba636cb54b38e06c8be7d229e51a607ed1",
+    "bytes": 360,
+    "sha256": "1a7572f6e75a1e66495fe59a312feca1fe60239cbe80f3395b686b31d0405016"
+  },
+  {
+    "path": "chrome-final-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 227,
+    "rawSha256": "f6b350728ea0a3746f4db6ad3d2432f48c763c6fb6958170835b962e832e16a7",
+    "bytes": 180,
+    "sha256": "b39f89bc4c5dd36416782c9b4bd47c66a5e2f4d2b2a8fd961905424a1140da7c"
+  },
+  {
+    "path": "chrome-reward-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 1209,
+    "rawSha256": "4b096de47d9dad10da880d1f1dd63bb31bd104d9ee453d3d24e030679365a590",
+    "bytes": 647,
+    "sha256": "f04a3d20488029c740e2272b841d198466dd4fa34791bcc03e665743dc4071e5"
+  },
+  {
+    "path": "feedback-polish-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 7889,
+    "rawSha256": "2a53550dabfbd00bcde3a8dcd7a98480c704d232ebffc5f08db87859b91e8098",
+    "bytes": 1359,
+    "sha256": "ac6b879cc360deb8d98cf2a04c938fb6c36eb1a6ee0bedef6a62cc146b153f89"
+  },
+  {
+    "path": "final-source-audit.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 29,
+    "rawSha256": "21d9394a0cacb337dd0e68aa8b77f24db6370648520d56fd116b4a3b93ff936e",
+    "bytes": 49,
+    "sha256": "97287c15229b37bff723c265ac2ff289464bb95ffbd1f36e8dbefebab024bdd9"
+  },
+  {
+    "path": "integrated-source-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 2046,
+    "rawSha256": "d4d2cd29b9490305256504fc637d194455f6a4c56d926e1786358657d5e405c3",
+    "bytes": 856,
+    "sha256": "04f473b27891ee1f09b2d581c86c84f3dde95de5fd8a20832984c39f3d45c226"
+  },
+  {
+    "path": "integrated-source-final2.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 354,
+    "rawSha256": "d87d36a1f1ead7d3e5488a67d703bf187955892709cd6e7ae4073a8c21d59932",
+    "bytes": 243,
+    "sha256": "03748d915e9e34455411b4618d7b4ea606041104e75c9be9218788579469595d"
+  },
+  {
+    "path": "job-132976717615.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 110991,
+    "rawSha256": "58214e007df73183ab14f2a9f91a6a5e50fe22abbfd713ae611d88692736bdf6",
+    "bytes": 30061,
+    "sha256": "ae4fd8fcd5e1e10f2cf6f8ffcf80e935ee5dbc178b2e8f3455bd2ded8517ecb2"
+  },
+  {
+    "path": "job-132976717635.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 177804,
+    "rawSha256": "0fd7c569af097523d058e85e8e766310d05e03182bfc1ff03f15a54dbef7dc20",
+    "bytes": 39820,
+    "sha256": "d5f2f63280349da3b07f38dfc28a97c2453a37ddb9faaa26bdfaaa820c7e50c0"
+  },
+  {
+    "path": "job-132976717644.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 86176,
+    "rawSha256": "107e5eb0ad6123dba4f9ba379f4539eed9edb30d5e2febfa5a2da7252a4e23e5",
+    "bytes": 24893,
+    "sha256": "91cb992267f69aba3c4f09fab2360b0cb3bf6ae1fd2638e56548ebdc8d28774b"
+  },
+  {
+    "path": "job-132976717654.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 102113,
+    "rawSha256": "964382255c774d45c938ed299a887ec672c4696c57ecd99054b2d85dd5fcd4f6",
+    "bytes": 28500,
+    "sha256": "3edc94195cf6863681298a75c1a6328fb3f1893ff6c2278510c0e53f0a38dae6"
+  },
+  {
+    "path": "job-132976717662.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 331102,
+    "rawSha256": "a95d0eafeb88ab1f314dfa0b62222a384a88132db9827655311ff355ae469486",
+    "bytes": 56586,
+    "sha256": "99f44b151c0251d74ed70ba3215ebb0fbd17e638322eb27afaa29365593286c6"
+  },
+  {
+    "path": "job-132976717672.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 98532,
+    "rawSha256": "ac27b3d9039df4112746e04e900b3be5214d19a81b2c907dcfeb6b76a08b52f0",
+    "bytes": 27682,
+    "sha256": "a43da7df36bb5ec832e3e7776cbf70593397922e1e1ec0d0f14c4e17b3785bd3"
+  },
+  {
+    "path": "job-132976717689.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 122528,
+    "rawSha256": "f3b94d62dc7d3ef1380d4a6f1a6d45671f3808d2fcd0360e5fe211e6773284ab",
+    "bytes": 27307,
+    "sha256": "443c6c481f0c9bd8e677dd1bce19f565830773ce5af703bb1bd1cdc3e4f71e93"
+  },
+  {
+    "path": "job-132976717858.log.gz",
+    "source": "GitHub job logs API structured content",
+    "rawBytes": 94229,
+    "rawSha256": "0d2fde39bd37bec76738903aab8edb0a7c5e9baba5c025f5cd40e75b443c4e5a",
+    "bytes": 24962,
+    "sha256": "216ad9a003a0f81a691314ca58636303f0b207b1a4452f5438d4deab999c0839"
+  },
+  {
+    "path": "runtime-timings-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 5582,
+    "rawSha256": "1a363f1b155d8978dd839be18bd482ab4e0b910e8d799f605203bce96d479c0b",
+    "bytes": 1175,
+    "sha256": "9a3312a2902d696ad47b6acbf034f00e31dd3c8889934443af1a5a1bfeb29beb"
+  },
+  {
+    "path": "runtime-timings-final2.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 226,
+    "rawSha256": "d07ec81e8836e64700176704f076a49bf28f25ed890556a71be9b2274acde0d0",
+    "bytes": 184,
+    "sha256": "dff75bb7d2710e2b056e0f1b710164217a534c1ae2436cd2ac01a309fdecfb3d"
+  },
+  {
+    "path": "runtime-timings-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 1036,
+    "rawSha256": "fbe7d5cba60099e383adae3ace112843c67e45059ff90053462ac6271c3d4e57",
+    "bytes": 560,
+    "sha256": "a6a861d0fdf3fd32832cd1d282f40f7a712fb6fbc2c1350ba705871fe6556556"
+  },
+  {
+    "path": "source-boundary-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 342,
+    "rawSha256": "7c8ad0aedc7569492b8251746f61645a073abd9239f27b7860d1be140b8c0c10",
+    "bytes": 252,
+    "sha256": "d1b2534511e9c277b1d1e129845d442b41ae4d4b02a317c9b229810c69f191df"
+  },
+  {
+    "path": "source-boundary-green.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 1990617,
+    "rawSha256": "95bd04c2bdef297c5eb6b0201001d6193e58e012fb60496535a1b68d5a634514",
+    "bytes": 1398580,
+    "sha256": "b0db2ec18e50f8717791c374458f2f56684617836a765e6f525811b571a502c4"
+  },
+  {
+    "path": "source-consumers-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 1638,
+    "rawSha256": "ab20e3678e46b3ef76a6fefe129bf65fc7b38c78deff9bd22fe6189e6d9d0b50",
+    "bytes": 776,
+    "sha256": "834f8a7402272869f751296e4766a7eadeb1143ebc95a9a6b2925dd47b689882"
+  },
+  {
+    "path": "source-consumers.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 3130,
+    "rawSha256": "db1ad120ba4f8f6cf0bf41361227db2d6d19a7a08952ded5798ec10ffe55579c",
+    "bytes": 1005,
+    "sha256": "a5403f4f661255e8abbd427e0af466908fcd2a3cf23e3514034baf766ffc4421"
+  },
+  {
+    "path": "source-current-first.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 12903,
+    "rawSha256": "344eb45dd53b1b701218d9cee0901a3eceeafd7134ee8f674a50d7e0fcc1fcfe",
+    "bytes": 2706,
+    "sha256": "34bd5a151610828392dffe1978a49c927625ed1980d3905d3ed57c4c7f2c97fe"
+  },
+  {
+    "path": "source-inventory-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 240,
+    "rawSha256": "b4c67ee02150f6c29ab80de8255d22661a90c2bd247e077f739a99c3ddc98835",
+    "bytes": 186,
+    "sha256": "1488e4d0d66e2db0b36b030747b52292f0b06af9aa678abbaddd276c90156502"
+  },
+  {
+    "path": "source-local-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 828,
+    "rawSha256": "f11f5eddf5e31b6d436d755131a3827bf6544859a2f4006de5efd6e121d8a821",
+    "bytes": 461,
+    "sha256": "711c78ea647e042bf682e952234ef01e58d2fa25be7adae417f7a2c7acd74775"
+  },
+  {
+    "path": "syntax-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "rawBytes": 108,
+    "rawSha256": "010949ef9b66fe6f1b7909f0e8b2b97143988a1307a9df8778988edf0663fd10",
+    "bytes": 107,
+    "sha256": "7c66fa643d0e1a72b0ed530923a651f48851fdd4c083278a821fdebf6e1af849"
+  },
+  {
+    "path": "job-132976717778.log.gz",
+    "source": "gh api completed job logs",
+    "rawBytes": 78694,
+    "rawSha256": "f9e011137675632c9ab71abfa006cef501cc541e648ae53c443a0bae946c0ef1",
+    "bytes": 21066,
+    "sha256": "c66d4ced058f6ff4c58011c7c21621454245957d74fc520aabc5824a0fe26d17"
+  },
+  {
+    "path": "job-132976717719.log.gz",
+    "source": "gh api completed job logs",
+    "rawBytes": 1096161,
+    "rawSha256": "7799f414b24e8d6063c885070fa06fbce365bc27cb4808bec5c641465b00b61a",
+    "bytes": 81420,
+    "sha256": "b2de39dc3906bfc08412e4f0302d5d272085d09647aa04489876c0dff7597114"
+  },
+  {
+    "path": "job-132976717949.log.gz",
+    "source": "gh api completed job logs",
+    "rawBytes": 213019,
+    "rawSha256": "8104d11cde3b728b0261e50b409ff7e89100b33b5f1172889ded41aa14a18efb",
+    "bytes": 53469,
+    "sha256": "174d507952690d8fcacd92d4aadfd07c0806826bcc961a7af58dd67d44429e32"
+  },
+  {
+    "path": "capture.mjs.gz",
+    "source": "local collector",
+    "rawBytes": 1950,
+    "rawSha256": "d54f60a00a137ac353d760e582a22821e33d41af256d3297900d0b893485123d",
+    "bytes": 966,
+    "sha256": "c3e8dcbd2fbdec5a91491aff26644e782702aeb707101879f9b392e9e61a94b0"
+  },
+  {
+    "path": "archive.mjs.gz",
+    "source": "local collector",
+    "rawBytes": 1487,
+    "rawSha256": "62a4dad02051fd28371d195be05f9ab720b409b0f746a75fd580402a049d99fb",
+    "bytes": 753,
+    "sha256": "3627d51ab8bcb31a59326b9728933e6bd0bf13d0edb47e617966c2261636f070"
+  }
+]

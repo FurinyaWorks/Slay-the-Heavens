@@ -1,0 +1,20 @@
+{
+  "sha256": "fedeefa1dee8dc65312e94029848b2618ee84228ce7f4001fcd1b2cdc0dc1295",
+  "bytes": 69413,
+  "paths": [
+    "tests/ci-runtime.test.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/helpers/release-item-title-shadow-bootstrap-source.mjs",
+    "tests/helpers/release-item-title-shadow-ci-source.mjs",
+    "tests/helpers/release-item-title-shadow-planning.mjs",
+    "tests/lua/battle_life_regression.lua",
+    "tests/lua/card_feedback.lua",
+    "tests/lua/card_flow_feedback.lua",
+    "tests/lua/feedback_polish.lua",
+    "tests/official-run-chrome.test.mjs",
+    "tests/release-item-title-shadow-source.test.mjs",
+    "tests/sts-reward-row-runtime.test.mjs"
+  ],
+  "archives": 96,
+  "production": 352
+}

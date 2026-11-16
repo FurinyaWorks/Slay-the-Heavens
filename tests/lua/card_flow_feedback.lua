@@ -8,7 +8,10 @@ local EnemyView=require('abyss_battle_enemy_view')
 local function control(definition)
  local c={name=definition.name,children={},visible=definition.visible~=false}
  for _,child in ipairs(definition.children or{})do c.children[child.name]=control(child)end
- function c:GetChild(name)return assert(self.children[name],self.name..'/'..name)end
+ function c:GetChild(name)
+  if name=='officialFigure'then return self.children[name]end
+  return assert(self.children[name],self.name..'/'..name)
+ end
  function c:SetVisible(v)self.visible=v end
  function c:SetAnchoredPosition(x,y)self.x,self.y=x,y end
  function c:SetLocalScale(x,y)self.sx,self.sy=x,y end

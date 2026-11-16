@@ -9,8 +9,25 @@ import {releaseItemTitleShadowCiPacket,releaseItemTitleShadowCiSource,releaseIte
 import {retirementPlanningReceipt,assertRetirementPlanningCurrent,shadowPlanningReceipt,assertShadowPlanningCurrent,assertReleaseItemTitleShadowPhysicalGuards} from './helpers/release-item-title-shadow-planning.mjs';
 import {itemTitleShadowBootstrapPacket,itemTitleShadowBootstrapSource,itemTitleShadowBootstrapRead,itemTitleShadowBootstrapInventory,assertItemTitleShadowBootstrapCurrent,assertItemTitleShadowBootstrapRawInventory} from './helpers/release-item-title-shadow-bootstrap-source.mjs';
 import {releaseBootstrapCiPacket,assertReleaseBootstrapCiCurrent} from './helpers/release-bootstrap-ci-source.mjs';
+import {itemCiRepairPacket,itemCiRepairSource,itemCiRepairRead,assertItemCiRepairCurrent} from './helpers/release-item-ci-repair-source.mjs';
 const readFileSync=itemTitleShadowBootstrapRead('item',actualReadFileSync);
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+
+test('item CI repair authenticates every changed source and retains exact opaque boundaries',()=>{
+ assertItemCiRepairCurrent(actualReadFileSync);
+ for(const [path,row]of Object.entries(itemCiRepairPacket.files)){
+  const raw=actualReadFileSync(path,'utf8');assert.equal(itemCiRepairSource(path,raw),row.before.source,path);
+  for(const foreign of [raw+'\n',raw.slice(1),null,{},17])assert.equal(itemCiRepairSource(path,foreign),foreign,path);
+  assert.throws(()=>assertItemCiRepairCurrent((p,e)=>{const b=actualReadFileSync(p,e);return p===path?typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]):b;}),/fresh complete integration source: item CI repair/);
+  assert.throws(()=>assertItemCiRepairCurrent((p,e)=>{if(p===path)throw Error('missing');return actualReadFileSync(p,e);}),/missing/);
+ }
+ for(const path of ['src/lua/abyss_combat.lua','config/architecture.json','__proto__'])assert.equal(itemCiRepairSource(path,'foreign'),'foreign');
+ for(const verify of [assertRetirementPlanningCurrent,assertShadowPlanningCurrent]){
+  const lf=(p,e)=>{const b=actualReadFileSync(p,e);if(p!=='node_modules/.package-lock.json')return b;const s=norm(b.toString());return typeof b==='string'?s:Buffer.from(s);};
+  verify(lf);
+  assert.throws(()=>verify((p,e)=>{const b=lf(p,e);return p==='node_modules/.package-lock.json'?typeof b==='string'?b+' ':Buffer.concat([b,Buffer.from(' ')]):b;}),/dependency input/);
+ }
+});
 
 test('retirement observed local floor authenticates its execution inputs and preserves every original cost',()=>{
  const p=assertRetirementPlanningCurrent(),prior=JSON.parse(releaseItemTitleShadowCiPacket.files['scripts/ci-test-timings.json'].before.source),current=JSON.parse(readFileSync('scripts/ci-test-timings.json','utf8'));
@@ -136,6 +153,7 @@ test('actual Release composition rejects fresh source and binary drift without h
  const leaf=actualReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.mjs','utf8'),bytes=actualReadFileSync('tests/helpers/release-item-title-shadow-bootstrap-source.json.gz');
  const marker="const bytes=readFileSync(new URL('./release-item-title-shadow-bootstrap-source.json.gz',import.meta.url));";
  assert.equal(leaf.split(marker).length,2);
- const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,-1).toString('base64'))},'base64');`);
+ const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,-1).toString('base64'))},'base64');`)
+  .replace("'./release-item-ci-repair-source.mjs'",JSON.stringify(new URL('./helpers/release-item-ci-repair-source.mjs',import.meta.url).href));
  await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete item title shadow actual Release composition/);
 });
