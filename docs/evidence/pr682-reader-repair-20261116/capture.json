@@ -1,0 +1,14 @@
+{
+  "sha256": "193d80b2c6e97f18fdc26229d9e6f82265560a0d308fabb9a7b8d134a917c8f8",
+  "bytes": 43565,
+  "paths": [
+    "tests/dependency-bgm-source.test.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "archives": 93,
+  "production": 352,
+  "rawJs": 879,
+  "rawLua": 1424,
+  "addedOwners": []
+}

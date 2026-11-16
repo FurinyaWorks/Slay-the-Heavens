@@ -1,0 +1,37 @@
+{
+  "baseCommit": "1b60f71c4733ced0c91dc814dc5c7a6644c8fe56",
+  "codeCheckpoint": "ce075f014702b70a2a20456e7dc6ef0f5659be59",
+  "captureCurrentTreeCommitted": false,
+  "allExecutablePathsBound": true,
+  "beforeCurrent": [
+    "tests/dependency-bgm-source.test.mjs",
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "trustBoundaries": [
+    "tests/helpers/dependency-ci-repair-source.mjs",
+    "tests/helpers/dependency-ci-repair-source.json.gz"
+  ],
+  "archives": 93,
+  "lfsArchives": 2,
+  "production": 352,
+  "owners": 116,
+  "addedOwners": [],
+  "oldDomain": {
+    "js": 876,
+    "lua": 1423
+  },
+  "parentDomain": {
+    "js": 879,
+    "lua": 1424
+  },
+  "currentDomain": {
+    "js": 879,
+    "lua": 1424
+  },
+  "rawDelta": {
+    "js": 0,
+    "lua": 0
+  },
+  "status": "PASS"
+}

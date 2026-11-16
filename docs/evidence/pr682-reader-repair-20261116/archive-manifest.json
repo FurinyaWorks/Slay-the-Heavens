@@ -1,0 +1,138 @@
+[
+  {
+    "path": "exact-fixed-final.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 259,
+    "sha256": "f8b9b29e9d685a67d6d3ac7fbb4ef6b55fc59a10d033d0367053fe4c3ac6f115",
+    "rawBytes": 359,
+    "rawSha256": "c98ea76819ff2a1275f95898e5611c69bd52b3cde01f56e7721546af51e866d6"
+  },
+  {
+    "path": "exact-fixed-first.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 862,
+    "sha256": "2b1cb761547578dc94eae5a08a9e815f4fadc4977cd45839a9ccb7824531c9d2",
+    "rawBytes": 2346,
+    "rawSha256": "e17e5f03703d93da9ddec06ba802b0cc6ec093062b00439a94ec5d96d3cc8e9a"
+  },
+  {
+    "path": "exact-fixed-second.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 260,
+    "sha256": "3c2ab417de546039fefe18844d33f8343c9b0194a06022a822d96e281370d02f",
+    "rawBytes": 359,
+    "rawSha256": "0df4f81fa6abf2516bef68ea20c58c2d8fedcf6a5677bf5603a7955a03561eb6"
+  },
+  {
+    "path": "exact-original-red.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 795,
+    "sha256": "a5d591eac15dc48fe0c7485f18781c3663fd9f4aaaffb69eb4bff0e143d693fb",
+    "rawBytes": 2069,
+    "rawSha256": "fe317875537b5bec4334e243b2fa36982d26e49ae74ea10c2cd988565a9c29bf"
+  },
+  {
+    "path": "final-inventory-authorization.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 259,
+    "sha256": "e0905a52f443c64df38fe8a486aa814c2772590869af5e46e5d4506c6bccd6a3",
+    "rawBytes": 359,
+    "rawSha256": "fbd45a3478544a65c8899b36c3b1d6fe4284c91ad9753608f869dbd34e564476"
+  },
+  {
+    "path": "final-related-contracts.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 469,
+    "sha256": "c6b3331deff4f565ca0a85834c1e8f2250ee1770e03d446c576d921976fdc8e4",
+    "rawBytes": 832,
+    "rawSha256": "38bc2cdd24b161e760bcf36289c503581f96a0d77af49c320716f9ef0c6b5a53"
+  },
+  {
+    "path": "final-scoped-contracts.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 510,
+    "sha256": "0b083225d181bb3871f9ae430c93722814f56d949484a5ca641f04d300075da0",
+    "rawBytes": 935,
+    "rawSha256": "08c745b4dbb0de59631b6e874fe3dd2e222af5e319d2d3dfb60b8d1b5d634b5b"
+  },
+  {
+    "path": "reader-only-first.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 671,
+    "sha256": "23d58de71c6eca3fbe2d8bb1bbf3a56490791635882a5b77db054db665901edb",
+    "rawBytes": 1430,
+    "rawSha256": "fbb7a1b33480d0fede1d79a1c6ad0c37cd3eaea1b41d1a0ead15bc93d727eccb"
+  },
+  {
+    "path": "reproduction-before.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 726,
+    "sha256": "9381a35f6ebf3e876d235a137f7a89877c4979c41c85a5aa76f939fa0a137d13",
+    "rawBytes": 1876,
+    "rawSha256": "7ae4c80591dac898c394b7b113635adaa5704afac6b95130fe21df8386dc7426"
+  },
+  {
+    "path": "reproduction-first-fixed.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 173,
+    "sha256": "bccf3a1c31457a663cab69321129985a7167e28de9b7b6eac8d0d7ed49c88798",
+    "rawBytes": 222,
+    "rawSha256": "ada54e1f3d5e75800b7a9cede7b68667b8b9368b0582fd816b2c08273b928f14"
+  },
+  {
+    "path": "source-copy-first.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 5916,
+    "sha256": "1d98f95e0e48ca29f3c3cb3e675c89c3467d1afa11531c69b7b8a470890da2b8",
+    "rawBytes": 35887,
+    "rawSha256": "c830e4ded8ea3e9665bc5c188ab2b23112c76659de6e705ebd9ae1c2f7c0ea14"
+  },
+  {
+    "path": "source-copy-second.log.gz",
+    "source": "local bounded verification stdout/stderr",
+    "bytes": 365,
+    "sha256": "b96674aa8229e485c411b9e84536b811b5955f313290f297cbf3e53851d5bbb7",
+    "rawBytes": 590,
+    "rawSha256": "dcc9406752286c3feb6db4861ec5a5c65f6b368932952b82cd5edee7723c61e5"
+  },
+  {
+    "path": "job-132986880772.log.gz",
+    "source": "GitHub completed job log API; exact decoded content",
+    "bytes": 35354,
+    "sha256": "a1a8bf538d89ef2bf77e93fe214919581df8e4374962bc6574364f1e3f041f56",
+    "rawBytes": 161642,
+    "rawSha256": "979422f92e590010872fb6546a70a85d59a4e3faa74c3b435d10891520b8eb20"
+  },
+  {
+    "path": "job-132986880785.log.gz",
+    "source": "GitHub completed job log API; exact decoded content",
+    "bytes": 22631,
+    "sha256": "4724be0510dbecbcdbdc628e54fc3bf1595b0ef29f494651b53327ae16d523c5",
+    "rawBytes": 83209,
+    "rawSha256": "9ba74e7b5f80ac4fb35a08c565d0955bb5f96d654a1c5ee5adcc18ec29bc8728"
+  },
+  {
+    "path": "capture.mjs.gz",
+    "source": "bounded local collector/audit",
+    "bytes": 1123,
+    "sha256": "127554f0ef58f809ed3a171cb36d8ad0e9ecb55a98085d794dabbfcc733059d4",
+    "rawBytes": 2323,
+    "rawSha256": "e10c31a11527be36914c9a9fc21a650756bf8925632a5174b02f08f8da27d5df"
+  },
+  {
+    "path": "audit.mjs.gz",
+    "source": "bounded local collector/audit",
+    "bytes": 1265,
+    "sha256": "710d23fe6355aa4c627c338393aff5898a55145135b05278f58bbf2ddefd951c",
+    "rawBytes": 2911,
+    "rawSha256": "3a57fabb7f2e78a69ecd46ceba7f71cbac993e5ff976684d293b3b82d4189cd9"
+  },
+  {
+    "path": "archive.mjs.gz",
+    "source": "bounded local collector/audit",
+    "bytes": 702,
+    "sha256": "177a9d6992305758bf9e58bf608b4673238ae2546627d14525c3ae6a1afbff1e",
+    "rawBytes": 1329,
+    "rawSha256": "79acf11070d307362e29981b9308ced83411e8fc63c9803744d7edf7c4976de9"
+  }
+]
