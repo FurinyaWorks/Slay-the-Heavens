@@ -12,6 +12,7 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendReleaseItemTitleShadowSource} from './release-item-title-shadow-source.mjs';
+import {extendItemPost697Source} from './item-post697-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
@@ -54,7 +55,8 @@ export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preReleaseSelectionMapSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
 export const preReleaseItemTitleShadowSourceEpoch=preReleaseSelectionMapSourceEpoch;
 export const itemBeforeMapSourceEpoch=extendReleaseItemTitleShadowSource(preReleaseItemTitleShadowSourceEpoch);
-export const sourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const preItemPost697SourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const sourceEpoch=extendItemPost697Source(preItemPost697SourceEpoch,itemBeforeMapSourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
