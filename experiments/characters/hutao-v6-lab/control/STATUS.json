@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "phase": "CANDIDATE_B1_FROZEN_REVIEW_PENDING",
-  "updated_date": "2026-11-15",
+  "phase": "B1_FROZEN_CHANGES_REQUESTED_C1_DRAFT_NATURAL_TESTED",
+  "updated_date": "2026-11-16",
   "owner_task": "胡桃独立设计迭代",
   "implementation_branch": "feat/hutao-v6-design-lab-20261114",
   "allowed_root": "experiments/characters/hutao-v6-lab/",
@@ -27,8 +27,8 @@
     "experiment_summary": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-small-ab-findings.md",
     "test_result_path": "experiments/characters/hutao-v6-lab/experiments/2026-11-15-small-ab-raw-results.json",
     "independent_reviews": {
-      "decisions": "PENDING_NEW_CANDIDATE",
-      "economy": "PENDING_NEW_CANDIDATE",
+      "decisions": "CHANGES_REQUESTED_B1_SOURCE_3da512df7e62afdbfe49c7a8d47a781bebe65786",
+      "economy": "CHANGES_REQUESTED_B1_SOURCE_3da512df7e62afdbfe49c7a8d47a781bebe65786",
       "presentation": "CHANGES_REQUESTED_B1_SOURCE_3da512df7e62afdbfe49c7a8d47a781bebe65786"
     },
     "human_approval": "PENDING",
@@ -46,29 +46,29 @@
       "created": true,
       "interval_hours": 12,
       "new_snapshot_only": true,
-      "executed_evidence": null
+      "executed_evidence": "reviewer branch feat/hutao-v6-review-decisions-20261114 reviews/decisions/2026-11-15-b1-independent-review.md"
     },
     {
       "name": "胡桃平衡独立评审",
       "created": true,
       "interval_hours": 12,
       "new_snapshot_only": true,
-      "executed_evidence": null
+      "executed_evidence": "reviewer branch feat/hutao-v6-review-economy-20261114 reviews/economy/2026-11-15-b1-independent-review.md"
     },
     {
       "name": "胡桃呈现独立评审",
       "created": true,
       "interval_hours": 12,
       "new_snapshot_only": true,
-      "executed_evidence": null
+      "executed_evidence": "reviewer branch feat/hutao-v6-review-presentation-20261114 reviews/presentation/2026-11-15-b1-independent-review.md"
     }
   ],
   "next_actions": [
-    "Wait for B1 mechanics/economy reviews to finish; presentation B1 CHANGES_REQUESTED; do not inherit any B1 PASS for C1",
-    "Validate C1 draft in actual frozen HutaoGame using new preregistered multi-strategy natural five-battle tests, HP/deck/rarity analysis and real browser before freezing or requesting reviews",
-    "Resolve legacy 18 card triple-maintained wording and audit 35 original names and source provenance",
-    "Run extreme card combo and free draw/energy loophole probes, preserve failures and negative controls",
-    "Keep current B1 unchanged; no PR, no merge, no production changes, no new release"
+    "Keep B1 frozen and C1 DRAFT; B1 independent decision/economy/presentation all CHANGES_REQUESTED. Do not inherit review for C1.",
+    "C1 rarity-weighted real five-battle results show balanced/ignite/rush holdout completion falls. Diagnose common/uncommon card floors and strategy sensitivity using NEW preregistered seeds; do not tune on existing holdout.",
+    "Add source-anchored reproducible chance-separated reward/shuffle RNG and an opportunistic-E strategy in an isolated NEW draft, not frozen B1/C1.",
+    "Audit legacy 18 card triple-maintained wording and 35 original name provenance; resolve independent review findings.",
+    "Browser desktop/narrow click, extreme combo and HP accounting validation remain missing; no merge/PR/release."
   ],
   "not_claimed": [
     "Independent review passed for B1",
@@ -81,7 +81,7 @@
     "Weighted reward policy improves actual five-battle HP or player enjoyment",
     "B1 independent presentation review passed",
     "C1 draft reviewed, frozen, playtested or integrated",
-    "Actual HutaoGame randomized reward pipeline executed in C1 browser or Node VM"
+    "C1 five-battle completion equals player win rate, fun, causal outcome of rewards alone, or formal three-party acceptance"
   ],
   "baseline": {
     "candidate_id": "baseline-pr640-99cc1e0",
@@ -109,16 +109,49 @@
       "heldout_rare_offer_screen_rate_original": 0.606425,
       "heldout_rare_offer_screen_rate_experimental_weighted": 0.09065,
       "limitation": "Only reward-only deterministic simulation; not HutaoGame natural 5-battle HP/win/playability. New weighted policy not in frozen B1; requires new preregistered gameplay candidate and three fresh reviews."
+    },
+    "reward_c1_natural_five": {
+      "status": "RUN_COMPLETE_C1_STILL_DRAFT",
+      "sources": {
+        "B1": "3da512df7e62afdbfe49c7a8d47a781bebe65786",
+        "C1": "62385bed410b29aba731de3a429eb1fbe875036a",
+        "runner": "5a91cd203a1d3d63edbbeae4b7aa57a4988287d4"
+      },
+      "prereg": "experiments/2026-11-16-c1-natural-five-prereg.md",
+      "raw": "experiments/2026-11-16-c1-natural-five-raw.json",
+      "report": "experiments/2026-11-16-c1-natural-five-findings.md",
+      "reproducer": "experiments/2026-11-16-c1-natural-five-reproduce.cjs",
+      "run_count": 768,
+      "errors": 0,
+      "holdout_B1_wins": [
+        64,
+        63,
+        43,
+        30
+      ],
+      "holdout_C1_wins": [
+        64,
+        57,
+        34,
+        25
+      ],
+      "unverified": [
+        "browser clicks",
+        "independent C1 3-review",
+        "meaningful player decision quality",
+        "natural extreme combos",
+        "human approval"
+      ]
     }
   },
   "draft_candidates": {
     "v6-reward-weighted-c1-20261115-DRAFT": {
-      "status": "DRAFT_NOT_FROZEN_UNVERIFIED",
+      "status": "DRAFT_NATURAL_FIVE_TESTED_NOT_FROZEN",
       "html_path": "experiments/characters/hutao-v6-lab/candidates/v6-reward-weighted-c1-draft.html",
       "html_git_blob_sha": "62385bed410b29aba731de3a429eb1fbe875036a",
       "manifest_path": "experiments/characters/hutao-v6-lab/candidates/v6-reward-weighted-c1-draft.manifest.json",
       "mechanism_scope": "Reward rarity buckets and rare chance offset only, B1 player mechanics unchanged",
-      "evidence": "Static reversible B1-to-C1 diff and isolated method 80000 offer-screen tests; no actual HutaoGame natural battle or browser test",
+      "evidence": "Actual native HutaoGame (isolated V8) 384 B1 vs 384 C1 natural five-battle fixed-strategy seeds; reports experiments/2026-11-16-c1-natural-five-findings.md, raw json. Holdout B1->C1 wins: guard 64->64, balanced 63->57, ignite 43->34, rush 30->25; no new independent reviews, browser or player validation.",
       "formal_review": "NOT_STARTED",
       "user_ready": false,
       "merge_authorized": false,
