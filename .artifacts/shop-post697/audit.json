@@ -1,0 +1,60 @@
+{
+  "head": "5e2375f03a9a80d2abc8420ab7a401e89d525add",
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "original": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+  "product": "5e2375f03a9a80d2abc8420ab7a401e89d525add",
+  "gitObjects": 1098,
+  "production": 352,
+  "currentOwners": 118,
+  "legacyReleaseOwners": 116,
+  "newOwners": [
+    "src/lua/abyss_node_ui_input.lua",
+    "src/lua/abyss_shop_selection.lua"
+  ],
+  "bindings": 31,
+  "archives": 98,
+  "oldArchivesUnchanged": 97,
+  "raw": {
+    "js": 880,
+    "lua": 1424
+  },
+  "kept": {
+    "src/lua/abyss_node_ui_input.lua": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "3e1d6a6b03feb99e741cf8ea607f82cefaec591f"
+    },
+    "src/lua/abyss_shop_selection.lua": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "46ea222831f69730185acea8329427b9633cbe17"
+    },
+    "scripts/node-ui-layout.mjs": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "5684b41d31bac42b617cbcdc35a1cd972d96284d"
+    },
+    "tests/node-ui-layout.test.mjs": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "b8893d2b08b218573f2437359b37564ecbc3c846"
+    },
+    "tests/shop-dismiss.test.mjs": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "fdf1bd2c719c95a76831a380868d77bf2ac27f5f"
+    },
+    "tests/lua/shop_dismiss.lua": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "614be5e4e81edc258c594608d920b4d126a1e077"
+    },
+    "docs/backlog-details/TASK-38.6-SHOP-DISMISS-20261115.md": {
+      "commit": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+      "blob": "3035c4e855a8ee4d6fc7a53bdf21a5c6849eeb6c"
+    },
+    "src/lua/abyss_game_ui_input.lua": {
+      "commit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+      "blob": "640b899577b267b3a1c52d0354b652b0c2da2140"
+    },
+    "src/lua/abyss_game_ui_view.lua": {
+      "commit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+      "blob": "cfd5077f9716cd9d8841e2d60abdf777048689a6"
+    }
+  },
+  "packetSha256": "28f9a0ae8811ffeff2b967a5df982e943de70e49b251b1affe5cccddc13bb823"
+}
