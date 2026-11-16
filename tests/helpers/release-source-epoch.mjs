@@ -7,11 +7,11 @@ import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.values(value).forEach(freeze);Object.freeze(value);}return value;};
 export function extendReleaseSourceEpoch(original){
  const bytes=readFileSync(new URL('./release-source-epoch.json.gz',import.meta.url));
- assert.equal(createHash('sha256').update(bytes).digest('hex'),'f2d206e64071ec45826bef6eb3e71aa03454ec2aae8dfa0cb15c7067d6174938');
+ assert.equal(createHash('sha256').update(bytes).digest('hex'),'5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780');
  const patch=JSON.parse(gunzipSync(bytes)),prior=original.proof;
  assert.equal(patch.schemaVersion,1);
  assert.equal(patch.baseCommit,'0cf2008fa4f5086ac3b2b84b71753b84e7a37962');
- assert.equal(patch.currentCommit,'9098a8844900a887931e32aa78ac617ee1a894df');
+ assert.equal(patch.currentCommit,'e02ed4abce6a694fcf63cbd91ccde00e5e1e44e9');
  assert.deepEqual(patch.inventoryBefore,Object.keys(prior.current).sort());
  assert.deepEqual(Object.keys(patch.before).sort(),Object.keys(patch.current).sort());
  for(const [path,row]of Object.entries(patch.before))assert.deepEqual(row,prior.current[path]??null,'exact release predecessor: '+path);

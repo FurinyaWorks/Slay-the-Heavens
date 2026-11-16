@@ -9,6 +9,45 @@ const sandbox=process.cwd();
 const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
 const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
 const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];
+
+test('runtime helper copy continuation retains every old view and rejects stale predecessor identity',async()=>{
+ const {integratedCiProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');
+ const {feedbackCiPatch}=await import('./helpers/sts-feedback-ci.mjs');
+ const {extendFeedbackHelperClosure}=await import('./helpers/sts-feedback-source-runtime.mjs');
+ const {createHash}=await import('node:crypto');
+ const path='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
+ const original=JSON.parse(readFileSync('tests/helpers/closeout-source-closure.json','utf8'));
+ const row=integratedCiProof.closure[path];assert(row,'explicit current runtime helper continuation is required');
+ assert.equal(original[path],'5341c965ce41e956f153caf90c2e2097ccaee447a2d1e53a5aa666d15a238882');
+ assert.equal(row.before,original[path]);assert.equal(row.after,integratedCiProof.files[path].current.sha256);
+ assert.equal(row.after,'ee54191f327d412a5e37a76ff236af6f4aac692e51884a0e3afd33fe62e427e4');
+ for(const view of Object.values(integratedCiProof.files[path].views)){
+  assert.equal(view.sha256,row.before,'complete original runtime source view');
+  assert.equal(createHash('sha256').update(view.source).digest('hex'),row.before);
+ }
+ const predecessor=extendFeedbackHelperClosure(original,feedbackCiPatch.helperClosure);
+ assert.equal(extendIntegratedHelperClosure(predecessor)[path],row.after);
+ assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'0'.repeat(64)}),/exact integration copy predecessor/);
+});
+
+test('runtime helper copy freshly rejects isolated edits and deletion after warm copy success',async()=>{
+ const {copyIntegrationSourceClosure}=await import('./helpers/copy-integration-source-closure.mjs');
+ const {realpathSync}=await import('node:fs');const {relative,isAbsolute}=await import('node:path');
+ const temp=realpathSync.native(tmpdir()),source=mkdtempSync(join(temp,'runtime-copy-current-')),target=mkdtempSync(join(temp,'runtime-copy-target-'));
+ const path='tests/helpers/combined-epoch/source-epoch-runtime.mjs',helper=join(source,path);
+ try{
+  copyIntegrationSourceClosure(source);const bytes=readFileSync(helper);
+  copyIntegrationSourceClosure(target,{sourceRoot:source});assert.deepEqual(readFileSync(join(target,path)),bytes);
+  writeFileSync(helper,Buffer.concat([bytes,Buffer.from('\n')]));
+  assert.throws(()=>copyIntegrationSourceClosure(target,{sourceRoot:source}),/fresh helper copy identity/);
+  unlinkSync(helper);assert.throws(()=>copyIntegrationSourceClosure(target,{sourceRoot:source}),/ENOENT/);
+  writeFileSync(helper,bytes);copyIntegrationSourceClosure(target,{sourceRoot:source});
+ }finally{for(const directory of [source,target]){
+  const actual=realpathSync.native(directory),within=relative(temp,actual);
+  assert(!isAbsolute(within)&&within.startsWith('runtime-copy-')&&!within.startsWith('..'));
+  rmSync(actual,{recursive:true,force:true});
+ }}
+});
 test('shop/deck continuation retains the complete closeout predecessor and every original target',async()=>{
  const {closeoutPriorEpoch,ciRepairSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const frozen=ciRepairSourceEpoch.proof;

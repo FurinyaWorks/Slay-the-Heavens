@@ -6,6 +6,35 @@ import {join} from 'node:path';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 
 const modulePath=new URL('../scripts/official-portraits.mjs',import.meta.url);
+
+test('official runtime inventory preserves every producer field and rejects selection or idle tampering',async t=>{
+ const {writePortraitModule,portraitRuntimeInventory,portraitInventory,portraitModule,portraitRuntimeInputs}=await import(modulePath);
+ const {officialAssetFlags,officialAssetsProfile}=await import('../scripts/official-assets-profile.mjs');
+ const {artFeatureReceipt,artBuildOptionsFromReceipt}=await import('../scripts/art-features.mjs');
+ const dir=mkdtempSync(join(tmpdir(),'abyss-official-inventory-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+ writeFileSync(join(dir,'art-render-v2.json'),'{}');
+ const source=writePortraitModule(dir,{officialAssets:true,imageTemplateIndex:77,containerTemplateIndex:88,selectionHalfImageTemplateIndex:99});
+ const actual=portraitRuntimeInventory(dir),expected=portraitInventory(officialAssetFlags,{officialAssets:true});
+ assert.deepEqual(actual,expected,'complete production inventory, including order, profile, budgets and hashes');
+ assert.equal(actual.renderProfile,'selection-budget-v1');
+ assert.deepEqual(actual.assets.map(row=>row.asset),['traveler-geo/portraits/avatar96','lowpolyLumine','traveler-geo/idle-approved-v1']);
+ assert.equal(actual.assets[1].sourceSha256,'29c47e50581951d1f3cf509eb39b1a73bf8d6ae4934a5b0606a3c76f9857c050');
+ const receipt={officialAssetsProfile,artFeatures:artFeatureReceipt(officialAssetFlags),officialPortraits:{...actual,
+  imageTemplateIndex:77,containerTemplateIndex:88,selectionHalfImageTemplateIndex:99,inputs:portraitRuntimeInputs(officialAssetFlags).map(path=>({path}))}};
+ assert.equal(artBuildOptionsFromReceipt(receipt).officialAssets,true);
+ for(const patch of [{renderProfile:'lowpoly-mixed-v1'},{assets:[...actual.assets].reverse()},
+  {assets:actual.assets.map((row,i)=>i===1?{...row,sourceSha256:'0'.repeat(64)}:row)}, {peakDynamicControls:1}])
+  assert.throws(()=>artBuildOptionsFromReceipt({...receipt,officialPortraits:{...receipt.officialPortraits,...patch}}),/Portrait artwork inventory differs/);
+ const selected=source.split('\n').find(line=>line.startsWith('lowpolyLumine='));
+ const file=join(dir,portraitModule+'.lua');
+ for(const invalid of [source.replace(selected,selected.replace('1600','1599')),
+  source.replace(selected,selected+'\n'+selected),source.replace(selected,'-- '+selected+',\nlowpolyLumine={count=1,rows={{1}}},'),
+  source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpolyLumine']=")),
+  source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpoly'..'Lumine']=")),
+  source.replace('battleApprovedIdle=','battleApprovedIdleChanged=')]){
+  writeFileSync(file,invalid);assert.throws(()=>portraitRuntimeInventory(dir),/official selection|Official battle idle/);
+ }
+});
 test('V25 inventory counts the actual independent selection and result source instances',async t=>{
  const {writePortraitModule,portraitRuntimeInventory,portraitInventory}=await import(modulePath);
  const dir=mkdtempSync(join(tmpdir(),'abyss-v25-portrait-inventory-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));

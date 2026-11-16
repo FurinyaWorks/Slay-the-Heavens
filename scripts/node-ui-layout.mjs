@@ -108,6 +108,12 @@ export function nodeLayout(theme = nativeTheme) {
   const pickerControls = [arrow('previous', picker.previous, icon.back), arrow('next', picker.next, icon.next),
     text('page', picker.page, '', font.small, color.textDim),
     ...picker.columns.map((x, i) => card(`card${i + 1}`, [x, picker.cardY])),
+    // Camp/Match retire six stable semantic slots even when this profile only
+    // displays three. Empty parents preserve lookup without serialized faces.
+    ...Array.from({length:Math.max(0,6-picker.columns.length)},(_,i)=>({
+      name:`card${picker.columns.length+i+1}`,kind:'container',position:[0,picker.cardY],
+      size:[...theme.layout.card.size],visible:false,children:[],
+    })),
     hidden(card('before', [picker.before, previewY], true)), hidden(card('after', [picker.after, previewY], true)),
     hidden(card('target', [picker.target, previewY], false)),
     hidden(picture('arrow', picker.arrow, icon.next, color.positive)),

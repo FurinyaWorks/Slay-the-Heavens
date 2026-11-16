@@ -137,10 +137,16 @@ export const lowpolySelectPath='art/lowpoly-select/select-lowpoly.json';
 export function portraitRuntimeInputs(flags={}) {
  return [...portraitSourceInputs(flags),...(flags.selectionAvatar||flags.cards||flags.menuBackground?[lowpolySelectPath]:[])];
 }
-function lowpolyInventory(source) {
+function lowpolyInventory(source,{officialSelectionSource}={}) {
  if(!/\blowpoly(?:Hero|CardFan|Land|Lumine)=/.test(source))return [];
  const luaparse=createRequire(import.meta.url)('luaparse');
- const table=luaparse.parse(source).body.find(n=>n.type==='ReturnStatement')?.arguments[0];
+ const table=luaparse.parse(source,{ranges:true}).body.find(n=>n.type==='ReturnStatement')?.arguments[0];
+ if(officialSelectionSource!==undefined){
+  const selected=table?.fields?.filter(field=>field.key?.name==='lowpolyLumine')??[];
+  if(table?.fields?.some(field=>field.type!=='TableKeyString')
+   ||selected.length!==1||source.slice(...selected[0].range)!==officialSelectionSource)
+   throw Error('Unsupported official selection schema; read historical candidates with their pinned producer');
+ }
  const rows=[];
  for(const field of table?.fields??[]) {
   const name=field.key?.name;
@@ -267,5 +273,8 @@ export function portraitRuntimeInventory(directory) {
    groups:Math.ceil(row.count/60),pages:Math.ceil(row.count/3600),sourcePreviewSha256:row.sha256,grid:row.grid};});
   return combineInventory(rows.length?{renderProfile:'compact-v1',assets:rows,instances:rows.length,batchSize:64,peakDynamicControls:rows.reduce((n,a)=>n+a.images+a.groups+a.pages,0),maxDirectDynamicChildren:60,officialCapacity:'not_measured',devicePerformance:'not_run'}:undefined,lowpolyInventory(source));
  }
- return combineInventory(portraitInventory(flags,{budget:existsSync(join(directory,'art-render-v2.json'))||source.includes('selection133='),lowpoly:false,v25:source.includes('v25PortraitProfile=')||source.includes('v25SceneOwnerCount='),officialAssets}),lowpolyInventory(source));
+ const landscape=lowpolyInventory(source,officialAssets&&flags.selectionAvatar?
+  {officialSelectionSource:`lowpolyLumine=${toLua(lumineSelectionBackground())}`}:{})
+  .filter(row=>!officialAssets||row.asset!=='lowpolyLumine');
+ return combineInventory(portraitInventory(flags,{budget:existsSync(join(directory,'art-render-v2.json'))||source.includes('selection133='),lowpoly:false,v25:source.includes('v25PortraitProfile=')||source.includes('v25SceneOwnerCount='),officialAssets}),landscape);
 }
