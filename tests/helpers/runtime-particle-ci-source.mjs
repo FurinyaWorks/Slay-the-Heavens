@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./runtime-particle-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'049afd82531b5a0f1683b7ead422c2a36f5c411244b8d9047fd0f675b8a4ea2a','complete runtime particle CI continuation');
+assert.equal(hash(bytes),'d4fddaf8cc6fc4b06a64eeb8c23ecb3ac6570e336a19ab9c071616513c85003d','complete runtime particle CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');

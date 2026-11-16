@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-16 03:11'
+updated_date: '2026-11-16 03:33'
 labels:
   - 待验
   - delivery-verify
@@ -85,4 +85,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
 2026-11-16 Owner授权Release白盒运行时切片：基1cc5479b，核对19在途PR，不重复688/694，不接703。唯一生产producer befd4808为意图粒子首次成功静态配置；正式美术同源三配对300帧native17270→9530、属性30860→20540，七UI模块表字面量16157→15297。5120更新所测字段及完整Run/RNG一致，20次切屏和3600帧循环驻留对账；普通待机/连续牌调用不变，部分墙钟样本升高保留。机制入口 scripts/benchmark-battle-runtime.mjs；报告 docs/research/2026-11-16-runtime-attribution.md。图片false/重入与来源raw/历史混用独审RED→GREEN，最终独审及PR接续。无官方SDK/同候选/ready/手机温度FPS数据，UNVERIFIED；状态/Owner/AC不改，不合并发版。
+
+2026-11-16测量覆盖纠正：c56dcd7的17270→9530是真实UNKNOWN-only，不应称UNKNOWN/STUN联合；首次refresh后改raw意图不触发Displayed.createIntent。已保留旧数据/旧审结论并撤回联合标签，真实Host缺类断言RED后，将两个move移到首次呈现前。新一轮三配对+allocation/visual均成功，实际每块同时存在两类粒子，300帧native30469→14881、属性49912→29128、七UI模块表21801→20069，5120字段更新与Run/RNG一致。普通待机/连续牌调用不变且部分VM时长升高公开；每轮驻留扣除存活粒子及容器后27578不变。报告同入口，手机/SDK/Hosted仍UNVERIFIED，最终新SHA独审及独立PR接续，不合并。
 <!-- SECTION:NOTES:END -->

@@ -23,6 +23,8 @@ function validate(run){
   assert(Number.isFinite(r.elapsedMs)&&r.elapsedMs>=0,'invalid duration');
   for(const k of ['frames','liveControls','effects','outputs','particlePages','visualFrames'])assert(Number.isSafeInteger(r[k])&&r[k]>=0,'invalid '+k);
   assert(digestPattern.test(r.coreHash),'missing core/RNG identity');
+  if(['particle-warmup','particles-300'].includes(r.phase)||r.phase.startsWith('long-'))assert((r.intentKinds?.INTENT_UNKNOWN_L??0)>0&&(r.intentKinds?.TINY_STAR??0)>0,'both source particle classes must be present');
+  assert.equal(Object.values(r.intentKinds).reduce((a,b)=>a+b,0),r.effects,'source particle class census');
   for(const k of ['rss','heapUsed'])assert(Number.isSafeInteger(r.memory[k])&&r.memory[k]>0,'missing VM memory');
   for(const k of ['nativeCalls','propertyWrites','created','destroyed'])assert(Number.isSafeInteger(r.counts[k])&&r.counts[k]>=0,'invalid count');
   validateHistogram(r.counts.methods,r.counts.nativeCalls);validateHistogram(r.counts.properties,r.counts.propertyWrites);
@@ -34,7 +36,7 @@ export function validateBattlePair(before,after){
  validate(before);validate(after);assert.equal(before.mode,after.mode);assert.deepEqual(before.cycles,after.cycles,'lifecycle cycle mismatch');
  for(let i=0;i<before.rows.length;i++){
   const a=before.rows[i],b=after.rows[i];
-  for(const k of ['phase','frames','coreHash','liveControls','effects','outputs'])assert.deepEqual(b[k],a[k],'changed workload/state: '+k);
+  for(const k of ['phase','frames','coreHash','liveControls','effects','outputs','intentKinds'])assert.deepEqual(b[k],a[k],'changed workload/state: '+k);
   assert.deepEqual(b.counts.calls,a.counts.calls,'changed subsystem calls');
   for(const k of ['created','destroyed'])assert.equal(b.counts[k],a.counts[k],'changed native lifetime');
   if(before.mode==='visual')assert.equal(b.visualHash,a.visualHash,'visual field drift');

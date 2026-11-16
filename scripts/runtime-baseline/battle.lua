@@ -38,9 +38,10 @@ counted(host.battleUI.feedback,'update','Feedback.update')
 for _,name in ipairs({'nodeUI','deckUI','mapUI'})do counted(host[name],'update',name..'.update')end
 assert(F.start(host));assert(host.run.runSeed=='1');assert(Run.startCombat(host.run,'cultist_solo'))
 local deck={'strike','defend','defend','strike','bash','defend','strike','defend','strike','defend'}
-local function battle(enemies)
- host.run.combat=F.Combat.new(F.Data,{enemies=enemies,deck=deck,seed=42})
- host:refresh()
+local function battle(enemies,prepare)
+ local state=F.Combat.new(F.Data,{enemies=enemies,deck=deck,seed=42})
+ if prepare then prepare(state)end
+ host.run.combat=state;host:refresh()
 end
 local fields={'visible','activeInHierarchy','alive','x','y','sizeDeltaX','sizeDeltaY','localScaleX','localScaleY','rotation','imageId','imageColor','fontColor','text','raycastTarget'}
 local function primitive(v)
@@ -84,16 +85,18 @@ local function steps(n)for _=1,n do step(1/60)end end
 local function inventory()
  local current=live+counts.created-counts.destroyed
  local effects,outputs,pages=0,0,0
+ local kinds={}
  for _,v in ipairs(particleViews)do
-  for _,s in pairs(v.states)do effects=effects+#s.effects end
+  for _,s in pairs(v.states)do effects=effects+#s.effects;for _,e in ipairs(s.effects)do kinds[e.textureKey]=(kinds[e.textureKey]or 0)+1 end end
   for _,o in pairs(v.outputs)do for _,p in pairs(o)do p:each(function()outputs=outputs+1 end);for _ in pairs(p.pages)do pages=pages+1 end end end
  end
- return current,effects,outputs,pages
+ return current,effects,outputs,pages,kinds
 end
 local function mark(name)
- local current,effects,outputs,pages=inventory()
+ local current,effects,outputs,pages,kinds=inventory()
+ if name=='particle-warmup'then assert((kinds.INTENT_UNKNOWN_L or 0)>0 and (kinds.TINY_STAR or 0)>0,'intent workload did not produce both UNKNOWN and STUN source particles')end
  CORE(host.run) -- same full Run/RNG graph, including aliases, via existing observer.
- MARK(name,counts,frames,current,effects,outputs,pages)
+ MARK(name,counts,frames,current,effects,outputs,pages,kinds)
  live=current;frames=0
  for k in pairs(counts)do counts[k]=type(counts[k])=='table'and{}or 0 end
 end
@@ -121,10 +124,10 @@ for _=1,3 do
  played=played+1;steps(20)
 end
 assert(played==3);mark('cards-3')
-battle({'collector','byrd'})
-local b=host.run.combat
 local function move(a,id)for i,intent in ipairs(a.intents)do if intent.id==id then a.intentIndex=i;return end end;error('missing source intent')end
-move(b.enemies[1],'spawn');move(b.enemies[2],'stunned');host:refresh();steps(120);mark('particle-warmup')
+-- Source displayed intent is captured on first presentation, not inferred from raw mutations.
+battle({'collector','byrd'},function(b)move(b.enemies[1],'spawn');move(b.enemies[2],'stunned')end)
+steps(120);mark('particle-warmup')
 steps(300);mark('particles-300')
 for cycle=1,20 do
  assert(host:openDeck());steps(15)

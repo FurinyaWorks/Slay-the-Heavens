@@ -1,7 +1,7 @@
 {
   "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
   "runtimeProducer": "befd480817b0f7c875de189863d37e803704ad3a",
-  "benchmark": "OFFLINE_HOST_PAIR_VERIFIED",
+  "benchmark": "OFFLINE_HOST_PAIR_VERIFIED (combined actual UNKNOWN+STUN)",
   "sourceClosure": {
     "tests": 62,
     "pass": 62
@@ -27,5 +27,23 @@
   "ordinaryFull": "UNVERIFIED, normal existing risk route remains required; not run locally",
   "officialSdk": "UNVERIFIED",
   "officialPhone": "UNVERIFIED",
-  "autoMerge": "not requested"
+  "autoMerge": "not requested",
+  "workloadCorrection": {
+    "historicalCheckpoint": "c56dcd7bbda5ba302ba9f37d11bab2f64a6bc32f",
+    "oldScope": "UNKNOWN only; joint conclusion withdrawn",
+    "actualClassesRequired": [
+      "INTENT_UNKNOWN_L",
+      "TINY_STAR"
+    ],
+    "lightContractTests": 7
+  },
+  "priorSourceAndCalibrationCheckpoint": "c56dcd7bbda5ba302ba9f37d11bab2f64a6bc32f; source/CI implementation reused, new sampler bindings reauthenticated",
+  "combinedCurrent": {
+    "tests": 11,
+    "pass": 11
+  },
+  "combinedRawInventory": {
+    "tests": 2,
+    "pass": 2
+  }
 }

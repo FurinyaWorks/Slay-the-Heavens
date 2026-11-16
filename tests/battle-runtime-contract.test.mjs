@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validateBattlePair,battlePhases} from '../scripts/benchmark-battle-runtime.mjs';
 const sha='a'.repeat(64);
-function report(mode='counts') {return {mode,cycles:Array.from({length:20},(_,i)=>({cycle:i+1,liveControls:10,effects:1,outputs:1,particlePages:1})),rows:battlePhases.map((phase,i)=>({phase,elapsedMs:1,frames:[120,300,80,120,300,600,...Array(12).fill(300),0][i],coreHash:sha,visualHash:mode==='visual'?sha:null,visualFrames:mode==='visual'?[120,300,80,120,300,600,...Array(12).fill(300),0][i]:0,liveControls:10,particlePages:1,effects:phase==='disable'?0:1,outputs:phase==='disable'?0:1,memory:{rss:100,heapUsed:50},counts:{nativeCalls:3,propertyWrites:3,methods:{SetVisible:3},properties:{visible:3},calls:Object.fromEntries(['particles.paint','GameUI.update','BattleUI.update','Feedback.update','nodeUI.update','mapUI.update'].map(k=>[k,[120,300,80,120,300,600,...Array(12).fill(300),0][i]+(k==='mapUI.update'&&i===0?3:0)-(k==='Feedback.update'&&i===3?1:0)]).filter(([,v])=>v>0)),allocations:mode==='allocations'?{site:10}:{},created:1,destroyed:1}}))};}
+function report(mode='counts') {return {mode,cycles:Array.from({length:20},(_,i)=>({cycle:i+1,liveControls:10,effects:1,outputs:1,particlePages:1})),rows:battlePhases.map((phase,i)=>({phase,elapsedMs:1,frames:[120,300,80,120,300,600,...Array(12).fill(300),0][i],coreHash:sha,visualHash:mode==='visual'?sha:null,visualFrames:mode==='visual'?[120,300,80,120,300,600,...Array(12).fill(300),0][i]:0,liveControls:10,particlePages:1,intentKinds:phase==='disable'?{}:{INTENT_UNKNOWN_L:1,TINY_STAR:1},effects:phase==='disable'?0:2,outputs:phase==='disable'?0:2,memory:{rss:100,heapUsed:50},counts:{nativeCalls:3,propertyWrites:3,methods:{SetVisible:3},properties:{visible:3},calls:Object.fromEntries(['particles.paint','GameUI.update','BattleUI.update','Feedback.update','nodeUI.update','mapUI.update'].map(k=>[k,[120,300,80,120,300,600,...Array(12).fill(300),0][i]+(k==='mapUI.update'&&i===0?3:0)-(k==='Feedback.update'&&i===3?1:0)]).filter(([,v])=>v>0)),allocations:mode==='allocations'?{site:10}:{},created:1,destroyed:1}}))};}
 test('battle pair accepts deterministic calls and exact core/visual equality with lower cost',()=>{
  for(const mode of ['counts','allocations','visual']){
   const a=report(mode),b=structuredClone(a);b.rows[4].counts.nativeCalls=2;b.rows[4].counts.methods.SetVisible=2;if(mode==='allocations')b.rows[4].counts.allocations.site=9;
@@ -40,4 +40,9 @@ test('a pair with no reduction or an empty allocation observer cannot certify th
  const a=report('allocations'),b=report('allocations');b.rows[4].counts.nativeCalls=2;b.rows[4].counts.methods.SetVisible=2;
  a.rows.forEach(r=>r.counts.allocations={});b.rows.forEach(r=>r.counts.allocations={});
  assert.throws(()=>validateBattlePair(a,b));
+});
+
+test('combined intent workload cannot pass with only UNKNOWN particles on both sides',()=>{
+ const a=report(),b=report();a.rows[3].intentKinds={INTENT_UNKNOWN_L:2};b.rows[3].intentKinds={INTENT_UNKNOWN_L:2};
+ assert.throws(()=>validateBattlePair(a,b),/source particle classes/);
 });

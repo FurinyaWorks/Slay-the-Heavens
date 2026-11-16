@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-16 03:11'
+updated_date: '2026-11-16 03:33'
 labels:
   - 待验
   - delivery-verify
@@ -65,4 +65,6 @@ PR #523 首份离线Host全路径基线已实现：固定实际seed、源摘要�
 2026-11-14第二轮状态纠正：已有Host基准、visibility配对与SDK阶段记录，当前候选完整覆盖待补；工具及研究已开展，不应标To Do。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
 
 2026-11-16复用TASK100 observer/nearest-rank及既有Run图serializer，新增显式运行时配对入口（不进入普通CI长回放）。固定1cc基线、正式美术profile、run1/battle42种子及动作，三交错freshVM、独立allocation/visual两配对，含20逐轮驻留与12x300循环、完整原始输入/计数/时长/不利结果及缺observer/no-op/欠工作量反例。报告 docs/research/2026-11-16-runtime-attribution.md；不重做688/694，不把VM时长当设备帧时。官方SDK/手机/Hosted及合后Full未验，既有任务状态与AC保持。
+
+2026-11-16在基准机制中补实际source类型census：原c56联合标签撤回并封存为UNKNOWN-only。真实Host缺STUN先RED，首次呈现前准备修正；新固定三配对及独立allocation/visual通过。压力与12长块必须同时有INTENT_UNKNOWN_L/TINY_STAR，类别总数与effects一致，缺类反例拒绝。新native30469→14881，表21801→20069；原所有不利时长和历史数据保留。普通路径没有调用收益、全场景无回退及官方手机仍未认证，状态/AC保持。
 <!-- SECTION:NOTES:END -->

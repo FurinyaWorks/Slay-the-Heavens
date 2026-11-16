@@ -21,7 +21,7 @@ callback('CYCLE',s=>{cycles.push({cycle:value(s,1),liveControls:value(s,2),effec
 callback('VISUAL',s=>{visual.update(to_jsstring(lua.lua_tostring(s,1)));visualFrames++;return 0;});
 installLuaGraphObserver(L,'RUN_GRAPH',(_label,graph)=>{coreHash=hash(graph);});
 exec('function CORE(run) RUN_GRAPH_WRITE(run,"run") end');
-callback('MARK',s=>{const now=performance.now();rows.push({phase:value(s,1),elapsedMs:now-previous,counts:value(s,2),frames:value(s,3),liveControls:value(s,4),effects:value(s,5),outputs:value(s,6),particlePages:value(s,7),coreHash,visualHash:mode==='visual'?visual.digest('hex'):null,visualFrames,memory:process.memoryUsage()});visual=createHash('sha256');visualFrames=0;previous=performance.now();return 0;});
+callback('MARK',s=>{const now=performance.now();rows.push({phase:value(s,1),elapsedMs:now-previous,counts:value(s,2),frames:value(s,3),liveControls:value(s,4),effects:value(s,5),outputs:value(s,6),particlePages:value(s,7),intentKinds:value(s,8),coreHash,visualHash:mode==='visual'?visual.digest('hex'):null,visualFrames,memory:process.memoryUsage()});visual=createHash('sha256');visualFrames=0;previous=performance.now();return 0;});
 exec(`package.path=${JSON.stringify(resolve(profile).replaceAll('\\','/')+'/?.lua;./build/lua/?.lua;./src/lua/?.lua;')}..package.path;VERIFY_VISUAL=${mode==='visual'}`);
 const target='abyss_monster_intent_particle_view';
 const sources=new Map([[target,readFileSync(sourceFile,'utf8')]]);
