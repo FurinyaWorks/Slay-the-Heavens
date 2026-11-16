@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./potion-shop-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'82c20f9ee24fcb07de6e215d6b19851fffa74190ac587a7e0630e14fcc59ae34','complete potion/shop current corpus');
+assert.equal(hash(bytes),'cdd685fbad781304910f6b89d9fa87ad48d060c4fbea30eeea223868d1061aad','complete potion/shop current corpus');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const potionShopCiPacket=freeze(JSON.parse(gunzipSync(bytes)));
 const p=potionShopCiPacket;

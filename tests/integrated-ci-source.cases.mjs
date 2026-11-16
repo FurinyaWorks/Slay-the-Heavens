@@ -399,7 +399,7 @@ test('post697 union public CI source authenticates the same raw reader before ev
 });
 
 test('post697 union current inventory authenticates the complete corpus before entering prior inventory',()=>{
- const inventories={js:actualPost697DiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};let fault;
+ const inventories={js:actualPost697DiscoverJs(),lua:potionShopPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualUnionReadFileSync,'potion')};let fault;
  const read=(path,encoding)=>{
   if(path===fault?.path){
    if(fault.kind==='missing')throw Error('missing '+path);
