@@ -3,6 +3,8 @@ import { mkdirSync, realpathSync, statSync, writeFileSync, existsSync } from 'no
 import { dirname, resolve, join, basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { contentFiles, loadContent, validateContent } from './validate-data.mjs';
+import { luaString } from './lua-string.mjs';
+export { luaString } from './lua-string.mjs';
 
 function rejectInputOutputAlias(inputDirectory, output) {
   let outputStat;
@@ -26,14 +28,6 @@ function rejectInputOutputAlias(inputDirectory, output) {
       throw new Error(`Output must not overwrite an input file: ${inputPath}`);
     }
   }
-}
-
-export function luaString(value) {
-  if (!value.isWellFormed()) throw new TypeError('Lua strings require well-formed Unicode');
-  // Fixed-width byte escapes prevent a following digit from joining an escape.
-  return '"' + [...Buffer.from(value, 'utf8')].map(byte =>
-    byte >= 32 && byte <= 126 && byte !== 34 && byte !== 92
-      ? String.fromCharCode(byte) : `\\${String(byte).padStart(3, '0')}`).join('') + '"';
 }
 
 export function toLua(value) {

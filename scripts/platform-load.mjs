@@ -16,6 +16,7 @@ import { verifyNativeCardArtReceipt } from './card-art-samples.mjs';
 import { validDate } from './evidence-files.mjs';
 import { gitSourceIdentity } from './release-notes.mjs';
 import {assertCandidateArtReceipt} from './candidate-art-policy.mjs';
+import {productionCosts,productionCostDelta} from './production-costs.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export function packageInventory(directory = 'build/lua') {
@@ -75,6 +76,7 @@ export function packageInventory(directory = 'build/lua') {
   }
   return {schemaVersion: 1, ...gitSourceIdentity(process.cwd()), measurement: 'offline-production-inputs-not-official-storage', modules,
     luaBytes: modules.reduce((n, row) => n + row.bytes, 0),
+    costBreakdown:productionCosts(modules,layout,templates,JSON.parse(readFileSync('config/architecture.json')).layers),
     layoutJsonBytes: Buffer.byteLength(JSON.stringify(layout)), templateJsonBytes: Buffer.byteLength(JSON.stringify(templates)),
     controls, hiddenControls, templates: templates.length, artPools, maxChildren,
     monsterActors: {...monsterActorInventory(templates.find(t=>t.name===monsterActorTemplateName)),
@@ -176,6 +178,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         || observation.serverStorageMB < 0 || observation.serverStorageMB > 3)
         throw Error('Recorded official storage exceeds a hard limit or is malformed');
       report.warnings = growthWarnings(report, baseline);
+      // An optional prior daily report supplies comparable module/page/resource
+      // paths. The original aggregate budget and historical reading stay fixed.
+      const prior=evidencePath?JSON.parse(readFileSync(evidencePath)):baseline;
+      report.costDelta=productionCostDelta(report.costBreakdown,prior.costBreakdown);
+      for(const group of ['lua','pages','templates'])for(const row of report.costDelta[group]??[]){
+        if(row.deltaBytes>0&&row.afterBytes>row.beforeBytes*1.1)
+          report.warnings.push(`${group} ${row.name??row.path}: +${row.deltaBytes} offline bytes; review assembly, not official MB`);
+      }
       if (observation.levelStorageMB > 16) report.warnings.push('Recorded official level storage exceeds 16MB internal budget; historical reading does not verify this candidate');
       report.baselineSourceCommit = baseline.sourceCommit;
       report.delta = Object.fromEntries(['luaBytes', 'layoutJsonBytes', 'templateJsonBytes', 'controls', 'hiddenControls']
@@ -199,7 +209,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         return readFileSync(target);
       });
       if (report.status !== 'PASS') process.exitCode = 1;
-    } else throw Error('Usage: platform-load.mjs daily [generated-directory] | release <candidate.json> [official-evidence.json]');
+    } else throw Error('Usage: platform-load.mjs daily [generated-directory] [prior-daily.json] | release <candidate.json> [official-evidence.json]');
     mkdirSync('build', {recursive: true});
     writeFileSync(`build/platform-load-${mode}.json`, JSON.stringify(report, null, 2) + '\n');
     console.log(JSON.stringify({...report, ...(report.modules ? {modules: report.modules.length} : {})}, null, 2));
