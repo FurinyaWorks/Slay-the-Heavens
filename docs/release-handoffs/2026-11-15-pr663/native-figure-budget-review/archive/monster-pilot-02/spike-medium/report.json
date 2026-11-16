@@ -1,0 +1,21 @@
+{
+  "graphics": 41,
+  "containersPredicted": 3,
+  "artControlsPredicted": 44,
+  "sourceSHA256": "3266caa1fd8512777345682ebd76cc623e7680bfd94b92613f14340f6443e9fe",
+  "exactTransformMaxError": 0.0,
+  "engineVerified": false,
+  "enemyId": "spike_slime_m",
+  "displayName": "中型棘刺团",
+  "officialPage": "https://wiki.hoyolab.com/pc/genshin/entry/2137?lang=en-us",
+  "officialImage": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/04/35428890/d6d14f3be2acda7571dd38710d54dca2_3981115206830671799.png",
+  "sourcePose": "upright center reference pose, no claim of official medium species; regular Geo Slime; not the squat left-bottom pose",
+  "maskedRows": 0,
+  "standaloneReleaseVM": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "anchors": [
+    "vertical rounded body",
+    "asymmetric twin rock tips",
+    "paired luminous eyes",
+    "small green stone leaves"
+  ]
+}

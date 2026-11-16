@@ -1,0 +1,37 @@
+{
+  "enemyId": "acid_slime_s",
+  "gameName": "小型酸液团",
+  "officialIdentity": "Dendro Slime / 草史莱姆 (small species)",
+  "officialPage": "https://wiki.hoyolab.com/pc/genshin/entry/2214?lang=en-us",
+  "officialImage": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/04/35428890/f7231cfde37a6dc9d6431c6520ab31de_8412928126485511837.png",
+  "referenceSHA256": "ecb2a44610a015c9bb1c27107a5993ce8e38481c90eab39ebccf7ec31e523f27",
+  "chosenPoseCrop": [
+    627,
+    397,
+    857,
+    647
+  ],
+  "sourceSelection": "Right-bottom pose from official2214 three-pose illustration; no2130 LargeDendro source or AI derivative",
+  "traits": [
+    "Low pale-green rounded small body",
+    "Short drooping forked leaf crown with small curled shoot",
+    "Two pale vertical eyes with warm orange rims"
+  ],
+  "nativeRows": 32,
+  "primitiveCounts": {
+    "100002": 11,
+    "100003": 21
+  },
+  "maskCount": 0,
+  "controls": 35,
+  "containers": 3,
+  "vmBaseline": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "vm": "Actual Portraits.createController;120static poses0imagewrites/recreation;release0. Standalone art mock not production MonsterArt allocation/device proof.",
+  "refinement": "Same35 cap: slimmed stem and slightly reduced upper green patch to expose rounded pale body, preserving eyes and drooping crown.",
+  "status": "Unapproved draft, no production/runtime modifications,CI,push,Codex. Small shape own draft, not scaling medium art.",
+  "commands": [
+    "python acid-small/build.py \"$REPO\" \"$HISTORY\"",
+    "python acid-small/encode.py",
+    "from REPO root, node \"$BATCH/standalone-probe.mjs\" \"$BATCH/acid-small/native-layout.json\""
+  ]
+}

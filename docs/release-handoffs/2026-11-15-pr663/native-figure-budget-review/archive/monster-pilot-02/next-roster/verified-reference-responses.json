@@ -1,0 +1,30 @@
+[
+  {
+    "entry": 2213,
+    "name": "Dendro Samachurl",
+    "sha256": "335668b56bf513adeb2324f83197d725f92a7f67f16106b5fd8c1540d8fded09",
+    "source": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2213",
+    "header": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/08/35428890/b8ad56958a7e69b5da9bb8915b06e170_1502814972231730551.png"
+  },
+  {
+    "entry": 2731,
+    "name": "Stretchy Pyro Fungus",
+    "sha256": "9d0d1efcb26adffd307a5dddc6323350f62881c3c051cfadbd392662eab9f15c",
+    "source": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2731",
+    "header": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/6676a7e2c239faef2ab20e3cc7c834e3_524803526322218731.png"
+  },
+  {
+    "entry": 2732,
+    "name": "Stretchy Geo Fungus",
+    "sha256": "3ef8e39a5267a29860836ccc0f99ca1ebfa8151f08ad8f7bfc245e52db4a085b",
+    "source": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2732",
+    "header": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/d4263c7a6d94dc1e6e9ffb14805a80db_9147417040645087238.png"
+  },
+  {
+    "entry": 2144,
+    "name": "Geovishap Hatchling",
+    "sha256": "0b1bf97fecf7c52327e74f9022c26e449909423b4f9e40b0eb49083b18808e25",
+    "source": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2144",
+    "header": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/08/15/35428890/f6cfb60bc11b888e2c772887dc1e4f02_6592641396496602649.png"
+  }
+]

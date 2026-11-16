@@ -1,0 +1,13 @@
+body crown #51473a 24,58 31,39 43,34 68,36 88,43 98,64 78,53 52,49 35,56
+body leftrock #3d372f 26,46 22,20 30,16 38,20 45,37 37,49
+body leftfacet #655e52 24,21 30,18 36,22 38,36 33,39
+body backrock #403a30 42,36 39,10 43,-2 50,-5 56,8 58,37
+body centerfacet #625b4e 42,9 49,-1 54,10 51,30
+body rightrock #37332b 77,43 84,30 98,22 103,27 95,54
+body rightfacet #655e54 85,32 98,25 100,28 92,44
+body centerrock #3d372c 68,36 75,26 81,28 84,36 78,42
+body speckleft #423b2e 38,56 42,54 44,58 41,62
+body speckright #423b2e 82,59 86,57 89,63 86,66
+body leafleft #a6a96e 26,43 32,40 35,43 31,46
+body leafsmall #a6a96e 32,46 36,48 35,52
+body leafright #a6a96e 74,33 78,30 81,33 78,36

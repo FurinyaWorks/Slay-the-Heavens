@@ -1,0 +1,21 @@
+{
+  "enemyId": "spike_slime_s",
+  "displayName": "\u5c0f\u578b\u68d8\u523a\u56e2",
+  "baselineCommit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "referenceIdentity": "Geo Slime",
+  "officialPage": "https://wiki.hoyolab.com/pc/genshin/entry/2137?lang=en-us",
+  "api": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2137",
+  "referenceUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/04/35428890/d6d14f3be2acda7571dd38710d54dca2_3981115206830671799.png",
+  "sourceSha256": "3266caa1fd8512777345682ebd76cc623e7680bfd94b92613f14340f6443e9fe",
+  "pose": "left-bottom compressed/grounded pose crop100,365,350,550; not center upright pose; small regular Geo Slime2137, not Large2127",
+  "images": 41,
+  "containers": 3,
+  "total": 44,
+  "primitiveTypes": {
+    "100002": 5,
+    "100003": 36
+  },
+  "halfMaskedTriangles": 0,
+  "design": "Compact wide grounded brown-gray body, dominant rock caps, one side-visible glowing eye and small leaves; no dome-shaped yellow armored Large Geo Slime. Actual triangles/ellipses only, no runtime PNG.",
+  "limitations": "Simplified shapes and color fields; not exact reference pixels. Official HoYoWiki displayed image, CDN is UGC path; no independent studio-author or license certification. No production mutation/device performance claim."
+}
