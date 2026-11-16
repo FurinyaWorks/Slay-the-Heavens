@@ -26,3 +26,11 @@ Owner 明确要求实际解决两片冲突，独立分支 `fix/hand-enemy-integr
 最终map来源原入口7/7 PASS（137.85s，0skip），保存map-source-final.log；随后历史cases的输入分层只用于每test认证后的历史fixture，生产live认证没有缓存或降级，最终复核另列。
 
 最终dff身份（35个CI绑定、105归档、882JS/1426Lua真实发现）union入口3/3 PASS，50.03秒、0skip。`check:guidance`、`git diff --check`通过。历史输入分层独审通过：hand3922/enemy3920个Git blob记录精确，未知路径拒绝、Buffer无污染，每test真FS重新认证；生产live授权未缓存。完整旧cases运行结果尚待记录，不当作已通过。
+
+## 最终交付
+
+完整解决代码远端提交 `c31dec26295105ba1d7d15f3e4588088e728f3e5`，Git tree `cfada4405db6e27eaf931c7fe4a48a9dfbd39a27` 与独审本地 b1777271 tree 完全一致。双方原post697 integrated reader/source关键用例2/2 PASS，25.46秒、0skip（domain-selected.log.gz）；current真实FS两个integrated API对三个跨hand/enemy/map生产owner的missing/null/drift共18次拒绝并恢复通过（current-entry.log.gz）。
+
+独立精确提交复审 `/root/resolve_conflicts/review_union`：tests/src/config/scripts/.github与b1777271无差异，最终packet/leaf/fixture hash一致，无剩余源码阻断。远端c31dec仅因GitHub服务生成commit元数据而不同SHA，tree精确相同。
+
+旧完整历史cases矩阵主动中止，不计通过；所有原用例仍可执行，未删断言，未增加超时/预算。没有宣称Hosted Required、实际Release合并、官方/手机验收通过。
