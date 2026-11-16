@@ -55,7 +55,27 @@ for(const [path,row]of Object.entries({...reduction.files,...reduction.addedFile
   if(prior)assert.deepEqual(row.before,prior,'retained TASK-111 predecessor: '+path);
  }else assert.equal(row.before,null,'new source has no invented predecessor');
 }
+// Receipt propagation fixes are a new leaf; the frozen production packet stays intact.
+const audioBytes=readFileSync(new URL('./task111-default-audio-ci-source.json.gz',import.meta.url));
+assert.equal(hash(audioBytes),'9cbd6377f119df375beedda9077d7ce5ee63fe803c0ee8ccbd90fcc20bd8fba8','complete TASK-111 audio handoff CI continuation');
+const audio=JSON.parse(gunzipSync(audioBytes));
+assert.equal(audio.schemaVersion,1);assert.equal(audio.normalization,'LF');
+assert.equal(audio.baseCommit,'d46bf7aa9a27e0a47528412d7f0ad8fd7e2cbf2b');assert.equal(audio.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(audio.files),['scripts/build-native-audio-game.mjs','scripts/build-native-bgm-candidate.mjs','tests/native-bgm-build-provenance.test.mjs','tests/native-candidate-art.test.mjs','tests/native-candidate.test.mjs']);
+for(const [path,row]of Object.entries(audio.files)){
+ for(const binding of [row.before,row.current]){
+  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+ }
+ if(reduction.files[path])assert.deepEqual(row.before,reduction.files[path].current,'retained production freeze: '+path);
+}
+function audioBefore(path,source){
+ const row=Object.hasOwn(audio.files,path)?audio.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ return hash(norm(source))===row.current.sha256?row.before.source:source;
+}
 function reductionBefore(path,source){
+ source=audioBefore(path,source);
  const row=Object.hasOwn(reduction.files,path)?reduction.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
@@ -93,6 +113,7 @@ export const releaseBootstrapCiPacket=freeze(packet);
 export const capacityCiPacket=freeze(capacity);
 export const capacityReviewCiPacket=freeze(review);
 export const defaultReductionCiPacket=freeze(reduction);
+export const defaultReductionAudioCiPacket=freeze(audio);
 function checkedSource(path,source,before){
  source=capacityBefore(path,source,before);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
@@ -121,8 +142,10 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries(audio.files))
+  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: audio handoff / fresh complete integration source: '+path);
  for(const [path,row]of Object.entries({...reduction.files,...reduction.addedFiles}))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: default reduction / fresh complete integration source: '+path);
+  assert.equal(hash(norm(audioBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete TASK-111 CI source: default reduction / fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(review.files))
   assert.equal(hash(norm(reductionBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete TASK-111 CI source: review '+path);
  for(const [path,row]of Object.entries(capacity.files))
@@ -130,7 +153,7 @@ export function assertReleaseBootstrapCiCurrent(read=readFileSync){
  const rawRead=read;
  read=(path,encoding)=>{
   const raw=rawRead(path,encoding);
-  if(!Object.hasOwn(capacity.files,path)&&!Object.hasOwn(review.files,path)&&!Object.hasOwn(reduction.files,path))return raw;
+  if(!Object.hasOwn(capacity.files,path)&&!Object.hasOwn(review.files,path)&&!Object.hasOwn(reduction.files,path)&&!Object.hasOwn(audio.files,path))return raw;
   const source=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityBefore(path,source);
   return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
  };

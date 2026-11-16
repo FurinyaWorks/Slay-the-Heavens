@@ -180,15 +180,19 @@ test('MCP mock: audio wrapper preserves full art receipt and rejects input chang
       runs++;mkdirSync(directory,{recursive:true});const mapPath=join(directory,'audio.gil');writeFileSync(mapPath,'MCP mock audio');
       writeFileSync(join(directory,'candidate.json'),JSON.stringify({mapPath,sha256:fileRecord(mapPath).sha256,candidate:fileRecord(mapPath),
         baseSha256:full.candidate.sha256,baseAfter:full.candidate.sha256,buildId:full.buildId,artFeatures:full.artFeatures,
-    uiProfile:full.uiProfile,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
-      mutate?.();
+    uiProfile:full.uiProfile,nativeUiPacking:full.nativeUiPacking,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
+      mutate?.(directory);
     }});
   const audio=await packageAudio();assert.deepEqual(audio.nativeCardArt,full.nativeCardArt);
   assert.deepEqual(audio.toolchainIdentity,full.toolchainIdentity);
+  assert.deepEqual(audio.nativeUiPacking,full.nativeUiPacking);
+  for(const corrupt of [undefined,{...full.nativeUiPacking,sharing:{...full.nativeUiPacking.sharing,packedDigest:'0'.repeat(64)}}])
+    await assert.rejects(packageAudio(directory=>{const p=join(directory,'candidate.json'),r=JSON.parse(readFileSync(p));r.nativeUiPacking=corrupt;writeFileSync(p,JSON.stringify(r));}),/Audio UI packing differs/);
+
   const {verifyUiCandidateInputs}=await import('../scripts/verify-ui-acceptance.mjs');
   assert.doesNotThrow(()=>verifyUiCandidateInputs(audio,audio.mapPath,{root:f.root}));
   const original=readFileSync(f.literal);writeFileSync(f.literal,Buffer.concat([original,Buffer.from('\n')]));
-  await assert.rejects(packageAudio(),/Native art.*changed/);assert.equal(runs,1,'stale art must not start audio packaging');
+  await assert.rejects(packageAudio(),/Native art.*changed/);assert.equal(runs,3,'stale art must not start audio packaging');
   writeFileSync(f.literal,original);
   const drawing=f.registry.sourceInputs[0].path,drawingBytes=readFileSync(drawing);
   await assert.rejects(packageAudio(()=>writeFileSync(drawing,'changed during audio')),/Native art.*changed/);
@@ -381,7 +385,7 @@ test('MCP mock: monster-only audio preserves source receipt and rejects changed 
    mkdirSync(directory,{recursive:true});const mapPath=join(directory,'audio.gil');writeFileSync(mapPath,'MCP mock audio');
    writeFileSync(join(directory,'candidate.json'),JSON.stringify({mapPath,sha256:fileRecord(mapPath).sha256,candidate:fileRecord(mapPath),
     baseSha256:full.candidate.sha256,baseAfter:full.candidate.sha256,buildId:full.buildId,artFeatures:full.artFeatures,
-    uiProfile:full.uiProfile,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
+    uiProfile:full.uiProfile,nativeUiPacking:full.nativeUiPacking,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
   }});
  const audio=await run();assert.deepEqual(audio.nativeMonsterArt,full.nativeMonsterArt);
  const path=join(f.root,full.nativeMonsterArt.inputs[0].path);writeFileSync(path,readFileSync(path,'utf8')+'\n-- changed');

@@ -209,7 +209,7 @@ async function releaseFixture(t, stale = false, mutate = () => {}) {
     const notes=loadReleaseNotes({root,releaseCandidate:true});
     writeFileSync(join(dir,'abyss_narrative.lua'),stale ? (stale === 'wrong-version' ? 'return {["codeVersion"]="v0.0.1"}' : 'return {}')
       : `return {["codeVersion"]=${toLua(notes.build.version)}}`);
-    mutate(root);
+    mutate(root,dir);
   }});
   root=f.root;mkdirSync(join(root,'data/release'));
   writeFileSync(join(root,'package.json'),'{"version":"0.1.1"}');
@@ -353,7 +353,9 @@ test('default reduction CI continuation authenticates every new current owner wi
  const packet=adapter.defaultReductionCiPacket;assert.ok(packet,'complete default reduction continuation required');
  assert.equal(packet.baseCommit,'396b55757a9e536b052f6c960daf1159351f57b1');
  assertIntegratedCurrent();
- for(const [file,row]of Object.entries({...packet.files,...packet.addedFiles})){
+ const audio=adapter.defaultReductionAudioCiPacket;assert.ok(audio,'complete audio handoff continuation required');
+ assert.equal(audio.baseCommit,'d46bf7aa9a27e0a47528412d7f0ad8fd7e2cbf2b');
+ for(const [file,row]of Object.entries({...packet.files,...packet.addedFiles,...audio.files})){
   const source=readFileSync(file,'utf8').replaceAll('\r\n','\n');assert.equal(sha256(source),row.current.sha256);
   for(const changed of [source+'\n',source.replace(/./,'!')]){
    assert.equal(adapter.releaseBootstrapCiSource(file,changed),changed);
@@ -373,4 +375,13 @@ test('native card packing only factors nonoverlapping hosts and reduces physical
  assert.equal(packed.sharing.logicalHosts,6);assert.equal(packed.sharing.sharedHosts,2,'only outermost nonoverlapping hosts may be factored');
  assert.equal(packed.sharing.templateNames.length,1);assert.ok(packed.sharing.afterControls<packed.sharing.beforeControls);
  assert.deepEqual(expandSharedCardFaces(packed.layout,packed.templates),{layout:source,templates:[]});
+});
+
+
+test('frozen release-candidate mode uses the same default card storage sharing',async t=>{
+ const face=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
+ const f=await releaseFixture(t,false,(_root,dir)=>writeFileSync(join(dir,'game-ui.json'),JSON.stringify({name:'SlayTheAbyss',controls:[face('one'),face('two')]})));
+ const r=await f.run();assert.equal(r.sourceDirty,false);assert.equal(r.release.version,'v0.1.1');
+ assert.equal(r.officialAssetsProfile,undefined);assert.equal(r.nativeUiPacking.sharing.sharedHosts,2);
+ assert.equal(f.calls.find(c=>c.name==='scene_add_client_ui').args.controls[0].kind,'reference');
 });
