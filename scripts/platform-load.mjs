@@ -180,8 +180,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       report.warnings = growthWarnings(report, baseline);
       // An optional prior daily report supplies comparable module/page/resource
       // paths. The original aggregate budget and historical reading stay fixed.
-      const prior=evidencePath?JSON.parse(readFileSync(evidencePath)):baseline;
+      const priorPath=evidencePath??'config/platform-load-baseline.json',priorBytes=readFileSync(priorPath);
+      const prior=JSON.parse(priorBytes);
       report.costDelta=productionCostDelta(report.costBreakdown,prior.costBreakdown);
+      report.costDelta.baseline={path:priorPath,sourceCommit:prior.sourceCommit??null,
+        sourceDirty:prior.sourceDirty??null,reportSha256:hash(priorBytes)};
       for(const group of ['lua','pages','templates'])for(const row of report.costDelta[group]??[]){
         if(row.deltaBytes>0&&row.afterBytes>row.beforeBytes*1.1)
           report.warnings.push(`${group} ${row.name??row.path}: +${row.deltaBytes} offline bytes; review assembly, not official MB`);

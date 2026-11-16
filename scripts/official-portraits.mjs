@@ -199,7 +199,9 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
   if(compact){const asset=compact.assets[a.kind];return `${a.kind}=${toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'compact-v1',sourcePreviewSha256:asset.sha256})}`;}
   return `${a.kind}=(function()\n${a.literals}\nreturn {root=ROOT,rows=ELEMENTS,width=${a.width},count=${a.count},display=${a.display},sourceSha256='${a.runtime}',jsonSha256='${a.json}'${runtimeV2?',runtimeV2=true,cache=true,rectanglesOnly=true':''}}\nend)()`;
  });
- if(budget&&!v25BattleChrome)data.push(`selection133=${budgetLiteral(assets[1],budget.assets.selection133)}`);
+ // Official selection requires lowpolyLumine; the old selection133 rows have
+ // no consumer in that profile. Other profiles retain their original source.
+ if(budget&&!v25BattleChrome&&!officialAssets)data.push(`selection133=${budgetLiteral(assets[1],budget.assets.selection133)}`);
  data.push(...lowpoly);
  // Selection keeps its bounded temporary actor. Full-body literals remain
  // available to other profiles; official combat uses the approved idle below.

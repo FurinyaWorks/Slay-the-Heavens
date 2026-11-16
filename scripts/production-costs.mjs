@@ -38,11 +38,17 @@ export function productionCosts(modules,layout,templates,layers={}) {
 }
 
 export function productionCostDelta(current,baseline) {
-  if(!baseline)return {status:'UNVERIFIED-no-comparable-breakdown'};
+  const groups=[['lua','name','bytes'],['pages','path','jsonBytes'],['templates','path','jsonBytes'],['cardHosts','path','jsonBytes']];
+  const valid=(report,[group,key,metric])=>Array.isArray(report[group])
+    &&report[group].every(row=>row&&typeof row[key]==='string'&&row[key].length>0&&Number.isSafeInteger(row[metric])&&row[metric]>=0)
+    &&new Set(report[group].map(row=>row[key])).size===report[group].length;
+  if(current?.schemaVersion!==1||baseline?.schemaVersion!==1
+    ||!groups.every(group=>valid(current,group)&&valid(baseline,group)))
+    return {status:'UNVERIFIED-no-comparable-breakdown'};
   const result={status:'offline-comparison-not-official-storage'};
-  for(const [group,key,metric] of [['lua','name','bytes'],['pages','path','jsonBytes'],['templates','path','jsonBytes'],['cardHosts','path','jsonBytes']]){
-    const before=new Map((baseline[group]??[]).map(row=>[row[key],row[metric]]));
-    const after=new Map((current[group]??[]).map(row=>[row[key],row[metric]]));
+  for(const [group,key,metric] of groups){
+    const before=new Map(baseline[group].map(row=>[row[key],row[metric]]));
+    const after=new Map(current[group].map(row=>[row[key],row[metric]]));
     result[group]=rank([...new Set([...before.keys(),...after.keys()])].map(id=>({[key]:id,
       beforeBytes:before.get(id)??0,afterBytes:after.get(id)??0,deltaBytes:(after.get(id)??0)-(before.get(id)??0)})),'deltaBytes');
   }

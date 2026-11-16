@@ -16,9 +16,15 @@ test('costs count pages, templates and cards separately without treating ancesto
  assert.equal(r.officialStorageMB,null);
 });
 test('growth ranks comparable paths including added/removed modules and never invents an old path baseline',()=>{
- const before={lua:[{name:'a',bytes:10},{name:'gone',bytes:8}],pages:[{path:'Game/stage/a',jsonBytes:20}],templates:[],cardHosts:[]};
- const after={lua:[{name:'a',bytes:15},{name:'new',bytes:9}],pages:[{path:'Game/stage/a',jsonBytes:12}],templates:[],cardHosts:[]};
+ const before={schemaVersion:1,lua:[{name:'a',bytes:10},{name:'gone',bytes:8}],pages:[{path:'Game/stage/a',jsonBytes:20}],templates:[],cardHosts:[]};
+ const after={schemaVersion:1,lua:[{name:'a',bytes:15},{name:'new',bytes:9}],pages:[{path:'Game/stage/a',jsonBytes:12}],templates:[],cardHosts:[]};
  assert.deepEqual(costs.productionCostDelta(after,before).lua.map(r=>[r.name,r.deltaBytes]),[['new',9],['a',5],['gone',-8]]);
  assert.equal(costs.productionCostDelta(after,before).pages[0].deltaBytes,-8);
  assert.equal(costs.productionCostDelta(after).status,'UNVERIFIED-no-comparable-breakdown');
+ for(const partial of [{},{schemaVersion:1},{...before,lua:undefined},{...before,schemaVersion:2}]){
+  assert.equal(costs.productionCostDelta(after,partial).status,'UNVERIFIED-no-comparable-breakdown');
+ }
+ for(const invalid of [[{name:'a',bytes:NaN}],[{name:'a',bytes:10},{name:'a',bytes:20}],[{bytes:10}]]){
+  assert.equal(costs.productionCostDelta(after,{...before,lua:invalid}).status,'UNVERIFIED-no-comparable-breakdown');
+ }
 });

@@ -7,6 +7,19 @@ import {gameLayout} from '../scripts/game-ui-layout.mjs';
 
 const modulePath=new URL('../scripts/official-portraits.mjs',import.meta.url);
 
+test('official approved selection omits the superseded 1940-row figure while other profiles preserve it',async t=>{
+ const {writePortraitModule}=await import(modulePath);
+ const dir=mkdtempSync(join(tmpdir(),'abyss-no-legacy-selection-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+ writeFileSync(join(dir,'art-render-v2.json'),'{}');
+ const official=writePortraitModule(dir,{officialAssets:true});
+ assert.doesNotMatch(official,/^selection133=/m);
+ assert.match(official,/^lowpolyLumine=/m);
+ assert.match(official,/^battleApprovedIdle=/m);
+ assert.match(official,/^battle133=/m,'result pages still own this drawing');
+ const other=writePortraitModule(dir);
+ assert.match(other,/^selection133=/m,'full-source data remains available to other profiles');
+});
+
 test('official runtime inventory preserves every producer field and rejects selection or idle tampering',async t=>{
  const {writePortraitModule,portraitRuntimeInventory,portraitInventory,portraitModule,portraitRuntimeInputs}=await import(modulePath);
  const {officialAssetFlags,officialAssetsProfile}=await import('../scripts/official-assets-profile.mjs');
