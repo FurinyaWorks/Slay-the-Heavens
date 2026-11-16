@@ -103,6 +103,10 @@ test('Release CI repair maps only complete reviewed helper and test bytes, retai
   for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(project(foreign,raw),raw);
  }
  const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path);
+ for(const source of [raw.toString(),raw.toString().replaceAll('\n','\r\n')]){
+  assert.equal(hash(releaseSelectionMapCiSource(path,source,{sha256:'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986'})),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
+  assert.equal(releaseSelectionMapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
+ }
  const prior=releaseSelectionMapCiRead(()=>raw)(path);assert(Buffer.isBuffer(prior));
  assert.equal(hash(prior),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
  const bad=Buffer.concat([raw,Buffer.from('\n')]);assert.strictEqual(releaseSelectionMapCiRead(()=>bad)(path),bad);

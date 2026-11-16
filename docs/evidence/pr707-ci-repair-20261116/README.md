@@ -11,3 +11,7 @@
 Node v24.22.1 定向验证：summary/selection 两文件 16/16；原失败 combined-closeout 单项 1/1；Release cases 7/7；ci-impact 单文件 14/14（包含上述 7 项 cases，不重复计数）。新增负控覆盖 LF/CRLF、CRCRLF、追加/删首、非字符串、foreign 路径与 Buffer 保留。附同轮日志，不冒称本地 Full 或 hosted 新头通过。首次本地加载因 Git LFS 指针及 npm 默认缓存路径缺失而中断，恢复精确 LFS 内容及临时缓存后执行；两份材料化历史 gz 不作为改动提交。
 
 独立评审由另一 Agent 只读进行；结果绑定候选提交后另行记录。不修改 workflow、保护、生产代码、游戏数据或任务状态；Backlog CLI 不可用，未手改 Backlog。Hosted 必需检查及合并仍待后续真实结果。
+
+## 映射前驱身份补强
+
+同步 #677 时独立评审发现：新增完整 helper 映射仍须尊重传入 before.sha256。现仅正确或省略 before 允许映射，错误身份原样保留；新增 LF/CRLF 下正确/错误 before 断言。终态 ci-impact/selection-map 21/21、原 closeout 单项 1/1，日志追加保存，不覆盖先前验证。该补强不改变 helper 本身、历史档案或生产逻辑。
