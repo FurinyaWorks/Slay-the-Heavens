@@ -50,14 +50,34 @@ for(const [path,row]of Object.entries(navigationFixturePacket.files))for(const b
  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
 }
+// A separate exact continuation retains the previous help-retirement packet.
+const menuBytes=readFileSync(new URL('./navigation-menu-reader-repair.json',import.meta.url));
+assert.equal(hash(menuBytes),'cbc3fc4b9050bf6405cc25029fd98ee47bf7b1e4a8780b40a953b2d53d9538ae','complete menu reader continuation');
+const menuPacket=freeze(JSON.parse(menuBytes));
+assert.equal(menuPacket.baseCommit,'ad1df7f3f02561701339d030d3acffb3218aa549');
+assert.deepEqual(Object.keys(menuPacket.files),['tests/mobile-typography.test.mjs','tests/release-navigation-map-integration.test.mjs']);
+for(const [path,row]of Object.entries(menuPacket.files))for(const binding of [row.before,row.current]){
+ assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+}
+function menuReaderBefore(path,source,read){
+ const row=Object.hasOwn(menuPacket.files,path)?menuPacket.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ assert.equal(hash(read('tests/helpers/navigation-menu-reader-repair.json')),hash(menuBytes),'immutable menu reader continuation');
+ for(const [p,binding]of Object.entries(menuPacket.files)){
+  const raw=read(p,'utf8');assert.equal(typeof raw,'string','fresh menu reader: '+p);
+  assert.equal(hash(norm(raw)),binding.current.sha256,'fresh menu reader: '+p);
+ }
+ return row.before.source;
+}
 export function assertNavigationFixturesCurrent(read=readFileSync){
  assert.equal(hash(read('tests/helpers/navigation-help-retirement-fixtures.json.gz')),hash(fixtureBytes),'immutable navigation fixture predecessor');
  for(const [path,row]of Object.entries(navigationFixturePacket.files)){
-  const source=read(path,'utf8');assert.equal(typeof source,'string','fresh navigation fixture: '+path);
+  const source=menuReaderBefore(path,read(path,'utf8'),read);assert.equal(typeof source,'string','fresh navigation fixture: '+path);
   assert.equal(hash(norm(source)),row.current.sha256,'fresh navigation fixture: '+path);
  }
 }
 export function navigationFixtureBefore(path,source,read=readFileSync){
+ source=menuReaderBefore(path,source,read);
  const row=Object.hasOwn(navigationFixturePacket.files,path)?navigationFixturePacket.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  assertNavigationFixturesCurrent(read);return row.before.source;
