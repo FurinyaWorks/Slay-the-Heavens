@@ -1,3 +1,4 @@
+import {navigationMapPriorInventory} from './helpers/navigation-map-integration.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
 import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
@@ -44,7 +45,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releaseNavigationCiRead,releaseNavigationPriorInventory,assertReleaseNavigationCiCurrent,releaseNavigationCiPacket} from './helpers/release-navigation-ci-source.mjs';
-import {releaseMergeRead,assertReleaseMergeCurrent} from './helpers/release-bootstrap-merge-ci-source.mjs';
+import {releaseMergeRead,assertReleaseMergeCurrent} from './helpers/navigation-map-legacy-domains.mjs';
 const liveDiskReadFileSync=releaseNavigationCiRead(releaseMergeRead('slicePrior',rawReleaseReadFileSync));
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 const rawBootstrapReadFileSync=releaseMergeRead('bootstrapView',rawReleaseReadFileSync);
@@ -60,7 +61,8 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as rawReleaseDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualJointDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const rawReleaseDiscoverJs=()=>navigationMapPriorInventory(actualJointDiscoverJs());
 const liveDiscoverJs=()=>releaseNavigationPriorInventory(rawReleaseDiscoverJs(),'js',releaseMergeRead('slicePrior',rawReleaseReadFileSync));
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');

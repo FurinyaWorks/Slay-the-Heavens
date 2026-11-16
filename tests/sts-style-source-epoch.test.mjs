@@ -10,7 +10,8 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {releaseNavigationPriorInventory} from './helpers/release-navigation-ci-source.mjs';
-import {releaseMergeCiPacket,releaseMergeRead} from './helpers/release-bootstrap-merge-ci-source.mjs';
+import {releaseMergeCiPacket,releaseMergeRead} from './helpers/navigation-map-legacy-domains.mjs';
+import {navigationMapPriorInventory} from './helpers/navigation-map-integration.mjs';
 const driftRead=selected=>(path,encoding)=>{
  const raw=readFileSync(path,encoding);
  return path!==selected?raw:typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
@@ -42,7 +43,7 @@ test('release additions remain in raw Full and exact historical inventories reje
  assertIntegratedCurrent();
  const actualJs=discoverJs(),actualLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
  assert.deepEqual(actualJs,integratedCurrentInventory('js'));assert.deepEqual(actualLua,integratedCurrentInventory('lua'));
- const rawJs=releaseNavigationPriorInventory(actualJs,'js',releaseMergeRead('slicePrior')),rawLua=releaseNavigationPriorInventory(actualLua,'lua',releaseMergeRead('slicePrior'));
+ const rawJs=releaseNavigationPriorInventory(navigationMapPriorInventory(actualJs),'js',releaseMergeRead('slicePrior')),rawLua=releaseNavigationPriorInventory(navigationMapPriorInventory(actualLua,'navigation','lua'),'lua',releaseMergeRead('slicePrior'));
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));

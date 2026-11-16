@@ -1,0 +1,113 @@
+// Current join is separate from the immutable navigation slice/bootstrap domains.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
+import {sourceEpoch} from './closeout-source-epoch.mjs';
+import {releaseMergeCiPacket,releaseMergeSource as oldMergeSource,assertReleaseMergeCurrent as oldMergeCurrent} from './release-bootstrap-merge-ci-source.mjs';
+import {releaseNavigationCiPacket} from './release-navigation-ci-source.mjs';
+import {releaseSelectionMapCiPacket} from './release-selection-map-ci-source.mjs';
+const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+const bytes=readFileSync(new URL('./navigation-map-ci-c433d789e470.json.gz',import.meta.url));
+assert.equal(hash(bytes),'c433d789e470edb9307d5c0a13a7a65f9e1a8ac540232dc60af58b62b13b60fd','complete navigation/map outer join');
+export const navigationMapPacket=JSON.parse(gunzipSync(bytes));
+const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
+assert.equal(navigationMapPacket.head,'26cad4a66e9ec0ef64655afa8bd7fbbc92830f47');
+assert.equal(navigationMapPacket.base,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
+assert.deepEqual(Object.keys(navigationMapPacket).sort(),['archives','base','currentTreeCommitted','files','head','inventories','normalization','schemaVersion','sources']);
+assert.equal(navigationMapPacket.schemaVersion,1);assert.equal(navigationMapPacket.normalization,'LF');assert.equal(navigationMapPacket.currentTreeCommitted,false);
+const originals=[releaseNavigationCiPacket,releaseMergeCiPacket,releaseSelectionMapCiPacket];
+const expectedPaths=[...new Set([...originals.flatMap(p=>Object.keys(p.files)),
+ 'tests/helpers/release-navigation-ci-source.mjs','tests/helpers/release-bootstrap-merge-ci-source.mjs','tests/helpers/release-selection-map-ci-source.mjs',
+ 'tests/helpers/navigation-map-legacy-domains.mjs','tests/helpers/navigation-map-merged-input.json','tests/release-navigation-map-integration.test.mjs',
+ 'tests/release-navigation-source.test.mjs','tests/release-selection-map-source.test.mjs'])].sort();
+assert.deepEqual(Object.keys(navigationMapPacket.files).sort(),expectedPaths,'complete outer join source domain');
+const archivePaths=[...new Set([...originals.flatMap(p=>Object.keys(p.immutableArchives)),
+ 'tests/helpers/release-navigation-ci-source.json.gz','tests/helpers/release-bootstrap-merge-ci-source.json.gz','tests/helpers/release-selection-map-ci-source.json.gz'])].sort();
+assert.deepEqual(Object.keys(navigationMapPacket.archives).sort(),archivePaths,'complete outer join archive domain');
+for(const original of originals)for(const [path,id]of Object.entries(original.immutableArchives))assert.equal(navigationMapPacket.archives[path],id,'unchanged original archive identity: '+path);
+assert.deepEqual(navigationMapPacket.inventories.navigation,releaseNavigationCiPacket.currentInventory);
+assert.deepEqual(navigationMapPacket.inventories.selection,releaseSelectionMapCiPacket.currentInventory);
+for(const kind of ['js','lua'])assert.deepEqual(navigationMapPacket.inventories.joint[kind],[...new Set([
+ ...releaseNavigationCiPacket.currentInventory[kind],...releaseSelectionMapCiPacket.currentInventory[kind],...(kind==='js'?['tests/release-navigation-map-integration.test.mjs']:[])])].sort());
+for(const [id,source]of Object.entries(navigationMapPacket.sources))assert.equal(hash(source),id,'complete immutable standalone source atom');
+for(const row of Object.values(navigationMapPacket.files)){
+ assert.deepEqual(Object.keys(row).sort(),['current','views']);assert.match(row.current,/^[a-f0-9]{64}$/);
+ assert.deepEqual(Object.keys(row.views).sort(),['navigation','selection']);
+ for(const id of Object.values(row.views))assert(id===null||Object.hasOwn(navigationMapPacket.sources,id),'complete standalone source reference');
+}
+freeze(navigationMapPacket);
+export function navigationMapSource(path,source,side='navigation'){
+ assert(['navigation','selection'].includes(side),'known navigation/map standalone view');
+ if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ const row=Object.hasOwn(navigationMapPacket.files,path)?navigationMapPacket.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current)return source;
+ const id=row.views[side];return id===null?source:navigationMapPacket.sources[id];
+}
+export function navigationMapRead(side='navigation',read=readFileSync){return(path,encoding)=>{
+ const raw=read(path,encoding);return typeof raw==='string'?navigationMapSource(path,raw,side):raw;
+};}
+export function navigationMapProductionRead(side='navigation',read=readFileSync){
+ const ci=navigationMapRead(side,read);
+ return(path,encoding)=>{
+  if(!path.startsWith('src/')&&path!=='config/architecture.json')return ci(path,encoding);
+  const raw=read(path,encoding);if(typeof raw!=='string')return raw;
+  return sourceEpoch.preCombinedSource(path,raw,{target:side==='navigation'?'releaseNavigationReviewed':'releaseSelectionMapReviewed',readSource:p=>read(p,'utf8')});
+ };
+}
+// One synchronous validator invocation owns this reader. A new reader is made
+// for every public call; authorization is never shared between calls or runs.
+export function navigationValidationRead(read=readFileSync){
+ const ci=navigationMapRead('navigation',read);let ownersChecked=false;
+ return(path,encoding)=>{
+  if(!path.startsWith('src/')&&path!=='config/architecture.json')return ci(path,encoding);
+  const raw=read(path,encoding);if(typeof raw!=='string')return raw;
+  const p=sourceEpoch.proof,input='src/lua/abyss_game_ui_input.lua';
+  if(!ownersChecked){
+   const current=read(input,'utf8');assert.equal(typeof current,'string','linked owner identity: '+input);
+   assert.equal(hash(norm(current)),p.current[input].sha256,'linked owner identity: '+input);
+   sourceEpoch.preCombinedSource(input,current,{target:'releaseNavigationReviewed',readSource:p=>read(p,'utf8')});
+   ownersChecked=true;
+  }
+  const row=p.current[path];
+  return row&&hash(norm(raw))===row.sha256?p.targets.releaseNavigationReviewed.files[path]?.source??raw:raw;
+ };
+}
+export function navigationMapPriorInventory(paths,side='navigation',kind='js'){
+ assert(['navigation','selection'].includes(side));assert(['js','lua'].includes(kind));
+ const sorted=[...paths].sort(),current=navigationMapPacket.inventories.joint[kind],prior=navigationMapPacket.inventories[side][kind];
+ if(JSON.stringify(sorted)===JSON.stringify(prior))return [...paths];
+ const added=current.filter(p=>!prior.includes(p));
+ if(!added.some(p=>paths.includes(p)))return [...paths];
+ assert.deepEqual(sorted,current,'complete navigation/map raw inventory');return [...prior];
+}
+export function assertNavigationMapRawInventory(paths,kind='js'){
+ assert(['js','lua'].includes(kind));assert.deepEqual([...paths].sort(),navigationMapPacket.inventories.joint[kind],'complete navigation/map raw inventory');
+}
+export function assertNavigationMapCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries(navigationMapPacket.files)){
+  const s=read(path,'utf8');assert.equal(typeof s,'string','fresh navigation/map source: '+path);
+  assert.equal(hash(norm(s)),row.current,'fresh complete integration source: navigation/map '+path);
+ }
+ for(const [path,id]of Object.entries(navigationMapPacket.archives))assert.equal(hash(read(path)),id,'immutable navigation/map predecessor: '+path);
+}
+export function navigationDomainSource(path,source,target,read=readFileSync){
+ const current=navigationMapSource(path,source,'navigation');
+ if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ const row=Object.hasOwn(releaseMergeCiPacket.files,path)?releaseMergeCiPacket.files[path]:null;
+ if(row?.[target]&&typeof current==='string'&&!current.includes('\r\r\n')&&hash(norm(current))===row.current.sha256)
+  assertNavigationMapCurrent(read);
+ return oldMergeSource(path,current,target,navigationValidationRead(read));
+}
+export function navigationDomainRead(target,read=readFileSync){return(path,encoding)=>{
+ const raw=read(path,encoding);
+ if(typeof raw==='string')return navigationDomainSource(path,raw,target,read);
+ if(encoding||!Buffer.isBuffer(raw)||!Object.hasOwn(releaseMergeCiPacket.files,path))return raw;
+ const text=raw.toString('utf8'),prior=navigationDomainSource(path,text,target,read);
+ return prior===text?raw:Buffer.from(prior);
+};}
+export function assertNavigationDomainCurrent(read=readFileSync){
+ assertNavigationMapCurrent(read);oldMergeCurrent(navigationValidationRead(read));
+}
+export {navigationMapRead as integrationRead,navigationMapSource as integrationCiSource,navigationMapProductionRead as integrationProductionRead,navigationMapPriorInventory as integrationPriorInventory};
+export function integrationInventory(kind='js'){assert(['js','lua'].includes(kind));return [...navigationMapPacket.inventories.joint[kind]];}
