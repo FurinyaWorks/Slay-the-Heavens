@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "original": "23bed75c642f8f4af5c2783526a5afc4a57f471f",
+  "checkpoint": "b48acb5a26bcf96a6207836aafd8579ffef47476",
+  "productLuaTree": "ebfb53b3d542c7c73ae4cb2a60945c45d56819ec",
+  "fixtureBlob": "9246752ab7d5aab26ca07c22b7cb17efc076daca",
+  "fixtureSha256": "958c6422c7e14af2f9a1bb95e675a52460e266687985c5eff20a7f656a1322f3",
+  "patchCommit": "8fa591fa858174afdc0a5d62f92cf40cc43f3a60",
+  "patchSha256": "00be993d27e6934b3390fc2b64694baadc4ccc3a089cb62e6b75d1f303853a4f",
+  "defaultProfile": null,
+  "defaultRuntimeIdentity": "DEFAULT_PROFILE=nil",
+  "productionPaths": 352,
+  "productionTargets": 65,
+  "productionOwners": 116,
+  "ciPaths": 10,
+  "retainedPredecessorArchives": 93,
+  "rawInventory": {
+    "js": 877,
+    "lua": 1424
+  },
+  "packetHashes": {
+    "blue-candle-source": "d8be56143b70efd9c73f91716f77163f877604b75d6bfe93d71ee014f954fed0",
+    "blue-candle-ci-source": "6c277c08189975b5cb4a7c6f68402036bec7eec5b30634276fb35f64e73d9c89"
+  },
+  "independentReview": "pending parent review",
+  "hostedQuick": "existing failure not rerun",
+  "officialCandidate": "not_run"
+}
