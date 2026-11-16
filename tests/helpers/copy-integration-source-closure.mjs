@@ -28,6 +28,8 @@ export const releaseSelectionMapHelperCopies=[
  {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
 ];
 for(const row of releaseSelectionMapHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release selection map helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const intentPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1","after":"521f290dd13030d577d7dfa014e1780ab54cea7be58a2de388c2549d31ddc09f"},{"path":"tests/helpers/intent-post697-source.mjs","before":null,"after":"f5e76fe4eb0a6e1675886557ca7a15e35adc80f2144473a2fe3c694d588d434a"},{"path":"tests/helpers/intent-post697-source.json.gz","before":null,"after":"d16dcb304accfbf8e00a5035c450849afcf3256ce53a4a1802ab8f766f342a59"}];
+for(const row of intentPost697HelperCopies){assert.equal(files[row.path]??null,row.before,'exact intent post697 helper predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

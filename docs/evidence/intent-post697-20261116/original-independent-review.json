@@ -1,0 +1,76 @@
+{
+  "reviewId": "/root/review_mobile_shop",
+  "reviewedHeadSha": "f448a9df48054f49af792312cd866c03b53b0197",
+  "reviewedBaseSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "targetBranch": "release/v2.0.0",
+  "conclusion": "pass",
+  "unresolved": [],
+  "reviewedAt": "2026-11-15T13:33:18.782Z",
+  "scope": "Fresh independent M08 full-diff review in detached review-mobile-intent-v2-1115. Review covers runtime, test-oracle migration, geometry/cache/lifecycle and read-only rule behavior; no author files modified.",
+  "findings": [],
+  "evidence": {
+    "directory": "F:/New folder/.worktrees/review-mobile-intent-v2-1115/build/review-intent",
+    "source": "All seven changed files reviewed against exact base; selectedDescriptor metadata is the sole semantic data change; source main image/damage/hit geometry and EnemyView.geometry call signature remain unchanged.",
+    "oracle": "130 pinned original source moves from docs/art/source-monster-intents.json; expected secondary visibility derives from pinned enum, never face.badge. Exactly 6 DEFEND_BUFF cases show the buff glyph; other enums retain one primary.",
+    "newBadgeBoundaryChecks": [
+      "120 unchanged frames reuse geometry and visibility",
+      "A/B/A view binding ownership repaints",
+      "Rejected size and position setters retry",
+      "Main glyph and hit geometry retained",
+      "Same alpha and buff tone",
+      "Source primary-to-secondary clearance",
+      "Hidden permission disables primary/badge/hit",
+      "Ordinary BUFF retires secondary",
+      "Expired native badge reaches lifetime guard"
+    ],
+    "replays": [
+      {
+        "name": "source-enum-and-badge-lifecycle",
+        "status": 0,
+        "elapsedMs": 2414
+      },
+      {
+        "name": "natural-host-profiles",
+        "status": 0,
+        "elapsedMs": 24250
+      },
+      {
+        "name": "existing-cache-ownership-contracts",
+        "status": 0,
+        "elapsedMs": 3756
+      }
+    ],
+    "negativeControls": [
+      {
+        "name": "missing-source-secondary",
+        "status": 1,
+        "expected": "nonzero semantic rejection; production source unchanged"
+      },
+      {
+        "name": "leaked-other-enum",
+        "status": 1,
+        "expected": "nonzero semantic rejection; production source unchanged"
+      }
+    ],
+    "profiles": "Committed natural Bellow Host tests executed fresh for default and official generated profiles: 2/2. Existing geometry and visibility native ownership contracts: 2/2 selected tests.",
+    "diffCheck": {
+      "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+      "head": "f448a9df48054f49af792312cd866c03b53b0197",
+      "status": 0
+    },
+    "gitTree": "clean",
+    "files": {
+      "matrix.lua": "f3b3d5bce0292128ea62b35f9aae2ef74e3908b6a91f31d8ebcf524013f99603",
+      "run-matrix.mjs": "1b2d34d4a2c531dff820ef5883812e09156138de38dfa9ad57036a182205d3bf",
+      "pinned-entry.lua": "911ec2dcd6320e56bdcb2e178143456de06bf1f3baff7e408e4f81192e33b090",
+      "matrix-result.json": "007a595fd5b028c27adca07089aa7b4a3cc5f95f01834ccbe96452874de075b9",
+      "replay-results.json": "8d9b648b5d65f95b37c1a7e5aabd2deb51cb19a31a0dffa2d9ccf98d05cd0cda",
+      "negative-results.json": "d91d41b75148320185530b766b81caef4c7b3fc5a699c9a0c843a659a322e8a6"
+    }
+  },
+  "limitations": [
+    "Author reports additional Act2 intent wrapper slice timed out at its original 30s budget on both patch and original Release baseline; this reviewer did not repeat that wrapper and does not report it passing. Exact Release CI must verify it.",
+    "No Full or full engineering rerun was performed by this reviewer; full-quality/strict Release merge admission remain separate.",
+    "No GIL, official import/ready, device/mobile or capacity validation. This code-review pass is not RC or publication approval."
+  ]
+}

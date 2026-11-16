@@ -1,0 +1,20 @@
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK orb_end_turn source=- target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=jaw_worm_1 target=- amount=0
+ABYSS_FEEDBACK status source=jaw_worm_1 target=jaw_worm_1 amount=3
+ABYSS_FEEDBACK block source=jaw_worm_1 target=jaw_worm_1 amount=6
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+POST697_GAMEUI_MAP_INTENT_PASS 1
+
+✔ generated official Host preserves pointer, controller and read-only return behavior (7590.9452ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7735.7776

@@ -1,0 +1,21 @@
+{
+  "sha256": "fac6548cf310122e0e40e236edd7a616fbab245e573219ca1ce66bb3c89462fc",
+  "bytes": 244443,
+  "bindings": 30,
+  "archives": 98,
+  "currentInventory": {
+    "js": 880,
+    "lua": 1424
+  },
+  "viewInventories": {
+    "release": {
+      "js": 879,
+      "lua": 1423
+    },
+    "intent": {
+      "js": 877,
+      "lua": 1424
+    }
+  },
+  "materialized": []
+}

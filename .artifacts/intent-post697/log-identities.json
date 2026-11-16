@@ -1,0 +1,22 @@
+[
+  {
+    "path": ".artifacts/intent-post697/live-red.log.gz",
+    "rawSha256": "536c0e5ac8c3e1ee6cc2cc32e2d5fbc91fa2fc115487f5f3046f05e060e76225",
+    "rawBytes": 34944
+  },
+  {
+    "path": ".artifacts/intent-post697/audit-path-diagnostic.log.gz",
+    "rawSha256": "b24852fac954730d05ab69d15ff8cce2feb8d7213177ed0295802cf437a2499b",
+    "rawBytes": 4268
+  },
+  {
+    "path": ".artifacts/intent-post697/source-final.log",
+    "sha256": "28d303c0eb77e61a36d1549c9b3bc6b78fe7f0202f2dfae30065721f7f8721d0",
+    "bytes": 2772
+  },
+  {
+    "path": ".artifacts/intent-post697/gameui-final.log",
+    "sha256": "5e5ed5dd180f32cda91d652c55cb1245ab94995f61a340456be0f77a12d9322f",
+    "bytes": 781
+  }
+]
