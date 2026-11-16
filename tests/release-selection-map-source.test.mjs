@@ -106,7 +106,7 @@ test('legacy landed697 release selection map production requires fresh complete 
  const p=sourceEpoch.proof,prior=preReleaseSelectionMapSourceEpoch.proof;
  assert.equal(Object.keys(p.current).length,352);assert.equal(p.owners.length,116);
  assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,65);
- // Immutable landed697 projector domain; current118 is verified independently.
+ // Immutable landed697 projector domain; current union is verified independently.
  const anchor=Object.keys(releaseSelectionMapSourcePacket.current)[0],raw=path=>p.current[path]?.source??null;
  const source=norm(raw(anchor)),expected=prior.current[anchor].source;
  for(const current of [source,source.replaceAll('\n','\r\n')]){

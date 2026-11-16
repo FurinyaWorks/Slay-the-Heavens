@@ -8,6 +8,14 @@
     "gitStoredSha256": "cd9363134e44277ed44c241413d31a9bcd5e5a1af5db4cb950fefa5a03eabfb0"
   },
   {
+    "path": "audit-final.log.gz",
+    "source": ".artifacts/hand-post697/audit-final.log",
+    "rawBytes": 1237,
+    "rawSha256": "af103a9f3ef9506faf2927cfe6e6db624caf9d0e9a80091b839859d19cee76d6",
+    "gitStoredBytes": 777,
+    "gitStoredSha256": "8a7aaa38268ef688f2a7ecd560d92ac4da7231a7bdc977307204a5c46749c591"
+  },
+  {
     "path": "audit.json.gz",
     "source": ".artifacts/hand-post697/audit.json",
     "rawBytes": 1453,
@@ -43,9 +51,9 @@
     "path": "capture.json.gz",
     "source": ".artifacts/hand-post697/capture.json",
     "rawBytes": 384,
-    "rawSha256": "9d0b0842162690def0309ea0ca05a98adae1731ca3809e8e9c729bfff246b756",
+    "rawSha256": "d330f669ca3b0002536789e018744ed3280be3390fc687691104e600d9e9c4a4",
     "gitStoredBytes": 229,
-    "gitStoredSha256": "284328c0a8815e4cc6d441d86ad232b35867a4210bd49b0636521a3effd729fe"
+    "gitStoredSha256": "30744adf9f28becb005179fd2cd0cb562f1d72238da8ee2d38e9b5f811985c7b"
   },
   {
     "path": "capture.py.gz",
@@ -98,10 +106,10 @@
   {
     "path": "consumers.py.gz",
     "source": ".artifacts/hand-post697/consumers.py",
-    "rawBytes": 12085,
-    "rawSha256": "37a65d4b8869446885e9a64f0e69fa2ef48869ff0356d05f86133d741bb6276f",
-    "gitStoredBytes": 2497,
-    "gitStoredSha256": "d12e3bc1bae91a64bb50f23ad602552133df4c7c3a3f907ff423e250d2c871c7"
+    "rawBytes": 11830,
+    "rawSha256": "21c5b028b0c835e18d62b5333b1d4504903fd55f409bbcd78b46dfd5788615e8",
+    "gitStoredBytes": 2423,
+    "gitStoredSha256": "9ab8683aa11361a65a70f54fca5c591cad81a77bb0e7f2be32ffe4050b39fd3c"
   },
   {
     "path": "gameui-combo.test.mjs.gz",

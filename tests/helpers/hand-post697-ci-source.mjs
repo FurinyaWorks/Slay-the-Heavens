@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./hand-post697-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'18ee040b0c4b3f660eeca87426fbe65cf30f688adac99c85245a265e6dd2042e','complete hand post697 CI packet');
+assert.equal(hash(bytes),'75b1a74f0e50a72b5e071f58263f5cef1d650040fd8cd3de155abccf2759b0c4','complete hand post697 CI packet');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.currentTreeCommitted,false);
 assert.deepEqual(packet.viewCommits,{release:'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9',hand:'4ace45fedbce5fb0507f793bca0e7b5c8992e061'});
