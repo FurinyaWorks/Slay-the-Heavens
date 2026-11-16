@@ -1,0 +1,18 @@
+{
+  "graphics": 41,
+  "containersPredicted": 3,
+  "artControlsPredicted": 44,
+  "sourceSHA256": "cb760d18ebfe77c870876f914d8d66bf1fb06eb0227adea355be1b68ac53b2d7",
+  "exactTransformMaxError": 5.684341886080802e-14,
+  "engineVerified": false,
+  "officialPage": "https://wiki.hoyolab.com/pc/genshin/entry/2130?lang=ja-jp",
+  "officialImage": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/04/35428890/3e16ef4b6eef9b12a1f2f8fe085d4a97_4124852896731976517.png",
+  "enemy": "大型酸液团",
+  "enemyId": "acid_slime_l",
+  "reference": "Actual HoYoWiki displayed artwork; old project derivative not used.",
+  "anchors": [
+    "three-petal corona",
+    "front green leaf",
+    "paired elongated orange-rim eyes"
+  ]
+}

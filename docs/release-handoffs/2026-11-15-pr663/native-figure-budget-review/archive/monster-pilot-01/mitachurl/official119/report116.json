@@ -1,0 +1,15 @@
+{
+  "identity": "Rock Shieldwall Mitachurl",
+  "referencePage": "https://wiki.hoyolab.com/pc/genshin/entry/2139?lang=en-us",
+  "referenceAPI": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2139",
+  "referencePixelUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/04/19/35428890/fcc8a0d69cae72db9665f4a995362ad2_8158832518646493168.png",
+  "referenceSha256": "f41bd5cb85f9288eafe662feda94cc58f84d0c6c23fce5178a7e29ab2b6e7546",
+  "referenceAttribution": "Actual header pixels displayed by official HoYoWiki entry. CDN path is event-ugc-hoyowiki; original studio authorship and license not independently certified. Not old AI-generated repo source.",
+  "binding": "Release src/lua/abyss_act2_enemies.lua:12 centurion name \u5ca9\u536b\u7edf\u9886; :83 act2_centurion_mystic. Proposed role-appropriate Rock Shieldwall Mitachurl appearance; no code/binding mutation.",
+  "images": 112,
+  "containers": 4,
+  "total": 116,
+  "fixedCap": 119,
+  "process": "New manual planes traced to official-reference positions; closer hand, narrower legs, large vertical shield. Simplify inner facets to retain limbs and bone mask. Same-cap refinement repaired feet/mask and added intrinsic shield slab seam.",
+  "limitations": "Large flat low-resource reinterpretation, not exact official pixel copy; simplified mane, horn curves, wraps, spiral engraving. No commercial license inference. No production monster pool change or device performance test."
+}

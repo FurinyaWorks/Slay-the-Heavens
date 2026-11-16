@@ -1,0 +1,27 @@
+{
+  "identity": "大型岩史莱姆 / Large Geo Slime",
+  "officialPage": "https://wiki.hoyolab.com/pc/genshin/entry/2127?lang=en-us",
+  "officialAPI": "https://sg-wiki-api.hoyolab.com/hoyowiki/wapi/entry_page?entry_page_id=2127",
+  "officialImage": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/04/35428890/23c3f763d43dccaad87bb8b378ca129d_6599626726642137260.png",
+  "referenceSHA256": "1a692872f69a66f65afb20a41799f4f36debdf90c182a760551814e9a510e3f8",
+  "method": "Manually authored native planes directly referencing official HoYoWiki image; no AI/source derivative used. Original official file unmodified; comparison only alpha-crops and contain scales for legibility.",
+  "features": [
+    "Two tall stone horn plates around lower central faceted ridge",
+    "Paired vertical cream eyes with orange glowing rims",
+    "Dark rugged stone cap over low broad pale-gray round slime body"
+  ],
+  "actualVM": {
+    "images": 41,
+    "containers": 3,
+    "controls": 44,
+    "poseFrames": 120,
+    "imageWrites": 0,
+    "recreatedControls": 0,
+    "liveAfterRelease": 0
+  },
+  "primitiveCounts": {
+    "100002": 7,
+    "100003": 34
+  },
+  "status": "Draft not approved, no runtime product integration; broad shell planes discard small fracture lines. Existing game mapping untouched. Official art reference does not imply redistribution licence."
+}
