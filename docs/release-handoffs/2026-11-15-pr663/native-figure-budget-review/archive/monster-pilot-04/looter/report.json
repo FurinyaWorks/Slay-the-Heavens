@@ -1,0 +1,8 @@
+{
+  "graphics": 113,
+  "containersPredicted": 4,
+  "artControlsPredicted": 117,
+  "sourceSHA256": "45ab2151bdd74e57663949f177d7395694b97c2e02fa2d51ba40f2b47599d4e6",
+  "exactTransformMaxError": 1.4210854715202004e-14,
+  "engineVerified": false
+}

@@ -1,0 +1,14 @@
+{
+  "enemyId": "looter",
+  "displayName": "窃金客",
+  "officialEntryId": 2202,
+  "identity": "Treasure Hoarders - Scout",
+  "pageUrl": "https://wiki.hoyolab.com/pc/genshin/entry/2202?lang=en-us",
+  "headerImageUrl": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/676bfb45cac59d0b2409e1dedadf85d6_7932671173996478165.png",
+  "sourceSHA256": "45ab2151bdd74e57663949f177d7395694b97c2e02fa2d51ba40f2b47599d4e6",
+  "nativeLayoutSHA256": "0e4f847a2e59cc26822c03d2db72b80a66b0d67ca3769d3425645e1a2e202c7a",
+  "mappingStatus": "沿用现有 Scout 绑定；新低预算视觉稿待确认",
+  "images": 113,
+  "containers": 4,
+  "total": 117
+}

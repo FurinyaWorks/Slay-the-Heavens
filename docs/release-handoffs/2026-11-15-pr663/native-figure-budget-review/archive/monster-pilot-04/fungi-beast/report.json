@@ -1,0 +1,30 @@
+{
+  "enemyId": "fungi_beast",
+  "name": "蕈甲兽",
+  "referenceName": "Grounded Hydroshroom",
+  "officialEntry": "2728",
+  "source": "https://wiki.hoyolab.com/pc/genshin/entry/2728?lang=en-us",
+  "referenceHeader": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/09/35428890/dbbf4a9f51e0b9e4d5026a9cdbf3635b_2775914279738988063.png",
+  "referenceSha256": "b89189accc4af3dba32b24bd9934c2c3ee777b3b128737400fa668a5cd8a59f4",
+  "images": 114,
+  "containers": 4,
+  "total": 118,
+  "masks": 0,
+  "releaseCommit": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "nativeSha256": "c4bdde1f4ee4c3f27b1d408d7d43a5bcbe6a30f00bad957f04be1165e8362428",
+  "status": "Draft; pending owner visual acceptance",
+  "identityAnchors": [
+    "Hooked cyan crest with open gold curl",
+    "Broad folded pale cyan gill-cap lobes",
+    "Cream face with paired amber eyes and cyan brow",
+    "Drooping long cheek flaps",
+    "Heavy cyan biped legs, one lifted"
+  ],
+  "simplifications": [
+    "Only major gill planes, no fine striations",
+    "Feet angular and toes omitted",
+    "Large uninterrupted body plates rather than fur"
+  ],
+  "visualReview": "Inspected source header and native 508px/127px. Curl negative-space remains open, two eyes visible, cap and biped silhouette distinct from prior stretchy fungi. Native 127px is recognizable but simplified. No device acceptance claimed.",
+  "scope": "Standalone portrait VM only, not actual MonsterArt host or official device"
+}

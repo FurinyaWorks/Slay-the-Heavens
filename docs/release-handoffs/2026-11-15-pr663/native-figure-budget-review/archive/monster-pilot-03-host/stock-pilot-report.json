@@ -1,0 +1,140 @@
+{
+  "head": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "pass": true,
+  "scope": "exact Release builder and GameUI native mock; explicit test registry only; not official engine/device",
+  "poolCapacity": 115,
+  "priorSlimeOnlyPoolCapacity": 41,
+  "retainedCatalogCapacity": 600,
+  "slotsByEnemy": {
+    "cultist": 115,
+    "jaw_worm": 114,
+    "red_louse": 41,
+    "green_louse": 40,
+    "acid_slime_m": 41
+  },
+  "templateControls": 154,
+  "cases": [
+    {
+      "name": "Cultist",
+      "actors": 1,
+      "visibleShapes": 115,
+      "reservedShapes": 115
+    },
+    {
+      "name": "Jaw Worm",
+      "actors": 1,
+      "visibleShapes": 114,
+      "reservedShapes": 115
+    },
+    {
+      "name": "2 Louse bits=0",
+      "actors": 2,
+      "visibleShapes": 80,
+      "reservedShapes": 230
+    },
+    {
+      "name": "2 Louse bits=1",
+      "actors": 2,
+      "visibleShapes": 81,
+      "reservedShapes": 230
+    },
+    {
+      "name": "2 Louse bits=2",
+      "actors": 2,
+      "visibleShapes": 81,
+      "reservedShapes": 230
+    },
+    {
+      "name": "2 Louse bits=3",
+      "actors": 2,
+      "visibleShapes": 82,
+      "reservedShapes": 230
+    },
+    {
+      "name": "3 Louse bits=0",
+      "actors": 3,
+      "visibleShapes": 120,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=1",
+      "actors": 3,
+      "visibleShapes": 121,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=2",
+      "actors": 3,
+      "visibleShapes": 121,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=3",
+      "actors": 3,
+      "visibleShapes": 122,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=4",
+      "actors": 3,
+      "visibleShapes": 121,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=5",
+      "actors": 3,
+      "visibleShapes": 122,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=6",
+      "actors": 3,
+      "visibleShapes": 122,
+      "reservedShapes": 345
+    },
+    {
+      "name": "3 Louse bits=7",
+      "actors": 3,
+      "visibleShapes": 123,
+      "reservedShapes": 345
+    },
+    {
+      "name": "Exordium Thugs: red_louse+cultist",
+      "actors": 2,
+      "visibleShapes": 156,
+      "reservedShapes": 230
+    },
+    {
+      "name": "fixture mixed gallery fallback",
+      "actors": 2,
+      "visibleShapes": 115,
+      "reservedShapes": 230
+    },
+    {
+      "name": "fixture double long to short rebind",
+      "actors": 2,
+      "visibleShapes": 230,
+      "reservedShapes": 230
+    },
+    {
+      "name": "fixture stable pre-rebind",
+      "actors": 2,
+      "visibleShapes": 230,
+      "reservedShapes": 230
+    },
+    {
+      "name": "fixture same identity shorter rebind",
+      "actors": 2,
+      "visibleShapes": 81,
+      "reservedShapes": 230
+    }
+  ],
+  "inputHashes": {
+    "cultist": "a5c561f10edd2983b4a76f89bbd8154e5ce61a34b9a76e40d967e8f2a8b7b0c5",
+    "jaw_worm": "7d29a27e6b0a9662c18142223929752b816548bad2c5a9c3b9161fd7a9095939",
+    "red_louse": "71db00e47b127038d64d57f6c5758935f991739f7546fd08b1c12cee26170efe",
+    "green_louse": "1ce2bfef944b934202e579bcbaff0c299e950ab2e27bf6023e31467ef34d01dc",
+    "acid_slime_m": "1fb5488943cbfc0002ff9de26e237bfd9b4a306d9fd12825a8eb321ada5d7d51"
+  },
+  "officialDevice": false
+}

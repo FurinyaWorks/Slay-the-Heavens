@@ -1,0 +1,23 @@
+ABYSS_RUN seed=1 source=explicit
+TEMPLATE_CONTROLS	154
+CASE_PASS	Cultist	1	115	115
+CASE_PASS	Jaw Worm	1	114	115
+CASE_PASS	2 Louse bits=0	2	80	230
+CASE_PASS	2 Louse bits=1	2	81	230
+CASE_PASS	2 Louse bits=2	2	81	230
+CASE_PASS	2 Louse bits=3	2	82	230
+CASE_PASS	3 Louse bits=0	3	120	345
+CASE_PASS	3 Louse bits=1	3	121	345
+CASE_PASS	3 Louse bits=2	3	121	345
+CASE_PASS	3 Louse bits=3	3	122	345
+CASE_PASS	3 Louse bits=4	3	121	345
+CASE_PASS	3 Louse bits=5	3	122	345
+CASE_PASS	3 Louse bits=6	3	122	345
+CASE_PASS	3 Louse bits=7	3	123	345
+CASE_PASS	Exordium Thugs: red_louse+cultist	2	156	230
+CASE_PASS	fixture mixed gallery fallback	2	115	230
+CASE_PASS	fixture double long to short rebind	2	230	230
+CASE_PASS	fixture stable pre-rebind	2	230	230
+CASE_PASS	fixture same identity shorter rebind	2	81	230
+RETIREMENT_PASS
+BATCH03_HOST_PASS	19
