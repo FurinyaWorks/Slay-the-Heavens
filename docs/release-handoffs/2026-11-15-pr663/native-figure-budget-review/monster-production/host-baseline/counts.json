@@ -1,0 +1,64 @@
+{
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "fixture": "tests/lua/support/native_monster_art_host.lua",
+  "fixtureSha256": "524c9303ff2092ec9195b359f957cba0c1de05d6fb04fcb3d553838e3e87bac5",
+  "catalog": "existing explicit monsters:true full-catalog test; static accepted fixture, not 44/119 enabled production",
+  "cases": {
+    "idle-two-bound-12": {
+      "GetChild": 0,
+      "GetChildren": 0,
+      "imageColor": 0,
+      "identicalRGBA": 0,
+      "SetImage": 0,
+      "SetLocalRotation": 0
+    },
+    "nonlethal-hit-120": {
+      "GetChild": 15551,
+      "GetChildren": 0,
+      "imageColor": 7761,
+      "identicalRGBA": 97,
+      "SetImage": 0,
+      "SetLocalRotation": 0
+    },
+    "lethal-windup-through-contact": {
+      "GetChild": 4,
+      "GetChildren": 0,
+      "imageColor": 0,
+      "identicalRGBA": 0,
+      "SetImage": 0,
+      "SetLocalRotation": 0
+    },
+    "post-contact-first-death-sample": {
+      "GetChild": 1195,
+      "GetChildren": 0,
+      "imageColor": 597,
+      "identicalRGBA": 0,
+      "SetImage": 0,
+      "SetLocalRotation": 0
+    },
+    "death-during-action": {
+      "GetChild": 19136,
+      "GetChildren": 0,
+      "imageColor": 9552,
+      "identicalRGBA": 408,
+      "SetImage": 0,
+      "SetLocalRotation": 0
+    },
+    "first-update-six-bound": {
+      "GetChild": 14394,
+      "GetChildren": 0,
+      "imageColor": 7164,
+      "identicalRGBA": 0,
+      "SetImage": 3582,
+      "SetLocalRotation": 3582
+    },
+    "steady-idle-six-bound-120": {
+      "GetChild": 0,
+      "GetChildren": 0,
+      "imageColor": 0,
+      "identicalRGBA": 0,
+      "SetImage": 0,
+      "SetLocalRotation": 0
+    }
+  }
+}
