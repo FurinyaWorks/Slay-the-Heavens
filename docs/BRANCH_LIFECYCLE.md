@@ -37,13 +37,31 @@
 4. 新建 PR 必须注明目标版本、base、依赖、独立验收证据、来源/继任者、合并或关闭后的清理动作。不要用 draft 作为空任务占位。
 5. 多 Agent 协调集成沿用 docs/CI.md 的来源 SHA 冻结表；来源 PR 的关闭理由、继承 PR、未纳入内容及剩余责任逐项回填。
 
-## 分支出口：明确结束动作
+## 分支出口：Agent 的最小收口协议（Definition of Done）
 
-- **合并后：** 核对 PR 是否真实 merged、包含的精确来源 SHA、合后验证及剩余独立提交。GitHub 自动删除只能作为辅助；检查剩余引用和工作树。
-- **被替代/关闭：** 在原 PR、Backlog 记录 successor、未纳入的工作与下一次验收；保留仍有唯一成果的来源，不谎报 Done。
-- **继续实验：** 标记 HOLD/experiment，记录负责人、冻结数据、复核条件；不因当前版发版而强行合入。
-- **计划删分支：** 先核对远端最新 HEAD、开放 PR head/base、保护规则、实验/交接引用、主线已交付的实际内容。Squash 会改写祖先关系，不能单靠 git merge-base / compare 的 ahead_by 判断“已经交付”。删除动作须有可追溯的理由、来源 SHA 和实际验证结果。
-- **无法证实：** 分类为 NEEDS_REVIEW，保留，不进行猜测性批量删除。
+**责任人**：开工 Agent 默认是分支 Closeout Owner；协调集成者明确接管时，必须在原 PR/Backlog 记下接管人和固定来源 HEAD。每日巡检只发现遗漏、点名归属，不代替 Owner 合并/删除。
+
+**六步闭环（不额外发明新的项目管理表）**：
+
+1. **核对来源**：核查 Backlog 任务、正确目标版本/base、原 PR/替代 PR、精确 40 位 HEAD SHA；有脏文件、工作树、唯一证据先记录。
+2. **验收交付**：现有独立评审、定向测试与 Required CI 不变。排队/Auto-merge 只是 `DELIVERY_PENDING`，不能写成已合并、已通过实机或 Done。按 docs/CI.md 异步交接，无须盯着 CI 运行。
+3. **确认结果**：实际 merged + `verify:delivery --merged` + Backlog AC 对账才能记 `DELIVERED_VERIFIED`；协调集成需逐源核对已纳入范围、未纳入内容及对应 successor，不能只看来源 PR 被关闭。
+4. **只选一种出口**：`DELIVERED_VERIFIED`（已交付且已核对）；`SUPERSEDED`（继任来源及未接续内容明确）；`FROZEN`（有后续目标和复核触发条件的实验/HOLD）；`DISCARDED`（确认不需要且保留足够恢复/审计证据）。等待依赖、CI 或审批时保持 `ACTIVE/BLOCKED/DELIVERY_PENDING`，**不算关闭**。
+5. **安全清理**：确认不是 master/develop/release/受保护分支；远端 HEAD 仍等于复核时固定 SHA；没有开放 PR 将它作为 head 或 base；无在途 Agent、依赖/工作树/未提交文件/唯一证据；交付或弃用的证明成立。Squash 改写 SHA，所以 `ahead_by=0`、`git branch --merged` 或 diff 看起来为空都不能独立替代交付证据。满足才删除远端引用和自己的**干净**工作树；有疑点保留并标 `NEEDS_REVIEW`。
+6. **核实关闭**：读回远端 branch 已不存在（或标注为什么保留）；原 PR/Backlog 状态、继承者和版本无误，再领取下一个独立任务。GitHub 自动删 head 只是一项辅助。
+
+**最小留痕（写在既有 PR / Backlog 交接备注，不为每个分支另建文件/Issue）**：
+
+```text
+CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VERIFIED/SUPERSEDED/FROZEN/DISCARDED/BLOCKED> | PR=<#或none> | successor=<#或none> | owner=<agent/协调者> | evidence=<可复核链接> | remote=<deleted/retained+原因>
+```
+
+四种特殊情形：
+
+- **正常 PR 合并**：只有实际合并和合后核验完成才结束；若 GitHub 已删 head，读回确认，无需重复操作。
+- **PR 被关闭/被整合替代**：先写清继任者 PR、被接管的源 SHA、接受的内容和剩余工作；没有可靠内容对应关系不得删除。
+- **长期研究/胡桃冻结候选**：保留分支，显式 `FROZEN` + owner + 复核条件，巡检不将其当作普通逾期分支；需要时把重要历史证据保存在可恢复的位置。
+- **没有 PR 的临时分支**：补齐唯一 Owner、任务来源、后续目标及出口；没有证据时一律 `NEEDS_REVIEW`，不能因为过了 N 天而自动删。
 
 ## WIP 预警与处置（软阈值）
 
@@ -55,7 +73,8 @@
 
 ## 自动化范围与执行
 
-- .github/workflows/branch-hygiene.yml 每日生成只读库存和行动清单，落在 Actions job summary 与可下载的 JSON/Markdown artifact。使用 GITHUB_TOKEN 的 **read** 权限。
+- **每日巡检 Owner：云端 ChatGPT 定时任务（可由 dot 接管）**，逐日只读核对分支、PR、继任者和责任人，只对新异常/升级事件简报；禁止直接合并或删分支。定时任务在 GitHub 之外维护，避免为每日巡检占用本地电脑。
+- .github/workflows/branch-hygiene.yml 改为 **手动触发的只读证据工具**，需要详细库存时由协调者运行并下载结果；不再和云端任务重复每日调度。
 - scripts/branch-hygiene.mjs 通过 GitHub API 分页核对全部分支及全部 PR，绝不调用 DELETE、合并或开 issue。它提供待复核线索，**不是自动删除清单**。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
 - 治理更新只走 develop 的正常 PR，绝不把治理功能/脚本混入当前 release，也不因治理绕过 Fast、Full、独立评审或规则集。
