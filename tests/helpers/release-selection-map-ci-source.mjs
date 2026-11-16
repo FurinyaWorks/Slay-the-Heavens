@@ -42,7 +42,90 @@ for(const [path,row]of Object.entries(freezePacket.files)){
   assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(b.source)}\0`).update(b.source).digest('hex'),b.gitBlob,path);
  }
 }
+// Exact complete historical-fixture repair; immutable predecessor sources remain unchanged.
+const fixtureRepairs={
+ "tests/ci-summary-runners.test.mjs": {
+  "current": "a8b1480f8b7d44e6b3dce5df25d667399e09f0142e945c9ab26fc710417a8551",
+  "before": "c13e584a22ca96185e638ec5e9da85fc45183eed3bb15c9170508f0385058e28",
+  "edits": [
+   [
+    "import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';\n",
+    ""
+   ],
+   [
+    "    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\\n', eol);\n",
+    "    const current = workflow.replaceAll('\\n', eol);\n"
+   ],
+   [
+    "    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\\n', eol);\n",
+    "    const current = workflow.replaceAll('\\n', eol);\n"
+   ],
+   [
+    "    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\\n', eol);\n",
+    "    const current = workflow.replaceAll('\\n', eol);\n"
+   ],
+   [
+    "\n// Authenticate the complete live input before using any historical test fixture.\ntest('Release freeze fixture continuation rejects unknown paths and all byte drift', () => {\n  const predecessors = {\n  \"tests/ci-summary-runners.test.mjs\": \"c13e584a22ca96185e638ec5e9da85fc45183eed3bb15c9170508f0385058e28\",\n  \"tests/ci-windows-shape-expansion.test.mjs\": \"d28a52f2e892ed88e68cbe5fd29d123dfe6a5b86de5d8053b48a6a117504c874\",\n  \"tests/engineering-quality.test.mjs\": \"202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b\",\n  \"tests/full-quality.test.mjs\": \"a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51\"\n};\n  for (const [path, expected] of Object.entries(predecessors)) {\n    const live = readFileSync(path, 'utf8').replaceAll('\\r\\n', '\\n');\n    for (const eol of ['\\n', '\\r\\n']) {\n      const source = live.replaceAll('\\n', eol);\n      assert.equal(digest(releaseFreezeCiBefore(path, source)), expected);\n      for (const foreign of [source + eol, source.slice(1), source.replaceAll(eol, '\\r\\r\\n'), null, {}, 17])\n        assert.equal(releaseFreezeCiBefore(path, foreign), foreign);\n      for (const unknown of ['__proto__', 'constructor', 'foreign/' + path])\n        assert.equal(releaseFreezeCiBefore(unknown, source), source);\n    }\n  }\n  assert.match(workflow, /reopened, edited, ready_for_review/);\n  assert(workflow.includes('node scripts/check-release-scope.mjs'));\n  for (const bad of [workflow + '\\n', workflow.replace('reopened, edited,', 'reopened,'),\n    workflow.replace('node scripts/check-release-scope.mjs', 'echo bypass')])\n    assert.equal(releaseFreezeCiBefore('.github/workflows/quality.yml', bad), bad);\n});\n",
+    ""
+   ]
+  ]
+ },
+ "tests/ci-windows-shape-expansion.test.mjs": {
+  "current": "118566137510d978b4c7abf6595aecd34a4571ee72b1a0bc580fd907d0db0e6d",
+  "before": "d28a52f2e892ed88e68cbe5fd29d123dfe6a5b86de5d8053b48a6a117504c874",
+  "edits": [
+   [
+    "import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';\n",
+    ""
+   ],
+   [
+    " const workflow=beforeExecutionTimeoutWorkflow(releaseFreezeCiBefore('.github/workflows/quality.yml',readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n')));\n",
+    " const workflow=beforeExecutionTimeoutWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n'));\n"
+   ]
+  ]
+ },
+ "tests/engineering-quality.test.mjs": {
+  "current": "e2376dbca82911a27d9f32f585aba6e5afba0b2fbe5beb4bd68edd28f95c4aa4",
+  "before": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+  "edits": [
+   [
+    "import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';\n",
+    ""
+   ],
+   [
+    "  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',releaseFreezeCiBefore('.github/workflows/quality.yml',workflow));\n",
+    "  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',workflow);\n"
+   ]
+  ]
+ },
+ "tests/full-quality.test.mjs": {
+  "current": "e2b0d03df22d2f9d87a5e6adc93bcf7f7077f7d0b007579fbd295a84e5fbd2b5",
+  "before": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+  "edits": [
+   [
+    "import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';\n",
+    ""
+   ],
+   [
+    " const workflow=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',releaseFreezeCiBefore('.github/workflows/quality.yml',physical));\n",
+    " const workflow=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',physical);\n"
+   ],
+   [
+    " const current=beforeDraftQualityWorkflow(releaseFreezeCiBefore('.github/workflows/quality.yml',readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n')));\n",
+    " const current=beforeDraftQualityWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n'));\n"
+   ]
+  ]
+ }
+};
 export function releaseFreezeCiBefore(path,source){
+ if(Object.hasOwn(fixtureRepairs,path)&&typeof source==='string'&&!source.includes('\r\r\n')){
+  const row=fixtureRepairs[path],current=norm(source);
+  if(hash(current)===row.current){
+   let prior=current;for(const [after,before]of row.edits)prior=prior.replace(after,before);
+   assert.equal(hash(prior),row.before,'complete historical-fixture predecessor: '+path);
+   return prior;
+  }
+ }
  const row=Object.hasOwn(freezePacket.files,path)?freezePacket.files[path]:null;
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
