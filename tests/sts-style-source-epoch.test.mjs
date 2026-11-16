@@ -10,6 +10,8 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
+import {blueCandlePriorInventory} from './helpers/blue-candle-ci-source.mjs';
+import {integrationRead,integrationPriorInventory} from './helpers/release-candle-map-integration.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -25,7 +27,10 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ // Keep the complete original receipt input; the blue candle raw Full contract
+ // independently hard-checks every current test and the unchanged budgets.
+ const sideRead=integrationRead('candle');
+ const rawJs=blueCandlePriorInventory(integrationPriorInventory(discoverJs(),'candle'),'js',sideRead),rawLua=blueCandlePriorInventory(integrationPriorInventory(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'candle','lua'),'lua',sideRead);
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "normalization": "LF",
+  "head": "aad672ac4e84741825596ecb034464d16daf49d8",
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "currentTreeCommitted": false,
+  "addedJs": [
+    "tests/release-candle-map-integration.test.mjs"
+  ],
+  "files": {
+    ".github/workflows/licenses.yml": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1",
+    ".github/workflows/quality.yml": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a",
+    ".github/workflows/quick-feedback.yml": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248",
+    "scripts/lowcost-art.mjs": "2b68d1b24a6b68c5e63214810d376dc87e1781c800385e855a328f9531aa345e",
+    "scripts/noncombat-v25-layout.mjs": "e48115c39396240ac6911fc9495600eaba0e5a974845e5999bff423abc78458b",
+    "scripts/official-map-return-controls.mjs": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68",
+    "scripts/official-run-layout.mjs": "c84504418fc773445d982fc2f8e83b548d04ff2b35090fc3c854c816389b93b9",
+    "src/lua/abyss_battle_reward_layout.lua": "b1fc7878161c49337ff42900d6a5e7bd8802a92e84b40dee79252985c2466f74",
+    "src/lua/abyss_game_ui_input.lua": "8476a62e295e72b065fd48642afccf4158c1b70a23aad52290d8ffd3dbee7c9d",
+    "src/lua/abyss_game_ui_view.lua": "34af7bc390792b5eb4b62f265edd10f9786ed153b21ad35b74662ace514db215",
+    "tests/ci-complete-calibration.test.mjs": "ee48d3b04ba13927e7db4471012839fee35608b7b2d2dcc6cc32d4d223903aba",
+    "tests/ci-posix-concurrency.test.mjs": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd",
+    "tests/engineering-quality.test.mjs": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+    "tests/full-quality.test.mjs": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+    "tests/helpers/blue-candle-ci-source.mjs": "38db193ee13112442cc38a0cfabcdc1f11b8a5816839e299fc2cf13ca689fbb0",
+    "tests/helpers/blue-candle-source.mjs": "b608e97b7c43fad61cb397203a67f17e2fb4401525a1794a76ec26aeb33f7422",
+    "tests/helpers/closeout-source-epoch.mjs": "0c2735f0916a941c4e97d6b6cf36f7c09a8dfecaae359af0b0a9add11c2a3304",
+    "tests/helpers/copy-integration-source-closure.mjs": "8c2aeffb439ebd4f85b9f5b437d863c5a035addd18d7dd3ce43329192b757da5",
+    "tests/helpers/integrated-ci-source.mjs": "8363835f383e7e9151a5a6de5f5d452cf539109337e7fa8708da5b11040a2f33",
+    "tests/helpers/release-bootstrap-ci-source.mjs": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08",
+    "tests/helpers/release-selection-map-ci-source.mjs": "a268ae4c8a8c838e219e497adf1effea22a71b0ab944a4d009537c94ab526b1d",
+    "tests/helpers/release-selection-map-source.mjs": "920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52",
+    "tests/integrated-ci-source.cases.mjs": "2b5cd878cc258ee20713220cf4242af501b13f257e558b2410886669041ad3e4",
+    "tests/integration-source-epoch.test.mjs": "a0d0141729baec3d8bd39061db81095bc1b2aaec4fa86f35c20896fc86a9c41d",
+    "tests/lua/reward_relic_shared_art.lua": "958c6422c7e14af2f9a1bb95e675a52460e266687985c5eff20a7f656a1322f3",
+    "tests/lua/support/official_map_return.lua": "2ebf4f45d3dbe6d0ef53c38febf3c7618c3c1c1f4dde8b2c560aff18fdfb7271",
+    "tests/official-map-return-controls.test.mjs": "a2e8dd6aa80a575c1c0ea8b6ff379fe456a4707e357c0589345f3cb236f30c6a",
+    "tests/quick-feedback.test.mjs": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
+    "tests/release-candle-map-integration.test.mjs": "f592f20b42ac4bb5c5d4a075f5d378b1b9251951b6baaede11a349bfbe0806f4",
+    "tests/release-selection-map-source.test.mjs": "32782ff59b2da00caeee6d9a9365e9dc7a0fc31c48d68322fbd3403aed15d012",
+    "tests/reward-relic-shared-art.test.mjs": "fe36677d2b07f569d04f0a3f1ffd7dd5f9a177f49e573ca8a8ff5812d3788099",
+    "tests/selection-overlay-scope.test.mjs": "e412e1173ae9d513b773546788feeea69ea4aae7f04ce98cbb0f7131c33b29f3",
+    "tests/session-menu-navigation.test.mjs": "f1a962f1ffdaa7f409fe8a9fe12e33b4c715e2e376542d5f42f87bf4c0010846",
+    "tests/sts-style-source-epoch.test.mjs": "74e9bdacfa619735f7cec439fe162feab22bc20a59afbdf44b9d39b2be82161c"
+  },
+  "archives": {
+    "tests/helpers/blue-candle-ci-source.json.gz": "6c277c08189975b5cb4a7c6f68402036bec7eec5b30634276fb35f64e73d9c89",
+    "tests/helpers/release-selection-map-ci-source.json.gz": "c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03"
+  }
+}
