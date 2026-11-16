@@ -1,0 +1,14 @@
+✔ shop post697 union historical CI reader reauthenticates every current binding and archive after warm success (21530.8539ms)
+✔ shop post697 union public CI source authenticates the same raw reader before every historical conversion (21094.6135ms)
+✔ shop post697 union current inventory authenticates the complete corpus before entering prior inventory (22111.6322ms)
+✔ shop post697 union integrated reader and source forward the same raw reader before historical output (436.5032ms)
+✔ shop post697 union both explicit histories reject warm cross-input faults and preserve unchanged before bytes (431.5228ms)
+✔ shop post697 union complete current production authenticates every one of 118 owners (7937.0129ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 73878.4959

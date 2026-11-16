@@ -28,6 +28,8 @@ export const releaseSelectionMapHelperCopies=[
  {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
 ];
 for(const row of releaseSelectionMapHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release selection map helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const shopPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1","after":"1f5e9a254c09f5fb9690426ae6e2fb04944d6571f3cb5e7937356643b9a498e8"},{"path":"tests/helpers/shop-post697-source.mjs","before":null,"after":"60095e45728f2663dce88c93e49c04b51fa96d3a496ea5b396ad590aefd2a3d2"},{"path":"tests/helpers/shop-post697-source.json.gz","before":null,"after":"6eac8fe5ad19c6506df977795c4a9bc9dbec276474d3bc85365871bf32976c37"}];
+for(const row of shopPost697HelperCopies){assert.equal(files[row.path]??null,row.before,'exact shop post697 helper predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

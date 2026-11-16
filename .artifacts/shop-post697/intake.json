@@ -1,0 +1,48 @@
+{
+  "releaseOwners": 116,
+  "comboOwners": 118,
+  "newOwners": [
+    "src/lua/abyss_node_ui_input.lua",
+    "src/lua/abyss_shop_selection.lua"
+  ],
+  "delta": [
+    {
+      "path": "src/lua/abyss_node_ui_input.lua",
+      "before": "c7aa8771c045dbdb24f7d36589f8671b548cca7c5bf55d0f5dcefddecac882ad",
+      "current": "34b38a5648f0486bc78d83651ca5733cfdeb9c2d39ae0fa5b32eb4e61447d106",
+      "existingOwner": false
+    },
+    {
+      "path": "src/lua/abyss_shop_selection.lua",
+      "before": "66ac3deb3029d761fea245cc1a37e9d6096ae13a7a06e18223490ce8253efb20",
+      "current": "53d1bcaf70f000f43a951ae2baf280413296ef7982d89d31f77cb5bcd5e85714",
+      "existingOwner": false
+    }
+  ],
+  "inputs": {
+    "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3": {
+      "js": 877,
+      "lua": 1424
+    },
+    "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9": {
+      "js": 879,
+      "lua": 1423
+    }
+  },
+  "currentRaw": {
+    "js": 880,
+    "lua": 1424
+  },
+  "restored": [
+    {
+      "p": "tests/helpers/closeout-ci-source.json.gz",
+      "oid": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+      "size": 2848271
+    },
+    {
+      "p": "tests/helpers/release-source-epoch.json.gz",
+      "oid": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+      "size": 2587324
+    }
+  ]
+}

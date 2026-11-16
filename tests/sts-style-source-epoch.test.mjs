@@ -11,6 +11,7 @@ import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
+import {shopPost697PriorInventory,shopPost697HistoricalRead,assertShopPost697RawInventory} from './helpers/shop-post697-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -28,7 +29,10 @@ test('release additions remain in raw Full and exact historical inventories reje
  assertIntegratedCurrent();
  // Keep the complete original receipt input; the selection map raw Full contract
  // independently hard-checks every current test and the unchanged budgets.
- const rawJs=releaseSelectionMapPriorInventory(discoverJs(),'js',readFileSync),rawLua=releaseSelectionMapPriorInventory(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'lua',readFileSync);
+ const currentJs=discoverJs(),currentLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ assertShopPost697RawInventory(currentJs,'js');assertShopPost697RawInventory(currentLua,'lua');
+ const releaseRead=shopPost697HistoricalRead('release',readFileSync);
+ const rawJs=releaseSelectionMapPriorInventory(shopPost697PriorInventory(currentJs,'js',readFileSync),'js',releaseRead),rawLua=releaseSelectionMapPriorInventory(shopPost697PriorInventory(currentLua,'lua',readFileSync),'lua',releaseRead);
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
