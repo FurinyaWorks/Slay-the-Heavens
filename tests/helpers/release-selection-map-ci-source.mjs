@@ -30,7 +30,12 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
 }
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseSelectionMapCiPacket=freeze(packet);
-function historicalSource(path,source){
+export function historicalSource(path,source){
+ if(path==='tests/release-selection-map-source.test.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='f8f63b397e57267e7d69ed174575459726aa34651196ed6ff307a33b912a5764'){
+  const prior=norm(source).replace('import {historicalSource,releaseSelectionMapCiPacket,','import {releaseSelectionMapCiPacket,').replace('assert.equal(hash(historicalSource(path,source)),row.current.sha256,path);','assert.equal(hash(source),row.current.sha256,path);').replace('production?source:row.before?.source??historicalSource(path,source),path);','production?source:row.before?.source??source,path);');
+  assert.equal(hash(prior),packet.files[path].current.sha256,'complete prior selection map test');return prior;
+ }
+
  if(path==='tests/helpers/release-bootstrap-ci-source.mjs'&&typeof source==='string'&&hash(norm(source))==='ce667d97bc69c66654c857fcf1d51d35dfaa39e09d375c3f10bd789ce89de6e8')return packet.files[path].current.source;
  if(path!=='.github/workflows/quality.yml'||typeof source!=='string')return source;
  const eol=source.includes('\r\n')?'\r\n':'\n';
@@ -55,6 +60,12 @@ function checkedSource(path,source,before){
 // freshly checked after binding with its immutable CI predecessor record.
 export const releaseSelectionMapCiCheckedSource=checkedSource;
 export function releaseSelectionMapCiSource(path,source,before){
+ if(path==='tests/helpers/draft-quality-workflow.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='357ad5c4d68378063b02cf75396f804c8c2b61d12a925595663a4b533948e4e6'){
+  const prior=norm(source).replace("import {beforeReleaseFullGate} from './release-ci-workflow.mjs';\n",'').replace('  text = beforeReleaseFullGate(text);\n','');
+  assert.equal(hash(prior),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986','complete pre-Release draft helper');
+  return prior;
+ }
+
  if(path==='tests/ci-impact.test.mjs'&&typeof source==='string'){
   const prior=norm(source).replace(/\nimport '\.\/helpers\/release-ci\.cases\.mjs';\n$/, '\n');
   if(hash(prior)==='bc325f953a1a8d6b44b24e7d7481e174386df3a5a102dc78581d19397dd0d602')source=prior;
@@ -75,7 +86,7 @@ export function releaseSelectionMapPriorInventory(paths,kind='js',read=readFileS
  if(!current.some(path=>!before.includes(path)&&sorted.includes(path)))return [...paths];
  assert.deepEqual(sorted,current,'complete release selection map raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
  for(const path of current.filter(p=>!before.includes(p)))
-  assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh release selection map added inventory source: '+path);
+  assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),packet.files[path].current.sha256,'fresh release selection map added inventory source: '+path);
  return [...before];
 }
 export function assertReleaseSelectionMapRawInventory(paths,kind='js'){

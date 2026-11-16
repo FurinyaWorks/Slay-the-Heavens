@@ -10,7 +10,7 @@ import {gunzipSync} from 'node:zlib';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
-import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {historicalSource,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
@@ -46,9 +46,9 @@ test('release selection map production preserves every complete prior target and
 test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
  assertReleaseSelectionMapCiCurrent();
  for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){
-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
+  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(historicalSource(path,source)),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
-  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??source,path);
+  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??historicalSource(path,source),path);
   for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);
   for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);
   assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{

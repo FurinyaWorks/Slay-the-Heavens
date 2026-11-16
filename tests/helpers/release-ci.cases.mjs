@@ -88,3 +88,22 @@ if(existsSync(new URL('./release-selection-map-ci-source.mjs',import.meta.url)))
   }
  });
 }
+
+import {createHash} from 'node:crypto';
+import {releaseSelectionMapCiSource,releaseSelectionMapCiRead,historicalSource,releaseSelectionMapCiPacket} from './release-selection-map-ci-source.mjs';
+test('Release CI repair maps only complete reviewed helper and test bytes, retaining drift and foreign inputs',()=>{
+ const hash=s=>createHash('sha256').update(s).digest('hex');
+ for(const [path,priorSha,project]of [
+  ['tests/helpers/draft-quality-workflow.mjs','5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986',releaseSelectionMapCiSource],
+  ['tests/release-selection-map-source.test.mjs',releaseSelectionMapCiPacket.files['tests/release-selection-map-source.test.mjs'].current.sha256,historicalSource],
+ ]){
+  const raw=readFileSync(path,'utf8');
+  for(const source of [raw,raw.replaceAll('\n','\r\n')])assert.equal(hash(project(path,source)),priorSha);
+  for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.equal(project(path,source),source);
+  for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(project(foreign,raw),raw);
+ }
+ const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path);
+ const prior=releaseSelectionMapCiRead(()=>raw)(path);assert(Buffer.isBuffer(prior));
+ assert.equal(hash(prior),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
+ const bad=Buffer.concat([raw,Buffer.from('\n')]);assert.strictEqual(releaseSelectionMapCiRead(()=>bad)(path),bad);
+});
