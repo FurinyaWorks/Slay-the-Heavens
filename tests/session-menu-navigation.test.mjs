@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,releaseSourceEpoch,preReleaseItemTitleShadowSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch,releaseSourceEpoch,preReleaseItemTitleShadowSourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
@@ -15,6 +15,10 @@ import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,e
 const itemTitleShadowCurrentRead=p=>readFileSync(p,'utf8');
 const itemTitleShadowHistoricalRead=p=>sourceEpoch.preCombinedSource(p,itemTitleShadowCurrentRead(p),{target:'releaseItemTitleShadowPrior',readSource:itemTitleShadowCurrentRead});
 
+// Read the exact old menu corpus only after authenticating live current owners.
+// The selection map source contract separately validates the complete current tree.
+const selectionMapCurrentRead=p=>readFileSync(p,'utf8');
+const selectionMapHistoricalRead=p=>sourceEpoch.preCombinedSource(p,selectionMapCurrentRead(p),{target:'releaseSelectionMapPrior',readSource:selectionMapCurrentRead});
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -22,7 +26,7 @@ test('session menu preserves live state, confirms destructive actions and uses p
 });
 
 test('deck notification continuation preserves immutable menu sources and authenticates both exact current owners',()=>{
- const sourceEpoch=preReleaseItemTitleShadowSourceEpoch;
+ const sourceEpoch=preReleaseSelectionMapSourceEpoch;
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz')));
  assertNeowStaticPredecessor(packet);
  const {neowRetirementStaticContinuation,neowRetirementContinuation,continuation,...menu}=packet;
@@ -38,7 +42,7 @@ test('deck notification continuation preserves immutable menu sources and authen
  const changed=structuredClone(menu),owner=Object.keys(changed.current)[0];
  changed.current[owner].source+='\n';
  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
- const proof=sourceEpoch.proof,read=p=>itemTitleShadowHistoricalRead(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,read=p=>selectionMapHistoricalRead(p).replaceAll('\r\n','\n');
  assert.equal(proof.currentCommit,neowRetirementStaticContinuation.currentCommit);
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);
  for(const p of Object.keys(continuation.current)){
@@ -55,10 +59,10 @@ test('deck notification continuation preserves immutable menu sources and authen
 });
 
 test('Neow retirement continuation keeps the complete prior corpus and rejects fresh owner drift',()=>{
- const sourceEpoch=preReleaseItemTitleShadowSourceEpoch;
+ const sourceEpoch=preReleaseSelectionMapSourceEpoch;
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),retirement=packet.neowRetirementContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>itemTitleShadowHistoricalRead(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>selectionMapHistoricalRead(p).replaceAll('\r\n','\n');
  const {navigationRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
  assert.equal(navigationRetirementPrior.commit,'808a310cfc9a0c2734ec424d7ac80d3a040557c8');
  assert.deepEqual(Object.keys(navigationRetirementPrior.files),Object.keys(proof.current));
@@ -83,10 +87,10 @@ test('Neow retirement continuation keeps the complete prior corpus and rejects f
 });
 
 test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
- const sourceEpoch=preReleaseItemTitleShadowSourceEpoch;
+ const sourceEpoch=preReleaseSelectionMapSourceEpoch;
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>itemTitleShadowHistoricalRead(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>selectionMapHistoricalRead(p).replaceAll('\r\n','\n');
  const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
  const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
  assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);

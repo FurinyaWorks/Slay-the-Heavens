@@ -1,0 +1,33 @@
+✔ shared menu entry matches the canvas round copper button while keeping four full native hit states (48.9521ms)
+✔ map header and necessary return controls follow the canvas hierarchy rather than large boxed prose (28.8641ms)
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ok pc08 1 - four live states, cancellation, stale touches, menu cover and C-tier click use the original hit
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ok pc08 2 - camp preview restores its existing caller, live caption and unchanged Run including RNG
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ok pc08 3 - controller focus uses existing binding and stale callbacks remain guarded
+OFFICIAL_MAP_RETURN_PASS 3
+
+✔ official map return reuses final character cancel material in every state, retaining its input and caption (556.3413ms)
+✔ generated official Host preserves pointer, controller and read-only return behavior (12073.459ms)
+✔ every run page mounts the complete battle resource component, preserving writer handles (553.1017ms)
+✔ blessing, map and reward potion slots mount the same final battle faces in all states (406.1631ms)
+✔ paper chrome preserves every graph, edge, scrolling and node-input object and path (72.9077ms)
+✔ paper and blue legend have layered native silhouettes, continuous light and no new input (4.148ms)
+✔ wrapped production map retains live HUD contents and return command identities (95.2059ms)
+✔ duplicate or malformed map refuses before changing input (22.7935ms)
+✔ map legend title retains source centre and font while fitting one native glyph line (2.6168ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12846.3341

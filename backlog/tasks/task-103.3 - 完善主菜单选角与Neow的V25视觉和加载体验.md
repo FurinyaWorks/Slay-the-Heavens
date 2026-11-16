@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11 08:07'
-updated_date: '2026-11-15 21:28'
+updated_date: '2026-11-16 06:46'
 labels:
   - 待验
   - delivery-verify
@@ -16,6 +16,8 @@ references:
   - >-
     docs/evidence/release-item-title-shadow-source-1116/independent-increment.json
   - docs/backlog-details/PC-QA-20261115-CONTINUATION.md
+  - docs/evidence/release-selection-map-admission-1116/README.md
+  - docs/evidence/release-selection-map-release1cc-1116/README.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 171000
@@ -96,4 +98,10 @@ PC01标题/批准按钮恢复产品8ee在df5组合、6cc来源/harness c344/e2eb
 PC04产品0a56仅退休officialBackdropVeil旧全屏层，a3b最终回归与evidence9b0已组合74a598。精确Release逆放2RED/1默认PASS、原8定向、独立失败回退探针及组合5/5通过；正式生成仅一个visible字段变化，其它3profile字节不变。旧层缺陷不是私图06唯一根因证明；独立HUD半透明区批准位置/正式画面AC4未验。来源565cb735与21+1输入独审通过，保留fallback与输入blocker，未勾新AC。
 
 当前Release1cc实际前置692已合；PC01本组合标题/按钮和旧菜单证据原样，55current来源独审通过。PC04正常PR697@2c06753d退休旧veil，actual1cc来源10/10+raw2/2及23+1输入覆盖；批准HUD backing位置与正式画面/PC手机仍未验。
+
+接续 actual Release 33d71575c5f186a1b54f7bf3e4f1826c145aa1d9 的既有历史记录；保留原PR699任务、状态和全部未验AC：
+
+PC04确认实际officialBackdropVeil旧全屏层仍在正式选角人物背景之上；0a56产品仅退休该层，a3b最终测试已组合74a598。精确Release逆放2 RED/1默认PASS，产品8定向、独审失败回退probe及本组合5/5通过；其它3profile生成字节不变，保留fallback/input blocker。不能据此认定私图06唯一根因；批准HUD独立半透明区位置与新候选实机AC4仍未验。565cb735来源合同接续已独审，21+1输入精确覆盖，RequiredCI/正式候选/PC手机/容量不虚报。
+
+#692已实际合入Release1cc，PC04/08旧9b703分支保留history合流；代码eafcaeee/绑定80e1d3ec新base独立增审通过。352生产Git等价、26CI before/after+10bootstrap/96档案保全，产品8路径/旧production producer原样。原合流6pass3CI fail完整保留，来源10/10与两侧raw2/2通过，当前23代码/合同输入及原1可执行证据逐blob追踪。官方像素、PC04批准HUD backing位置、新ready/PC手机/容量及当前Hosted Full仍未验，不因#692合入勾AC。
 <!-- SECTION:NOTES:END -->
