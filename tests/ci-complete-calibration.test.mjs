@@ -2002,7 +2002,8 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
  for(const path of ['.github/workflows/quality.yml','.github/workflows/licenses.yml']){
   const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
-  assert.match(source,/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+  assert.match(source,path==='.github/workflows/quality.yml'?
+   /  push:\n    branches: \[develop, master\]\n/:/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
   assert.match(source,/permissions:\n  contents: read/);
  }
