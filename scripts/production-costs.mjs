@@ -1,10 +1,12 @@
+import {isReadyCardHost} from './art/ready-card-runtime.mjs';
+import {normalizeAssemblyProfile} from './assembly-profile.mjs';
 const bytes = value => Buffer.byteLength(JSON.stringify(value));
 const parts = node => node.controls ?? node.children ?? [];
 const rank = (rows,key) => rows.sort((a,b)=>b[key]-a[key]);
 
 // Subtree rows overlap (cards sit inside pages). These are inspection rankings,
 // not additive storage estimates or a declaration that hidden controls are dead.
-export function productionCosts(modules,layout,templates,layers={}) {
+export function productionCosts(modules,layout,templates,layers={},assemblyProfile=null) {
   const imageReferences=new Map(),cardHosts=[];
   function visit(node,path,ancestorHidden=false) {
     const hidden=ancestorHidden||node.visible===false;
@@ -15,7 +17,7 @@ export function productionCosts(modules,layout,templates,layers={}) {
       controls+=row.controls;hiddenControls+=row.hiddenControls;
     }
     const row={path,controls,hiddenControls,jsonBytes:bytes(node)};
-    if(parts(node).some(child=>child.name==='stsReferenceChrome'))cardHosts.push(row);
+    if(isReadyCardHost(node)||parts(node).some(child=>child.name==='stsReferenceChrome'))cardHosts.push(row);
     return row;
   }
   const treeRows=[visit(layout,layout.name),...templates.map(tree=>visit(tree,tree.name))];
@@ -32,6 +34,7 @@ export function productionCosts(modules,layout,templates,layers={}) {
   const category=name=>/portrait|ready_card_assets|monster_art_data|menu_background_asset|v25_card_assets/.test(name)?'art-data'
     :['abyss_data','abyss_original_v4_data','abyss_theme','abyss_narrative','abyss_presentation','abyss_art_features'].includes(name)?'configuration':layers[name]??'generated-binding';
   return {schemaVersion:1,measurement:'offline-production-inputs-not-official-storage',officialStorageMB:null,
+    assemblyProfile:normalizeAssemblyProfile(assemblyProfile),
     lua:rank(modules.map(row=>({...row,category:category(row.name)})),'bytes'),
     pages:rank(pages,'jsonBytes'),templates:rank(treeRows.slice(1),'jsonBytes'),cardHosts:rank(cardHosts,'jsonBytes'),
     imageReferences:rank([...imageReferences].map(([image,instances])=>({image,instances,storage:'reference-not-embedded-art-bytes'})),'instances')};
@@ -45,7 +48,11 @@ export function productionCostDelta(current,baseline) {
   if(current?.schemaVersion!==1||baseline?.schemaVersion!==1
     ||!groups.every(group=>valid(current,group)&&valid(baseline,group)))
     return {status:'UNVERIFIED-no-comparable-breakdown'};
-  const result={status:'offline-comparison-not-official-storage'};
+  const currentProfile=normalizeAssemblyProfile(current.assemblyProfile),baselineProfile=normalizeAssemblyProfile(baseline.assemblyProfile);
+  if(!currentProfile||!baselineProfile)return {status:'UNVERIFIED-configuration-unknown'};
+  if(JSON.stringify(currentProfile)!==JSON.stringify(baselineProfile))
+    return {status:'UNVERIFIED-configuration-mismatch',currentProfile,baselineProfile};
+  const result={status:'offline-comparison-not-official-storage',assemblyProfile:currentProfile};
   for(const [group,key,metric] of groups){
     const before=new Map(baseline[group].map(row=>[row[key],row[metric]]));
     const after=new Map(current[group].map(row=>[row[key],row[metric]]));

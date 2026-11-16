@@ -28,4 +28,4 @@
 
 ### TASK-111 离线接续（非 RC）
 
-见 [本轮归因报告](../research/2026-11-16-release-capacity-forensics.md)：最新 Release `1cc5479b` 的真实编码大户为原生 UI/39 个完整卡面；独立最小修复只排除 Official 已无消费路径的 selection133，诊断 GIL 减少 128,379 字节。序列化仍由 #691 负责，本 PR 未重复其实现。C4 `be5466c1 / ffb7a077-2bb4-48ec-8f23-cad599dd8d0e / 9a3a94c08f708b4fc64b6397395f429f34f7a9b2f3160358cc4b6392734567a4` 使用公开 fixture 基底，**不是用户游戏候选或正式 RC**。官方容量、导入/ready、PC/手机仍 UNVERIFIED；C0/C4 严格审计均有相同三项未通过，不作为发布 GO。后续应在真实基底和届时最新 Release 重建，不能沿用此诊断身份放行。
+见 [本轮归因报告](../research/2026-11-16-release-capacity-forensics.md)：Release `1cc5479b` 的 **Official 诊断配置** 实测编码大户为原生 UI/39 个完整卡面；最小修复只排除该诊断配置无消费路径的 selection133，诊断 GIL 减少 128,379 字节，**不计正式默认包发版收益**。默认配置实计 61 个卡面宿主、8,892 个宿主子树控件，默认肖像源码前后同为 971,304 字节；旧账单漏记及跨配置比较已纠正。序列化仍由 #691 负责，本 PR 未重复其实现。C4 `be5466c1 / ffb7a077-2bb4-48ec-8f23-cad599dd8d0e / 9a3a94c08f708b4fc64b6397395f429f34f7a9b2f3160358cc4b6392734567a4` 使用公开 fixture 基底，**不是用户游戏候选或正式 RC**。官方容量、导入/ready、PC/手机仍 UNVERIFIED；C0/C4 严格审计均有相同三项未通过，不作为发布 GO。本次账单/生成器修订没有新 GIL，C4 不代表修订后 HEAD。后续应在真实基底和届时最新 Release 重建，不能沿用此诊断身份放行。

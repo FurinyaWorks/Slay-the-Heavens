@@ -20,7 +20,29 @@ for(const [path,row]of Object.entries(capacity.files))for(const binding of [row.
  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
 }
+// Review correction is a new exact outer view; committed predecessor packets remain immutable.
+const reviewBytes=readFileSync(new URL('./task111-capacity-review-ci-source.json',import.meta.url));
+assert.equal(hash(reviewBytes),'6be10ce258d1d6654f91c01047bf442bf4b9cc7e2eafcf5137b3565ef832f325','complete TASK-111 review CI continuation');
+const review=JSON.parse(reviewBytes);
+assert.equal(review.schemaVersion,1);assert.equal(review.normalization,'LF');
+assert.equal(review.baseCommit,'7d62a227af187c2df7edf4941adb8fb30cf708b6');
+assert.equal(review.sourceComment,'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/703#issuecomment-6905101000');
+assert.equal(review.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(review.files),['scripts/art/ready-card-runtime.mjs','scripts/build-ui.mjs','scripts/platform-load.mjs','tests/build-ui-input-protection.test.mjs','tests/platform-load.test.mjs']);
+for(const [path,row]of Object.entries(review.files)){
+ for(const binding of [row.before,row.current]){
+  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+ }
+ if(capacity.files[path])assert.deepEqual(row.before,capacity.files[path].current,'retained TASK-111 predecessor: '+path);
+}
+function reviewBefore(path,source){
+ const row=Object.hasOwn(review.files,path)?review.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ return hash(norm(source))===row.current.sha256?row.before.source:source;
+}
 function capacityBefore(path,source,before){
+ source=reviewBefore(path,source);
  const row=Object.hasOwn(capacity.files,path)?capacity.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||before&&row.before.sha256!==before.sha256)return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
@@ -44,6 +66,7 @@ for(const [path,row]of Object.entries(packet.files)){
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseBootstrapCiPacket=freeze(packet);
 export const capacityCiPacket=freeze(capacity);
+export const capacityReviewCiPacket=freeze(review);
 function checkedSource(path,source,before){
  source=capacityBefore(path,source,before);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
@@ -72,12 +95,14 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries(review.files))
+  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: review '+path);
  for(const [path,row]of Object.entries(capacity.files))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: '+path);
+  assert.equal(hash(norm(reviewBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete TASK-111 CI source: '+path);
  const rawRead=read;
  read=(path,encoding)=>{
   const raw=rawRead(path,encoding);
-  if(!Object.hasOwn(capacity.files,path))return raw;
+  if(!Object.hasOwn(capacity.files,path)&&!Object.hasOwn(review.files,path))return raw;
   const source=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityBefore(path,source);
   return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
  };

@@ -4,6 +4,7 @@ import {portraitRuntimeInventory} from './official-portraits.mjs';
 import {readyArtRuntimeInventory} from './art/ready-card-runtime.mjs';
 import {backgroundRuntimeInventory} from './official-background.mjs';
 import { readFileSync, mkdirSync, writeFileSync, realpathSync } from 'node:fs';
+import {normalizeAssemblyProfile} from './assembly-profile.mjs';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -21,6 +22,10 @@ import {productionCosts,productionCostDelta} from './production-costs.mjs';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export function packageInventory(directory = 'build/lua') {
   const artFeatures=readArtFeatures(directory);
+  let assemblyProfile=null;
+  try{assemblyProfile=normalizeAssemblyProfile(JSON.parse(readFileSync(join(directory,'assembly-profile.json'),'utf8')));}
+  catch(error){if(error.code!=='ENOENT'&&!(error instanceof SyntaxError))throw error;}
+  if(assemblyProfile&&Object.entries(artFeatures).some(([key,value])=>assemblyProfile.artFeatures[key]!==value))assemblyProfile=null;
   const architecture = checkArchitecture();
   if (architecture.errors.length) throw Error('Production dependency analysis failed; run check:architecture');
   for (const edge of architecture.edges) if (excludedProductionModules.includes(edge.to))
@@ -76,7 +81,7 @@ export function packageInventory(directory = 'build/lua') {
   }
   return {schemaVersion: 1, ...gitSourceIdentity(process.cwd()), measurement: 'offline-production-inputs-not-official-storage', modules,
     luaBytes: modules.reduce((n, row) => n + row.bytes, 0),
-    costBreakdown:productionCosts(modules,layout,templates,JSON.parse(readFileSync('config/architecture.json')).layers),
+    costBreakdown:productionCosts(modules,layout,templates,JSON.parse(readFileSync('config/architecture.json')).layers,assemblyProfile),
     layoutJsonBytes: Buffer.byteLength(JSON.stringify(layout)), templateJsonBytes: Buffer.byteLength(JSON.stringify(templates)),
     controls, hiddenControls, templates: templates.length, artPools, maxChildren,
     monsterActors: {...monsterActorInventory(templates.find(t=>t.name===monsterActorTemplateName)),

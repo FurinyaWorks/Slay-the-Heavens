@@ -1,4 +1,5 @@
 import {validateOfficialAssets,officialAssetsArgs,officialAssetFlags} from './official-assets-profile.mjs';
+import {normalizeAssemblyProfile} from './assembly-profile.mjs';
 import {applyOfficialAssets,officialAssetsTheme} from './official-assets-layout.mjs';
 import {assertOfficialRunContracts} from './official-run-layout.mjs';
 import {resolveArtFeatures,artFeatureArgs,writeArtFeatures,artFeatureModule} from './art-features.mjs';
@@ -100,7 +101,7 @@ function rejectInputOutputAliases(outputDirectory, extraInputs = []) {
     stat: statSync(input, { bigint: true }) }));
   const outputs = ['abyss_theme.lua', 'map-ui.json', 'abyss_map_layout.lua', 'abyss_map_controls.lua',
     'abyss_narrative.lua', 'abyss_presentation.lua', 'battle-ui.json', 'game-ui.json', 'abyss_ui_layout.lua',
-    'game-ui-templates.json', 'abyss_ui_templates.lua', 'native-card-art-receipt.json', 'lightweight-2d.json', 'v25-theme.json', 'official-assets-theme.json', `${uiProfileModule}.lua`, `${backgroundModule}.lua`,
+    'game-ui-templates.json', 'abyss_ui_templates.lua', 'assembly-profile.json', 'native-card-art-receipt.json', 'lightweight-2d.json', 'v25-theme.json', 'official-assets-theme.json', `${uiProfileModule}.lua`, `${backgroundModule}.lua`,
     'abyss_ready_card_binding.lua','abyss_ready_card_assets.lua','abyss_traveler_portrait_assets.lua',`${artFeatureModule}.lua`,'abyss_monster_art_data.lua','abyss_monster_actor_binding.lua','abyss_component_binding.lua','art-performance.json','art-render-v2.json'];
   outputs.push(`${v25CardModule}.lua`);
   for (const file of outputs) {
@@ -206,6 +207,13 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   if(performance)writeFileSync(join(outputDirectory,'art-performance.json'),JSON.stringify(performance));
   else rmSync(join(outputDirectory,'art-performance.json'),{force:true});
   writeFileSync(join(outputDirectory,'art-render-v2.json'),JSON.stringify({profile:'native-v2',hiddenBuild:true,cache:true,revealGroupsPerFrame:4}));
+  const assemblyProfile=normalizeAssemblyProfile({schemaVersion:1,renderProfile:'native-v2',
+    uiProfile:officialAssets?'official-assets':v25BattleChrome?'v25-battle-chrome':options.lightweight2d===true?'bounded-2d':'default',
+    artFeatures:flags,cardArt:!flags.cards?'disabled':art?'static':'dynamic',staticCardHosts:art?.hosts??[],nativePageLifecycle,
+    legacyCardFrames:options.legacyCardFrames===true,experimentalCharacters:options.experimentalCharacters===true,
+    performanceArt:compact,privateCardAssets:!!v25Cards,privateUiMasks:!!v25Masks,releaseCandidate:options.releaseCandidate===true});
+  if(!assemblyProfile)throw Error('Invalid resolved assembly profile');
+  writeFileSync(join(outputDirectory,'assembly-profile.json'),JSON.stringify(assemblyProfile,null,2)+'\n');
   writeArtFeatures(outputDirectory,flags);writeMonsterActorBinding(outputDirectory);
   writeBackgroundModule(outputDirectory,{enabled:flags.menuBackground});writePortraitModule(outputDirectory,{...flags,v25BattleChrome,officialAssets});
   writeReadyArtBinding(outputDirectory);writeReadyCardAssets(outputDirectory,{prepared:readyAssets});
