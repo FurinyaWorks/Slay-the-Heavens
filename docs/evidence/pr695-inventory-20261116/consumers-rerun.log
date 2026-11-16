@@ -1,0 +1,17 @@
+✔ [historical 98fef source contract] actual complete registration union adds only roster admission and retains every accepted Nodes Battle MaxHP classification (187.559777ms)
+✔ [historical 98fef source contract] outer proof composes both immutable config witnesses through all existing historical guards (29141.694779ms)
+✔ [historical 98fef source contract] all actual registration mutations reject unknown identities while retaining the exact complete prior config witness (285.263806ms)
+✔ [historical 98fef source contract] config reordering unrelated bytes and missing wrong-path or target inputs remain rejected (212.633294ms)
+✔ [historical 98fef source contract] public roster bridges retain original witnesses and reject foreign partial or changed linked sources freshly (38215.648807ms)
+✔ original Roster closure rejects relabeled missing changed or redirected inputs before import (162.286606ms)
+✔ current Roster registration admission validates every raw owner freshly at the supported develop target (1003.556416ms)
+✔ current Roster legacy bridge rejects incompatible owners rather than claiming either ancient witness (13957.818059ms)
+✔ [historical 98fef source contract] M4 deck controls recover only the seven complete pre-feature source identities (215.792784ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 98958.152201

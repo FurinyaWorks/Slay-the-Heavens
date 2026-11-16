@@ -1,9 +1,11 @@
-# PR695 inventory repair candidate
+# PR695 inventory repair validation
 
-Base: 6cdfd8dbe23aa115e45c1c37a5bc7883d0c46c41.
+Candidate a942adbcfa76fa136972d5ec42b0a89479ff9aae based on 6cdfd8dbe23aa115e45c1c37a5bc7883d0c46c41.
 
-Original integratedPriorInventory(current JS, selection) rejects current selection-map source 9ceb9109 against historical 273f17c8. Repair authenticates the same complete caller raw reader then uses the exact existing settings selection view. Immutable original packets and production are unchanged. A new full before/current helper packet preserves prior identity.
+The original integratedPriorInventory entry rejected the current selection-map source against its immutable historical identity. The repair authenticates the complete caller raw reader before applying the existing precise settings selection view. Original packets, product code, assertions and budgets remain unchanged.
 
-Direct original inventory entry now returns the expected 855 historical JS paths. Independent review: 118 checks PASS (probe and raw output included), covering exact Git predecessor/current, current inventories, legacy idempotence, missing/empty/drift/Buffer/CRLF/warm recovery. Guidance and Backlog PASS.
+Original inventory RED → GREEN (855 historical JS paths). Independent review: 118 checks PASS; guidance and Backlog PASS. Probe and original logs are preserved here.
 
-UNVERIFIED: deck-browse-source-inverse and competition-roster-config-composition consumer runs lost their executor session during environment replacement; empty log is not PASS. No Full, hosted pass, merge or device claim. Do not apply to active PR until consumer runs complete. LFS materialization changes are not part of this candidate.
+Follow-up: confirmed no old consumer processes in the available executor and ran both original files together: node --test tests/deck-browse-source-inverse.test.mjs tests/competition-roster-config-composition.test.mjs. Result: 9/9 PASS, 0 failed/cancelled/skipped, 98958.152201 ms. Full output: consumers-rerun.log. Prior lost-session attempts remain unverified; this is a new completed run, not a rewrite of their result.
+
+No Full or hosted CI pass, merge, official import, ready or device claim. LFS materialization changes are excluded.
