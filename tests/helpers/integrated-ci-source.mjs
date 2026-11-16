@@ -10,8 +10,9 @@ import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBo
 import {potionBootstrapCiSource,potionBootstrapCiCheckedSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent} from './potion-bootstrap-ci-source.mjs';
 import {potionRegressionCiSource,potionRegressionCiCheckedSource,potionRegressionHistoricalRead,potionRegressionPriorInventory,assertPotionRegressionCiCurrent} from './potion-regression-ci-source.mjs';
 import {potionClickCiSource,potionClickCiCheckedSource,potionClickHistoricalRead,assertPotionClickCiCurrent} from './potion-click-ci-source.mjs';
-const priorCiSource=(path,source,before)=>releaseBootstrapCiSource(path,potionBootstrapCiSource(path,potionRegressionCiSource(path,potionClickCiSource(path,source))),before);
-const priorCiCheckedSource=(path,source,before)=>releaseBootstrapCiCheckedSource(path,potionBootstrapCiCheckedSource(path,potionRegressionCiCheckedSource(path,potionClickCiCheckedSource(path,source))),before);
+import {cottageClickCiSource,cottageClickCiCheckedSource,cottageClickHistoricalRead,cottageClickPriorInventory,assertCottageClickCiCurrent} from './cottage-click-ci-source.mjs';
+const priorCiSource=(path,source,before)=>releaseBootstrapCiSource(path,potionBootstrapCiSource(path,potionRegressionCiSource(path,potionClickCiSource(path,cottageClickCiSource(path,source)))),before);
+const priorCiCheckedSource=(path,source,before)=>releaseBootstrapCiCheckedSource(path,potionBootstrapCiCheckedSource(path,potionRegressionCiCheckedSource(path,potionClickCiCheckedSource(path,cottageClickCiCheckedSource(path,source)))),before);
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -40,8 +41,10 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertPotionClickCiCurrent(read);
- const clickPriorRead=potionClickHistoricalRead(read);
+ assertCottageClickCiCurrent(read);
+ const beforeCottageRead=cottageClickHistoricalRead(read);
+ assertPotionClickCiCurrent(beforeCottageRead);
+ const clickPriorRead=potionClickHistoricalRead(beforeCottageRead);
  assertPotionRegressionCiCurrent(clickPriorRead);
  const priorRead=potionRegressionHistoricalRead(clickPriorRead);
  assertPotionBootstrapCiCurrent(priorRead);
@@ -61,6 +64,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
+ paths=cottageClickPriorInventory(paths,kind,read);read=cottageClickHistoricalRead(read);
  read=potionClickHistoricalRead(read);
  paths=potionRegressionPriorInventory(paths,kind,read);read=potionRegressionHistoricalRead(read);
  paths=mobilePotionPriorInventory(paths,kind,read);

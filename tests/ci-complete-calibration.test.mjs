@@ -42,7 +42,9 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualPotionClickReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualCottageClickReadFileSync,readdirSync} from 'node:fs';
+import {cottageClickHistoricalRead,cottageClickCiRead,cottageClickCiPacket,cottageClickCiSource,cottageClickPriorInventory,assertCottageClickCiCurrent,assertCottageClickRawInventory} from './helpers/cottage-click-ci-source.mjs';
+const actualPotionClickReadFileSync=cottageClickHistoricalRead(actualCottageClickReadFileSync);
 import {potionClickHistoricalRead,assertPotionClickCiCurrent,assertPotionClickRawInventory} from './helpers/potion-click-ci-source.mjs';
 const actualPotionRegressionReadFileSync=potionClickHistoricalRead(actualPotionClickReadFileSync);
 import {potionRegressionHistoricalRead,potionRegressionCiPacket,potionRegressionPriorInventory,assertPotionRegressionCiCurrent,assertPotionRegressionRawInventory} from './helpers/potion-regression-ci-source.mjs';
@@ -65,7 +67,9 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as actualPotionRegressionDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualCottageClickDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const actualPotionRegressionDiscoverJs=()=>cottageClickPriorInventory(actualCottageClickDiscoverJs(),'js',actualCottageClickReadFileSync);
+const beforeCottageClickLua=()=>cottageClickPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualCottageClickReadFileSync);
 const rawMobilePotionDiscoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
 const liveDiscoverJs=()=>mobilePotionPriorInventory(rawMobilePotionDiscoverJs(),'js',rawMobilePotionReadFileSync);
 // Frozen receipts retain their complete inventory; current Full remains raw.
@@ -174,7 +178,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const actualPotionRegressionLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+const actualPotionRegressionLua=()=>beforeCottageClickLua();
 const rawMobilePotionLua=()=>potionRegressionPriorInventory(actualPotionRegressionLua(),'lua',actualPotionRegressionReadFileSync);
 const liveCloseoutLua=()=>mobilePotionPriorInventory(rawMobilePotionLua(),'lua',rawMobilePotionReadFileSync);
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
@@ -2110,7 +2114,7 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
 
 test('potion regression composition raw Full retains complete discovery costs and real execution guards',t=>{
  assertPotionRegressionCiCurrent(actualPotionRegressionReadFileSync);
- const js=actualPotionRegressionDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const js=actualPotionRegressionDiscoverJs(),lua=beforeCottageClickLua();
  assertPotionRegressionRawInventory(js,'js');assertPotionRegressionRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=actualPotionRegressionReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
@@ -2143,11 +2147,43 @@ test('potion regression composition raw Full retains complete discovery costs an
 test('potion click raw Full keeps real discovery and execution guards',()=>{
  assertPotionClickCiCurrent(actualPotionClickReadFileSync);
  assertPotionClickRawInventory(actualPotionRegressionDiscoverJs(),'js');
- assertPotionClickRawInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua');
+ assertPotionClickRawInventory(beforeCottageClickLua(),'lua');
  const physical=actualPotionClickReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
  assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
  assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
+});
+
+test('cottage click composition raw Full retains complete discovery costs and real execution guards',t=>{
+ assertCottageClickCiCurrent(actualCottageClickReadFileSync);
+ const js=actualCottageClickDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ assertCottageClickRawInventory(js,'js');assertCottageClickRawInventory(lua,'lua');
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
+ const physical=actualCottageClickReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
+ assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
+ assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  for(const path of js.filter(p=>!cottageClickCiPacket.priorInventory.js.includes(p))){
+   assert.equal(rawCurrentTimings.js[platform][path],undefined,'no fabricated hosted measurement');
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs);
+  }
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical guard ${guard}ms; prediction is not admission`);
+ }
 });

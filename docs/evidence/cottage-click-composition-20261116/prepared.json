@@ -1,0 +1,11 @@
+{
+  "prior": "3e96a1589435f8b06645db095775a789f24b1350",
+  "product": "329d13a72d3abcc8a80fe09fb4cfbd503972f08b",
+  "productionPacketSha256": "edb0c369e9230c768123999e2509402e0c508ce872b4aff87e17a94e95df9284",
+  "productionPacketBytes": 834012,
+  "copyPaths": [
+    "tests/helpers/closeout-source-epoch.mjs",
+    "tests/helpers/cottage-click-source.mjs",
+    "tests/helpers/cottage-click-source.json.gz"
+  ]
+}

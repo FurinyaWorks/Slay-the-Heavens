@@ -1,0 +1,16 @@
+{
+  "prior": "3e96a1589435f8b06645db095775a789f24b1350",
+  "product": "329d13a72d3abcc8a80fe09fb4cfbd503972f08b",
+  "ciSha256": "aad69c2ebe301444ccf72294ffbb0a71d8a7d2ec275dab4a7bcecb48ae12d01e",
+  "ciBytes": 170212,
+  "files": 20,
+  "archives": 105,
+  "priorInventory": {
+    "js": 877,
+    "lua": 1424
+  },
+  "currentInventory": {
+    "js": 878,
+    "lua": 1425
+  }
+}

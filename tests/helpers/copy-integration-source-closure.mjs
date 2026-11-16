@@ -40,6 +40,8 @@ export const potionClickHelperCopies=[
  {path:'tests/helpers/potion-click-source.json.gz',before:null,after:'823ccaff8ee4d2d6e48fb94c758f9ae11a001c73872fef2a890109de0c8e0dbf'}
 ];
 for(const row of potionClickHelperCopies){assert.equal(files[row.path]??null,row.before,'exact potion click helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const cottageClickHelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"b0260eb43becd74e52a8b5ed04e1909f52741d8cc9813c42ec5bc109f3c5723c","after":"9337999eaf5bb887ab40b60998cd3783b3c1a54b55245f0f5030c22585be549e"},{"path":"tests/helpers/cottage-click-source.mjs","before":null,"after":"618a1cb833cf4da24e85f13ce6e729b2ec428c1a8101f92f0cdbc8939e1ab369"},{"path":"tests/helpers/cottage-click-source.json.gz","before":null,"after":"edb0c369e9230c768123999e2509402e0c508ce872b4aff87e17a94e95df9284"}];
+for(const row of cottageClickHelperCopies){assert.equal(files[row.path]??null,row.before,'exact cottage click helper-copy predecessor: '+row.path);files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

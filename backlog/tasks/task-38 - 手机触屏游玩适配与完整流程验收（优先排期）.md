@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-23 12:23'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-16 02:08'
 labels:
   - awaiting-live
   - release-qa-20261101
@@ -106,4 +106,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-16 PR678本地冲突接续：保留原3eb与稳定药水3e96祖先，产品merge329d；新cottage-click来源外层独立采集、保留7eac历史及105归档，352当前/352历史Git绑定审核通过，117→118仅新增pending_ui owner，raw877/1424→878/1425。原Tiny default/official与shop pending实际通过；设备AC不勾。678仍Draft且Depends-on679未合，准备头须独审，不推送、不正式Full/准入。完整证据见待提交TASK-38.5-CLICK-COMPOSITION-20261116附件。
 <!-- SECTION:NOTES:END -->

@@ -1,0 +1,163 @@
+[
+  {
+    "path": "prepare.py.gz",
+    "sourceBytes": 11220,
+    "storedBytes": 3652,
+    "sourceSha256": "cbcd2962e78efca82869603ba2967d1d9d40cceda52d574c46109fefe4647df5",
+    "storedSha256": "3980c7183bad60006b7c0669937c4220002acf34e788cd080da63f6ce494b9b2"
+  },
+  {
+    "path": "auth-entries.py.gz",
+    "sourceBytes": 2303,
+    "storedBytes": 973,
+    "sourceSha256": "4052227a56628db3b786d6ee846899643f469a8877c782ed2752ac1bedaa035d",
+    "storedSha256": "ae76fa0c8c625a8d57a9ba2605b95c16e18937de84400f6e4fb92c35c65430ce"
+  },
+  {
+    "path": "capture.py.gz",
+    "sourceBytes": 3582,
+    "storedBytes": 1624,
+    "sourceSha256": "376e90be599f2343c0f79d614db1839bbc291149fe90cd4808b1b3a01e470bcd",
+    "storedSha256": "4b0a162db90aeb3754b37c8d4fe27422acdfae810ea6929067806829914385c4"
+  },
+  {
+    "path": "audit.mjs.gz",
+    "sourceBytes": 4042,
+    "storedBytes": 1532,
+    "sourceSha256": "2f3632541dfb616bbf9c20b2e87f6c58108453c9069753072a46c0b6e3b032ea",
+    "storedSha256": "3a9675b587445e7703a181ac87aff8df511ac69af56fbd9187edbff9b7e7480e"
+  },
+  {
+    "path": "restore-portrait-inputs.py.gz",
+    "sourceBytes": 1031,
+    "storedBytes": 571,
+    "sourceSha256": "dd364c721354fb25c71c9e5fd53c97d06cfaccf4f1dec73669f11dcf9669f47e",
+    "storedSha256": "d8686f6ef360866985d0b791f4026959a786b6bef60a51f3fcbfd4a5e88505a2"
+  },
+  {
+    "path": "prepared.json",
+    "sourceBytes": 421,
+    "storedBytes": 421,
+    "sourceSha256": "f54cf8e382040f8ad35a76298e87686b9647bc9d720f67c4227a4357ff0b6eb1",
+    "storedSha256": "f54cf8e382040f8ad35a76298e87686b9647bc9d720f67c4227a4357ff0b6eb1"
+  },
+  {
+    "path": "capture.json",
+    "sourceBytes": 386,
+    "storedBytes": 386,
+    "sourceSha256": "6cb82eec9f65d68528aad80f05804bba52f23e3b562804468f81213fb9316aab",
+    "storedSha256": "6cb82eec9f65d68528aad80f05804bba52f23e3b562804468f81213fb9316aab"
+  },
+  {
+    "path": "audit.json",
+    "sourceBytes": 507,
+    "storedBytes": 507,
+    "sourceSha256": "c5c6a308914ace8ba0ee8755e664a612ce78c9083f55bef2cc9ec7bf08612e79",
+    "storedSha256": "c5c6a308914ace8ba0ee8755e664a612ce78c9083f55bef2cc9ec7bf08612e79"
+  },
+  {
+    "path": "portrait-inputs.json",
+    "sourceBytes": 404,
+    "storedBytes": 404,
+    "sourceSha256": "ffb9c0d903d51cb137eeae106e230e32f42fa815c843d5d0712c0300c419780a",
+    "storedSha256": "ffb9c0d903d51cb137eeae106e230e32f42fa815c843d5d0712c0300c419780a"
+  },
+  {
+    "path": "source-first.log.gz",
+    "sourceBytes": 1484,
+    "storedBytes": 656,
+    "sourceSha256": "144b5238718cd69bfc9cf4a6339af1912501b2b8d7f1e46056ebb78eddac1b1b",
+    "storedSha256": "dc2f58d24531aaa87d2aeecd7fb37c91bea885d7888ac025ca0441758ee82ce6"
+  },
+  {
+    "path": "source-auth.log.gz",
+    "sourceBytes": 606,
+    "storedBytes": 315,
+    "sourceSha256": "66fd0e2e23ef15f7607766fc948a090f2a45aec644cde324a547ac7684d627ec",
+    "storedSha256": "46a4633a8d3fe4c3c5fd608142ff086669b99f913dba83af52f7d19c574c9119"
+  },
+  {
+    "path": "live-owners.log.gz",
+    "sourceBytes": 2013,
+    "storedBytes": 859,
+    "sourceSha256": "03167be848f7a0234a8452d78ab2f5622d0d0f81682de842cad6f3fd122b6481",
+    "storedSha256": "90714b6f2e770865416484f6f662cdf0868c139b2b9b578e86ba585e589acdb4"
+  },
+  {
+    "path": "live-owners-green.log.gz",
+    "sourceBytes": 1441,
+    "storedBytes": 700,
+    "sourceSha256": "ab01126802f76998ee5a7ba0578b7e592d1d2143c6bf2b783afbdc7c8eda2e41",
+    "storedSha256": "61913da8535998afcc04072c5426e1695c4d4f588c6a661a44b40966a83b6d81"
+  },
+  {
+    "path": "defect-live-green.log.gz",
+    "sourceBytes": 259,
+    "storedBytes": 193,
+    "sourceSha256": "989bc8a0cbc3fc69744365c2bdbffd24f94deee41615da638edd6e3ef6fd934a",
+    "storedSha256": "0935e468d8fbc438915b10b1bcd5dfc0a173238ae1de2dc0958affcb3e949c8b"
+  },
+  {
+    "path": "tiny-house-current.log.gz",
+    "sourceBytes": 1446,
+    "storedBytes": 567,
+    "sourceSha256": "55d9c5677fe1b8265676c491edd8f6c907622d3d84219ed2c352d0f22eac126c",
+    "storedSha256": "893fce94b266a834139c3acdbc8c46e176eddb2da1f17dc8d6adadcbd6966d92"
+  },
+  {
+    "path": "tiny-official-green.log.gz",
+    "sourceBytes": 219,
+    "storedBytes": 177,
+    "sourceSha256": "f2647dd1e58c083a4055c8151a8e778cf8ba7b16e5a2ab3e77450f097cdd7b47",
+    "storedSha256": "a789eef8feaec123adc6d5a8d8cdcb5b7aef522b18226683e983969bff9e81d9"
+  },
+  {
+    "path": "shop-pending-current.log.gz",
+    "sourceBytes": 848,
+    "storedBytes": 503,
+    "sourceSha256": "4f5d5af1040969b62b068bb19a84051a508bedf35985ecfc8c80dafeba163384",
+    "storedSha256": "18831ce5c5747542170da69464a10fc36c1cdd928d8a7ecb38dfedca047dd99f"
+  },
+  {
+    "path": "integration-current-guard-cost.log.gz",
+    "sourceBytes": 246,
+    "storedBytes": 190,
+    "sourceSha256": "562c62304e6fb0ddbc173570e2c4f3806c3a8b5d4cbb25040ccbd41bd618ba2d",
+    "storedSha256": "bde91608bba85c4222916eeacfcbad6d2a05536af1fa1af358b395a0e2bb78bf"
+  },
+  {
+    "path": "audit.log.gz",
+    "sourceBytes": 398,
+    "storedBytes": 276,
+    "sourceSha256": "e8bfaa84091c4c6f5893f8e8640e433a5c1ef73f9bf1b59614f2fa99e991b693",
+    "storedSha256": "b7b2dd2f2e2cc0501a1c1d8299a6207bf30e697664db43e0dc7a11cfb9c8d9c8"
+  },
+  {
+    "path": "syntax.log.gz",
+    "sourceBytes": 108,
+    "storedBytes": 108,
+    "sourceSha256": "010949ef9b66fe6f1b7909f0e8b2b97143988a1307a9df8778988edf0663fd10",
+    "storedSha256": "feffad5e923ac0ed65d9f3ab16f9ddb649f32b70201514fea3645b7cbfb3d728"
+  },
+  {
+    "path": "build-data.log.gz",
+    "sourceBytes": 108,
+    "storedBytes": 113,
+    "sourceSha256": "375f9139cb4732d6047d241483ea6904385348ae3b4b2dfdc13116ce80601cc6",
+    "storedSha256": "c9e1d6fcb8eab63b936fcb40737b13209d4bbdb4eabbd75c425d4468cb1489c9"
+  },
+  {
+    "path": "build-ui.log.gz",
+    "sourceBytes": 119,
+    "storedBytes": 124,
+    "sourceSha256": "a273c886b8998942a6078b7921aea990f6e26d09ea096e553423f54c17fcbebf",
+    "storedSha256": "ad235a0d8f1f89b574818744cc383ad99d855058c94c508789e262ddcae603a3"
+  },
+  {
+    "path": "build-theme.log.gz",
+    "sourceBytes": 103,
+    "storedBytes": 108,
+    "sourceSha256": "9396c1ed1551c9ecf71a07776dfd4c045fc443e939457c07a57af2b132953a5d",
+    "storedSha256": "c97bf0be568a21dd93f07733de8762558be39fd7a1b5f6d405840d225ecbec92"
+  }
+]

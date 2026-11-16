@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualPotionClickReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualCottageClickReadFileSync,readdirSync} from 'node:fs';
+import {cottageClickHistoricalRead,cottageClickCiRead,cottageClickCiPacket,cottageClickCiSource,cottageClickPriorInventory,assertCottageClickCiCurrent,assertCottageClickRawInventory} from './helpers/cottage-click-ci-source.mjs';
+const actualPotionClickReadFileSync=cottageClickHistoricalRead(actualCottageClickReadFileSync);
 import {potionClickHistoricalRead,potionClickCiSource,potionClickCiPacket,assertPotionClickCiCurrent,assertPotionClickRawInventory} from './helpers/potion-click-ci-source.mjs';
 const actualPotionRegressionReadFileSync=potionClickHistoricalRead(actualPotionClickReadFileSync);
 import {potionRegressionHistoricalRead,potionRegressionCiRead,potionRegressionCiPacket,potionRegressionCiSource,potionRegressionPriorInventory,assertPotionRegressionCiCurrent,assertPotionRegressionRawInventory} from './helpers/potion-regression-ci-source.mjs';
@@ -11,9 +13,11 @@ const rawReadFileSync=potionBootstrapHistoricalRead('potion',actualDiskReadFileS
 const rawBootstrapReadFileSync=potionBootstrapHistoricalRead('bootstrap',actualDiskReadFileSync);
 import {mobilePotionCiRead,mobilePotionPriorInventory,mobilePotionCiPacket,mobilePotionCiSource,assertMobilePotionCiCurrent,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 import {createHash} from 'node:crypto';
-import {discoverJs as actualPotionRegressionDiscoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualCottageClickDiscoverJs} from '../scripts/ci-shards.mjs';
+const actualPotionRegressionDiscoverJs=()=>cottageClickPriorInventory(actualCottageClickDiscoverJs(),'js',actualCottageClickReadFileSync);
+const beforeCottageClickLua=()=>cottageClickPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualCottageClickReadFileSync);
 const discoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
-const beforePotionRegressionLua=()=>potionRegressionPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualPotionRegressionReadFileSync);
+const beforePotionRegressionLua=()=>potionRegressionPriorInventory(beforeCottageClickLua(),'lua',actualPotionRegressionReadFileSync);
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
@@ -34,7 +38,7 @@ test('integration validates complete raw sources and leaves every foreign byte a
  }
  for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])
   assert.throws(()=>assertIntegratedCurrent((p,e)=>{
-   const value=actualPotionClickReadFileSync(p,e);
+   const value=actualCottageClickReadFileSync(p,e);
    return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
   }),error=>{assert.match(error.message,/fresh complete integration source/);assert(error.message.includes(path),'the intended after owner must reject');return true;});
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
@@ -224,7 +228,7 @@ test('potion regression composition CI keeps the bootstrap packet and rejects mi
 });
 
 test('potion regression composition raw JS and Lua inventory rejects missing duplicate foreign and source drift',()=>{
- const inventories={js:actualPotionRegressionDiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ const inventories={js:actualPotionRegressionDiscoverJs(),lua:beforeCottageClickLua()};
  for(const [kind,paths]of Object.entries(inventories)){
   assertPotionRegressionRawInventory(paths,kind);
   assert.deepEqual(potionRegressionPriorInventory(paths,kind,actualPotionRegressionReadFileSync),potionRegressionCiPacket.priorInventory[kind]);
@@ -240,7 +244,7 @@ test('potion regression composition raw JS and Lua inventory rejects missing dup
 });
 
 test('potion click production closure authenticates new bytes and retains every complete predecessor',async()=>{
- const {sourceEpoch,prePotionClickSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {preCottageClickSourceEpoch:sourceEpoch,prePotionClickSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {potionClickSourcePacket:p,extendPotionClickSource}=await import('./helpers/potion-click-source.mjs');
  const prior=prePotionClickSourceEpoch.proof,current=sourceEpoch.proof;
  assert.equal(current.currentCommit,'c126877c31b37396b6148e1101a8dba555d03feb');assert.equal(current.currentTreeCommitted,true);
@@ -262,7 +266,7 @@ test('potion click production closure authenticates new bytes and retains every 
 
 test('potion click CI authenticates new bytes and rejects drift missing packets and incomplete discovery',async()=>{
  assertPotionClickCiCurrent(actualPotionClickReadFileSync);
- const inventories={js:actualPotionRegressionDiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ const inventories={js:actualPotionRegressionDiscoverJs(),lua:beforeCottageClickLua()};
  for(const [kind,paths]of Object.entries(inventories)){
   assertPotionClickRawInventory(paths,kind);
   for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,`tests/foreign.${kind}`]])assert.throws(()=>assertPotionClickRawInventory(bad,kind),/raw discovery inventory/);
@@ -311,4 +315,101 @@ test('potion click historical entry authenticates complete current bindings befo
  const reads=[];const tracked=potionClickHistoricalRead((p,e)=>{reads.push(p);return actualPotionClickReadFileSync(p,e);});
  assert.equal(tracked(path,'utf8'),expected);
  for(const required of [...Object.keys(potionClickCiPacket.files),...Object.keys(potionClickCiPacket.immutableArchives)])assert(reads.includes(required),'fresh complete read '+required);
+});
+
+test('cottage click composition production sources retain original owners and reject partial fresh authorizations',async()=>{
+ const {sourceEpoch,preCottageClickSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {cottageClickSourcePacket:p,extendCottageClickSource}=await import('./helpers/cottage-click-source.mjs');
+ const prior=preCottageClickSourceEpoch.proof,current=sourceEpoch.proof;
+ for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(current.targets[name],target,name);
+ assert.deepEqual(current.targets.cottageClickPrior.files,prior.current);
+ assert.equal(current.currentCommit,'329d13a72d3abcc8a80fe09fb4cfbd503972f08b');assert.equal(current.currentTreeCommitted,true);
+ assert.equal(Object.keys(p.combinedProducers).length,5);
+ for(const [path,row]of Object.entries(p.inheritedSources))assert.equal(actualCottageClickReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
+ for(const [path,row]of Object.entries(p.current))assert.equal(actualCottageClickReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
+ for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)},{...p,prerequisites:[]},{...p,inheritedSources:{}},{...p,combinedProducers:{}}])
+  assert.throws(()=>extendCottageClickSource(preCottageClickSourceEpoch,bad));
+ const path=Object.keys(p.current)[0],source=p.current[path].source;
+ const read=p=>{try{return actualCottageClickReadFileSync(p,'utf8');}catch(e){if(e.code==='ENOENT')return null;throw e;}};
+ for(const owner of [...Object.keys(p.current),...Object.keys(p.inheritedSources)]){
+  assert.equal(sourceEpoch.preCombinedSource(path,source,{target:'cottageClickPrior',readSource:read}),prior.current[path].source);
+  for(const missing of [false,true])assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'cottageClickPrior',readSource:p=>p===owner?missing?null:read(p)+'\n':read(p)}),/linked owner identity/);
+ }
+});
+
+test('cottage click composition CI keeps the bootstrap packet and rejects missing drift and incomplete after bytes',async()=>{
+ assertCottageClickCiCurrent(actualCottageClickReadFileSync);
+ assert.equal(cottageClickCiPacket.currentTreeCommitted,false);
+ assert.equal(cottageClickCiPacket.baseCommit,'3e96a1589435f8b06645db095775a789f24b1350');
+ assert.equal(hash(actualCottageClickReadFileSync('tests/helpers/release-bootstrap-ci-source.json.gz')),'868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6');
+ for(const [path,row]of Object.entries(cottageClickCiPacket.files)){
+  const source=actualCottageClickReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const production=path.startsWith('src/')||path==='config/architecture.json';
+  assert.equal(cottageClickCiSource(path,source),production?source:row.before?.source??source,path);
+  for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(cottageClickCiSource(path,foreign),foreign);
+  for(const key of ['__proto__','constructor','foreign/'+path])assert.equal(cottageClickCiSource(key,source),source);
+  assert.throws(()=>assertCottageClickCiCurrent((p,e)=>{
+   const value=actualCottageClickReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+  }),error=>{assert(error.message.includes(path));return true;});
+  assert.throws(()=>assertCottageClickCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return actualCottageClickReadFileSync(p,e);}),/missing/);
+ }
+ const bytes=actualCottageClickReadFileSync('tests/helpers/cottage-click-ci-source.json.gz');
+ const leaf=actualCottageClickReadFileSync('tests/helpers/cottage-click-ci-source.mjs','utf8');
+ const marker="const bytes=readFileSync(new URL('./cottage-click-ci-source.json.gz',import.meta.url));";assert.equal(leaf.split(marker).length,2);
+ const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
+ await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete mobile cottage CI continuation/);
+});
+
+test('cottage click composition raw JS and Lua inventory rejects missing duplicate foreign and source drift',()=>{
+ const inventories={js:actualCottageClickDiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ for(const [kind,paths]of Object.entries(inventories)){
+  assertCottageClickRawInventory(paths,kind);
+  assert.deepEqual(cottageClickPriorInventory(paths,kind,actualCottageClickReadFileSync),cottageClickCiPacket.priorInventory[kind]);
+  const noAdded=paths.filter(p=>cottageClickCiPacket.priorInventory[kind].includes(p));
+  assert.throws(()=>assertCottageClickRawInventory(noAdded,kind),/raw discovery inventory/);
+  for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
+   assert.throws(()=>cottageClickPriorInventory(bad,kind,actualCottageClickReadFileSync),/raw .* inventory/);
+  for(const path of paths.filter(p=>!noAdded.includes(p)))assert.throws(()=>cottageClickPriorInventory(paths,kind,(p,e)=>{
+   const value=actualCottageClickReadFileSync(p,e);return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
+  }),/fresh mobile cottage added inventory source/);
+ }
+});
+
+test('cottage click historical entry authenticates complete current bindings before replay and after warm success',()=>{
+ const path='src/lua/abyss_node_ui_events.lua',expected=cottageClickCiPacket.files[path].before.source;
+ const other='tests/helpers/closeout-source-epoch.mjs';let fault;
+ const read=(p,e)=>{
+  if(p===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+p);
+   if(fault.kind==='null')return null;
+   const raw=actualCottageClickReadFileSync(p,e);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualCottageClickReadFileSync(p,e);
+ };
+ const historical=cottageClickHistoricalRead(read);
+ assert.equal(historical(path,'utf8'),expected);
+ for(const missing of ['missing','null','drift']){
+  fault={path:other,kind:missing};
+  assert.throws(()=>historical(path,'utf8'),undefined,'complete current must authenticate other binding '+missing);
+  fault=undefined;assert.equal(historical(path,'utf8'),expected);
+ }
+ const archive=Object.keys(cottageClickCiPacket.immutableArchives)[0];
+ for(const kind of ['missing','drift']){
+  fault={path:archive,kind};assert.throws(()=>historical(path,'utf8'),undefined,'archive must authenticate before replay '+kind);
+  fault=undefined;assert.equal(historical(path,'utf8'),expected);
+ }
+ const reads=[];const tracked=cottageClickHistoricalRead((p,e)=>{reads.push(p);return actualCottageClickReadFileSync(p,e);});
+ assert.equal(tracked(path,'utf8'),expected);
+ for(const required of [...Object.keys(cottageClickCiPacket.files),...Object.keys(cottageClickCiPacket.immutableArchives)])assert(reads.includes(required),'fresh complete read '+required);
+});
+
+test('cottage click CI reader authenticates all current owners before exposing historical CI',()=>{
+ const path='tests/helpers/closeout-source-epoch.mjs';
+ const other='src/lua/abyss_relic_pending_ui.lua';let fault;
+ const read=(p,e)=>{const raw=actualCottageClickReadFileSync(p,e);if(p!==fault)return raw;return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);};
+ const reader=cottageClickCiRead(read),expected=cottageClickCiPacket.files[path].before.source;
+ assert.equal(reader(path,'utf8'),expected);
+ fault=other;assert.throws(()=>reader(path,'utf8'),/fresh complete integration source/);
+ fault=undefined;assert.equal(reader(path,'utf8'),expected);
 });
