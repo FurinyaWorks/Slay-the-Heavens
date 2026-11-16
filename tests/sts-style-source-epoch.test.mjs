@@ -91,11 +91,11 @@ test('real style source retains the complete CI-repair and every older target wh
 });
 
 test('real style CI admits only full inventory, complete source and freshly verified executable helpers',async()=>{
- const readFileSync=integratedRead('sts');
+ const historicalRead=integratedRead('sts');
  const {stsStyleCiProof:p,assertStsStyleCiCurrent,preStsStyleCiSource,stsStylePriorInventory}=await import('./helpers/sts-style-ci-source.mjs');
  const files=discoverJs();assertStsStyleCiCurrent(files);assert.deepEqual(stsStylePriorInventory(files),p.beforeInventory);
  for(const [path,row]of Object.entries(p.files)){
-  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const raw=historicalRead(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(preStsStyleCiSource(path,raw),row.before?.source??raw);
   for(const foreign of [raw+'\n',null,{},17])assert.equal(preStsStyleCiSource(path,foreign),foreign);
  }
