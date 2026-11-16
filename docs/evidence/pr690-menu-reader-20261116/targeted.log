@@ -1,0 +1,40 @@
+✔ default resource values stay large and fit seven-digit health and five-digit gold (33.071381ms)
+✔ every deck and relic entry count has a complete large native line (14.599921ms)
+✔ frozen pre-navigation menu reading and warnings use larger text without fallback shrink (93.837864ms)
+✔ normal menu reading and warnings use larger text without fallback shrink after guide retirement (11.372452ms)
+✔ muted ordinary reading reaches 4.5 on the opaque menu surfaces (0.371342ms)
+✔ readable resource targets and utility controls do not overlap (20.981364ms)
+✔ existing full-reading surfaces enlarge body text and reserve readable line pitch (10.427218ms)
+✔ real Lua host retains complete values and paged long reading with the enlarged defaults (9374.720741ms)
+✔ single-glyph potion identities have a readable box and valid fixed font range (15.689268ms)
+✔ pile totals, captions and library filter labels retain complete native lines (15.630141ms)
+✔ full card reading uses 28-unit text and comfortable line pitch (15.328162ms)
+✔ reward headings reserve a complete large-text line without displacing relics or hovering cards (18.027358ms)
+✔ noncombat potion management keeps its count on the main row clear of notices (9.836191ms)
+✔ pressed and destructive action text keeps normal-text contrast (13.518056ms)
+✔ readable pile captions clear energy and end-turn controls with safe action gaps (22.137469ms)
+✔ owned relics and managed potions retain complete large-copy native frames (15.476282ms)
+✔ navigation map union retains both complete producer domains and exact three-way input (1280.033661ms)
+✔ navigation map actual raw input rejects every current drift before either historical domain (4541.956212ms)
+✔ retired-help fixture continuation keeps complete old assertions and freshly rejects every changed owner (3958.797049ms)
+✔ navigation map actual Full inventory and execution guards cover the complete union (132.989936ms)
+✔ navigation domain authorization is fresh on every call after warm success and recovery (206.344548ms)
+✔ accepted navigation domains freshly reject map-only CI source and archive drift (293.21085ms)
+✔ integrated public source and reader freshly reject map-only drift after warm success (771.62334ms)
+✔ historical menu authorization uses the current raw closure afresh without accepting stale owners (202.014469ms)
+✔ release navigation production preserves every complete prior target and freshly authenticates the committed source tree (21.249283ms)
+✔ release navigation CI validates complete live bindings while unknown or changed bytes stay visible (8833.005383ms)
+✔ release navigation raw JS and Lua inventories reject missing duplicate foreign and changed additions (388.661692ms)
+✔ actual Release merge authenticates separate slice and bootstrap views with fresh complete current bindings (2074.509874ms)
+✔ actual Release merge proves all production base Git blobs and exact bootstrap sources without relabelling producers (21.08388ms)
+✔ navigation fixture repair retains the complete original merge packet and exact historical source views (6.049921ms)
+✔ archived Git provenance rejects changed missing and mistyped objects without a checkout database (39.971369ms)
+✔ actual Release merge CI trust packet rejects truncated isolated copies (104.748112ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13149.700687
