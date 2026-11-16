@@ -6,19 +6,19 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-enemy-art-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'ed72322e70e7c9650fb901a678ee66bcd5eb9d0be28964a4eb0e8150239a66c4','complete release enemy artwork CI continuation');
+assert.equal(hash(bytes),'b18f606a5b7e82730b7c9baf462171ee4d877936a8bad0ea847a5c7d2c0851f5','complete release enemy artwork CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
 assert.equal(packet.currentCommit,packet.baseCommit);
 assert.equal(packet.currentTreeCommitted,false,'current bindings are a worktree capture, not claimed in the Release predecessor');
 assert.deepEqual(Object.keys(packet.files).sort(),[
- 'scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/lowcost-art.mjs',
+ 'scripts/build-native-candidate.mjs','scripts/build-ui-theme.mjs','scripts/build-ui.mjs','scripts/lowcost-art.mjs',
  'tests/helpers/closeout-source-epoch.mjs','tests/helpers/copy-integration-source-closure.mjs',
  'tests/native-candidate-art.test.mjs','tests/release-selection-map-source.test.mjs',
-],'exact seven integrated enemy artwork owners');
+],'exact eight integrated enemy artwork owners');
 assert.deepEqual(Object.keys(packet.currentOwners).sort(),[
- 'data/presentation/release-enemy-art.json','scripts/build-ui-theme.mjs','src/lua/abyss_lowcost_art.lua',
+ 'data/presentation/release-enemy-art.json','src/lua/abyss_lowcost_art.lua',
  'tests/helpers/release-enemy-art-source.mjs','tests/lua/support/formal_enemy_art.lua','tests/native-enemy-portraits.test.mjs',
 ],'complete additional enemy artwork source and regression closure');
 assert.deepEqual(Object.keys(packet.binaryOwners),['tests/helpers/release-enemy-art-source.json.gz']);
