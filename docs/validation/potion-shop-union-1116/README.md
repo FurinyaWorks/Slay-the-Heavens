@@ -4,8 +4,8 @@ Inputs: #679 `10cfd7ac965c6aa2f640cdfac35c1149ac42c5c0` and #680 `ad3a53cb3eb87f
 
 Remote real product union: `349b670e4a5ee12c4c13a6e55394b62ac06e5f4b`, verified by coordinator, has both exact input commits as parents and tree `253dac6`. Local producer `879e54d894959055904eff8e0c24d72219258271` has the same tree but is not claimed to have been uploaded. Both original product increments and historical archives remain present. The added narrow two-parent source epoch preserves all predecessor targets and authenticates 352 current production bindings; the shop contribution changes exactly two disjoint owners.
 
-Verified at this checkpoint:
-- Direct live union corpus: 59 text bindings and 108 immutable archives; missing/null/drift negative controls against public historical-read and CI-source boundaries, plus raw JS/Lua inventory controls: PASS (19.4s). Null/drift of the queried source itself remains raw without granting historical output.
+Verified evidence (scope and version limits):
+- Earlier direct live union corpus: 59 text bindings and 108 immutable archives; missing/null/drift negative controls against public historical-read and CI-source boundaries, plus raw JS/Lua inventory controls: PASS (19.4s). Null/drift of the queried source itself remains raw without granting historical output.
 - Both original post697 production-epoch tests: 2/2 PASS (9.7s), including all owner faults and retained predecessor domains.
 - Coordinator separately reports original product entries `potion-popup-click-payload` and `shop-dismiss`: 3/3 PASS after generated data/theme/UI preparation. This is default-profile evidence, not official/mobile acceptance. Initial missing theme build preparation failed and must not be hidden.
 
@@ -17,3 +17,5 @@ Preparation and remaining work:
 - New skills/monster redesign and unrelated release agents' work remain untouched.
 
 Additional bounded diagnostic (`--test-name-pattern=post697`, 120s external diagnostic stop): all six original shop post697 cases PASS, including fresh complete corpus, public source, inventory, same-raw integrated reader, cross-input faults, and all 118 production owners. Potion historical case file did not finish before the diagnostic stop (exit 124/cancelled); this is NOT a passing combined history run and not a raised test timeout. See `history-diagnostic.log`.
+
+Independent review of local `6cd16f7f` confirmed six product files byte-identical to their respective parents, both historical views matching the real parent commits, and all 108 archive hashes and original LFS pointer blobs unchanged. Small cross-product null controls passed for both targets at HistoricalRead, CiSource and JS/Lua inventory entry points. The final packet contains **60 text bindings**: the earlier 59-binding PASS above is not evidence of a complete final 60-binding run. The final two-target full negative-control matrix and remaining gates above are still outstanding. Review outcome: WIP preservation only, not merge-ready.
