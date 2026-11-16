@@ -19,7 +19,7 @@
 | 694 | e259ca49be9d2e3b3526a5efa762814ef96df1c9 | Release33d |
 | 682 | 1996e65c5647750bc9d907be6562909135e08e3d | develop c2409ad750c15124b7b843c6bbfa5b222537cb75 |
 
-Root证据副本随本次交接提交，见[收据清单](evidence/goal-integration-handoff-20261116/manifest.json)；其中各JSON是带日期的原始历史快照，当前交接状态以本文及最终PR快照为准。产品/验证日志已在各PR分支的Task附件及证据目录。682授权收据原路径为 `.worktrees/goal-v2-potion-click-1116/build/delivery/auto-merge-682-1996e65c5647.json`。只有收到实际合并事件后再做verify:delivery与安全清理，不循环查询或重复派发CI。
+Root证据副本随本次交接提交，见[收据清单](evidence/goal-integration-handoff-20261116/manifest.json)；副本的采集字节与实际Git字节分别记录，明确CRLF→LF规范化，不把两种哈希混用。各JSON是带日期的历史快照，当前交接状态以本文及最终PR快照为准。产品/验证原始日志已在各PR分支的Task附件及证据目录。682授权收据原路径为 `.worktrees/goal-v2-potion-click-1116/build/delivery/auto-merge-682-1996e65c5647.json`。只有收到实际合并事件后再做verify:delivery与安全清理，不循环查询或重复派发CI。
 
 ## 未完成切片与备份
 
