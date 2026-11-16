@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {readFileSync as rawReadFileSync,readdirSync as rawReaddirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {unlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -8,11 +8,17 @@ import {pathToFileURL} from 'node:url';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {discoverJs} from '../scripts/ci-shards.mjs';
-import {sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {discoverJs as rawDiscoverJs} from '../scripts/ci-shards.mjs';
+import {sourceEpoch as jointSourceEpoch,releasePc22BasicFeedbackSourceEpoch as sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {integrationProductionRead,integrationPriorInventory} from './helpers/release-card-contact-integration.mjs';
 import {releasePc22BasicFeedbackSourcePacket,extendReleasePc22BasicFeedbackSource} from './helpers/release-pc22-basic-feedback-source.mjs';
 import {releasePc22BasicFeedbackCiPacket,releasePc22BasicFeedbackCiSource,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackRawInventory,assertReleasePc22BasicFeedbackCiCurrent,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+// Replay the complete immutable standalone contract after authenticating the
+// joint current input. The integration contract separately checks raw discovery.
+const readFileSync=integrationProductionRead('pc22',rawReadFileSync);
+const discoverJs=()=>integrationPriorInventory(rawDiscoverJs(),'pc22');
+const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'pc22','lua').map(p=>p.slice(10)):rawReaddirSync(path);
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
  const bytes=readFileSync('tests/helpers/release-pc22-basic-feedback-base-source.json.gz');
@@ -45,7 +51,7 @@ test('release PC22 basic feedback production preserves every complete prior targ
 });
 
 test('release PC22 basic feedback CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
- assertReleasePc22BasicFeedbackCiCurrent();
+ assertReleasePc22BasicFeedbackCiCurrent(readFileSync);
  for(const [path,row]of Object.entries(releasePc22BasicFeedbackCiPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
@@ -107,7 +113,7 @@ test('release PC22 basic feedback raw JS and Lua inventories reject missing dupl
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releasePc22BasicFeedbackCiPacket.currentInventory[kind]);
   assertReleasePc22BasicFeedbackRawInventory(paths,kind);
-  assert.deepEqual(releasePc22BasicFeedbackPriorInventory(paths,kind),releasePc22BasicFeedbackCiPacket.priorInventory[kind]);
+   assert.deepEqual(releasePc22BasicFeedbackPriorInventory(paths,kind,readFileSync),releasePc22BasicFeedbackCiPacket.priorInventory[kind]);
   const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];
   assert.deepEqual(releasePc22BasicFeedbackPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');
   const noAdditions=paths.filter(path=>releasePc22BasicFeedbackCiPacket.priorInventory[kind].includes(path));
@@ -172,7 +178,7 @@ test('release PC22 basic feedback isolated production copy includes exact helper
  for(const file of ['release-pc22-basic-feedback-source.mjs','release-pc22-basic-feedback-source.json.gz'])assert(existsSync(join(directory,'tests/helpers',file)));
  assert(!existsSync(join(directory,'tests/helpers/release-pc22-basic-feedback-ci-source.mjs')));
  const copied=await import(pathToFileURL(join(directory,'tests/helpers/closeout-source-epoch.mjs')).href);
- assert.deepEqual(copied.sourceEpoch.proof,sourceEpoch.proof);
+ assert.deepEqual(copied.sourceEpoch.proof,jointSourceEpoch.proof);
  const sourceRoot=join(directory,'drift');mkdirSync(sourceRoot);
  // The original closure copier authenticates dependencies from a distinct root.
  copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory});
