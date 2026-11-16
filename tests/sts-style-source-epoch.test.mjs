@@ -101,6 +101,9 @@ test('real style CI admits only full inventory, complete source and freshly veri
  const readFileSync=integratedRead('sts');
  const {stsStyleCiProof:p,assertStsStyleCiCurrent,preStsStyleCiSource,stsStylePriorInventory}=await import('./helpers/sts-style-ci-source.mjs');
  const files=discoverJs();assertStsStyleCiCurrent(files);assert.deepEqual(stsStylePriorInventory(files),p.beforeInventory);
+ // The injected reader is already in the StS historical domain. Keep its exact
+ // inventory paired with it; the raw current admission above is unchanged.
+ const historicalFiles=p.afterInventory;
  for(const [path,row]of Object.entries(p.files)){
   const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(preStsStyleCiSource(path,raw),row.before?.source??raw);
@@ -115,10 +118,10 @@ test('real style CI admits only full inventory, complete source and freshly veri
   'scripts/check-license.mjs','tests/ci-reviewed-lfs.test.mjs','.gitattributes','config/ci-media-lfs.json','docs/legal/assets.json',
   'docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs']){
   assert(p.files[path]?.after,'exact CI/storage execution witness: '+path);
-  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete StS CI source/,path);
+  assert.throws(()=>assertStsStyleCiCurrent(historicalFiles,(p,e)=>{const raw=readFileSync(p,e);return p===path?raw+'\n':raw;}),/fresh complete StS CI source/,path);
  }
  assert.equal(p.files['docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs'].before,null,'new verifier cannot invent a historical source');
- for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:StS helper|complete StS CI) source/,path);
+ for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(historicalFiles,(p,e)=>{const raw=readFileSync(p,e);return p===path?raw+'\n':raw;}),/fresh (?:StS helper|complete StS CI) source/,path);
  for(const changed of [files.slice(1),[...files,files[0]],[...files,'tests/foreign.test.mjs']])assert.throws(()=>assertStsStyleCiCurrent(changed),/inventory/);
  for(const path of p.addedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined,'new style regression cannot acquire a historical hosted observation');
@@ -220,7 +223,8 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:complete StS CI|StS helper) source/,path);
+ const feedbackHistoricalRead=integratedRead('sts');
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(stsStyleCiProof.afterInventory,(p,e)=>{const raw=feedbackHistoricalRead(p,e);return p===path?raw+'\n':raw;}),/fresh (?:complete StS CI|StS helper) source/,path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

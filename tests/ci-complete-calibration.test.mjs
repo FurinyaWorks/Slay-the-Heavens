@@ -48,7 +48,10 @@ const rawReleaseReadFileSync=intentPost697HistoricalRead('release',actualIntentP
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 const rawBootstrapReadFileSync=releaseSelectionMapCiRead(rawReleaseReadFileSync);
-const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+const historicalCiReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+// Authenticate the final production corpus before entering historical views.
+const liveDiskReadFileSync=(path,encoding)=>(path.startsWith('src/')||path==='config/architecture.json'
+ ?actualIntentPost697ReadFileSync:historicalCiReadFileSync)(path,encoding);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;

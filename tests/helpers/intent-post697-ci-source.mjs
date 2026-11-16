@@ -6,7 +6,31 @@ import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./intent-post697-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'fac6548cf310122e0e40e236edd7a616fbab245e573219ca1ce66bb3c89462fc','complete intent post697 CI packet');
-const packet=JSON.parse(gunzipSync(bytes));
+const originalPacket=JSON.parse(gunzipSync(bytes));
+// Preserve the original Release/intent domains; extend only exact CI consumers.
+const repairBytes=readFileSync(new URL('./intent-post697-ci-reader-repair.json.gz',import.meta.url));
+assert.equal(hash(repairBytes),'e96bfcf7bddb340fa596f9dab4807be383f10a4a6d7eb331692f0856bf66f4d6','complete intent post697 CI reader repair');
+const repair=JSON.parse(gunzipSync(repairBytes));
+assert.equal(repair.schemaVersion,1);assert.equal(repair.normalization,'LF');
+assert.equal(repair.baseCommit,'d0de2f65454c307f7048bcceac86400dbb40fb35');
+assert.equal(repair.currentTreeCommitted,false,'CI reader capture does not change committed production');
+assert.deepEqual(Object.keys(repair.files),['tests/ci-complete-calibration.test.mjs','tests/defect-final-source-epoch.test.mjs','tests/encounter-formation-source-epoch.test.mjs','tests/sts-style-source-epoch.test.mjs']);
+const addedBeforeGit={'tests/defect-final-source-epoch.test.mjs':'072e6fd3f0ed3ef7d797b221329c91fdfc1200e7','tests/encounter-formation-source-epoch.test.mjs':'d137ae680404eb393544e301c08d0b1f7589afb6'},files={...originalPacket.files};
+for(const [path,row]of Object.entries(repair.files)){
+ if(Object.hasOwn(originalPacket.files,path)){
+  assert.deepEqual(row.before,originalPacket.files[path].current,'complete original intent consumer: '+path);
+  assert.deepEqual(row.views,originalPacket.files[path].views,'immutable original intent history: '+path);
+ }else assert.equal(row.before.gitBlob,addedBeforeGit[path],'original committed test reader: '+path);
+ assert.deepEqual(Object.keys(row.views),Object.keys(originalPacket.viewCommits),'complete original Release/intent domains');
+ for(const item of [row.before,row.current,...Object.values(row.views)]){
+  assert.equal(item.source,norm(item.source));assert.equal(hash(item.source),item.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(item.source)}\0`).update(item.source).digest('hex'),item.gitBlob,path);
+ }
+ files[path]={current:row.current,views:row.views};
+}
+const packet={...originalPacket,files,immutableArchives:{...originalPacket.immutableArchives,
+ 'tests/helpers/intent-post697-ci-source.json.gz':hash(bytes),
+ 'tests/helpers/intent-post697-ci-reader-repair.json.gz':hash(repairBytes)}};
 assert.equal(packet.schemaVersion,1);assert.equal(packet.currentTreeCommitted,false);
 assert.deepEqual(packet.viewCommits,{release:'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9',intent:'f448a9df48054f49af792312cd866c03b53b0197'});
 assert.equal(packet.productCommit,'38efba8119e3b812d530e32915907ef842bcafae');

@@ -1,3 +1,4 @@
+import {sourceEpoch as intentCurrentEpoch,preIntentPost697SourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import test from 'node:test';
 import {officialUiRepairProof,preOfficialUiRepairSource} from './helpers/official-ui-repair-source-epoch.mjs';
@@ -211,7 +212,12 @@ test('pre-feedback UI facade retains all 104 frozen owners and their original au
  }
 });
 
+const priorIntentRead=(file,...args)=>intentCurrentEpoch.preCombinedSource(file,diskReadFileSync(file,...args),
+ {target:'intentPost697Release',readSource:path=>diskReadFileSync(path,'utf8')});
 test('current UI facade authenticates all 116 disk owners once in order and rejects every warm drift or removal',()=>{
+ // Replay the full original 116-owner contract through its authenticated parent;
+ // current intent union checks still cover all 117 raw owners independently.
+ const currentSourceEpoch=preIntentPost697SourceEpoch,diskReadFileSync=priorIntentRead;
  const current=currentSourceEpoch.proof,file='config/architecture.json',input=diskReadFileSync(file,'utf8'),target='develop';
  const pad=files=>Object.fromEntries(Object.keys(current.current).map(path=>[path,files[path]??null]));
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current),'complete 104-owner predecessor remains available, new modules have no invented source');
