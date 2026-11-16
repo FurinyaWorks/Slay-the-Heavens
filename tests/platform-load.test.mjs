@@ -147,3 +147,54 @@ test('release CLI rejects missing evidence, changed candidate, current payload d
     rmSync(directory, {recursive: true, force: true});
   }
 });
+
+import * as costs from '../scripts/production-costs.mjs';
+
+test('capacity CI continuation authenticates every current source before replaying immutable predecessors',async()=>{
+ const adapter=await import('./helpers/release-bootstrap-ci-source.mjs');
+ const {integratedCiProof,assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
+ const packet=adapter.capacityCiPacket;
+ assert.ok(packet,'explicit complete capacity CI continuation is required');
+ assert.deepEqual(Object.keys(packet.files).sort(),['scripts/official-portraits.mjs','scripts/platform-load.mjs','tests/official-portraits-build.test.mjs','tests/platform-load.test.mjs','tests/v25-portrait-profile.test.mjs']);
+ assertIntegratedCurrent();
+ for(const [path,row]of Object.entries(packet.files)){
+  if(integratedCiProof.files[path])assert.deepEqual(row.before,integratedCiProof.files[path].current,'unchanged complete predecessor');
+  else assert.equal(row.before.sha256,{'scripts/platform-load.mjs':'020cfad431d2924bc925690d972a4f732eff73de35af72c3592997404af6bf39',
+   'tests/platform-load.test.mjs':'0c1bc43441bf22c0dfcdeac8a2512faff28fc6da31f962711229c66f71feaab5'}[path],'unchanged complete platform-load predecessor');
+  const current=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  assert.equal(adapter.releaseBootstrapCiSource(path,current,row.before),row.before.source);
+  for(const changed of [current+'\n',current.replace(/./,'!')]){
+   assert.equal(adapter.releaseBootstrapCiSource(path,changed,row.before),changed,'unknown bytes cannot receive a trusted source view');
+   assert.throws(()=>assertIntegratedCurrent((file,encoding)=>file===path?changed:readFileSync(file,encoding)),/fresh complete TASK-111 CI source/);
+  }
+  assert.throws(()=>assertIntegratedCurrent((file,encoding)=>{if(file===path)throw Error('ENOENT '+path);return readFileSync(file,encoding);}),/ENOENT/);
+ }
+ assertIntegratedCurrent();
+});
+
+test('costs count pages, templates and cards separately without treating ancestor-hidden pages as waste',()=>{
+ const card={name:'card1',kind:'container',children:[{name:'stsReferenceChrome',kind:'container',children:[]},{name:'art',kind:'image',image:100001}]};
+ const layout={name:'Game',controls:[{name:'stage',children:[{name:'battlePanel',visible:false,children:[card]},{name:'menuPanel',children:[]}]}]};
+ const templates=[{name:'Deck',children:[{...card,name:'face'}]}];
+ const r=costs.productionCosts([{name:'abyss_data',bytes:17},{name:'abyss_a',bytes:9}],layout,templates,{abyss_a:'core'});
+ assert.equal(r.measurement,'offline-production-inputs-not-official-storage');
+ assert.equal(r.cardHosts.length,2);assert.equal(r.cardHosts[0].controls,3);
+ assert.equal(r.pages.find(p=>p.path.endsWith('battlePanel')).hiddenControls,4);
+ assert.equal(r.templates[0].controls,4);
+ assert.deepEqual(r.lua.map(x=>[x.name,x.category]),[['abyss_data','configuration'],['abyss_a','core']]);
+ assert.equal(r.imageReferences.find(x=>x.image===100001).instances,2);
+ assert.equal(r.officialStorageMB,null);
+});
+test('growth ranks comparable paths including added/removed modules and never invents an old path baseline',()=>{
+ const before={schemaVersion:1,lua:[{name:'a',bytes:10},{name:'gone',bytes:8}],pages:[{path:'Game/stage/a',jsonBytes:20}],templates:[],cardHosts:[]};
+ const after={schemaVersion:1,lua:[{name:'a',bytes:15},{name:'new',bytes:9}],pages:[{path:'Game/stage/a',jsonBytes:12}],templates:[],cardHosts:[]};
+ assert.deepEqual(costs.productionCostDelta(after,before).lua.map(r=>[r.name,r.deltaBytes]),[['new',9],['a',5],['gone',-8]]);
+ assert.equal(costs.productionCostDelta(after,before).pages[0].deltaBytes,-8);
+ assert.equal(costs.productionCostDelta(after).status,'UNVERIFIED-no-comparable-breakdown');
+ for(const partial of [{},{schemaVersion:1},{...before,lua:undefined},{...before,schemaVersion:2}]){
+  assert.equal(costs.productionCostDelta(after,partial).status,'UNVERIFIED-no-comparable-breakdown');
+ }
+ for(const invalid of [[{name:'a',bytes:NaN}],[{name:'a',bytes:10},{name:'a',bytes:20}],[{bytes:10}]]){
+  assert.equal(costs.productionCostDelta(after,{...before,lua:invalid}).status,'UNVERIFIED-no-comparable-breakdown');
+ }
+});

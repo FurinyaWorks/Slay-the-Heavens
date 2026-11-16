@@ -6,6 +6,25 @@ import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-bootstrap-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'868f4e717b4ebe7af6a77b8bf6239748629d6d11b6de6e15af9f0e668a3971d6','complete Release bootstrap CI continuation');
+// Append an exact CI-only current view. The old bootstrap/integration archives
+// and their hashes stay immutable; production code never imports this helper.
+const capacityBytes=readFileSync(new URL('./task111-capacity-ci-source.json',import.meta.url));
+assert.equal(hash(capacityBytes),'b30875912d25e3adcd6cd83a0c71c5c5c1d97f9a219c20f7094d667c2f584108','complete TASK-111 CI continuation');
+const capacity=JSON.parse(capacityBytes);
+assert.equal(capacity.schemaVersion,1);assert.equal(capacity.normalization,'LF');
+assert.equal(capacity.baseCommit,'1cc5479b713edab6fd26db4e20f8eb22b7401cb2');
+assert.equal(capacity.productionCommit,'be5466c1a35f78b660c3c7e712b714c98af0ce24');
+assert.equal(capacity.currentTreeCommitted,false,'CI/test bindings are a capture after the production freeze');
+assert.deepEqual(Object.keys(capacity.files),['scripts/official-portraits.mjs','scripts/platform-load.mjs','tests/official-portraits-build.test.mjs','tests/platform-load.test.mjs','tests/v25-portrait-profile.test.mjs']);
+for(const [path,row]of Object.entries(capacity.files))for(const binding of [row.before,row.current]){
+ assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+}
+function capacityBefore(path,source,before){
+ const row=Object.hasOwn(capacity.files,path)?capacity.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||before&&row.before.sha256!==before.sha256)return source;
+ return hash(norm(source))===row.current.sha256?row.before.source:source;
+}
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'36b9b157ee6f05b65eb9f1da7e2978647d36c210');
@@ -24,7 +43,9 @@ for(const [path,row]of Object.entries(packet.files)){
 }
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseBootstrapCiPacket=freeze(packet);
+export const capacityCiPacket=freeze(capacity);
 function checkedSource(path,source,before){
+ source=capacityBefore(path,source,before);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
@@ -51,6 +72,15 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries(capacity.files))
+  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: '+path);
+ const rawRead=read;
+ read=(path,encoding)=>{
+  const raw=rawRead(path,encoding);
+  if(!Object.hasOwn(capacity.files,path))return raw;
+  const source=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityBefore(path,source);
+  return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
+ };
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
