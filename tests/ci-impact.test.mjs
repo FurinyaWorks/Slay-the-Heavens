@@ -9,20 +9,6 @@ import { impact } from '../scripts/ci-impact.mjs';
 const timing = { js: { win32: {}, linux: {} }, lua: {}, unknownJsMs: 1000, unknownLuaMs: 1000 };
 const event = { eventName: 'pull_request', base: 'develop' };
 const sources = { 'scripts/value.mjs': 'export const value=1;', 'tests/value.test.mjs': 'import {value} from "../scripts/value.mjs";' };
-
-test('Release integration uses complete affected Fast without weakening develop or explicit Full', () => {
-  const release = { ...event, base: 'release/v2.0.0' };
-  assert.equal(impact(['scripts/value.mjs'], sources, release, timing).mode, 'fast');
-  const module = 'src/lua/abyss_combat.lua';
-  const input = { [module]: 'return {}', 'tests/lua/combat.lua': 'require("abyss_combat")' };
-  assert.deepEqual(impact([module], input, release, timing).lua, ['tests/lua/combat.lua']);
-  assert.equal(impact([module], input, release, timing).mode, 'fast');
-  assert.equal(impact([module], input, event, timing).mode, 'full');
-  for (const path of ['unknown', '.github/workflows/quality.yml', 'config/architecture.json'])
-    assert.equal(impact([path], sources, release, timing).mode, 'full');
-  assert.equal(impact(['scripts/value.mjs'], sources, { ...release, forceFull: true }, timing).mode, 'full');
-  assert.equal(impact(['scripts/value.mjs'], sources, { ...release, eventName: 'workflow_dispatch' }, timing).mode, 'full');
-});
 test('complete mapped set is eligible; unknown, deleted, core and release changes require full', () => {
   const plan = impact(['scripts/value.mjs'], sources, event, timing);
   assert.equal(plan.mode, 'fast');
@@ -158,3 +144,4 @@ test('actual impact CLI routes Full Fast unknown and merge-group through the com
   }
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+import './helpers/release-ci.cases.mjs';

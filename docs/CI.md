@@ -1,5 +1,7 @@
 # 自动化检查
 
+2026-11-16 已通过 GitHub 管理 API 将 develop Ruleset 25870651 的 `max_entries_to_build` 从 1 改为 3；其余队列参数与 Required Checks 逐字段读回不变。Release Ruleset 27313515 仅修正名称，保留四个 Actions 来源的必需检查、Strict、空 bypass 和无队列；master 与公共保护未修改。下方旧配置记录中的“单条构建”仅为历史。Release 日常 Fast 与冻结 HEAD 的 Full 验收见 [CI-FAST](CI-FAST.md)。规则变化会使旧队列授权指纹失效，须对仍需入队的准确 HEAD/BASE 正常重新授权，不能复用旧指纹。
+
 2026-11-07已读回 develop Ruleset 25870651：原生 Merge Queue 已开启，Squash、ALLGREEN、单条构建/合并、Strict、空 bypass。六项 Required 为 Actions 来源的 `check`、`presentation`、`engineering-posix`、`inventory`、`pr-quality`，及 Any source 的 `independent-review`。安全且完整映射的 PR 默认走双平台 Fast；核心、高风险、未知或超预算改动仍走 PR Full。`full-quality` 仍只证明完整 Full，队列组合与合后 push 始终 Full。配置读回不等于真实链路已经验收，须分别核对 Fast、入队、组合 Full、实际 squash 与 push Full。当前操作合同见[Fast准入](CI-FAST.md)。
 
 2026-10-26起Quality/check使用GitHub-hosted `windows-2025`，固定Node 24.18.0、Pillow 12.3.0和Luacheck 1.2.0。Ubuntu的presentation和engineering-posix保留，真实执行Windows权限环境可能无法运行的符号链接/硬链接边界。三项均是正常合并前必需检查；基础设施故障的唯一应急流程见下文。

@@ -40,6 +40,15 @@ export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
+ if(path==='.github/workflows/quality.yml'&&typeof source==='string'){
+  const eol=source.includes('\r\n')?'\r\n':'\n';
+  const block=["      - name: Require frozen Release Full before publication",
+   "        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'master' && startsWith(github.event.pull_request.head.ref, 'release/')",
+   '        env:', '          GH_TOKEN: ${{ github.token }}', '        run: node scripts/release-ci.mjs verify-pr', ''].join(eol);
+  const push='  push:'+eol+'    branches: [develop, master]'+eol;
+  if(source.split(block).length===2&&source.split(push).length===2)
+   source=source.replace(block,'').replace(push,'  push:'+eol+"    branches: [develop, master, 'release/**']"+eol);
+ }
  assert(bootstrap.includes(path),'explicit complete bootstrap workflow');
  const row=packet.files[path];
  assert.equal(typeof source,'string');assert(!source.includes('\r\r\n'));

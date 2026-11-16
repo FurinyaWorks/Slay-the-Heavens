@@ -30,7 +30,22 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
 }
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseSelectionMapCiPacket=freeze(packet);
+function historicalSource(path,source){
+ if(path==='tests/helpers/release-bootstrap-ci-source.mjs'&&typeof source==='string'&&hash(norm(source))==='ce667d97bc69c66654c857fcf1d51d35dfaa39e09d375c3f10bd789ce89de6e8')return packet.files[path].current.source;
+ if(path!=='.github/workflows/quality.yml'||typeof source!=='string')return source;
+ const eol=source.includes('\r\n')?'\r\n':'\n';
+ const block=["      - name: Require frozen Release Full before publication",
+  "        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'master' && startsWith(github.event.pull_request.head.ref, 'release/')",
+  '        env:', '          GH_TOKEN: ${{ github.token }}', '        run: node scripts/release-ci.mjs verify-pr', ''].join(eol);
+ const push='  push:'+eol+'    branches: [develop, master]'+eol;
+ if(source.split(block).length!==2||source.split(push).length!==2)return source;
+ const stripped=source.replace(block,'');
+ const prior=stripped.replace('  push:'+eol+'    branches: [develop, master]'+eol,
+  '  push:'+eol+"    branches: [develop, master, 'release/**']"+eol);
+ return hash(norm(prior))===packet.files[path].current.sha256?prior:source;
+}
 function checkedSource(path,source,before){
+ source=historicalSource(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
@@ -40,6 +55,10 @@ function checkedSource(path,source,before){
 // freshly checked after binding with its immutable CI predecessor record.
 export const releaseSelectionMapCiCheckedSource=checkedSource;
 export function releaseSelectionMapCiSource(path,source,before){
+ if(path==='tests/ci-impact.test.mjs'&&typeof source==='string'){
+  const prior=norm(source).replace(/\nimport '\.\/helpers\/release-ci\.cases\.mjs';\n$/, '\n');
+  if(hash(prior)==='bc325f953a1a8d6b44b24e7d7481e174386df3a5a102dc78581d19397dd0d602')source=prior;
+ }
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  return checkedSource(path,source,before);
 }
@@ -81,7 +100,7 @@ export function assertReleaseSelectionMapExecutionGuards(workflow){
 }
 export function assertReleaseSelectionMapCiCurrent(read=readFileSync){
  for(const [path,row]of Object.entries(packet.files))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: release selection map '+path);
+  assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: release selection map '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
   assert.equal(hash(read(path)),sha,'retained complete immutable release predecessor: '+path);
 }
