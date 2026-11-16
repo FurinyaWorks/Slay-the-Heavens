@@ -1,0 +1,50 @@
+{
+  "baselineSha": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "profile": {
+    "officialAssets": true,
+    "nativePageLifecycle": true
+  },
+  "layouts": [
+    {
+      "name": "game-ui",
+      "before": {
+        "controls": 23884,
+        "sha256": "72725f195d15431b1edfc557c8208cceda93a68d350ca59c83e7b1cdb61d4a31"
+      },
+      "after": {
+        "controls": 23912,
+        "sha256": "8f1585f005c3bcb5fc971b7e2a329c971be544d693cc59afb13655cbe4d899b5"
+      },
+      "delta": 28
+    },
+    {
+      "name": "battle-ui",
+      "before": {
+        "controls": 5827,
+        "sha256": "c515b794ca1768af9d3926e9a61657965ad06f02c49d173c9cac866e52c61e8e"
+      },
+      "after": {
+        "controls": 5855,
+        "sha256": "0d8713bfde350be79c51c7a16fde3b88a192faf833bb6461456b525460cc9422"
+      },
+      "delta": 28
+    },
+    {
+      "name": "game-ui-templates",
+      "before": {
+        "controls": 788,
+        "sha256": "8b604aa0bea5db9927226c8a942e289c8275bda328becbdd84c1aed9c1b44334"
+      },
+      "after": {
+        "controls": 788,
+        "sha256": "8b604aa0bea5db9927226c8a942e289c8275bda328becbdd84c1aed9c1b44334"
+      },
+      "delta": 0
+    }
+  ],
+  "sourceFiles": {
+    "scripts/lowcost-art.mjs": "c12c8c899efb4b2cd14db58e4b88ba46dd4bf39daf3349953d78d555fedcd3b4",
+    "src/lua/abyss_battle_reward_layout.lua": "fcccfcfbbfaec2b2a78a1fac90cf0c4292a1f34fe549f378aa1473e314b151ab"
+  },
+  "boundary": "Counts of complete generated import trees only; no official capacity measurement, candidate import, ready, client or phone validation."
+}
