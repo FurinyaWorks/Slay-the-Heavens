@@ -4,6 +4,10 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=b=>b.toString().replaceAll('\r\n','\n');
+// npm's generated hidden lock was sampled with CRLF. Reconstruct exactly that
+// text for comparison on LF hosts; every dependency payload remains byte-bound.
+const dependencyBytes=(path,raw)=>path==='node_modules/.package-lock.json'
+ ?Buffer.from(norm(raw).replaceAll('\n','\r\n')):raw;
 export const retirementPlanningReceiptPath='docs/evidence/release-item-title-shadow-source-1116/retirement-planning-receipt.json';
 const bytes=Buffer.from(norm(readFileSync(new URL('../../'+retirementPlanningReceiptPath,import.meta.url))));
 assert.equal(hash(bytes),'9c1148f4042dd123b1b2e0a2be95c5dfd83c62cadb56cddd06bd252834d98a55','immutable observed local planning receipt');
@@ -15,7 +19,7 @@ export function assertRetirementPlanningCurrent(read=readFileSync){
   const content=read(row.path),text=/\.(?:mjs|js|json|lua|md|txt|yml|yaml)$/.test(row.path);
   assert.equal(hash(text?norm(content):content),text?row.lfSha256:row.sha256,'fresh retirement execution input: '+row.path);
  }
- for(const row of p.dependencies)assert.equal(hash(read(row.path)),row.sha256,'fresh retirement dependency input: '+row.path);
+ for(const row of p.dependencies)assert.equal(hash(dependencyBytes(row.path,read(row.path))),row.sha256,'fresh retirement dependency input: '+row.path);
  const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
  const sampledMetadata=['data/README.md','data/SOURCES.md'];
  assert.deepEqual(p.sampledMetadata.map(row=>row.path),sampledMetadata,'only the two confirmed non-executable descriptions are sample-only');
@@ -58,7 +62,7 @@ export function assertShadowPlanningCurrent(read=readFileSync){
  const p=shadowPlanningReceipt;
  assert.equal(hash(norm(read(shadowPlanningReceiptPath))),hash(shadowBytes),'fresh shadow planning receipt');
  for(const row of p.closure){const b=read(row.path);assert.equal(hash(row.lfSha256?norm(b):b),row.lfSha256??row.sha256,'fresh shadow execution input: '+row.path);}
- for(const row of p.dependencies)assert.equal(hash(read(row.path)),row.sha256,'fresh shadow dependency input: '+row.path);
+ for(const row of p.dependencies)assert.equal(hash(dependencyBytes(row.path,read(row.path))),row.sha256,'fresh shadow dependency input: '+row.path);
  const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(dir+'/'+e.name):[dir+'/'+e.name]);
  assert.deepEqual(p.sampledMetadataExcluded,['data/README.md','data/SOURCES.md']);
  for(const prefix of ['src/lua/','data/'])assert.deepEqual(walk(prefix.slice(0,-1)).filter(path=>prefix==='data/'?!p.sampledMetadataExcluded.includes(path):path.endsWith('.lua')).sort(),p.closure.filter(row=>row.path.startsWith(prefix)).map(row=>row.path),'complete shadow execution corpus: '+prefix);

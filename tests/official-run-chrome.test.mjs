@@ -214,7 +214,13 @@ local theme=${toLua(selected)}
 package.preload.abyss_theme=function()return theme end
 package.preload.abyss_numbers=function()return{integer=tostring}end
 package.preload.abyss_run=function()return{potionCapacity=function(run)return run.capacity end,potionCount=function()return 0 end}end
-${[...deps].filter(name=>!modules.includes(name)&&!['abyss_theme','abyss_numbers','abyss_run'].includes(name)).map(name=>`package.preload[${luaString(name)}]=function()return{}end`).join('\n')}
+-- This native-shell test deliberately has no low-cost recipe pool. Model the
+-- complete optional-art port while retaining every native image/tint assertion.
+package.preload.abyss_lowcost_art=function()return{
+ hide=function(control,clear)assert(control and clear==false)end,
+ paint=function(control,kind,id,size,platform)assert(control and kind=='potion' and id and size and platform);return false end,
+}end
+${[...deps].filter(name=>!modules.includes(name)&&!['abyss_theme','abyss_numbers','abyss_run','abyss_lowcost_art'].includes(name)).map(name=>`package.preload[${luaString(name)}]=function()return{}end`).join('\n')}
 ${Object.entries(sources).map(([name,source])=>`package.preload[${luaString(name)}]=assert(load(${luaString(source)},${luaString(name)}))`).join('\n')}
 local function node()
  local n={children={},visible=true}

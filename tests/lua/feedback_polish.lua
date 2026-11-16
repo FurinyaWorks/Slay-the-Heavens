@@ -14,7 +14,11 @@ local function control(definition)
     local c = { name = definition.name, visible = definition.visible ~= false, children = {}, text = "", x = 0, y = 0,
         localScaleX = 1, localScaleY = 1 }
     for _, entry in ipairs(definition.children or {}) do c.children[entry.name] = control(entry) end
-    function c:GetChild(key) return assert(self.children[key], "unknown control " .. self.name .. "/" .. key) end
+    function c:GetChild(key)
+        -- Keep required-control assertions; only the optional portrait may be absent.
+        if key == 'officialFigure' then return self.children[key] end
+        return assert(self.children[key], "unknown control " .. self.name .. "/" .. key)
+    end
     function c:SetVisible(value) assert(type(value) == "boolean") self.visible = value end
     function c:SetAnchoredPosition(x, y) self.x, self.y = x, y end
     function c:SetLocalScale(x, y) self.localScaleX, self.localScaleY = x, y end

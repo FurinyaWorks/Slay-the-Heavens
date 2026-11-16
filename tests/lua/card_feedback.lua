@@ -14,7 +14,11 @@ local function control(definition)
         sizeDeltaX = definition.size[1], sizeDeltaY = definition.size[2], interactable = true,
         x = definition.position and definition.position[1] or 0, y = definition.position and definition.position[2] or 0 }
     for _, entry in ipairs(definition.children or {}) do c.children[entry.name] = control(entry) end
-    function c:GetChild(key) return assert(self.children[key], "unknown control " .. self.name .. "/" .. key) end
+    function c:GetChild(key)
+        -- The functional profile has no optional official portrait subtree.
+        if key == 'officialFigure' then return self.children[key] end
+        return assert(self.children[key], "unknown control " .. self.name .. "/" .. key)
+    end
     function c:SetVisible(value) assert(type(value) == "boolean") self.visible = value end
     function c:AddCursorEventListener(event, fn) NativeContract.listener(event,fn); assert(event == "click") self.click = fn end
     function c:SetAnchoredPosition(x, y) self.x, self.y = x, y end

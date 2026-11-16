@@ -52,7 +52,11 @@ local function control(definition, inventory)
         text = "", x = 0, y = 0, localScaleX = 1, localScaleY = 1}
     inventory[#inventory + 1] = c
     for _, child in ipairs(definition.children or {}) do c.children[child.name] = control(child, inventory) end
-    function c:GetChild(name) return assert(self.children[name], self.name .. "/" .. name .. " missing") end
+    function c:GetChild(name)
+        -- Native lookup returns nil for the optional official portrait subtree.
+        if name == 'officialFigure' then return self.children[name] end
+        return assert(self.children[name], self.name .. "/" .. name .. " missing")
+    end
     function c:SetVisible(value) assert(type(value) == "boolean"); self.visible = value end
     function c:SetAnchoredPosition(x, y) self.x, self.y = x, y end
     function c:SetLocalScale(x, y, z) assert(z == 1); self.localScaleX, self.localScaleY = x, y end

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {itemTitleShadowBootstrapRead} from './release-item-title-shadow-bootstrap-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-item-title-shadow-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'29ed620cf9e562a382d50a9722397579b0c0523196a582e9a41c8a52f6ffa18f','complete release item-title-shadow CI continuation');
@@ -46,7 +47,7 @@ export function releaseItemTitleShadowPriorInventory(paths,kind='js',read=readFi
  if(!current.some(path=>!before.includes(path)&&sorted.includes(path)))return [...paths];
  assert.deepEqual(sorted,current,'complete release item-title-shadow raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
  for(const path of current.filter(p=>!before.includes(p)))
-  assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh release item-title-shadow added inventory source: '+path);
+  assert.equal(hash(norm(itemTitleShadowBootstrapRead('item',read)(path,'utf8'))),packet.files[path].current.sha256,'fresh release item-title-shadow added inventory source: '+path);
  return [...before];
 }
 export function assertReleaseItemTitleShadowRawInventory(paths,kind='js'){
