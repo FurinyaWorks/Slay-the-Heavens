@@ -13,8 +13,41 @@ import {checkWhitespace,validateMediaBases} from '../scripts/ci-whitespace.mjs';
 import {prepareComparisonBlobs,comparisonBlobIds} from '../scripts/ci-comparison-blobs.mjs';
 import {checkHostedCheckout,checkNetworkPolicy} from '../scripts/check-network-policy.mjs';
 import {sensitive,checkAssets} from '../scripts/check-license.mjs';
+import {readReleaseItemEvidence,releaseItemEvidenceRead,itemEvidenceMembers,itemEvidenceManifestPath,itemEvidencePayloadPath,assertReleaseItemEvidenceCurrent} from '../scripts/release-item-evidence.mjs';
 
 const root = resolve('.');
+test('item evidence storage retains every complete original gzip Git and raw identity',()=>{
+ assert.equal(itemEvidenceMembers.length,252);assert.equal(new Set(itemEvidenceMembers).size,252);
+ const manifest=JSON.parse(readFileSync(itemEvidenceManifestPath,'utf8'));
+ for(const row of manifest.entries){
+  assert(!existsSync(row.path),'original bytes use their explicit bounded archive: '+row.path);
+  const bytes=readReleaseItemEvidence(row.path);
+  assert.equal(bytes.length,row.originalGzipBytes,row.path);assert.equal(createHash('sha256').update(bytes).digest('hex'),row.originalGzipSha256,row.path);
+  assert.equal(createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'),row.originalGitBlob,row.path);
+ }
+});
+test('item evidence reused readers authenticate both complete physical inputs after every warm read',()=>{
+ let broken=null,mode=null;
+ const read=(path,encoding)=>{const bytes=readFileSync(path,encoding);if(path!==broken)return bytes;if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);};
+ const warm=releaseItemEvidenceRead(read),path=itemEvidenceMembers[0],expected=warm(path);
+ for(const input of [itemEvidenceManifestPath,itemEvidencePayloadPath])for(const failure of ['missing','null','drift']){
+  broken=input;mode=failure;assert.throws(()=>warm(path),input+' '+failure);assert.throws(()=>assertReleaseItemEvidenceCurrent(read));broken=null;assert.deepEqual(warm(path),expected);
+ }
+ let calls=[];const foreign=releaseItemEvidenceRead((p,e)=>{calls.push([p,e]);return Buffer.from('opaque');});
+ for(const p of ['__proto__','constructor','docs/evidence/foreign.json.gz'])assert.deepEqual(foreign(p),Buffer.from('opaque'));
+ assert.equal(calls.length,3);assert(calls.every(([p])=>p!==itemEvidenceManifestPath&&p!==itemEvidencePayloadPath));
+ const owned=warm(path);owned[0]^=1;assert.deepEqual(warm(path),expected,'caller mutations never alter memoized decompression');
+});
+test('post697 historical source authorization freshly binds the complete evidence storage',async()=>{
+ const {itemPost697CiRead,itemPost697CiSource}=await import('./helpers/item-post697-ci-source.mjs');
+ const path='tests/helpers/integrated-ci-source.mjs',raw=readFileSync(path,'utf8');let broken=null;
+ const read=(p,e)=>{const bytes=readFileSync(p,e);return p===broken?typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]):bytes;};
+ const warm=itemPost697CiRead(read),expected=warm(path,'utf8');assert.notEqual(expected,raw);
+ for(const p of [itemEvidenceManifestPath,itemEvidencePayloadPath]){
+  broken=p;assert.throws(()=>warm(path,'utf8'));assert.throws(()=>itemPost697CiSource(path,raw,undefined,read));
+  broken=null;assert.equal(warm(path,'utf8'),expected);
+ }
+});
 const expectedPaths = ['armaments', 'cleave', 'heavy_blade'].flatMap(id => ['source.png', 'preview-native.png'].map(name => `art/cards/traveler-geo/${id}/${name}`));
 const source = readFileSync('scripts/ci-reviewed-lfs.mjs', 'utf8');
 // Synthetic pixels keep this CI-contract test independent of the real asset
@@ -394,7 +427,7 @@ test('post697 packet decoder rejects extra row fields instead of silently discar
 test('post697 archive atoms decode exact old bytes and reject unknown malformed or changed references',async()=>{
  const {decodeItemPost697Storage,itemPost697StoredPacket}=await import('./helpers/item-post697-ci-source.mjs');
  const {gunzipSync}=await import('node:zlib');
- const refs=JSON.parse(gunzipSync(readFileSync('docs/evidence/item-post697-wip-20261116/immutable-reuse-measure.json.gz'))).references;
+ const refs=JSON.parse(gunzipSync(readReleaseItemEvidence('docs/evidence/item-post697-wip-20261116/immutable-reuse-measure.json.gz'))).references;
  const stored=structuredClone(itemPost697StoredPacket),key=Object.keys(refs)[0],ref=refs[key];
  stored.storageSchemaVersion=2;stored.codec='sha256-exact-utf8-with-archive-sources';stored.sourceTable[key]=ref;
  const decoded=decodeItemPost697Storage(stored);

@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {assertReleaseItemEvidenceCurrent} from '../../scripts/release-item-evidence.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./item-post697-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'ef77290b978b59f09c8bbe7243fd8f5bc38a62889c770201b83dbc66e3d142c1','complete item post697 CI packet');
+assert.equal(hash(bytes),'5181f98e5a2d89e9cf533a8c2ba42cd8eaacef17e99dfde5d3cc648ea4203618','complete item post697 CI packet');
 const atomArchives=Object.freeze({"tests/helpers/integrated-ci-source.json.gz":"f0b7137f7d0462dff36b78e39a39aab8804ba9a097b1b72bdf6686cf10f15c35","tests/helpers/release-item-ci-repair-source.json.gz":"a0e4ebb49f81dbf0d59c4f80a0c1e4ed2588eb0051b7397206c6d79265efbbaa","tests/helpers/release-item-title-shadow-bootstrap-source.json.gz":"dabab7788653b45eff7f570f2ab2ae3797b40e1d91a5fe9ea0a54d0354a45be8","tests/helpers/release-selection-map-base-source.json.gz":"4678cdb4036cab5217a359657ae15735c7a2af47936ec58067018dd2d53c9dfa","tests/helpers/release-selection-map-ci-before-release1cc-source.json.gz":"ab9597d0237daaf530f609ca6772576e170d0785e1fd66852c7e54800909fd66","tests/helpers/release-selection-map-ci-source.json.gz":"c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03"});
 // This one packet's storage encoding only. It does not authorize reads.
 export function decodeItemPost697Storage(storage,{read=readFileSync}={}){
@@ -114,6 +115,7 @@ export function assertItemPost697RawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete post697 raw discovery inventory');
 }
 export function assertItemPost697CiCurrent(read=readFileSync){
+ assertReleaseItemEvidenceCurrent(read);
  const fresh=(path,encoding,label)=>{
   let raw;try{raw=read(path,encoding);}catch(error){assert.fail(label+path+': '+String(error?.message??error));}
   assert(encoding?typeof raw==='string':Buffer.isBuffer(raw),label+path+' exact input type');return raw;

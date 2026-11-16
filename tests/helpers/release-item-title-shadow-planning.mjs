@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {releaseItemEvidenceRead} from '../../scripts/release-item-evidence.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=b=>b.toString().replaceAll('\r\n','\n');
 // npm's generated hidden lock was sampled with CRLF. Reconstruct exactly that
 // text for comparison on LF hosts; every dependency payload remains byte-bound.
@@ -13,6 +14,7 @@ const bytes=Buffer.from(norm(readFileSync(new URL('../../'+retirementPlanningRec
 assert.equal(hash(bytes),'9c1148f4042dd123b1b2e0a2be95c5dfd83c62cadb56cddd06bd252834d98a55','immutable observed local planning receipt');
 export const retirementPlanningReceipt=JSON.parse(bytes);
 export function assertRetirementPlanningCurrent(read=readFileSync){
+ read=releaseItemEvidenceRead(read);
  const p=retirementPlanningReceipt;
  assert.equal(hash(norm(read(retirementPlanningReceiptPath))),hash(bytes),'fresh local planning receipt');
  for(const row of p.closure){
@@ -59,6 +61,7 @@ const shadowBytes=Buffer.from(norm(readFileSync(new URL('../../'+shadowPlanningR
 assert.equal(hash(shadowBytes),'bde02bd9f6f0990e608766e471d43cd012553babe49c352bffadcdd59c52f719','immutable corrected shadow complete-file planning receipt');
 export const shadowPlanningReceipt=JSON.parse(shadowBytes);
 export function assertShadowPlanningCurrent(read=readFileSync){
+ read=releaseItemEvidenceRead(read);
  const p=shadowPlanningReceipt;
  assert.equal(hash(norm(read(shadowPlanningReceiptPath))),hash(shadowBytes),'fresh shadow planning receipt');
  for(const row of p.closure){const b=read(row.path);assert.equal(hash(row.lfSha256?norm(b):b),row.lfSha256??row.sha256,'fresh shadow execution input: '+row.path);}
