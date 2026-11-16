@@ -1,4 +1,4 @@
-import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preMobilePotionSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -174,7 +174,8 @@ test('current raw production retains the exact power-view owner and complete rel
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current));
  assert.deepEqual(menuRedEpoch.proof.owners,[...stsStyleEpoch.proof.owners,owner].sort());assert.equal(menuRedEpoch.proof.owners.length,105);
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
- assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(current.owners.length,116);
+ assert.deepEqual(preMobilePotionSourceEpoch.proof.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(preMobilePotionSourceEpoch.proof.owners.length,116);
+ assert.deepEqual(current.owners,[...preMobilePotionSourceEpoch.proof.owners,'src/lua/abyss_battle_potion_popup.lua'].sort());assert.equal(current.owners.length,117);
  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
  const expected=current.targets.develop.files[file].source;
  assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);

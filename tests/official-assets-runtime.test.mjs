@@ -615,12 +615,19 @@ tap('potion3',3);assert(u.potionMenu and #calls>0)
 for _,slot in ipairs(calls)do assert(slot==3,'popup staged an unselected bottle')end
 local popup=p:GetChild('potionHelp'):GetChild('potionPopup')
 assert(popup:GetChild('use').interactable)
+local function use(touch)
+ local control=popup:GetChild('use')
+ control.listeners.down({touchId=touch});control.listeners.up({touchId=touch})
+ return control.listeners.click({touchId=touch})
+end
 local count=#calls;battle.player.block=2147483647
-assert(popup:GetChild('use').click()==false,'stale popup used newly invalid block potion')
+assert(use(4)==false,'stale popup used newly invalid block potion')
 assert(#calls>count and h.run.potions[3]=='block_potion' and not u.busy)
+assert(popup:GetChild('use').click({})==false,'anonymous old retry needs a fresh physical press')
+assert(h.run.potions[3]=='block_potion' and battle.player.block==2147483647)
 battle.player.block=0
 count=#calls
-assert(popup:GetChild('use').click());drain()
+assert(use(5));drain()
 for i=count+1,#calls do assert(calls[i]==3,'selected potion Use staged another inventory slot')end
 assert(not h.run.potions[3] and battle.player.block==12)
 -- In-place pending choice after Down is rejected by the actual drag validator.

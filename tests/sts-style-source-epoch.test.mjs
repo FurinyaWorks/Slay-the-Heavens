@@ -10,6 +10,7 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
+import {mobilePotionPriorInventory,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -26,8 +27,18 @@ function fixture(){
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
- assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
- for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
+ const historical={};
+ for(const [kind,raw]of [['js',rawJs],['lua',rawLua]]){
+  assertMobilePotionRawInventory(raw,kind);
+  historical[kind]=mobilePotionPriorInventory(raw,kind);
+  for(const path of raw.filter(p=>!historical[kind].includes(p))){
+   assert.throws(()=>assertMobilePotionRawInventory(raw.filter(p=>p!==path),kind),/inventory/);
+   for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>mobilePotionPriorInventory(raw,kind,
+    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+  }
+ }
+ assert.deepEqual(historical.js,integratedCiProof.inventory);assert.deepEqual(historical.lua,integratedCiProof.luaInventory);
+ for(const [kind,current]of Object.entries(historical))for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
   if(target==='release'&&kind==='js'&&added.length===0){
    assert.deepEqual(current,prior,'source-only continuation retains the complete identical JS inventory');

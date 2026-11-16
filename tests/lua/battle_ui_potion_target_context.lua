@@ -5,6 +5,12 @@ local registered,executed=0,0
 local H = dofile("tests/lua/support/potion_targeting_fixture.lua")
 local setup,Run,Combat,F,eq,untouched = H.setup,H.Run,H.Combat,H.F,H.eq,H.untouched
 local test,finish = H.suite("LUA_POTION_TARGET_CONTEXT")
+local function freshPointerSetup()
+ local h,u,p,r,e,_,tap,drain=setup(true)
+ local touch=100
+ local function click(name)touch=touch+1;return tap(name,touch)end
+ return h,u,p,r,e,click,tap,drain
+end
 local originalTest=test
 test=function(name,fn)
  registered=registered+1
@@ -28,8 +34,12 @@ test('detail overlay cancels pending instead of reviving on dismissal',function(
   click('potion1');assert(u:showStatus(0));click('enemy2');click('enemy2');untouched(h,a,z);eq(u.potionAim,nil)
 end)
 test('new turn rejects pending before render',function()
-  local h,u,p,r,e,click=setup();click('potion1');assert(Run.endTurn(h.run));local z=h.run.combat.enemies[2].hp
+  -- The next-turn target is a new physical press, not Use's queued anonymous tail.
+  local h,u,p,r,e,click=freshPointerSetup();click('potion1');assert(Run.endTurn(h.run));local z=h.run.combat.enemies[2].hp
   click('enemy2');eq(h.run.potions[1],'fire_potion');eq(h.run.combat.enemies[2].hp,z);eq(u.potionAim,nil)
+  e('enemy2','up',102);e('enemy2','click',102)
+  eq(h.run.potions[1],'fire_potion');eq(h.run.combat.enemies[2].hp,z)
+  click('potion1');click('enemy2');eq(h.run.potions[1],nil);eq(h.run.combat.enemies[2].hp,z-20)
 end)
 test('run replacement cancels pending',function()
   local h,u,p,r,e,click=setup();click('potion1');local old=h.run

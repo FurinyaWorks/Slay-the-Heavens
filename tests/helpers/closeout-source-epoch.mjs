@@ -11,7 +11,9 @@ import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
-import {extendMobileCottageSource} from './mobile-cottage-source.mjs';
+import {extendMobilePotionSource} from './mobile-potion-source.mjs';
+import {extendPotionRegressionSource} from './potion-regression-source.mjs';
+import {extendPotionClickSource} from './potion-click-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -50,8 +52,10 @@ export const menuRedPriorEpoch=extendFeedbackSourceEpoch(stsStyleEpoch,feedbackP
 export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
-export const preMobileCottageSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
-export const sourceEpoch=extendMobileCottageSource(preMobileCottageSourceEpoch);
+export const preMobilePotionSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const prePotionRegressionSourceEpoch=extendMobilePotionSource(preMobilePotionSourceEpoch);
+export const prePotionClickSourceEpoch=extendPotionRegressionSource(prePotionRegressionSourceEpoch);
+export const sourceEpoch=extendPotionClickSource(prePotionClickSourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
