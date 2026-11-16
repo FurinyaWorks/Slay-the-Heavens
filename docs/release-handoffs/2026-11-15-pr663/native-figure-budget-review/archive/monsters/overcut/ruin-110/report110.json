@@ -1,0 +1,16 @@
+{
+  "fixedCap": 110,
+  "firstTotal": 110,
+  "refinedTotal": 110,
+  "images": 106,
+  "containers": 4,
+  "primitiveTypes": {
+    "100003": 87,
+    "100001": 12,
+    "100002": 7
+  },
+  "refinement": "Eliminated internal leg/arm/shadow facets instead of destructive silhouette cuts. Within cap110, omitted right forearm brown inset to restore connected left orange shoulder band. Eye, shoulder caps, fists and wide feet retained.",
+  "assessment": "Main identity intact at127; inner legs/arms flatter and less dimensional than119. More aggressive angular shading. Owner should decide whether visual cost is worth9 controls;119 remains intact. No minimum-budget claim.",
+  "retained119Sha256": "1086fe22301513dd4927dd3dc930e51e6db531d30d7da8bbd0be8c8c08061459",
+  "newSha256": "504bd74c798db3cb428c0bc5e1f92f6cac7a800a7e6132646b5133e0d7ce7cbe"
+}

@@ -1,0 +1,12 @@
+{
+  "images": 33,
+  "containers": 3,
+  "actualControls": 36,
+  "silhouetteIoUAt127": 0.9382296752281893,
+  "changedPixelsAt127": 2176,
+  "firstAttempt": "36 budget: remove left secondary leaf plus3 low-curve body vertices; shape flattened",
+  "sameCapRefinement": "Still36: restored shoulder vertex, funding it by removing body-light ellipse; eyes retain both golden and cream lights",
+  "assessment": "HOLD, not recommended as automatic replacement: fixed-outline requirement is NOT satisfied. Left secondary leaf and lower body contour differ; flatter body shading. Eyes/main crown/right fork remain recognizable at127. Prefer44 unless owner accepts this tradeoff.",
+  "approval": "36 not approved;44/54 untouched",
+  "mock": "PASS actual controller ready;120static poses0 imagewrites/0 recreation;release0;not device"
+}

@@ -1,0 +1,11 @@
+{
+  "images": 41,
+  "containers": 3,
+  "actualControls": 44,
+  "alphaSilhouetteIoUvs54": 0.9853997316707442,
+  "first": "PASS identity, inner ellipse slightly overwhelms dark shoulder",
+  "sameCapRefinement": "44 unchanged: inset body-light ellipse from66x43 center61,95 to64x40 center61,96; retain eyes/highlight",
+  "tradeoff": "Secondary flat body polygon becomes ellipse; two spots removed; leaf curvature simplified. Main/forked leaf, eyes, exterior body silhouette retained.",
+  "limits": "No observed failing31\u201335 lower.44 is next tested tier, not a proved bisection midpoint or minimum. New44 not owner approved; approved54/67/85 untouched.",
+  "mock": "120 static poses0image writes/0recreation; release0; not platform/device."
+}

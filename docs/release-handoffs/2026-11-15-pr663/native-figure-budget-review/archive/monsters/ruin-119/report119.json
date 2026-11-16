@@ -1,0 +1,16 @@
+{
+  "fixedCap": 120,
+  "firstTotal": 119,
+  "refinedTotal": 119,
+  "images": 115,
+  "containers": 4,
+  "primitiveTypes": {
+    "100003": 96,
+    "100001": 12,
+    "100002": 7
+  },
+  "refinement": "Removed small inner right thigh brown patch; rebuilt connected left wrist band instead of thin triangle, within unchanged cap120. Broad foot outlines retained from approved134.",
+  "assessment": "Eye, orange shoulder caps, fists and broad feet recognizable; knees/elbows become more triangular and lower contrast than134. Candidate for owner review, not proof that lower cannot work.",
+  "approved134Sha256": "2e46e3eb2631ad38925972e8efb65f4d73dc0a594c6c225e5c44e057d86e37c3",
+  "newSha256": "1086fe22301513dd4927dd3dc930e51e6db531d30d7da8bbd0be8c8c08061459"
+}
