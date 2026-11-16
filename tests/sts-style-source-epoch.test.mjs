@@ -10,6 +10,7 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
+import {enemyGeometryPriorInventory,assertEnemyGeometryRawInventory} from './helpers/enemy-geometry-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -25,7 +26,16 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const currentRaw={js:discoverJs(),lua:readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort()},historical={};
+ for(const [kind,paths]of Object.entries(currentRaw)){
+  assertEnemyGeometryRawInventory(paths,kind);
+  historical[kind]=enemyGeometryPriorInventory(paths,kind,readFileSync);
+  for(const path of paths.filter(path=>!historical[kind].includes(path))){
+   assert.throws(()=>assertEnemyGeometryRawInventory(paths.filter(p=>p!==path),kind),/inventory/);
+   for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>enemyGeometryPriorInventory(paths,kind,(p,e)=>p===path?value:readFileSync(p,e)),/fresh complete integration source|replaceAll/);
+  }
+ }
+ const {js:rawJs,lua:rawLua}=historical;
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));

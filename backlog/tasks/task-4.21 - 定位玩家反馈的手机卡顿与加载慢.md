@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-15 15:51'
+updated_date: '2026-11-16 03:09'
 labels:
   - 待验
   - delivery-verify
@@ -85,4 +85,8 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
 2026-11-15 Release接续旧b56/be41坐标剪枝：基线36b9原专项RED，真实Host预热后300帧statusView精确900到0；原专项及相邻官方状态/命中/三布局负控通过，三runtime增量patch-id同旧片。672/684未带此剪枝，render_actors不同区叠加检查通过。仅迁三runtime/原测试/21行隔离helper，既有性能树保留；证据TASK-4.21-ENEMY-GEOMETRY-20261115.md。未Full/设备/候选，状态与3/4AC不变，精确新HEAD独审另交。
+
+2026-11-16 PR688原2c正常合入实际Release1cc，d19完整tree仍等原2c；b672与1cc完整tree相同，三个来源冲突按其后已审geometry接续保留。原生产tree/metrics/helper blob不变，不重复产品矩阵。修复R688-1：Read/公共Source/当前库存进入历史前，每次以同raw reader认证13绑定/94归档；暖读缺失/null/漂移与恢复负控通过。仅更新active CI包的cases当前绑定，旧93归档/原产品保持，原active包留Git。待最终独审与Required，未推/未正式Full，不勾手机AC3或Done。
+
+PR688最终接续：补齐原漏live guard，保留116历史、current117新增targeting与877/1424实际发现；精准RED3→GREEN3。active CI最终16绑定/94归档，原产品及93旧档案未变；完整事实与原失败见TASK-4.21-ENEMY-GEOMETRY-ACTUAL-RELEASE-20261116附件，待最终独审/Required，不授予设备或Full通过。
 <!-- SECTION:NOTES:END -->

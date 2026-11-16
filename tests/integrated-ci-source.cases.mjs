@@ -133,3 +133,131 @@ test('enemy geometry composition raw JS and Lua inventory rejects missing duplic
   }),/fresh enemy geometry added inventory source/);
  }
 });
+
+test('enemy geometry historical CI reader reauthenticates every current binding and archive after warm success',()=>{
+ const anchor='tests/helpers/closeout-source-epoch.mjs',expected=enemyGeometryCiPacket.files[anchor].before.source;
+ const other='src/lua/abyss_battle_enemy_view.lua';let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const raw=actualEnemyGeometryReadFileSync(path,encoding);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualEnemyGeometryReadFileSync(path,encoding);
+ };
+ const reader=enemyGeometryCiRead(read);
+ assert.equal(reader(anchor,'utf8'),expected);
+ // The exact old implementation exposes the historical anchor without ever
+ // consulting this independent missing owner. Keep this first as the RED.
+ fault={path:other,kind:'missing'};
+ assert.throws(()=>reader(anchor,'utf8'),undefined,'the entire declared corpus must authenticate before history');
+ fault=undefined;assert.equal(reader(anchor,'utf8'),expected);
+ for(const path of Object.keys(enemyGeometryCiPacket.files).filter(path=>path!==anchor)){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(()=>reader(anchor,'utf8'),undefined,path+' '+kind);
+   fault=undefined;assert.equal(reader(anchor,'utf8'),expected);
+  }
+ }
+ for(const path of Object.keys(enemyGeometryCiPacket.immutableArchives)){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(()=>reader(anchor,'utf8'),undefined,path+' '+kind);
+   fault=undefined;assert.equal(reader(anchor,'utf8'),expected);
+  }
+ }
+ // The selected anchor must itself be exact; null and foreign data are raw,
+ // never authenticated historical output. Errors still propagate unchanged.
+ fault={path:anchor,kind:'missing'};assert.throws(()=>reader(anchor,'utf8'),/missing/);
+ fault={path:anchor,kind:'null'};assert.equal(reader(anchor,'utf8'),null);
+ fault={path:anchor,kind:'drift'};assert.equal(reader(anchor,'utf8'),actualEnemyGeometryReadFileSync(anchor,'utf8')+'\n');
+ fault=undefined;const binary=reader(anchor);assert(Buffer.isBuffer(binary));assert.equal(binary.toString('utf8'),expected);
+ const production='src/lua/abyss_battle_enemy_view.lua';fault={path:other,kind:'missing'};
+ assert.equal(enemyGeometryCiRead((p,e)=>p===production?actualEnemyGeometryReadFileSync(p,e):read(p,e))(production,'utf8'),actualEnemyGeometryReadFileSync(production,'utf8'),'CI reader never projects production');
+ fault=undefined;
+ const unknown=enemyGeometryCiRead(()=>null);assert.equal(unknown('foreign/source','utf8'),null);
+ const historical=enemyGeometryCiRead((p,e)=>p===anchor?(e?expected:Buffer.from(expected)):read(p,e));
+ fault={path:other,kind:'missing'};assert.equal(historical(anchor,'utf8'),expected,'already historical bytes stay raw and gain no fresh authorization');
+ fault=undefined;
+ const seen=[],tracked=enemyGeometryCiRead((p,e)=>{seen.push(p);return actualEnemyGeometryReadFileSync(p,e);});
+ assert.equal(tracked(anchor,'utf8'),expected);
+ for(const path of [...Object.keys(enemyGeometryCiPacket.files),...Object.keys(enemyGeometryCiPacket.immutableArchives)])assert(seen.includes(path),path+' checked before replay');
+});
+
+test('enemy geometry public CI source authenticates the same raw reader before every historical conversion',()=>{
+ const anchor='tests/helpers/closeout-source-epoch.mjs',source=actualEnemyGeometryReadFileSync(anchor,'utf8');
+ const expected=enemyGeometryCiPacket.files[anchor].before.source;let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const raw=actualEnemyGeometryReadFileSync(path,encoding);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualEnemyGeometryReadFileSync(path,encoding);
+ };
+ const project=()=>enemyGeometryCiSource(anchor,source,undefined,read);
+ assert.equal(project(),expected);
+ for(const path of [...Object.keys(enemyGeometryCiPacket.files),...Object.keys(enemyGeometryCiPacket.immutableArchives)]){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(project,undefined,path+' '+kind);
+   fault=undefined;assert.equal(project(),expected);
+  }
+ }
+ const noRead=()=>{throw Error('foreign input cannot authorize a historical view');};
+ for(const value of [source+'\n',source.slice(1),null,{},17,expected])assert.equal(enemyGeometryCiSource(anchor,value,undefined,noRead),value);
+ assert.equal(enemyGeometryCiSource('foreign/source',source,undefined,noRead),source);
+ const production='src/lua/abyss_battle_enemy_view.lua',raw=actualEnemyGeometryReadFileSync(production,'utf8');
+ assert.equal(enemyGeometryCiSource(production,raw,undefined,noRead),raw);
+ assert.equal(enemyGeometryCiSource(anchor,source,{sha256:'0'.repeat(64)},noRead),source);
+});
+
+test('enemy geometry current inventory authenticates the complete corpus before entering prior inventory',()=>{
+ const inventories={js:actualEnemyGeometryDiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const raw=actualEnemyGeometryReadFileSync(path,encoding);
+   return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }
+  return actualEnemyGeometryReadFileSync(path,encoding);
+ };
+ for(const [kind,paths]of Object.entries(inventories))assert.deepEqual(enemyGeometryPriorInventory(paths,kind,read),enemyGeometryCiPacket.priorInventory[kind]);
+ // Both kinds share the same corpus gate. Exercise all declared faults once,
+ // and retain separate positive JS/Lua and already-prior boundaries.
+ for(const path of [...Object.keys(enemyGeometryCiPacket.files),...Object.keys(enemyGeometryCiPacket.immutableArchives)]){
+  for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(()=>enemyGeometryPriorInventory(inventories.js,'js',read),undefined,path+' '+kind);
+   fault=undefined;assert.deepEqual(enemyGeometryPriorInventory(inventories.js,'js',read),enemyGeometryCiPacket.priorInventory.js);
+  }
+ }
+ fault={path:'src/lua/abyss_battle_enemy_view.lua',kind:'missing'};
+ for(const kind of ['js','lua'])assert.deepEqual(enemyGeometryPriorInventory(enemyGeometryCiPacket.priorInventory[kind],kind,read),enemyGeometryCiPacket.priorInventory[kind]);
+});
+
+test('enemy geometry integrated reader and source forward the same raw reader before historical output',async()=>{
+ const {integratedRead}=await import('./helpers/integrated-ci-source.mjs');
+ const anchor='tests/helpers/closeout-source-epoch.mjs',other='src/lua/abyss_battle_targeting.lua';
+ const raw=actualEnemyGeometryReadFileSync(anchor,'utf8');let fault;const seen=[];
+ const read=(path,encoding)=>{
+  seen.push(path);
+  if(path===other&&fault){
+   if(fault==='missing')throw Error('missing '+path);
+   if(fault==='null')return null;
+   const bytes=actualEnemyGeometryReadFileSync(path,encoding);
+   return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+  }
+  return actualEnemyGeometryReadFileSync(path,encoding);
+ };
+ assertEnemyGeometryCiCurrent(actualEnemyGeometryReadFileSync);
+ const reader=integratedRead('menu',{read}),expected=reader(anchor,'utf8');assert.notEqual(expected,raw,'the test must actually expose an older view');
+ for(const invoke of [()=>reader(anchor,'utf8'),()=>integratedSource(anchor,raw,'menu',read)]){
+  assert.equal(invoke(),expected);
+  for(const kind of ['missing','null','drift']){
+   fault=kind;assert.throws(invoke,undefined,'the integrated boundary must use the injected raw owner '+kind);
+   fault=undefined;assert.equal(invoke(),expected);
+  }
+ }
+ assert(seen.includes(other),'current owner must be read through this invocation reader');
+ const binary=reader(anchor);assert(Buffer.isBuffer(binary));assert.equal(binary.toString('utf8'),expected);
+});

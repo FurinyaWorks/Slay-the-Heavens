@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "original": "2c038f8dac2b707eecd0366437552f97a16f4e9d",
+  "actualRelease": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "merged": "d19b3d9cacc5397f0880a9435cc18c1f6095883e",
+  "oldBootstrapTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "actualBootstrapTree": "b5ec29f2b7718b0d4b6564afea03144a3f14a81e",
+  "mergeTree": "90c864fd6442eb9bf2a31abccade73e12e7c9e31",
+  "originalTree": "90c864fd6442eb9bf2a31abccade73e12e7c9e31",
+  "unchangedProductionTree": "d7aa27edc0e9ba478e8d597aa8f4b58a13f052ce",
+  "originalActiveCiSha256": "04848f5f8d39bdd8dc2f1aa9b9eb605982aa5f3025710dd91b16836d4d8e2475",
+  "changedActiveCiBindings": [
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs"
+  ],
+  "addedActiveCiBindings": [
+    "tests/defect-final-source-epoch.test.mjs",
+    "tests/encounter-formation-source-epoch.test.mjs",
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "productionBindings": 352,
+  "ownersBefore": 116,
+  "ownersCurrent": 117,
+  "newOwners": [
+    "src/lua/abyss_battle_targeting.lua"
+  ],
+  "bindings": 16,
+  "archives": 94,
+  "checkedSourceCallers": [
+    "tests/helpers/integrated-ci-source.mjs:assertIntegratedCurrent; complete same-reader assertion precedes private comparison"
+  ],
+  "rawBefore": {
+    "js": 876,
+    "lua": 1423
+  },
+  "rawCurrent": {
+    "js": 877,
+    "lua": 1424
+  }
+}

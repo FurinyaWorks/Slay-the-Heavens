@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./enemy-geometry-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'04848f5f8d39bdd8dc2f1aa9b9eb605982aa5f3025710dd91b16836d4d8e2475','complete enemy geometry CI continuation');
+assert.equal(hash(bytes),'195be60094d0bd8c4b748a89e38410d746487d983a4d4a3ac3662a0b3610297a','complete enemy geometry CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'b67226945c2be47c8fff31f1362412b973f68875');
@@ -29,12 +29,17 @@ function checkedSource(path,source,before){
 // Only the explicit complete-CI validator may compare a production owner's
 // freshly checked after binding with its immutable CI predecessor record.
 export const enemyGeometryCiCheckedSource=checkedSource;
-export function enemyGeometryCiSource(path,source,before){
+export function enemyGeometryCiSource(path,source,before,read=readFileSync){
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
- return checkedSource(path,source,before);
+ const prior=checkedSource(path,source,before);
+ if(prior!==source)assertEnemyGeometryCiCurrent(read);
+ return prior;
 }
 export function enemyGeometryCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=enemyGeometryCiSource(path,text);
+ const raw=read(path,encoding);if(raw===null||raw===undefined)return raw;
+ // The public Source gate receives this exact raw reader, rather than a
+ // default reader which could authenticate different current bytes.
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=enemyGeometryCiSource(path,text,undefined,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function enemyGeometryPriorInventory(paths,kind='js',read=readFileSync){
@@ -45,6 +50,7 @@ export function enemyGeometryPriorInventory(paths,kind='js',read=readFileSync){
  // Their own immutable validators retain the original missing/duplicate checks.
  if(!current.some(path=>!before.includes(path)&&sorted.includes(path)))return [...paths];
  assert.deepEqual(sorted,current,'complete enemy geometry raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
+ assertEnemyGeometryCiCurrent(read);
  for(const path of current.filter(p=>!before.includes(p)))
   assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh enemy geometry added inventory source: '+path);
  return [...before];
