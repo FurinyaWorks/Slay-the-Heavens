@@ -1,0 +1,86 @@
+✔ actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch (25.915804ms)
+✔ release selection map production preserves every complete prior target and freshly authenticates the committed source tree (11.188696ms)
+✖ release selection map CI validates complete live bindings while unknown or changed bytes stay visible (0.907417ms)
+✖ release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions (4.349529ms)
+✔ release selection map raw workflow checks each real execution deadline and trusted local route (3.315624ms)
+✔ release selection map production requires fresh complete owners and leaves foreign bytes visible (679.305966ms)
+✔ release selection map isolated production copy includes exact helper and packet without CI trust leaf (849.220346ms)
+✖ Release freeze CI continuation authenticates fresh owners before historical projection (1.311798ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 5
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3102.08531
+
+✖ failing tests:
+
+test at tests/release-selection-map-source.test.mjs:46:1
+✖ release selection map CI validates complete live bindings while unknown or changed bytes stay visible (0.907417ms)
+  AssertionError [ERR_ASSERTION]: fresh complete integration source: Release freeze .github/workflows/quality.yml
+  + actual - expected
+  
+  + '64085f537f925f55d8774f76d5b68de7113238484f6aee6b215ce99c09507b93'
+  - '4cff0add80bc1736b09d20d67a2d7766166f837a4f17e3482cd985e94e342931'
+  
+      at assertReleaseSelectionMapCiCurrent (file:///workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/tests/helpers/release-selection-map-ci-source.mjs:218:67)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/tests/release-selection-map-source.test.mjs:47:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '64085f537f925f55d8774f76d5b68de7113238484f6aee6b215ce99c09507b93',
+    expected: '4cff0add80bc1736b09d20d67a2d7766166f837a4f17e3482cd985e94e342931',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/release-selection-map-source.test.mjs:61:1
+✖ release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions (4.349529ms)
+  AssertionError [ERR_ASSERTION]: fresh release selection map added inventory source: tests/release-selection-map-source.test.mjs
+  + actual - expected
+  
+  + '3d620a551bfc1b82d069c7e5756c3c493a43897c3c39b71007154f976b9fad4a'
+  - '273f17c89002fbe8a8d09cf7f3ab9bda6258f7775ee823c7a175d2da88415acd'
+  
+      at releaseSelectionMapPriorInventory (file:///workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/tests/helpers/release-selection-map-ci-source.mjs:194:10)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/tests/release-selection-map-source.test.mjs:66:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '3d620a551bfc1b82d069c7e5756c3c493a43897c3c39b71007154f976b9fad4a',
+    expected: '273f17c89002fbe8a8d09cf7f3ab9bda6258f7775ee823c7a175d2da88415acd',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/release-selection-map-source.test.mjs:140:1
+✖ Release freeze CI continuation authenticates fresh owners before historical projection (1.311798ms)
+  AssertionError [ERR_ASSERTION]: fresh complete integration source: Release freeze .github/workflows/quality.yml
+  + actual - expected
+  
+  + '64085f537f925f55d8774f76d5b68de7113238484f6aee6b215ce99c09507b93'
+  - '4cff0add80bc1736b09d20d67a2d7766166f837a4f17e3482cd985e94e342931'
+  
+      at assertReleaseSelectionMapCiCurrent (file:///workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/tests/helpers/release-selection-map-ci-source.mjs:218:67)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/release-fast-freeze-preflight/tests/release-selection-map-source.test.mjs:142:82)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '64085f537f925f55d8774f76d5b68de7113238484f6aee6b215ce99c09507b93',
+    expected: '4cff0add80bc1736b09d20d67a2d7766166f837a4f17e3482cd985e94e342931',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

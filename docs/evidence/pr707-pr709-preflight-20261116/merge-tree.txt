@@ -1,0 +1,14 @@
+b4990d27a07fc5bc3cfff79d0b5d4f09aa579ea1
+100644 3aae727891592fe66027cd38627bd5cd4d9ea059 1	tests/helpers/release-selection-map-ci-source.mjs
+100644 bd7c3a94d3371c505704a5ef46a318d6086b494c 2	tests/helpers/release-selection-map-ci-source.mjs
+100644 fe72b4a8e912ccfaa81e40b75a8b237f3e314a19 3	tests/helpers/release-selection-map-ci-source.mjs
+100644 da5437071467555fe5e3eb54727bfc3a20b21d3e 1	tests/release-selection-map-source.test.mjs
+100644 c495bcc0b12ff7c0faafe35beebc11cbe5267cae 2	tests/release-selection-map-source.test.mjs
+100644 a2f1b95f3f4f28048e418725a849be4848b5006f 3	tests/release-selection-map-source.test.mjs
+
+Auto-merging .github/workflows/quality.yml
+Auto-merging docs/versions/V2-RELEASE-HANDOFF.md
+Auto-merging tests/helpers/release-selection-map-ci-source.mjs
+CONFLICT (content): Merge conflict in tests/helpers/release-selection-map-ci-source.mjs
+Auto-merging tests/release-selection-map-source.test.mjs
+CONFLICT (content): Merge conflict in tests/release-selection-map-source.test.mjs
