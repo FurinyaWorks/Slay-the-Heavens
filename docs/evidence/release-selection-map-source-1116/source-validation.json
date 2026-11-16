@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "releaseBefore": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "productCheckpoint": "74a598a52a0b846bc1bec1ef57083b2fdb1bbc39",
+  "productTree": "a6b52420a3b9c42c1e2443d8eb900d7e248dc441",
+  "scope": "Two exact existing Lua owner bindings and this slice source/CI continuation; product, workflows, timings, partition, thresholds, unknown cost and immutable predecessors stay unchanged.",
+  "packets": {
+    "tests/helpers/release-selection-map-source.json.gz": "0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62",
+    "tests/helpers/release-selection-map-ci-source.json.gz": "ab9597d0237daaf530f609ca6772576e170d0785e1fd66852c7e54800909fd66"
+  },
+  "production": {
+    "beforePaths": 352,
+    "currentPaths": 352,
+    "beforeOwners": 116,
+    "currentOwners": 116,
+    "priorTargets": 64,
+    "currentTargets": 65,
+    "changedOwners": [
+      "src/lua/abyss_game_ui_input.lua",
+      "src/lua/abyss_game_ui_view.lua"
+    ],
+    "producer": {
+      "src/lua/abyss_game_ui_input.lua": {
+        "commit": "5755726916f3dc1cbaf65d13e2a64c259d0873eb",
+        "parents": [
+          "d3e13df130dbd3af53b960361a339d3a27e295c8"
+        ]
+      },
+      "src/lua/abyss_game_ui_view.lua": {
+        "commit": "5755726916f3dc1cbaf65d13e2a64c259d0873eb",
+        "parents": [
+          "d3e13df130dbd3af53b960361a339d3a27e295c8"
+        ]
+      }
+    },
+    "currentCommitIsCommittedProduct": true,
+    "ciPacketCurrentTreeCommitted": false
+  },
+  "ciBindings": {
+    "count": 21,
+    "bootstrapPredecessor": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+    "bootstrapPaths": [
+      ".github/workflows/licenses.yml",
+      ".github/workflows/quality.yml",
+      ".github/workflows/quick-feedback.yml"
+    ]
+  },
+  "inventory": {
+    "prior": {
+      "js": 876,
+      "lua": 1423
+    },
+    "current": {
+      "js": 879,
+      "lua": 1423
+    },
+    "addedJs": [
+      "tests/official-map-return-controls.test.mjs",
+      "tests/release-selection-map-source.test.mjs",
+      "tests/selection-overlay-scope.test.mjs"
+    ],
+    "addedTopLevelLua": [],
+    "supportLua": "tests/lua/support/official_map_return.lua; fully executed by existing product parent JS; excluded from raw top-level Lua discovery as before"
+  },
+  "immutable": {
+    "count": 92,
+    "physicalGitGzip": 90,
+    "lfs": [
+      {
+        "path": "tests/helpers/closeout-ci-source.json.gz",
+        "oid": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8",
+        "sizeBytes": 2848271
+      },
+      {
+        "path": "tests/helpers/release-source-epoch.json.gz",
+        "oid": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780",
+        "sizeBytes": 2587324
+      }
+    ],
+    "verified": "Every exact original Git gzip byte or LFS oid/size and every current physical payload SHA256 checked; new production packet separately pinned."
+  },
+  "productFiles": [
+    {
+      "path": "scripts/noncombat-v25-layout.mjs",
+      "gitBlob": "e47cbdd5ce135b7c0aef96fa5cf4e580a3f968e2",
+      "sha256": "e48115c39396240ac6911fc9495600eaba0e5a974845e5999bff423abc78458b"
+    },
+    {
+      "path": "scripts/official-map-return-controls.mjs",
+      "gitBlob": "7b834ff79b3846d968212b9e424c25052c13887f",
+      "sha256": "b35fb19427e88cd1ac05a4d07f004187b81bbb224ca1bd97a1dfaa872a899f68"
+    },
+    {
+      "path": "scripts/official-run-layout.mjs",
+      "gitBlob": "e4435c0aa55acec0c83e3d5adff0d50924ca4703",
+      "sha256": "c84504418fc773445d982fc2f8e83b548d04ff2b35090fc3c854c816389b93b9"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_input.lua",
+      "gitBlob": "640b899577b267b3a1c52d0354b652b0c2da2140",
+      "sha256": "8476a62e295e72b065fd48642afccf4158c1b70a23aad52290d8ffd3dbee7c9d"
+    },
+    {
+      "path": "src/lua/abyss_game_ui_view.lua",
+      "gitBlob": "cfd5077f9716cd9d8841e2d60abdf777048689a6",
+      "sha256": "34af7bc390792b5eb4b62f265edd10f9786ed153b21ad35b74662ace514db215"
+    },
+    {
+      "path": "tests/lua/support/official_map_return.lua",
+      "gitBlob": "2b56af1dab0ca68ed1b57f9f3c40ac6acfb1d0d4",
+      "sha256": "2ebf4f45d3dbe6d0ef53c38febf3c7618c3c1c1f4dde8b2c560aff18fdfb7271"
+    },
+    {
+      "path": "tests/official-map-return-controls.test.mjs",
+      "gitBlob": "c9221e0483f5fcf8b32d3cdc40f70caf374488f9",
+      "sha256": "a2e8dd6aa80a575c1c0ea8b6ff379fe456a4707e357c0589345f3cb236f30c6a"
+    },
+    {
+      "path": "tests/selection-overlay-scope.test.mjs",
+      "gitBlob": "39f38cd1c0c80f60e378aa697685afa8503fe63c",
+      "sha256": "e412e1173ae9d513b773546788feeea69ea4aae7f04ce98cbb0f7131c33b29f3"
+    }
+  ],
+  "node": "v24.18.0",
+  "normalization": "LF for source; gzip raw binary byte identity",
+  "checks": {
+    "raw-before.log": {
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "durationMs": 16381.6217,
+      "log": "raw-before.log.gz",
+      "command": "node --test --test-name-pattern 'menu current complete JS and Lua workload' tests/ci-complete-calibration.test.mjs (before adapter)"
+    },
+    "source-small.log": {
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "durationMs": 8182.1106,
+      "log": "source-small.log.gz",
+      "command": "node --test tests/release-selection-map-source.test.mjs"
+    },
+    "ci-raw-current.log": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "durationMs": 16205.9124,
+      "log": "ci-raw-current.log.gz",
+      "command": "node --test --test-name-pattern 'release selection map raw Full inventory' tests/ci-complete-calibration.test.mjs"
+    },
+    "owners-copy.log": {
+      "tests": 44,
+      "passed": 44,
+      "failed": 0,
+      "durationMs": 18416.1413,
+      "log": "owners-copy.log.gz",
+      "command": "node --test tests/integration-source-epoch.test.mjs"
+    },
+    "raw-original-after.log": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "durationMs": 11413.8419,
+      "log": "raw-original-after.log.gz",
+      "command": "node --test --test-name-pattern 'menu current complete JS and Lua workload' tests/ci-complete-calibration.test.mjs (after adapter)"
+    },
+    "historical-seams.log": {
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "durationMs": 2223.2622,
+      "log": "historical-seams.log.gz",
+      "command": "node --test --test-name-pattern 'deck notification continuation|Neow retirement continuation|optional Neow flow helper|release additions remain in raw Full' tests/session-menu-navigation.test.mjs tests/sts-style-source-epoch.test.mjs"
+    },
+    "integrated-ci-seams.log": {
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "durationMs": 854.5627,
+      "log": "integrated-ci-seams.log.gz",
+      "command": "node --test tests/integrated-ci-source.cases.mjs"
+    }
+  },
+  "rawForecasts": {
+    "win32Ms": 1757264,
+    "linuxMs": 1191630,
+    "status": "diagnostic only; no threshold, timing, partition or workflow changed",
+    "unknownJsMs": 10000,
+    "executionMinutes": {
+      "fastWindows": 45,
+      "fastPosix": 30,
+      "fullWindowsHosted": 45,
+      "fullWindowsTrustedLocal": 75,
+      "fullPosix": 30
+    },
+    "observedProductParent": "Root reports PC08 full generated Host scenarios about 17.793s and combined five parent tests about 25.331s. New parent default unknown cost is 10s, so the forecast can underestimate runtime; no new timing or hard forecast gate is added."
+  },
+  "preservedFailure": {
+    "log": "raw-before.log.gz",
+    "reason": "Original menu-current complete raw discovery assertion rejected this slice added JS tests before explicit exact continuation. Original before/receipt assertions remain; current 879/1423 raw contract checks all after inventory separately."
+  },
+  "executionDetail": "owners-copy.log has 44 real source tests: 8 direct plus 36 dynamically imported source projection/retirement negative controls. No product or Host test was run in this source slice.",
+  "dependency": {
+    "pr": 692,
+    "head": "b6722694",
+    "status": "Parent last reports open common bootstrap prerequisite; no CI polling or duplicate repair. If Release base changes, exact before must be rebound and reviewed."
+  },
+  "notRun": [
+    "product/Host regressions (already executed by root on product checkpoint)",
+    "Full/Fast",
+    "all CI calibration cases",
+    "hosted Quality/Licenses",
+    "official import/new ready",
+    "PC/mobile acceptance",
+    "GUI/MCP",
+    "Backlog mutations"
+  ],
+  "evidence": {
+    "raw-before.log.gz": {
+      "sha256": "4fbbc54455fbf98edb3a72edd95887167a5c5e1cb4eae23eeb162f097fb8ecbc",
+      "rawSha256": "e0d8628eb5d3947b6a9afd6f2aa6c89ed98ef0bca0b27350bef7495b8e51fdbf",
+      "rawBytes": 11743
+    },
+    "source-small.log.gz": {
+      "sha256": "41953183a4f7a4d2d00e4d26879f8cb82cc87ced4460a65b7e8c6e39b64d9263",
+      "rawSha256": "d0778167a636f053e4afc6c19332aab1ec1841ef39b084cb0619eeb43a28a69c",
+      "rawBytes": 853
+    },
+    "ci-raw-current.log.gz": {
+      "sha256": "66b51db2e077afcea948db208688e04b03953eea875aaa0f44ec5f03b212ad9f",
+      "rawSha256": "2c381e4560b820e6db1ea914fa22983c2ef2e7290d821520227ec253b0bde7b6",
+      "rawBytes": 540
+    },
+    "owners-copy.log.gz": {
+      "sha256": "ede48863c7b2aaaf59420c2db8c87de3abaf8ac2ae83f9ab9d14c1f2702c8e81",
+      "rawSha256": "0dd9f8235c5d9f9a70a88bec7a7ade6343c364a2cada380fa9f8d645e6f5e444",
+      "rawBytes": 4636
+    },
+    "raw-original-after.log.gz": {
+      "sha256": "abfbe2cac9ff479acb07361123355472864b5a74f2eb2766b45b1311693510d8",
+      "rawSha256": "21f4c3ef41987f16d4ef2379c54d0d84ae89b369f2d10ff44d31f162730220f7",
+      "rawBytes": 353
+    },
+    "historical-seams.log.gz": {
+      "sha256": "4b6721abb3aa01c1662f688de5097536ce52e437a7964304e5181721094352d8",
+      "rawSha256": "f4e7bf5fa44fde9e1ad8fd5964567ab9ea296fedc4cb43cd52a88551ba157da0",
+      "rawBytes": 581
+    },
+    "integrated-ci-seams.log.gz": {
+      "sha256": "2db188240e650a72e5d61591438b54b3980cf7b00a9d6cad87860c77b292a9fd",
+      "rawSha256": "e9ef15359fcc9d43dbd8807cf4db9fd81b01009beca3b55be8f982e2fae7a4b2",
+      "rawBytes": 352
+    }
+  }
+}
