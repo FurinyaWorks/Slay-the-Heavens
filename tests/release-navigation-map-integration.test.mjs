@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {discoverJs,jsShard,timings} from '../scripts/ci-shards.mjs';
 import {shardLuaScripts} from '../scripts/test-lua.mjs';
 import {sourceEpoch,releaseNavigationSourceEpoch,releaseSelectionMapSourceEpoch,preReleaseNavigationSourceEpoch} from './helpers/closeout-source-epoch.mjs';
-import {navigationMapPacket,navigationMapSource,navigationMapRead,navigationMapProductionRead,navigationMapPriorInventory,assertNavigationMapCurrent,assertNavigationMapRawInventory,navigationDomainSource,navigationDomainRead} from './helpers/navigation-map-integration.mjs';
+import {navigationFixturePacket,navigationFixtureBefore,assertNavigationFixturesCurrent,navigationMapPacket,navigationMapSource,navigationMapRead,navigationMapProductionRead,navigationMapPriorInventory,assertNavigationMapCurrent,assertNavigationMapRawInventory,navigationDomainSource,navigationDomainRead} from './helpers/navigation-map-integration.mjs';
 import {releaseMergeCiPacket,releaseMergeRead,assertReleaseMergeCurrent} from './helpers/release-bootstrap-merge-ci-source.mjs';
 import {assertReleaseNavigationCiCurrent} from './helpers/release-navigation-ci-source.mjs';
 import {assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
@@ -34,7 +34,7 @@ test('navigation map union retains both complete producer domains and exact thre
 test('navigation map actual raw input rejects every current drift before either historical domain',()=>{
  assertNavigationMapCurrent();
  for(const [path,row]of Object.entries(navigationMapPacket.files)){
-  const raw=readFileSync(path,'utf8');assert.equal(hash(norm(raw)),row.current,path);
+  const raw=readFileSync(path,'utf8');assert.equal(hash(norm(navigationFixtureBefore(path,raw))),row.current,path);
   for(const mode of ['missing','changed','buffer'])assert.throws(()=>assertNavigationMapCurrent((p,e)=>{
    if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing '+p);
    return mode==='buffer'?Buffer.from(raw):raw+'\n';
@@ -52,6 +52,40 @@ test('navigation map actual raw input rejects every current drift before either 
   const raw=nav(path,'utf8'),got=releaseMergeRead(target,nav)(path,'utf8');
   assert.equal(norm(got),path.startsWith('src/')?norm(raw):row[target]?.source??norm(raw),path+':'+target);
  }
+});
+test('retired-help fixture continuation keeps complete old assertions and freshly rejects every changed owner',()=>{
+ assertNavigationFixturesCurrent();
+ for(const [path,row]of Object.entries(navigationFixturePacket.files)){
+  const raw=readFileSync(path,'utf8');
+  assert.equal(navigationFixtureBefore(path,raw),row.before.source);
+  for(const foreign of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),null,{},Buffer.from(raw)]){
+   let reads=0;assert.equal(navigationFixtureBefore(path,foreign,()=>{reads++;throw Error('foreign read');}),foreign);assert.equal(reads,0);
+  }
+  for(const mode of ['changed','stale','missing','buffer']){
+   let bad=false;
+   const read=(p,e)=>{
+    if(p!==path||!bad)return readFileSync(p,e);
+    if(mode==='missing')throw Error('missing '+p);
+    return mode==='changed'?raw+'\n':mode==='stale'?row.before.source:Buffer.from(raw);
+   };
+   const anchor='tests/ci-complete-calibration.test.mjs',source=readFileSync(anchor,'utf8');
+   const expected=integratedSource(anchor,source,'native',read),reader=integratedRead('native',{read});
+   assert.notEqual(expected,source);assert.equal(reader(anchor,'utf8'),expected);
+   bad=true;
+   for(const call of [()=>assertNavigationMapCurrent(read),()=>integratedSource(anchor,source,'native',read),()=>reader(anchor,'utf8')])
+    assert.throws(call,error=>{assert(error.message.includes(path));return true;});
+   bad=false;assert.equal(reader(anchor,'utf8'),expected);
+  }
+ }
+ const archive='tests/helpers/navigation-help-retirement-fixtures.json.gz';
+ const anchor='tests/ci-complete-calibration.test.mjs',source=readFileSync(anchor,'utf8');
+ let bad=false;
+ const read=(p,e)=>p===archive&&bad?readFileSync(p).subarray(1):readFileSync(p,e);
+ const expected=integratedSource(anchor,source,'native',read),reader=integratedRead('native',{read});
+ assert.equal(reader(anchor,'utf8'),expected);bad=true;
+ for(const call of [()=>assertNavigationFixturesCurrent(read),()=>integratedSource(anchor,source,'native',read),()=>reader(anchor,'utf8')])
+  assert.throws(call,/immutable navigation fixture predecessor/);
+ bad=false;assert.equal(reader(anchor,'utf8'),expected);
 });
 test('navigation map actual Full inventory and execution guards cover the complete union',()=>{
  const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort()};

@@ -5,7 +5,7 @@ import { gameLayout } from '../scripts/game-ui-layout.mjs';
 import { nativeTheme as theme } from '../scripts/native-ui-theme.mjs';
 import { runLua } from '../scripts/test-lua.mjs';
 
-test('three scene-based instruction sections fit the approved modal and do not promise unbound keyboard shortcuts', () => {
+test('retained guide source stays readable while actual navigation retires both help receivers', () => {
   const guide = controlsGuide();
   const sections = guide.children.filter(c => ['battle', 'map', 'resources'].includes(c.name));
   assert.equal(sections.length, 3);
@@ -25,13 +25,17 @@ test('three scene-based instruction sections fit the approved modal and do not p
   visit(guide);
   const content = JSON.stringify(guide);
   assert(!content.includes('1–9') && !content.includes('Esc') && !content.includes('Tab'));
-  const exit = gameLayout().controls.find(c=>c.name==='exitPanel');
-  const help = exit.children.find(c=>c.name==='help'), title = exit.children.find(c=>c.name==='title');
-  assert(Math.abs(help.position[0]-title.position[0]) >= (help.size[0]+title.size[0])/2);
-  assert.deepEqual(help.position,theme.layout.exitMenu.help.slice(0,2));
+  const controls = gameLayout().controls;
+  for(const name of ['exitPanel','runMenu']) {
+    const panel = controls.find(c=>c.name===name);
+    assert(panel);
+    assert(!panel.children.some(c=>['help','guide'].includes(c.name)), 'retired help must have no generated hit area');
+  }
+  const exit = controls.find(c=>c.name==='exitPanel');
+  assert.deepEqual(exit.children.find(c=>c.name==='cancel').position,theme.layout.exitMenu.cancel.slice(0,2));
 });
 
-test('real host isolates guide input, returns controller focus, and retains map navigation after input switching', () => {
+test('real host isolates exit input, returns controller focus, and retains map navigation after input switching', () => {
   const result=runLua('tests/lua/native_ui_parity.lua');
   assert.equal(result.status,0,result.stdout+result.stderr);
   assert.match(result.stdout,/NATIVE_UI_PARITY_PASS/);

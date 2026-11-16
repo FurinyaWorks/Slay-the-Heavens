@@ -37,15 +37,41 @@ for(const row of Object.values(navigationMapPacket.files)){
  for(const id of Object.values(row.views))assert(id===null||Object.hasOwn(navigationMapPacket.sources,id),'complete standalone source reference');
 }
 freeze(navigationMapPacket);
-export function navigationMapSource(path,source,side='navigation'){
+// The real menus retired help; keep the complete earlier fixture assertions as
+// historical views, accepting only these reviewed replacement bytes on disk.
+const fixtureBytes=readFileSync(new URL('./navigation-help-retirement-fixtures.json.gz',import.meta.url));
+assert.equal(hash(fixtureBytes),'c0671bd990a62117af7b46bf89c735cc7defae6dae2caba619f1ff8b28c588f6','complete navigation help retirement fixture continuation');
+export const navigationFixturePacket=freeze(JSON.parse(gunzipSync(fixtureBytes)));
+assert.equal(navigationFixturePacket.schemaVersion,1);
+assert.equal(navigationFixturePacket.baseCommit,'198357cfb03a36c6290966d8cee83daea47fd700');
+assert.equal(navigationFixturePacket.normalization,'LF');assert.equal(navigationFixturePacket.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(navigationFixturePacket.files),['tests/lua/m3_chinese_copy.lua','tests/lua/native_ui_parity.lua','tests/m3-chinese-copy.test.mjs','tests/native-ui-parity.test.mjs','tests/release-navigation-map-integration.test.mjs']);
+for(const [path,row]of Object.entries(navigationFixturePacket.files))for(const binding of [row.before,row.current]){
+ assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+}
+export function assertNavigationFixturesCurrent(read=readFileSync){
+ assert.equal(hash(read('tests/helpers/navigation-help-retirement-fixtures.json.gz')),hash(fixtureBytes),'immutable navigation fixture predecessor');
+ for(const [path,row]of Object.entries(navigationFixturePacket.files)){
+  const source=read(path,'utf8');assert.equal(typeof source,'string','fresh navigation fixture: '+path);
+  assert.equal(hash(norm(source)),row.current.sha256,'fresh navigation fixture: '+path);
+ }
+}
+export function navigationFixtureBefore(path,source,read=readFileSync){
+ const row=Object.hasOwn(navigationFixturePacket.files,path)?navigationFixturePacket.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ assertNavigationFixturesCurrent(read);return row.before.source;
+}
+export function navigationMapSource(path,source,side='navigation',read=readFileSync){
  assert(['navigation','selection'].includes(side),'known navigation/map standalone view');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ source=navigationFixtureBefore(path,source,read);
  const row=Object.hasOwn(navigationMapPacket.files,path)?navigationMapPacket.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current)return source;
  const id=row.views[side];return id===null?source:navigationMapPacket.sources[id];
 }
 export function navigationMapRead(side='navigation',read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding);return typeof raw==='string'?navigationMapSource(path,raw,side):raw;
+ const raw=read(path,encoding);return typeof raw==='string'?navigationMapSource(path,raw,side,read):raw;
 };}
 export function navigationMapProductionRead(side='navigation',read=readFileSync){
  const ci=navigationMapRead(side,read);
@@ -85,14 +111,15 @@ export function assertNavigationMapRawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));assert.deepEqual([...paths].sort(),navigationMapPacket.inventories.joint[kind],'complete navigation/map raw inventory');
 }
 export function assertNavigationMapCurrent(read=readFileSync){
+ assertNavigationFixturesCurrent(read);
  for(const [path,row]of Object.entries(navigationMapPacket.files)){
   const s=read(path,'utf8');assert.equal(typeof s,'string','fresh navigation/map source: '+path);
-  assert.equal(hash(norm(s)),row.current,'fresh complete integration source: navigation/map '+path);
+  assert.equal(hash(norm(navigationFixtureBefore(path,s,read))),row.current,'fresh complete integration source: navigation/map '+path);
  }
  for(const [path,id]of Object.entries(navigationMapPacket.archives))assert.equal(hash(read(path)),id,'immutable navigation/map predecessor: '+path);
 }
 export function navigationDomainSource(path,source,target,read=readFileSync){
- const current=navigationMapSource(path,source,'navigation');
+ const current=navigationMapSource(path,source,'navigation',read);
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(releaseMergeCiPacket.files,path)?releaseMergeCiPacket.files[path]:null;
  if(row?.[target]&&typeof current==='string'&&!current.includes('\r\r\n')&&hash(norm(current))===row.current.sha256)
