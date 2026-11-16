@@ -1,6 +1,9 @@
+import {potionShopParentFixture} from './helpers/potion-shop-parent-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualPost697ReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as actualUnionReadFileSync,readdirSync} from 'node:fs';
+import {potionShopHistoricalRead,potionShopPriorInventory} from './helpers/potion-shop-ci-source.mjs';
+const actualPost697ReadFileSync=potionShopParentFixture('potion',actualUnionReadFileSync);
 import {potionPost697HistoricalRead,potionPost697PriorInventory} from './helpers/potion-post697-ci-source.mjs';
 const actualPotionClickReadFileSync=potionPost697HistoricalRead('potion',actualPost697ReadFileSync);
 import {potionClickHistoricalRead,potionClickCiSource,potionClickCiPacket,assertPotionClickCiCurrent,assertPotionClickRawInventory} from './helpers/potion-click-ci-source.mjs';
@@ -13,9 +16,10 @@ const rawReadFileSync=potionBootstrapHistoricalRead('potion',actualDiskReadFileS
 const rawBootstrapReadFileSync=potionBootstrapHistoricalRead('bootstrap',actualDiskReadFileSync);
 import {mobilePotionCiRead,mobilePotionPriorInventory,mobilePotionCiPacket,mobilePotionCiSource,assertMobilePotionCiCurrent,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 import {createHash} from 'node:crypto';
-import {discoverJs as actualPost697DiscoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualUnionDiscoverJs} from '../scripts/ci-shards.mjs';
+const actualPost697DiscoverJs=()=>potionShopPriorInventory(actualUnionDiscoverJs(),'js',actualUnionReadFileSync,'potion');
 const actualPotionRegressionDiscoverJs=()=>potionPost697PriorInventory(actualPost697DiscoverJs(),'js',actualPost697ReadFileSync);
-const potionLegacyLua=()=>potionPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualPost697ReadFileSync);
+const potionLegacyLua=()=>potionPost697PriorInventory(potionShopPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualUnionReadFileSync,'potion'),'lua',actualPost697ReadFileSync);
 const discoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
 const beforePotionRegressionLua=()=>potionRegressionPriorInventory(potionLegacyLua(),'lua',actualPotionRegressionReadFileSync);
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
@@ -448,7 +452,7 @@ test('post697 union integrated reader and source forward the same raw reader bef
 import {potionPost697CiRead,potionPost697CiPacket,potionPost697CiSource,assertPotionPost697CiCurrent,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
 
 test('post697 union production retains both complete real inputs and authenticates every current owner',async()=>{
- const {sourceEpoch,prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {potionPost697LegacyEpoch:sourceEpoch,prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {potionPost697SourcePacket:p,extendPotionPost697Source}=await import('./helpers/potion-post697-source.mjs');
  const current=sourceEpoch.proof,prior=prePotionPost697SourceEpoch.proof,legacy=releaseSelectionMapLegacyEpoch.proof;
  assert.equal(current.currentCommit,'a9df9dff11779cb1d850dc97b715c711881cf9c6');assert.equal(current.currentTreeCommitted,true);

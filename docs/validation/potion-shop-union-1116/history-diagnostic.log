@@ -1,0 +1,26 @@
+
+Interrupted while running:
+
+⚠ tests/integrated-ci-source.cases.mjs (tests/integrated-ci-source.cases.mjs:1:1)
+⚠ tests/potion-shop-historical.cases.mjs (tests/potion-shop-historical.cases.mjs:1:1)
+✖ tests/integrated-ci-source.cases.mjs (119847.903794ms)
+✔ shop post697 union historical CI reader reauthenticates every current binding and archive after warm success (36290.122252ms)
+✔ shop post697 union public CI source authenticates the same raw reader before every historical conversion (32598.708447ms)
+✔ shop post697 union current inventory authenticates the complete corpus before entering prior inventory (35042.926144ms)
+✔ shop post697 union integrated reader and source forward the same raw reader before historical output (616.594854ms)
+✔ shop post697 union both explicit histories reject warm cross-input faults and preserve unchanged before bytes (706.849228ms)
+✔ shop post697 union complete current production authenticates every one of 118 owners (7772.895576ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 1
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119863.613118
+
+✖ failing tests:
+
+test at tests/integrated-ci-source.cases.mjs:1:1
+✖ tests/integrated-ci-source.cases.mjs (119847.903794ms)
+  'Promise resolution is still pending but the event loop has already resolved'

@@ -15,6 +15,8 @@ import {extendMobilePotionSource} from './mobile-potion-source.mjs';
 import {extendPotionRegressionSource} from './potion-regression-source.mjs';
 import {extendPotionClickSource} from './potion-click-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
+import {extendShopPost697Source} from './shop-post697-source.mjs';
+import {composePotionShopEpoch} from './potion-shop-source.mjs';
 import {extendPotionPost697Source} from './potion-post697-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
@@ -60,7 +62,10 @@ export const prePotionClickSourceEpoch=extendPotionRegressionSource(prePotionReg
 export const prePotionPost697SourceEpoch=extendPotionClickSource(prePotionClickSourceEpoch);
 export const preReleaseSelectionMapSourceEpoch=preMobilePotionSourceEpoch;
 export const releaseSelectionMapLegacyEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
-export const sourceEpoch=extendPotionPost697Source(prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
+export const potionPost697LegacyEpoch=extendPotionPost697Source(prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
+export const preShopPost697SourceEpoch=releaseSelectionMapLegacyEpoch;
+export const shopPost697LegacyEpoch=extendShopPost697Source(preShopPost697SourceEpoch);
+export const sourceEpoch=composePotionShopEpoch(potionPost697LegacyEpoch,shopPost697LegacyEpoch,releaseSelectionMapLegacyEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

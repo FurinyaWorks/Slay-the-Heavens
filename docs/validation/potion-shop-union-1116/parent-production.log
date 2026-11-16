@@ -1,0 +1,10 @@
+✔ post697 union production retains both complete real inputs and authenticates every current owner (8104.78649ms)
+✔ shop post697 union complete current production authenticates every one of 118 owners (5590.300478ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9671.007187

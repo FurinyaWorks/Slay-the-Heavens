@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualPost697ReadFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {readFileSync as actualUnionReadFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {potionShopHistoricalRead,potionShopPriorInventory} from './helpers/potion-shop-ci-source.mjs';
+const actualPost697ReadFileSync=potionShopHistoricalRead('potion',actualUnionReadFileSync);
 import {potionPost697HistoricalRead,potionPost697PriorInventory} from './helpers/potion-post697-ci-source.mjs';
 const readFileSync=potionPost697HistoricalRead('selection',actualPost697ReadFileSync);
 import {join} from 'node:path';
@@ -9,7 +11,8 @@ import {pathToFileURL} from 'node:url';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {discoverJs as actualPost697DiscoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as actualUnionDiscoverJs} from '../scripts/ci-shards.mjs';
+const actualPost697DiscoverJs=()=>potionShopPriorInventory(actualUnionDiscoverJs(),'js',actualUnionReadFileSync,'potion');
 const discoverJs=()=>potionPost697PriorInventory(actualPost697DiscoverJs(),'js',actualPost697ReadFileSync,'selection');
 import {sourceEpoch as activePost697Epoch,releaseSelectionMapLegacyEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
@@ -63,7 +66,7 @@ test('legacy landed697 release selection map CI validates complete live bindings
 });
 
 test('legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
- const inventories={js:discoverJs(),lua:potionPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualPost697ReadFileSync,'selection')};
+ const inventories={js:discoverJs(),lua:potionPost697PriorInventory(potionShopPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualUnionReadFileSync,'potion'),'lua',actualPost697ReadFileSync,'selection')};
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);
   assertReleaseSelectionMapRawInventory(paths,kind);

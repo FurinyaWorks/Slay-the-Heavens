@@ -12,6 +12,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {mobilePotionPriorInventory,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 import {potionPost697PriorInventory,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
+import {potionShopHistoricalRead,potionShopPriorInventory,assertPotionShopRawInventory} from './helpers/potion-shop-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -30,8 +31,10 @@ test('release additions remain in raw Full and exact historical inventories reje
  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
  const historical={};
  for(const [kind,combined]of [['js',rawJs],['lua',rawLua]]){
-  assertPotionPost697RawInventory(combined,kind);
-  const raw=potionPost697PriorInventory(combined,kind,readFileSync);
+  assertPotionShopRawInventory(combined,kind);
+  const potionCombined=potionShopPriorInventory(combined,kind,readFileSync,'potion');
+  assertPotionPost697RawInventory(potionCombined,kind);
+  const raw=potionPost697PriorInventory(potionCombined,kind,potionShopHistoricalRead('potion',readFileSync));
   assertMobilePotionRawInventory(raw,kind);
   historical[kind]=mobilePotionPriorInventory(raw,kind);
   for(const path of raw.filter(p=>!historical[kind].includes(p))){

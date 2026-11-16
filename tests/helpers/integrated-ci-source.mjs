@@ -4,7 +4,10 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {shopPost697CiSource} from './shop-post697-ci-source.mjs';
+import {releaseSelectionMapCiSource} from './release-selection-map-ci-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
+import {potionShopCiSource,potionShopHistoricalRead,potionShopPriorInventory,assertPotionShopCiCurrent,potionShopCiPacket} from './potion-shop-ci-source.mjs';
 import {mobilePotionPriorInventory,assertMobilePotionCiCurrent} from './mobile-potion-ci-source.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {potionBootstrapCiSource,potionBootstrapCiCheckedSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent} from './potion-bootstrap-ci-source.mjs';
@@ -26,7 +29,10 @@ export function integratedSource(path,source,target,read=readFileSync){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=priorCiSource(path,source,row?.current,read);
+ const binding=potionShopCiPacket.files[path];
+ const isShop=typeof source==='string'&&binding?.views.shop&&binding.views.shop.sha256!==binding.current.sha256&&binding.views.shop.sha256!==binding.views.potion?.sha256&&hash(norm(source))===binding.views.shop.sha256;
+ if(isShop)source=releaseBootstrapCiSource(path,releaseSelectionMapCiSource(path,shopPost697CiSource(path,source,undefined,read)),row?.current);
+ else {source=potionShopCiSource(path,source,read);read=potionShopHistoricalRead('potion',read);source=priorCiSource(path,source,row?.current,read);}
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
@@ -41,6 +47,7 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ assertPotionShopCiCurrent(read);read=potionShopHistoricalRead('potion',read);
  assertPotionPost697CiCurrent(read);
  const potionRead=potionPost697HistoricalRead('potion',read);
  assertPotionClickCiCurrent(potionRead);
@@ -53,6 +60,7 @@ export function assertIntegratedCurrent(read=readFileSync){
  for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(priorCiCheckedSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(priorCiSource(path,read(path,'utf8'),integratedCiProof.files[path]?.current,read))),row.after,'fresh integration copy owner: '+path);
 }
+export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return [...potionShopCiPacket.currentInventory[kind]];}
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;
  assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
@@ -64,6 +72,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
+ paths=potionShopPriorInventory(paths,kind,read);read=potionShopHistoricalRead('potion',read);
  paths=potionPost697PriorInventory(paths,kind,read);read=potionPost697HistoricalRead('potion',read);
  read=potionClickHistoricalRead(read);
  paths=potionRegressionPriorInventory(paths,kind,read);read=potionRegressionHistoricalRead(read);
