@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./mobile-cottage-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'54e12fca90fb63f2830dc70a662e4898c5b0f46d8591d688fb9f887b1f1afbca','complete mobile cottage CI continuation');
+assert.equal(hash(bytes),'5b294b07f6e0d722285fe7a44f43dbc97cbcb652ce4adafdeaaa44f312375e8d','complete mobile cottage CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'89dfc774b1c6bb146b91e6064039f4d648db0d33');
