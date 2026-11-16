@@ -4,7 +4,7 @@
 
 原 661568B WIP packet 的完整 Git 字节仍可从 `3f715049:tests/helpers/item-post697-ci-source.json.gz` 恢复，SHA256 `6785f5fb56a5117f88d611319ff0322b0501141e8b231f93fbd24c156bacb40f`。当前新捕获另有明确 current/before 域：Item `16cf4a2e862ccfa0eaed06c5cf11cb8546e6095f`、Release `33d71575c5f186a1b54f7bf3e4f1826c145aa1d9`；旧已接受 gzip 不改写。新编码为 179864B，SHA256 `ef77290b978b59f09c8bbe7243fd8f5bc38a62889c770201b83dbc66e3d142c1`；133 个完整 UTF8 atom 中112个仅引用六条固定旧 archive 的精确字段，其余为字面值。每个压缩 archive、解码文本 SHA256、Git blob、字段键/域、引用存在性和无闲置 atom 均严格校验；不是任意路径或通用存储框架。
 
-每次实际 current→历史转换前，原始同一 reader 重新认证77条当前文本、103条不可变 archive 和352条生产 Git 身份，无授权缓存。生产投影器保留完整352文件/68 target，CI public source adapter 不代替生产授权。补齐了 WIP 漏列的实际父域输入（包括 docs/legal/assets），源/read/inventory 消费者显式接续。bootstrap inventory 原先偷用默认 FS 的缺口已真实 RED 后修复为同一显式 reader。
+每次实际 current→历史转换前，原始同一 reader 重新认证77条当前文本、102条不可变 archive 和352条生产 Git 身份，无授权缓存。生产投影器保留完整352文件/68 target，CI public source adapter 不代替生产授权。补齐了 WIP 漏列的实际父域输入（包括 docs/legal/assets），源/read/inventory 消费者显式接续。bootstrap inventory 原先偷用默认 FS 的缺口已真实 RED 后修复为同一显式 reader。
 
 原两侧来源负控作为明确命名的 immutable parent checkpoint fixture 保留，完整原断言和 missing/null/drift 回调仍在；新的独立 rawFS 合同检查当前完整库存、生产 union 及公共适配器。五个 reader wrapper 在 warm 回归中只构造一次，每次注入或恢复均复用同一闭包。未知、已历史、外来字节保持透传；实际当前转换不借用旧授权。
 
