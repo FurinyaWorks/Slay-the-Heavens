@@ -1,13 +1,17 @@
+import {integrationProductionRead,integrationPriorInventory} from './helpers/release-picker-map-integration.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,readdirSync} from 'node:fs';
+import {readFileSync as rawReadFileSync,readdirSync as rawReaddirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {discoverJs} from '../scripts/ci-shards.mjs';
-import {sourceEpoch,preReleasePickerControlsSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {discoverJs as rawDiscoverJs} from '../scripts/ci-shards.mjs';
+import {sourceEpoch as jointSourceEpoch,releasePickerControlsSourceEpoch as sourceEpoch,preReleasePickerControlsSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releasePickerControlsSourcePacket,extendReleasePickerControlsSource} from './helpers/release-picker-controls-source.mjs';
 import {releasePickerControlsCiPacket,releasePickerControlsCiSource,releasePickerControlsPriorInventory,assertReleasePickerControlsRawInventory,assertReleasePickerControlsCiCurrent,assertReleasePickerControlsExecutionGuards} from './helpers/release-picker-controls-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+const readFileSync=integrationProductionRead('picker',rawReadFileSync);
+const discoverJs=()=>integrationPriorInventory(rawDiscoverJs(),'picker');
+const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'picker','lua').map(p=>p.slice(10)):rawReaddirSync(path);
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
  const bytes=readFileSync('tests/helpers/release-picker-controls-base-source.json.gz');
@@ -40,7 +44,7 @@ test('release picker controls production preserves every complete prior target a
 });
 
 test('release picker controls CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
- assertReleasePickerControlsCiCurrent();
+ assertReleasePickerControlsCiCurrent(readFileSync);
  for(const [path,row]of Object.entries(releasePickerControlsCiPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
@@ -59,7 +63,7 @@ test('release picker controls raw JS and Lua inventories reject missing duplicat
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releasePickerControlsCiPacket.currentInventory[kind]);
   assertReleasePickerControlsRawInventory(paths,kind);
-  assert.deepEqual(releasePickerControlsPriorInventory(paths,kind),releasePickerControlsCiPacket.priorInventory[kind]);
+  assert.deepEqual(releasePickerControlsPriorInventory(paths,kind,readFileSync),releasePickerControlsCiPacket.priorInventory[kind]);
   const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];
   assert.deepEqual(releasePickerControlsPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');
   const noAdditions=paths.filter(path=>releasePickerControlsCiPacket.priorInventory[kind].includes(path));

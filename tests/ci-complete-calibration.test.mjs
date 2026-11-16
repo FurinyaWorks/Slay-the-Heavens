@@ -45,7 +45,10 @@ import assert from 'node:assert/strict';
 import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releasePickerControlsCiRead,releasePickerControlsPriorInventory,assertReleasePickerControlsCiCurrent,releasePickerControlsCiPacket,assertReleasePickerControlsExecutionGuards} from './helpers/release-picker-controls-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
-const rawBootstrapReadFileSync=releasePickerControlsCiRead(rawReleaseReadFileSync);
+import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {integrationRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-picker-map-integration.mjs';
+const sideRead=integrationRead('picker',rawReleaseReadFileSync);
+const rawBootstrapReadFileSync=releasePickerControlsCiRead(sideRead);
 const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
@@ -60,7 +63,7 @@ import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
 import {discoverJs as rawReleaseDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
-const liveDiscoverJs=()=>releasePickerControlsPriorInventory(rawReleaseDiscoverJs(),'js',rawReleaseReadFileSync);
+const liveDiscoverJs=()=>releasePickerControlsPriorInventory(integrationPriorInventory(rawReleaseDiscoverJs(),'picker'),'js',sideRead);
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
 import {shardLuaScripts} from '../scripts/test-lua.mjs';
@@ -168,7 +171,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
 const rawReleaseLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
-const liveCloseoutLua=()=>releasePickerControlsPriorInventory(rawReleaseLua(),'lua',rawReleaseReadFileSync);
+const liveCloseoutLua=()=>releasePickerControlsPriorInventory(integrationPriorInventory(rawReleaseLua(),'picker','lua'),'lua',sideRead);
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
 // inventories. Current Full below still discovers and checks every file.
@@ -1999,10 +2002,14 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
-test('release picker controls raw Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
- assertReleasePickerControlsCiCurrent(rawReleaseReadFileSync);
- assertReleasePickerControlsExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
- const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releasePickerControlsCiPacket;
+for(const [side,label,p,check,guards]of [
+ ['picker','picker controls',releasePickerControlsCiPacket,assertReleasePickerControlsCiCurrent,assertReleasePickerControlsExecutionGuards],
+ ['selection','selection map',releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards],
+ ['joint','card-contact integration',{currentInventory:integrationPacket.inventory,priorInventory:releasePickerControlsCiPacket.priorInventory},assertReleaseIntegrationCurrent,assertReleasePickerControlsExecutionGuards],
+])test(`release ${label} retained Full inventory retains all tests, diagnostic forecasts and actual execution guards`,t=>{
+ check(side==='joint'?rawReleaseReadFileSync:integrationRead(side,rawReleaseReadFileSync));
+ guards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
+ const js=side==='joint'?rawReleaseDiscoverJs():integrationPriorInventory(rawReleaseDiscoverJs(),side),lua=side==='joint'?rawReleaseLua():integrationPriorInventory(rawReleaseLua(),side,'lua');
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
  for(const path of p.priorInventory.js)assert(js.includes(path));
  for(const path of p.priorInventory.lua)assert(lua.includes(path));
@@ -2032,7 +2039,7 @@ test('release picker controls raw Full inventory retains all tests, diagnostic f
 
 test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
- const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const js=liveDiscoverJs(),lua=liveCloseoutLua();
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');

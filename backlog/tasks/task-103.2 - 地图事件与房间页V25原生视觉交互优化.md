@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-10 11:46'
-updated_date: '2026-11-15 22:38'
+updated_date: '2026-11-16 08:47'
 labels:
   - 待验
   - delivery-verify
@@ -24,6 +24,8 @@ references:
   - docs/evidence/release-picker-controls-ci-repair-1116/README.md
   - >-
     docs/evidence/release-picker-controls-ci-repair-1116/review696-independent.json
+  - docs/evidence/release-selection-map-admission-1116/README.md
+  - docs/evidence/release-selection-map-release1cc-1116/README.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 169000
@@ -97,4 +99,8 @@ PC30产品/来源双层独审现均通过，组合20项输入coverage无遗漏�
 PR696 CI有界修复已定向GREEN待独审：原official-choice首项因两页old previous/next整体比较RED；保留锻造/删牌全部非页脚字段、双卡面与nativeTheme快照，分别精确断言批准200x48 footer及default原56x44/44x208。首项+default2/2，outer当前/旧包/库存/硬门槛5/5；中间两次fixture RED如实保留。新CI包6e63658f，26绑定/97archive；旧8f63全包原字节另存pin，24/25旧绑定完整不变，全部before/旧archive/元数据库存保全；新after honest worktree capture(false)，旧producer只历史基点。生产/时限/workflow未动，无新Host/Full/官方设备或截图实测，不扩认此前独审7cases为本轮。待主线程独立复审与正常原PR新CI，旧checked与新#676未勾保持。
 
 PR696分页fixture接续独立复审PASS：未参与实现的pc695 reviewer完成15项结构/实际Git前像/物理绑定/档案/主题/任务状态检查，26当前绑定与97档案一致，旧8f63整包及24旧after/全部before保全，未改产品/工作流/耗时，保原全部AC与In Progress。评审凭据已归档docs/evidence/release-picker-controls-ci-repair-1116/review696-independent.json；裸log被既有*.log忽略，5份原日志用base64 .log.json原字节封装，manifest按实际LF待提交字节记录。原2/2与5/5测试仅复用本轮日志未重跑；新SHA CI及正式候选/设备/ready/容量仍待验。
+
+PC08 Release36最小产品70664a69/证据e7fa已选择性组合至74a598；共享最终选角四态旗帜，保留旧命令、触点和焦点许可。11定向与独立对抗probe通过，PC04+PC08组合5/5通过；565cb735来源接续有独立复审，21项代码/合同加1项可执行证据逐blob核对。PC08像素/正式ready/PC手机与容量未验；PC19仅已有bcca切片的controlled golden_wing option3 leave held Continue已验证可复用，golden_idol双步无heldfooter，不代表私图05或所有事件已修。仍In Progress，不勾新AC。
+
+#692已实际合入Release1cc，PC04/08旧9b703分支保留history合流；代码eafcaeee/绑定80e1d3ec新base独立增审通过。352生产Git等价、26CI before/after+10bootstrap/96档案保全，产品8路径/旧production producer原样。原合流6pass3CI fail完整保留，来源10/10与两侧raw2/2通过，当前23代码/合同输入及原1可执行证据逐blob追踪。官方像素、PC04批准HUD backing位置、新ready/PC手机/容量及当前Hosted Full仍未验，不因#692合入勾AC。
 <!-- SECTION:NOTES:END -->

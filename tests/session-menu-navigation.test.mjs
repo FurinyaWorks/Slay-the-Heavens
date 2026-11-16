@@ -11,7 +11,7 @@ import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
 // Read the exact old menu corpus only after authenticating live current owners.
-// The picker source contract separately validates the complete current tree.
+// The picker controls source contract separately validates the complete current tree.
 const pickerCurrentRead=p=>readFileSync(p,'utf8');
 const pickerHistoricalRead=p=>sourceEpoch.preCombinedSource(p,pickerCurrentRead(p),{target:'releasePickerControlsPrior',readSource:pickerCurrentRead});
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{

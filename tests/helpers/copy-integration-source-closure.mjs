@@ -27,7 +27,16 @@ export const releasePickerControlsHelperCopies=[
  {path:'tests/helpers/release-picker-controls-source.mjs',before:null,after:'50a07ccd4a23a9c638716da314aef74588a6b3583280e655cefa25c883571cdf'},
  {path:'tests/helpers/release-picker-controls-source.json.gz',before:null,after:'8846606fcc1f08c98923d51c6a23f58820f9ee74b95c64d018584dd02a808ba4'}
 ];
-for(const row of releasePickerControlsHelperCopies){assert.equal(files[row.path]??null,row.before,'exact release picker controls helper-copy predecessor: '+row.path);files[row.path]=row.after;}
+export const releaseSelectionMapHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
+ {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
+ {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
+];
+for(const rows of [releasePickerControlsHelperCopies,releaseSelectionMapHelperCopies])for(const row of rows){
+ assert.equal(files[row.path]??null,row.before,'exact standalone Release helper-copy predecessor: '+row.path);
+ if(row.path!=='tests/helpers/closeout-source-epoch.mjs')files[row.path]=row.after;
+}
+files['tests/helpers/closeout-source-epoch.mjs']='b689e51ded133201f1b70a755816ede3266df12e3a1f8b8f1c67205981ed1d70';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
