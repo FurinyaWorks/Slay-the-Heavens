@@ -15,14 +15,19 @@ test('successor reproduction uses authenticated predecessor bytes in a shallow c
   import fs from 'node:fs';
   import {syncBuiltinESMExports} from 'node:module';
   import {dependencyCiProof as patch} from './tests/helpers/dependency-ci-source.mjs';
+  import {dependencyCiRepairRead,assertDependencyCiRepairCurrent} from './tests/helpers/dependency-ci-repair-source.mjs';
   const original=childProcess.execFileSync;
   const beforePaths=Object.entries(patch.files).filter(([,row])=>row.before).map(([path])=>path);
   const changedPaths=[...Object.keys(patch.files),...Object.keys(patch.binary)].sort();
   const reply=(text,options)=>options?.encoding?text:Buffer.from(text);
   let historicalReads=0;
   const read=fs.readFileSync;
+  // Reproduce the immutable 1b checkpoint through its complete authenticated
+  // successor view; do not regenerate that old packet from later fixture bytes.
+  assertDependencyCiRepairCurrent(read);
+  const historicalRead=dependencyCiRepairRead(read);
   fs.readFileSync=(file,options)=>{
-   const value=read(file,options);
+   const value=historicalRead(file,options);
    if(process.env.ABYSS_SOURCE_TEST_EOL!=='crlf'||!String(file).endsWith('.mjs'))return value;
    const text=(typeof value==='string'?value:value.toString('utf8')).replace(/\r?\n/g,'\r\n');
    return typeof value==='string'?text:Buffer.from(text);
@@ -32,7 +37,8 @@ test('successor reproduction uses authenticated predecessor bytes in a shallow c
    if(args.some(arg=>String(arg).includes('158c492a')))
     throw Error('retired side-branch object unavailable');
    // Only historical Git input is substituted from the authenticated packet.
-   // The generator still reads every current file, closure and inventory itself.
+   // The generator reads every retained checkpoint file, closure and inventory
+   // itself; each later current-to-checkpoint conversion is freshly authenticated.
    if(args[0]==='rev-parse') {
     assert.equal(args[1],patch.baseCommit.slice(0,8)+'^{commit}');
     return reply(patch.baseCommit+'\n',options);

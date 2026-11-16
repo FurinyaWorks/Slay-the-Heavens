@@ -1,5 +1,6 @@
 import test from 'node:test';
-import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
+import {integratedSource,integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
+import {dependencyCiRepairPacket,dependencyCiRepairSource,dependencyCiRepairRead,assertDependencyCiRepairCurrent} from './helpers/dependency-ci-repair-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
@@ -8,9 +9,14 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
  feedbackHash,feedbackProductionPaths,feedbackCiPaths,feedbackHelperPaths,feedbackClosurePaths,feedbackAddedTests,
  feedbackPriorCiSha,feedbackPriorClosureSha,renderFeedbackCiBinding} from './helpers/sts-feedback-source-runtime.mjs';
 import {gunzipSync} from 'node:zlib';
-import {readFileSync,readdirSync} from 'node:fs';
+import {readFileSync,readdirSync,writeFileSync,unlinkSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
+const mutateCurrentInput=changed=>(path,encoding)=>{
+ const raw=readFileSync(path,encoding);
+ if(path!==changed)return raw;
+ return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+};
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
  const config='config/architecture.json',one='src/lua/one.lua',two='src/lua/two.lua',added='src/lua/abyss_page_reveal.lua';
@@ -22,6 +28,45 @@ function fixture(){
   owners:[added,one].sort(),current:{[one]:bind('return 10\n'),[added]:bind('return 30\n')},before:{[one]:current[one],[added]:null}};
  return {config,one,two,added,original,outer};
 }
+
+test('dependency CI reader repair requires fresh complete authorization before every historical conversion',()=>{
+ assertDependencyCiRepairCurrent();
+ const packet=dependencyCiRepairPacket,anchor=Object.keys(packet.files)[0],current=readFileSync(anchor,'utf8'),prior=packet.files[anchor].before.source;
+ let broken=null,mode=null,observedBroken=0;
+ const raw=(path,encoding)=>{
+  if(path===broken){observedBroken++;if(mode==='missing')throw Error('missing '+path);if(mode==='null')return null;const b=readFileSync(path,encoding);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);}
+  return readFileSync(path,encoding);
+ };
+ const warm=dependencyCiRepairRead(raw),publicWarm=integratedRead('sts',{read:raw});
+ const publicBefore=integratedRead('sts')(anchor,'utf8');
+ assert.equal(warm(anchor,'utf8'),prior);assert.equal(publicWarm(anchor,'utf8'),publicBefore);
+ const inventory=discoverJs(),oldInventory=integratedCiProof.inventories.sts.js;
+ assert.deepEqual(integratedPriorInventory(inventory,'sts','js',raw),oldInventory);
+ for(const path of [Object.keys(packet.files).find(p=>p!==anchor),Object.keys(packet.archives)[0],'tests/helpers/dependency-ci-repair-source.json.gz',Object.keys(packet.production)[0]])for(const failure of ['missing','null','drift']){
+  broken=path;mode=failure;
+  assert.throws(()=>warm(anchor,'utf8'),'same reader rejects warm '+path+'/'+failure);
+  observedBroken=0;assert.throws(()=>publicWarm(anchor,'utf8'),'public same reader rejects warm '+path+'/'+failure);
+  assert(observedBroken>0,'public reader must reach the same failing raw input before refusing replay');
+  assert.throws(()=>dependencyCiRepairSource(anchor,current,{read:raw}),'source API rejects warm '+path+'/'+failure);
+  assert.throws(()=>integratedSource(anchor,current,'sts',{read:raw}),'public source forwards the same raw reader');
+  assert.throws(()=>integratedPriorInventory(inventory,'sts','js',raw),'raw inventory conversion reauthenticates complete inputs');
+  assert.deepEqual(integratedPriorInventory(oldInventory,'sts','js',raw),oldInventory,'already historical inventory stays opaque');
+  assert.equal(dependencyCiRepairSource(anchor,prior,{read:raw}),prior,'historical source stays opaque');
+  assert.equal(dependencyCiRepairSource('foreign/path',current,{read:raw}),current,'unknown source stays opaque');
+  broken=null;assert.equal(warm(anchor,'utf8'),prior,'restored complete inputs authorize again');assert.equal(publicWarm(anchor,'utf8'),publicBefore);
+ }
+ for(const [path,row]of Object.entries(packet.files)){
+  assert.equal(dependencyCiRepairSource(path,readFileSync(path,'utf8')),row.before.source,path);
+  for(const source of [row.current.source+'\n',null,{},17])assert.equal(dependencyCiRepairSource(path,source),source);
+ }
+ const extra='tests/.dependency-reader-inventory-probe.test.mjs';let created=false;
+ try{
+  writeFileSync(extra,'// Complete inventory negative control.\n',{flag:'wx'});created=true;
+  assert.throws(()=>publicWarm(anchor,'utf8'),/dependency repair JS inventory/,'a new unregistered raw input cannot borrow warm authorization');
+  assert.throws(()=>dependencyCiRepairSource(anchor,current,{read:raw}),/dependency repair JS inventory/);
+ }finally{if(created)unlinkSync(extra);}
+ assert.equal(publicWarm(anchor,'utf8'),publicBefore,'restored discovery authorizes again');
+});
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
@@ -108,10 +153,10 @@ test('real style CI admits only full inventory, complete source and freshly veri
   'scripts/check-license.mjs','tests/ci-reviewed-lfs.test.mjs','.gitattributes','config/ci-media-lfs.json','docs/legal/assets.json',
   'docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs']){
   assert(p.files[path]?.after,'exact CI/storage execution witness: '+path);
-  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete StS CI source/,path);
+  assert.throws(()=>assertStsStyleCiCurrent(files,mutateCurrentInput(path)),/fresh complete StS CI source/,path);
  }
  assert.equal(p.files['docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs'].before,null,'new verifier cannot invent a historical source');
- for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:StS helper|complete StS CI) source/,path);
+ for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,mutateCurrentInput(path)),/fresh (?:StS helper|complete StS CI) source/,path);
  for(const changed of [files.slice(1),[...files,files[0]],[...files,'tests/foreign.test.mjs']])assert.throws(()=>assertStsStyleCiCurrent(changed),/inventory/);
  for(const path of p.addedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined,'new style regression cannot acquire a historical hosted observation');
@@ -213,7 +258,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),mutateCurrentInput(path)),/fresh (?:complete StS CI|StS helper) source/,path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }
