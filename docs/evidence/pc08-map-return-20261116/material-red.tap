@@ -1,0 +1,27 @@
+✖ official map return reuses final character cancel material in every state, retaining its input and caption (364.1379ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 483.4204
+
+✖ failing tests:
+
+test at tests\official-map-return-controls.test.mjs:9:1
+✖ official map return reuses final character cancel material in every state, retaining its input and caption (364.1379ms)
+  AssertionError [ERR_ASSERTION]: PC08: map return has no shared four-state face
+      at TestContext.<anonymous> (file:///F:/New%20folder/.worktrees/release-pc-map-return-1116/tests/official-map-return-controls.test.mjs:16:35)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

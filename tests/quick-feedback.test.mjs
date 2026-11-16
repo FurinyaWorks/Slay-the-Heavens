@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import {releaseBootstrapWorkflowBefore} from './helpers/release-bootstrap-ci-source.mjs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -281,7 +282,9 @@ test('local and CI advisory plans select the same real Lua feedback', () => {
 test('quick workflow is independent, read-only, exact-revision and cancels only superseded PR feedback', () => {
   const workflow = readFileSync('.github/workflows/quick-feedback.yml', 'utf8').replaceAll('\r\n', '\n');
   assert.match(workflow, /workflow_dispatch:/);
-  assert.match(workflow, /  pull_request:\n    branches: \[develop\]/);
+  assert.match(workflow, /  pull_request:\n    branches: \[develop, 'release\/\*\*'\]/);
+  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',workflow);
+  assert.match(historical, /  pull_request:\n    branches: \[develop\]/);
   assert.match(workflow, /permissions:\n  contents: read/);
   assert.match(workflow, /group: quick-feedback-\$\{\{ github.ref \}\}\n  cancel-in-progress: true/);
   assert.match(workflow, /ref: \$\{\{ github.sha \}\}/);
