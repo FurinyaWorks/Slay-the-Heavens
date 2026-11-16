@@ -1,0 +1,25 @@
+{
+  "reviewId": "/root/review_split684_final:5fe72de4:20261116",
+  "reviewedHeadSha": "5fe72de406f42ebbf406ac386d4c03a3a903373b",
+  "reviewedBaseSha": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "conclusion": "pass",
+  "unresolved": [],
+  "prNumber": 684,
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "scope": "Independent incremental review 6c45778c to 5fe72de4; retains existing PR684 underlying product review",
+  "evidence": [
+    "Reviewed exact production extraction: original copy and EnemySetup Copy are the same abyss_copy.copy; split positions preserve explicit deep copies, fallback x +/-134 and y, construction/death/event/RNG order. No new core module, threshold, architecture config, timing or workflow change.",
+    "Reviewed added absent/zero/nonzero-origin and deep-copy assertions, retained original acid/spike assertions and existing discovery entry.",
+    "Reviewed saved original ratchet RED and final GREEN: combat2295 lines, splitEnemyCC13, setup203/helperCC5; no baseline relaxation. Reviewed author paired18 scenarios/3 negative controls and original fixture logs, plus independent layout-check log 1/1 0skip at aa387 with unchanged product/source final blobs.",
+    "Fresh independent direct Node verification PASS: all352 current production bindings equal physical disk,120 owners; assertReleaseMergeCurrent raw guard and assertReleasePcCiCurrent through its declared slicePrior reader PASS.",
+    "Fresh independent56-entry evidence archive manifest hash/size verification PASS, including expanded gzip source hashes; retained old CI packets and historical readers, all120 live owner checks and stale119-owner negatives remain.",
+    "Source packet current producer53e and actual source changes combat/setup match committed incremental diff; old119-owner target retained, new owner setup added; no generic projector mutation.",
+    "Coordinator supplied exact final cold depth1 Git fetch evidence .artifacts/pr684-cold-5fe72de4.json:130958408<134217728; no duplicate cold or Full run."
+  ],
+  "limitations": [
+    "No Full rerun, Hosted pass, official import/ready, capacity or device acceptance granted.",
+    "Independent review probe initially used wrong export then wrong direct historical reader and attempted gzip on raw manifest entry; corrected API/manifest use produced final PASS without source edits.",
+    "This review does not replace original PR684 product review or new exactHEAD Required CI."
+  ],
+  "reviewer": "/root/review_split684_final"
+}

@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/review_potion_post697:pr694-post697:e259ca49:20261116",
+  "reviewer": "/root/review_potion_post697 independent reviewer; not this PR author or original694 reviewer",
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "prNumber": 694,
+  "reviewedHeadSha": "e259ca49be9d2e3b3526a5efa762814ef96df1c9",
+  "reviewedBaseSha": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "conclusion": "pass",
+  "unresolved": [],
+  "scope": {
+    "kind": "Independent incremental review of hand-values and actual landed697 combination, complete source-history preservation and fresh authorization boundaries",
+    "authorWorktree": "F:/New folder/.worktrees/goal-v2-hand-post697-1116",
+    "original694Head": "4ace45fedbce5fb0507f793bca0e7b5c8992e061",
+    "productCheckpoint": "d956df3e8b429ad4d4042d9489108000fb9b327b",
+    "productParents": [
+      "4ace45fedbce5fb0507f793bca0e7b5c8992e061",
+      "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9"
+    ],
+    "appendOnlyChain": [
+      "d956df3e8b429ad4d4042d9489108000fb9b327b",
+      "ef0148827cbc32103fd0463cb378f3c3c38e609c",
+      "e259ca49be9d2e3b3526a5efa762814ef96df1c9"
+    ],
+    "retainedReviewChain": [
+      ".artifacts/pr694-final-review.json",
+      ".worktrees/review-hand-layout-v2-1116/build/review-hand/independent-review.json",
+      ".worktrees/review-hand-merge-prep-v2-1116/build/review-hand-prep/independent-review.json",
+      ".worktrees/review-hand-merge-prep-v2-1116/build/review-hand-pr/independent-review.json"
+    ],
+    "retainedProductEvidence": "Read original da455 product review, fab33 source preparation and12f integration review, then4ace final R694-1 review. Original8product files including TASK4.21 and HAND document independently equal originalda455/4ace Git; Map2 runtime independently equals actual33d Git. Original product matrix not rerun."
+  },
+  "findings": [],
+  "reviewedRepairs": [
+    {
+      "id": "R694-1-preservation",
+      "disposition": "preserved",
+      "evidence": "Fresh current-to-history Source/Read/Inventory and public integrated Source/Read use same injected raw reader, reject warm cross-input missing/null/drift, restore successfully, and preserve opaque inputs. Original mobileHand Source/Read/Inventory also independently reject cross-input current Map missing/null/drift when entered through explicit authenticated hand domain."
+    },
+    {
+      "id": "StS-current-raw-negative",
+      "disposition": "verified",
+      "evidence": "Final StS code first checks actual current880JS/1425Lua, injects missing/null/drift through actual readFileSync for added paths of both domains before handPost697PriorInventory, then retains complete historical Hand/Release inventories and their original negative checks. Author exact targeted9/9 includes this strengthened case."
+    },
+    {
+      "id": "producer-and-history-preservation",
+      "disposition": "verified",
+      "evidence": "Exact original4ace and33d closeout Git source executed in memory with byte-checked unchanged production dependencies. Both full proof objects equal respective explicit legacy epochs. Every65hand and65Map target deep-equals corresponding current68 target; original hand and Map producer fields present at current top level. Three actual producer commits, parents and source bytes verified."
+    }
+  ],
+  "freshIndependentChecks": [
+    {
+      "kind": "finalGitProductionBindingsArchivesTargetsProducersReceipts",
+      "result": "PASS",
+      "node": "v24.18.0",
+      "elapsedSeconds": 8.7295,
+      "exactGitObjectsCompared": 1115,
+      "completeProductionCurrent": 352,
+      "currentOwners": 116,
+      "originalHandOwners": 116,
+      "originalMapOwners": 116,
+      "completeOriginalProofsEqualExactGitExecution": true,
+      "originalTargets": {
+        "hand": 65,
+        "map": 65
+      },
+      "currentTargets": 68,
+      "allOriginalTargetsPreservedByDeepEquality": true,
+      "realProducersVerified": 3,
+      "currentCiBindings": 28,
+      "immutableArchives": 100,
+      "unchangedOldArchiveGitOrLfsIdentities": 99,
+      "currentRaw": {
+        "js": 880,
+        "lua": 1425
+      },
+      "originalEightProductPathsPreserved": true,
+      "actualMapRuntimePathsPreserved": 2,
+      "handoffPreserved": true,
+      "newTrackedGzipReceiptRows": 32,
+      "allNewStoredAndRawShaAndSizeVerifiedFromFinalGit": true,
+      "allFourHydratedDirtyPathsEqualFinalLfsOidAndSize": true,
+      "originalReceiptInfoSymbolLinesPreserved": true,
+      "ancestorAndDiffChecks": true
+    },
+    {
+      "kind": "boundedSameReaderWarmFaultInjection",
+      "result": "PASS",
+      "rejectedFaults": 87,
+      "successfulRecoveries": 87,
+      "currentCiEntryFaults": 72,
+      "originalR6941EntryFaults": 9,
+      "actualCurrentProductionOwnerFaults": 6,
+      "completeCiBindingsObservedOnBufferReplay": 128,
+      "targets": [
+        "hand",
+        "release"
+      ],
+      "faults": [
+        "missing",
+        "null",
+        "drift"
+      ],
+      "covered": [
+        "historicalRead",
+        "public Source",
+        "actual-current PriorInventory",
+        "public integratedRead",
+        "public integratedSource",
+        "original mobileHandCiSource",
+        "original mobileHandCiRead",
+        "original mobileHandPriorInventory",
+        "actual current production owner guard"
+      ],
+      "sameRawReaderForwarded": true,
+      "noAuthorizationCacheObserved": true,
+      "unknownAlreadyHistoricalAndBinaryRemainOpaque": true
+    },
+    {
+      "kind": "boundedProbeDiagnostic",
+      "description": "An initial reviewer exploratory probe incorrectly expected a production projector to authenticate a CI archive. That expectation was removed: production checks116owners, CI checks28bindings+100archives. Corrected separate-scope87fault probe above passed; no product code change was requested for that reviewer expectation."
+    }
+  ],
+  "authorEvidenceReadAndReused": [
+    {
+      "path": "docs/evidence/hand-post697-20261116/live-first.log.gz",
+      "result": "5 passed,0failed,0skipped",
+      "durationMs": 50190.4822,
+      "scope": "Actual filesystem current/live/raw consumers after recorded RED5; no old fixture substituted."
+    },
+    {
+      "path": "docs/evidence/hand-post697-20261116/union-first.log.gz",
+      "scope": "Recorded first run contains7successful new union authorization/production/raw cases plus retained successes and2actual failures. Not claimed whole-runPASS. Those two failures were repaired and targeted below; already-green matrices not repeated."
+    },
+    {
+      "path": "docs/evidence/hand-post697-20261116/consumers-second.log.gz",
+      "result": "9 passed,0failed,0skipped",
+      "durationMs": 16780.3045,
+      "scope": "Retains old hand full inventories and negatives, corrected Map historical imports, complete legacy/copy boundaries, strengthened real raw StS differences."
+    },
+    {
+      "path": "docs/evidence/hand-post697-20261116/production-final.log.gz",
+      "result": "1 passed,0failed",
+      "durationMs": 7616.6856,
+      "scope": "Only affected complete-production contract rerun after explicit current hand producer preservation."
+    },
+    {
+      "path": "docs/evidence/hand-post697-20261116/gameui-second.log.gz",
+      "result": "1 passed,0failed",
+      "caseDurationMs": 4440.5806,
+      "timeoutMs": 30000,
+      "scope": "Read actual generated official Host test and map-hand Lua: existing current battle gesture fixture and real current hand private calculation, UI Menu/readonlyMap/previewBack, geometry/origin coordinates retained,106calls/temporary0, same Run/battle/map identities, full Run/RNG equal excluding documented real elapsedSeconds. Offline Host proof only."
+    },
+    {
+      "path": "docs/evidence/hand-post697-20261116/archive-manifest.json",
+      "scope": "All32rows independently checked against exact finalGit stored gzip bytes and decoded original raw SHA256/length; includes collectors/scripts, REDs, GREENs and audit evidence."
+    }
+  ],
+  "historicalReceiptBoundary": {
+    "path": "docs/evidence/hand-values-actual-release-20261116/archive-manifest.json",
+    "verifiedRows": 12,
+    "exactGitRows": 11,
+    "crlfMaterializationRow": "capture.json",
+    "description": "Historical capture.json manifest records674CRLF bytes while its Git blob is650LF bytes. LF-to-CRLF reconstructs the exact recorded old hash/size; old identities were not rewritten. This limitation is explicit in new attachment. All32new evidence rows are gzip and independently exactGit/raw verified."
+  },
+  "packetIdentity": {
+    "bytes": 228592,
+    "sha256": "75b1a74f0e50a72b5e071f58263f5cef1d650040fd8cd3de155abccf2759b0c4",
+    "currentTreeCommitted": false,
+    "productCommit": "d956df3e8b429ad4d4042d9489108000fb9b327b"
+  },
+  "limits": [
+    "PASS is source-review conclusion for exact e259HEAD and actual33dBASE, not RequiredCI/preflight/auto-merge/actual merge admission.",
+    "No original243-formula/300-frame/cache/reentry product matrix, Full/check or existing full authorization matrix repeated. Traceable authored evidence reused only after code and source identity review; independent checks above were newly executed.",
+    "No push, PR mutation, Ready, auto-merge, merge, GUI/input, GIL, release or Tag action; no author-tree edit. Only this review JSON was written under root.artifacts.",
+    "Four marked-dirty localLFS inputs independently match finalHEAD exactOID/size and are hydration inputs, not new product work.",
+    "Original Task4.21/owner/mobileAC and HANDOFF preserve original blobs; no phone/FPS/GC/loading/root-cause acceptance claimed.",
+    "Generated official Host tests are offline evidence; no official import/ready/capacity or real device acceptance.",
+    "Local bounded durations and forecast/physical guard checks do not establish full-file, Hosted-shard or overall execution cost; existing gates remain authoritative."
+  ]
+}

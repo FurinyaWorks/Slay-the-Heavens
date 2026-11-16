@@ -1,0 +1,23 @@
+{
+  "currentOwners": 117,
+  "legacy697Owners": 116,
+  "date": "2026-11-16T06:05:07.5125072Z",
+  "head": "d0de2f65454c307f7048bcceac86400dbb40fb35",
+  "rawJS": 880,
+  "sourceBindings": 30,
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "sourceTargetsPassed": 19,
+  "coldPackBytes": 128548193,
+  "archives": 98,
+  "act2Wrapper": "original and patch 30s timed out; not verified",
+  "next": "Normal ready/synchronize CI only; no rerun or watching. Actual merge and Act2/official/device acceptance remain unverified.",
+  "limit": 134217728,
+  "status": "OPEN_READY_AUTO_MERGE_SQUASH",
+  "review": ".artifacts/pr687-post697-review.json",
+  "pr": 687,
+  "actualGeneratedHostCasesPassed": 1,
+  "rawLua": 1424,
+  "actualMergesInGoal": 1,
+  "remoteHeadBefore": "f448a9df48054f49af792312cd866c03b53b0197",
+  "authorization": ".artifacts/pr687-auto-readback.json"
+}

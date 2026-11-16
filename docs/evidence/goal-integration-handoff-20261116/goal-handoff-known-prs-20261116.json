@@ -1,0 +1,76 @@
+[
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "68a17f53dd4e8ebd72f6dc146ddc1652eb8b8cdd",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 699,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "2c06753de6f96ab6908ebe30d8e4a216d1ebbe60",
+    "mergeCommit": {
+      "oid": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9"
+    },
+    "mergedAt": "2026-11-16T03:47:03Z",
+    "number": 697,
+    "state": "MERGED"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "e259ca49be9d2e3b3526a5efa762814ef96df1c9",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 694,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "4d40bdac703c80e51054d551f1512ff02fc0adbc",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 688,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "d0de2f65454c307f7048bcceac86400dbb40fb35",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 687,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "5fe72de406f42ebbf406ac386d4c03a3a903373b",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 684,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "develop",
+    "headRefOid": "1996e65c5647750bc9d907be6562909135e08e3d",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 682,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "ad3a53cb3eb87fbad4ae015d11ea870deb6d5db1",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 680,
+    "state": "OPEN"
+  },
+  {
+    "baseRefName": "release/v2.0.0",
+    "headRefOid": "10cfd7ac965c6aa2f640cdfac35c1149ac42c5c0",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 679,
+    "state": "OPEN"
+  }
+]

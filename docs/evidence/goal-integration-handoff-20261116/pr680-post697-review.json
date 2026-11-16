@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/review_shop_post697:pr680:ad3a53cb:20261116",
+  "reviewer": "/root/review_shop_post697 independent read-only reviewer",
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "prNumber": 680,
+  "reviewedHeadSha": "ad3a53cb3eb87fbad4ae015d11ea870deb6d5db1",
+  "reviewedBaseSha": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "conclusion": "pass",
+  "unresolved": [],
+  "scope": {
+    "kind": "Independent source, provenance, fresh authentication and offline product composition review against actual landed PR697",
+    "authorWorktree": "F:/New folder/.worktrees/goal-v2-shop-post697-1116",
+    "productCheckpointSha": "5e2375f03a9a80d2abc8420ab7a401e89d525add",
+    "priorShopHeadSha": "d9cc12bfc0e620847afa10c7e5c515d748b8ccc3",
+    "productParents": ["d9cc12bfc0e620847afa10c7e5c515d748b8ccc3", "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9"],
+    "finalHeadParent": "5e2375f03a9a80d2abc8420ab7a401e89d525add",
+    "retainedShopInputs": ["src/lua/abyss_node_ui_input.lua", "src/lua/abyss_shop_selection.lua", "scripts/node-ui-layout.mjs", "tests/lua/shop_dismiss.lua", "tests/node-ui-layout.test.mjs", "tests/shop-dismiss.test.mjs", "docs/backlog-details/TASK-38.6-SHOP-DISMISS-20261115.md"],
+    "retainedMapInputs": ["src/lua/abyss_game_ui_input.lua", "src/lua/abyss_game_ui_view.lua"],
+    "preservedInputFinding": "All seven Shop inputs equal actual d9 Git blobs; both Map runtimes equal actual 33d blobs. The product merge has exactly d9 and 33d parents. No PR679 product entered this composition. Final metadata is the single child of that product checkpoint. .github and config have no differences against actual 33d.",
+    "priorReviewProvenance": "Original reviewer worktree F:/New folder/.worktrees/review-mobile-shop-v2-1115 is frozen at d9. Neither it nor review-mobile-shop-1115 contains a Shop machine-readable review receipt under .artifacts. No prior receipt is claimed verified. This receipt is a new independent source review, including direct source inspection and original behavioral evidence inspection."
+  },
+  "independentEvidence": [
+    {
+      "kind": "fresh Git object, source binding and provenance audit",
+      "result": "PASS",
+      "nodeVersion": "v24.18.0",
+      "gitObjectComparisonRows": 1106,
+      "productionCurrent": 352,
+      "actualReleasePrior": 352,
+      "actualD9CompleteInput": 352,
+      "currentOwners": 118,
+      "legacy697Owners": 116,
+      "newOwners": ["src/lua/abyss_node_ui_input.lua", "src/lua/abyss_shop_selection.lua"],
+      "finalGitAndLiveCiBindings": 31,
+      "freshLiveArchives": 98,
+      "oldArchivesMatchingActualBaseGitBytesOrLfsOidAndSize": 97,
+      "rawJs": 880,
+      "rawLua": 1424,
+      "architecture": "Both Shop files are existing ui modules, now new owners; no new module category or architecture change.",
+      "notes": "Actual old d9 input is independently compared with Git, not represented as an already-registered Shop epoch. The old 697 projector domain remains explicitly historical 116 owners, while real current118 is checked from filesystem. The one new production archive is correctly absent from actual 33d."
+    },
+    {
+      "kind": "independent small warm cross-input missing/null/drift and recovery probes",
+      "result": "PASS",
+      "faultAndRecoveryAssertions": 39,
+      "boundaries": ["release and shop HistoricalRead", "release and shop PriorInventory", "public integratedRead", "public integratedSource", "production shopPost697Release", "production shopBeforeMap"],
+      "notes": "Injected failures affect another live raw owner after successful warm access; every missing/null/drift is rejected and restored input succeeds. All public source/read/inventory current-to-prior conversions authenticate complete current declarations through the same caller raw reader. No authentication cache. Unknown, already historical, unchanged and unrelated binary bytes remain opaque. Existing internal Checked comparison is confined to the validator that first authenticates the complete same raw reader."
+    },
+    {
+      "kind": "final commit, evidence identity and encoding audit",
+      "result": "PASS",
+      "finalMetadataParentVerified": true,
+      "trackedCompressedLogIdentitiesVerified": 6,
+      "utf8TextPathsChecked": 27,
+      "originalNonAsciiTestLinesPreserved": true,
+      "diffCheck": "PASS actual 33d to final ad3",
+      "notes": "Every current CI binding equals final committed Git bytes. All six gzip logs decode to declared SHA256 and byte counts. Fatal UTF8 decoder and replacement-character checks pass. Every original non-ASCII line in the four existing modified tests is still present verbatim. Four pre-existing hydration-only dirty files remain outside commit."
+    },
+    {
+      "kind": "offline real generated official Host composition code and log review",
+      "result": "PASS",
+      "trackedEvidenceRoot": ".artifacts/shop-post697/",
+      "probe": "gameui-combo.test.mjs + map-shop.lua",
+      "log": "gameui-second.log",
+      "cases": 1,
+      "elapsedMs": 4624.1565,
+      "findings": "Real buildUI official-assets/nativePageLifecycle output and actual GameUI Host; reachable graph fixture then public map choose enters actual Shop. Public Menu to read-only Map and previewBack retain same Run/Map/flow. Original background tail cannot dismiss a fresh selection after return; fresh outside input closes only detail; fresh item inspection still works. Complete Run including RNG is compared unchanged. No fabricated nodeFlow or phase or gold; original 30s child guard retained. This is offline behavior evidence, not native engine or device evidence."
+    }
+  ],
+  "authorEvidenceReviewed": {
+    "trackedRoot": ".artifacts/shop-post697/",
+    "newAuthenticationMatrix": "union-final.log: 6/6 PASS, 73878.4959ms; complete 31 bindings/98 archives and all current118 production owners, LF/CRLF and warm rejection/recovery.",
+    "otherSourceTargets": "source-first.log.gz: 9 individual source/current/copy/live/raw targets PASS; the aggregate originally exited nonzero due to new test import typo and is not claimed wholly passing. Fixed six-case matrix is reported separately.",
+    "oldConsumerTargets": "integrated-live.log.gz: 3 targets PASS and one diagnostic-name assertion RED after the intended injected source rejection; integrated-live-green.log: exact failed target subsequently 1/1 PASS, 10338.5909ms. Only error matching was expanded, authentication unchanged.",
+    "productLegacy": "original-runtime-layout.log.gz: original unchanged Release inputs 14/14 with SHOP_DISMISS_PASS 12. Also inspected original green-complete-lifecycle.log and green-final-boundaries.log (14/14), official-final-runtime.log (12), and cancel-negative.log (expected assertion failure) at frozen mobile-shop-dismiss-1115 source tree. Preserved original matrix is not rerun or promoted to new device evidence.",
+    "sourceAudit": "audit.json / audit.mjs: author 1098 distinct Git objects, product checkpoint identity, 97 immutable old archive identities and nine preserved product/build/test/doc blobs.",
+    "technicalAttachment": "docs/backlog-details/TASK-38-SHOP-POST697-20261116.md"
+  },
+  "productSourceFindings": [
+    "shopDismiss is a non-focusable background layer below foreground item/footer input. It delegates only to existing selection cancel and never purchases or leaves.",
+    "Foreground ownership, anonymous Click ambiguity, multiple active touches, controller barriers, busy/presentationBusy, stale offer/selection identity and terminal Exit/EndDrag paths are retained. Hide/clear/repaint retire tokens and observed-pointer capability blocks late click-only fallback.",
+    "Selection/map files are orthogonal retained runtime blobs; real generated Host probe covers the newly combined lifecycle."
+  ],
+  "limitations": [
+    "Source/offline review PASS only. It grants no Hosted Quality or Full success, native auto-merge admission, actual merge, cleanup completion, release permission or device acceptance.",
+    "Hosted timing and complete shard budget remain unknown. No duplicate Full or 74s matrix was dispatched by this reviewer.",
+    "No GUI, input capture, official GIL import, ready/startup, native engine interaction, iPhone test or official capacity evidence was performed or inferred.",
+    "Root coordinator must re-read exact PR head/base, original required checks and actual target before admission; moving either SHA invalidates this pair.",
+    "No original d9 machine-readable receipt was found in the two supplied original reviewer trees; this is explicitly not represented as receipt reuse."
+  ]
+}

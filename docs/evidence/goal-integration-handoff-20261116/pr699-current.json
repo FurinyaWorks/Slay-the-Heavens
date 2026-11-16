@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-16T02:33:05.8100153Z",
+  "pr": 699,
+  "head": "68a17f53dd4e8ebd72f6dc146ddc1652eb8b8cdd",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "status": "OPEN_READY_AUTO_MERGE_SQUASH",
+  "review": ".artifacts/pr699-final-review.json",
+  "coldPackBytes": 132578816,
+  "limit": 134217728,
+  "lfsUploaded": {
+    "bytes": 1398580,
+    "oid": "b0db2ec18e50f8717791c374458f2f56684617836a765e6f525811b571a502c4"
+  },
+  "mergedThisTurn": 0,
+  "deletedBranchesThisTurn": 0,
+  "remoteBranches": 109,
+  "next": "New normal synchronize CI and actual merge unproven; no rerun.678 local6eb independent PASS but HOLD until679 actually merged."
+}

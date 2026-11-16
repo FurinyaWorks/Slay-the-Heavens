@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/review_shop_post697:pr687:d0de2f65:20261116",
+  "reviewer": "/root/review_shop_post697 independent read-only reviewer",
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "prNumber": 687,
+  "reviewedHeadSha": "d0de2f65454c307f7048bcceac86400dbb40fb35",
+  "reviewedBaseSha": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "conclusion": "pass",
+  "unresolved": [],
+  "scope": {
+    "kind": "Independent source, source identity, authentication and offline product composition review against actual landed PR697",
+    "authorWorktree": "F:/New folder/.worktrees/goal-v2-intent-post697-1116",
+    "productCheckpointSha": "38efba8119e3b812d530e32915907ef842bcafae",
+    "priorIntentHeadSha": "f448a9df48054f49af792312cd866c03b53b0197",
+    "productParents": ["f448a9df48054f49af792312cd866c03b53b0197", "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9"],
+    "metadataHeadSha": "b4179bbc0bdaa8a9c7f906b7acf114948455723e",
+    "metadataParentSha": "38efba8119e3b812d530e32915907ef842bcafae",
+    "finalHeadParent": "b4179bbc0bdaa8a9c7f906b7acf114948455723e",
+    "finalDelta": "Exactly two lossless original raw log gzip files and log-identities.json; all product, source authentication packets, helpers and tests remain identical to reviewed b417.",
+    "priorIndependentReview": "docs/evidence/intent-post697-20261116/original-independent-review.json",
+    "priorIndependentReviewPair": "f448a9df48054f49af792312cd866c03b53b0197 / 36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+    "retainedEvidence": "Original independent review and its six declared evidence files are committed losslessly, with explicit SHA256 and byte counts. Original reviewer tree review-mobile-intent-v2-1115 is also readable. No unmerged PR684 sleep implementation or other future product is included."
+  },
+  "resolvedFindings": [
+    {
+      "id": "R687-RAW-LOG-IDENTITY",
+      "description": "At b417, two readable GREEN logs were normalized from CRLF to LF by Git while their manifest declared original CRLF hashes and sizes. Content was equivalent but the original raw bytes lacked committed preservation.",
+      "resolution": "Final d0de commits both original raw logs losslessly as gzip, declares raw SHA/size, and separately identifies LF readable copies. Independently verified exact committed gzip expansion, original SHA/size and LF equivalence. No product, authentication or test changes and no repeated matrix."
+    }
+  ],
+  "independentEvidence": [
+    {
+      "kind": "final Git and live-source identity audit",
+      "result": "PASS",
+      "nodeVersion": "v24.18.0",
+      "distinctGitObjects": 1096,
+      "gitComparisonRows": 1104,
+      "productionCurrent": 352,
+      "actualReleasePrior": 352,
+      "actualIntentBeforeMap": 352,
+      "currentOwners": 117,
+      "legacy697Owners": 116,
+      "newOwners": ["src/lua/abyss_battle_intent_view.lua"],
+      "alreadyOwnedChangedRuntime": "src/lua/abyss_battle_render_actors.lua",
+      "finalGitAndLiveCiBindings": 30,
+      "freshLiveArchives": 98,
+      "oldArchivesMatchingActualBaseGitBytesOrLfsOidAndSize": 97,
+      "rawJs": 880,
+      "rawLua": 1424,
+      "retainedOriginalProductAndProducerInputs": 14,
+      "retainedMapRuntimeInputs": 2,
+      "packetSha256": "fac6548cf310122e0e40e236edd7a616fbab245e573219ca1ce66bb3c89462fc",
+      "findings": "Full current, actual33d and actualf448 production source maps are independently compared to real Git objects, not inherited registered-epoch claims. All current352 match filesystem. All seven original changed files plus seven oracle/cache/producer inputs equal f448 blobs. Both Map runtimes equal actual33d. .github and config remain unchanged against actual33d; both intent modules already have ui architecture classification. Historical697116 and real current117 remain separate."
+    },
+    {
+      "kind": "independent warm cross-input authentication faults and recovery",
+      "result": "PASS",
+      "faultAndRecoveryAssertions": 45,
+      "boundaries": ["release and intent CiSource", "release and intent HistoricalRead", "release and intent PriorInventory", "public integratedRead", "public integratedSource", "production intentPost697Release", "production intentBeforeMap"],
+      "findings": "After successful warm reads, missing/null/drift on another current owner intent_view is rejected at all listed current-to-prior boundaries, with restored raw inputs succeeding. Same caller raw reader is forwarded throughout. Complete current declarations are authenticated per invocation without authorization cache. Unknown binary/null values remain opaque. Existing Checked comparisons are confined to explicit complete validators. No blanket authentication is added to already-before/unchanged legacy branches. Packet remains identical at final head."
+    },
+    {
+      "kind": "independent original-review and final evidence preservation audit",
+      "result": "PASS",
+      "originalReviewFiles": 6,
+      "originalReceiptSha256": "47ec6a0986b2a7cd7593b4313557fd1e4f263bfd380970ea5f79b6804ba69954",
+      "originalBundleSha256": "52059bbbce06a0eb43790338d726165c40d422b8365932ace3d7c106648091a6",
+      "finalLosslessLogIdentitiesVerified": 4,
+      "metadataUtf8PathsChecked": 29,
+      "originalNonAsciiTestLinesPreserved": true,
+      "diffCheck": "PASS actual33d to final d0de",
+      "findings": "Original receipt matches committed bytes exactly; six decoded bundle files match original receipt hashes, declared byte sizes and original reviewer-tree bytes. Metadata text is valid UTF8 without replacement characters. Every original non-ASCII line in the four modified existing tests remains verbatim. Final evidence-only three-file delta checked independently."
+    }
+  ],
+  "sourceAndBehaviorReview": {
+    "product": "Directly reviewed both changed intent runtimes, renderer cache/lifetime integration and test-oracle migration. Only source DEFEND_BUFF receives pending buff metadata and secondary glyph. Original primary shield, attack tiers/value/hit geometry remain intact. Secondary follows source alpha, visibility permissions and native cache ownership; retired/replaced/ordinary-BUFF/hidden/Dome states cannot retain it. No AI selection, RNG, damage, strength, block or future-effect execution is changed.",
+    "originalIndependentMatrix": "Inspected original independent matrix source and preserved results: 130 pinned original source moves, exactly six DEFEND_BUFF cases, 120 unchanged frames, A/B/A bindings, rejected setters, hidden permission, ordinary BUFF retirement and dead native handle. Oracle uses pinned enum rather than tested face.badge. Both missing-secondary and leaked-other-enum negatives are genuine assertion failures. Original natural default/official Host 2/2 and existing cache ownership contracts 2/2 have matching preserved input blobs. These unchanged matrices were not repeated.",
+    "newSourceMatrix": ".artifacts/intent-post697/source-final.log.gz: author 19/19 PASS, 123066.3088ms. Includes complete new authentication matrix, all117 current owners, legacy116 domain, current source/copy/live/raw and old consumers. Reviewed exact lossless committed output; did not dispatch a duplicate run.",
+    "newProductComposition": ".artifacts/intent-post697/gameui-combo.test.mjs + map-intent.lua + gameui-final.log.gz: author one real generated official nativePageLifecycle Host case PASS, 7590.9452ms, unchanged 30s child guard. Natural Bellow selection uses actual core; public Menu/Map/previewBack preserves complete Run/RNG and same run/map/combat identity, leaves pending Bellow unexecuted, retains shield plus buff. Public C-tier endTurn then executes strength3/block6 exactly once and next attack has no residual badge. Probe and log inspected directly; this is offline behavior evidence.",
+    "technicalAttachment": "docs/backlog-details/TASK-4.4-INTENT-POST697-20261116.md"
+  },
+  "limitations": [
+    "Source and offline review PASS only. Hosted full-quality, strict Release admission, actual merge, cleanup, release permission and device acceptance remain separate.",
+    "Original Act2 intent wrapper timed out at unchanged 30s on both patch and original baseline. It was not repeated, diagnosed conclusively or claimed passing here. Exact Hosted checks remain necessary.",
+    "No duplicate Full, source long matrix, original130/6/120 or two-profile Host matrix was dispatched by this reviewer. Hosted total timing and shard budget remain unproven locally.",
+    "No GUI, GIL import, official ready/startup, native engine interaction, iPhone/current-device or official capacity validation was performed or inferred.",
+    "Root coordinator must re-read exact current PR head/base and original required checks before admission. This receipt is bound only to final d0de and actual33d."
+  ]
+}

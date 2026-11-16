@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/review_potion_post697:pr679:10cfd7ac:20261116",
+  "reviewer": "/root/review_potion_post697 independent read-only reviewer",
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "prNumber": 679,
+  "reviewedHeadSha": "10cfd7ac965c6aa2f640cdfac35c1149ac42c5c0",
+  "reviewedBaseSha": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "conclusion": "pass",
+  "unresolved": [],
+  "scope": {
+    "kind": "Independent incremental source, trust-boundary and product-composition review against actual landed PR697",
+    "authorWorktree": "F:/New folder/.worktrees/goal-v2-potion-post697-1116",
+    "productCheckpointSha": "a9df9dff11779cb1d850dc97b715c711881cf9c6",
+    "priorPotionHeadSha": "3e96a1589435f8b06645db095775a789f24b1350",
+    "productParents": [
+      "3e96a1589435f8b06645db095775a789f24b1350",
+      "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9"
+    ],
+    "finalHeadParent": "a9df9dff11779cb1d850dc97b715c711881cf9c6",
+    "retainedReviews": [
+      ".artifacts/review-pr679-3e96a158-independent-deep-20261116.json",
+      ".artifacts/pr679-3e96-independent-review.json"
+    ],
+    "retainedProductEvidence": "Exact three potion runtime blobs and previous R679-1/R679-2 deep review retained; exact two Map runtime blobs equal actual landed 33d. No duplicate old product matrix."
+  },
+  "resolvedFindings": [
+    {
+      "id": "R679-POST697-ENCODING",
+      "disposition": "resolved before final commit",
+      "description": "Intermediate metadata writer corrupted original receipt info-symbol log assertions. Final Git diff contains only intended wiring; every line containing original info symbol exactly matches 3e Git bytes. Author targeted original receipt parser passes 1/1; no corrupted intermediate was committed or treated as PASS."
+    }
+  ],
+  "independentEvidence": [
+    {
+      "kind": "fresh-final-Git-binding-producer-and-archive-audit",
+      "result": "PASS",
+      "nodeVersion": "v24.18.0",
+      "elapsedSeconds": 5.177,
+      "exactGitObjectsCompared": 1148,
+      "productionCurrent": 352,
+      "currentOwners": 117,
+      "legacy697Owners": 116,
+      "newOwners": [],
+      "allCurrentCiBindingsEqualFinalGit": 42,
+      "immutableArchives": 105,
+      "oldArchivesEqualOriginalGitBytesOrLfsOidAndSize": 104,
+      "rawJs": 880,
+      "rawLua": 1424,
+      "retainedPotionTargets": 67,
+      "allCurrentProductionEqualsFinalGitAndFilesystem": true,
+      "selectionLegacyCompleteProductionEqualsActual33dGit": true,
+      "allViewBindingsEqualTheirActualGitInputs": true,
+      "sourceProducerCommitsAndParentsVerified": true,
+      "finalFiveRuntimeBlobsEqualTheirRespectiveReviewedInputs": true,
+      "receiptInfoLinesExactlyEqualOriginalGit": true,
+      "fourHydratedDirtyPathsEqualFinalLfsOidAndSize": true,
+      "diffCheck": true,
+      "ancestorChecks": true
+    },
+    {
+      "kind": "fresh-independent-small-warm-cross-input-counterexamples",
+      "result": "PASS",
+      "elapsedSeconds": 4.372,
+      "rejectedMissingNullDriftCases": 72,
+      "successfulRecoveries": 72,
+      "coverage": [
+        "potion and selection explicit historical reader",
+        "public post697 Source",
+        "actual current to priorInventory",
+        "public integratedRead and integratedSource using same injected raw reader",
+        "both product input owners and an inherited archive",
+        "Buffer replay observing all 42 current bindings plus 105 archives",
+        "foreign, already-historical and unknown binary inputs retain raw behavior"
+      ],
+      "authorizationCacheObserved": false,
+      "all147DeclaredBindingsObservedOnBufferReplay": true
+    },
+    {
+      "kind": "checked-comparison-callsite-inspection",
+      "result": "PASS",
+      "description": "New checked helper is used only by priorCiCheckedSource at assertIntegratedCurrent complete validator after fresh same-raw outer authentication. Existing legacy before/binary functions are not retrofitted with whole-combination guards."
+    },
+    {
+      "kind": "retained-product-source-review",
+      "result": "PASS",
+      "description": "Reviewed exact prior deep-review closure for partial pointer tail barrier and targeting; final three potion blobs unchanged from 3e. Inspected new GameUI Map input/view diff, exact actual33d blobs and real generated Host probe code/log."
+    }
+  ],
+  "authorEvidenceReused": [
+    {
+      "path": ".worktrees/goal-v2-potion-post697-1116/.artifacts/potion-post697/final-corpus.log",
+      "result": "8 passed, 0 failed, 0 skipped",
+      "durationMs": 95410.5577,
+      "scope": "Final 42/105 corpus; complete warm missing/null/drift/recovery across Source/Read/Inventory; current real-FS117 owners LF/CRLF; two histories; complete raw discovery and legacy CI/copy boundaries. Earlier21-binding exploratory GREEN is not final evidence."
+    },
+    {
+      "path": ".worktrees/goal-v2-potion-post697-1116/.artifacts/potion-post697/gameui-combo-seventh.log",
+      "result": "1 passed, 0 failed",
+      "caseDurationMs": 6517.4866,
+      "timeoutMs": 30000,
+      "codePaths": [
+        ".artifacts/potion-post697/gameui-combo.test.mjs",
+        ".artifacts/potion-post697/map-potion.lua"
+      ],
+      "scope": "Actual generated official Host with native page lifecycle; lawful F.start seed61 and same initialized Run using public combat/reward APIs for natural Fire drop; real Use then openMenu, Map and previewBack UI listeners; complete Run/RNG unchanged, old tail zero consumption/damage, fresh potion/target exactly one consumption and20damage. Existing leave-battle aim cancellation preserved. Offline generated Host evidence only."
+    },
+    {
+      "path": ".worktrees/goal-v2-potion-post697-1116/.artifacts/potion-post697/receipt-utf8.log",
+      "result": "1 passed, 0 failed",
+      "scope": "Original receipt parser retained after UTF8 repair."
+    },
+    {
+      "path": ".worktrees/goal-v2-potion-post697-1116/docs/backlog-details/TASK-38-POTION-POST697-20261116.md",
+      "scope": "Technical scope, exact provenance, preserved diagnostic failures and unverified limits agree with reviewed source and logs. Author audit captured product checkpoint; independent audit above additionally bound all final metadata to finalHEAD."
+    }
+  ],
+  "limits": [
+    "PASS is independent source-review conclusion for exact reviewed HEAD and actual33d BASE, not Hosted CI/preflight/merge admission.",
+    "No push, Ready, auto-merge, merge, publication, tag, GUI/input operation, product-tree edit or author-tree write performed. This report is the only reviewer artifact written under root .artifacts.",
+    "No duplicate Full, old eleven-Lua/product matrix or full final95s corpus execution; reused traceable authored evidence after source review and independently ran bounded fresh Git/binding and72warm counterexamples.",
+    "No official import, real ready, capacity, PC game device or phone acceptance claimed. Generated Host is offline test evidence.",
+    "Whole-file, Hosted shard and overall combination execution cost remains unverified; original workflows, deadlines, concurrency, weights and admission gates remain authoritative.",
+    "Author worktree contains four hydrated LFS paths marked M; each independently verified exact finalHEAD OID/size. They are not new product changes and were not staged by reviewer."
+  ]
+}

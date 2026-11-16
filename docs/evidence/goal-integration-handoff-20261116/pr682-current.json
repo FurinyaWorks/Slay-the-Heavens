@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-16T03:40:44.2803914Z",
+  "pr": 682,
+  "adoptedHead": "1996e65c5647750bc9d907be6562909135e08e3d",
+  "base": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "status": "auto-merge-requested",
+  "review": ".artifacts/pr682-final-review.json",
+  "authorizationProof": "F:/New folder/.worktrees/goal-v2-potion-click-1116/build/delivery/auto-merge-682-1996e65c5647.json",
+  "localAlternativeRetained": "25f9ef3a5517abc326a4875980ea34ff8d82f6a0",
+  "alternativePushed": false,
+  "mergedThisTurn": 0,
+  "deletedBranchesThisTurn": 0,
+  "next": "Do not overlay local alternative on concurrent remote head. After actual merge event verify:delivery with saved proof.694 finalization active;678 HOLD until679 merge."
+}

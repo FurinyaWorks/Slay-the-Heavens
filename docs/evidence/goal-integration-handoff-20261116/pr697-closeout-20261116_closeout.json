@@ -1,0 +1,49 @@
+{
+  "pr": 697,
+  "state": "MERGED",
+  "mergedAt": "2026-11-16T03:47:03Z",
+  "base": "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+  "head": "2c06753de6f96ab6908ebe30d8e4a216d1ebbe60",
+  "squash": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "sourceTestedSquashTree": "22b2ad44dbf7fb6547e7cd8c75f49d3ab9ef2a33",
+  "tested": "9045391ed0fa9c297cb282a95767569068660f34",
+  "quality": {
+    "totalJobs": 38,
+    "success": 37,
+    "skipped": 1,
+    "run": 43762803303,
+    "attempt": 1,
+    "nonPassing": 0
+  },
+  "licensesRun": 43762803332,
+  "checkoutArtifactId": 14189524863,
+  "requiredContexts": [
+    "check",
+    "presentation",
+    "engineering-posix",
+    "inventory"
+  ],
+  "ruleset": {
+    "id": 27313515,
+    "enforcement": "active",
+    "bypassActors": []
+  },
+  "remoteBranchDeleted": true,
+  "localWorktreeRemoved": true,
+  "localBranchRemoved": true,
+  "removedOnlyIgnored": [
+    "node_modules dependencies",
+    "build/tools/luacheck/luacheck.exe reproducible tool"
+  ],
+  "recovery": {
+    "verified": true,
+    "bytes": 1473764,
+    "sha256": "0b4ea6a43c0ac536222ce53ce68de5a023c7b3fb4781f6af343fe2b309006185",
+    "prerequisites": [
+      "1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+      "36b9b157ee6f05b65eb9f1da7e2978647d36c210"
+    ],
+    "bundle": "F:\\New folder\\.artifacts\\pr697-closeout-20261116\\recovery.bundle"
+  },
+  "limits": "Source/required CI/integration verified; no official build, ready, device or release acceptance claimed"
+}

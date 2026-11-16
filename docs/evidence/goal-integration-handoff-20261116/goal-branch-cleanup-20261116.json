@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-16T01:30:30.0771076Z",
+  "deletedRemoteBranches": [
+    {
+      "sha": "551677b7966437e07a95fc3b08ef8747d48a1a10",
+      "retainedIn": "1d825a2e89a763738fa471268abf116a2b8d3f65",
+      "branch": "fix/mobile-potion-click-payload-1115"
+    },
+    {
+      "sha": "5d9384b784b1cebea9a7f4101e76b107ab540ea4",
+      "retainedIn": "1d825a2e89a763738fa471268abf116a2b8d3f65",
+      "branch": "fix/release-potion-bootstrap-v2-1116"
+    },
+    {
+      "sha": "213dcf501bbdd43707bfc3dc22cdbdaef510fe5e",
+      "retainedIn": "3eb212bd18e3af038f65ac67ed93049af70cc78e",
+      "branch": "fix/mobile-cottage-merge-prep-v2-1116"
+    },
+    {
+      "branch": "feat/item-semantic-icons",
+      "sha": "a27449ecef1f5e02034c22e677ed9f9a9bfe86aa",
+      "retainedIn": "1f7ce04c53189db8c39b59c797a45d57a2c7bac1"
+    },
+    {
+      "branch": "feat/release-pc-selection-map-return-1116",
+      "sha": "2c06753de6f96ab6908ebe30d8e4a216d1ebbe60",
+      "retainedIn": "697 actual squash33d + verified local recovery.bundle",
+      "automaticAfterMerge": true,
+      "localWorktreeAndBranchRemoved": true
+    }
+  ],
+  "preservation": "Exact ancestors of retained existing PR branches; all local refs/worktrees preserved; no open PR used deleted heads",
+  "mergedThisTurn": 0,
+  "remoteBranchCountAfter": 111,
+  "pendingRuns": [
+    43785482334,
+    43786264743
+  ]
+}

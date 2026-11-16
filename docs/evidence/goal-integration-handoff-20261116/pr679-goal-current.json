@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-16T05:08:44.6216593Z",
+  "pr": 679,
+  "head": "10cfd7ac965c6aa2f640cdfac35c1149ac42c5c0",
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "status": "OPEN_READY_AUTO_MERGE_SQUASH",
+  "review": ".artifacts/pr679-post697-review.json",
+  "coldPackBytes": 129395575,
+  "limit": 134217728,
+  "sourceBindings": 42,
+  "archives": 105,
+  "currentOwners": 117,
+  "legacy697Owners": 116,
+  "rawJS": 880,
+  "rawLua": 1424,
+  "actualMergesInGoal": 1,
+  "remoteBranchesLastRead": 111,
+  "next": "Normal synchronize CI; no rerun.678 HOLD until679 actual merge. Keep source/CI/official/device evidence separate."
+}

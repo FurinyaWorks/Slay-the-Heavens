@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "/root/review_shop_post697:pr688:4d40bdac:20261116",
+  "reviewer": "/root/review_shop_post697 independent read-only reviewer",
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "prNumber": 688,
+  "reviewedHeadSha": "4d40bdac703c80e51054d551f1512ff02fc0adbc",
+  "reviewedBaseSha": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "conclusion": "pass",
+  "unresolved": [],
+  "scope": {
+    "kind": "Independent source, provenance, authentication, original evidence and offline Map/geometry composition review",
+    "authorWorktree": "F:/New folder/.worktrees/goal-v2-enemy-post697-1116",
+    "productCheckpointSha": "bc106cce4f8fde5d1b0dec5ae9c0403cb5436a0c",
+    "priorEnemyHeadSha": "13a3c70046391cadee86ecffb57ded3450906687",
+    "productParents": ["13a3c70046391cadee86ecffb57ded3450906687", "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9"],
+    "finalHeadParent": "bc106cce4f8fde5d1b0dec5ae9c0403cb5436a0c",
+    "priorProductReview": "61bdf6c069f8e30e6aa3ff44d3ecddd25c159ee2 / 36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+    "priorActualReleaseReview": "13a3c70046391cadee86ecffb57ded3450906687 / 1cc5479b713edab6fd26db4e20f8eb22b7401cb2",
+    "originalReviewAndMetricsBundle": "docs/evidence/enemy-post697-20261116/original-review-and-metrics.json.gz",
+    "technicalAttachment": "docs/backlog-details/TASK-4.21-ENEMY-POST697-20261116.md",
+    "boundary": "No unmerged PR687 compound-intent or PR684 sleep product is included. Original three enemy runtimes, metrics JS/Lua and isolated producer are retained by Git identity; actual Map runtimes are retained from33d. No repeated original product matrix."
+  },
+  "resolvedReviewPoints": [
+    {
+      "id": "R688-POST697-RAW-CURRENT",
+      "result": "Resolved before final freeze",
+      "description": "Original enemy877 and Map879 discovery contracts are explicitly historical. New current880JS/1424Lua gate checks full physical discovery, missing/duplicate/foreign negatives, original unknown costs and physical execution guards. Actual Map879 tail contract is also preserved in its complete explicit legacy domain."
+    },
+    {
+      "id": "R688-POST697-LEGACY-DIAGNOSTICS",
+      "result": "Resolved before final freeze",
+      "description": "Two original negative cases correctly rejected injected input at an earlier complete authentication gate, while predicates expected only added-path messages. Final changes accept the specific complete gate, retain intended non-null fault-path assertions, and keep original injections and counts. Only those two targets were rerun. Production and authentication logic were unchanged."
+    }
+  ],
+  "independentEvidence": [
+    {
+      "kind": "fresh final Git/source/target/producer audit",
+      "result": "PASS",
+      "nodeVersion": "v24.18.0",
+      "distinctGitObjects": 1092,
+      "gitComparisonRows": 1102,
+      "realNullCiPredecessorsCheckedAgainstGitTrees": 14,
+      "productionCurrent": 352,
+      "actualEnemyInput": 352,
+      "actualSelectionInput": 352,
+      "currentOwners": 117,
+      "legacyEnemyOwners": 117,
+      "legacyMapOwners": 116,
+      "newOwnersFromEnemy": [],
+      "newOwnersFromActualRelease": ["src/lua/abyss_battle_targeting.lua"],
+      "unionTargets": 68,
+      "preservedEnemyTargets": 65,
+      "preservedMapTargets": 65,
+      "producerRowsWithExactRealCommitParentsAndSourceChecked": 7,
+      "finalGitAndLiveCiBindings": 30,
+      "freshLiveArchives": 100,
+      "oldArchivesMatchingOriginalInputGitBytesOrLfsOidAndSize": 99,
+      "rawJs": 880,
+      "rawLua": 1424,
+      "retainedProductAndProducerInputs": 10,
+      "activePacketSha256": "46b8f11973ff930fd8e884b9bd4b2ef154eff1a8424d779c63fc0110c4a71beb",
+      "findings": "All current352 match live normalized source and actual product Git; both complete352 input targets match real13a/33d Git. Fourteen null predecessors are actual absent paths, not skipped checks. Both full historical target sets and all three original enemy producers are retained. Original enemy, new Map and legacy Map producer commits/parents/source bytes are checked. Final source diff against33d is exactly the three retained enemy runtimes; .github/config/package inputs are unchanged."
+    },
+    {
+      "kind": "independent bounded warm cross-input authentication failures and restoration",
+      "result": "PASS",
+      "preDiagnosticCaptureFaultAndRecoveryAssertions": 45,
+      "historicalOpaqueBoundaryChecks": 4,
+      "finalCaptureUpdatedDeclarationFaultAndRecoveryAssertions": 9,
+      "boundaries": ["enemy and selection CiSource", "enemy and selection HistoricalRead", "enemy and selection PriorInventory", "public integratedRead", "public integratedSource", "production enemyBeforeSelection", "production selectionMapLanded"],
+      "findings": "Warm missing/null/drift on another live targeting owner is rejected by both explicit source/input domains and both production targets, with restored input succeeding. Historical sources read only themselves; unknown binary/null remain opaque. After the final two diagnostic-row recapture, nine additional public read/source faults and restorations challenge the updated StS declaration. Complete final30/100 live authentication also passes. Same caller raw reader is forwarded throughout; no successful authorization cache or blanket authentication on already-historical branches."
+    },
+    {
+      "kind": "new raw evidence and original evidence preservation audit",
+      "result": "PASS",
+      "newLosslessLogGzipIdentities": 6,
+      "originalBundledFiles": 13,
+      "originalBundleSha256": "c5d709a01623f866833c4a9c7648bc6d5d6e8bc67bd06dbb230af0f9d855c1ec",
+      "originalBundleBytes": 16070,
+      "originalProductReviewAndMetricsHashesIndependentlyChecked": 11,
+      "utf8MetadataTextPathsChecked": 26,
+      "originalNonAsciiTestLinesPreserved": true,
+      "diffCheck": "PASS actual33d to final4d40",
+      "findings": "Every new raw gzip is verified from committed Git bytes against declared expanded SHA256 and size. All13 original bundle entries match declared hashes/sizes and original raw source files: two receipts, four independent audit/result files and seven metrics inputs/logs. Six original product/metric/isolated input blobs also match61bdf. Original actual-release evidence tree is Git-identical to13a; its16gzip rows and audit.json match original declared committed identities. capture.json historical newline limitation is explicitly recorded below."
+    }
+  ],
+  "directProductReview": {
+    "runtime": "Read the three runtime diffs and all coordinate/full-metric call sites. Only explicit false omits statusCountWidth. Six coordinate calls use false; full renderEnemySlot retains default full geometry. Other geometry, current phase/position and hit fields are recalculated identically; coordinate consumers do not use the omitted metric. Full power layout still reads fresh current ordered statuses. No cache, AI, gameplay, status membership/order or RNG change.",
+    "retainedOriginalEvidence": "Actually read original61bdf product review, AE preparation,2c integration and13a final review chain. Original specialty covers two profiles, eight geometry variants, changing status counts/membership/order/removal, Guardian phases/retirement,300 idle frames with zero status queries and complete Run/RNG equality. Exact-base negative rejects coordinate-only status derivation; default/true/zero flags still retain full derivation errors. Original independent product execution used Node22; new source/authentication and Map Host evidence use Node24. Original author baseline900 versus optimized0 counter logs were inspected and hash-verified; they are source query counts, not device performance measurements.",
+    "newComposition": "Inspected committed gameui-combo.test.mjs, map-geometry.lua and gameui-final.log.gz. One actual generated official nativePageLifecycle Host case passes6241.6435ms under original30s child guard. Public Menu/readonlyMap/previewBack preserves same Run/Map/Combat, complete Run including RNG and current coordinate geometry. Returned renderer/name frame performs zero status queries; subsequent gameplay/RNG comparison excludes only elapsedSeconds advanced by that frame. No active drag is present, so this case does not claim dynamic targeting execution. Targeting is covered by unchanged inputs, geometry equivalence and direct source review."
+  },
+  "authorEvidenceReviewed": {
+    "root": ".artifacts/enemy-post697/",
+    "sourceFirst": "source-first.log.gz: original formal group23 targets,21PASS/2 diagnostic predicate RED,265911.683ms. New6 complete auth/current117-owner cases, real current raw880 and complete Map879 legacy gate pass. Overall group is not reported23/23.",
+    "exactCorrections": "consumer-green.log.gz: only the two failed diagnostic targets rerun,2/2PASS,30128.9244ms; StS target27854.2166ms. Final packet captures the two real updated test rows. Other21 targets and original product matrices were not repeated.",
+    "costAndFailures": "Explicit integration78353ms and bootstrap33221ms remain reported. Invalid ^$ preflight and import-only marker outputs are retained as diagnostics, not successful test bodies. No timing, timeout, worker safety, unknown-cost or assertion count was reduced."
+  },
+  "historicalEvidenceIdentityLimits": [
+    {
+      "path": "docs/evidence/enemy-geometry-actual-release-20261116/capture.json",
+      "oldFrozenFilesystemSha256": "5c3c6504fece55dd810764479ba4bee2ab34b3c6939d52128365291f9dbb8324",
+      "oldFrozenFilesystemBytes": 815,
+      "committedLfSha256": "8ecbb054994239b20d420792b901c1acc40bbe3eceeb68e76bd4119f4c8bf1f5",
+      "committedLfBytes": 788,
+      "finding": "Original13a manifest describes old filesystem CRLF bytes. Original frozen filesystem identity and exact LF-normalized equivalence to committed Git are verified. This is not claimed an exact raw SHA match to Git; immutable historical evidence is not rewritten."
+    },
+    {
+      "path": "docs/evidence/enemy-geometry-actual-release-20261116/audit.json",
+      "sha256": "11307e2fddd3def0bdfe23841af86a25e6b2a4efe75815f64f30355b6b0f222d",
+      "bytes": 1375,
+      "finding": "Original frozen file and committed Git match declared bytes exactly. New worktree CRLF checkout may differ physically but normalizes identically; this file is not classified as a Git identity mismatch."
+    }
+  ],
+  "limitations": [
+    "Source/offline review PASS only. Hosted full-quality and strict Release admission, actual merge, cleanup, release permission and device acceptance remain separate.",
+    "No Full, original product/metrics matrix or author long source group was repeated by this reviewer. Local source costs do not prove whole-file or Hosted shard budget compliance; exact original execution gates remain required.",
+    "No GUI, GIL import, official ready/startup, native engine or current phone/capacity validation. Source query reduction is not a phone FPS or loading improvement claim.",
+    "Four hydration-only dirty files remain outside the committed tree. Reviewer did not modify author source or staging.",
+    "Root must re-read exact current PR head/base and required checks before admission. This receipt binds only4d40/actual33d."
+  ]
+}

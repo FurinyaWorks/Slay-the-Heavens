@@ -1,0 +1,19 @@
+{
+  "rawLua": 1424,
+  "rawJS": 880,
+  "date": "2026-11-16T05:42:54.1470107Z",
+  "coldPackBytes": 128522664,
+  "legacy697Owners": 116,
+  "head": "ad3a53cb3eb87fbad4ae015d11ea870deb6d5db1",
+  "sourceBindings": 31,
+  "review": ".artifacts/pr680-post697-review.json",
+  "next": "Normal ready/synchronize route only; do not rerun or watch CI. Official/device acceptance remains unfinished.",
+  "actualMergesInGoal": 1,
+  "limit": 134217728,
+  "status": "OPEN_READY_AUTO_MERGE_SQUASH",
+  "pr": 680,
+  "base": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "currentOwners": 118,
+  "archives": 98,
+  "authorization": ".artifacts/pr680-auto-readback.json"
+}
