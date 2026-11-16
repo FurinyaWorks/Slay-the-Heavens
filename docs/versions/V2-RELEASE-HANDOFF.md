@@ -2,7 +2,7 @@
 
 > 快照：2026-11-15（北京时间）；这是**分流入口与待验门禁**，不是实时 CI/PR 状态。每轮先读远端 refs、原生 Ruleset、当前 PR/Backlog 和准确候选身份。状态：**RELEASE_BRANCH_CREATED / RULESET_NOT_CONFIGURED / RC_NO_GO**。
 
-> 冻结规则唯一执行入口：[Release维护技能](../../.codebuddy/skills/release-maintenance/SKILL.md)。Quality元数据门禁要求类型/目标版本/发版必要性；Feature拒绝。TASK-42.1/#670的数字键、快捷键、预输入仅后续版本，不以调试便利等理由引入。声明不替代人工diff复审。
+> 冻结规则唯一执行入口：[Release维护技能](../../.codebuddy/skills/release-maintenance/SKILL.md)。Quality元数据门禁要求类型/目标版本/发版必要性；Feature拒绝。TASK-42.1/#670的数字键、快捷键、预输入仅后续版本，不以调试便利等理由引入。声明不替代人工diff复审。既有Release保护已只读核验active，原文见[本轮规则读回](../evidence/release-freeze-20261116/release-ruleset-readback.json)；下文2026-11-15未配置状态仅历史快照。新增范围gate仍须正常合入后生效。
 
 ## 所有 Agent 的分流规则
 

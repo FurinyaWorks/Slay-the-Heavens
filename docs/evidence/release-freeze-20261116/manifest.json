@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 4938,
-      "sha256": "3fe5f2a49b62ccbba891fc8a574ea4c7bf884f8d24fb25cfd139419854c685c0"
+      "bytes": 5170,
+      "sha256": "bceb8773d88c0a62ece211c59e3e32b8991d1fbcac023ea59fe2a5e3612f1fa3"
     },
     {
       "path": "backlog-final.log.gz",
@@ -75,6 +75,11 @@
       "path": "pr-scope-audit.json",
       "bytes": 13267,
       "sha256": "2f8588f827317ce2ad51ad2b0e7ef9ebc2f01f9bdab32b062efb2b14e75618e9"
+    },
+    {
+      "path": "release-ruleset-readback.json",
+      "bytes": 2595,
+      "sha256": "9fd6b44ce2d820a7c52ee20fa87b262056d34b9f0b3708ba4163736cd62dbd27"
     },
     {
       "path": "reproduce-p0.mjs",
