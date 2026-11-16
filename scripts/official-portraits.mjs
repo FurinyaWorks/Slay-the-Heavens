@@ -167,9 +167,15 @@ function combineInventory(inventory,lowpoly) {
   peakDynamicControls:assets.reduce((n,a)=>n+(a.images+a.groups+a.pages)*(a.instances??1)+(a.hosts??0),0),
   maxDirectDynamicChildren:60,officialCapacity:'not_measured',measurement:'offline-runtime-control-contract-not-official-capacity',devicePerformance:'not_run'};
 }
-export function lowpolySelectLiterals(root=process.cwd(),{selectionAvatar=false,cards=false,menuBackground=false}={}) {
+export function lowpolySelectLiterals(root=process.cwd(),{selectionAvatar=false,cards=false,menuBackground=false,requireSelection=false}={}) {
  if(!selectionAvatar&&!cards&&!menuBackground)return [];
  const bytes=readFileSync(join(root,lowpolySelectPath)),data=JSON.parse(bytes),sha=createHash('sha256').update(bytes).digest('hex');
+ if(requireSelection&&selectionAvatar){
+  const hero=data.hero;
+  if(!hero||!Number.isSafeInteger(hero.width)||hero.width<1||!Number.isSafeInteger(hero.height)||hero.height<1
+   ||!Array.isArray(hero.rows)||hero.rows.length<1||hero.rows.length>2304)
+   throw Error('Native default selection requires valid bounded lowpolyHero data');
+ }
  const asset=(name,a)=>`${name}=${toLua({rows:a.rows.map(r=>[r[0],r[1],r[2],r[3],r[4],.5,.5,.5,.5,.5,.5,1,1,r[7],r[8],r[9],r[10],r[11],r[5],r[6]]),
   width:a.width,height:a.height,count:a.rows.length,renderProfile:'lowpoly-v1',cache:true,jsonSha256:sha,sourceSha256:data.sourceSha256,
   root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0]})}`;
@@ -185,12 +191,13 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
   const source=boundedPortraitSource(imageTemplateIndex,containerTemplateIndex);
   writeFileSync(join(directory,`${portraitModule}.lua`),source);return source;
  }
- const lowpoly=lowpolySelectLiterals(root,{selectionAvatar:selectionAvatar&&!v25BattleChrome&&!officialAssets,cards,menuBackground});
+ const runtimeV2=existsSync(join(directory,'art-render-v2.json'));
+ const nativeSelection=runtimeV2&&selectionAvatar&&!v25BattleChrome&&!officialAssets;
+ const lowpoly=lowpolySelectLiterals(root,{selectionAvatar:selectionAvatar&&!v25BattleChrome&&!officialAssets,cards,menuBackground,requireSelection:nativeSelection});
  if(v25BattleChrome&&menuBackground)lowpoly.push('v25SceneOwnerCount=1');
  if(!selectionAvatar&&!battlePortrait){const source=lowpoly.length?`-- Disabled portraits; low-poly select fan / scene backgrounds only.\nreturn {imagePrefabId=${imageTemplateIndex},containerPrefabId=${containerTemplateIndex},\n${lowpoly.join(',\n')}\n}\n`:'-- Disabled optional drawings.\nreturn {imagePrefabId=0,containerPrefabId=0}\n';writeFileSync(join(directory,`${portraitModule}.lua`),source);return source;}
  const compactPath=join(directory,'art-performance.json');
  const compact=existsSync(compactPath)?JSON.parse(readFileSync(compactPath,'utf8')):null;
- const runtimeV2=existsSync(join(directory,'art-render-v2.json'));
  const budget=selectionAvatar&&(runtimeV2||!battlePortrait)&&!compact?selectionBudget(root):null;
  const budgetLiteral=(a,asset)=>toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,
   display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'selection-budget-v1',runtimeV2:true,cache:true,rectanglesOnly:true});
@@ -199,9 +206,9 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
   if(compact){const asset=compact.assets[a.kind];return `${a.kind}=${toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'compact-v1',sourcePreviewSha256:asset.sha256})}`;}
   return `${a.kind}=(function()\n${a.literals}\nreturn {root=ROOT,rows=ELEMENTS,width=${a.width},count=${a.count},display=${a.display},sourceSha256='${a.runtime}',jsonSha256='${a.json}'${runtimeV2?',runtimeV2=true,cache=true,rectanglesOnly=true':''}}\nend)()`;
  });
- // Official selection requires lowpolyLumine; the old selection133 rows have
- // no consumer in that profile. Other profiles retain their original source.
- if(budget&&!v25BattleChrome&&!officialAssets)data.push(`selection133=${budgetLiteral(assets[1],budget.assets.selection133)}`);
+ // Both approved native selections have a generated, validated source. The
+ // isolated legacy producer retains its selection133 data and original assets.
+ if(budget&&!v25BattleChrome&&!officialAssets&&!nativeSelection)data.push(`selection133=${budgetLiteral(assets[1],budget.assets.selection133)}`);
  data.push(...lowpoly);
  // Selection keeps its bounded temporary actor. Full-body literals remain
  // available to other profiles; official combat uses the approved idle below.

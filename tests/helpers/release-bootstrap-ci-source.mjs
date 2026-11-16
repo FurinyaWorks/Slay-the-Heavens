@@ -36,7 +36,32 @@ for(const [path,row]of Object.entries(review.files)){
  }
  if(capacity.files[path])assert.deepEqual(row.before,capacity.files[path].current,'retained TASK-111 predecessor: '+path);
 }
+// Default production reduction is an additional complete outer source view.
+// Its predecessors and their source/measurement claims remain immutable.
+const reductionBytes=readFileSync(new URL('./task111-default-reduction-ci-source.json.gz',import.meta.url));
+assert.equal(hash(reductionBytes),'580a5b94a1235e3b849d2a8ca47ae12d3a7f89fa0e7a4f1617d09d58a1be0ada','complete TASK-111 default reduction CI continuation');
+const reduction=JSON.parse(gunzipSync(reductionBytes));
+assert.equal(reduction.schemaVersion,1);assert.equal(reduction.normalization,'LF');
+assert.equal(reduction.baseCommit,'396b55757a9e536b052f6c960daf1159351f57b1');assert.equal(reduction.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(reduction.files),['scripts/audit-native-candidate.mjs','scripts/build-native-candidate.mjs','scripts/official-portraits.mjs','tests/helpers/native-toolchain-fixture.mjs','tests/lowpoly-select-flags.test.mjs','tests/native-candidate-art.test.mjs','tests/native-candidate-audit.test.mjs','tests/native-candidate.test.mjs','tests/native-monster-actor-template.test.mjs','tests/official-background-candidate.test.mjs','tests/official-portraits-build.test.mjs']);
+assert.deepEqual(Object.keys(reduction.addedFiles),['scripts/native-ui-card-sharing.mjs']);
+for(const [path,row]of Object.entries({...reduction.files,...reduction.addedFiles})){
+ for(const binding of [row.before,row.current].filter(Boolean)){
+  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+ }
+ if(reduction.files[path]){
+  const prior=review.files[path]?.current??capacity.files[path]?.current;
+  if(prior)assert.deepEqual(row.before,prior,'retained TASK-111 predecessor: '+path);
+ }else assert.equal(row.before,null,'new source has no invented predecessor');
+}
+function reductionBefore(path,source){
+ const row=Object.hasOwn(reduction.files,path)?reduction.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ return hash(norm(source))===row.current.sha256?row.before.source:source;
+}
 function reviewBefore(path,source){
+ source=reductionBefore(path,source);
  const row=Object.hasOwn(review.files,path)?review.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
@@ -67,6 +92,7 @@ const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v
 export const releaseBootstrapCiPacket=freeze(packet);
 export const capacityCiPacket=freeze(capacity);
 export const capacityReviewCiPacket=freeze(review);
+export const defaultReductionCiPacket=freeze(reduction);
 function checkedSource(path,source,before){
  source=capacityBefore(path,source,before);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
@@ -95,14 +121,16 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries({...reduction.files,...reduction.addedFiles}))
+  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: default reduction / fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(review.files))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete TASK-111 CI source: review '+path);
+  assert.equal(hash(norm(reductionBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete TASK-111 CI source: review '+path);
  for(const [path,row]of Object.entries(capacity.files))
   assert.equal(hash(norm(reviewBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete TASK-111 CI source: '+path);
  const rawRead=read;
  read=(path,encoding)=>{
   const raw=rawRead(path,encoding);
-  if(!Object.hasOwn(capacity.files,path)&&!Object.hasOwn(review.files,path))return raw;
+  if(!Object.hasOwn(capacity.files,path)&&!Object.hasOwn(review.files,path)&&!Object.hasOwn(reduction.files,path))return raw;
   const source=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityBefore(path,source);
   return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
  };
