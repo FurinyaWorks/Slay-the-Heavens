@@ -348,6 +348,16 @@
       "sha256": "6e08d754a71a0ab279e3b440fa1f93706985bcfb5cb9a403dda750b2da9996e6"
     },
     {
+      "path": "latest-product-readback.log.gz",
+      "bytes": 183,
+      "sha256": "5f698f36e5c4390a3cf99bba4902554cc7f6cca5ee152b324c1021740051b987"
+    },
+    {
+      "path": "latest-product-small.log.gz",
+      "bytes": 376,
+      "sha256": "26c707e0636d88c930679e0956159fd98808a77016d049b241244844ffc82941"
+    },
+    {
       "path": "latest-release-audio-comparison.json",
       "bytes": 12248,
       "sha256": "cd818257eac671cf155ded0195524facdf89835db98ba83060293cdc1f3d7097"
