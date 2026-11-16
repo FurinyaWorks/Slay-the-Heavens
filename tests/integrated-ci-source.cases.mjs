@@ -1,6 +1,12 @@
-import test from 'node:test';
+import {handEnemyHistoricalRead,handEnemyPriorInventory,handEnemyCiPacket} from './helpers/hand-enemy-ci-source.mjs';
+const actualHandPost697ReadFileSync=handTestRead;
+const actualHandPost697DiscoverJs=()=>[...handEnemyCiPacket.viewInventories.hand.js];
+const handEnemyLegacyLua=()=>[...handEnemyCiPacket.viewInventories.hand.lua];
+import test,{beforeEach} from 'node:test';
+import {prepareHandEnemyTestDomain,handTestRead} from './helpers/hand-enemy-test-domains.mjs';
+beforeEach(()=>prepareHandEnemyTestDomain('hand'));
 import assert from 'node:assert/strict';
-import {readFileSync as actualHandPost697ReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
 import {handPost697HistoricalRead,handPost697PriorInventory} from './helpers/hand-post697-ci-source.mjs';
 const rawReadFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
 import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent as priorBootstrapCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
@@ -10,12 +16,12 @@ import {mobileHandCiRead,mobileHandCiPacket,mobileHandCiSource as priorMobileHan
 const mobileHandCiSource=(path,source,before,read=actualHandReadFileSync)=>priorMobileHandCiSource(path,source,before,read);
 const assertMobileHandCiCurrent=(read=actualHandReadFileSync)=>priorAssertMobileHandCiCurrent(read);
 import {createHash} from 'node:crypto';
-import {discoverJs as actualHandPost697DiscoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as unionActualDiscoverJs} from '../scripts/ci-shards.mjs';
 const actualHandDiscoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync,'hand');
-const handLegacyLua=()=>handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync,'hand');
-const releaseLegacyLua=()=>handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync);
+const handLegacyLua=()=>handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync,'hand');
+const releaseLegacyLua=()=>handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync);
 const discoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
-import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
+import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/hand-enemy-hand-integrated.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const pickerBeforeRead=releaseSelectionMapCiRead(rawReadFileSync);
 const assertReleaseBootstrapCiCurrent=(read=pickerBeforeRead)=>priorBootstrapCurrent(read);
@@ -245,7 +251,7 @@ test('mobile hand current inventory authenticates the complete corpus before ent
 });
 
 test('mobile hand integrated reader and source forward the same raw reader before historical output',async()=>{
- const {integratedRead}=await import('./helpers/integrated-ci-source.mjs');
+ const {integratedRead}=await import('./helpers/hand-enemy-hand-integrated.mjs');
  const anchor='tests/helpers/closeout-source-epoch.mjs',other='src/lua/abyss_battle_card_view.lua';
  const raw=actualHandReadFileSync(anchor,'utf8');let fault;const seen=[];
  const read=(path,encoding)=>{
@@ -348,7 +354,7 @@ test('hand post697 union public CI source authenticates the same raw reader befo
 });
 
 test('hand post697 union current inventory authenticates the complete corpus before entering prior inventory',()=>{
- const inventories={js:actualHandPost697DiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};let fault;
+ const inventories={js:actualHandPost697DiscoverJs(),lua:handEnemyLegacyLua()};let fault;
  const read=(path,encoding)=>{
   if(path===fault?.path){
    if(fault.kind==='missing')throw Error('missing '+path);
@@ -372,7 +378,7 @@ test('hand post697 union current inventory authenticates the complete corpus bef
 });
 
 test('hand post697 union integrated reader and source forward the same raw reader before historical output',async()=>{
- const {integratedRead}=await import('./helpers/integrated-ci-source.mjs');
+ const {integratedRead}=await import('./helpers/hand-enemy-hand-integrated.mjs');
  const anchor='tests/helpers/closeout-source-epoch.mjs',other='src/lua/abyss_game_ui_input.lua';
  const raw=actualHandPost697ReadFileSync(anchor,'utf8');let fault;const seen=[];
  const read=(path,encoding)=>{
@@ -422,7 +428,7 @@ test('hand post697 union both explicit histories reject warm cross-input faults 
 
 
 test('hand post697 union complete current production authenticates every one of 116 owners',async()=>{
- const {sourceEpoch,preHandPost697SourceEpoch,handBeforeMapSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {handPost697SourceEpoch:sourceEpoch,preHandPost697SourceEpoch,handBeforeMapSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {handPost697SourcePacket:p,extendHandPost697Source}=await import('./helpers/hand-post697-source.mjs');
  const current=sourceEpoch.proof,prior=preHandPost697SourceEpoch.proof,hand=handBeforeMapSourceEpoch.proof;
  assert.deepEqual(current.mobileHandProducers,hand.mobileHandProducers);assert.deepEqual(current.releaseSelectionMapProducers,prior.releaseSelectionMapProducers);

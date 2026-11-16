@@ -1,3 +1,6 @@
+import {handEnemyHistoricalRead,handEnemyPriorInventory} from './helpers/hand-enemy-ci-source.mjs';
+const readFileSync=handEnemyHistoricalRead('hand',unionActualReadFileSync);
+const discoverJs=()=>handEnemyPriorInventory(unionActualDiscoverJs(),'js',unionActualReadFileSync);
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -8,8 +11,8 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
  feedbackHash,feedbackProductionPaths,feedbackCiPaths,feedbackHelperPaths,feedbackClosurePaths,feedbackAddedTests,
  feedbackPriorCiSha,feedbackPriorClosureSha,renderFeedbackCiBinding} from './helpers/sts-feedback-source-runtime.mjs';
 import {gunzipSync} from 'node:zlib';
-import {readFileSync,readdirSync} from 'node:fs';
-import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
+import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
+import {discoverJs as unionActualDiscoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {mobileHandPriorInventory,assertMobileHandRawInventory} from './helpers/mobile-hand-ci-source.mjs';
 import {releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
 import {handPost697PriorInventory,handPost697HistoricalRead,assertHandPost697RawInventory,handPost697CiPacket} from './helpers/hand-post697-ci-source.mjs';
@@ -28,7 +31,7 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const currentJs=discoverJs(),currentLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const currentJs=discoverJs(),currentLua=handEnemyPriorInventory(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'lua',unionActualReadFileSync);
  assertHandPost697RawInventory(currentJs,'js');assertHandPost697RawInventory(currentLua,'lua');
  // These are the actual filesystem bytes, before either history is entered.
  for(const [kind,paths]of [['js',currentJs],['lua',currentLua]])for(const target of ['release','hand']){

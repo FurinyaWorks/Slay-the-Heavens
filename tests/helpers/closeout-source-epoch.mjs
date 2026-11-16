@@ -12,6 +12,9 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendMobileHandSource} from './mobile-hand-source.mjs';
+import {extendEnemyGeometrySource} from './enemy-geometry-source.mjs';
+import {extendEnemyPost697Source} from './enemy-post697-source.mjs';
+import {extendHandEnemyUnion} from './hand-enemy-source.mjs';
 import {extendHandPost697Source} from './hand-post697-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -56,7 +59,12 @@ export const preReleaseSelectionMapSourceEpoch=extendSessionMenuEpoch(releaseSou
 export const preMobileHandSourceEpoch=preReleaseSelectionMapSourceEpoch;
 export const handBeforeMapSourceEpoch=extendMobileHandSource(preMobileHandSourceEpoch);
 export const preHandPost697SourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
-export const sourceEpoch=extendHandPost697Source(preHandPost697SourceEpoch,handBeforeMapSourceEpoch);
+export const handPost697SourceEpoch=extendHandPost697Source(preHandPost697SourceEpoch,handBeforeMapSourceEpoch);
+export const preEnemyGeometrySourceEpoch=preReleaseSelectionMapSourceEpoch;
+export const preEnemyPost697SourceEpoch=extendEnemyGeometrySource(preEnemyGeometrySourceEpoch);
+export const releaseSelectionMapLegacyEpoch=preHandPost697SourceEpoch;
+export const enemyPost697SourceEpoch=extendEnemyPost697Source(preEnemyPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
+export const sourceEpoch=extendHandEnemyUnion(handPost697SourceEpoch,enemyPost697SourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

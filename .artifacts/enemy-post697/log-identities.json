@@ -1,0 +1,32 @@
+[
+  {
+    "path": ".artifacts/enemy-post697/source-first.log.gz",
+    "rawSha256": "9fb85be8245e365fe10f9b952c02f4627c86c9f9600026c7adc88eabf59cfa50",
+    "rawBytes": 8649
+  },
+  {
+    "path": ".artifacts/enemy-post697/consumer-green.log.gz",
+    "rawSha256": "9daf9f4c8c0280104237f3edd46ccc5bdc754e9656dab5e5fdd6e472d3ce1124",
+    "rawBytes": 374
+  },
+  {
+    "path": ".artifacts/enemy-post697/gameui-final.log.gz",
+    "rawSha256": "5f5de66b7b2712dee9fd85843774d0e71bd4a41da19ad1e4ca2b5b09fe56f592",
+    "rawBytes": 417
+  },
+  {
+    "path": ".artifacts/enemy-post697/module-preflight.log.gz",
+    "rawSha256": "c6a6e7c05c531818dae79729485172ca41f4e76bb9d08f4b5fc3b50778fb2672",
+    "rawBytes": 10245
+  },
+  {
+    "path": ".artifacts/enemy-post697/module-import-only.log.gz",
+    "rawSha256": "8fe8df929b1f12738a54d542c6a2373287a94996d0a4e68f61c2dc50f21cf953",
+    "rawBytes": 482
+  },
+  {
+    "path": ".artifacts/enemy-post697/audit.log.gz",
+    "rawSha256": "62aee42a8d12e5e67a5eedf7711269dbc5541c5c48c64d276b15be0e00d7383c",
+    "rawBytes": 1954
+  }
+]

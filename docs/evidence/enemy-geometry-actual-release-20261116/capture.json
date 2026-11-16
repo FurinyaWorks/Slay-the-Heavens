@@ -1,0 +1,27 @@
+{
+  "originalPacketCommit": "d19b3d9cacc5397f0880a9435cc18c1f6095883e",
+  "originalPacketSha256": "04848f5f8d39bdd8dc2f1aa9b9eb605982aa5f3025710dd91b16836d4d8e2475",
+  "currentPacketSha256": "195be60094d0bd8c4b748a89e38410d746487d983a4d4a3ac3662a0b3610297a",
+  "currentPacketBytes": 144116,
+  "changedBindings": [
+    "tests/helpers/integrated-ci-source.mjs",
+    "tests/integrated-ci-source.cases.mjs"
+  ],
+  "addedBindings": [
+    "tests/defect-final-source-epoch.test.mjs",
+    "tests/encounter-formation-source-epoch.test.mjs",
+    "tests/sts-style-source-epoch.test.mjs"
+  ],
+  "bindings": 16,
+  "archives": 94,
+  "runtimeUnchanged": true,
+  "priorInventory": {
+    "js": 876,
+    "lua": 1423
+  },
+  "currentInventory": {
+    "js": 877,
+    "lua": 1424
+  },
+  "restoredInputs": []
+}

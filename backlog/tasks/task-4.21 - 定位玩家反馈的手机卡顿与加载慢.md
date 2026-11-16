@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-15 18:17'
+updated_date: '2026-11-16 08:01'
 labels:
   - 待验
   - delivery-verify
@@ -50,6 +50,10 @@ ordinal: 136000
 2026-11-02 牌库注册生命周期小切片：先用真实 DeckUI/Controller 与原生 Grid 销毁语义复现记录累积；只对确认销毁的牌面保存 hit 并调用现有 Controller.unbind，覆盖关闭后的及时释放及存活复用。新增重复开关、翻页/过滤/排序、刷新销毁/回收、原生失效、键鼠/手柄和旧回调回归；先红后绿、定向检查及独审，不改设计/Controller 架构，不推断手机性能，AC3 保持未验。
 
 2026-11-16经Owner批准窄分配切片，独立Release36b9树。去重684ae/69011ec与9mobile drafts的card_view均同base。实际Host300静止帧分别证实1500新cardPositions snapshot(保留g.origin语义)与1500 cache-hit前handValues八值临时表；仅后者拟用原私有函数多返回值消除，现有成功缓存、owner/hit/alive、false/throw/重入重验及公式不变，无新cache或输入行为变更。先RED后局部等价/Host静止hover-drag-resize/RunRNG/原缓存失败重入合同，独审后独立提交，不Full/客户端/GIL/AC完成，手机性能未验，状态Owner保持。
+
+2026-11-15经Owner协调授权迁移已保存b56e1c39/be41ed0b敌人坐标statusView剪枝至release/v2.0.0@36b9b157；不重新认领既有InProgress。先核对672/684只涉及相邻sleep呈现、无重复剪枝；原计数fixture在本基线先RED再GREEN，确认几何字段/全量状态宽度/Run与RNG等价，独立评审后再协调PR。只改三runtime及原专用测试/隔离helper，不Full、不推断手机性能。
+
+2026-11-16 Owner明确要求解决冲突：在独立分支整合PR694与688完整源码及来源合同，保留双方历史证据与未验手机AC，定向验证、独审后推送候选，不覆盖原分支、不绕过Required。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -85,4 +89,10 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
 2026-11-16 handValues窄分配片：实际Release Host分别确认300帧1500个两值cardPositions snapshot与1500个八值临时返回表，前者完整保留g.origin语义，只有后者1500到0。原私有函数改多返回值，不新增cache、不减公式计算，owner/hit/alive/false/throw/reentry原保护保留。243数值组合和当前官方profile实际Host静止/hover-drag-resize/RunRNG两入口通过；原缓存合同+七精确负控及pattern实际匹配的3近邻负控合计11/11，静态CC15通过。独立源码评审待交；原9mobile/684/690 card_view均同base无重复。证据docs/backlog-details/TASK-4.21-HAND-VALUES-20261116.md；未Full/PR/GIL/官方/手机或FPS结论，状态Owner/AC不变。
+
+2026-11-15 Release接续旧b56/be41坐标剪枝：基线36b9原专项RED，真实Host预热后300帧statusView精确900到0；原专项及相邻官方状态/命中/三布局负控通过，三runtime增量patch-id同旧片。672/684未带此剪枝，render_actors不同区叠加检查通过。仅迁三runtime/原测试/21行隔离helper，既有性能树保留；证据TASK-4.21-ENEMY-GEOMETRY-20261115.md。未Full/设备/候选，状态与3/4AC不变，精确新HEAD独审另交。
+
+2026-11-16 PR688原2c正常合入实际Release1cc，d19完整tree仍等原2c；b672与1cc完整tree相同，三个来源冲突按其后已审geometry接续保留。原生产tree/metrics/helper blob不变，不重复产品矩阵。修复R688-1：Read/公共Source/当前库存进入历史前，每次以同raw reader认证13绑定/94归档；暖读缺失/null/漂移与恢复负控通过。仅更新active CI包的cases当前绑定，旧93归档/原产品保持，原active包留Git。待最终独审与Required，未推/未正式Full，不勾手机AC3或Done。
+
+PR688最终接续：补齐原漏live guard，保留116历史、current117新增targeting与877/1424实际发现；精准RED3→GREEN3。active CI最终16绑定/94归档，原产品及93旧档案未变；完整事实与原失败见TASK-4.21-ENEMY-GEOMETRY-ACTUAL-RELEASE-20261116附件，待最终独审/Required，不授予设备或Full通过。
 <!-- SECTION:NOTES:END -->

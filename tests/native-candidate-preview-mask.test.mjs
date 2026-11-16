@@ -85,3 +85,5 @@ test('native preview continuation authenticates complete current files and prese
  assert.equal(readFileSync(path,'utf8'),raw,'projection never writes the runtime script');
  assert(Object.isFrozen(nativePreviewCiProof.files[path].after));
 });
+
+import './hand-enemy-legacy-enemy.cases.mjs';

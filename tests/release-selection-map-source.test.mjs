@@ -1,6 +1,10 @@
+import {handEnemyHistoricalRead,handEnemyPriorInventory} from './helpers/hand-enemy-ci-source.mjs';
+const actualHandPost697ReadFileSync=handEnemyHistoricalRead('hand',unionActualReadFileSync);
+const actualHandPost697DiscoverJs=()=>handEnemyPriorInventory(unionActualDiscoverJs(),'js',unionActualReadFileSync);
+const handEnemyLegacyLua=()=>handEnemyPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',unionActualReadFileSync);
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualHandPost697ReadFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {readFileSync as unionActualReadFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
 import {handPost697HistoricalRead,handPost697PriorInventory} from './helpers/hand-post697-ci-source.mjs';
 const readFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
 import {join} from 'node:path';
@@ -9,9 +13,9 @@ import {pathToFileURL} from 'node:url';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {discoverJs as actualHandPost697DiscoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as unionActualDiscoverJs} from '../scripts/ci-shards.mjs';
 const discoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
-import {sourceEpoch as activeHandPost697Epoch,preHandPost697SourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch as activeHandPost697Epoch,handPost697SourceEpoch,preHandPost697SourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
 import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent as priorSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const assertReleaseSelectionMapCiCurrent=(read=readFileSync)=>priorSelectionMapCiCurrent(read);
@@ -63,7 +67,7 @@ test('legacy landed697 release selection map CI validates complete live bindings
 });
 
 test('legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
- const inventories={js:discoverJs(),lua:handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync)};
+ const inventories={js:discoverJs(),lua:handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync)};
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);
   assertReleaseSelectionMapRawInventory(paths,kind);
@@ -134,6 +138,7 @@ test('legacy landed697 release selection map isolated production copy includes e
  assert(!existsSync(join(directory,'tests/helpers/release-selection-map-ci-source.mjs')));
  const copied=await import(pathToFileURL(join(directory,'tests/helpers/closeout-source-epoch.mjs')).href);
  assert.deepEqual(copied.preHandPost697SourceEpoch.proof,sourceEpoch.proof);
+ assert.deepEqual(copied.handPost697SourceEpoch.proof,handPost697SourceEpoch.proof);
  assert.deepEqual(copied.sourceEpoch.proof,activeHandPost697Epoch.proof);
  const sourceRoot=join(directory,'drift');mkdirSync(sourceRoot);
  // The original closure copier authenticates dependencies from a distinct root.

@@ -1,3 +1,7 @@
+import {handEnemyHistoricalRead,handEnemyPriorInventory} from './helpers/hand-enemy-ci-source.mjs';
+const actualHandPost697ReadFileSync=handEnemyHistoricalRead('hand',unionActualReadFileSync);
+const actualHandPost697DiscoverJs=()=>handEnemyPriorInventory(unionActualDiscoverJs(),'js',unionActualReadFileSync);
+const handEnemyLegacyLua=()=>handEnemyPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',unionActualReadFileSync);
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
 import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
@@ -42,7 +46,7 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualHandPost697ReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
 import {handPost697HistoricalRead,handPost697PriorInventory,handPost697CiPacket,assertHandPost697CiCurrent,assertHandPost697RawInventory} from './helpers/hand-post697-ci-source.mjs';
 const rawReleaseReadFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
@@ -64,10 +68,10 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as actualHandPost697DiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as unionActualDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
 const rawReleaseDiscoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
 const actualHandDiscoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync,'hand');
-const handLegacyLua=()=>handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync,'hand');
+const handLegacyLua=()=>handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync,'hand');
 const liveDiscoverJs=()=>releaseSelectionMapPriorInventory(rawReleaseDiscoverJs(),'js',rawReleaseReadFileSync);
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
@@ -175,7 +179,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const rawReleaseLua=()=>handPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualHandPost697ReadFileSync);
+const rawReleaseLua=()=>handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync);
 const liveCloseoutLua=()=>releaseSelectionMapPriorInventory(rawReleaseLua(),'lua',rawReleaseReadFileSync);
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
@@ -2109,7 +2113,7 @@ test('hand composition raw Full retains complete discovery costs and real execut
 
 test('hand post697 union raw Full retains complete actual discovery and physical execution guards',t=>{
  assertHandPost697CiCurrent(actualHandPost697ReadFileSync);
- const js=actualHandPost697DiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const js=actualHandPost697DiscoverJs(),lua=handEnemyLegacyLua();
  assertHandPost697RawInventory(js,'js');assertHandPost697RawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=actualHandPost697ReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
