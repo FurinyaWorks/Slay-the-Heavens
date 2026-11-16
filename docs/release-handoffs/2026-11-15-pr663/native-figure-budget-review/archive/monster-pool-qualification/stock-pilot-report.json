@@ -1,0 +1,22 @@
+{
+  "head": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "pass": true,
+  "source": "Lots of Slimes",
+  "acid": 2,
+  "spike": 3,
+  "scope": "Actual GameUI/Combat/formation/runtime with native mocks; new batch02 art injected into a temporary explicit build input, exact visible primitive fields; not real device or product bindings",
+  "poolCapacity": 41,
+  "fiveActorVisibleShapes": 187,
+  "fiveActorAllocatedShapeSlots": 205,
+  "twoRealSmallSlimesBranches": true,
+  "unselectedFallback": true,
+  "allVisibleSlotIdentitiesStable": true,
+  "newRowsVerified": true,
+  "slotsByEnemy": {
+    "acid_slime_s": 32,
+    "spike_slime_s": 41,
+    "spike_slime_m": 41,
+    "acid_slime_m": 41
+  },
+  "officialDevice": false
+}

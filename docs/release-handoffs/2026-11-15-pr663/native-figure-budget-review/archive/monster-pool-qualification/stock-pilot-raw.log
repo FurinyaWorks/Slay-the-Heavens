@@ -1,0 +1,11 @@
+ABYSS_RUN seed=1 source=explicit
+ACTOR	1	spike_slime_s_1	-480	30	0.0	-30.0
+ACTOR	2	spike_slime_s_2	-320	2	106.66666666667	-48.666666666667
+ACTOR	3	spike_slime_s_3	-160	32	213.33333333333	-28.666666666667
+ACTOR	4	acid_slime_s_4	10	-12	326.66666666667	-58.0
+ACTOR	5	acid_slime_s_5	200	9	453.33333333333	-44.0
+NATIVE_FORMATION_HOST_PASS source=Lots-of-Slimes acid=2 spike=3 independent=5 idleFrames=120 visible=187 allocatedPerInstance=41 retirement=one
+MEDIUM_NATIVE_HOST_PASS assets=4 fields=image,rotation,position,size,RGBA_after_pose_tint visibility=exact
+SMALL_SLIMES_HOST_PASS	1	spike_slime_s	acid_slime_m
+SMALL_SLIMES_HOST_PASS	2	acid_slime_s	spike_slime_m
+UNSELECTED_GALLERY_FALLBACK_PASS

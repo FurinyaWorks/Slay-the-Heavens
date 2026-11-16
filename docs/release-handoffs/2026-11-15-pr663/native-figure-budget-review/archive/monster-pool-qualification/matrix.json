@@ -1,0 +1,112 @@
+{
+  "baseline": "33d71575c5f186a1b54f7bf3e4f1826c145aa1d9",
+  "inactiveInvalidSlotRejected": true,
+  "stockDefaultDiagnostic": {
+    "templateName": "AbyssMonsterActor",
+    "controlsPerActor": 647,
+    "shapesPerActor": 600,
+    "powerTemplateName": "AbyssMonsterPower",
+    "controlsPerPower": 7,
+    "powerAllocation": "per-power-instance",
+    "allocation": "per-drawable-actor-instance",
+    "measurement": "offline-template-count-not-official-load",
+    "officialImport": "not_run",
+    "devices": "not_run",
+    "registryLuaBytes": 384940,
+    "templateLuaBytes": 93674,
+    "retainedPool": 600,
+    "selectedSlots": {
+      "acid_slime_m": 597
+    },
+    "visibleFive": 0
+  },
+  "currentRetainedFourArtDiagnostic": {
+    "templateName": "AbyssMonsterActor",
+    "controlsPerActor": 647,
+    "shapesPerActor": 600,
+    "powerTemplateName": "AbyssMonsterPower",
+    "controlsPerPower": 7,
+    "powerAllocation": "per-power-instance",
+    "allocation": "per-drawable-actor-instance",
+    "measurement": "offline-template-count-not-official-load",
+    "officialImport": "not_run",
+    "devices": "not_run",
+    "registryLuaBytes": 457310,
+    "templateLuaBytes": 93674,
+    "retainedPool": 600,
+    "selectedSlots": {
+      "acid_slime_m": 597,
+      "pilot-acid-small": 32,
+      "pilot-spike-small": 41,
+      "pilot-spike-medium": 41
+    },
+    "visibleFive": 187
+  },
+  "trimmedButLegacyRequiredAnchorDiagnostic": {
+    "templateName": "AbyssMonsterActor",
+    "controlsPerActor": 644,
+    "shapesPerActor": 597,
+    "powerTemplateName": "AbyssMonsterPower",
+    "controlsPerPower": 7,
+    "powerAllocation": "per-power-instance",
+    "allocation": "per-drawable-actor-instance",
+    "measurement": "offline-template-count-not-official-load",
+    "officialImport": "not_run",
+    "devices": "not_run",
+    "registryLuaBytes": 457310,
+    "templateLuaBytes": 93242,
+    "retainedPool": 597,
+    "selectedSlots": {
+      "acid_slime_m": 597,
+      "pilot-acid-small": 32,
+      "pilot-spike-small": 41,
+      "pilot-spike-medium": 41
+    },
+    "visibleFive": 187
+  },
+  "scope": "Offline stock builder. Default formal monsters=false is not this test. Neither runtime source nor release is changed. Byte values are serialized Lua, not GIL/server/official import.",
+  "maskFreeAnchorRetained": {
+    "templateName": "AbyssMonsterActor",
+    "controlsPerActor": 647,
+    "shapesPerActor": 600,
+    "powerTemplateName": "AbyssMonsterPower",
+    "controlsPerPower": 7,
+    "powerAllocation": "per-power-instance",
+    "allocation": "per-drawable-actor-instance",
+    "measurement": "offline-template-count-not-official-load",
+    "officialImport": "not_run",
+    "devices": "not_run",
+    "registryLuaBytes": 99478,
+    "templateLuaBytes": 93674,
+    "retainedPool": 600,
+    "selectedSlots": {
+      "acid_slime_m": 41,
+      "pilot-acid-small": 32,
+      "pilot-spike-small": 41,
+      "pilot-spike-medium": 41
+    },
+    "visibleFive": 187
+  },
+  "maskFreeAnchorTrimmed": {
+    "templateName": "AbyssMonsterActor",
+    "controlsPerActor": 79,
+    "shapesPerActor": 41,
+    "powerTemplateName": "AbyssMonsterPower",
+    "controlsPerPower": 7,
+    "powerAllocation": "per-power-instance",
+    "allocation": "per-drawable-actor-instance",
+    "measurement": "offline-template-count-not-official-load",
+    "officialImport": "not_run",
+    "devices": "not_run",
+    "registryLuaBytes": 99472,
+    "templateLuaBytes": 12314,
+    "retainedPool": 41,
+    "selectedSlots": {
+      "acid_slime_m": 41,
+      "pilot-acid-small": 32,
+      "pilot-spike-small": 41,
+      "pilot-spike-medium": 41
+    },
+    "visibleFive": 187
+  }
+}

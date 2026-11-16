@@ -1,0 +1,15 @@
+417e619c53e11dace1bf75c3ef4a0952704a799ce551ca35fd18a27b2a523e23  ./README.md
+a450c89cfcb724b8ad222fd45dd55768beff0712357f1fedaee4935d11de9a17  ./acid-medium/build.py
+21460d30cb7ef0c51cefd4b9a921c8c3570388448810a5d65da3efef84fe03d5  ./acid-medium/comparison.png
+ac1bae0d73b003d795cf3f32a66c77bd72419b0253e8a10421854aef1e6728db  ./acid-medium/conversion-receipts.json
+16729d95ba9d5c6ca88fc139b1e896991f0773106848d6a8f6a6a00c76548760  ./acid-medium/converter-result.json
+1fb5488943cbfc0002ff9de26e237bfd9b4a306d9fd12825a8eb321ada5d7d51  ./acid-medium/native-layout.json
+2ad89f5c64865909b1e002d7055c11776871f9d307c753115b4e059de896e2ef  ./acid-medium/native-reconstruction.png
+bf308a756fca80b1022e82c9fbfb7b0107b44a89c9673a849be7af98392a107d  ./acid-medium/provenance.json
+0acf32f1d730f8e8e363c41edafd7a6aedb255dfbcff739fa477f58c2d8461ca  ./acid-medium/runtime-result.json
+2d1d886d72aff5a335b5e2d5ea0796e11e9a41355bc83c1611a1871aba2e0f14  ./acid-medium/visual-metrics.json
+d17cef0b88f2b1c1aee04a4c92a4d300ad1b90ebceabc046148ef6fd19efae2f  ./matrix.json
+ae51b302c39f0ca555fc2b864d60a7304743561bc651446e71bd55fb8dd70944  ./qualify.mjs
+86d66a90615400ab3184e4152152a7313ca647d04742c644a3fffa5c35a91a80  ./run-stock-pilot.mjs
+229b208eafc6dd7517a1b68ff8a142cd6d1bb17ae99059716a7fe063a57a1fe4  ./stock-pilot-raw.log
+d26f51cb647f41b5ae6bfba65e0b133c70641282aaf0d2b8824de94559fcdf62  ./stock-pilot-report.json

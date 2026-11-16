@@ -1,0 +1,10 @@
+{
+  "images": 41,
+  "containers": 3,
+  "total": 44,
+  "masks": 0,
+  "silhouetteIoUAlpha128": 0.9998936085325957,
+  "changedRGBApixels": 106,
+  "maxChannelDifference": 139,
+  "status": "pending visual acceptance"
+}
