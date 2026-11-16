@@ -2,17 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
 import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
-import {createHash} from 'node:crypto';
-import {discoverJs as particleActualDiscoverJs} from '../scripts/ci-shards.mjs';
 import {runtimeParticleCiRead,runtimeParticlePriorInventory} from './helpers/runtime-particle-ci-source.mjs';
-const particlePriorRead=runtimeParticleCiRead(rawReadFileSync);
-const discoverJs=()=>runtimeParticlePriorInventory(particleActualDiscoverJs(),'js',rawReadFileSync);
+import {integrationRead,integrationPriorInventory} from './helpers/release-runtime-integration.mjs';
+import {createHash} from 'node:crypto';
+import {discoverJs} from '../scripts/ci-shards.mjs';
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
-const readFileSync=releaseBootstrapCiRead(particlePriorRead);
+const sideRead=integrationRead('particle',rawReadFileSync);
+const pickerBeforeRead=runtimeParticleCiRead(sideRead);
+const readFileSync=releaseBootstrapCiRead(pickerBeforeRead);
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
- assertIntegratedCurrent();assert.deepEqual(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
+ assertIntegratedCurrent();assert.deepEqual(runtimeParticlePriorInventory(integrationPriorInventory(discoverJs(),'particle'),'js',sideRead),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
  for(const [path,row]of Object.entries(proof.files))for(const target of Object.keys(proof.sources)){
   const source=raw(path),production=path.startsWith('src/')||path==='config/architecture.json';
   const expected=production?source:row.views[target]?.source??source;
@@ -45,16 +46,16 @@ test('integration copy closure requires its complete exact predecessor and curre
 });
 
 test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
- assertReleaseBootstrapCiCurrent(particlePriorRead);
+ assertReleaseBootstrapCiCurrent(pickerBeforeRead);
  for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
-  const source=particlePriorRead(path,'utf8').replaceAll('\r\n','\n');
+  const source=pickerBeforeRead(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(releaseBootstrapCiSource(path,source),row.before.source,path);
   for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(releaseBootstrapCiSource(path,foreign),foreign);
   for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseBootstrapCiSource(foreignPath,source),source);
   assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{
-   const value=particlePriorRead(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+   const value=pickerBeforeRead(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
   }),error=>{assert(error.message.includes(path));return true;});
-  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return particlePriorRead(p,e);}),/missing/);
+  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return pickerBeforeRead(p,e);}),/missing/);
   if(path.startsWith('.github/')){
    for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(releaseBootstrapWorkflowBefore(path,input),row.before.source);
    for(const foreign of [source+'\n',source.slice(1),source.replace('release/**','foreign/**')])
@@ -62,15 +63,15 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
   }
  }
  const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
- assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?particlePriorRead(p).subarray(1):particlePriorRead(p,e)),/immutable bootstrap predecessor/);
- const inventories={js:discoverJs(),lua:runtimeParticlePriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',rawReadFileSync)};
+ assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?pickerBeforeRead(p).subarray(1):pickerBeforeRead(p,e)),/immutable bootstrap predecessor/);
+ const inventories={js:runtimeParticlePriorInventory(integrationPriorInventory(discoverJs(),'particle'),'js',sideRead),lua:runtimeParticlePriorInventory(integrationPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'particle','lua'),'lua',sideRead)};
  for(const [kind,paths]of Object.entries(inventories)){
   assertReleaseBootstrapRawInventory(paths,kind);
   for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
    assert.throws(()=>assertReleaseBootstrapRawInventory(bad,kind),/raw discovery inventory/);
  }
- const leaf=particlePriorRead('tests/helpers/release-bootstrap-ci-source.mjs','utf8');
- const bytes=particlePriorRead('tests/helpers/release-bootstrap-ci-source.json.gz');
+ const leaf=pickerBeforeRead('tests/helpers/release-bootstrap-ci-source.mjs','utf8');
+ const bytes=pickerBeforeRead('tests/helpers/release-bootstrap-ci-source.json.gz');
  const marker="const bytes=readFileSync(new URL('./release-bootstrap-ci-source.json.gz',import.meta.url));";
  assert.equal(leaf.split(marker).length,2);
  const broken=leaf.replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);

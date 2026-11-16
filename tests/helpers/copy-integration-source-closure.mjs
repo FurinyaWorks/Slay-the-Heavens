@@ -23,7 +23,16 @@ const currentBytes=readFileSync(new URL('./closeout-source-closure.json',import.
 assert.equal(hash(currentBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','complete closeout source helper closure');
 const files={...extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure))};
 export const runtimeParticleHelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7","after":"c57ef7bc66a4c4e98a781ce32752718316266da41435b6ac9ed47c263f6d192c"},{"path":"tests/helpers/runtime-particle-source.mjs","before":null,"after":"00a50e3835bcfd6d4cfab153a9e92fdba666cd8de02c7a67539598a75dc054ab"},{"path":"tests/helpers/runtime-particle-source.json.gz","before":null,"after":"2cef28e3bd47c3638c421c9f152453b7e446501f69e32bdaac39417a3731ad6a"}];
-for(const row of runtimeParticleHelperCopies){assert.equal(files[row.path]??null,row.before);files[row.path]=row.after;}
+export const releaseSelectionMapHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
+ {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
+ {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
+];
+for(const rows of [runtimeParticleHelperCopies,releaseSelectionMapHelperCopies])for(const row of rows){
+ assert.equal(files[row.path]??null,row.before,'exact standalone Release helper-copy predecessor: '+row.path);
+ if(row.path!=='tests/helpers/closeout-source-epoch.mjs')files[row.path]=row.after;
+}
+files['tests/helpers/closeout-source-epoch.mjs']='54d949a4f3ad810aeb23bfc0a3df8f8123e21c0c3f24a8e796680484043d1318';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

@@ -12,6 +12,7 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendRuntimeParticleSource} from './runtime-particle-source.mjs';
+import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -51,7 +52,34 @@ export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preRuntimeParticleSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
-export const sourceEpoch=extendRuntimeParticleSource(preRuntimeParticleSourceEpoch);
+export const preReleaseSelectionMapSourceEpoch=preRuntimeParticleSourceEpoch;
+export const runtimeParticleSourceEpoch=extendRuntimeParticleSource(preRuntimeParticleSourceEpoch);
+export const releaseSelectionMapSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+// Join disjoint approved owners against their exact common predecessor. Both
+// standalone corpora and every original target retain their original identity.
+function joinReleaseSources(){
+const base=preRuntimeParticleSourceEpoch.proof;
+const particle=runtimeParticleSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof;
+const current={...base.current},targets={...base.targets};
+for(const side of [particle,selection]){
+ for(const [path,row]of Object.entries(side.current))if(row?.sha256!==base.current[path]?.sha256){
+  assert.deepEqual(current[path],base.current[path],'disjoint Release integration owner: '+path);
+  current[path]=row;
+ }
+ for(const [name,target]of Object.entries(side.targets)){
+  if(Object.hasOwn(targets,name))assert.deepEqual(targets[name],target,'unchanged common Release target: '+name);
+  else targets[name]=target;
+ }
+}
+targets.runtimeParticleReviewed={commit:particle.currentCommit,files:particle.current};
+targets.releaseSelectionMapReviewed={commit:selection.currentCommit,files:selection.current};
+const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
+return createSourceEpochProjector(freeze({...base,current,targets,owners,
+ currentTreeCommitted:false,currentCommit:'514de9a7b9641c7269ac81f9c7504ea7f21161e7',
+ currentCommitRole:'integration worktree capture; standalone committed product producers are retained separately',
+ releaseSelectionMapProducers:selection.releaseSelectionMapProducers}),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+export const sourceEpoch=joinReleaseSources();
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

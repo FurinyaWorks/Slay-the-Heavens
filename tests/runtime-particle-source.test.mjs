@@ -1,8 +1,9 @@
+import {integrationRead,integrationProductionRead,integrationPriorInventory} from './helpers/release-runtime-integration.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {extendRuntimeParticleSource,runtimeParticleSourcePacket,verifyParticleGitProof} from './helpers/runtime-particle-source.mjs';
-import {preRuntimeParticleSourceEpoch,sourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {preRuntimeParticleSourceEpoch,runtimeParticleSourceEpoch as sourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {assertRuntimeParticleCiCurrent,runtimeParticleCiPacket,assertRuntimeParticleRawInventory,runtimeParticlePriorInventory,runtimeParticleCiSource} from './helpers/runtime-particle-ci-source.mjs';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 const path='src/lua/abyss_monster_intent_particle_view.lua';
@@ -22,10 +23,10 @@ test('fresh production owner authorization rejects missing or changed particle s
  for(const bad of [null,current+'\n'])assert.throws(()=>sourceEpoch.preCombinedSource(path,current,{target,readSource:key=>key===path?bad:read(key)}));
 });
 test('raw CI discovery stays complete and rejects drift, duplicates, missing inputs and production projection bypass',()=>{
- assertRuntimeParticleCiCurrent();
- const js=discoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ assertRuntimeParticleCiCurrent(integrationRead('particle'));
+ const js=integrationPriorInventory(discoverJs(),'particle'),lua=integrationPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'particle','lua');
  assertRuntimeParticleRawInventory(js);assertRuntimeParticleRawInventory(lua,'lua');
- assert.deepEqual(runtimeParticlePriorInventory(js).sort(),runtimeParticleCiPacket.priorInventory.js);
+ assert.deepEqual(runtimeParticlePriorInventory(js,'js',integrationRead('particle')).sort(),runtimeParticleCiPacket.priorInventory.js);
  for(const list of [js.slice(1),[...js,js[0]],[...js,'tests/forged.test.mjs']])assert.throws(()=>assertRuntimeParticleRawInventory(list));
  const file=Object.keys(runtimeParticleCiPacket.files)[0],source=readFileSync(file,'utf8');
  for(const bad of [null,source+'\n'])assert.throws(()=>assertRuntimeParticleCiCurrent(p=>p===file?bad:readFileSync(p,'utf8')));
