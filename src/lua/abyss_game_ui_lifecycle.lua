@@ -48,6 +48,11 @@ local function advancePreparation(self,platform,dt)
     PageReveal.registerSource(platform,'mapPanel');self.mapUI:update(dt)
     self:syncController();return true
 end
+local function updateSuspended(self,dt)
+    if self.settlementRequested then self:animate(dt);return true end
+    if self.sessionPaused then self:animate(dt);self:syncController();return true end
+    return false
+end
 function M.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     local function advancePages(dt)
             PageReveal.registerSource(platform,'battlePanel')
@@ -71,7 +76,7 @@ function M.update(self,controller,platform,openingCovered,updateBossEntrance,bgm
             self:paintArtLoading()
             if controller then controller:tick() end
             if self.exitOpen or self.settlementBusy then self:syncController();return true end
-            if self.settlementRequested then self:animate(dt); return true end
+            if updateSuspended(self,dt) then return true end
             -- Count client update time within this run; menus/results never extend it.
             -- The terminal rule state can precede the last feedback animation.
             if not countRunTime(self,dt,openingCovered) then return false,"invalid_delta" end

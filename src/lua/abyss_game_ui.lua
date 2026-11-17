@@ -92,7 +92,7 @@ function M.new(root, data, presentation, clickEvent, platform)
                 if not self.deckUI:inspect(self.run,definition,upgraded) then return false end
                 self:refresh();return true
             end })
-    platform.deckChanged=changed
+    platform.deckChanged=View.deckChanged(self,owner,platform,changed)
     self.deckUI = DeckUI.new(child("deckPanel"), presentation, clickEvent, platform, function() return self:closeDeck() end)
     do
         self.choiceUI = require("abyss_choice_ui").new(child("choicePanel"),presentation,clickEvent,platform,
@@ -123,6 +123,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openMenu = Overlays.openMenu(self,owner)
     self.closeExit = Overlays.closeExit(self,exitPanel,owner)
     self.confirmExit = Overlays.confirmExit(self,owner)
+    require('abyss_game_ui_navigation').install(self,owner,neowHistory)
 
     self.openDeck = Overlays.openDeck(inputCovered,self)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)

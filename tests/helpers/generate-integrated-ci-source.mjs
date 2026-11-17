@@ -19,8 +19,11 @@ for(const revision of [...Object.values(sources),'HEAD'])for(const p of git(['di
 for(const p of [...git(['diff','--name-only','HEAD']).trim().split('\n'),...git(['ls-files','--others','--exclude-standard','tests']).trim().split('\n')])all.add(p);
 const production=['src/lua/abyss_game_ui_menu_view.lua','src/lua/abyss_game_ui_view.lua','src/lua/abyss_v25_menu_view.lua'];
 production.forEach(p=>all.add(p));
+// Full reviewed UI builds need these exact release inputs even in a shallow checkout.
+const releaseInputs=['package.json','package-lock.json','.release-please-manifest.json','CHANGELOG.md','data/release/publications.json'];
+releaseInputs.forEach(p=>all.add(p));
 const paths=[...all].filter(p=>p&&existsSync(p)&&p!=='tests/helpers/integrated-ci-binding.mjs'&&(
- production.includes(p)||p==='.gitattributes'||p==='package.json'||p==='package-lock.json'||p==='docs/legal/assets.json'||/^(scripts|tests|data|config|tools|\.github)\//.test(p))&&(/\.(mjs|json|lua|yml|yaml)$/.test(p)||p==='.gitattributes')).sort();
+ releaseInputs.includes(p)||production.includes(p)||p==='.gitattributes'||p==='package.json'||p==='package-lock.json'||p==='docs/legal/assets.json'||/^(scripts|tests|data|config|tools|\.github)\//.test(p))&&(/\.(mjs|json|lua|yml|yaml)$/.test(p)||p==='.gitattributes'||releaseInputs.includes(p))).sort();
 const requests=paths.flatMap(p=>Object.values(sources).map(revision=>revision+':'+p));
 const payload=execFileSync('git',['cat-file','--batch'],{input:requests.join('\n')+'\n',maxBuffer:64*1024*1024}),viewsByRef=new Map();
 let offset=0;
@@ -35,8 +38,17 @@ for(const ref of requests){
 assert.equal(offset,payload.length,'complete Git batch response');
 const files={};for(const p of paths){const views={};for(const [name,revision]of Object.entries(sources))views[name]=viewsByRef.get(revision+':'+p);
  files[p]={current:bind(norm(readFileSync(p,'utf8'))),views};}
-const closure={};for(const p of ['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz'])
+const closure={};for(const p of ['tests/helpers/closeout-source-epoch.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz'])
  closure[p]={before:feedback.helperClosure[p]?.after??null,after:hash(p.endsWith('.gz')?readFileSync(p):norm(readFileSync(p,'utf8')))};
+// Continue the live copy dependency without relabelling the immutable closeout
+// manifest or any complete historical runtime source view.
+const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
+const oldClosure=readFileSync('tests/helpers/closeout-source-closure.json');
+assert.equal(hash(oldClosure),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5');
+const runtimeBefore=JSON.parse(oldClosure)[runtime];
+assert.equal(runtimeBefore,'5341c965ce41e956f153caf90c2e2097ccaee447a2d1e53a5aa666d15a238882');
+for(const view of Object.values(files[runtime].views))assert.equal(view.sha256,runtimeBefore,'complete old runtime helper view');
+closure[runtime]={before:runtimeBefore,after:files[runtime].current.sha256};
 const binaryViews={'tests/helpers/menu-red-production-source.json.gz':{current:closure['tests/helpers/menu-red-production-source.json.gz'].after,
  views:{menu:{path:'tests/helpers/menu-red-before-integration-production-source.json.gz',sha256:'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae'}}}};
 const inventories=Object.fromEntries(Object.entries(sources).map(([name,revision])=>[name,{

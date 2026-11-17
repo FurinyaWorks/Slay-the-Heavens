@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {replayReviewedSelection} from './helpers/replay-reviewed-selection.mjs';
 import assert from 'node:assert/strict';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
@@ -102,13 +103,17 @@ test('official selection flags retain readable shared ink and their aligned nati
  const misaligned=structuredClone(panel);child(child(misaligned,'confirm'),'hit').size=[180,54];
  assert.throws(()=>assertFlagInk(misaligned,theme),/original native hit remains aligned/,'old hit bounds must fail');
 });
+test('historical official card host capacity and readability retain all original assertions',t=>{
+ t.diagnostic(replayReviewedSelection('tests/official-assets-legibility.test.mjs'));
+});
+
 test('official card hosts share the measured back/front frame, visible cost and native reading minimum',()=>{
  const source=JSON.stringify(nativeTheme),theme=officialAssetsTheme(nativeTheme);
  const layout=gameLayout(),template=deckCardTemplate();applyOfficialAssets([layout,template],theme);
  const battleCards=new Set(all(child(layout,'battlePanel')).filter(n=>child(n,'roundFrame')&&child(n,'costDisc')));
  assert.equal(battleCards.size,10);
  const cards=[...all(layout),...all(template)].filter(n=>child(n,'roundFrame')&&child(n,'costDisc'));
- assert(cards.length>=40);
+ assert.equal(cards.length,38,'current two-choice and three-picker profile plus the shared deck template');
  for(const card of cards)assertSharedCard(card,theme);
  const old=structuredClone(cards[0]);old.children=children(old).filter(n=>!['stsReferenceBack','stsReferenceChrome'].includes(n.name));
  assert.throws(()=>assertSharedCard(old,theme),/shared StS back and front/,'old card frame rollback must fail');
@@ -118,6 +123,41 @@ test('official card hosts share the measured back/front frame, visible cost and 
  assertSharedCard(all(tokenTemplate).find(n=>child(n,'roundFrame')&&child(n,'costDisc')),changed);
  assert.deepEqual(theme.cardSkin.costTone,nativeTheme.cardSkin.costTone,'red/green cost semantics');
  assert.equal(JSON.stringify(nativeTheme),source,'candidate must not change the legacy theme');
+});
+
+test('both official build orders retain exact choice and picker semantics and every readable card face',()=>{
+ const expected=[
+  ...Array.from({length:10},(_,i)=>'/SlayTheAbyss/battlePanel/card'+(i+1)),
+  ...Array.from({length:7},(_,i)=>'/SlayTheAbyss/nodePanel/shopView/card'+(i+1)),
+  ...Array.from({length:3},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/card'+(i+1)),
+  ...['before','after','target'].map(n=>'/SlayTheAbyss/nodePanel/pickerView/'+n),
+  ...Array.from({length:12},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/forgeGrid/card'+(i+1)),
+  ...Array.from({length:2},(_,i)=>'/SlayTheAbyss/choicePanel/card'+(i+1)+'/face'),
+  '/AbyssDeckCard/face',
+ ].sort();
+ const paths=(node,prefix='')=>{
+  const path=prefix+'/'+node.name;return [[path,node],...children(node).flatMap(c=>paths(c,path))];
+ };
+ for(const themeFirst of [false,true]){
+  const theme=officialAssetsTheme(nativeTheme),layout=gameLayout(themeFirst?theme:nativeTheme),template=deckCardTemplate();
+  const picker=child(child(layout,'nodePanel'),'pickerView'),choice=child(layout,'choicePanel');
+  const retained=[...['card1','card2','card3'].map(n=>child(picker,n)),...['card1','card2'].map(n=>child(choice,n))];
+  const hits=retained.map(n=>child(n,'hit'));
+  const result=applyOfficialAssets([layout,template],theme);
+  assert.deepEqual(children(choice).filter(n=>/^card\d+$/.test(n.name)).map(n=>n.name),['card1','card2']);
+  assert.deepEqual(children(picker).filter(n=>/^card\d+$/.test(n.name)).map(n=>n.name),['card1','card2','card3','card4','card5','card6']);
+  for(let i=1;i<=3;i++)assert(child(child(picker,'card'+i),'stsReferenceChrome'),'visible picker retains a full card face');
+  for(let i=4;i<=6;i++){
+   const parent=child(picker,'card'+i);assert.equal(parent.kind,'container');
+   assert.equal(parent.visible,false);assert.deepEqual(children(parent),[],'unused semantic parent has no serialized card face');
+  }
+  retained.forEach((n,i)=>assert.strictEqual(child(n,'hit'),hits[i],'retained native receiver identity'));
+  const cards=[...paths(layout),...paths(template)].filter(([,n])=>child(n,'stsReferenceChrome'));
+  assert.deepEqual(cards.map(([p])=>p).sort(),expected,'both build orders preserve exactly the same active card hosts');
+  assert.equal(result.cardHosts,cards.length+12,'host accounting retires only the twelve-card duplicate selection deck');
+  for(const [,card]of cards)assertSharedCard(card,theme);
+  assert(!all(layout).some(n=>n.name==='StsAngerReferencePrototype'));
+ }
 });
 test('official battle reuses the approved complete V25 architecture instead of stretched pillar icons',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);applyOfficialAssets([layout],theme);

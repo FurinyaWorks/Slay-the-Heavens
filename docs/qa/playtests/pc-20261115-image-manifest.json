@@ -1,0 +1,86 @@
+[
+  {
+    "number": 1,
+    "file": "screenshots/01-map-legend-offset.png",
+    "description": "地图路线偏向右侧、图例遮挡部分路线",
+    "sha256": "9b4a5e5e72a475fcdd0067f7a5a498fa8c790844e8f064ab2502949b56625bce",
+    "bytes": 310622
+  },
+  {
+    "number": 2,
+    "file": "screenshots/02-back-to-battle-ribbon.png",
+    "description": "返回战斗按钮样式",
+    "sha256": "4ed05d3a8cdeefed9ffb5618f3257a42fa9cbf8a73a678e524471292ed372eba",
+    "bytes": 47429
+  },
+  {
+    "number": 3,
+    "file": "screenshots/03-potion-dialog-style.png",
+    "description": "药水使用弹窗与战斗界面",
+    "sha256": "f4013ac88fedbd9161673fcbb38b13b1483ce0a82ea1c2e392c36b1f7e6e0698",
+    "bytes": 1087373
+  },
+  {
+    "number": 4,
+    "file": "screenshots/04-battle-target-crosses.png",
+    "description": "敌人锁定四角加号与战斗截图",
+    "sha256": "267cdb777c7009bf8293b08ec6baa7ca9c0e7ce9e699ac63de7273b966042b72",
+    "bytes": 747989
+  },
+  {
+    "number": 5,
+    "file": "screenshots/05-golden-idol-event.png",
+    "description": "金翼雕像事件大面积黑底和继续按钮",
+    "sha256": "c2ba8347c6124ce96211c788cdfc3519e06ec677f7682d8eaa151b3037d3b6ec",
+    "bytes": 411738
+  },
+  {
+    "number": 6,
+    "file": "screenshots/06-character-selection-dark.png",
+    "description": "选角主视觉与半透明层",
+    "sha256": "55a7399d6323fcab3d6c80b486295570db1d34a809172970c60d8013bfc6557e",
+    "bytes": 852484
+  },
+  {
+    "number": 7,
+    "file": "screenshots/07-rest-upgrade-page.png",
+    "description": "营地锻造卡牌列表与按钮",
+    "sha256": "2480c1bbd4f8195b0f3a2a19e99f3456683f0acbed04aa7557edd80a881c485b",
+    "bytes": 459215
+  },
+  {
+    "number": 8,
+    "file": "screenshots/08-shop-item-overlap.png",
+    "description": "商店商品与卡牌遮挡",
+    "sha256": "99fda58fcee085624f889ff4264d39e9f2350871215b2d185563a9f1f8c12774",
+    "bytes": 716810
+  },
+  {
+    "number": 9,
+    "file": "screenshots/09-shop-remove-card-pager.png",
+    "description": "商店移除卡牌服务的分页页面",
+    "sha256": "2a762a58f9eea50dcfb36ec905aa9a92e0e73a848e5ea1c734df57365a59de86",
+    "bytes": 411181
+  },
+  {
+    "number": 10,
+    "file": "screenshots/10-sleep-intent-icon.png",
+    "description": "沉眠遗卫的睡眠状态显示",
+    "sha256": "73e160e13fe7a69cc852f4b6c764b63a5187916dc86fda123e28d59d10f6d1b8",
+    "bytes": 1029414
+  },
+  {
+    "number": 11,
+    "file": "screenshots/11-all-out-attack-card.png",
+    "description": "全力进攻牌面及红色向下箭头",
+    "sha256": "10fc7d11aa6b67fbc61cd38e937a344e4d5e37d544376b0e4c6cbb21e571ca20",
+    "bytes": 486967
+  },
+  {
+    "number": 12,
+    "file": "screenshots/12-battle-card-yellow-line.png",
+    "description": "战斗出牌线/卡牌布局/多任务桌面",
+    "sha256": "64869438da2b9f93e4e9b28adb95b0fcab8b2602ce4ae1a13614965bd9277e03",
+    "bytes": 707556
+  }
+]

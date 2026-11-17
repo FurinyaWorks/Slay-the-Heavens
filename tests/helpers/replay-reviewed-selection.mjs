@@ -7,8 +7,15 @@ import {createHash} from 'node:crypto';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
-export function replayReviewedSelection(){
- const script='tests/sts-character-reference.test.mjs',root=process.cwd();
+const reviewedContracts=Object.freeze({
+ 'tests/sts-character-reference.test.mjs':5,
+ 'tests/official-assets-legibility.test.mjs':10,
+ 'tests/sts-card-reference.test.mjs':13,
+ 'tests/official-assets.test.mjs':6,
+});
+export function replayReviewedSelection(script='tests/sts-character-reference.test.mjs'){
+ assert(Object.hasOwn(reviewedContracts,script),'exact reviewed selection contract');
+ const expected=reviewedContracts[script],root=process.cwd();
  assertIntegratedCurrent();
  for(const [path,row]of Object.entries(sourceEpoch.proof.current))
   assert.equal(hash(norm(readFileSync(path,'utf8'))),row.sha256,'fresh current production owner: '+path);
@@ -27,6 +34,14 @@ export function replayReviewedSelection(){
   for(const [path,row]of Object.entries(sourceEpoch.proof.targets.releaseReviewed.files)){
    if(!row)continue;const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,row.source);
   }
+  // The full official-assets view authenticates all releaseBuild input files.
+  // Materialize exact committed predecessors, never today's release inputs.
+  for(const path of ['package.json','package-lock.json','.release-please-manifest.json','CHANGELOG.md','data/release/publications.json']){
+   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
+   const original=integratedCiProof.files[path]?.views.release;
+   assert(original,'complete frozen release build input: '+path);
+   writeFileSync(target,original.source);
+  }
   for(const path of ['art','node_modules']){
    mkdirSync(dirname(join(directory,path)),{recursive:true});symlinkSync(join(root,path),join(directory,path),process.platform==='win32'?'junction':'dir');
   }
@@ -35,8 +50,8 @@ export function replayReviewedSelection(){
   const env={...process.env};delete env.NODE_TEST_CONTEXT;
   const result=spawnSync(process.execPath,['--test','--test-reporter=tap',script],{cwd:directory,encoding:'utf8',timeout:remaining(),maxBuffer:4*1024*1024,windowsHide:true,env});
   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);
-  assert.match(result.stdout,/^# tests 5$/m,'all five original selection contracts execute');
-  assert.match(result.stdout,/^# pass 5$/m);assert.match(result.stdout,/^# fail 0$/m);assert.match(result.stdout,/^# skipped 0$/m);
+  assert.match(result.stdout,new RegExp('^# tests '+expected+'$','m'),'complete original selection contracts execute');
+  assert.match(result.stdout,new RegExp('^# pass '+expected+'$','m'));assert.match(result.stdout,/^# fail 0$/m);assert.match(result.stdout,/^# skipped 0$/m);
   return result.stdout;
  }finally{
   const actual=realpathSync(directory),within=relative(resolve(tmpdir()),actual);

@@ -60,10 +60,10 @@ test('current Watcher SCC analysis includes exact release additions and every or
  const raw=discoverSources(),sources=Object.fromEntries(Object.entries(raw).map(([p,s])=>[p.split('/').at(-1).slice(0,-4),s]));
  const prior=Object.keys(ciRepairSourceEpoch.proof.current).filter(p=>p.startsWith('src/lua/')).sort();
  const added=Object.keys(raw).filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();
- assert.deepEqual(added,['lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua'));
+ assert.deepEqual(added,['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua'));
  assert.deepEqual(Object.keys(raw).filter(p=>!added.includes(p)).sort(),prior,'complete original 346-module corpus retained');
  assert.deepEqual(Object.keys(raw).sort(),Object.keys(currentEpoch.proof.current).filter(p=>p.startsWith('src/lua/')).sort());
- assert.equal(Object.keys(raw).length,349);
+ assert.equal(Object.keys(raw).length,351);
  for(const [path,source]of Object.entries(raw))assert.equal(source.replaceAll('\r\n','\n'),currentEpoch.proof.current[path].source,path);
  const policy=JSON.parse(read('config/architecture.json'));
  for(const path of added){

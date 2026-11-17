@@ -1,5 +1,6 @@
 import {validateOfficialAssets,officialAssetsArgs,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
+import {attachLowCostArt} from './lowcost-art.mjs';
 import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';
 import {resolveArtFeatures,artFeatureArgs,artFeatureBuildArgs,artFeatureReceipt,artFeaturesSource,artFeatureModule,withCandidateArtDefaults} from './art-features.mjs';
 import {portraitSourceInputs,portraitRuntimeInputs,lowpolySelectPath,portraitModule,bindPortraitTemplates,portraitRuntimeInventory} from './official-portraits.mjs';
@@ -210,7 +211,9 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
           inputs:records.map(({path})=>({...fileRecord(join(root,path),root),path}))};
       }
       const actorTemplates=templates.filter(template=>template.name===monsterActorTemplateName);
-      const expectedActor=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[monsterActorTemplate(monster)],componentWidgets).templates[0]:monsterActorTemplate(monster);
+      const actorSource=monsterActorTemplate(monster);
+      if(officialAssets)attachLowCostArt(actorSource);
+      const expectedActor=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[actorSource],componentWidgets).templates[0]:actorSource;
       if(actorTemplates.length!==1||JSON.stringify(actorTemplates[0])!==JSON.stringify(expectedActor))throw Error('Monster actor template differs from candidate features or source');
       const expected=`-- Generated from the bounded native monster registry.\nreturn ${toLua(monster??{})}\n`;
       if(readFileSync(join(generated,'abyss_monster_art_data.lua'),'utf8')!==expected)throw Error('Monster artwork payload differs from candidate features or source');

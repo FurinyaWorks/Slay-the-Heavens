@@ -5,10 +5,15 @@ local C = Theme.color
 local layout = Theme.layout.nativeNode
 local M = {}
 
+local function currentNodeFlow(ui)
+    if ui.run then return ui.run.nodeFlow end
+end
+
 local function neowChoiceChrome(ctx, box, look, hover, pressed)
     local chrome = box:GetChild('stsNeowChrome')
     if not chrome then return end
-    local flow = ctx.self.run.nodeFlow
+    -- Hiding/resetting the page also runs after navigation retires its Run.
+    local flow = currentNodeFlow(ctx.self)
     local active = flow and flow.event and flow.event.id == 'neow'
     chrome:SetVisible(active == true)
     for _,name in ipairs({'v25BaseMaterial','v25StateChrome','v25Corner0_0','v25Corner0_1','v25Corner1_0','v25Corner1_1'})do

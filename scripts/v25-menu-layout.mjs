@@ -29,6 +29,8 @@ export function applyV25MenuLayout(layout,theme){
  }
  if(!get(menu,'menuRuinsScene'))menu.children.splice(1,0,menuRedScene());
  style(start,theme);start.position=theme.menuPresentation.start.slice(0,2);
+ const resume=get(menu,'continueRun');style(resume,theme);
+ resume.position=[theme.menuPresentation.start[0],theme.menuPresentation.start[1]+64];
  let chrome=get(menu,'v25MainMenu');
  if(!chrome){
   chrome={name:'v25MainMenu',kind:'container',size:[1280,720],children:[]};

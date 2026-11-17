@@ -83,8 +83,13 @@ local count,removed=created,destroyed;local shown=0;local cover=root:GetChild('p
 cover.SetVisible=function(self,v)if v then shown=shown+1 end;return visibility(self,v)end
 local before=F.Combat.copy(run.combat.draw);local initialSession=deck.openSession;local back=panel:GetChild('pileReturn'):GetChild('hit')
 back.listeners.down({touchId=44});sizes={}
+local battleRenders=0;local renderBattle=host.battleUI.render
+host.battleUI.render=function(self,...)battleRenders=battleRenders+1;return renderBattle(self,...)end
 for i=1,100 do
- assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('hit').click());assert(not host.pageReveal:covered(),'same-ready metadata sort acquired a full page cover');host:update(0);Art.update();host.pageReveal:step(Gate.intent(host))
+ local renders=battleRenders
+ assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('hit').click())
+ assert(battleRenders==renders,'read-only pile sorting repainted the covered battle')
+ assert(not host.pageReveal:covered(),'same-ready metadata sort acquired a full page cover');host:update(0);Art.update();host.pageReveal:step(Gate.intent(host))
  assert(not host.pageReveal:covered()and deck.openSession==initialSession)
 end
 assert(#sizes==100);for _,n in ipairs(sizes)do assert(n==3,'sorting recalibrated an already known grid base')end
@@ -105,6 +110,13 @@ assert(host:closeDeck());settle()
 -- The second native grid has an independent one-based callback contract.
 local choice={token='grid-base',cards=F.Combat.copy(run.combat.draw),op='discover'};assert(deck:open(run,choice));deck:update();assert(deck.indexBase==1);assert(deck:close())
 assert(host:openDeck('draw'));settle();assert(deck.indexBase==0,'browser/pile grids shared an index calibration');assert(host:closeDeck());settle()
+local renders=battleRenders;host:refresh();assert(battleRenders>renders,'ordinary Host changes must still render the battle')
+assert(host:openDeck());settle();renders=battleRenders
+for _,mode in ipairs({'original','type','cost','name'})do assert(deck:setSort(mode))end
+assert(not deck:setFilter('attack'),'official browser must not expose the legacy filter')
+assert(battleRenders==renders,'master deck sorting repainted the covered battle')
+assert(host:closeDeck());assert(battleRenders>renders,'closing the deck must refresh the returning battle');settle()
+host.battleUI.render=renderBattle
 run.combat.draw={};assert(host:openDeck('draw'));settle();assert(#deck.cards==0 and not deck.pendingGrid and not deck.calibrating,'N to EMPTY left preparation pending')
 print('DECK_REUSE_PASS')`);
 

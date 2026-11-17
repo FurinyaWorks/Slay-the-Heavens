@@ -1,9 +1,95 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { compareNativeCandidate, requireSourceSha, candidateEntrySource } from '../scripts/native-candidate-audit.mjs';
+import { compareNativeCandidate, requireSourceSha, candidateEntrySource,nativeControlsEqual } from '../scripts/native-candidate-audit.mjs';
+import {auditPortraitTemplateBindings} from '../scripts/audit-native-candidate.mjs';
+import {selectionHalfImage,selectionHalfTemplate} from '../scripts/lumine-selection-background.mjs';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/native-candidate-audit/readback-slice.json', import.meta.url)));
+
+test('native defaults stay specific to container size, true text outline and non-pointer false annotations',()=>{
+ const eq=(source,actual)=>nativeControlsEqual([source],[actual]);
+ const container={name:'box',kind:'container'};
+ assert(eq(container,{...container,size:[150,150]}));
+ assert(!eq({...container,size:[150,150]},container),'missing read-back rectangle is not a source default');
+ assert(!eq(container,{...container,size:[149,150]}));
+ assert(!eq({name:'image',kind:'image'},{name:'image',kind:'image',size:[80,80]}));
+ for(const kind of ['container','image','text','textWindow']){
+  const source={name:'box',kind,raycastTarget:false},actual={name:'box',kind,...(kind==='container'?{size:[150,150]}:{})};
+  assert(eq(source,actual));assert(!eq({...source,raycastTarget:true},actual));
+ }
+ assert(!eq({name:'hit',kind:'cursorArea',raycastTarget:false},{name:'hit',kind:'cursorArea'}));
+ assert(eq({name:'label',kind:'text',text:{outline:true}},{name:'label',kind:'text',text:{}}));
+ assert(!eq({name:'label',kind:'text',text:{outline:false}},{name:'label',kind:'text',text:{}}));
+ for(const kind of ['image','unregistered'])assert(!eq({name:'foreign',kind,text:{outline:true}},{name:'foreign',kind,text:{}}));
+ for(const metadata of [{raycastTarget:false},{outline:true},{size:[150,150]}])
+  assert(!eq({...container,metadata},{...container,size:[150,150],metadata:{}}));
+});
+
+test('fill progress matches only the exact native percentage encoding, never an epsilon or opaque payload',()=>{
+ const image=amount=>({name:'image',kind:'image',fill:{shape:'horizontal',from:'left',amount}});
+ for(const amount of [0,.001,.514,.995,1]){
+  const decoded=Math.round(amount*100)/100;
+  assert(nativeControlsEqual([image(amount)],[image(decoded)]));
+  assert(!nativeControlsEqual([image(amount)],[image(decoded===1?.99:decoded+.01)]));
+ }
+ for(const amount of [-.1,1.1,NaN,Infinity])assert(!nativeControlsEqual([image(amount)],[image(amount)]));
+ const source=image(.514),actual=image(.51);
+ assert(!nativeControlsEqual([{...source,metadata:{fill:{amount:.514}}}],[{...actual,metadata:{fill:{amount:.51}}}]));
+ const omitted=image(undefined);assert(nativeControlsEqual([omitted],[image(1)]));
+});
+
+test('native anchor f32 and XYZ-to-Z projection retain one-ULP and opaque metadata rejection',()=>{
+ const box={name:'box',kind:'container',size:[150,150],anchor:{min:[.185,.31],max:[.435,.56]},rotation:[71.71453027000204,0,-102.00624798435123]};
+ const decoded={...box,anchor:{min:box.anchor.min.map(Math.fround),max:box.anchor.max.map(Math.fround)},rotation:box.rotation.map(Math.fround)};
+ assert(nativeControlsEqual([box],[decoded]));
+ const wrong=structuredClone(decoded);wrong.anchor.min[0]+=2**-26;assert(!nativeControlsEqual([box],[wrong]));
+ const wrongRotation=structuredClone(decoded);wrongRotation.rotation[0]+=2**-17;assert(!nativeControlsEqual([box],[wrongRotation]));
+ for(const z of [0,90,180,-90]){
+  const source={name:'shape',kind:'image',rotation:[0,0,z]},actual={name:'shape',kind:'image',...(z?{rotation:z}:{})};
+  assert(nativeControlsEqual([source],[actual]));
+ }
+ assert(!nativeControlsEqual([{...box,rotation:[1,2]}],[{...box,rotation:[1,2]}]));
+ assert(!nativeControlsEqual([{...box,metadata:{anchor:box.anchor}}],[{...decoded,metadata:{anchor:decoded.anchor}}]));
+ assert(!nativeControlsEqual([{...box,rotation:[0,0,1]}],[{...decoded,rotation:1+2**-23}]));
+ assert(!nativeControlsEqual([{...box,kind:'unregistered'}],[{...decoded,kind:'unregistered'}]));
+ assert(!nativeControlsEqual([{name:'foreign',kind:'unregistered',rotation:[0,0,90]}],[{name:'foreign',kind:'unregistered',rotation:90}]));
+});
+
+test('unencoded gallery imageType remains a real difference, including stretch',()=>{
+ for(const imageType of ['basic','stretch']){
+  const source={name:'gallery',kind:'image',image:106056,imageType};
+  assert(!nativeControlsEqual([source],[{name:'gallery',kind:'image',image:106056}]));
+ }
+});
+
+test('official selection audit binds the read-back half triangle to the same candidate and distinct native IDs',()=>{
+ const sourceSha='a'.repeat(40),candidateHash='b'.repeat(64);
+ const rows=[{template:{name:'AbyssReadyCardImage'},templateIndex:77},{template:{name:'AbyssReadyCardGroup'},templateIndex:88},
+  {template:selectionHalfImage(),templateIndex:99}];
+ const receipt={sourceCommit:sourceSha,candidate:{sha256:candidateHash},officialPortraits:{imageTemplateIndex:77,containerTemplateIndex:88,selectionHalfImageTemplateIndex:99}};
+ const options={sourceSha,candidateHash,officialAssets:true,selectionAvatar:true};
+ assert.deepEqual(auditPortraitTemplateBindings(receipt,rows,options),{image:rows[0],container:rows[1],half:rows[2]});
+ assert.deepEqual(auditPortraitTemplateBindings(receipt,rows,{...options,officialAssets:false}),{image:rows[0],container:rows[1]});
+ for(const bad of [[],rows.slice(0,2),[...rows,rows[2]],rows.map((row,i)=>i===2?{...row,templateIndex:0}:row),
+  rows.map((row,i)=>i===2?{...row,templateIndex:77}:row),[...rows,{template:{name:'foreign'},templateIndex:99}]])
+  assert.throws(()=>auditPortraitTemplateBindings(receipt,bad,options),/template binding/);
+ for(const changed of [{...receipt,sourceCommit:'c'.repeat(40)},{...receipt,candidate:{sha256:'d'.repeat(64)}},
+  {...receipt,officialPortraits:{...receipt.officialPortraits,selectionHalfImageTemplateIndex:100}}])
+  assert.throws(()=>auditPortraitTemplateBindings(changed,rows,options),/template binding/);
+});
+
+test('official selection half-template still undergoes complete ID and geometry readback comparison',()=>{
+ const check=change=>audit(input=>{
+  const wanted={template:selectionHalfImage(),templateIndex:99};
+  input.expected.runtimeTemplates=[wanted];input.actual.runtimeTemplates=[structuredClone(wanted)];
+  change(input.actual.runtimeTemplates);
+ });
+ assert.equal(check(()=>{}).ok,true);
+ for(const change of [rows=>rows.pop(),rows=>rows.push(structuredClone(rows[0])),rows=>{rows[0].templateIndex=100;},
+  rows=>{rows[0].template.fill.amount=.75;},rows=>{rows[0].template.image=100001;},rows=>{rows[0].template.name=selectionHalfTemplate+'Changed';}])
+  assert.equal(check(change).ok,false);
+});
 test('only a receipt bound to the exact candidate can add its exact entry marker', () => {
   const source = 'local view\nreturn view\n', hash = 'a'.repeat(64);
   const receipt = { buildId: '86e30616-6b6a-408e-b8bd-6491b9e2793c', candidate: { sha256: hash } };

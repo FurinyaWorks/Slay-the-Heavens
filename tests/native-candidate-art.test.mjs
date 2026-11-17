@@ -2,6 +2,7 @@ import {prepareMonsterArt} from '../scripts/monster-art.mjs';
 import {portraitInputs} from '../scripts/official-portraits.mjs';
 import {readyArtInputs,readyArtSourceInputs} from '../scripts/art/ready-card-runtime.mjs';
 import {backgroundInputs} from '../scripts/official-background.mjs';
+import {lumineSelectionPath} from '../scripts/lumine-selection-background.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { cpSync, mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, linkSync, symlinkSync, realpathSync } from 'node:fs';
@@ -36,13 +37,14 @@ export class Client {
  }
 }
 `;
-function fixture(t,{monsterOnly=false}={}) {
+function fixture(t,{monsterOnly=false,officialAssets=false}={}) {
   mkdirSync(join(repo,'build'),{recursive:true});
   const root=mkdtempSync(join(repo,'build/native-art-entry-'));
   t.after(()=>rmSync(root,{recursive:true,force:true}));
   for(const file of ['src/lua','data','scripts','tools','art/monsters/acid_slime_m/native-art-r02','package.json','package-lock.json','CHANGELOG.md','.release-please-manifest.json'])
     cpSync(join(repo,file),join(root,file),{recursive:true});
   const put=(file,bytes)=>{const path=join(root,file);mkdirSync(dirname(path),{recursive:true});writeFileSync(path,bytes);return path;};
+  if(officialAssets)put(lumineSelectionPath,readFileSync(join(repo,lumineSelectionPath)));
   // This isolated experiment exercises the opt-in renderer, not production permission.
   // The explicit test policy remains an ordinary hashed source input.
   if(!monsterOnly)put('data/release/candidate-art-policy.json',JSON.stringify({schemaVersion:1,disabledFeatures:{}}));
@@ -335,6 +337,29 @@ test('MCP mock: explicit monster-only CLI packages approved candidate drawing wh
  assert.equal(receipt.payloadDigest,payloadDigest(sourceInputs(f.root,{artFeatures:flags,toolchainIdentity:receipt.toolchainIdentity})));
  assert.equal(receipt.statuses.playtest,'not_run');assert.equal(receipt.liveWriteEnabled,false);
 });
+
+test('MCP mock: official-assets candidate preserves the complete low-cost actor template',t=>{
+ const f=fixture(t,{officialAssets:true}),run=f.api({officialAssets:true,nativePageLifecycle:true});success(run);
+ const receipt=run.receipt();
+ assert.equal(receipt.statuses.staticCheck,'pass');assert.equal(receipt.artFeatures.flags.monsters,false);
+ assert.equal(receipt.uiProfile.nativePageLifecycle,true);
+ const actor=run.calls.find(c=>c.name==='scene_add_client_template'&&c.args.template.name==='AbyssMonsterActor').args.template;
+ const pool=actor.children.find(n=>n.name==='portraitArt');
+ assert.equal(pool.children.length,32);assert.equal(pool.visible,false);assert.equal(pool.raycastTarget,false);
+ assert.deepEqual(pool.children.map(n=>n.name),Array.from({length:32},(_,i)=>'shape'+i));
+ assert(pool.children.every(n=>n.kind==='image'&&n.image===100001&&n.visible===false&&n.raycastTarget===false));
+ assert.equal(receipt.statuses.officialImport,'not_run');assert.equal(receipt.liveWriteEnabled,false);
+});
+
+for(const [label,edit]of [['missing shape','pool.children.pop()'],['changed shape',"pool.children[0].colour='#FF0000'"]])
+ test(`MCP mock: changed official-assets actor ${label} rejects before connection`,t=>{
+  const f=fixture(t,{officialAssets:true}),path=join(f.root,'scripts/build-ui.mjs');
+  writeFileSync(path,readFileSync(path,'utf8')+`\nconst p=join(process.argv[2],'game-ui-templates.json'),tree=JSON.parse(readFileSync(p,'utf8'));
+const actor=tree.find(n=>n.name==='AbyssMonsterActor'),pool=actor.children.find(n=>n.name==='portraitArt');
+${edit};writeFileSync(p,JSON.stringify(tree));`);
+  const run=f.api({officialAssets:true,nativePageLifecycle:true});
+  assert.notEqual(run.result.status,0);assert.match(run.result.stderr,/Monster actor template differs/);assert.deepEqual(run.calls,[]);
+ });
 
 for(const [label,edit,pattern]of [
  ['payload',"writeFileSync(join(process.argv[2],'abyss_monster_art_data.lua'),'return {}');",/Monster artwork payload differs/],
