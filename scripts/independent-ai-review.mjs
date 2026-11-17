@@ -40,6 +40,29 @@ function trusted(review,permissions){
 const reviewOrder=(a,b)=>Date.parse(a.submitted_at)-Date.parse(b.submitted_at)||a.id-b.id;
 const treeOf=commit=>commit?.tree?.sha??commit?.commit?.tree?.sha;
 
+// Source trust is checked by both the running producer and its consumers.
+// Completion/attempt/artifact checks belong to the consumer, not this helper.
+export const CLOUD_GATE_BOOTSTRAP_BASE='c2409ad750c15124b7b843c6bbfa5b222537cb75';
+export function cloudGateSourceErrors(run,{repo,head,base,ref,bootstrap,coordinator,reviewedBranch}={}){
+ const errors=[];
+ if(!projectRepositoryMatches(run?.repository,repo)||run?.path!=='.github/workflows/licenses.yml'||
+  !['workflow_dispatch','workflow_run'].includes(run?.event)||!sha(head)||!sha(base)||
+  typeof ref!=='string'||!ref.startsWith('refs/heads/')||run?.head_branch!==ref.slice(11)||
+  run?.head_repository!==undefined&&!projectRepositoryMatches(run.head_repository,repo))
+  errors.push('Cloud review gate has a foreign repository, workflow, event or source ref');
+ if(bootstrap===false){
+  if(ref!=='refs/heads/develop'||run?.head_sha!==base)
+   errors.push('Normal cloud review gate must execute the actual develop BASE source');
+ }else if(bootstrap===true){
+  if(base!==CLOUD_GATE_BOOTSTRAP_BASE||run?.event!=='workflow_dispatch'||!text(reviewedBranch)||
+   ref!=='refs/heads/'+reviewedBranch||ref==='refs/heads/develop'||run?.head_sha!==head||
+   !TRUSTED_REVIEW_COORDINATOR_IDS.includes(coordinator?.id)||run?.actor?.id!==coordinator.id||
+   run?.triggering_actor?.id!==coordinator.id)
+   errors.push('Bootstrap cloud review gate requires the fixed BASE, reviewed branch and actual coordinator dispatcher');
+ }else errors.push('Explicit cloud review bootstrap mode is required');
+ return errors;
+}
+
 // Pure payload validation for a coordinator before submitting a Review. This
 // does not prove server authorship, repository role or actual session provenance;
 // authorization still requires collectIndependentAiReview's real server records.

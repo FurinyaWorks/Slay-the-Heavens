@@ -869,9 +869,11 @@ test('documentation waiver rejects agent instruction entrypoints in every allowe
 import {createHash} from 'node:crypto';
 import {deflateRawSync} from 'node:zlib';
 import {currentFastQualityJobs} from '../scripts/pr-quality-evidence.mjs';
-import {validateIndependentAiReview,INDEPENDENT_AI_REVIEW_MARKER} from '../scripts/independent-ai-review.mjs';
-function nativeDeliveryFixture(){
+import {validateIndependentAiReview,INDEPENDENT_AI_REVIEW_MARKER,CLOUD_GATE_BOOTSTRAP_BASE,cloudGateSourceErrors} from '../scripts/independent-ai-review.mjs';
+function nativeDeliveryFixture(base=sha('b')){
  const e=mergedEvidence(3),p=e.preflight,repo='FurinyaWorks/Slay-the-Heavens',repository={id:1429751262,full_name:repo};
+ if(base!==p.base){p.base=base;p.targetBeforeSha=base;p.targetAfterSha=base;p.parents[0]=base;
+  p.checkout.base=base;p.checkout.parents[0]=base;p.testedCommit.parents[0].sha=base;p.review.reviewedBaseSha=base;}
  p.repo=repo;p.run.repository=repository;p.currentRun.repository=repository;
  e.repo=repo;e.run.repository=repository;e.currentRun.repository=repository;
  const pr={number:p.prNumber,user:{id:337201427},state:'open',merged:false,draft:false,mergeable:true,body:'Depends-on: none',
@@ -1007,13 +1009,41 @@ test('native proof refuses immutable ID/digest replacement and superseding statu
   path.endsWith('/artifacts?per_page=100')?[{artifacts:[f.artifact,{...f.artifact,id:71}]}]:value)),/ambiguous|replaced/);
 });
 
-test('native bootstrap proof must execute the exact reviewed source branch and SHA',()=>{
- const f=nativeDeliveryFixture();f.intent.gateRef='refs/heads/feat/native-proof';
+function bootstrapDeliveryFixture(base=CLOUD_GATE_BOOTSTRAP_BASE){
+ const f=nativeDeliveryFixture(base);f.intent.gateRef='refs/heads/feat/native-proof';
  f.proof.gate.ref=f.intent.gateRef;f.proof.gate.bootstrap=true;f.gateRun.head_branch='feat/native-proof';f.gateRun.head_sha=f.intent.head;
  f.artifact.workflow_run.head_sha=f.intent.head;
- assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)).head,f.intent.head);
- f.intent.gateRef=f.proof.gate.ref='refs/heads/foreign';f.gateRun.head_branch='foreign';
- assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),/actual reviewed PR/);
+ f.gateRun.actor={id:f.proof.nativeReview.coordinator.id};f.gateRun.triggering_actor={id:f.proof.nativeReview.coordinator.id};
+ return f;
+}
+test('native bootstrap proof permits only the fixed first BASE and actual coordinator-dispatched reviewed source',()=>{
+ const f=bootstrapDeliveryFixture();assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)).head,f.intent.head);
+ const arbitrary=bootstrapDeliveryFixture(sha('b'));
+ assert.throws(()=>delivery.resolveNativePreflight(arbitrary.intent,nativeProofQuery(arbitrary)),/Bootstrap cloud review/);
+ for(const mutate of [
+  f=>delete f.gateRun.actor,f=>delete f.gateRun.triggering_actor,
+  f=>f.gateRun.actor.id=111138384,f=>f.gateRun.triggering_actor.id=111138384,
+  f=>f.gateRun.event='workflow_run',f=>f.gateRun.head_sha=f.intent.base,
+  f=>{f.intent.gateRef=f.proof.gate.ref='refs/heads/foreign';f.gateRun.head_branch='foreign';}
+ ]){const bad=bootstrapDeliveryFixture();mutate(bad);assert.throws(()=>delivery.resolveNativePreflight(bad.intent,nativeProofQuery(bad)),/Bootstrap cloud review|gate run.*mismatched/);}
+});
+test('bootstrap proof rechecks actual gate dispatcher identity after the immutable download',()=>{
+ for(const actor of ['actor','triggering_actor']){
+  const f=bootstrapDeliveryFixture();let reads=0;
+  const query=nativeProofQuery(f,(path,value)=>{
+   if(path.endsWith('/actions/runs/50')&&++reads===2)value[actor]={id:111138384};return value;
+  });
+  assert.throws(()=>delivery.resolveNativePreflight(f.intent,query),/changed during download/);
+ }
+});
+test('shared cloud gate source validation allows a running producer but authenticates its full source identity',()=>{
+ const f=nativeDeliveryFixture(),context={repo:f.intent.repo,head:f.intent.head,base:f.intent.base,ref:f.intent.gateRef,
+  bootstrap:false,coordinator:f.proof.nativeReview.coordinator,reviewedBranch:'feat/native-proof'};
+ assert.deepEqual(cloudGateSourceErrors({...f.gateRun,status:'in_progress',conclusion:null},context),[]);
+ for(const mutate of [x=>x.run.head_sha=x.context.head,x=>x.run.repository.id=1,x=>x.run.path='.github/workflows/quality.yml',
+  x=>x.run.head_branch='foreign',x=>x.run.event='pull_request',x=>delete x.context.bootstrap]){
+  const x={run:structuredClone(f.gateRun),context:structuredClone(context)};mutate(x);assert(cloudGateSourceErrors(x.run,x.context).length);
+ }
 });
 
 function nativeQueueEvidence(preflight,mergedSha){

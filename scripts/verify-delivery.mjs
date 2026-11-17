@@ -10,7 +10,7 @@ import {qualityShardJobs} from './ci-quality-shape.mjs';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';
 import {prFastErrors,collectFastCheckout} from './pr-quality-evidence.mjs';
 import {syncBacklogCloseout} from './backlog-closeout.mjs';
-import {validateIndependentAiReview} from './independent-ai-review.mjs';
+import {validateIndependentAiReview,cloudGateSourceErrors} from './independent-ai-review.mjs';
 export {planBacklogCloseout,syncBacklogCloseout} from './backlog-closeout.mjs';
 
 export const requiredJobs=['check','presentation','engineering-posix'];
@@ -397,11 +397,8 @@ export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
   const first=status(),runMatch=first.status.target_url?.match(new RegExp('^https://github\\.com/'+repo+'/actions/runs/([1-9]\\d*)$'));
   if(!runMatch||!positiveId(Number(runMatch[1])))throw Error('Native review status does not identify a real gate run');
   const runId=Number(runMatch[1]),gateRun=get('actions/runs/'+runId),artifact=get('actions/artifacts/'+first.artifactId);
-  const runValid=run=>run?.id===runId&&positiveId(run.run_attempt)&&run.path==='.github/workflows/licenses.yml'&&
-    ['workflow_dispatch','workflow_run'].includes(run.event)&&run.status==='completed'&&run.conclusion==='success'&&
-    projectRepositoryMatches(run.repository,repo)&&run.head_branch===intent.gateRef.slice('refs/heads/'.length)&&
-    (run.head_repository===undefined||projectRepositoryMatches(run.head_repository,repo))&&
-    run.head_sha===(intent.gateRef==='refs/heads/develop'?intent.base:intent.head);
+  const runValid=run=>run?.id===runId&&positiveId(run.run_attempt)&&run.status==='completed'&&run.conclusion==='success'&&
+    projectRepositoryMatches(run.repository,repo);
   const artifactValid=value=>value?.id===first.artifactId&&value.name===`independent-review-${intent.prNumber}-${intent.head.slice(0,12)}-${runId}-${gateRun.run_attempt}`&&
     value.expired===false&&value.workflow_run?.id===runId&&value.workflow_run.head_sha===gateRun.head_sha&&
     [value.workflow_run.repository_id,value.workflow_run.head_repository_id].every(id=>id===undefined||id===projectRepositoryId);
@@ -430,13 +427,13 @@ export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
     proof.gate.attempt!==gateRun.run_attempt||proof.gate.ref!==intent.gateRef||
     proof.gate.bootstrap!==(intent.gateRef!=='refs/heads/develop'))
     throw Error('Native proof is shadow, unsuccessful or belongs to a different exact preflight');
-  if(intent.gateRef!=='refs/heads/develop'&&intent.gateRef!=='refs/heads/'+proof.nativeReview?.observations?.prBefore?.head?.ref)
-    throw Error('Bootstrap gate ref is not the actual reviewed PR source branch');
   const converted={...preflight,nativeReview:proof.nativeReview};
-  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted)];
+  const sourceContext={repo,head:intent.head,base:intent.base,ref:intent.gateRef,bootstrap:proof.gate.bootstrap,
+    coordinator:proof.nativeReview?.coordinator,reviewedBranch:proof.nativeReview?.observations?.prBefore?.head?.ref};
+  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted),...cloudGateSourceErrors(gateRun,sourceContext)];
   if(errors.length)throw Error('Native proof failed existing delivery/review verification: '+errors.join('; '));
   const current=get('actions/artifacts/'+artifact.id),currentRun=get('actions/runs/'+runId),last=status();
-  if(!artifactValid(current)||current.digest!==artifact.digest||!runValid(currentRun)||currentRun.run_attempt!==gateRun.run_attempt||
+  if(!artifactValid(current)||current.digest!==artifact.digest||!runValid(currentRun)||cloudGateSourceErrors(currentRun,sourceContext).length||currentRun.run_attempt!==gateRun.run_attempt||
     last.status.id!==first.status.id||!isDeepStrictEqual(last,first))throw Error('Native review artifact, gate attempt or latest status changed during download');
   return {...converted,nativeProof:{artifact,gateRun,status:first.status}};
 }

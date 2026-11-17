@@ -1,3 +1,5 @@
+import {isDeepStrictEqual} from 'node:util';
+import {resolveNativePreflight} from './verify-delivery.mjs';
 import {collectIndependentAiReview} from './independent-ai-review.mjs';
 import {projectRepositoryId,projectRepositoryMatches} from './repository-identity.mjs';
 
@@ -63,6 +65,28 @@ export function collectQueueAdmission(event,env,query,ruleset){
   const review=collectIndependentAiReview({api:path=>JSON.parse(query('api',path)),prNumber:p.number,
    expectedHeadSha:p.headRefOid,expectedBaseSha:base});
   if(review.conclusion!=='pass')throw Error('Queue PR independent AI coordinator attestation is invalid: '+p.number+'; '+review.errors.join('; '));
+  // A signed report alone is not proof that the trusted Actions source gate
+  // checked the current candidate. Resolve its real immutable CI evidence now,
+  // before releasing any group status, and retain its identity in the snapshot.
+  const statusPages=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/commits/${p.headRefOid}/statuses?per_page=100`));
+  if(!Array.isArray(statusPages)||!statusPages.length||statusPages.some(page=>!Array.isArray(page)))
+   throw Error('Queue PR cloud review proof status pages are missing');
+  const proofStatus=statusPages.flat().filter(row=>row?.context==='independent-review').sort((a,b)=>b.id-a.id)[0];
+  const match=proofStatus?.target_url?.match(new RegExp('^https://github\\.com/'+repo+'/actions/runs/([1-9]\\d*)$'));
+  if(!match)throw Error('Queue PR cloud review proof has no actual gate run');
+  const sourceRun=JSON.parse(query('api',`repos/${repo}/actions/runs/${match[1]}`));
+  const proof=resolveNativePreflight({schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,
+   prNumber:p.number,head:review.head,base:review.base,sourceTree:review.tree,githubReviewId:review.githubReviewId,
+   gateRef:'refs/heads/'+sourceRun.head_branch,createdAt:proofStatus.created_at,
+   nativeAuto:{confirmed:true,queueEntryId:entry.id,state:entry.state}},query);
+  if(!isDeepStrictEqual(proof.nativeReview.report,review.report)||
+   !isDeepStrictEqual(proof.nativeReview.coordinator,review.coordinator)||proof.nativeReview.githubReviewId!==review.githubReviewId||
+   proof.nativeReview.mergeCommitSha!==review.mergeCommitSha)
+   throw Error('Queue PR cloud review proof differs from the current signed report');
+  const gateProof={artifactId:proof.nativeProof.artifact.id,digest:proof.nativeProof.artifact.digest,
+   runId:proof.nativeProof.gateRun.id,attempt:proof.nativeProof.gateRun.run_attempt,statusId:proof.nativeProof.status.id,
+   ref:'refs/heads/'+proof.nativeProof.gateRun.head_branch,githubReviewId:proof.nativeReview.githubReviewId,
+   reviewId:proof.nativeReview.reviewId};
   let quality;
   if(ruleset?.rules?.find(rule=>rule.type==='required_status_checks')?.parameters?.required_status_checks?.some(check=>check.context==='pr-quality')){
    const statuses=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/commits/${p.headRefOid}/statuses?per_page=100`));
@@ -85,7 +109,7 @@ export function collectQueueAdmission(event,env,query,ruleset){
   const dependencyEvidence=review.observations.dependencies.map(row=>({number:row.number,merge:row.pr.merge_commit_sha}));
   snapshot.push({id:entry.id,position:entry.position,base:entry.baseCommit.oid,head:entry.headCommit.oid,
    number:p.number,prHead:p.headRefOid,githubReviewId:review.githubReviewId,
-   coordinator:review.coordinator,
+   coordinator:review.coordinator,gateProof,
    reviewedHead:review.head,reviewedBase:review.base,reviewedTree:review.tree,reviewedMergeCommit:review.mergeCommitSha,
    aiReviewId:review.reviewId,report:review.report,
    coordinatorPermission:review.observations.permissions[review.coordinator.id].permission,

@@ -7,6 +7,7 @@ import {main} from '../scripts/publish-merge-group.mjs';
 import {collectQueueAdmission} from '../scripts/merge-queue-admission.mjs';
 
 import {admissionFixture,admissionQuery} from './helpers/merge-queue-admission.mjs';
+import {CLOUD_GATE_BOOTSTRAP_BASE} from '../scripts/independent-ai-review.mjs';
 import {queueRulesFingerprint} from '../scripts/merge-queue-policy.mjs';
 const sha=c=>c.repeat(40);
 function execute(f,query=admissionQuery(f),options){
@@ -77,7 +78,8 @@ test('queue snapshots use the real signed AI Review and leave enqueue authority 
  assert.equal(snapshot.reviewedBase,f.pr.base.sha);assert.equal(snapshot.reviewedTree,f.report.reviewedTreeSha);
  assert.equal(snapshot.reviewedMergeCommit,f.pr.merge_commit_sha);
  assert.equal(Object.hasOwn(snapshot,'rulesFingerprint'),false);
- assert(!calls.some(args=>args.some(value=>String(value).includes('/commits/')&&String(value).includes('/statuses?'))));
+ assert(calls.some(args=>args.some(value=>String(value).includes('/commits/')&&String(value).includes('/statuses?'))));
+ assert.deepEqual(snapshot.gateProof,{artifactId:80,digest:f.proofArtifact.digest,runId:60,attempt:1,statusId:92,ref:'refs/heads/develop',githubReviewId:90,reviewId:f.report.provenance.reviewId});
  for(const enqueuer of [undefined,{databaseId:52,login:'native-writer'}]){
   f.entry.enqueuer=enqueuer;assert.equal(collect()[0].githubReviewId,90);
  }
@@ -182,7 +184,7 @@ test('Fast queue admission rechecks the latest PR run/attempt before and after r
     target_url:'https://github.com/FurinyaWorks/Slay-the-Abyss/actions/runs/9',description:'Exact dual-platform Fast run 9, attempt 1'};
    const underlying=admissionQuery(f,writes),query=(...args)=>{
     const endpoint=args.at(-1);
-    if(endpoint.includes('/statuses?'))return JSON.stringify([[f.review,f.qualityStatus]]);
+    if(endpoint.includes('/statuses?'))return JSON.stringify([[f.proofStatus,f.qualityStatus]]);
     if(endpoint.includes('/actions/workflows/')&&endpoint.includes('event=pull_request'))return JSON.stringify([{workflow_runs:[f.prRun]}]);
     return underlying(...args);
    };
@@ -218,6 +220,58 @@ test('visible policy changes during receipt verification cannot be hidden by an 
 test('valid AI report or signer-role changes cannot replace the exact observed authorization during receipt verification',()=>{
  for(const mutate of [f=>f.report.provenance.sessionId+='-changed',f=>f.report.implementationAgents=['/root/another_implementer'],
   f=>{f.permission.role_name='admin';f.permission.permission='admin';}]){
+  const f=admissionFixture(),writes=[];
+  assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+   mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
+  }}),/authorization changed|proof differs/);assert.deepEqual(writes,[]);
+ }
+});
+
+test('queue release consumes the real immutable PR source-gate proof before publishing any success',()=>{
+ for(const mutate of [
+  f=>delete f.proofStatus,f=>f.proofStatus.state='pending',f=>f.proofStatus.creator.id=1,
+  f=>f.proofStatus.description=f.proofStatus.description.replace('AI review 90','AI review 91'),
+  f=>f.proofStatus.description=f.proofStatus.description.replace('[proof:80]','[proof:81]'),
+  f=>f.proofStatus.description=f.proofStatus.description.replace(f.pr.base.sha,sha('f')),
+  f=>f.proofArtifact.id=81,f=>f.proofArtifact.expired=true,f=>f.proofArtifact.name+='-replaced',
+  f=>f.proofRun.run_attempt++,f=>f.proofRun.status='in_progress',f=>f.proofRun.conclusion='failure',
+  f=>f.proofRun.head_sha=f.pr.head.sha,f=>f.proofRun.repository.id=1,
+  f=>f.proof.mode='shadow',f=>f.proof.preflight.jobs.pop(),
+  f=>f.proof.nativeReview.githubReviewId++,f=>f.proof.nativeReview.report.provenance.sessionId+='-forged'
+ ])for(const duringReceipt of [false,true]){
+  const f=admissionFixture(),writes=[];if(!duringReceipt)mutate(f);
+  assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+   if(duringReceipt)mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
+  }}),undefined,String(mutate));assert.deepEqual(writes,[],String(mutate));
+ }
+});
+test('queue source proof bootstrap is bound to the sole fixed BASE and the actual attesting dispatcher',()=>{
+ function fixture(base=CLOUD_GATE_BOOTSTRAP_BASE){
+  const f=admissionFixture('FurinyaWorks/Slay-the-Heavens',base);
+  f.proof.gate.ref='refs/heads/'+f.pr.head.ref;f.proof.gate.bootstrap=true;
+  f.proofRun.head_branch=f.pr.head.ref;f.proofRun.head_sha=f.pr.head.sha;f.proofArtifact.workflow_run.head_sha=f.pr.head.sha;
+  f.proofRun.actor={id:f.review.user.id};f.proofRun.triggering_actor={id:f.review.user.id};return f;
+ }
+ assert.equal(execute(fixture()).state,'success');
+ const arbitrary=fixture(sha('b'));assert.throws(()=>execute(arbitrary),/Bootstrap cloud review/);
+ for(const mutate of [f=>delete f.proofRun.actor,f=>delete f.proofRun.triggering_actor,
+  f=>f.proofRun.actor.id=111138384,f=>f.proofRun.triggering_actor.id=111138384,
+  f=>f.proofRun.event='workflow_run',f=>f.proofRun.head_branch='other']){
+  const f=fixture(),writes=[];mutate(f);assert.throws(()=>execute(f,admissionQuery(f,writes)));assert.deepEqual(writes,[]);
+ }
+});
+test('pending group publication does not race an in-progress PR proof while final success requires completed proof',()=>{
+ const f=admissionFixture(),writes=[];f.proofRun.status='in_progress';f.proofRun.conclusion=null;
+ assert.equal(execute(f,admissionQuery(f,writes),{pending:true}).state,'pending');
+ assert.deepEqual(writes.map(row=>row.state),['pending','pending','pending']);
+ writes.length=0;assert.throws(()=>execute(f,admissionQuery(f,writes)));assert.deepEqual(writes,[]);
+});
+
+test('a newly valid artifact or status cannot replace the exact PR gate proof during group receipt verification',()=>{
+ for(const mutate of [
+  f=>{f.proofArtifact.id=82;f.proofStatus.id++;f.proofStatus.description=f.proofStatus.description.replace('[proof:80]','[proof:82]');},
+  f=>f.proofStatus.id++,f=>f.proofArtifact.digest='sha256:'+'1'.repeat(64)
+ ]){
   const f=admissionFixture(),writes=[];
   assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
    mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
