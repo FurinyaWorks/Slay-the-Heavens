@@ -212,3 +212,5 @@ Windows hosted仍从空Git数据库检出精确SHA、depth2及双父，增加blo
 Full、Fast、Quick、Licenses及presentation在实际读取媒体前恢复并逐文件验证原始SHA和大小；无token的缓存命中同样重验索引/模式/内容。只读token仅放Git子进程，不持久化或回显认证信息；关闭额外重试，准备共用90秒期限及原步骤时限。metadata导入不依赖可选globSync，实际分片仍在固定Node24.18.0运行，presentation显式同版。新实现不新增job、worker或放宽测试/官方容量门槛。
 
 Fork 先于正式测试的可执行准入、完整预检与复用规则见 [Fork 预检](CI-PREFLIGHT.md)。
+
+治理以原生机制为底座。新增自定义防护先用真实失败证明需要，再比较故障拦截、CI耗时和维护返工；先做最小诊断，按已发生的问题逐步补强，不预先堆叠来源快照、签名或强制收据。持续复用 `ci-run-costs.mjs` 按需取样，不新增常驻统计任务。

@@ -1,4 +1,3 @@
-import {preflightPriorInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -10,8 +9,7 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
  feedbackPriorCiSha,feedbackPriorClosureSha,renderFeedbackCiBinding} from './helpers/sts-feedback-source-runtime.mjs';
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
-import {discoverJs as preflightRawDiscoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
-const discoverJs=()=>preflightPriorInventory(preflightRawDiscoverJs());
+import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){

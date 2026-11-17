@@ -1,8 +1,8 @@
-import {beforePreflightSource,preflightPriorInventory} from './helpers/fork-preflight-source.mjs';
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
-import { readFileSync,readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { compileFunction } from 'node:vm';
 import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
@@ -248,12 +248,4 @@ test('preflight continuation authenticates complete LF/CRLF input and rejects fo
  const buffer=Buffer.from(live);assert.equal(beforePreflightSource(path,buffer),buffer);
  assert.equal(beforePreflightSource('foreign.yml',live),live);
  assert.equal(beforePreflightSource(path,before),before);
-});
-
-test('preflight inventory keeps complete old discovery and authenticates added files',()=>{
- const paths=readdirSync('tests').filter(p=>p.endsWith('.test.mjs')).map(p=>'tests/'+p).sort();
- const prior=preflightPriorInventory(paths);
- assert.deepEqual(prior,paths.filter(p=>!['tests/fork-preflight.test.mjs','tests/ci-governance-metrics.test.mjs'].includes(p)));
- assert.throws(()=>preflightPriorInventory([...paths,'tests/foreign.test.mjs']),/complete preflight test inventory/);
- assert.throws(()=>preflightPriorInventory(paths,(p,encoding)=>readFileSync(p,encoding)+'# drift'),/exact preflight added test/);
 });

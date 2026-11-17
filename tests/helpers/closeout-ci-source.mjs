@@ -1,4 +1,4 @@
-import {beforePreflightSource,preflightPriorRead,preflightPriorInventory} from './fork-preflight-source.mjs';
+import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -40,7 +40,6 @@ export function preCloseoutCiSource(path,source,view){
 export function closeoutInventory(paths,view,readSource=readFileSync){
  const before=target(view);
  assert.notEqual(before.scope,'workflow-only','workflow-only views cannot project test inventories');
- paths=preflightPriorInventory(paths,readSource);readSource=preflightPriorRead(readSource);
  paths=runHudPriorInventory(paths,readSource);readSource=runHudPriorRead(readSource);
  const sorted=[...paths].sort();
  if(JSON.stringify(sorted)===JSON.stringify(before.inventory))return [...paths];

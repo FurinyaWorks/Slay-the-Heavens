@@ -1,25 +1,20 @@
-# Fork 先排错，主仓库后验收
+# Fork 预检
 
-接续 #712 / TASK-88.1.1。A/B 提供独立 runner 并发：不同任务并行，同一候选默认只用一个 Fork。
+A/B 使用各自已有 runner，并行处理不同任务；同一候选默认只在一个 Fork 验证。主仓库保留原生 Required Checks、Merge Queue、合后分支清理和 Release 最终 Full，不重复实现这些机制。
 
-1. 在 Fork 分支开发；读取目标分支当前完整 BASE SHA。先不要推主仓库已有 PR head，也不要先创建正式 PR。
-2. 先用现有 `node scripts/test-affected.mjs --plan --base <BASE>` 检查完整选集；共享 CI/未知影响直接选择一个 Fork Full，避免先跑无效 Quick。检查 **两个 Fork** 同 HEAD 的 Actions：相同工作流、HEAD（包含全部测试配置）、BASE 已成功则复用；正在运行则异步交接，不再 dispatch。失败须排错，新提交正常重测。新 BASE、配置变化、取消/失败均不算可复用成功。
-3. A 优先执行已有 `quick-feedback.yml`，`base_sha` 填准确 BASE；完整 JS（含 integration）与 Lua 受影响集合，无90秒裁剪。未知输入或零覆盖失败，按提示交给 B 执行已有 `quality.yml` Full，仍传 `base_sha`。不得另跑一次 A Full 再跑 B Full；仅跨平台、共享 CI/未知影响或明确故障诊断需要 Full。也可由 A 互援 Full。
-4. 成功后将 **原提交** 快进到主仓库分支，再提 PR / 更新已有 PR。不得 squash/cherry-pick 后沿用旧 SHA 证据。主仓库 admission 按固定 Fork ID、API 实际 head_sha、workflow path、run-name 中 BASE、完成结论及先后时间核验；缺证据立即失败，不自动启动 Fork 或测试矩阵。已有抢跑 PR：先补预检，再重跑原 Quality / Licenses 的失败作业，或正常推送新候选。每次新提交或基线变化重新验证。
-5. Release/hotfix→master 继续使用既有冻结 Full 发布准入，不额外强制 Fork Full；新门禁用于开发/集成 PR。主仓库正式 Required Checks、独审、Merge Queue 组合 Full、develop push 验证及 Release 冻结 Full 照常执行。Fork 成功只表示准入，不能代替正式验收。Release 日常 Fast / 冻结 Full 继续由 #677/#707 接续，本变更不重写该策略。
-
-原生入口（repo 名称应按固定 ID 读回）：
+1. 读取目标分支准确 BASE，先用已有 `node scripts/test-affected.mjs --plan --base <BASE>` 查看影响。A 优先完整受影响 Quick；共享 CI、未知或零覆盖交给一个 Fork Full，B 优先、A 可互援。
+2. dispatch 前查看 A/B：相同 HEAD/BASE 已成功则复用；运行中则交接，不重复 dispatch。原生 rerun 成功同样有效，不必为获取预检资格再造一个提交。
+3. 成功后把原提交推到主仓库分支，再创建或更新 PR。Quality/Licenses 的轻量准入只核对固定 Fork ID、准确 HEAD/BASE 和最新已完成的成功结果，正式测试依赖此步。缺证据就失败；补齐后原生重跑失败作业即可，不自动 dispatch、不轮询。
+4. Fork HEAD 与 PR merge SHA、Merge Queue SHA 分别验收；Fork 成功不替代正式检查。Release/hotfix→master 继续走既有冻结 Full，日常 Release Fast 由 #677/#707 接续，不额外要求双 Full。
 
 ```sh
-gh workflow run quick-feedback.yml --repo FurinyaDev/Slay-the-Heavens-Fork-A --ref <branch> -f base_sha=<40位BASE>
-# 仅未知影响/明确风险要求 Full 时使用；不是第二次默认验证
-gh workflow run quality.yml --repo v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <branch> -f base_sha=<40位BASE>
+gh workflow run quick-feedback.yml --repo FurinyaDev/Slay-the-Heavens-Fork-A --ref <branch> -f base_sha=<BASE>
+# 仅风险或未知影响要求 Full 时使用；没有第二次默认 Full
+gh workflow run quality.yml --repo v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <branch> -f base_sha=<BASE>
 ```
 
-固定 ID：主仓库1429751262、A1460097312、B1460133275。Fork checkout SHA 与主仓库 PR merge SHA 不同：门禁匹配 PR **head**；正式 CI 仍测试 GitHub merge SHA。精确相同 head 也绑定 workflow、selector、依赖与测试配置；不同 SHA 不作跨提交缓存。现有 `ci-checkout.json` 留作可检查的实际 checkout 收据，门禁使用 GitHub run 元数据而非 PR 自填声明。仅接受第一次成功 attempt；需要重新运行的预检请正常修复/推新候选，避免 mutable rerun 时间歧义。
+固定仓库 ID：主1429751262、A1460097312、B1460133275；名称变化按 ID 解析。HEAD 已绑定工作流、测试、依赖和配置，不另建配置签名注册表。成功结果在准入步骤读取，依赖它的正式作业随后才能开始，因此不额外校验工作流创建时间或拒绝成功 rerun。读取权限不足明确失败，由已有授权维护者执行，不提供写 token 或改用 pull_request_target。
 
-平台边界：GitHub 无法阻止 `pull_request` 事件创建轻量 admission run，因此保证的是 **正式测试作业先等预检**；失败 gate 本身仍会消耗少量时间。Licenses 使用相同门禁，Quick 不再随主仓库 PR 自动重复运行。只读令牌跨公开 Fork API 如被平台限制会明确失败，不能视为通过；不得改为 `pull_request_target` 执行不可信代码或提供写 token。无 Fork Actions 权限时由已有授权维护者在 Fork 调度，不豁免门禁。
+GitHub 仍会创建轻量准入 run；Concurrency 只能取消同仓库/ref 的旧运行，不能原子锁住 A/B。沿用 Backlog 认领和 dispatch 前查重，不另造全局调度器。
 
-Concurrency 仅限单仓库，不能原子锁住 A/B：Agent 必须复用现有 Backlog 认领、两个仓库 run 查询及单次 dispatch；门禁不会自动 dispatch，因此不引入扇出循环。过时 ref 继续由原生 concurrency 取消。不同 head、base、平台配置、Merge Queue 组合和正式验收不是浪费；双 Fork 同候选同配置、无输入变化的重复成功 dispatch 才是应消除项。人工 rerun 仍可造成重复，此边界不宣称已由 GitHub 全局去重。
-
-部署和量化证据见 [本轮记录](evidence/ci-preflight-20261117/PLAN.md) 与同目录 history.md。按需统计脚本从 GitHub API 导出原始运行、job 与 PR；同窗口、同配置比较重复候选率、实际 runner minutes、首次通过率和创建→合并 P50/P90。不定时轮询、不为了刷指标重跑旧 SHA。首次取得至少20个真实候选后再判断改善。
+统计复用 `scripts/ci-run-costs.mjs`，仅按需运行，见[基线](evidence/ci-preflight-20261117/history.md)。额外来源、SHA、历史或证据防护先针对已发生的故障做最小修复，再比较实际拦截、runner 时间和维护返工；没有收益证据就先保留诊断，不默认升级强制门禁。不为这条原则新增检查、报表平台或每 PR 填表。

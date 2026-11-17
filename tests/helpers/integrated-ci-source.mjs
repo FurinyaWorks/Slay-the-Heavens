@@ -1,4 +1,4 @@
-import {beforePreflightSource,preflightPriorRead,preflightPriorInventory} from './fork-preflight-source.mjs';
+import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -46,7 +46,6 @@ export function extendIntegratedHelperClosure(original){
 }
 // Exact complete inventories for historical receipts; raw Full discovery remains live.
 export function integratedPriorInventory(paths,target,kind='js',read=readFileSync){
- if(kind==='js')paths=preflightPriorInventory(paths,read);read=preflightPriorRead(read);
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');

@@ -1,3 +1,4 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -185,12 +186,13 @@ test('quality reports are collected by the existing gate and uploaded on failed 
   assert.equal(workflow.split(qualityWindowsUpload).length,2);
   assert.equal(workflow.split(qualityPosixPaths).length,2);
   assert.ok(workflow.includes('        if: always() && matrix.shard == 1\n        with:\n          name: engineering-'));
-  const restored=beforeQualityArtifacts(workflow);
+  const priorWorkflow=beforePreflightSource('.github/workflows/quality.yml',workflow);
+  const restored=beforeQualityArtifacts(priorWorkflow);
   assert.ok(!restored.includes('build/engineering-quality.json'));
   for(const old of ['build/architecture.json','build/lua-static.json','build/lua-complexity.json','build/ui-complexity.json','build/test-strength/*/report.json'])assert.ok(restored.includes(old));
   // Inversion must not erase accidental changes in new upload scope or paths.
-  for(const bad of [workflow.replace(qualityWindowsUpload,qualityWindowsUpload.replace('build/engineering-quality.md','build/other.md')),
-    workflow.replace(qualityWindowsUpload,qualityWindowsUpload.replace('if-no-files-found: warn','if-no-files-found: error'))]) {
+  for(const bad of [priorWorkflow.replace(qualityWindowsUpload,qualityWindowsUpload.replace('build/engineering-quality.md','build/other.md')),
+    priorWorkflow.replace(qualityWindowsUpload,qualityWindowsUpload.replace('if-no-files-found: warn','if-no-files-found: error'))]) {
     assert.ok(beforeQualityArtifacts(bad).includes('engineering-quality-windows-'));
   }
 });

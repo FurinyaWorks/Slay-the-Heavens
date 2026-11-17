@@ -1,3 +1,4 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -39,9 +40,10 @@ test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>
     assert.equal(beforePosixConcurrencyWorkflow(capped),old);
     // Existing layered callers normalize endings; this inverse alone preserves
     // the original bytes, including a Windows checkout's CRLF.
-    const projected=beforeAutoMergeWorkflow(capped.replaceAll('\r\n','\n'));
+    const priorCapped=beforePreflightSource('.github/workflows/quality.yml',capped.replaceAll('\r\n','\n'));
+    const projected=beforeAutoMergeWorkflow(priorCapped);
     assert.equal(typeof projected,'string');
-    assert.equal(projected,beforeAutoMergeWorkflow(old.replaceAll('\r\n','\n')));
+    assert.equal(projected,beforeAutoMergeWorkflow(priorCapped.replace(cap,'')));
   }
 });
 

@@ -1,5 +1,5 @@
 name: Quality
-run-name: Full / ${{ github.sha }} / ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Full / {0} / {1}', github.sha, inputs.base_sha) || github.workflow }}
 on:
   pull_request:
     branches: [develop, master]
