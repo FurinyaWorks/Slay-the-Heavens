@@ -16,6 +16,18 @@ const workflow = beforePreflightSource('.github/workflows/quality.yml', readFile
 const job = (name,source=workflow) => source.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [\\w-]+:|(?![\\s\\S]))`, 'm'))[1];
 const digest = text => createHash('sha256').update(text).digest('hex');
 
+test('current control jobs use the existing standard hosted pool after slim acquisition failures', () => {
+  const current = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
+  for (const name of ['impact', 'check', 'engineering-posix']) {
+    assert.match(job(name, current), /^    runs-on: ubuntu-24\.04$/m);
+    assert.match(job(name, current), new RegExp(`^    timeout-minutes: ${name === 'impact' ? 3 : 2}$`, 'm'));
+  }
+  assert.match(job('check', current), /^    needs: \[impact, rules, fast, presentation, engineering-posix\]$/m);
+  assert.match(job('engineering-posix', current), /^    needs: \[impact, engineering-posix-shards, fast\]$/m);
+  const licenses = readFileSync('.github/workflows/licenses.yml', 'utf8').replaceAll('\r\n', '\n');
+  assert.match(job('cancel-obsolete-queue', licenses), /^    runs-on: ubuntu-24\.04$/m);
+});
+
 test('only the lightweight impact planner and two required summaries use slim', () => {
   assert.equal((workflow.match(/^    runs-on: ubuntu-slim$/gm) ?? []).length, 3);
   const impact = job('impact');

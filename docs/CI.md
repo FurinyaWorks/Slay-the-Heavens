@@ -136,6 +136,8 @@ npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
 
 资源清尾复用 Licenses 的 `pull_request_target(dequeued)`，仅在主仓 develop 的可信 BASE 源码运行小型取消作业，不执行 PR HEAD 程序。独立 concurrency 和非 Required 的跳过名称避免取消或覆盖正常 inventory。只在完整队列、Quality 运行及 Git refs 元数据均可读、取消前重读仍确认旧 HEAD 已离队且其引用已删除时取消该旧 merge_group 运行；保留 PR/push/dispatch 与仍有效组。动作只获本作业的 Actions 写权限，不写检查、不改队列或分支，不新增工作流或定时调度。权限/分页/竞态不明确即跳过，HTTP 阶段及取消读回如实记录，接受请求不等于已经取消。
 
+控制作业使用已有标准 `ubuntu-24.04` hosted 池：Fork A 的[真实汇总作业](https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A/actions/runs/44113901367/job/134179946668)等待 Slim Runner 15 分钟后收到 `The job was not acquired by Runner of type hosted even after multiple attempts`，未执行步骤；Fork B 的规划也出现同类无 Runner 排队。规划、两个 Required 汇总及清尾因此沿用已能实际执行测试的标准 Ubuntu，不新增 Runner 或付费机型，检查名称、依赖、权限、矩阵和执行超时不变。旧 Slim 合同保留历史身份，当前实际工作流另有原始源码检查；等待或接受重跑请求不等于托管 CI 成功。
+
 PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，另核实际组 G/Tq/[Q]、原基线到 Q 的真实祖先比较、完整队列 Full/inventory、实际 squash 与 push Full 收据及 Backlog。shadow、替换附件、旧 run/attempt、祖先关系失效、非 Actions 来源或缺队列证明均保持 `merged_pending`；原 PR 合前树不改写，旧 schema/Fast 合后格式继续按原合同读取，不冒称本次修复了所有历史格式的基线限制。
 
 自动化边界：AI 由现有云端交付会话执行，Actions 验证预存的实际独审结果，不声称它能唤醒已退出的 Codex 会话。准确报告预存且原受审 HEAD/B0/树未变时，后续 CI→Queue→Merge 无人值守；改变原受审组合仍须真实重审，不能把旧报告改写成新 BASE。D/Q 的正常前缀推进由祖先链和真正组合 Full 验证，不冒充对新组合重新做了 AI 审查。仍沿用现行可信维护者接纳 CI 源码的边界；Any-source 检查和 Actions artifact 不是供应商 AI 数字签名，也不声称能阻止有权限修改所有 CI 的恶意维护者。
