@@ -73,6 +73,16 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
  const signed=reviews.filter(review=>trusted(review,permissions));
  for(const review of signed)if(!Number.isFinite(Date.parse(review.submitted_at))||!sha(review.commit_id))
   errors.push('Malformed trusted server Review timestamp or commit identity');
+ // COMMENTED can carry the AI metadata. Publication additionally requires a
+ // real, current native approval by a trusted account other than the PR author.
+ const decisions=new Map();
+ for(const review of [...signed].sort(reviewOrder))if(['APPROVED','CHANGES_REQUESTED','DISMISSED'].includes(review.state))
+  decisions.set(review.user.id,review);
+ const nativeApproval=[...decisions.values()].filter(review=>review.state==='APPROVED'&&
+  review.commit_id===head&&review.user.id!==pr?.user?.id).sort(reviewOrder).at(-1);
+ if(!positive(pr?.user?.id)||!nativeApproval)errors.push('A trusted non-author native APPROVED Review for the current HEAD is required');
+ if([...decisions.values()].some(review=>review.state==='CHANGES_REQUESTED'))
+  errors.push('A trusted native change request remains unresolved');
  const candidates=signed.filter(review=>marked(review.body)).sort(reviewOrder);
  const selected=candidates.at(-1);let report=null;
  if(!selected)errors.push('No report signed by an authorized maintain/admin coordinator');
@@ -101,12 +111,13 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
  }
  return {conclusion:errors.length?'fail':'pass',errors,report,reviewId:report?.provenance?.reviewId,
   githubReviewId:selected?.id,githubReviewUrl:selected?.html_url,coordinator:selected?.user,
+  nativeApprovalReviewId:nativeApproval?.id,nativeApprovalUser:nativeApproval?.user,
   repositoryId:repository?.id,repo,prNumber:pr?.number,head,base:baseSha,tree,mergeCommitSha:merge};
 }
 
 function snapshot(pr){
  return {number:pr?.number,state:pr?.state,merged:pr?.merged,draft:pr?.draft,mergeable:pr?.mergeable,
-  head:pr?.head,base:pr?.base,merge_commit_sha:pr?.merge_commit_sha,body:pr?.body};
+  authorId:pr?.user?.id,head:pr?.head,base:pr?.base,merge_commit_sha:pr?.merge_commit_sha,body:pr?.body};
 }
 
 // api(path) is synchronous parsed JSON, e.g. the existing coordinator's gh API
