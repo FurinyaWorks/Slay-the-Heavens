@@ -1,0 +1,123 @@
+PASS 1 complete both-parent authorization
+PASS 2 exact release source
+PASS 3 Buffer exact release source
+PASS 4 same reader drift tests/release-selection-map-source.test.mjs
+PASS 5 same reader missing tests/release-selection-map-source.test.mjs
+PASS 6 same reader drift tests/helpers/release-picker-b9-integration.mjs
+PASS 7 same reader missing tests/helpers/release-picker-b9-integration.mjs
+PASS 8 same reader drift tests/helpers/release-picker-preflight-join.json
+PASS 9 same reader missing tests/helpers/release-picker-preflight-join.json
+PASS 10 same reader drift tests/helpers/release-capacity-preflight-source.json.gz
+PASS 11 same reader missing tests/helpers/release-capacity-preflight-source.json.gz
+PASS 12 same reader drift src/lua/abyss_node_ui_feedback.lua
+PASS 13 same reader missing src/lua/abyss_node_ui_feedback.lua
+PASS 14 restored same reader
+PASS 15 old capacity remains distinct
+PASS 16 public CI reader does not project src/lua/abyss_node_ui_feedback.lua
+PASS 17 public CI reader does not project config/architecture.json
+PASS 18 foreign and malformed opaque values
+PASS 19 new CI Buffer and string remain equivalent
+PASS 20 complete joint binding drift .github/workflows/licenses.yml
+PASS 21 complete joint binding missing .github/workflows/licenses.yml
+PASS 22 complete joint binding drift .github/workflows/quality.yml
+PASS 23 complete joint binding missing .github/workflows/quality.yml
+PASS 24 complete joint binding drift .github/workflows/quick-feedback.yml
+PASS 25 complete joint binding missing .github/workflows/quick-feedback.yml
+PASS 26 complete joint binding drift scripts/check-release-scope.mjs
+PASS 27 complete joint binding missing scripts/check-release-scope.mjs
+PASS 28 complete joint binding drift scripts/official-assets-layout.mjs
+PASS 29 complete joint binding missing scripts/official-assets-layout.mjs
+PASS 30 complete joint binding drift scripts/official-picker-controls.mjs
+PASS 31 complete joint binding missing scripts/official-picker-controls.mjs
+PASS 32 complete joint binding drift scripts/official-run-layout.mjs
+PASS 33 complete joint binding missing scripts/official-run-layout.mjs
+PASS 34 complete joint binding drift scripts/test-affected.mjs
+PASS 35 complete joint binding missing scripts/test-affected.mjs
+PASS 36 complete joint binding drift src/lua/abyss_node_ui_feedback.lua
+PASS 37 complete joint binding missing src/lua/abyss_node_ui_feedback.lua
+PASS 38 complete joint binding drift tests/ci-complete-calibration.test.mjs
+PASS 39 complete joint binding missing tests/ci-complete-calibration.test.mjs
+PASS 40 complete joint binding drift tests/ci-posix-concurrency.test.mjs
+PASS 41 complete joint binding missing tests/ci-posix-concurrency.test.mjs
+PASS 42 complete joint binding drift tests/ci-summary-runners.test.mjs
+PASS 43 complete joint binding missing tests/ci-summary-runners.test.mjs
+PASS 44 complete joint binding drift tests/ci-windows-shape-expansion.test.mjs
+PASS 45 complete joint binding missing tests/ci-windows-shape-expansion.test.mjs
+PASS 46 complete joint binding drift tests/delivery.test.mjs
+PASS 47 complete joint binding missing tests/delivery.test.mjs
+PASS 48 complete joint binding drift tests/engineering-quality.test.mjs
+PASS 49 complete joint binding missing tests/engineering-quality.test.mjs
+PASS 50 complete joint binding drift tests/full-quality.test.mjs
+PASS 51 complete joint binding missing tests/full-quality.test.mjs
+PASS 52 complete joint binding drift tests/helpers/closeout-ci-source.mjs
+PASS 53 complete joint binding missing tests/helpers/closeout-ci-source.mjs
+PASS 54 complete joint binding drift tests/helpers/closeout-source-epoch.mjs
+PASS 55 complete joint binding missing tests/helpers/closeout-source-epoch.mjs
+PASS 56 complete joint binding drift tests/helpers/copy-integration-source-closure.mjs
+PASS 57 complete joint binding missing tests/helpers/copy-integration-source-closure.mjs
+PASS 58 complete joint binding drift tests/helpers/integrated-ci-source.mjs
+PASS 59 complete joint binding missing tests/helpers/integrated-ci-source.mjs
+PASS 60 complete joint binding drift tests/helpers/release-bootstrap-ci-source-picker-before-capacity.mjs
+PASS 61 complete joint binding missing tests/helpers/release-bootstrap-ci-source-picker-before-capacity.mjs
+PASS 62 complete joint binding drift tests/helpers/release-bootstrap-ci-source.mjs
+PASS 63 complete joint binding missing tests/helpers/release-bootstrap-ci-source.mjs
+PASS 64 complete joint binding drift tests/helpers/release-capacity-b9-ci-source.mjs
+PASS 65 complete joint binding missing tests/helpers/release-capacity-b9-ci-source.mjs
+PASS 66 complete joint binding drift tests/helpers/release-card-contact-integration.mjs
+PASS 67 complete joint binding missing tests/helpers/release-card-contact-integration.mjs
+PASS 68 complete joint binding drift tests/helpers/release-ci.cases.mjs
+PASS 69 complete joint binding missing tests/helpers/release-ci.cases.mjs
+PASS 70 complete joint binding drift tests/helpers/release-fast-b9-ci-source.mjs
+PASS 71 complete joint binding missing tests/helpers/release-fast-b9-ci-source.mjs
+PASS 72 complete joint binding drift tests/helpers/release-picker-b9-integration.json
+PASS 73 complete joint binding missing tests/helpers/release-picker-b9-integration.json
+PASS 74 complete joint binding drift tests/helpers/release-picker-controls-ci-source.mjs
+PASS 75 complete joint binding missing tests/helpers/release-picker-controls-ci-source.mjs
+PASS 76 complete joint binding drift tests/helpers/release-picker-controls-source.mjs
+PASS 77 complete joint binding missing tests/helpers/release-picker-controls-source.mjs
+PASS 78 complete joint binding drift tests/helpers/release-picker-map-integration.json
+PASS 79 complete joint binding missing tests/helpers/release-picker-map-integration.json
+PASS 80 complete joint binding drift tests/helpers/release-picker-map-integration.mjs
+PASS 81 complete joint binding missing tests/helpers/release-picker-map-integration.mjs
+PASS 82 complete joint binding drift tests/helpers/release-preflight-union-source.mjs
+PASS 83 complete joint binding missing tests/helpers/release-preflight-union-source.mjs
+PASS 84 complete joint binding drift tests/helpers/release-selection-map-ci-source-picker-before-capacity.mjs
+PASS 85 complete joint binding missing tests/helpers/release-selection-map-ci-source-picker-before-capacity.mjs
+PASS 86 complete joint binding drift tests/helpers/release-selection-map-ci-source.mjs
+PASS 87 complete joint binding missing tests/helpers/release-selection-map-ci-source.mjs
+PASS 88 complete joint binding drift tests/helpers/run-hud-ci-source.mjs
+PASS 89 complete joint binding missing tests/helpers/run-hud-ci-source.mjs
+PASS 90 complete joint binding drift tests/helpers/sts-style-ci-source.mjs
+PASS 91 complete joint binding missing tests/helpers/sts-style-ci-source.mjs
+PASS 92 complete joint binding drift tests/integrated-ci-source.cases.mjs
+PASS 93 complete joint binding missing tests/integrated-ci-source.cases.mjs
+PASS 94 complete joint binding drift tests/integration-source-epoch.test.mjs
+PASS 95 complete joint binding missing tests/integration-source-epoch.test.mjs
+PASS 96 complete joint binding drift tests/lua/support/release_picker_controls.lua
+PASS 97 complete joint binding missing tests/lua/support/release_picker_controls.lua
+PASS 98 complete joint binding drift tests/official-assets.test.mjs
+PASS 99 complete joint binding missing tests/official-assets.test.mjs
+PASS 100 complete joint binding drift tests/official-choice-pagination.test.mjs
+PASS 101 complete joint binding missing tests/official-choice-pagination.test.mjs
+PASS 102 complete joint binding drift tests/pr-history.test.mjs
+PASS 103 complete joint binding missing tests/pr-history.test.mjs
+PASS 104 complete joint binding drift tests/quick-feedback.test.mjs
+PASS 105 complete joint binding missing tests/quick-feedback.test.mjs
+PASS 106 complete joint binding drift tests/release-card-contact-integration.test.mjs
+PASS 107 complete joint binding missing tests/release-card-contact-integration.test.mjs
+PASS 108 complete joint binding drift tests/release-pc22-basic-feedback-source.test.mjs
+PASS 109 complete joint binding missing tests/release-pc22-basic-feedback-source.test.mjs
+PASS 110 complete joint binding drift tests/release-picker-controls-source.test.mjs
+PASS 111 complete joint binding missing tests/release-picker-controls-source.test.mjs
+PASS 112 complete joint binding drift tests/release-picker-controls.test.mjs
+PASS 113 complete joint binding missing tests/release-picker-controls.test.mjs
+PASS 114 complete joint binding drift tests/release-picker-map-integration.test.mjs
+PASS 115 complete joint binding missing tests/release-picker-map-integration.test.mjs
+PASS 116 complete joint binding drift tests/release-selection-map-source.test.mjs
+PASS 117 complete joint binding missing tests/release-selection-map-source.test.mjs
+PASS 118 complete joint binding drift tests/session-menu-navigation.test.mjs
+PASS 119 complete joint binding missing tests/session-menu-navigation.test.mjs
+PASS 120 complete joint binding drift tests/sts-style-source-epoch.test.mjs
+PASS 121 complete joint binding missing tests/sts-style-source-epoch.test.mjs
+PASS 122 full boundary restored after complete matrix
+controls 122 passed

@@ -1,0 +1,10 @@
+✔ B9 capacity CI join binds both exact predecessors and refuses drift foreign paths wrong before and malformed inputs (58103.849315ms)
+✔ capacity and latest Release CI views compose without accepting stale or foreign current owners (77920.835977ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 137607.944614

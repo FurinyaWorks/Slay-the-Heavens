@@ -1,4 +1,6 @@
 // CI-only join of #696 picker, #697 selection/map and landed #698 card contact. Original packets stay immutable.
+import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
+import {assertFastFreezeB9UnionCurrent} from './release-fast-freeze-b9-union.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -27,6 +29,22 @@ assert.equal(hash(capacityJoinBytes),'c0acb1ca67272b88be37050885b0c11fd75a7aeb3d
 const capacityJoin=JSON.parse(capacityJoinBytes);
 assert.equal(capacityJoin.prepCommit,'c2d32421e63f104675fb98d7af033cb5817555eb');
 assert.equal(capacityJoin.releaseCommit,'00ab3fe6d386f55aecfb063e59aeca2cf5065807');
+const currentImplementation=norm(readFileSync(new URL(import.meta.url),'utf8'));
+const preflightJoinBytes=norm(readFileSync(new URL('./release-picker-preflight-join.json',import.meta.url),'utf8'));
+assert.equal(hash(preflightJoinBytes),'4032e96519d833a5d38a2447aabf7031a54e8701fc4e666c933abfa9c07c2ec9','complete picker preflight join');
+const preflightJoin=JSON.parse(preflightJoinBytes);
+assert.deepEqual(preflightJoin.parents,{picker:'af3ddb2eef8969959454c432cb2743288917a086',release:'af77fb2461c548f0faf104761d107397f75dca08'});
+function preflightJoinSource(path,source,domain){
+ const row=Object.hasOwn(preflightJoin.files,path)?preflightJoin.files[path]:null;
+ if(!row||typeof row[domain]!=='string'||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
+ return source.includes('\r\n')?row[domain].replaceAll('\n','\r\n'):row[domain];
+}
+function preflightJoinRead(domain,read){return(path,encoding)=>{
+ const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+ if(Buffer.isBuffer(raw)&&!Object.hasOwn(preflightJoin.files,path))return raw;
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=preflightJoinSource(path,text,domain);
+ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+};}
 const packets={picker,pc22,selection};
 assert.equal(integrationPacket.fixedStsValidatorBefore.sha256,'054113396d3db48407c2aee4f5c9563e6c4f2e8a80d37c979c79b6b3afac423a');
 assert.equal(hash(integrationPacket.fixedStsValidatorBefore.source),integrationPacket.fixedStsValidatorBefore.sha256,'exact fixed StS validator predecessor');
@@ -35,7 +53,7 @@ integrationPacket.inventory=Object.fromEntries(['js','lua'].map(kind=>[kind,[...
  ...pc22.currentInventory[kind],...picker.currentInventory[kind],...selection.currentInventory[kind],...(kind==='js'?integrationPacket.addedJs:[]),
 ])].sort()]));
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
-freeze(integrationPacket);freeze(capacityJoin);
+freeze(integrationPacket);freeze(capacityJoin);freeze(preflightJoin);
 for(const side of Object.keys(packets))for(const kind of ['js','lua'])
  assert(packets[side].currentInventory[kind].every(path=>integrationPacket.inventory[kind].includes(path)),'retain complete '+side+' '+kind+' inventory');
 // CI projections never intercept production authorization. Complete standalone
@@ -57,7 +75,7 @@ export function integrationCiSource(path,source,side='picker',read=readFileSync)
 function uncheckedRead(side,read){return(path,encoding)=>{
  const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
  // Freshly read opaque archives have no text projection in either exact domain.
- if(Buffer.isBuffer(raw)&&!Object.hasOwn(integrationPacket.files,path)&&!Object.hasOwn(capacityJoin.files,path))return raw;
+ if(Buffer.isBuffer(raw)&&!Object.hasOwn(integrationPacket.files,path)&&!Object.hasOwn(capacityJoin.files,path)&&!Object.hasOwn(preflightJoin.files,path))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=uncheckedCiSource(path,text,side);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
@@ -259,17 +277,26 @@ export function releaseIntegratedPriorInventory(paths,target,kind='js',read=read
 
 // Exact outer join: raw current identity is checked before either private domain.
 function capacityJoinSource(path,source,domain){
+ source=preflightJoinSource(path,source,'picker');
  const row=Object.hasOwn(capacityJoin.files,path)?capacityJoin.files[path]:null;
  if(!row?.[domain]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
  return source.includes('\r\n')?row[domain].source.replaceAll('\n','\r\n'):row[domain].source;
 }
 function capacityJoinRead(domain,read){return(path,encoding)=>{
  const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
- if(Buffer.isBuffer(raw)&&!Object.hasOwn(capacityJoin.files,path))return raw;
+ if(Buffer.isBuffer(raw)&&!Object.hasOwn(capacityJoin.files,path)&&!Object.hasOwn(preflightJoin.files,path))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityJoinSource(path,text,domain);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertReleaseIntegrationCurrent(read=readFileSync){
+ assert.equal(norm(read('tests/helpers/release-picker-b9-integration.mjs','utf8')),currentImplementation,'fresh complete integration source: picker implementation');
+ assert.equal(norm(read('tests/helpers/release-picker-preflight-join.json','utf8')),preflightJoinBytes,'fresh complete picker preflight join packet');
+ for(const [path,row]of Object.entries(preflightJoin.files))assert.equal(hash(norm(read(path,'utf8'))),row.currentSha256,'fresh complete integration source: picker preflight '+path);
+ const releaseRead=preflightJoinRead('release',read);
+ assertCapacityPreflightCurrent(releaseRead);
+ assertFastFreezeB9UnionCurrent(releaseRead);
+ assertCapacityIntegrationCurrent(releaseRead);
+ read=preflightJoinRead('picker',read);
  assert.equal(norm(read('tests/helpers/release-picker-capacity-join.json','utf8')),capacityJoinBytes,'fresh complete picker capacity join packet');
  for(const [path,row]of Object.entries(capacityJoin.files))assert.equal(hash(norm(read(path,'utf8'))),row.currentSha256,'fresh complete integration source: picker capacity '+path);
  for(const [path,sha]of Object.entries(capacityJoin.archives))assert.equal(hash(read(path)),sha,'fresh complete picker capacity archive: '+path);
@@ -301,3 +328,13 @@ export function integrationCapacityCurrentRead(read=readFileSync){
   return value;
  };
 }
+
+// #707 current domain is separate from the immutable #703 current domain.
+export function integrationPreflightCurrentRead(read=readFileSync){return(path,encoding)=>{
+ const raw=read(path,encoding);
+ if(path.startsWith('src/')||path==='config/architecture.json')return raw;
+ const value=preflightJoinRead('release',()=>raw)(path,encoding);
+ const changed=Buffer.isBuffer(raw)&&Buffer.isBuffer(value)?!raw.equals(value):raw!==value;
+ if(changed)assertReleaseIntegrationCurrent(read);
+ return value;
+};}

@@ -1,0 +1,32 @@
+✖ capacity and latest Release CI views compose without accepting stale or foreign current owners (68295.542934ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 70330.678781
+
+✖ failing tests:
+
+test at tests/release-selection-map-source.test.mjs:91:1
+✖ capacity and latest Release CI views compose without accepting stale or foreign current owners (68295.542934ms)
+  AssertionError [ERR_ASSERTION]: fresh complete integration source: capacity/preflight tests/release-selection-map-source.test.mjs
+  + actual - expected
+  
+  + '65bfcbdb61799e6d973ab17edba79225c8ef4405764095fc31a17a9b878637f8'
+  - '312409e2805093ad2e5f627827be3d6f5f8cbc138d582be6ff203e2a44deed27'
+  
+      at assertCapacityPreflightCurrent (file:///workspace/scratch/c1a4970a76e0/picker696-current-1615/tests/helpers/release-capacity-preflight-source.mjs:20:10)
+      at assertIntegratedCurrent (file:///workspace/scratch/c1a4970a76e0/picker696-current-1615/tests/helpers/integrated-ci-source.mjs:34:60)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/picker696-current-1615/tests/release-selection-map-source.test.mjs:100:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '65bfcbdb61799e6d973ab17edba79225c8ef4405764095fc31a17a9b878637f8',
+    expected: '312409e2805093ad2e5f627827be3d6f5f8cbc138d582be6ff203e2a44deed27',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

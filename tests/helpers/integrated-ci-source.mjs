@@ -1,4 +1,3 @@
-import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
 import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
@@ -31,7 +30,9 @@ export function integratedRead(target,{read=readFileSync}={}){read=preflightPrio
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
-export function assertIntegratedCurrent(read=readFileSync){assertCapacityPreflightCurrent(read);return assertReleaseIntegratedCurrent(read);}
+// The joint validator runs the unchanged preflight assertion in its exact
+// Release parent view, after authenticating this same raw caller.
+export function assertIntegratedCurrent(read=readFileSync){return assertReleaseIntegratedCurrent(read);}
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return integrationInventory(kind);}
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;

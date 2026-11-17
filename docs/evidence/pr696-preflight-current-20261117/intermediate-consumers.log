@@ -1,0 +1,33 @@
+✔ B9 capacity CI join binds both exact predecessors and refuses drift foreign paths wrong before and malformed inputs (55488.510817ms)
+✖ capacity and latest Release CI views compose without accepting stale or foreign current owners (71261.128258ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 128066.454981
+
+✖ failing tests:
+
+test at tests/release-selection-map-source.test.mjs:91:1
+✖ capacity and latest Release CI views compose without accepting stale or foreign current owners (71261.128258ms)
+  AssertionError [ERR_ASSERTION]: fresh complete integration source: scripts/test-affected.mjs
+  + actual - expected
+  
+  + '507a990e4a7aaba56a28455130f11e9ada8348e90631e6007dc713fdaf6f9068'
+  - '3e4399ce922a5be10d5fa373c770ce3e58085f212e26f4b2b5f414f327ad27ee'
+  
+      at assertReleaseIntegratedCurrent (file:///workspace/scratch/c1a4970a76e0/picker696-current-1615/tests/helpers/release-picker-b9-integration.mjs:145:75)
+      at assertIntegratedCurrent (file:///workspace/scratch/c1a4970a76e0/picker696-current-1615/tests/helpers/integrated-ci-source.mjs:35:67)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/picker696-current-1615/tests/release-selection-map-source.test.mjs:100:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '507a990e4a7aaba56a28455130f11e9ada8348e90631e6007dc713fdaf6f9068',
+    expected: '3e4399ce922a5be10d5fa373c770ce3e58085f212e26f4b2b5f414f327ad27ee',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

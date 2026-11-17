@@ -1,0 +1,14 @@
+{
+  "docs/evidence/pr696-preflight-current-20261117/README.md": "9ab5d9dea6edf10336f11e4bb5e6738e290c302ec52d399fc102762f6df5a881",
+  "docs/evidence/pr696-preflight-current-20261117/final-consumers.log": "a88b3f42083171a2f83b2a49b4ae9c38044c868e6860f8bd2e35e5086e35d03e",
+  "docs/evidence/pr696-preflight-current-20261117/first-consumer.log": "0bde656d4b6770f3c9e93f1a38fd517aad1ac40dbde064fdc11f00dc6cb042e2",
+  "docs/evidence/pr696-preflight-current-20261117/fixed-integrated-validator.log": "8d5f452f54b5bc424bc86fcccf48627b7411082d6621bc9787ba83339224b66d",
+  "docs/evidence/pr696-preflight-current-20261117/initial-compose-failure.log": "623cb1369a6ae72efa374426a0b528d674d36cdab7ff21c15121980ecccc8d99",
+  "docs/evidence/pr696-preflight-current-20261117/initial-probe-assumption-failure.log": "d374a21f858a29068dd4cd17a4729e13c5480d9f1b7f03cf53e2d43c659da778",
+  "docs/evidence/pr696-preflight-current-20261117/intermediate-consumers.log": "dcc7168c2ad05549e931c7f86d7320e4e525342310fa7ea2206929de2fd511c0",
+  "docs/evidence/pr696-preflight-current-20261117/interrupted-by-local-edit-controls.log": "229592f7a568ea38a8288c09afa2072aba3c4d63d04bcb6fe9e41d2cb143b09a",
+  "docs/evidence/pr696-preflight-current-20261117/negative-controls.log": "b2df43af97f97102d32789115f84072e75ea61ac5ebd0a05cdc17355904e3c3a",
+  "docs/evidence/pr696-preflight-current-20261117/negative-controls.mjs": "21cd1a5606932130b217e1ce71389519d897fe9a8e3dc8cb6a873edf93120b9b",
+  "docs/evidence/pr696-preflight-current-20261117/rebuild-packet.py": "d06a321ebbfac290007649946a6795c3e91991e8b7729a95969999f0a598f1ba",
+  "docs/evidence/pr696-preflight-current-20261117/regeneration.log": "02260996ebc646b6db73973c22331414e7b4dfc7dec604d4a29acd34acfc9af2"
+}
