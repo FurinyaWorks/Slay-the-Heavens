@@ -13,3 +13,5 @@ Commands:
 - node --test tests/release-navigation-map-integration.test.mjs tests/release-navigation-source.test.mjs
 
 Original PR still has Release merge conflicts; final Release integration must preserve this tested consumer and revalidate the actual combined candidate. No release merge or publication permission is asserted by this preparation.
+
+A broader single-file `node --test tests/ci-complete-calibration.test.mjs` attempt was stopped with SIGINT (exit130) after several minutes without emitted results, to avoid consuming more heavy validation resources. Its outcome is UNVERIFIED, not a pass. Only the 2 focused cases and 16 source-contract cases above are claimed green.
