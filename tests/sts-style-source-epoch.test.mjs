@@ -11,7 +11,7 @@ import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {releasePickerControlsPriorInventory} from './helpers/release-picker-controls-ci-source.mjs';
-import {integrationRead,integrationPriorInventory} from './helpers/release-picker-map-integration.mjs';
+import {integrationRead,integrationPriorInventory} from './helpers/release-picker-b9-integration.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){

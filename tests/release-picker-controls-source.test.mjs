@@ -1,4 +1,4 @@
-import {integrationProductionRead,integrationPriorInventory} from './helpers/release-picker-map-integration.mjs';
+import {integrationProductionRead,integrationPriorInventory} from './helpers/release-picker-b9-integration.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReadFileSync,readdirSync as rawReaddirSync} from 'node:fs';

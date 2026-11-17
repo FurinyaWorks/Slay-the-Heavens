@@ -46,7 +46,7 @@ import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releasePickerControlsCiRead,releasePickerControlsPriorInventory,assertReleasePickerControlsCiCurrent,releasePickerControlsCiPacket,assertReleasePickerControlsExecutionGuards} from './helpers/release-picker-controls-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
-import {integrationRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-picker-map-integration.mjs';
+import {integrationRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-picker-b9-integration.mjs';
 const sideRead=integrationRead('picker',rawReleaseReadFileSync);
 const rawBootstrapReadFileSync=releasePickerControlsCiRead(sideRead);
 const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);

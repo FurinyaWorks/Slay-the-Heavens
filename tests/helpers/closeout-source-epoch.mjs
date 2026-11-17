@@ -11,6 +11,7 @@ import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
+import {extendReleasePc22BasicFeedbackSource} from './release-pc22-basic-feedback-source.mjs';
 import {extendReleasePickerControlsSource} from './release-picker-controls-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -52,16 +53,18 @@ export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preReleasePickerControlsSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const preReleasePc22BasicFeedbackSourceEpoch=preReleasePickerControlsSourceEpoch;
+export const releasePc22BasicFeedbackSourceEpoch=extendReleasePc22BasicFeedbackSource(preReleasePc22BasicFeedbackSourceEpoch);
 export const preReleaseSelectionMapSourceEpoch=preReleasePickerControlsSourceEpoch;
 export const releasePickerControlsSourceEpoch=extendReleasePickerControlsSource(preReleasePickerControlsSourceEpoch);
 export const releaseSelectionMapSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
 // Join disjoint approved owners against their exact common predecessor. Both
 // standalone corpora and every original target retain their original identity.
-function joinReleaseSources(){
+function joinReleaseSources(sides){
 const base=preReleasePickerControlsSourceEpoch.proof;
-const picker=releasePickerControlsSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof;
+const picker=releasePickerControlsSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof,pc22=releasePc22BasicFeedbackSourceEpoch.proof;
 const current={...base.current},targets={...base.targets};
-for(const side of [picker,selection]){
+for(const side of sides){
  for(const [path,row]of Object.entries(side.current))if(row?.sha256!==base.current[path]?.sha256){
   assert.deepEqual(current[path],base.current[path],'disjoint Release integration owner: '+path);
   current[path]=row;
@@ -71,16 +74,20 @@ for(const side of [picker,selection]){
   else targets[name]=target;
  }
 }
-targets.releasePickerControlsReviewed={commit:picker.currentCommit,files:picker.current};
+if(sides.includes(picker))targets.releasePickerControlsReviewed={commit:picker.currentCommit,files:picker.current};
+if(sides.includes(pc22))targets.releasePc22BasicFeedbackReviewed={commit:pc22.currentCommit,files:pc22.current};
 targets.releaseSelectionMapReviewed={commit:selection.currentCommit,files:selection.current};
 const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
 return createSourceEpochProjector(freeze({...base,current,targets,owners,
- currentTreeCommitted:false,currentCommit:'44711d80a427e811745ad005c314e069a1a54038',
+ currentTreeCommitted:false,currentCommit:sides.length===3?'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc':sides.includes(picker)?'44711d80a427e811745ad005c314e069a1a54038':'17580f25c742a7facb5626db8fc17efb4abe269b',
  currentCommitRole:'integration worktree capture; standalone committed product producers are retained separately',
- releasePickerControlsProducers:picker.releasePickerControlsProducers,
+ ...(sides.includes(picker)?{releasePickerControlsProducers:picker.releasePickerControlsProducers}:{}),
+ ...(sides.includes(pc22)?{releasePc22BasicFeedbackProducers:pc22.releasePc22BasicFeedbackProducers}:{}),
  releaseSelectionMapProducers:selection.releaseSelectionMapProducers}),{allowConfigLayout:true,reuseFrozenInput:true});
 }
-export const sourceEpoch=joinReleaseSources();
+export const pickerMapSourceEpoch=joinReleaseSources([releasePickerControlsSourceEpoch.proof,releaseSelectionMapSourceEpoch.proof]);
+export const cardContactSourceEpoch=joinReleaseSources([releasePc22BasicFeedbackSourceEpoch.proof,releaseSelectionMapSourceEpoch.proof]);
+export const sourceEpoch=joinReleaseSources([releasePickerControlsSourceEpoch.proof,releasePc22BasicFeedbackSourceEpoch.proof,releaseSelectionMapSourceEpoch.proof]);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

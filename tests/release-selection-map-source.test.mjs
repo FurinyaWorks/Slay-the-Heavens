@@ -9,7 +9,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {discoverJs as rawDiscoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch as jointSourceEpoch,releaseSelectionMapSourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
-import {integrationProductionRead,integrationPriorInventory} from './helpers/release-picker-map-integration.mjs';
+import {integrationProductionRead,integrationPriorInventory} from './helpers/release-picker-b9-integration.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
 import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
