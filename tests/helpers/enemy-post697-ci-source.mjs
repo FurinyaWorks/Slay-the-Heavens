@@ -28,9 +28,27 @@ for(const [path,row]of Object.entries(repair.files)){
  }
  files[path]={current:row.current,views:row.views};
 }
+// The calibration consumer also needs real current production bytes before any
+// named historical CI view. Keep the first repair and all original views intact.
+const calibrationBytes=readFileSync(new URL('./enemy-calibration-reader-repair.json.gz',import.meta.url));
+assert.equal(hash(calibrationBytes),'25f3d637595627f690844b22ecd7443526527b553d9e572f5f40a67a449aa26f','complete enemy calibration reader repair');
+const calibration=JSON.parse(gunzipSync(calibrationBytes));
+assert.equal(calibration.schemaVersion,1);assert.equal(calibration.baseCommit,'1508139e1918af4eeb455e4124241fd927c896b2');
+assert.equal(calibration.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(calibration.files),['tests/ci-complete-calibration.test.mjs']);
+for(const [path,row]of Object.entries(calibration.files)){
+ assert.deepEqual(row.before,files[path].current,'exact pre-calibration consumer: '+path);
+ assert.deepEqual(row.views,files[path].views,'immutable calibration histories: '+path);
+ for(const item of [row.before,row.current,...Object.values(row.views)].filter(Boolean)){
+  assert.equal(item.source,norm(item.source));assert.equal(hash(item.source),item.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(item.source)}\0`).update(item.source).digest('hex'),item.gitBlob,path);
+ }
+ files[path]={current:row.current,views:row.views};
+}
 const packet={...originalPacket,files,immutableArchives:{...originalPacket.immutableArchives,
  'tests/helpers/enemy-post697-ci-source.json.gz':hash(bytes),
- 'tests/helpers/enemy-post697-ci-reader-repair.json.gz':hash(repairBytes)}};
+ 'tests/helpers/enemy-post697-ci-reader-repair.json.gz':hash(repairBytes),
+ 'tests/helpers/enemy-calibration-reader-repair.json.gz':hash(calibrationBytes)}};
 assert.equal(packet.schemaVersion,1);assert.equal(packet.currentTreeCommitted,false);
 assert.deepEqual(packet.viewCommits,{enemy:'13a3c70046391cadee86ecffb57ded3450906687',selection:'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9'});
 assert.equal(packet.productCommit,'bc106cce4f8fde5d1b0dec5ae9c0403cb5436a0c');

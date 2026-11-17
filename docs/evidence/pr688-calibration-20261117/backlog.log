@@ -1,0 +1,22 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> slay-the-abyss@1.0.0 verify:backlog
+> node scripts/verify-backlog-roadmap.mjs
+
+node:fs:1630
+  const result = binding.readdir(
+                         ^
+
+Error: ENOENT: no such file or directory, scandir 'backlog/tasks'
+    at readdirSync (node:fs:1630:26)
+    at files (file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/scripts/verify-backlog-roadmap.mjs:166:30)
+    at readTasks (file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/scripts/verify-backlog-roadmap.mjs:168:34)
+    at verifyBacklogRoadmap (file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/scripts/verify-backlog-roadmap.mjs:169:17)
+    at file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/scripts/verify-backlog-roadmap.mjs:204:22 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'backlog/tasks'
+}
+
+Node.js v24.22.1

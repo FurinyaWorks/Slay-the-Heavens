@@ -1,0 +1,13 @@
+{
+  "checks": 47,
+  "base": "1508139e1918af4eeb455e4124241fd927c896b2",
+  "production": 352,
+  "owners": 117,
+  "ciFiles": 31,
+  "archives": 103,
+  "files": {
+    "tests/ci-complete-calibration.test.mjs": "c41dd9c44020d60b7204eb9a437fc9d405c2d8b1cd26a204e4146f65c84ae8c1",
+    "tests/helpers/enemy-post697-ci-source.mjs": "3543d9df9de430e256d60e9bbc2df2c2f8f3f76153141069aa7092bdd393df80",
+    "tests/helpers/enemy-calibration-reader-repair.json.gz": "25f3d637595627f690844b22ecd7443526527b553d9e572f5f40a67a449aa26f"
+  }
+}

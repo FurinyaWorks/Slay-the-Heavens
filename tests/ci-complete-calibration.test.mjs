@@ -55,7 +55,10 @@ import {mobileHandCiRead,mobileHandCiPacket,mobileHandPriorInventory,assertMobil
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 const assertMobileHandCiCurrent=(read=actualHandReadFileSync)=>priorAssertMobileHandCiCurrent(read);
 const rawBootstrapReadFileSync=releaseSelectionMapCiRead(rawReleaseReadFileSync);
-const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+const historicalCiReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+// Authenticate the final current production closure before historical projection.
+const liveDiskReadFileSync=(path,encoding)=>(path.startsWith('src/')||path==='config/architecture.json'
+ ?unionActualReadFileSync:historicalCiReadFileSync)(path,encoding);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
