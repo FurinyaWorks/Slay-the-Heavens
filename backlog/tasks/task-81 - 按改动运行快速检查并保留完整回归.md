@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-17 09:19'
+updated_date: '2026-11-17 11:21'
 labels:
   - 待验
   - delivery-verify
@@ -63,6 +63,8 @@ PR332已复现Silent自然构筑夹具在Windows原30000ms超时；仅诊断并�
 2026-11-17 Release CI #707：从3f890cdc接续旧reader，精确全文映射component281/nativeCloseout及改动helper前驱；原pin、负控和完整库存不变，定向验证后交还协调者，不重复Full。
 
 2026-11-17 Release三仓准入组合：复用b6准备后继合准确707@845，选择性接712@208内联准入/完整Quick与必要reader；保留709 edited/scope与707冻结Full。先验证严格job身份、同HEAD/BASE和Release合同；来源闭包过大时保留实际组合及具名失败，不批量扩映射或库存。
+
+2026-11-17 既有707执行线：从已审359隔离正常合703@698，先merge-tree核无产品冲突，只组合真实CI/source接缝；保原完整前驱/pin/当前断言，复用703产品独审和359CI foundation。等待真实703 squash后正常merge同步并断言tree不变，再绑定实际BASE和必要一次Fork Full；当前准备不冒称Release base已更新。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -123,4 +125,8 @@ Release Fast×Freeze×三仓准入最小组合准备：107项定向96过11红；
 Release三源组合后续已修完旧11红，并补齐Full base_sha四组真实消费者。最终7文件196/196、0skip通过，含完整calibration、原107和新漂移/错before/注入archive/完整Quick负控；summary保持当前原盘表达式，仅补needs实际上下文及上游失败拒绝。外层18份完整源码按固定b6/845视图续接，旧union与712源包pin不改，5验证器和881JS库存不变。候选待最终准确HEAD独审与托管准入，不推送或启动Full。
 
 接续B712 run44050580539两条真实当前消费者失败：POSIX4 ci-posix-shards:73、POSIX11 delivery:539。仅把当前regex强化为显式!cancelled+impact success+mode，未映旧workflow。20行完整前驱保旧pin；两原例2红→差量7/7通过，含全20行负控及原两calibration current检查；先前8d96的196/196无需重复。
+
+359×703 merge-tree仅4个CI/source冲突，无产品/core冲突。语义组合双保Freeze/Quick与capacity/review/reduction/audio链，必要来源显式分359历史view与698容量view，10个真实CI输入完整source固定，两个单父入口缺席view保持raw。11个703产品脚本逐字698、三workflow及原CI/freeze准入13路径逐字359，src/data/config tree两父相同；无新测试库存。当前本地227项组合通过，最终窄负控及准确merge独审待绑定。A359/3c/c650及正式PR不动，未push/dispatch/新PR或Full。
+
+本地359×703最终11文件定向组合228/228、0skip；原12红、advisory缺席view负控红及caller漏参负控红保留原始输出，修复不改旧hash/断言。严格advisory guard揭示release-ci.cases旧fixture须显式359 parent，已作唯一必要reader接续，因此最终11row/真实父view逐字Git；测试库存仍881，产品及CI核心字节身份不变。准确正常merge候选及独审将单独绑定，当前不称真实Release BASE已变或正式准入已完成。
 <!-- SECTION:NOTES:END -->

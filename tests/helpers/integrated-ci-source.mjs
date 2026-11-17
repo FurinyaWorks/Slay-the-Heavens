@@ -1,3 +1,4 @@
+import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
 import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
@@ -19,12 +20,12 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
-export function integratedSource(path,source,target){
+export function integratedSource(path,source,target,read=readFileSync){
  source=beforePreflightSource(path,source);
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=integrationCiSource(path,source,'pc22');
+ source=integrationCiSource(path,source,'pc22',read);
  source=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,source),row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
@@ -36,12 +37,13 @@ export function integratedRead(target,{read=readFileSync}={}){read=preflightPrio
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
   const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
  }
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target);
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ const capacityRead=read;assertCapacityPreflightCurrent(read);
  read=preflightPriorRead(read);
- assertReleaseIntegrationCurrent(read);
+ assertReleaseIntegrationCurrent(read,capacityRead);
  read=integrationProductionRead('pc22',read);
  assertReleasePc22BasicFeedbackCiCurrent(read);
  assertReleaseBootstrapCiCurrent(releasePc22BasicFeedbackCiRead(read));

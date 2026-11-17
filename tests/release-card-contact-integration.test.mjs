@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
 import {releaseFastB9CiRead} from './helpers/release-fast-b9-ci-source.mjs';
 import {createHash} from 'node:crypto';
+import {beforeCapacityB9Ci} from './helpers/release-capacity-b9-ci-source.mjs';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch,releasePc22BasicFeedbackSourceEpoch,releaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {integrationPacket,integrationCiSource,integrationRead,integrationInventory,integrationPriorInventory,assertIntegrationRawInventory,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
@@ -47,7 +48,7 @@ test('joint owner authorization freshly rejects every missing changed or mistype
 test('joint CI binds every current input, preserves both packets and never masks production or foreign drift',()=>{
  assertReleaseIntegrationCurrent();
  for(const [path,sha]of Object.entries(integrationPacket.files)){
-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),sha,path);
+  const source=norm(beforeCapacityB9Ci(path,readFileSync(path,'utf8')));assert.equal(hash(source),sha,path);
   for(const side of ['pc22','selection']){
    for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(integrationCiSource(path,foreign,side),foreign,path);
    for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(integrationCiSource(foreignPath,source,side),source);
@@ -57,14 +58,14 @@ test('joint CI binds every current input, preserves both packets and never masks
    }
   }
   for(const mode of ['changed','missing'])assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>{
-   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing '+p);return e?source+'\n':Buffer.from(source+'\n');
+   if(p!==path)return rawReadFileSync(p,e);if(mode==='missing')throw Error('missing '+p);return e?source+'\n':Buffer.from(source+'\n');
   }),mode==='missing'?/missing/:/fresh complete integration source/);
  }
  for(const [side,packet]of [['pc22',releasePc22BasicFeedbackCiPacket],['selection',releaseSelectionMapCiPacket]]){
   const read=integrationRead(side);
   for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,path+' exact '+side+' current view');
  }
- for(const path of Object.keys(integrationPacket.archives))assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>p===path?Buffer.concat([readFileSync(p),Buffer.from('\n')]):readFileSync(p,e)),/immutable Release join predecessor/);
+ for(const path of Object.keys(integrationPacket.archives))assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>p===path?Buffer.concat([rawReadFileSync(p),Buffer.from('\n')]):rawReadFileSync(p,e)),/immutable Release join predecessor/);
 });
 
 test('joint raw inventories retain both additions and reject missing duplicate foreign and changed inputs',()=>{

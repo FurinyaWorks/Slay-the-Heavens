@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {beforeCapacityB9Ci} from './release-capacity-b9-ci-source.mjs';
 import {beforeReleaseFastB9SelectionTest} from './release-fast-b9-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-selection-map-ci-source.json.gz',import.meta.url));
@@ -133,10 +134,37 @@ export function releaseFreezeCiBefore(path,source){
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
+// Exact composition over the committed Release and capacity leaves. Their
+// complete packets stay immutable; this outer view authenticates only the
+// changed CI owners before supplying their full Release predecessors.
+const capacityReleaseBytes=readFileSync(new URL('./task111-release-integration-ci-source.json.gz',import.meta.url));
+assert.equal(hash(capacityReleaseBytes),'92e8c369968fcf18d46c1787b4e5ea06c0a1f74246ffec4339bd1a524cac453e','complete TASK-111 Release integration CI continuation');
+const capacityRelease=JSON.parse(gunzipSync(capacityReleaseBytes));
+assert.equal(capacityRelease.schemaVersion,1);assert.equal(capacityRelease.normalization,'LF');
+assert.equal(capacityRelease.releaseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
+assert.equal(capacityRelease.capacityCommit,'bf74c0c391a0700740fee9b7cb8695bff615366a');
+assert.equal(capacityRelease.mergeCommit,'7b6e63283e5b2b1fede623ad2a3ac0498a4c2558');
+assert.equal(capacityRelease.currentTreeCommitted,false);
+assert.deepEqual(Object.keys(capacityRelease.files),['tests/helpers/release-bootstrap-ci-source.mjs','tests/release-selection-map-source.test.mjs']);
+for(const [path,row]of Object.entries(capacityRelease.files)){
+ assert.deepEqual(row.before,packet.files[path].current,'complete committed Release CI predecessor: '+path);
+ for(const binding of [row.before,row.current]){
+  assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+ }
+}
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseSelectionMapCiPacket=freeze(packet);
+export const capacityReleaseCiPacket=freeze(capacityRelease);
 export const releaseFreezeCiPacket=freeze(freezePacket);
+export function capacityReleaseCiBefore(path,source){
+ source=beforeCapacityB9Ci(path,source,'capacity');
+ const row=Object.hasOwn(capacityRelease.files,path)?capacityRelease.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ return hash(norm(source))===row.current.sha256?row.before.source:source;
+}
 export function historicalSource(path,source){
+ source=capacityReleaseCiBefore(path,source);
  source=beforeReleaseFastB9SelectionTest(path,releaseFreezeCiBefore(path,source));
  if(path==='tests/release-selection-map-source.test.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='f8f63b397e57267e7d69ed174575459726aa34651196ed6ff307a33b912a5764'){
   const prior=norm(source).replace('import {historicalSource,releaseSelectionMapCiPacket,','import {releaseSelectionMapCiPacket,').replace('assert.equal(hash(historicalSource(path,source)),row.current.sha256,path);','assert.equal(hash(source),row.current.sha256,path);').replace('production?source:row.before?.source??historicalSource(path,source),path);','production?source:row.before?.source??source,path);');
@@ -218,6 +246,8 @@ export function assertReleaseSelectionMapExecutionGuards(workflow){
  assert.deepEqual(runners,["${{ github.event_name == 'workflow_dispatch' && inputs.runner_pool == 'local-special' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && fromJSON('[\"self-hosted\", \"Windows\", \"X64\", \"slay-the-abyss\"]') || 'windows-2025' }}"],'raw Quality trusted local runner guard');
 }
 export function assertReleaseSelectionMapCiCurrent(read=readFileSync){
+ for(const [path,row]of Object.entries(capacityRelease.files))
+  assert.equal(hash(norm(beforeCapacityB9Ci(path,read(path,'utf8'),'capacity'))),row.current.sha256,'fresh complete integration source: capacity Release merge '+path);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: release selection map '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
