@@ -522,3 +522,37 @@ test('fresh live dependencies must be actually merged and contained in real Q, n
   assert.equal(queueAdmissionCompatible(before,JSON.stringify(changed)),false,field);
  }
 });
+
+function maintainedLegacyFixture(){
+ const f=legacyAdmissionFixture(),user={id:337201427,login:'v5g95m7t8m-max'};f.permission=structuredClone(f.permission);
+ f.entry.enqueuer={databaseId:user.id,login:user.login};f.enqueuerPermission={permission:'write',role_name:'maintain',user};return f;
+}
+test('a fresh Furi Admin legacy attestation can be enqueued by the actual native Maintain or Write operator',()=>{
+ for(const role of ['maintain','write']){
+  const f=maintainedLegacyFixture(),calls=[],underlying=admissionQuery(f);f.enqueuerPermission.role_name=role;
+  const query=(...args)=>{calls.push(args);return underlying(...args);};
+  const rows=JSON.parse(collectQueueAdmission(f.event,f.env,query,f.ruleset));
+  assert.equal(rows[0].legacySigner.id,111138384);assert.equal(rows[0].enqueuer,337201427);
+  assert.equal(rows[0].enqueuerRole,role);assert.equal(rows[0].review,f.proofStatus.id);
+  assert(!calls.some(args=>args.includes('POST')),'read-only collector never issues legacy status');
+  assert.equal(execute(f,query).state,'success');
+ }
+ const same=legacyAdmissionFixture(),calls=[],underlying=admissionQuery(same);
+ collectQueueAdmission(same.event,same.env,(...args)=>{calls.push(args);return underlying(...args);},same.ruleset);
+ assert.equal(calls.filter(args=>args.some(value=>String(value).includes('/collaborators/'))).length,1,'same signer/operator reuses the fresh Admin read');
+});
+test('separate legacy signer and native operator retain their distinct current roles and exact identities',()=>{
+ for(const mutate of [
+  f=>f.proofStatus.state='pending',f=>f.proofStatus.state='failure',f=>f.permission.permission='write',
+  f=>f.permission.user.id=52,f=>f.permission.user.login='other',
+  f=>f.enqueuerPermission.permission='read',f=>f.enqueuerPermission.role_name='read',
+  f=>f.enqueuerPermission.user.id=52,f=>f.enqueuerPermission.user.login='other',
+  f=>f.entry.enqueuer.databaseId=52,f=>f.entry.enqueuer.login='other',
+  f=>f.reviews=[{...f.review,body:'<!-- independent-ai-review:v1 -->\n{}'}]
+ ])for(const duringReceipt of [false,true]){
+  const f=maintainedLegacyFixture(),writes=[];if(!duringReceipt)mutate(f);
+  assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+   if(duringReceipt)mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
+  }}),undefined,String(mutate));assert.deepEqual(writes,[]);
+ }
+});

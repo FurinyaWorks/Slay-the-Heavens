@@ -117,7 +117,11 @@ export function admissionQuery(f,writes=[]){
   }
   if(url.endsWith('/git/commits/'+f.pr.merge_commit_sha))return JSON.stringify(f.sourceCommit);
   if(url.endsWith('/git/ref/heads/develop'))return JSON.stringify({ref:'refs/heads/develop',object:{type:'commit',sha:f.event.merge_group.base_sha}});
-  if(url.includes('/collaborators/'))return JSON.stringify(f.permission);
+  if(url.includes('/collaborators/')){
+   const operator=f.enqueuerPermission;
+   if(operator&&url.includes('/collaborators/'+encodeURIComponent(f.entry.enqueuer.login)+'/'))return JSON.stringify(operator);
+   return JSON.stringify(f.permission);
+  }
   if(url.endsWith('/commits/'+f.env.GITHUB_SHA))return JSON.stringify(f.groupCommit);
   if(url.includes(`/commits/${f.pr.head.sha}/statuses?`))return JSON.stringify([[...(f.proofStatus?[f.proofStatus]:[]),...(f.qualityStatus?[f.qualityStatus]:[])]]);
   if(url.endsWith('/git/ref/heads/'+f.env.GITHUB_REF.slice('refs/heads/'.length)))

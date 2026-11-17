@@ -104,15 +104,26 @@ export function collectQueueAdmission(event,env,query,ruleset){
    if(!positive(status?.id)||status.state!=='success'||!binding||binding[1]!==fingerprint)
     throw Error('Legacy queue review is paused, missing or bound to another ruleset/BASE');
    reviewBase=binding[2];
-   if(!positive(entry.enqueuer?.databaseId)||status.creator?.id!==entry.enqueuer.databaseId||
-    typeof entry.enqueuer.login!=='string'||!entry.enqueuer.login||typeof status.creator?.login!=='string'||
-    status.creator.login.toLowerCase()!==entry.enqueuer.login.toLowerCase())
-    throw Error('Legacy queue authorization does not belong to its actual enqueuer');
+   if(!positive(entry.enqueuer?.databaseId)||typeof entry.enqueuer.login!=='string'||!entry.enqueuer.login||
+    !positive(status.creator?.id)||typeof status.creator?.login!=='string'||!status.creator.login)
+    throw Error('Legacy queue signer and native enqueue operator identities are required');
    const permission=api(`repos/${repo}/collaborators/${encodeURIComponent(status.creator.login)}/permission`);
    if(permission?.permission!=='admin'||permission.user?.id!==status.creator.id||typeof permission.user?.login!=='string'||
     permission.user.login.toLowerCase()!==status.creator.login.toLowerCase())
     throw Error('Legacy queue authorization requires the current repository administrator');
-   legacyAuthorization={review:status.id,rulesFingerprint:fingerprint,enqueuer:entry.enqueuer.databaseId};
+   const sameActor=entry.enqueuer.databaseId===status.creator.id;
+   const enqueuerPermission=sameActor?permission:
+    api(`repos/${repo}/collaborators/${encodeURIComponent(entry.enqueuer.login)}/permission`);
+   const enqueuerRole=enqueuerPermission?.role_name??enqueuerPermission?.permission;
+   const mayEnqueue=enqueuerRole==='admin'&&enqueuerPermission?.permission==='admin'||
+    enqueuerRole==='maintain'&&['maintain','write'].includes(enqueuerPermission?.permission)||
+    enqueuerRole==='write'&&enqueuerPermission?.permission==='write';
+   if(!mayEnqueue||enqueuerPermission.user?.id!==entry.enqueuer.databaseId||
+    typeof enqueuerPermission.user?.login!=='string'||enqueuerPermission.user.login.toLowerCase()!==entry.enqueuer.login.toLowerCase())
+    throw Error('Legacy native enqueue operator requires current write/maintain/admin permission and exact server identity');
+   legacyAuthorization={review:status.id,rulesFingerprint:fingerprint,enqueuer:entry.enqueuer.databaseId,
+    legacySigner:{id:status.creator.id,login:status.creator.login.toLowerCase()},
+    enqueuerLogin:entry.enqueuer.login.toLowerCase(),enqueuerPermission:enqueuerPermission.permission,enqueuerRole};
   }else{
    const selected=[...reviews].filter(row=>TRUSTED_REVIEW_COORDINATOR_IDS.includes(row?.user?.id)&&
     typeof row.body==='string'&&row.body.includes(INDEPENDENT_AI_REVIEW_MARKER))

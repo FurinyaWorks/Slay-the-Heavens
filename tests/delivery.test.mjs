@@ -1284,3 +1284,20 @@ test('native queue Licenses folds authenticated filter-all history without rewri
  const legacy=structuredClone(e.queueFull);legacy.kind='fast-queue-full';
  assert(delivery.verifyFastQueueFull(legacy,e.preflight,e.pr.merge_commit_sha).length,'the historical Fast contract is not relaxed');
 });
+
+test('a partial native Licenses rerun inherits actual old auxiliary skips while inventory must pass in the current attempt',()=>{
+ const e=secondNativeMergedFixture(),licenses=e.queueFull.licenses;
+ licenses.jobs.push({...licenses.jobs[1],id:702,name:'cancel-obsolete-queue'});
+ licenses.run.run_attempt=licenses.currentRun.run_attempt=2;
+ licenses.jobs.push({...licenses.jobs[0],id:800,run_attempt:2});
+ const raw=JSON.stringify(licenses.jobs);
+ assert.deepEqual(verifyMergedDelivery(e),{state:'merged_passed',errors:[]});
+ assert.equal(JSON.stringify(licenses.jobs),raw,'old skipped rows stay actual attempt1, not fabricated attempt2');
+ for(const mutate of [
+  x=>x.jobs=x.jobs.filter(job=>job.run_attempt!==2),
+  x=>x.jobs[1].conclusion='success',x=>x.jobs[2].conclusion='failure',
+  x=>x.jobs.push({...x.jobs[1],id:801,run_attempt:2,conclusion:'failure'}),
+  x=>x.jobs.push({...x.jobs[2],id:802,run_attempt:2,conclusion:'success'}),
+  x=>x.jobs[1].run_attempt=3,x=>x.jobs[2].head_sha=sha('f')
+ ]){const bad=structuredClone(e);mutate(bad.queueFull.licenses);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));}
+});

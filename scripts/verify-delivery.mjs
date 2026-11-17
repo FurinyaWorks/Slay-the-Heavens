@@ -338,8 +338,8 @@ function verifyQueueFull(e,arm,mergedSha,kind){
       if(!previous||job?.run_attempt>previous.run_attempt||job?.run_attempt===previous.run_attempt&&job?.id>previous.id)
         latest.set(job?.name,job);
     }
-    // Preserve the raw filter=all history; only current execution rows decide
-    // the latest attempt's conclusions. Never relabel an old successful row.
+    // Preserve raw history. Inventory needs a current execution; a conditional
+    // auxiliary may retain its latest genuine skipped execution. Never relabel rows.
     licenseJobs=[...latest.values()];
   }
   const inventory=Array.isArray(licenseJobs)?licenseJobs.filter(job=>job?.name==='inventory'):[],
@@ -356,7 +356,7 @@ function verifyQueueFull(e,arm,mergedSha,kind){
     inventory[0].run_id!==licenses.run.id||inventory[0].run_attempt!==licenses.run.run_attempt||inventory[0].head_sha!==mergedSha||
     inventory[0].status!=='completed'||inventory[0].conclusion!=='success'||
     (kind==='fast-queue-full'?extra.length!==0:extra.length>2||new Set(extra.map(job=>job?.name)).size!==extra.length||new Set(extra.map(job=>job?.id)).size!==extra.length||extra.some(job=>!['independent-ai-review','cancel-obsolete-queue'].includes(job?.name)||
-      !positiveId(job.id)||job.id===inventory[0].id||job.run_id!==licenses.run.id||job.run_attempt!==licenses.run.run_attempt||job.head_sha!==mergedSha||
+      !positiveId(job.id)||job.id===inventory[0].id||job.run_id!==licenses.run.id||!positiveId(job.run_attempt)||job.run_attempt>licenses.run.run_attempt||job.head_sha!==mergedSha||
       job.status!=='completed'||job.conclusion!=='skipped')))
     errors.push('Queue inventory is missing, stale or unsuccessful');
   return errors;
