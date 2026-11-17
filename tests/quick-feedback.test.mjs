@@ -369,15 +369,28 @@ test('newer failed or active dispatch invalidates older success across forks',()
 test('draft license gate stays in the existing inventory before media and retries on ready',()=>{
  const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
  assert.doesNotMatch(licenses,/^  admission:|needs: admission|draft == false/m);
- assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory','independent-ai-review']);
+ assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory','independent-ai-review','cancel-obsolete-queue']);
  assert.match(licenses,/types: \[opened, synchronize, reopened, ready_for_review\]/);
  assert.match(licenses,/  inventory:[\s\S]*?    permissions:\n      contents: read\n      actions: read/);
  assert.match(licenses,/license-audit-not-requested/);
- assert.match(licenses,/if: github.event_name != 'workflow_run'/);
+ assert.match(licenses,/if: github.event_name != 'pull_request_target' && github.event_name != 'workflow_run'/);
  const gate=licenses.indexOf('run: node scripts/fork-preflight.mjs');
  assert(gate>licenses.indexOf('uses: actions/setup-node@'));
  for(const command of ['node scripts/ci-media-lfs.mjs','node scripts/ci-reviewed-lfs.mjs','node --test scripts/check-license.test.mjs','node scripts/check-license.mjs'])assert(gate<licenses.indexOf(command));
  assert.doesNotMatch(licenses,/continue-on-error:/);
+});
+test('dequeued cleanup uses a separate trusted-base job without executing PR code',()=>{
+ const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
+ assert.match(licenses,/pull_request_target:\n    branches: \[develop\]\n    types: \[dequeued\]/);
+ assert.match(licenses,/format\('queue-cleanup-\{0\}', github.repository_id\)/);
+ const cleanup=licenses.slice(licenses.indexOf('\n  cancel-obsolete-queue:\n'));
+ assert.match(cleanup,/github.repository_id == '1429751262' && github.event_name == 'pull_request_target'/);
+ assert.match(cleanup,/github.event.action == 'dequeued' && github.event.pull_request.base.ref == 'develop' && github.ref == 'refs\/heads\/develop'/);
+ assert.match(cleanup,/permissions:\n      contents: read\n      actions: write\n      pull-requests: read/);
+ assert.match(cleanup,/ref: \$\{\{ github\.sha \}\}/);
+ assert.match(cleanup,/persist-credentials: false/);
+ assert.match(cleanup,/run: node scripts\/publish-merge-group\.mjs --cancel-obsolete/);
+ assert.doesNotMatch(cleanup,/pull_request\.head|npm ci|persist-credentials: true/);
 });
 test('admission implementation always requires Full even with a tiny proven mapping',async()=>{
  const {impact}=await import('../scripts/ci-impact.mjs');
