@@ -43,3 +43,10 @@ Backlog 追加仅在 C 系统临时目录的原配置/精确任务原件副本�
 主仓707去重真实读回：`3f890cdcdf2849ae981d9c221d2a0c390647b062` 的 [Quick44025702654](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/44025702654) completed/skipped，[Quality44025702622](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/44025702622)/[Licenses44025702495](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/44025702495) queued。连同677新873的Quick44024833076，两个Ready PR均真实零runner跳过重复advisory；不推导exactly-once、不替代正式Required/MQ/冻结Full。
 
 组织侧诊断边界：主控真实执行 `gh api orgs/FurinyaWorks/actions/permissions` 返回 HTTP403，正文 `You must be an org admin or have the actions policies fine-grained permission`，CLI提示 `admin:org`。主仓正式运行持续queued/尚无runner、同期Fork预检可运行，是可见现场；不足以判定组织并发、Actions策略或账户限制的具体根因。已异步请组织Owner核查上述组织侧条件，不请求付费、不改门禁，不扩权限方案。此权限拒绝不认证源码失败，也不作为绕过Required的理由。
+
+
+## 并发接续边界
+
+本分支 `feat/ci-minimal-handoff-1117` 是本轮最小改动的远端交接恢复点，不是 #712 当前实现。最终 lease 前发现另一会话已将 #712 从75ff推进至 `b4801643dc4371754ba98dbe96a389c546e1f9b8`，加入强制 Fork admission、完整预检与指标实现；未覆盖其工作，也未把本分支旧工作流政策自动拼入该实现。#677/#707 的已验证最小增量已分别接续正式源分支；后续协调者须统一审查 #712 与两分支的工作流及历史来源绑定后再集成。#712 当前 Fork A Full44026568101 在其 PR 正文交接为待验证；不重复派发，不把该实现视为正式验收通过。
+
+机器可读审查恢复入口：本分支 `docs/evidence/three-repo-flow-20261117/pr677-review-873d4392.json` 与 `pr707-review-3f890cdc.json`；必须先读回当前正式 HEAD/BASE，变化后重新评审，不盲用旧授权。
