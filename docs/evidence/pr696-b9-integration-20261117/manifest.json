@@ -114,6 +114,24 @@
     "complete": true
   },
   {
+    "path": "integrated-public-count-after.log.gz",
+    "uncompressedBytes": 122,
+    "sha256": "aacd7eb328e9c40fd36b0f6b444cc3719b190759fb99b54ea97a5954ea540631",
+    "complete": true
+  },
+  {
+    "path": "integrated-public-count-before.log.gz",
+    "uncompressedBytes": 116,
+    "sha256": "852728c8850e1fc87dcc35822e18dbe55cb3172f5abd96eaedebd368470ba1f0",
+    "complete": true
+  },
+  {
+    "path": "integrated-public-count.mjs.gz",
+    "uncompressedBytes": 578,
+    "sha256": "11af1b533bdda0131f56ca3cb0630f72399a57cf93ed43364677f55fd30be2d0",
+    "complete": true
+  },
+  {
     "path": "joints-final.log.gz",
     "uncompressedBytes": 1233,
     "sha256": "db3be83f4a41471769c30eadc143a46b283aecc53059ef79230ac733873f3a3b",
@@ -153,6 +171,18 @@
     "path": "picker696-b9-review.mjs.gz",
     "uncompressedBytes": 4135,
     "sha256": "27106b507e4ea08c813423c5c2005a293f914df71ffb2920ad9a007c66fad61e",
+    "complete": true
+  },
+  {
+    "path": "public-single-auth-probe.log.gz",
+    "uncompressedBytes": 199,
+    "sha256": "d12d58d97b8226ad705a29dfe854597d347877c21fa8c9c66e489058cb9ee9b8",
+    "complete": true
+  },
+  {
+    "path": "public-single-auth-probe.mjs.gz",
+    "uncompressedBytes": 1899,
+    "sha256": "e8b02f6dbe87468bd9a2f1020c129ea60cfbd430033ea0d357000b1242ec9f56",
     "complete": true
   },
   {
@@ -213,6 +243,12 @@
     "path": "sts-new-domain-probe.mjs.gz",
     "uncompressedBytes": 1500,
     "sha256": "885b6efcfafff40f80e0e58138e79f73dbd62d8f9a0d71b328e29a30b5f938cf",
+    "complete": true
+  },
+  {
+    "path": "sts-real-style-single-call.log.gz",
+    "uncompressedBytes": 274,
+    "sha256": "16334f8354904effbca95c397a9d4413b65a985f696e7c22e9b8cb0ee8cf5e21",
     "complete": true
   }
 ]

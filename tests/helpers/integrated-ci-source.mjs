@@ -8,7 +8,7 @@ import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releasePickerControlsCiSource,releasePickerControlsCiCheckedSource,releasePickerControlsPriorInventory,releasePickerControlsCiPacket,assertReleasePickerControlsCiCurrent} from './release-picker-controls-ci-source.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {releasePickerControlsCiRead} from './release-picker-controls-ci-source.mjs';
-import {integrationRead,assertReleaseIntegratedCurrent,integrationCiSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-picker-b9-integration.mjs';
+import {integrationRead,assertReleaseIntegratedCurrent,releaseIntegratedSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-picker-b9-integration.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -18,18 +18,7 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
-export function integratedSource(path,source,target,read=readFileSync){
- const original=source;
- const authorized=result=>{if(result!==original)assertReleaseIntegrationCurrent(read);return result;};
- assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
- if(path.startsWith('src/')||path==='config/architecture.json')return authorized(source);
- const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=integrationCiSource(path,source,'picker',read);
- source=releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,source),row?.current);
- if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return authorized(source);
- if(row.views[target].sha256===row.current.sha256)return authorized(source);
- return authorized(row.views[target].source);
-}
+export function integratedSource(path,source,target,read=readFileSync){return releaseIntegratedSource(path,source,target,read);}
 export function integratedRead(target,{read=readFileSync}={}){return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;

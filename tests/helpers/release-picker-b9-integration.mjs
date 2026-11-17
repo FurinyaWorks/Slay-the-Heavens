@@ -15,7 +15,7 @@ import {releasePickerControlsCiPacket as picker,assertReleasePickerControlsCiCur
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=norm(readFileSync(new URL('./release-picker-b9-integration.json',import.meta.url),'utf8'));
-assert.equal(hash(bytes),'67680671ccfde4ae7aa84c4849c6b60e5c6c45f9c42db4a6083a426c7f13cef4','complete Release card-contact integration bindings');
+assert.equal(hash(bytes),'768db26cadceb7b596e7ec7a456e7f8ac71ed4bf16f5de43291c48e9caf3c54b','complete Release card-contact integration bindings');
 export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc');
 assert.equal(integrationPacket.base,'b9bca884ed9b9831965b409885d78f719b9a567a');
@@ -188,4 +188,19 @@ export function assertReleaseStsStyleCiCurrent(paths,read=readFileSync){
  assert.deepEqual([...paths].sort(),fixedStsProof.afterInventory,'complete StS current Full inventory');
  for(const [p,row]of Object.entries(fixedStsProof.files))assert.equal(hash(norm(read(p,'utf8'))),row.after.sha256,'fresh complete StS CI source: '+p);
  for(const [p,row]of Object.entries(fixedStsProof.helperSources))assert.equal(hash(norm(read(p,'utf8'))),row.sha256,'fresh StS helper source: '+p);
+}
+
+// One public call, one fresh boundary if either the current join or final
+// historical transform changes bytes. No authorization survives this call.
+export function releaseIntegratedSource(path,source,target,read=readFileSync){
+ assert(Object.hasOwn(fixedIntegratedProof.sources,target),'known integration input');
+ if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ const original=source;
+ const row=Object.hasOwn(fixedIntegratedProof.files,path)?fixedIntegratedProof.files[path]:null;
+ source=uncheckedCiSource(path,source,'picker');
+ const joined=source!==original;
+ source=releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,source),row?.current);
+ if(row?.views[target]&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))===row.current.sha256&&row.views[target].sha256!==row.current.sha256)source=row.views[target].source;
+ if(joined||source!==original)assertReleaseIntegrationCurrent(read);
+ return source;
 }

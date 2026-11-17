@@ -23,7 +23,7 @@
     "tests/full-quality.test.mjs": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
     "tests/helpers/closeout-source-epoch.mjs": "58e290d0c445f12f010ee78b94adc4d2a76210ac80244c6bcfeaab418f705e46",
     "tests/helpers/copy-integration-source-closure.mjs": "21a43930872d29e763e58a76f199ac9188c8cd5441121f0f4c821abd49ea8b22",
-    "tests/helpers/integrated-ci-source.mjs": "1aa565fec9eaedb9510923ea4f699fcca4d0030ae42fbdf6820266ae745496f9",
+    "tests/helpers/integrated-ci-source.mjs": "405604fc10e51ad175ad59250c8a617d00df273602be2153a01e384b0cc79892",
     "tests/helpers/release-bootstrap-ci-source.mjs": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08",
     "tests/helpers/release-card-contact-integration.json": "374e9f3ab0117d08ec202c406d9be466f7f94644b86daf8a3095a3e3a298c171",
     "tests/helpers/release-card-contact-integration.mjs": "9c1b3e443b56a283ae4b3774193f33a8e1cb72e7a3cadf4fc408462caff6b0c6",
