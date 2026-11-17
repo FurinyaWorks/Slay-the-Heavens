@@ -117,7 +117,7 @@ jobs:
           retention-days: 7
   fast:
     needs: impact
-    if: needs.impact.outputs.mode == 'fast'
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'fast' }}
     strategy:
       fail-fast: false
       matrix:
@@ -510,7 +510,7 @@ jobs:
           ABYSS_PYTHON: python3
   engineering-posix-shards:
     needs: impact
-    if: needs.impact.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'full' }}
     name: ${{ needs.impact.outputs.mode == 'fast' && 'engineering-posix-shards' || format('engineering-posix ({0}/{1})', matrix.shard, strategy.job-total) }}
     # Separate hosted VMs keep generated files isolated. Twenty minutes is a
     # performance target; the hard guard allows host variance. Files execute once.

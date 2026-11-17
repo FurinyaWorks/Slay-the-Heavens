@@ -58,3 +58,22 @@ test('admission implementation always requires Full even with a tiny proven mapp
  {eventName:'pull_request',base:'develop'},{js:{win32:{},linux:{}},lua:{},unknownJsMs:1,unknownLuaMs:1});
  assert.equal(plan.mode,'full');assert.equal(plan.reason,'High risk or shared infrastructure');
 });
+
+import {runInNewContext as evaluateJobIf} from 'node:vm';
+test('preflight skip does not suppress required Fast or POSIX Full consumers',()=>{
+ const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ for(const [job,mode]of [['fast','fast'],['engineering-posix-shards','full']]){
+  const section=workflow.slice(workflow.indexOf('  '+job+':\n')).split(/\n  [a-z][\w-]*:\n/)[0];
+  const expression=section.match(/^    if: (.+)$/m)?.[1];
+  assert(expression,'required consumer condition exists: '+job);
+  assert.match(expression,/!cancelled\(\)/,'explicit status check removes default success(): '+job);
+  const js=expression.replace(/^\$\{\{\s*|\s*\}\}$/g,'');
+  const invoke=(result,cancelled=false,selected=mode)=>evaluateJobIf(js,{
+   cancelled:()=>cancelled,needs:{admission:{result:'skipped'},impact:{result,outputs:{mode:selected}}}
+  });
+  assert.equal(invoke('success'),true,job+' runs after dispatch admission skip');
+  for(const result of ['failure','cancelled','skipped'])assert.equal(invoke(result),false,job+' rejects '+result);
+  assert.equal(invoke('success',true),false,job+' rejects cancellation');
+  assert.equal(invoke('success',false,mode==='full'?'fast':'full'),false,job+' respects route');
+ }
+});
