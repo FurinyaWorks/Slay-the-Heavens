@@ -130,7 +130,7 @@ npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
 
 安装保留现有可信维护者边界：真实独审报告须显式签署 `installBaseSha`，与实际受审 BASE 一致，协调者用 `--bootstrap-ref=<本 PR 源分支>` 自动接续。GitHub 服务端 dispatch actor、triggering actor、签署身份一致，运行源码 SHA 等于已审候选 HEAD；生产者、Queue 和合后消费者各自读取该 immutable BASE 的 commit、完整 root tree 和 scripts tree，确认 `scripts/independent-ai-review.mjs` 尚不存在。同名任何 Git 类型、缺失/截断元数据或403均不得当作未安装。已安装的 BASE 必须走可信 BASE 源码，不能候选自签。安装窗口不钉死某个旧提交；改变原受审组合或安装授权须新真实审查及 CI，不能改写旧报告。后续原生前缀正常推进按下述组合合同接续。未来如模块被删除，缺失本身也不授权重装，仍必须新的明确安装签署。历史证明核其 immutable 原安装 BASE，不因合后已安装而伪造或否定历史。
 
-队列迁移只读接续尚未继承新模块、且无受信账号新 marker 的旧管理员授权，不签发 legacy 授权。受信新 marker（任意格式）、HEAD 或共同祖先 LCA 含同名模块，均强制完整新 proof；API 错误、缺失或截断元数据不得回退。旧路径仍核实际入队者与状态签署者一致、当前 admin、原规则指纹、签署的精确原基线、最新正式 CI 和已落地依赖；新路径必须消费真实 Actions 不可变 proof，并以最新服务端 Review、当前角色和正式 CI run/attempt 重核原独审。原签署基线必须可验证为当前受保护主线和实际组父提交的祖先，不能把分叉或任意旧基线当作有效授权。
+队列迁移只读接续尚未继承新模块、且无受信账号新 marker 的旧管理员授权，不签发 legacy 授权。受信新 marker（任意格式）、HEAD 或共同祖先 LCA 含同名模块，均强制完整新 proof；API 错误、缺失或截断元数据不得回退。旧审查的签署者仍须当前 admin，原规则指纹、精确原基线、最新正式 CI 和已落地依赖继续验证；实际入队者则按不可变 ID/login 重核当前原生写权限，不再要求签署管理员本人代点。这是按 Owner 要求恢复原生写权限操作者范围，不是把 write 当作旧审查者；签署者和入队者相同可复用管理员读取。新路径必须消费真实 Actions 不可变 proof，并以最新服务端 Review、当前角色和正式 CI run/attempt 重核原独审。原签署基线必须可验证为当前受保护主线和实际组父提交的祖先，不能把分叉或任意旧基线当作有效授权。
 
 原 PR 的受审/正式 CI 基线 `B0` 和合成树保留原样，分别核对当前受保护 develop `D`、实际队列父提交 `Q`、实际队列提交/树 `G/Tq`。非首组的 `Q` 可以是前一条原生 squash，尚未等于 `D`；GitHub 原生完整成员前缀、真实 ref、`G.parents=[Q]` 及完整组 Full 共同认证该组合。REST PR.base.sha 的缓存值只作审计，不冒充当前 Git ref。两次读取均须完整认证；仅允许已验证的连续前缀正常落地收缩，目标 entry、G/Q/HEAD 及剩余成员的审查、权限、依赖和测试身份须不变。不能因为普通前缀推进而重签原报告，也不能拿原 PR 的树冒充未来组合树。正常独审签署及正式 CI 的当前基线发布条件不因此放松。
 
