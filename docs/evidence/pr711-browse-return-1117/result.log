@@ -1,0 +1,17 @@
+MODE=current
+BROWSE_RETURN_DETAIL	true
+/tmp/pointer-review-0115/current.lua:71: browsing then returning must not become stationary long hold
+stack traceback:
+	[JS]: in function 'assert'
+	/tmp/pointer-review-0115/current.lua:71: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
+STATUS=1
+MODE=prototype
+BROWSE_RETURN_DETAIL	false
+NEW_BOUNDARY_PROBE_PASS 2
+STATUS=0
+8d92c1ec712f8562f066fa077a403b10e1abbbb09f5be8406ea11f9f797c16e1  /tmp/pointer-review-0115/actions-prototype.lua
+1ae0daac89b81388391a4a9cf6773d81caa22dab202158e7e7e3006f4e67f3c9  /tmp/pointer-review-0115/current.lua
+c0e4e0c2f3345e4a5a9cfd2371c12013ec6cbd08a4a1b4ba6f2fc3aac25594c2  /tmp/pointer-review-0115/prototype.lua
+11222422d46898fdc10f26eb5cc17fc700f8bbb3d4aaba375ab53721206af5e0  src/lua/abyss_battle_actions.lua
