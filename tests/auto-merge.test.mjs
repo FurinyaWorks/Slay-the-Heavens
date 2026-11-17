@@ -818,3 +818,181 @@ test('canonical CI example checks accept LF and CRLF but reject a missing setup 
    /current gate setup section exists/);
  }
 });
+
+// Native review evidence: GitHub authenticates the coordinator, who must have
+// checked the actual distinct AI sessions. These tests do not claim that a JSON
+// body or the GitHub account alone proves AI independence.
+import {INDEPENDENT_AI_REVIEW_MARKER as aiMarker,TRUSTED_REVIEW_COORDINATOR_IDS as aiCoordinators,
+ parseIndependentAiReview,validateIndependentAiReview,collectIndependentAiReview,
+ parseDependencies as parseAiDependencies} from '../scripts/independent-ai-review.mjs';
+const aiRepo='FurinyaWorks/Slay-the-Heavens',aiRoleId=111138384;
+const aiBody=report=>aiMarker+'\n'+JSON.stringify(report);
+function aiFixture(){
+ const repository={id:projectRepositoryId,full_name:aiRepo},user={id:aiRoleId,login:'FurinyaDev'};
+ const pr={number:712,state:'open',merged:false,draft:false,mergeable:true,body:'Summary\nDepends-on: none',
+  head:{sha:sha('a'),repo:repository},base:{ref:'develop',sha:sha('b'),repo:repository},merge_commit_sha:sha('d')};
+ const report={schemaVersion:1,kind:'independent-ai-review',repositoryId:projectRepositoryId,repositoryFullName:aiRepo,
+  prNumber:712,reviewedHeadSha:sha('a'),reviewedBaseSha:sha('b'),reviewedTreeSha:sha('e'),conclusion:'pass',unresolved:[],
+  reviewerAgent:'/root/reviewer',implementationAgents:['/root/implementer'],
+  coordinator:{...user,verifiedActualSessions:true},
+  provenance:{kind:'coordinator-verified-agent-session',reviewId:'/root/reviewer/review-712',sessionId:'actual-review-session'}};
+ const reviews=[{id:100,commit_id:sha('a'),state:'COMMENTED',submitted_at:'2026-11-17T10:00:00Z',user,
+  html_url:'https://github.com/'+aiRepo+'/pull/712#pullrequestreview-100',body:aiBody(report)}];
+ return {repository,pr,baseSha:sha('b'),sourceCommit:{sha:sha('d'),tree:{sha:sha('e')},parents:[{sha:sha('b')},{sha:sha('a')}]},
+  reviews,permissions:{[aiRoleId]:{permission:'admin',role_name:'admin',user}},dependencies:[],report};
+}
+function aiCheck(change=()=>{}){const f=aiFixture();change(f);f.reviews[0].body=aiBody(f.report);return validateIndependentAiReview(f);}
+function aiApi(f=aiFixture(),alter=(_path,value)=>value){
+ const calls=[],prefix='repos/'+aiRepo;let prReads=0,targetReads=0;
+ const api=path=>{
+  calls.push(path);let value;
+  if(path==='repositories/'+projectRepositoryId)value=f.repository;
+  else if(path===prefix+'/git/ref/heads/develop'){targetReads++;value={ref:'refs/heads/develop',object:{type:'commit',sha:f.baseSha}};}
+  else if(path===prefix+'/pulls/712'){prReads++;value=f.pr;}
+  else if(path===prefix+'/git/commits/'+f.pr.merge_commit_sha)value=f.sourceCommit;
+  else if(path.startsWith(prefix+'/pulls/712/reviews?')){
+   const page=Number(new URL('https://api.github.com/'+path).searchParams.get('page'));value=f.reviews.slice((page-1)*100,page*100);
+  }else if(path===prefix+'/collaborators/FurinyaDev/permission')value=f.permissions[aiRoleId];
+  else if(path===prefix+'/pulls/11')value=f.dependencies[0]?.pr;
+  else if(path===prefix+'/compare/'+sha('f')+'...'+f.baseSha)value=f.dependencies[0]?.comparison;
+  else throw Error('Unexpected API read: '+path);
+  return alter(path,structuredClone(value),{prReads,targetReads,calls});
+ };
+ return {api,calls};
+}
+const aiCollect=(f=aiFixture(),alter)=>collectIndependentAiReview({prNumber:712,...aiApi(f,alter)});
+
+test('independent AI gate accepts a maintain/admin signed COMMENTED review from a distinct real AI session',()=>{
+ const f=aiFixture(),result=validateIndependentAiReview(f);
+ assert.equal(result.conclusion,'pass');assert.deepEqual(result.errors,[]);assert.equal(result.githubReviewId,100);
+ assert.equal(result.reviewId,f.report.provenance.reviewId);assert.equal(result.tree,sha('e'));
+ assert.deepEqual(aiCoordinators,[111138384,337201427]);
+ assert.equal(aiCheck(x=>{x.permissions[aiRoleId].permission='write';x.permissions[aiRoleId].role_name='maintain';}).conclusion,'pass');
+ assert.equal(aiCheck(x=>{delete x.report.coordinator.verifiedActualSessions;x.report.provenance.coordinatorVerified=true;}).conclusion,'pass');
+});
+
+test('independent AI gate never substitutes a PR body, artifact declaration or arbitrary review text for a signed report',()=>{
+ const f=aiFixture();f.pr.body+='\n'+aiBody(f.report);f.artifact={report:f.report};f.reviews=[];
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ for(const body of [JSON.stringify(f.report),'quoted report '+aiBody(f.report),'```json\n'+JSON.stringify(f.report)+'\n```'])
+  assert.equal(parseIndependentAiReview(body),null);
+ for(const body of [aiMarker+'\n{}',aiMarker+'\n'+JSON.stringify({...f.report,schemaVersion:2}),aiBody(f.report)+'\n{}'])
+  assert.throws(()=>parseIndependentAiReview(body));
+});
+
+test('independent AI gate requires both the fixed coordinator user ID and current repository maintain/admin role',()=>{
+ for(const change of [
+  x=>{x.reviews[0].user={id:999,login:'FurinyaDev'};},
+  x=>{x.permissions[aiRoleId].role_name='write';},
+  x=>{x.permissions[aiRoleId].permission='read';},
+  x=>{x.permissions[aiRoleId].user={id:999,login:'FurinyaDev'};},
+  x=>{x.permissions[aiRoleId].user={id:aiRoleId,login:'impostor'};},
+  x=>{x.report.coordinator.id=337201427;},x=>{x.report.coordinator.login='impostor';},
+  x=>{delete x.permissions[aiRoleId];},
+ ])assert.equal(aiCheck(change).conclusion,'fail');
+});
+
+test('independent AI gate binds the current merge combination, not merely a familiar HEAD or head tree',()=>{
+ for(const change of [
+  x=>{x.repository={...x.repository,id:1};},x=>{x.repository={...x.repository,full_name:'foreign/repo'};},
+  x=>{x.pr.head={...x.pr.head,repo:{id:1,full_name:aiRepo}};},x=>{x.pr.base.ref='master';},
+  x=>{x.pr.state='closed';},x=>{x.pr.draft=true;},x=>{x.pr.mergeable=null;},
+  x=>{x.pr.base.sha=sha('c');},x=>{x.sourceCommit.sha=sha('c');},
+  x=>{x.sourceCommit.parents.reverse();},x=>{x.sourceCommit.parents=[{sha:sha('b')}];},
+  x=>{x.sourceCommit.parents={};},x=>{x.sourceCommit.parents=[null,null];},
+  x=>{x.sourceCommit.tree.sha=sha('c');},x=>{x.sourceCommit.commit={tree:{sha:sha('c')}};},
+  x=>{x.reviews[0].commit_id=sha('c');},x=>{x.reviews[0].state='DISMISSED';},
+  x=>{x.report.repositoryId=1;},x=>{x.report.repositoryFullName='foreign/repo';},x=>{x.report.prNumber=713;},
+  x=>{x.report.reviewedHeadSha=sha('c');},x=>{x.report.reviewedBaseSha=sha('c');},x=>{x.report.reviewedTreeSha=sha('c');},
+ ])assert.equal(aiCheck(change).conclusion,'fail');
+});
+
+test('independent AI gate requires explicit verified session provenance and a reviewer outside the implementation agents',()=>{
+ for(const change of [
+  x=>{x.report.reviewerAgent='/root/implementer';},x=>{x.report.implementationAgents=[];},
+  x=>{x.report.implementationAgents=['/root/implementer','/root/implementer'];},
+  x=>{x.report.reviewerAgent='/root/reviewer ';},x=>{x.report.provenance.sessionId='';},
+  x=>{delete x.report.coordinator.verifiedActualSessions;},x=>{x.report.provenance.reviewId='';},
+  x=>{x.report.provenance.kind='artifact-self-assertion';},x=>{x.report.unresolved=['unfixed'];},
+  x=>{x.report.conclusion='fail';},
+ ])assert.equal(aiCheck(change).conclusion,'fail');
+});
+
+test('independent AI gate rejects later trusted change requests and later fail/malformed/stale reports without falling back',()=>{
+ for(const patch of [
+  {state:'CHANGES_REQUESTED',body:'Fix the transaction bug'},
+  {state:'COMMENTED',body:aiBody({...aiFixture().report,conclusion:'fail',unresolved:['bug']})},
+  {state:'COMMENTED',body:aiMarker+'\nnot JSON'},
+  {state:'COMMENTED',body:aiBody({...aiFixture().report,reviewedBaseSha:sha('c')})},
+  {state:'DISMISSED'},
+ ]){
+  const f=aiFixture();f.reviews.push({...f.reviews[0],id:101,submitted_at:'2026-11-17T10:01:00Z',...patch});
+  assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ }
+ const f=aiFixture();f.reviews.push({...f.reviews[0],id:101,state:'CHANGES_REQUESTED',user:{id:999,login:'untrusted'},body:'No'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ f.reviews.push({...f.reviews[0],id:99,submitted_at:'2026-11-17T09:59:00Z',state:'CHANGES_REQUESTED',body:'Earlier issue'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+});
+
+function aiDependency(f){
+ f.pr.body='Depends-on: #11, #11';
+ f.dependencies=[{number:11,comparedBaseSha:f.baseSha,pr:{number:11,merged:true,merge_commit_sha:sha('f'),base:{ref:'develop',repo:f.repository}},
+  comparison:{status:'ahead',merge_base_commit:{sha:sha('f')}}}];return f;
+}
+test('independent AI gate preserves the existing complete Depends-on containment semantics',()=>{
+ assert.deepEqual(parseAiDependencies('Depends-on: #11, #12 #11'),[11,12]);
+ assert.deepEqual(parseAiDependencies('Depends-on: none'),[]);
+ for(const body of ['', 'Depends-on: none\nDepends-on: #11','Depends-on: #0','Depends-on: external/11'])assert.throws(()=>parseAiDependencies(body));
+ const f=aiDependency(aiFixture());assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ for(const change of [
+  x=>{x.dependencies=[];},x=>{x.dependencies[0].pr.merged=false;},x=>{x.dependencies[0].pr.base.ref='master';},
+  x=>{x.dependencies[0].comparison.status='behind';},x=>{x.dependencies[0].comparison.merge_base_commit.sha=sha('c');},
+  x=>{x.dependencies[0].comparedBaseSha=sha('c');},x=>{x.pr.body='Depends-on: #712';},
+ ]){const x=aiDependency(aiFixture());change(x);assert.equal(validateIndependentAiReview(x).conclusion,'fail');}
+});
+
+test('independent AI gate collector reads actual merge parents/tree, all reviews, current roles and HEAD/BASE twice without Admin or writes',()=>{
+ const f=aiDependency(aiFixture()),{api,calls}=aiApi(f);
+ const result=collectIndependentAiReview({api,prNumber:712,expectedHeadSha:sha('a'),expectedBaseSha:sha('b'),expectedTreeSha:sha('e')});
+ assert.equal(result.conclusion,'pass');assert.equal(result.observations.prAfter.merge_commit_sha,sha('d'));
+ assert.equal(calls.filter(p=>p.endsWith('/pulls/712')).length,2);
+ assert.equal(calls.filter(p=>p.endsWith('/git/ref/heads/develop')).length,2);
+ assert(calls.some(p=>p.endsWith('/git/commits/'+sha('d'))));
+ assert(calls.some(p=>p.includes('/collaborators/FurinyaDev/permission')));
+ assert(!calls.some(p=>/rulesets|statuses|\/actions\/|\/admin/.test(p)));
+});
+
+test('independent AI gate collector detects HEAD/BASE/merge/dependency declaration movement during collection',()=>{
+ for(const mutate of [x=>{x.head.sha=sha('c');},x=>{x.base.sha=sha('c');},x=>{x.merge_commit_sha=sha('c');},x=>{x.body='Depends-on: #11';}]){
+  const result=aiCollect(aiFixture(),(path,value,count)=>{if(path.endsWith('/pulls/712')&&count.prReads===2)mutate(value);return value;});
+  assert.equal(result.conclusion,'fail');assert.match(result.errors.join('\n'),/changed during collection/);
+ }
+ const moved=aiCollect(aiFixture(),(path,value,count)=>{if(path.endsWith('/git/ref/heads/develop')&&count.targetReads===2)value.object.sha=sha('c');return value;});
+ assert.equal(moved.conclusion,'fail');
+ for(const field of ['expectedHeadSha','expectedBaseSha','expectedTreeSha']){
+  const {api}=aiApi();assert.equal(collectIndependentAiReview({api,prNumber:712,[field]:sha('c')}).conclusion,'fail');
+ }
+});
+
+test('independent AI gate collector paginates to completion and observes a rejection beyond the first hundred reviews',()=>{
+ const f=aiFixture(),valid=f.reviews[0];
+ f.reviews=Array.from({length:99},(_,i)=>({...valid,id:i+1,user:{id:999,login:'untrusted'},body:'ordinary review'}));
+ f.reviews.push(valid,{...valid,id:101,state:'CHANGES_REQUESTED',submitted_at:'2026-11-17T10:01:00Z',body:'later rejection'});
+ const {api,calls}=aiApi(f),result=collectIndependentAiReview({api,prNumber:712});
+ assert.equal(result.conclusion,'fail');assert(calls.some(p=>p.endsWith('page=2')));assert.match(result.errors.join('\n'),/later trusted Review/);
+ f.reviews.pop();assert.equal(aiCollect(f).conclusion,'pass');
+ const duplicate=aiCollect(f,(path,value)=>path.endsWith('page=2')?[valid]:value);
+ assert.equal(duplicate.conclusion,'fail');assert.match(duplicate.errors.join('\n'),/duplicate/i);
+});
+
+test('independent AI gate collector fails closed on malformed pages, missing permission evidence, API failure or async adapters',()=>{
+ for(const modify of [
+  (path,value)=>path.includes('/reviews?')?{reviews:value}:value,
+  (path,value)=>path.endsWith('/permission')?{}:value,
+  (path,value)=>{if(path.endsWith('/permission'))throw Error('permission unavailable');return value;},
+ ])assert.equal(aiCollect(aiFixture(),modify).conclusion,'fail');
+ assert.equal(collectIndependentAiReview({api:()=>Promise.resolve({}),prNumber:712}).conclusion,'fail');
+ const f=aiFixture();f.reviews.push({...f.reviews[0]});assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ f.reviews=[{...f.reviews[0],submitted_at:'invalid timestamp'}];assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+});
