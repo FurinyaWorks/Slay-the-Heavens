@@ -87,7 +87,7 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 
 当前已启用原生队列，保护状态见本文开头的本轮读回。未增加第三方 App、Runner 或常驻调度服务。下列机制仍生效；后面的早期上线顺序属于历史切换步骤，不能据其重复配置或把排队当作 Full 通过。
 
-- `quality.yml` / `licenses.yml` 监听 `merge_group(checks_requested)`，只针对 develop。impact 在非 PR 事件强制 **Full**；当前共享形状为 17 片 Windows、13 片 POSIX，加 presentation、inventory 及汇总作业。片数以 `scripts/ci-quality-shape.mjs` 为准，Fast 不能放行队列。
+- `quality.yml` / `licenses.yml` 监听 `merge_group(checks_requested)`，只针对 develop。impact 在非 PR 事件强制 **Full**；共享矩阵包含 Windows、POSIX、presentation、inventory 及汇总作业；片数直接以 `scripts/ci-quality-shape.mjs` 为准，Fast 不能放行队列。
 - 队列生成的组合提交与原 PR HEAD 不相同。现有 PR 侧 `independent-review` 仍由协调 Agent 核实真实独立审查；队列侧同名状态仅在 GitHub 原生队列准入、原六项 Required contexts 和整个组合 Full 均经校验后发布。**它不是对组合代码重新做独立人工审查**。队列的代码组合由 Full 验证。
 - 队列开始时关闭准入状态；成功前复用既有 `checkoutReceipt`、共享形状的完整作业集合、实际 checkout SHA 和不可变 artifact 校验。失败、缺片、过期 run/attempt、Ruleset 漂移或无法验证的组合均不发布 success。保留 PR/push 的验证及合后收据，不能从队列绿灯反推原 PR 实机验收。
 - #504 已合入迁仓身份和 #505 的严格收据继承；本切片在其上接续。队列发布同时核对实际收据的有效执行 attempt；不会用最新 run attempt 冒充未重跑首片的原执行。
