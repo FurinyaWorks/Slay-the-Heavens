@@ -18,7 +18,31 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
-export function integratedSource(path,source,target){
+// Preserve the complete 116-owner contracts while current tests admit the exact particle owner.
+const ownerRepairBytes=readFileSync(new URL('./runtime-current-owner-repair.json',import.meta.url));
+assert.equal(hash(ownerRepairBytes),'aebfe9f45c2168a05aa4a6ed9270224d4cceba66dc3cc29296ccd250b704c2cf','complete current-owner repair packet');
+const ownerRepair=freeze(JSON.parse(ownerRepairBytes));
+assert.equal(ownerRepair.baseCommit,'dc74ab236c3df11a3e4cc394356c9b6e53e1b0ae');
+assert.deepEqual(Object.keys(ownerRepair.files),['tests/defect-final-source-epoch.test.mjs','tests/encounter-formation-source-epoch.test.mjs']);
+for(const [path,row]of Object.entries(ownerRepair.files))for(const binding of [row.before,row.current]){
+ assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path);
+ assert.equal(row.before.sha256,integratedCiProof.files[path].current.sha256,'exact complete prior contract');
+}
+function assertOwnerRepairCurrent(read=readFileSync){
+ assert.equal(hash(read('tests/helpers/runtime-current-owner-repair.json')),hash(ownerRepairBytes),'immutable current-owner repair');
+ for(const [p,binding]of Object.entries(ownerRepair.files)){
+  const raw=read(p,'utf8');assert.equal(typeof raw,'string','fresh current-owner contract: '+p);
+  assert.equal(hash(norm(raw)),binding.current.sha256,'fresh current-owner contract: '+p);
+ }
+}
+function ownerRepairBefore(path,source,read=readFileSync){
+ const row=Object.hasOwn(ownerRepair.files,path)?ownerRepair.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ assertOwnerRepairCurrent(read);
+ return row.before.source;
+}
+export function integratedSource(path,source,target,read=readFileSync){
+ source=ownerRepairBefore(path,source,read);
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
@@ -34,15 +58,16 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
   const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
  }
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target);
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ assertOwnerRepairCurrent(read);
  assertReleaseIntegrationCurrent(read);
  read=integrationProductionRead('particle',read);
  assertRuntimeParticleCiCurrent(read);
  assertReleaseBootstrapCiCurrent(runtimeParticleCiRead(read));
- for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,runtimeParticleCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,runtimeParticleCiCheckedSource(path,ownerRepairBefore(path,read(path,'utf8'),read)),row.current))),row.current.sha256,'fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,runtimeParticleCiSource(path,read(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
 }
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return integrationInventory(kind);}

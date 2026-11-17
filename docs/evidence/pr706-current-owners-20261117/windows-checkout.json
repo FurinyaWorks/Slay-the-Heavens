@@ -1,0 +1,12 @@
+[
+  {
+    "path": "tests/helpers/runtime-current-owner-repair.json",
+    "sha256": "aebfe9f45c2168a05aa4a6ed9270224d4cceba66dc3cc29296ccd250b704c2cf",
+    "rawIdentical": true
+  },
+  {
+    "path": "tests/helpers/release-runtime-before-current-owner-repair.json",
+    "sha256": "f7a0664aa24e803bc53cf2ebbe6a251f566ee3fb40b8cbe0e60760b1a013dfdb",
+    "rawIdentical": true
+  }
+]

@@ -28,7 +28,7 @@
     "tests/full-quality.test.mjs": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
     "tests/helpers/closeout-source-epoch.mjs": "54d949a4f3ad810aeb23bfc0a3df8f8123e21c0c3f24a8e796680484043d1318",
     "tests/helpers/copy-integration-source-closure.mjs": "1a21f90bc2df9cb3c9332e5aa6a240d37ab90c9789243e28fafe2814d4256982",
-    "tests/helpers/integrated-ci-source.mjs": "d85621c24416d9b74f5351a3cde81be59f101270330598ca428084b918ab0cfe",
+    "tests/helpers/integrated-ci-source.mjs": "9cba05f221f38ce50069ad8beab6d6bf23a4e1140b808eb46740212baef80a54",
     "tests/helpers/release-bootstrap-ci-source.mjs": "2243a11310bab723722cdfecfe8b3dd98c33856d58e66c1ff1154c5dc5623e08",
     "tests/helpers/release-selection-map-ci-source.mjs": "a268ae4c8a8c838e219e497adf1effea22a71b0ab944a4d009537c94ab526b1d",
     "tests/helpers/release-selection-map-source.mjs": "920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52",
@@ -50,6 +50,8 @@
   },
   "archives": {
     "tests/helpers/runtime-particle-ci-source.json.gz": "d4fddaf8cc6fc4b06a64eeb8c23ecb3ac6570e336a19ab9c071616513c85003d",
-    "tests/helpers/release-selection-map-ci-source.json.gz": "c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03"
+    "tests/helpers/release-selection-map-ci-source.json.gz": "c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03",
+    "tests/helpers/release-runtime-before-current-owner-repair.json": "f7a0664aa24e803bc53cf2ebbe6a251f566ee3fb40b8cbe0e60760b1a013dfdb",
+    "tests/helpers/runtime-current-owner-repair.json": "aebfe9f45c2168a05aa4a6ed9270224d4cceba66dc3cc29296ccd250b704c2cf"
   }
 }
