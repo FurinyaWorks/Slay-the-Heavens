@@ -209,8 +209,8 @@ function nativeFixture(){
  f.jobs=currentFullQualityJobs.map((name,i)=>({id:100+i,name,run_id:7,run_attempt:1,head_sha:sha('a'),status:'completed',conclusion:name==='fast'?'skipped':'success'}));
  f.checkout={schemaVersion:1,event:'pull_request',runId:7,attempt:1,head:sha('a'),base:sha('b'),tested:sha('d'),prNumber:712,parents:[sha('b'),sha('a')]};
  f.artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:sha('a')}};
- f.gateRun={id:9,run_attempt:1,status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
- f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12),expired:false,workflow_run:{id:9},digest:'sha256:'+ 'f'.repeat(64)};
+ f.gateRun={id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
+ f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12)+'-9-1',expired:false,workflow_run:{id:9,head_sha:sha('b')},digest:'sha256:'+ 'f'.repeat(64)};
  const api=aiApi(f).api,calls=[];
  const query=(...args)=>{
   calls.push(args);const path=args.find(a=>typeof a==='string'&&(/^(repos|repositories)\//).test(a));
@@ -274,4 +274,72 @@ test('gate-only workflow keeps Required inventory distinct and uses a separate c
  const text=readFileSync(new URL('../.github/workflows/licenses.yml',import.meta.url),'utf8');
  assert.match(text,/license-audit-not-requested/);assert.match(text,/format\('ai-review-/);assert.match(text,/statuses: write/);
  assert(text.indexOf('--independent-review')<text.indexOf('id: proof'));assert(text.indexOf('id: proof')<text.indexOf('--release-independent-review'));
+});
+
+test('native gate retains CODEOWNERS in the reviewed merge tree and never silently re-enters bootstrap',()=>{
+ for(const target of ['base','reviewed']){
+  const f=nativeFixture(),normal=f.query;
+  f.query=(...args)=>{
+   const path=args.at(-1);
+   if(typeof path==='string'&&path.endsWith('/contents/.github/CODEOWNERS?ref='+ (target==='base'?sha('b'):sha('d')))){
+    if(target==='base')throw Error('HTTP 404: Not Found');
+    return JSON.stringify({type:'file',content:Buffer.from('* @attacker').toString('base64')});
+   }
+   return normal(...args);
+  };
+  assert.throws(()=>gateExecute(f),/CODEOWNERS|bootstrap/);assert(!f.calls.some(a=>a.includes('POST')));
+ }
+});
+test('rerun proof names bind the immutable gate run and attempt without overwriting earlier evidence',()=>{
+ const f=nativeFixture(),p=gateExecute(f).proof;
+ f.proofArtifact.name=f.proofArtifact.name.replace('-9-1','-9-2');
+ assert.throws(()=>gateExecute(f,{release:true,saved:p}),/artifact/);assert(!f.calls.some(a=>a.includes('POST')));
+});
+test('native mutation reply loss is recovered only by exact server-side auto/queue readback',()=>{
+ const f=nativeFixture(),normal=f.query,records=[];
+ f.query=(...args)=>{if(args[1]==='graphql'&&args.some(a=>a.includes('enablePullRequestAutoMerge')))throw Error('EOF after server commit');return normal(...args);};
+ const result=armAutoMerge(aiRepo,712,100,f.query,{persist:r=>records.push(structuredClone(r))});
+ assert.equal(result.proof.nativeAuto.confirmed,true);assert.equal(records[0].proof.nativeAuto.confirmed,false);assert.equal(records.at(-1).state,'auto-merge-requested');
+ assert(!f.calls.some(a=>a.some(v=>typeof v==='string'&&v.includes('/statuses/'))));
+});
+test('activation readback failure or changed combination cancels native intent and preserves uncertainty',()=>{
+ for(const scenario of ['readback-fails','head-changes','base-changes','cleanup-unreadable']){
+  const f=nativeFixture(),normal=f.query,records=[];let enabled=false,failedOnce=false,disabled=false;
+  f.query=(...args)=>{
+   if(args[0]==='pr'){assert(args.includes('--disable-auto'));disabled=true;return '';}
+   if(args[1]==='graphql'){
+    if(args.some(a=>a.includes('enablePullRequestAutoMerge'))){enabled=true;if(scenario==='head-changes')f.pr.head.sha=sha('f');if(scenario==='base-changes')f.pr.base.sha=sha('f');}
+    const parsed=JSON.parse(normal(...args));if(parsed.data?.node){parsed.data.node.headRefOid=f.pr.head.sha;if(disabled)parsed.data.node.autoMergeRequest=null;}return JSON.stringify(parsed);
+   }
+   if(enabled&&args.at(-1)==='repos/'+aiRepo+'/pulls/712'){
+    if(scenario==='cleanup-unreadable'||scenario==='readback-fails'&&!failedOnce){failedOnce=true;throw Error('readback unavailable');}
+    return JSON.stringify({...f.pr,auto_merge:disabled?null:{merge_method:'squash'}});
+   }
+   return normal(...args);
+  };
+  assert.throws(()=>armAutoMerge(aiRepo,712,100,f.query,{persist:r=>records.push(structuredClone(r))}),scenario==='cleanup-unreadable'?/cancellation uncertain/:/changed|unavailable/);
+  assert.equal(records[0].state,'prepared');assert.equal(records.at(-1).state,'activation-failed');assert.equal(records.at(-1).proof.nativeAuto.confirmed,false);
+  assert.equal(disabled,scenario!=='cleanup-unreadable');assert.equal(records.at(-1).cleanup.length,scenario==='cleanup-unreadable'?1:0);
+ }
+});
+
+test('explicit bootstrap requires the two native collaborators, exact approved source and retained final owners',()=>{
+ const make=(third=false)=>{
+  const f=nativeFixture(),normal=f.query;
+  f.query=(...args)=>{
+   const path=args.at(-1);
+   if(path==='repos/'+aiRepo+'/contents/.github/CODEOWNERS?ref='+sha('b'))throw Error('HTTP 404 Not Found');
+   if(typeof path==='string'&&path.includes('/collaborators?'))return JSON.stringify([{id:111138384,permissions:{admin:true}},{id:337201427,permissions:{maintain:true}},...(third?[{id:1,permissions:{push:true}}]:[])]);
+   return normal(...args);
+  };return f;
+ };
+ const bootstrap=e=>{e.AI_REVIEW_BOOTSTRAP='true';e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');};
+ assert.equal(gateExecute(make(),{mutateEnv:bootstrap}).result.state,'pr_passed');
+ assert.throws(()=>gateExecute(make(true),{mutateEnv:bootstrap}),/two existing trusted/);
+ assert.throws(()=>gateExecute(make(),{mutateEnv:e=>{bootstrap(e);e.GITHUB_SHA=sha('f');}}),/exact approved/);
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrap}),/before CODEOWNERS/);
+});
+test('a hold added during artifact collection prevents the CI gate from releasing success',()=>{
+ const f=nativeFixture(),load=f.loadCheckout;f.loadCheckout=()=>{const result=load();f.pr.labels=[{name:'hold'}];return result;};
+ assert.throws(()=>gateExecute(f),/admission changed/);assert(!f.calls.some(a=>a.includes('POST')));
 });

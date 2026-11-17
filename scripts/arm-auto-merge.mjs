@@ -71,10 +71,17 @@ export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=fa
  if(dryRun)return {state:'eligible',head:current.headSha,base:current.baseSha};
  const gateRef=dispatchGate(repo,number,current,query,{shadow,bootstrapRef});
  if(shadow)return {state:'shadow-requested',head:current.headSha,base:current.baseSha,gateRef};
+ const proof={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',head:current.headSha,base:current.baseSha,sourceTree:current.sourceTree,githubReviewId:current.nativeReview.githubReviewId,nativeApprovalReviewId:current.nativeReview.nativeApprovalReviewId,gateRef,nativeAuto:{confirmed:false,state:'prepared'},createdAt:new Date().toISOString()};
+ persist({state:'prepared',proof});
+ try{
  // expectedHeadOid prevents a new push from being armed. Required Checks and
  // the native non-author approval remain responsible for the actual merge.
- const enabled=json(query,'api','graphql','-f','query=mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{number}}}', '-f','id='+current.pr.node_id,'-f','head='+current.headSha);
+ let enableError;
+ try{const enabled=json(query,'api','graphql','-f','query=mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{number}}}', '-f','id='+current.pr.node_id,'-f','head='+current.headSha);
  if(enabled.errors?.length)throw Error('Native auto-merge enable failed: '+JSON.stringify(enabled.errors));
+ }catch(error){enableError=error;}
+ // An error may arrive after GitHub committed the mutation. Read actual state
+ // once; only the exact native intent can convert an uncertain reply to success.
  const after=json(query,'api',`repos/${repo}/pulls/${number}`);
  if(after.head?.sha!==current.headSha||after.base?.ref!=='develop'||after.node_id!==current.pr.node_id)throw Error('PR identity changed after native enable');
  let native;
@@ -85,11 +92,22 @@ export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=fa
  }else{
   if(after.base.sha!==current.baseSha||after.merge_commit_sha!==current.tested)throw Error('PR proposal changed after native enable');
   const node=readNativeQueueState(repo,number,after,query,true);
-  if(!node.isInMergeQueue&&!node.autoMergeRequest)throw Error('Native auto-merge/queue request was not confirmed');
+  if(!node.isInMergeQueue&&!node.autoMergeRequest)throw enableError??Error('Native auto-merge/queue request was not confirmed');
   native={confirmed:true,state:node.isInMergeQueue?'queued':'waiting',queueId:node.mergeQueue.id,entryId:node.mergeQueueEntry?.id??null};
  }
- const proof={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',head:current.headSha,base:current.baseSha,sourceTree:current.sourceTree,githubReviewId:current.nativeReview.githubReviewId,nativeApprovalReviewId:current.nativeReview.nativeApprovalReviewId,gateRef,nativeAuto:native,createdAt:new Date().toISOString()};
+
+ proof.nativeAuto=native;
  const result={state:native.state==='merged'?'merged':'auto-merge-requested',head:proof.head,base:proof.base,proof};persist(result);return result;
+ }catch(error){
+  const cleanup=[];
+  try{
+   const active=json(query,'api',`repos/${repo}/pulls/${number}`);
+   if(active.node_id!==current.pr.node_id||active.number!==number||active.state!=='open'||active.merged||active.base?.ref!=='develop'||!projectRepositoryMatches(active.head?.repo,repo)||!projectRepositoryMatches(active.base?.repo,repo))throw Error('Cannot safely identify an open native request for cleanup');
+   cancelNativeMerge(repo,number,active,query);
+  }catch(failure){cleanup.push('native cancellation uncertain: '+failure.message);}
+  persist({state:'activation-failed',proof,error:error.message,cleanup});
+  throw Error(error.message+(cleanup.length?'\n'+cleanup.join('\n'):''));
+ }
 }
 function readNativeQueueState(repo,number,pr,query,requirePolicy=false){
     const result=json(query,'api','graphql','-f','query=query($id:ID!){node(id:$id){... on PullRequest{id number state baseRefName headRefOid repository{databaseId nameWithOwner} isInMergeQueue '+
@@ -145,7 +163,9 @@ export function main(args=process.argv.slice(2),query=gh){
  if(reviewArg==='--pause'&&!flags.length){const r=pauseAutoMerge(repo,number,query);console.log(JSON.stringify(r));return r;}
  if(!reviewArg||flags.some(f=>!['--dry-run','--shadow'].includes(f)&&!f.startsWith('--bootstrap-ref='))||flags.filter(f=>f.startsWith('--bootstrap-ref=')).length>1||flags.includes('--dry-run')&&flags.includes('--shadow'))throw Error('Invalid native merge options');
  const review=/^[1-9][0-9]*$/.test(reviewArg)?Number(reviewArg):JSON.parse(readFileSync(reviewArg,'utf8'));
- const result=armAutoMerge(repo,number,review,query,{dryRun:flags.includes('--dry-run'),shadow:flags.includes('--shadow'),bootstrapRef:flags.find(f=>f.startsWith('--bootstrap-ref='))?.slice(16)});
+ if(!flags.includes('--dry-run'))mkdirSync('build/delivery',{recursive:true});
+ const journal=`build/delivery/native-auto-${number}-${Date.now()}-attempt.json`;
+ const result=armAutoMerge(repo,number,review,query,{persist:record=>writeFileSync(journal,JSON.stringify(record,null,2)+'\n'),dryRun:flags.includes('--dry-run'),shadow:flags.includes('--shadow'),bootstrapRef:flags.find(f=>f.startsWith('--bootstrap-ref='))?.slice(16)});
  if(result.proof){mkdirSync('build/delivery',{recursive:true});const file=`build/delivery/auto-merge-${number}-${result.head.slice(0,12)}.json`;writeFileSync(file,JSON.stringify(result.proof,null,2)+'\n');result.proofFile=file;}
  console.log(JSON.stringify(result,null,2));return result;
 }

@@ -84,10 +84,13 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  let owners;
  try{owners=get(prefix+'/contents/.github/CODEOWNERS?ref='+review.base);}catch(error){if(!/404|Not Found/i.test(error.message))throw error;}
  const expectedOwners='* @FurinyaDev @v5g95m7t8m-max';
- if(owners){
-  const lines=Buffer.from(owners.content??'','base64').toString('utf8').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
-  if(owners.type!=='file'||!isDeepStrictEqual(lines,[expectedOwners]))throw Error('Baseline CODEOWNERS does not match the existing trusted review coordinators');
- }else{
+ const checkOwners=(file,label)=>{
+  const lines=Buffer.from(file?.content??'','base64').toString('utf8').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
+  if(file?.type!=='file'||!isDeepStrictEqual(lines,[expectedOwners]))throw Error(label+' CODEOWNERS must retain exactly the existing trusted review coordinators');
+ };
+ if(owners)checkOwners(owners,'Baseline');
+ else{
+  if(!bootstrap)throw Error('Missing baseline CODEOWNERS requires explicit one-time bootstrap');
   const collaborators=[];
   for(let page=1;;page++){
    const rows=get(prefix+'/collaborators?affiliation=all&per_page=100&page='+page);if(!Array.isArray(rows))throw Error('Cannot audit bootstrap collaborators');
@@ -96,6 +99,8 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
   const writers=collaborators.filter(u=>u.permissions?.push||u.permissions?.maintain||u.permissions?.admin).map(u=>u.id).sort((a,b)=>a-b);
   if(!isDeepStrictEqual(writers,[...TRUSTED_REVIEW_COORDINATOR_IDS].sort((a,b)=>a-b)))throw Error('Bootstrap requires exactly the two existing trusted write collaborators');
  }
+ const reviewedOwners=get(prefix+'/contents/.github/CODEOWNERS?ref='+review.mergeCommitSha);
+ checkOwners(reviewedOwners,'Reviewed merge tree');
  if(bootstrap){
   if(owners||env.GITHUB_EVENT_NAME!=='workflow_dispatch'||env.GITHUB_REF!=='refs/heads/'+pr.head.ref||env.GITHUB_SHA!==review.head)throw Error('Bootstrap must execute the exact approved migration candidate before CODEOWNERS installation');
  }else if(env.GITHUB_REF!=='refs/heads/'+settings.default_branch)throw Error('Gate must execute the trusted default branch workflow');
@@ -106,6 +111,9 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  if(env.GITHUB_EVENT_NAME==='workflow_run'&&(event.workflow_run.id!==collected.evidence.runId||event.workflow_run.run_attempt!==collected.evidence.attempt))return {state:'superseded'};
  const current=collectIndependentAiReview({api,prNumber:number,expectedHeadSha:review.head,expectedBaseSha:review.base,expectedTreeSha:review.tree});
  const policyNow=get(prefix+'/rulesets/25870651');
+ const freshPr=get(prefix+'/pulls/'+number);
+ const admissionErrors=autoMergeErrors({repo,settings,pr:freshPr,ruleset:policyNow,nativeReview:current});
+ if(!isDeepStrictEqual(pr.labels,freshPr.labels)||pr.changed_files!==freshPr.changed_files||mode==='publish'&&admissionErrors.length)throw Error('PR labels, files or native admission changed during evidence collection');
  if(!isDeepStrictEqual(current,review)||!isDeepStrictEqual(policyNow,ruleset))throw Error('Review or native policy changed during evidence collection');
  const envelope={schemaVersion:1,kind:'native-ai-review-proof',mode,state:mode==='publish'?'pr_passed':'shadow_verified',repo,prNumber:number,head:review.head,base:review.base,nativeReview:review,nativePolicy:ruleset,preflight:collected.evidence,gate:{runId:Number(env.GITHUB_RUN_ID),attempt:Number(env.GITHUB_RUN_ATTEMPT),ref:env.GITHUB_REF,bootstrap},policyErrors};
  if(!release){mkdirSync(resolve(proofFile,'..'),{recursive:true});writeFileSync(proofFile,JSON.stringify(envelope,null,2)+'\n');return {state:envelope.state,policyErrors};}
@@ -114,7 +122,7 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  if(!isDeepStrictEqual(saved,envelope))throw Error('Uploaded proof differs from the fresh current gate evidence');
  const artifactId=Number(env.AI_REVIEW_ARTIFACT_ID),runId=Number(env.GITHUB_RUN_ID),attempt=Number(env.GITHUB_RUN_ATTEMPT);
  const artifact=get(prefix+'/actions/artifacts/'+artifactId),run=get(prefix+'/actions/runs/'+runId);
- if(!Number.isSafeInteger(artifactId)||artifact.id!==artifactId||artifact.expired!==false||artifact.name!==`independent-review-${number}-${review.head.slice(0,12)}`||artifact.workflow_run?.id!==runId||!/^sha256:[a-f0-9]{64}$/.test(artifact.digest??'')||run.id!==runId||run.run_attempt!==attempt||run.status!=='in_progress'||run.path!=='.github/workflows/licenses.yml'||run.repository?.id!==projectRepositoryId)throw Error('Immutable proof artifact or current gate run identity differs');
+ if(!Number.isSafeInteger(artifactId)||artifact.id!==artifactId||artifact.expired!==false||artifact.name!==`independent-review-${number}-${review.head.slice(0,12)}-${runId}-${attempt}`||artifact.workflow_run?.id!==runId||!/^sha256:[a-f0-9]{64}$/.test(artifact.digest??'')||artifact.workflow_run?.head_sha!==env.GITHUB_SHA||run.id!==runId||run.run_attempt!==attempt||run.event!==env.GITHUB_EVENT_NAME||run.head_sha!==env.GITHUB_SHA||run.status!=='in_progress'||run.path!=='.github/workflows/licenses.yml'||run.repository?.id!==projectRepositoryId)throw Error('Immutable proof artifact or current gate run identity differs');
  const description=`AI review ${review.githubReviewId} [base:${review.base}] [proof:${artifactId}]`;
  const status=getStatusWrite(query,repo,review.head,description,runId);
  if(status.context!=='independent-review'||status.state!=='success'||status.creator?.id!==41898282)throw Error('Required independent-review status source/readback differs');

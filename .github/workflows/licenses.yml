@@ -97,7 +97,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         id: proof
         with:
-          name: independent-review-${{ env.AI_REVIEW_PR }}-${{ steps.identity.outputs.head }}
+          name: independent-review-${{ env.AI_REVIEW_PR }}-${{ steps.identity.outputs.head }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/native-ai-review-proof.json
           retention-days: 30
           if-no-files-found: error
