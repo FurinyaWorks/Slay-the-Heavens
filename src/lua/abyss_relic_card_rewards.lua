@@ -47,6 +47,16 @@ function M.open(run,source,Run)
   return true
  end)
 end
+local function claimGroupChoice(staged,group,choice,Run)
+ if choice=='bowl'then
+  if not owns(staged,'singing_bowl')then return false,'missing_singing_bowl'end
+  return Run.increaseMaxHp(staged,2)
+ elseif type(choice)=='number'and choice%1==0 and choice>=0 and choice<=#group.cards then
+  if choice==0 then return true end
+  return Run.obtainCard(staged,group.cards[choice],{upgraded=group.cardUpgrades and group.cardUpgrades[choice]==true})
+ end
+ return false,'invalid_reward_choice'
+end
 -- choice=0 is explicit API abandonment of one group; modal Skip instead uses close.
 function M.claim(run,index,choice,Run)
  return Run.transaction(run,function(staged)
@@ -56,14 +66,7 @@ function M.claim(run,index,choice,Run)
   if type(index)~='number'or index%1~=0 then return false,'invalid_reward_group'end
   local group=staged.rewards.cardRewardGroups[index]
   if not group or group.resolved then return false,'no_pending_reward'end
-  local ok,why
-  if choice=='bowl'then
-   if not owns(staged,'singing_bowl')then return false,'missing_singing_bowl'end
-   ok,why=Run.increaseMaxHp(staged,2)
-  elseif type(choice)=='number'and choice%1==0 and choice>=0 and choice<=#group.cards then
-   if choice==0 then ok=true
-   else ok,why=Run.obtainCard(staged,group.cards[choice],{upgraded=group.cardUpgrades and group.cardUpgrades[choice]==true})end
-  else return false,'invalid_reward_choice'end
+  local ok,why=claimGroupChoice(staged,group,choice,Run)
   if not ok then return false,why end
   staged.rewards.cardRewardGroups[index].resolved=true
   M.sync(staged)
@@ -71,6 +74,7 @@ function M.claim(run,index,choice,Run)
   return true,why
  end)
 end
+
 function M.close(run,token)
  local p=run.pendingCardRewardSelection
  if not p or p.token~=token or p.rewardOwner~=run.rewards then return false,'stale_card_reward'end

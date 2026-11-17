@@ -22,39 +22,56 @@ function M.isAttacking(target)
     end
     return false
 end
-function M.makeCard(state,effect,combat)
+local function buildCardSelection(state,effect)
     local id=effect.cardId or effect.card
     assert(type(id)=='string' and state.catalog.cards[id],'unknown temporary card')
     local count=integer(effect.value)
     local pile=effect.pile or 'hand'
     assert(pile=='hand' or pile=='draw','invalid temporary destination')
     if pile=='draw' then assert(effect.randomSpot==true and state.cardRandomRng,'missing card insertion RNG') end
+    return id,count,pile
+end
+local function buildCardIdentities(state)
     local seen={}
     for _,name in ipairs({'hand','draw','discard','exhaust'}) do
         for _,c in ipairs(state[name]) do seen[c.uid]=true end
     end
     if state.cardInUse then seen[state.cardInUse.uid]=true end
+    return seen
+end
+local function buildCardInstance(state,effect,combat,id,pile,seen)
+    local uid=state.nextUid
+    assert(type(uid)=='number' and uid>0 and uid%1==0 and uid+1.0>uid and uid+1.0<math.huge and not seen[uid],'invalid nextUid')
+    local card={uid=uid,cardId=id,upgraded=effect.upgraded==true}
+    combat.created(state,card)
+    if pile=='hand' then combat.created(state,card)end
+    require('abyss_warrior_status_cards').created(state,card,'make_copy')
+    if id=='shiv' then require('abyss_shivs').created(state,card) end
+    state.nextUid=uid+1.0;seen[uid]=true
+    return card
+end
+local function buildCardDestination(state,pile,card)
+    local destination=pile
+    if pile=='hand' and #state.hand>=state.rules.player.maxHand then destination='discard' end
+    if destination=='draw' and #state.draw>0 then
+        local i=require('abyss_sts_random').randomInt(state.cardRandomRng,#state.draw-1)+1
+        table.insert(state.draw,i,card)
+    else state[destination][#state[destination]+1]=card end
+    if destination=='hand' and (state.player.statuses.corruption or 0)~=0 then
+        require('abyss_corruption').created(state,card)
+    end
+    return destination
+end
+function M.makeCard(state,effect,combat)
+    local id,count,pile=buildCardSelection(state,effect)
+    local seen=buildCardIdentities(state)
     for _=1,count do
-        local uid=state.nextUid
-        assert(type(uid)=='number' and uid>0 and uid%1==0 and uid+1.0>uid and uid+1.0<math.huge and not seen[uid],'invalid nextUid')
-        local card={uid=uid,cardId=id,upgraded=effect.upgraded==true}
-        combat.created(state,card)
-        if pile=='hand' then combat.created(state,card)end
-        require('abyss_warrior_status_cards').created(state,card,'make_copy')
-        if id=='shiv' then require('abyss_shivs').created(state,card) end
-        state.nextUid=uid+1.0;seen[uid]=true
-        local destination=pile
-        if pile=='hand' and #state.hand>=state.rules.player.maxHand then destination='discard' end
-        if destination=='draw' and #state.draw>0 then
-            local i=require('abyss_sts_random').randomInt(state.cardRandomRng,#state.draw-1)+1
-            table.insert(state.draw,i,card)
-        else state[destination][#state[destination]+1]=card end
-        if destination=='hand' and (state.player.statuses.corruption or 0)~=0 then
-            require('abyss_corruption').created(state,card)
-        end
+        local card=buildCardInstance(state,effect,combat,id,pile,seen)
+        local destination=buildCardDestination(state,pile,card)
         Events.emit(state,'cards_created',{source=state.player.id,cardId=id,amount=1,pile=destination})
     end
 end
+
 function M.applyNextEnergy(state,n,id)
     n=integer(n);id=id or 'energized'
     Actors.applyPower(state,state.player,id,math.min(n,999),state.player)

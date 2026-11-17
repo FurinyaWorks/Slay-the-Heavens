@@ -6282,6 +6282,34 @@
         "testSha256": "8709c8de6cd8fdc5ee8aad61e6c68f25d2ba077c7a545c13f1908f30549006d4",
         "sourceReceipt": "docs/evidence/m7-golden-idol-current-20261111/source-receipt.json",
         "sourceReceiptSha256": "943d5446780f34dea1e23514eb381bd77430d463b0221db496f390623be31993"
+      },
+      "tests/combat-owner-state-equivalence.test.mjs": {
+        "durationMs": 84831,
+        "environment": "cloud Linux local Node 24.19.0",
+        "tests": 6,
+        "coverage": "All 6 cases in this test file passed in the 9-case combined invocation; sum excludes file startup and other test files.",
+        "kind": "Local successful-run planning floor only; not hosted timing, timeout change or execution permission.",
+        "nodeReportedDurationMs": 85072.731748,
+        "sourceLog": "docs/evidence/develop-architecture-20261118/combat-owner-final.log.gz",
+        "sourceLogSha256": "e05d3bf6dd44ac46d4330301ce4a7fbd6e8a407da8efbaaf3a9a85ff9d23e8be",
+        "sourceLogUncompressedSha256": "ca47a3b44a984c9d2bc3424c45a998366eaa6e91f4b4dcb6223426766fd4a90f",
+        "testSha256": "af7daff012a56870999958f4facab723c962a1c4008225a2127d0b9f8e1c49eb",
+        "sourceReceipt": "docs/evidence/develop-architecture-20261118/test-planning-receipt.json",
+        "sourceReceiptSha256": "7b1f34f61a3408151c2a0aab99805e27aa8af201522a312c3d85f6de003c152f"
+      },
+      "tests/architecture-feedback-equivalence.test.mjs": {
+        "durationMs": 269861,
+        "environment": "cloud Linux local Node 24.19.0",
+        "tests": 10,
+        "coverage": "10/10 complete file passed; original startup and all 9 continuous-card cases, no skips.",
+        "kind": "Local successful-run planning floor only; not hosted timing, timeout change or execution permission.",
+        "nodeReportedDurationMs": 269860.536824,
+        "sourceLog": "docs/evidence/develop-architecture-20261118/feedback-final.log.gz",
+        "sourceLogSha256": "da6839edb7e029de7d43fa0bde811981bf2e2db1935b08c89efa7bd808ec03a0",
+        "sourceLogUncompressedSha256": "fa9ac45c5de45c667d6bdbe3bce0751b80d79da882ebeef49ff5f16ee30c59fe",
+        "testSha256": "095f98de2a5dfba1ab9ddb7d7f05171231e353c5c4ecd593b9b246cad3608c65",
+        "sourceReceipt": "docs/evidence/develop-architecture-20261118/test-planning-receipt.json",
+        "sourceReceiptSha256": "7b1f34f61a3408151c2a0aab99805e27aa8af201522a312c3d85f6de003c152f"
       }
     }
   },

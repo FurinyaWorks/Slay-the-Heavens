@@ -22,18 +22,7 @@ local ShopRelics=require('abyss_relic_family_combat').shop
 local ShopRelicsQueries=require('abyss_relic_queries').shop
 local Awakened=require('abyss_awakened_one')
 local Darklings=require('abyss_darklings')
-local M = { addStatus = Actors.addStatus, addTemporaryStrength = Actors.addTemporaryStrength,
-    statusView = Actors.statusView, block = Actors.block,
-    attackAmount = Actors.attackAmount,intentAttackAmount=Actors.intentAttackAmount,intentAttackPreview=Actors.intentAttackPreview,
-    faceTarget=Actors.faceTarget,blockAmount = Actors.blockAmount }
-
-local Upgrade=require('abyss_card_upgrade')
-local upgradeFields={combatBaseCost=true,validSearingBlowCopy=true,canUpgrade=true,upgrade=true}
-local function upgradeIndex(_,key)if upgradeFields[key]then return Upgrade[key]end end
-local function upgradeNewIndex(self,key,value)
- if upgradeFields[key]then Upgrade[key]=value else rawset(self,key,value)end
-end
-setmetatable(M,{__index=upgradeIndex,__newindex=upgradeNewIndex})
+local M=require('abyss_combat_commands').createOwner(Actors)
 
 -- UseCardAction visits each source monster's sorted Power list, not module
 -- batches. Preserve group order and stable acquisition order for equal priority.
@@ -2301,64 +2290,6 @@ function M.new(data, options)
     return constructorOpening(state,options,openingDraw)
 end
 
--- Explicit combat commands supplied to card/effect strategies. Dynamic reads
--- remain at the original execution point; the host keeps dispatch ownership.
-function M.silentFinalAllowedAfterVictory(effect)
-    return require('abyss_silent_final_cards').allowedAfterVictory(effect)
-end
-function M.initializeGeneratedCard(state,card)
-    return require('abyss_defect_final_cards').created(state,card)
-end
-function M.chooseSilentFinal(state,token,uid)
-    return require('abyss_silent_final_cards').choose(M,state,token,uid)
-end
-function M.applySilentFinal(state,item)
-    return require('abyss_silent_final_cards').apply(M,state,item)
-end
-function M.supportsWatcherFinal(op)
-    return require('abyss_watcher_final_cards').ops[op]
-end
-function M.applyWatcherFinal(state,effect)
-    return require('abyss_watcher_final_cards').execute(M,state,effect)
-end
-function M.created(state,card)
-    return require('abyss_watcher_final_cards').created(M,state,card)
-end
-function M.freshCard(state,id,prototype)
-    return require('abyss_card_actions').fresh(M,state,id,prototype)
-end
-function M.moveCardToHand(state,card)
-    return require('abyss_card_actions').toHand(state,card)
-end
-function M.exhaustCard(state,card)
-    return require('abyss_card_actions').exhaust(M,state,card)
-end
-function M.drainCardActions(state)
-    return require('abyss_card_actions').drain(M,state)
-end
-function M.applyCardAction(state,item)
-    return require('abyss_card_actions').apply(M,state,item)
-end
-function M.isCardImplemented(card)
-    return require('abyss_card_capability').isImplemented(card)
-end
-function M.recycleCard(state,card,queue)
-    return require('abyss_defect_final_cards').recycle(state,card,queue,M)
-end
-
-function M.makeTemporaryCard(state,effect)
-    return require('abyss_build_actions').makeCard(state,effect,M)
-end
-function M.beforePermanentCardObtain(context,definition)
-    return require('abyss_relic_family_combat').common.beforeObtainCard(context,definition)
-end
-function M.onPermanentCardObtain(context,card,definition,permanentApi)
-    return require('abyss_relic_family_combat').common.onObtainCard(context,card,definition,permanentApi)
-end
-function M.applyPermanentCardInventory(state,effects,target,run,inCombat)
-    return require('abyss_inventory').apply(state,effects,target,run,inCombat,M)
-end
-
--- Explicit Power capability for leaf lifecycle callers.
-function M.applyPower(...)return Actors.applyPower(...)end
+-- Strategies receive capabilities owned by this exact Combat table.
+require('abyss_combat_commands').install(M,Actors)
 return M

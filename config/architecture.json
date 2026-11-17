@@ -366,7 +366,8 @@
     "abyss_original_v4_actor_hooks": "core",
     "abyss_stance_damage": "core",
     "abyss_card_upgrade": "core",
-    "abyss_actor_attack_math": "core"
+    "abyss_actor_attack_math": "core",
+    "abyss_combat_commands": "core"
   },
   "dynamicExceptions": [],
   "deferredImports": [

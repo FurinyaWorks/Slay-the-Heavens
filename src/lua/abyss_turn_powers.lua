@@ -78,11 +78,7 @@ local function amount(entry)
     return entry.amount
 end
 
-function M.prepareStart(state,combat)
-    local out={}
-    if not live(state)then return out end
-    for _,entry in ipairs(ordered(state,'turn_start'))do
-        local id,n=entry.id,amount(entry)
+local function startPowerNative(state,out,id,n)
         if id=='nightmare'or id=='phantasmal'then add(out,{op='silentFinal',kind='startPower',status=id,value=n},id)
         elseif id=='loop' or id=='bias' then append(out,OrbPowers.prepareStart(state,id),id)
         elseif id=='berserk' then
@@ -90,7 +86,12 @@ function M.prepareStart(state,combat)
             else bottom(out,Strength.planHook(state,id,'turn_start'),id)end
         elseif id=='magnetism' or id=='mayhem' then
             add(out,{op='colorless',kind=id=='magnetism' and 'generateColorless' or 'mayhem',value=n},id)
-        elseif id=='hello_world'or id=='creative_ai'then
+        else return false end
+        return true
+end
+
+local function startPowerCards(state,out,id,n,combat)
+        if id=='hello_world'or id=='creative_ai'then
             append(out,require('abyss_defect_final_cards').turnStartActions(state,id,n,combat),id)
         elseif id=='infinite_blades' then
             add(out,{op='makeTempCard',cardId='shiv',pile='hand',upgraded=false,value=n},id)
@@ -104,12 +105,27 @@ function M.prepareStart(state,combat)
         elseif id=='end_turn_death' then
             add(out,{op='loseHp',value=99999},id)
             add(out,{op='removeStatus',status=id,value=0},id)
-        elseif n>0 then bottom(out,Flow.planHook(state,id,'turn_start'),id)
+        else return false end
+        return true
+end
+
+local function startPowerFlow(state,out,id,n)
+        if n>0 then bottom(out,Flow.planHook(state,id,'turn_start'),id)
         elseif id=='battle_hymn' then add(out,{op='makeTempCard',cardId='smite',pile='hand',upgraded=false,value=0},id)
         elseif id=='energy_down' then add(out,{op='loseEnergy',value=0},id)
         elseif id=='wrath_next_turn' then
             add(out,{op='changeStance',stance='Wrath'},id)
             add(out,{op='removeFlowPower',status=id,value=1},id)
+        end
+end
+
+function M.prepareStart(state,combat)
+    local out={}
+    if not live(state)then return out end
+    for _,entry in ipairs(ordered(state,'turn_start'))do
+        local id,n=entry.id,amount(entry)
+        if not startPowerNative(state,out,id,n)and not startPowerCards(state,out,id,n,combat)then
+            startPowerFlow(state,out,id,n)
         end
     end
     -- Ordinary orb onStartOfTurn is a separate source loop after ALL Powers.

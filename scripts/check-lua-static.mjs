@@ -94,7 +94,7 @@ export function reviewRenderComplexity(diagnostics, sources) {
 // Budget only this governance slice and every extracted responsibility module.
 // Unrelated pre-existing Combat/UI hotspots keep their diagnostic reports.
 // Reviewed leaf, presentation and preparation responsibilities are fully governed.
-const architectureGovernedModules = ["src/lua/abyss_actor_attack_math.lua", "src/lua/abyss_actor_artifact.lua", "src/lua/abyss_combat_card_hooks.lua", "src/lua/abyss_original_v4_actor_hooks.lua", "src/lua/abyss_power_membership.lua", "src/lua/abyss_relic_actor_hooks.lua", "src/lua/abyss_stance_damage.lua", "src/lua/abyss_card_upgrade.lua", "src/lua/abyss_character_profiles.lua", "src/lua/abyss_character_presentation.lua", "src/lua/abyss_character_select_view.lua", "src/lua/abyss_warrior_status_cards.lua", "src/lua/abyss_watcher_flow_cards.lua", "src/lua/abyss_original_v4_display.lua", "src/lua/abyss_potion_text.lua", "src/lua/abyss_feedback.lua", "src/lua/abyss_relic_pending.lua"];
+const architectureGovernedModules = ["src/lua/abyss_actor.lua", "src/lua/abyss_combat_commands.lua", "src/lua/abyss_actor_attack_math.lua", "src/lua/abyss_actor_artifact.lua", "src/lua/abyss_combat_card_hooks.lua", "src/lua/abyss_original_v4_actor_hooks.lua", "src/lua/abyss_power_membership.lua", "src/lua/abyss_relic_actor_hooks.lua", "src/lua/abyss_stance_damage.lua", "src/lua/abyss_card_upgrade.lua", "src/lua/abyss_character_profiles.lua", "src/lua/abyss_character_presentation.lua", "src/lua/abyss_character_select_view.lua", "src/lua/abyss_warrior_status_cards.lua", "src/lua/abyss_watcher_flow_cards.lua", "src/lua/abyss_original_v4_display.lua", "src/lua/abyss_potion_text.lua", "src/lua/abyss_feedback.lua", "src/lua/abyss_relic_pending.lua"];
 const responsibilityRoots = {
   ...Object.fromEntries(architectureGovernedModules.map(file=>[file,[]])),
   'src/lua/abyss_curses.lua': ["function 'M.isImplemented'"],
@@ -460,7 +460,26 @@ const architectureScopedLegacy = {
   "src/lua/abyss_colorless_cards.lua": {
     "$/M.canUse#1": 18,
     "$/M.choose#1": 16
-  }
+  },
+  "src/lua/abyss_combat.lua": {
+    "$/resolvePlay#1": 16,
+    "$/queuedHandlers.useCard#1": 16,
+    "$/M.chooseDiscard#1": 16,
+    "$/M.chooseCard#1/<anonymous>#1": 20
+  },
+  "src/lua/abyss_build_actions.lua": {},
+  "src/lua/abyss_hand_choice.lua": {
+    "$/index#1": 19
+  },
+  "src/lua/abyss_silent.lua": {},
+  "src/lua/abyss_turn_powers.lua": {
+    "$/ordered#1": 23,
+    "$/M.preparePostDraw#1": 17
+  },
+  "src/lua/abyss_boss_relics.lua": {},
+  "src/lua/abyss_relic_card_rewards.lua": {},
+  "src/lua/abyss_relic_choices.lua": {},
+  "src/lua/abyss_relic_pending_ui.lua": {}
 };
 export function reviewScopedArchitectureComplexity(measurements,scopes=architectureScopedLegacy) {
   const errors=[...(measurements?.errors??[])],functions=[];

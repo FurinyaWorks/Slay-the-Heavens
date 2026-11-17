@@ -130,37 +130,48 @@ function M.claimRelic(run,index,Run)
   staged.pendingBossRelic.relics[index].claimed=true;return true
  end)
 end
+local function claimBossGold(staged,p,Run)
+ if p.gold==nil or p.goldClaimed then return false,'no_pending_gold_reward'end
+ Run.gainGold(staged,p.gold);p.goldClaimed=true
+ return true
+end
+local function claimBossPotion(staged,p,Run)
+ if not p.potion or p.potion.claimed then return false,'no_pending_potion_reward'end
+ local ok,why=Run.obtainPotion(staged,p.potion.id);if not ok then return false,why end
+ staged.pendingBossRelic.potion.claimed=true
+ return true
+end
+local function claimBossBowl(staged,p,Run)
+ if not p.cards or p.cardResolved or not owns(staged,'singing_bowl')then return false,'no_pending_reward'end
+ local ok,why=Run.increaseMaxHp(staged,2);if not ok then return false,why end
+ staged.pendingBossRelic.cardResolved=true;return true
+end
+local function claimBossCard(staged,p,choice,Run)
+ if choice=='bowl'then return claimBossBowl(staged,p,Run)end
+ if not p.cards or p.cardResolved or type(choice)~='number'or choice%1~=0 or choice<0 or choice>#p.cards then
+  return false,'invalid_reward_choice'
+ end
+ if choice>0 then
+  local ok,why=Run.obtainCard(staged,p.cards[choice],{upgraded=p.cardUpgrades and p.cardUpgrades[choice]==true})
+  if not ok then return false,why end
+ end
+ staged.pendingBossRelic.cardResolved=true
+ return true
+end
 function M.claim(run,kind,choice,Run)
  if kind=='relic'then return M.claimRelic(run,choice,Run)end
  return Run.transaction(run,function(staged)
   local p=staged.pendingBossRelic
   if not p or p.kind~='rewards'then return false,'no_pending_boss_reward'end
-  if kind=='gold'then
-   if p.gold==nil or p.goldClaimed then return false,'no_pending_gold_reward'end
-   Run.gainGold(staged,p.gold);p.goldClaimed=true
-  elseif kind=='potion'then
-   if not p.potion or p.potion.claimed then return false,'no_pending_potion_reward'end
-   local ok,why=Run.obtainPotion(staged,p.potion.id);if not ok then return false,why end
-   staged.pendingBossRelic.potion.claimed=true
-  elseif kind=='card'then
-   if choice=='bowl'then
-    if not p.cards or p.cardResolved or not owns(staged,'singing_bowl')then return false,'no_pending_reward'end
-    local ok,why=Run.increaseMaxHp(staged,2);if not ok then return false,why end
-    staged.pendingBossRelic.cardResolved=true;return true
-   end
-   if not p.cards or p.cardResolved or type(choice)~='number'or choice%1~=0 or choice<0 or choice>#p.cards then
-    return false,'invalid_reward_choice'
-   end
-   if choice>0 then
-    local ok,why=Run.obtainCard(staged,p.cards[choice],{upgraded=p.cardUpgrades and p.cardUpgrades[choice]==true})
-    if not ok then return false,why end
-   end
-   staged.pendingBossRelic.cardResolved=true
+  if kind=='gold'then return claimBossGold(staged,p,Run)
+  elseif kind=='potion'then return claimBossPotion(staged,p,Run)
+  elseif kind=='card'then return claimBossCard(staged,p,choice,Run)
   elseif kind=='done'then staged.pendingBossRelic=nil
   else return false,'invalid_boss_reward'end
   return true
  end)
 end
+
 local function tinyHouse(run,Run)
  local eligible={};for _,card in ipairs(run.deck)do if upgradeable(run,card)then eligible[#eligible+1]=card end end
  R.shuffle(run.miscRng,eligible);if #eligible>0 then

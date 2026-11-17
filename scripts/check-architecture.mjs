@@ -179,13 +179,18 @@ export function analyzeSources(sources,policy,generated=generatedRuntimeModules,
   if(policy.fullDependencyAcyclic===true)for(const component of dependencyCycles(nodes,edges))
     errors.push({file:sourceFile(component.members[0]),line:1,
       message:`Full dependency cycle (including deferred imports): ${component.members.join(' -> ')}`});
-  return {schemaVersion:1,parser:'luaparse@0.3.1',sourceHashes:Object.fromEntries(nodes.map(name=>[name,sha256(sources[name])])),nodes,edges,errors};
+  return {schemaVersion:1,parser:'luaparse@0.3.1',fullDependencyAcyclic:policy.fullDependencyAcyclic===true,sourceHashes:Object.fromEntries(nodes.map(name=>[name,sha256(sources[name])])),nodes,edges,errors};
 }
 export function checkArchitecture(root=process.cwd()) {
   const {byModule,sourcePaths}=architectureSources(discoverSources(root));
-  return analyzeSources(byModule,JSON.parse(readFileSync(join(root,'config/architecture.json'),'utf8')),undefined,sourcePaths);
+  const policy=JSON.parse(readFileSync(join(root,'config/architecture.json'),'utf8'));
+  const report=analyzeSources(byModule,policy,undefined,sourcePaths);
+  if(policy.fullDependencyAcyclic!==true)report.errors.push({file:'config/architecture.json',line:1,
+    message:'Production architecture policy must enable fullDependencyAcyclic'});
+  return report;
 }
 export function main(report=checkArchitecture()) {
+  if(report.fullDependencyAcyclic!==true)throw new Error('Production architecture policy must enable fullDependencyAcyclic');
   mkdirSync('build',{recursive:true});writeFileSync('build/architecture.json',JSON.stringify(report,null,2)+'\n');
   for(const error of report.errors)console.error(`${error.file}:${error.line}: ${error.message}`);
   if(report.errors.length)throw new Error('Architecture check failed');

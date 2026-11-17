@@ -243,7 +243,7 @@ function actionHandlers.remove(_combat,s,e,_item)
   remove(s,e.status);if e.status=='nightmare'then s.nightmareTemplate=nil;s.player.nightmareCardName=nil end
 end
 function actionHandlers.tools(combat,s,e,_item)
-  combat.draw(s,e.value);assert(require('abyss_discard').begin(s,e.value))
+  combat.draw(s,e.value);assert(require('abyss_discard').begin(s,e.value,combat))
 end
 function actionHandlers.startPower(combat,s,e,_item)
   if e.status=='nightmare'then

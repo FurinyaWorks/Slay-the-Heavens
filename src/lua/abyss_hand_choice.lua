@@ -68,18 +68,14 @@ local function move(s,entry,mode,combat)
     Events.emit(s,'hand_choice_move',{uid=card.uid,cardId=card.cardId,mode=mode,pile=destination})
 end
 function M.active(s) return type(s)=='table' and s.pendingHandChoice~=nil end
-function M.begin(s,mode,count,_queue,combat)
-    assert(modes[mode] and count==1,'unsupported hand choice')
-    assert(type(s)=='table' and not s.pendingHandChoice,'hand choice already pending')
-    assert(not s.pendingScry and not s.pendingDiscard,'other selection already pending')
-    if not live(s) then return true end
-    local byUid,n=index(s);assert(byUid,'invalid hand choice piles')
-    if n==0 then return true end
+local function handChoiceValidateStart(s,mode)
     assert(integer(s.choiceSerial or 0,0,MAX-1),'hand choice serial overflow')
     assert(integer(s.turn,0,MAX) and type(s.events)=='table','invalid hand choice state')
     if mode~='put_on_deck' then
         for _,card in ipairs(s.hand) do assert(exhaustSupported(s,card),'unsupported exhaust trigger') end
     end
+end
+local function handChoiceSelectStart(s,mode,n)
     -- ExhaustAction auto-all is before its random branch. PutOnDeckAction's
     -- one-card shortcut explicitly uses getRandomCard, including random(0).
     local random=(mode=='exhaust_random' and n>1) or (mode=='put_on_deck' and n==1)
@@ -87,8 +83,9 @@ function M.begin(s,mode,count,_queue,combat)
     local selected
     if random then selected=s.hand[Random.randomInt(s.cardRandomRng,n-1)+1]
     elseif n==1 then selected=s.hand[1] end
-    s.choiceSerial=(s.choiceSerial or 0)+1
-    if selected then move(s,byUid[selected.uid],mode,combat);return true end
+    return selected
+end
+local function handChoicePublish(s,mode)
     local uids,ids,upgraded={},{},{}
     for i,card in ipairs(s.hand) do uids[i]=card.uid;ids[i]=card.cardId;upgraded[i]=card.upgraded==true end
     s.pendingHandChoice={mode=mode,count=1,serial=s.choiceSerial,token=s.choiceSerial,turn=s.turn,
@@ -96,22 +93,41 @@ function M.begin(s,mode,count,_queue,combat)
     Events.emit(s,'hand_choice',{mode=mode,token=s.choiceSerial,count=1})
     return 'pause'
 end
-function M.choose(s,uids,token,combat)
-    if not live(s) then return false,'not_player_turn' end
-    local p=s.pendingHandChoice
-    if type(p)~='table' or not integer(token,1,MAX) or p.token~=token or s.choiceSerial~=token then
-        return false,'stale_hand_choice_token'
-    end
-    if not modes[p.mode] or p.mode=='exhaust_random' or p.count~=1 then return false,'invalid_hand_choice_mode' end
-    local byUid,n=index(s)
+function M.begin(s,mode,count,_queue,combat)
+    assert(modes[mode] and count==1,'unsupported hand choice')
+    assert(type(s)=='table' and not s.pendingHandChoice,'hand choice already pending')
+    assert(not s.pendingScry and not s.pendingDiscard,'other selection already pending')
+    if not live(s) then return true end
+    local byUid,n=index(s);assert(byUid,'invalid hand choice piles')
+    if n==0 then return true end
+    handChoiceValidateStart(s,mode)
+    local selected=handChoiceSelectStart(s,mode,n)
+    s.choiceSerial=(s.choiceSerial or 0)+1
+    if selected then move(s,byUid[selected.uid],mode,combat);return true end
+    return handChoicePublish(s,mode)
+end
+
+local function handChoiceTokenValid(s,p,token)
+    return not (type(p)~='table' or not integer(token,1,MAX) or p.token~=token or s.choiceSerial~=token)
+end
+local function handChoiceSnapshotValid(s,p,byUid,n)
     if not byUid or p.turn~=s.turn or dense(p.handUids)~=n or dense(p.cardIds)~=n or dense(p.upgraded)~=n then
-        return false,'stale_hand_choice_hand'
+        return false
     end
     for i,card in ipairs(s.hand) do
         if card.uid~=p.handUids[i] or card.cardId~=p.cardIds[i] or (card.upgraded==true)~=p.upgraded[i] then
-            return false,'stale_hand_choice_hand'
+            return false
         end
     end
+    return true
+end
+function M.choose(s,uids,token,combat)
+    if not live(s) then return false,'not_player_turn' end
+    local p=s.pendingHandChoice
+    if not handChoiceTokenValid(s,p,token)then return false,'stale_hand_choice_token'end
+    if not modes[p.mode] or p.mode=='exhaust_random' or p.count~=1 then return false,'invalid_hand_choice_mode' end
+    local byUid,n=index(s)
+    if not handChoiceSnapshotValid(s,p,byUid,n)then return false,'stale_hand_choice_hand'end
     if dense(uids)~=1 or not integer(uids[1],1,MAX) or not byUid[uids[1]] then return false,'invalid_hand_choice_uid' end
     local entry=byUid[uids[1]]
     if p.mode~='put_on_deck' and not exhaustSupported(s,entry.card) then return false,'unsupported_exhaust_trigger' end

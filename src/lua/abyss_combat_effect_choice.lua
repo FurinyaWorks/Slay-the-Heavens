@@ -10,7 +10,7 @@ end
 function Handlers.requestDiscard(c)
     local state=c.state
     local effect=c.effect
-    local ok,reason=require('abyss_discard').begin(state,effect.value)
+    local ok,reason=require('abyss_discard').begin(state,effect.value,c.combat)
     assert(ok,reason)
     return state.pendingDiscard and 'pause' or true
 end

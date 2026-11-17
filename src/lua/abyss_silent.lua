@@ -87,7 +87,7 @@ end
 
 -- Resolved generation action; the shared effect dispatcher owns card payment.
 -- Explicit source creation callbacks upgrade before Accuracy stamps the base.
-function M.generateShivs(state, count, upgraded, combat)
+local function silentGenerationValidate(state,count,upgraded,combat)
     assert(type(state) == "table" and state.phase == "player"
         and not combat.outcome(state), "generation requires live player combat")
     assert(integer(count,0,2147483647), "invalid Shiv count")
@@ -98,6 +98,8 @@ function M.generateShivs(state, count, upgraded, combat)
     assert(card.type == "attack" and card.cost == 0 and card.exhaust == true
         and card.effects[1].op == "damage" and card.effects[1].value == 4
         and card.upgrade.effects[1].value == 6, "unexpected Shiv definition")
+end
+local function silentGenerationIdentities(state,count)
     -- Reject UID collisions before changing any pile. All four piles own UIDs.
     local used = {}
     for _, pile in ipairs({state.hand, state.draw, state.discard, state.exhaust}) do
@@ -110,18 +112,26 @@ function M.generateShivs(state, count, upgraded, combat)
     for offset = 0, count - 1 do
         assert(not used[state.nextUid + offset], "card UID collision")
     end
+end
+local function silentGenerationInstance(state,upgraded,combat)
+    local instance = {uid=state.nextUid, cardId="shiv", upgraded=upgraded == true}
+    require('abyss_card_actions').created(combat,state,instance)
+    require('abyss_card_actions').created(combat,state,instance)
+    require("abyss_shivs").created(state,instance)
+    state.nextUid = state.nextUid + 1
+    local destination = #state.hand < 10 and "hand" or "discard"
+    state[destination][#state[destination] + 1] = instance
+    if destination=="hand" and (state.player.statuses.corruption or 0)~=0 then
+        require("abyss_corruption").created(state,instance)
+    end
+    return instance,destination
+end
+function M.generateShivs(state, count, upgraded, combat)
+    silentGenerationValidate(state,count,upgraded,combat)
+    silentGenerationIdentities(state,count)
     local generated = {}
-    for _ = 1, count do
-        local instance = {uid=state.nextUid, cardId="shiv", upgraded=upgraded == true}
-        require('abyss_card_actions').created(combat,state,instance)
-        require('abyss_card_actions').created(combat,state,instance)
-        require("abyss_shivs").created(state,instance)
-        state.nextUid = state.nextUid + 1
-        local destination = #state.hand < 10 and "hand" or "discard"
-        state[destination][#state[destination] + 1] = instance
-        if destination=="hand" and (state.player.statuses.corruption or 0)~=0 then
-            require("abyss_corruption").created(state,instance)
-        end
+    for _=1,count do
+        local instance,destination=silentGenerationInstance(state,upgraded,combat)
         generated[#generated + 1] = instance.uid
         Events.emit(state, "silent_generate", {uid=instance.uid, cardId="shiv", destination=destination})
     end

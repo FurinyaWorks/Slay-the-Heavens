@@ -17,6 +17,26 @@ local function text(ctx,row)
  end
  return row.title,row.description
 end
+-- Prepare the shared event panel before capturing the command generation.
+-- Native setters can reenter; the command owner snapshot stays at its old site.
+local function renderPendingScreen(ctx,self,view)
+ self.renderRun,self.renderMap,self.nodeId=self.run,self.map,nil
+ self.view={phase=self.run.phase,node={type='relic_pending',complete=false},pendingRelic=view};self.actions={}
+ ctx.shopSelection:clear();ctx.roomMotion:cancel();ctx.merchant:setVisible(false)
+ ctx.renderTopBar(nil);ctx.child('title').text='遗物效果'
+ for _,name in ipairs({'shopView','campView','pickerView','eventView','treasureView'})do ctx.show(ctx.child(name),name=='eventView')end
+ local event=ctx.child('eventView')
+ local figure=event:GetChild('neowFigure');if figure then ctx.show(figure,false)end
+ local art=event:GetChild('art');if art then ctx.show(art,false)end
+ event:GetChild('name').text=view.title
+ local count=math.min(3,#Theme.layout.nativeNode.event.options.rows)
+ self.pageCount=math.max(1,math.ceil(#view.rows/count))
+ self.pendingPage=math.min(self.pendingPage or 1,self.pageCount)
+ event:GetChild('caption').text='遗物选择 · '..self.pendingPage..'/'..self.pageCount
+ event:GetChild('body').text=view.body
+ ctx.child('notice').text=self.notice~=''and self.notice or '请选择一项，完成后返回原界面。'
+ return event,count
+end
 function M.install(ctx,Run)
  function ctx.renderRelicPending()
   local self=ctx.self;local view=Pending.view(self.run)
@@ -24,21 +44,7 @@ function M.install(ctx,Run)
   if not view then self.pendingOwner=nil;return false end
   if self.pendingOwner~=view.owner then self.pendingPage=1;self.notice=''end
   self.pendingOwner=view.owner
-  self.renderRun,self.renderMap,self.nodeId=self.run,self.map,nil
-  self.view={phase=self.run.phase,node={type='relic_pending',complete=false},pendingRelic=view};self.actions={}
-  ctx.shopSelection:clear();ctx.roomMotion:cancel();ctx.merchant:setVisible(false)
-  ctx.renderTopBar(nil);ctx.child('title').text='遗物效果'
-  for _,name in ipairs({'shopView','campView','pickerView','eventView','treasureView'})do ctx.show(ctx.child(name),name=='eventView')end
-  local event=ctx.child('eventView')
-  local figure=event:GetChild('neowFigure');if figure then ctx.show(figure,false)end
-  local art=event:GetChild('art');if art then ctx.show(art,false)end
-  event:GetChild('name').text=view.title
-  local count=math.min(3,#Theme.layout.nativeNode.event.options.rows)
-  self.pageCount=math.max(1,math.ceil(#view.rows/count))
-  self.pendingPage=math.min(self.pendingPage or 1,self.pageCount)
-  event:GetChild('caption').text='遗物选择 · '..self.pendingPage..'/'..self.pageCount
-  event:GetChild('body').text=view.body
-  ctx.child('notice').text=self.notice~=''and self.notice or '请选择一项，完成后返回原界面。'
+  local event,count=renderPendingScreen(ctx,self,view)
   local generation,run,owner=self.pendingGeneration,self.run,view.owner
   local function observe()
    return self.visible and not self.busy and not self.presentationBusy
