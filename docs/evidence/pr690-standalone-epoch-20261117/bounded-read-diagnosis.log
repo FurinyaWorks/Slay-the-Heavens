@@ -1,0 +1,54 @@
+{"count":10000,"total":609216585,"seconds":2.004,"path":"tests/fixtures/class-potion-watcher-before.json.gz"}
+{"count":20000,"total":1261507201,"seconds":3.79,"path":"tests/fixtures/defect-actor-before.json.gz"}
+{"count":30000,"total":1914689350,"seconds":5.673,"path":"tests/fixtures/delivery-source-composition.json.gz"}
+{"count":40000,"total":2597653821,"seconds":8.71,"path":"tests/lua/game_ui_prologue_readiness.lua"}
+{"count":50000,"total":3244836365,"seconds":10.665,"path":"tests/helpers/naming-package-source.json"}
+{"count":60000,"total":3897082964,"seconds":12.735,"path":"tests/helpers/native-enemy-theme-inverse.mjs"}
+{"count":70000,"total":4549438166,"seconds":14.39,"path":"tests/helpers/native-monster-art-source-inverse.mjs"}
+{"count":80000,"total":5228145654,"seconds":17.219,"path":"tests/fixtures/event-snapshot-composition.json"}
+{"count":90000,"total":5880726827,"seconds":18.961,"path":"tests/fixtures/hero-visual-source-inverse.json"}
+{"count":100000,"total":6532995620,"seconds":20.514,"path":"tests/fixtures/historical-monster-ui-support.json"}
+{"count":110000,"total":7215813986,"seconds":23.357,"path":"src/lua/abyss_silent.lua"}
+{"count":120000,"total":7868926654,"seconds":25.175,"path":"src/lua/abyss_moai_event.lua"}
+{"count":130000,"total":8521200460,"seconds":26.888,"path":"src/lua/abyss_monster_art.lua"}
+{"count":140000,"total":9173484132,"seconds":28.78,"path":"src/lua/abyss_monster_displayed_intent.lua"}
+{"count":150000,"total":9858318184,"seconds":31.468,"path":"src/lua/abyss_combat_reactions.lua"}
+{"count":160000,"total":10511036169,"seconds":33.096,"path":"scripts/v25-card-audit-inputs.mjs"}
+{"count":170000,"total":11163282245,"seconds":34.865,"path":"scripts/v25-card-binding.mjs"}
+{"count":180000,"total":11815643084,"seconds":36.672,"path":"scripts/v25-card-templates.mjs"}
+{"count":190000,"total":12481166773,"seconds":39.42,"path":"tests/helpers/m7-core-final-before.json.gz"}
+{"count":200000,"total":13133437349,"seconds":41.22,"path":"tests/helpers/menu-presentation-source.json.gz"}
+{"count":210000,"total":13785707420,"seconds":42.868,"path":"tests/helpers/menu-red-before-integration-production-source.json.gz"}
+{"count":220000,"total":14438468554,"seconds":44.635,"path":"tests/helpers/menu-red-ci-source.json.gz"}
+{"count":230000,"total":15088499213,"seconds":47.155,"path":"tests/helpers/release-pc22-basic-feedback-source.mjs"}
+{"count":240000,"total":15740781869,"seconds":48.927,"path":"tests/helpers/release-selection-map-ci-source.mjs"}
+{"count":250000,"total":16393050996,"seconds":50.848,"path":"tests/helpers/release-selection-map-source.mjs"}
+{"count":260000,"total":17077198166,"seconds":53.28,"path":"tests/helpers/golden-idol-current-ci-source-inverse.mjs"}
+{"count":270000,"total":17729395983,"seconds":55.15,"path":"tests/helpers/card-origin-source-inverse.mjs"}
+{"count":280000,"total":18381663461,"seconds":56.816,"path":"tests/helpers/ci-complete-calibration-source-inverse.mjs"}
+{"count":290000,"total":19034011342,"seconds":58.633,"path":"tests/helpers/ci-fast-migration.json"}
+{"count":300000,"total":19711941031,"seconds":61.334,"path":"src/lua/abyss_original_v4.lua"}
+{"count":310000,"total":20364231867,"seconds":63.167,"path":"src/lua/abyss_original_v4_display.lua"}
+{"count":320000,"total":21016475961,"seconds":65,"path":"src/lua/abyss_original_v4_health.lua"}
+{"count":330000,"total":21668843793,"seconds":66.775,"path":"src/lua/abyss_original_v4_profiles.lua"}
+{"count":340000,"total":22353893878,"seconds":69.439,"path":"src/lua/abyss_back_to_basics.lua"}
+{"count":350000,"total":23006174015,"seconds":71.349,"path":"src/lua/abyss_battle_action_bindings.lua"}
+{"count":360000,"total":23658457362,"seconds":73.107,"path":"src/lua/abyss_battle_actions.lua"}
+{"count":370000,"total":24343065093,"seconds":75.636,"path":"scripts/native-script-inventory.mjs"}
+{"count":380000,"total":24984896258,"seconds":77.593,"path":"tests/helpers/run-hud-before-ci-repair-ci-source.json.gz"}
+{"count":390000,"total":25637441107,"seconds":79.347,"path":"tests/helpers/run-hud-ci-source.json.gz"}
+{"count":400000,"total":26289860466,"seconds":81.214,"path":"tests/helpers/selection-ci-source.json.gz"}
+{"count":410000,"total":26967533569,"seconds":84.797,"path":"tests/lua/menu_input_boundaries_current.lua"}
+{"count":420000,"total":27615121958,"seconds":86.603,"path":"tests/helpers/navigation-map-legacy-domains.mjs"}
+{"count":430000,"total":28267421460,"seconds":88.425,"path":"tests/helpers/navigation-map-merged-input.json"}
+Error: DIAGNOSTIC_BUDGET_90S reads=437821 bytes=28780073066
+    at raw (file:///tmp/nav1815-probe.mjs:21:214)
+    at assertCurrent (file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/release-navigation-pc22-join.mjs:21:13)
+    at project (file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/release-navigation-pc22-join.mjs:36:2)
+    at file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/release-navigation-pc22-join.mjs:47:15
+    at menuReaderBefore (file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/navigation-map-integration.mjs:83:20)
+    at navigationFixtureBefore (file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/navigation-map-integration.mjs:99:9)
+    at navigationMapSource (file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/navigation-map-integration.mjs:107:9)
+    at file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/navigation-map-integration.mjs:113:61
+    at read (file:///tmp/nav1815-probe.mjs:24:72)
+    at assertReleaseMergeCurrent (file:///workspace/scratch/c1a4970a76e0/navigation690-1815/tests/helpers/release-bootstrap-merge-ci-source.mjs:23:26)
