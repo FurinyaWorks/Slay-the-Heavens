@@ -39,10 +39,26 @@ for(const [path,row]of Object.entries(matcher.files)){
  }
  files[path]={...files[path],current:row.current};
 }
+// Preserve every predecessor; this continuation repairs only the StS consumer.
+const stsBytes=readFileSync(new URL('./potion-post697-ci-sts-repair.json.gz',import.meta.url));
+assert.equal(hash(stsBytes),'f6ae4d3f79372323d87be3f2da5945a82b3d5b782018d7c69d68798bbcdeaf4a','complete post697 StS CI repair');
+const sts=JSON.parse(gunzipSync(stsBytes));
+assert.equal(sts.schemaVersion,1);assert.equal(sts.baseCommit,'eabff9b0bf2cce17ae05913c0e5d47366d0ff173');
+assert.equal(sts.currentTreeCommitted,false,'StS capture is separate from committed product');
+assert.deepEqual(Object.keys(sts.files),['tests/sts-style-source-epoch.test.mjs']);
+for(const [path,row]of Object.entries(sts.files)){
+ assert.deepEqual(row.before,files[path].current,'exact pre-repair StS source: '+path);
+ for(const item of [row.before,row.current]){
+  assert.equal(item.source,norm(item.source));assert.equal(hash(item.source),item.sha256,path);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(item.source)}\0`).update(item.source).digest('hex'),item.gitBlob,path);
+ }
+ files[path]={...files[path],current:row.current};
+}
 const packet={...originalPacket,files,immutableArchives:{...originalPacket.immutableArchives,
  'tests/helpers/potion-post697-ci-source.json.gz':hash(bytes),
  'tests/helpers/potion-post697-ci-reader-repair.json.gz':hash(repairBytes),
- 'tests/helpers/potion-post697-ci-matcher-repair.json.gz':hash(matcherBytes)}};
+ 'tests/helpers/potion-post697-ci-matcher-repair.json.gz':hash(matcherBytes),
+ 'tests/helpers/potion-post697-ci-sts-repair.json.gz':hash(stsBytes)}};
 assert.equal(packet.schemaVersion,1);assert.equal(packet.currentTreeCommitted,false);
 assert.deepEqual(packet.viewCommits,{potion:'3e96a1589435f8b06645db095775a789f24b1350',selection:'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9'});
 assert.equal(packet.productCommit,'a9df9dff11779cb1d850dc97b715c711881cf9c6');
