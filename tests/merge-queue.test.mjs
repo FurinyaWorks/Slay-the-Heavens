@@ -413,7 +413,7 @@ test('queue cleanup reuses only trusted base code in existing Licenses without s
  const s=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
  assert.match(s,/pull_request_target:\n    branches: \[develop\]\n    types: \[dequeued\]/);
  const cleanup=s.slice(s.indexOf('  cancel-obsolete-queue:'));
- for(const token of ["github.repository_id == '1429751262'","github.event_name == 'pull_request_target'","github.event.action == 'dequeued'","github.event.pull_request.base.ref == 'develop'","github.ref == 'refs/heads/develop'",'runs-on: ubuntu-slim','actions: write','pull-requests: read','ref: ${{ github.sha }}','--cancel-obsolete'])assert(cleanup.includes(token),token);
+ for(const token of ["github.repository_id == '1429751262'","github.event_name == 'pull_request_target'","github.event.action == 'dequeued'","github.event.pull_request.base.ref == 'develop'","github.ref == 'refs/heads/develop'",'runs-on: ubuntu-24.04','actions: write','pull-requests: read','ref: ${{ github.sha }}','--cancel-obsolete'])assert(cleanup.includes(token),token);
  assert(!/pull_request.head|npm |secrets\.|schedule:|destroyed/.test(cleanup));
  assert.match(s,/github.event_name == 'pull_request_target' && format\('queue-cleanup-/);
  assert.match(s,/name: .*github.event_name == 'pull_request_target'.*license-audit-not-requested/);
