@@ -369,9 +369,11 @@ test('newer failed or active dispatch invalidates older success across forks',()
 test('draft license gate stays in the existing inventory before media and retries on ready',()=>{
  const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
  assert.doesNotMatch(licenses,/^  admission:|needs: admission|draft == false/m);
- assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory']);
+ assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory','independent-ai-review']);
  assert.match(licenses,/types: \[opened, synchronize, reopened, ready_for_review\]/);
- assert.match(licenses,/  inventory:\n    permissions:\n      contents: read\n      actions: read/);
+ assert.match(licenses,/  inventory:[\s\S]*?    permissions:\n      contents: read\n      actions: read/);
+ assert.match(licenses,/license-audit-not-requested/);
+ assert.match(licenses,/if: github.event_name != 'workflow_run'/);
  const gate=licenses.indexOf('run: node scripts/fork-preflight.mjs');
  assert(gate>licenses.indexOf('uses: actions/setup-node@'));
  for(const command of ['node scripts/ci-media-lfs.mjs','node scripts/ci-reviewed-lfs.mjs','node --test scripts/check-license.test.mjs','node scripts/check-license.mjs'])assert(gate<licenses.indexOf(command));
