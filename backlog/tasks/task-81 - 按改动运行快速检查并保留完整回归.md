@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-17 08:44'
+updated_date: '2026-11-17 08:48'
 labels:
   - 待验
   - delivery-verify
@@ -114,5 +114,5 @@ e22本地重放验证：相对basename参考与短模式原生CLI对当前360个
 
 2026-11-14第二轮状态纠正：选测机制与前两项AC已交付，尚缺自然Fast样本及真实耗时；属于进行中待验，不重新实现选择器。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
 
-2026-11-17 #707@3f890cdc旧reader收口：component281/nativeCloseout完整前驱映射，保留原pin和库存；完整calibration76项及其余来源合同31项通过，ci-impact因初始缺luaparse单文件复跑26项通过；负控4项、真实隔离reviewed selection5项、guidance/backlog通过，独审通过。仅本地候选，尚未push/托管CI/合并；#709准备组合评估后不纳入此次窄修复。证据docs/evidence/release-calibration-readers-20261117。
+2026-11-17 #707@3f890cdc旧reader收口：component281/nativeCloseout完整前驱映射，保留原pin和库存；完整calibration76项及其余来源合同31项通过，ci-impact因初始缺luaparse单文件复跑26项通过；负控4项、真实隔离reviewed selection5项、guidance/backlog通过，独审通过。仅本地候选，尚未push/托管CI/合并；#709准备组合评估后不纳入此次窄修复。证据docs/evidence/release-fast-b9-ci-20261117。
 <!-- SECTION:NOTES:END -->
