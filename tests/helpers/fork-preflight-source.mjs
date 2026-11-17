@@ -11,7 +11,7 @@ const proof=JSON.parse(gunzipSync(bytes));
 for(const row of Object.values(proof.files))assert.equal(hash(row.before),row.beforeSha);
 const normalize=s=>s.replaceAll('\r\n','\n');
 export function beforePreflightSource(path,source){
- source=releasePreflightUnionSource(path,source,'release');
+ source=releasePreflightUnionSource(path,source,'release',false);
  const row=Object.hasOwn(proof.files,path)?proof.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==row.currentSha)return source;
  const eol=source.includes('\r\n')?'\r\n':'\n';return row.before.replaceAll('\n',eol);

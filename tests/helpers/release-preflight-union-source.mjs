@@ -25,7 +25,36 @@ export function assertReleasePreflightUnionCurrent(read=readFileSync){
   assert.equal(hash(norm(source)),row.current.sha256,'fresh complete Release preflight input: '+path);
  }
 }
-export function releasePreflightUnionSource(path,source,target){
+// The two fixed Release candidates retain complete independent CI histories.
+const capacityFastBytes=readFileSync(new URL('./release-capacity-fast-union.json.gz',import.meta.url));
+assert.equal(hash(capacityFastBytes),'7f28fc1d8f34fe6d7916c105972073f6ebc39ee1e28d52a29aae77164cf955a6','complete capacity Fast union');
+const capacityFast=JSON.parse(gunzipSync(capacityFastBytes));
+assert.deepEqual(capacityFast.parents,{fast:'620106856f4457501275db212c70a58ff79e5b67',capacity:'6980b909db9e3d1a2f425ebaf31524aebc156416'});
+assert.equal(capacityFast.currentTreeCommitted,false);
+for(const [path,row]of Object.entries(capacityFast.files))for(const binding of [row.current,...Object.values(row.views)].filter(Boolean)){
+ assert.equal(norm(binding.source),binding.source);assert.equal(hash(binding.source),binding.sha256,'complete capacity Fast source: '+path);
+}
+export const capacityFastUnionBindings=Object.freeze(Object.fromEntries(Object.entries(capacityFast.files).map(([path,row])=>[path,Object.freeze({current:row.current.sha256,fast:row.views.fast?.sha256??null,capacity:row.views.capacity?.sha256??null})])));
+export function capacityFastUnionSource(path,source,view){
+ const row=Object.hasOwn(capacityFast.files,path)?capacityFast.files[path]:null;
+ const prior=row&&Object.hasOwn(row.views,view)?row.views[view]:null;
+ if(!prior||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
+}
+export function capacityFastUnionRead(view,read=readFileSync){return(path,encoding)=>{
+ const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityFastUnionSource(path,text,view);
+ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+};}
+export function assertCapacityFastUnionCurrent(read=readFileSync){
+ assert.equal(hash(read('tests/helpers/release-capacity-fast-union.json.gz')),hash(capacityFastBytes),'fresh immutable capacity Fast union archive');
+ for(const [path,row]of Object.entries(capacityFast.files)){
+  const source=read(path,'utf8');assert.equal(typeof source,'string');assert(!source.includes('\r\r\n'));
+  assert.equal(hash(norm(source)),row.current.sha256,'fresh complete integration source: capacity Fast union '+path);
+ }
+}
+export function releasePreflightUnionSource(path,source,target,applyCapacityUnion=true){
+ if(applyCapacityUnion&&['release','advisory'].includes(target))source=capacityFastUnionSource(path,source,'fast');
  if(target==='release'&&path==='tests/release-selection-map-source.test.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='045dd56326acbe32ff06ba8d80ba20aa454bf86d919e437645b52c42b85823a6'){
   const prior=norm(source).replaceAll('norm(raw).replaceAll(', 'raw.replaceAll(');
   assert.equal(hash(prior),'5726b421c7e56d56e28d5787f795df5e442c58f38f55e61ca283b1fcac189eba','exact selection line-ending fixture predecessor');

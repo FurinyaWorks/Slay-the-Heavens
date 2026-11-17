@@ -356,3 +356,27 @@ test('alpha encoding cannot hide wrong bytes, invalid readback or unrelated floa
     },
   ]) assert.ok(audit(change).issues.length);
 });
+
+test('shared card audit requires the complete same-source plan and unique same-candidate bindings',async()=>{
+ const helper=await import('../scripts/native-ui-card-sharing.mjs');
+ assert.equal(typeof helper.assertCardSharingPlan,'function','audit must reproduce the physical packing from pinned source');
+ const face=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
+ const layout={name:'Test',controls:[face('one'),face('two')]},templates=[];
+ const packed=helper.packNativeCardFaces(layout,templates),record={sharing:packed.sharing,templateIndices:{AbyssSharedCardFace1:201}};
+ assert.deepEqual(helper.assertCardSharingPlan(layout,templates,record),packed);
+ for(const bad of [{...record,sharing:{...record.sharing,packedDigest:'0'.repeat(64)}},
+  {...record,sharing:{...record.sharing,sourceDigest:'0'.repeat(64)}},
+  {...record,templateIndices:{}},{...record,templateIndices:{AbyssSharedCardFace1:0}},
+  {...record,templateIndices:{AbyssSharedCardFace1:201,extra:202}},
+  {...record,sharing:{...record.sharing,profile:'unknown'}}])
+  assert.throws(()=>helper.assertCardSharingPlan(layout,templates,bad));
+ const prior={candidate:{sha256:'a'.repeat(64)},nativeUiPacking:record};
+ assert.deepEqual(helper.assertSharedCardBaseOwnership('a'.repeat(64),prior,[{name:'AbyssSharedCardFace1',templateIndex:201}]),['AbyssSharedCardFace1']);
+ for(const actual of [[],[{name:'AbyssSharedCardFace1',templateIndex:202}],
+  [{name:'AbyssSharedCardFace1',templateIndex:201},{name:'AbyssSharedCardFace2',templateIndex:202}]])
+  assert.throws(()=>helper.assertSharedCardBaseOwnership('a'.repeat(64),prior,actual),/ownership/);
+ assert.throws(()=>helper.assertSharedCardBaseOwnership('b'.repeat(64),prior,[{name:'AbyssSharedCardFace1',templateIndex:201}]),/ownership/);
+ assert.throws(()=>helper.assertNoExternalSharedCardReferences({name:'foreign',children:[{name:'face',kind:'reference',template:'AbyssSharedCardFace1'}]}),/External UI/);
+ for(const spec of [{name:'foreign',kind:'grid',itemTemplate:'AbyssSharedCardFace1'},{name:'foreign',kind:'grid',grid:{itemTemplate:'AbyssSharedCardFace1'}}])
+  assert.throws(()=>helper.assertNoExternalSharedCardReferences(spec),/External UI/);
+});
