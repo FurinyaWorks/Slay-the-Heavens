@@ -14,7 +14,7 @@ test('Mutagenic opening Artifact blocks debt BEFORE gain, using a controlled pre
  local opening=assert(Inventory.opening(r.data.relics.relics,r.relics,r.relicCounters))
  local s=assert(H.C.new(r.data,{deck=r.deck,enemies={'cultist'},cardRandomSeed='42',shuffleSeed='42',
   beforeFirstTurn=function(staged)H.A.applyPower(staged,staged.player,'artifact',1,staged.player);return true end,
-  beforeOpeningDraw=function(staged)return Inventory.applyOpening(staged,opening.beforeDraw)end}))
+  beforeOpeningDraw=function(staged)return Inventory.applyOpening(staged,opening.beforeDraw,require('abyss_combat'))end}))
  eq(s.player.statuses.artifact,0);eq(s.player.temporaryStrength,nil);eq(s.player.statuses.strength,3)
  local blocked,gained
  for i,e in ipairs(s.events)do if e.kind=='status'and e.detail.blockedStatus=='lose_strength'then blocked=i elseif e.kind=='status'and e.detail.status=='strength'then gained=i end end

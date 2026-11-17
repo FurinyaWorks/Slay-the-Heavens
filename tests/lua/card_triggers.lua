@@ -46,7 +46,7 @@ local function run(s,actions,extra)
         if e.op=="cardTriggerStorm" then
             for _,next in ipairs(Triggers.expandStorm(current,e)) do q.pushTop(current,next) end
         elseif e.op=="cardTriggerDamageAll" then Triggers.resolveDamageAll(current,e,Combat)
-        elseif e.op=="cardTriggerPoison" then Triggers.resolveEnvenom(current,e)
+        elseif e.op=="cardTriggerPoison" then Triggers.resolveEnvenom(current,e,Actors)
         elseif e.op=="removeCardTriggerPower" then Triggers.removePower(current,e.status)
         elseif extra and extra[e.op] then extra[e.op](current,e,q)
         else Combat.applyEffects(current,{e},current.player,current.enemies[1]) end
@@ -229,14 +229,14 @@ test("Envenom prepares a TOP poison action without eager Artifact or poison muta
     local lost=Actors.damage(s,s.player,t,6)
     local unchanged=freeze(s);local a=Triggers.onAttack(s,s.player,t,lost,"NORMAL");assert(a);unchanged()
     eq(a.effect.op,"cardTriggerPoison");eq(a.effect.value,2);eq(a.effect.targetId,t.id)
-    eq(Triggers.resolveEnvenom(s,a.effect),false);eq(t.statuses.artifact,0);eq(t.statuses.poison or 0,0)
+    eq(Triggers.resolveEnvenom(s,a.effect,Actors),false);eq(t.statuses.artifact,0);eq(t.statuses.poison or 0,0)
 end)
 test("queued Envenom poison precedes an existing native bottom action",function()
     local s=state();apply(s,"envenom",1);local t=s.enemies[1]
     local a=Triggers.onAttack(s,s.player,t,1,"NORMAL")
     Queue.start(s,{{kind="effect",effect={op="block",value=5}}});Queue.pushTop(s,a)
     assert(Queue.run(s,{effect=function(current,entry)
-        if entry.effect.op=="cardTriggerPoison" then Triggers.resolveEnvenom(current,entry.effect)
+        if entry.effect.op=="cardTriggerPoison" then Triggers.resolveEnvenom(current,entry.effect,Actors)
         else Combat.applyEffects(current,{entry.effect},current.player) end
         return true
     end}))
@@ -252,7 +252,7 @@ test("Envenom snapshots the old amount and its queued action survives later Powe
     local s=state();apply(s,"envenom",2);local t=s.enemies[1]
     local a=Triggers.onAttack(s,s.player,t,1,"NORMAL")
     apply(s,"envenom",1);assert(Triggers.removePower(s,"envenom"))
-    assert(Triggers.resolveEnvenom(s,a.effect));eq(t.statuses.poison,2)
+    assert(Triggers.resolveEnvenom(s,a.effect,Actors));eq(t.statuses.poison,2)
 end)
 test("Envenom requires an unblocked positive NORMAL hit and ignores THORNS and HP loss",function()
     local s=state();apply(s,"envenom",1);local t=s.enemies[1]
@@ -265,8 +265,8 @@ test("Envenom requires an unblocked positive NORMAL hit and ignores THORNS and H
 end)
 test("new poison constructor caps 9999 while existing poison stacks the raw Envenom amount",function()
     local s=state();apply(s,"envenom",10000);local t=s.enemies[1]
-    local a=Triggers.onAttack(s,s.player,t,1,"NORMAL");assert(Triggers.resolveEnvenom(s,a.effect));eq(t.statuses.poison,9999)
-    assert(Triggers.resolveEnvenom(s,a.effect));eq(t.statuses.poison,19999)
+    local a=Triggers.onAttack(s,s.player,t,1,"NORMAL");assert(Triggers.resolveEnvenom(s,a.effect,Actors));eq(t.statuses.poison,9999)
+    assert(Triggers.resolveEnvenom(s,a.effect,Actors));eq(t.statuses.poison,19999)
 end)
 test("dead target player death and final enemy death skip poison without spending Artifact",function()
     for _,condition in ipairs({"target","player","all"}) do
@@ -274,7 +274,7 @@ test("dead target player death and final enemy death skip poison without spendin
         local a=Triggers.onAttack(s,s.player,t,1,"NORMAL");assert(a)
         if condition=="target" then t.hp=0 elseif condition=="player" then s.player.hp=0
         else for _,e in ipairs(s.enemies) do e.hp=0 end end
-        local unchanged=freeze(s);eq(Triggers.resolveEnvenom(s,a.effect),false);unchanged();eq(t.statuses.artifact,1)
+        local unchanged=freeze(s);eq(Triggers.resolveEnvenom(s,a.effect,Actors),false);unchanged();eq(t.statuses.artifact,1)
         eq(Triggers.onAttack(s,s.player,t,1,"NORMAL"),nil)
     end
 end)

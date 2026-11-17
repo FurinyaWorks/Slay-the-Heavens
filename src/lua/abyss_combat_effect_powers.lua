@@ -114,7 +114,7 @@ end
 function Handlers.cardTriggerPoison(c)
     local state=c.state
     local effect=c.effect
-    require('abyss_card_triggers').resolveEnvenom(state,effect);return true
+    require('abyss_card_triggers').resolveEnvenom(state,effect,Actors);return true
 end
 
 function Handlers.cardTriggerDamageAll(c)

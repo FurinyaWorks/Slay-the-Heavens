@@ -2,11 +2,14 @@
 -- Shared cards are registered after character preparation; class pools stay intact.
 local Actors=require('abyss_actor')
 local Random=require('abyss_sts_random')
+local Hooks=require('abyss_combat_card_hooks').colorless
 local Catalog=require('abyss_colorless_catalog')
 local function catalogIndex(_,key)
+    if key=='endOwnerTurn'or key=='debuffApplied'then return Hooks[key]end
     if key=='withCards' or key=='powerIcon' or key=='powerDescription' then return Catalog[key] end
 end
 local function catalogNewIndex(self,key,value)
+    if key=='endOwnerTurn'or key=='debuffApplied'then Hooks[key]=value;return end
     if key=='withCards' or key=='powerIcon' or key=='powerDescription' then Catalog[key]=value
     else rawset(self,key,value) end
 end
@@ -16,7 +19,7 @@ local function e(kind,value,extra)
     for k,v in pairs(extra or {})do out[k]=v end
     return out
 end
-local function actions()return require('abyss_card_actions')end
+local function actions()return require('abyss_combat_reactions')end
 function M.adapt(state,instance,d)
     local first=type(d.effects)=='table' and d.effects[1]
     if type(first)=='table' then
@@ -43,42 +46,65 @@ function M.canUse(state,d)
     end
     return true
 end
+local descriptionLabels={weak='虚弱',vulnerable='易伤',strength='力量',artifact='人工制品',intangible='无实体',no_block='无法从卡牌获得格挡',magnetism='每回合开始生成无色牌',mayhem='每回合开始自动打出抽牌堆顶牌',sadistic_nature='施加减益时造成伤害'}
+local function describeBasicEffect(d,f,n,dynamic)
+    if f.op=='damage'or f.op=='damageAll'then
+        if d.id=='mind_blast' and not dynamic then return '造成等同于抽牌堆张数的伤害'
+        else return '造成'..n..'点伤害'..(f.op=='damageAll'and '（全体敌人）'or '') end
+    elseif f.op=='block'then return '获得'..n..'点格挡'
+    elseif f.op=='draw'then return '抽'..n..'张牌'
+    elseif f.op=='heal'then return '回复'..n..'点生命'
+    elseif f.op=='loseHp'then return '失去'..n..'点生命'
+
+    end
+end
+local function describeStatusEffect(f,n)
+    if f.op=='gainStatus'then return '获得'..n..'层'..assert(descriptionLabels[f.status])
+    elseif f.op=='applyStatus'or f.op=='applyStatusAll'then return '施加'..n..'层'..assert(descriptionLabels[f.status])..(f.op=='applyStatusAll'and '（全体敌人）'or '')
+    elseif f.op=='handToDraw'then return '将一张手牌放到抽牌堆顶'
+
+    end
+end
+local function describePreparation(k,f,n)
+    if k=='apotheosis'then return '升级本场战斗所有牌'
+    elseif k=='shackles'then return '目标本回合失去'..n..'点力量'
+    elseif k=='deepBreath'then return '将弃牌洗入抽牌堆'
+    elseif k=='discovery'then return '从三张随机牌中选一张入手，本回合费用为0'
+    elseif k=='enlightenment'then return '手牌费用高于1的降至1，持续'..(f.value==1 and '本场战斗'or '本回合')
+    elseif k=='forethought'then return '将'..(f.value==1 and '任意张手牌'or '一张手牌')..'置于牌底，下次打出免费'
+
+    end
+end
+local function describeGeneration(k,f,n,i,dynamic)
+    if k=='impatience'then return '手牌没有攻击牌时抽'..n..'张牌'
+    elseif k=='generateColorless'then return '生成'..n..'张随机无色牌入手'
+    elseif k=='generateDraw'then return '生成'..n..'张随机'..(f.cardType=='skill'and '技能'or '攻击')..'牌洗入抽牌堆，本场费用为0'
+    elseif k=='madness'then return '随机一张手牌的费用在本场战斗降为0'
+    elseif k=='purity'then return '选择至多'..n..'张手牌消耗'
+    elseif k=='greed'then return '造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.value))..'点伤害；击杀非召唤敌人获得'..tostring(f.value)..'金币'
+    elseif k=='ritual'then return '造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.damage))..'点伤害；击杀非召唤敌人永久增加'..tostring(f.value)..'点伤害'
+
+    end
+end
+local function describeDelayedEffect(k,f,n)
+    if k=='panache'then return '每回合每打出五张牌，对全体敌人造成'..n..'点伤害'
+    elseif k=='secret'then return '从抽牌堆选择一张'..(f.cardType=='skill'and '技能'or '攻击')..'牌入手'
+    elseif k=='bomb'then return '第三次己方回合结束时，对全体敌人造成'..n..'点伤害'
+    elseif k=='transmutation'then return '生成X张随机无色牌'..(f.value==1 and '并升级'or '')..'入手，本回合费用为0'
+    elseif k=='violence'then return '随机将抽牌堆'..n..'张攻击牌加入手牌'
+    end
+end
+local function describeColorlessEffect(f,n,i,dynamic)
+    local k=f.kind
+    return describePreparation(k,f,n) or describeGeneration(k,f,n,i,dynamic)
+        or describeDelayedEffect(k,f,n)
+end
 function M.describe(d,dynamic)
-    local parts={};local labels={weak='虚弱',vulnerable='易伤',strength='力量',artifact='人工制品',intangible='无实体',no_block='无法从卡牌获得格挡',magnetism='每回合开始生成无色牌',mayhem='每回合开始自动打出抽牌堆顶牌',sadistic_nature='施加减益时造成伤害'}
+    local parts={}
     for i,f in ipairs(d.effects)do
         local n=dynamic and ('{effects.'..(i-1)..'.value}')or tostring(f.value)
-        local text
-        if f.op=='damage'or f.op=='damageAll'then
-            if d.id=='mind_blast' and not dynamic then text='造成等同于抽牌堆张数的伤害'
-            else text='造成'..n..'点伤害'..(f.op=='damageAll'and '（全体敌人）'or '') end
-        elseif f.op=='block'then text='获得'..n..'点格挡'
-        elseif f.op=='draw'then text='抽'..n..'张牌'
-        elseif f.op=='heal'then text='回复'..n..'点生命'
-        elseif f.op=='loseHp'then text='失去'..n..'点生命'
-        elseif f.op=='gainStatus'then text='获得'..n..'层'..assert(labels[f.status])
-        elseif f.op=='applyStatus'or f.op=='applyStatusAll'then text='施加'..n..'层'..assert(labels[f.status])..(f.op=='applyStatusAll'and '（全体敌人）'or '')
-        elseif f.op=='handToDraw'then text='将一张手牌放到抽牌堆顶'
-        elseif f.op=='colorless'then
-            local k=f.kind
-            if k=='apotheosis'then text='升级本场战斗所有牌'
-            elseif k=='shackles'then text='目标本回合失去'..n..'点力量'
-            elseif k=='deepBreath'then text='将弃牌洗入抽牌堆'
-            elseif k=='discovery'then text='从三张随机牌中选一张入手，本回合费用为0'
-            elseif k=='enlightenment'then text='手牌费用高于1的降至1，持续'..(f.value==1 and '本场战斗'or '本回合')
-            elseif k=='forethought'then text='将'..(f.value==1 and '任意张手牌'or '一张手牌')..'置于牌底，下次打出免费'
-            elseif k=='impatience'then text='手牌没有攻击牌时抽'..n..'张牌'
-            elseif k=='generateColorless'then text='生成'..n..'张随机无色牌入手'
-            elseif k=='generateDraw'then text='生成'..n..'张随机'..(f.cardType=='skill'and '技能'or '攻击')..'牌洗入抽牌堆，本场费用为0'
-            elseif k=='madness'then text='随机一张手牌的费用在本场战斗降为0'
-            elseif k=='purity'then text='选择至多'..n..'张手牌消耗'
-            elseif k=='greed'then text='造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.value))..'点伤害；击杀非召唤敌人获得'..tostring(f.value)..'金币'
-            elseif k=='ritual'then text='造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.damage))..'点伤害；击杀非召唤敌人永久增加'..tostring(f.value)..'点伤害'
-            elseif k=='panache'then text='每回合每打出五张牌，对全体敌人造成'..n..'点伤害'
-            elseif k=='secret'then text='从抽牌堆选择一张'..(f.cardType=='skill'and '技能'or '攻击')..'牌入手'
-            elseif k=='bomb'then text='第三次己方回合结束时，对全体敌人造成'..n..'点伤害'
-            elseif k=='transmutation'then text='生成X张随机无色牌'..(f.value==1 and '并升级'or '')..'入手，本回合费用为0'
-            elseif k=='violence'then text='随机将抽牌堆'..n..'张攻击牌加入手牌'end
-        end
+        local text=describeBasicEffect(d,f,n,dynamic) or describeStatusEffect(f,n)
+        if not text and f.op=='colorless'then text=describeColorlessEffect(f,n,i,dynamic)end
         parts[#parts+1]=assert(text,'missing colorless description: '..d.id)
     end
     if d.innate then parts[#parts+1]='固有'end
@@ -105,26 +131,8 @@ function M.startTurn(state,onlyReset)
         actions().enqueue(state,e(id=='magnetism'and 'generateColorless'or 'mayhem',p.statuses[id]))
     end
 end
-function M.endOwnerTurn(state,actor)
-    if (actor.statuses.shackled or 0)>0 then
-        local amount=actor.statuses.shackled
-        Actors.applyPower(state,actor,'strength',amount,actor)
-        actor.statuses.shackled=nil;require('abyss_power_schedule').remove(state,actor,'shackled')
-    end
-    if actor~=state.player then return end
-    for _,bomb in ipairs(state.colorlessBombs or {})do
-        if bomb.turns>0 then
-            bomb.turns=bomb.turns-1;actor.statuses[bomb.id]=bomb.turns>0 and bomb.turns or nil
-            if bomb.turns==0 then actions().enqueue(state,{op='damageAll',value=bomb.damage,fixed=true})end
-        end
-    end
-end
-function M.debuffApplied(state,target,id,amount,source)
-    local n=state.player.statuses.sadistic_nature or 0
-    if n<=0 or source~=state.player or target==state.player or id=='shackled'then return end
-    local debuff=target.statusDefinitions[id].kind=='debuff'or (id=='strength'or id=='dexterity')and amount<=0
-    if debuff then actions().enqueue(state,{op='colorless',kind='sadisticDamage',value=n},state.player,target)end
-end
+
+
 local function remove(pile,uid)
     for i,c in ipairs(pile)do if c.uid==uid then return table.remove(pile,i)end end
 end
@@ -146,7 +154,7 @@ local function generate(combat,state,kind,count,pile,upgraded,permanentZero,turn
     local ids=pool(state,kind)
     local generated={}
     for _=1,count do
-        local c=actions().fresh(combat,state,ids[combat.cardRandom(state,#ids)])
+        local c=combat.freshCard(state,ids[combat.cardRandom(state,#ids)])
         if upgraded or (state.player.statuses.master_reality or 0)>0 then combat.upgrade(state,c)end
         if permanentZero and combat.combatBaseCost(state,c)>0 then c.costOverride=0;c.costForTurn=0
         elseif turnZero then c.costForTurn=0 end
@@ -157,7 +165,7 @@ local function generate(combat,state,kind,count,pile,upgraded,permanentZero,turn
     for _,c in ipairs(generated)do
         if pile=='draw'then
             if #state.draw==0 then state.draw[1]=c else table.insert(state.draw,combat.cardRandom(state,#state.draw),c)end
-        else actions().toHand(state,c)end
+        else combat.moveCardToHand(state,c)end
     end
 end
 local function eligible(state,kind,cardType)
@@ -175,9 +183,9 @@ local function secretOrder(state,uids)
 end
 local function applySelected(combat,state,item,uid)
     local kind=item.effect.kind
-    if kind=='secret'then actions().toHand(state,assert(remove(state.draw,uid),'stale secret choice'))
+    if kind=='secret'then combat.moveCardToHand(state,assert(remove(state.draw,uid),'stale secret choice'))
     elseif kind=='purity'then
-        local c=assert(remove(state.hand,uid),'stale purity choice');actions().exhaust(combat,state,c)
+        local c=assert(remove(state.hand,uid),'stale purity choice');combat.exhaustCard(state,c)
     elseif kind=='forethought'then
         local c=assert(remove(state.hand,uid),'stale forethought choice')
         if combat.combatBaseCost(state,c)>0 then c.freeToPlayOnce=true end
@@ -204,11 +212,11 @@ function M.choose(combat,state,token,uid)
     if choice.multiple and uid==0 then
         state.pendingChoice=nil
         for _,id in ipairs(choice.selected)do applySelected(combat,state,choice.item,id)end
-        actions().drain(combat,state);return true
+        combat.drainCardActions(state);return true
     end
     if not valid[uid]then return false,'invalid_card_choice'end
     if not choice.multiple then
-        state.pendingChoice=nil;applySelected(combat,state,choice.item,uid);actions().drain(combat,state);return true
+        state.pendingChoice=nil;applySelected(combat,state,choice.item,uid);combat.drainCardActions(state);return true
     end
     for i,id in ipairs(choice.selected)do if id==uid then
         table.remove(choice.selected,i);state.choiceSerial=state.choiceSerial+1;choice.token=state.choiceSerial;return true
@@ -249,7 +257,7 @@ function actionHandlers.enlightenment(combat,state,_,a)
     end
 end
 function actionHandlers.discovery(_,state)
-    require('abyss_card_actions').enqueueReaction(state,{op='discover',value=1,exclude='discovery'},true)
+    actions().enqueueReaction(state,{op='discover',value=1,exclude='discovery'},true)
 end
 actionHandlers.purity=select
 actionHandlers.secret=select
@@ -307,7 +315,7 @@ function actionHandlers.violence(combat,state,_,a)
     end end
     for _=1,a.value do if #tmp>0 then
         Random.shuffle(assert(state.shuffleRng,'Violence needs shuffle stream'),tmp)
-        local c=table.remove(tmp,1);remove(state.draw,c.uid);actions().toHand(state,c)
+        local c=table.remove(tmp,1);remove(state.draw,c.uid);combat.moveCardToHand(state,c)
     end end
 end
 function actionHandlers.panache(_,state,_,a)
@@ -344,7 +352,7 @@ local function rewardGreed(combat,state,a)
         state.player.gold=state.player.gold+a.value
         if state.scoreStats then state.scoreStats.goldGained=state.scoreStats.goldGained+a.value end
         require('abyss_act2_event_relics').gainGold(state,a.value,function(n)
-            return actions().apply(combat,state,{effect={op='heal',value=n},source=state.player})
+            return combat.applyCardAction(state,{effect={op='heal',value=n},source=state.player})
         end)
         require('abyss_events').emit(state,'gold',{amount=a.value,source='hand_of_greed'})
     end

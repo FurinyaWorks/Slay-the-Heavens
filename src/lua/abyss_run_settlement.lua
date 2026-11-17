@@ -19,7 +19,7 @@ function M.install(Run, shared)
     local find,amount=shared.find,shared.amount
     local endingQualified,endingRoom=shared.endingQualified,shared.endingRoom
     local function combatEndHealing(run)
-        require('abyss_uncommon_relics').battleEnd(run)
+        require('abyss_uncommon_relics').battleEnd(run,Run)
         for _,id in ipairs(run.relics)do
             local relic=find(run.data.relics.relics,id)
             if RelicHooks.localId(id)=='face_of_cleric'then

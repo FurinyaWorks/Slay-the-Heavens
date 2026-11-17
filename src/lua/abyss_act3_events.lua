@@ -66,25 +66,7 @@ function M.options(run,event)
  end
  return rows
 end
-function M.choose(run,flow,choice,uid)
- if flow.event.id=='mind_bloom'then return MindBloom.choose(run,flow,choice,uid)end
- if flow.event.id=='mysterious_sphere'then return Sphere.choose(run,flow,choice,uid)end
- if flow.event.id=='tomb_red_mask'then return Tomb.choose(run,flow,choice,uid)end
- if flow.event.id=='sensory_stone'then return Sensory.choose(run,flow,choice,uid)end
- if flow.event.id=='winding_halls'then return Winding.choose(run,flow,choice,uid)end
- if flow.event.id=='moai_head'then return Moai.choose(run,flow,choice,uid)end
- local event=flow.event
- if event.id~='falling' or run.act~=3 then return false,'invalid_event_choice'end
- if event.stage=='intro'then
-  if choice~='continue' or uid~=nil then return false,'invalid_event_choice'end
-  event.stage,event.body='choice','你必须舍弃其中一张卡牌，才能继续前进。';return true,'pending'
- elseif event.stage=='result'then
-  if choice~='leave' or uid~=nil then return false,'invalid_event_choice'end
-  return true,'complete'
- elseif event.stage~='choice'then return false,'invalid_event_choice'end
- if choice=='escape' and not any(event) and uid==nil then
-  event.stage,event.body='result','你稳住了身形，没有失去卡牌。';return true,'pending'
- end
+local function chooseFallingCard(run,event,choice,uid)
  local selected=event.candidates[choice]
  if not selected then return false,'event_condition_unmet'end
  if uid~=nil and uid~=selected.uid then return false,'stale_event_card'end
@@ -96,5 +78,28 @@ function M.choose(run,flow,choice,uid)
  event.removedCard,event.removedUid=Copy(removed),removed.uid
  event.stage,event.body='result','你舍弃了「'..d.name..(removed.upgraded and '＋' or '')..'」。'
  return true,'pending'
+end
+local function chooseFalling(run,event,choice,uid)
+ if event.id~='falling' or run.act~=3 then return false,'invalid_event_choice'end
+ if event.stage=='intro'then
+  if choice~='continue' or uid~=nil then return false,'invalid_event_choice'end
+  event.stage,event.body='choice','你必须舍弃其中一张卡牌，才能继续前进。';return true,'pending'
+ elseif event.stage=='result'then
+  if choice~='leave' or uid~=nil then return false,'invalid_event_choice'end
+  return true,'complete'
+ elseif event.stage~='choice'then return false,'invalid_event_choice'end
+ if choice=='escape' and not any(event) and uid==nil then
+  event.stage,event.body='result','你稳住了身形，没有失去卡牌。';return true,'pending'
+ end
+ return chooseFallingCard(run,event,choice,uid)
+end
+function M.choose(run,flow,choice,uid)
+ if flow.event.id=='mind_bloom'then return MindBloom.choose(run,flow,choice,uid)end
+ if flow.event.id=='mysterious_sphere'then return Sphere.choose(run,flow,choice,uid)end
+ if flow.event.id=='tomb_red_mask'then return Tomb.choose(run,flow,choice,uid)end
+ if flow.event.id=='sensory_stone'then return Sensory.choose(run,flow,choice,uid)end
+ if flow.event.id=='winding_halls'then return Winding.choose(run,flow,choice,uid)end
+ if flow.event.id=='moai_head'then return Moai.choose(run,flow,choice,uid)end
+ return chooseFalling(run,flow.event,choice,uid)
 end
 return M

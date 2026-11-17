@@ -68,7 +68,7 @@ local function beginQueuedPlay(state, uid, targetIndex, instance, position, card
     local triggerActive=#triggerPlan.top+#triggerPlan.beforeUse+#triggerPlan.afterUse>0
         or (state.player.statuses.envenom or 0)>0
     local advanced=Effects.requiresQueue(card.effects) or card.experimental==true or require('abyss_hp_loss').requiresQueue(state) or triggerActive
-    local effects=require('abyss_defect_final_cards').prepareEffects(state,copy(card.effects))
+    local effects=require('abyss_defect_final_cards').prepareEffects(state,copy(card.effects),require('abyss_combat'))
     for _,effect in ipairs(effects)do
         if (effect.op=='applyStatus' or effect.op=='applyStatusAll') and effect.status=='poison'
             or effect.op=='cripplingPoison' then effect.poisonBonus=Actors.poisonBonus(state,target,state.player) end

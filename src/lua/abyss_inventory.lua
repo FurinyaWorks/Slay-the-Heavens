@@ -1,6 +1,5 @@
 -- Inventory effects use combat actors and data, with fixed potion/relic damage and block.
 -- Callers execute on an uncommitted battle: a refusal may discard this candidate safely.
-local Combat = require("abyss_combat")
 local Actors = require("abyss_actor")
 local RelicHooks = require('abyss_relic_combat_hooks')
 local RelicHooksQueries=require('abyss_relic_queries').hooks
@@ -123,18 +122,18 @@ function M.opening(definitions, owned, persistentCounters, context)
     return opening
 end
 
-function M.applyOpening(state, groups)
+function M.applyOpening(state, groups, Combat)
     if groups.relics then
         RelicHooks.bindBattle(state,groups.relics,groups.relicCounters)
-        RelicHooks.preBattle(state,groups.relicContext)
+        RelicHooks.preBattle(state,groups.relicContext,Combat)
         if RelicHooksQueries.owns(state,'enchiridion')then
             require('abyss_act2_event_relics').preBattle(Combat,state,require('abyss_card_actions'),require('abyss_card_capability').isImplemented)
         end
     end
     for _, effects in ipairs(groups) do
-        if effects[1] and effects[1].op=='relic_hook' then RelicHooks.battleStart(state,effects[1].id)
+        if effects[1] and effects[1].op=='relic_hook' then RelicHooks.battleStart(state,effects[1].id,Combat)
         else
-            local ok, reason = M.apply(state, effects)
+            local ok, reason = M.apply(state, effects,nil,nil,nil,Combat)
             if not ok then return false, reason end
         end
     end
@@ -229,7 +228,7 @@ function effectHandlers.generatePotions(state,_,_,run)
     end
 end
 
-function effectHandlers.channelOrb(state,effect)
+function effectHandlers.channelOrb(state,effect,_,_,_,_,Combat)
     require("abyss_orbs").channel(state, effect.orb, Combat)
 end
 
@@ -240,11 +239,11 @@ function effectHandlers.makeMiracle(state)
     require("abyss_events").emit(state,"cards_created",{cardId="miracle",amount=1})
 end
 
-function effectHandlers.damage(state,_,target,_,_,value)
+function effectHandlers.damage(state,_,target,_,_,value,Combat)
     Combat.damage(state, state.player, target, value, true)
 end
 
-function effectHandlers.damageAll(state,_,_,_,_,value)
+function effectHandlers.damageAll(state,_,_,_,_,value,Combat)
     -- Explosive Potion: pure matrix, null owner, NORMAL damage.
     -- A missing owner prevents Curl Up, Angry, Plated Armor and Thorns
     -- callbacks, rather than misclassifying the hit as Fire/THORNS.
@@ -255,7 +254,7 @@ function effectHandlers.damageAll(state,_,_,_,_,value)
     Actors.resolveDamageReactions(state, reactions)
 end
 
-function effectHandlers.block(state,_,_,_,_,value)
+function effectHandlers.block(state,_,_,_,_,value,Combat)
     if state.player.block + 0.0 + value > maximum then return false, "effect_overflow" end
     Combat.block(state, state.player, value, true)
 end
@@ -278,11 +277,11 @@ function effectHandlers.increaseMaxHp(state,_,_,run,op,value)
     if not called then return false, amount end
     if state.originalV4 then
         state.player.hp=beforeHp
-        local actual=require('abyss_original_v4_health').heal(state,state.player,amount,nil,'increaseMaxHp')
-        if actual==0 then RelicHooks.hpChanged(state,state.player,beforeHp)end
+        local actual=require('abyss_original_v4_health').heal(state,state.player,amount,nil,'increaseMaxHp',Actors)
+        if actual==0 then RelicHooks.hpChanged(state,state.player,beforeHp,nil,Actors)end
     else
     require('abyss_events').emit(state,'heal',{target=state.player.id,amount=amount})
-    RelicHooks.hpChanged(state,state.player,beforeHp)
+    RelicHooks.hpChanged(state,state.player,beforeHp,nil,Actors)
     end
 end
 
@@ -298,7 +297,7 @@ function effectHandlers.escape(state)
     state.smoked=true
 end
 
-function effectHandlers.playTopCards(state,_,_,_,_,value)
+function effectHandlers.playTopCards(state,_,_,_,_,value,Combat)
     local Actions=require('abyss_card_actions')
     local pool={}
     for i,enemy in ipairs(state.enemies) do if Actors.isActive(enemy) then pool[#pool+1]=i end end
@@ -310,7 +309,7 @@ function effectHandlers.playTopCards(state,_,_,_,_,value)
     end
 end
 
-function effectHandlers.upgradeHand(state)
+function effectHandlers.upgradeHand(state,_,_,_,_,_,Combat)
     for _, card in ipairs(state.hand) do
         if Combat.canUpgrade(state, card) then Combat.upgrade(state, card) end
     end
@@ -348,7 +347,7 @@ effectHandlers.discardRedraw=effectHandlers.exhaustMany
 effectHandlers.discardToHand=effectHandlers.exhaustMany
 effectHandlers.applyStatus=effectHandlers.gainStatus
 
-function M.apply(state, effects, targetIndex, run, deferDrain)
+function M.apply(state, effects, targetIndex, run, deferDrain, Combat)
     local ok, reason = validate(state, effects, targetIndex)
     if not ok then return false, reason end
     local target = state.enemies[targetIndex]
@@ -356,7 +355,7 @@ function M.apply(state, effects, targetIndex, run, deferDrain)
         local op, value = effect.op, effect.value
         local handler = effectHandlers[op]
         if handler then
-            local called, failure = handler(state,effect,target,run,op,value)
+            local called, failure = handler(state,effect,target,run,op,value,Combat)
             if called == false then return false, failure end
         end
     end

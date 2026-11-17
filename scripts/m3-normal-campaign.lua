@@ -57,7 +57,7 @@ local function play(seed)
  while (run.phase~='defeat' and run.phase~='victory' or Pending.owner(run)) and actions<3000 do
   actions=actions+1
   local pendingToken,pendingDetails=RelicChoices.choose(run,Policy.scoreCard)
-  if pendingToken then command('mandatory_relic_choice',function()return Pending.resolve(run,pendingToken)end,pendingDetails)
+  if pendingToken then command('mandatory_relic_choice',function()return Pending.resolve(run,pendingToken,Run)end,pendingDetails)
   elseif run.phase=='act_transition'then command('advance_act',function()return Nodes.advanceAct(run,map)end);done={}
   elseif run.phase=='combat'then
    local choice=run.combat.pendingChoice

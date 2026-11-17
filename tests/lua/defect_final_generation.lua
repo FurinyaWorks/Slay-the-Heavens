@@ -3,7 +3,7 @@ local C,A,P,D,R=require('abyss_combat'),require('abyss_card_actions'),require('a
 local data=P.prepare(D,'defect');local Final=require('abyss_defect_final_cards')
 local function setup()return C.new(data,{deck={},enemies={'cultist'},seed=42,orbSlots=3,cardRandomSeed='17',shuffleSeed='17'})end
 local function play(s,id,up)local c=A.fresh(C,s,id);c.upgraded=up;s.hand={c};s.energy=10;assert(C.play(s,c.uid));return c end
-local s=setup();local common=Final.pool(s,'common');local power=Final.pool(s,'power')
+local s=setup();local common=Final.pool(s,'common',require('abyss_combat'));local power=Final.pool(s,'power',require('abyss_combat'))
 assert(#common==18 and #power==13 and common[4]=='recursion' and power[1]=='defragment' and power[13]=='creative_ai')
 for _,id in ipairs(power)do assert(id~='self_repair')end
 for _,up in ipairs({false,true})do

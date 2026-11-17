@@ -141,7 +141,7 @@ for _,mode in ipairs({'native','shared','orb'})do
    else AQ.start(s,{{kind='effect',effect={op='heal',value=30}}});AQ.run(s,{
     effect=function(state,item)C.applyEffects(state,{item.effect},state.player);return true end})end
    eq(s.player.hp,50);eq(s.player.statuses.strength,0);eq(s.relicCombat.redSkullActive,false)
-   assert(I.apply(s,{{op='increaseMaxHp',value=4}}));eq(s.player.hp,54);eq(s.player.maxHp,84)
+   assert(I.apply(s,{{op='increaseMaxHp',value=4}},nil,nil,nil,require('abyss_combat')));eq(s.player.hp,54);eq(s.player.maxHp,84)
    H.battleStart(s,'blood_vial');eq(s.player.hp,56)
    A.addStatus(s.player,'regen',2);A.endTurn(s,s.player);eq(s.player.hp,58)
   end)

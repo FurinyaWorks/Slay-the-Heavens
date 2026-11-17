@@ -4,7 +4,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { generatedRuntimeModules } from './build-native-candidate.mjs';
 import { sha256 } from './evidence-files.mjs';
-import { discoverSources, architectureSources } from './lua-quality-metrics.mjs';
+import { discoverSources, architectureSources, dependencyCycles } from './lua-quality-metrics.mjs';
 
 // Resolve statically visible initialization calls, not arbitrary Lua execution.
 // Only single-write locals assigned by their declaring function before the
@@ -174,6 +174,11 @@ export function analyzeSources(sources,policy,generated=generatedRuntimeModules,
     active.delete(name);done.add(name);
   }
   nodes.forEach(name=>cycle(name));
+  if(policy.fullDependencyAcyclic!==undefined&&typeof policy.fullDependencyAcyclic!=='boolean')
+    policyError('fullDependencyAcyclic must be a boolean');
+  if(policy.fullDependencyAcyclic===true)for(const component of dependencyCycles(nodes,edges))
+    errors.push({file:sourceFile(component.members[0]),line:1,
+      message:`Full dependency cycle (including deferred imports): ${component.members.join(' -> ')}`});
   return {schemaVersion:1,parser:'luaparse@0.3.1',sourceHashes:Object.fromEntries(nodes.map(name=>[name,sha256(sources[name])])),nodes,edges,errors};
 }
 export function checkArchitecture(root=process.cwd()) {

@@ -6,12 +6,16 @@ local R=S
 local boss,uncommon,rare,shop,common
 
 do
+local ActorHooks=require('abyss_relic_actor_hooks').boss
+local actorHookFields={wasHpLost=true}
 local Queries=require('abyss_relic_queries').boss
 local queryFields={canPlay=true,cardRewardCount=true,drawBonus=true,energyBonus=true,hidesIntents=true,localId=true,retainsHand=true}
 local function queryIndex(_,key)
+ if actorHookFields[key]then return ActorHooks[key]end
  if queryFields[key] then return Queries[key] end
 end
 local function queryNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value;return end
  if queryFields[key] then Queries[key]=value
  else rawset(self,key,value) end
 end
@@ -28,12 +32,7 @@ function M.onPlayCard(state)
   state.relicCounters.velvet_choker=math.min(6,(state.relicCounters.velvet_choker or 0)+1)
  end
 end
-function M.wasHpLost(state,actor,amount)
- if actor==state.player and amount>0 and owns(state,'runic_cube')then
-  local combat=false;for _,e in ipairs(state.enemies)do if A.isPresent(e)then combat=true;break end end
-  if combat then require('abyss_combat_reactions').enqueueReaction(state,{op='draw',value=1},true)end
- end
-end
+
 function M.preBattle(state,owner)
  if owns(owner or state,'snecko_eye')then A.applyPower(state,state.player,'confusion',1,state.player)end
 end
@@ -43,25 +42,29 @@ function M.onSpawnMonster(state,enemy)
   A.addStatus(enemy,'strength',1)
  end
 end
-function M.battleStart(state,id)
+function M.battleStart(state,id,combat)
  id=M.localId(id)
  if id=='philosophers_stone'then for _,enemy in ipairs(state.enemies)do M.onSpawnMonster(state,enemy)end
  elseif id=='mark_of_pain'then
   -- This hook is dispatched by the already ordered after-draw opening group.
   -- Use the native MakeTempCard helper, whose random spot excludes the top
   -- slot exactly as CardGroup.addToRandomSpot does in the pinned source.
-  require('abyss_build_actions').makeCard(state,{cardId='wound',value=2,pile='draw',randomSpot=true})
+  combat.makeTemporaryCard(state,{cardId='wound',value=2,pile='draw',randomSpot=true})
  else error('unsupported boss battle hook '..tostring(id))end
 end
 end
 
 do
+local ActorHooks=require('abyss_relic_actor_hooks').uncommon
+local actorHookFields={onMonsterDeath=true,wasHpLost=true,vulnerablePercent=true}
 local Queries=require('abyss_relic_queries').uncommon
 local queryFields={isBottled=true,localId=true,owns=true,rewardCardCount=true}
 local function queryIndex(_,key)
+ if actorHookFields[key]then return ActorHooks[key]end
  if queryFields[key] then return Queries[key] end
 end
 local function queryNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value;return end
  if queryFields[key] then Queries[key]=value
  else rawset(self,key,value) end
 end
@@ -135,29 +138,24 @@ function M.onUseCard(state,definition,instance,combat)
  end
  return out
 end
-function M.onMonsterDeath(state,enemy)
- if not M.owns(state,'gremlin_horn')or enemy.hp~=0 then return {}end
- for _,other in ipairs(state.enemies)do
-  if other~=enemy and require('abyss_actor').isPresent(other)and not other.isDying then return {effect('energy',1),effect('draw',1)}end
- end
- return {}
-end
-function M.wasHpLost(state,actor,amount)
- if actor==state.player and amount>0 and M.owns(state,'self_forming_clay')then return {effect('gainStatus',3,{status='next_turn_block'})}end
- return {}
-end
+
+
 function M.strikeBonus(owner,definition)return definition.strikeTag and M.owns(owner,'strike_dummy')and 3 or 0 end
-function M.vulnerablePercent(owner,target)if target~=owner.player and M.owns(owner,'paper_frog')then return 175 end end
+
 function M.canPlayCurse(owner,definition)return definition.type=='curse'and M.owns(owner,'blue_candle')end
 end
 
 do
+local ActorHooks=require('abyss_relic_actor_hooks').rare
+local actorHookFields={blockPower=true,onVulnerableApplied=true,onAttacked=true,blockAtTurnStart=true}
 local Queries=require('abyss_relic_queries').rare
 local queryFields={canSpawn=true,extraCardRewards=true,localId=true,owns=true}
 local function queryIndex(_,key)
+ if actorHookFields[key]then return ActorHooks[key]end
  if queryFields[key] then return Queries[key] end
 end
 local function queryNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value;return end
  if queryFields[key] then Queries[key]=value
  else rawset(self,key,value) end
 end
@@ -238,17 +236,10 @@ function M.onRefreshHand(s,canDraw)
  end
  return false
 end
-function M.blockPower(s,target,id)
- return target==s.player and (id=='weak'and owns(s,'ginger')or id=='frail'and owns(s,'turnip'))or false
-end
-function M.onVulnerableApplied(s,target)
- if target~=s.player and owns(s,'champion_belt')then enqueue(s,{op='rareRelicWeak',targetId=target.id,value=1})end
-end
-function M.onAttacked(s,owner,damageType,amount)
- if owns(s,'torii')and owner~=nil and damageType=='normal'and amount>1 and amount<=5 then return 1 end
- return amount
-end
-function M.blockAtTurnStart(s,amount)return owns(s,'calipers')and math.max(0,amount-15)or 0 end
+
+
+
+
 function M.rechargeEnergy(s,base)return owns(s,'ice_cream')and s.energy+0.0+base or base end
 function M.modifyHealing(s,amount,inCombat)
  if owns(s,'magic_flower')and inCombat then return math.floor(S.float32(S.float32(amount)*1.5)+.5)end
@@ -324,12 +315,16 @@ end
 end
 
 do
+local ActorHooks=require('abyss_relic_actor_hooks').shop
+local actorHookFields={onBlockBroken=true}
 local Queries=require('abyss_relic_queries').shop
 local queryFields={aliases=true,drawOrderVisible=true,localId=true,owns=true,xBonus=true}
 local function queryIndex(_,key)
+ if actorHookFields[key]then return ActorHooks[key]end
  if queryFields[key] then return Queries[key] end
 end
 local function queryNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value;return end
  if queryFields[key] then Queries[key]=value
  else rawset(self,key,value) end
 end
@@ -358,12 +353,7 @@ function M.turnStartActions(state,singleId)
  end
  return actions
 end
-function M.onBlockBroken(state,target)
- if M.owns(state,'hand_drill')and target~=state.player then
-  require('abyss_combat_reactions').enqueueReaction(state,
-   {op='shopRelic',kind='handDrill',targetId=target.id},false)
- end
-end
+
 function M.onShuffle(state,effectsOnly)
  if M.owns(state,'the_abacus')then
   local effect={op='block',value=6,fixed=true,relic='the_abacus'}

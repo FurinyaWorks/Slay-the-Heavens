@@ -52,7 +52,7 @@ local function execute(s,items)
     action.targetId=nil
    end
    O.resolve(current,action,C)
-  elseif e.op=='makeTempCard'then Build.makeCard(current,e)
+  elseif e.op=='makeTempCard'then Build.makeCard(current,e,require('abyss_combat'))
   elseif e.op=='removeStatus' or e.op=='removeStatusPower' or e.op=='removeFlowPower'then remove(current,e.status)
   elseif e.op=='reduceFlowPower'then current.player.statuses[e.status]=current.player.statuses[e.status]-e.value
   elseif e.op=='loseEnergy'then current.energy=math.max(0,current.energy-e.value)
@@ -82,7 +82,7 @@ end
 
 test('pre Powers preserve actual acquisition order and ordinary Plasma comes last',function()
  local s=state();apply(s,'energy_down',1);apply(s,'berserk',2);apply(s,'next_turn_block',4)
- O.channel(s,'plasma',C);local before=s.energy;local plan=P.prepareStart(s)
+ O.channel(s,'plasma',C);local before=s.energy;local plan=P.prepareStart(s,require('abyss_combat'))
  eq(ops(plan),'loseEnergy,energy,block,removeStatus,orbStart');eq(s.energy,before);eq(s.player.block,0)
  execute(s,plan);eq(s.energy,before+2);eq(s.player.block,4);eq(s.player.statuses.next_turn_block,nil)
 end)
@@ -90,7 +90,7 @@ for _,first in ipairs({'bias','loop'})do
  test(first..' acquisition freezes old Focus for both Power slots before execution',function()
   local s=state();s.player.statuses.focus=3;require('abyss_focus').sync(s);O.channel(s,'frost',C)
   apply(s,first,1);apply(s,first=='bias' and 'loop' or 'bias',1)
-  local plan=P.prepareStart(s);eq(#plan,2);eq(s.player.statuses.focus,3)
+  local plan=P.prepareStart(s,require('abyss_combat'));eq(#plan,2);eq(s.player.statuses.focus,3)
   local orb=plan[first=='bias' and 2 or 1].effect;eq(orb.op,'orbStart');eq(orb.action.amount,5)
   execute(s,plan);eq(s.player.statuses.focus,2);eq(s.player.block,5)
  end)
@@ -98,14 +98,14 @@ end
 
 test('Loop Dark growth is synchronous while queued Bias loss has not applied',function()
  local s=state();s.player.statuses.focus=1;require('abyss_focus').sync(s);O.channel(s,'dark',C)
- apply(s,'bias',1);apply(s,'loop',2);local plan=P.prepareStart(s)
+ apply(s,'bias',1);apply(s,'loop',2);local plan=P.prepareStart(s,require('abyss_combat'))
  eq(s.orbs.balls[1].stored,20);eq(s.player.statuses.focus,1);eq(ops(plan),'gainStatus')
  execute(s,plan);eq(s.player.statuses.focus,nil);eq(s.orbs.balls[1].stored,20)
 end)
 
 test('legacy orb order is reused without inventing a relation to other Powers',function()
  local s=state();s.player.statuses.bias=1;s.player.statuses.loop=1;s.orbPowerOrder={'loop','bias'};O.channel(s,'frost',C)
- local plan=P.prepareStart(s);eq(ops(plan),'orbStart,gainStatus');eq(s.player.powerScheduleOrder,nil)
+ local plan=P.prepareStart(s,require('abyss_combat'));eq(ops(plan),'orbStart,gainStatus');eq(s.player.powerScheduleOrder,nil)
  s.player.statuses.berserk=1;eq(pcall(P.prepareStart,s),false)
 end)
 
@@ -118,14 +118,14 @@ test('generated Shiv and Smite execute later with real Accuracy and overflow rul
  local deck={};for i=1,10 do deck[i]='defend'end
  local s=state(deck);while #s.hand<9 do s.hand[#s.hand+1]=table.remove(s.draw)end
  apply(s,'accuracy',4);apply(s,'infinite_blades',2);apply(s,'battle_hymn',1)
- local plan=P.prepareStart(s);eq(#s.hand,9);eq(#s.discard,0);execute(s,plan)
+ local plan=P.prepareStart(s,require('abyss_combat'));eq(#s.hand,9);eq(#s.discard,0);execute(s,plan)
  eq(#s.hand,10);eq(#s.discard,2);eq(s.hand[10].cardId,'shiv');eq(s.hand[10].shivAccuracyBonus,4)
  eq(s.discard[1].cardId,'shiv');eq(s.discard[2].cardId,'smite');eq(s.discard[2].upgraded,false)
 end)
 
 test('Energized is immediate but its removal waits behind the complete pre queue',function()
  local s=state();apply(s,'berserk',2);apply(s,'energy_down',1);apply(s,'loop',1);apply(s,'energized',1)
- O.channel(s,'plasma',C);local pre=P.prepareStart(s);s.energy=3
+ O.channel(s,'plasma',C);local pre=P.prepareStart(s,require('abyss_combat'));s.energy=3
  local recharge=P.onEnergyRecharge(s);eq(s.energy,4);eq(s.player.statuses.energized,1)
  local all={};append(all,pre);append(all,recharge);execute(s,all)
  eq(s.energy,7);eq(s.player.statuses.energized,nil)
@@ -198,7 +198,7 @@ end)
 test('zero pre members retain source unconditional actions without family zero shortcuts',function()
  local s=state()
  for _,id in ipairs({'berserk','flame_barrier','next_turn_block','battle_hymn','energy_down','wrath_next_turn','bias'})do apply(s,id,0)end
- local pre=P.prepareStart(s)
+ local pre=P.prepareStart(s,require('abyss_combat'))
  eq(ops(pre),'energy,removeStatusPower,block,removeStatus,makeTempCard,loseEnergy,changeStance,removeFlowPower,gainStatus')
  execute(s,pre);eq(s.player.stance,'Wrath');eq(s.player.statuses.flame_barrier,nil);eq(s.player.statuses.next_turn_block,nil)
  eq(s.player.statuses.wrath_next_turn,nil);eq(s.player.statuses.focus,0)
@@ -226,13 +226,13 @@ end)
 
 test('dead player or finished battle creates no actions or constructor mutations',function()
  local s=state();apply(s,'loop',1);apply(s,'devotion',2);O.channel(s,'dark',C);s.player.hp=0
- eq(#P.prepareStart(s),0);eq(#P.onEnergyRecharge(s),0);eq(#P.preparePostDraw(s),0)
+ eq(#P.prepareStart(s,require('abyss_combat')),0);eq(#P.onEnergyRecharge(s),0);eq(#P.preparePostDraw(s),0)
  eq(s.orbs.balls[1].stored,6);eq(s.mantraGained,nil)
 end)
 
 test('combined plans are plain action data and never contain actor identities',function()
  local s=state();for _,id in ipairs({'loop','bias','battle_hymn','energized','collect','devotion','noxious_fumes'})do apply(s,id,1)end
- O.channel(s,'lightning',C);local all=P.prepareStart(s);append(all,P.onEnergyRecharge(s));append(all,P.preparePostDraw(s))
+ O.channel(s,'lightning',C);local all=P.prepareStart(s,require('abyss_combat'));append(all,P.onEnergyRecharge(s));append(all,P.preparePostDraw(s))
  noObjects(all,s);Q.start(s,all);eq(#s.actionQueue.actions,#all)
 end)
 test('one real data queue composes pre recharge tail normal Draw and post plans',function()
@@ -240,7 +240,7 @@ test('one real data queue composes pre recharge tail normal Draw and post plans'
  local s=state(deck);for _,c in ipairs(s.hand)do s.draw[#s.draw+1]=c end;s.hand={}
  apply(s,'energy_down',1);apply(s,'berserk',2);apply(s,'collect',1);apply(s,'energized',1)
  apply(s,'demon_form',3);apply(s,'devotion',2);apply(s,'brutality',1)
- local hp=s.player.hp;local pre=P.prepareStart(s);s.energy=3
+ local hp=s.player.hp;local pre=P.prepareStart(s,require('abyss_combat'));s.energy=3
  local recharge=P.onEnergyRecharge(s);local post=P.preparePostDraw(s)
  eq(s.energy,4);eq(s.mantraGained,2);eq(#s.hand,0);eq(s.player.statuses.strength,nil)
  local all={};append(all,pre);append(all,recharge)

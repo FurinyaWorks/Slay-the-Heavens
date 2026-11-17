@@ -6,8 +6,8 @@ local function test(name,f)f();n=n+1;print('PASS '..name)end
 local function battle(ids,counters)
  local opening=assert(I.opening(data.relics.relics,ids,counters))
  local s=assert(C.new(data,{seed=42,deck={'strike','defend','defend','defend','defend','defend','defend'},enemies={'cultist'},
-  beforeOpeningDraw=function(s)return I.applyOpening(s,opening.beforeDraw)end}))
- assert(I.applyOpening(s,opening.afterDraw));return s
+  beforeOpeningDraw=function(s)return I.applyOpening(s,opening.beforeDraw,require('abyss_combat'))end}))
+ assert(I.applyOpening(s,opening.afterDraw,require('abyss_combat')));return s
 end
 test('HappyFlower grants one energy on every third player turn and persists its counter',function()
  local s=battle({'happy_flower'},{happy_flower=0});assert(s.energy==3 and s.relicCounters.happy_flower==1)

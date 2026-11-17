@@ -77,7 +77,7 @@ local function validDrawQueue(queue)
 end
 
 local function resolve(state, selected, api, incrementFirst)
-    api = api or require("abyss_combat")
+    api = api or {}
     local energy, gains, draws = 0, {}, {}
     -- DiscardAction completes every move before its queued trigger actions run.
     -- Tactician adds to the front; Reflex appends to the back. For this final
@@ -157,7 +157,7 @@ function M.flushDraws(state, api)
     local queue = state.pendingDiscardDraws
     if queue == nil then return true end
     if not validDrawQueue(queue) then return false, "invalid_discard_draw_queue" end
-    api = api or require("abyss_combat")
+    api = api or {}
     if live(state) and #queue > 0 and type(api.draw) ~= "function" then return false, "missing_draw_api" end
     return transaction(state, function()
         state.pendingDiscardDraws = nil
@@ -197,7 +197,7 @@ function M.choose(state, uids, token, api)
     return resolve(state, selected, api)
 end
 
-function M.begin(state, count)
+function M.begin(state, count, api)
     if not live(state) then return false, "not_player_turn" end
     if M.active(state) then return false, "discard_pending" end
     if not integer(count, 0, 10) then return false, "invalid_discard_count" end
@@ -215,7 +215,7 @@ function M.begin(state, count)
             -- from the top, rather than pretending the player selected an order.
             local uids = {}
             for i = #handUids, 1, -1 do uids[#uids + 1] = handUids[i] end
-            local ok, reason = M.choose(state, uids, token)
+            local ok, reason = M.choose(state, uids, token, api)
             if not ok then error(reason, 0) end
             return true
         end

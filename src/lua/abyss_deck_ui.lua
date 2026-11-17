@@ -281,8 +281,17 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
     local function picture(control,id) control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
-    local function fill(control, instance, catalog)
-        require('abyss_page_reveal').registerSource(platform,'deckPanel')
+    local function paintDeckPalette(face,definition)
+        tint(face:GetChild("border"), Theme.color.rarity[definition.rarity] or Theme.color.line)
+        tint(face:GetChild("nameBand"), Theme.color.rarityBand[definition.rarity] or Theme.color.rarityBand.basic)
+        tint(face:GetChild("nameRule"), Theme.color.rarity[definition.rarity] or Theme.color.line)
+        tint(face:GetChild("artPlate"), Theme.color.cardType[definition.type] or Theme.color.panelRaised)
+    end
+    local function deckCardText(battle,display,definition,instance)
+        return battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
+            or CardDisplay.permanentText(display,definition,instance)
+    end
+    local function paintDeckCard(control,instance,catalog)
         local battle=(self.choiceToken or self.pileKind) and self.battle
         local definition = Combat.cardDefinition(battle or {catalog=catalog}, instance)
         local display = assert(presentation[instance.cardId], "missing deck presentation " .. instance.cardId)
@@ -298,16 +307,15 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
         face:GetChild("name").fontColor = colour(Theme.cardSkin.text.title)
         -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
-        local text=battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
-            or CardDisplay.permanentText(display,definition,instance)
+        local text=deckCardText(battle,display,definition,instance)
         CardDisplay.writeBody(face:GetChild("label"),text,face)
         if Theme.cardSkin.text.body then face:GetChild('label').fontColor=colour(Theme.cardSkin.text.body)end
         face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
-        tint(face:GetChild("border"), Theme.color.rarity[definition.rarity] or Theme.color.line)
-        tint(face:GetChild("nameBand"), Theme.color.rarityBand[definition.rarity] or Theme.color.rarityBand.basic)
-        tint(face:GetChild("nameRule"), Theme.color.rarity[definition.rarity] or Theme.color.line)
-        tint(face:GetChild("artPlate"), Theme.color.cardType[definition.type] or Theme.color.panelRaised)
+        paintDeckPalette(face,definition)
         CardDisplay.writeArt(face:GetChild("art"), definition, picture,face);CardDisplay.writeNativeArt(face,definition,display.nativeArt,platform,face:GetChild('art'),instance.uid)
+        return face,definition
+    end
+    local function paintDeckCardSkin(face,definition,instance,catalog)
         local printed=catalog.cards[instance.cardId]
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         local selected=false
@@ -318,9 +326,9 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             face:GetChild('glow'):SetVisible(false)
             face:GetChild('costHalo'):SetVisible(false)
         end
-        control:GetChild("uid").text = selected and '已选择' or ''
-        local hit=control:GetChild('hit')
-        hit:SetVisible(true)
+        return selected
+    end
+    local function bindDeckCard(control,hit)
         if not self.bindings[control] then
             -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
             self.bindings[control]={hit=hit}
@@ -346,12 +354,20 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 return control.alive~=false and self.visible and b~=nil and b.generation==self.generation
             end,10)
         end
+    end
+    local function fill(control, instance, catalog)
+        require('abyss_page_reveal').registerSource(platform,'deckPanel')
+        local face,definition=paintDeckCard(control,instance,catalog)
+        local selected=paintDeckCardSkin(face,definition,instance,catalog)
+        control:GetChild("uid").text = selected and '已选择' or ''
+        local hit=control:GetChild('hit')
+        hit:SetVisible(true)
+        bindDeckCard(control,hit)
         self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
         self.bindings[control].instance=Combat.copy(instance)
         control:SetVisible(true)
     end
-    -- Pure presentation projection. The permanent deck and the three combat
-    -- piles retain their UIDs, acquisition order and RNG state unchanged.
+
     local function sortKey(entry)
         local suffix=entry.card.upgraded and ('+'..(entry.definition.repeatable and tostring(entry.card.upgrades or 1) or '')) or ''
         local name=assert(presentation[entry.card.cardId],'missing deck name').name..suffix
@@ -482,10 +498,17 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
         root:GetChild('header'):SetVisible(not self.browserShell)
     end
-    function self.open(_, run, choice, onPick, pileKind)
-        if self.visible then return false end
-        self.openSession=self.openSession+1
-        self.generation = self.generation + 1
+    local function choiceDeckCards(run,choice)
+        local cards
+            cards=Combat.copy(choice.cards or {})
+            for _,uid in ipairs(choice.cards and {} or choice.uids) do
+                for _,pile in ipairs({run.combat.hand,run.combat.draw,run.combat.discard,run.combat.exhaust}) do
+                    for _,c in ipairs(pile) do if c.uid==uid then cards[#cards+1]=Combat.copy(c) end end
+                end
+            end
+        return cards
+    end
+    local function openDeckCards(run,choice,onPick,pileKind)
         -- A copied permanent instance never acquires temporary hand cost/growth/status.
         local cards, catalog = Combat.copy(run.deck), {cards={}}
         for _, card in ipairs(run.data.cards.cards) do catalog.cards[card.id] = card end
@@ -496,25 +519,10 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if Theme.presentationProfile=='official-assets-first' then root:GetChild('pileChrome'):GetChild('empty'):SetVisible(self.browserShell and #cards==0)end
         self.multiple,self.choiceSelected=choice and choice.multiple,choice and choice.selected
         self.optional=choice and choice.optional
-        if choice then
-            cards=Combat.copy(choice.cards or {})
-            for _,uid in ipairs(choice.cards and {} or choice.uids) do
-                for _,pile in ipairs({run.combat.hand,run.combat.draw,run.combat.discard,run.combat.exhaust}) do
-                    for _,c in ipairs(pile) do if c.uid==uid then cards[#cards+1]=Combat.copy(c) end end
-                end
-            end
-        end
-        self.visible,self.run,self.allCards,self.cards,self.catalog=true,run,cards,cards,catalog
-        self.browseEnabled=choice==nil
-        self.typeFilter='all'
-        restoreSort(run)
-        self.controllerPage=1
-        self.detailOnly,self.detailPages,self.cardDetail=nil,nil,nil
-        upgradePreview:SetVisible(false)
-        grid:SetVisible(true);details:SetVisible(false);detailHit:SetVisible(false)
-        self.indexBase, self.pending, self.calibrating = nil, false, true
-        root:SetVisible(true)
-        root:SetAsLastSibling()
+        if choice then cards=choiceDeckCards(run,choice) end
+        return cards,catalog
+    end
+    local function paintDeckOpening(choice,pileKind,cards)
         local prompts=choicePrompts(choice)
         self.listTitle=browserHeading(pileKind).." · "..#cards.." 张"
         if self.pileView then self.sortMode,self.sortAscending='original',true end
@@ -526,11 +534,32 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             root:GetChild('pileReturn'):SetVisible(self.browserShell)
         end
         if self.multiple then root:GetChild('title').text=root:GetChild('title').text..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '') end
+    end
+    local function paintDeckClosing(choice)
         root:GetChild("close"):SetVisible(not choice or self.multiple == true or self.optional==true)
         if self.browserShell then root:GetChild('close'):SetVisible(false)end
         local close=root:GetChild('close'):GetChild('hit')
         close.interactable=not choice or self.optional==true or self.multiple and (not choice.required or #choice.selected==choice.required) or false;close.raycastTarget=close.interactable
         for _,state in ipairs({'normal','hover','pressed','disabled'}) do close:GetChild(state):GetChild('label').text=self.optional and '跳过' or self.multiple and '确认选择' or '关闭' end
+    end
+    function self.open(_, run, choice, onPick, pileKind)
+        if self.visible then return false end
+        self.openSession=self.openSession+1
+        self.generation = self.generation + 1
+        local cards,catalog=openDeckCards(run,choice,onPick,pileKind)
+        self.visible,self.run,self.allCards,self.cards,self.catalog=true,run,cards,cards,catalog
+        self.browseEnabled=choice==nil
+        self.typeFilter='all'
+        restoreSort(run)
+        self.controllerPage=1
+        self.detailOnly,self.detailPages,self.cardDetail=nil,nil,nil
+        upgradePreview:SetVisible(false)
+        grid:SetVisible(true);details:SetVisible(false);detailHit:SetVisible(false)
+        self.indexBase, self.pending, self.calibrating = nil, false, true
+        root:SetVisible(true)
+        root:SetAsLastSibling()
+        paintDeckOpening(choice,pileKind,cards)
+        paintDeckClosing(choice)
         paintBrowse()
         refreshGrid()
         if self.browserShell then root:GetChild('pileReturn'):SetAsLastSibling()end

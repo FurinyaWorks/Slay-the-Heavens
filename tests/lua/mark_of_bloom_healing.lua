@@ -32,7 +32,7 @@ for _,id in ipairs({'none','mark_of_bloom','Mark of the Bloom'})do
   r.relics[#r.relics+1]='toy_ornithopter';H.onUsePotion(r);eq(r.hp,blocked and 20 or 40)
  end)
  test(id..' Strawberry equip keeps seven maximum HP',function()
-  local r=room(id);H.onEquip(r,'strawberry');eq(r.maxHp,87);eq(r.hp,blocked and 20 or 27)
+  local r=room(id);H.onEquip(r,'strawberry',nil,require('abyss_run'));eq(r.maxHp,87);eq(r.hp,blocked and 20 or 27)
  end)
  test(id..' Blood Vial real opening hook',function()
   local s=state(id);H.battleStart(s,'blood_vial');eq(s.player.hp,blocked and 20 or 22)
@@ -59,7 +59,7 @@ for _,id in ipairs({'none','mark_of_bloom','Mark of the Bloom'})do
  for _,role in ipairs({'HT','AR','FR','RD'})do
   test(id..' original '..role..' actual-heal ledger',function()
    local s=state(id);V4.init(s,role,require('abyss_original_v4_data').rules)
-   local amount=V4Health.heal(s,s.player,6,role=='AR' and 'burst' or nil,'mark_component')
+   local amount=V4Health.heal(s,s.player,6,role=='AR' and 'burst' or nil,'mark_component',A)
    eq(amount,blocked and 0 or 6);eq(s.player.hp,blocked and 20 or 26)
    eq(s.originalV4.healUsed,blocked and 0 or 6)
    if blocked then eq(s.originalV4.fan,0);eq(s.originalV4.fanGained,0)end

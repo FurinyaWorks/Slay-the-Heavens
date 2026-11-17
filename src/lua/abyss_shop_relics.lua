@@ -19,7 +19,6 @@ end
 local M=setmetatable({}, {__index=queryIndex,__newindex=queryNewIndex})
 function M.onEquip(run,id,api)
  id=M.aliases[id]or id
- api=api and api.openRewards and api or require('abyss_relic_choices').adapter()
  if id=='prismatic_shard' then
   if run.character~='defect'and (run.masterMaxOrbs or 0)==0 then run.masterMaxOrbs=1 end
  elseif id=='dollys_mirror' then
@@ -52,8 +51,7 @@ function M.chooseMirror(run,uid,api)
  if not choice or choice.kind~='copy'or choice.relic~='dollys_mirror'then return false,'no_shop_relic_choice'end
  local eligible=false;for _,id in ipairs(choice.uids)do if id==uid then eligible=true end end
  if not eligible then return false,'invalid_card_choice'end
- api=api or require('abyss_relic_choices').adapter()
- assert(type(api.obtainCardCopy)=='function','Dolly requires permanent card-copy adapter')
+ assert(api and type(api.obtainCardCopy)=='function','Dolly requires permanent card-copy adapter')
  local ok,why=api.obtainCardCopy(run,uid)
  if not ok then return false,why end
  run.shopRelicChoice=nil;return true,why

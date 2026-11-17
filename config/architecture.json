@@ -358,20 +358,18 @@
     "abyss_monster_intent_particles": "ui",
     "abyss_combat_native_play": "core",
     "abyss_combat_queued_play": "core",
-    "abyss_actor_presence": "core"
+    "abyss_actor_presence": "core",
+    "abyss_power_membership": "core",
+    "abyss_combat_card_hooks": "core",
+    "abyss_relic_actor_hooks": "core",
+    "abyss_actor_artifact": "core",
+    "abyss_original_v4_actor_hooks": "core",
+    "abyss_stance_damage": "core",
+    "abyss_card_upgrade": "core",
+    "abyss_actor_attack_math": "core"
   },
   "dynamicExceptions": [],
   "deferredImports": [
-    {
-      "from": "abyss_uncommon_relics",
-      "to": "abyss_run",
-      "reason": "Meat on the Bone delegates raw victory healing to the initialized Run health owner while the room is still in combat, preserving one shared Magic Flower/Bloom modifier pass."
-    },
-    {
-      "from": "abyss_relic_card_rewards",
-      "to": "abyss_run",
-      "reason": "Card reward commands invoke the initialized Run transaction and permanent inventory only when selecting or claiming; never during module initialization."
-    },
     {
       "from": "abyss_boss_relics",
       "to": "abyss_event_transform_context",
@@ -389,27 +387,12 @@
     },
     {
       "from": "abyss_boss_relics",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_boss_relics",
       "to": "abyss_potion_random",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
       "from": "abyss_boss_relics",
       "to": "abyss_card_pool",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_boss_relics",
-      "to": "abyss_relic_hooks",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_choices",
-      "to": "abyss_run",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
@@ -444,11 +427,6 @@
     },
     {
       "from": "abyss_relic_pending",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_pending",
       "to": "abyss_uncommon_relics",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
@@ -464,11 +442,6 @@
     },
     {
       "from": "abyss_shop_relics",
-      "to": "abyss_relic_choices",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_shop_relics",
       "to": "abyss_potion_random",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
@@ -479,11 +452,6 @@
     },
     {
       "from": "abyss_act2_powers",
-      "to": "abyss_power_order",
-      "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
-    },
-    {
-      "from": "abyss_power_schedule",
       "to": "abyss_power_order",
       "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
     },
@@ -503,19 +471,9 @@
       "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
     },
     {
-      "from": "abyss_defect_final_cards",
-      "to": "abyss_card_capability",
-      "reason": "Random generation validates the complete candidate pool only at use/start hook runtime."
-    },
-    {
       "from": "abyss_turn_powers",
       "to": "abyss_defect_final_cards",
       "reason": "Final random Power generation constructs actions during start hooks after initialization."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_defect_final_cards",
-      "reason": "Damage and reaction boundaries invoke final Defect defenses only after Actor initializes."
     },
     {
       "from": "abyss_defect_final_cards",
@@ -523,29 +481,9 @@
       "reason": "Victory healing dispatches the initialized shared heal action only when a battle actually ends."
     },
     {
-      "from": "abyss_defect_final_cards",
-      "to": "abyss_combat",
-      "reason": "Recycle reads the initialized host card definition only during a real hand movement."
-    },
-    {
-      "from": "abyss_hand_choice",
-      "to": "abyss_defect_final_cards",
-      "reason": "Recycle hand movement invokes the final card action after module initialization only."
-    },
-    {
-      "from": "abyss_watcher_final_cards",
-      "to": "abyss_card_capability",
-      "reason": "Only resolved Foreign Influence validates a selected complete-source candidate after all modules initialize."
-    },
-    {
       "from": "abyss_pile_choice",
       "to": "abyss_card_actions",
       "reason": "Only a committed Omniscience choice creates its stat-equivalent queued duplicate; never imported at load."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_watcher_final_cards",
-      "reason": "Only positive float gained-block callbacks invoke the already initialized Watcher power hook."
     },
     {
       "from": "abyss_watcher_final_cards",
@@ -563,26 +501,6 @@
       "reason": "Only InstantKill runtime resolution notifies the initialized enemy death callbacks."
     },
     {
-      "from": "abyss_build_actions",
-      "to": "abyss_combat",
-      "reason": "Only runtime Master Reality creation uses the initialized host upgrade API; no module-load import."
-    },
-    {
-      "from": "abyss_act2_stasis",
-      "to": "abyss_combat",
-      "reason": "StasisPower death constructs Master Reality's upgrade only at runtime after Combat initialization."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_colorless_cards",
-      "reason": "Runtime Power callbacks run after Actor initialization."
-    },
-    {
-      "from": "abyss_colorless_cards",
-      "to": "abyss_card_actions",
-      "reason": "Generation and UID choices call the initialized host dispatcher at runtime."
-    },
-    {
       "from": "abyss_actor",
       "to": "abyss_hp_loss",
       "reason": "HP-loss callback runs after Actor initializes; notifier only queues runtime reactions."
@@ -596,31 +514,6 @@
       "from": "abyss_actor",
       "to": "abyss_focus",
       "reason": "Focus is dispatched only from runtime applyPower after module initialization."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_card_triggers",
-      "reason": "Envenom reaction resolver runs after the combat engine initializes."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_stances",
-      "reason": "Damage arithmetic calls the stance modifier only at runtime."
-    },
-    {
-      "from": "abyss_silent",
-      "to": "abyss_combat",
-      "reason": "Foundation builders and generation validation invoke Combat only after initialization."
-    },
-    {
-      "from": "abyss_discard",
-      "to": "abyss_combat",
-      "reason": "Discard execution chooses the default host API at runtime, never during require."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_original_v4",
-      "reason": "Actor death notifications call the already-initialized original hero ledger only at runtime."
     },
     {
       "from": "abyss_original_v4",
@@ -649,11 +542,6 @@
     },
     {
       "from": "abyss_silent_potions",
-      "to": "abyss_combat",
-      "reason": "Silent callbacks import the initialized runtime only during action execution, never at module initialization."
-    },
-    {
-      "from": "abyss_silent_potions",
       "to": "abyss_card_actions",
       "reason": "Silent callbacks import the initialized runtime only during action execution, never at module initialization."
     },
@@ -661,21 +549,6 @@
       "from": "abyss_silent_final_cards",
       "to": "abyss_enemy_ai",
       "reason": "Choke execution notifies the initialized enemy death hooks only while resolving a card action."
-    },
-    {
-      "from": "abyss_writhing_mass",
-      "to": "abyss_inventory",
-      "reason": "Darkstone uses the existing in-combat max-health/healing adapter only during a permanent obtain action."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_relic_family_combat",
-      "reason": "Only runtime power admission, damage modifiers, attack and HP-loss notifications call fixed family combat methods after Actor initializes."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_relic_combat_hooks",
-      "reason": "Only resolved HP changes, Poison construction and damage callbacks enter Combat hooks; no module-initialization call."
     },
     {
       "from": "abyss_card_actions",
@@ -718,29 +591,9 @@
       "reason": "Only an actual exhaust dispatches Charon's Ashes and Dead Branch rules through the initialized family capability."
     },
     {
-      "from": "abyss_hp_loss",
-      "to": "abyss_relic_combat_hooks",
-      "reason": "Only an actual HP-loss notification dispatches Combat HP hooks after the notifier and Actor initialize."
-    },
-    {
       "from": "abyss_inventory",
       "to": "abyss_relic_family_combat",
       "reason": "Only battle-start inventory iteration builds ordered shop opening actions; its existing eager Combat/Hooks imports remain enforced."
-    },
-    {
-      "from": "abyss_original_v4_health",
-      "to": "abyss_relic_combat_hooks",
-      "reason": "Only completed original-v4 healing notifies Combat HP changes; the health module performs no load-time callback."
-    },
-    {
-      "from": "abyss_player_revive",
-      "to": "abyss_relic_combat_hooks",
-      "reason": "Only the Lizard Tail revive callback notifies Combat HP changes after revive health and event writes."
-    },
-    {
-      "from": "abyss_potion_fairy",
-      "to": "abyss_relic_combat_hooks",
-      "reason": "Only automatic fatal Fairy resolution notifies Combat HP changes; no ordinary potion-use hook or module-load call."
     },
     {
       "from": "abyss_relic_combat_hooks",
@@ -764,11 +617,6 @@
     },
     {
       "from": "abyss_relic_family_combat",
-      "to": "abyss_build_actions",
-      "reason": "Only the ordered Mark of Pain battle hook constructs Wounds with the initialized native creation helper."
-    },
-    {
-      "from": "abyss_relic_family_combat",
       "to": "abyss_discard",
       "reason": "Only a committed Gambling Chip selection dispatches initialized per-card discard actions after pending-choice clearing and draw admission."
     },
@@ -788,11 +636,6 @@
       "reason": "Only the resolved Wish gold choice invokes the common gainGold rule with its existing owner projection."
     },
     {
-      "from": "abyss_writhing_mass",
-      "to": "abyss_relic_family_combat",
-      "reason": "Only an actual Parasite obtain invokes common before/onObtainCard rules with its owner-matched permanent health adapter."
-    },
-    {
       "from": "abyss_card_actions",
       "to": "abyss_orbs",
       "reason": "The card-action queue host supplies the explicit deferred Orb execution capability only when a class-potion action needs it."
@@ -801,6 +644,11 @@
       "from": "abyss_combat_effect_dispatch",
       "to": "abyss_orbs",
       "reason": "The Combat effect queue host supplies the explicit deferred Orb execution capability for Darkness resolution; no load-time import."
+    },
+    {
+      "from": "abyss_power_schedule",
+      "to": "abyss_power_membership",
+      "reason": "Schedule removes presentation membership through the shared leaf slot; it never imports the PowerOrder coordinator."
     }
   ],
   "dependencyBoundaries": [
@@ -1068,5 +916,6 @@
       ],
       "reason": "Defect utility plans retain read-only relic queries; the queued-play host supplies lazy Actor arithmetic for Barrage, FTL and X block snapshots."
     }
-  ]
+  ],
+  "fullDependencyAcyclic": true
 }

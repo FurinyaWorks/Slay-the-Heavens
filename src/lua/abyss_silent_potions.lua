@@ -8,8 +8,8 @@ function M.register(data)
  })do if not seen[p.id]then data.potions.potions[#data.potions.potions+1]=p end end
  return data
 end
-function M.shivs(state,n)
- local C=require('abyss_combat');local Actions=require('abyss_card_actions')
+function M.shivs(state,n,C)
+ local Actions=require('abyss_card_actions')
  for _=1,n do
   local card=Actions.fresh(C,state,'shiv');assert(C.canUpgrade(state,card),'missing upgraded Shiv')
   C.upgrade(state,card);Actions.created(C,state,card);Actions.created(C,state,card);Actions.toHand(state,card)

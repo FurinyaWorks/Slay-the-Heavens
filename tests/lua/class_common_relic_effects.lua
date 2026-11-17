@@ -76,9 +76,9 @@ test('DataDisk reuses Focus lifecycle without replacing or retagging existing or
  local _,s=run('defect',{'data_disk'});O.channel(s,'dark',C);O.channel(s,'plasma',C)
  local container,first,second,third=s.orbs,s.orbs.balls[1],s.orbs.balls[2],s.orbs.balls[3]
  local stored=second.stored
- A.applyPower(s,s.player,'bias',1,s.player);F.startTurn(s);eq(s.player.statuses.focus,nil);eq(s.orbs.focus,0)
+ A.applyPower(s,s.player,'bias',1,s.player);F.startTurn(s,A);eq(s.player.statuses.focus,nil);eq(s.orbs.focus,0)
  eq(s.orbs,container);eq(s.orbs.balls[1],first);eq(s.orbs.balls[2],second);eq(s.orbs.balls[3],third);eq(second.stored,stored)
- F.startTurn(s);eq(s.player.statuses.focus,-1);eq(O.view(s).balls[3].passive,1,'Plasma ignores Focus')
+ F.startTurn(s,A);eq(s.player.statuses.focus,-1);eq(O.view(s).balls[3].passive,1,'Plasma ignores Focus')
 end)
 test('DataDisk external obtain on a non-Defect keeps zero orb slots and uses the shared status owner',function()
  local _,s=run('silent',{'data_disk'});eq(s.player.statuses.focus,1);eq(s.orbs.focus,1);eq(s.orbs.slots,0);eq(#s.orbs.balls,0)

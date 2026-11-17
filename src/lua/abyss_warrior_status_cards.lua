@@ -3,7 +3,13 @@
 local Actors=require('abyss_actor')
 local Random=require('abyss_sts_random')
 local Exhaust=require('abyss_exhaust')
-local M={}
+local ActorHooks=require('abyss_combat_card_hooks').warriorStatus
+local actorHookFields={onHpLost=true,onUpgrade=true}
+local function actorHookIndex(_,key)if actorHookFields[key]then return ActorHooks[key]end end
+local function actorHookNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=actorHookIndex,__newindex=actorHookNewIndex})
 local MAX=2147483647
 local copy=require('abyss_copy').copy
 local function integer(n,lo) return type(n)=='number' and n==n and n%1==0 and n>=(lo or 0) and n<=MAX end
@@ -212,22 +218,7 @@ local function cost(s,c)
  if turn==nil then turn=base end
  assert(integer(base) and integer(turn),'invalid Blood for Blood cost metadata');return base,turn
 end
-function M.onHpLost(s,n)
- assert(integer(n),'invalid Blood for Blood HP loss');if n==0 then return false end
- local times=s.player.damagedThisCombat or 0;assert(integer(times) and integer(times+1),'damagedThisCombat overflow')
- local changes={};local seen={}
- for _,name in ipairs({'hand','draw','discard'}) do
-  for _,c in ipairs(s[name]) do
-   assert(not seen[c.uid],'duplicate damage-notification UID');seen[c.uid]=true
-   if c.cardId=='blood_for_blood' then
-    local base,turn=cost(s,c);local nextBase=math.max(0,base-1)
-    if nextBase~=base then changes[#changes+1]={card=c,base=nextBase,turn=math.max(0,turn-1)} end
-   end
-  end
- end
- for _,change in ipairs(changes) do change.card.combatCost=change.base;change.card.turnCost=change.turn end
- s.player.damagedThisCombat=times+1;return true
-end
+
 function M.created(s,c,mode,source)
  if c.cardId~='blood_for_blood' then return false end
  assert(mode=='make_copy' or mode=='stat_equivalent','Blood for Blood creation mode must be explicit')
@@ -242,10 +233,5 @@ function M.created(s,c,mode,source)
 end
 -- Host invokes before changing the upgraded flag. Catalog upgrade damage is
 -- still applied by ordinary definition merging, never copied into the instance.
-function M.onUpgrade(s,c)
- assert(c.cardId=='blood_for_blood' and not c.upgraded,'invalid Blood for Blood upgrade')
- local base,turn=cost(s,c);local rawBase=base<4 and base-1 or 3
- c.combatCost=math.max(0,rawBase);c.turnCost=turn>0 and math.max(0,rawBase+turn-base) or 0
- return true
-end
+
 return M

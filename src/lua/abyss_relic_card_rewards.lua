@@ -33,14 +33,14 @@ function M.prepareExtra(run)
  end
  M.sync(run)
 end
-function M.open(run,source)
+function M.open(run,source,Run)
  if run.phase~='reward'or run.rewards~=source or source.cardResolved or not M.managed(run)then
   return false,'stale_card_reward'
  end
  if run.pendingBottledRelic or run.shopRelicChoice or run.pendingBossRelic or run.shopRelicRewards or run.pendingCardRewardSelection then
   return false,'relic_choice_pending'
  end
- return require('abyss_run').transaction(run,function(staged)
+ return Run.transaction(run,function(staged)
   M.ensure(staged)
   staged.cardRewardSelectionSerial=(staged.cardRewardSelectionSerial or 0)+1
   staged.pendingCardRewardSelection={token=staged.cardRewardSelectionSerial,rewardOwner=staged.rewards}
@@ -48,15 +48,15 @@ function M.open(run,source)
  end)
 end
 -- choice=0 is explicit API abandonment of one group; modal Skip instead uses close.
-function M.claim(run,index,choice)
- return require('abyss_run').transaction(run,function(staged)
+function M.claim(run,index,choice,Run)
+ return Run.transaction(run,function(staged)
   if staged.phase~='reward'or not staged.rewards then return false,'no_pending_reward'end
   M.ensure(staged)
   if index==nil then local _,i=M.nextGroup(staged);index=i end
   if type(index)~='number'or index%1~=0 then return false,'invalid_reward_group'end
   local group=staged.rewards.cardRewardGroups[index]
   if not group or group.resolved then return false,'no_pending_reward'end
-  local Run=require('abyss_run');local ok,why
+  local ok,why
   if choice=='bowl'then
    if not owns(staged,'singing_bowl')then return false,'missing_singing_bowl'end
    ok,why=Run.increaseMaxHp(staged,2)

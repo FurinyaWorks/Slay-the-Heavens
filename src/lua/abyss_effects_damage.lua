@@ -78,7 +78,7 @@ function M.loseHp(context)
     Events.emit(state, "hp_loss", {source = source.id, target = source.id, amount = before - source.hp, blocked = 0})
     -- Actor owns the single HP-loss notification for either queue.
     Actors.hpLostFromCard(state,source,before-source.hp)
-    require('abyss_relic_combat_hooks').hpChanged(state,source,before)
+    require('abyss_relic_combat_hooks').hpChanged(state,source,before,nil,Actors)
 end
 
 return M

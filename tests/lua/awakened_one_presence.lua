@@ -77,8 +77,8 @@ for _,advanced in ipairs({false,true})do
   local I=require('abyss_inventory')
   local opening=assert(I.opening(D.relics.relics,{'red_skull','centennial_puzzle'}))
   local s=C.new(D,{deck={'bloodletting'},seed=42,enemies={'awakened_one'},hp=41,maxHp=80,enableStances=advanced,
-   beforeOpeningDraw=function(current)return I.applyOpening(current,opening.beforeDraw)end})
-  assert(I.applyOpening(s,opening.afterDraw));local e=s.enemies[1]
+   beforeOpeningDraw=function(current)return I.applyOpening(current,opening.beforeDraw,require('abyss_combat'))end})
+  assert(I.applyOpening(s,opening.afterDraw,require('abyss_combat')));local e=s.enemies[1]
   for _=1,3 do add(s,'draw','defend')end
   down(s,e);play(s,'bloodletting');eq(s.player.hp,38);eq(s.player.statuses.strength,3,'Red Skull threshold')
   eq(#s.hand,3,'Centennial draw');assert(s.relicCombat.centennialUsed)

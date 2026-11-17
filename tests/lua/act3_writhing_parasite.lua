@@ -77,7 +77,7 @@ test('Darkstone in-combat health uses source healing modifiers and CeramicFish r
   {{'darkstone_periapt','mark_of_bloom','ceramic_fish'},0,9}})do
   local s=battle(v[1]);local e=s.enemies[1];s.player.hp=40
   s.potionInventory={'fairy_in_a_bottle'};s.relics[#s.relics+1]='red_skull'
-  H.hpChanged(s,s.player,80);eq(s.player.statuses.strength,3)
+  H.hpChanged(s,s.player,80,nil,A);eq(s.player.statuses.strength,3)
   force(e,'implant');local maximum,gold=s.player.maxHp,s.player.gold;assert(C.endTurn(s))
   eq(s.player.maxHp,maximum+6);eq(s.player.hp,40+v[2]);eq(s.player.gold,gold+v[3]);eq(#s.masterDeck,2)
   eq(s.scoreStats.goldGained,v[3])

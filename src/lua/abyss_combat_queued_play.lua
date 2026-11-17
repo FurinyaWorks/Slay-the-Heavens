@@ -109,7 +109,7 @@ local function randomTarget(combat,state,effect)
 end
 
 local function prepareEffects(combat,state,card,target)
-    local effects=require('abyss_defect_final_cards').prepareEffects(state,copy(card.effects))
+    local effects=require('abyss_defect_final_cards').prepareEffects(state,copy(card.effects),combat)
     for _,effect in ipairs(effects)do
         if(effect.op=='applyStatus'or effect.op=='applyStatusAll')and effect.status=='poison'or effect.op=='cripplingPoison'then
             effect.poisonBonus=Actors.poisonBonus(state,target,state.player)

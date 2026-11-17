@@ -210,11 +210,7 @@ local function phase(label,value)
     value=value or {}
     return label..' '..count(value.uses)..'次／'..count(value.ends)..'阶段'
 end
-function M.summary(state)
-    assert(type(state)=='table','缺少原创V4战斗状态')
-    local v=state.originalV4
-    if not v then return '' end
-    local parts={lookup(roles,v.role,'角色')}
+local function appendRoleSummary(v,parts)
     if v.role=='HT' then
         parts[#parts+1]='蝶引 '..count(v.infuse)..'阶段；本回合重击 '..count(v.chargedUsed)..'/2'
     elseif v.role=='AR' then
@@ -232,6 +228,8 @@ function M.summary(state)
         parts[#parts+1]=phase('雷眼',v.eye)
         parts[#parts+1]=phase('梦想一心',v.musou)..'；本回合返能 '..count(v.musouRefunded)..'/1'
     end
+end
+local function appendEnemySummary(state,parts)
     for i,enemy in ipairs(state.enemies or {}) do
         if (enemy.hp or 0)>0 and not enemy.escaped then
             local name=enemy.name or '敌人'..number(i)
@@ -241,6 +239,8 @@ function M.summary(state)
             if enemy.v4Directive then parts[#parts+1]=name..' 勒令'..(enemy.v4Directive.mature and '已成熟' or '待成熟') end
         end
     end
+end
+local function appendBattleResources(v,parts)
     parts[#parts+1]='本战已治疗 '..count(v.healUsed)..'/12'
     parts[#parts+1]='下回合 能量＋'..count(v.nextEnergy)..'／抽牌＋'..count(v.nextDraw)..'／格挡＋'..count(v.nextBlock)
     if v.bonus and (v.bonus.n or 0)>0 then
@@ -248,13 +248,19 @@ function M.summary(state)
     end
     if (v.counter or 0)>0 then parts[#parts+1]='反击 '..count(v.counter) end
     if (v.soften or 0)>0 then parts[#parts+1]='削势 '..count(v.soften) end
+end
+function M.summary(state)
+    assert(type(state)=='table','缺少原创V4战斗状态')
+    local v=state.originalV4
+    if not v then return '' end
+    local parts={lookup(roles,v.role,'角色')}
+    appendRoleSummary(v,parts)
+    appendEnemySummary(state,parts)
+    appendBattleResources(v,parts)
     return table.concat(parts,'\n')
 end
 -- Cards keep costs visible; the existing detail panel carries full rules.
-function M.brief(card,upgraded,preview)
-    M.describe(card,upgraded)
-    local raw,value=variant(card,upgraded)
-    local critical,actions={},{}
+local function appendBriefCosts(raw,value,critical)
     local compact={bond='契量',fan='气氛',resolve='愿力'}
     for _,condition in ipairs(raw.requirements)do
         local resource,n=condition:match('^(%a+)(%d+)$')
@@ -267,48 +273,77 @@ function M.brief(card,upgraded,preview)
     end
     if paid>0 then critical[#critical+1]='付血'..number(paid)end
     if value.exhaust then critical[#critical+1]='本场消耗'end
-    local seen={}
-    local function add(text)if text and not seen[text]then actions[#actions+1]=text;seen[text]=true end end
+end
+local function appendBriefPreview(preview,add)
     if preview and preview.originalV4 and #preview>0 then
         local damage,block=0,0
         for _,entry in ipairs(preview)do if entry.op=='block'then block=block+entry.low else damage=damage+(entry.actual or 0)end end
         if damage>0 then add('本次扣血'..number(damage))end
         if block>0 then add('本次格挡'..number(block))end
     end
+end
+local function appendBriefHealth(op,n,e,add)
+    if op=='damage'then add((e.target=='all' and '全体伤害' or '伤害')..number(n)..((e.hits or 1)>1 and ('×'..e.hits) or ''))
+    elseif op=='damage_spent'then add(e.coefficient==0 and ('伤害'..number(n)) or '消耗增伤')
+    elseif op=='block' and n>0 then add('格挡'..number(n))
+    elseif op=='heal'then add('治疗'..number(n))
+    elseif op=='heal_spent'then add('消耗治疗')
+
+    end
+end
+local function appendBriefSummons(op,n,add)
+    if op=='infuse'then add('蝶引'..number(n)..'阶段')
+    elseif op=='summon'then add('部署宾客')
+    elseif op=='singer'then add('歌者'..number(n)..'次')
+
+    end
+end
+local function appendBriefState(op,n,add)
+    if op=='directive'then add('施加勒令')
+    elseif op=='absorb'then add('吸收勒令')
+    elseif op=='bloom'then add('血梅香'..number(n)..'层')
+    elseif op=='cash_bloom'then add('兑现血梅香')
+    elseif op=='eye'then add('雷眼'..number(n)..'次')
+    elseif op=='musou'then add('一心'..number(n)..'次')
+    elseif op=='revelry'then add('欢腾'..number(n)..'批')
+    elseif op=='mode' or op=='toggle'then add('切换荒芒')
+    elseif op=='draw'then add('抽牌'..number(n))
+
+    end
+end
+local function appendBriefResources(op,n,add)
+    if op=='next_energy'then add('下回合能量+'..number(n))
+    elseif op=='next_draw'then add('下回合抽牌+'..number(n))
+    elseif op=='next_block'then add('下回合格挡'..number(n))
+    elseif op=='bonus'then add('准备加成'..number(n))
+    elseif op=='mature'then add('勒令成熟')
+    elseif op=='cleanse'then add('净化虚弱脆弱')
+    elseif op=='trigger'then add('召唤物行动')
+    elseif op=='eye_pulse'then add('雷眼追击')
+    elseif op=='block_spent'then add('消费量转格挡')
+    elseif op=='end_infuse'then add('结束蝶引')
+    elseif op=='when'then add('附条件效果')
+    elseif op=='soften'then add('削势'..number(n))
+    elseif op=='counter'then add('反击'..number(n))
+    elseif op=='resolve'then add('愿力+'..number(n))
+
+    end
+end
+function M.brief(card,upgraded,preview)
+    M.describe(card,upgraded)
+    local raw,value=variant(card,upgraded)
+    local critical,actions={},{}
+    appendBriefCosts(raw,value,critical)
+    local seen={}
+    local function add(text)if text and not seen[text]then actions[#actions+1]=text;seen[text]=true end end
+    appendBriefPreview(preview,add)
     for _,e in ipairs(value.effects)do
         local op,n=e.op,e.n
-        if op=='damage'then add((e.target=='all' and '全体伤害' or '伤害')..number(n)..((e.hits or 1)>1 and ('×'..e.hits) or ''))
-        elseif op=='damage_spent'then add(e.coefficient==0 and ('伤害'..number(n)) or '消耗增伤')
-        elseif op=='block' and n>0 then add('格挡'..number(n))
-        elseif op=='heal'then add('治疗'..number(n))
-        elseif op=='heal_spent'then add('消耗治疗')
-        elseif op=='infuse'then add('蝶引'..number(n)..'阶段')
-        elseif op=='summon'then add('部署宾客')
-        elseif op=='singer'then add('歌者'..number(n)..'次')
-        elseif op=='directive'then add('施加勒令')
-        elseif op=='absorb'then add('吸收勒令')
-        elseif op=='bloom'then add('血梅香'..number(n)..'层')
-        elseif op=='cash_bloom'then add('兑现血梅香')
-        elseif op=='eye'then add('雷眼'..number(n)..'次')
-        elseif op=='musou'then add('一心'..number(n)..'次')
-        elseif op=='revelry'then add('欢腾'..number(n)..'批')
-        elseif op=='mode' or op=='toggle'then add('切换荒芒')
-        elseif op=='draw'then add('抽牌'..number(n))
-        elseif op=='next_energy'then add('下回合能量+'..number(n))
-        elseif op=='next_draw'then add('下回合抽牌+'..number(n))
-        elseif op=='next_block'then add('下回合格挡'..number(n))
-        elseif op=='bonus'then add('准备加成'..number(n))
-        elseif op=='mature'then add('勒令成熟')
-        elseif op=='cleanse'then add('净化虚弱脆弱')
-        elseif op=='trigger'then add('召唤物行动')
-        elseif op=='eye_pulse'then add('雷眼追击')
-        elseif op=='block_spent'then add('消费量转格挡')
-        elseif op=='end_infuse'then add('结束蝶引')
-        elseif op=='when'then add('附条件效果')
-        elseif op=='soften'then add('削势'..number(n))
-        elseif op=='counter'then add('反击'..number(n))
-        elseif op=='resolve'then add('愿力+'..number(n))
-        end
+        -- Each operation belongs to one family; later families have no matching predicate.
+        appendBriefHealth(op,n,e,add)
+        appendBriefSummons(op,n,add)
+        appendBriefState(op,n,add)
+        appendBriefResources(op,n,add)
     end
     assert(#critical<=4,'original card costs exceed readable brief')
     for _,text in ipairs(actions)do if #critical>=4 then break end;critical[#critical+1]=text end
@@ -319,29 +354,47 @@ end
 -- existing reachable keyword inspector. Full describe() is never shortened.
 local faceConditions={eye='雷眼有效',musou='梦想一心有效',
     not_musou='梦想一心失效',resolve0='愿力为0',resolve2='愿力≥2',resolve3='愿力≥3',resolve4='愿力≥4'}
-local function faceEffect(e,ctx)
-    local n=e.n and e.n~='all' and number(e.n)
+local faceEffect
+local function faceDamageEffect(e,n)
     if e.op=='damage' then return (e.target=='all' and '全体受' or '目标受')..n..((e.hits or 1)>1 and '×'..e.hits or '')..'伤害'
     elseif e.op=='damage_spent' then return (e.target=='all' and '全体受' or '目标受')..n..(e.coefficient~=0 and '+'..number(e.coefficient)..'×所耗愿力' or '')..'伤害'
     elseif e.op=='block' then return '获得'..n..'格挡'
-    elseif e.op=='draw' then return '抽'..n..'张牌'
+
+    end
+end
+local function faceResourceEffect(e,n)
+    if e.op=='draw' then return '抽'..n..'张牌'
     elseif e.op=='spend' then return '耗'..(e.n=='all' and '全部' or n)..'愿力'
     elseif e.op=='eye' or e.op=='musou' then
         local name=e.op=='eye' and '雷眼' or '梦想一心'
         return name..(e.n==3 and '3次' or '至少'..n..'次（≤3）')..'，2结束阶段'
     elseif e.op=='eye_pulse' then return '使用雷眼1次，对目标造成2衍生伤害'
-    elseif e.op=='next_energy' then return '下回合能量+'..n
+
+    end
+end
+local function faceFutureEffect(e,n)
+    if e.op=='next_energy' then return '下回合能量+'..n
     elseif e.op=='next_draw' then return '下回合多抽'..n..'张'
     elseif e.op=='next_block' then return '下回合格挡+'..n
     elseif e.op=='resolve' then return '愿力+'..n
-    elseif e.op=='cleanse' then return '清除自身虚弱与脆弱'
+
+    end
+end
+local function faceRuleEffect(e,n,ctx)
+    if e.op=='cleanse' then return '清除自身虚弱与脆弱'
     elseif e.op=='bonus' then return '本回合下张'..lookup(tags,e.tag,'准备标签')..'伤害牌首击+'..n
     elseif e.op=='soften' then return '本回合削势+'..n..'（上限6），减下次敌方攻击总伤害'
     elseif e.op=='counter' then return '本回合反击取大至'..n..'（上限8），下次敌方攻击后存活则反击一次'
     elseif e.op=='when' then
         local nested={};for _,part in ipairs(e.effects)do nested[#nested+1]=faceEffect(part,ctx)end
         return '若'..lookup(faceConditions,e.condition,'卡面条件')..'：'..table.concat(nested,'；')
+
     end
+end
+faceEffect=function(e,ctx)
+    local n=e.n and e.n~='all' and number(e.n)
+    local text=faceDamageEffect(e,n) or faceResourceEffect(e,n) or faceFutureEffect(e,n) or faceRuleEffect(e,n,ctx)
+    if text then return text end
     error('unknown Raiden card operation '..tostring(e.op))
 end
 local function faceColour(text,palette)
@@ -351,6 +404,17 @@ local function faceColour(text,palette)
     end
     return text
 end
+local function appendFaceRow(e,raw,rows,context,palette)
+    if e.op=='spend' and e.n=='all' and #rows==1 and #(raw.requirements or {})>0 then
+        rows[1]=rows[1]..'，耗尽'
+    else
+    local text=faceEffect(e,{})
+    if e.op=='when' and context and context.snapshot and palette then
+        text='<color='..(context.snapshot[e.condition] and palette.gold or palette.dim)..'>'..text..'</color>'
+    else text=faceColour(text,palette)end
+    rows[#rows+1]=text
+    end
+    end
 function M.faceText(card,upgraded,context,palette)
     local raw,definition=variant(card,upgraded)
     if raw.role~='RD' then return M.brief(card,upgraded) end -- retained development roles; full describe remains unchanged
@@ -363,17 +427,7 @@ function M.faceText(card,upgraded,context,palette)
         local requirements={};for _,id in ipairs(raw.requirements)do requirements[#requirements+1]=lookup(faceConditions,id,'卡面前提')end
         rows[#rows+1]='需'..table.concat(requirements,'且')
     end
-    for _,e in ipairs(definition.effects)do
-        if e.op=='spend' and e.n=='all' and #rows==1 and #(raw.requirements or {})>0 then
-            rows[1]=rows[1]..'，耗尽'
-        else
-        local text=faceEffect(e,{})
-        if e.op=='when' and context and context.snapshot and palette then
-            text='<color='..(context.snapshot[e.condition] and palette.gold or palette.dim)..'>'..text..'</color>'
-        else text=faceColour(text,palette)end
-        rows[#rows+1]=text
-        end
-    end
+    for _,e in ipairs(definition.effects)do appendFaceRow(e,raw,rows,context,palette)end
     if definition.exhaust then rows[#rows+1]=faceColour('消耗',palette)end
     return table.concat(rows,'。')..'。'
 end

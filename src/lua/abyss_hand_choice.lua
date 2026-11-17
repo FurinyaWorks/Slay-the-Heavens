@@ -50,10 +50,10 @@ local function exhaustSupported(s,card)
     return def and not def.onExhaust and not def.exhaustEffects and not def.exhaustTrigger
         and card.cardId~='sentinel' and card.cardId~='necronomicurse'
 end
-local function move(s,entry,mode)
+local function move(s,entry,mode,combat)
     local card=entry.card
     if mode=='recycle'then
-        require('abyss_defect_final_cards').recycle(s,card,require('abyss_action_queue'))
+        combat.recycleCard(s,card,require('abyss_action_queue'))
         Events.emit(s,'hand_choice_move',{uid=card.uid,cardId=card.cardId,mode=mode,pile='exhaust'})
         return
     end
@@ -68,7 +68,7 @@ local function move(s,entry,mode)
     Events.emit(s,'hand_choice_move',{uid=card.uid,cardId=card.cardId,mode=mode,pile=destination})
 end
 function M.active(s) return type(s)=='table' and s.pendingHandChoice~=nil end
-function M.begin(s,mode,count,_queue)
+function M.begin(s,mode,count,_queue,combat)
     assert(modes[mode] and count==1,'unsupported hand choice')
     assert(type(s)=='table' and not s.pendingHandChoice,'hand choice already pending')
     assert(not s.pendingScry and not s.pendingDiscard,'other selection already pending')
@@ -88,7 +88,7 @@ function M.begin(s,mode,count,_queue)
     if random then selected=s.hand[Random.randomInt(s.cardRandomRng,n-1)+1]
     elseif n==1 then selected=s.hand[1] end
     s.choiceSerial=(s.choiceSerial or 0)+1
-    if selected then move(s,byUid[selected.uid],mode);return true end
+    if selected then move(s,byUid[selected.uid],mode,combat);return true end
     local uids,ids,upgraded={},{},{}
     for i,card in ipairs(s.hand) do uids[i]=card.uid;ids[i]=card.cardId;upgraded[i]=card.upgraded==true end
     s.pendingHandChoice={mode=mode,count=1,serial=s.choiceSerial,token=s.choiceSerial,turn=s.turn,
@@ -96,7 +96,7 @@ function M.begin(s,mode,count,_queue)
     Events.emit(s,'hand_choice',{mode=mode,token=s.choiceSerial,count=1})
     return 'pause'
 end
-function M.choose(s,uids,token)
+function M.choose(s,uids,token,combat)
     if not live(s) then return false,'not_player_turn' end
     local p=s.pendingHandChoice
     if type(p)~='table' or not integer(token,1,MAX) or p.token~=token or s.choiceSerial~=token then
@@ -116,7 +116,7 @@ function M.choose(s,uids,token)
     local entry=byUid[uids[1]]
     if p.mode~='put_on_deck' and not exhaustSupported(s,entry.card) then return false,'unsupported_exhaust_trigger' end
     assert(type(s.events)=='table','missing hand choice events')
-    move(s,entry,p.mode);s.pendingHandChoice=nil
+    move(s,entry,p.mode,combat);s.pendingHandChoice=nil
     return true
 end
 return M

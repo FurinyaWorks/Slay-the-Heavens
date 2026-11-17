@@ -2,11 +2,14 @@
 local A=require('abyss_actor')
 local E=require('abyss_events')
 local S=require('abyss_sts_random')
+local ActorHooks=require('abyss_relic_actor_hooks').combat
 local Queries=require('abyss_relic_queries').hooks
 local function queryIndex(_,key)
+ if key=='hpChanged'or key=='wasHpLost'then return ActorHooks[key]end
  if key=='localId' or key=='owns' then return Queries[key] end
 end
 local function queryNewIndex(self,key,value)
+ if key=='hpChanged'or key=='wasHpLost'then ActorHooks[key]=value;return end
  if key=='localId' or key=='owns' then Queries[key]=value else rawset(self,key,value)end
 end
 local M=setmetatable({}, {__index=queryIndex,__newindex=queryNewIndex})
@@ -83,57 +86,18 @@ local function insectOpening(state,context)
  end
 end
 
-function M.preBattle(state,context)
+function M.preBattle(state,context,combat)
  context=context or {}
- if M.owns(state,'philosophers_stone')then require('abyss_relic_family_combat').boss.battleStart(state,'philosophers_stone')end
+ if M.owns(state,'philosophers_stone')then require('abyss_relic_family_combat').boss.battleStart(state,'philosophers_stone',combat)end
  neowOpening(state)
  insectOpening(state,context)
 end
 
-local function redSkullHealth(state,actor,before,queuedFatal,c)
- if M.owns(state,'red_skull')then
-  local bloodied=actor.hp<=actor.maxHp/2.0
-  local wasBloodied=before<=actor.maxHp/2.0
-  if bloodied and not wasBloodied and not c.redSkullActive then
-   c.redSkullActive=true
-   if queuedFatal then require('abyss_combat_reactions').enqueueReaction(state,{op='gainStatus',status='strength',value=3},true)
-   else A.applyPower(state,actor,'strength',3,actor)end
-  elseif not bloodied and wasBloodied and c.redSkullActive then
-   c.redSkullActive=false
-   if queuedFatal then require('abyss_combat_reactions').enqueueReaction(state,{op='gainStatus',status='strength',value=-3},true)
-   else A.applyPower(state,actor,'strength',-3,actor)end
-  end
- end
-end
 
-function M.hpChanged(state,actor,before,queuedFatal)
- if actor~=state.player or not queuedFatal and not A.isActive(actor)then return end
- local inCombat=false
- for _,enemy in ipairs(state.enemies or {})do if A.isPresent(enemy)then inCombat=true;break end end
- if not inCombat and not queuedFatal then return end
- local c=state.relicCombat
- if not c then return end
- redSkullHealth(state,actor,before,queuedFatal,c)
-end
 
-function M.wasHpLost(state,actor,amount)
- if actor~=state.player or amount<=0 then return end
- local inCombat=false
- for _,enemy in ipairs(state.enemies or {})do if A.isPresent(enemy)then inCombat=true;break end end
- local c=state.relicCombat
- if not inCombat or not c then return end
- require('abyss_relic_family_combat').boss.wasHpLost(state,actor,amount)
- for _,effect in ipairs(require('abyss_relic_family_combat').uncommon.wasHpLost(state,actor,amount))do
-  require('abyss_combat_reactions').enqueueReaction(state,effect,true)
- end
- if M.owns(state,'centennial_puzzle') and not c.centennialUsed then
-  c.centennialUsed=true
-  -- wasHPLost queues a TOP DrawCardAction; it must not draw while the HP
-  -- action is still executing. This is the existing CardActions item ABI.
-  -- The outer action owner drains it, including draw-triggered actions.
-  require('abyss_combat_reactions').enqueueReaction(state,{op='draw',value=3},true)
- end
-end
+
+
+
 
 local function teaSetTurnStart(state)
  for _,id in ipairs(state.relics or {})do
@@ -217,11 +181,11 @@ end
 
 local function openingHeal(state,id,value)
   local amount=require('abyss_potion_health').modifyHealing(value,state.relics,true)
-  if state.originalV4 then require('abyss_original_v4_health').heal(state,state.player,amount,nil,id)
+  if state.originalV4 then require('abyss_original_v4_health').heal(state,state.player,amount,nil,id,A)
   else
    local before=state.player.hp;state.player.hp=math.min(state.player.maxHp,before+amount)
    E.emit(state,'heal',{target=state.player.id,amount=state.player.hp-before,relic=id})
-   M.hpChanged(state,state.player,before)
+   M.hpChanged(state,state.player,before,nil,A)
   end
 end
 
@@ -244,7 +208,7 @@ local function redSkullOpening(state)
   end
 end
 
-local function openingPower(state,id)
+local function openingPower(state,id,combat)
  if id=='cultist_mask'then E.emit(state,'relic_flavor',{relic=id,text='CAW! CAAAW!'})
  elseif id=='fossilized_helix' then A.applyPower(state,state.player,'buffer',1,state.player)
  elseif id=='data_disk' then A.applyPower(state,state.player,'focus',1,state.player)
@@ -254,17 +218,17 @@ local function openingPower(state,id)
  elseif id=='pen_nib' then
   if state.relicCounters.pen_nib==9 then A.applyPower(state,state.player,'pen_nib',1,state.player)end
  elseif id=='red_skull' then redSkullOpening(state)
- elseif id=='philosophers_stone' or id=='mark_of_pain' then require('abyss_relic_family_combat').boss.battleStart(state,id)
+ elseif id=='philosophers_stone' or id=='mark_of_pain' then require('abyss_relic_family_combat').boss.battleStart(state,id,combat)
  elseif id=='thread_and_needle' or id=='girya' or id=='du_vu_doll' then require('abyss_relic_family_combat').rare.battleStart(state,id,true)
  else error('unsupported battle hook '..tostring(id))end
 end
 
-function M.battleStart(state,id)
+function M.battleStart(state,id,combat)
  if id=='mutagenic_strength'then return require('abyss_act2_event_relics').battleStart(state,id)end
  id=M.localId(id)
  if id=='pantograph' then openingHeal(state,id,25)
  elseif id=='blood_vial' then openingHeal(state,id,2)
- else openingPower(state,id)end
+ else openingPower(state,id,combat)end
 end
 
 function M.endTurnBlock(state)

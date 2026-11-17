@@ -78,7 +78,7 @@ local function amount(entry)
     return entry.amount
 end
 
-function M.prepareStart(state)
+function M.prepareStart(state,combat)
     local out={}
     if not live(state)then return out end
     for _,entry in ipairs(ordered(state,'turn_start'))do
@@ -91,7 +91,7 @@ function M.prepareStart(state)
         elseif id=='magnetism' or id=='mayhem' then
             add(out,{op='colorless',kind=id=='magnetism' and 'generateColorless' or 'mayhem',value=n},id)
         elseif id=='hello_world'or id=='creative_ai'then
-            append(out,require('abyss_defect_final_cards').turnStartActions(state,id,n),id)
+            append(out,require('abyss_defect_final_cards').turnStartActions(state,id,n,combat),id)
         elseif id=='infinite_blades' then
             add(out,{op='makeTempCard',cardId='shiv',pile='hand',upgraded=false,value=n},id)
         elseif id=='flame_barrier' then

@@ -39,7 +39,7 @@ test("lethal poison ends combat before enemy attack",function()
 end)
 for _, upgraded in ipairs({false,true}) do
     test("generated Shiv uses Combat play and exhaust "..tostring(upgraded),function()
-        local s=fresh(); local ids=Silent.generateShivs(s,3,upgraded)
+        local s=fresh(); local ids=Silent.generateShivs(s,3,upgraded,require('abyss_combat'))
         local hp=s.enemies[1].hp; local energy=s.energy
         assert(Combat.play(s,ids[1],1)); eq(s.enemies[1].hp,hp-(upgraded and 6 or 4))
         eq(s.energy,energy); eq(#s.exhaust,1); eq(s.exhaust[1].uid,ids[1])
@@ -48,14 +48,14 @@ for _, upgraded in ipairs({false,true}) do
     end)
 end
 test("one hand slot sends remaining generated cards to discard",function()
-    local s=fresh(); Silent.generateShivs(s,9)
-    local ids=Silent.generateShivs(s,4)
+    local s=fresh(); Silent.generateShivs(s,9,nil,require('abyss_combat'))
+    local ids=Silent.generateShivs(s,4,nil,require('abyss_combat'))
     eq(#s.hand,10); eq(#s.discard,3); eq(s.hand[10].uid,ids[1]); eq(s.discard[1].uid,ids[2])
     eq(#s.exhaust,0)
 end)
 test("full hand routes all generation to discard without replacing cards",function()
-    local s=fresh(); Silent.generateShivs(s,10); local first=s.hand[1]
-    Silent.generateShivs(s,3); eq(#s.hand,10); eq(#s.discard,3); eq(s.hand[1],first)
+    local s=fresh(); Silent.generateShivs(s,10,nil,require('abyss_combat')); local first=s.hand[1]
+    Silent.generateShivs(s,3,nil,require('abyss_combat')); eq(#s.hand,10); eq(#s.discard,3); eq(s.hand[1],first)
 end)
 test("invalid generation is rejected before pile, event or UID mutation",function()
     -- More than ten is legal generation; excess cards go to discard.
@@ -64,16 +64,16 @@ test("invalid generation is rejected before pile, event or UID mutation",functio
         assert(not pcall(Silent.generateShivs,s,value))
         eq(s.nextUid,uid);eq(#s.events,events);eq(#s.hand,0);eq(#s.discard,0)
     end
-    local s=fresh(); Silent.generateShivs(s,1);s.nextUid=s.hand[1].uid
+    local s=fresh(); Silent.generateShivs(s,1,nil,require('abyss_combat'));s.nextUid=s.hand[1].uid
     assert(not pcall(Silent.generateShivs,s,1));eq(#s.hand,1)
     s=fresh(); s.phase="victory";assert(not pcall(Silent.generateShivs,s,1))
     s=fresh();s.player.statuses.master_reality=1
-    local created=Silent.generateShivs(s,1);eq(#created,1);eq(#s.hand,1)
+    local created=Silent.generateShivs(s,1,nil,require('abyss_combat'));eq(#created,1);eq(#s.hand,1)
     assert(s.hand[1].upgraded);eq(Combat.cardDefinition(s,s.hand[1]).effects[1].value,6)
 end)
 test("zero generation is a no-op and temporary cards stay out of source deck",function()
     local deck={"defend"};local s=fresh(deck);local uid,events=s.nextUid,#s.events
-    eq(#Silent.generateShivs(s,0),0);eq(s.nextUid,uid);eq(#s.events,events)
-    Silent.generateShivs(s,3);eq(#deck,1);eq(deck[1],"defend")
+    eq(#Silent.generateShivs(s,0,nil,require('abyss_combat')),0);eq(s.nextUid,uid);eq(#s.events,events)
+    Silent.generateShivs(s,3,nil,require('abyss_combat'));eq(#deck,1);eq(deck[1],"defend")
 end)
 print("SILENT_FOUNDATION_PASS "..count)

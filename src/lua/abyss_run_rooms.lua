@@ -105,10 +105,10 @@ function M.install(Run, shared)
             masterDeck=run.deck,nextMasterDeckUid=run.nextDeckUid,miscRng=nextMiscRng or run.miscRng,cardRng=run.cardRng,
             beforeOpeningDraw=function(state)
                 if opening.preDraw then
-                    local ok, openingReason = Inventory.applyOpening(state,opening.preDraw)
+                    local ok, openingReason = Inventory.applyOpening(state,opening.preDraw,Combat)
                     if not ok then return false, openingReason end
                 end
-                return Inventory.applyOpening(state,opening.beforeDraw)
+                return Inventory.applyOpening(state,opening.beforeDraw,Combat)
             end}
         options.beforeFirstTurn=function(state)
             state.potionRng=run.shopRng and EventRandom.cloneState(run.shopRng.potion)or EventRandom.fromSeed(run.runSeed)
@@ -116,7 +116,7 @@ function M.install(Run, shared)
             state.potionInventory=Combat.copy(run.potions)
             state.potionCapacity=run.potionSlots or run.data.rules.player.potionSlots
             if opening.preBattle then
-                local ok,why=Inventory.applyOpening(state,opening.preBattle)
+                local ok,why=Inventory.applyOpening(state,opening.preBattle,Combat)
                 if not ok then return false,why end
             end
             require('abyss_boss_relics').preBattle(state,run)
@@ -128,7 +128,7 @@ function M.install(Run, shared)
         if not battle then return false, reason end
         -- Queue-tail relics follow the ordinary draw, retaining their held order.
         local ok
-        ok, reason = Inventory.applyOpening(battle, opening.afterDraw)
+        ok, reason = Inventory.applyOpening(battle, opening.afterDraw,Combat)
         if not ok then return false, reason end
         require('abyss_card_actions').drain(Combat,battle)
         run.combatGeneration = generation + 1

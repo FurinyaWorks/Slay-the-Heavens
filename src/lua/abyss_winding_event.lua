@@ -27,6 +27,51 @@ local function obtain(run,event,id)
  else event.obtainedUids[#event.obtainedUids+1]=uid end
  return true
 end
+local function validChoiceHealth(run)
+ if type(run.maxHp)~='number' or run.maxHp%1~=0 or run.maxHp<1 or run.maxHp>2147483647 then return false end
+ if type(run.hp)~='number' or run.hp%1~=0 or run.hp<=0 or run.hp>run.maxHp then return false end
+ return true
+end
+local function obtainAvailable(run,choice)
+ -- Admission stays closed until the actual shared onObtainCard hooks exist.
+ local missing=choice=='writhe' and 'darkstone_periapt'
+ for _,id in ipairs(run.relics or {})do
+  if id==missing then return false end
+ end
+ return true
+end
+local function chooseMadness(run,event)
+ local ok,why=Run.eventNormalDamage(run,event.hpDamage);if not ok then return false,why end
+ -- The source constructs both obtain effects after damage, even after death.
+ for _=1,2 do ok,why=obtain(run,event,'madness');if not ok then return false,why end end
+ event.body='你获得了2张Madness。'
+ return true
+end
+local function chooseWrithe(run,event)
+ local healed=Run.heal(run,event.healAmount)
+ if type(healed)~='number' or healed<0 or healed%1~=0 then return false,'event_heal_failed'end
+ local ok,why=obtain(run,event,'writhe');if not ok then return false,why end
+ event.healed=healed
+ event.body='实际回复了'..healed..'点生命。'..(event.curseBlocked and'Omamori阻止了Writhe。'or'你获得了Writhe。')
+ return true
+end
+local function chooseMaxHp(run,event)
+ -- AbstractCreature.decreaseMaxHealth clamps maximum BEFORE current health.
+ run.maxHp=math.max(1,run.maxHp-event.maxHpLoss)
+ run.hp=math.min(run.hp,run.maxHp)
+ event.body='你失去了'..event.maxHpLoss..'点最大生命，没有获得治疗。'
+ return true
+end
+local choiceHandlers={madness=chooseMadness,writhe=chooseWrithe,max_hp=chooseMaxHp}
+local function chooseOutcome(run,event,choice)
+ if not validChoiceHealth(run)then return false,'invalid_event_health'end
+ if not obtainAvailable(run,choice)then return false,'event_obtain_content_unavailable'end
+ event.obtainedUids={}
+ local handler=choiceHandlers[choice]
+ if not handler then return false,'invalid_event_choice'end
+ local ok,why=handler(run,event);if not ok then return false,why end
+ event.stage='result';return true,'pending'
+end
 function M.choose(run,flow,choice,uid)
  local event=flow.event
  if event.id~='winding_halls' or run.act~=3 or uid~=nil then return false,'invalid_event_choice'end
@@ -39,31 +84,6 @@ function M.choose(run,flow,choice,uid)
   return true,'complete'
  end
  if event.stage~='choice'then return false,'invalid_event_choice'end
- if type(run.maxHp)~='number' or run.maxHp%1~=0 or run.maxHp<1 or run.maxHp>2147483647 then return false,'invalid_event_health'end
- if type(run.hp)~='number' or run.hp%1~=0 or run.hp<=0 or run.hp>run.maxHp then return false,'invalid_event_health'end
- -- Admission stays closed until the actual shared onObtainCard hooks exist.
- local missing=choice=='writhe' and 'darkstone_periapt'
- for _,id in ipairs(run.relics or {})do
-  if id==missing then return false,'event_obtain_content_unavailable'end
- end
- event.obtainedUids={}
- if choice=='madness'then
-  local ok,why=Run.eventNormalDamage(run,event.hpDamage);if not ok then return false,why end
-  -- The source constructs both obtain effects after damage, even after death.
-  for _=1,2 do ok,why=obtain(run,event,'madness');if not ok then return false,why end end
-  event.body='你获得了2张Madness。'
- elseif choice=='writhe'then
-  local healed=Run.heal(run,event.healAmount)
-  if type(healed)~='number' or healed<0 or healed%1~=0 then return false,'event_heal_failed'end
-  local ok,why=obtain(run,event,'writhe');if not ok then return false,why end
-  event.healed=healed
-  event.body='实际回复了'..healed..'点生命。'..(event.curseBlocked and'Omamori阻止了Writhe。'or'你获得了Writhe。')
- elseif choice=='max_hp'then
-  -- AbstractCreature.decreaseMaxHealth clamps maximum BEFORE current health.
-  run.maxHp=math.max(1,run.maxHp-event.maxHpLoss)
-  run.hp=math.min(run.hp,run.maxHp)
-  event.body='你失去了'..event.maxHpLoss..'点最大生命，没有获得治疗。'
- else return false,'invalid_event_choice'end
- event.stage='result';return true,'pending'
+ return chooseOutcome(run,event,choice)
 end
 return M

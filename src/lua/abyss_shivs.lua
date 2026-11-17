@@ -174,7 +174,7 @@ end
 
 -- Invoke in the source start-of-turn Power slot, before the ordinary draw.
 -- The shared generator is a call-stack argument, never persisted in state.
-function M.startTurn(state, generate)
+function M.startTurn(state, generate, combat)
     if not Actors.isActive(state.player) then return false end
     if not hasActiveEnemies(state) then return false end
     local count = state.player.statuses.infinite_blades or 0
@@ -183,7 +183,7 @@ function M.startTurn(state, generate)
     assert(type(generate) == "function", "missing shared Shiv generator")
     local bonus, before = amount(state), existingUids(state)
     local eventCount = #state.events
-    local uids = generate(state, count, false)
+    local uids = generate(state, count, false, combat)
     validateGeneratedCount(uids, count)
     local byUid, seen = generatedShivs(state, uids, before)
     for _, uid in ipairs(uids) do byUid[uid].shivAccuracyBonus = bonus end

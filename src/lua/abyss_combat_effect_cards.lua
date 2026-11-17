@@ -50,7 +50,7 @@ function Handlers.makeTempCardInHand(c)
     local state=c.state
     local effect=c.effect
     local build=require('abyss_build_actions')
-    build.makeCard(state,effect);return true
+    build.makeCard(state,effect,c.combat);return true
 end
 Handlers.makeTempCard=Handlers.makeTempCardInHand
 

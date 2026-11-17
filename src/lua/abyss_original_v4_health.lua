@@ -11,7 +11,7 @@ function M.hpEvent(state,amount)
         Events.emit(state,'original_v4_resource',{resource='fan',amount=gained,value=v.fan})
     end
 end
-function M.heal(state,actor,requested,category,origin)
+function M.heal(state,actor,requested,category,origin,combat)
     local v=state.originalV4
     assert(v and actor==state.player,'original healing needs its combat owner')
     if actor.hp<=0 or v.role=='AR' and category~='burst' or require('abyss_potion_health').blocked(state.relics) then return 0 end
@@ -20,7 +20,7 @@ function M.heal(state,actor,requested,category,origin)
     local before=actor.hp;actor.hp=actor.hp+amount;v.healUsed=v.healUsed+amount
     Events.emit(state,'heal',{target=actor.id,amount=amount,origin=origin or 'original_v4'})
     M.hpEvent(state,amount)
-    require('abyss_relic_combat_hooks').hpChanged(state,actor,before)
+    require('abyss_relic_actor_hooks').combat.hpChanged(state,actor,before,nil,combat)
     return amount
 end
 return M

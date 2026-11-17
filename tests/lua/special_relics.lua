@@ -4,9 +4,9 @@ local run={relics={'burning_blood'},relicCounters={},gold=0,hp=80,maxHp=80}
 assert(H.obtainCirclet(run));assert(#run.relics==2 and run.relics[2]=='circlet' and run.relicCounters.circlet==1)
 assert(H.obtainCirclet(run));assert(#run.relics==2 and run.relicCounters.circlet==2)
 assert(H.obtainCirclet(run));assert(#run.relics==2 and run.relicCounters.circlet==3)
-H.onEquip(run,'circlet');assert(run.relicCounters.circlet==3,'onEquip must not double-count host-managed repeats')
+H.onEquip(run,'circlet',nil,require('abyss_run'));assert(run.relicCounters.circlet==3,'onEquip must not double-count host-managed repeats')
 assert(H.scoreAdjustment(run)==0)
-run.relics[#run.relics+1]='spirit_poop';H.onEquip(run,'spirit_poop')
+run.relics[#run.relics+1]='spirit_poop';H.onEquip(run,'spirit_poop',nil,require('abyss_run'))
 assert(H.scoreAdjustment(run)==-1 and run.hp==80 and run.gold==0)
 local battle={relics={'warped_tongs'},player={hp=80},cardActions={{effect={op='draw',value=5}}}}
 H.enqueuePostDraw(battle)

@@ -6,7 +6,7 @@ local n=0
 local function test(name,f)f();n=n+1;print('PASS '..name)end
 local function run(ids)return {relics=ids,relicCounters={},gold=0,hp=30,maxHp=80,potionSlots=3,potions={}}end
 test('Omamori prevents two curses without card-obtain gold, third obtains normally',function()
- local r=run({'omamori','ceramic_fish'});H.onEquip(r,'omamori')
+ local r=run({'omamori','ceramic_fish'});H.onEquip(r,'omamori',nil,R)
  for _=1,2 do assert(not H.beforeObtainCard(r,{type='curse'}));assert(r.gold==0)end
  assert(r.relicCounters.omamori==0);assert(H.beforeObtainCard(r,{type='curse'}));H.onObtainCard(r,{type='curse'});assert(r.gold==9)
  assert(H.beforeObtainCard(r,{type='attack'}));H.onObtainCard(r,{type='attack'});assert(r.gold==18)
@@ -15,10 +15,10 @@ test('CeramicFish gainGold respects Ectoplasm',function()
  local r=run({'ceramic_fish','ectoplasm'});H.onObtainCard(r,{type='attack'});assert(r.gold==0)
 end)
 test('PotionBelt increases physical capacity by two only on equip and preserves holes',function()
- local r=run({'potion_belt'});r.potions[3]='fire_potion';H.onEquip(r,'potion_belt');assert(r.potionSlots==5 and r.potions[3]=='fire_potion' and not r.potions[2])
+ local r=run({'potion_belt'});r.potions[3]='fire_potion';H.onEquip(r,'potion_belt',nil,R);assert(r.potionSlots==5 and r.potions[3]=='fire_potion' and not r.potions[2])
 end)
 test('MealTicket only heals entering shop; MawBank awards each entered room then shop spend disables permanently',function()
- local r=run({'meal_ticket','maw_bank'});H.onEquip(r,'maw_bank')
+ local r=run({'meal_ticket','maw_bank'});H.onEquip(r,'maw_bank',nil,R)
  H.onEnterRoom(r,'combat');assert(r.gold==12 and r.hp==30)
  H.onEnterRoom(r,'shop');assert(r.gold==24 and r.hp==45)
  H.onSpendGold(r,'event');H.onEnterRoom(r,'event');assert(r.gold==36)

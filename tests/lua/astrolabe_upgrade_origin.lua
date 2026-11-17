@@ -5,7 +5,7 @@ r.phase='reward'
 assert(Run.obtainRelic(r,'astrolabe'))
 local old,nextUid={},r.nextDeckUid
 for i=1,3 do old[i]=r.deck[i].uid end
-for _,uid in ipairs(old)do assert(require('abyss_boss_relics').select(r,uid))end
+for _,uid in ipairs(old)do assert(require('abyss_boss_relics').select(r,uid,Run))end
 assert(not r.pendingBossRelic)
 local count=0
 for _,card in ipairs(r.deck)do

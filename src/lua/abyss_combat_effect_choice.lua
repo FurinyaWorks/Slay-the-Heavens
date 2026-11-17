@@ -26,7 +26,7 @@ function Handlers.handChoice(c)
     local state=c.state
     local effect=c.effect
     local queue=c.queue
-    local result, reason=require("abyss_hand_choice").begin(state,effect.mode,effect.value,queue)
+    local result, reason=require("abyss_hand_choice").begin(state,effect.mode,effect.value,queue,c.combat)
     assert(result,reason)
     return result
 end

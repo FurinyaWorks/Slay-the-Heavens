@@ -1,6 +1,12 @@
 -- Final Silent definitions and source action contracts, pinned STS1 319009.
 -- Plans are pure data; shared Combat owns identity, selections and auto play.
-local M={}
+local Hooks=require('abyss_combat_card_hooks').silent
+local hookFields={powerDescription=true,onHpLost=true,endTurn=true,death=true}
+local function hookIndex(_,key)if hookFields[key]then return Hooks[key]end end
+local function hookNewIndex(self,key,value)
+ if hookFields[key]then Hooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=hookIndex,__newindex=hookNewIndex})
 M.ops={silentFinal=true}
 local function copy(x)if type(x)~='table'then return x end;local y={};for k,v in pairs(x)do y[k]=copy(v)end;return y end
 local function effect(op,value,extra)
@@ -73,12 +79,7 @@ end
 function M.allowedAfterVictory(e)
  return e.kind=='corpseDamage'or e.kind=='trigger'and (e.action.op=='block'or e.action.op=='cardTriggerDamageAll')
 end
-function M.powerDescription(actor,id)
- local n=actor.statuses[id]or 0
- local number=require('abyss_numbers').integer
- if id=='wraith_form'then return '每个自己的回合结束时，失去'..number(-n)..'点敏捷；敏捷减少可被人工制品抵挡。'
- elseif id=='nightmare'then return '下回合开始，获得'..number(n)..'张'..(actor.nightmareCardName or '所选卡牌')..'的临时复制，然后移除此能力。'end
-end
+
 function M.adapt(s,c,d)
  if c.cardId=='masterful_stab'then
   local n=c.masterfulLosses or 0
@@ -87,15 +88,7 @@ function M.adapt(s,c,d)
  if c.silentRetainTurn==s.turn then d.selfRetain=true end
  return d
 end
-function M.onHpLost(s)
- for _,name in ipairs({'hand','draw','discard'})do for _,c in ipairs(s[name])do if c.cardId=='masterful_stab'then
-  c.masterfulLosses=(c.masterfulLosses or 0)+1
-  if c.combatCost~=nil then c.combatCost=c.combatCost+1 end
-  if c.turnCost~=nil then c.turnCost=c.turnCost+1 end
-  if c.costOverride~=nil then c.costOverride=c.costOverride+1 end
-  if c.costForTurn~=nil and c.costForTurn>=0 then c.costForTurn=c.costForTurn+1 end
- end end end
-end
+
 function M.onDraw(s,c)
  if c.cardId=='endless_agony'then
   local e={op='silentFinal',kind='copyHand',value=1,template=copy(c)}
@@ -177,16 +170,8 @@ function M.startTurn(s,post)
   if n>0 then actions().enqueue(s,{op='silentFinal',kind='tools',value=n})end
  end
 end
-function M.endTurn(s,actor)
- if actor~=s.player then return end
- if actor.statuses.burst then remove(s,'burst')end
-end
-function M.death(s,actor,before,push)
- local n=actor.statuses.corpse_explosion or 0
- if before<=0 or actor.hp>0 or n<=0 or actor.escaped or actor==s.player then return end
- local live=false;for _,e in ipairs(s.enemies)do if A().isPresent(e)then live=true end end
- if live then (push or actions().enqueueReaction)(s,{op='silentFinal',kind='corpseDamage',value=actor.maxHp*n})end
-end
+
+
 function M.prepare(combat,s,e)
  if e.op~='silentFinal'then return e end
  if e.kind=='alchemize'then
@@ -208,8 +193,8 @@ local actionHandlers={}
 function actionHandlers.gainSilentFinalPower(_combat,s,e,_item)
   A().applyPower(s,s.player,e.status,e.value,s.player)
 end
-function actionHandlers.potionShivs(_combat,s,e,_item)
-  require('abyss_silent_potions').shivs(s,e.value)
+function actionHandlers.potionShivs(combat,s,e,_item)
+  require('abyss_silent_potions').shivs(s,e.value,combat)
 end
 function actionHandlers.trigger(combat,s,e,item)
   local a=e.action

@@ -232,7 +232,7 @@ for _,first in ipairs({'flame_barrier','thorns'}) do
   local bronze
   for _,potion in ipairs(data.potions.potions) do if potion.id=='liquid_bronze' then bronze=potion end end
   assert(bronze)
-  local function thorns() assert(require('abyss_inventory').apply(s,bronze.effects)) end
+  local function thorns() assert(require('abyss_inventory').apply(s,bronze.effects,nil,nil,nil,require('abyss_combat'))) end
   if first=='flame_barrier' then play(s,'flame_barrier');thorns() else thorns();play(s,'flame_barrier') end
   local start=#s.events+1;local hp=s.player.hp;assert(C.endTurn(s))
   local hits={}

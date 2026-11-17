@@ -2,7 +2,13 @@
 local Actors=require('abyss_actor')
 local Events=require('abyss_events')
 local Health=require('abyss_original_v4_health')
-local M={}
+local ActorHooks=require('abyss_original_v4_actor_hooks')
+local actorHookFields={enemyDied=true}
+local function actorHookIndex(_,key)if actorHookFields[key]then return ActorHooks[key]end end
+local function actorHookNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=actorHookIndex,__newindex=actorHookNewIndex})
 local ops={absorb=true,block=true,block_spent=true,bloom=true,bonus=true,cash_bloom=true,cleanse=true,counter=true,
     damage=true,damage_spent=true,directive=true,draw=true,end_infuse=true,eye=true,eye_pulse=true,heal=true,heal_spent=true,
     infuse=true,mature=true,mode=true,musou=true,next_block=true,next_draw=true,next_energy=true,pay_hp=true,resolve=true,
@@ -134,11 +140,7 @@ local function bond(state,n,mature)
     local v=state.originalV4;v.bond=math.min(state.originalV4Rules.AR.bond_max,v.bond+n)
     if v.role=='AR' and mature and not v.relicUsed then v.relicUsed=true;M.block(state,3,true)end
 end
-function M.enemyDied(state,enemy,before)
-    if not state.originalV4 or before<=0 or enemy.hp>0 or enemy==state.player then return end
-    if state.originalV4.role=='AR' and enemy.v4Directive then enemy.v4Directive=nil;bond(state,state.originalV4Rules.AR.marked_target_death_gain,false)end
-    enemy.v4Bloom=nil;enemy.v4Directive=nil
-end
+
 local function resolve(state,n)
     local v,r=state.originalV4,state.originalV4Rules.RD
     if v.role~='RD'then return end
@@ -186,7 +188,7 @@ trigger=function(combat,state,member)
         return
     end
     if member=='singer'then
-        if v.mode=='pneuma' and v.singer>0 then v.singer=v.singer-1;Health.heal(state,state.player,r.singer_heal,'singer')end
+        if v.mode=='pneuma' and v.singer>0 then v.singer=v.singer-1;Health.heal(state,state.player,r.singer_heal,'singer',nil,Actors)end
         return
     end
     if v.mode~='ousia' or (v.guests[member] or 0)<=0 then return end
@@ -209,7 +211,7 @@ local function applyDamage(combat,state,e,target,ctx,_v,_r,n,op)
 end
 local function applyBasic(combat,state,e,_target,ctx,_v,_r,n,op)
     if op=='block' or op=='block_spent'then M.block(state,n+(op=='block_spent' and e.coefficient*ctx.spent or 0),false)
-    elseif op=='heal' or op=='heal_spent'then Health.heal(state,state.player,n+(op=='heal_spent' and e.coefficient*ctx.spent or 0),ctx.tag)
+    elseif op=='heal' or op=='heal_spent'then Health.heal(state,state.player,n+(op=='heal_spent' and e.coefficient*ctx.spent or 0),ctx.tag,nil,Actors)
     elseif op=='draw'then if not combat.outcome(state)then combat.draw(state,n)end
     end
 end

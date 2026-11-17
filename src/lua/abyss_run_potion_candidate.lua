@@ -91,7 +91,7 @@ local function combatCandidate(run,slot,targetIndex,potion,effects,afterPotionAc
     candidate.potionInventory=Combat.copy(run.potions)
     local called,ok,reason=pcall(function()
         if potion.targetPolicy=='enemy_one'then Combat.faceTarget(candidate,candidate.enemies[targetIndex])end
-        local applied,why=Inventory.apply(candidate,effects,targetIndex,run,true)
+        local applied,why=Inventory.apply(candidate,effects,targetIndex,run,true,Combat)
         if not applied then return false,why end
         -- Preserve Potion.use, hooks, slot release, caller actions, then one drain.
         RelicHooks.onUsePotion(run,candidate)

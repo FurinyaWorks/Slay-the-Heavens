@@ -17,7 +17,7 @@ local function text(ctx,row)
  end
  return row.title,row.description
 end
-function M.install(ctx)
+function M.install(ctx,Run)
  function ctx.renderRelicPending()
   local self=ctx.self;local view=Pending.view(self.run)
   self.pendingGeneration=(self.pendingGeneration or 0)+1
@@ -59,7 +59,7 @@ function M.install(ctx)
     assert(type(title)=='string'and title~=''and type(description)=='string'and description~='', 'missing relic choice description')
     box:GetChild('title').text=title;box:GetChild('description').text=description
     bind('eventView/option'..i,true,function()
-     self.busy=true;local called,ok,why=pcall(Pending.resolve,run,row.token);self.busy=false
+     self.busy=true;local called,ok,why=pcall(Pending.resolve,run,row.token,Run);self.busy=false
      if not called then error(ok)end
      self.notice=ok and ''or ({potion_slots_full='药水槽已满，请先丢弃药水或放弃本瓶。'})[why]or '操作未完成，请重新选择。'
      self:render();if ctx.onChange then ctx.onChange(ok,why,self)end

@@ -172,17 +172,27 @@ function M.view(run,event)
     if #event.purgeCards==0 then event.body='没有可移除的卡牌。已支付75金币，可以离开。' end
 end
 
-function M.choose(run,flow,choice,uid,upgradeable)
-    local extra=extension(flow.event.id);if extra then return extra.choose(run,flow,choice,uid)end
-    if flow.event.id=='duplicator' then return Duplicator.choose(run,flow,choice,uid) end
-    if flow.event.id=='nest' then return Nest.choose(run,flow,choice,uid) end
-    if flow.event.id=='the_library' then return Library.choose(run,flow,choice,uid) end
-    if flow.event.id=='joust' then return Joust.choose(run,flow,choice,uid) end
-    local event=flow.event
-    if event.id=='ghosts' then return Ghosts.choose(run,flow,choice,uid) end
-    if event.id=='back_to_basics' then return Basics.choose(run,flow,choice,uid,upgradeable) end
-    if event.id=='addict' then return chooseAddict(run,event,choice,uid) end
-    if event.id=='mausoleum' then return chooseMausoleum(run,event,choice,uid) end
+local function chooseBeggarCard(run,event,choice,uid)
+    -- Recheck live candidates: a stale empty-screen leave cannot skip a card.
+    if choice=='leave' and uid==nil and #Purge.purgeCards(run)==0 then
+        event.stage='result';event.body='没有可移除的卡牌。你离开了，已支付的75金币不退还。'
+        return true,'complete'
+    end
+    if choice~='purge' then return false,'invalid_event_choice' end
+    -- UIDs represent source object identity. Never remove the first of two
+    -- ambiguous instances, nor reinterpret a stale position as another card.
+    local matches=0
+    for _,card in ipairs(run.deck) do if card.uid==uid then matches=matches+1 end end
+    if uid==nil or matches~=1 then return false,'invalid_card' end
+    local allowed=false
+    for _,card in ipairs(Purge.purgeCards(run)) do if card.uid==uid then allowed=true;break end end
+    if not allowed then return false,'card_not_purgeable' end
+    local ok,why=Run.removeCard(run,uid)
+    if not ok then return false,why end
+    event.removedUid=uid;event.stage='result'
+    return true,'complete'
+end
+local function chooseBeggar(run,event,choice,uid)
     if uid~=nil and event.stage~='choose_card' then return false,'invalid_event_choice' end
     if event.stage=='intro' then
         if choice=='leave' then
@@ -200,27 +210,23 @@ function M.choose(run,flow,choice,uid,upgradeable)
         event.body='已支付75金币。请查看下方选项。'
         return true,'choose_card'
     elseif event.stage=='choose_card' then
-        -- Recheck live candidates: a stale empty-screen leave cannot skip a card.
-        if choice=='leave' and uid==nil and #Purge.purgeCards(run)==0 then
-            event.stage='result';event.body='没有可移除的卡牌。你离开了，已支付的75金币不退还。'
-            return true,'complete'
-        end
-        if choice~='purge' then return false,'invalid_event_choice' end
-        -- UIDs represent source object identity. Never remove the first of two
-        -- ambiguous instances, nor reinterpret a stale position as another card.
-        local matches=0
-        for _,card in ipairs(run.deck) do if card.uid==uid then matches=matches+1 end end
-        if uid==nil or matches~=1 then return false,'invalid_card' end
-        local allowed=false
-        for _,card in ipairs(Purge.purgeCards(run)) do if card.uid==uid then allowed=true;break end end
-        if not allowed then return false,'card_not_purgeable' end
-        local ok,why=Run.removeCard(run,uid)
-        if not ok then return false,why end
-        event.removedUid=uid;event.stage='result'
-        return true,'complete'
+        return chooseBeggarCard(run,event,choice,uid)
     elseif event.stage=='leave' and choice=='leave' then
         return true,'complete'
     end
     return false,'invalid_event_choice'
+end
+function M.choose(run,flow,choice,uid,upgradeable)
+    local extra=extension(flow.event.id);if extra then return extra.choose(run,flow,choice,uid)end
+    if flow.event.id=='duplicator' then return Duplicator.choose(run,flow,choice,uid) end
+    if flow.event.id=='nest' then return Nest.choose(run,flow,choice,uid) end
+    if flow.event.id=='the_library' then return Library.choose(run,flow,choice,uid) end
+    if flow.event.id=='joust' then return Joust.choose(run,flow,choice,uid) end
+    local event=flow.event
+    if event.id=='ghosts' then return Ghosts.choose(run,flow,choice,uid) end
+    if event.id=='back_to_basics' then return Basics.choose(run,flow,choice,uid,upgradeable) end
+    if event.id=='addict' then return chooseAddict(run,event,choice,uid) end
+    if event.id=='mausoleum' then return chooseMausoleum(run,event,choice,uid) end
+    return chooseBeggar(run,event,choice,uid)
 end
 return M

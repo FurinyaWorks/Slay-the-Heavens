@@ -12,19 +12,19 @@ end
 function M.notify(state,owner,target,amount)
     if target~=state.player or amount<=0 then return end
     if state.originalV4 then require('abyss_original_v4_health').hpEvent(state,amount) end
-    require('abyss_warrior_status_cards').onHpLost(state,amount)
-    require('abyss_silent_final_cards').onHpLost(state)
-    local plan=require('abyss_warrior_strength_cards').planHpLost(state,owner,amount)
+    require('abyss_combat_card_hooks').warriorStatus.onHpLost(state,amount)
+    require('abyss_combat_card_hooks').silent.onHpLost(state)
+    local plan=require('abyss_combat_card_hooks').warriorStrength.planHpLost(state,owner,amount)
     -- Powers dispatch before relics. Both callbacks insert TOP actions, so
     -- a later Puzzle Draw must run before Rupture's ApplyPower, on either owner.
     for _,action in ipairs(plan.top) do
-        require('abyss_card_actions').enqueueReaction(state,action.effect,true)
+        require('abyss_combat_reactions').enqueueReaction(state,action.effect,true)
     end
-    require('abyss_relic_combat_hooks').wasHpLost(state,target,amount)
+    require('abyss_relic_actor_hooks').combat.wasHpLost(state,target,amount)
     -- Source damage updates bloodied before the fatal reserve. Only actual
     -- positive damage grants this HP0 callback; arbitrary zeroing does not.
     if state.player.hp<=0 then
-        require('abyss_relic_combat_hooks').hpChanged(state,target,target.hp+amount,true)
+        require('abyss_relic_actor_hooks').combat.hpChanged(state,target,target.hp+amount,true)
         require('abyss_player_revive').battle(state)
     end
 end

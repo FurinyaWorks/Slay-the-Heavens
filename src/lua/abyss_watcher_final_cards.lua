@@ -1,5 +1,11 @@
 -- Pinned319009 facts and pure-data plans. The core owns all effects/choices.
-local M={}
+local Hooks=require('abyss_combat_card_hooks').watcher
+local hookFields={gainedBlock=true}
+local function hookIndex(_,key)if hookFields[key]then return Hooks[key]end end
+local function hookNewIndex(self,key,value)
+ if hookFields[key]then Hooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=hookIndex,__newindex=hookNewIndex})
 local function copy(v,path)
  local kind=type(v)
  if kind~='table'then assert(kind=='nil'or kind=='string'or kind=='boolean'or kind=='number'and v==v and math.abs(v)<math.huge,'non-data final card field');return v end
@@ -165,13 +171,7 @@ function M.cancelAutomatic(combat,state)
  end
  state.queuedCards=nil
 end
-function M.gainedBlock(state,amount)
- local n=state.player.statuses.wave_of_the_hand or 0
- if amount<=0 or n<=0 then return end
- local effect={op='applyStatusAll',status='weak',value=n}
- if state.actionQueue then require('abyss_action_queue').pushBottom(state,{kind='effect',effect=effect})
- else require('abyss_card_actions').enqueue(state,effect)end
-end
+
 function M.endRound(state)
  if state.player.statuses.wave_of_the_hand~=nil then
   require('abyss_power_schedule').remove(state,state.player,'wave_of_the_hand')
@@ -187,7 +187,7 @@ local function top(state,queue,effect)
  queue.pushTop(state,{kind='effect',effect=effect})
 end
 local function normalized(value)return (value or ''):lower():gsub('[^a-z0-9]','')end
-local function foreignChoices(state)
+local function foreignChoices(state,combat)
  local pools=require('abyss_watcher_foreign_pool')
  local Random=require('abyss_sts_random')
  local bySource={}
@@ -205,7 +205,7 @@ local function foreignChoices(state)
   local source=pool[Random.randomInt(assert(state.cardRng,'missing persistent Foreign Influence card RNG'),#pool-1)+1]
   if not seen[source]then
    local id=assert(bySource[normalized(source)],'missing Foreign Influence definition: '..source)
-   assert(require('abyss_card_capability').isImplemented(state.catalog.cards[id]),'unimplemented Foreign Influence card: '..source)
+   assert(combat.isCardImplemented(state.catalog.cards[id]),'unimplemented Foreign Influence card: '..source)
    seen[source]=true;cards[#cards+1]={uid=#cards+1,cardId=id,upgraded=false}
   end
  end
@@ -269,16 +269,16 @@ function effectHandlers.watcherFinalOmega(combat,state,effect,_queue,Actor)
  for _,enemy in ipairs(state.enemies)do if Actor.isActive(enemy)then combat.retaliate(state,nil,enemy,effect.value)end end
  return true
 end
-function effectHandlers.watcherFinalGenerate(_combat,state,effect)
- require('abyss_build_actions').makeCard(state,effect)
+function effectHandlers.watcherFinalGenerate(combat,state,effect)
+ require('abyss_build_actions').makeCard(state,effect,combat)
  return true
 end
-function effectHandlers.watcherFinalWish(_combat,state,effect,_queue,_Actor,op)
+function effectHandlers.watcherFinalWish(combat,state,effect,_queue,_Actor,op)
  assert(not state.pendingChoice,'another choice is pending')
  state.choiceSerial=(state.choiceSerial or 0)+1
  local kind=op=='watcherFinalWish' and 'wish' or 'foreign'
  local cards={}
- if kind=='foreign' then cards=foreignChoices(state)
+ if kind=='foreign' then cards=foreignChoices(state,combat)
  else for i,id in ipairs({'become_almighty','fame_and_fortune','live_forever'})do cards[i]={uid=i,cardId=id,upgraded=effect.value==1}end end
  state.pendingChoice={op='watcher_final',kind=kind,token=state.choiceSerial,turn=state.turn,using=state.pendingPlay.uid,
   uids={1,2,3},cards=cards,upgraded=effect.value==1}
@@ -323,12 +323,12 @@ function effectHandlers.watcherFinalSpiritShield(combat,state,effect)
  combat.block(state,state.player,effect.value*#state.hand)
  return true
 end
-function effectHandlers.watcherFinalConjureBlade(_combat,state,effect)
+function effectHandlers.watcherFinalConjureBlade(combat,state,effect)
  local context=assert(state.pendingPlay,'missing Conjure Blade context')
  local x=context.energyOnUse+effect.value
  if require('abyss_relic_queries').hooks.owns(state,'chemical_x')then x=x+2 end
  local uid=state.nextUid
- require('abyss_build_actions').makeCard(state,{cardId='expunger',pile='draw',randomSpot=true,value=1})
+ require('abyss_build_actions').makeCard(state,{cardId='expunger',pile='draw',randomSpot=true,value=1},combat)
  for _,c in ipairs(state.draw)do if c.uid==uid then c.expungerHits=x end end
  if not context.freeToPlayOnce then state.energy=0 end
  return true

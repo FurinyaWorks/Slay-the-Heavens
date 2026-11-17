@@ -1,7 +1,13 @@
 -- Fixed319009 card/power hooks. Plans are data; Combat owns phase/transactions.
 local Actors=require("abyss_actor")
 local Events=require("abyss_events")
-local M={}
+local ActorHooks=require('abyss_combat_card_hooks').triggers
+local actorHookFields={resolveEnvenom=true}
+local function actorHookIndex(_,key)if actorHookFields[key]then return ActorHooks[key]end end
+local function actorHookNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=actorHookIndex,__newindex=actorHookNewIndex})
 local MAX=2147483647
 local ids={"after_image","thousand_cuts","envenom","rage","heat_sinks","storm"}
 local specs={
@@ -197,21 +203,7 @@ function M.onAttack(s,source,target,damageAmount,damageType)
     return action("envenom",{op="cardTriggerPoison",targetId=target.id,value=n,
         poisonBonus=Actors.poisonBonus(s,target,source)})
 end
-function M.resolveEnvenom(s,effect)
-    powers(s);plain(effect,"invalid Envenom action")
-    assert(effect.op=="cardTriggerPoison" and type(effect.targetId)=="string" and integer(effect.value,1,MAX),"invalid Envenom action")
-    if not live(s) then return false end
-    local target
-    for _,enemy in ipairs(s.enemies) do if enemy.id==effect.targetId then assert(not target,"duplicate Envenom target");target=enemy end end
-    if not target or not Actors.isActive(target) then return false end
-    local old=target.statuses.poison or 0
-    assert(integer(old,0,MAX),"invalid existing Envenom poison")
-    -- PoisonPower's constructor caps a NEW Power, while an existing Power's
-    -- stack uses the uncapped action amount. Actor adds Snake Skull after this
-    -- constructor cap, before the shared Artifact gate.
-    local value=old>0 and effect.value or math.min(9999,effect.value)
-    return Actors.applyPower(s,target,"poison",value,s.player,nil,effect.poisonBonus)
-end
+
 function M.resolveDamageAll(s,effect,api)
     powers(s);plain(effect,"invalid Thousand Cuts action")
     assert(effect.op=="cardTriggerDamageAll","invalid Thousand Cuts operation")

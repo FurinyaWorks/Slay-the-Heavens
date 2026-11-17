@@ -28,13 +28,13 @@ local operations = { timeEater=true, writhingRoll=true,writhingParasite=true, cl
 for _,op in ipairs({'rareGamblingChip','rareRelicGenerate','rareRelicDamageAll','rareRelicWeak','shopRelic'})do operations[op]=true end
 function M.supports(op) return operations[op] == true end
 
-function M.reactionRetained(effect)
+function M.reactionRetained(effect,combat)
     if effect.op=='rareRelicDamageAll'then return true end
     if require('abyss_corrupt_heart').retained(effect)then return true end
     if effect.op=='reptomancerSuicide'then return true end
     return TimeEater.retained(effect) or effect.op=='awakenedAction' and effect.kind=='heal' or PlatedArmor.retained(effect) or Act2Powers.retained(effect) or effect.op=='resolveCurlUp'
         or effect.op=='damageRandom' or effect.op=='staticRetaliation'
-        or effect.op=='silentFinal' and require('abyss_silent_final_cards').allowedAfterVictory(effect)
+        or effect.op=='silentFinal' and combat.silentFinalAllowedAfterVictory(effect)
 end
 
 local function remove(pile, uid)
@@ -80,7 +80,7 @@ function M.fresh(combat, state, id, prototype)
     c.uuid=c.uid
     state.nextUid=state.nextUid+1.0
     assert(state.nextUid>c.uid and state.nextUid<math.huge,"nextUid cannot advance")
-    if not prototype then require('abyss_defect_final_cards').created(state,c)end
+    if not prototype then combat.initializeGeneratedCard(state,c)end
     return c
 end
 
@@ -263,7 +263,7 @@ end
 
 function M.choose(combat,state,token,uid)
     local choice=state.pendingChoice
-    if choice and choice.op=='silentFinal'then return require('abyss_silent_final_cards').choose(combat,state,token,uid)end
+    if choice and choice.op=='silentFinal'then return combat.chooseSilentFinal(state,token,uid)end
     if choice and choice.op=='colorless' then return require('abyss_colorless_cards').choose(combat,state,token,uid) end
     if not choice or token~=choice.token then return false,"stale_card_choice" end
     if choice.op=='discover' then
@@ -405,14 +405,14 @@ local function damageRandom(combat,state,item)
     end
 end
 
-local function feedReward(state,source,amount)
+local function feedReward(state,source,amount,combat)
     source.maxHp=source.maxHp+amount
     local beforeHp=source.hp
     local healing=source==state.player and require('abyss_potion_health').modifyHealing(amount,state.relics,true)or amount
-    if state.originalV4 and source==state.player then require('abyss_original_v4_health').heal(state,source,healing,nil,'feed')
+    if state.originalV4 and source==state.player then require('abyss_original_v4_health').heal(state,source,healing,nil,'feed',combat)
     else source.hp=math.min(source.maxHp,source.hp+healing)end
     Events.emit(state,"max_hp",{amount=amount,target=source.id})
-    require('abyss_relic_combat_hooks').hpChanged(state,source,beforeHp)
+    require('abyss_relic_combat_hooks').hpChanged(state,source,beforeHp,nil,Actors)
 end
 
 local function feed(combat,state,item)
@@ -420,7 +420,7 @@ local function feed(combat,state,item)
     local before=target.hp
     combat.damage(state,source,target,e.value,nil,nil,e.resolved and e.resolved[target.id])
     if before>0 and target.hp<=0 and not target.escaped and not target.minion and not target.halfDead
-        and (target.statuses.minion or 0)<=0 and source.hp>0 then feedReward(state,source,e.maxHp)end
+        and (target.statuses.minion or 0)<=0 and source.hp>0 then feedReward(state,source,e.maxHp,combat)end
 end
 
 local function reaper(combat,state,item)
@@ -431,18 +431,18 @@ local function reaper(combat,state,item)
     M.enqueue(state,{op="heal",value=healed},source)
 end
 
-local function heal(_,state,item)
+local function heal(combat,state,item)
     local e,source=item.effect,item.source
     local value=e.value
     if source==state.player then value=require('abyss_potion_health').modifyHealing(value,state.relics,true)end
     if state.originalV4 and source==state.player then
-        require('abyss_original_v4_health').heal(state,source,value,nil,e.relic)
+        require('abyss_original_v4_health').heal(state,source,value,nil,e.relic,combat)
     elseif source.hp>0 then
         local amount=math.min(value,source.maxHp-source.hp)
         local beforeHp=source.hp
         source.hp=source.hp+amount
         Events.emit(state,"heal",{target=source.id,amount=amount})
-        require('abyss_relic_combat_hooks').hpChanged(state,source,beforeHp)
+        require('abyss_relic_combat_hooks').hpChanged(state,source,beforeHp,nil,Actors)
     end
 end
 
@@ -477,7 +477,7 @@ function actionHandlers.shopRelic(combat,state,item)
     return require('abyss_relic_family_combat').shop.execute(state,item.effect)
 end
 function actionHandlers.writhingRoll(_,state,item)return require('abyss_writhing_mass').roll(state,item.effect.targetId)end
-function actionHandlers.writhingParasite(_,state,item)return require('abyss_writhing_mass').obtainParasite(state,item.source)end
+function actionHandlers.writhingParasite(combat,state,item)return require('abyss_writhing_mass').obtainParasite(state,item.source,combat)end
 function actionHandlers.giantHeadSlow(_,state,item)return require('abyss_giant_head').applySlow(Actors,state,item.effect)end
 function actionHandlers.timeEater(combat,state,item)return TimeEater.execute(combat,state,item.effect,item.source,M)end
 function actionHandlers.reptomancerSuicide(_,state,item)return require('abyss_reptomancer').cleanup(Actors,state,item.effect)end
@@ -487,7 +487,7 @@ local function classPotionOrbHost()return require('abyss_orbs')end
 function actionHandlers.classPotion(combat,state,item)
  return require('abyss_class_potions').apply(combat,state,item.effect,classPotionOrbHost)
 end
-function actionHandlers.silentFinal(combat,state,item)return require('abyss_silent_final_cards').apply(combat,state,item)end
+function actionHandlers.silentFinal(combat,state,item)return combat.applySilentFinal(state,item)end
 function actionHandlers.discover(combat,state,item)return require('abyss_potion_discovery').begin(combat,state,item.effect)end
 function actionHandlers.colorless(combat,state,item)return require('abyss_colorless_cards').apply(combat,state,item)end
 function actionHandlers.originalV4(combat,state,item)return require('abyss_original_v4').execute(combat,state,item)end
@@ -514,7 +514,7 @@ function M.apply(combat,state,item)
     local e=item.effect
     if PlatedArmor.supports(e.op)then return PlatedArmor.apply(combat,state,e,M.enqueueReaction)end
     if Act2Powers.supports(e.op)then return Act2Powers.apply(Actors,state,e)end
-    if require('abyss_watcher_final_cards').ops[e.op]then return require('abyss_watcher_final_cards').execute(combat,state,e)end
+    if combat.supportsWatcherFinal(e.op)then return combat.applyWatcherFinal(state,e)end
     applyFallback(combat,state,item)
 end
 
@@ -522,7 +522,7 @@ end
 -- draws are cleared, but disposal, damage, ordinary block and healing survive.
 local retained={originalV4=true,dispose=true,capturedSharpHide=true,damage=true,damageAll=true,damageRandom=true,loseHp=true,block=true,heal=true,feed=true,reaper=true,effectBatch=true}
 local function applyDrainedAction(combat,state,item,outcome)
-    local keep=retained[item.effect.op] or (M.reactionRetained(item.effect) or item.effect.op=='silentFinal' and require('abyss_silent_final_cards').allowedAfterVictory(item.effect))
+    local keep=retained[item.effect.op] or (M.reactionRetained(item.effect,combat) or item.effect.op=='silentFinal' and combat.silentFinalAllowedAfterVictory(item.effect))
     if item.effect.op=='enemyAction'then keep=combat.enemyActionRetained(item.effect)end
     if not outcome or outcome=="victory" and keep then M.apply(combat,state,item) end
 end

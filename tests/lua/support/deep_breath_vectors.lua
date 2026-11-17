@@ -11,8 +11,8 @@ return function(samples)
  for _,sample in ipairs(samples)do
   local q=assert(I.opening(D.relics.relics,sample.relics,{sundial=2}))
   local s=assert(C.new(D,{deck={},enemies={'jaw_worm'},seed=7,shuffleSeed=sample.seed,
-   beforeOpeningDraw=function(owner)return I.applyOpening(owner,q.beforeDraw)end}))
-  assert(I.applyOpening(s,q.afterDraw));s.energy=5
+   beforeOpeningDraw=function(owner)return I.applyOpening(owner,q.beforeDraw,require('abyss_combat'))end}))
+  assert(I.applyOpening(s,q.afterDraw,require('abyss_combat')));s.energy=5
   local cards={};for uid=1,7 do cards[uid]=A.fresh(C,s,uid==1 and 'deep_breath'or uid%2==0 and 'strike'or 'defend');assert(cards[uid].uid==uid)end
   if sample.upgraded then assert(C.upgrade(s,cards[1]))end
   s.hand={cards[1]};s.draw={};s.discard={}

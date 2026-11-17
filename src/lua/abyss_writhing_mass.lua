@@ -84,21 +84,20 @@ function M.bindMaster(s,deck,nextUid)
  for _,card in ipairs(s.masterDeck)do minimum=math.max(minimum,card.uid+1.0)end
  s.nextMasterDeckUid=nextUid or minimum
 end
-function M.obtainParasite(s,source)
+function M.obtainParasite(s,source,combat)
  assert(isMass(source),'Parasite requires Writhing Mass')
- local Relics=require('abyss_relic_family_combat').common
  local definition=assert(s.catalog.cards.parasite,'missing permanent Parasite')
  assert(definition.type=='curse'and definition.onRemoveMaxHpLoss==3,'invalid Parasite definition')
  local context={phase='combat',combat=s,relics=s.relics,relicCounters=s.relicCounters,gold=s.player.gold,scoreStats=s.scoreStats}
- if not Relics.beforeObtainCard(context,definition)then
+ if not combat.beforePermanentCardObtain(context,definition)then
   Events.emit(s,'permanent_card_blocked',{cardId='parasite',relic='omamori'});return
  end
  local uid=s.nextMasterDeckUid
  assert(type(uid)=='number'and uid%1==0 and uid>=1 and uid<9007199254740991.0,'invalid master-deck UID')
  for _,card in ipairs(s.masterDeck)do assert(card.uid~=uid,'duplicate master-deck UID')end
  local card={uid=uid,cardId='parasite',upgraded=false}
- local ok,why=Relics.onObtainCard(context,card,definition,{combatContext=s,increaseMaxHp=function(_,n)
-  return require('abyss_inventory').apply(s,{{op='increaseMaxHp',value=n}},nil,context,true)
+ local ok,why=combat.onPermanentCardObtain(context,card,definition,{combatContext=s,increaseMaxHp=function(_,n)
+  return combat.applyPermanentCardInventory(s,{{op='increaseMaxHp',value=n}},nil,context,true)
  end})
  assert(ok,why)
  s.player.gold=context.gold

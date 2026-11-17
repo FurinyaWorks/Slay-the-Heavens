@@ -4,7 +4,13 @@ local Events=require('abyss_events')
 local Random=require('abyss_sts_random')
 local Actor=require('abyss_actor')
 local Schedule=require('abyss_power_schedule')
-local M={}
+local Hooks=require('abyss_combat_card_hooks').defect
+local hookFields={removePower=true,reducePower=true,incoming=true,static=true}
+local function hookIndex(_,key)if hookFields[key]then return Hooks[key]end end
+local function hookNewIndex(self,key,value)
+ if hookFields[key]then Hooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=hookIndex,__newindex=hookNewIndex})
 local function e(action,value,extra)local out=extra or {};out.op='defectFinal';out.action=action;out.value=value;return out end
 local function power(id,value)return e('power',value,{status=id})end
 local powers={
@@ -72,11 +78,11 @@ function M.describe(effect)
  end
  return assert(({white_noise='将1张随机非治疗能力牌加入手牌，本回合费用变为0；使用当前职业完整能力池',recursion='唤起最前方充能球，然后将同一个球重新生成',recycle='选择并消耗1张手牌，获得等同其当前费用的能量；X按当前能量计算',all_for_one='将弃牌堆所有基础费用为0或免费打出的牌加入手牌；满手时留在弃牌堆'})[action],'unknown final Defect description')
 end
-function M.pool(state,kind)
+function M.pool(state,kind,combat)
  local pools=assert(state.sourcePools,'missing class source pools');local list={}
  local function add(id)
   local card=assert(state.catalog.cards[id],'incomplete '..kind..' source pool: '..id)
-  assert(require('abyss_card_capability').isImplemented(card),'unimplemented '..kind..' source candidate: '..id)
+  assert(combat.isCardImplemented(card),'unimplemented '..kind..' source candidate: '..id)
   assert(kind~='common'or card.rarity=='common','invalid common source candidate')
   assert(kind~='power'or card.type=='power'and not card.healing,'invalid Power source candidate')
   list[#list+1]=id
@@ -94,16 +100,16 @@ function M.pool(state,kind)
  else error('unknown generated pool')end
  assert(#list>0,'empty complete source pool');return list
 end
-local function select(state,kind)
- local pool=M.pool(state,kind);return pool[Random.randomInt(assert(state.cardRandomRng),#pool-1)+1]
+local function select(state,kind,combat)
+ local pool=M.pool(state,kind,combat);return pool[Random.randomInt(assert(state.cardRandomRng),#pool-1)+1]
 end
-function M.prepareEffects(state,effects)
- for _,effect in ipairs(effects)do if effect.op=='defectFinal'and effect.action=='white_noise'then effect.cardId=select(state,'power')end end
+function M.prepareEffects(state,effects,combat)
+ for _,effect in ipairs(effects)do if effect.op=='defectFinal'and effect.action=='white_noise'then effect.cardId=select(state,'power',combat)end end
  return effects
 end
-function M.turnStartActions(state,id,n)
+function M.turnStartActions(state,id,n,combat)
  local out={};local kind=id=='hello_world'and'common'or'power'
- for _=1,n do out[#out+1]=e('generate',1,{cardId=select(state,kind)})end
+ for _=1,n do out[#out+1]=e('generate',1,{cardId=select(state,kind,combat)})end
  return out
 end
 function M.created(state,card)
@@ -117,26 +123,10 @@ function M.needsQueue(state)
  for _,name in ipairs({'hand','draw','discard'})do for _,c in ipairs(state[name])do if c.cardId=='force_field'then return true end end end
  return false
 end
-function M.removePower(state,id)
- Schedule.remove(state,state.player,id);state.player.statuses[id]=nil
- if id=='rebound'then state.reboundJustEvoked=nil end
-end
-function M.reducePower(state,id)
- local old=state.player.statuses[id]or 0
- if old<=1 then M.removePower(state,id)else state.player.statuses[id]=old-1 end
-end
-function M.incoming(state,target,amount)
- if target==state.player and target.statuses.buffer~=nil then
-  if amount>0 then M.reducePower(state,'buffer')end
-  return 0
- end
- return amount
-end
-function M.static(state,count)
- for _=1,count do
-  require('abyss_card_actions').enqueueReaction(state,{op='channelOrb',orb='lightning',value=1},true)
- end
-end
+
+
+
+
 function M.onUse(state,card)
  if card.type~='power'then return end
  for _,name in ipairs({'hand','draw','discard'})do for _,c in ipairs(state[name])do if c.cardId=='force_field'then
@@ -204,9 +194,9 @@ local function genetic(state,value)
   end end
  end
 end
-function M.recycle(state,card,queue)
+function M.recycle(state,card,queue,combat)
  local view=Copy.copy(card);view.freeToPlayOnce=nil
- local cost=require('abyss_combat').cardDefinition(state,view).cost
+ local cost=combat.cardDefinition(state,view).cost
  local energy=cost==-1 and state.energy or math.max(0,cost)
  if energy>0 then push(queue,state,{op='energy',value=energy})end
  require('abyss_exhaust').move(state,card,'hand',queue,{onExhaustRelics=state.onExhaustRelics or {}})
@@ -268,7 +258,7 @@ function M.execute(combat,state,effect,queue)
  elseif action=='genetic'then genetic(state,effect.value)
  elseif action=='recursion'then recurOrb(state,queue)
  elseif action=='rechannel'then require('abyss_orbs').rechannel(state,effect.ball,combat)
- elseif action=='recycle'then return require('abyss_hand_choice').begin(state,'recycle',1,queue)
+ elseif action=='recycle'then return require('abyss_hand_choice').begin(state,'recycle',1,queue,combat)
  elseif action=='scrape'then scrapeDrawn(combat,state,effect,queue)
  elseif action=='all_for_one'then recoverZeroCost(combat,state,queue)
  elseif action=='discard_to_hand'then recoverDiscard(state,effect)

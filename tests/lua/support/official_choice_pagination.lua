@@ -12,14 +12,14 @@ local function setup()
  local battle=Combat.new(F.Data,{deck=deck,enemies={'cultist'},seed=42})
  Combat.draw(battle,10-#battle.hand);assert(#battle.hand==10)
  -- count==10 auto-discards in Core, so the largest genuine pending choice is nine.
- assert(Discard.begin(battle,9));assert(battle.pendingDiscard and battle.pendingDiscard.count==9)
+ assert(Discard.begin(battle,9,require('abyss_combat')));assert(battle.pendingDiscard and battle.pendingDiscard.count==9)
  local run={phase='combat',combat=battle,combatGeneration=7}
  local root=F.control(assert(spec));local calls=0
  local view=Choice.new(root,F.Presentation,'click',{imageSource='static',
   cursorEvents={CursorDown='down',CursorUp='up'},color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end},
   function(kind,uids,token,generation,owner)
    calls=calls+1;assert(kind=='discard'and generation==7 and owner==battle)
-   return Discard.choose(battle,uids,token)
+   return Discard.choose(battle,uids,token,require('abyss_combat'))
   end)
  assert(view:refresh(run,true))
  local function event(name,kind,touch)

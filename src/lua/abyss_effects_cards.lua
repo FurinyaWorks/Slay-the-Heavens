@@ -31,7 +31,7 @@ function M.requestDiscard(context)
     local value=context.effect.value
     assert(source == state.player and not queuedEnemyAction, "player discard only")
     if not combat.outcome(state) then
-        local ok, reason = require("abyss_discard").begin(state, value)
+        local ok, reason = require("abyss_discard").begin(state, value, combat)
         assert(ok, reason)
     end
 end
@@ -46,7 +46,7 @@ function M.generateShivs(context)
     assert(source == state.player and not queuedEnemyAction, "player generation only")
     if not combat.outcome(state) then
         assert(effect.upgraded==nil or type(effect.upgraded)=='boolean','invalid generated Shiv upgrade')
-        require("abyss_silent").generateShivs(state, value, effect.upgraded==true)
+        require("abyss_silent").generateShivs(state, value, effect.upgraded==true, combat)
     end
 end
 

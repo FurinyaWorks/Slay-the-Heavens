@@ -103,7 +103,7 @@ test("catalog stays immutable and real generator stamps Accuracy",function()
  local s=fresh({"shiv"});assert(Shivs.applyAccuracy(s,4))
  eq(s.catalog.cards.shiv.effects[1].value,4);eq(s.catalog.cards.shiv.upgrade.effects[1].value,6)
  assert(not pcall(Combat.cardDefinition,s,{uid=999,cardId="shiv",upgraded=false}))
- local uids=Silent.generateShivs(s,1);local generated
+ local uids=Silent.generateShivs(s,1,nil,require('abyss_combat'));local generated
  for _,c in ipairs(s.hand)do if c.uid==uids[1]then generated=c end end
  eq(generated.shivAccuracyBonus,4);eq(Combat.cardDefinition(s,generated).effects[1].value,8)
 end)
@@ -156,7 +156,7 @@ for _,upgraded in ipairs({false,true})do
   eq(Combat.cardDefinition(s,card).innate==true,upgraded)
   local energy=s.energy;assert(Combat.play(s,card.uid));eq(s.energy,energy-1)
   eq(s.player.statuses.infinite_blades,1);eq(#s.hand,0);eq(#s.discard,0);eq(#s.exhaust,0)
-  local ok,uids=Shivs.startTurn(s,Silent.generateShivs);assert(ok);eq(#uids,1);eq(#s.hand,1)
+  local ok,uids=Shivs.startTurn(s,Silent.generateShivs,require('abyss_combat'));assert(ok);eq(#uids,1);eq(#s.hand,1)
   eq(s.hand[1].upgraded,false)
  end)
 end
@@ -166,8 +166,8 @@ test("stacked Infinite Blades generates per layer and retains no callback in sta
  eq(s.player.statuses.infinite_blades,2)
  local calls=0
  local ok,uids=Shivs.startTurn(s,function(state,n,upgraded)
-  calls=calls+1;eq(n,2);eq(upgraded,false);return Silent.generateShivs(state,n,upgraded)
- end)
+  calls=calls+1;eq(n,2);eq(upgraded,false);return Silent.generateShivs(state,n,upgraded,require('abyss_combat'))
+ end,require('abyss_combat'))
  assert(ok);eq(calls,1);eq(#uids,2)
  local seen={}
  local function scan(t)
@@ -180,7 +180,7 @@ test("explicit pre-draw hook fills final hand slot before ordinary draw",functio
  local deck={};for _=1,12 do deck[#deck+1]="defend"end
  local s=infinite(deck);Combat.draw(s,4);eq(#s.hand,9)
  assert(Shivs.applyInfiniteBlades(s,1));local drawCount=#s.draw
- assert(Shivs.startTurn(s,Silent.generateShivs));eq(#s.hand,10)
+ assert(Shivs.startTurn(s,Silent.generateShivs,require('abyss_combat')));eq(#s.hand,10)
  Combat.draw(s,5);eq(#s.hand,10);eq(#s.draw,drawCount)
  -- This fixture calls the hook at its documented boundary; it is not a
  -- claim that shared Combat.startPlayerTurn already invokes Infinite Blades.
@@ -190,7 +190,7 @@ test("Infinite Blades full-hand output goes to discard and carries Accuracy",fun
  local s=infinite(deck)
  assert(Shivs.applyAccuracy(s,4));Combat.draw(s,5);eq(#s.hand,10)
  assert(Shivs.applyInfiniteBlades(s,1));local n=#s.discard
- local ok,uids=Shivs.startTurn(s,Silent.generateShivs);assert(ok)
+ local ok,uids=Shivs.startTurn(s,Silent.generateShivs,require('abyss_combat'));assert(ok)
  eq(#s.hand,10);eq(#s.discard,n+1);local card=s.discard[#s.discard]
  eq(card.uid,uids[1]);eq(card.cardId,"shiv");eq(card.shivAccuracyBonus,4)
  eq(Combat.cardDefinition(s,card).effects[1].value,8)
@@ -198,20 +198,20 @@ end)
 test("Infinite Blades real generator and Accuracy produce a playable eight-damage Shiv",function()
  local s=infinite({"accuracy","infinite_blades"})
  assert(Combat.play(s,find(s,"accuracy").uid));assert(Combat.play(s,find(s,"infinite_blades").uid))
- local ok,uids=Shivs.startTurn(s,Silent.generateShivs);assert(ok)
+ local ok,uids=Shivs.startTurn(s,Silent.generateShivs,require('abyss_combat'));assert(ok)
  local hp=s.enemies[1].hp;assert(Combat.play(s,uids[1],1));eq(s.enemies[1].hp,hp-8)
 end)
 test("Infinite Blades empty absent and dead cases remain explicit",function()
- local s=infinite();eq(Shivs.startTurn(s,function()error("absent power ran")end),false)
+ local s=infinite();eq(Shivs.startTurn(s,function()error("absent power ran")end,require('abyss_combat')),false)
  assert(Shivs.applyInfiniteBlades(s,1));s.player.hp=0
- eq(Shivs.startTurn(s,function()error("dead source ran")end),false)
+ eq(Shivs.startTurn(s,function()error("dead source ran")end,require('abyss_combat')),false)
  s=infinite();assert(Shivs.applyInfiniteBlades(s,1));s.enemies[1].hp=0
- eq(Shivs.startTurn(s,function()error("dead combat ran")end),false)
+ eq(Shivs.startTurn(s,function()error("dead combat ran")end,require('abyss_combat')),false)
 end)
 test("eleven Infinite Blades layers legally generate ten in hand and one in discard with Accuracy",function()
  local s=infinite();assert(Shivs.applyAccuracy(s,4))
  for _=1,11 do assert(Shivs.applyInfiniteBlades(s,1))end
- local ok,uids=Shivs.startTurn(s,Silent.generateShivs);assert(ok);eq(#uids,11)
+ local ok,uids=Shivs.startTurn(s,Silent.generateShivs,require('abyss_combat'));assert(ok);eq(#uids,11)
  eq(#s.hand,10);eq(#s.discard,1)
  local seen={}
  for _,pile in ipairs({s.hand,s.discard})do

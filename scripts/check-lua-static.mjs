@@ -93,7 +93,10 @@ export function reviewRenderComplexity(diagnostics, sources) {
 
 // Budget only this governance slice and every extracted responsibility module.
 // Unrelated pre-existing Combat/UI hotspots keep their diagnostic reports.
+// Reviewed leaf, presentation and preparation responsibilities are fully governed.
+const architectureGovernedModules = ["src/lua/abyss_actor_attack_math.lua", "src/lua/abyss_actor_artifact.lua", "src/lua/abyss_combat_card_hooks.lua", "src/lua/abyss_original_v4_actor_hooks.lua", "src/lua/abyss_power_membership.lua", "src/lua/abyss_relic_actor_hooks.lua", "src/lua/abyss_stance_damage.lua", "src/lua/abyss_card_upgrade.lua", "src/lua/abyss_character_profiles.lua", "src/lua/abyss_character_presentation.lua", "src/lua/abyss_character_select_view.lua", "src/lua/abyss_warrior_status_cards.lua", "src/lua/abyss_watcher_flow_cards.lua", "src/lua/abyss_original_v4_display.lua", "src/lua/abyss_potion_text.lua", "src/lua/abyss_feedback.lua", "src/lua/abyss_relic_pending.lua"];
 const responsibilityRoots = {
+  ...Object.fromEntries(architectureGovernedModules.map(file=>[file,[]])),
   'src/lua/abyss_curses.lua': ["function 'M.isImplemented'"],
   'src/lua/abyss_skill_feedback.lua': [],
   'src/lua/abyss_joust_event.lua': [],
@@ -264,7 +267,7 @@ const responsibilityRoots = {
 // Existing seed/red-card contracts are separate, unchanged responsibilities.
 // All Run orchestration and newly extracted Run helpers receive the full budget.
 const responsibilityHelper = file => /^src\/lua\/abyss_(?:effects_.+|combat_effect.*|combat_catalog|combat_reactions|combat_native_play|combat_queued_play|act2_ai_.+|character_presentation_.+|feedback_.+|node_ui(?:_.+)?|game_ui_.+|run(?:_(?!(?:card_catalog|red_card_contract|seed)\.lua$).+)?|nodes(?:_.+)?)\.lua$/.test(file);
-const completeResponsibility = file => responsibilityHelper(file)
+const completeResponsibility = file => architectureGovernedModules.includes(file) || responsibilityHelper(file)
   || file==='src/lua/abyss_curses.lua'
   || file==='src/lua/abyss_skill_feedback.lua'
   || file==='src/lua/abyss_joust_event.lua'
@@ -405,6 +408,94 @@ export function reviewNodeUiSize(sources) {
   }
   return {errors,measurements};
 }
+// The completed high-complexity inventory establishes a whole-source ceiling.
+// Existing stricter scopes and the CC15 new-code ratchet remain independent.
+// Only these unchanged legacy AST identities retain their existing <=30 debt.
+// Every current/future extraction in these responsibilities has a CC15 budget.
+const architectureScopedLegacy = {
+  "src/lua/abyss_traveler_portraits.lua": {
+    "$/controller#1/self.begin#1": 22,
+    "$/M.new#1/paint#1": 20,
+    "$/M.new#1/self.syncResult#1": 22
+  },
+  "src/lua/abyss_choice_ui.lua": {
+    "$/candidates#1": 28,
+    "$/M.new#1/fresh#1": 20
+  },
+  "src/lua/abyss_map_ui.lua": {
+    "$/chapterFor#1": 29,
+    "$/M.new#1": 23,
+    "$/M.new#1/paintButton#1": 22,
+    "$/M.new#1/self.update#1": 22,
+    "$/M.new#1/self.choose#1": 29
+  },
+  "src/lua/abyss_deck_ui.lua": {
+    "$/M.new#1/paintCardDetail#1": 22,
+    "$/M.new#1/self.update#1": 22
+  },
+  "src/lua/abyss_treasure_ui.lua": {},
+  "src/lua/abyss_match_event_ui.lua": {},
+  "src/lua/abyss_map.lua": {
+    "$/configuration#1": 24,
+    "$/M.generate#1": 17,
+    "$/M.available#1": 16,
+    "$/M.restore#1": 28
+  },
+  "src/lua/abyss_ending_history.lua": {
+    "$/identity#1": 17
+  },
+  "src/lua/abyss_treasure_source.lua": {
+    "$/item#1": 19
+  },
+  "src/lua/abyss_wheel_event.lua": {},
+  "src/lua/abyss_winding_event.lua": {},
+  "src/lua/abyss_act2_events.lua": {
+    "$/M.options#1": 19,
+    "$/chooseAddict#1": 22,
+    "$/chooseMausoleum#1": 19
+  },
+  "src/lua/abyss_act3_events.lua": {
+    "$/M.prepare#1": 17
+  },
+  "src/lua/abyss_colorless_cards.lua": {
+    "$/M.canUse#1": 18,
+    "$/M.choose#1": 16
+  }
+};
+export function reviewScopedArchitectureComplexity(measurements,scopes=architectureScopedLegacy) {
+  const errors=[...(measurements?.errors??[])],functions=[];
+  const modules=new Map((measurements?.modules??[]).map(module=>[module.file,module]));
+  for(const [file,legacy] of Object.entries(scopes)) {
+    const module=modules.get(file);
+    if(!module){errors.push({file,message:'Required architecture responsibility missing'});continue;}
+    for(const fn of module.functions) {
+      const limit=Object.hasOwn(legacy,fn.id)?legacy[fn.id]:15;
+      functions.push({file,id:fn.id,line:fn.line,complexity:fn.complexity,limit});
+      if(!Number.isSafeInteger(fn.complexity)||fn.complexity<1)
+        errors.push({file,line:fn.line,message:'Invalid architecture responsibility measurement'});
+      else if(fn.complexity>limit)
+        errors.push({file,line:fn.line,message:`Architecture responsibility complexity ${fn.complexity} exceeds ${limit}: ${fn.id}`});
+    }
+  }
+  return {schemaVersion:1,functions,errors};
+}
+export function reviewGlobalComplexity(measurements) {
+  const errors=[...(measurements?.errors??[])];
+  const modules=measurements?.modules;
+  if(!Array.isArray(modules)||!modules.length)errors.push({message:'Global complexity requires complete source measurements'});
+  let functions=0,maximum=0;
+  for(const module of Array.isArray(modules)?modules:[])for(const fn of module.functions??[]) {
+    functions++;
+    if(!Number.isSafeInteger(fn.complexity)||fn.complexity<1)
+      errors.push({file:module.file,line:fn.line,message:'Invalid global complexity measurement'});
+    else {
+      maximum=Math.max(maximum,fn.complexity);
+      if(fn.complexity>30)errors.push({file:module.file,line:fn.line,message:`Global complexity ${fn.complexity} exceeds 30: ${fn.name}`});
+    }
+  }
+  if(!functions)errors.push({message:'Global complexity has no function/chunk measurements'});
+  return {schemaVersion:1,limit:30,modules:modules?.length??0,functions,maximum,errors};
+}
 export function main(inputs) {
     const report=inputs?.warnings??runStatic(),baseline=JSON.parse(readFileSync('config/luacheck-baseline.json','utf8'));
     const unexpected=compareDiagnostics(report.diagnostics,baseline.diagnostics);
@@ -415,6 +506,8 @@ export function main(inputs) {
     writeFileSync('build/lua-complexity.json',JSON.stringify(complexity,null,2)+'\n');
     const sources=inputs?.sources??discoverSources();
     const measurements=inputs?.measurements??measureSources(sources,complexity.diagnostics);
+    const globalComplexity=reviewGlobalComplexity(measurements);
+    const architectureScope=reviewScopedArchitectureComplexity(measurements);
     const gameUi=reviewGameUiMeasurements(measurements,sources);
     writeFileSync('build/game-ui-size.json',JSON.stringify(gameUi,null,2)+'\n');
     const size=reviewNodeUiSize(sources);
@@ -424,9 +517,11 @@ export function main(inputs) {
     // Keep the scoped result in the existing uploaded UI artifact as well.
     writeFileSync('build/ui-complexity.json',JSON.stringify({...render,tool:complexity.tool,gameUi},null,2)+'\n');
     const responsibilities=reviewResponsibilityComplexity(complexity.diagnostics,sources);
-    writeFileSync('build/responsibility-complexity.json',JSON.stringify({...responsibilities,tool:complexity.tool},null,2)+'\n');
+    writeFileSync('build/responsibility-complexity.json',JSON.stringify({...responsibilities,globalComplexity,architectureScope,tool:complexity.tool},null,2)+'\n');
     const sizes=reviewModuleSize(sources);
     writeFileSync('build/module-size.json',JSON.stringify(sizes,null,2)+'\n');
+    if(globalComplexity.errors.length)throw new Error(`Global complexity check failed: ${JSON.stringify(globalComplexity.errors)}`);
+    if(architectureScope.errors.length)throw new Error(`Architecture responsibility check failed: ${JSON.stringify(architectureScope.errors)}`);
     if(gameUi.errors.length)throw new Error(`Game UI scope check failed: ${JSON.stringify(gameUi.errors)}`);
     if(unexpected.length||hard.length)throw new Error(`Lua static check failed: ${JSON.stringify([...unexpected,...hard])}`);
     if(render.errors.length)throw new Error(`UI complexity check failed: ${JSON.stringify(render.errors)}`);

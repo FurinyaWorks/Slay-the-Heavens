@@ -2,7 +2,13 @@
 -- Combat owns phase order, NORMAL snapshots, transactions and hook dispatch.
 local Actors=require('abyss_actor')
 local Events=require('abyss_events')
-local M={}
+local ActorHooks=require('abyss_combat_card_hooks').warriorStrength
+local actorHookFields={planHpLost=true}
+local function actorHookIndex(_,key)if actorHookFields[key]then return ActorHooks[key]end end
+local function actorHookNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=actorHookIndex,__newindex=actorHookNewIndex})
 local MAX=2147483647
 local copy=require('abyss_copy').copy
 local function integer(v,lo) return type(v)=='number' and v==v and v%1==0 and v>=(lo or 0) and v<=MAX end
@@ -135,14 +141,7 @@ local function action(op,value,extra)
  local e={op=op,value=value};for k,v in pairs(extra or {}) do e[k]=v end
  return {kind='effect',effect=e}
 end
-function M.planHpLost(state,owner,damageAmount)
- assert(type(damageAmount)=='number' and damageAmount==damageAmount,'invalid HP-loss hook amount')
- local result={top={},bottom={}};local n=amount(state,'rupture')
- if damageAmount>0 and owner==state.player and n>0 then
-  result.top[1]=action('gainStatus',n,{status='strength'})
- end
- return result
-end
+
 function M.planHook(state,id,phase)
  assert(powerIds[id],'unknown strength power hook')
  local result={top={},bottom={}};local n=amount(state,id)

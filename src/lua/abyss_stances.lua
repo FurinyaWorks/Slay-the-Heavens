@@ -1,6 +1,12 @@
 -- Source-derived stance semantics; shared combat owns damage and turn ordering.
 local Events = require("abyss_events")
-local M = {}
+local ActorHooks=require('abyss_stance_damage')
+local actorHookFields={damageMultiplier=true}
+local function actorHookIndex(_,key)if actorHookFields[key]then return ActorHooks[key]end end
+local function actorHookNewIndex(self,key,value)
+ if actorHookFields[key]then ActorHooks[key]=value else rawset(self,key,value)end
+end
+local M=setmetatable({}, {__index=actorHookIndex,__newindex=actorHookNewIndex})
 local valid = {Neutral=true, Wrath=true, Calm=true, Divinity=true}
 local amounts = {violet_lotus=1, calm_exit=2, divinity_enter=3}
 local powerKinds = {rushdown="draw",mental_fortress="block"}
@@ -143,18 +149,7 @@ end
 
 -- Apply at the shared Actor.attackAmount modifier stage, before its final floor.
 -- Never pre-multiply base damage (that would incorrectly multiply Strength).
-function M.damageMultiplier(state, source, target, fixed)
-    local p=player(state)
-    assert(type(source)=="table" and type(target)=="table", "invalid stance damage actors")
-    assert(fixed==nil or type(fixed)=="boolean", "invalid stance damage type")
-    if fixed then return 1 end
-    local n=1
-    if source==p then
-        if p.stance=="Wrath" then n=2 elseif p.stance=="Divinity" then n=3 end
-    end
-    if target==p and p.stance=="Wrath" then n=n*2 end
-    return n
-end
+
 
 function M.reset(state)
     local p=player(state)

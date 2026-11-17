@@ -7,7 +7,7 @@ local function test(name,f)f();count=count+1;print('PASS '..name)end
 local function battle(ids,hp,context,advanced)
  local q=assert(I.opening(data.relics.relics,ids,nil,context))
  local s=assert(C.new(data,{seed=42,hp=hp or 80,deck={'strike','defend','defend','defend','defend','defend','defend','defend','defend','defend'},enemies={'cultist'},enableStances=advanced,
- beforeOpeningDraw=function(s)return I.applyOpening(s,q.beforeDraw)end}));assert(I.applyOpening(s,q.afterDraw));return s
+ beforeOpeningDraw=function(s)return I.applyOpening(s,q.beforeDraw,require('abyss_combat'))end}));assert(I.applyOpening(s,q.afterDraw,require('abyss_combat')));return s
 end
 local function withHooks(hooks,fn)
  local saved={}
@@ -30,7 +30,7 @@ test('PreservedInsect sets only elite current HP to floor 75 percent and preserv
 end)
 test('RedSkull starts at half HP, adds three Strength and removes it after healing above half',function()
  local s=battle({'red_skull'},40);assert(s.player.statuses.strength==3)
- local before=s.player.hp;s.player.hp=41;H.hpChanged(s,s.player,before);assert(s.player.statuses.strength==0)
+ local before=s.player.hp;s.player.hp=41;H.hpChanged(s,s.player,before,nil,A);assert(s.player.statuses.strength==0)
  before=s.player.hp;C.applyEffects(s,{{op='loseHp',value=1}},s.player,s.player);assert(s.player.hp==40 and s.player.statuses.strength==3)
 end)
 -- Pinned aeubanks/sts@319009d5: CentennialPuzzle.wasHPLost adds draw 3
@@ -72,18 +72,18 @@ test('Puzzle ignores fully blocked attacks and lethal loss does not draw after d
   assert(queued.energy==energy,'terminal queue must not grant later energy')
  end
  local ended=battle({'centennial_puzzle'});ended.enemies[1].hp=0;n=#ended.hand
- local before=ended.player.hp;ended.player.hp=before-1;H.hpChanged(ended,ended.player,before)
+ local before=ended.player.hp;ended.player.hp=before-1;H.hpChanged(ended,ended.player,before,nil,A)
  assert(#ended.hand==n and ended.cardActions==nil)
 end)
 test('RedSkull updates on actual normal damage and regeneration healing; Artifact may block negative Strength',function()
  local s=battle({'red_skull'},41);A.damage(s,s.enemies[1],s.player,1);assert(s.player.statuses.strength==3)
  C.addStatus(s.player,'regen',2);A.endTurn(s,s.player);assert(s.player.hp==42 and s.player.statuses.strength==0)
- s.player.hp=40;H.hpChanged(s,s.player,42);C.addStatus(s.player,'artifact',1)
- s.player.hp=41;H.hpChanged(s,s.player,40);assert(s.player.statuses.strength==3 and s.player.statuses.artifact==0)
+ s.player.hp=40;H.hpChanged(s,s.player,42,nil,A);C.addStatus(s.player,'artifact',1)
+ s.player.hp=41;H.hpChanged(s,s.player,40,nil,A);assert(s.player.statuses.strength==3 and s.player.statuses.artifact==0)
 end)
 test('TinyChest equipment resets its actual unknown-room counter',function()
  local r=R.new(data,42);r.relics={'tiny_chest'};r.unknown.chances.tinyChestCount=3
- H.onEquip(r,'tiny_chest');assert(r.unknown.chances.tinyChestCount==0)
+ H.onEquip(r,'tiny_chest',nil,R);assert(r.unknown.chances.tinyChestCount==0)
 end)
 test('Juzu and fourth TinyChest use existing formal Nodes unknown-room ownership adapters',function()
  for _,kind in ipairs({'juzu_bracelet','tiny_chest'})do

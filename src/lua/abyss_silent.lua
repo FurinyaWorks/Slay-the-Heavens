@@ -10,7 +10,7 @@ end
 -- Return detached data: callers must deliberately opt in before Combat.new.
 -- This does not add green cards to Ironclad rewards or claim a playable class.
 function M.withFoundationCards(data)
-    local result = require("abyss_combat").copy(data)
+    local result = require("abyss_copy").copy(data)
     for _, card in ipairs(result.cards.cards) do
         assert(card.id ~= "deadly_poison" and card.id ~= "shiv" and card.id ~= "blade_dance", "foundation card already registered")
     end
@@ -87,9 +87,9 @@ end
 
 -- Resolved generation action; the shared effect dispatcher owns card payment.
 -- Explicit source creation callbacks upgrade before Accuracy stamps the base.
-function M.generateShivs(state, count, upgraded)
+function M.generateShivs(state, count, upgraded, combat)
     assert(type(state) == "table" and state.phase == "player"
-        and not require("abyss_combat").outcome(state), "generation requires live player combat")
+        and not combat.outcome(state), "generation requires live player combat")
     assert(integer(count,0,2147483647), "invalid Shiv count")
     assert(upgraded == nil or type(upgraded) == "boolean", "invalid upgrade flag")
     assert(integer(state.nextUid, 1, 2147483647 - count), "card UID overflow")
@@ -113,8 +113,8 @@ function M.generateShivs(state, count, upgraded)
     local generated = {}
     for _ = 1, count do
         local instance = {uid=state.nextUid, cardId="shiv", upgraded=upgraded == true}
-        require('abyss_card_actions').created(require('abyss_combat'),state,instance)
-        require('abyss_card_actions').created(require('abyss_combat'),state,instance)
+        require('abyss_card_actions').created(combat,state,instance)
+        require('abyss_card_actions').created(combat,state,instance)
         require("abyss_shivs").created(state,instance)
         state.nextUid = state.nextUid + 1
         local destination = #state.hand < 10 and "hand" or "discard"

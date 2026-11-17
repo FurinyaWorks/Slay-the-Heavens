@@ -22,7 +22,7 @@ function M.isAttacking(target)
     end
     return false
 end
-function M.makeCard(state,effect)
+function M.makeCard(state,effect,combat)
     local id=effect.cardId or effect.card
     assert(type(id)=='string' and state.catalog.cards[id],'unknown temporary card')
     local count=integer(effect.value)
@@ -38,8 +38,8 @@ function M.makeCard(state,effect)
         local uid=state.nextUid
         assert(type(uid)=='number' and uid>0 and uid%1==0 and uid+1.0>uid and uid+1.0<math.huge and not seen[uid],'invalid nextUid')
         local card={uid=uid,cardId=id,upgraded=effect.upgraded==true}
-        require('abyss_watcher_final_cards').created(require('abyss_combat'),state,card)
-        if pile=='hand' then require('abyss_watcher_final_cards').created(require('abyss_combat'),state,card)end
+        combat.created(state,card)
+        if pile=='hand' then combat.created(state,card)end
         require('abyss_warrior_status_cards').created(state,card,'make_copy')
         if id=='shiv' then require('abyss_shivs').created(state,card) end
         state.nextUid=uid+1.0;seen[uid]=true
