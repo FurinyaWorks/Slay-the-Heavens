@@ -1,0 +1,33 @@
+✖ release navigation raw Full inventory retains all tests, conservative costs and original execution guards (373.340458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15941.172377
+
+✖ failing tests:
+
+test at tests/ci-complete-calibration.test.mjs:2034:1
+✖ release navigation raw Full inventory retains all tests, conservative costs and original execution guards (373.340458ms)
+  AssertionError [ERR_ASSERTION]: fresh complete integration source: release navigation src/lua/abyss_game_ui_input.lua
+  + actual - expected
+  
+  + 'eb4ef0623f7621a1c5bac9e2fdc919a4c08b8128ef5aa863e1329d9d2a68280c'
+  - 'b2394cff71e20fdc5490fca41718435b623b1b9971827df1b639a77abcc75086'
+  
+      at assertReleaseNavigationCiCurrent (file:///workspace/scratch/c1a4970a76e0/navigation690-crlf/tests/helpers/release-navigation-ci-source.mjs:58:10)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/navigation690-crlf/tests/ci-complete-calibration.test.mjs:2036:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'eb4ef0623f7621a1c5bac9e2fdc919a4c08b8128ef5aa863e1329d9d2a68280c',
+    expected: 'b2394cff71e20fdc5490fca41718435b623b1b9971827df1b639a77abcc75086',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

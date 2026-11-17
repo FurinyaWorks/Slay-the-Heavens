@@ -1,0 +1,24 @@
+✔ navigation map union retains both complete producer domains and exact three-way input (1122.192515ms)
+✔ navigation map actual raw input rejects every current drift before either historical domain (4664.970365ms)
+✔ retired-help fixture continuation keeps complete old assertions and freshly rejects every changed owner (4285.965434ms)
+✔ navigation map actual Full inventory and execution guards cover the complete union (181.328067ms)
+✔ navigation domain authorization is fresh on every call after warm success and recovery (223.827942ms)
+✔ accepted navigation domains freshly reject map-only CI source and archive drift (369.368247ms)
+✔ integrated public source and reader freshly reject map-only drift after warm success (772.352576ms)
+✔ historical menu authorization uses the current raw closure afresh without accepting stale owners (204.934565ms)
+✔ release navigation production preserves every complete prior target and freshly authenticates the committed source tree (15.931437ms)
+✔ release navigation CI validates complete live bindings while unknown or changed bytes stay visible (8900.317187ms)
+✔ release navigation raw JS and Lua inventories reject missing duplicate foreign and changed additions (408.992038ms)
+✔ actual Release merge authenticates separate slice and bootstrap views with fresh complete current bindings (2359.143515ms)
+✔ actual Release merge proves all production base Git blobs and exact bootstrap sources without relabelling producers (13.997866ms)
+✔ navigation fixture repair retains the complete original merge packet and exact historical source views (7.296921ms)
+✔ archived Git provenance rejects changed missing and mistyped objects without a checkout database (28.266765ms)
+✔ actual Release merge CI trust packet rejects truncated isolated copies (48.631312ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12887.42021
