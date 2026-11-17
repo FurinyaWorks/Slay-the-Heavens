@@ -73,22 +73,17 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
  const signed=reviews.filter(review=>trusted(review,permissions));
  for(const review of signed)if(!Number.isFinite(Date.parse(review.submitted_at))||!sha(review.commit_id))
   errors.push('Malformed trusted server Review timestamp or commit identity');
- // COMMENTED can carry the AI metadata. Publication additionally requires a
- // real, current native approval by a trusted account other than the PR author.
- const decisions=new Map();
- for(const review of [...signed].sort(reviewOrder))if(['APPROVED','CHANGES_REQUESTED','DISMISSED'].includes(review.state))
-  decisions.set(review.user.id,review);
- const nativeApproval=[...decisions.values()].filter(review=>review.state==='APPROVED'&&
-  review.commit_id===head&&review.user.id!==pr?.user?.id).sort(reviewOrder).at(-1);
- if(!positive(pr?.user?.id)||!nativeApproval)errors.push('A trusted non-author native APPROVED Review for the current HEAD is required');
- if([...decisions.values()].some(review=>review.state==='CHANGES_REQUESTED'))
-  errors.push('A trusted native change request remains unresolved');
  const candidates=signed.filter(review=>marked(review.body)).sort(reviewOrder);
  const selected=candidates.at(-1);let report=null;
+ // The complete AI report and the native approval must be the same server
+ // Review. COMMENTED reports can reject/revoke, but cannot authorize a merge.
+ const nativeApproval=selected?.state==='APPROVED'&&selected.commit_id===head&&
+  positive(pr?.user?.id)&&selected.user.id!==pr.user.id?selected:null;
+ if(!nativeApproval)errors.push('The complete AI report must itself be a trusted non-author native APPROVED Review for the current HEAD');
  if(!selected)errors.push('No report signed by an authorized maintain/admin coordinator');
  else{
   try{report=parseIndependentAiReview(selected.body);}catch(error){errors.push(error.message);}
-  if(!['APPROVED','COMMENTED'].includes(selected.state)||selected.commit_id!==head)
+  if(selected.state!=='APPROVED'||selected.commit_id!==head)
    errors.push('Signed Review is dismissed, rejected, unpublished or belongs to another HEAD');
   if(signed.some(review=>review.state==='CHANGES_REQUESTED'&&reviewOrder(review,selected)>0))
    errors.push('A later trusted Review requests changes');

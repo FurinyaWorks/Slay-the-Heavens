@@ -872,10 +872,12 @@ test('independent AI gate accepts a maintain/admin native approval attesting a d
  assert.equal(aiCheck(x=>{delete x.report.coordinator.verifiedActualSessions;x.report.provenance.coordinatorVerified=true;}).conclusion,'pass');
 });
 
-test('independent AI gate treats COMMENTED as metadata and requires a separate current trusted non-author native approval',()=>{
+test('independent AI gate requires the same complete report to be a current trusted non-author native approval',()=>{
  const f=aiFixture();f.reviews[0].state='COMMENTED';
  assert.equal(validateIndependentAiReview(f).conclusion,'fail');
  f.reviews.push({...f.reviews[0],id:101,state:'APPROVED',body:'Native approval after verifying the actual AI session'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail','an unrelated approval cannot be stitched to COMMENTED metadata');
+ f.reviews[1].body=aiBody(f.report);
  assert.equal(validateIndependentAiReview(f).conclusion,'pass');
  for(const patch of [{state:'DISMISSED'},{state:'CHANGES_REQUESTED'},{commit_id:sha('c')},{user:f.pr.user}]){
   const x=structuredClone(f);Object.assign(x.reviews[1],patch);assert.equal(validateIndependentAiReview(x).conclusion,'fail');
