@@ -20,12 +20,12 @@ function fixture(){
   merge_group:{head_sha:head,base_sha:base,base_ref:'refs/heads/develop',head_ref:ref}};
  const needs={impact:{result:'success'},rules:{result:'success'},fast:{result:'skipped'},
   presentation:{result:'success'},'engineering-posix':{result:'success'}};
- const ruleset={target:'branch',enforcement:'active',bypass_actors:[],
+ const ruleset={id:25870651,target:'branch',enforcement:'active',bypass_actors:[],
   conditions:{ref_name:{include:['refs/heads/develop'],exclude:[]}},
   rules:[{type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},{type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,required_status_checks:
    ['check','presentation','engineering-posix','inventory','full-quality','independent-review']
     .map(context=>({context,integration_id:context==='independent-review'?null:15368}))}},
-   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
+   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true,required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true}},
    {type:'required_linear_history'}]};
  const run={id:7,run_attempt:1,event:'merge_group',head_sha:head,status:'in_progress',path:qualityWorkflowPath,repository:{full_name:repo}};
  const jobs=currentFullQualityJobs.map((name,i)=>({name,id:100+i,run_id:7,run_attempt:1,head_sha:head,
@@ -54,8 +54,11 @@ test('queue full requires every shard, immutable receipt and actual native admis
   x=>x.env.FULL_MODE='fast',x=>x.needs.fast.result='success',
   x=>x.needs.rules.result='skipped',x=>x.needs.presentation.result='failure',
   x=>x.ruleset.rules=x.ruleset.rules.filter(r=>r.type!=='merge_queue'),
-  x=>x.ruleset.bypass_actors=[{actor_id:1}],x=>delete x.ruleset.bypass_actors,
+  x=>x.ruleset.bypass_actors=[{actor_id:1}],
   x=>x.ruleset.bypass_actors=null,x=>x.ruleset.enforcement='disabled',
+  x=>x.ruleset.rules[2].parameters.required_approving_review_count=0,
+  x=>x.ruleset.rules[2].parameters.dismiss_stale_reviews_on_push=false,
+  x=>x.ruleset.rules[2].parameters.require_code_owner_review=false,
   x=>x.ruleset.conditions.ref_name.exclude=['refs/heads/develop'],
   x=>x.ruleset.rules[1].parameters.required_status_checks.pop(),
   x=>x.ruleset.rules[1].parameters.required_status_checks[0].integration_id=null,
@@ -209,10 +212,10 @@ test('success transport recovery revalidates the current attempt and complete qu
  }finally{m.cleanup();}
  for(const mutate of [
   f=>{f.run.status='completed';f.run.conclusion='cancelled';},f=>f.run.run_attempt++,
-  f=>f.pr.labels.push({name:'hold'}),f=>f.review.description+=' stale',
+  f=>f.pr.labels.push({name:'hold'}),f=>f.report.reviewedBaseSha=sha('f'),
  ]){
   const stale=statusTransportFixture({state:'success',mutate});try{
-   assert.throws(stale.run,/run|attempt|authoriz|eligible|paused|Full/i);
+   assert.throws(stale.run,/run|attempt|approval|authoriz|eligible|paused|Full/i);
    assert.equal(stale.attempts.length,1,'stale authorization must not be posted again');
    assert.equal(stale.writes.length,0,'no later success context may release a stale group');
   }finally{stale.cleanup();}

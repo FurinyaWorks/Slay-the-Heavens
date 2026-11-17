@@ -30,6 +30,17 @@ export function parseDependencies(body){
  return [...new Set(entries.map(item=>Number(item.slice(1))))];
 }
 
+// These native policy fields are necessary, not proof that CODEOWNERS already
+// exists on BASE. The publisher separately verifies that source/bootstrap anchor.
+export function nativeReviewPolicyErrors(ruleset){
+ const pull=ruleset?.rules?.find(rule=>rule.type==='pull_request')?.parameters,errors=[];
+ if(!Number.isSafeInteger(pull?.required_approving_review_count)||pull.required_approving_review_count<1)
+  errors.push('Native policy requires at least one approving review');
+ if(pull?.dismiss_stale_reviews_on_push!==true)errors.push('Native policy must dismiss stale reviews on push');
+ if(pull?.require_code_owner_review!==true)errors.push('Native policy requires CODEOWNERS review');
+ return errors;
+}
+
 function trusted(review,permissions){
  const actor=review?.user,permission=permissions?.[actor?.id];
  const role=permission?.role_name??permission?.permission;

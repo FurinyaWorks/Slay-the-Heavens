@@ -1,7 +1,7 @@
 import {writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {currentFullQualityJobs,qualityWorkflowPath} from '../../scripts/verify-delivery.mjs';
-import {queueRulesFingerprint} from '../../scripts/merge-queue-policy.mjs';
+import {INDEPENDENT_AI_REVIEW_MARKER} from '../../scripts/independent-ai-review.mjs';
 const sha=c=>c.repeat(40),repo='FurinyaWorks/Slay-the-Abyss';
 export function admissionFixture(repoName=repo){
  const head=sha('a'),base=sha('b'),prHead=sha('c');
@@ -19,25 +19,32 @@ export function admissionFixture(repoName=repo){
   rules:[{type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},
    {type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,required_status_checks:
     ['check','presentation','engineering-posix','inventory','full-quality','independent-review'].map(context=>({context,integration_id:context==='independent-review'?null:15368}))}},
-   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
+   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true,required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true}},
    {type:'required_linear_history'}]};
  const artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:head}};
  const checkout={schemaVersion:1,event:'merge_group',runId:7,attempt:1,tested:head,head,base,parents:[base]};
- const pr={number:510,node_id:'PR_510',state:'open',merged:false,draft:false,head:{sha:prHead,repo:{id:1429751262,full_name:repoName}},
+ const pr={number:510,node_id:'PR_510',user:{id:111138384,login:'FurinyaDev'},state:'open',merged:false,draft:false,mergeable:true,merge_commit_sha:sha('d'),head:{sha:prHead,repo:{id:1429751262,full_name:repoName}},
   base:{sha:base,ref:'develop',repo:{id:1429751262,full_name:repoName}},labels:[],body:'Depends-on: none'};
- const review={id:90,context:'independent-review',state:'success',creator:{id:51,login:'maintainer'},
-  description:`Independent review [rules:${queueRulesFingerprint(ruleset)}] [base:${base}]`};
- const entry={id:'ENTRY_510',position:1,state:'AWAITING_CHECKS',enqueuer:{databaseId:51,login:'maintainer'},baseCommit:{oid:base},headCommit:{oid:head},
+ const reviewer={id:337201427,login:'v5g95m7t8m-max'};
+ const report={schemaVersion:1,kind:'independent-ai-review',repositoryId:1429751262,repositoryFullName:repoName,
+  prNumber:510,reviewedHeadSha:prHead,reviewedBaseSha:base,reviewedTreeSha:sha('e'),conclusion:'pass',unresolved:[],
+  reviewerAgent:'/root/queue_review',implementationAgents:['/root/implementer'],
+  coordinator:{...reviewer,verifiedActualSessions:true},
+  provenance:{kind:'coordinator-verified-agent-session',reviewId:'/root/queue_review/fixture',sessionId:'fixture-queue-session'}};
+ const review={id:90,state:'APPROVED',commit_id:prHead,submitted_at:'2026-11-17T10:00:00Z',user:reviewer};
+ const sourceCommit={sha:sha('d'),tree:{sha:sha('e')},parents:[{sha:base},{sha:prHead}]};
+ const entry={id:'ENTRY_510',position:1,state:'AWAITING_CHECKS',enqueuer:{databaseId:51,login:'native-enqueuer'},baseCommit:{oid:base},headCommit:{oid:head},
   pullRequest:{number:510,headRefOid:prHead,baseRefName:'develop',isDraft:false,state:'OPEN',mergeQueueEntry:{id:'ENTRY_510'}}};
  const repository={databaseId:1429751262,nameWithOwner:repoName,ref:{target:{oid:base}},
   mergeQueue:{entries:{nodes:[entry],pageInfo:{hasNextPage:false}}}};
- const permission={permission:'admin',user:{id:51,login:'maintainer'}};
- return {env,event,run,needs,jobs,ruleset,artifact,checkout,pr,review,entry,repository,permission};
+ const permission={permission:'write',role_name:'maintain',user:reviewer};
+ return {env,event,run,needs,jobs,ruleset,artifact,checkout,pr,review,report,sourceCommit,entry,repository,permission};
 }
 export function admissionQuery(f,writes=[]){
  return (...args)=>{
   const url=args.find(a=>typeof a==='string'&&a.startsWith('repos/'))??'';
   if(args[0]==='api'&&args[1]==='graphql')return JSON.stringify({data:{repository:f.repository}});
+  if(args.includes('repositories/1429751262'))return JSON.stringify(f.event.repository);
   if(args.includes('POST')){
    const state=args.find(a=>a.startsWith('state=')).slice(6),context=args.find(a=>a.startsWith('context=')).slice(8);
    writes.push({state,context});return JSON.stringify({state,context});
@@ -52,9 +59,16 @@ export function admissionQuery(f,writes=[]){
   if(url.includes('/artifacts?'))return JSON.stringify([{artifacts:[f.artifact]}]);
   if(url.endsWith('/actions/artifacts/42'))return JSON.stringify(f.artifact);
   if(url.endsWith('/pulls/510'))return JSON.stringify(f.pr);
+  if(url.includes('/pulls/510/reviews?')){
+   const page=Number(new URL('https://api.github.com/'+url).searchParams.get('page'));
+   const reviews=f.reviews??[{...f.review,body:f.review.body??INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(f.report)}];
+   return JSON.stringify(reviews.slice((page-1)*100,page*100));
+  }
+  if(url.endsWith('/git/commits/'+f.pr.merge_commit_sha))return JSON.stringify(f.sourceCommit);
+  if(url.endsWith('/git/ref/heads/develop'))return JSON.stringify({ref:'refs/heads/develop',object:{type:'commit',sha:f.event.merge_group.base_sha}});
   if(url.includes('/collaborators/'))return JSON.stringify(f.permission);
   if(url.endsWith('/commits/'+f.env.GITHUB_SHA))return JSON.stringify({sha:f.env.GITHUB_SHA,parents:[{sha:f.event.merge_group.base_sha}]});
-  if(url.includes(`/commits/${f.pr.head.sha}/statuses?`))return JSON.stringify([[f.review]]);
+  if(url.includes(`/commits/${f.pr.head.sha}/statuses?`))return JSON.stringify([f.qualityStatus?[f.qualityStatus]:[]]);
   if(url.endsWith('/git/ref/heads/'+f.env.GITHUB_REF.slice('refs/heads/'.length)))
    return JSON.stringify({ref:f.env.GITHUB_REF,object:{type:'commit',sha:f.env.GITHUB_SHA}});
   if(url.endsWith('/pulls/999'))return JSON.stringify({number:999,merged:false});

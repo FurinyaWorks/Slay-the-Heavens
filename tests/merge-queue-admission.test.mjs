@@ -4,6 +4,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {main} from '../scripts/publish-merge-group.mjs';
+import {collectQueueAdmission} from '../scripts/merge-queue-admission.mjs';
 
 import {admissionFixture,admissionQuery} from './helpers/merge-queue-admission.mjs';
 import {queueRulesFingerprint} from '../scripts/merge-queue-policy.mjs';
@@ -39,39 +40,51 @@ test('real checkout loader accepts only the effective receipt execution attempt'
  }
 });
 
-test('read-only ruleset visibility can release only a matching privileged authorization',()=>{
+test('redacted bypass metadata needs no Admin attestation when native approval protections and a real trusted Review are present',()=>{
  const f=admissionFixture();
  delete f.ruleset.bypass_actors;
  assert.equal(execute(f).state,'success');
 });
 
-test('hidden bypass configuration requires immutable policy version and exact current coordinator',()=>{
+test('native AI approval binds the trusted signer and exact combination before and after receipt download',()=>{
  for(const mutate of [
-  f=>f.review.description=`Independent review [base:${f.event.merge_group.base_sha}]`,
-  f=>f.review.description=f.review.description.replace(/rules:[0-9a-f]{64}/,'rules:'+ '0'.repeat(64)),
-  f=>delete f.ruleset.updated_at,f=>f.ruleset.updated_at='not-a-date',
-  f=>f.ruleset.updated_at='2026-11-04T17:51:24.025+08:00',
-  f=>f.ruleset.id=7,f=>f.ruleset.rules[0].parameters.check_response_timeout_minutes=121,
-  f=>f.ruleset.bypass_actors=null,f=>f.ruleset.bypass_actors=[{actor_id:51}],
-  f=>delete f.review.creator,f=>f.review.creator.id=52,f=>f.review.creator.login='other',
-  f=>delete f.entry.enqueuer,f=>f.entry.enqueuer.databaseId=52,f=>f.entry.enqueuer.login='other',
-  f=>delete f.permission.permission,f=>f.permission.permission='write',f=>f.permission.permission='maintain',
+  f=>f.ruleset.id=7,f=>f.ruleset.bypass_actors=null,f=>f.ruleset.bypass_actors=[{actor_id:51}],
+  f=>f.review.state='COMMENTED',f=>f.review.state='DISMISSED',f=>f.review.commit_id=sha('d'),
+  f=>f.review.body='unstructured pass',f=>f.report.conclusion='fail',f=>f.report.unresolved=['bug'],
+  f=>f.report.reviewedBaseSha=sha('d'),f=>f.report.reviewedTreeSha=sha('f'),
+  f=>f.report.coordinator.id=111138384,f=>f.report.coordinator.verifiedActualSessions=false,
+  f=>f.report.reviewerAgent=f.report.implementationAgents[0],
+  f=>f.pr.user.id=f.review.user.id,f=>f.sourceCommit.parents.reverse(),
+  f=>f.permission.role_name='write',f=>f.permission.permission='read',
   f=>delete f.permission.user,f=>f.permission.user.id=52,f=>f.permission.user.login='other'
- ]){
-  for(const duringDownload of [false,true]){
-   const f=admissionFixture(),writes=[];
-   delete f.ruleset.bypass_actors;
-   const receipt={checkout:structuredClone(f.checkout),checkoutArtifact:structuredClone(f.artifact)};
-   if(!duringDownload)mutate(f);
-   assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
-    if(duringDownload)mutate(f);return receipt;
-   }}),undefined,String(mutate));
-   assert.deepEqual(writes,[],String(mutate));
-  }
+ ])for(const duringDownload of [false,true]){
+  const f=admissionFixture(),writes=[];delete f.ruleset.bypass_actors;
+  const receipt={checkout:structuredClone(f.checkout),checkoutArtifact:structuredClone(f.artifact)};
+  if(!duringDownload)mutate(f);
+  assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+   if(duringDownload)mutate(f);return receipt;
+  }}),undefined,String(mutate));assert.deepEqual(writes,[],String(mutate));
  }
 });
 
-test('policy digest is stable across JSON key order but never authorizes invisible bypass at coordinator',()=>{
+test('queue snapshots use the real approving AI Review and leave enqueue authority to native GitHub',()=>{
+ const f=admissionFixture(),calls=[],query=admissionQuery(f);
+ delete f.ruleset.bypass_actors;
+ const collect=()=>JSON.parse(collectQueueAdmission(f.event,f.env,(...args)=>{calls.push(args);return query(...args);},f.ruleset));
+ const [snapshot]=collect();
+ assert.equal(snapshot.githubReviewId,90);assert.equal(snapshot.nativeApprovalReviewId,90);
+ assert.equal(snapshot.coordinator.id,337201427);assert.equal(snapshot.reviewedHead,f.pr.head.sha);
+ assert.equal(snapshot.reviewedBase,f.pr.base.sha);assert.equal(snapshot.reviewedTree,f.report.reviewedTreeSha);
+ assert.equal(snapshot.reviewedMergeCommit,f.pr.merge_commit_sha);
+ assert.equal(Object.hasOwn(snapshot,'rulesFingerprint'),false);
+ assert(!calls.some(args=>args.some(value=>String(value).includes('/commits/')&&String(value).includes('/statuses?'))));
+ for(const enqueuer of [undefined,{databaseId:52,login:'native-writer'}]){
+  f.entry.enqueuer=enqueuer;assert.equal(collect()[0].nativeApprovalReviewId,90);
+ }
+ assert(!calls.some(args=>args.some(value=>String(value).includes('/collaborators/native-'))));
+});
+
+test('legacy policy digest remains byte-compatible without authorizing the native review path',()=>{
  const f=admissionFixture(),full=f.ruleset;
  const reversed=Object.fromEntries(Object.entries(full).reverse());
  assert.equal(queueRulesFingerprint(full),queueRulesFingerprint(reversed));
@@ -86,7 +99,7 @@ test('policy digest is stable across JSON key order but never authorizes invisib
   assert.throws(()=>queueRulesFingerprint({...full,updated_at}),/versioned/);
 });
 
-test('missing administrator metadata capability cannot publish queue gates',()=>{
+test('missing collaborator metadata evidence cannot publish queue gates',()=>{
  const f=admissionFixture(),writes=[],query=admissionQuery(f,writes);
  assert.throws(()=>execute(f,(...args)=>{
   if(args.some(arg=>arg.includes('/collaborators/')))throw Error('HTTP 403 metadata unavailable');
@@ -96,8 +109,8 @@ test('missing administrator metadata capability cannot publish queue gates',()=>
 });
 test('queue release rejects paused, held, changed dependency and stale-base PR authorization',()=>{
  for(const mutate of [
-  f=>f.review.state='failure',f=>f.review.description='Independent review without BASE',
-  f=>f.review.description=`Independent review [base:${sha('d')}]`,
+  f=>f.review.state='DISMISSED',f=>f.report.provenance.reviewId='',
+  f=>f.report.reviewedBaseSha=sha('d'),
   f=>f.pr.labels=[{name:'hold'}],f=>f.pr.body='Depends-on: #999',
   f=>f.pr.body='Depends-on: none\nDepends-on: #999',
   f=>f.pr.draft=true,f=>f.pr.head.sha=sha('d'),f=>f.pr.base.sha=sha('d'),
@@ -113,7 +126,7 @@ test('queue release rejects paused, held, changed dependency and stale-base PR a
 });
 test('queue release rechecks protection and PR admission after downloading immutable evidence',()=>{
  for(const mutate of [f=>f.ruleset.bypass_actors=[{actor_id:9}],
-  f=>f.review.state='failure',f=>f.pr.labels=[{name:'hold'}],
+  f=>f.review.state='DISMISSED',f=>f.pr.labels=[{name:'hold'}],
   f=>f.repository.mergeQueue.entries.nodes=[]]){
   const f=admissionFixture(),writes=[];
   assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
@@ -136,7 +149,10 @@ test('queue release preserves Strict, squash-only PRs, resolved threads and line
   f=>f.ruleset.rules=f.ruleset.rules.filter(r=>r.type!=='pull_request'),
   f=>f.ruleset.rules=f.ruleset.rules.filter(r=>r.type!=='required_linear_history'),
   f=>f.ruleset.rules[2].parameters.allowed_merge_methods.push('merge'),
-  f=>f.ruleset.rules[2].parameters.required_review_thread_resolution=false]){
+  f=>f.ruleset.rules[2].parameters.required_review_thread_resolution=false,
+  f=>f.ruleset.rules[2].parameters.required_approving_review_count=0,
+  f=>f.ruleset.rules[2].parameters.dismiss_stale_reviews_on_push=false,
+  f=>f.ruleset.rules[2].parameters.require_code_owner_review=false]){
   for(const duringDownload of [false,true]){
    const f=admissionFixture(),writes=[],receipt={checkout:structuredClone(f.checkout),checkoutArtifact:structuredClone(f.artifact)};
    if(!duringDownload)mutate(f);
@@ -163,7 +179,6 @@ test('Fast queue admission rechecks the latest PR run/attempt before and after r
   for(const duringDownload of [false,true]){
    const f=admissionFixture(),writes=[];
    f.ruleset.rules[1].parameters.required_status_checks.find(c=>c.context==='full-quality').context='pr-quality';
-   f.review.description=`Independent review [rules:${queueRulesFingerprint(f.ruleset)}] [base:${f.pr.base.sha}]`;
    f.prRun={id:9,run_attempt:1,head_sha:f.pr.head.sha,event:'pull_request',path:'.github/workflows/quality.yml',
     status:'completed',conclusion:'success',repository:{full_name:'FurinyaWorks/Slay-the-Abyss'},pull_requests:[{number:510}]};
    f.qualityStatus={id:91,context:'pr-quality',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
@@ -180,5 +195,36 @@ test('Fast queue admission rechecks the latest PR run/attempt before and after r
    if(mutate.toString()==='()=>{}')assert.equal(run().state,'success');
    else{assert.throws(run,/admission|changed/);assert.deepEqual(writes,[]);}
   }
+ }
+});
+
+
+test('shadow rules with zero approvals or missing stale/CODEOWNERS enforcement never publish success',()=>{
+ for(const mutate of [
+  f=>f.ruleset.rules[2].parameters.required_approving_review_count=0,
+  f=>delete f.ruleset.rules[2].parameters.dismiss_stale_reviews_on_push,
+  f=>delete f.ruleset.rules[2].parameters.require_code_owner_review,
+ ]){
+  const f=admissionFixture(),writes=[];mutate(f);
+  assert.throws(()=>execute(f,admissionQuery(f,writes)),/approving review|stale reviews|CODEOWNERS/);
+  assert.deepEqual(writes,[]);
+ }
+});
+
+test('visible policy changes during receipt verification cannot be hidden by an old matching approval',()=>{
+ const f=admissionFixture(),writes=[];
+ assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+  f.ruleset.rules[0].parameters.check_response_timeout_minutes=121;
+  return {checkout:f.checkout,checkoutArtifact:f.artifact};
+ }}),/protection changed/);assert.deepEqual(writes,[]);
+});
+
+test('valid AI report or signer-role changes cannot replace the exact observed authorization during receipt verification',()=>{
+ for(const mutate of [f=>f.report.provenance.sessionId+='-changed',f=>f.report.implementationAgents=['/root/another_implementer'],
+  f=>{f.permission.role_name='admin';f.permission.permission='admin';}]){
+  const f=admissionFixture(),writes=[];
+  assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+   mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
+  }}),/authorization changed/);assert.deepEqual(writes,[]);
  }
 });

@@ -6,7 +6,8 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {checkoutReceipt,receiptErrors,currentFullQualityJobs,qualityWorkflowPath} from './verify-delivery.mjs';
 import {collectQueueAdmission} from './merge-queue-admission.mjs';
-import {queueRulesAttested} from './merge-queue-policy.mjs';
+import {nativeReviewPolicyErrors} from './independent-ai-review.mjs';
+import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryMatches} from './repository-identity.mjs';
 
 const contexts=['check','presentation','engineering-posix','inventory','full-quality','independent-review'];
@@ -35,11 +36,12 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
  const statusPolicy=ruleset?.rules?.find(rule=>rule.type==='required_status_checks')?.parameters;
  const checks=statusPolicy?.required_status_checks;
  const pull=ruleset?.rules?.find(rule=>rule.type==='pull_request')?.parameters;
- if(ruleset?.target!=='branch'||ruleset?.enforcement!=='active'||
+ if(ruleset?.id!==25870651||ruleset?.target!=='branch'||ruleset?.enforcement!=='active'||
   JSON.stringify(ruleset?.conditions?.ref_name?.include)!==JSON.stringify(['refs/heads/develop'])||
   JSON.stringify(ruleset?.conditions?.ref_name?.exclude)!=='[]'||
-  (Object.hasOwn(ruleset??{},'bypass_actors')?
-   !Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length!==0:!queueRulesAttested(ruleset,admission))||
+  // A missing field is redacted metadata, not an inferred empty bypass list.
+  (Object.hasOwn(ruleset??{},'bypass_actors')&&
+   (!Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length!==0))||
   !ruleset.rules?.some(rule=>rule.type==='merge_queue'&&
    rule.parameters?.merge_method==='SQUASH'&&rule.parameters?.grouping_strategy==='ALLGREEN'))
   errors.push('Native develop Merge Queue protection is not active or has bypass actors');
@@ -47,6 +49,7 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
   JSON.stringify(pull?.allowed_merge_methods)!==JSON.stringify(['squash'])||
   pull?.required_review_thread_resolution!==true||!ruleset?.rules?.some(rule=>rule.type==='required_linear_history'))
   errors.push('Native queue must preserve Strict, squash-only PRs, resolved threads and linear history');
+ errors.push(...nativeReviewPolicyErrors(ruleset));
  const required=checks?.some(check=>check.context==='pr-quality')?
   contexts.map(name=>name==='full-quality'?'pr-quality':name):contexts;
  for(const context of required) {
@@ -208,6 +211,7 @@ export function main(env=process.env,query=gh,{pending=false,loadCheckout,
  // overwrite the new group's pending/failure status.
  const validate=()=>{
   const current=activeRun(false),finalRules=get('rulesets/25870651');
+  if(!isDeepStrictEqual(ruleset,finalRules))throw Error('Visible native queue protection changed during evidence verification');
   const currentJobs=pages(`actions/runs/${runId}/jobs?filter=all&per_page=100`,'jobs');
   const finalErrors=queueFullErrors({...context,...current,jobs:currentJobs,ruleset:finalRules,checkout:receipt});
   if(finalErrors.length)throw Error(finalErrors.join('\n'));

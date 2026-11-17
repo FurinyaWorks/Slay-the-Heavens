@@ -1,6 +1,5 @@
-import {parseDependencies} from './arm-auto-merge.mjs';
+import {collectIndependentAiReview} from './independent-ai-review.mjs';
 import {projectRepositoryId,projectRepositoryMatches} from './repository-identity.mjs';
-import {queueRulesFingerprint} from './merge-queue-policy.mjs';
 
 const validSha=value=>typeof value==='string'&&/^[a-f0-9]{40}$/.test(value);
 const positive=value=>Number.isSafeInteger(value)&&value>0;
@@ -26,7 +25,6 @@ export function collectQueueAdmission(event,env,query,ruleset){
  const repo=env.GITHUB_REPOSITORY;
  if(!projectRepositoryMatches(event?.repository,repo))throw Error('Current queue repository identity is invalid');
  ruleset??=JSON.parse(query('api',`repos/${repo}/rulesets/25870651`));
- const fingerprint=queueRulesFingerprint(ruleset,{allowRedacted:true});
  const response=JSON.parse(query('api','graphql','-f','query='+queryText(repo)));
  const repository=response?.data?.repository;
  const entries=repository?.mergeQueue?.entries;
@@ -62,15 +60,14 @@ export function collectQueueAdmission(event,env,query,ruleset){
    !Array.isArray(labels)||labels.some(label=>!label||typeof label.name!=='string'||
     ['hold','blocked','do-not-merge','manual-merge','merge:manual','risk:critical'].includes(label.name.toLowerCase())))
    throw Error('Queue PR is held, changed or no longer eligible: '+p.number);
-  const statuses=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/commits/${p.headRefOid}/statuses?per_page=100`));
-  if(!Array.isArray(statuses)||!statuses.length||statuses.some(page=>!Array.isArray(page)))
-   throw Error('Complete current review status pages are missing');
-  const review=statuses.flat().filter(s=>s?.context==='independent-review').sort((a,b)=>b.id-a.id)[0];
-  if(!positive(review?.id)||review.state!=='success'||typeof review.description!=='string'||
-   !review.description.endsWith(` [rules:${fingerprint}] [base:${base}]`))
-   throw Error('Queue PR review is paused, missing or bound to a different BASE: '+p.number);
+  const review=collectIndependentAiReview({api:path=>JSON.parse(query('api',path)),prNumber:p.number,
+   expectedHeadSha:p.headRefOid,expectedBaseSha:base});
+  if(review.conclusion!=='pass')throw Error('Queue PR independent AI/native approval is invalid: '+p.number+'; '+review.errors.join('; '));
   let quality;
   if(ruleset?.rules?.find(rule=>rule.type==='required_status_checks')?.parameters?.required_status_checks?.some(check=>check.context==='pr-quality')){
+   const statuses=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/commits/${p.headRefOid}/statuses?per_page=100`));
+   if(!Array.isArray(statuses)||!statuses.length||statuses.some(page=>!Array.isArray(page)))
+    throw Error('Complete current PR-quality status pages are missing');
    const status=statuses.flat().filter(s=>s?.context==='pr-quality').sort((a,b)=>b.id-a.id)[0];
    const runs=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/actions/workflows/quality.yml/runs?event=pull_request&head_sha=${p.headRefOid}&per_page=100`));
    if(!Array.isArray(runs)||!runs.length||runs.some(page=>!Array.isArray(page.workflow_runs)))
@@ -85,29 +82,15 @@ export function collectQueueAdmission(event,env,query,ruleset){
     throw Error('Queue PR latest run/attempt admission is pending, failed or stale: '+p.number);
    quality={status:status.id,run:run.id,attempt:run.run_attempt};
   }
-  if(!positive(entry.enqueuer?.databaseId)||review.creator?.id!==entry.enqueuer.databaseId||
-   typeof entry.enqueuer.login!=='string'||!entry.enqueuer.login||
-   typeof review.creator.login!=='string'||review.creator.login.toLowerCase()!==entry.enqueuer.login.toLowerCase())
-   throw Error('Queue PR rules authorization does not belong to its enqueuer: '+p.number);
-  const permission=JSON.parse(query('api',`repos/${repo}/collaborators/${encodeURIComponent(review.creator.login)}/permission`));
-  if(permission?.permission!=='admin'||permission.user?.id!==review.creator.id||
-   typeof permission.user?.login!=='string'||permission.user.login.toLowerCase()!==review.creator.login.toLowerCase())
-   throw Error('Queue PR rules authorization requires the current repository administrator: '+p.number);
-  const dependencies=parseDependencies(pr.body),dependencyEvidence=[];
-  for(const number of dependencies){
-   if(number===p.number)throw Error('Queue PR cannot depend on itself');
-   const dep=JSON.parse(query('api',`repos/${repo}/pulls/${number}`));
-   if(dep.number!==number||dep.merged!==true||dep.base?.ref!=='develop'||
-    !projectRepositoryMatches(dep.base?.repo,repo)||!validSha(dep.merge_commit_sha))
-    throw Error('Queue PR dependency is not confirmed merged: '+number);
-   const comparison=JSON.parse(query('api',`repos/${repo}/compare/${dep.merge_commit_sha}...${base}`));
-   if(!['ahead','identical'].includes(comparison.status)||comparison.merge_base_commit?.sha!==dep.merge_commit_sha)
-    throw Error('Queue PR dependency is not contained in the group BASE: '+number);
-   dependencyEvidence.push({number,merge:dep.merge_commit_sha});
-  }
+  const dependencyEvidence=review.observations.dependencies.map(row=>({number:row.number,merge:row.pr.merge_commit_sha}));
   snapshot.push({id:entry.id,position:entry.position,base:entry.baseCommit.oid,head:entry.headCommit.oid,
-   number:p.number,prHead:p.headRefOid,review:review.id,rulesFingerprint:fingerprint,
-   enqueuer:entry.enqueuer.databaseId,dependencies:dependencyEvidence,...(quality?{quality}:{})});
+   number:p.number,prHead:p.headRefOid,githubReviewId:review.githubReviewId,
+   nativeApprovalReviewId:review.nativeApprovalReviewId,coordinator:review.coordinator,
+   reviewedHead:review.head,reviewedBase:review.base,reviewedTree:review.tree,reviewedMergeCommit:review.mergeCommitSha,
+   aiReviewId:review.reviewId,report:review.report,
+   coordinatorPermission:review.observations.permissions[review.coordinator.id].permission,
+   coordinatorRole:review.observations.permissions[review.coordinator.id].role_name??null,
+   enqueuer:entry.enqueuer?.databaseId??null,dependencies:dependencyEvidence,...(quality?{quality}:{})});
  }
  return JSON.stringify(snapshot);
 }
