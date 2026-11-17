@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {beforeReleaseFastB9SelectionTest} from './release-fast-b9-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-selection-map-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03','complete release selection map CI continuation');
@@ -31,6 +32,7 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseSelectionMapCiPacket=freeze(packet);
 export function historicalSource(path,source){
+ source=beforeReleaseFastB9SelectionTest(path,source);
  if(path==='tests/release-selection-map-source.test.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='f8f63b397e57267e7d69ed174575459726aa34651196ed6ff307a33b912a5764'){
   const prior=norm(source).replace('import {historicalSource,releaseSelectionMapCiPacket,','import {releaseSelectionMapCiPacket,').replace('assert.equal(hash(historicalSource(path,source)),row.current.sha256,path);','assert.equal(hash(source),row.current.sha256,path);').replace('production?source:row.before?.source??historicalSource(path,source),path);','production?source:row.before?.source??source,path);');
   assert.equal(hash(prior),packet.files[path].current.sha256,'complete prior selection map test');return prior;
@@ -50,10 +52,10 @@ export function historicalSource(path,source){
  return hash(norm(prior))===packet.files[path].current.sha256?prior:source;
 }
 function checkedSource(path,source,before){
- source=historicalSource(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
+ if(before&&(!row?.before||row.before.sha256!==before.sha256))return source;
+ source=historicalSource(path,source);
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
- if(before&&row.before.sha256!==before.sha256)return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
 // Only the explicit complete-CI validator may compare a production owner's

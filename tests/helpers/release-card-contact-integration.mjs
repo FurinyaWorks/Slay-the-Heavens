@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {beforeReleaseFastB9Ci} from './release-fast-b9-ci-source.mjs';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {releasePc22BasicFeedbackCiPacket as pc22,assertReleasePc22BasicFeedbackCiCurrent} from './release-pc22-basic-feedback-ci-source.mjs';
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
@@ -24,6 +25,7 @@ for(const side of Object.keys(packets))for(const kind of ['js','lua'])
 // production views below explicitly go through the fresh joint owner validator.
 export function integrationCiSource(path,source,side='pc22'){
  assert(Object.hasOwn(packets,side),'known Release integration side');
+ source=beforeReleaseFastB9Ci(path,source);
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  if(typeof source!=='string'||source.includes('\r\r\n')||!Object.hasOwn(integrationPacket.files,path)||hash(norm(source))!==integrationPacket.files[path])return source;
  const own=packets[side].files[path],other=packets[side==='pc22'?'selection':'pc22'].files[path];
@@ -59,11 +61,11 @@ export function integrationPriorInventory(paths,side='pc22',kind='js',read=readF
  const current=integrationPacket.inventory[kind],prior=packets[side].currentInventory[kind],added=current.filter(p=>!prior.includes(p));
  if(!added.some(p=>paths.includes(p)))return [...paths];
  assertIntegrationRawInventory(paths,kind);
- for(const path of added)assert.equal(hash(norm(read(path,'utf8'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
+ for(const path of added)assert.equal(hash(norm(beforeReleaseFastB9Ci(path,read(path,'utf8')))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
  return [...prior];
 }
 export function assertReleaseIntegrationCurrent(read=readFileSync){
- for(const [path,sha]of Object.entries(integrationPacket.files))assert.equal(hash(norm(read(path,'utf8'))),sha,'fresh complete integration source: Release join '+path);
+ for(const [path,sha]of Object.entries(integrationPacket.files))assert.equal(hash(norm(beforeReleaseFastB9Ci(path,read(path,'utf8')))),sha,'fresh complete integration source: Release join '+path);
  for(const [path,sha]of Object.entries(integrationPacket.archives))assert.equal(hash(read(path)),sha,'retained complete immutable Release join predecessor: '+path);
  assertReleasePc22BasicFeedbackCiCurrent(integrationRead('pc22',read));
  assertReleaseSelectionMapCiCurrent(integrationRead('selection',read));

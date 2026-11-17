@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,readdirSync} from 'node:fs';
+import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
+import {releaseFastB9CiRead} from './helpers/release-fast-b9-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch,releasePc22BasicFeedbackSourceEpoch,releaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
@@ -8,6 +9,7 @@ import {integrationPacket,integrationCiSource,integrationRead,integrationInvento
 import {releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 import {releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+const readFileSync=releaseFastB9CiRead(rawReadFileSync);
 
 test('joint Release authenticates the full live production corpus and retains both immutable standalone corpora',()=>{
  const p=sourceEpoch.proof,prior=preReleasePc22BasicFeedbackSourceEpoch.proof;

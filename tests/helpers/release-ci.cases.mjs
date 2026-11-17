@@ -91,6 +91,26 @@ if(existsSync(new URL('./release-selection-map-ci-source.mjs',import.meta.url)))
 
 import {createHash} from 'node:crypto';
 import {releaseSelectionMapCiSource,releaseSelectionMapCiRead,historicalSource,releaseSelectionMapCiPacket} from './release-selection-map-ci-source.mjs';
+import {beforeReleaseFastB9Ci,releaseFastB9CiBindings,releaseFastB9CiRead} from './release-fast-b9-ci-source.mjs';
+
+test('B9 Release join projects only exact complete CI inputs and keeps wrong predecessors and drift visible',()=>{
+ const hash=s=>createHash('sha256').update(s).digest('hex');
+ for(const [path,row]of Object.entries(releaseFastB9CiBindings)){
+  const raw=readFileSync(path,'utf8'),lf=raw.replaceAll('\r\n','\n');
+  assert.equal(hash(lf),row.currentSha256,path+' actual complete current input');
+  assert.equal(releaseSelectionMapCiSource(path,raw,{sha256:'0'.repeat(64)}),raw,path+' wrong standalone predecessor');
+  for(const source of [raw,lf,lf.replaceAll('\n','\r\n')]){
+   const prior=beforeReleaseFastB9Ci(path,source,{sha256:row.beforeSha256});
+   assert.equal(hash(prior.replaceAll('\r\n','\n')),row.beforeSha256,path);
+   assert.equal(beforeReleaseFastB9Ci(path,source,{sha256:'0'.repeat(64)}),source);
+  }
+  for(const source of [raw+'\n',raw.slice(1),lf.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.strictEqual(beforeReleaseFastB9Ci(path,source),source);
+  for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(beforeReleaseFastB9Ci(foreign,raw),raw);
+  const buffer=Buffer.from(raw),prior=releaseFastB9CiRead(()=>buffer)(path);
+  assert(Buffer.isBuffer(prior));assert.equal(hash(prior.toString().replaceAll('\r\n','\n')),row.beforeSha256);
+  const bad=Buffer.concat([buffer,Buffer.from('\n')]);assert.strictEqual(releaseFastB9CiRead(()=>bad)(path),bad);
+ }
+});
 test('Release CI repair maps only complete reviewed helper and test bytes, retaining drift and foreign inputs',()=>{
  const hash=s=>createHash('sha256').update(s).digest('hex');
  for(const [path,priorSha,project]of [
