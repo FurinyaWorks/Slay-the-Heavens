@@ -347,7 +347,8 @@ test('legacy authorization cannot bypass its original latest-status, actual enqu
 });
 test('any real trusted marker forces the new path and never falls back after a failed, invalid, stale or dismissed cloud review',()=>{
  for(const patch of [{state:'COMMENTED'},{state:'DISMISSED'},{state:'CHANGES_REQUESTED'},
-  {commit_id:sha('f')},{body:'<!-- independent-ai-review:v1 -->\n{invalid-json'}]){
+  {commit_id:sha('f')},{body:'<!-- independent-ai-review:v1 -->\n{invalid-json'},
+  {body:'quoted malformed report: <!-- independent-ai-review:v1 --> {}'}]){
   const f=legacyAdmissionFixture(),writes=[];
   f.report.coordinator={...f.permission.user,verifiedActualSessions:true};
   const row={...f.review,user:f.permission.user,body:'<!-- independent-ai-review:v1 -->\n'+JSON.stringify(f.report),...patch};

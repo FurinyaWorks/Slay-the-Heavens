@@ -76,7 +76,7 @@ export function collectQueueAdmission(event,env,query,ruleset){
    ancestorModule=collectReviewModule({api,repo,commitSha:comparison.merge_base_commit.sha});
   }catch(error){throw Error('Queue authorization module policy metadata failed: '+error.message);}
   const hasNewMarker=reviews.some(row=>TRUSTED_REVIEW_COORDINATOR_IDS.includes(row?.user?.id)&&
-   typeof row.body==='string'&&row.body.trimStart().startsWith(INDEPENDENT_AI_REVIEW_MARKER));
+   typeof row.body==='string'&&row.body.includes(INDEPENDENT_AI_REVIEW_MARKER));
   const legacy=!hasNewMarker&&!headModule.installed&&!ancestorModule.installed;
   const summarize=value=>({installed:value.installed,commit:value.installation.commit.sha,
    root:value.installation.root.sha,scripts:value.installation.scripts.sha});
