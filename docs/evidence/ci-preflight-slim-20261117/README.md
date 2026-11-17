@@ -18,3 +18,9 @@ C 系统临时目录载入准确 API 源码，受限 Node REPL 无 process 全�
 本新提交须独审后再进行一次必要 Quick，确认显式合同步骤真实执行；不重复 EDF，不跑额外 Full。真实 Release freeze 仍只接受主仓准确候选的正式 Full 证据，不接受 Fork 回传替代。
 
 官方机制：[job 条件](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-jobs-with-conditions)、[原生 concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)。
+
+## 真实预检拦截与修复
+
+Fork A 新预检 [44023968552](https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A/actions/runs/44023968552)，job `133839769812`，Node `24.18.0` 真实执行了显式合同：33 项、32 通过、1 失败。唯一失败是 Ready/Draft/manual 用例在 `release-ci.cases.mjs:123` 引用 `releaseBootstrapWorkflowBefore` 未定义；原有导入只在旧 if 块内解构，新顶层测试无法访问。此前 C fixture 的额外顶层导入掩盖了入口作用域缺陷，13/13 mock 不能代替真实测试入口。
+
+修复仅将该函数加入已有静态 bootstrap 命名导入；不改 workflow、helper、历史 packet 或 expected，不改变任何断言。C 临时目录用实际新导入语句和原 advisory 回调独立执行 1/1 通过，没有 fixture 额外 bootstrap 导入。完整 Node24 红绿仍待新唯一提交的必要 Quick；不重跑旧提交、不跑额外 Full。

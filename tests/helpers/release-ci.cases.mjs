@@ -92,7 +92,7 @@ if(existsSync(new URL('./release-bootstrap-ci-source.mjs',import.meta.url))) {
 }
 
 import {createHash} from 'node:crypto';
-import {releaseBootstrapCiSource,releaseBootstrapCiRead} from './release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiSource,releaseBootstrapCiRead,releaseBootstrapWorkflowBefore} from './release-bootstrap-ci-source.mjs';
 test('Release bootstrap helper continuation rejects drift, foreign inputs and preserves Buffer identity',()=>{
  const hash=s=>createHash('sha256').update(s).digest('hex');
  const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path,'utf8');
