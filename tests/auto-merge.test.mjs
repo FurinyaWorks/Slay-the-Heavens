@@ -285,14 +285,14 @@ test('CI native review gate uploads genuine preflight before releasing a truthfu
  const released=gateExecute(f,{release:true,saved:prepared.proof});assert.equal(released.result.state,'published');assert.equal(released.result.artifactId,99);
  assert(f.calls.some(a=>a.includes('POST')&&a.includes('context=independent-review')));
 });
-test('shadow cannot publish and stale approval, policy, CI, artifact or untrusted source fails closed',()=>{
+test('shadow cannot publish and stale signed review, policy, CI, artifact or untrusted source fails closed',()=>{
  const shadow=nativeFixture(),s=gateExecute(shadow,{mode:'shadow'});assert.equal(s.result.state,'shadow_verified');
  gateExecute(shadow,{mode:'shadow',release:true,saved:s.proof});assert(!shadow.calls.some(a=>a.includes('POST')));
  for(const mutate of [f=>f.ruleset.rules[3].parameters.strict_required_status_checks_policy=false,f=>f.reviews[0].state='DISMISSED',f=>f.run.conclusion='failure',f=>f.jobs[0].conclusion='failure']){
   const f=nativeFixture();mutate(f);assert.throws(()=>gateExecute(f));assert(!f.calls.some(a=>a.includes('POST')));
  }
  const f=nativeFixture(),p=gateExecute(f).proof;f.proofArtifact.expired=true;assert.throws(()=>gateExecute(f,{release:true,saved:p}),/artifact/);assert(!f.calls.some(a=>a.includes('POST')));
- assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:e=>e.GITHUB_REF='refs/heads/untrusted'}),/trusted default/);
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:e=>e.GITHUB_REF='refs/heads/untrusted'}),/trusted actual BASE/);
 });
 test('gate-only workflow keeps Required inventory distinct and uses a separate concurrency group',()=>{
  const text=readFileSync(new URL('../.github/workflows/licenses.yml',import.meta.url),'utf8');
