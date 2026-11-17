@@ -79,23 +79,26 @@ function installationErrors(base,installation){
   errors.push('Reviewed install BASE already contains the independent AI review module');
  return errors;
 }
-// Read immutable Git objects only. Failed/truncated reads never prove absence.
+// Read complete authenticated immutable metadata; API errors never mean absence.
+export function collectReviewModule({api,repo,commitSha}){
+ if(typeof api!=='function'||!sha(commitSha))throw Error('Synchronous Git API and exact module commit are required');
+ const read=path=>{const value=api(path);if(value&&typeof value.then==='function')throw Error('Synchronous Git API required');return value;};
+ const prefix='repos/'+repo,commit=read(prefix+'/git/commits/'+commitSha);
+ if(commit?.sha!==commitSha||!sha(commit?.tree?.sha))throw Error('Immutable module commit metadata is missing');
+ const root=read(prefix+'/git/trees/'+commit.tree.sha);
+ const entries=Array.isArray(root?.tree)?root.tree.filter(row=>row?.path==='scripts'):[];
+ if(!completeTree(root,commit.tree.sha)||entries.length!==1||entries[0].mode!=='040000'||entries[0].type!=='tree')
+  throw Error('Complete module root with a unique scripts Git tree is required');
+ const scripts=read(prefix+'/git/trees/'+entries[0].sha);
+ if(!completeTree(scripts,entries[0].sha))throw Error('Complete immutable scripts Git tree metadata is required');
+ return {installed:scripts.tree.some(row=>row.path==='independent-ai-review.mjs'),installation:{commit,root,scripts}};
+}
+// Bootstrap consumers always re-read immutable objects, not artifact claims.
 export function collectCloudGateSource({api,run,...context}){
  const observations={};
  try{
-  if(context.bootstrap===true){
-   if(typeof api!=='function')throw Error('Synchronous Git API is required for the install BASE');
-   const read=path=>{const value=api(path);if(value&&typeof value.then==='function')throw Error('Synchronous Git API required');return value;};
-   const prefix='repos/'+context.repo;
-   const commit=read(prefix+'/git/commits/'+context.base);
-   if(commit?.sha!==context.base||!sha(commit?.tree?.sha))throw Error('Immutable install BASE commit metadata is missing');
-   const root=read(prefix+'/git/trees/'+commit.tree.sha);
-   const entries=Array.isArray(root?.tree)?root.tree.filter(row=>row?.path==='scripts'):[];
-   if(!completeTree(root,commit.tree.sha)||entries.length!==1||entries[0].mode!=='040000'||entries[0].type!=='tree')
-    throw Error('Complete install BASE root with a unique scripts Git tree is required');
-   const scripts=read(prefix+'/git/trees/'+entries[0].sha);
-   observations.installation={commit,root,scripts};
-  }
+  if(context.bootstrap===true)
+   observations.installation=collectReviewModule({api,repo:context.repo,commitSha:context.base}).installation;
   return {errors:cloudGateSourceErrors(run,{...context,installation:observations.installation}),observations};
  }catch(error){return {errors:[error.message],observations};}
 }
@@ -190,6 +193,23 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
   repositoryId:repository?.id,repo,prNumber:pr?.number,head,base:baseSha,tree,mergeCommitSha:merge};
 }
 
+// Complete server Review records also select the staged migration path. Any
+// marker from a fixed trusted actor opts into the new contract, even if invalid.
+export function collectIndependentAiReviewRecords({api,repo,prNumber}){
+ if(typeof api!=='function'||!positive(prNumber))throw Error('Synchronous API and exact PR number are required');
+ const reviews=[];
+ for(let page=1;;page++){
+  const rows=api(`repos/${repo}/pulls/${prNumber}/reviews?per_page=100&page=${page}`);
+  if(rows&&typeof rows.then==='function')throw Error('API adapter must return synchronous parsed JSON');
+  if(!Array.isArray(rows)||rows.length>100)throw Error('Malformed paginated PR Review response');
+  reviews.push(...rows);
+  if(reviews.some(row=>!positive(row?.id))||new Set(reviews.map(row=>row.id)).size!==reviews.length)
+   throw Error('Missing or duplicate paginated Review records');
+  if(rows.length<100)break;
+ }
+ return reviews;
+}
+
 function snapshot(pr){
  return {number:pr?.number,state:pr?.state,merged:pr?.merged,draft:pr?.draft,mergeable:pr?.mergeable,
   authorId:pr?.user?.id,head:pr?.head,base:pr?.base,merge_commit_sha:pr?.merge_commit_sha,body:pr?.body};
@@ -214,13 +234,7 @@ export function collectIndependentAiReview({api,prNumber,expectedHeadSha,expecte
   if(targetBefore?.ref!=='refs/heads/develop'||targetBefore.object?.type!=='commit'||!sha(targetBefore.object.sha)||
    prBefore?.number!==prNumber||!sha(prBefore.merge_commit_sha))throw Error('Exact PR and actual develop commit are required');
   const baseSha=targetBefore.object.sha,sourceCommit=read(prefix+'/git/commits/'+prBefore.merge_commit_sha);
-  const reviews=[];
-  for(let page=1;;page++){
-   const rows=read(prPath+'/reviews?per_page=100&page='+page);
-   if(!Array.isArray(rows)||rows.length>100)throw Error('Malformed paginated PR Review response');
-   reviews.push(...rows);if(rows.length<100)break;
-   if(new Set(reviews.map(row=>row.id)).size!==reviews.length)throw Error('Duplicate paginated Review records');
-  }
+  const reviews=collectIndependentAiReviewRecords({api:read,repo,prNumber});
   const permissions={};
   for(const review of reviews)if(TRUSTED_REVIEW_COORDINATOR_IDS.includes(review?.user?.id)&&!Object.hasOwn(permissions,review.user.id)){
    if(!text(review.user.login)||!/^[a-z\d](?:[a-z\d-]*[a-z\d])?$/i.test(review.user.login))throw Error('Invalid server Review actor login');

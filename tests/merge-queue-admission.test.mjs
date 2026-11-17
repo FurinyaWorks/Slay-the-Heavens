@@ -306,3 +306,101 @@ test('a newly successful formal run or attempt cannot reuse the old source-gate 
   }}),/proof.*formal|formal.*proof/);assert.deepEqual(writes,[]);
  }
 });
+
+function legacyAdmissionFixture(){
+ const f=admissionFixture('FurinyaWorks/Slay-the-Heavens'),admin={id:111138384,login:'FurinyaDev'};
+ f.reviews=[];f.headInstallation.scripts.tree=f.headInstallation.scripts.tree.filter(row=>row.path!=='independent-ai-review.mjs');
+ f.entry.enqueuer={databaseId:admin.id,login:admin.login};f.permission={permission:'admin',role_name:'admin',user:admin};
+ f.ruleset.rules[1].parameters.required_status_checks.find(row=>row.context==='full-quality').context='pr-quality';
+ f.proofStatus={id:59139120357,context:'independent-review',state:'success',target_url:null,creator:admin,
+  description:`opencode-independen [rules:${queueRulesFingerprint(f.ruleset)}] [base:${f.pr.base.sha}]`};
+ f.prRun=structuredClone(f.proof.preflight.run);
+ f.qualityStatus={id:93,context:'pr-quality',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
+  target_url:`https://github.com/${f.env.GITHUB_REPOSITORY}/actions/runs/61`,description:'Exact Full run 61, attempt 1'};
+ return f;
+}
+test('unmigrated legacy queue members retain the original exact rules/BASE enqueuer-admin authorization and current Full',()=>{
+ const f=legacyAdmissionFixture(),writes=[];f.pr.merge_commit_sha=null;
+ f.reviews=[{id:5,user:{id:999,login:'ordinary'},state:'COMMENTED',body:'An ordinary historical review'}];
+ const snapshot=JSON.parse(collectQueueAdmission(f.event,f.env,admissionQuery(f),f.ruleset))[0];
+ assert.equal(snapshot.authorizationKind,'legacy');assert.equal(snapshot.review,f.proofStatus.id);
+ assert.equal(snapshot.rulesFingerprint,queueRulesFingerprint(f.ruleset));assert.equal(snapshot.enqueuer,111138384);
+ assert.equal(snapshot.moduleEvidence.head.installed,false);assert.equal(snapshot.moduleEvidence.mergeBase.installed,false);
+ assert.equal(snapshot.moduleEvidence.mergeBase.commit,f.pr.base.sha);
+ assert.deepEqual(snapshot.quality,{status:93,run:61,attempt:1});assert(!Object.hasOwn(snapshot,'gateProof'));
+ assert.equal(execute(f,admissionQuery(f,writes)).state,'success');assert.equal(writes.filter(row=>row.state==='success').length,3);
+});
+test('legacy authorization cannot bypass its original latest-status, actual enqueuer, current admin or formal CI controls',()=>{
+ for(const mutate of [
+  f=>f.proofStatus.state='failure',f=>f.proofStatus.creator={id:52,login:'other'},
+  f=>f.proofStatus.description=f.proofStatus.description.replace(f.pr.base.sha,sha('f')),
+  f=>f.proofStatus.description=f.proofStatus.description.replace(queueRulesFingerprint(f.ruleset),'0'.repeat(64)),
+  f=>f.entry.enqueuer.databaseId=52,f=>f.permission.permission='write',f=>f.permission.user.id=52,
+  f=>f.qualityStatus.state='pending',f=>f.prRun.run_attempt++,f=>f.prRun.conclusion='failure',
+  f=>f.pr.body='Depends-on: #999'
+ ])for(const duringReceipt of [false,true]){
+  const f=legacyAdmissionFixture(),writes=[];if(!duringReceipt)mutate(f);
+  assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+   if(duringReceipt)mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
+  }}),undefined,String(mutate));assert.deepEqual(writes,[]);
+ }
+});
+test('any real trusted marker forces the new path and never falls back after a failed, invalid, stale or dismissed cloud review',()=>{
+ for(const patch of [{state:'COMMENTED'},{state:'DISMISSED'},{state:'CHANGES_REQUESTED'},
+  {commit_id:sha('f')},{body:'<!-- independent-ai-review:v1 -->\n{invalid-json'}]){
+  const f=legacyAdmissionFixture(),writes=[];
+  f.report.coordinator={...f.permission.user,verifiedActualSessions:true};
+  const row={...f.review,user:f.permission.user,body:'<!-- independent-ai-review:v1 -->\n'+JSON.stringify(f.report),...patch};
+  f.reviews=[row];
+  assert.throws(()=>execute(f,admissionQuery(f,writes)),/attestation|proof/);assert.deepEqual(writes,[]);
+ }
+ const demoted=legacyAdmissionFixture();demoted.reviews=[{...demoted.review,body:'<!-- independent-ai-review:v1 -->\n{}'}];
+ assert.throws(()=>execute(demoted),/attestation/,'a fixed trusted marker cannot downgrade when its signer role no longer matches');
+});
+test('an installed HEAD or inherited merge-base module forbids deleting the gate to regain legacy admission',()=>{
+ for(const location of ['headInstallation','mergeBaseInstallation'])for(const [mode,type]of [
+  ['100644','blob'],['120000','blob'],['160000','commit'],['040000','tree']]){
+  const f=legacyAdmissionFixture(),writes=[];
+  f[location].scripts.tree.push({path:'independent-ai-review.mjs',mode,type,sha:sha('9')});
+  assert.throws(()=>execute(f,admissionQuery(f,writes)),/attestation/);assert.deepEqual(writes,[]);
+ }
+});
+test('missing, truncated, foreign or inaccessible selector Git metadata is a policy failure, never proof of legacy eligibility',()=>{
+ for(const mutate of [
+  f=>f.headInstallation.root.truncated=true,f=>f.mergeBaseInstallation.scripts.truncated=true,
+  f=>delete f.headInstallation.root.truncated,f=>delete f.mergeBaseInstallation.scripts.tree,
+  f=>f.headInstallation.root.sha=sha('f'),f=>f.mergeBaseInstallation.scripts.sha=sha('f'),
+  f=>f.comparison.base_commit.sha=sha('f'),f=>delete f.comparison.merge_base_commit,
+  f=>f.headInstallation.root.tree.push({...f.headInstallation.root.tree[0]})
+ ]){
+  const f=legacyAdmissionFixture(),writes=[];mutate(f);
+  assert.throws(()=>execute(f,admissionQuery(f,writes)),/module policy metadata/);assert.deepEqual(writes,[]);
+ }
+ for(const status of [403,404]){
+  const f=legacyAdmissionFixture(),writes=[],underlying=admissionQuery(f,writes);
+  assert.throws(()=>execute(f,(...args)=>{
+   if(args.at(-1).includes('/git/trees/'))throw Error('HTTP '+status);return underlying(...args);
+  }),new RegExp('module policy metadata.*'+status));assert.deepEqual(writes,[]);
+ }
+});
+test('legacy and new authorization modes are stable across final queue receipt verification',()=>{
+ const f=legacyAdmissionFixture(),writes=[];
+ assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
+  f.reviews=[{...f.review,body:'<!-- independent-ai-review:v1 -->\n{}'}];
+  return {checkout:f.checkout,checkoutArtifact:f.artifact};
+ }}),/attestation/);assert.deepEqual(writes,[]);
+});
+
+test('the migration selector reads all real Review pages and never treats malformed or denied Review metadata as no marker',()=>{
+ const paged=legacyAdmissionFixture();paged.reviews=Array.from({length:100},(_,i)=>({id:i+1,user:{id:999,login:'ordinary'},state:'COMMENTED',body:'old comment'}));
+ paged.reviews.push({...paged.review,id:101,user:paged.permission.user,body:'<!-- independent-ai-review:v1 -->\n{}'});
+ assert.throws(()=>execute(paged),/attestation/,'a trusted marker on page two forbids legacy fallback');
+ for(const response of [null,{},[{id:1},{id:1}]]){
+  const f=legacyAdmissionFixture(),writes=[],underlying=admissionQuery(f,writes);
+  assert.throws(()=>execute(f,(...args)=>args.at(-1).includes('/reviews?')?JSON.stringify(response):underlying(...args)),/server Review policy metadata/);
+  assert.deepEqual(writes,[]);
+ }
+ const f=legacyAdmissionFixture(),writes=[],underlying=admissionQuery(f,writes);
+ assert.throws(()=>execute(f,(...args)=>{if(args.at(-1).includes('/reviews?'))throw Error('HTTP403');return underlying(...args);}),/server Review policy metadata.*403/);
+ assert.deepEqual(writes,[]);
+});
