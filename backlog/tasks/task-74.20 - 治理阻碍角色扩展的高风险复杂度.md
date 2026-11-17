@@ -1,16 +1,18 @@
 ---
 id: TASK-74.20
 title: 治理剩余中高风险复杂度并固化职责门槛
-status: In Progress
+status: Blocked
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-17 17:17'
+updated_date: '2026-11-17 17:54'
 labels:
   - 待验
   - delivery-verify
 milestone: m-9
 dependencies: []
+references:
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/714'
 documentation:
   - docs/backlog-details/M7-CORE-LIFECYCLE-20261106.md
   - docs/backlog-details/M7-SCRY-CHOICE-RESPONSIBILITIES-20261107.md
@@ -218,4 +220,6 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 2026-11-18阶段实测：本轮31处CC>30已清零，358模块新增叶均CC15内，全库原max68降至30。角色五模块2项新旧全图回归及独立1260个hook检查点/96次渲染轨迹通过；准入事件899点/4负控通过，UI与中央展示定向通过。Actor/Combat额外中高状态owner仍在拆分及验证；最终出口、来源适配、独立组合审查与完整交付未认证，不提前Done。
 
 2026-11-18产品提交5a47b106已通过真实Git增量棘轮（80份Lua，0新增违规）；最终新鲜工程入口360模块6440/6440测量、完整SCC0、maxCC30、31处>30清零、6旧告警无新增，4关键变异和6原生合同通过。主控重新组合10个产品测试文件28/28通过；独立产品复审PASS并结案ARCH-PRODUCT-001。机器前后清单、完整边位置、原始日志摘要与残余149个>15观察项已存对应evidence及本轮记录。AC1/2据源码/行为证据勾选；实际最终HEAD Hosted Full、原生队列与合后push Full尚未取得，保持In Progress/待验，不伪称Done或发版通过。
+
+交付接续PR714（develop），中高职责和棘轮修复/独审已完成；原merge:auto写独审commit status因当前GitHub集成HTTP403失败，读回未入队、auto_merge=null。保留待验AC，不冒称Full/合后或全库CC15完成。恢复需具备commit statuses写权限的授权，按精确HEAD/base独审+原生队列+verify:delivery --merged继续；不改保护规则或增加豁免，详delivery-blocker.json。
 <!-- SECTION:NOTES:END -->

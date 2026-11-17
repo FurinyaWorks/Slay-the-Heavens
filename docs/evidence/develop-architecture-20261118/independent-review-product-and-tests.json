@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "reviewedHeadSha": "3c2d34af66e7a520c6e048d72e25bae038364456",
+  "reviewedBaseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "reviewId": "independent-final-develop-architecture-20261118-architecture-review-3c2d34af",
+  "reviewer": "/root/architecture_review",
+  "actor": {
+    "kind": "independent-subagent",
+    "canonicalTask": "/root/architecture_review",
+    "parentTask": "/root",
+    "provenance": "Three read-only review turns in this agent conversation: e014cc84 initial product audit, 5a47b106 production follow-up, 3c2d34af final full-branch follow-up. This reviewer did not implement production/test changes or delegate review."
+  },
+  "reviewedAt": "2026-11-17T17:43:48.693Z",
+  "conclusion": "pass",
+  "unresolved": [],
+  "critical": [],
+  "important": [],
+  "resolvedFindings": [
+    {
+      "id": "ARCH-PRODUCT-001",
+      "severity": "Important",
+      "summary": "Missing explicit Combat host in requestDiscard and Tools auto-discard production calls caused Reflex automatic all-hand discard to throw missing_draw_api.",
+      "discoveredAtHead": "e014cc844e3fa4615fee95f654d3d697259008c3",
+      "verifiedResolvedAtHead": "5a47b1066772778f018695a0f0eea9a7f6892421",
+      "evidence": "Complete 351-before/359-after git-source VM reproduced initial failure; both production callers now pass their exact host. Independent current handler regressions cover both callers and basic/upgraded Reflex, actual queue-tail draw and physical card identity.",
+      "finalProductionUnchanged": true
+    }
+  ],
+  "scope": {
+    "branch": "feat/develop-architecture",
+    "intendedTarget": "develop",
+    "changedFileCount": 212,
+    "finalFollowupFileCount": 78,
+    "initialProductReview": "work/review-architecture-product.json",
+    "productionFilesBoundBySourceHash": 80,
+    "areas": [
+      "Full branch source/config/test/helper/documentation delta, reviewed across three exact source checkpoints",
+      "Actor death/decay/reactions/float32 and Combat four state-owner splits; explicit Run/Combat/Potion/Inventory hosts; shared dynamic facade slots and actual production call-site migration",
+      "Nine new responsibilities including Combat command factory; direct and deferred dependency graph enforcement, exact scoped AST complexity ceilings and existing stricter rules",
+      "Six UI lifecycle extractions, Feedback stages, card display and permanent reward transaction boundaries",
+      "Standard sourceEpoch continuation, lightweight authorization using the same fixed archive, auxiliary executable inputs and test/helper closure",
+      "Immutable historical CI source/shape/inventory aliases versus independent current raw scheduling and local measured floors",
+      "Backlog/plan/evidence status boundaries: source/behavior acceptance separated from final Hosted Full, merged push and device acceptance"
+    ],
+    "reviewBoundaries": [
+      "No independent repeat of the entire engineering/full regression suite; targeted fresh validation was run and coordinator artifacts were inspected separately.",
+      "No official client, device, import, readiness, mobile, hosted final-HEAD or merged-push acceptance claimed.",
+      "Frozen-context Feedback owner comparison is identified as such; current production integrations remain covered separately, and projected old bytes were not treated as current VM execution.",
+      "Historical trust binding leaf is an explicit fixed code anchor; its own source cannot be recursively self-certified by the archive it authenticates. Archive SHA, helper closure SHA and fresh copied owner reads were inspected."
+    ]
+  },
+  "independentValidation": [
+    {
+      "check": "Initial complete-git-source before/after VM reproducer",
+      "result": "Confirmed ARCH-PRODUCT-001 in both production handlers before fix; true baseline success and candidate missing_draw_api failure"
+    },
+    {
+      "check": "Four targeted raw Lua contracts",
+      "result": "core_actor_leaf_contract (4 groups), core_other_host_boundaries (4), combat_owner_semantics (5), run_cycle_host all exit 0"
+    },
+    {
+      "check": "Post-fix targeted Node contracts",
+      "result": "discard-host-boundaries, architecture-full-cycle-gate, architecture-scoped-gate: 7 tests passed"
+    },
+    {
+      "check": "Independent Combat command factory probe",
+      "result": "Cold load inert; original nine Actor alias reads before Upgrade import; original alias snapshot behavior; shared Upgrade dynamic slot; two explicit owner bindings; multiple returns, table error identity and varargs preserved"
+    },
+    {
+      "check": "Final archive-to-Git audit",
+      "result": "336 complete before/current source bindings matched exact c240/3c2d bytes; all 361 authentication hashes matched final HEAD. git diff 5a47..3c2d -- src/lua is empty"
+    },
+    {
+      "check": "Final sourceEpoch/raw-budget targeted Node contracts",
+      "result": "6 tests passed: prototype/own metadata, fresh owner reads, auxiliary closure, immutable prior source and current raw budget"
+    },
+    {
+      "check": "Independent accessor and warm lightweight authorizer probes",
+      "result": "Accessor source read once during JSON deep copy; later getter changes do not mutate authorization; warm product/input calls reject fresh linked owner drift"
+    },
+    {
+      "check": "Independent helper closure drift probes",
+      "result": "Successful helper predecessor projection then per-owner mutation for all 7 source closure entries was rejected"
+    },
+    {
+      "check": "Planning evidence and prior-record audit",
+      "result": "All five new local floors matched their committed test/log/receipt SHA; c240 prior timing data and eight existing floor records were unchanged"
+    },
+    {
+      "check": "Raw scheduler budget",
+      "result": "900 JS / 1430 Lua; Windows18 forecast 1795110ms < 1800000ms, Linux16 forecast 1159095ms < 1200000ms, each including existing 60000ms reserve; old POSIX15 capacity rejects"
+    },
+    {
+      "check": "Git whitespace verification",
+      "result": "git diff --check c2409ad7..3c2d34af passed"
+    }
+  ],
+  "sourceEpochAssessment": {
+    "inputSnapshot": "composeDevelopArchitectureEpoch JSON-clones the complete supplied patch before checking own source/sha256/gitBlob fields; frozen projector reuse additionally rejects accessors/non-plain data.",
+    "archiveBinding": "Current archive SHA and helper continuation SHA are fixed literals; direct Git comparison verified archived predecessor and final source bytes.",
+    "freshness": "Production projector and lightweight authorizers re-read linked owners per authorization. Helper source adapters re-read their declared closure before returning predecessor source. LF/CRLF normalization preserves byte identity beyond line endings.",
+    "historicalExecution": "Old source remains in immutable archives and explicit old target/materialization paths. Reward current VM loads the live source string after authentication, not its projected predecessor. CI c240 shape is actually imported/executed as authenticated predecessor bytes, and current raw Full inventory/budget is checked separately.",
+    "guardrails": "No old archive was edited by this branch. Original Full38/18-15/eight-floor assertions remain historical contracts; current matrix 18/16 and raw inventory are separately asserted."
+  },
+  "followupChangesSha256": "3a5d541e3851c700e2d4ac1c8d706bd5cf7504dea37f14ab93dd04b1ad2f910c",
+  "sourceTree": "8f785b6cad1b6ba0c72a3e34821e77f21dd4761f"
+}

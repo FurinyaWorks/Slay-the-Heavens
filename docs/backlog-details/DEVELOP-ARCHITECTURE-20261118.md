@@ -69,3 +69,11 @@
 本轮只从develop开发线交付，不向release/v2.0.0或master推送，不制作发布Tag，不启动用户客户端。官方与设备证据仍按原合同单独验收。
 
 完整来源/奖励/菜单合同由主控重新运行22/22通过。CI历史合同两文件完整85/85通过：历史Full38、18/15、8个原floor保持各自c240上下文与原断言；当前900 JS/1430 Lua、18/16及全部新成本由独立raw预算入口验证。另记录了既有CI合同文件72个成功case成本和61802ms，修正其原unknown10s的规划低估；它是下界，未冒称完整单file墙钟。最终预算均含60秒预留，实际Hosted完成仍单独验收。
+
+## PR与交付阻塞
+
+交付入口为[PR714](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/714)，目标develop。独立整分支审查绑定候选`3c2d34af66e7a520c6e048d72e25bae038364456`与基线c240，结论PASS、unresolved为空；原始审查记录已保存至对应evidence。
+
+原`merge:auto --dry-run`已通过精确HEAD/base、依赖、Ruleset和原生队列准入。实际授权在首次写入必需`independent-review: pending`时，被当前GitHub集成以HTTP403拒绝；没有触发enable Auto-merge。清理后再次读回auto_merge=null、isInMergeQueue=false；状态列表没有independent-review记录。未宣称已入队、已授权或已合并，也未更改保护规则。
+
+TASK-74.19/74.20通过CLI置Blocked，保留Owner、优先级、已验AC与待验项，并链接PR。恢复需要一个具备commit statuses写权限的GitHub连接：先核对当时最新HEAD/base及独审，使用原merge:auto入口授权；实际Full、队列、squash和合后push Full验证后，再通过CLI完成余下AC和任务收口。当前授权只读回看到FurinyaDev的GH_TOKEN身份，没有可直接使用的替代写入授权。详细机器接续见[交付阻塞](../evidence/develop-architecture-20261118/delivery-blocker.json)。

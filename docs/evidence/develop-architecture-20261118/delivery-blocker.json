@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "pr": 714,
+  "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/pull/714",
+  "attemptedHead": "3c2d34af66e7a520c6e048d72e25bae038364456",
+  "base": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "eligibility": "pass",
+  "authorization": "blocked",
+  "reason": "GitHub integration returned HTTP403 for required independent-review commit status writes",
+  "nativeReadback": {
+    "number": 714,
+    "headRefOid": "3c2d34af66e7a520c6e048d72e25bae038364456",
+    "baseRefName": "develop",
+    "isInMergeQueue": false,
+    "autoMergeRequest": null
+  },
+  "reviewId": "independent-final-develop-architecture-20261118-architecture-review-3c2d34af",
+  "requiredCapability": "commit statuses write permission; original merge:auto workflow must be used",
+  "next": "Use an authorized GitHub connection, recheck latest exact HEAD/base/review, run merge:auto, then verify:delivery --merged before checking remaining AC or marking Done."
+}
