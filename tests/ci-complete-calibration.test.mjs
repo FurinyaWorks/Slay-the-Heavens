@@ -49,7 +49,10 @@ const actualEnemyGeometryReadFileSync=enemyPost697HistoricalRead('enemy',actualE
 import {enemyGeometryCiRead,enemyGeometryCiPacket,enemyGeometryPriorInventory,assertEnemyGeometryCiCurrent,assertEnemyGeometryRawInventory} from './helpers/enemy-geometry-ci-source.mjs';
 const rawBootstrapReadFileSync=enemyGeometryCiRead(actualEnemyGeometryReadFileSync);
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
-const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+const historicalCiReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+// Authenticate the final current production closure before historical projection.
+const liveDiskReadFileSync=(path,encoding)=>(path.startsWith('src/')||path==='config/architecture.json'
+ ?actualEnemyPost697ReadFileSync:historicalCiReadFileSync)(path,encoding);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;

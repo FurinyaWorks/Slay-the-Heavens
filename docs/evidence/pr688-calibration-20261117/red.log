@@ -1,0 +1,30 @@
+✖ component UI CI projection admits only complete current sources and preserves foreign drift (40.308403ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15838.517033
+
+✖ failing tests:
+
+test at tests/ci-complete-calibration.test.mjs:220:1
+✖ component UI CI projection admits only complete current sources and preserves foreign drift (40.308403ms)
+  AssertionError [ERR_ASSERTION]: combined linked owner identity: src/lua/abyss_game_ui_input.lua
+      at Object.preCombinedSource (file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/tests/helpers/combined-epoch/source-epoch-runtime.mjs:119:4)
+      at sourceSlice (file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/tests/helpers/closeout-source-epoch.mjs:69:21)
+      at file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/tests/helpers/closeout-ci-source.mjs:57:10
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/geometry688-calibration/tests/ci-complete-calibration.test.mjs:227:37)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
