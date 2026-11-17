@@ -1,0 +1,58 @@
+{
+  "tests/helpers/defect-final-source-epoch.mjs": {
+    "sha256": "4433f8de381cb3b7389b3fee3560756650a140d997688cc7975805ed33b6ad51",
+    "bytes": 3075
+  },
+  "tests/helpers/copy-integration-source-closure.mjs": {
+    "sha256": "70f3325d96d92f787a994ae8938ff7298988c0292a4d8f343ac244af482e0be2",
+    "bytes": 4776
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-final-defect.json": {
+    "sha256": "0e760ab539ac567d6b66871c5023f435f89a6a853d71757d0d88f9c5451e7f07",
+    "bytes": 387
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-two-full-formation.json": {
+    "sha256": "31b656c3112877c56c9727ed78775a81dce8a73fa176d72d4c7af8d3d2348566",
+    "bytes": 384
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-two-full-formation.log": {
+    "sha256": "9b97fc32017c314b562addfd26ade1cb812f5f0fd0d6dfcbec7fe69c1fe7b92c",
+    "bytes": 2700
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/README.md": {
+    "sha256": "411d6b5e59477b48077a96a53aec60150b89c9cabb62368c7b9ce0fbcd5d31bf",
+    "bytes": 2690
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-full-formation.log": {
+    "sha256": "e23c262b3554755a2dbfd164694cc2c757255dbccf3ac78349bcdddbb4bd4219",
+    "bytes": 2755
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/review.md": {
+    "sha256": "033dd8752dd3774c3ab4105a344c1f596a3d79639f5a84bc068fc079b3ab0aa2",
+    "bytes": 917
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-one-closure.log": {
+    "sha256": "3e2a6478e29b98807b624a08e59e9ca99f76943a933b2d83b3e6204b8bf48483",
+    "bytes": 391
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-final-defect.log": {
+    "sha256": "c2321aceb0dc231d8041821703ea636c271861146d8ea2de2146b384f1029426",
+    "bytes": 3412
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-one.log": {
+    "sha256": "710db07c0b2dc3c7698ce7b404aba7cc5ca278fe9a17e3fae454e39f53cf0361",
+    "bytes": 1576
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/mutable-predecessor-probe.mjs.txt": {
+    "sha256": "e4684ddf38c2381d2b7340ec6ea29ec4cdc5f5499efb41ba42e63217a8e27ba0",
+    "bytes": 1209
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-full-defect.log": {
+    "sha256": "96af2c0706e4a3d9b79eafc314bad706d479954a35fb84a1259f6d9e334ce3f2",
+    "bytes": 3412
+  },
+  "docs/evidence/pr706-defect-proof-reuse-20261117/706-reuse-full-formation.json": {
+    "sha256": "c8d97b96fd51e84c9be61ae417445dd134dea46a00a1c791d2bbc080221b6a10",
+    "bytes": 381
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--max-old-space-size=2048",
+    "--test",
+    "--test-reporter=tap",
+    "tests/encounter-formation-source-epoch.test.mjs"
+  ],
+  "exitCode": 1,
+  "wallSeconds": 22.82366713701049,
+  "maxRssKiB": 2410220,
+  "sampledTreeRssBytes": 2502856704,
+  "processesAtPeak": 2,
+  "sampleIntervalMs": 20,
+  "userSeconds": 19.543371,
+  "systemSeconds": 7.6119
+}

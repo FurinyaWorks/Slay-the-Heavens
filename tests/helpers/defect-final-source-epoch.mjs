@@ -17,7 +17,12 @@ export function extendDefectFinalEpoch(original){
  const proof={...prior,currentTreeCommitted:false,defectFinalCurrentCommitRole:outer.currentCommitRole,defectFinalCollectedBaseCommit:outer.targets.prior.commit,current:{...prior.current,...outer.current},
   owners:[...new Set([...prior.owners,...outer.owners])],
   targets:{...prior.targets,defectFinalPrior:{commit:outer.targets.prior.commit,files:prior.current}}};
- const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();
+ // Freeze only new containers: never mutate a caller's synthetic predecessor.
+ const reuseFrozenInput=Object.isFrozen(prior)&&Object.isFrozen(outer);
+ if(reuseFrozenInput){
+  Object.freeze(proof.current);Object.freeze(proof.owners);Object.freeze(proof.targets.defectFinalPrior);Object.freeze(proof.targets);Object.freeze(proof);
+ }
+ const current=createSourceEpochProjector(proof,{allowConfigLayout:true,reuseFrozenInput}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();
  function preCombinedSource(path,source,{target,readSource=live}={}){
   readSource=readers.get(readSource)?.raw??readSource;
   const projected=current.preCombinedSource(path,source,{target,readSource});

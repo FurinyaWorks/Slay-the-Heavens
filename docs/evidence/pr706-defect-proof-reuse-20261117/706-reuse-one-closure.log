@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift
+ok 1 - isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift
+  ---
+  duration_ms: 5956.732719
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19845.327009

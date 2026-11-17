@@ -33,6 +33,9 @@ for(const rows of [runtimeParticleHelperCopies,releaseSelectionMapHelperCopies])
  if(row.path!=='tests/helpers/closeout-source-epoch.mjs')files[row.path]=row.after;
 }
 files['tests/helpers/closeout-source-epoch.mjs']='54d949a4f3ad810aeb23bfc0a3df8f8123e21c0c3f24a8e796680484043d1318';
+// Explicit immutable Defect builder reuse; retain the authenticated predecessor.
+assert.equal(files['tests/helpers/defect-final-source-epoch.mjs'],'8088008202072d1ce22492383861fe5ccb2b57d2bd9d1b06abb6653f835c2137','Defect frozen-proof builder predecessor');
+files['tests/helpers/defect-final-source-epoch.mjs']='4433f8de381cb3b7389b3fee3560756650a140d997688cc7975805ed33b6ad51';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

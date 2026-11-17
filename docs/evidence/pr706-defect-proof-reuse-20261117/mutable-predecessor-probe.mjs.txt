@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';
+import {defectFinalEpoch,extendDefectFinalEpoch} from '/workspace/scratch/c1a4970a76e0/runtime706-memory1615/tests/helpers/defect-final-source-epoch.mjs';
+const outer=defectFinalEpoch.proof;
+const fresh=()=>({schemaVersion:1,normalization:'LF',currentCommit:outer.targets.prior.commit,owners:Object.keys(outer.targets.prior.files),current:JSON.parse(JSON.stringify(outer.targets.prior.files)),targets:{}});
+const p=fresh(), original={proof:p}, next=extendDefectFinalEpoch(original); const path=Object.keys(p.current).find(p=>original.proof.current[p]); const old=next.proof.targets.defectFinalPrior.files[path].source;
+assert(!Object.isFrozen(p));assert(!Object.isFrozen(p.current));assert(!Object.isFrozen(p.current[path]));p.current[path].source+='mutation';assert.equal(next.proof.targets.defectFinalPrior.files[path].source,old);
+const shallow=Object.freeze(fresh());assert.throws(()=>extendDefectFinalEpoch({proof:shallow}),/must be frozen/);assert(!Object.isFrozen(shallow.current));assert(!Object.isFrozen(shallow.current[path]));
+console.log('PASS mutable predecessor remains mutable; output isolated; shallow-frozen mutable graph rejected without mutation');

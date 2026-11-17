@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: Defect final outer epoch preserves every prior binding and exact frozen production byte
+ok 1 - Defect final outer epoch preserves every prior binding and exact frozen production byte
+  ---
+  duration_ms: 2.906564
+  type: 'test'
+  ...
+# Subtest: all advertised historical targets restore Defect final from LF and CRLF without rewriting originals
+ok 2 - all advertised historical targets restore Defect final from LF and CRLF without rewriting originals
+  ---
+  duration_ms: 3.214641
+  type: 'test'
+  ...
+# Subtest: current facade retains exact config identity and rechecks all 50 owners after warm success
+ok 3 - current facade retains exact config identity and rechecks all 50 owners after warm success
+  ---
+  duration_ms: 7.406011
+  type: 'test'
+  ...
+# Subtest: foreign bytes never authorize reads and composed readers preserve explicit raw reader ownership
+ok 4 - foreign bytes never authorize reads and composed readers preserve explicit raw reader ownership
+  ---
+  duration_ms: 2.183571
+  type: 'test'
+  ...
+# Subtest: isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift
+ok 5 - isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift
+  ---
+  duration_ms: 5370.163523
+  type: 'test'
+  ...
+# Subtest: unknown source targets are rejected rather than gaining an identity fallback
+ok 6 - unknown source targets are rejected rather than gaining an identity fallback
+  ---
+  duration_ms: 0.506803
+  type: 'test'
+  ...
+# Subtest: configuration layout admission preserves exact tokens and freshly authenticates all 50 current raw owners
+ok 7 - configuration layout admission preserves exact tokens and freshly authenticates all 50 current raw owners
+  ---
+  duration_ms: 13.636238
+  type: 'test'
+  ...
+# Subtest: outer foreign-source fallback preserves invalid raw-reader semantics
+ok 8 - outer foreign-source fallback preserves invalid raw-reader semantics
+  ---
+  duration_ms: 0.849211
+  type: 'test'
+  ...
+# Subtest: live LF and CRLF raw owner reads authenticate 50 current owners on every call
+ok 9 - live LF and CRLF raw owner reads authenticate 50 current owners on every call
+  ---
+  duration_ms: 3393.387858
+  type: 'test'
+  ...
+# Subtest: outer metadata preserves the full predecessor and rejects altered predecessor metadata
+ok 10 - outer metadata preserves the full predecessor and rejects altered predecessor metadata
+  ---
+  duration_ms: 1013.182885
+  type: 'test'
+  ...
+# Subtest: source and configuration reject unknown targets and malformed live readers after warm authorization
+ok 11 - source and configuration reject unknown targets and malformed live readers after warm authorization
+  ---
+  duration_ms: 3.276813
+  type: 'test'
+  ...
+# Subtest: pre-feedback production retains original68, exact28, merchant and all 104 frozen owner assertions
+ok 12 - pre-feedback production retains original68, exact28, merchant and all 104 frozen owner assertions
+  ---
+  duration_ms: 124.046325
+  type: 'test'
+  ...
+# Subtest: current raw production retains the exact power-view owner and complete release owner continuation
+ok 13 - current raw production retains the exact power-view owner and complete release owner continuation
+  ---
+  duration_ms: 17.500453
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22934.435286

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--max-old-space-size=2048",
+    "--test",
+    "--test-reporter=tap",
+    "tests/defect-final-source-epoch.test.mjs"
+  ],
+  "exitCode": 0,
+  "wallSeconds": 23.008975849996204,
+  "maxRssKiB": 2475428,
+  "sampledTreeRssBytes": 2538315776,
+  "processesAtPeak": 2,
+  "sampleIntervalMs": 20,
+  "userSeconds": 20.753674,
+  "systemSeconds": 6.6732119999999995
+}

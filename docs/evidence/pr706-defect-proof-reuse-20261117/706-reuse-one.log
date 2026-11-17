@@ -1,0 +1,37 @@
+TAP version 13
+# Subtest: isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift
+not ok 1 - isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift
+  ---
+  duration_ms: 13.689556
+  type: 'test'
+  location: '/workspace/scratch/c1a4970a76e0/runtime706-memory1615/tests/defect-final-source-epoch.test.mjs:58:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    fresh helper copy identity: tests/helpers/defect-final-source-epoch.mjs
+    + actual - expected
+    
+    + '3d2adcf14011f357b894f858a5f384133d06f2aa02840da8df7a0cc6b15ac97f'
+    - '8088008202072d1ce22492383861fe5ccb2b57d2bd9d1b06abb6653f835c2137'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '8088008202072d1ce22492383861fe5ccb2b57d2bd9d1b06abb6653f835c2137'
+  actual: '3d2adcf14011f357b894f858a5f384133d06f2aa02840da8df7a0cc6b15ac97f'
+  operator: 'strictEqual'
+  stack: |-
+    copyIntegrationSourceClosure (file:///workspace/scratch/c1a4970a76e0/runtime706-memory1615/tests/helpers/copy-integration-source-closure.mjs:42:104)
+    TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/runtime706-memory1615/tests/defect-final-source-epoch.test.mjs:61:3)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12904.116182
