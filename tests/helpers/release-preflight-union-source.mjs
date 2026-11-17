@@ -26,6 +26,11 @@ export function assertReleasePreflightUnionCurrent(read=readFileSync){
  }
 }
 export function releasePreflightUnionSource(path,source,target){
+ if(target==='release'&&path==='tests/release-selection-map-source.test.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='803e0effb38fd39ec153b4f508b50722fac0993a5faee36ff54c42be5077908a'){
+  const prior=norm(source).replace("[norm(raw),norm(raw).replaceAll('\\n','\\r\\n')]","[raw,raw.replaceAll('\\n','\\r\\n')]");
+  assert.equal(hash(prior),'5726b421c7e56d56e28d5787f795df5e442c58f38f55e61ca283b1fcac189eba','exact selection-map EOL-fixture predecessor');
+  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  if(target==='release'&&path==='tests/sts-style-source-epoch.test.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='8541039a7c6c15f497bc678bc29cd43e68183297b7f9ad54bc8c527b8d076164'){
   const prior=norm(source).replace("(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\\n':value;}","(p,e)=>readFileSync(p,e)+(p===path?'\\n':'')");
   assert.equal(hash(prior),'eb5fa6dad1ad421aa4c565d2e700f91e04b510ae2602c4186c26c0732eb78435','exact StS mutation-reader predecessor');

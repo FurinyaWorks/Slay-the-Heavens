@@ -26,3 +26,12 @@ git diff --check
 11份原始成功/失败输出无损合并到 `calibration-readers-raw.tar.gz`，SHA256 `85ae484e580cc2940c70e1e91ffa297883f07121b6d9bbb29f26a8a0b4032cce`，压缩前后逐项核对原文件SHA256。原独立日志、一次性 controls脚本和旧摘要可从上述 b33提交恢复；本入口不重复保存。没有重跑已通过套件或修改可执行代码。本地两份历史LFS实化未纳入提交。
 
 本轮未启动Full。后续沿原 #707 准确 HEAD/BASE 验证必要 hosted Quality；Quality manual仅接受 `runner_pool`，不接受 `base_sha`。Quick manual虽有 `base_sha`，仍是单平台advisory，不能替代必要Quality。
+
+
+## 2026-11-17 Windows selection-map EOL fixture
+
+Fork A Full `44058918461`, exact `558832b6` / Release `b9bca884`, failed the existing Windows rules (16/18) at `release-selection-map-source.test.mjs:151`. The positive fixture reapplied CRLF conversion to already-CRLF text and generated CRCRLF. The reader correctly preserved/rejected those malformed bytes; no runner or permission failure is inferred.
+
+The original callback was reproduced RED using a real Git core.autocrlf/core.eol CRLF checkout of the existing workflow on Linux, then GREEN after canonicalizing only the positive fixture's LF text before constructing its LF/CRLF pair. All original drift/type/unknown/fresh-owner assertions remain. The retained outer source leaf reverses only this exact complete new test body to the exact `558832b6` Git predecessor; all historical packets and pins are unchanged. No workflow, product, budget or source discovery inventory changes.
+
+Validation: original named callback LF 1/1; real Git CRLF fixture 1/1; complete original source file 8/8; 29 exact-source/EOL/drift/type/unknown/packet controls. The real-CRLF experiment runs on Linux and does not claim Windows OS or a new Hosted success. Decoded original Hosted job log, actual RED/GREEN and completed source-file logs are preserved in `selection-crlf-repair-raw.json.gz`. No second Full was dispatched while the original run was in flight.
