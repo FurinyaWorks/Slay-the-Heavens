@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const normalized=s=>typeof s==='string'&&!s.includes('\r\r\n')?s.replaceAll('\r\n','\n'):null;
-const archive='tests/helpers/release-enemy-fast-source.json.gz',digest='89c3967f38222934b5e0afc59117973b717a7048f5f02ea7c288b7a9cd928efc';
+const archive='tests/helpers/release-enemy-fast-source.json.gz',digest='52e465bb1a9ccfec30527d196c545fe56c58d992a06f67c0b68f8c6d363eac90';
 const bytes=readFileSync(new URL('./release-enemy-fast-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),digest,'complete enemy/Fast CI source seam');
 const packet=JSON.parse(gunzipSync(bytes));

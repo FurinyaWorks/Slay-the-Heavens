@@ -25,6 +25,9 @@ export function assertCapacityPreflightCurrent(read=readFileSync){
 }
 export function capacityPreflightSource(path,source,view,before){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,binding=row&&Object.hasOwn(row.views,view)?row.views[view]:null;
+ // These two prepared sources were unchanged in af77; the existing outer seam now binds their runner-only successor.
+ if(!row&&view==='preflight'&&before===undefined&&['.github/workflows/quality.yml','tests/ci-summary-runners.test.mjs'].includes(path))
+  return enemyFastSource(path,source,'release');
  if(!binding||before&&before.sha256!==binding.sha256)return source;
  source=enemyFastSource(path,source,'release');
  if(typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
