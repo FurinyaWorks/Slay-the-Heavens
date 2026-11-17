@@ -181,7 +181,7 @@ test('independent AI gate collector paginates to completion and observes a rejec
  f.reviews=Array.from({length:99},(_,i)=>({...valid,id:i+1,user:{id:999,login:'untrusted'},body:'ordinary review'}));
  f.reviews.push(valid,{...valid,id:101,state:'CHANGES_REQUESTED',submitted_at:'2026-11-17T10:01:00Z',body:'later rejection'});
  const {api,calls}=aiApi(f),result=collectIndependentAiReview({api,prNumber:712});
- assert.equal(result.conclusion,'fail');assert(calls.some(p=>p.endsWith('page=2')));assert.match(result.errors.join('\n'),/later trusted Review/);
+ assert.equal(result.conclusion,'fail');assert(calls.some(p=>p.endsWith('page=2')));assert.match(result.errors.join('\n'),/trusted reviewer still requests changes/);
  f.reviews.pop();assert.equal(aiCollect(f).conclusion,'pass');
  const duplicate=aiCollect(f,(path,value)=>path.endsWith('page=2')?[valid]:value);
  assert.equal(duplicate.conclusion,'fail');assert.match(duplicate.errors.join('\n'),/duplicate/i);
