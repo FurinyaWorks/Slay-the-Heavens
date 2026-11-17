@@ -6,4 +6,3 @@ stack traceback:
 	...ture-check/build/battle-regression-xuBPPm/regression.lua:21: in main chunk
 	[JS]: in function 'dofile'
 	(command line):1: in main chunk
-

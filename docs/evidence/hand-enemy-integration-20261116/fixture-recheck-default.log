@@ -1,4 +1,3 @@
 ENEMY_GEOMETRY_DEFAULT_PASS profiles=2 statusChanges=3 geometryVariants=8 fixedCountWidth=true
 ABYSS_RUN seed=1 source=explicit
 ENEMY_GEOMETRY_HOST_PASS idleFrames=300 statusQueries=0 runRngEqual=true
- 

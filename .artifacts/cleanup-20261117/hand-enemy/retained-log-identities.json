@@ -1,0 +1,33 @@
+{
+  "reason": "Preserve exact historical Git and filesystem raw output before removing only trailing whitespace/blank EOF from display logs for the unchanged CI whitespace gate.",
+  "rows": [
+    {
+      "path": "docs/evidence/hand-enemy-integration-20261116/fixture-recheck-default.log",
+      "sourceCommit": "79a8b59e5d89bf97e521093d03b29e2808293c40",
+      "gitBlob": "1176cf211126441544f0ebca3e3806a10fd64cf0",
+      "bytes": 203,
+      "sha256": "9b0ada6233667bddd49392948ff0c2ec86c568b7d4dd6cedcc8d49f92b7cffcd",
+      "archive": "retained-fixture-recheck-default.log.gz",
+      "archiveSha256": "a2fcc2b21eac505584af6b70d7949727216391b1206069c68558dfd352d7e410",
+      "filesystem": {
+        "bytes": 207,
+        "sha256": "ef78ad84b8b58e7a2f6ed98be35eda4a2b22333a94a8af29f45e4a87bae20922",
+        "archive": "retained-fs-fixture-recheck-default.log.gz"
+      }
+    },
+    {
+      "path": "docs/evidence/hand-enemy-integration-20261116/fixture-recheck-red.log",
+      "sourceCommit": "79a8b59e5d89bf97e521093d03b29e2808293c40",
+      "gitBlob": "5922c8df8c4553b0183693a28309e5f19cd7cc01",
+      "bytes": 365,
+      "sha256": "6ea8d50dc909d7faab244d97f772ff5a44c51f89ddacd2511223d68239a05488",
+      "archive": "retained-fixture-recheck-red.log.gz",
+      "archiveSha256": "297946d78eda2ac6ed7e8af8e632f7d4641e3bdaff93156df7e3349552dfa826",
+      "filesystem": {
+        "bytes": 374,
+        "sha256": "a179ba5599944a8ebcb20be26560aa5114622753abee57e303668c65e8387222",
+        "archive": "retained-fs-fixture-recheck-red.log.gz"
+      }
+    }
+  ]
+}
