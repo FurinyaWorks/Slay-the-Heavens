@@ -57,7 +57,7 @@ test('joint CI binds every current input, preserves both packets and never masks
  for(const [path,sha]of Object.entries(integrationPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(norm(releaseRead(path,'utf8'))),sha,path);
   if(source!==releaseRead(path,'utf8')){
-    assert.equal(beforeCapacityB9Ci(path,source.replaceAll('\n','\r\n')),releaseRead(path,'utf8'));
+    assert.equal(norm(beforeCapacityB9Ci(path,source.replaceAll('\n','\r\n'))),norm(releaseRead(path,'utf8')));
     const foreign=source.replaceAll('\n','\r\r\n');
     assert.equal(beforeCapacityB9Ci(path,foreign),foreign);
    }
@@ -100,6 +100,25 @@ test('joint raw inventories retain both additions and reject missing duplicate f
  }
  const workflow=readFileSync('.github/workflows/quality.yml','utf8');
  assertReleasePc22BasicFeedbackExecutionGuards(workflow);assertReleaseSelectionMapExecutionGuards(workflow);
+});
+
+test('regression repairs preserve exact LF parent views and reject fresh missing stale or malformed current inputs',()=>{
+ const anchor='scripts/build-ui.mjs';
+ for(const path of ['tests/sts-style-source-epoch.test.mjs','tests/native-candidate.test.mjs',
+  'tests/platform-load.test.mjs','tests/release-card-contact-integration.test.mjs']){
+  const current=norm(readFileSync(path,'utf8')),prior=enemyCapacitySource(path,current,'release');
+  assert.notEqual(prior,current,'the executable repair retains a distinct immutable predecessor');
+  assert(!prior.includes('\r'),'parent view uses exact LF bytes');
+  assert.equal(enemyCapacitySource(path,current.replaceAll('\n','\r\n'),'release'),prior);
+  for(const changed of [null,current+'\n',prior])assert.throws(()=>enemyCapacityRead('release',(p,e)=>p===path?changed:readFileSync(p,e))(anchor,'utf8'),
+   error=>error.code==='ERR_ASSERTION'&&error.message.split('\n')[0]==='fresh complete integration source: enemy capacity '+path);
+  for(const foreign of [current+'\n',current.replaceAll('\n','\r\r\n'),null,17,Buffer.from(current)]){
+   let reads=0;assert.strictEqual(enemyCapacitySource(path,foreign,'release',{read:()=>{reads++;throw Error('unknown source');}}),foreign);assert.equal(reads,0);
+  }
+  const crcrlf=Buffer.from(current.replaceAll('\n','\r\r\n'));
+  assert.strictEqual(enemyCapacityRead('release',(p,e)=>p===path?(e?crcrlf.toString():crcrlf):readFileSync(p,e))(path),crcrlf);
+ }
+ assertEnemyCapacityCurrent();
 });
 
 test('actual 00ab enemy capacity join freshly rejects cross-input and archive drift through both public readers',()=>{

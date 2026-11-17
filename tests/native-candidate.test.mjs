@@ -350,16 +350,22 @@ test('packed candidates cannot reuse the legacy logical-only UI cache',async t=>
 test('default reduction CI continuation authenticates every new current owner without rewriting prior packets',async()=>{
  const adapter=await import('./helpers/release-bootstrap-ci-source.mjs');
  const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
+ const {enemyCapacityRead}=await import('./helpers/release-enemy-capacity-join.mjs');
+ const capacityRead=enemyCapacityRead('release');
  const packet=adapter.defaultReductionCiPacket;assert.ok(packet,'complete default reduction continuation required');
  assert.equal(packet.baseCommit,'396b55757a9e536b052f6c960daf1159351f57b1');
  assertIntegratedCurrent();
  const audio=adapter.defaultReductionAudioCiPacket;assert.ok(audio,'complete audio handoff continuation required');
  assert.equal(audio.baseCommit,'d46bf7aa9a27e0a47528412d7f0ad8fd7e2cbf2b');
  for(const [file,row]of Object.entries({...packet.files,...packet.addedFiles,...audio.files})){
-  const source=readFileSync(file,'utf8').replaceAll('\r\n','\n');assert.equal(sha256(source),row.current.sha256);
+  const source=capacityRead(file,'utf8').replaceAll('\r\n','\n');assert.equal(sha256(source),row.current.sha256);
   for(const changed of [source+'\n',source.replace(/./,'!')]){
    assert.equal(adapter.releaseBootstrapCiSource(file,changed),changed);
-   assert.throws(()=>assertIntegratedCurrent((path,encoding)=>path===file?changed:readFileSync(path,encoding)),/fresh complete TASK-111 CI source/);
+   assert.throws(()=>assertIntegratedCurrent((path,encoding)=>path===file?changed:readFileSync(path,encoding)),error=>error.code==='ERR_ASSERTION'&&[
+    'fresh complete integration source: enemy capacity '+file,
+    'fresh complete TASK-111 CI source: default reduction / fresh complete integration source: '+file,
+    'fresh complete TASK-111 CI source: audio handoff / fresh complete integration source: '+file,
+   ].includes(error.message.split('\n')[0]));
   }
   assert.throws(()=>assertIntegratedCurrent((path,encoding)=>{if(path===file)throw Error('ENOENT '+file);return readFileSync(path,encoding);}),/ENOENT/);
  }
