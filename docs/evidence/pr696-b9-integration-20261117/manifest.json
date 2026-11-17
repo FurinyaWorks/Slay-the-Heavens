@@ -84,6 +84,12 @@
     "complete": true
   },
   {
+    "path": "integrated-bootstrap-single.log.gz",
+    "uncompressedBytes": 273,
+    "sha256": "b8f6240e3c6395a855795c666df469ffc4e501788af89426e80c7e83fc07c1a0",
+    "complete": true
+  },
+  {
     "path": "integrated-cases-bounded.log.gz",
     "uncompressedBytes": 538,
     "sha256": "fce326951bed8906ae98a684fe1ad79ee5ebb47a5b788c6093f27917eeb15139",
@@ -99,6 +105,18 @@
     "path": "integrated-copy-closure-single.log.gz",
     "uncompressedBytes": 266,
     "sha256": "6709242e6314424d8b2b9089ac0c647a4339f7d540449446562e977b5f0cb593",
+    "complete": true
+  },
+  {
+    "path": "integrated-first-offline-count.json.gz",
+    "uncompressedBytes": 433,
+    "sha256": "85a60c10d9d86cb964ec2fb22969f9b44bbd318f70d00010b43e968922e348eb",
+    "complete": true
+  },
+  {
+    "path": "integrated-first-offline-count.py.gz",
+    "uncompressedBytes": 3259,
+    "sha256": "60e3b199daa673c893183368b3b086addb11127b9042f690dac2c277b73c44ed",
     "complete": true
   },
   {
