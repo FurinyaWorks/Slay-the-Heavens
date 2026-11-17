@@ -7,7 +7,7 @@ import {gunzipSync} from 'node:zlib';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const textHash=text=>typeof text==='string'&&!text.includes('\r\r\n')?hash(text.replaceAll('\r\n','\n')):null;
 const bytes=readFileSync(new URL('./release-enemy-art-join.json.gz',import.meta.url));
-assert.equal(hash(bytes),'65ffcb90270318a7ccf53f71b394ce6e9493d13d83472002f436327242a24c9d','exact enemy art release join packet');
+assert.equal(hash(bytes),'57d7ec5c4c106ef6829c33970f944200d2d4d3754736bbe8c1c8a3303b1e977c','exact enemy art release join packet');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.deepEqual(packet.heads,{release:'b9bca884ed9b9831965b409885d78f719b9a567a',enemy:'8025fc9f585f2ca98bfa05c5e5c68de1593005d1'});
 export function enemyJoinSource(path,source,side){
