@@ -1,0 +1,210 @@
+{
+  "head": "a15f9e5115290451865b79ff9db33dc6e5e13961",
+  "parents": {
+    "picker": "af3ddb2eef8969959454c432cb2743288917a086",
+    "release": "af77fb2461c548f0faf104761d107397f75dca08"
+  },
+  "contracts": {
+    "pickerCapacity": {
+      "totalBindings": 82,
+      "rawMismatches": [
+        {
+          "path": ".github/workflows/licenses.yml",
+          "expectedSha256": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1",
+          "currentSha256": "6884673236e69a71de85cc45214e88d1fef27dd45caba01ac531bcd60ffbed76",
+          "parentSha256": {
+            "picker": "0d2767e00ecb43efce321a63a91eb52cb682c42301d27bbe1ea731c5446b15c1",
+            "release": "6884673236e69a71de85cc45214e88d1fef27dd45caba01ac531bcd60ffbed76"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": ".github/workflows/quality.yml",
+          "expectedSha256": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a",
+          "currentSha256": "a1cea762a43d9ce44b56e39ed865edb4203d6b91ae9dff0f7bc5ff90fe5b3f50",
+          "parentSha256": {
+            "picker": "1421c47e483f9d85bf6dea031db6721ac8df7dc039c4017272dbb83eb3c6958a",
+            "release": "a1cea762a43d9ce44b56e39ed865edb4203d6b91ae9dff0f7bc5ff90fe5b3f50"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": ".github/workflows/quick-feedback.yml",
+          "expectedSha256": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248",
+          "currentSha256": "3a1425304aff3de9736f7ebd38e035ddaae8ca6b7c2fcf7a8d45e037b3708359",
+          "parentSha256": {
+            "picker": "f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248",
+            "release": "3a1425304aff3de9736f7ebd38e035ddaae8ca6b7c2fcf7a8d45e037b3708359"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/ci-posix-concurrency.test.mjs",
+          "expectedSha256": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd",
+          "currentSha256": "2fbed048a7ac5d6b2cbea587aa94c1fad9b1b571bf68544895c73644f42e47c0",
+          "parentSha256": {
+            "picker": "6b5848ceca858e6b4d2d337270f866d458f1c58df5d307c4abf71fb254dd11fd",
+            "release": "2fbed048a7ac5d6b2cbea587aa94c1fad9b1b571bf68544895c73644f42e47c0"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/engineering-quality.test.mjs",
+          "expectedSha256": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+          "currentSha256": "e2376dbca82911a27d9f32f585aba6e5afba0b2fbe5beb4bd68edd28f95c4aa4",
+          "parentSha256": {
+            "picker": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+            "release": "e2376dbca82911a27d9f32f585aba6e5afba0b2fbe5beb4bd68edd28f95c4aa4"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/full-quality.test.mjs",
+          "expectedSha256": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+          "currentSha256": "e2b0d03df22d2f9d87a5e6adc93bcf7f7077f7d0b007579fbd295a84e5fbd2b5",
+          "parentSha256": {
+            "picker": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51",
+            "release": "e2b0d03df22d2f9d87a5e6adc93bcf7f7077f7d0b007579fbd295a84e5fbd2b5"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/helpers/integrated-ci-source.mjs",
+          "expectedSha256": "e78ad60fa6b13717f7de0cd832bbc07c2d9e205baf6ddc35b4233d744c92fa91",
+          "currentSha256": "3934106e69b5d3e14670f51be4517c8fffb3cf4d0866a8539283657796a17848",
+          "parentSha256": {
+            "picker": "e78ad60fa6b13717f7de0cd832bbc07c2d9e205baf6ddc35b4233d744c92fa91",
+            "release": "6e82e6fbc859c4235f591f7c710126acd0680682c4ef1a97e557036a7bc73ce8"
+          },
+          "introducedByJoin": true
+        },
+        {
+          "path": "tests/helpers/release-bootstrap-ci-source.mjs",
+          "expectedSha256": "a45e4441e756b1f803e406ffaea4b655eb623fecbdcb325402704e185cbf97a9",
+          "currentSha256": "dfca169a7cff29c945da5e7d69c9642bce82a41bd4bdeb3816519ef2809710eb",
+          "parentSha256": {
+            "picker": "a45e4441e756b1f803e406ffaea4b655eb623fecbdcb325402704e185cbf97a9",
+            "release": "dfca169a7cff29c945da5e7d69c9642bce82a41bd4bdeb3816519ef2809710eb"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/helpers/release-capacity-b9-ci-source.mjs",
+          "expectedSha256": "85ebd88ef33ba495fca7bddcf8f372e35603ab5dec82a5c6cb72277af1e51eca",
+          "currentSha256": "9a6c7fcbf362bfb2427ac7f3fb77aacac78b0673414606655766aba6ae4b6c38",
+          "parentSha256": {
+            "picker": "85ebd88ef33ba495fca7bddcf8f372e35603ab5dec82a5c6cb72277af1e51eca",
+            "release": "9a6c7fcbf362bfb2427ac7f3fb77aacac78b0673414606655766aba6ae4b6c38"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/helpers/release-card-contact-integration.mjs",
+          "expectedSha256": "8e2f8a4ef10af31031f91c01467c0d8c5fdfcb6f2cb7d5c219b9ef2c25c6eaf3",
+          "currentSha256": "e819d3f806c78c9b7e12fd71ec91bddc2bb9419d6e071babfa5680a5f647c94b",
+          "parentSha256": {
+            "picker": "8e2f8a4ef10af31031f91c01467c0d8c5fdfcb6f2cb7d5c219b9ef2c25c6eaf3",
+            "release": "e819d3f806c78c9b7e12fd71ec91bddc2bb9419d6e071babfa5680a5f647c94b"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/helpers/release-selection-map-ci-source.mjs",
+          "expectedSha256": "86a5b6c14c16d4c5724bf12da5816afc530674b937034031171ed8a2d1571cc6",
+          "currentSha256": "b3afd94ba73e8d0c9086311750fcb58f4286e62b99cd40dbc25d7a2c0126345b",
+          "parentSha256": {
+            "picker": "86a5b6c14c16d4c5724bf12da5816afc530674b937034031171ed8a2d1571cc6",
+            "release": "b3afd94ba73e8d0c9086311750fcb58f4286e62b99cd40dbc25d7a2c0126345b"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/integrated-ci-source.cases.mjs",
+          "expectedSha256": "0133c4d85ae44c2ce2b05754d88f40690b6451d85c8571b65cfbddcc95ea0782",
+          "currentSha256": "c381d727b6d95173436c4c9414d6969552be0e39444441fef2e8ef90dce1ea2d",
+          "parentSha256": {
+            "picker": "0133c4d85ae44c2ce2b05754d88f40690b6451d85c8571b65cfbddcc95ea0782",
+            "release": "bfabe02bdd1d0dcb11169221e0a65903a0ae802ae4ac7e7014ddb00f3a598b2b"
+          },
+          "introducedByJoin": true
+        },
+        {
+          "path": "tests/quick-feedback.test.mjs",
+          "expectedSha256": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
+          "currentSha256": "c160240be64efa475c3742518f790ff13ccfddfa7f1a4495b6abc823e1cd37af",
+          "parentSha256": {
+            "picker": "fd4ec1db0bf23e21072fea8374c4c876591aaac1f3ed81c0e602f170a4a0adf9",
+            "release": "c160240be64efa475c3742518f790ff13ccfddfa7f1a4495b6abc823e1cd37af"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/release-card-contact-integration.test.mjs",
+          "expectedSha256": "debd3ba0a665c80f5e072536cb532418f32a1a800ceb3640b4aba4442b7bdfa4",
+          "currentSha256": "4e23883696814e5c68e365ca3f491675784ee7463aa58a279e67e4839b7f3c50",
+          "parentSha256": {
+            "picker": "debd3ba0a665c80f5e072536cb532418f32a1a800ceb3640b4aba4442b7bdfa4",
+            "release": "ab15cea197a091356fccc918606603bfc25c4a3e9db862527d73eb5f6fb3e81a"
+          },
+          "introducedByJoin": true
+        },
+        {
+          "path": "tests/release-selection-map-source.test.mjs",
+          "expectedSha256": "062ab732c39e69d5a858c8580d8b4de5c8b27bc40f45958a1bb1308dcb4da348",
+          "currentSha256": "36d449cf2283148e6ceb1e0b9c3039d0dfa38553bc40dabddeca327b5daa8cc2",
+          "parentSha256": {
+            "picker": "062ab732c39e69d5a858c8580d8b4de5c8b27bc40f45958a1bb1308dcb4da348",
+            "release": "312409e2805093ad2e5f627827be3d6f5f8cbc138d582be6ff203e2a44deed27"
+          },
+          "introducedByJoin": true
+        }
+      ]
+    },
+    "capacityPreflight": {
+      "totalBindings": 11,
+      "rawMismatches": [
+        {
+          "path": "tests/release-selection-map-source.test.mjs",
+          "expectedSha256": "312409e2805093ad2e5f627827be3d6f5f8cbc138d582be6ff203e2a44deed27",
+          "currentSha256": "36d449cf2283148e6ceb1e0b9c3039d0dfa38553bc40dabddeca327b5daa8cc2",
+          "parentSha256": {
+            "picker": "062ab732c39e69d5a858c8580d8b4de5c8b27bc40f45958a1bb1308dcb4da348",
+            "release": "312409e2805093ad2e5f627827be3d6f5f8cbc138d582be6ff203e2a44deed27"
+          },
+          "introducedByJoin": true
+        },
+        {
+          "path": "tests/release-card-contact-integration.test.mjs",
+          "expectedSha256": "ab15cea197a091356fccc918606603bfc25c4a3e9db862527d73eb5f6fb3e81a",
+          "currentSha256": "4e23883696814e5c68e365ca3f491675784ee7463aa58a279e67e4839b7f3c50",
+          "parentSha256": {
+            "picker": "debd3ba0a665c80f5e072536cb532418f32a1a800ceb3640b4aba4442b7bdfa4",
+            "release": "ab15cea197a091356fccc918606603bfc25c4a3e9db862527d73eb5f6fb3e81a"
+          },
+          "introducedByJoin": true
+        },
+        {
+          "path": "tests/ci-complete-calibration.test.mjs",
+          "expectedSha256": "4d663e5f02ebe1406b1207798feae92206cf49b63b20dbb1141f6b07baf79f84",
+          "currentSha256": "f11fa80a5e1ed0bfbdcdd4bf3c9b1b9a2d0cc8583284b7ab39af7a31e4902eae",
+          "parentSha256": {
+            "picker": "f11fa80a5e1ed0bfbdcdd4bf3c9b1b9a2d0cc8583284b7ab39af7a31e4902eae",
+            "release": "4d663e5f02ebe1406b1207798feae92206cf49b63b20dbb1141f6b07baf79f84"
+          },
+          "introducedByJoin": false
+        },
+        {
+          "path": "tests/helpers/integrated-ci-source.mjs",
+          "expectedSha256": "6e82e6fbc859c4235f591f7c710126acd0680682c4ef1a97e557036a7bc73ce8",
+          "currentSha256": "3934106e69b5d3e14670f51be4517c8fffb3cf4d0866a8539283657796a17848",
+          "parentSha256": {
+            "picker": "e78ad60fa6b13717f7de0cd832bbc07c2d9e205baf6ddc35b4233d744c92fa91",
+            "release": "6e82e6fbc859c4235f591f7c710126acd0680682c4ef1a97e557036a7bc73ce8"
+          },
+          "introducedByJoin": true
+        }
+      ]
+    }
+  },
+  "scope": "raw identity audit only; existing #707 outer projections may explain parent mismatches; no runtime readiness claim"
+}
