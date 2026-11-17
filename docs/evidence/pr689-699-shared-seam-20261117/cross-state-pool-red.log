@@ -1,0 +1,5 @@
+CROSS_STATE_POOL expected=false actual=true
+...ence/pr689-699-shared-seam-20261117/cross-state-pool.lua:44: shared pool retirement must follow latest row owner across states
+stack traceback:
+	[JS]: in function 'assert'
+	...ence/pr689-699-shared-seam-20261117/cross-state-pool.lua:44: in main chunk

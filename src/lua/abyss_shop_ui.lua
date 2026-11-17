@@ -2,6 +2,7 @@
 -- Transactions and gesture ownership stay with abyss_node_ui / abyss_nodes.
 local Run = require("abyss_run")
 local Theme = require("abyss_theme")
+local Art=require('abyss_lowcost_art')
 local number = require("abyss_numbers").integer
 local C = Theme.color
 local removalInk = Theme.layout.nativeNode.shop.referenceRemovalInk or C.text
@@ -228,7 +229,10 @@ function M.new(controller, ui)
 
     local function writePotion(tile, offer, definition, availability, full)
         state(tile, availability.enabled or selection:inspectable('potions',offer))
-        picture(tile:GetChild('icon'), Theme.icon.potion[offer.id])
+        local icon=tile:GetChild('icon')
+        icon:SetVisible(true)
+        picture(icon, Theme.icon.potion[offer.id] or Theme.icon.intent.unknown)
+        Art.paint(icon,'potion',offer.id,32,ui.platform or {})
         tile:GetChild('name').text = definition and definition.name or (rarityNames[offer.rarity] or '') .. '药水'
         tile:GetChild('description').text = potionDescription(offer, full)
         show(tile:GetChild('veil'), offer.sold)

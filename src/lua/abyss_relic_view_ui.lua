@@ -64,7 +64,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
     local boundCount=official and battleBar.count or baseBar.count
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
-    local function picture(control,id)if platform.imageSource then control:SetImage(platform.imageSource,id)end end
+    local function picture(control,id)control:SetVisible(true);if platform.imageSource then control:SetImage(platform.imageSource,id)end end
     function self.resetBarHover(_)
         if self.hoverIndex then local icon=bar:GetChild('slot'..self.hoverIndex):GetChild('icon');icon:SetLocalScale(1,1,1);Art.scale(icon,1)end
         self.hoverIndex=nil

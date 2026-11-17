@@ -1,0 +1,18 @@
+✔ potion pools are bounded to live owners, leave the default profile and old registries unchanged (1164.015938ms)
+ℹ official complete Host potion47/517 + relic-reward2/34 =49 pools/551 controls; standalone battle potion24/264 + relic-reward2/34 =26/298; default +0. Offline counts, not FPS.
+✔ reward semantic art short Host preserves potion binding and paints both relic rows with source aliases (8040.948975ms)
+✔ 42 recipes in native pool and six representatives across four paths (8160.264237ms)
+✔ relic native fallback survives unavailable pools in shop, treasure, single and list owners (7658.934377ms)
+✔ formal relic source aliases share canonical native and semantic reward mapping without state writes (13712.498125ms)
+✔ reward relic pool retirement preserves fallback, replacements and foreign owners in row 1 and all states (37865.800612ms)
+✔ reward relic pool retirement preserves fallback, replacements and foreign owners in row 2 and all states (36010.194659ms)
+✔ reward relics share one real root fallback/pool with unchanged state faces and no new input (6316.184896ms)
+✔ real reward button writer retains measured state colours, resolves changing rewards and caches idle icons (699.788977ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 120408.758506

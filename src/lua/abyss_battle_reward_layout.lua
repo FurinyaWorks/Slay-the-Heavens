@@ -1,11 +1,20 @@
 -- Preserve the approved ordinary list; expand only independent multi-item rows.
 local Theme=require('abyss_theme')
+local Art=require('abyss_lowcost_art')
 local RelicView=require('abyss_relic_view_ui')
 local M={}
 local rowFaces=setmetatable({},{__mode='k'})
+local iconImages=setmetatable({},{__mode='k'})
+local iconPools=setmetatable({},{__mode='k'})
 local names={'goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward'}
 local rowNames={};for _,name in ipairs(names)do rowNames[name]=true end
 local function iconId(value)return type(value)=='table'and value.id or value end
+local function relicId(item,run)
+ if not item then return nil end
+ local source=item.sourceId or item.id
+ local definition=run and run.data and require('abyss_relic_rewards').definition(run,source)
+ return definition and definition.id or require('abyss_relic_hooks').localId(source)
+end
 local function rewardIcon(name,run)
  if name=='goldReward'or name=='stolenGold'then return iconId(Theme.icon.gold)end
  if name=='cardReward'then return iconId(Theme.icon.deck)end
@@ -14,11 +23,49 @@ local function rewardIcon(name,run)
  if name=='claimPotion'then return Theme.icon.potion[rewards and rewards.potion and rewards.potion.id]or Theme.icon.potion.empty end
  local index=tonumber(name:match('^relicReward(%d)$'))
  local item=rewards and rewards.relics and rewards.relics[index]
- return item and RelicView.icon(item.sourceId or item.id,true)or iconId(Theme.icon.node.treasure)
+ return item and RelicView.icon(relicId(item,run),true)or iconId(Theme.icon.node.treasure)
+end
+local function hidePool(pool,owner)
+ if pool and pool.alive~=false and pool.parent==owner then pool:SetVisible(false)end
+end
+local function paintShared(cached,id,platform)
+ local icon=cached.icon;local owner=icon.parent
+ local ok,pool=pcall(owner.GetChild,owner,'rewardIconArt')
+ -- Retire only this row's previously observed real handle when lookup or
+ -- replacement loses it; Art cannot hide an unavailable pool by rediscovery.
+ local previous=iconPools[icon]
+ if previous~=pool then hidePool(previous,owner)end
+ if ok and pool and pool.alive~=false then iconPools[icon]=pool end
+ icon:SetVisible(true)
+ if not Art.paint(icon,'relic',id,Theme.officialAssets.rewardRows.iconSize,platform)then hidePool(iconPools[icon],owner)end
 end
 local function paintIcon(cached,name,run,platform)
  local id=rewardIcon(name,run)
- if platform.imageSource and cached.id~=id then cached.icon:SetImage(platform.imageSource,id);cached.id=id end
+ local image=iconImages[cached.icon]
+ if platform.imageSource and (not image or image.source~=platform.imageSource or image.id~=id)then
+  iconImages[cached.icon]=nil
+  if cached.icon:SetImage(platform.imageSource,id)~=false then
+   iconImages[cached.icon]={source=platform.imageSource,id=id}
+  end
+ end
+ if name=='claimPotion'then
+  local potion=run and run.rewards and run.rewards.potion
+  cached.icon:SetVisible(true)
+  Art.paint(cached.icon,'potion',potion and potion.id,Theme.officialAssets.rewardRows.iconSize,platform)
+ elseif cached.shared then
+  local rewards=run and run.rewards
+  local item=rewards and rewards.relics and rewards.relics[tonumber(name:sub(-1))]
+  local localId=relicId(item,run)
+  paintShared(cached,localId,platform)
+ end
+end
+local function faceCache(name,part)
+ local shared
+ if name:match('^relicReward[12]$') and part.parent then
+  local ok,icon=pcall(part.parent.GetChild,part.parent,'rewardIcon')
+  if ok then shared=icon end
+ end
+ return {parts=part:GetChild('stsRewardFace'):GetChildren(),icon=shared or part:GetChild('rewardIcon'),shared=shared~=nil}
 end
 function M.paintButton(name,part,state,run,platform,tint,ink)
  local token=Theme.officialAssets and Theme.officialAssets.rewardRows
@@ -27,7 +74,7 @@ function M.paintButton(name,part,state,run,platform,tint,ink)
  if not rowNames[name]then return false end
  local cached=rowFaces[part]
  if not cached then
-  cached={parts=part:GetChild('stsRewardFace'):GetChildren(),icon=part:GetChild('rewardIcon')};rowFaces[part]=cached
+  cached=faceCache(name,part);rowFaces[part]=cached
  end
  local tone=token[state]or token.normal
  if cached.tone~=tone then for _,image in ipairs(cached.parts)do tint(image,tone)end;cached.tone=tone end

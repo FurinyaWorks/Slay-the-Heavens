@@ -28,7 +28,7 @@ local function control(spec)
  function c:SetSizeDelta(w,h)self.size={w,h}end
  function c:SetLocalScale(x,y,z)self.scale={x,y,z}end
  function c:SetVisible(v)self.visible=v end
- for _,s in ipairs(spec.children or{})do local n=control(s);c.children[n.name]=n;c.order[#c.order+1]=n end
+ for _,s in ipairs(spec.children or{})do local n=control(s);n.parent=c;c.children[n.name]=n;c.order[#c.order+1]=n end
  return c
 end
 local boxes={};for _,s in ipairs(${toLua(faces)})do boxes[s.name]=control(s)end

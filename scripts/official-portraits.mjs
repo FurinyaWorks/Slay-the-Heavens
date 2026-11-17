@@ -107,7 +107,17 @@ export function attachLowpolyScenes(layout,{menuBackground=false}={}) {
  select.children.splice(select.children.findIndex(c=>c.name==='border'),0,host());
  battle.children.unshift(host());
 }
-export function attachOfficialPortraits(layout,{selectionAvatar=true,battlePortrait=true}={}) {
+function approvedGroundShadow(){
+ const drawing=approvedBattleIdle(),solid=drawing.rows.filter(row=>row[17]>=128);
+ const floor=Math.min(...solid.map(row=>row[2]-row[4]/2));
+ const feet=solid.filter(row=>row[2]-row[4]/2<=floor+4);
+ const left=Math.min(...feet.map(row=>row[1]-row[3]/2)),right=Math.max(...feet.map(row=>row[1]+row[3]/2));
+ const ground=JSON.parse(readFileSync('data/presentation/lowcost-enemy-art.json','utf8')).assets.lagavulin.shapes[0];
+ if(ground.image!==100002||ground.w<=0||ground.h<=0)throw Error('Missing existing monster ground shadow');
+ return {name:'groundShadow',kind:'image',position:[(left+right)/2,floor],size:[right-left,(right-left)*ground.h/ground.w],
+  image:ground.image,colour:ground.colour,raycastTarget:false};
+}
+export function attachOfficialPortraits(layout,{selectionAvatar=true,battlePortrait=true,officialAssets=false}={}) {
  if(!selectionAvatar&&!battlePortrait)return;
  const stage=layout.controls.find(c=>c.name==='stage');
  const child=(p,n)=>{const c=p?.children?.find(c=>c.name===n);if(!c)throw Error(`Missing portrait parent ${n}`);return c;};
@@ -125,7 +135,10 @@ export function attachOfficialPortraits(layout,{selectionAvatar=true,battlePortr
   const hero=child(child(stage,'battlePanel'),'hero');
   if(hero.children.some(c=>c.name==='officialFigure'))throw Error('Portrait hosts already attached');
   const index=hero.children.findIndex(c=>c.name==='portrait');
-  hero.children.splice(index+1,0,{name:'officialFigure',kind:'container',position:[0,0],size:[133,133],scale:[(400/3)/133,(400/3)/133],visible:false,children:[]});
+  // First child stays behind all subsequently instantiated figure pages. It
+  // shares their single host/pose/lifecycle and never creates an input surface.
+  hero.children.splice(index+1,0,{name:'officialFigure',kind:'container',position:[0,0],size:[133,133],scale:[(400/3)/133,(400/3)/133],visible:false,
+   children:officialAssets?[approvedGroundShadow()]:[]});
  }
 }
 function validIndex(index,allowUnbound=false) {

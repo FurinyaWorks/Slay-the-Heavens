@@ -1,0 +1,3521 @@
+{
+  "schemaVersion": 1,
+  "canvas": 100,
+  "capacity": 10,
+  "provenance": "Original project-authored semantic illustrations using existing approved rectangle/circle/triangle native primitives; no gameplay or pool admission changes.",
+  "assets": {
+    "attack_potion": {
+      "name": "攻击药水",
+      "motif": "交叉剑",
+      "meaning": "攻击牌三选一",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#F0C4AD",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -7,
+          "y": -8,
+          "w": 9,
+          "h": 44,
+          "colour": "#20323B",
+          "rotation": -36
+        },
+        {
+          "image": 100003,
+          "x": 7,
+          "y": 13,
+          "w": 18,
+          "h": 22,
+          "colour": "#20323B",
+          "rotation": -36
+        },
+        {
+          "image": 100001,
+          "x": 7,
+          "y": -8,
+          "w": 9,
+          "h": 44,
+          "colour": "#20323B",
+          "rotation": 36
+        },
+        {
+          "image": 100003,
+          "x": -7,
+          "y": 13,
+          "w": 18,
+          "h": 22,
+          "colour": "#20323B",
+          "rotation": 36
+        },
+        {
+          "image": 100001,
+          "x": -13,
+          "y": -20,
+          "w": 22,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": -36
+        },
+        {
+          "image": 100001,
+          "x": 13,
+          "y": -20,
+          "w": 22,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 36
+        }
+      ]
+    },
+    "skill_potion": {
+      "name": "技能药水",
+      "motif": "开口扳手",
+      "meaning": "技能牌三选一",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#B9DBD2",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -7,
+          "y": -14,
+          "w": 12,
+          "h": 30,
+          "colour": "#20323B",
+          "rotation": -35
+        },
+        {
+          "image": 100001,
+          "x": 3,
+          "y": 7,
+          "w": 10,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": -35
+        },
+        {
+          "image": 100001,
+          "x": 17,
+          "y": -3,
+          "w": 10,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": -35
+        },
+        {
+          "image": 100001,
+          "x": 9,
+          "y": -9,
+          "w": 23,
+          "h": 10,
+          "colour": "#20323B",
+          "rotation": -35
+        }
+      ]
+    },
+    "power_potion": {
+      "name": "能力药水",
+      "motif": "三尖冠",
+      "meaning": "能力牌三选一",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#D4C5E9",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -16,
+          "y": 1,
+          "w": 17,
+          "h": 30,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": 6,
+          "w": 20,
+          "h": 38,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 16,
+          "y": 1,
+          "w": 17,
+          "h": 30,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -16,
+          "w": 47,
+          "h": 12,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "colorless_potion": {
+      "name": "无色药水",
+      "motif": "空心晶面",
+      "meaning": "无色牌三选一",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#E4E4D6",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -4,
+          "w": 33,
+          "h": 33,
+          "colour": "#20323B",
+          "rotation": 45
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -4,
+          "w": 18,
+          "h": 18,
+          "colour": "#E4E4D6",
+          "rotation": 45
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -27,
+          "w": 28,
+          "h": 6,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "blood_potion": {
+      "name": "鲜血药水",
+      "motif": "血滴",
+      "meaning": "回复最大生命百分比",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#F1B5B0",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": 6,
+          "w": 30,
+          "h": 34,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -9,
+          "w": 31,
+          "h": 31,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -9,
+          "w": 7,
+          "h": 20,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -9,
+          "w": 20,
+          "h": 7,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "block_potion": {
+      "name": "护盾药水",
+      "motif": "整面盾",
+      "meaning": "立即获得格挡",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#C0D8EF",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 1,
+          "w": 40,
+          "h": 29,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": -18,
+          "w": 40,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 180
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 8,
+          "h": 29,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "strength_potion": {
+      "name": "力量药水",
+      "motif": "杠铃",
+      "meaning": "本场战斗力量",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#EBC4AA",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -5,
+          "w": 38,
+          "h": 10,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -22,
+          "y": -5,
+          "w": 12,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 22,
+          "y": -5,
+          "w": 12,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "flex_potion": {
+      "name": "肌肉药水",
+      "motif": "弯臂与日落刻线",
+      "meaning": "本回合临时力量",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#EDBEA7",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -9,
+          "y": -11,
+          "w": 14,
+          "h": 30,
+          "colour": "#20323B",
+          "rotation": -35
+        },
+        {
+          "image": 100001,
+          "x": 8,
+          "y": -2,
+          "w": 31,
+          "h": 15,
+          "colour": "#20323B",
+          "rotation": -20
+        },
+        {
+          "image": 100002,
+          "x": 19,
+          "y": 12,
+          "w": 16,
+          "h": 18,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -29,
+          "w": 37,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 11,
+          "y": -24,
+          "w": 7,
+          "h": 14,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "dexterity_potion": {
+      "name": "敏捷药水",
+      "motif": "轻羽",
+      "meaning": "本场战斗敏捷",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#C4DDCB",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 2,
+          "y": -1,
+          "w": 27,
+          "h": 49,
+          "colour": "#20323B",
+          "rotation": -27
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -6,
+          "w": 7,
+          "h": 42,
+          "colour": "#C4DDCB",
+          "rotation": -27
+        },
+        {
+          "image": 100001,
+          "x": -9,
+          "y": -28,
+          "w": 7,
+          "h": 22,
+          "colour": "#20323B",
+          "rotation": -27
+        }
+      ]
+    },
+    "speed_potion": {
+      "name": "速度药水",
+      "motif": "飞翼与疾行线",
+      "meaning": "本回合临时敏捷",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#BBD9D9",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 5,
+          "y": 1,
+          "w": 50,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 90
+        },
+        {
+          "image": 100001,
+          "x": -17,
+          "y": -16,
+          "w": 25,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -19,
+          "y": -28,
+          "w": 20,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 9,
+          "y": 2,
+          "w": 28,
+          "h": 7,
+          "colour": "#BBD9D9",
+          "rotation": 30
+        }
+      ]
+    },
+    "energy_potion": {
+      "name": "能量药水",
+      "motif": "闪电",
+      "meaning": "立即获得能量",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#EDDF9E",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -5,
+          "y": 8,
+          "w": 26,
+          "h": 42,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 6,
+          "y": -14,
+          "w": 26,
+          "h": 42,
+          "colour": "#20323B",
+          "rotation": 180
+        }
+      ]
+    },
+    "swift_potion": {
+      "name": "迅捷药水",
+      "motif": "三层牌与抽取箭头",
+      "meaning": "抽三张牌",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#C0DCEC",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -5,
+          "y": -20,
+          "w": 38,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -5,
+          "y": -6,
+          "w": 38,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -5,
+          "y": 8,
+          "w": 38,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 20,
+          "y": -8,
+          "w": 7,
+          "h": 29,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 20,
+          "y": 10,
+          "w": 19,
+          "h": 18,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "fire_potion": {
+      "name": "火焰药水",
+      "motif": "火焰",
+      "meaning": "对单敌固定伤害",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#F4C2A1",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -12,
+          "w": 35,
+          "h": 33,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -6,
+          "y": 5,
+          "w": 29,
+          "h": 39,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 12,
+          "y": -2,
+          "w": 22,
+          "h": 31,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -15,
+          "w": 13,
+          "h": 22,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "explosive_potion": {
+      "name": "爆炸药水",
+      "motif": "圆炸弹与引线",
+      "meaning": "对全体敌人伤害",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#E5CC9D",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -12,
+          "w": 38,
+          "h": 38,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 7,
+          "y": 13,
+          "w": 8,
+          "h": 18,
+          "colour": "#20323B",
+          "rotation": -27
+        },
+        {
+          "image": 100001,
+          "x": 15,
+          "y": 21,
+          "w": 18,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 23,
+          "y": 23,
+          "w": 13,
+          "h": 16,
+          "colour": "#20323B",
+          "rotation": -35
+        }
+      ]
+    },
+    "weak_potion": {
+      "name": "虚弱药水",
+      "motif": "断刃",
+      "meaning": "减少敌人攻击伤害",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#C9D5BD",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -4,
+          "y": -19,
+          "w": 12,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": -25
+        },
+        {
+          "image": 100003,
+          "x": 9,
+          "y": 10,
+          "w": 23,
+          "h": 29,
+          "colour": "#20323B",
+          "rotation": -25
+        },
+        {
+          "image": 100001,
+          "x": -12,
+          "y": -29,
+          "w": 26,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": -25
+        }
+      ]
+    },
+    "fear_potion": {
+      "name": "恐惧药水",
+      "motif": "瞪视眼与裂痕",
+      "meaning": "易伤增加敌人受伤",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#E3C2CA",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 1,
+          "w": 49,
+          "h": 25,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 1,
+          "w": 27,
+          "h": 17,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 1,
+          "w": 11,
+          "h": 15,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": -23,
+          "w": 18,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": 180
+        }
+      ]
+    },
+    "ancient_potion": {
+      "name": "远古药水",
+      "motif": "齿轮环",
+      "meaning": "人工制品抵挡减益",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#E2D8AE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -5,
+          "w": 32,
+          "h": 32,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -5,
+          "w": 32,
+          "h": 32,
+          "colour": "#20323B",
+          "rotation": 45
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -5,
+          "w": 23,
+          "h": 23,
+          "colour": "#E2D8AE",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -5,
+          "w": 9,
+          "h": 9,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "liquid_bronze": {
+      "name": "液态铜",
+      "motif": "四向荆棘环",
+      "meaning": "反击荆棘",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#E9C39E",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 30,
+          "h": 30,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 14,
+          "h": 14,
+          "colour": "#E9C39E",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": 17,
+          "w": 15,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": -29,
+          "w": 15,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": 180
+        },
+        {
+          "image": 100003,
+          "x": -23,
+          "y": -6,
+          "w": 15,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": 90
+        },
+        {
+          "image": 100003,
+          "x": 23,
+          "y": -6,
+          "w": 15,
+          "h": 23,
+          "colour": "#20323B",
+          "rotation": -90
+        }
+      ]
+    },
+    "regen_potion": {
+      "name": "再生药水",
+      "motif": "向上新芽",
+      "meaning": "逐回合回复生命",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#CAE0BB",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -13,
+          "w": 7,
+          "h": 37,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -10,
+          "y": 0,
+          "w": 23,
+          "h": 14,
+          "colour": "#20323B",
+          "rotation": -30
+        },
+        {
+          "image": 100002,
+          "x": 10,
+          "y": 10,
+          "w": 23,
+          "h": 14,
+          "colour": "#20323B",
+          "rotation": 30
+        },
+        {
+          "image": 100002,
+          "x": -9,
+          "y": 19,
+          "w": 18,
+          "h": 12,
+          "colour": "#20323B",
+          "rotation": -30
+        }
+      ]
+    },
+    "heart_of_iron": {
+      "name": "钢铁之心",
+      "motif": "铆钉心脏",
+      "meaning": "持续金属化防守",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#C9D4DF",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -10,
+          "y": 5,
+          "w": 25,
+          "h": 26,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 10,
+          "y": 5,
+          "w": 25,
+          "h": 26,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": -13,
+          "w": 43,
+          "h": 38,
+          "colour": "#20323B",
+          "rotation": 180
+        },
+        {
+          "image": 100001,
+          "x": -10,
+          "y": 2,
+          "w": 6,
+          "h": 15,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 10,
+          "y": 2,
+          "w": 6,
+          "h": 15,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "essence_of_steel": {
+      "name": "钢之精华",
+      "motif": "三层甲片",
+      "meaning": "逐层损耗的护甲",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#CDD8D5",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 13,
+          "w": 42,
+          "h": 10,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 34,
+          "h": 10,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -19,
+          "w": 26,
+          "h": 10,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": -30,
+          "w": 20,
+          "h": 14,
+          "colour": "#20323B",
+          "rotation": 180
+        }
+      ]
+    },
+    "cultist_potion": {
+      "name": "邪教徒药水",
+      "motif": "长喙仪式面具",
+      "meaning": "仪式每回合增加力量",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#D7BCD2",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -3,
+          "y": -10,
+          "w": 44,
+          "h": 52,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -5,
+          "y": 8,
+          "w": 28,
+          "h": 27,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 18,
+          "y": 5,
+          "w": 31,
+          "h": 18,
+          "colour": "#20323B",
+          "rotation": -90
+        },
+        {
+          "image": 100002,
+          "x": -8,
+          "y": 10,
+          "w": 8,
+          "h": 8,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "elixir": {
+      "name": "灵药",
+      "motif": "燃去的牌",
+      "meaning": "选择手牌消耗",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#D0CBE6",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -3,
+          "y": -6,
+          "w": 31,
+          "h": 43,
+          "colour": "#20323B",
+          "rotation": -10
+        },
+        {
+          "image": 100001,
+          "x": -3,
+          "y": -6,
+          "w": 17,
+          "h": 29,
+          "colour": "#D0CBE6",
+          "rotation": -10
+        },
+        {
+          "image": 100003,
+          "x": 14,
+          "y": -15,
+          "w": 20,
+          "h": 31,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 20,
+          "y": -25,
+          "w": 17,
+          "h": 19,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "gamblers_brew": {
+      "name": "赌徒佳酿",
+      "motif": "骰子",
+      "meaning": "弃牌并重抽等量牌",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#DED0B7",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -5,
+          "w": 43,
+          "h": 43,
+          "colour": "#20323B",
+          "rotation": 10
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -5,
+          "w": 31,
+          "h": 31,
+          "colour": "#F9F4DE",
+          "rotation": 10
+        },
+        {
+          "image": 100002,
+          "x": -9,
+          "y": 3,
+          "w": 7,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 9,
+          "y": 1,
+          "w": 7,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -9,
+          "y": -13,
+          "w": 7,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 9,
+          "y": -15,
+          "w": 7,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "liquid_memories": {
+      "name": "液态记忆",
+      "motif": "回转箭头与牌",
+      "meaning": "弃牌回手",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#C3D9E0",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 7,
+          "y": -15,
+          "w": 24,
+          "h": 30,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 7,
+          "y": -15,
+          "w": 12,
+          "h": 18,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -4,
+          "y": 13,
+          "w": 33,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -23,
+          "y": 13,
+          "w": 20,
+          "h": 24,
+          "colour": "#20323B",
+          "rotation": 90
+        },
+        {
+          "image": 100001,
+          "x": 14,
+          "y": 3,
+          "w": 8,
+          "h": 25,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "snecko_oil": {
+      "name": "异蛇油",
+      "motif": "蛇身与眼",
+      "meaning": "抽牌并随机改费",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#CFDBB8",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 11,
+          "w": 38,
+          "h": 21,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 11,
+          "w": 20,
+          "h": 13,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 11,
+          "w": 7,
+          "h": 15,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -7,
+          "y": -7,
+          "w": 25,
+          "h": 9,
+          "colour": "#20323B",
+          "rotation": 30
+        },
+        {
+          "image": 100001,
+          "x": 7,
+          "y": -23,
+          "w": 25,
+          "h": 9,
+          "colour": "#20323B",
+          "rotation": 30
+        },
+        {
+          "image": 100002,
+          "x": -9,
+          "y": -28,
+          "w": 13,
+          "h": 13,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "duplication_potion": {
+      "name": "复制药水",
+      "motif": "成对重叠牌",
+      "meaning": "下一张牌复制",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#BFD8DC",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -8,
+          "y": 2,
+          "w": 31,
+          "h": 37,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -8,
+          "y": 2,
+          "w": 19,
+          "h": 25,
+          "colour": "#BFD8DC",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 10,
+          "y": -12,
+          "w": 31,
+          "h": 37,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 10,
+          "y": -12,
+          "w": 19,
+          "h": 25,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "distilled_chaos": {
+      "name": "混沌精华",
+      "motif": "三张散射牌",
+      "meaning": "随机目标免费打出三牌",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#DAC8DC",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -15,
+          "y": 1,
+          "w": 16,
+          "h": 31,
+          "colour": "#20323B",
+          "rotation": 30
+        },
+        {
+          "image": 100001,
+          "x": 6,
+          "y": 10,
+          "w": 16,
+          "h": 31,
+          "colour": "#20323B",
+          "rotation": -15
+        },
+        {
+          "image": 100001,
+          "x": 14,
+          "y": -20,
+          "w": 16,
+          "h": 31,
+          "colour": "#20323B",
+          "rotation": 50
+        },
+        {
+          "image": 100002,
+          "x": -9,
+          "y": -24,
+          "w": 9,
+          "h": 9,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "smoke_bomb": {
+      "name": "烟雾弹",
+      "motif": "烟云与逃逸尾",
+      "meaning": "逃离非首领战斗",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#D3D2D2",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -13,
+          "y": -5,
+          "w": 29,
+          "h": 29,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 4,
+          "y": 3,
+          "w": 34,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 19,
+          "y": -11,
+          "w": 24,
+          "h": 26,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -18,
+          "y": -27,
+          "w": 23,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -23,
+          "y": -38,
+          "w": 13,
+          "h": 7,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "entropic_brew": {
+      "name": "熵之酿",
+      "motif": "三种泡与旋转箭头",
+      "meaning": "填充随机药水",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#DDD2B7",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -15,
+          "y": 4,
+          "w": 17,
+          "h": 17,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 12,
+          "y": 10,
+          "w": 22,
+          "h": 22,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 5,
+          "y": -17,
+          "w": 26,
+          "h": 26,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -17,
+          "y": -21,
+          "w": 8,
+          "h": 25,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -17,
+          "y": -36,
+          "w": 18,
+          "h": 16,
+          "colour": "#20323B",
+          "rotation": 180
+        }
+      ]
+    },
+    "fruit_juice": {
+      "name": "果汁",
+      "motif": "果实与双叶",
+      "meaning": "增加最大生命",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#EDD2A6",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -13,
+          "w": 35,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -10,
+          "y": 12,
+          "w": 25,
+          "h": 13,
+          "colour": "#20323B",
+          "rotation": -25
+        },
+        {
+          "image": 100002,
+          "x": 10,
+          "y": 16,
+          "w": 25,
+          "h": 13,
+          "colour": "#20323B",
+          "rotation": 25
+        },
+        {
+          "image": 100001,
+          "x": -8,
+          "y": -11,
+          "w": 7,
+          "h": 17,
+          "colour": "#F9F4DE",
+          "rotation": -20
+        }
+      ]
+    },
+    "blessing_of_the_forge": {
+      "name": "锻造祝福",
+      "motif": "锻锤与火星",
+      "meaning": "升级当前手牌",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#E9D4AB",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 1,
+          "y": -13,
+          "w": 10,
+          "h": 40,
+          "colour": "#20323B",
+          "rotation": -30
+        },
+        {
+          "image": 100001,
+          "x": 9,
+          "y": 9,
+          "w": 37,
+          "h": 17,
+          "colour": "#20323B",
+          "rotation": -30
+        },
+        {
+          "image": 100003,
+          "x": -20,
+          "y": 6,
+          "w": 15,
+          "h": 21,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -20,
+          "y": 24,
+          "w": 6,
+          "h": 11,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "fairy_in_a_bottle": {
+      "name": "瓶中精灵",
+      "motif": "双翼与精灵身",
+      "meaning": "致命自动救援",
+      "production": true,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#D3DAEE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -15,
+          "y": -3,
+          "w": 23,
+          "h": 38,
+          "colour": "#20323B",
+          "rotation": -25
+        },
+        {
+          "image": 100002,
+          "x": 15,
+          "y": -3,
+          "w": 23,
+          "h": 38,
+          "colour": "#20323B",
+          "rotation": 25
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 17,
+          "w": 13,
+          "h": 13,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -8,
+          "w": 9,
+          "h": 28,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": -27,
+          "w": 21,
+          "h": 19,
+          "colour": "#20323B",
+          "rotation": 180
+        }
+      ]
+    },
+    "poison_potion": {
+      "name": "毒雾药水",
+      "motif": "骷髅",
+      "meaning": "持续中毒伤害",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#D3DFBA",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 1,
+          "w": 40,
+          "h": 35,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -20,
+          "w": 26,
+          "h": 18,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -9,
+          "y": 3,
+          "w": 10,
+          "h": 12,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 9,
+          "y": 3,
+          "w": 10,
+          "h": 12,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -23,
+          "w": 6,
+          "h": 12,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "cunning_potion": {
+      "name": "狡诈药水",
+      "motif": "三把小刀",
+      "meaning": "生成升级小刀",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#C9DABD",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -15,
+          "y": -14,
+          "w": 7,
+          "h": 26,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -15,
+          "y": 8,
+          "w": 14,
+          "h": 24,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -10,
+          "w": 7,
+          "h": 34,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": 17,
+          "w": 14,
+          "h": 24,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 15,
+          "y": -14,
+          "w": 7,
+          "h": 26,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 15,
+          "y": 8,
+          "w": 14,
+          "h": 24,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "ghost_in_a_jar": {
+      "name": "瓶中幽灵",
+      "motif": "鬼影与空眼",
+      "meaning": "无实体降低所受伤害",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#E0E0EA",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 2,
+          "w": 37,
+          "h": 39,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -19,
+          "w": 37,
+          "h": 27,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -10,
+          "y": -34,
+          "w": 18,
+          "h": 15,
+          "colour": "#20323B",
+          "rotation": 180
+        },
+        {
+          "image": 100003,
+          "x": 10,
+          "y": -34,
+          "w": 18,
+          "h": 15,
+          "colour": "#20323B",
+          "rotation": 180
+        },
+        {
+          "image": 100002,
+          "x": -8,
+          "y": 5,
+          "w": 9,
+          "h": 13,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 8,
+          "y": 5,
+          "w": 9,
+          "h": 13,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        }
+      ]
+    },
+    "focus_potion": {
+      "name": "集中药水",
+      "motif": "同心靶",
+      "meaning": "提升充能球集中",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#C3D8EE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 46,
+          "h": 46,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 32,
+          "h": 32,
+          "colour": "#C3D8EE",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 17,
+          "h": 17,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 18,
+          "w": 7,
+          "h": 16,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "potion_of_capacity": {
+      "name": "扩容药水",
+      "motif": "双空球槽与加号",
+      "meaning": "增加球槽",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#C0D8E1",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -16,
+          "y": 3,
+          "w": 21,
+          "h": 21,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": -16,
+          "y": 3,
+          "w": 10,
+          "h": 10,
+          "colour": "#C0D8E1",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 12,
+          "y": 3,
+          "w": 21,
+          "h": 21,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 12,
+          "y": 3,
+          "w": 10,
+          "h": 10,
+          "colour": "#C0D8E1",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -23,
+          "w": 27,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -23,
+          "w": 8,
+          "h": 27,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "essence_of_darkness": {
+      "name": "黑暗精华",
+      "motif": "放射暗球",
+      "meaning": "按球槽生成黑暗球",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 76,
+          "h": 74,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 62,
+          "h": 60,
+          "colour": "#CEC6E0",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": -6,
+          "w": 29,
+          "h": 29,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 17,
+          "w": 8,
+          "h": 17,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -29,
+          "w": 8,
+          "h": 17,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -23,
+          "y": -6,
+          "w": 17,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 23,
+          "y": -6,
+          "w": 17,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "bottled_miracle": {
+      "name": "瓶装奇迹",
+      "motif": "光芒中的晶牌",
+      "meaning": "生成奇迹能量牌",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 57,
+          "h": 77,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -3,
+          "w": 43,
+          "h": 63,
+          "colour": "#EEE0AB",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -4,
+          "w": 25,
+          "h": 34,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -4,
+          "w": 11,
+          "h": 18,
+          "colour": "#F9F4DE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": -19,
+          "y": 12,
+          "w": 7,
+          "h": 16,
+          "colour": "#20323B",
+          "rotation": 30
+        },
+        {
+          "image": 100001,
+          "x": 19,
+          "y": 12,
+          "w": 7,
+          "h": 16,
+          "colour": "#20323B",
+          "rotation": -30
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 23,
+          "w": 7,
+          "h": 14,
+          "colour": "#20323B",
+          "rotation": 0
+        }
+      ]
+    },
+    "stance_potion": {
+      "name": "姿态药水",
+      "motif": "相向双三角",
+      "meaning": "选择愤怒或平静",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 69,
+          "h": 67,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 55,
+          "h": 53,
+          "colour": "#DCCBDE",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": -12,
+          "y": 0,
+          "w": 25,
+          "h": 39,
+          "colour": "#20323B",
+          "rotation": 90
+        },
+        {
+          "image": 100003,
+          "x": 12,
+          "y": -14,
+          "w": 25,
+          "h": 39,
+          "colour": "#20323B",
+          "rotation": -90
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -6,
+          "w": 7,
+          "h": 47,
+          "colour": "#DCCBDE",
+          "rotation": 0
+        }
+      ]
+    },
+    "ambrosia": {
+      "name": "仙酒",
+      "motif": "神圣高脚杯",
+      "meaning": "进入神格",
+      "production": false,
+      "shapes": [
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 82,
+          "h": 66,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -7,
+          "w": 68,
+          "h": 52,
+          "colour": "#E8D5AD",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 31,
+          "w": 28,
+          "h": 22,
+          "colour": "#D8C69B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": 45,
+          "w": 37,
+          "h": 10,
+          "colour": "#A4794C",
+          "rotation": 0
+        },
+        {
+          "image": 100003,
+          "x": 0,
+          "y": 3,
+          "w": 43,
+          "h": 34,
+          "colour": "#20323B",
+          "rotation": 180
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -21,
+          "w": 8,
+          "h": 24,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100001,
+          "x": 0,
+          "y": -33,
+          "w": 35,
+          "h": 8,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 23,
+          "w": 36,
+          "h": 10,
+          "colour": "#20323B",
+          "rotation": 0
+        },
+        {
+          "image": 100002,
+          "x": 0,
+          "y": 23,
+          "w": 22,
+          "h": 4,
+          "colour": "#E8D5AD",
+          "rotation": 0
+        }
+      ]
+    }
+  }
+}

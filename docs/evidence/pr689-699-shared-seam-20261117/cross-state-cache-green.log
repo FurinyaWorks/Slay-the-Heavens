@@ -1,0 +1,2 @@
+CROSS_STATE_NATIVE_IMAGE expected=blue_candle actual=blue_candle
+CROSS_STATE_SHARED_NATIVE_IDENTITY_PASS
