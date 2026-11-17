@@ -261,7 +261,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
  const feedbackHistoricalRead=integratedRead('sts');
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(stsStyleCiProof.afterInventory,(p,e)=>{const raw=feedbackHistoricalRead(p,e);return p===path?raw+'\n':raw;}),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(stsStyleCiProof.afterInventory,(p,e)=>{const value=feedbackHistoricalRead(p,e);return p===path?value+'\n':value;}),/fresh (?:complete StS CI|StS helper) source/,path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

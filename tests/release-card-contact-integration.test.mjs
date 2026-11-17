@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as actualReadFileSync,readdirSync as actualReaddirSync} from 'node:fs';
 import {releaseUnionHistoricalRead,releaseUnionPriorInventory} from './helpers/hand-enemy-release-ci-source.mjs';
-const readFileSync=releaseUnionHistoricalRead('release',actualReadFileSync);
+const rawReadFileSync=releaseUnionHistoricalRead('releaseAf77',actualReadFileSync);
 const readdirSync=path=>path==='tests/lua'?releaseUnionPriorInventory(actualReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'lua').map(p=>p.slice(10)):actualReaddirSync(path);
+import {releaseFastB9CiRead} from './helpers/release-fast-b9-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {beforeCapacityB9Ci} from './helpers/release-capacity-b9-ci-source.mjs';
 import {discoverJs as actualDiscoverJs} from '../scripts/ci-shards.mjs';
@@ -13,6 +14,7 @@ import {integrationPacket,integrationCiSource,integrationRead,integrationInvento
 import {releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 import {releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+const readFileSync=releaseFastB9CiRead(rawReadFileSync);
 
 test('joint Release authenticates the full live production corpus and retains both immutable standalone corpora',()=>{
  const p=sourceEpoch.proof,prior=preReleasePc22BasicFeedbackSourceEpoch.proof;
@@ -48,7 +50,7 @@ test('joint owner authorization freshly rejects every missing changed or mistype
 });
 
 test('joint CI binds every current input, preserves both packets and never masks production or foreign drift',()=>{
- assertReleaseIntegrationCurrent(readFileSync);
+ assertReleaseIntegrationCurrent(rawReadFileSync);
  for(const [path,sha]of Object.entries(integrationPacket.files)){
   const source=norm(beforeCapacityB9Ci(path,readFileSync(path,'utf8')));assert.equal(hash(source),sha,path);
   for(const side of ['pc22','selection']){
@@ -56,18 +58,18 @@ test('joint CI binds every current input, preserves both packets and never masks
    for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(integrationCiSource(foreignPath,source,side),source);
    if(path.startsWith('src/')||path==='config/architecture.json'){
     assert.equal(integrationCiSource(path,source,side),source,'CI cannot authorize production');
-    assert.equal(norm(integrationRead(side)(path,'utf8')),source,'CI reader leaves raw production authorization to the production projector');
+    assert.equal(norm(integrationRead(side,rawReadFileSync)(path,'utf8')),source,'CI reader leaves raw production authorization to the production projector');
    }
   }
   for(const mode of ['changed','missing'])assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>{
-   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing '+p);return e?source+'\n':Buffer.from(source+'\n');
+   if(p!==path)return rawReadFileSync(p,e);if(mode==='missing')throw Error('missing '+p);return e?source+'\n':Buffer.from(source+'\n');
   }),mode==='missing'?/missing/:/fresh complete integration source/);
  }
  for(const [side,packet]of [['pc22',releasePc22BasicFeedbackCiPacket],['selection',releaseSelectionMapCiPacket]]){
-  const read=integrationRead(side);
+  const read=integrationRead(side,rawReadFileSync);
   for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,path+' exact '+side+' current view');
  }
- for(const path of Object.keys(integrationPacket.archives))assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>p===path?Buffer.concat([readFileSync(p),Buffer.from('\n')]):readFileSync(p,e)),/immutable Release join predecessor/);
+ for(const path of Object.keys(integrationPacket.archives))assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>p===path?Buffer.concat([rawReadFileSync(p),Buffer.from('\n')]):rawReadFileSync(p,e)),/immutable Release join predecessor/);
 });
 
 test('joint raw inventories retain both additions and reject missing duplicate foreign and changed inputs',()=>{

@@ -5,6 +5,7 @@ const handEnemyLegacyLua=()=>[...handEnemyCiPacket.viewInventories.hand.lua];
 import test,{beforeEach} from 'node:test';
 import {prepareHandEnemyTestDomain,handTestRead} from './helpers/hand-enemy-test-domains.mjs';
 beforeEach(()=>prepareHandEnemyTestDomain('hand'));
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
 import {handPost697HistoricalRead,handPost697PriorInventory} from './helpers/hand-post697-ci-source.mjs';
@@ -22,7 +23,7 @@ const handLegacyLua=()=>handPost697PriorInventory(handEnemyLegacyLua(),'lua',act
 const releaseLegacyLua=()=>handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync);
 const discoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/hand-enemy-hand-integrated.mjs';
-const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
+const raw=p=>beforePreflightSource(p,readFileSync(p,'utf8')).replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const pickerBeforeRead=releaseSelectionMapCiRead(rawReadFileSync);
 const assertReleaseBootstrapCiCurrent=(read=pickerBeforeRead)=>priorBootstrapCurrent(read);
 const readFileSync=releaseBootstrapCiRead(pickerBeforeRead);

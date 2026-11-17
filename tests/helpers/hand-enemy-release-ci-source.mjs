@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./hand-enemy-release-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'69515fa112d60dc9e2b675fc52f052fb273a31ea97a655fbf62a81f88ddd48c7','complete hand enemy Release continuation');
+assert.equal(hash(bytes),'3209beb09ad0b6bd3ddb15009a6159dea31d47707c15fc6af809e20cad236b63','complete hand enemy Release continuation');
 const packed=JSON.parse(gunzipSync(bytes));
 assert.equal(packed.storageFormat,'deduplicated-complete-records-v1');
 const record=id=>{
@@ -18,6 +18,7 @@ const packet={...packed,files:Object.fromEntries(Object.entries(packed.files).ma
 delete packet.records;delete packet.storageFormat;
 assert.equal(packet.baseCommit,'5bb154a0649b2a5c372f0f08c0f93ee0ec716249');
 assert.equal(packet.viewCommits.release,'00ab3fe6d386f55aecfb063e59aeca2cf5065807');
+assert.equal(packet.viewCommits.releaseAf77,'af77fb2461c548f0faf104761d107397f75dca08');
 assert.equal(packet.viewCommits.enemyCalibration,'e229f7c4943915e33109e6bdc293c4dd3fcbedc2');
 assert.equal(packet.currentTreeCommitted,false);
 for(const [path,row]of Object.entries(packet.files))for(const item of [row.before,row.current,...Object.values(row.views)].filter(Boolean)){
@@ -33,7 +34,7 @@ export function assertReleaseUnionCurrent(read=readFileSync){
   assert(!raw.includes('\r\r\n'),'fresh complete integration source: '+path);
   assert.equal(hash(norm(raw)),row.current.sha256,'fresh complete integration source: '+path);
  }
- for(const [path,sha]of Object.entries(packet.archives))assert.equal(hash(read(path)),sha,'immutable Release union predecessor: '+path);
+ for(const [path,sha]of Object.entries(packet.archives))assert.equal(hash(read(path)),sha,'immutable Release union predecessor archive: '+path);
 }
 // Production history is explicit and independently authenticated. Public CI
 // projections below never substitute an older production owner.

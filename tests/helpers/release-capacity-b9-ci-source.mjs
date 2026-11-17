@@ -1,3 +1,4 @@
+import {capacityPreflightSource,assertCapacityPreflightArchive} from './release-capacity-preflight-source.mjs';
 // CI-only exact join of the reviewed capacity and B9 card-contact sources.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -31,15 +32,20 @@ for(const [path,row]of Object.entries(repair.files))for(const binding of [row.be
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
 }
 export function assertCapacityB9ReaderRepairCurrent(read=readFileSync){
+ assertCapacityPreflightArchive(read);
  assert.equal(hash(read('tests/helpers/release-capacity-b9-reader-repair.json.gz')),hash(repairBytes),'fresh complete capacity B9 reader repair packet');
  for(const [path,row]of Object.entries(repair.files)){
-  const source=read(path,'utf8');
+  const source=capacityPreflightSource(path,read(path,'utf8'),'capacity');
   assert.equal(typeof source,'string','fresh complete integration source: capacity B9 reader repair '+path);
   assert(!source.includes('\r\r\n'),'fresh complete integration source: capacity B9 reader repair '+path);
   assert.equal(hash(norm(source)),row.current.sha256,'fresh complete integration source: capacity B9 reader repair '+path);
  }
 }
 export function beforeCapacityB9Ci(path,source,view='b9',before){
+ if(!['b9','capacity'].includes(view))return source;
+ const binding=view==='b9'&&Object.hasOwn(repair.files,path)?repair.files[path].before:packet.files[path]?.before?.[view];
+ if(!binding||before&&before.sha256!==binding.sha256)return source;
+ source=capacityPreflightSource(path,source,'capacity');
  if(view==='b9'&&typeof path==='string'&&Object.hasOwn(repair.files,path)){
   const row=repair.files[path];
   if(typeof source!=='string'||source.includes('\r\r\n')||before&&before.sha256!==row.before.sha256||hash(norm(source))!==row.current.sha256)return source;

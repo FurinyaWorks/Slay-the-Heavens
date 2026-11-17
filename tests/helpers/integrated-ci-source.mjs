@@ -1,4 +1,6 @@
 import {handEnemyCiSource,handEnemyHistoricalRead,handEnemyPriorInventory,handEnemyCiPacket,assertHandEnemyCiCurrent} from './hand-enemy-ci-source.mjs';
+import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
+import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -36,12 +38,18 @@ export function integratedSource(path,source,target,read=readFileSync){
   if(value!==input&&typeof input==='string'&&!input.includes('\r\r\n')&&current?.sha256===hash(norm(input)))assertReleaseUnionCurrent(originalRead);
   return value;
  };
+ // The new Release path has its own complete current domain. It must never
+ // borrow the hand projection reader or replace the original authorization reader.
+ const currentInput=typeof input==='string'&&!input.includes('\r\r\n')&&current?.sha256===hash(norm(input));
+ const releaseRead=currentInput?releaseUnionHistoricalRead('releaseAf77',originalRead):originalRead;
+ const releaseSource=()=>beforePreflightSource(path,releaseUnionCiSource(path,input,'releaseAf77',originalRead));
  source=handEnemyCiSource(path,source,undefined,read);read=handEnemyHistoricalRead('hand',read);
  source=handPost697CiSource(path,source,undefined,read);
  source=mobileHandCiSource(path,source,undefined,handPost697HistoricalRead('hand',read));
  source=handBootstrapSource(path,releaseSelectionMapCiSource(path,source),row?.current);
  // Explicit standalone Release input remains available alongside the hand chain.
- source=integrationCiSource(path,source,'pc22');
+ if(source===input)source=releaseSource();
+ source=integrationCiSource(path,source,'pc22',releaseRead);
  source=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,source),row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return expose(source);
  if(row.views[target].sha256===row.current.sha256)return expose(source);
@@ -67,7 +75,14 @@ export function assertIntegratedCurrent(read=readFileSync){
   if(row)return encoding?row.source:Buffer.from(row.source);
   return originalRead(path,encoding);
  };
- assertReleaseIntegrationCurrent(view('release'));
+ const capacityRead=view('releaseAf77');assertCapacityPreflightCurrent(capacityRead);
+ let releaseRead=preflightPriorRead(capacityRead);
+ assertReleaseIntegrationCurrent(releaseRead,capacityRead);
+ releaseRead=integrationProductionRead('pc22',releaseRead);
+ assertReleasePc22BasicFeedbackCiCurrent(releaseRead);
+ assertReleaseBootstrapCiCurrent(releasePc22BasicFeedbackCiRead(releaseRead));
+ for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releasePc22BasicFeedbackCiCheckedSource(path,releaseRead(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?releaseRead(path):norm(releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,releaseRead(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
  assertHandEnemyCiCurrent(read);read=view('hand');
  assertHandPost697CiCurrent(read);read=handPost697HistoricalRead('release',read);
  assertReleaseSelectionMapCiCurrent(read);
