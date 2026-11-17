@@ -1,0 +1,5 @@
+source rejected after valid baseline
+archive rejected after valid baseline
+missing rejected after valid baseline
+crcrlf rejected after valid baseline
+Buffer capture/output copy isolation PASS

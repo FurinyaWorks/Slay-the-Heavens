@@ -1,0 +1,37 @@
+{
+  "inputCommit": "a24104cd401f08213771af10289ab3c97de140dd",
+  "files": {
+    "README.md": {
+      "bytes": 2978,
+      "sha256": "e60d0790a4877bc918d336dc74c85418672e22b33fdef3805e384e59b3eadb56"
+    },
+    "bootstrap-original.mjs": {
+      "bytes": 3953,
+      "sha256": "1d7f7e90ea958d467c69ea4fe08e6c165e6e07dc16b4327ff4ce6ea6e1f262b0"
+    },
+    "boundary-negative-controls.log": {
+      "bytes": 192,
+      "sha256": "80ecf9fb74f9394e30eb0c475d2eb1d0a7dace096546d1cd20e8edf5acac0144"
+    },
+    "boundary-negative-controls.mjs": {
+      "bytes": 1161,
+      "sha256": "c89a3ad1c94c18cd6c35a98386db6ae76a908c3b86c176a37cb8855a13bea5c7"
+    },
+    "independent-review.md": {
+      "bytes": 1909,
+      "sha256": "a6b51cd424ff3110e325df34eb636a3a5010f675c19758f4c632a683a90fd9da"
+    },
+    "probe-initial-binary-red.log": {
+      "bytes": 970,
+      "sha256": "7c5a8a152a533c283f02d9c6f7a72fec499bc70b11d3cd811cd4a8442ea9c092"
+    },
+    "probe.log": {
+      "bytes": 84,
+      "sha256": "a9ea132a8bbc7d713745269e8ce5d6f039868927b903edce266f50ca1ce04439"
+    },
+    "scoped-probe.mjs": {
+      "bytes": 3318,
+      "sha256": "f16cdf74d0292af678c71d766d8f20789dddafba71d17155095ad3d6d57567db"
+    }
+  }
+}
