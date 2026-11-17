@@ -3,11 +3,17 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {gunzipSync} from 'node:zlib';
+import {gunzipSync,brotliDecompressSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./hand-enemy-release-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'3209beb09ad0b6bd3ddb15009a6159dea31d47707c15fc6af809e20cad236b63','complete hand enemy Release continuation');
-const packed=JSON.parse(gunzipSync(bytes));
+assert.equal(hash(bytes),'8acd2c4028f14b58b00923e8c859905d3050f5c1a99faadd193e552fb47fea94','complete hand enemy Release continuation');
+const stored=JSON.parse(gunzipSync(bytes));
+assert.equal(stored.storageFormat,'deduplicated-complete-records-brotli-v1');
+const {recordsBrotli,recordsByteLength,recordsSha256,...metadata}=stored;
+assert(Number.isSafeInteger(recordsByteLength)&&recordsByteLength>0,'complete record byte length');
+const recordBytes=brotliDecompressSync(Buffer.from(recordsBrotli,'base64'),{maxOutputLength:recordsByteLength});
+assert.equal(recordBytes.length,recordsByteLength);assert.equal(hash(recordBytes),recordsSha256,'complete SHA record dictionary');
+const packed={...metadata,storageFormat:'deduplicated-complete-records-v1',records:JSON.parse(recordBytes)};
 assert.equal(packed.storageFormat,'deduplicated-complete-records-v1');
 const record=id=>{
  if(id===null)return null;

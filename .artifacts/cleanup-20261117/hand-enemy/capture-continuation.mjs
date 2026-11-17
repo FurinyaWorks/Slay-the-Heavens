@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {gzipSync,gunzipSync} from 'node:zlib';
+import {gzipSync,gunzipSync,brotliCompressSync,brotliDecompressSync,constants} from 'node:zlib';
 import {sourceEpoch} from '../../../tests/helpers/closeout-source-epoch.mjs';
 import {discoverJs} from '../../../scripts/ci-shards.mjs';
 const base='5bb154a0649b2a5c372f0f08c0f93ee0ec716249';
@@ -15,11 +15,17 @@ const trees=Object.fromEntries(Object.entries(commits).map(([k,c])=>[k,new Set(g
 const cachePath='tests/helpers/hand-enemy-release-ci-source.json.gz';
 let previous=existsSync(cachePath)?JSON.parse(gunzipSync(readFileSync(cachePath))):null;
 const expandPacket=packed=>{
+ if(packed.storageFormat==='deduplicated-complete-records-brotli-v1'){
+  const {recordsBrotli,recordsByteLength,recordsSha256,...metadata}=packed;
+  const raw=brotliDecompressSync(Buffer.from(recordsBrotli,'base64'),{maxOutputLength:recordsByteLength});
+  assert.equal(raw.length,recordsByteLength);assert.equal(hash(raw),recordsSha256,'complete SHA record dictionary');
+  packed={...metadata,storageFormat:'deduplicated-complete-records-v1',records:JSON.parse(raw)};
+ }
  const record=id=>{if(id===null)return null;assert(Object.hasOwn(packed.records,id),'complete stored source record');return packed.records[id];};
  const result={...packed,files:Object.fromEntries(Object.entries(packed.files).map(([path,row])=>[path,{...row,before:record(row.before),current:record(row.current),views:Object.fromEntries(Object.entries(row.views).map(([domain,id])=>[domain,record(id)]))}]))};
  delete result.records;delete result.storageFormat;return result;
 };
-if(previous?.storageFormat==='deduplicated-complete-records-v1')previous=expandPacket(previous);
+if(previous?.storageFormat==='deduplicated-complete-records-v1'||previous?.storageFormat==='deduplicated-complete-records-brotli-v1')previous=expandPacket(previous);
 const historical=(domain,path)=>{
  if(previous?.viewCommits[domain]===commits[domain]&&previous.files[path]&&Object.hasOwn(previous.files[path].views,domain))return previous.files[path].views[domain];
  return trees[domain].has(path)?bind(git('show',commits[domain]+':'+path)):null;
@@ -56,6 +62,11 @@ const records={},store=row=>{
 };
 const stored={...packet,storageFormat:'deduplicated-complete-records-v1',files:Object.fromEntries(Object.entries(packet.files).map(([path,row])=>[path,{...row,before:store(row.before),current:store(row.current),views:Object.fromEntries(Object.entries(row.views).map(([domain,binding])=>[domain,store(binding)]))}])),records};
 assert.deepEqual(expandPacket(stored),packet,'lossless complete continuation capture');
-const bytes=gzipSync(JSON.stringify(stored),{level:9,mtime:0});
+const recordBytes=Buffer.from(JSON.stringify(records));
+const recordData=brotliCompressSync(recordBytes,{params:{[constants.BROTLI_PARAM_QUALITY]:11,[constants.BROTLI_PARAM_LGWIN]:24,[constants.BROTLI_PARAM_SIZE_HINT]:recordBytes.length}});
+const {records:completeRecords,...metadata}=stored;
+const compressedStored={...metadata,storageFormat:'deduplicated-complete-records-brotli-v1',recordsBrotli:recordData.toString('base64'),recordsByteLength:recordBytes.length,recordsSha256:hash(recordBytes)};
+assert.deepEqual(expandPacket(compressedStored),packet,'lossless compressed complete continuation capture');
+const bytes=gzipSync(JSON.stringify(compressedStored),{level:9,mtime:0});
 writeFileSync('tests/helpers/hand-enemy-release-ci-source.json.gz',bytes);
 console.log(JSON.stringify({sha256:hash(bytes),bytes:bytes.length,files:Object.keys(files).length,archives:Object.keys(archives).length,closeoutSha:hash(norm(readFileSync('tests/helpers/closeout-source-epoch.mjs','utf8')))},null,2));
