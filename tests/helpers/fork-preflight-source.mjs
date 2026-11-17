@@ -5,9 +5,13 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('./fork-preflight-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'8c8b646297983e68fcd49aa20e5ed91490e6800f7f27f7a88c8d7d38ea4025b5');
+assert.equal(hash(bytes),'85dd5a3ea9fa4ec646725edf241d0f7230a8cf3130652d009db0fc016e0ada05');
 const proof=JSON.parse(gunzipSync(bytes));
-for(const row of Object.values(proof.files))assert.equal(hash(row.before),row.beforeSha);
+for(const row of Object.values(proof.files)){
+ if(row.before===null)assert.equal(row.beforeSha,null,'explicitly absent historical source');
+ else assert.equal(hash(row.before),row.beforeSha);
+}
+assert.equal(proof.nativePredecessorCommit,'187a7db55c47b91ee0037486c1e3918f9541f11a');
 assert.equal(proof.releaseBootstrapCommit,'873d4392c02fd5ac92e653e57a78fd59f6ae63c6');
 for(const [path,row]of Object.entries(proof.files))if(row.releaseBootstrapBefore){
  const prior=row.releaseBootstrapBefore;
@@ -20,7 +24,8 @@ export function beforePreflightSource(path,source,view='prior'){
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==row.currentSha)return source;
  assert(['prior','release-bootstrap'].includes(view),'explicit preflight predecessor view');
  const prior=view==='release-bootstrap'?row.releaseBootstrapBefore?.source:row.before;
- if(prior===undefined)return source;
+ // Newly introduced gates have no historical implementation to invent or hide.
+ if(prior===undefined||prior===null)return source;
  const eol=source.includes('\r\n')?'\r\n':'\n';return prior.replaceAll('\n',eol);
 }
 export function preflightPriorRead(read=readFileSync,view='prior'){return(path,encoding)=>{
