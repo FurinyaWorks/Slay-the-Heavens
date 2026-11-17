@@ -11,6 +11,7 @@ import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
+import {extendReleasePc22BasicFeedbackSource} from './release-pc22-basic-feedback-source.mjs';
 import {extendReleaseNavigationSource} from './release-navigation-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -53,6 +54,8 @@ export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preReleaseNavigationSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
 export const preReleaseSelectionMapSourceEpoch=preReleaseNavigationSourceEpoch;
+export const preReleasePc22BasicFeedbackSourceEpoch=preReleaseNavigationSourceEpoch;
+export const releasePc22BasicFeedbackSourceEpoch=extendReleasePc22BasicFeedbackSource(preReleasePc22BasicFeedbackSourceEpoch);
 export const releaseNavigationSourceEpoch=extendReleaseNavigationSource(preReleaseNavigationSourceEpoch);
 export const releaseSelectionMapSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
 const joinedInputBytes=readFileSync(new URL('./navigation-map-merged-input.json',import.meta.url),'utf8').replaceAll('\r\n','\n');
@@ -67,7 +70,8 @@ function joinReleaseSources(){
 const base=preReleaseNavigationSourceEpoch.proof;
 const navigation=releaseNavigationSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof;
 const current={...base.current},targets={...base.targets};
-for(const side of [navigation,selection]){
+const pc22=releasePc22BasicFeedbackSourceEpoch.proof;
+for(const side of [navigation,selection,pc22]){
  for(const [path,row]of Object.entries(side.current))if(row?.sha256!==base.current[path]?.sha256){
   if(current[path]?.sha256!==base.current[path]?.sha256){
    assert.equal(path,joinedInput.path,'only the declared three-way owner overlaps');
@@ -80,13 +84,15 @@ for(const side of [navigation,selection]){
   else targets[name]=target;
  }
 }
+targets.releasePc22BasicFeedbackReviewed={commit:pc22.currentCommit,files:pc22.current};
 targets.releaseNavigationReviewed={commit:navigation.currentCommit,files:navigation.current};
 targets.releaseSelectionMapReviewed={commit:selection.currentCommit,files:selection.current};
 const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
 return createSourceEpochProjector(freeze({...base,current,targets,owners,
- currentTreeCommitted:false,currentCommit:'26cad4a66e9ec0ef64655afa8bd7fbbc92830f47',
- currentCommitRole:'integration worktree capture; standalone committed product producers are retained separately',
+ currentTreeCommitted:false,currentCommit:'cd9106c0e302cb50f83ba8b5c85ce81560c6ed88',
+ currentCommitRole:'uncommitted product integration of cd9106c0 and b9bca884; not merged or CI-authenticated; standalone committed product producers are retained separately',
  releaseNavigationProducers:navigation.releaseNavigationProducers,
+ releasePc22BasicFeedbackProducers:pc22.releasePc22BasicFeedbackProducers,
  releaseSelectionMapProducers:selection.releaseSelectionMapProducers}),{allowConfigLayout:true,reuseFrozenInput:true});
 }
 export const sourceEpoch=joinReleaseSources();

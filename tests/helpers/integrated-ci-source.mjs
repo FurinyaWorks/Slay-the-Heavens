@@ -1,4 +1,6 @@
-import {navigationDomainSource,navigationMapProductionRead,navigationValidationRead,navigationMapPriorInventory,navigationMapPacket,assertNavigationMapCurrent} from './navigation-map-integration.mjs';
+import {assertNavigationMapCurrent} from './navigation-map-integration.mjs';
+import {ciSource as jointCiSource,jointRead,assertCurrent as assertJointCurrent,jointPriorInventory,jointCurrentInventory} from './release-navigation-pc22-join.mjs';
+import {sourceEpoch} from './closeout-source-epoch.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -6,9 +8,10 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
-import {releaseNavigationCiSource,releaseNavigationCiCheckedSource,releaseNavigationPriorInventory,releaseNavigationCiPacket,assertReleaseNavigationCiCurrent} from './release-navigation-ci-source.mjs';
+import {releasePc22BasicFeedbackCiSource,releasePc22BasicFeedbackCiCheckedSource,releasePc22BasicFeedbackPriorInventory,releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackCiCurrent} from './release-pc22-basic-feedback-ci-source.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
-import {releaseMergeRead,releaseMergeSource,assertReleaseMergeCurrent} from './release-bootstrap-merge-ci-source.mjs';
+import {releasePc22BasicFeedbackCiRead} from './release-pc22-basic-feedback-ci-source.mjs';
+import {integrationRead,integrationProductionRead,integrationCiSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-card-contact-integration.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -22,9 +25,9 @@ export function integratedSource(path,source,target,read=readFileSync){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=navigationDomainSource(path,source,'slicePrior',read);
- source=releaseNavigationCiSource(path,source,row?.current);
- source=releaseBootstrapCiSource(path,source,row?.current);
+ source=jointCiSource(path,source,'pc22',read);
+ source=integrationCiSource(path,source,'pc22');
+ source=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,source),row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
@@ -38,17 +41,23 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
-export function assertNavigationStandaloneCurrent(read=readFileSync){
- assertReleaseMergeCurrent(read);
- assertReleaseBootstrapCiCurrent(releaseMergeRead('bootstrapView',read));
- assertReleaseNavigationCiCurrent(releaseMergeRead('slicePrior',read));
- for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseNavigationCiCheckedSource(path,releaseMergeRead('slicePrior',read)(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
- for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseNavigationCiSource(path,releaseMergeRead('slicePrior',read)(path,'utf8'),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
-}
 export function assertIntegratedCurrent(read=readFileSync){
- assertNavigationMapCurrent(read);assertNavigationStandaloneCurrent(navigationValidationRead(read));
+ assertJointCurrent(read);
+ assertNavigationMapCurrent(jointRead('navigation',read,{productionView:true}));
+ const raw=read,side=jointRead('pc22',raw,{productionView:true});
+ assertReleaseIntegrationCurrent(side);
+ const ci=integrationRead('pc22',side);
+ read=(path,encoding)=>{
+  if(!path.startsWith('src/')&&path!=='config/architecture.json')return ci(path,encoding);
+  const value=raw(path,encoding);if(typeof value!=='string')return value;
+  return sourceEpoch.preCombinedSource(path,value,{target:'releasePc22BasicFeedbackReviewed',readSource:p=>raw(p,'utf8')});
+ };
+ assertReleasePc22BasicFeedbackCiCurrent(read);
+ assertReleaseBootstrapCiCurrent(releasePc22BasicFeedbackCiRead(read));
+ for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releasePc22BasicFeedbackCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,read(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
 }
-export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return [...navigationMapPacket.inventories.joint[kind]];}
+export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return jointCurrentInventory(kind);}
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;
  assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
@@ -60,8 +69,11 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
- paths=navigationMapPriorInventory(paths,'navigation',kind);read=navigationMapProductionRead('navigation',read);
- paths=releaseNavigationPriorInventory(paths,kind,releaseMergeRead('slicePrior',read));
+ paths=jointPriorInventory(paths,'pc22',kind,read);
+ const originalRead=jointRead('pc22',read,{productionView:true});
+ paths=integrationPriorInventory(paths,'pc22',kind,originalRead);
+ read=integrationRead('pc22',originalRead);
+ paths=releasePc22BasicFeedbackPriorInventory(paths,kind,read);
  // New standalone reviewed views consume raw discovery. Older chained views
  // retain their existing idempotent prior-inventory contract.
  if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
@@ -75,7 +87,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
  for(const path of added){
   const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-  assert.equal(hash(norm(releaseNavigationCiSource(path,releaseMergeRead('slicePrior',read)(path,'utf8'),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+   assert.equal(hash(norm(releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
 }

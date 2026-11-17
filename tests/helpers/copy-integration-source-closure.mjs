@@ -27,16 +27,21 @@ export const releaseNavigationHelperCopies=[
  {path:'tests/helpers/release-navigation-source.mjs',before:null,after:'23d6276435f6d9e15cdfe5a20ce1ea88ebb4c5a36902b02aada9bf28cacdcc1d'},
  {path:'tests/helpers/release-navigation-source.json.gz',before:null,after:'83b69705480776eb130b3487f09af79c50625410925e76bba958644093c91f31'}
 ];
+export const releasePc22BasicFeedbackHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'0c7ff98c42c47a1a48ad83537d1d7c37a6cc23aed55ada9c763122d4ea102d07'},
+ {path:'tests/helpers/release-pc22-basic-feedback-source.mjs',before:null,after:'395e3810c67852768340eb868ee7397bb9ed0b232ff112efa93fb4b520e80b96'},
+ {path:'tests/helpers/release-pc22-basic-feedback-source.json.gz',before:null,after:'1cb0fddfea365de7be5331dc169bd438f2cde36b372c4c15bf9c8ac8a2eed157'}
+];
 export const releaseSelectionMapHelperCopies=[
  {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
  {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
  {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
 ];
-for(const rows of [releaseNavigationHelperCopies,releaseSelectionMapHelperCopies])for(const row of rows){
+for(const rows of [releaseNavigationHelperCopies,releaseSelectionMapHelperCopies,releasePc22BasicFeedbackHelperCopies])for(const row of rows){
  assert.equal(files[row.path]??null,row.before,'exact standalone Release helper-copy predecessor: '+row.path);
  if(row.path!=='tests/helpers/closeout-source-epoch.mjs')files[row.path]=row.after;
 }
-files['tests/helpers/closeout-source-epoch.mjs']='104892bbc33c3c1986e2fe617a85f4e00cabb46b16c017bf162db04345736ed9';
+files['tests/helpers/closeout-source-epoch.mjs']='2a3eaa4ad1549d2a32caa4d541ffcc5d0ad224bbd903bef625878991453be479';
 assert(!Object.hasOwn(files,'tests/helpers/navigation-map-merged-input.json'));
 files['tests/helpers/navigation-map-merged-input.json']='d3365408860f9fb9ab7df36d1676fcb62c770327bc4679cd2d36ffe78593ff19';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
