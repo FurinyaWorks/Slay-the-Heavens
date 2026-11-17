@@ -1,3 +1,4 @@
+import {releaseCalibrationReaderSource} from './release-calibration-reader-source.mjs';
 // CI-only continuation of the exact #698 merge plus the reviewed Release gate.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -23,6 +24,7 @@ function currentB9Source(path,source){
 }
 const quickPath='.github/workflows/quick-feedback.yml',quickBefore='f83265202778b448ae13f3f8839a0d36987c131bdfeb0ec671fff29539628248',quickCurrent='7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9';
 export function beforeReleaseFastB9Ci(path,source,before){
+ if(!before)source=releaseCalibrationReaderSource(path,source,'releaseIntegration');
  if(path===quickPath){
   if(typeof source!=='string'||source.includes('\r\r\n')||before&&before.sha256!==quickBefore||hash(norm(source))!==quickCurrent)return source;
   const prior=norm(source).replace("      - name: Verify affected Release CI contracts explicitly\n        env:\n          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}\n        run: |\n          node --input-type=module <<'NODE'\n          import {execFileSync} from 'node:child_process';\n          const base=process.env.BASE_SHA;\n          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');\n          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\\0');\n          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);\n          if(changed.some(path=>contracts.has(path))){\n            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');\n            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});\n          }else console.log('No Release CI contract changes');\n          NODE\n",'').replace("    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\n",'');

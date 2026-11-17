@@ -1,0 +1,34 @@
+✔ Release integration uses complete affected Fast without weakening develop or explicit Full (4.87185ms)
+✔ only exact frozen Release HEAD with complete latest Full permits publication (5.35021ms)
+✔ candidate verification rejects branch movement and a newer attempt during reads (0.837656ms)
+✔ publication requires immutable actual checkout, never green metadata alone (2.542211ms)
+✔ publication gate is in required impact and never removes foreign partial wiring (0.659635ms)
+✔ Release history accepts only the complete reviewed gate and push removal together (2.36405ms)
+✔ B9 Release join projects only exact complete CI inputs and keeps wrong predecessors and drift visible (3.641059ms)
+✔ Release CI repair maps only complete reviewed helper and test bytes, retaining drift and foreign inputs (0.951903ms)
+✔ advisory job skips Ready PR duplicates while Draft and manual prechecks remain enabled (3.012078ms)
+✔ freeze waits for an existing exact pending Full instead of dispatching again (1.508237ms)
+✔ freeze reuses a successful run only through the unchanged complete receipt verifier (2.110629ms)
+✔ freeze refuses failed cancelled or foreign runs and never silently restarts them (0.814692ms)
+✔ freeze dispatches once only when the exact Release candidate has no registered run (0.200424ms)
+✔ freeze rereads pending registration and moving HEAD without duplicate dispatch (0.532479ms)
+✔ concurrent freeze callers reuse the same already registered pending run (0.292938ms)
+✔ freeze rejects a changed attempt and never falls back past a newer failure (0.40951ms)
+✔ freeze rejects a foreign repository before any run or dispatch can be reused (0.206452ms)
+✔ advisory explicitly executes affected Release CI contracts and fails closed on Git errors (7.983339ms)
+✔ B9 advisory continuation retains exact standalone Quick and bootstrap contracts before historical views (0.767012ms)
+✔ complete mapped set is eligible; unknown, deleted, core and release changes require full (0.705473ms)
+✔ prose allowlist cannot hide additional unmodelled changes (0.110832ms)
+✔ admission control changes require Full even with proven tiny affected tests (0.176858ms)
+✔ registered UI responsibilities share eligibility with their parent; unknown modules stay full (0.445492ms)
+✔ parallel platform costs are advisory and never expand the complete affected set (1.414069ms)
+✔ actual required gate commands reject every missing, failed, cancelled or skipped selected execution (95.198374ms)
+✔ actual impact CLI routes Full Fast unknown and merge-group through the complete current matrices (330.668525ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 588.94269
