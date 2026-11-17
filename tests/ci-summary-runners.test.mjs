@@ -249,3 +249,22 @@ test('preflight continuation authenticates complete LF/CRLF input and rejects fo
  assert.equal(beforePreflightSource('foreign.yml',live),live);
  assert.equal(beforePreflightSource(path,before),before);
 });
+
+test('combined preflight selects a complete fixed Release predecessor without masking source drift',()=>{
+ const path='.github/workflows/quality.yml',live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const prior=beforePreflightSource(path,live),release=beforePreflightSource(path,live,'release-bootstrap');
+ assert.notEqual(prior,release);assert.notEqual(live,release);
+ assert.match(release,/release-ci.mjs verify-pr/);assert.doesNotMatch(release,/fork-preflight.mjs/);
+ assert.doesNotMatch(prior,/release-ci.mjs verify-pr|fork-preflight.mjs/);
+ for(const eol of ['\n','\r\n']){
+  const source=live.replaceAll('\n',eol);
+  assert.equal(beforePreflightSource(path,source,'release-bootstrap'),release.replaceAll('\n',eol));
+  for(const changed of [source+'# foreign'+eol,source.replace('verify-pr','forged'),
+   source.replace('run: node scripts/fork-preflight.mjs','run: echo skipped')])
+   assert.equal(beforePreflightSource(path,changed,'release-bootstrap'),changed);
+ }
+ const bad=live.replaceAll('\n','\r\r\n');assert.equal(beforePreflightSource(path,bad,'release-bootstrap'),bad);
+ for(const source of [Buffer.from(live),null,{},17])assert.equal(beforePreflightSource(path,source,'release-bootstrap'),source);
+ assert.equal(beforePreflightSource('__proto__',live,'release-bootstrap'),live);
+ assert.throws(()=>beforePreflightSource(path,live,'unknown'),/explicit preflight predecessor/);
+});

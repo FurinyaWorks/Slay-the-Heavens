@@ -21,11 +21,13 @@ git push fork-b <task-branch>:refs/heads/<task-branch>
 gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <task-branch> -f runner_pool=hosted
 ```
 
-Fast 是 advisory 有界选测，可能报告延期或零测试，不能称为双平台 Fast 准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
+Fork Quick 手动预检执行完整受影响 JS/Lua 和便宜治理检查，未知或空覆盖明确要求一次必要 Full；本地 fast/advisory 仍保留有界选测和延期报告。两者都不能称为双平台正式准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
 
 成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。release 修复只移植必要代码并在该基线验证，后续工作留 develop；冻结候选的 Full 与官方容量、导入、ready、PC/手机仍逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
 
 算力分配复用已有 [Fast 选测](CI-FAST.md)、`scripts/ci-quality-shape.mjs` 的共享矩阵、`ci-shards.mjs` 的平台耗时权重、安全 Lua worker 与 Quality 原 `max-parallel`，不要在 Fork 另维护分片数或删测试。先分配互不重复的任务/准确提交，再让原矩阵自动铺开；以实际 job 排队和执行时间判断资源使用，保留失败成本。GitHub 并发上限按账号/组织套餐和 runner 可用性核对，不假定每个仓库天然拥有固定20/30槽位；沿用标准 hosted，不切付费 larger runner。[官方并发与矩阵说明](https://docs.github.com/en/actions/reference/limits)。
+
+2026-11-16 已通过 GitHub 管理 API 将 develop Ruleset 25870651 的 `max_entries_to_build` 从 1 改为 3；其余队列参数与 Required Checks 逐字段读回不变。Release Ruleset 27313515 仅修正名称，保留四个 Actions 来源的必需检查、Strict、空 bypass 和无队列；master 与公共保护未修改。下方旧配置记录中的“单条构建”仅为历史。Release 日常 Fast 与冻结 HEAD 的 Full 验收见 [CI-FAST](CI-FAST.md)。规则变化会使旧队列授权指纹失效，须对仍需入队的准确 HEAD/BASE 正常重新授权，不能复用旧指纹。
 
 2026-11-07已读回 develop Ruleset 25870651：原生 Merge Queue 已开启，Squash、ALLGREEN、单条构建/合并、Strict、空 bypass。六项 Required 为 Actions 来源的 `check`、`presentation`、`engineering-posix`、`inventory`、`pr-quality`，及 Any source 的 `independent-review`。安全且完整映射的 PR 默认走双平台 Fast；核心、高风险、未知或超预算改动仍走 PR Full。`full-quality` 仍只证明完整 Full，队列组合与合后 push 始终 Full。配置读回不等于真实链路已经验收，须分别核对 Fast、入队、组合 Full、实际 squash 与 push Full。当前操作合同见[Fast准入](CI-FAST.md)。
 
@@ -35,7 +37,7 @@ Fast 是 advisory 有界选测，可能报告延期或零测试，不能称为�
 
 TASK-74正式退役已停用任务锁的源码和29项专属测试，并移除两个npm入口；旧基线中这些测试占Windows约6分51秒。历史从[固定Git提交](REMOTE_TASK_CLAIMS.md)取回，当前游戏、构建和交付门禁覆盖保持。
 
-日常使用 `npm run test:fast -- --base origin/develop` 获取 advisory 快速反馈，`npm run test:related -- --base origin/develop` 验证完整受影响集合；`--plan`只生成计划。未知输入及基础设施变更仍要求全量，fast 只报告独立可映射部分，不自动启动重复全量。自动 PR advisory 与本地 fast 共用选择器，选集、延期与零测试均显式报告，详见 [CI-FAST](CI-FAST.md)。最终集成执行完整 Quality，不能把快速层的成功当作完整验收。
+日常使用 `npm run test:fast -- --base origin/develop` 获取 advisory 快速反馈，`npm run test:related -- --base origin/develop` 验证完整受影响集合；`--plan`只生成计划。未知输入及基础设施变更仍要求全量，fast 只报告独立可映射部分，不自动启动重复全量。Fork Quick 仅手动运行完整受影响预检，本地 fast 的选集、延期与零测试仍显式报告，详见 [CI-FAST](CI-FAST.md)。最终集成执行完整 Quality，不能把快速层的成功当作完整验收。
 
 完整 Windows 回归使用独立 VM 的 `rules (i/N)`，片数由[共享形状](../scripts/ci-quality-shape.mjs)定义。JS 使用 `ci-shards.mjs --shard=i/N` 按逐文件权重分配；Lua 使用 `--shard i/N`，计入前置 JS 负载后分配，JS 片内串行，Lua 按安全规则最多两个 worker、长夹具独占，普通 hosted Windows 作业保持原30分钟总预算（JS与随后Lua合计）。POSIX 的完整 JS 回归使用 `engineering-posix (i/N)`，不运行raw Lua，每个JS文件在该平台执行一次；第一片执行完整工程门禁，所有片保持原20分钟作业预算，矩阵最多同时12项。调度使用本平台实际观测成本与明确标注本地下界的逐文件最大值；未知平台才使用跨平台最大值回退。准备图片与执行使用同一平台计划。impact输出共享形状的实际矩阵，交付验证器使用同一份完整job名；任意片数均为第一片预留原平台门禁耗时。每个脚本保持独立进程、原超时和完整断言，输出按文件聚合，失败仍跑完剩余文件并非零退出。`check` 与 `engineering-posix` 分别汇总各自所有分片，失败、取消或跳过均不放行；三个必需检查名称不变，完整身份包括所有分片、三个汇总作业、impact与预期跳过的fast。schema 2的旧15作业历史合同保留，旧分片形状的绿灯不能认证当前完整集合。可信local-special手动诊断仍单片串行、保留原75分钟作业预算。当前完整校准、容量选择与实际耗时见[M7本批证据](backlog-details/M7-HOST-BATCH-20261105.md)。
 

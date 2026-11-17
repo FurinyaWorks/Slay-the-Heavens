@@ -2,7 +2,7 @@ name: Quality
 run-name: ${{ github.event_name == 'workflow_dispatch' && format('Full / {0} / {1}', github.sha, inputs.base_sha) || github.workflow }}
 on:
   pull_request:
-    branches: [develop, master]
+    branches: [develop, master, 'release/**']
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, labeled, unlabeled]
   merge_group:
     types: [checks_requested]
@@ -67,6 +67,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/fork-preflight.mjs
+      - name: Require frozen Release Full before publication
+        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'master' && startsWith(github.event.pull_request.head.ref, 'release/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release-ci.mjs verify-pr
       - name: Check feature branch history
         if: github.event_name == 'pull_request'
         env:

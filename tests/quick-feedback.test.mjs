@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import {releaseBootstrapWorkflowBefore} from './helpers/release-bootstrap-ci-source.mjs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -330,9 +331,26 @@ test('formal preflight reuses existing jobs and precedes costly PR work',()=>{
  assert.match(impact,/actions: read/);
  assert.doesNotMatch(impact,/continue-on-error:/);
  assert.match(q,/  presentation:\n    needs: impact\n    if: \$\{\{ !cancelled\(\) && needs\.impact\.result == 'success' \}\}/);
- assert.match(q,/merge_group:/);assert.match(q,/branches: \[develop, master\]/);
+ assert.match(q,/merge_group:/);assert.match(q,/branches: \[develop, master, 'release\/\*\*'\]/);
  const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
  assert.match(quick,/--preflight --base/); assert.doesNotMatch(quick,/--ci-fast --base/);
+});
+
+test('combined Release routing retains frozen publication Full and manual-only Fork preflight',async()=>{
+ const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
+ for(const source of [workflow,licenses])assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+ const publication=workflow.indexOf('run: node scripts/release-ci.mjs verify-pr');
+ assert(publication>workflow.indexOf('run: node scripts/fork-preflight.mjs'));
+ assert(publication<workflow.indexOf('Check feature branch history'));
+ assert.equal(workflow.split('run: node scripts/release-ci.mjs verify-pr').length,2);
+ assert.match(workflow,/github.event.pull_request.base.ref == 'master' && startsWith\(github.event.pull_request.head.ref, 'release\/'\)/);
+ const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ assert.doesNotMatch(quick,/^  pull_request:|Verify affected Release CI contracts explicitly/m);
+ assert.match(quick,/--preflight --base/);
+ const {impact}=await import('../scripts/ci-impact.mjs');
+ for(const base of ['develop','release/v2.0.0'])for(const name of ['release-ci','fork-preflight'])
+  assert.equal(impact(['scripts/'+name+'.mjs'],{}, {eventName:'pull_request',base},{}).mode,'full');
 });
 
 test('preflight retains integration JS and every slow Lua without duplicated execution',()=>{

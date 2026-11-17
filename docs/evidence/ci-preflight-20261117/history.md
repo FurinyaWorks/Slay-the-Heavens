@@ -44,3 +44,12 @@ B Full [44034686329](https://github.com/v5g95m7t8m-max/Slay-the-Heavens-Fork-B/a
 Owner已触发准确 B Full44050580539（HEAD2089991e/BASEc240/attempt1）。POSIX真实展开，4/11两片发现现有 ci-posix-shards/delivery 的 current 表达式断言仍要求旧隐式条件；仅把两条断言严格接续显式 impact 成功与非取消，保原运行时修复和门禁。原两例2红→2绿，五文件114/114、原来源4/4通过；原17条before逐字保持，仅为两份实际改动测试新增完整前驱映射，共19条，不增加测试库存。旧运行继续保留失败，不借旧绿认证新HEAD。
 
 一次性授权已读回：当前App新增B owner安装182868876且Actions write，Agent已成功触发703候选6980b909的Full44052937001；A的707候选845 Full44050034037亦由Agent触发。主仓安装仍statuses read，原merge:auto首次POST403且未写入review pending/auto_merge；与Runner排队、测试失败分开，不能用workflow权限声明代替协调凭据写权限。
+
+
+## 同类 CI 组合候选（未正式合并）
+
+以 #712 固定 `7d163cbb7e1c6a50c41328309eb257232c907d3f` 合入 #677 固定 `873d4392c02fd5ac92e653e57a78fd59f6ae63c6`，仅整合 CI 与交接，不改产品。保留 Release 日常完整受影响 Fast、主仓冻结 HEAD Full 与发布阻断；Fork 预检仍在原 impact/inventory 中先执行，Quick 仅手动运行完整受影响集合，不恢复 Draft/Ready 重复 Quick。普通 push 的收据 BASE 空值修复保留。
+
+旧 #677 的 Draft/manual advisory 和显式契约步骤作为固定完整来源历史回放，当前正式契约另核 manual-only Quick、两项高风险 CI 脚本强制 Full、Release 路由与发布门禁。原最外层 preflight 包增加显式 `release-bootstrap` 完整前驱视图，固定来源为上述 #677 SHA；旧19条 before 及 beforeSha 逐字不变，#677 bootstrap packet 全字节不变。21条组合绑定逐项认证完整源码 SHA、历史视图 SHA/Git blob；未知、部分、额外权限改动和 CRCRLF 不投影，不新增 helper、packet 或流程层。
+
+定向验证：CI/交付八文件首轮158/158；完整来源、校准、消耗统计及摘要五入口107/107，包含新增视图与缺失/篡改负例；两批有重叠，不合计为独立用例数。将三份真实 workflow、既有 draft helper 及 Release 验证器临时转为物理 CRLF 后，原五入口60/60，结束逐字恢复。guidance、Backlog 与 diff-check 通过。这些是本地组合证据，不继承各来源绿灯，不代表组合 Hosted Full、主仓 PR/队列或合后交付通过；未推送、派发 Full、取消来源 PR 或修改远程保护。
