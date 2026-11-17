@@ -15,6 +15,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   related:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true
     name: Advisory related tests
     runs-on: ubuntu-24.04
     timeout-minutes: 5

@@ -109,3 +109,121 @@ test('Release bootstrap helper continuation rejects drift, foreign inputs and pr
  const bytes=Buffer.from(raw),prior=releaseBootstrapCiRead(()=>bytes)(path);assert(Buffer.isBuffer(prior));assert.equal(hash(prior),priorSha);
  const bad=Buffer.concat([bytes,Buffer.from('\n')]);assert.strictEqual(releaseBootstrapCiRead(()=>bad)(path),bad);
 });
+
+import {freezeReleaseFull} from '../../scripts/release-ci.mjs';
+import {runInNewContext} from 'node:vm';
+
+test('advisory job skips Ready PR duplicates while Draft and manual prechecks remain enabled',()=>{
+ const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ const gate=workflow.match(/^  related:\n    if: (.+)\n/m)?.[1];
+ assert.equal(gate,"github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true");
+ for(const [name,draft,expected]of [['pull_request',false,false],['pull_request',true,true],['workflow_dispatch',false,true]]) {
+  assert.equal(runInNewContext(gate,{github:{event_name:name,event:{pull_request:{draft}}}}),expected);
+ }
+ const prior=releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',workflow);
+ assert.match(prior,/  pull_request:\n    branches: \[develop\]/);
+ for(const source of [workflow,workflow.replaceAll('\n','\r\n')])
+  assert.equal(releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',source),prior);
+ for(const source of [workflow+'\n',workflow.replace(gate,gate+' || true'),workflow.replace('  related:\n','  related:\n    if: true\n')]) {
+  assert.equal(releaseBootstrapCiSource('.github/workflows/quick-feedback.yml',source),source);
+  assert.throws(()=>releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',source));
+ }
+ assert.equal(releaseBootstrapCiSource('.github/workflows/quick-feedback.yml',workflow,{sha256:'0'.repeat(64)}),workflow);
+});
+
+function freezeFixture() {
+ const f=fixture();f.run.html_url=`https://github.com/${repo}/actions/runs/10`;
+ const calls=[],base=request(f);
+ const read=async(path,body)=>{
+  calls.push({path,body});
+  if(body)return null;
+  if(path==='/repos/'+repo)return {id:1429751262,full_name:repo};
+  if(path.includes('/workflows/'))return {workflow_runs:f.run?[structuredClone(f.run)]:[]};
+  return base(path);
+ };
+ return {f,calls,read};
+}
+const posts=calls=>calls.filter(call=>call.body);
+
+test('freeze waits for an existing exact pending Full instead of dispatching again',async()=>{
+ for(const state of ['queued','pending','waiting','requested','in_progress']) {
+  const {f,calls,read}=freezeFixture();f.run.status=state;f.run.conclusion=null;
+  const result=await freezeReleaseFull(repo,branch,sha,read,proof);
+  assert.equal(result.state,'waiting');assert.equal(result.runId,10);
+  assert.equal(result.url,f.run.html_url);assert.equal(posts(calls).length,0);
+ }
+});
+
+test('freeze reuses a successful run only through the unchanged complete receipt verifier',async()=>{
+ const good=freezeFixture();
+ const result=await freezeReleaseFull(repo,branch,sha,good.read,proof);
+ assert.equal(result.state,'verified');assert.equal(result.runId,10);assert.equal(posts(good.calls).length,0);
+ for(const mutate of [x=>x.jobs.pop(),x=>x.jobs[0].conclusion='failure',x=>x.run.run_attempt=2]) {
+  const {f,calls,read}=freezeFixture();mutate(f);
+  await assert.rejects(freezeReleaseFull(repo,branch,sha,read,proof));assert.equal(posts(calls).length,0);
+ }
+ for(const checkout of [()=>({}),()=>({...proof(),checkoutArtifact:{...proof().checkoutArtifact,expired:true}})]) {
+  const {calls,read}=freezeFixture();await assert.rejects(freezeReleaseFull(repo,branch,sha,read,checkout));assert.equal(posts(calls).length,0);
+ }
+});
+
+test('freeze refuses failed cancelled or foreign runs and never silently restarts them',async()=>{
+ for(const mutate of [x=>x.run.conclusion='failure',x=>x.run.conclusion='cancelled',
+  x=>x.run.conclusion='timed_out',x=>x.run.repository.id=1460097312,
+  x=>x.run.event='pull_request',x=>x.run.path='.github/workflows/other.yml',
+  x=>x.run.head_branch='develop',x=>delete x.run.head_sha]) {
+  const {f,calls,read}=freezeFixture();mutate(f);
+  await assert.rejects(freezeReleaseFull(repo,branch,sha,read,proof));assert.equal(posts(calls).length,0);
+ }
+});
+
+test('freeze dispatches once only when the exact Release candidate has no registered run',async()=>{
+ const {f,calls,read}=freezeFixture();f.run=null;
+ assert.equal((await freezeReleaseFull(repo,branch,sha,read,proof)).state,'requested');
+ assert.deepEqual(posts(calls),[{path:`/repos/${repo}/actions/workflows/quality.yml/dispatches`,body:{ref:branch,inputs:{runner_pool:'hosted'}}}]);
+});
+
+test('freeze rereads pending registration and moving HEAD without duplicate dispatch',async()=>{
+ const raced=freezeFixture();raced.f.run=null;let lists=0;
+ const result=await freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.includes('/workflows/')&&!body&&++lists===2) {
+   raced.f.run=fixture().run;raced.f.run.status='queued';raced.f.run.conclusion=null;
+  }
+  return raced.read(path,body);
+ },proof);
+ assert.equal(result.state,'waiting');assert.equal(posts(raced.calls).length,0);
+ const moved=freezeFixture();moved.f.run=null;let refs=0;
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.includes('/git/ref/')&&++refs===2)moved.f.head='b'.repeat(40);
+  return moved.read(path,body);
+ },proof),/HEAD/);
+ assert.equal(posts(moved.calls).length,0);
+});
+
+test('concurrent freeze callers reuse the same already registered pending run',async()=>{
+ const {f,calls,read}=freezeFixture();f.run.status='queued';f.run.conclusion=null;
+ const results=await Promise.all([freezeReleaseFull(repo,branch,sha,read,proof),freezeReleaseFull(repo,branch,sha,read,proof)]);
+ assert.deepEqual(results.map(result=>result.state),['waiting','waiting']);assert.equal(posts(calls).length,0);
+});
+
+test('freeze rejects a changed attempt and never falls back past a newer failure',async()=>{
+ const changed=freezeFixture();changed.f.run.status='queued';changed.f.run.conclusion=null;
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.endsWith('/actions/runs/10'))changed.f.run.run_attempt=2;
+  return changed.read(path,body);
+ },proof),/attempt/);
+ assert.equal(posts(changed.calls).length,0);
+ const latest=freezeFixture(),older=structuredClone(latest.f.run);latest.f.run.id=11;latest.f.run.conclusion='failure';
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.includes('/workflows/')&&!body)return {workflow_runs:[older,structuredClone(latest.f.run)]};
+  return latest.read(path,body);
+ },proof),/failed|cancelled/);
+ assert.equal(posts(latest.calls).length,0);
+});
+
+test('freeze rejects a foreign repository before any run or dispatch can be reused',async()=>{
+ const {calls,read}=freezeFixture();
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>
+  path==='/repos/'+repo?{id:1460097312,full_name:repo}:read(path,body),proof),/repository identity/);
+ assert.equal(posts(calls).length,0);
+});

@@ -25,6 +25,11 @@ for(const [path,row]of Object.entries(packet.files)){
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseBootstrapCiPacket=freeze(packet);
 function historicalSource(path,source){
+ if(path==='.github/workflows/quick-feedback.yml'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='ec23dcec59adc0a6de7a1f1ba30304e6e6e3b0262fdc369b1fdb533b4f4c9800'){
+  const prior=norm(source).replace("    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\n",'');
+  return hash(prior)===packet.files[path].current.sha256?prior:source;
+ }
+
  if(path==='tests/ci-complete-calibration.test.mjs'&&typeof source==='string'&&hash(norm(source))==='12241fe7c9ba344aa6fc4179ae8178736fb2cd94d43332f315c8c2c4ecb72247')return packet.files[path].current.source;
  if(path!=='.github/workflows/quality.yml'||typeof source!=='string')return source;
  const eol=source.includes('\r\n')?'\r\n':'\n';
@@ -37,8 +42,9 @@ function historicalSource(path,source){
  return hash(norm(prior))===packet.files[path].current.sha256?prior:source;
 }
 function checkedSource(path,source,before){
- source=historicalSource(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
+ if(before&&(!row||row.before.sha256!==before.sha256))return source;
+ source=historicalSource(path,source);
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
@@ -64,6 +70,7 @@ export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
+ source=historicalSource(path,source);
  if(path==='.github/workflows/quality.yml'&&typeof source==='string'){
   const eol=source.includes('\r\n')?'\r\n':'\n';
   const block=["      - name: Require frozen Release Full before publication",

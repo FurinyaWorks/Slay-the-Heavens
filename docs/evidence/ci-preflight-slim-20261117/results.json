@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "6b16b6e8ec74e5247dfee228d9ef4fb98a5b1583",
+  "nodeVersion": "restricted Node REPL; CLI argv/env shim only",
+  "total": 12,
+  "passed": 12,
+  "results": [
+    {
+      "name": "only exact frozen Release HEAD with complete latest Full permits publication",
+      "pass": true,
+      "durationMs": 2.6062999999849126
+    },
+    {
+      "name": "candidate verification rejects branch movement and a newer attempt during reads",
+      "pass": true,
+      "durationMs": 0.41630000004079193
+    },
+    {
+      "name": "publication requires immutable actual checkout, never green metadata alone",
+      "pass": true,
+      "durationMs": 1.4429999999701977
+    },
+    {
+      "name": "advisory job skips Ready PR duplicates while Draft and manual prechecks remain enabled",
+      "pass": true,
+      "durationMs": 2.2777999999234453
+    },
+    {
+      "name": "freeze waits for an existing exact pending Full instead of dispatching again",
+      "pass": true,
+      "durationMs": 0.7126000000862405
+    },
+    {
+      "name": "freeze reuses a successful run only through the unchanged complete receipt verifier",
+      "pass": true,
+      "durationMs": 1.2626999999629334
+    },
+    {
+      "name": "freeze refuses failed cancelled or foreign runs and never silently restarts them",
+      "pass": true,
+      "durationMs": 0.5941999999340624
+    },
+    {
+      "name": "freeze dispatches once only when the exact Release candidate has no registered run",
+      "pass": true,
+      "durationMs": 0.11499999999068677
+    },
+    {
+      "name": "freeze rereads pending registration and moving HEAD without duplicate dispatch",
+      "pass": true,
+      "durationMs": 0.24020000000018626
+    },
+    {
+      "name": "concurrent freeze callers reuse the same already registered pending run",
+      "pass": true,
+      "durationMs": 0.12780000001657754
+    },
+    {
+      "name": "freeze rejects a changed attempt and never falls back past a newer failure",
+      "pass": true,
+      "durationMs": 0.25930000003427267
+    },
+    {
+      "name": "freeze rejects a foreign repository before any run or dispatch can be reused",
+      "pass": true,
+      "durationMs": 0.0625
+    }
+  ],
+  "full": "not_run",
+  "officialImport": "not_run",
+  "device": "not_run",
+  "scope": "actual API modules; HTTP/checkout mocked; local imported CLI guards supplied argv/env only"
+}
