@@ -2,12 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {beforeCapacityB9Ci} from './helpers/release-capacity-b9-ci-source.mjs';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch,releasePc22BasicFeedbackSourceEpoch,releaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {integrationPacket,integrationCiSource,integrationRead,integrationInventory,integrationPriorInventory,assertIntegrationRawInventory,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
 import {releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 import {releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 import {enemyJoinRead,enemyJoinSource,assertEnemyJoinCurrent} from './helpers/release-enemy-art-join.mjs';
+import {enemyCapacityRead,enemyCapacitySource,assertEnemyCapacityCurrent} from './helpers/release-enemy-capacity-join.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('joint Release authenticates the full live production corpus and retains both immutable standalone corpora',()=>{
@@ -45,7 +47,7 @@ test('joint owner authorization freshly rejects every missing changed or mistype
 
 test('joint CI binds every current input, preserves both packets and never masks production or foreign drift',()=>{
  assertReleaseIntegrationCurrent();
- const releaseRead=enemyJoinRead('release');
+ const releaseRead=(path,encoding)=>beforeCapacityB9Ci(path,readFileSync(path,encoding));
  // The changed CI wrapper is authenticated separately from the immutable old inventory.
  const wrapper='tests/helpers/release-card-contact-integration.mjs';
  for(const mode of ['changed','missing'])assert.throws(()=>assertEnemyJoinCurrent((p,e)=>{
@@ -55,10 +57,10 @@ test('joint CI binds every current input, preserves both packets and never masks
  for(const [path,sha]of Object.entries(integrationPacket.files)){
   const source=norm(readFileSync(path,'utf8'));assert.equal(hash(norm(releaseRead(path,'utf8'))),sha,path);
   if(source!==releaseRead(path,'utf8')){
-   assert.equal(enemyJoinSource(path,source.replaceAll('\n','\r\n'),'release'),releaseRead(path,'utf8'));
-   const foreign=source.replaceAll('\n','\r\r\n');
-   assert.equal(enemyJoinSource(path,foreign,'release'),foreign);
-  }
+    assert.equal(beforeCapacityB9Ci(path,source.replaceAll('\n','\r\n')),releaseRead(path,'utf8'));
+    const foreign=source.replaceAll('\n','\r\r\n');
+    assert.equal(beforeCapacityB9Ci(path,foreign),foreign);
+   }
   for(const side of ['pc22','selection']){
    for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(integrationCiSource(path,foreign,side),foreign,path);
    for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(integrationCiSource(foreignPath,source,side),source);
@@ -87,10 +89,44 @@ test('joint raw inventories retain both additions and reject missing duplicate f
    const added=paths.filter(p=>!packet.currentInventory[kind].includes(p));
    if(kind==='js'||side==='selection')assert(added.length>0);
    if(added.length)assert.throws(()=>assertIntegrationRawInventory(paths.filter(p=>!added.includes(p)),kind),/raw discovery inventory/);
-   for(const path of added)assert.throws(()=>integrationPriorInventory(paths,side,kind,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh Release integration added inventory source/);
+   for(const path of added)assert.throws(()=>integrationPriorInventory(paths,side,kind,(p,e)=>{
+    const raw=readFileSync(p,e);return p===path?raw+'\n':raw;
+   }),error=>error.code==='ERR_ASSERTION'&&[
+    'fresh Release integration added inventory source: '+path,
+    'fresh complete integration source: enemy capacity '+path,
+   ].includes(error.message.split('\n')[0]));
   }
   for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,'tests/foreign.test.mjs']])assert.throws(()=>assertIntegrationRawInventory(bad,kind),/raw discovery inventory/);
  }
  const workflow=readFileSync('.github/workflows/quality.yml','utf8');
  assertReleasePc22BasicFeedbackExecutionGuards(workflow);assertReleaseSelectionMapExecutionGuards(workflow);
+});
+
+test('actual 00ab enemy capacity join freshly rejects cross-input and archive drift through both public readers',()=>{
+ const anchor='scripts/build-ui.mjs',dependency='scripts/build-native-candidate.mjs';
+ const raw=readFileSync(anchor,'utf8'),source=norm(raw);
+ assertEnemyCapacityCurrent();
+ for(const side of ['enemy','release']){
+  const expected=enemyCapacityRead(side)(anchor,'utf8');
+  assert.notEqual(norm(expected),source,'both complete parent inputs differ from the real combined builder');
+  for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(enemyCapacitySource(anchor,input,side),expected);
+  for(const foreign of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),null,17,Buffer.from(source)]){
+   let reads=0;assert.strictEqual(enemyCapacitySource(anchor,foreign,side,{read:()=>{reads++;throw Error('foreign');}}),foreign);assert.equal(reads,0);
+  }
+  for(const path of [dependency,'tests/helpers/release-enemy-capacity-join.json.gz','tests/helpers/release-capacity-b9-reader-repair.json.gz']){
+   for(const mode of ['drift','missing','null']){
+    const read=(p,e)=>{if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing '+p);if(mode==='null')return null;const b=readFileSync(p,e);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);};
+    assert.throws(()=>enemyCapacityRead(side,read)(anchor,'utf8'));
+    assert.throws(()=>integrationRead('pc22',read)(anchor,'utf8'));
+   }
+   assert.equal(enemyCapacityRead(side)(anchor,'utf8'),expected,'restoration authorizes freshly');
+  }
+  const buffer=enemyCapacityRead(side)(anchor);assert(Buffer.isBuffer(buffer));assert.equal(norm(buffer.toString()),norm(expected));
+ }
+ for(const path of ['src/lua/abyss_lowcost_art.lua','config/architecture.json','foreign/'+anchor,'__proto__',null,17]){
+  let reads=0;assert.equal(enemyCapacitySource(path,source,'enemy',{read:()=>{reads++;throw Error('production');}}),source);assert.equal(reads,0);
+ }
+ const joined='tests/release-card-contact-integration.test.mjs',joinedRaw=readFileSync(joined,'utf8');
+ assert.strictEqual(beforeCapacityB9Ci(joined,joinedRaw,'b9',{sha256:'0'.repeat(64)}),joinedRaw,'wrong predecessor preserves the original complete input');
+ assert.throws(()=>enemyCapacityRead('unknown'),/known enemy capacity parent/);
 });
