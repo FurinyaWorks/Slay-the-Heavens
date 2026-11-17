@@ -1,3 +1,4 @@
+import {fastFreezeB9Source} from './release-fast-freeze-b9-union.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
@@ -96,7 +97,7 @@ import {beforeReleaseFastB9Ci,releaseFastB9CiBindings,releaseFastB9CiRead} from 
 test('B9 Release join projects only exact complete CI inputs and keeps wrong predecessors and drift visible',()=>{
  const hash=s=>createHash('sha256').update(s).digest('hex');
  for(const [path,row]of Object.entries(releaseFastB9CiBindings)){
-  const raw=readFileSync(path,'utf8'),lf=raw.replaceAll('\r\n','\n');
+  const raw=fastFreezeB9Source(path,readFileSync(path,'utf8')),lf=raw.replaceAll('\r\n','\n');
   assert.equal(hash(lf),row.currentSha256,path+' actual complete current input');
   assert.equal(releaseSelectionMapCiSource(path,raw,{sha256:'0'.repeat(64)}),raw,path+' wrong standalone predecessor');
   for(const source of [raw,lf,lf.replaceAll('\n','\r\n')]){

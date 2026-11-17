@@ -2,7 +2,7 @@ name: Quality
 on:
   pull_request:
     branches: [develop, master, 'release/**']
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, labeled, unlabeled]
+    types: [opened, synchronize, reopened, edited, ready_for_review, converted_to_draft, labeled, unlabeled]
   merge_group:
     types: [checks_requested]
     branches: [develop]
@@ -88,6 +88,7 @@ jobs:
         run: |
           title_pattern='^(feat|fix|chore|docs|refactor|test|perf|ci)(\([^)]+\))?!?: .+'
           [[ "$PR_TITLE" =~ $title_pattern ]]
+          node scripts/check-release-scope.mjs
       - id: plan
         run: node scripts/ci-impact.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

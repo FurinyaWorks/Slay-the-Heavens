@@ -1,3 +1,4 @@
+import {fastFreezeB9Source} from './release-fast-freeze-b9-union.mjs';
 // CI-only continuation of the exact #698 merge plus the reviewed Release gate.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -12,8 +13,10 @@ assert.equal(packet.mergeCommit,'1346295a5223ff99501040a2546f4f97ac615352');
 assert.equal(packet.normalization,'LF');
 assert.equal(hash(packet.selectionTest.source),packet.selectionTest.sha256,'immutable standalone selection test');
 for(const [path,row]of Object.entries(packet.files))assert.equal(hash(row.before.source),row.before.sha256,path+' immutable B9 source');
-export function beforeReleaseFastB9Ci(path,source,before){
+export function beforeReleaseFastB9Ci(path,source,before,read=readFileSync){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
+ if(before&&(!row||before.sha256!==row.before.sha256))return source;
+ source=fastFreezeB9Source(path,source,'fast',read);
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||before&&before.sha256!==row.before.sha256)return source;
  if(hash(norm(source))!==row.currentSha256)return source;
  const prior=row.before.source;
@@ -29,6 +32,6 @@ export const releaseFastB9CiBindings=Object.freeze(Object.fromEntries(Object.ent
 export function releaseFastB9CiRead(read=readFileSync){return(path,encoding)=>{
  const raw=read(path,encoding);
  if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforeReleaseFastB9Ci(path,text);
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforeReleaseFastB9Ci(path,text,undefined,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}

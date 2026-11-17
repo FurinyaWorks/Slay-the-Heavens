@@ -1,3 +1,4 @@
+import {fastFreezeB9Source,assertFastFreezeB9UnionCurrent} from './helpers/release-fast-freeze-b9-union.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReadFileSync,readdirSync as rawReaddirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
@@ -11,7 +12,7 @@ import {discoverJs as rawDiscoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch as jointSourceEpoch,releaseSelectionMapSourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {integrationProductionRead,integrationPriorInventory} from './helpers/release-card-contact-integration.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
-import {historicalSource,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {historicalSource,releaseFreezeCiBefore,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 // Preserve the full #697 standalone contract in its authenticated exact view.
 const readFileSync=integrationProductionRead('selection',rawReadFileSync);
@@ -139,4 +140,20 @@ test('release selection map isolated production copy includes exact helper and p
  copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory});
  const adapter=join(directory,'tests/helpers/release-selection-map-source.mjs');writeFileSync(adapter,readFileSync(adapter,'utf8')+'\n');
  assert.throws(()=>copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory}),/fresh helper copy identity/);
+});
+test('Release freeze CI continuation authenticates fresh owners before historical projection',async()=>{
+ const readFileSync=(path,encoding)=>{const raw=rawReadFileSync(path,encoding);return typeof raw==='string'?fastFreezeB9Source(path,raw,'freeze'):raw;};
+ const assertReleaseSelectionMapCiCurrent=(read=rawReadFileSync)=>assertFastFreezeB9UnionCurrent(read);
+ const {releaseFreezeCiPacket:p,releaseFreezeCiBefore:before}=await import('./helpers/release-selection-map-ci-source.mjs');
+ assert(p);assert.equal(p.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');assertReleaseSelectionMapCiCurrent();
+ for(const [path,row]of Object.entries(p.files)){
+  const raw=readFileSync(path,'utf8');assert.equal(hash(norm(raw)),row.current.sha256);
+  for(const input of [raw,raw.replaceAll('\n','\r\n')])assert.equal(before(path,input),row.before?.source??input);
+  for(const input of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),null,{},17])assert.equal(before(path,input),input);
+  assert.equal(before('foreign/'+path,raw),raw);
+  for(const change of ['append','missing','stale'])assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{
+   if(p===path){if(change==='missing')throw Error('missing owner');if(change==='stale')return row.before?.source??'';return rawReadFileSync(p,encoding)+'\n';}return rawReadFileSync(p,encoding);
+  }));
+ }
+ const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');assertIntegratedCurrent();
 });
