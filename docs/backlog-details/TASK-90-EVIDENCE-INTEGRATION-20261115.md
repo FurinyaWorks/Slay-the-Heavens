@@ -39,3 +39,11 @@ node --test --test-reporter=spec --test-concurrency=1 tests/uncommon-relics.test
 11/14 的 10/10、13/10/7、8/8、旧显示回执及 #436 历史 CI 是各自当时的证据；本轮 8/8、10、7 和显示闭环来自当前基线新执行，不能互相冒充。历史 Quality JSON 不表示本提交 CI 已通过。
 
 本轮只修改说明、证据附件与 TASK-90 状态记录，未改变玩法、文案、遗物名、数值或未来第三幕。原反馈事件身份/候选仍未知，不能逆推成 Falling。没有构建新 GIL 候选、候选写入/读回、官方导入、真实 ready、自然抽中事件、PC 客户端或实体手机实测；这些状态均为未验证。Full、官方设备与发布验收未执行，也不由离线结果推定通过。
+
+## 2026-11-17：接回已关闭调查线的独有证据
+
+原调查 [#693](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/693) 已关闭，状态与证据集成由 [#700](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/700) 接续。固定来源为 `feat/bottled-card-explanation@e4b4149315fe33e089a5642f5eb15abb419fd5d8`；该提交的三份独有附件此前不在 #700 的 `b6f5bbeebc41a80fcbe54ae88ff7099fbf8390eb` 中。现将 [原调查说明](../evidence/task90-binding-20261115/README.md)、[八份源码摘要](../evidence/task90-binding-20261115/source-sha256.txt) 和 [原始定向日志](../evidence/task90-binding-20261115/targeted-tests.log) 按原 Git blob、原字节接回本准备树，供 #700 原执行线接续，不另开 PR 或重复运行 Full。
+
+原说明末段的 In Progress、未勾 AC 和设备条件仅代表当时调查线的结论，不覆盖上文本轮证据集成对原两条 AC 的结论。此次不接回旧 TASK-90 快照，#700 的 Done、两条已勾 AC、负责人、创建身份及原有附件均保持。本次没有新增玩法实现、AC、设备验收或发布许可。
+
+本次仅验证三个附件逐字等于固定来源、八条 SHA256 与本准备树源码全部一致、任务文件等于 #700，以及 guidance、Backlog 和差异空白检查。原日志的 12/12 是 11/15 历史执行，未在本轮重跑，不能计作当前候选 CI。源分支与完整历史恢复包继续保留；本准备提交被接纳且完成正常交付核验前，不以“文件已复制”宣称 #693 已合并或源分支可删。
