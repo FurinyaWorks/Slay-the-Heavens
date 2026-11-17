@@ -76,11 +76,7 @@ local descriptions={
  flurry_of_blows={'造成4伤害。每次实际改变姿态后，若本牌在弃牌堆且手牌未满，将其返回手牌。','造成6伤害。每次实际改变姿态后，若本牌在弃牌堆且手牌未满，将其返回手牌。'},
  weave={'造成4伤害。占卜非空抽牌堆后，若本牌在弃牌堆且手牌未满，将其返回手牌。','造成6伤害。占卜非空抽牌堆后，若本牌在弃牌堆且手牌未满，将其返回手牌。'},
 }
-function M.withCards(data)
- assert(type(data)=='table' and data.cards and data.cards.cards and data.statuses and data.statuses.statuses,'missing Watcher flow data')
- local out,ids,statuses=copy(data),{},{}
- for _,c in ipairs(out.cards.cards)do assert(not ids[c.id],'duplicate flow input card');ids[c.id]=true end
- for _,s in ipairs(out.statuses.statuses)do assert(not statuses[s.id],'duplicate flow input power');statuses[s.id]=s end
+local function installFlowCards(out,ids)
  for _,s in ipairs(specs)do
   assert(not ids[s[1]],'Watcher flow card already exists: '..s[1])
   local c={id=s[1],sourceId=s[2],sts_name=s[3],name=s[4],type=s[5],rarity=s[6],cost=s[7],color='purple',
@@ -90,6 +86,8 @@ function M.withCards(data)
   end
   out.cards.cards[#out.cards.cards+1]=c;ids[c.id]=true
  end
+end
+local function installSpecialCards(out,ids)
  local special={
   {id='through_violence',sourceId='ThroughViolence',sts_name='Through Violence',name='以暴制暴',cost=0,type='attack',effects={e('damage',20)},upgrade={effects={e('damage',30)}},text='保留。造成20点伤害。消耗。',upgradeText='保留。造成30点伤害。消耗。'},
   {id='insight',sourceId='Insight',sts_name='Insight',name='洞见',cost=0,type='skill',effects={e('draw',2)},upgrade={effects={e('draw',3)}},text='保留。抽2张牌。消耗。',upgradeText='保留。抽3张牌。消耗。'},
@@ -106,6 +104,8 @@ function M.withCards(data)
    end end
   end
  end
+end
+local function installFlowPowers(out,statuses)
  for _,id in ipairs(powerOrder)do
   local s=powers[id]
   local existing=statuses[id]
@@ -120,6 +120,15 @@ function M.withCards(data)
     priority=id=='draw_card_next_turn' and 20 or 5,description=s[4]}
   end
  end
+end
+function M.withCards(data)
+ assert(type(data)=='table' and data.cards and data.cards.cards and data.statuses and data.statuses.statuses,'missing Watcher flow data')
+ local out,ids,statuses=copy(data),{},{}
+ for _,c in ipairs(out.cards.cards)do assert(not ids[c.id],'duplicate flow input card');ids[c.id]=true end
+ for _,status in ipairs(out.statuses.statuses)do assert(not statuses[status.id],'duplicate flow input power');statuses[status.id]=status end
+ installFlowCards(out,ids)
+ installSpecialCards(out,ids)
+ installFlowPowers(out,statuses)
  return out
 end
 local function plan()return {top={},bottom={},consumeAllEnergy=false}end
@@ -215,6 +224,18 @@ function M.planWallop(lost)
  return p
 end
 -- Host invokes in source Power priority/acquisition order, not this map order.
+local function startTurnHook(p,id,n)
+ if id=='battle_hymn'then p.bottom[1]=make('smite','hand',false,n)
+ elseif id=='energy_down'then p.bottom[1]=e('loseEnergy',n)
+ elseif id=='wrath_next_turn'then p.bottom={e('changeStance',nil,{stance='Wrath'}),e('removeFlowPower',1,{status=id})}
+ end
+end
+local function laterTurnHook(p,state,id,phase,n)
+ if id=='draw_card_next_turn' and phase=='turn_start_post_draw'then p.bottom={e('draw',n),e('removeFlowPower',1,{status=id})}
+ elseif id=='like_water' and phase=='turn_end_pre_cards' and state.player.stance=='Calm'then p.bottom[1]=e('block',n,{fixed=true})
+ elseif id=='study' and phase=='turn_end'then p.bottom[1]=make('insight','draw',false,n)
+ end
+end
 function M.planHook(state,id,phase)
  assert(phase=='energy_recharge' or phase=='turn_start' or phase=='turn_start_post_draw'
   or phase=='turn_end_pre_cards' or phase=='turn_end','unknown Watcher flow hook phase')
@@ -222,12 +243,9 @@ function M.planHook(state,id,phase)
  if n==0 then return p end
  if id=='collect' and phase=='energy_recharge'then
   p.bottom={make('miracle','hand',true),e(n>1 and 'reduceFlowPower' or 'removeFlowPower',1,{status=id})}
- elseif id=='battle_hymn' and phase=='turn_start'then p.bottom[1]=make('smite','hand',false,n)
- elseif id=='energy_down' and phase=='turn_start'then p.bottom[1]=e('loseEnergy',n)
- elseif id=='wrath_next_turn' and phase=='turn_start'then p.bottom={e('changeStance',nil,{stance='Wrath'}),e('removeFlowPower',1,{status=id})}
- elseif id=='draw_card_next_turn' and phase=='turn_start_post_draw'then p.bottom={e('draw',n),e('removeFlowPower',1,{status=id})}
- elseif id=='like_water' and phase=='turn_end_pre_cards' and state.player.stance=='Calm'then p.bottom[1]=e('block',n,{fixed=true})
- elseif id=='study' and phase=='turn_end'then p.bottom[1]=make('insight','draw',false,n)
+ elseif phase=='turn_start'then startTurnHook(p,id,n)
+
+ else laterTurnHook(p,state,id,phase,n)
  end
  return p
 end

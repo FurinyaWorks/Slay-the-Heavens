@@ -64,11 +64,7 @@ local powers={
 }
 local powerIds={flame_barrier=true,evolve=true,fire_breathing=true}
 M.ops={limitBreak=true,exhaustNonAttacks=true,secondWind=true,fiendFire=true,gainStatusPower=true}
-function M.withCards(data)
- assert(type(data)=='table' and data.cards and data.cards.cards and data.statuses and data.statuses.statuses,'missing warrior status data')
- assert(not data.experimentalWarriorStatus,'warrior status data already prepared')
- local out,ids,statusIds=copy(data),{},{}
- for _,c in ipairs(out.cards.cards) do assert(not ids[c.id],'duplicate source card');ids[c.id]=c end
+local function installCards(out,ids)
  for _,c in ipairs(cards) do
   local existing=ids[c.id]
   if existing then
@@ -80,6 +76,8 @@ function M.withCards(data)
    for i,old in ipairs(out.cards.cards) do if old==existing then out.cards.cards[i]=d;break end end
   else out.cards.cards[#out.cards.cards+1]=d end
  end
+end
+local function installStatuses(out,ids)
  for _,c in ipairs(states) do
   local existing=ids[c.id]
   if existing then
@@ -93,7 +91,8 @@ function M.withCards(data)
    for i,old in ipairs(out.cards.cards) do if old==existing then out.cards.cards[i]=copy(c);break end end
   else out.cards.cards[#out.cards.cards+1]=copy(c) end
  end
- for _,d in ipairs(out.statuses.statuses) do assert(not statusIds[d.id],'duplicate source status');statusIds[d.id]=d end
+end
+local function installPowers(out,statusIds)
  for _,d in ipairs(powers) do
   local existing=statusIds[d.id]
   if existing then assert(existing.kind=='buff' and existing.stack=='intensity' and existing.decay=='none',
@@ -103,6 +102,16 @@ function M.withCards(data)
    for i,old in ipairs(out.statuses.statuses) do if old==existing then out.statuses.statuses[i]=c;break end end
   else out.statuses.statuses[#out.statuses.statuses+1]=c end
  end
+end
+function M.withCards(data)
+ assert(type(data)=='table' and data.cards and data.cards.cards and data.statuses and data.statuses.statuses,'missing warrior status data')
+ assert(not data.experimentalWarriorStatus,'warrior status data already prepared')
+ local out,ids,statusIds=copy(data),{},{}
+ for _,c in ipairs(out.cards.cards) do assert(not ids[c.id],'duplicate source card');ids[c.id]=c end
+ installCards(out,ids)
+ installStatuses(out,ids)
+ for _,d in ipairs(out.statuses.statuses) do assert(not statusIds[d.id],'duplicate source status');statusIds[d.id]=d end
+ installPowers(out,statusIds)
  out.experimentalWarriorStatus=true;return out
 end
 local function amount(s,id) local n=s.player.statuses[id] or 0;assert(integer(n),'invalid status Power amount');return n end
@@ -168,19 +177,21 @@ function M.applyPower(s,id,n)
  end
  return applied
 end
-function M.onDraw(s,c,id)
- local p=plan();local d=resolved(s,c)
- local order=id and {id} or s.statusDrawPowerOrder or {}
- if not id then
+local function validateDrawOrder(s,order)
   local found={};for _,key in ipairs(order) do assert((key=='evolve' or key=='fire_breathing') and not found[key],'invalid status draw order');found[key]=true end
   for _,key in ipairs({'evolve','fire_breathing'}) do assert(amount(s,key)==0 or found[key],'missing status draw Power order') end
- end
- for _,key in ipairs(order) do
+end
+local function planDrawPower(p,s,d,key)
   local n=amount(s,key)
   if key=='evolve' and n>0 and d.type=='status' and not s.player.noDraw then p.bottom[#p.bottom+1]=action(make('draw',n))
   elseif key=='fire_breathing' and n>0 and (d.type=='status' or d.type=='curse') then p.bottom[#p.bottom+1]=action(make('statusFireDamage',n))
   else assert(key=='evolve' or key=='fire_breathing','unknown draw Power') end
- end
+end
+function M.onDraw(s,c,id)
+ local p=plan();local d=resolved(s,c)
+ local order=id and {id} or s.statusDrawPowerOrder or {}
+ if not id then validateDrawOrder(s,order) end
+ for _,key in ipairs(order) do planDrawPower(p,s,d,key) end
  return p
 end
 function M.onAttacked(s,owner,damageType)

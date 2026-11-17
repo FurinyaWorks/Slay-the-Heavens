@@ -1,14 +1,12 @@
 ---
 id: TASK-74.19
-title: 按真实内容阻塞复核状态所有权与残余依赖
+title: 消除核心完整依赖环并固化状态所有权边界
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:13'
-labels:
-  - 待验
-  - delivery-verify
+updated_date: '2026-11-17 16:16'
+labels: []
 milestone: m-9
 dependencies: []
 documentation:
@@ -28,7 +26,7 @@ ordinal: 161000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-当前大SCC仍有104个模块，既有职责切片未覆盖全部跨领域反向边；先确认影响后续角色内容开发的真实高风险耦合，避免仅靠拆文件宣称架构完成。
+2026-11-18用户明确要求恢复架构治理：修复中高优先级循环依赖，全部改动仅进入develop，隔离release/v2.0.0。当前c2409ad7全量351模块新鲜AST含延迟依赖为67/11/2三个SCC；历史64或104不作为当前值。保留此前已交付成果，从当前残余继续，不重复既有PR。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -69,6 +67,8 @@ ordinal: 161000
 
 2026-11-11 本轮合流#619与#622：已核当前develop及两PR无新占用，保留两父提交及全部独立证据；仅合并同文件互不覆盖的门禁与回归，Backlog通过CLI追加两侧记录，.gitattributes保留两侧。完整定向验证、原全图对照与独立组合复审后更新原#622，不新增PR，不重复Full，不改生产Lua/共享来源或owner/status/AC。
 2026-11-11接续未占用DefectUtility准备能力切片：基线6a614fc8，核对8个开放PR及保全工作树，不重复认领。在现有queued-play宿主提供延迟Actor算术能力，Utility只保留纯数据规划；内部prepareEffect增加显式host参数，原校验、复制、动态方法、错误与回滚时机保持。先独立审查全部当前及冻结调用、源码桥和测试成本；保留旧完整源与冻结协议，补冷加载/完整图/负控、精确鲜读历史接线及全图SCC证据。只做必要定向测试，不重复Full、改预算或用户GUI；独立深审后按现有队列交付，owner/status/AC不变。
+
+2026-11-18已获Owner自主处理授权。隔离树feat/develop-architecture基于origin/develop c2409ad7，开放PR无架构生产文件重叠。先固定完整源码/质量基线，分解Power顺序、Run奖励事务和Combat/Actor能力边界；保留状态/RNG/事件/别名/回滚，先红后绿并以完整AST防回退。每片必要定向回归，整合独立深审与完整质量后只向develop交付，不触碰发布线。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -132,4 +132,6 @@ DefectUtility最终历史消费者补齐：Formation12、Room6、Seven19完整�
 2026-11-14逐项对账：重复元数据经用户批准修复，CLI现恢复可读；Defect/Protected等已有成果见634来源清单，不能据旧待合备注重做。全局残余风险未获接受，待真实内容扩展阻塞再核查；保留原AC。
 
 2026-11-14第二轮状态纠正：已有Protected/Defect能力边界等切片、全图与回滚证据；残余所有权/风险复核未完成，属于已开展工作的收口，不是待新开工。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+本轮task:pick为HOLD，原因既有In Progress和待验标签；已核旧成果确实存在，但完整图仍有67/11/2残余。按用户明确要求续做原任务，保留Furinya与全部历史AC，不重新认领、不重复新建任务。Backlog CLI已在cloud-tools找到并可用。
 <!-- SECTION:NOTES:END -->

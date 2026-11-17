@@ -1,14 +1,12 @@
 ---
 id: TASK-74.20
-title: 按真实内容阻塞复核剩余高风险复杂度
+title: 治理剩余中高风险复杂度并固化职责门槛
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:13'
-labels:
-  - 待验
-  - delivery-verify
+updated_date: '2026-11-17 16:16'
+labels: []
 milestone: m-9
 dependencies: []
 documentation:
@@ -44,7 +42,7 @@ ordinal: 162000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-已合Host切片后仍存在最大CC75及67个CC超过30函数；现有任务未逐项界定Combat、Actor、MapUI及RelicHooks对内容迭代的风险。按真实职责治理，避免无限拆分或搬移指标。
+2026-11-18用户明确授权中高优先级架构治理，全部仅进入develop并与当前发版隔离。c2409ad7全量351模块、6165完整测量，CC>30为31处、>15为206、最大68。已交付Actor/Combat六核心不重复实施，按当前调用链与状态owner复核剩余热点，保留低优先级债务和未验收证据。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -113,6 +111,8 @@ ordinal: 162000
 2026-11-11 本轮接续主控明确指派的未占用 SkillFeedback.resolve 职责切片：以 develop 3a061a76 核对开放 PR 与本地分支，保留已提交事件、精确敌人意图、效果及伤害修饰的优先级和短路读取；冻结完整旧源，双 VM 逐字段及读取/失败轨迹对照和真实语义负控，全部新增 helper 纳入 CC15 硬门禁，再独立深审和正常 Draft/队列交付。不碰 #620/#618/#622/CharacterProfiles/UI 在途，不重复 Full，不改 owner/status/AC。
 2026-11-11 接续未占用Joust事件阶段职责：基线6a614fc8，已核开放PR609/610/611与归档十项；保留choose分支及读取次序，分离下注扣款、开奖、奖金结算。冻结旧源，独立VM差分覆盖动态接口、失败部分写入、随机及别名；全模块CC15和原Joust回归后独审，仅本轮窄验证，不重复Full，不改原owner/status/AC。
 2026-11-11 接续已保全Golden Idol f1481459c，不新领父任务。以当前develop6a614fc8独立组合保留原生产重构与证据，适配当前来源闭包及成本合同；只做定向回归、全源码度量与独审，不重复Full，不触碰其他候选或GUI；原owner/status/AC保持。
+
+本轮先按当前完整报告和真实调用链确定中高风险清单，避免将CC数字直接冒充风险级别；每项保留既有行为与失败路径，新增helper受CC15，独立深审后统一develop交付。此前已实现成果和AC保持可追溯。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
