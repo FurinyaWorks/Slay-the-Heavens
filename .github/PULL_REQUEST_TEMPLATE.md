@@ -6,8 +6,16 @@
 - [ ] chore / docs / refactor / test / ci (no release)
 
 ## Base branch
-- [ ] feature/* → `develop`
+- [ ] 新Feature → `develop`；不反向引入Release
+- [ ] v2.0.0必要修复 → `release/v2.0.0`
 - [ ] release/* or hotfix/* → `master` (+ back-merge into `develop`)
+
+## Release scope
+<!-- Targeting release/*: fill each declaration exactly once. Rules: .codebuddy/skills/release-maintenance/SKILL.md -->
+Change-Type:
+Target-Version:
+Release-Necessity:
+<!-- Types: bugfix, performance, regression, release-engineering. Feature goes to develop; self-declared exceptions are invalid. -->
 
 ## PR dependencies
 Depends-on: none

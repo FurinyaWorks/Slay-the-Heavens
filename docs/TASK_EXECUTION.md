@@ -6,7 +6,7 @@
 
 ## 开始任务
 
-1. 读取 `AGENTS.md` 与 Backlog CLI 指引，核对最新 `origin/develop`、任务正文/依赖/验收、已认领工作、开放 PR 和文件写入范围；已有切片继续交给原执行者，不因移除 Sprint 重新领取。
+1. 读取 `AGENTS.md` 与 Backlog CLI 指引，按[冻结技能](../.codebuddy/skills/release-maintenance/SKILL.md)核对目标版本及对应最新Release/Develop基线、任务正文/依赖/验收、已认领工作、开放 PR 和文件写入范围；已有切片继续交给原执行者，不因移除 Sprint 重新领取。
 2. 新的自主领取前运行 `npm run task:pick -- TASK-编号`。该只读检查核对任务身份、`To Do` 状态和 `config/task-intake.json` 中的独立审批限制。`ALLOW` 不是认领、批准或依赖已经满足的证明；仍须核实上述信息，再用 Backlog CLI 认领。`HOLD` 只处理具体原因，不刷新日期、换阶段或复制任务绕过。
 3. `In Progress`、`Blocked`、`Done` 及身份不明的任务不新领。需要协助、收尾或复审时协调原执行者和已有 PR，保留其工作树、任务状态与成果。缺少 Backlog CLI 时记录认领/状态同步限制，不手改任务或里程碑文件，也不伪称已认领；用户明确授权的独立工作按已批准边界执行。
 4. `TASK-85`、`TASK-96`、`TASK-97`、`TASK-62`、`TASK-64` 继续需要各自明确的 Owner 批准。已合 PR #491 的离线成果不等于正式职业方向或后续实施获批。其他任务中的具体批准、设计/范围/设备授权和依赖要求也不因移除 Sprint 失效。

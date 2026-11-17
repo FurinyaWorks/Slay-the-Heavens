@@ -218,7 +218,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\n':value;}),/fresh (?:complete StS CI|StS helper) source/,path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

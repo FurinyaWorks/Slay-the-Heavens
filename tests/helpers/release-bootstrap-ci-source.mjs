@@ -110,6 +110,11 @@ for(const [path,row]of Object.entries(packet.files)){
 }
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseBootstrapCiPacket=freeze(packet);
+function beforeQuickFeedbackAdvisory(path,source){
+ if(path!=='.github/workflows/quick-feedback.yml'||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!=='7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9')return source;
+ const prior=norm(source).replace("      - name: Verify affected Release CI contracts explicitly\n        env:\n          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}\n        run: |\n          node --input-type=module <<'NODE'\n          import {execFileSync} from 'node:child_process';\n          const base=process.env.BASE_SHA;\n          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');\n          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\\0');\n          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);\n          if(changed.some(path=>contracts.has(path))){\n            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');\n            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});\n          }else console.log('No Release CI contract changes');\n          NODE\n",'').replace("    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\n",'');
+ return hash(prior)===packet.files[path].current.sha256?prior:source;
+}
 export const capacityCiPacket=freeze(capacity);
 export const capacityReviewCiPacket=freeze(review);
 export const defaultReductionCiPacket=freeze(reduction);
@@ -119,6 +124,7 @@ function checkedSource(path,source,before){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
+ source=beforeQuickFeedbackAdvisory(path,source);
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
 export const releaseBootstrapCiCheckedSource=checkedSource;
@@ -131,6 +137,16 @@ export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
+ source=beforeQuickFeedbackAdvisory(path,source);
+ if(path==='.github/workflows/quality.yml'&&typeof source==='string'){
+  const eol=source.includes('\r\n')?'\r\n':'\n';
+  const block=["      - name: Require frozen Release Full before publication",
+   "        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'master' && startsWith(github.event.pull_request.head.ref, 'release/')",
+   '        env:', '          GH_TOKEN: ${{ github.token }}', '        run: node scripts/release-ci.mjs verify-pr', ''].join(eol);
+  const push='  push:'+eol+'    branches: [develop, master]'+eol;
+  if(source.split(block).length===2&&source.split(push).length===2)
+   source=source.replace(block,'').replace(push,'  push:'+eol+"    branches: [develop, master, 'release/**']"+eol);
+ }
  assert(bootstrap.includes(path),'explicit complete bootstrap workflow');
  const row=packet.files[path];
  assert.equal(typeof source,'string');assert(!source.includes('\r\r\n'));
@@ -158,7 +174,7 @@ export function assertReleaseBootstrapCiCurrent(read=readFileSync){
   return typeof raw==='string'?prior:prior===source?raw:Buffer.from(prior);
  };
  for(const [path,row]of Object.entries(packet.files))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
+  assert.equal(hash(norm(beforeQuickFeedbackAdvisory(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
   assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);
 }
