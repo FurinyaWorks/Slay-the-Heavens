@@ -7,7 +7,7 @@ const hash=value=>createHash('sha256').update(value).digest('hex');
 const norm=value=>value.replaceAll('\r\n','\n');
 const path='tests/helpers/release-preflight-union-source.json.gz';
 const bytes=readFileSync(new URL('./release-preflight-union-source.json.gz',import.meta.url));
-const sha='6fc6bc9570a171330f57aa3fc2ba4e861491f86d7492de242b8a771acf87280b';
+const sha='fe6450c752cea6f6eac13afd0e7d7cb28532151dbcdefe4baafa5a83b8c36712';
 assert.equal(hash(bytes),sha,'complete Release preflight union continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.deepEqual(packet.parents,{release:'b6d24eed1cfab7d27c078ffdb3d2c76541065639',advisory:'8457762c7f93fc0201ac15ee9386e0d3e6e2bd58',preflight:'2089991e6cb893de3690622ecc3e52edd27658d2'});

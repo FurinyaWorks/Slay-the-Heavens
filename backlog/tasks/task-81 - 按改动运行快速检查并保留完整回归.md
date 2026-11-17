@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-17 09:14'
+updated_date: '2026-11-17 09:19'
 labels:
   - 待验
   - delivery-verify
@@ -121,4 +121,6 @@ e22本地重放验证：相对basename参考与短模式原生CLI对当前360个
 Release Fast×Freeze×三仓准入最小组合准备：107项定向96过11红；新增准入/完整Quick及Full/Fast/License运行合同通过，红为旧union/source pin及两条旧Quick行为视图。另Release metadata3项和严格delivery身份4项通过。尚不可推送/合并；旧包与断言完整保留，不批量添加source/inventory体系，后续按具名旧reader接续。
 
 Release三源组合后续已修完旧11红，并补齐Full base_sha四组真实消费者。最终7文件196/196、0skip通过，含完整calibration、原107和新漂移/错before/注入archive/完整Quick负控；summary保持当前原盘表达式，仅补needs实际上下文及上游失败拒绝。外层18份完整源码按固定b6/845视图续接，旧union与712源包pin不改，5验证器和881JS库存不变。候选待最终准确HEAD独审与托管准入，不推送或启动Full。
+
+接续B712 run44050580539两条真实当前消费者失败：POSIX4 ci-posix-shards:73、POSIX11 delivery:539。仅把当前regex强化为显式!cancelled+impact success+mode，未映旧workflow。20行完整前驱保旧pin；两原例2红→差量7/7通过，含全20行负控及原两calibration current检查；先前8d96的196/196无需重复。
 <!-- SECTION:NOTES:END -->

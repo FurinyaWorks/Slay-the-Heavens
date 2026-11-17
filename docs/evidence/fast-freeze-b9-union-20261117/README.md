@@ -25,10 +25,12 @@ This is a real prepared two-parent integration tree, not an upstream merge. Neit
 
 实际组合保留原Quality七个job模板和18/15分片、Licenses唯一inventory；准入放在既有impact/inventory内，保留同HEAD/BASE、成功rerun、较新失败拒绝及非master主仓PR条件。Release→master仍要求原精确冻结Full，普通Release修复仍完整受影响Fast。Full manual的base_sha实际贯穿比较blobs、checkout whitespace、manual Lua ratchet及首片receipt，不只改标题。Quick采用完整 `--preflight` 并保留707显式CI合同步骤。原五个Full/Fast/收据验证脚本和共享形状逐字等845，raw JS库存881与b6相同。
 
-原组合107项的11红已修复；最终原五文件加完整calibration、summary为 **196/196，0skip**，含新增3项当前完整Quick/源边界/注入依赖负控。另Release metadata **3/3**、严格delivery身份 **4/4**。全部原始输出合于 `preflight-union-raw.tar.gz`，SHA256 `e15229a6a65272f4c90d9952bd79b7cc1dbd58732d04ea3b2a2e64219b4e02c7`，共8个原始日志，保留最初11红、109/110和195/196及最终成功，不把旧失败抹掉。未启动hosted Full，不冒称托管或真实正式准入通过。
+原组合107项的11红已修复；`8d96be314a1817b422105cce03684fb5911c4c94` 上原五文件加完整calibration、summary为 **196/196，0skip**，含新增3项当前完整Quick/源边界/注入依赖负控。另Release metadata **3/3**、严格delivery身份 **4/4**。全部原始输出合于 `preflight-union-raw.tar.gz`，SHA256 `549af5ad326dbd89d5446c67a6efba4695d01a2b5cee5bea3b63da86f62608e3`，共10个原始日志，保留最初11红、109/110和195/196及最终成功，不把旧失败抹掉。未启动hosted Full，不冒称托管或真实正式准入通过。
 
-来源兼容沿既有union机制：外层18份完整最终源码仅映射固定 `release→b6`；Quick具名 `advisory→845` 后再由原B9转到其f832前驱，避免提前落错epoch。旧union只在已有fast/freeze目标内接续，13行当前校验沿caller read映射且鲜读新archive固定hash；无对应view的路径保持原输入。712原17行包及旧union、所有旧pin/断言保持。错误/空before在任何映射前拒绝；LF/CRLF、截断/尾字节/CRCRLF、外来/生产路径、缺失及非caller依赖漂移均覆盖。没有新库存或通用注册器。
+来源兼容沿既有union机制：外层20份完整最终源码仅映射固定 `release→b6`；Quick具名 `advisory→845` 后再由原B9转到其f832前驱，避免提前落错epoch。旧union只在已有fast/freeze目标内接续，13行当前校验沿caller read映射且鲜读新archive固定hash；无对应view的路径保持原输入。712原17行包及旧union、所有旧pin/断言保持。错误/空before在任何映射前拒绝；LF/CRLF、截断/尾字节/CRCRLF、外来/生产路径、缺失及非caller依赖漂移均覆盖。没有新库存或通用注册器。
 
 707两项旧Quick行为合同显式读完整845历史视图，当前完整Quick仍读原盘并验证原显式CI步骤与完整预检/收据并存。summary验证当前presentation表达式：补真实needs.impact状态上下文，保留Draft/Ready/集成/取消断言，并补上游failure/cancelled/skipped拒绝；不投影旧工作流掩盖当前行为。
+
+后续接续真实B712 run `44050580539` 的 POSIX4 job `133927379711`（`ci-posix-shards.test.mjs:73`）及 POSIX11 job `133927379705`（`delivery.test.mjs:539`）：只把两条当前workflow断言强化为显式 `!cancelled()`、impact success与对应mode；其余矩阵/身份断言保留，不使用旧workflow视图。两例本地先复现 **2红**，修改后两例、20行完整源/依赖负控、当前Quick及原两calibration current检查 **7/7，0skip**。可执行workflow/脚本与8d96逐字不变，未重复196套件；新source包只为这两份实际改动测试多保存完整前驱。
 
 独立复审已捕获并促成四组Full base消费者补齐及summary上下文修复；最终准确HEAD/base绑定见协调者本轮 `release-ci-union-review.json`，不借用旧准备树审查。可从此准备继续原707/709集成线；712仅列选择性来源，未宣称该PR已合入。实际base推进后应正常重审，不推BLOCKED旧节点b235。未推送、dispatch或新建PR/任务；正式hosted准入仍由主控沿现有A/B及原PR操作。
