@@ -16,3 +16,9 @@ All original 2512/2440 control counts, 2011 per-image rotation/order checks, 64/
 - Independent read-only subagent review PASS: original assertion coverage and native/legacy separation checked; no blocking findings.
 
 No Full run, hosted result, official GIL/client/device capacity or release acceptance is claimed.
+
+## 2026-11-17 raw failure-log preservation
+
+The actual impact job [133586726312](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/43949160328/job/133586726312) rejected `703-portrait-red.log` lines 17–21 (space before tab) and 22, 23, 25 (trailing whitespace). These bytes belong to the original failure evidence and are retained unchanged in `703-portrait-red.log.gz`; the uncompressed copy is removed. Production, test assertions, workflows and quality gates are unchanged.
+
+The original Git blob is 1,364 bytes, SHA-256 `d257d7de6a1a43a68e6d1c38b6ff73e4d029b66c2cc0dab0aed768c397d32545`. The gzip is 665 bytes, SHA-256 `656b94ff03abca94f191d3163beb46d02d8ac0cfa6e79d37f7e5637e7454dc96`. `gunzipSync` returns byte-identical original content, including its whitespace and line endings. The same parent-to-current `git diff --check` changed from exit 2 to exit 0. This proves evidence preservation and the whitespace repair only, not a Hosted Full or release pass.
