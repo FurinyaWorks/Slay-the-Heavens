@@ -170,7 +170,7 @@ test('release enemy artwork CI authenticates full current closure and preserves 
  for(const [path,row]of Object.entries(packet.files)){
   const source=readFileSync(path,'utf8');
   assert.equal(releaseEnemyArtCiSource(path,source),row.before.source);
-  assert.equal(releaseEnemyArtCiSource(path,source.replaceAll('\n','\r\n')),row.before.source);
+  assert.equal(releaseEnemyArtCiSource(path,norm(source).replaceAll('\n','\r\n')),row.before.source);
   for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])
    assert.equal(releaseEnemyArtCiSource(path,foreign),foreign);
   for(const unknown of ['__proto__','constructor','foreign/'+path])

@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-enemy-art-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'b18f606a5b7e82730b7c9baf462171ee4d877936a8bad0ea847a5c7d2c0851f5','complete release enemy artwork CI continuation');
+assert.equal(hash(bytes),'dd85f8122fb5a057b6128dcdca8d1b702ad2ac3e9042544d9c9f6eb5eb12f493','complete release enemy artwork CI continuation');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);assert.equal(packet.normalization,'LF');
 assert.equal(packet.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
