@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "scope": "本轮新几何与Lua替身回归；非SDK/官方/设备验收",
+  "repositoryEvidence": [
+    {
+      "file": "fit-receipt.json",
+      "bytes": 2509,
+      "sha256": "ec955422823eb931b16fd51d1e8c3df918b9f1607e87e26b92b48016e3b7fb11"
+    },
+    {
+      "file": "fit.txt",
+      "bytes": 622,
+      "sha256": "69728e2a304b4c44462d9045374b69d4ac82237eff45499f42e4900ec4ad352c"
+    },
+    {
+      "file": "geometry.json",
+      "bytes": 314,
+      "sha256": "854c6b4770c66924d37ac2dc6014504d1b8245649cabadad4168d0ff429e279e"
+    },
+    {
+      "file": "replay.json",
+      "bytes": 3766,
+      "sha256": "ec1f68ef1e314be9eb543b2e262a8b7379bb7c5491cc69c0ba18f1e7ba755f66"
+    },
+    {
+      "file": "source-inventory.json",
+      "bytes": 18520,
+      "sha256": "e4edf5549c9351a376e7146672e0cd4329f5bfcc982d8a703ae66eaa4c5fce04"
+    },
+    {
+      "file": "switch-after.txt",
+      "bytes": 266,
+      "sha256": "b75e495c647a9c418eec4edb25f8e939d8e0488da1bc9a7dcd552f2e38ca1ef8"
+    },
+    {
+      "file": "switch-before.txt",
+      "bytes": 408,
+      "sha256": "3c703e626165061cb26b0d0887f9f578f6fcb0a4350e7c97646c8f26787a77f2"
+    }
+  ],
+  "deliveryEvidence": [
+    {
+      "file": "collect.mjs",
+      "bytes": 4299,
+      "sha256": "395666c7af8bb5c82e8ac69868fa7410959a8ce60a75000c2f0deb5b1dcc7820"
+    },
+    {
+      "file": "compare-geometry.py",
+      "bytes": 2410,
+      "sha256": "c725fbcc59eafdb6b0de7db235ea0b019900bed7aa372ac14ad08408478aa33d"
+    },
+    {
+      "file": "geometry-comparison.png",
+      "bytes": 342553,
+      "sha256": "7b13154751d7f8eaff2738e0cb29efa61d9f64c7624a8bc2ff0a727f54e5fc25"
+    },
+    {
+      "file": "geometry-comparison.json",
+      "bytes": 591,
+      "sha256": "e83ba3d999e20ffcb14b24fc80a3bcdea4f483cd592d1de7303278953406fdc9"
+    }
+  ]
+}

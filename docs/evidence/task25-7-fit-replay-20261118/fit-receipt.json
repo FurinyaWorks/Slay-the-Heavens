@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "scope": "Offline fitting only; no official/native runtime/device acceptance",
+  "sourceRoot": "/workspace/work/monster-sources",
+  "toolBaseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "fitScriptSha256": "a0f32e7839053381bbda7a10707aa3d2af4e9199cefee6494fa56e9ffdf55219",
+  "fitterSha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293",
+  "placementSha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002",
+  "parameters": {
+    "width": 256,
+    "colors": 16,
+    "alphaThreshold": 16,
+    "spatial": 6,
+    "colorRange": 24,
+    "minimumArea": 5
+  },
+  "samples": [
+    {
+      "enemy": "jaw_worm",
+      "sourceSha256": "064a91c5bf075224d5fd10f27febfc2424c7418762fbc64e8234afd9f1841e96",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceRole": "source-candidate-only",
+      "sourceReview": "PASS_SOURCE_CANDIDATE_ONLY",
+      "sourceApprovals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "regions": 151,
+      "budgets": [
+        {
+          "budget": 100,
+          "nativeImages": 98,
+          "shapes": 79,
+          "epsilon": 84.32218139648438
+        },
+        {
+          "budget": 200,
+          "nativeImages": 188,
+          "shapes": 157,
+          "epsilon": 50.597848510742196
+        },
+        {
+          "budget": 400,
+          "nativeImages": 399,
+          "shapes": 345,
+          "epsilon": 21.618049926757806
+        }
+      ],
+      "fitSeconds": 2.828304086000003
+    },
+    {
+      "enemy": "hexaghost",
+      "sourceSha256": "6046dfd77a0c52f3b4489bcafa796903393a946e38ff621776840570c66fb600",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceRole": "source-candidate-only",
+      "sourceReview": "PASS_SOURCE_CANDIDATE_ONLY",
+      "sourceApprovals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "regions": 177,
+      "budgets": [
+        {
+          "budget": 100,
+          "nativeImages": 100,
+          "shapes": 88,
+          "epsilon": 45.609222412109375
+        },
+        {
+          "budget": 200,
+          "nativeImages": 197,
+          "shapes": 174,
+          "epsilon": 33.16664306640625
+        },
+        {
+          "budget": 400,
+          "nativeImages": 398,
+          "shapes": 351,
+          "epsilon": 15.494396972656249
+        }
+      ],
+      "fitSeconds": 4.861400398000001
+    }
+  ]
+}

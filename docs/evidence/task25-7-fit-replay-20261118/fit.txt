@@ -1,0 +1,6 @@
+{"enemy": "jaw_worm", "budget": 100, "nativeImages": 98, "shapes": 79, "epsilon": 84.32218139648438}
+{"enemy": "jaw_worm", "budget": 200, "nativeImages": 188, "shapes": 157, "epsilon": 50.597848510742196}
+{"enemy": "jaw_worm", "budget": 400, "nativeImages": 399, "shapes": 345, "epsilon": 21.618049926757806}
+{"enemy": "hexaghost", "budget": 100, "nativeImages": 100, "shapes": 88, "epsilon": 45.609222412109375}
+{"enemy": "hexaghost", "budget": 200, "nativeImages": 197, "shapes": 174, "epsilon": 33.16664306640625}
+{"enemy": "hexaghost", "budget": 400, "nativeImages": 398, "shapes": 351, "epsilon": 15.494396972656249}

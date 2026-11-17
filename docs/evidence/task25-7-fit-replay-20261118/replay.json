@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "baseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "sourceStudy": "d31c400972d380d119c48e4ef92573670cd5a2e8",
+  "workingTree": "dirty experimental slice; input hashes below identify actual files",
+  "scope": "Fresh geometric fitting and real Lua controller with a minimal fake host. Not SDK-native rendering, official import, capacity or devices.",
+  "officialCapacity": "UNVERIFIED",
+  "officialClient": "NOT_RUN",
+  "physicalMobile": "NOT_RUN",
+  "sdkReplay": "NOT_RUN",
+  "geometry": {
+    "jaw_worm": {
+      "portrait": 173.33333333333,
+      "hitWidth": 173.33333333333,
+      "hitHeight": 113.33333333333,
+      "healthY": -115.33333333333,
+      "intentY": 110.66666666667
+    },
+    "hexaghost": {
+      "portrait": 300,
+      "hitWidth": 300,
+      "hitHeight": 300,
+      "healthY": -162,
+      "intentY": 174
+    }
+  },
+  "inputs": [
+    {
+      "path": "experiments/monster-low-budget/fit.py",
+      "sha256": "a0f32e7839053381bbda7a10707aa3d2af4e9199cefee6494fa56e9ffdf55219"
+    },
+    {
+      "path": "experiments/monster-low-budget/switch.lua",
+      "sha256": "61a431efeb51272f924834b11a66a6beb0b27238b142952d89a3ebe728956463"
+    },
+    {
+      "path": "experiments/monster-low-budget/switch.test.lua",
+      "sha256": "11e5af26755e300a0b57574dbc1c2a32f4061dc8d31908f6bb5ec9b12ec9435d"
+    },
+    {
+      "path": "scripts/art/segment-lowpoly.py",
+      "sha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293"
+    },
+    {
+      "path": "scripts/art/native-triangle-placement.py",
+      "sha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002"
+    },
+    {
+      "path": "src/lua/abyss_battle_enemy_view.lua",
+      "sha256": "25894f61ea8084bf59db4f948d1a5ad9644c08e0d35ffb7cf651cbc335a171df"
+    },
+    {
+      "path": "src/lua/abyss_monster_source_geometry.lua",
+      "sha256": "72e5b5b88b3788f88597fb84d9e8df8c7369dbb38c75d2f99e9e81866f597d47"
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "sha256": "6e2fbf19879f05a1efa79c8f8d0533c1cce8c2c407c588d05e439d57f9c59f64"
+    }
+  ],
+  "controllerRegression": [
+    {
+      "name": "before",
+      "status": 1,
+      "controllerSha256": "b41a9ec8074a43ac301ab94a6c0818d7c08e171fb08083a752e850d5adee3204",
+      "logSha256": "3c703e626165061cb26b0d0887f9f578f6fcb0a4350e7c97646c8f26787a77f2"
+    },
+    {
+      "name": "after",
+      "status": 0,
+      "controllerSha256": "61a431efeb51272f924834b11a66a6beb0b27238b142952d89a3ebe728956463",
+      "logSha256": "b75e495c647a9c418eec4edb25f8e939d8e0488da1bc9a7dcd552f2e38ca1ef8"
+    }
+  ],
+  "packs": [
+    {
+      "enemy": "jaw_worm",
+      "budget": 100,
+      "images": 98,
+      "packBytes": 22133,
+      "sha256": "bdfb21ac974f13e95bfca691db00778bf3d86fcf94bbd40bab9d71f9a4041c0e"
+    },
+    {
+      "enemy": "jaw_worm",
+      "budget": 200,
+      "images": 188,
+      "packBytes": 45046,
+      "sha256": "67b7d00bb5333f62559814716a5d66babc4806a81a13ff7188fd174d53aeacc9"
+    },
+    {
+      "enemy": "jaw_worm",
+      "budget": 400,
+      "images": 399,
+      "packBytes": 101337,
+      "sha256": "ce23d3bc60d4191ca516b29dba1261cb8d1533aed9dd4ba501b5aa829ca13251"
+    },
+    {
+      "enemy": "hexaghost",
+      "budget": 100,
+      "images": 100,
+      "packBytes": 26777,
+      "sha256": "9c1d0b489ee64bc68497722d86077c940a586d37a275513672c7893042ee245f"
+    },
+    {
+      "enemy": "hexaghost",
+      "budget": 200,
+      "images": 197,
+      "packBytes": 52640,
+      "sha256": "f29192180c8bc6b2ab49c07c99c304abea96306dc1732ba11f482075ab862fc3"
+    },
+    {
+      "enemy": "hexaghost",
+      "budget": 400,
+      "images": 398,
+      "packBytes": 105318,
+      "sha256": "d6cb264884d7a4fac29a68d43596acc3dd123cfdd81e901de73ce88573ba1b68"
+    }
+  ]
+}

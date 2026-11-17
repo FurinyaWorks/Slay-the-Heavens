@@ -1,0 +1,4 @@
+PASS pending replacement cancelled by current identity; callback stays valid
+PASS pending replacements coalesce; retired callback rejected
+PASS close cancels pending construction and rejects old callback
+PASS reopen uses a new owner; zero live experimental surfaces

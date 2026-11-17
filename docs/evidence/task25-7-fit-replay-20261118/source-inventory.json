@@ -1,0 +1,579 @@
+{
+  "toolBaseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "sources": [
+    {
+      "enemy": "acid_slime_l",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "b0340d32eef614c71ef852cb8e4289ba2f8928ec08315c3e3b535da055fc8f82",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "acid_slime_m",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "5f766ae6b7806ccdffea52b6015f3cee130299472959ba0f811ea397074baa1e",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "acid_slime_m",
+      "nativeBindingInCurrentCandidate": true
+    },
+    {
+      "enemy": "acid_slime_s",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "5de3f90d5301baf8fb601e44e2d5c502f2badddbe61eb66cd253b17b1a6a0a37",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "automaton",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "6960b6ad6caed1fb234e154e234893d3d211e059d7f81792b254017a433a1109",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "blue_slaver",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "114416652a6902e8a90275b45d6bcc4f20f4de567acc8d4bd705f615d7a43db4",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "treasure-hoarder-pugilist",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "book_of_stabbing",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "7976df2fc5983181d841c61ac1e8cbae29dc0327cd7e2be23d7027135da6c102",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "bronze_orb",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "08c4ca215c049357f92150e95574f53fc91aef6cd5389a80f3a0943fd0e9608d",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "byrd",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "41d3ee80e86f94d4559d9730497fb261747a9ed52c175d32e186f473768d0d3b",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "centurion",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "0bffe96aa39a3b957a6203040fe13b09f723066a26fa783c9990f9a210938d53",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "rock-shieldwall-mitachurl",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "champ",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "22c1e287cee02aa7537943d983f01d87bfdd6013d8c297a72c8590c137606c07",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "chosen",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "72bd1a5fa9eef60992ab0a341f8db027e9b31e1b2890cd1a43a9b188a9bc0440",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "collector",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "f0c6a6a43df64f91bde993e50556649e19d5b0cac2565fcb650d83e4cd6c53d0",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "cultist",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "7d7b5fddd7c3080d028fd3f8aedf928e6d1911630f7c31ab912407efb8422ab2",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "fat_gremlin",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "31133c8ca9fffc135ab26d96904c698ddf3cbfa2372d5877dc7dce305c8cb3b5",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "cryo-abyss-mage",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "fungi_beast",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "627ba7a9314ff099aedb1d02db82f03b77de9696bd6ec353cdd9b9c6c3f7b646",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "green_louse",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "062e9d00158ec1c536bdf94f8c52e314108f7c2b4be8c5f7c86691b22bcd83b1",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_WITH_OCCLUSION_AND_MARGIN_CAVEATS",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "stretchy-geo-fungus",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "gremlin_leader",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "6df7d679a7bbdb95128738278f3bece208942bbe22e09135268a4524d428e3d0",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "stonehide-lawachurl",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "gremlin_nob",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "fe35e72f2d2416f5b713157ab3481f8bbca4780086ae80438399227deb0d4032",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "blazing-axe-mitachurl",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "guardian",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "2a8eab5ace3937a0256835628c8c614487378659e76de72b776a74902906030a",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_WITH_MARGIN_CAUTION",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "hexaghost",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "6046dfd77a0c52f3b4489bcafa796903393a946e38ff621776840570c66fb600",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "pyro-hypostasis",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "jaw_worm",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "064a91c5bf075224d5fd10f27febfc2424c7418762fbc64e8234afd9f1841e96",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "geovishap-hatchling",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "lagavulin",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "43c03d9aa18ab003e0318d9a14892baa7af5d79de20963c97991c0bd1dde8e69",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "ruin-guard",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "looter",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "534976f100a3edf8a424faa5064062025cc8e753d277c52e914cd4d4546069bf",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "treasure-hoarder-scout",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "mad_gremlin",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "2644de629bf224464503c7dbe340cfc6b9f6fb40dc2bd5c9543586453be57b75",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "pyro-abyss-mage",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "mugger",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "0bb23fe5d4b8a3885e1d1c6a33a3d24f67e40cce66c583557d528a7b363deb5b",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "mystic",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "b2db09249407d6199ea6cc817f76cd870ee6aa3bf99ed863e453f0f17785ccfa",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_WITH_TIGHT_MARGIN",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "hydro-samachurl",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "red_louse",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "d68a3c0ec240124678891e09395329047a66321173f8a58eb14f2f547d2c7b5e",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "stretchy-pyro-fungus",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "red_slaver",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "02481d421830376e77a224a5522ca1c339e9116973c11fb6e314759feef5112c",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "sentry",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "b4313791a2360d6f056f47b9c9b5373568dc12019faf3876a4cac48d222463b8",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "shield_gremlin",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "44c0562c1c1db3dfbc6beedacf7878d50641008f0a0d7c63b30320c461d5b1d4",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_WITH_OCCLUSION_CAVEAT",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "hydro-abyss-mage",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "slime_boss",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "2229626140befbf7d9d179a6d87c5d5923c5257c9d5b50dfafa54cd9531fff8b",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_WITH_MARGIN_ALPHA_CAVEATS",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "large-hydro-slime",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "snake_plant",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "0b42b224c9e00547e1abca6215c34d35f8225ca636abe716d8bafcac81520b2f",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "sneaky_gremlin",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "2a1949508955a44f923c6a20ee28022481118e3f7ee213b29f20cb5d20577b68",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "hydro-abyss-mage",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "snecko",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "e37eb9744d2c14cc4324749e217f57d2bf37558d7072d3799a00201806618dfb",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "spheric_guardian",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "03a158e462c60bf600f249390a11634f348b58e924084cb33e65f535738dd580",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_RECOVERY_ATTEMPT_2",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "spike_slime_l",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "ba20922386cfc664b3c4362113c2c54fd9ed5eca4acecc754f74307d4c9ef08d",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_WITH_SMALLVIEW_LIMIT",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "large-geo-slime",
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "spike_slime_m",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "1fd7be9ff86afba14a69a2971d4a12d7642ebe7f6ec64fc0f02dac05d9685f94",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "spike_slime_s",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "a8fdfc4494153a489ea3cad18ff5359b012533d8a0c594604c0eed9098214a52",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "taskmaster",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "40baac763a8214de793e16eb89997346d59bf97b085728d089d93d5a300197e0",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY_AFTER_ONE_PROP_REPAIR",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "torch_head",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "fbb0d5760aa70906b7a9f93ec2735c2333777a8c3ca29e39695d8622cec7e7ad",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": null,
+      "nativeBindingInCurrentCandidate": false
+    },
+    {
+      "enemy": "wizard_gremlin",
+      "sourceRole": "source-candidate-only",
+      "sourceSha256": "a1a0899fe21be84a385deef462b931a4548ca0cd3e30a4633e464b6508b505d2",
+      "review": "PASS_SOURCE_CANDIDATE_ONLY",
+      "approvals": {
+        "owner": false,
+        "native": false,
+        "runtime": false,
+        "device": false
+      },
+      "configuredNativeBinding": "electro-abyss-mage",
+      "nativeBindingInCurrentCandidate": false
+    }
+  ]
+}

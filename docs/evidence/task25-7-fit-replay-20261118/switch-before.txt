@@ -1,0 +1,8 @@
+...klog-next/experiments/monster-low-budget/switch.test.lua:32: LATEST_REQUEST_LOST: A -> queued B -> A must retain live A
+stack traceback:
+	[JS]: in function 'assert'
+	...klog-next/experiments/monster-low-budget/switch.test.lua:32: in main chunk
+	[JS]: in function 'dofile'
+	/workspace/work/monster-fit-evidence/probe-before.lua:1: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

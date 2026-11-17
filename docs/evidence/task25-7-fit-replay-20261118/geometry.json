@@ -1,0 +1,16 @@
+{
+  "jaw_worm": {
+    "portrait": 173.33333333333,
+    "hitWidth": 173.33333333333,
+    "hitHeight": 113.33333333333,
+    "healthY": -115.33333333333,
+    "intentY": 110.66666666667
+  },
+  "hexaghost": {
+    "portrait": 300,
+    "hitWidth": 300,
+    "hitHeight": 300,
+    "healthY": -162,
+    "intentY": 174
+  }
+}
