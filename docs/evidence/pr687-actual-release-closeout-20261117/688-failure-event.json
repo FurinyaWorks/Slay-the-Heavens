@@ -1,0 +1,16 @@
+{
+  "run": 44114037126,
+  "head": "f03605d69b0943139a2d1f015edd953cb9958089",
+  "base": "af77fb2461c548f0faf104761d107397f75dca08",
+  "jobs": [
+    134147872700,
+    134147872821
+  ],
+  "hostedPackBytes": 135484811,
+  "capBytes": 134217728,
+  "excessBytes": 1267083,
+  "step": "Check hosted checkout Git pack payload",
+  "beforeTests": true,
+  "ownerComment": "https://github.com/FurinyaWorks/Slay-the-Heavens/pull/688#issuecomment-6953185857",
+  "action": "original owner narrow fetch/pack diagnosis; no rerun/shared-ref write by this coordinator"
+}

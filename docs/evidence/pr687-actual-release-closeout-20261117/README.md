@@ -23,3 +23,8 @@
 另按 Pan 本轮明确协调指派，#688 的同 SHA/BASE 在两 Fork 均无既有运行后，只镜像到 Fork A 专属分支并派唯一 Full：[44114037126](https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A/actions/runs/44114037126)，读回 queued。已在原 #688 一条协调评论给 owner 准确链接，B未派、主仓未重跑，不守候CI。详见688-verified-handoff.json。
 
 当前复现入口为 capture687.py；capture687-pre-complete-history.py 与 prepare687.py 明确保留为中间历史，不用于生成当前字典packet。源工具仍将收据写入原/workspace/release-closeout-evidence，跨环境运行前须提供该路径；源包/reader的完整身份检查不变。
+
+
+## #688 后续失败事件（本轮补记）
+
+原预检交接的 queued 是15:24历史读回。随后按明确失败事件核原日志：Rules8/134147872700 和 Rules11/134147872821 均在非媒体比较准备成功后、Node/JS/Lua之前，实测 Hosted Git pack 135484811 B，超过原134217728 B上限1267083 B。已在原PR [失败接续评论](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/688#issuecomment-6953185857) 交回原owner，要求保留归档/上限/比较证据，仅诊断窄fetch/pack问题；本线不重跑、不改其ref或门禁。原offline134180020不证明Hosted合格；本候选的offline冷检出也只作代理，不能替代最终Hosted验收。
