@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('./fork-preflight-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'7c2ef1ca177dd7ce38ddfd26447fea6f3201286d1c4e719b6f4fd324cbaf985d');
+assert.equal(hash(bytes),'c6a6e34e8201b22b4c82fa554502785af7dc5f63840189e9c53da7692a55565e');
 const proof=JSON.parse(gunzipSync(bytes));
 for(const row of Object.values(proof.files)){
  if(row.before===null)assert.equal(row.beforeSha,null,'explicitly absent historical source');
