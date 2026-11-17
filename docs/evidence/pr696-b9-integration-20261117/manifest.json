@@ -96,6 +96,12 @@
     "complete": false
   },
   {
+    "path": "integrated-copy-closure-single.log.gz",
+    "uncompressedBytes": 266,
+    "sha256": "6709242e6314424d8b2b9089ac0c647a4339f7d540449446562e977b5f0cb593",
+    "complete": true
+  },
+  {
     "path": "integrated-fixed-perf-probe-first.log.gz",
     "uncompressedBytes": 458,
     "sha256": "144c5dd6b17527426e362e25da2f7e58f683a08a0e5216b659b22a5987b6daec",
@@ -129,6 +135,36 @@
     "path": "integrated-public-count.mjs.gz",
     "uncompressedBytes": 578,
     "sha256": "11af1b533bdda0131f56ca3cb0630f72399a57cf93ed43364677f55fd30be2d0",
+    "complete": true
+  },
+  {
+    "path": "inventory-count-after.log.gz",
+    "uncompressedBytes": 63,
+    "sha256": "a289568d606fbe22b5e040c7a5d8439c884f54c1e1cb9adbf1d152ed766ac860",
+    "complete": true
+  },
+  {
+    "path": "inventory-count-before.log.gz",
+    "uncompressedBytes": 56,
+    "sha256": "bf6f70ac25f152a9095821c08194478f1db6c88403baea65a278a452a21278a0",
+    "complete": true
+  },
+  {
+    "path": "inventory-count.mjs.gz",
+    "uncompressedBytes": 555,
+    "sha256": "1a08da9ed4ea1535848441908ecd4e2c6260a9449d0ad23545dc3f0dc9125409",
+    "complete": true
+  },
+  {
+    "path": "inventory-single-auth-probe.log.gz",
+    "uncompressedBytes": 194,
+    "sha256": "4ae94cdd09e49d30db3e1f10608aff6d87e68bdc4a769b2cd7ae1c51cacd32c5",
+    "complete": true
+  },
+  {
+    "path": "inventory-single-auth-probe.mjs.gz",
+    "uncompressedBytes": 1802,
+    "sha256": "7e23014d42ffa405b30c38fb6113a789f4dfb0c50bc20805cb90307f21122caf",
     "complete": true
   },
   {
@@ -210,6 +246,12 @@
     "complete": false
   },
   {
+    "path": "sts-feedback-single-call.log.gz",
+    "uncompressedBytes": 272,
+    "sha256": "7a9cb4c0b87d01ca9ee8cd6b3aada28c3355bf5fa1fa20dda1b9e7c08749d392",
+    "complete": true
+  },
+  {
     "path": "sts-fixed-perf-probe-first.log.gz",
     "uncompressedBytes": 1338,
     "sha256": "315bd60177f5a1ae759fefcb226634a36d404b77be85c4553187bb9c9618f292",
@@ -225,6 +267,12 @@
     "path": "sts-fixed-perf-probe.mjs.gz",
     "uncompressedBytes": 1264,
     "sha256": "7118387949ea641a26ef85f5634b4f459358de9774fcd8fdb90bdf8dd2434e16",
+    "complete": true
+  },
+  {
+    "path": "sts-inventory-single-call.log.gz",
+    "uncompressedBytes": 275,
+    "sha256": "7bc695fbc30d9ca94bacaa97902831fb860e2a2dd8dfdf80e36e981ba195d5a1",
     "complete": true
   },
   {

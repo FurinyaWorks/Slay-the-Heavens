@@ -15,7 +15,7 @@ import {releasePickerControlsCiPacket as picker,assertReleasePickerControlsCiCur
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=norm(readFileSync(new URL('./release-picker-b9-integration.json',import.meta.url),'utf8'));
-assert.equal(hash(bytes),'768db26cadceb7b596e7ec7a456e7f8ac71ed4bf16f5de43291c48e9caf3c54b','complete Release card-contact integration bindings');
+assert.equal(hash(bytes),'06c515adc402c299dc1fa8210cc110622869c80660a6960d3a3cf9d62c7f8914','complete Release card-contact integration bindings');
 export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc');
 assert.equal(integrationPacket.base,'b9bca884ed9b9831965b409885d78f719b9a567a');
@@ -203,4 +203,45 @@ export function releaseIntegratedSource(path,source,target,read=readFileSync){
  if(row?.views[target]&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))===row.current.sha256&&row.views[target].sha256!==row.current.sha256)source=row.views[target].source;
  if(joined||source!==original)assertReleaseIntegrationCurrent(read);
  return source;
+}
+
+export function releaseIntegratedPriorInventory(paths,target,kind='js',read=readFileSync){
+ const current=kind==='js'?fixedIntegratedProof.inventory:fixedIntegratedProof.luaInventory;
+ const prior=fixedIntegratedProof.inventories[target]?.[kind];
+ assert(prior,'known integration inventory');
+ let authenticated=false;
+ const ensure=()=>{if(!authenticated){assertReleaseIntegrationCurrent(originalRead);authenticated=true;}};
+ const originalRead=read;
+ const projected=(path,encoding)=>{
+  const raw=originalRead(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=uncheckedCiSource(path,text,'picker');
+  if(prior!==text)ensure();
+  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+ };
+ const currentJoin=integrationPacket.inventory[kind],priorJoin=picker.currentInventory[kind];
+ assert(['js','lua'].includes(kind));
+ const addedJoin=currentJoin.filter(p=>!priorJoin.includes(p));
+ if(addedJoin.some(p=>paths.includes(p))){
+  assertIntegrationRawInventory(paths,kind);
+  for(const path of addedJoin)assert.equal(hash(norm(originalRead(path,'utf8'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
+  ensure();paths=[...priorJoin];
+ }
+ read=projected;
+ paths=releasePickerControlsPriorInventory(paths,kind,read);
+ // New standalone reviewed views consume raw discovery. Older chained views
+ // retain their existing idempotent prior-inventory contract.
+ if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
+ if(JSON.stringify([...paths].sort())===JSON.stringify(prior))return [...paths];
+ const added=current.filter(p=>!prior.includes(p));
+ if(added.length===0){
+  assert.deepEqual([...paths].sort(),current,'complete identical integration '+kind+' inventory');
+  return [...prior];
+ }
+ if(!added.some(path=>paths.includes(path)))return [...paths];
+ assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
+ for(const path of added){
+  const row=fixedIntegratedProof.files[path];assert(row,'complete added inventory source: '+path);
+   assert.equal(hash(norm(releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+ }
+ return [...prior];
 }

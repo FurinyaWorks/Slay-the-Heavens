@@ -8,7 +8,7 @@ import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releasePickerControlsCiSource,releasePickerControlsCiCheckedSource,releasePickerControlsPriorInventory,releasePickerControlsCiPacket,assertReleasePickerControlsCiCurrent} from './release-picker-controls-ci-source.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {releasePickerControlsCiRead} from './release-picker-controls-ci-source.mjs';
-import {integrationRead,assertReleaseIntegratedCurrent,releaseIntegratedSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-picker-b9-integration.mjs';
+import {integrationRead,assertReleaseIntegratedCurrent,releaseIntegratedSource,releaseIntegratedPriorInventory,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-picker-b9-integration.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -38,31 +38,7 @@ export function extendIntegratedHelperClosure(original){
  return freeze(current);
 }
 // Exact complete inventories for historical receipts; raw Full discovery remains live.
-export function integratedPriorInventory(paths,target,kind='js',read=readFileSync){
- const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
- const prior=integratedCiProof.inventories[target]?.[kind];
- assert(prior,'known integration inventory');
- const originalRead=read;
- paths=integrationPriorInventory(paths,'picker',kind,originalRead);
- read=integrationRead('picker',originalRead);
- paths=releasePickerControlsPriorInventory(paths,kind,read);
- // New standalone reviewed views consume raw discovery. Older chained views
- // retain their existing idempotent prior-inventory contract.
- if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
- if(JSON.stringify([...paths].sort())===JSON.stringify(prior))return [...paths];
- const added=current.filter(p=>!prior.includes(p));
- if(added.length===0){
-  assert.deepEqual([...paths].sort(),current,'complete identical integration '+kind+' inventory');
-  return [...prior];
- }
- if(!added.some(path=>paths.includes(path)))return [...paths];
- assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
- for(const path of added){
-  const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-   assert.equal(hash(norm(releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
- }
- return [...prior];
-}
+export function integratedPriorInventory(paths,target,kind='js',read=readFileSync){return releaseIntegratedPriorInventory(paths,target,kind,read);}
 export function renderIntegratedCiBinding(sha){
  assert.match(sha,/^[a-f0-9]{64}$/);
  return `// Fixed trust leaf; excluded from its own archive.\nimport assert from 'node:assert/strict';\nimport {readFileSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nexport const integratedCiBytes=readFileSync(new URL('./integrated-ci-source.json.gz',import.meta.url));\nassert.equal(createHash('sha256').update(integratedCiBytes).digest('hex'),${JSON.stringify(sha)},'complete reviewed integration CI sources');\n`;

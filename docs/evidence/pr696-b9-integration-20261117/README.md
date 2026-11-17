@@ -75,3 +75,17 @@ After: one complete authorization, 536 reads, 1.396 seconds. Independent static 
 One actual previously failing named consumer was then run serially with a measured upper diagnostic bound of 600seconds: `node --test --test-name-pattern='^real style CI admits only full inventory, complete source and freshly verified executable helpers$' tests/sts-style-source-epoch.test.mjs`. **1 test passed, 0 failed, 0 cancelled; total 109.180seconds, test body107.791seconds, exit0.** No timeout fired. All its original file/helper/inventory/unknown-cost assertions executed.
 
 This clears only one of the original three failures. The remaining inventory and feedback consumers, plus the complete integrated cases, are NOT claimed passed by this result. The integrated first case has224files×6targets plus CRLF/foreign loops; these independent public calls cannot be merged into a cached authorization. Remaining cost and complete validation still block original-PR promotion. No seven-file/Full rerun, workflow budget alteration, or skipped assertion was used.
+
+## Inventory single-call continuation (2026-11-17)
+
+The complete public `integratedPriorInventory` body now executes in the B9 private closure with a per-call successful-authorization gate. The gate captures the same raw reader, never escapes, and is reset on every public invocation. B9 added-inventory source checks precede authorization in the original order; only real intermediate inventory conversion or CI byte projection triggers fresh authorization. All lower-picker checks, selection/release strict raw checks, historical early returns and exact added-source assertions remain. Historical no-op retains zero IO; there is no cross-call cache or unguarded exported view.
+
+Measured raw JS→StS inventory transformation: **3 complete authorizations/1623reads/4.250s before; 1/551/1.665s after**. The 5.685-second focused JS/Lua StS-target probe passed warm owner/packet rejection and restoration, one authorization each real call, historical zero-IO no-op, and missing/duplicate/foreign inventory rejection. Independent source and probe review passed.
+
+Actual original consumer validation, serially with bounded diagnostics:
+
+- `release additions remain in raw Full and exact historical inventories reject gaps and source drift`: **1/1 PASS, 147.140s total**, body145.791s, exit0 (600s bound did not fire). This executes all six historical targets in both JS/Lua and retains all original gap/source-drift assertions.
+- `feedback real current source and CI preserve all four immutable archives and every historical view`: **1/1 PASS, 50.697s total**, body49.198s, exit0 (300s bound did not fire).
+- Actual `tests/integrated-ci-source.cases.mjs`, named `integration copy closure requires its complete exact predecessor and current dependency bytes`: **1/1 PASS, 2.848s total**, body1.469s, exit0 (120s bound did not fire).
+
+Each of the original three StS failures now has a passing focused continuation, but the real-style test passed at the previous implementation stage; this is not a single clean full-suite run at the final SHA. The first and third integrated cases remain uncompleted at this stage. Earlier whole-file cancellation is retained, not overwritten. The first integrated case's224files×6targets and independent public fresh calls are not a license to introduce cross-call caching. No Full or seven-file rerun was launched. **Preparation branch only; remaining exact-SHA consumer/hosted-cost qualification and repository gates still apply.**
