@@ -1,21 +1,23 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualIntentPost697ReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
+import {intentReleaseFixtureRead,intentReleaseFixtureInventory} from './helpers/intent-release-union.mjs';
+const rawReadFileSync=intentReleaseFixtureRead('release',unionActualReadFileSync);
 import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
-import {intentPost697HistoricalRead,intentPost697PriorInventory} from './helpers/intent-post697-ci-source.mjs';
-const rawReadFileSync=intentPost697HistoricalRead('release',actualIntentPost697ReadFileSync);
-import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
+import {releasePc22BasicFeedbackCiRead,releasePc22BasicFeedbackPriorInventory} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
+import {integrationRead,integrationPriorInventory} from './helpers/release-af77-fixture-integration.mjs';
 import {createHash} from 'node:crypto';
-import {discoverJs as actualIntentPost697DiscoverJs} from '../scripts/ci-shards.mjs';
-const discoverJs=()=>intentPost697PriorInventory(actualIntentPost697DiscoverJs(),'js',actualIntentPost697ReadFileSync);
-const intentLegacyLua=()=>intentPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualIntentPost697ReadFileSync);
-import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
-const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
-const pickerBeforeRead=releaseSelectionMapCiRead(rawReadFileSync);
+import {discoverJs as unionActualDiscoverJs} from '../scripts/ci-shards.mjs';
+const discoverJs=()=>intentReleaseFixtureInventory('js','release');
+import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/release-af77-standalone-integrated-ci-source.mjs';
+const raw=p=>beforePreflightSource(p,readFileSync(p,'utf8')).replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
+const sideRead=integrationRead('pc22',rawReadFileSync);
+const pickerBeforeRead=releasePc22BasicFeedbackCiRead(sideRead);
 const readFileSync=releaseBootstrapCiRead(pickerBeforeRead);
 
-test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
- assertIntegratedCurrent();assert.deepEqual(releaseSelectionMapPriorInventory(discoverJs(),'js',rawReadFileSync),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
+test('af77 standalone: integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
+ assertIntegratedCurrent();assert.deepEqual(releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(discoverJs(),'pc22'),'js',sideRead),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
  for(const [path,row]of Object.entries(proof.files))for(const target of Object.keys(proof.sources)){
   const source=raw(path),production=path.startsWith('src/')||path==='config/architecture.json';
   const expected=production?source:row.views[target]?.source??source;
@@ -29,14 +31,14 @@ test('integration validates complete raw sources and leaves every foreign byte a
  }
  for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])
   assert.throws(()=>assertIntegratedCurrent((p,e)=>{
-   const value=actualIntentPost697ReadFileSync(p,e);
+   const value=rawReadFileSync(p,e);
    return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
-  }),error=>{assert.match(error.message,/fresh complete (?:integration|intent post697) source/);assert(error.message.includes(path),'reject the intended current owner');return true;});
+  }),error=>{assert.match(error.message,/fresh complete integration source/);assert(error.message.includes(path),'reject the intended current owner');return true;});
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
  assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');
 });
 
-test('integration copy closure requires its complete exact predecessor and current dependency bytes',()=>{
+test('af77 standalone: integration copy closure requires its complete exact predecessor and current dependency bytes',()=>{
  const predecessor=Object.fromEntries(Object.entries(proof.closure).filter(([,row])=>row.before!==null).map(([p,row])=>[p,row.before]));
  predecessor['tests/helpers/retained.mjs']='a'.repeat(64);
  const result=extendIntegratedHelperClosure(predecessor);assert.equal(result['tests/helpers/retained.mjs'],predecessor['tests/helpers/retained.mjs']);
@@ -47,7 +49,7 @@ test('integration copy closure requires its complete exact predecessor and curre
  }
 });
 
-test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
+test('af77 standalone: Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
  assertReleaseBootstrapCiCurrent(pickerBeforeRead);
  for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
   const source=pickerBeforeRead(path,'utf8').replaceAll('\r\n','\n');
@@ -66,7 +68,7 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  }
  const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?pickerBeforeRead(p).subarray(1):pickerBeforeRead(p,e)),/immutable bootstrap predecessor/);
- const inventories={js:releaseSelectionMapPriorInventory(discoverJs(),'js',rawReadFileSync),lua:intentLegacyLua()};
+ const inventories={js:releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(discoverJs(),'pc22'),'js',sideRead),lua:releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(intentReleaseFixtureInventory('lua','release'),'pc22','lua'),'lua',sideRead)};
  for(const [kind,paths]of Object.entries(inventories)){
   assertReleaseBootstrapRawInventory(paths,kind);
   for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
@@ -80,7 +82,11 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete Release bootstrap CI continuation/);
 });
 
-test('intent post697 union historical CI reader reauthenticates every current binding and archive after warm success',()=>{
+
+import {intentPost697HistoricalRead,intentPost697PriorInventory} from './helpers/intent-post697-ci-source.mjs';
+const actualIntentPost697ReadFileSync=intentReleaseFixtureRead('intent',unionActualReadFileSync);
+const actualIntentPost697DiscoverJs=()=>intentReleaseFixtureInventory('js','intent');
+test('e122 standalone: intent post697 union historical CI reader reauthenticates every current binding and archive after warm success',()=>{
  const anchor='tests/helpers/closeout-source-epoch.mjs',expected=intentPost697CiPacket.files[anchor].views.release.source;
  const other='src/lua/abyss_game_ui_input.lua';let fault;
  const read=(path,encoding)=>{
@@ -128,7 +134,7 @@ test('intent post697 union historical CI reader reauthenticates every current bi
  for(const path of [...Object.keys(intentPost697CiPacket.files),...Object.keys(intentPost697CiPacket.immutableArchives)])assert(seen.includes(path),path+' checked before replay');
 });
 
-test('intent post697 union public CI source authenticates the same raw reader before every historical conversion',()=>{
+test('e122 standalone: intent post697 union public CI source authenticates the same raw reader before every historical conversion',()=>{
  const anchor='tests/helpers/closeout-source-epoch.mjs',source=actualIntentPost697ReadFileSync(anchor,'utf8');
  const expected=intentPost697CiPacket.files[anchor].views.release.source;let fault;
  const read=(path,encoding)=>{
@@ -156,8 +162,8 @@ test('intent post697 union public CI source authenticates the same raw reader be
  assert.equal(intentPost697CiSource(anchor,source,{sha256:'0'.repeat(64)},noRead),source);
 });
 
-test('intent post697 union current inventory authenticates the complete corpus before entering prior inventory',()=>{
- const inventories={js:actualIntentPost697DiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};let fault;
+test('e122 standalone: intent post697 union current inventory authenticates the complete corpus before entering prior inventory',()=>{
+ const inventories={js:actualIntentPost697DiscoverJs(),lua:intentReleaseFixtureInventory('lua','intent')};let fault;
  const read=(path,encoding)=>{
   if(path===fault?.path){
    if(fault.kind==='missing')throw Error('missing '+path);
@@ -180,8 +186,8 @@ test('intent post697 union current inventory authenticates the complete corpus b
  for(const kind of ['js','lua'])assert.deepEqual(intentPost697PriorInventory(intentPost697CiPacket.viewInventories.release[kind],kind,read),intentPost697CiPacket.viewInventories.release[kind]);
 });
 
-test('intent post697 union integrated reader and source forward the same raw reader before historical output',async()=>{
- const {integratedRead}=await import('./helpers/integrated-ci-source.mjs');
+test('e122 standalone: intent post697 union integrated reader and source forward the same raw reader before historical output',async()=>{
+ const {integratedRead,integratedSource}=await import('./helpers/intent-standalone-integrated-ci-source.mjs');
  const anchor='tests/helpers/closeout-source-epoch.mjs',other='src/lua/abyss_game_ui_input.lua';
  const raw=actualIntentPost697ReadFileSync(anchor,'utf8');let fault;const seen=[];
  const read=(path,encoding)=>{
@@ -208,8 +214,76 @@ test('intent post697 union integrated reader and source forward the same raw rea
 });
 
 import {intentPost697CiRead,intentPost697CiPacket,intentPost697CiSource,assertIntentPost697CiCurrent,assertIntentPost697RawInventory} from './helpers/intent-post697-ci-source.mjs';
+import {intentReleasePacket,assertIntentReleaseCurrent,assertIntentReleaseRawInventory} from './helpers/intent-release-union.mjs';
+import {integratedSource as currentIntegratedSource,integratedRead as currentIntegratedRead,assertIntegratedCurrent as assertCurrentIntegrated,integratedPriorInventory as currentIntegratedPriorInventory,integratedCurrentInventory} from './helpers/integrated-ci-source.mjs';
 
-test('intent post697 union both explicit histories reject warm cross-input faults and preserve unchanged before bytes',()=>{
+test('actual af77 intent union preserves both complete raw inventories and every real production byte',async()=>{
+ const p=intentReleasePacket;
+ const current={js:unionActualDiscoverJs(),lua:readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort()};
+ assert.deepEqual(p.parents,{release:'af77fb2461c548f0faf104761d107397f75dca08',intent:'e1221ee0abc265a720cd71a87d01b9d109c51475'});
+ assert.equal(Object.keys(p.files).filter(path=>path.startsWith('src/')||path==='config/architecture.json').length,352);
+ for(const kind of ['js','lua']){
+  const union=[...new Set([...p.parentInventories.release[kind],...p.parentInventories.intent[kind]])].sort();
+  assert.deepEqual(p.inventory[kind],union,'complete exact parent inventory union');
+  assertIntentReleaseRawInventory(current[kind],kind);assert.deepEqual(integratedCurrentInventory(kind),union);
+  for(const bad of [current[kind].slice(1),[...current[kind],current[kind][0]],[...current[kind],'foreign']])assert.throws(()=>assertIntentReleaseRawInventory(bad,kind));
+ }
+ const {sourceEpoch,preIntentReleaseSourceEpoch,intentPost697StandaloneEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const proof=sourceEpoch.proof;
+ assert.equal(proof.owners.length,118);assert.equal(Object.keys(proof.targets).length,72);
+ for(const [path,row]of Object.entries(proof.current))if(row)assert.equal(unionActualReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,'actual raw production '+path);
+ for(const side of [preIntentReleaseSourceEpoch,intentPost697StandaloneEpoch])for(const [name,target]of Object.entries(side.proof.targets))assert.deepEqual(proof.targets[name],target,'complete unchanged original '+name);
+ assert.deepEqual(proof.targets.intentReleaseAf77Reviewed.files,preIntentReleaseSourceEpoch.proof.current);
+ assert.deepEqual(proof.targets.intentStandaloneReviewed.files,intentPost697StandaloneEpoch.proof.current);
+ for(const target of ['intentReleaseAf77Reviewed','intentStandaloneReviewed']){
+  const anchor=target==='intentReleaseAf77Reviewed'?'src/lua/abyss_battle_render_actors.lua':'src/lua/abyss_card_flow.lua',source=proof.current[anchor].source;
+  const raw=p=>unionActualReadFileSync(p,'utf8');
+  assert.equal(sourceEpoch.preCombinedSource(anchor,source,{target,readSource:raw}),proof.targets[target].files[anchor].source);
+  for(const owner of proof.owners)for(const value of [null,raw(owner)+'\n'])assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target,readSource:p=>p===owner?value:raw(p)}),/linked owner identity/);
+ }
+ assertCurrentIntegrated();assertIntentReleaseCurrent();
+});
+
+test('actual af77 intent union public admission freshly rejects each live source and archive fault with the same raw reader',()=>{
+ const p=intentReleasePacket,anchor='tests/helpers/closeout-source-epoch.mjs';
+ const source=unionActualReadFileSync(anchor,'utf8'),inventory=unionActualDiscoverJs();
+ let fault;
+ const read=(path,encoding)=>{
+  const raw=unionActualReadFileSync(path,encoding);
+  if(path!==fault?.path)return raw;
+  if(fault.kind==='missing')throw Error('missing '+path);
+  if(fault.kind==='null')return null;
+  return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+ };
+ const reader=currentIntegratedRead('menu',{read});
+ const operations=[()=>currentIntegratedSource(anchor,source,'menu',read),()=>reader(anchor,'utf8'),()=>assertCurrentIntegrated(read),()=>currentIntegratedPriorInventory(inventory,'menu','js',read)];
+ const expected=operations.map(operation=>operation());
+ assert.notEqual(expected[0],source);assert.equal(expected[1],expected[0]);
+ const corpus=[...Object.keys(p.files),...Object.keys(p.archives),'tests/helpers/intent-release-union.json.gz','tests/helpers/intent-release-union.mjs'];
+ const representatives=['src/lua/abyss_battle_intent_view.lua','src/lua/abyss_card_flow.lua','tests/helpers/integrated-ci-source.mjs','tests/release-selection-map-source.test.mjs',Object.keys(p.archives)[0],'tests/helpers/intent-release-union.json.gz','tests/helpers/intent-release-union.mjs'];
+ const probes=corpus.filter(path=>path!==anchor).map((path,index)=>({path,index:index%operations.length}));
+ for(let index=0;index<operations.length;index++)for(const path of representatives)probes.push({path,index});
+ // Exhaust the complete shared gate once per field/fault; independently prove
+ // all four public entries cross that gate for production, CI and archives.
+ for(const {path,index}of probes)for(const kind of ['missing','null','drift']){
+  const operation=operations[index];fault={path,kind};
+  assert.throws(operation,undefined,'public '+index+' rejects '+path+' '+kind);
+  fault=undefined;assert.deepEqual(operation(),expected[index],'warm recovery public '+index+' '+path);
+ }
+ // The requested anchor itself must stay foreign or absent rather than being
+ // blessed by a packet. These are no-authorization paths, separately observed.
+ fault={path:anchor,kind:'null'};assert.equal(currentIntegratedSource(anchor,null,'menu',read),null);
+ fault=undefined;
+ const noRead=()=>{throw Error('foreign input cannot authorize a historical result');};
+ for(const input of [source+'\n',null,{},17])assert.equal(currentIntegratedSource(anchor,input,'menu',noRead),input);
+ for(const path of ['foreign/source','__proto__','constructor'])assert.equal(currentIntegratedSource(path,source,'menu',noRead),source);
+ for(const path of ['src/lua/abyss_battle_render_actors.lua','config/architecture.json']){
+  const raw=unionActualReadFileSync(path,'utf8');assert.equal(currentIntegratedSource(path,raw,'menu',noRead),raw,'CI entry never projects production');
+ }
+ const binary=reader(anchor);assert(Buffer.isBuffer(binary));assert.equal(binary.toString('utf8'),expected[0]);
+});
+
+test('e122 standalone: intent post697 union both explicit histories reject warm cross-input faults and preserve unchanged before bytes',()=>{
  const anchor='tests/helpers/closeout-source-epoch.mjs',other='src/lua/abyss_battle_render_actors.lua';let fault;
  const read=(path,encoding)=>{if(path===other&&fault){if(fault==='missing')throw Error('missing '+path);if(fault==='null')return null;const b=actualIntentPost697ReadFileSync(path,encoding);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);}return actualIntentPost697ReadFileSync(path,encoding);};
  for(const target of ['release','intent']){
@@ -229,8 +303,8 @@ test('intent post697 union both explicit histories reject warm cross-input fault
  }
 });
 
-test('intent post697 union complete current production authenticates every one of 117 owners',async()=>{
- const {sourceEpoch,preIntentPost697SourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+test('e122 standalone: intent post697 union complete current production authenticates every one of 117 owners',async()=>{
+ const {intentPost697StandaloneEpoch:sourceEpoch,preIntentPost697SourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {intentPost697SourcePacket:p,extendIntentPost697Source}=await import('./helpers/intent-post697-source.mjs');
  const current=sourceEpoch.proof,prior=preIntentPost697SourceEpoch.proof;
  assert.equal(current.currentCommit,'38efba8119e3b812d530e32915907ef842bcafae');assert.equal(current.currentTreeCommitted,true);

@@ -11,6 +11,7 @@ import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
+import {extendReleasePc22BasicFeedbackSource} from './release-pc22-basic-feedback-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 import {extendIntentPost697Source} from './intent-post697-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -51,17 +52,67 @@ export const menuRedPriorEpoch=extendFeedbackSourceEpoch(stsStyleEpoch,feedbackP
 export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
-export const preReleaseSelectionMapSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
-export const preIntentPost697SourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
-export const sourceEpoch=extendIntentPost697Source(preIntentPost697SourceEpoch);
+export const preReleasePc22BasicFeedbackSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const preReleaseSelectionMapSourceEpoch=preReleasePc22BasicFeedbackSourceEpoch;
+export const releasePc22BasicFeedbackSourceEpoch=extendReleasePc22BasicFeedbackSource(preReleasePc22BasicFeedbackSourceEpoch);
+export const releaseSelectionMapSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+// Join disjoint approved owners against their exact common predecessor. Both
+// standalone corpora and every original target retain their original identity.
+function joinReleaseSources(){
+const base=preReleasePc22BasicFeedbackSourceEpoch.proof;
+const pc22=releasePc22BasicFeedbackSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof;
+const current={...base.current},targets={...base.targets};
+for(const side of [pc22,selection]){
+ for(const [path,row]of Object.entries(side.current))if(row?.sha256!==base.current[path]?.sha256){
+  assert.deepEqual(current[path],base.current[path],'disjoint Release integration owner: '+path);
+  current[path]=row;
+ }
+ for(const [name,target]of Object.entries(side.targets)){
+  if(Object.hasOwn(targets,name))assert.deepEqual(targets[name],target,'unchanged common Release target: '+name);
+  else targets[name]=target;
+ }
+}
+targets.releasePc22BasicFeedbackReviewed={commit:pc22.currentCommit,files:pc22.current};
+targets.releaseSelectionMapReviewed={commit:selection.currentCommit,files:selection.current};
+const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
+return createSourceEpochProjector(freeze({...base,current,targets,owners,
+ currentTreeCommitted:false,currentCommit:'17580f25c742a7facb5626db8fc17efb4abe269b',
+ currentCommitRole:'integration worktree capture; standalone committed product producers are retained separately',
+ releasePc22BasicFeedbackProducers:pc22.releasePc22BasicFeedbackProducers,
+ releaseSelectionMapProducers:selection.releaseSelectionMapProducers}),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+export const preIntentReleaseSourceEpoch=joinReleaseSources();
+// The original intent producer remains the exact standalone 33d/38ef corpus.
+export const preIntentPost697SourceEpoch=releaseSelectionMapSourceEpoch;
+export const intentPost697StandaloneEpoch=extendIntentPost697Source(preIntentPost697SourceEpoch);
+function joinIntentRelease(){
+ const release=preIntentReleaseSourceEpoch.proof,intent=intentPost697StandaloneEpoch.proof;
+ const current={...release.current},targets={...release.targets};
+ for(const [path,row]of Object.entries(intentPost697StandaloneEpoch.proof.current)){
+  if(row?.sha256===preIntentPost697SourceEpoch.proof.current[path]?.sha256)continue;
+  assert.deepEqual(current[path],preIntentPost697SourceEpoch.proof.current[path],'disjoint approved intent owner: '+path);
+  current[path]=row;
+ }
+ for(const [name,target]of Object.entries(intent.targets)){
+  if(Object.hasOwn(targets,name))assert.deepEqual(targets[name],target,'complete retained intent history: '+name);
+  else targets[name]=target;
+ }
+ targets.intentReleaseAf77Reviewed={commit:'af77fb2461c548f0faf104761d107397f75dca08',files:release.current};
+ targets.intentStandaloneReviewed={commit:intent.currentCommit,files:intent.current};
+ const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
+ return createSourceEpochProjector(freeze({...release,current,targets,owners,currentTreeCommitted:false,
+  currentCommitRole:'actual af77 Release plus original committed intent producer; current composition captured separately'}),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+export const sourceEpoch=joinIntentRelease();
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
-export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
+export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8'),epoch=sourceEpoch){
+ const proof=epoch.proof;
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
  const row=Object.hasOwn(proof.current,path)?proof.current[path]:null;
  if(!row||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
  const before=proof.targets[target].files[path];
  if(!before||before.sha256===row.sha256)return source;
- return sourceEpoch.preCombinedSource(path,source,{target,readSource});
+ return epoch.preCombinedSource(path,source,{target,readSource});
 }

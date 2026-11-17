@@ -1,5 +1,5 @@
 import test from 'node:test';
-import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
+import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/release-af77-standalone-integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
@@ -8,10 +8,13 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
  feedbackHash,feedbackProductionPaths,feedbackCiPaths,feedbackHelperPaths,feedbackClosurePaths,feedbackAddedTests,
  feedbackPriorCiSha,feedbackPriorClosureSha,renderFeedbackCiBinding} from './helpers/sts-feedback-source-runtime.mjs';
 import {gunzipSync} from 'node:zlib';
-import {readFileSync,readdirSync} from 'node:fs';
-import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
-import {releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
-import {intentPost697PriorInventory,intentPost697HistoricalRead,assertIntentPost697RawInventory} from './helpers/intent-post697-ci-source.mjs';
+import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
+import {intentReleaseFixtureRead,intentReleaseFixtureInventory} from './helpers/intent-release-union.mjs';
+const readFileSync=intentReleaseFixtureRead('release',unionActualReadFileSync);
+import {discoverJs as unionActualDiscoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
+const discoverJs=()=>intentReleaseFixtureInventory('js','release');
+import {releasePc22BasicFeedbackPriorInventory} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
+import {integrationRead,integrationPriorInventory} from './helpers/release-af77-fixture-integration.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -25,14 +28,12 @@ function fixture(){
  return {config,one,two,added,original,outer};
 }
 
-test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
+test('af77 standalone: release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- // Keep the complete original receipt input; the selection map raw Full contract
+ // Keep the complete original receipt input; the PC22 basic feedback raw Full contract
  // independently hard-checks every current test and the unchanged budgets.
- const currentJs=discoverJs(),currentLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
- assertIntentPost697RawInventory(currentJs,'js');assertIntentPost697RawInventory(currentLua,'lua');
- const releaseRead=intentPost697HistoricalRead('release',readFileSync);
- const rawJs=releaseSelectionMapPriorInventory(intentPost697PriorInventory(currentJs,'js',readFileSync),'js',releaseRead),rawLua=releaseSelectionMapPriorInventory(intentPost697PriorInventory(currentLua,'lua',readFileSync),'lua',releaseRead);
+ const sideRead=integrationRead('pc22');
+ const rawJs=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(discoverJs(),'pc22'),'js',sideRead),rawLua=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(intentReleaseFixtureInventory('lua','release'),'pc22','lua'),'lua',sideRead);
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
@@ -49,7 +50,7 @@ test('release additions remain in raw Full and exact historical inventories reje
   for(const changed of [[...current,current[0]],[...current,'tests/foreign.'+kind]])assert.throws(()=>integratedPriorInventory(changed,target,kind),/inventory/);
  }
 });
-test('style continuation preserves every old complete target and adds a complete prior view without rewriting its input',()=>{
+test('af77 standalone: style continuation preserves every old complete target and adds a complete prior view without rewriting its input',()=>{
  const f=fixture(),unchanged=JSON.stringify(f.outer),next=extendStsStyleEpoch(f.original,f.outer),p=next.proof;
  assert.equal(JSON.stringify(f.outer),unchanged);assert(!Object.isFrozen(f.outer));
  assert.deepEqual(Object.keys(p.current).sort(),f.outer.inventoryAfter);
@@ -58,7 +59,7 @@ test('style continuation preserves every old complete target and adds a complete
  assert.equal(p.targets.develop.files[f.added],null);assert.equal(p.targets.stsStylePrior.files[f.added],null);
  assert.deepEqual(p.current[f.two],f.original.proof.current[f.two]);assert(Object.isFrozen(p));
 });
-test('the new source closure freshly rejects every missing/foreign owner and never authorizes unknown source bytes',()=>{
+test('af77 standalone: the new source closure freshly rejects every missing/foreign owner and never authorizes unknown source bytes',()=>{
  const f=fixture(),next=extendStsStyleEpoch(f.original,f.outer),p=next.proof,raw=path=>p.current[path]?.source??null;
  const project=read=>next.preCombinedSource(f.one,raw(f.one),{target:'develop',readSource:read});
  assert.equal(project(raw),'return 0\n');
@@ -72,7 +73,7 @@ test('the new source closure freshly rejects every missing/foreign owner and nev
  // A target's absent witness is retained here; only a checked materializer retires it.
  let reads=0;assert.equal(next.preCombinedSource(f.added,raw(f.added),{target:'develop',readSource:()=>{reads++;}}),raw(f.added));assert.equal(reads,0);
 });
-test('incomplete inventories, invented predecessors and unowned additions cannot form a style epoch',()=>{
+test('af77 standalone: incomplete inventories, invented predecessors and unowned additions cannot form a style epoch',()=>{
  const f=fixture();
  for(const mutate of [p=>p.inventoryBefore.pop(),p=>p.inventoryAfter.pop(),p=>p.before[f.one]=bind('foreign\n'),
   p=>delete p.before[f.added],p=>p.owners=[],p=>p.addedPaths.push(f.added),p=>p.current[f.added]=null]){
@@ -80,8 +81,8 @@ test('incomplete inventories, invented predecessors and unowned additions cannot
  }
 });
 
-test('real style source retains the complete CI-repair and every older target while authenticating all current raw owners',async()=>{
- const {sourceEpoch,ciRepairSourceEpoch,releaseSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+test('af77 standalone: real style source retains the complete CI-repair and every older target while authenticating all current raw owners',async()=>{
+ const {preIntentReleaseSourceEpoch:sourceEpoch,ciRepairSourceEpoch,releaseSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const p=sourceEpoch.proof,before=ciRepairSourceEpoch.proof,read=path=>readFileSync(path,'utf8');
  assert.equal(Object.keys(before.current).length,347); // config plus all 346 prior Lua modules.
  assert.equal(Object.keys(releaseSourceEpoch.proof.current).length,350); // Frozen release: page reveal, low-cost art, merchant pages.
@@ -97,13 +98,10 @@ test('real style source retains the complete CI-repair and every older target wh
   assert.throws(()=>sourceEpoch.preCombinedSource(config,raw,{target:'stsStylePrior',readSource:path=>path===owner?missing:read(path)}),/linked owner identity/,owner);
 });
 
-test('real style CI admits only full inventory, complete source and freshly verified executable helpers',async()=>{
+test('af77 standalone: real style CI admits only full inventory, complete source and freshly verified executable helpers',async()=>{
  const readFileSync=integratedRead('sts');
  const {stsStyleCiProof:p,assertStsStyleCiCurrent,preStsStyleCiSource,stsStylePriorInventory}=await import('./helpers/sts-style-ci-source.mjs');
  const files=discoverJs();assertStsStyleCiCurrent(files);assert.deepEqual(stsStylePriorInventory(files),p.beforeInventory);
- // The injected reader is already in the StS historical domain. Keep its exact
- // inventory paired with it; the raw current admission above is unchanged.
- const historicalFiles=p.afterInventory;
  for(const [path,row]of Object.entries(p.files)){
   const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(preStsStyleCiSource(path,raw),row.before?.source??raw);
@@ -118,10 +116,10 @@ test('real style CI admits only full inventory, complete source and freshly veri
   'scripts/check-license.mjs','tests/ci-reviewed-lfs.test.mjs','.gitattributes','config/ci-media-lfs.json','docs/legal/assets.json',
   'docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs']){
   assert(p.files[path]?.after,'exact CI/storage execution witness: '+path);
-  assert.throws(()=>assertStsStyleCiCurrent(historicalFiles,(p,e)=>{const raw=readFileSync(p,e);return p===path?raw+'\n':raw;}),/fresh complete StS CI source/,path);
+  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete StS CI source/,path);
  }
  assert.equal(p.files['docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs'].before,null,'new verifier cannot invent a historical source');
- for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(historicalFiles,(p,e)=>{const raw=readFileSync(p,e);return p===path?raw+'\n':raw;}),/fresh (?:StS helper|complete StS CI) source/,path);
+ for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:StS helper|complete StS CI) source/,path);
  for(const changed of [files.slice(1),[...files,files[0]],[...files,'tests/foreign.test.mjs']])assert.throws(()=>assertStsStyleCiCurrent(changed),/inventory/);
  for(const path of p.addedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined,'new style regression cannot acquire a historical hosted observation');
@@ -140,7 +138,7 @@ function feedbackFixture(){
   current:Object.fromEntries(feedbackProductionPaths.map((p,i)=>[p,feedbackBinding(`return ${i+20}\n`)]))};
  return {original,patch};
 }
-test('feedback synthetic source delta preserves all prior targets and materializes only the exact forward target',()=>{
+test('af77 standalone: feedback synthetic source delta preserves all prior targets and materializes only the exact forward target',()=>{
  const f=feedbackFixture(),before=JSON.stringify(f.patch),next=extendFeedbackSourceEpoch(f.original,f.patch),p=next.proof;
  assert.equal(JSON.stringify(f.patch),before);assert.deepEqual(p.targets.develop,f.original.proof.targets.develop);
  assert.deepEqual(p.targets.stsFeedbackPrior,{commit:feedbackBase,files:f.original.proof.current});
@@ -150,7 +148,7 @@ test('feedback synthetic source delta preserves all prior targets and materializ
   const changed=structuredClone(f.patch);mutate(changed);assert.throws(()=>extendFeedbackSourceEpoch(f.original,changed));
  }
 });
-test('feedback synthetic owners remain fresh after success and unknown source never authorizes a view',()=>{
+test('af77 standalone: feedback synthetic owners remain fresh after success and unknown source never authorizes a view',()=>{
  const f=feedbackFixture(),next=extendFeedbackSourceEpoch(f.original,f.patch),p=next.proof,path=feedbackProductionPaths[0];
  const raw=owner=>p.current[owner]?.source??null,prior=f.original.proof.current[path].source;
  assert.equal(next.preCombinedSource(path,raw(path),{target:'stsFeedbackPrior',readSource:raw}),prior);
@@ -173,7 +171,7 @@ function feedbackCiFixture(){
   helperClosure:Object.fromEntries(feedbackClosurePaths.map(p=>[p,{before:closure[p]??null,after:'d'.repeat(64)}]))};
  return {original,patch,closure};
 }
-test('feedback synthetic CI retains immutable before sources and real Full inventory without accepting unregistered inputs',()=>{
+test('af77 standalone: feedback synthetic CI retains immutable before sources and real Full inventory without accepting unregistered inputs',()=>{
  const f=feedbackCiFixture(),snapshot=JSON.stringify(f.original),next=extendFeedbackCiProof(f.original,f.patch);
  assert.equal(JSON.stringify(f.original),snapshot);
  for(const [p,row]of Object.entries(f.original.files))assert.deepEqual(next.files[p].before,row.before,'cb predecessor unchanged: '+p);
@@ -184,7 +182,7 @@ test('feedback synthetic CI retains immutable before sources and real Full inven
   const changed=structuredClone(f.patch);mutate(changed);assert.throws(()=>extendFeedbackCiProof(f.original,changed));
  }
 });
-test('feedback synthetic helper-copy closure extends exact dependencies while preserving the original map',()=>{
+test('af77 standalone: feedback synthetic helper-copy closure extends exact dependencies while preserving the original map',()=>{
  const f=feedbackCiFixture(),snapshot=JSON.stringify(f.closure),next=extendFeedbackHelperClosure(f.closure,f.patch.helperClosure);
  assert.equal(JSON.stringify(f.closure),snapshot);
  for(const [p,sha]of Object.entries(f.closure))if(!feedbackClosurePaths.includes(p))assert.equal(next[p],sha);
@@ -192,7 +190,7 @@ test('feedback synthetic helper-copy closure extends exact dependencies while pr
   const changed=structuredClone(f.patch.helperClosure);mutate(changed);assert.throws(()=>extendFeedbackHelperClosure(f.closure,changed));
  }
 });
-test('feedback real current source and CI preserve all four immutable archives and every historical view',async()=>{
+test('af77 standalone: feedback real current source and CI preserve all four immutable archives and every historical view',async()=>{
  assert.equal(readFileSync('tests/helpers/sts-feedback-ci-binding.mjs','utf8').replaceAll('\r\n','\n'),
   renderFeedbackCiBinding(feedbackHash(readFileSync('tests/helpers/sts-feedback-ci.json.gz'))),'new trust leaf cannot grow arbitrary authorization policy');
  for(const [path,sha]of Object.entries({
@@ -200,7 +198,7 @@ test('feedback real current source and CI preserve all four immutable archives a
   'tests/helpers/sts-style-prior-runtime.json.gz':'10bf3b7d960e4c02ae2d64e26d8d5f16824439b9396949973f08ccec1c9d9330',
   'tests/helpers/sts-style-ci-source.json.gz':feedbackPriorCiSha,'tests/helpers/closeout-source-closure.json':feedbackPriorClosureSha,
  }))assert.equal(feedbackHash(readFileSync(path)),sha,path);
- const {sourceEpoch,stsStyleEpoch}=await import('./helpers/closeout-source-epoch.mjs'),p=sourceEpoch.proof;
+ const {preIntentReleaseSourceEpoch:sourceEpoch,stsStyleEpoch}=await import('./helpers/closeout-source-epoch.mjs'),p=sourceEpoch.proof;
  for(const [path,row]of Object.entries(stsStyleEpoch.proof.current))assert.deepEqual(p.targets.stsFeedbackPrior.files[path],row,path);
  for(const [name,target]of Object.entries(stsStyleEpoch.proof.targets)){
   assert.equal(p.targets[name].commit,target.commit,name);
@@ -223,8 +221,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- const feedbackHistoricalRead=integratedRead('sts');
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(stsStyleCiProof.afterInventory,(p,e)=>{const raw=feedbackHistoricalRead(p,e);return p===path?raw+'\n':raw;}),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\n':value;}),/fresh (?:complete StS CI|StS helper) source/,path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

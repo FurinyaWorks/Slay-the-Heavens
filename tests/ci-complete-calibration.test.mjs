@@ -1,6 +1,6 @@
-import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
-import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
-import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
+import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/release-af77-fixture-closeout-ci-source.mjs';
+import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/release-af77-fixture-menu-red-ci-source.mjs';
+import {integratedCiProof} from './helpers/release-af77-standalone-integrated-ci-source.mjs';
 import {runHudPriorRead,runHudPriorInventory,preRunHudCiSource,runHudCiProof,runHudBeforeCiRepairProof} from './helpers/run-hud-ci-source.mjs';
 import {stsStylePriorRead,stsStylePriorInventory} from './helpers/sts-style-ci-source.mjs';
 import {receiptToolingSource,toolingProof} from './helpers/integration-1111-tooling.mjs';
@@ -42,16 +42,16 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualIntentPost697ReadFileSync,readdirSync} from 'node:fs';
-import {intentPost697HistoricalRead,intentPost697PriorInventory} from './helpers/intent-post697-ci-source.mjs';
-const rawReleaseReadFileSync=intentPost697HistoricalRead('release',actualIntentPost697ReadFileSync);
-import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
+import {intentReleaseFixtureRead,intentReleaseFixtureInventory} from './helpers/intent-release-union.mjs';
+const rawReleaseReadFileSync=intentReleaseFixtureRead('release',unionActualReadFileSync);
+import {releasePc22BasicFeedbackCiRead,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackCiCurrent,releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
-const rawBootstrapReadFileSync=releaseSelectionMapCiRead(rawReleaseReadFileSync);
-const historicalCiReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
-// Authenticate the final production corpus before entering historical views.
-const liveDiskReadFileSync=(path,encoding)=>(path.startsWith('src/')||path==='config/architecture.json'
- ?actualIntentPost697ReadFileSync:historicalCiReadFileSync)(path,encoding);
+import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {integrationRead,integrationCapacityCiRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-af77-fixture-integration.mjs';
+const sideRead=integrationRead('pc22',rawReleaseReadFileSync);
+const rawBootstrapReadFileSync=releasePc22BasicFeedbackCiRead(sideRead);
+const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
@@ -64,10 +64,9 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as actualIntentPost697DiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
-const rawReleaseDiscoverJs=()=>intentPost697PriorInventory(actualIntentPost697DiscoverJs(),'js',actualIntentPost697ReadFileSync);
-const intentLegacyLua=()=>intentPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualIntentPost697ReadFileSync);
-const liveDiscoverJs=()=>releaseSelectionMapPriorInventory(rawReleaseDiscoverJs(),'js',rawReleaseReadFileSync);
+import {discoverJs as unionActualDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const rawReleaseDiscoverJs=()=>intentReleaseFixtureInventory('js','release');
+const liveDiscoverJs=()=>releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(rawReleaseDiscoverJs(),'pc22'),'js',sideRead);
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
 import {shardLuaScripts} from '../scripts/test-lua.mjs';
@@ -174,8 +173,8 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const rawReleaseLua=()=>intentLegacyLua();
-const liveCloseoutLua=()=>releaseSelectionMapPriorInventory(rawReleaseLua(),'lua',rawReleaseReadFileSync);
+const rawReleaseLua=()=>intentReleaseFixtureInventory('lua','release');
+const liveCloseoutLua=()=>releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(rawReleaseLua(),'pc22','lua'),'lua',sideRead);
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
 // inventories. Current Full below still discovers and checks every file.
@@ -201,7 +200,7 @@ const postCalibrationLua=['tests/lua/actor_lifecycle.lua','tests/lua/actor_lifec
   ...Array.from({length:11},(_,i)=>'uncommon_'+String(i+1).padStart(2,'0'))]
   .map(group=>'tests/lua/relic_lifecycle_'+group+'.lua')].sort();
 
-test('component alias repair preserves exact old CI sources without accepting drift or foreign paths',()=>{
+test('af77 standalone: component alias repair preserves exact old CI sources without accepting drift or foreign paths',()=>{
  const diskReadFileSync=jointAliasRead;
  const proof=componentAliasCiSourceProof;
  assert(Object.isFrozen(proof)&&Object.isFrozen(proof.files));
@@ -220,7 +219,7 @@ test('component alias repair preserves exact old CI sources without accepting dr
  }
 });
 
-test('component UI CI projection admits only complete current sources and preserves foreign drift',()=>{
+test('af77 standalone: component UI CI projection admits only complete current sources and preserves foreign drift',()=>{
  const preComponentUiCiSource=preComponentUiCiFoundationSource;
  const archive=componentUiCiSourceProof;
  assert.equal(archive.beforeCommit,'1eb288472d7b33b7450eec97a624ca2ffa526f39');
@@ -237,7 +236,7 @@ test('component UI CI projection admits only complete current sources and preser
  }
 });
 
-test('post281 CI fixes preserve the immutable71-source foundation and every exact foreign-source boundary',()=>{
+test('af77 standalone: post281 CI fixes preserve the immutable71-source foundation and every exact foreign-source boundary',()=>{
  const proof=foundationFixCiSourceProof;
  assert.equal(proof.beforeCommit,'2814719e884fa2a201e05a22b35d9bbc8519ca62');
  assert.equal(proof.afterProductionCommit,'a0c2dc558b2a37f26678dc104bb98df194b0f2d8');
@@ -250,7 +249,7 @@ test('post281 CI fixes preserve the immutable71-source foundation and every exac
  }
 });
 
-test('V25 tests stay outside frozen observations and each missing registration is rejected',()=>{
+test('af77 standalone: V25 tests stay outside frozen observations and each missing registration is rejected',()=>{
  const current=discoverJs(),v25=current.filter(file=>/^tests\/v25.*\.test\.mjs$/.test(file)||file==='tests/evidence-native-junction.test.mjs').sort();
  assert.deepEqual(v25,currentV25Js);
  const historical=placementJs();assert.equal(historical.length,placement.inventory.js);
@@ -265,7 +264,7 @@ test('V25 tests stay outside frozen observations and each missing registration i
  }
 });
 
-test('complete native successful rows authenticate every observed file and only raise effective placement costs',()=>{
+test('af77 standalone: complete native successful rows authenticate every observed file and only raise effective placement costs',()=>{
  assert.equal(e.lockedObservationsSha256,'a80b5fe95fcfb0b4d5fedf839045100466423f3129c000ce2eef642cc31c421d');
  assert.equal(e.sourceHead,'41a99579e41ea685a1d71d9ce6e6e603839968db');assert.equal(e.groupHead,'8ba123b90ef176ad240c25154059597ec2c34b9b');
  assert.equal(e.sharedTree,'65f5bb53e19fd6055488b928865804e132285fc2');assert.equal(e.sourceRecords.length,46);
@@ -319,7 +318,7 @@ test('complete native successful rows authenticate every observed file and only 
  assert.equal(luaBlock(binding.afterSource),luaBlock(binding.beforeSource),'literal original safety map bytes unchanged');
 });
 
-test('only complete approved sources reverse 16/12 to 14/9 to 13/9 and new timing to d580 to original 8e epoch',()=>{
+test('af77 standalone: only complete approved sources reverse 16/12 to 14/9 to 13/9 and new timing to d580 to original 8e epoch',()=>{
  for(const [path,b]of Object.entries(proof.files)){
   assert.equal(preCurrentCiPlacementSource(path,read(path)),b.afterSource);
   for(const source of [b.afterSource,b.afterSource.replaceAll('\n','\r\n')])assert.equal(project(path,source),b.beforeSource);
@@ -342,7 +341,7 @@ test('only complete approved sources reverse 16/12 to 14/9 to 13/9 and new timin
  assert.ok(Object.isFrozen(proof.files));assert.ok(Object.isFrozen(e.observations.lua[0]));
 });
 
-test('historical physical Windows16 POSIX12 Full33 covers final inventory under original budgets and unchanged setup reserve',()=>{
+test('af77 standalone: historical physical Windows16 POSIX12 Full33 covers final inventory under original budgets and unchanged setup reserve',()=>{
  assert.deepEqual(qualityShardMatrices.windows,Array.from({length:16},(_,i)=>i+1));assert.deepEqual(qualityShardMatrices.posix,Array.from({length:12},(_,i)=>i+1));
  const shape=proof.files['scripts/ci-quality-shape.mjs'];assert.equal(shape.afterSource,shape.beforeSource.replace('length:14','length:16').replace('length:9','length:12'));
  assert.equal(preCurrentCiPlacementSource('scripts/ci-quality-shape.mjs',read('scripts/ci-quality-shape.mjs')),shape.afterSource);assert.equal(qualityShardJobs.length,28);
@@ -369,7 +368,7 @@ test('historical physical Windows16 POSIX12 Full33 covers final inventory under 
  const workflow=beforeExecutionTimeoutWorkflow(read('.github/workflows/quality.yml'));assert.match(workflow,/max-parallel: 12/);assert.match(workflow,/timeout-minutes: 20/);assert.match(workflow,/local-special' && 75 \|\| 30/);
 });
 
-test('frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 Lua files within unchanged budgets',()=>{
+test('af77 standalone: frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 Lua files within unchanged budgets',()=>{
  assert.deepEqual(frozenQualityShardMatrices.windows,Array.from({length:17},(_,i)=>i+1));
  assert.deepEqual(frozenQualityShardMatrices.posix,Array.from({length:13},(_,i)=>i+1));
  assert.equal(frozenShapeSource,proof.files['scripts/ci-quality-shape.mjs'].afterSource.replace('length:16','length:17').replace('length:12','length:13'));
@@ -418,7 +417,7 @@ test('frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 L
  const workflow=beforeExecutionTimeoutWorkflow(read('.github/workflows/quality.yml'));assert.match(workflow,/max-parallel: 12/);assert.match(workflow,/timeout-minutes: 20/);assert.match(workflow,/local-special' && 75 \|\| 30/);
 });
 
-test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{
+test('af77 standalone: current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{
  const workflow=read('.github/workflows/quality.yml');assert.match(workflow,/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);assert.match(workflow,/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
  const js=discoverJs(),lua=currentLua();
  assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
@@ -514,7 +513,7 @@ test('current Full38 retains full coverage and reports performance targets under
  }
 });
 
-test('current placement authenticates 1458 complete successful assigned files without claiming failed containing jobs passed',()=>{
+test('af77 standalone: current placement authenticates 1458 complete successful assigned files without claiming failed containing jobs passed',()=>{
  assert.equal(hash(placementBytes),'5af2e277b3472262b57a12a6c13e387f4a008eeff0223b2a214bdddae115bd78');
  assert.equal(placement.schemaVersion,1);assert.equal(placement.kind,'pr521-native-file-placement');
  const run=placement.sourceRun;assert.equal(run.id,42176327678);assert.equal(run.attempt,1);
@@ -559,7 +558,7 @@ test('current placement authenticates 1458 complete successful assigned files wi
  assert.equal(d5.durationMs,461486.846292);assert.equal(d5.success,true);assert.equal(d5.jsStepConclusion,'cancelled');
 });
 
-test('current 129 placement raises reconstruct exact timings while preserving all old floors and raw worker safety bytes',()=>{
+test('af77 standalone: current 129 placement raises reconstruct exact timings while preserving all old floors and raw worker safety bytes',()=>{
  const expected=structuredClone(after),changes=[],raisedCounts={win32:0,linux:0};
  for(const row of placement.observations){
   const map=expected.js[row.platform],hadOwnBefore=Object.hasOwn(map,row.file),oldMs=map[row.file]??after.unknownJsMs,newMs=Math.max(oldMs,Math.ceil(row.durationMs));
@@ -650,7 +649,7 @@ test('current 129 placement raises reconstruct exact timings while preserving al
  assert.equal(placement.forecast.reserveMs,60000);assert.deepEqual(placement.forecast.budgets,{win32:1800000,linux:1200000});assert.equal(placement.forecast.workers,2);assert.equal(placement.forecast.concurrencyCapUnchanged,12);
 });
 
-test('only two exact current source identities enter the unchanged pure historical CI chain and all byte drift remains visible',()=>{
+test('af77 standalone: only two exact current source identities enter the unchanged pure historical CI chain and all byte drift remains visible',()=>{
  const identities={
   'scripts/ci-test-timings.json':'119d296f254629aa5316ff9a9fef5b51ff5f5bb3d25c7d5a912df9066b4ebde3',
   'scripts/ci-quality-shape.mjs':'0d6c82c2a7e7db82e276eb563978d5253d9a225039329e171ed3f907f98609d1',
@@ -674,7 +673,7 @@ test('only two exact current source identities enter the unchanged pure historic
  }
 });
 
-test('Potion timing outer projection preserves the complete Run catalogue epoch and rejects drift without live reads',()=>{
+test('af77 standalone: Potion timing outer projection preserves the complete Run catalogue epoch and rejects drift without live reads',()=>{
  const {read,readFileSync,timings:currentTimings}=ciEpoch('potion');
  const source=read('scripts/ci-test-timings.json'),prior=read('tests/helpers/potion-callback-planning-before.json');
  assert.equal(hash(prior),'39ad201a4b9bf0486820a23a95937a879a47092e2e07cf7ee848acd4a8f0ff14');
@@ -687,7 +686,7 @@ test('Potion timing outer projection preserves the complete Run catalogue epoch 
  assert.equal(JSON.stringify(expected,null,2)+'\n',prior,'no observed map, worker safety, matrix, unknown weight, or prior floor changes');
 });
 
-test('presence planning adds only one authenticated complete local observation and rejects failed or partial evidence',()=>{
+test('af77 standalone: presence planning adds only one authenticated complete local observation and rejects failed or partial evidence',()=>{
  const {read,readFileSync,timings:currentTimings}=ciEpoch('actor');
  const receiptPath='docs/evidence/actor-presence-planning-floor-20261107.json';
  const bytes=read(receiptPath),receipt=JSON.parse(bytes),key='tests/actor-presence.test.mjs';
@@ -718,7 +717,7 @@ test('presence planning adds only one authenticated complete local observation a
  }
 });
 
-test('presence planning exact full-source inverse rejects timing drift and preserves all prior source epochs',()=>{
+test('af77 standalone: presence planning exact full-source inverse rejects timing drift and preserves all prior source epochs',()=>{
  const {read}=ciEpoch('actor');
  const source=read(path),before=presencePlanningBefore;
  for(const value of [source,source.replaceAll('\n','\r\n')]){
@@ -733,7 +732,7 @@ test('presence planning exact full-source inverse rejects timing drift and prese
  assert.equal(prePresencePlanningSource('foreign',source),source);
 });
 
-test('original Actor placement forecast retains its exact complete slice and unchanged budgets',()=>{
+test('af77 standalone: original Actor placement forecast retains its exact complete slice and unchanged budgets',()=>{
  const e=ciEpoch('actor'),js=e.discoverJs(),lua=e.lua,t=e.timings;
  for(const [platform,count,budget,exact]of [['linux',13,1200000,1194287],['win32',17,1800000,1714151]]){
   const loads=e.jsShard(js,`1/${count}`,platform).loads;
@@ -746,10 +745,10 @@ test('original Actor placement forecast retains its exact complete slice and unc
   assert.equal(maximum,exact);assert.ok(maximum<budget);
  }
 });
-test('original reward-query whole-file provenance retains its measured source identity and costs',()=>{assertRewardQueryPlanningReceipt({epoch:ciEpoch('reward')});});
-test('original reward-query timing pure projection rejects every byte drift',()=>{assertRewardQueryPlanningProjection({project,preCurrentCiPlacementSource,preIntegrationSource,epoch:ciEpoch('reward')});});
+test('af77 standalone: original reward-query whole-file provenance retains its measured source identity and costs',()=>{assertRewardQueryPlanningReceipt({epoch:ciEpoch('reward')});});
+test('af77 standalone: original reward-query timing pure projection rejects every byte drift',()=>{assertRewardQueryPlanningProjection({project,preCurrentCiPlacementSource,preIntegrationSource,epoch:ciEpoch('reward')});});
 
-test('only exact POSIX14 source enters the frozen 17/13 epoch without accepting drift or cross-file sources',()=>{
+test('af77 standalone: only exact POSIX14 source enters the frozen 17/13 epoch without accepting drift or cross-file sources',()=>{
  const path='scripts/ci-quality-shape.mjs',source=preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))).replaceAll('\r\n','\n');
  assert.equal(source,frozenShapeSource.replace('length:13','length:14'));
  for(const input of [source,source.replaceAll('\n','\r\n')]){
@@ -762,7 +761,7 @@ test('only exact POSIX14 source enters the frozen 17/13 epoch without accepting 
  for(const wrongPath of ['foreign','scripts/ci-test-timings.json'])assert.equal(prePosix14ShapeSource(wrongPath,source),source);
 });
 
-test('Enemy AI planning layer authenticates complete current bytes and rejects unrelated drift',()=>{
+test('af77 standalone: Enemy AI planning layer authenticates complete current bytes and rejects unrelated drift',()=>{
  const source=enemyOnlyPlanningSource(path,preDefectIntegrationPlanningSource(path,originalPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))).replaceAll('\r\n','\n'),'seven'))),prior=preEnemyAiPlanningSource(path,source);
  assert.equal(hash(source),enemyAiPlanningProof.afterSha256);
  assert.equal(hash(prior),enemyAiPlanningProof.beforeSha256);
@@ -777,7 +776,7 @@ test('Enemy AI planning layer authenticates complete current bytes and rejects u
  }
 });
 
-test('Defect utility planning layer authenticates complete current bytes and rejects unrelated drift',()=>{
+test('af77 standalone: Defect utility planning layer authenticates complete current bytes and rejects unrelated drift',()=>{
  const source=defectOnlyPlanningSource(path,originalPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))).replaceAll('\r\n','\n'),'seven')),prior=preDefectUtilityPlanningSource(path,source);
  assert.equal(hash(source),defectUtilityPlanningProof.afterSha256);
  assert.equal(hash(prior),defectUtilityPlanningProof.beforeSha256);
@@ -793,7 +792,7 @@ test('Defect utility planning layer authenticates complete current bytes and rej
 });
 
 
-test('merged planning source authenticates both complete original epochs without masking drift',()=>{
+test('af77 standalone: merged planning source authenticates both complete original epochs without masking drift',()=>{
  const source=preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))).replaceAll('\r\n','\n');
  for(const epoch of ['develop','seven']){
   const original=originalPlanningSource(path,source,epoch);
@@ -811,7 +810,7 @@ test('merged planning source authenticates both complete original epochs without
 });
 
 
-test('Watcher Flow saved complete local run supplies only one authenticated planning floor',()=>{
+test('af77 standalone: Watcher Flow saved complete local run supplies only one authenticated planning floor',()=>{
  const source=preCombinedPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))),'flow'),prior=preWatcherFlowPlanningSource(path,source);
  assert.notEqual(source,prior);
  assert.equal(hash(prior),'54d5380ac20148b37866cb5a01e16bee76f6d9df5b013af9a29459d841969f56');
@@ -830,7 +829,7 @@ test('Watcher Flow saved complete local run supplies only one authenticated plan
 });
 
 
-test('pre-Flow current-integration inventory and planning forecasts remain reproducible without new files',()=>{
+test('af77 standalone: pre-Flow current-integration inventory and planning forecasts remain reproducible without new files',()=>{
  const historical=JSON.parse(preCombinedPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8')))));
  const js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)).filter(file=>!defectFinalJs.includes(file)).filter(file=>!silentFinalJs.includes(file)).filter(file=>!relicEquipJs.includes(file)).filter(file=>![watcherFlowPlanningKey,'tests/watcher-flow-source-epoch.test.mjs',silentTacticsPlanningKey,'tests/silent-tactics-source-epoch.test.mjs',effectsTargetGroupPlanningKey,'tests/effects-target-group-source-epoch.test.mjs'].includes(file));
  const lua=preComponentLua().filter(file=>!['tests/lua/watcher_flow_planning.lua','tests/lua/silent_tactics_planning.lua'].includes(file));
@@ -849,7 +848,7 @@ test('pre-Flow current-integration inventory and planning forecasts remain repro
 });
 
 
-test('current complete Flow integration run monotonically raises the saved planning floor',()=>{
+test('af77 standalone: current complete Flow integration run monotonically raises the saved planning floor',()=>{
  const floor=watcherFlowPlanningFloor,bytes=readFileSync(floor.sourceLog),log=gunzipSync(bytes).toString('utf8');
  assert.equal(hash(bytes),floor.sourceLogSha256);assert.equal(hash(log),floor.sourceLogUncompressedSha256);
  const receiptBytes=readFileSync(floor.sourceReceipt),receipt=JSON.parse(receiptBytes);assert.equal(hash(receiptBytes),floor.sourceReceiptSha256);
@@ -863,7 +862,7 @@ test('current complete Flow integration run monotonically raises the saved plann
  assert.equal(preWatcherFlowPlanningSource(path,savedSource),preWatcherFlowPlanningSource(path,current));
 });
 
-test('Silent tactics complete local run contributes only an authenticated planning floor',()=>{
+test('af77 standalone: Silent tactics complete local run contributes only an authenticated planning floor',()=>{
  const source=preCombinedPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))),'silent'),prior=preSilentTacticsPlanningSource(path,source),floor=silentTacticsPlanningFloor;
  assert.notEqual(source,prior);assert.equal(hash(prior),'54d5380ac20148b37866cb5a01e16bee76f6d9df5b013af9a29459d841969f56');
  const bytes=readFileSync(floor.sourceLog),log=gunzipSync(bytes).toString('utf8');
@@ -878,7 +877,7 @@ test('Silent tactics complete local run contributes only an authenticated planni
  assert.equal(preSilentTacticsPlanningSource('foreign',source),source);
 });
 
-test('Effects target group complete local run adds only an authenticated conservative planning floor',()=>{
+test('af77 standalone: Effects target group complete local run adds only an authenticated conservative planning floor',()=>{
  const source=preCombinedPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))),'effects'),prior=preEffectsTargetGroupPlanningSource(path,source),floor=effectsTargetGroupPlanningFloor;
  assert.notEqual(source,prior);assert.equal(hash(prior),'54d5380ac20148b37866cb5a01e16bee76f6d9df5b013af9a29459d841969f56');
  const bytes=readFileSync(floor.sourceLog),log=gunzipSync(bytes).toString('utf8');
@@ -896,7 +895,7 @@ test('Effects target group complete local run adds only an authenticated conserv
 });
 
 
-test('combined planning projection authenticates exact sibling bytes and rejects partial or foreign drift',()=>{
+test('af77 standalone: combined planning projection authenticates exact sibling bytes and rejects partial or foreign drift',()=>{
  const source=preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))),base=preCombinedPlanningSource(path,source);
  assert.equal(hash(source.replaceAll('\r\n','\n')),'db3b3dbb80f68d57c655f30efc2fb851fc83a61c5ce682b726a5369dc34ad9ba');
  for(const [epoch,key,floor,inverse]of [['flow',watcherFlowPlanningKey,watcherFlowPlanningFloor,preWatcherFlowPlanningSource],['silent',silentTacticsPlanningKey,silentTacticsPlanningFloor,preSilentTacticsPlanningSource],['effects',effectsTargetGroupPlanningKey,effectsTargetGroupPlanningFloor,preEffectsTargetGroupPlanningSource]]){
@@ -911,7 +910,7 @@ test('combined planning projection authenticates exact sibling bytes and rejects
  assert.throws(()=>preCombinedPlanningSource(path,source,'unknown'),/known frozen sibling/);
 });
 
-test('isolated published sibling inventories and forecasts remain independently reproducible',()=>{
+test('af77 standalone: isolated published sibling inventories and forecasts remain independently reproducible',()=>{
  for(const [epoch,ownJs,ownLua,windows,posix]of [['flow',[watcherFlowPlanningKey,'tests/watcher-flow-source-epoch.test.mjs'],['tests/lua/watcher_flow_planning.lua'],1775788,1183709],['silent',[silentTacticsPlanningKey,'tests/silent-tactics-source-epoch.test.mjs'],['tests/lua/silent_tactics_planning.lua'],1773802,1181278],['effects',[effectsTargetGroupPlanningKey,'tests/effects-target-group-source-epoch.test.mjs'],[],1772722,1180447]]){
  const historical=JSON.parse(preCombinedPlanningSource(path,preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8'))),epoch));
  const js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)).filter(file=>!defectFinalJs.includes(file)).filter(file=>!silentFinalJs.includes(file)).filter(file=>!relicEquipJs.includes(file)).filter(file=>![watcherFlowPlanningKey,'tests/watcher-flow-source-epoch.test.mjs',silentTacticsPlanningKey,'tests/silent-tactics-source-epoch.test.mjs',effectsTargetGroupPlanningKey,'tests/effects-target-group-source-epoch.test.mjs'].includes(file)||ownJs.includes(file));
@@ -931,7 +930,7 @@ test('isolated published sibling inventories and forecasts remain independently 
  }
 });
 
-test('combined gate receipt projection rejects drift and authenticates all three published siblings',()=>{
+test('af77 standalone: combined gate receipt projection rejects drift and authenticates all three published siblings',()=>{
  const file='scripts/check-lua-static.mjs',source=preRelicEquipCiSource(file,readFileSync(file,'utf8'));
  for(const epoch of ['flow','silent','effects']){
   const prior=preCombinedGateSource(file,source,epoch);assert.notEqual(prior,source);
@@ -942,7 +941,7 @@ test('combined gate receipt projection rejects drift and authenticates all three
  assert.throws(()=>preCombinedGateSource(file,source,'unknown'),/known frozen sibling/);
 });
 
-test('Relic equip CI outer epoch preserves all old costs and exact gate bytes while rejecting partial drift',()=>{
+test('af77 standalone: Relic equip CI outer epoch preserves all old costs and exact gate bytes while rejecting partial drift',()=>{
  const source=preSilentFinalCiSource(path,readFileSync(path,'utf8')),prior=preRelicEquipCiSource(path,source);
  assert.notEqual(source,prior);assert.equal(hash(prior),'db3b3dbb80f68d57c655f30efc2fb851fc83a61c5ce682b726a5369dc34ad9ba');
  const current=JSON.parse(source),previous=JSON.parse(prior);
@@ -960,7 +959,7 @@ test('Relic equip CI outer epoch preserves all old costs and exact gate bytes wh
  assert.equal(preRelicEquipCiSource(path,JSON.stringify(partial,null,2)+'\n'),JSON.stringify(partial,null,2)+'\n');
 });
 
-test('Relic equip floor authenticates a complete saved local file without fabricating hosted observations',()=>{
+test('af77 standalone: Relic equip floor authenticates a complete saved local file without fabricating hosted observations',()=>{
  const floor=relicEquipPlanningFloor,bytes=readFileSync(floor.sourceLog),log=gunzipSync(bytes).toString('utf8');
  assert.equal(hash(bytes),floor.sourceLogSha256);assert.equal(hash(log),floor.sourceLogUncompressedSha256);
  const receiptBytes=readFileSync(floor.sourceReceipt),receipt=JSON.parse(receiptBytes);assert.equal(hash(receiptBytes),floor.sourceReceiptSha256);
@@ -975,7 +974,7 @@ test('Relic equip floor authenticates a complete saved local file without fabric
  assert.equal(hash(readFileSync(receipt.testFile,'utf8').replaceAll('\r\n','\n')),receipt.testSha256);
 });
 
-test('pre-Relic equip published Full36 inventory and forecasts remain independently reproducible',()=>{
+test('af77 standalone: pre-Relic equip published Full36 inventory and forecasts remain independently reproducible',()=>{
  const historical=JSON.parse(preRelicEquipCiSource(path,preSilentFinalCiSource(path,readFileSync(path,'utf8')))),js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)).filter(file=>!defectFinalJs.includes(file)).filter(file=>!silentFinalJs.includes(file)).filter(file=>!relicEquipJs.includes(file)),lua=preComponentLua();
  assert.equal(js.length,788);assert.equal(lua.length,1410);
  for(const [platform,count,expected]of [['win32',17,1779486],['linux',14,1187400]]){
@@ -991,7 +990,7 @@ test('pre-Relic equip published Full36 inventory and forecasts remain independen
  }
 });
 
-test('Silent final CI outer epoch preserves exact predecessor costs and gate bytes and rejects drift',()=>{
+test('af77 standalone: Silent final CI outer epoch preserves exact predecessor costs and gate bytes and rejects drift',()=>{
  const source=readFileSync(path,'utf8'),prior=preSilentFinalCiSource(path,source),current=JSON.parse(source),previous=JSON.parse(prior);
  assert.notEqual(source,prior);
  assert.deepEqual(current.jsPlanning.localLowerBounds[silentFinalPlanningKey],silentFinalPlanningFloor);
@@ -1007,7 +1006,7 @@ test('Silent final CI outer epoch preserves exact predecessor costs and gate byt
  const text=JSON.stringify(partial,null,2)+'\n';assert.equal(preSilentFinalCiSource(path,text),text);
 });
 
-test('Silent final planning floor authenticates the complete saved local file without hosted observations',()=>{
+test('af77 standalone: Silent final planning floor authenticates the complete saved local file without hosted observations',()=>{
  const floor=silentFinalPlanningFloor,bytes=readFileSync(floor.sourceLog),log=gunzipSync(bytes).toString('utf8');
  assert.equal(hash(bytes),floor.sourceLogSha256);assert.equal(hash(log),floor.sourceLogUncompressedSha256);
  const receiptBytes=readFileSync(floor.sourceReceipt),receipt=JSON.parse(receiptBytes);assert.equal(hash(receiptBytes),floor.sourceReceiptSha256);
@@ -1026,7 +1025,7 @@ test('Silent final planning floor authenticates the complete saved local file wi
 });
 
 
-test('pre-Silent final published Full36 inventory and forecasts remain independently reproducible',()=>{
+test('af77 standalone: pre-Silent final published Full36 inventory and forecasts remain independently reproducible',()=>{
  const historical=JSON.parse(preSilentFinalCiSource(path,readFileSync(path,'utf8'))),js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)).filter(file=>!defectFinalJs.includes(file)).filter(file=>!silentFinalJs.includes(file)),lua=preComponentLua();
  assert.equal(js.length,791);assert.equal(lua.length,1410);
  for(const [platform,count,expected]of [['win32',17,1781066],['linux',14,1189539]]){
@@ -1042,7 +1041,7 @@ test('pre-Silent final published Full36 inventory and forecasts remain independe
  }
 });
 
-test('Silent final source-contract floor preserves the observed complete file cost above the unknown minimum',()=>{
+test('af77 standalone: Silent final source-contract floor preserves the observed complete file cost above the unknown minimum',()=>{
  const floor=silentFinalSourcePlanningFloor,bytes=readFileSync(floor.sourceLog),log=gunzipSync(bytes).toString('utf8');
  assert.equal(hash(bytes),floor.sourceLogSha256);assert.equal(hash(log),floor.sourceLogUncompressedSha256);
  assert.equal(hash(readFileSync(silentFinalSourcePlanningKey,'utf8').replaceAll('\r\n','\n')),floor.testSha256);
@@ -1055,7 +1054,7 @@ test('Silent final source-contract floor preserves the observed complete file co
  for(const platform of ['win32','linux']){assert.equal(actualCurrentTimings.js[platform][silentFinalSourcePlanningKey],undefined);assert.equal(currentJsPlanningWeights([silentFinalSourcePlanningKey],platform)[silentFinalSourcePlanningKey],Math.max(10000,floor.durationMs));}
 });
 
-test('Defect final CI outer epoch preserves complete predecessor costs and exact source receipt inputs',()=>{
+test('af77 standalone: Defect final CI outer epoch preserves complete predecessor costs and exact source receipt inputs',()=>{
  const source=rawReadFileSync(path,'utf8'),prior=preDefectFinalCiSource(path,source),current=JSON.parse(source),previous=JSON.parse(prior);
  for(const [key,floor]of Object.entries(defectFinalPlanningFloors)){
   assert.deepEqual(current.jsPlanning.localLowerBounds[key],floor);delete current.jsPlanning.localLowerBounds[key];
@@ -1071,7 +1070,7 @@ test('Defect final CI outer epoch preserves complete predecessor costs and exact
  const text=JSON.stringify(partial,null,2)+'\n';assert.equal(preDefectFinalCiSource(path,text),text);
 });
 
-test('Defect final floors authenticate complete fresh local files without inventing hosted observations',()=>{
+test('af77 standalone: Defect final floors authenticate complete fresh local files without inventing hosted observations',()=>{
  const rawReadFileSync=defectReceiptRead;
  assert.ok(Object.keys(defectFinalPlanningFloors).length>0);
  for(const [key,floor]of Object.entries(defectFinalPlanningFloors)){
@@ -1096,7 +1095,7 @@ test('Defect final floors authenticate complete fresh local files without invent
  }
 });
 
-test('pre-Defect final published Full36 inventory and forecasts remain independently reproducible',()=>{
+test('af77 standalone: pre-Defect final published Full36 inventory and forecasts remain independently reproducible',()=>{
  const historical=JSON.parse(preDefectFinalCiSource(path,rawReadFileSync(path,'utf8'))),js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)).filter(file=>!defectFinalJs.includes(file)),lua=preComponentLua();
  assert.equal(js.length,794);assert.equal(lua.length,1410);
  for(const [platform,count,expected]of [['win32',17,1785094],['linux',14,1194369]]){
@@ -1112,7 +1111,7 @@ test('pre-Defect final published Full36 inventory and forecasts remain independe
  }
 });
 
-test('Encounter formation CI outer epoch preserves every prior cost and admits only complete current input identities',()=>{
+test('af77 standalone: Encounter formation CI outer epoch preserves every prior cost and admits only complete current input identities',()=>{
  const source=componentReadFileSync(path,'utf8'),prior=preEncounterFormationCiSource(path,source),current=JSON.parse(source),previous=JSON.parse(prior);
  for(const [key,floor]of Object.entries(encounterFormationPlanningFloors)){
   assert.deepEqual(current.jsPlanning.localLowerBounds[key],floor);delete current.jsPlanning.localLowerBounds[key];
@@ -1131,7 +1130,7 @@ test('Encounter formation CI outer epoch preserves every prior cost and admits o
  }
 });
 
-test('Encounter formation floors authenticate complete recurring files without fabricating hosted or repeated retained-scenario costs',()=>{
+test('af77 standalone: Encounter formation floors authenticate complete recurring files without fabricating hosted or repeated retained-scenario costs',()=>{
  const componentReadFileSync=formationReceiptRead;
  assert.deepEqual(Object.keys(encounterFormationPlanningFloors).sort(),['tests/encounter-formation-responsibilities.test.mjs','tests/encounter-formation-source-epoch.test.mjs']);
  for(const [key,floor]of Object.entries(encounterFormationPlanningFloors)){
@@ -1155,7 +1154,7 @@ test('Encounter formation floors authenticate complete recurring files without f
  assert.equal(actualCurrentTimings.jsPlanning.localLowerBounds['tests/encounter-formation-complexity.test.mjs'],undefined);
 });
 
-test('pre-Formation Full36 inventory and forecasts remain independently reproducible and all 1410 original Lua files stay unchanged',()=>{
+test('af77 standalone: pre-Formation Full36 inventory and forecasts remain independently reproducible and all 1410 original Lua files stay unchanged',()=>{
  const componentReadFileSync=formationReceiptRead;
  const historical=JSON.parse(preEncounterFormationCiSource(path,componentReadFileSync(path,'utf8'))),js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)),lua=preComponentLua();
  assert.equal(js.length,797);assert.equal(lua.length,1410);
@@ -1176,7 +1175,7 @@ test('pre-Formation Full36 inventory and forecasts remain independently reproduc
  }
 });
 
-test('Act1 event history restores the exact Formation receipt without replacing the current Full fixture',()=>{
+test('af77 standalone: Act1 event history restores the exact Formation receipt without replacing the current Full fixture',()=>{
  const file='tests/lua/act1_event_content.lua',raw=diskReadFileSync(file,'utf8'),current=raw.replaceAll('\r\n','\n');
  const beforeSha='8af87e0dd5a776d19436c613a8c9bd5dba4bfc381d03ca7260a574e3b6a16a00';
  assert.equal(hash(current),'557a6f941bf154e07443aa6b6b9481ea328a350062790a4fbcb96a9d43cb7410');
@@ -1199,7 +1198,7 @@ test('Act1 event history restores the exact Formation receipt without replacing 
  assert.equal(diskReadFileSync(file,'utf8'),raw,'receipt reads never rewrite the fixture');
 });
 
-test('Act1 Formation source view rejects tampering partial reversals duplicates and unrelated targets',()=>{
+test('af77 standalone: Act1 Formation source view rejects tampering partial reversals duplicates and unrelated targets',()=>{
  const file='tests/lua/act1_event_content.lua',source=diskReadFileSync(file,'utf8').replaceAll('\r\n','\n'),lines=source.split('\n');
  const oldEq="local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end";
  const oldSame="local function same(a,b)eq(type(a),type(b));if type(a)~='table'then eq(a,b);return end;for k,v in pairs(a)do same(v,b[k])end;for k in pairs(b)do assert(a[k]~=nil)end end";
@@ -1218,7 +1217,7 @@ test('Act1 Formation source view rejects tampering partial reversals duplicates 
  }
 });
 
-test('POSIX15 accepts only its complete approved source and preserves the exact published POSIX14 epoch',()=>{
+test('af77 standalone: POSIX15 accepts only its complete approved source and preserves the exact published POSIX14 epoch',()=>{
  const {path,beforeSource,afterSource,beforeSha256,afterSha256}=posix15ShapeProof;
  assert.equal(rawReadFileSync(path,'utf8').replaceAll('\r\n','\n'),afterSource);
  assert.equal(afterSource,beforeSource.replace('length:14','length:15'),'only capacity allocation changes');
@@ -1230,7 +1229,7 @@ test('POSIX15 accepts only its complete approved source and preserves the exact 
  assert.equal(prePosix14ShapeSource(path,afterSource),afterSource,'the original POSIX14 projector still rejects POSIX15 directly');
 });
 
-test('pre-Formation unchanged complete weights reproduce the blocked POSIX14 forecast and the POSIX15 capacity allocation',()=>{
+test('af77 standalone: pre-Formation unchanged complete weights reproduce the blocked POSIX14 forecast and the POSIX15 capacity allocation',()=>{
  const historical=JSON.parse(preEncounterFormationCiSource(path,componentReadFileSync(path,'utf8')));
  const js=preComponentJs().filter(file=>!encounterFormationJs.includes(file)),lua=preComponentLua();assert.equal(js.length,797);assert.equal(lua.length,1410);
  assert.deepEqual([...js].sort(),encounterFormationCiInventory.js);
@@ -1253,7 +1252,7 @@ test('pre-Formation unchanged complete weights reproduce the blocked POSIX14 for
 });
 
 
-test('combined Formation800 inventory preserves both blocked POSIX14 and feasible POSIX15 forecasts without reducing work or floors',()=>{
+test('af77 standalone: combined Formation800 inventory preserves both blocked POSIX14 and feasible POSIX15 forecasts without reducing work or floors',()=>{
  const js=preComponentJs(),lua=preComponentLua();assert.equal(js.length,800);assert.equal(lua.length,1410);
  const totals=[];
  for(const [count,forecast]of [[14,1205156],[15,1128812]]){
@@ -1276,7 +1275,7 @@ test('combined Formation800 inventory preserves both blocked POSIX14 and feasibl
 // The first published checkpoint stays independently verifiable; this view never claims current execution.
 const currentOfficialDiscoverJs=()=>jointCiInventoryAt(discoverJs(),'officialAssetsFlow');
 const firstCheckpointRead=file=>{const bytes=jointFlowRead(file),source=bytes.toString('utf8'),prior=preOfficialAssetsFlowCiSource(file,source);return prior===source?bytes:Buffer.from(prior);};
-test('official candidate CI epoch preserves exact historical bytes and rejects partial or unrelated drift',()=>{
+test('af77 standalone: official candidate CI epoch preserves exact historical bytes and rejects partial or unrelated drift',()=>{
  const diskReadFileSync=(file,encoding)=>{const bytes=firstCheckpointRead(file);return encoding?bytes.toString('utf8'):bytes;};
  const officialAssetsPlanningFloors=firstOfficialAssetsPlanningFloors;
  const officialAssetsJs=Object.keys(firstOfficialAssetsPlanningFloors);
@@ -1296,7 +1295,7 @@ test('official candidate CI epoch preserves exact historical bytes and rejects p
  for(const changed of [JSON.stringify(partial,null,2)+'\n',current.replace('"unknownJsMs": 10000','"unknownJsMs": 9999')]){assert.notEqual(changed,current);assert.equal(preOfficialAssetsCiSource(path,changed),changed);}
 });
 
-test('official candidate floors authenticate complete serial runs and register only current inventory',()=>{
+test('af77 standalone: official candidate floors authenticate complete serial runs and register only current inventory',()=>{
  const diskReadFileSync=firstReceiptRead;
  const officialAssetsPlanningFloors=firstOfficialAssetsPlanningFloors;
  const officialAssetsJs=Object.keys(firstOfficialAssetsPlanningFloors);
@@ -1326,7 +1325,7 @@ test('official candidate floors authenticate complete serial runs and register o
 });
 
 
-test('complete official flow CI epoch accepts only exact sources and monotonically extends the published checkpoint',()=>{
+test('af77 standalone: complete official flow CI epoch accepts only exact sources and monotonically extends the published checkpoint',()=>{
  const diskReadFileSync=jointFlowRead;
  for(const [file,binding]of Object.entries(officialAssetsFlowCiSourceProof.files)){
   const source=diskReadFileSync(file,'utf8').replaceAll('\r\n','\n');assert.equal(hash(source),binding.afterSha256,file);
@@ -1346,7 +1345,7 @@ test('complete official flow CI epoch accepts only exact sources and monotonical
  for(const changed of [JSON.stringify(partial,null,2)+'\n',source.replace('"unknownJsMs": 10000','"unknownJsMs": 9999')]){assert.notEqual(changed,source);assert.equal(preOfficialAssetsFlowCiSource(path,changed),changed);}
 });
 
-test('current official flow floors bind four complete local files while long campaign remains standalone',()=>{
+test('af77 standalone: current official flow floors bind four complete local files while long campaign remains standalone',()=>{
  const diskReadFileSync=flowReceiptRead;
  const discoverJs=currentOfficialDiscoverJs;
  assert.deepEqual(Object.keys(officialAssetsPlanningFloors).sort(),[...officialAssetsJs].sort());
@@ -1369,7 +1368,7 @@ test('current official flow floors bind four complete local files while long cam
  }
 });
 
-test('joint historical inventory rejects missing duplicate and unknown files while current discovery remains complete',()=>{
+test('af77 standalone: joint historical inventory rejects missing duplicate and unknown files while current discovery remains complete',()=>{
  const current=discoverJs(),historical=jointCiInventoryAt(current,'officialAssetsFlow');
  assert.equal(current.length,837);assert.equal(historical.length,829);
  const added=current.filter(f=>!historical.includes(f));assert.equal(added.length,8);
@@ -1412,7 +1411,7 @@ test('joint historical inventory rejects missing duplicate and unknown files whi
 });
 
 
-test('integrated receipt tooling views retain frozen predecessors and reject drift or wrong scopes',()=>{
+test('af77 standalone: integrated receipt tooling views retain frozen predecessors and reject drift or wrong scopes',()=>{
  for(const [path,row]of Object.entries(toolingProof.files)){
   const view=path.includes('network')?'official':'curses',raw=diskReadFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(raw,row.after);assert.equal(hash(row.after),row.afterSha256);assert.equal(hash(row.before),row.beforeSha256);
@@ -1425,7 +1424,7 @@ test('integrated receipt tooling views retain frozen predecessors and reject dri
  }
 });
 
-test('Curses planning floors authenticate complete current file runs without hosted measurements',()=>{
+test('af77 standalone: Curses planning floors authenticate complete current file runs without hosted measurements',()=>{
  for(const [file,count,oldFloor]of [['tests/curses-shape-responsibilities.test.mjs',3,37312],['tests/curses-source-epoch.test.mjs',5,13299]]){
   const name=file.slice(6,-9),directory='docs/evidence/replay-curses-ci-20261111/planning/'+name;
   const receiptPath=directory+'/measurement.json',bytes=diskReadFileSync(receiptPath),receipt=JSON.parse(bytes),output=diskReadFileSync(directory+'/stdout.log'),errors=diskReadFileSync(directory+'/stderr.log');
@@ -1449,7 +1448,7 @@ test('Curses planning floors authenticate complete current file runs without hos
  }
 });
 
-test('Curses CI outer source views reject partial identities and preserve every frozen predecessor',()=>{
+test('af77 standalone: Curses CI outer source views reject partial identities and preserve every frozen predecessor',()=>{
  const archive=JSON.parse(gunzipSync(diskReadFileSync('tests/helpers/joint-ui-ci-source-epoch.json.gz')));
  const paths=['scripts/ci-test-timings.json','tests/helpers/ci-complete-calibration-source-inverse.mjs','tests/helpers/combined-epoch/source-epoch.mjs','tests/helpers/copy-integration-source-closure.mjs','tests/defect-final-source-epoch.test.mjs','tests/encounter-formation-source-epoch.test.mjs'];
  for(const file of paths){
@@ -1491,7 +1490,7 @@ test('Curses CI outer source views reject partial identities and preserve every 
 });
 
 
-test('Curses receipt source is exact and cannot substitute for raw current source validation',()=>{
+test('af77 standalone: Curses receipt source is exact and cannot substitute for raw current source validation',()=>{
  const path='src/lua/abyss_curses.lua',raw=diskReadFileSync(path,'utf8'),before=diskReadFileSync('tests/fixtures/curses-shape-before.lua','utf8').replaceAll('\r\n','\n');
  assert.equal(hash(raw),'65d912f1d2dbd5245bb4734103c762eb9667c5161c33e4c850062e35572c3642');
  assert.equal(hash(before),'942e7c65da29875fefbff132182ce7a7aab16afb4405e28d2a71e31d589a44b7');
@@ -1509,7 +1508,7 @@ test('Curses receipt source is exact and cannot substitute for raw current sourc
  assert.equal(diskReadFileSync(path,'utf8'),raw,'historical receipt projection never rewrites current production');
 });
 
-test('battle continuation retains exact historical sources and complete current Full coverage',()=>{
+test('af77 standalone: battle continuation retains exact historical sources and complete current Full coverage',()=>{
  // Immutable pr621 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr621');
  const currentLua=()=>[...closeoutCiProof.targets.pr621.luaInventory];
@@ -1544,7 +1543,7 @@ test('battle continuation retains exact historical sources and complete current 
 });
 
 
-test('ratchet current inventory preserves raw Full coverage and refuses source drift after a warm projection',()=>{
+test('af77 standalone: ratchet current inventory preserves raw Full coverage and refuses source drift after a warm projection',()=>{
  // Immutable pr616 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr616');
  const currentLua=()=>[...closeoutCiProof.targets.pr616.luaInventory];
@@ -1577,7 +1576,7 @@ test('ratchet current inventory preserves raw Full coverage and refuses source d
  assert.throws(()=>jointCiInventoryAt(current,'officialAssetsFlow',()=>{throw Error('fresh read failed');}),/fresh read failed/);
  assert.deepEqual(preRatchetInventory(current,(file,encoding)=>diskReadFileSync(file,encoding).replaceAll('\r\n','\n').replaceAll('\n','\r\n')),prior);
 });
-test('Joust gate outer view accepts only the complete two-line addition and preserves historical bytes',()=>{
+test('af77 standalone: Joust gate outer view accepts only the complete two-line addition and preserves historical bytes',()=>{
  // Immutable pr612 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr612');
  const currentLua=()=>[...closeoutCiProof.targets.pr612.luaInventory];
@@ -1602,7 +1601,7 @@ test('Joust gate outer view accepts only the complete two-line addition and pres
 });
 
 
-test('Joust CI outer identities retain complete predecessors and reject foreign drift',()=>{
+test('af77 standalone: Joust CI outer identities retain complete predecessors and reject foreign drift',()=>{
  // Immutable pr612 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr612');
  const currentLua=()=>[...closeoutCiProof.targets.pr612.luaInventory];
@@ -1623,7 +1622,7 @@ test('Joust CI outer identities retain complete predecessors and reject foreign 
  }
 });
 
-test('Golden Idol recovery preserves exact predecessor CI receipt sources and rejects foreign inputs',()=>{
+test('af77 standalone: Golden Idol recovery preserves exact predecessor CI receipt sources and rejects foreign inputs',()=>{
  // Immutable pr614 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr614');
  const currentLua=()=>[...closeoutCiProof.targets.pr614.luaInventory];
@@ -1644,7 +1643,7 @@ test('Golden Idol recovery preserves exact predecessor CI receipt sources and re
  }
 });
 
-test('current Golden Idol836 Full38 inventory adds only two files under unchanged budgets and complete effective costs',t=>{
+test('af77 standalone: current Golden Idol836 Full38 inventory adds only two files under unchanged budgets and complete effective costs',t=>{
  // Immutable pr614 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr614');
  const currentLua=()=>[...closeoutCiProof.targets.pr614.luaInventory];
@@ -1695,7 +1694,7 @@ test('current Golden Idol836 Full38 inventory adds only two files under unchange
 
 
 
-test('Golden Idol complete local floors authenticate actual files and preserve every prior observation',()=>{
+test('af77 standalone: Golden Idol complete local floors authenticate actual files and preserve every prior observation',()=>{
  // Immutable pr614 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr614');
  const currentLua=()=>[...closeoutCiProof.targets.pr614.luaInventory];
@@ -1731,7 +1730,7 @@ test('Golden Idol complete local floors authenticate actual files and preserve e
 });
 
 
-test('Golden Idol shared CI entry points preserve path type and target rejection boundaries',()=>{
+test('af77 standalone: Golden Idol shared CI entry points preserve path type and target rejection boundaries',()=>{
  // Immutable pr614 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr614');
  const currentLua=()=>[...closeoutCiProof.targets.pr614.luaInventory];
@@ -1768,7 +1767,7 @@ test('Golden Idol shared CI entry points preserve path type and target rejection
  assert.notEqual(preCombinedGateSource(gatePath,gate,'flow'),gate);
 });
 
-test('Defect Actor cost layer accepts only complete current bytes and authenticates the sole added inventory',()=>{
+test('af77 standalone: Defect Actor cost layer accepts only complete current bytes and authenticates the sole added inventory',()=>{
  // Immutable pr618 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr618');
  const currentLua=()=>[...closeoutCiProof.targets.pr618.luaInventory];
@@ -1803,7 +1802,7 @@ test('Defect Actor cost layer accepts only complete current bytes and authentica
 });
 
 
-test('Defect Actor floor binds the complete 18-case local run and actual behavior sources without inventing a wall clock or hosted data',()=>{
+test('af77 standalone: Defect Actor floor binds the complete 18-case local run and actual behavior sources without inventing a wall clock or hosted data',()=>{
  // Immutable pr618 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr618');
  const currentLua=()=>[...closeoutCiProof.targets.pr618.luaInventory];
@@ -1829,7 +1828,7 @@ test('Defect Actor floor binds the complete 18-case local run and actual behavio
 });
 
 
-test('complete current Defect Actor Full38 inventory fits original Windows18 POSIX15 budgets including the new floor and unchanged reserve',t=>{
+test('af77 standalone: complete current Defect Actor Full38 inventory fits original Windows18 POSIX15 budgets including the new floor and unchanged reserve',t=>{
  // Immutable pr618 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr618');
  const currentLua=()=>[...closeoutCiProof.targets.pr618.luaInventory];
@@ -1862,7 +1861,7 @@ test('complete current Defect Actor Full38 inventory fits original Windows18 POS
  }
 });
 
-test('combined closeout validates raw current sources and complete Full discovery independently of immutable slice views',t=>{
+test('af77 standalone: combined closeout validates raw current sources and complete Full discovery independently of immutable slice views',t=>{
  const files=nativeCloseoutDiscover();
  assert.deepEqual(files,closeoutCiProof.inventory,'every current test remains in raw discovery');
  assert.equal(new Set(files).size,files.length);
@@ -1933,7 +1932,7 @@ test('combined closeout validates raw current sources and complete Full discover
  }
 });
 
-test('noncombat immutable added inventory keeps its full source and unknown-cost rejection checks',()=>{
+test('af77 standalone: noncombat immutable added inventory keeps its full source and unknown-cost rejection checks',()=>{
  const slice=sliceTools('pr623'),current=slice.inventory(),actualCurrentTimings=slice.timings;
  const jointCiInventoryAt=(paths,target)=>nativeCloseoutJointInventory(paths,target,slice.read,'pr623');
  const currentJsPlanningWeights=slice.weights;
@@ -1948,7 +1947,7 @@ test('noncombat immutable added inventory keeps its full source and unknown-cost
  }
 });
 
-test('run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts',()=>{
+test('af77 standalone: run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts',()=>{
  const p=runHudCiProof,files=stsStylePriorInventory(liveDiscoverJs()),priorRead=stsStylePriorRead(menuRedPriorRead(liveDiskReadFileSync));
  assert.deepEqual(runHudBeforeCiRepairProof.afterInventory,p.afterInventory,'Full repair retains the complete preceding inventory');
  for(const [path,row]of Object.entries(runHudBeforeCiRepairProof.files))assert.deepEqual(p.files[path].before,row.before,'original receipt predecessor retained: '+path);
@@ -1975,7 +1974,7 @@ test('run HUD continuation authenticates complete current sources and raw Full i
  }
 });
 
-test('menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
+test('af77 standalone: menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
  // Preserve this complete original receipt; the appended Release contract
  // below separately accounts for every raw current test and its cost.
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
@@ -2006,10 +2005,14 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
-test('release selection map raw Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
- assertReleaseSelectionMapCiCurrent(rawReleaseReadFileSync);
- assertReleaseSelectionMapExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
- const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseSelectionMapCiPacket;
+for(const [side,label,p,check,guards]of [
+ ['pc22','PC22 basic feedback',releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackCiCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
+ ['selection','selection map',releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards],
+ ['joint','card-contact integration',{currentInventory:integrationPacket.inventory,priorInventory:releasePc22BasicFeedbackCiPacket.priorInventory},assertReleaseIntegrationCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
+])test(`release ${label} retained Full inventory retains all tests, diagnostic forecasts and actual execution guards`,t=>{
+ check(side==='joint'?rawReleaseReadFileSync:side==='selection'?integrationCapacityCiRead(rawReleaseReadFileSync):integrationRead(side,rawReleaseReadFileSync));
+ guards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
+ const js=side==='joint'?rawReleaseDiscoverJs():integrationPriorInventory(rawReleaseDiscoverJs(),side),lua=side==='joint'?rawReleaseLua():integrationPriorInventory(rawReleaseLua(),side,'lua');
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
  for(const path of p.priorInventory.js)assert(js.includes(path));
  for(const path of p.priorInventory.lua)assert(lua.includes(path));
@@ -2037,9 +2040,9 @@ test('release selection map raw Full inventory retains all tests, diagnostic for
  }
 });
 
-test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
+test('af77 standalone: Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
- const js=liveDiscoverJs(),lua=intentLegacyLua();
+ const js=liveDiscoverJs(),lua=liveCloseoutLua();
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');

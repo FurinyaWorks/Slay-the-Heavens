@@ -1,9 +1,12 @@
-import {sourceEpoch as intentCurrentEpoch,preIntentPost697SourceEpoch} from './helpers/closeout-source-epoch.mjs';
-import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
+const sourceSlice=(p,s,t,r)=>actualSourceSlice(p,s,t,r,currentEpoch);
+import {preIntentReleaseSourceEpoch as currentEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceSlice as actualSourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {readFileSync as diskReadFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {readFileSync as unionActualReadFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {intentReleaseFixtureRead,intentReleaseFixtureInventory} from './helpers/intent-release-union.mjs';
+const diskReadFileSync=intentReleaseFixtureRead('release',unionActualReadFileSync);
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -11,13 +14,13 @@ import {sourceEpoch,preDefectFinalEpoch} from './helpers/combined-epoch/pre-form
 import {defectFinalEpoch} from './helpers/defect-final-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.mjs';
-import {sourceEpoch as currentEpoch,preRoomUiEpoch as componentEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {preRoomUiEpoch as componentEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 // The original50-owner source contracts retain the frozen Defect epoch;
 // Actual current68+28+merchant admission is independently exercised below.
 const readFileSync=(file,...args)=>preComponentUiCiSource(file,sourceSlice(file,diskReadFileSync(file,...args).replaceAll('\r\n','\n'),'encounterFormationPrior'));
 const path='src/lua/abyss_defect_final_cards.lua',proof=sourceEpoch.proof,prior=preDefectFinalEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
-test('Defect final outer epoch preserves every prior binding and exact frozen production byte',()=>{
+test('af77 standalone: Defect final outer epoch preserves every prior binding and exact frozen production byte',()=>{
  assert.equal(defectFinalEpoch.proof.currentCommit,'6f017ff875baa2de80a121e507634a2d859fecfa');
  assert.equal(proof.currentCommit,prior.currentCommit);
  assert.equal(proof.currentTreeCommitted,false);
@@ -29,7 +32,7 @@ test('Defect final outer epoch preserves every prior binding and exact frozen pr
  for(const [file,binding]of Object.entries(prior.current))if(file!==path)assert.deepEqual(proof.current[file],binding,file);
  assert.deepEqual(proof.owners,[...prior.owners,path]);assert.equal(proof.owners.length,50);
 });
-test('all advertised historical targets restore Defect final from LF and CRLF without rewriting originals',()=>{
+test('af77 standalone: all advertised historical targets restore Defect final from LF and CRLF without rewriting originals',()=>{
  for(const [target,record]of Object.entries(proof.targets)){
   const expected=record.files[path]?.source??raw(path);
   for(const source of [raw(path),raw(path).replaceAll('\n','\r\n')])assert.equal(sourceEpoch.preCombinedSource(path,source,{target,readSource:raw}),expected,target);
@@ -37,7 +40,7 @@ test('all advertised historical targets restore Defect final from LF and CRLF wi
   assert.equal(sourceEpoch.preCombinedSource(path,original,{target,readSource(){reads++;throw Error('unexpected read');}}),original);assert.equal(reads,0);
  }
 });
-test('current facade retains exact config identity and rechecks all 50 owners after warm success',()=>{
+test('af77 standalone: current facade retains exact config identity and rechecks all 50 owners after warm success',()=>{
  const file='config/architecture.json',source=raw(file),target='actor';
  let calls=0;assert.equal(sourceEpoch.preCombinedSource(file,source,{target,readSource:p=>{calls++;return raw(p);}}),proof.targets.actor.files[file].source);assert.equal(calls,50);
  for(const owner of proof.owners){
@@ -47,7 +50,7 @@ test('current facade retains exact config identity and rechecks all 50 owners af
   assert.throws(()=>sourceEpoch.preCombinedSource(path,raw(path),{target:'defectFinalPrior',readSource:p=>p===owner?null:raw(p)}),/linked owner identity/,owner);
  }
 });
-test('foreign bytes never authorize reads and composed readers preserve explicit raw reader ownership',()=>{
+test('af77 standalone: foreign bytes never authorize reads and composed readers preserve explicit raw reader ownership',()=>{
  for(const target of Object.keys(proof.targets))for(const source of [raw(path)+'\n',raw(path).slice(1),null,undefined,{},17]){
   let reads=0;assert.equal(sourceEpoch.preCombinedSource(path,source,{target,readSource(){reads++;throw Error('unexpected read');}}),source);assert.equal(reads,0);
  }
@@ -56,7 +59,7 @@ test('foreign bytes never authorize reads and composed readers preserve explicit
  const retargeted=sourceEpoch.combinedReader(reader,'actor');assert.equal(retargeted(path),proof.targets.actor.files[path].source);
  assert.throws(()=>sourceEpoch.combinedReader(null,'actor'),/reader/);
 });
-test('isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift',async()=>{
+test('af77 standalone: isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift',async()=>{
  const directory=mkdtempSync(join(tmpdir(),'silent-epoch-closure-'));
  try{
   copyIntegrationSourceClosure(directory);
@@ -68,14 +71,14 @@ test('isolated authenticated helper closure retains the exact Defect final epoch
 });
 
 
-test('unknown source targets are rejected rather than gaining an identity fallback',()=>{
+test('af77 standalone: unknown source targets are rejected rather than gaining an identity fallback',()=>{
  for(const target of ['unknown','',undefined,null]){
   assert.throws(()=>sourceEpoch.preCombinedSource(path,raw(path),{target,readSource:raw}),/unknown source target/);
   assert.throws(()=>sourceEpoch.combinedReader(raw,target)(path),/unknown source target/);
  }
 });
 
-test('configuration layout admission preserves exact tokens and freshly authenticates all 50 current raw owners',async()=>{
+test('af77 standalone: configuration layout admission preserves exact tokens and freshly authenticates all 50 current raw owners',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/pre-formation-source-epoch.mjs');
  const proof=sourceEpoch.proof,path='config/architecture.json',source=proof.current[path].source;
  const raw=p=>proof.current[p]?.source??null,expected=proof.targets.actor.files[path].source;
@@ -97,12 +100,12 @@ test('configuration layout admission preserves exact tokens and freshly authenti
  for(const input of variants){let calls=0;assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'actor',readSource(){calls++;throw Error('unexpected');}}),input);assert.equal(calls,0);}
 });
 
-test('outer foreign-source fallback preserves invalid raw-reader semantics',()=>{
+test('af77 standalone: outer foreign-source fallback preserves invalid raw-reader semantics',()=>{
  for(const target of Object.keys(proof.targets))for(const source of ['foreign source',null,{},17])for(const readSource of [null,false,0,{}])
   assert.equal(sourceEpoch.preCombinedSource(path,source,{target,readSource}),source);
 });
 
-test('live LF and CRLF raw owner reads authenticate 50 current owners on every call',()=>{
+test('af77 standalone: live LF and CRLF raw owner reads authenticate 50 current owners on every call',()=>{
  const config='config/architecture.json',input=readFileSync(config,'utf8'),expected=proof.targets.actor.files[config].source;
  for(const crlf of [false,true]){
   const seen=[];let corrupt=null,missing=null;
@@ -115,7 +118,7 @@ test('live LF and CRLF raw owner reads authenticate 50 current owners on every c
  }
 });
 
-test('outer metadata preserves the full predecessor and rejects altered predecessor metadata',async()=>{
+test('af77 standalone: outer metadata preserves the full predecessor and rejects altered predecessor metadata',async()=>{
  const {extendDefectFinalEpoch}=await import('./helpers/defect-final-source-epoch.mjs');
  for(const [key,value]of Object.entries(prior))if(!['current','owners','targets'].includes(key))assert.deepEqual(proof[key],value,key);
  assert.equal(proof.defectFinalCollectedBaseCommit,'6f017ff875baa2de80a121e507634a2d859fecfa');
@@ -129,7 +132,7 @@ test('outer metadata preserves the full predecessor and rejects altered predeces
  assert.throws(()=>{proof.current[path].source='foreign';},TypeError);
 });
 
-test('source and configuration reject unknown targets and malformed live readers after warm authorization',()=>{
+test('af77 standalone: source and configuration reject unknown targets and malformed live readers after warm authorization',()=>{
  for(const file of [path,'config/architecture.json']){
   for(const target of ['unknown','',null,undefined,'__proto__']){
    assert.throws(()=>sourceEpoch.preCombinedSource(file,raw(file),{target,readSource:raw}),/unknown source target/);
@@ -143,7 +146,7 @@ test('source and configuration reject unknown targets and malformed live readers
  }
 });
 
-test('pre-feedback production retains original68, exact28, merchant and all 104 frozen owner assertions',()=>{
+test('af77 standalone: pre-feedback production retains original68, exact28, merchant and all 104 frozen owner assertions',()=>{
  const currentEpoch=stsStyleEpoch,diskReadFileSync=path=>stsStyleEpoch.proof.current[path]?.source??null;
  const current=currentEpoch.proof,file='config/architecture.json',source=diskReadFileSync(file,'utf8');
  const actual=Object.fromEntries(current.owners.map(path=>[path,diskReadFileSync(path,'utf8')]));
@@ -169,18 +172,30 @@ test('pre-feedback production retains original68, exact28, merchant and all 104 
  for(const foreign of [source+'-- foreign',expected,null,undefined,{},17]){reads=[];assert.equal(project(foreign),foreign);assert.deepEqual(reads,[]);}
 });
 
-const priorIntentRead=(file,...args)=>intentCurrentEpoch.preCombinedSource(file,diskReadFileSync(file,...args),
- {target:'intentPost697Release',readSource:path=>diskReadFileSync(path,'utf8')});
-test('current raw production retains the exact power-view owner and complete release owner continuation',()=>{
- // The original 116-owner release proof remains explicit. The separate intent
- // union contract authenticates the complete raw current corpus of 117 owners.
- const currentEpoch=preIntentPost697SourceEpoch,diskReadFileSync=priorIntentRead;
+test('af77 standalone: frozen pre-PC22 production retains the exact power-view owner and complete 116-owner release continuation',()=>{
+ const currentEpoch=preReleasePc22BasicFeedbackSourceEpoch,diskReadFileSync=path=>currentEpoch.proof.current[path]?.source??null;
  const current=currentEpoch.proof,file='config/architecture.json',source=diskReadFileSync(file,'utf8'),owner='src/lua/abyss_monster_power_view.lua';
  const pad=files=>Object.fromEntries(Object.keys(current.current).map(path=>[path,files[path]??null]));
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current));
  assert.deepEqual(menuRedEpoch.proof.owners,[...stsStyleEpoch.proof.owners,owner].sort());assert.equal(menuRedEpoch.proof.owners.length,105);
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
  assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(current.owners.length,116);
+ const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
+ const expected=current.targets.develop.files[file].source;
+ assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);
+ for(const replacement of [null,diskReadFileSync(owner,'utf8')+'\n',new Error('missing current power view')]){
+  reads.length=0;
+  assert.throws(()=>currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:path=>{if(path===owner){reads.push(path);if(replacement instanceof Error)throw replacement;return replacement;}return raw(path);}}),/combined linked owner/);
+  assert.deepEqual(reads,current.owners.slice(0,current.owners.indexOf(owner)+1));
+ }
+});
+
+test('af77 standalone: current PC22 raw production retains the exact power-view owner and complete 117-owner release continuation',()=>{
+ const current=currentEpoch.proof,prior=preReleasePc22BasicFeedbackSourceEpoch.proof,file='config/architecture.json',source=diskReadFileSync(file,'utf8'),owner='src/lua/abyss_monster_power_view.lua';
+ assert.equal(prior.owners.length,116);
+ assert.deepEqual(current.owners,[...prior.owners,'src/lua/abyss_card_flow.lua'].sort());
+ assert.equal(current.owners.length,117);
+ assert.deepEqual(current.targets.releasePc22BasicFeedbackPrior.files,prior.current);
  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
  const expected=current.targets.develop.files[file].source;
  assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);

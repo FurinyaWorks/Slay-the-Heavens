@@ -44,7 +44,7 @@ function M.new(stage,platform)
         self.active,self.waiting,self.inPlay,self.moving={},{},{},{}
     end
     function self.playing(_owner,d,flight)
-        self.inPlay[d.uid]={card={uid=d.uid,cardId=d.cardId},pile='play',position={flight.tx,flight.ty}}
+        self.inPlay[d.uid]={card={uid=d.uid,cardId=d.cardId},pile='play',position={flight.tx,flight.ty-(flight.stop or 0)}}
     end
     local function enqueue(card,from,to,label)
         local start=from.position or point(from)
