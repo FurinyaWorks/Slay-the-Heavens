@@ -417,7 +417,7 @@ test('inline admission runs only for organization non-master PRs and downstream 
   assert.equal(evaluateJobIf(downstream,{needs:{impact:{result}},cancelled:()=>cancelled}),result==='success'&&!cancelled);
 });
 
-import {releasePreflightUnionSource,assertReleasePreflightUnionCurrent} from './helpers/release-preflight-union-source.mjs';
+import {releasePreflightUnionSource,assertReleasePreflightUnionCurrent,capacityFastUnionSource} from './helpers/release-preflight-union-source.mjs';
 import {assertFastFreezeB9UnionCurrent,fastFreezeB9Source} from './helpers/release-fast-freeze-b9-union.mjs';
 import {beforeReleaseFastB9Ci} from './helpers/release-fast-b9-ci-source.mjs';
 import {gunzipSync} from 'node:zlib';
@@ -442,7 +442,7 @@ test('outer Release union retains complete named predecessors and rejects every 
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/release-preflight-union-source.json.gz')));
  assertReleasePreflightUnionCurrent();assertFastFreezeB9UnionCurrent();
  for(const [target,files]of Object.entries(packet.views))for(const [path,row]of Object.entries(files)){
-  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');assert.equal(hash(raw),row.current.sha256);
+  const raw=capacityFastUnionSource(path,readFileSync(path,'utf8'),'fast').replaceAll('\r\n','\n');assert.equal(hash(raw),row.current.sha256);
   for(const eol of ['\n','\r\n']){
    const source=raw.replaceAll('\n',eol);
    assert.equal(releasePreflightUnionSource(path,source,target).replaceAll('\r\n','\n'),row.before.source);
