@@ -25,7 +25,7 @@ on:
         options: [shadow, publish]
         default: shadow
       ai_review_bootstrap:
-        description: 'One-time native-approved CODEOWNERS migration candidate'
+        description: 'One-time independently audited cloud gate installation'
         type: boolean
         default: false
 permissions:
@@ -89,7 +89,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.18.0'
-      - name: Verify actual independent review, native policy and formal test evidence
+      - name: Verify signed cloud AI review and exact formal test evidence
         run: node scripts/publish-pr-quality.mjs --independent-review
       - name: Name immutable proof
         id: identity

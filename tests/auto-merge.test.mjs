@@ -200,16 +200,16 @@ test('independent AI gate collector fails closed on malformed pages, missing per
 
 function nativeFixture(){
  const f=aiFixture();f.repository.allow_auto_merge=true;f.repository.allow_squash_merge=true;f.repository.default_branch='develop';
- f.pr.node_id='PR_712';f.pr.head.ref='feat/native';f.pr.labels=[];
+ f.pr.node_id='PR_712';f.pr.head.ref='feat/native';f.pr.labels=[];f.pr.user=f.reviews[0].user;f.reviews[0].state='COMMENTED';
  f.ruleset={id:25870651,target:'branch',enforcement:'active',conditions:{ref_name:{include:['refs/heads/develop'],exclude:[]}},rules:[
-  {type:'pull_request',parameters:{required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true,allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
+  {type:'pull_request',parameters:{required_approving_review_count:0,dismiss_stale_reviews_on_push:false,require_code_owner_review:false,allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
   {type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},{type:'required_linear_history'},
   {type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,required_status_checks:['check','presentation','engineering-posix','inventory','independent-review','pr-quality'].map(context=>({context,integration_id:context==='independent-review'?null:15368}))}}]};
  f.run={id:7,run_attempt:1,head_sha:sha('a'),path:'.github/workflows/quality.yml',event:'pull_request',status:'completed',conclusion:'success',repository:{full_name:aiRepo},pull_requests:[{number:712}]};
  f.jobs=currentFullQualityJobs.map((name,i)=>({id:100+i,name,run_id:7,run_attempt:1,head_sha:sha('a'),status:'completed',conclusion:name==='fast'?'skipped':'success'}));
  f.checkout={schemaVersion:1,event:'pull_request',runId:7,attempt:1,head:sha('a'),base:sha('b'),tested:sha('d'),prNumber:712,parents:[sha('b'),sha('a')]};
  f.artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:sha('a')}};
- f.gateRun={id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
+ f.gateRun={actor:{id:aiRoleId},triggering_actor:{id:aiRoleId},id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
  f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12)+'-9-1',expired:false,workflow_run:{id:9,head_sha:sha('b')},digest:'sha256:'+ 'f'.repeat(64)};
  const api=aiApi(f).api,calls=[];
  const query=(...args)=>{
@@ -239,7 +239,7 @@ test('native merge dry-run requires actual Review and retained policy without Ad
  const f=nativeFixture();assert.equal(armAutoMerge(aiRepo,712,100,f.query,{dryRun:true}).state,'eligible');
  assert(f.calls.every(args=>!args.includes('POST')&&args[1]!=='graphql'));
  assert.throws(()=>armAutoMerge(aiRepo,712,{reviewId:'local-pass'},f.query),/server-side Review/);
- for(const mutate of [f=>f.ruleset.rules[0].parameters.required_approving_review_count=0,f=>f.ruleset.rules[0].parameters.dismiss_stale_reviews_on_push=false,f=>f.ruleset.rules[0].parameters.require_code_owner_review=false,f=>f.ruleset.rules[3].parameters.strict_required_status_checks_policy=false,f=>f.ruleset.rules[1].parameters.merge_method='MERGE',f=>f.ruleset.rules[3].parameters.required_status_checks.pop(),f=>f.ruleset.bypass_actors=[{actor_id:1}]]){
+ for(const mutate of [f=>f.ruleset.rules[3].parameters.strict_required_status_checks_policy=false,f=>f.ruleset.rules[1].parameters.merge_method='MERGE',f=>f.ruleset.rules[3].parameters.required_status_checks.pop(),f=>f.ruleset.bypass_actors=[{actor_id:1}]]){
   const bad=nativeFixture();mutate(bad);assert.throws(()=>armAutoMerge(aiRepo,712,100,bad.query));assert(!bad.calls.some(a=>a.includes('POST')));
  }
 });
@@ -254,7 +254,7 @@ test('native enable dispatches the existing gate and records an intent rather th
 function gateExecute(f,{mode='publish',release=false,mutateEnv=()=>{},saved,proofFile}={}){
  const dir=mkdtempSync(join(tmpdir(),'native-gate-test-')),event=join(dir,'event.json');writeFileSync(event,'{}');
  const file=proofFile??join(dir,'proof.json');if(saved)writeFileSync(file,JSON.stringify(saved));
- const env={GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_EVENT_PATH:event,GITHUB_REPOSITORY:aiRepo,GITHUB_REPOSITORY_ID:String(projectRepositoryId),GITHUB_SHA:sha('b'),GITHUB_REF:'refs/heads/develop',GITHUB_RUN_ID:'9',GITHUB_RUN_ATTEMPT:'1',AI_REVIEW_PR:'712',AI_REVIEW_HEAD:sha('a'),AI_REVIEW_MODE:mode,AI_REVIEW_ARTIFACT_ID:'99'};mutateEnv(env);
+ const env={GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_EVENT_PATH:event,GITHUB_REPOSITORY:aiRepo,GITHUB_REPOSITORY_ID:String(projectRepositoryId),GITHUB_SHA:sha('b'),GITHUB_REF:'refs/heads/develop',GITHUB_ACTOR_ID:String(aiRoleId),GITHUB_RUN_ID:'9',GITHUB_RUN_ATTEMPT:'1',AI_REVIEW_PR:'712',AI_REVIEW_HEAD:sha('a'),AI_REVIEW_MODE:mode,AI_REVIEW_ARTIFACT_ID:'99'};mutateEnv(env);
  try{const result=independentReviewGate(env,f.query,{release,loadCheckout:f.loadCheckout,proofFile:file});return {result,proof:JSON.parse(readFileSync(file,'utf8'))};}finally{rmSync(dir,{recursive:true,force:true});}
 }
 test('CI native review gate uploads genuine preflight before releasing a truthful Required status',()=>{
@@ -266,7 +266,7 @@ test('CI native review gate uploads genuine preflight before releasing a truthfu
 test('shadow cannot publish and stale approval, policy, CI, artifact or untrusted source fails closed',()=>{
  const shadow=nativeFixture(),s=gateExecute(shadow,{mode:'shadow'});assert.equal(s.result.state,'shadow_verified');
  gateExecute(shadow,{mode:'shadow',release:true,saved:s.proof});assert(!shadow.calls.some(a=>a.includes('POST')));
- for(const mutate of [f=>f.ruleset.rules[0].parameters.required_approving_review_count=0,f=>f.reviews[0].state='COMMENTED',f=>f.run.conclusion='failure',f=>f.jobs[0].conclusion='failure']){
+ for(const mutate of [f=>f.ruleset.rules[3].parameters.strict_required_status_checks_policy=false,f=>f.reviews[0].state='DISMISSED',f=>f.run.conclusion='failure',f=>f.jobs[0].conclusion='failure']){
   const f=nativeFixture();mutate(f);assert.throws(()=>gateExecute(f));assert(!f.calls.some(a=>a.includes('POST')));
  }
  const f=nativeFixture(),p=gateExecute(f).proof;f.proofArtifact.expired=true;assert.throws(()=>gateExecute(f,{release:true,saved:p}),/artifact/);assert(!f.calls.some(a=>a.includes('POST')));
@@ -278,20 +278,6 @@ test('gate-only workflow keeps Required inventory distinct and uses a separate c
  assert(text.indexOf('--independent-review')<text.indexOf('id: proof'));assert(text.indexOf('id: proof')<text.indexOf('--release-independent-review'));
 });
 
-test('native gate retains CODEOWNERS in the reviewed merge tree and never silently re-enters bootstrap',()=>{
- for(const target of ['base','reviewed']){
-  const f=nativeFixture(),normal=f.query;
-  f.query=(...args)=>{
-   const path=args.at(-1);
-   if(typeof path==='string'&&path.endsWith('/contents/.github/CODEOWNERS?ref='+ (target==='base'?sha('b'):sha('d')))){
-    if(target==='base')throw Error('HTTP 404: Not Found');
-    return JSON.stringify({type:'file',content:Buffer.from('* @attacker').toString('base64')});
-   }
-   return normal(...args);
-  };
-  assert.throws(()=>gateExecute(f),/CODEOWNERS|bootstrap/);assert(!f.calls.some(a=>a.includes('POST')));
- }
-});
 test('rerun proof names bind the immutable gate run and attempt without overwriting earlier evidence',()=>{
  const f=nativeFixture(),p=gateExecute(f).proof;
  f.proofArtifact.name=f.proofArtifact.name.replace('-9-1','-9-2');
@@ -325,32 +311,11 @@ test('activation readback failure or changed combination cancels native intent a
  }
 });
 
-test('explicit bootstrap requires the two native collaborators, exact approved source and retained final owners',()=>{
- const make=(third=false)=>{
-  const f=nativeFixture(),normal=f.query;
-  f.query=(...args)=>{
-   const path=args.at(-1);
-   if(path==='repos/'+aiRepo+'/contents/.github/CODEOWNERS?ref='+sha('b'))throw Error('HTTP 404 Not Found');
-   if(typeof path==='string'&&path.includes('/collaborators?'))return JSON.stringify([{id:111138384,permissions:{admin:true}},{id:337201427,permissions:{maintain:true}},...(third?[{id:1,permissions:{push:true}}]:[])]);
-   return normal(...args);
-  };return f;
- };
- const bootstrap=e=>{e.AI_REVIEW_BOOTSTRAP='true';e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');};
- assert.equal(gateExecute(make(),{mutateEnv:bootstrap}).result.state,'pr_passed');
- assert.throws(()=>gateExecute(make(true),{mutateEnv:bootstrap}),/two existing trusted/);
- assert.throws(()=>gateExecute(make(),{mutateEnv:e=>{bootstrap(e);e.GITHUB_SHA=sha('f');}}),/exact approved/);
- assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrap}),/before CODEOWNERS/);
-});
 test('a hold added during artifact collection prevents the CI gate from releasing success',()=>{
  const f=nativeFixture(),load=f.loadCheckout;f.loadCheckout=()=>{const result=load();f.pr.labels=[{name:'hold'}];return result;};
  assert.throws(()=>gateExecute(f),/admission changed/);assert(!f.calls.some(a=>a.includes('POST')));
 });
 
-test('CODEOWNERS text returned through a symlink cannot masquerade as a native review anchor',()=>{
- const f=nativeFixture(),normal=f.query;
- f.query=(...args)=>args.at(-1)==='repos/'+aiRepo+'/git/trees/'+sha('e')?JSON.stringify({truncated:false,tree:[{path:'CODEOWNERS',mode:'120000',type:'blob',sha:sha('c')}]}):normal(...args);
- assert.throws(()=>gateExecute(f),/regular native blob/);assert(!f.calls.some(a=>a.includes('POST')));
-});
 test('only each trusted actors latest active decisive review can request changes',()=>{
  const f=aiFixture(),other={id:337201427,login:'v5g95m7t8m-max'};
  f.permissions[other.id]={permission:'write',role_name:'maintain',user:other};
@@ -362,4 +327,31 @@ test('only each trusted actors latest active decisive review can request changes
  assert.equal(validateIndependentAiReview(f).conclusion,'pass');
  f.reviews.push({...f.reviews[1],id:104,state:'CHANGES_REQUESTED',submitted_at:'2026-11-17T10:04:00Z'});
  assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+});
+
+test('the existing zero-approval ruleset accepts an actual same-account signed independent cloud review',()=>{
+ const f=nativeFixture();assert.equal(f.pr.user.id,f.reviews[0].user.id);assert.equal(f.reviews[0].state,'COMMENTED');
+ const prepared=gateExecute(f);assert.equal(prepared.result.state,'pr_passed');
+ assert(!f.calls.some(a=>a.some(v=>typeof v==='string'&&(/CODEOWNERS|collaborators\?/).test(v))),'no new owner/reviewer infrastructure');
+});
+function bootstrapFixture(){
+ const f=nativeFixture(),base='c2409ad750c15124b7b843c6bbfa5b222537cb75';
+ f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
+ return f;
+}
+const bootstrapEnv=e=>{e.AI_REVIEW_BOOTSTRAP='true';e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');};
+test('first installation requires the fixed old BASE, exact audited source and actual signing dispatch actor',()=>{
+ assert.equal(gateExecute(bootstrapFixture(),{mutateEnv:bootstrapEnv}).result.state,'pr_passed');
+ for(const change of [
+  f=>f.gateRun.actor.id=999,f=>f.gateRun.triggering_actor.id=999,
+  f=>f.gateRun.actor.id=337201427,
+ ]){const f=bootstrapFixture();change(f);assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/actual trusted coordinator/);assert(!f.calls.some(a=>a.includes('POST')));}
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrapEnv}),/one-time frozen BASE/);
+ assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_SHA=sha('f');}}),/exact independently reviewed/);
+ assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_ACTOR_ID='999';}}),/actual trusted coordinator/);
+});
+test('ordinary proof publication executes current actual BASE code and never PR or stale default code',()=>{
+ for(const envChange of [e=>e.GITHUB_SHA=sha('a'),e=>{e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');}]){
+  const f=nativeFixture();assert.throws(()=>gateExecute(f,{mutateEnv:envChange}),/trusted actual BASE/);assert(!f.calls.some(a=>a.includes('POST')));
+ }
 });

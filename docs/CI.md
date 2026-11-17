@@ -79,7 +79,7 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 | [25870648](https://github.com/FurinyaWorks/Slay-the-Abyss/rules/25870648) | master | 必须PR、解决讨论；不绑定未验证的CI | 无 |
 | [25870651](https://github.com/FurinyaWorks/Slay-the-Abyss/rules/25870651) | develop | 必须PR、仅squash、线性历史、解决讨论、严格基线、原四项检查及independent-review/pr-quality、Squash/ALLGREEN队列 | 无 |
 
-历史 PR 豁免曾为 CHNISam（111138384）和 v5g95m7t8m-max（337201427），`actor_type: User`、`bypass_mode: pull_request`；本轮三份规则均读回 `bypass_actors: []`，不能沿用历史豁免。防强推/删除单独成规则且不列豁免。此为历史配置；本次迁移候选要求在 develop 增加非作者原生审批、推送后撤销旧审批及 CODEOWNERS 保护，实际启用须读回规则和真实闭环。
+历史 PR 豁免曾为 CHNISam（111138384）和 v5g95m7t8m-max（337201427），`actor_type: User`、`bypass_mode: pull_request`；本轮三份规则均读回 `bypass_actors: []`，不能沿用历史豁免。防强推/删除单独成规则且不列豁免。原生额外审批保持现有配置；真实云端独审通过同一可信协调账号的签署记录接入 Actions，不要求第二个账号。
 
 2026-11-04已读回 develop 的 `strict_required_status_checks_policy: true` 与六项必需 context。原四项及 full-quality 指定 GitHub Actions 15368，independent-review 为 Any source；旧 ownership 作业不恢复，原保护与 PR 豁免保留。
 
@@ -107,29 +107,31 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 
 develop PR 的独立评审与 CI 并行。审查与准入通过后可挂起原生 Auto-merge；这只是授权，不是 `pr_passed`。PR 侧必须等原四项门禁、`independent-review`、`pr-quality` 全绿并满足严格基线才能入队，实际 squash 还须组合 Full 通过。Draft、冲突、未落地依赖、已知 CI 失败及锁定标签在启用前拒绝。
 
-### 原生独审门禁迁移与一次性配置
+### 现有云端独审与 Actions 门禁
 
-本次候选移除协调连接器的 commit-status 写入、隐藏 bypass 字段认证和重复 enqueuer Admin 授权。GitHub 原生 Auto-merge / Merge Queue / Required Checks 仍负责准入和合并；真实独立 AI 复审、精确 HEAD/BASE/合并树、已合且已纳入基线的依赖、不可变测试收据及合后 Backlog 对账全部保留。保留现有一个组织主仓和两个个人 Fork，不增加组织、调度器或工作流。
+本次迁移保留现有 Ruleset、六项 Required Checks 及来源、Strict、SQUASH/ALLGREEN 队列、发版保护、讨论解决和线性历史；不增加 Required approvals、不启用额外 stale-approval/CODEOWNERS 要求，不强制第二 GitHub 账号逐 PR 审批。只保留一个组织主仓和两个既有个人 Fork，不另造工作流、调度器或付费 AI 后台。
 
-迁移必须先安装服务端信任锚，再发布新门禁。Owner 在既有 [develop Ruleset 25870651](https://github.com/FurinyaWorks/Slay-the-Heavens/rules/25870651) 仅增加三项：`required_approving_review_count: 1`、`dismiss_stale_reviews_on_push: true`、`require_code_owner_review: true`。六项 Required Checks 及各来源、Strict、SQUASH/ALLGREEN 队列、讨论解决、线性历史、额外审批字段、现有 bypass 配置全部保留。禁止用缺失的 `bypass_actors` 拼造完整规则 PUT；不得删除旧检查解决启动问题。源码候选、独立复审和测试先准备好，规则读回及 shadow 验证后才启用发布。此段是迁移要求，不是已经完成的远端配置声明。
-
-同一候选提交 `.github/CODEOWNERS`，全仓指定既有 `@FurinyaDev @v5g95m7t8m-max`。首次合入前 BASE 尚无 CODEOWNERS，不能声称已有 owner 保护；bootstrap 还须完整读取有写权限的协作者，确认恰为现有两账号，且真实 APPROVED Review 来自非 PR 作者。之后基线 CODEOWNERS 保护自身与门禁源码。GitHub 禁止作者自批，同账号的另一个 AI 会话不能豁免原生规则。日常连接器只需原有读代码、PR 与原生合并能力，不再需要 Administration 或 Commit statuses 写权限；仅既有 Licenses 中独立门禁作业使用 job-scoped `statuses: write`。
+独审复用现有云端 Codex 的真实独立子会话，在代码交付环节自动完成。现有可信维护协调者亲自核实实际会话与未解决问题，再以自己的 GitHub 身份提交绑定精确 HEAD/实际 develop BASE/合并树的 COMMENTED Review；同 PR 作者账号也可使用。APPROVED 历史记录仍可读取，但不是准入所需的第二人审批。原生记录证明签署账号与提交，不自证 AI 独立，报告中的 agent 名称也不自证会话；沿用现有“可信协调者核实实际独审”的边界。后续 Actions 从受保护的实际 BASE 源码校验报告、依赖和正式 CI 证据，发布真实独审状态；移除连接器直接写状态、隐藏 bypass 字段认证及重复的入队者 Admin 授权。
 
 ### 常规使用
 
-PR 正文须恰有一行 `Depends-on: none` 或 `Depends-on: #123, #456`。真实独立 AI 会话复审当前 HEAD、实际 develop BASE 和 GitHub PR 合成树；可信协调者核对会话来源与未解决问题，把完整报告随 GitHub 原生 APPROVED Review 提交到该 HEAD。报告以 `<!-- independent-ai-review:v1 -->` 开始，单个 JSON 使用 `schemaVersion: 1`、`kind: independent-ai-review`、固定仓库 ID/名称、PR、`reviewedHeadSha`、`reviewedBaseSha`、`reviewedTreeSha`、`conclusion: pass`、`unresolved: []`、不同于全部 `implementationAgents` 的 `reviewerAgent`、服务端签署账号 `coordinator`、实际 `provenance.reviewId/sessionId` 和 `kind: coordinator-verified-agent-session` / `coordinatorVerified: true`。JSON 不能自证独立，可信协调者仍须亲自核实真实会话。COMMENTED、任意本地 JSON、作者自批、非可信账号、旧 SHA 或被驳回的报告都不能授权。
+PR 正文须恰有一行 `Depends-on: none` 或 `Depends-on: #123, #456`。可信协调账号确认真实独立 AI 会话后，以 GitHub COMMENTED Review 在当前 HEAD 提交完整报告：`<!-- independent-ai-review:v1 -->` 后紧跟一个 JSON，含 `schemaVersion: 1`、`kind: independent-ai-review`、固定仓库 ID/名称、PR、`reviewedHeadSha`、`reviewedBaseSha`、`reviewedTreeSha`、`conclusion: pass`、`unresolved: []`、不同于全部 `implementationAgents` 的实际 `reviewerAgent`，以及签署账号 `coordinator` 和真实 `provenance.reviewId/sessionId`（`kind: coordinator-verified-agent-session`、`coordinatorVerified: true`）。未核实会话的 JSON、本地测试绿灯、非可信账号、旧组合、被驳回/撤销或仍有问题的报告均不能放行。
 
 ```bash
-npm run merge:auto -- <PR> <GitHub-Review-ID> --dry-run
-npm run merge:auto -- <PR> <GitHub-Review-ID> --shadow
-npm run merge:auto -- <PR> <GitHub-Review-ID>
+npm run merge:auto -- <PR> <GitHub-Review-record-ID> --dry-run
+npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
+npm run merge:auto -- <PR> <GitHub-Review-record-ID>
 ```
 
-命令读取真实 Review、当前协作者权限、依赖和公开规则，绑定原生 `expectedHeadOid`，申请 Auto-merge 并读回实际排队/等待状态。它不发布独审状态，不重复下载和运行 Full，也没有同步合并回退。schema9 `native-auto-merge-intent` 只是原生合并意图定位，不是测试通过凭证；缺失或已失败/取消的正式 CI 不能授权。首次候选只允许显式 `--bootstrap-ref=<该 PR 源分支>`；常规从可信默认分支执行，bootstrap 必须在服务端三项保护生效后使用，不能让未受保护的候选自签。
+云端交付协调者调用现有命令后，GitHub 负责 CI→Queue→Merge 等待，不需人工再审批。命令读取真实签署记录、当前协调者权限、已合且已纳入基线的依赖、当前完整 PR 合成树及公开保护，绑定 `expectedHeadOid` 请求原生 Auto-merge并读回；不直接发布独审状态，也不重复执行或下载 Full。schema9 `native-auto-merge-intent` 只是原生合并意图定位，不是测试通过凭证；缺失或已知失败/取消的正式 CI 拒绝。
 
-既有 Licenses 工作流新增一个小型独审门禁作业，Quality 完成后或原生 dispatch 时核对真正 APPROVED Review、当前三项原生保护、CODEOWNERS/首次协作者信任锚和既有 schema3/7 正式 CI 收据。先上传不可变 `native-ai-review-proof.json`，再重读相同身份和当前 run/attempt，最后发布真实 `independent-review` success，描述绑定原生 Review ID、BASE 和 artifact ID。shadow 只记录证据，永不写 Required success。Gate-only 事件使用独立 concurrency 与非 Required 的跳过名称，不能取消正式许可证审计或以 skipped inventory 覆盖其结果。Fork 门禁不写主仓状态。
+既有 Licenses 工作流复用一个小型门禁作业：Quality 完成事件或准确 dispatch 时读取最新受信 Review，下载原 schema3/7 正式 CI 不可变收据，校验全部必要作业与当前 run/attempt，先上传唯一 `native-ai-review-proof.json`（artifact 名绑定 PR/HEAD/run/attempt），再重读相同身份，最后由 Actions 发布真实 `independent-review` success。shadow 只留证据、不写 Required success。常态 gate 的运行源码 SHA 必须等于实际受审 develop BASE；PR 文本只作为数据，不执行 PR 中的程序来发布独审证明。Gate-only 使用独立 concurrency 与非 Required 的跳过名称，避免取消审计或覆盖 `inventory`。
 
-PR 日常受影响 Fast / 高风险 Full 的现有路由不变；Fast 不发布 Full success。真实队列组合仍 Full，合后 develop push Full 另验。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前证据，验证实际队列 Full/inventory、squash 唯一父/树及最新 push Full，再执行 Backlog 对账。shadow、旧 run/attempt、替换 artifact、旧 BASE、非 Actions 签署、缺队列证明均保持 `merged_pending`。历史 schema2/3/4/5/6/7/8 收据继续按原合同读取，不改写旧观测。
+首次安装保留现有可信维护者安装边界：只允许固定旧 BASE `c2409ad750c15124b7b843c6bbfa5b222537cb75`，由已亲自核实实际独审的同一协调者显式 `--bootstrap-ref=<本 PR 源分支>`，GitHub 服务端 dispatch actor、triggering actor、签署 Review 身份一致，且运行源 SHA 必须等于已审候选 HEAD。该一次性例外不是候选自行证明安全，也不新增用户操作；新 BASE 落地后不能重复使用。上线前先真实独审、正式 CI 和 shadow，再发布并验证队列闭环。
+
+PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，核队列 Full/inventory、squash 唯一父/树、最新 push Full 和 Backlog。shadow、替换附件、旧 run/attempt、旧 BASE、非 Actions 来源或缺队列证明均保持 `merged_pending`；旧 schema 证据继续按原合同读取，不改写历史。
+
+自动化边界：AI 由现有云端交付会话执行，Actions 验证预存的实际独审结果，不声称它能唤醒已退出的 Codex 会话。准确报告预存且组合未变时，后续 CI→Queue→Merge 无人值守；HEAD/BASE 改变必须重新实际独审，不能把旧报告改写成新 BASE。仍沿用现行可信维护者接纳 CI 源码的边界；Any-source 检查和 Actions artifact 不是供应商 AI 数字签名，也不声称能阻止有权限修改所有 CI 的恶意维护者。
 
 **Backlog 同轮收口**：已合 PR 正文用唯一 `Backlog:` 行显式列出改动任务的 `done`、`verify`、`continue` 或 `superseded:TASK-承接`；无任务更新才写 `none`。上述合后入口在真实 `merged_passed` 后核对完整 PR 文件清单、实际最新 develop 与合入时任务快照，再通过 Backlog CLI 更新并读回。`done` 不自动勾 AC，全部已勾才移入 completed；`verify` 保持 In Progress/待验，已有 Blocked 须先明确解除，不能隐式恢复；`continue` 留本轮接续备注；替代归档必须有有效承接且活动依赖已迁移。未知声明、旧工作树、后续任务变化、CLI失败或读回不符保持 `Backlog pending`，不得把代码交付成功当作任务已同步；已写入步骤可安全接续。历史 PR 无声明时先人工对账，不补造其合前声明。该入口没有后台轮询，当前会话不必守候；下次合后验收执行同一命令即可。
 

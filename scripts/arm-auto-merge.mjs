@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches} from './repository-identity.mjs';
-import {collectIndependentAiReview,nativeReviewPolicyErrors} from './independent-ai-review.mjs';
+import {collectIndependentAiReview} from './independent-ai-review.mjs';
 export {parseDependencies} from './independent-ai-review.mjs';
 export const reviewContext='independent-review';
 export const requiredContexts=['check','presentation','engineering-posix','inventory',reviewContext,'pr-quality'];
@@ -18,9 +18,9 @@ function gh(...args){
 const json=(query,...args)=>JSON.parse(query(...args));
 
 // GitHub owns merge authorization. This adapter validates the real independent
-// Review and dispatches the existing CI gate; it never posts commit statuses.
+// cloud AI report signed by the existing trusted coordinator and dispatches the existing CI gate; it never posts commit statuses.
 export function autoMergeErrors({repo,settings,pr,ruleset,nativeReview}){
- const errors=[...nativeReviewPolicyErrors(ruleset)];
+ const errors=[];
  if(!projectRepositoryMatches(settings,repo)||!projectRepositoryMatches(pr?.head?.repo,repo)||!projectRepositoryMatches(pr?.base?.repo,repo))errors.push('Unexpected project repository identity');
  if(settings?.allow_auto_merge!==true||settings?.allow_squash_merge!==true)errors.push('Native auto-merge and squash must be enabled');
  if(pr?.state!=='open'||pr.merged||pr.draft||pr.mergeable!==true||pr.base?.ref!=='develop')errors.push('PR must be ready, mergeable and target develop');
@@ -33,7 +33,7 @@ export function autoMergeErrors({repo,settings,pr,ruleset,nativeReview}){
  if(q.length!==1||q[0].parameters?.merge_method!=='SQUASH'||q[0].parameters?.grouping_strategy!=='ALLGREEN')errors.push('Native SQUASH ALLGREEN queue must remain enabled');
  if(!isDeepStrictEqual(pull?.allowed_merge_methods,['squash'])||pull.required_review_thread_resolution!==true||!rules.some(r=>r.type==='required_linear_history'))errors.push('Squash, resolved threads and linear history must remain enabled');
  if(Object.hasOwn(ruleset??{},'bypass_actors')&&(!Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length))errors.push('Unexpected explicit bypass actors');
- if(nativeReview?.conclusion!=='pass')errors.push(...(nativeReview?.errors??['A real native approving AI Review is required']));
+ if(nativeReview?.conclusion!=='pass')errors.push(...(nativeReview?.errors??['A trusted signed cloud AI review record is required']));
  return errors;
 }
 export function collectEligibility(repo,number,review,query=gh){
@@ -58,7 +58,7 @@ function dispatchGate(repo,number,current,query,{shadow=false,bootstrapRef}={}){
 }
 export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=false,bootstrapRef,persist=()=>{}}={}){
  const before=collectEligibility(repo,number,review,query);
- const blocking=record=>shadow?record.errors.filter(error=>!nativeReviewPolicyErrors(record.ruleset).includes(error)):record.errors;
+ const blocking=record=>record.errors;
  if(blocking(before).length)throw Error(blocking(before).join('\n'));
  const current=collectEligibility(repo,number,review,query);
  if(blocking(current).length||!isDeepStrictEqual(before,current))throw Error('PR, native Review or policy changed before activation');
@@ -71,11 +71,11 @@ export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=fa
  if(dryRun)return {state:'eligible',head:current.headSha,base:current.baseSha};
  const gateRef=dispatchGate(repo,number,current,query,{shadow,bootstrapRef});
  if(shadow)return {state:'shadow-requested',head:current.headSha,base:current.baseSha,gateRef};
- const proof={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',head:current.headSha,base:current.baseSha,sourceTree:current.sourceTree,githubReviewId:current.nativeReview.githubReviewId,nativeApprovalReviewId:current.nativeReview.nativeApprovalReviewId,gateRef,nativeAuto:{confirmed:false,state:'prepared'},createdAt:new Date().toISOString()};
+ const proof={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',head:current.headSha,base:current.baseSha,sourceTree:current.sourceTree,githubReviewId:current.nativeReview.githubReviewId,gateRef,nativeAuto:{confirmed:false,state:'prepared'},createdAt:new Date().toISOString()};
  persist({state:'prepared',proof});
  try{
  // expectedHeadOid prevents a new push from being armed. Required Checks and
- // the native non-author approval remain responsible for the actual merge.
+ // the real independent-review Required Check remain responsible for the actual merge.
  let enableError;
  try{const enabled=json(query,'api','graphql','-f','query=mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{number}}}', '-f','id='+current.pr.node_id,'-f','head='+current.headSha);
  if(enabled.errors?.length)throw Error('Native auto-merge enable failed: '+JSON.stringify(enabled.errors));
@@ -159,7 +159,7 @@ export function pauseAutoMerge(repo,number,query=gh){
 }
 export function main(args=process.argv.slice(2),query=gh){
  const [numberArg,reviewArg,...flags]=args,number=Number(numberArg),repo=currentProjectRepository(query).full_name;
- if(!/^[1-9][0-9]*$/.test(numberArg??''))throw Error('Usage: merge:auto <PR> <native-Review-ID|review.json> [--dry-run|--shadow] [--bootstrap-ref=branch]');
+ if(!/^[1-9][0-9]*$/.test(numberArg??''))throw Error('Usage: merge:auto <PR> <GitHub-Review-record-ID|review.json> [--dry-run|--shadow] [--bootstrap-ref=branch]');
  if(reviewArg==='--pause'&&!flags.length){const r=pauseAutoMerge(repo,number,query);console.log(JSON.stringify(r));return r;}
  if(!reviewArg||flags.some(f=>!['--dry-run','--shadow'].includes(f)&&!f.startsWith('--bootstrap-ref='))||flags.filter(f=>f.startsWith('--bootstrap-ref=')).length>1||flags.includes('--dry-run')&&flags.includes('--shadow'))throw Error('Invalid native merge options');
  const review=/^[1-9][0-9]*$/.test(reviewArg)?Number(reviewArg):JSON.parse(readFileSync(reviewArg,'utf8'));

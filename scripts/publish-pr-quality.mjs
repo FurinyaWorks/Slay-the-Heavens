@@ -4,7 +4,7 @@ import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
-import {collectIndependentAiReview,nativeReviewPolicyErrors,TRUSTED_REVIEW_COORDINATOR_IDS} from './independent-ai-review.mjs';
+import {collectIndependentAiReview,TRUSTED_REVIEW_COORDINATOR_IDS} from './independent-ai-review.mjs';
 import {collectPrDelivery,verifyDelivery} from './verify-delivery.mjs';
 import {autoMergeErrors} from './arm-auto-merge.mjs';
 import {projectRepositoryId,projectRepositoryMatches} from './repository-identity.mjs';
@@ -79,37 +79,15 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  const ruleset=get(prefix+'/rulesets/25870651');
  const policyErrors=autoMergeErrors({repo,settings,pr,ruleset,nativeReview:review});
  if(mode==='publish'&&policyErrors.length)throw Error(policyErrors.join('\n'));
- // Before CODEOWNERS exists on the base, only the existing two coordinators
- // may approve the bootstrap. No string in the candidate can waive this.
- let owners;
- try{owners=get(prefix+'/contents/.github/CODEOWNERS?ref='+review.base);}catch(error){if(!/404|Not Found/i.test(error.message))throw error;}
- const expectedOwners='* @FurinyaDev @v5g95m7t8m-max';
- const checkOwners=(file,label,ref)=>{
-  const lines=Buffer.from(file?.content??'','base64').toString('utf8').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
-  if(file?.type!=='file'||!isDeepStrictEqual(lines,[expectedOwners]))throw Error(label+' CODEOWNERS must retain exactly the existing trusted review coordinators');
-  // Contents dereferences symlinks. The native CODEOWNERS anchor must itself
-  // be a regular blob at this exact path, not a symlink to approved text.
-  const root=get(prefix+'/git/trees/'+ref),directory=root.tree?.find(row=>row.path==='.github');
-  if(root.truncated!==false||directory?.type!=='tree'||directory.mode!=='040000')throw Error(label+' CODEOWNERS directory is not an exact native tree');
-  const tree=get(prefix+'/git/trees/'+directory.sha),entry=tree.tree?.find(row=>row.path==='CODEOWNERS');
-  if(tree.truncated!==false||entry?.type!=='blob'||!['100644','100755'].includes(entry.mode)||entry.sha!==file.sha)throw Error(label+' CODEOWNERS must be the exact regular native blob');
- };
- if(owners)checkOwners(owners,'Baseline',review.base);
- else{
-  if(!bootstrap)throw Error('Missing baseline CODEOWNERS requires explicit one-time bootstrap');
-  const collaborators=[];
-  for(let page=1;;page++){
-   const rows=get(prefix+'/collaborators?affiliation=all&per_page=100&page='+page);if(!Array.isArray(rows))throw Error('Cannot audit bootstrap collaborators');
-   collaborators.push(...rows);if(rows.length<100)break;
-  }
-  const writers=collaborators.filter(u=>u.permissions?.push||u.permissions?.maintain||u.permissions?.admin).map(u=>u.id).sort((a,b)=>a-b);
-  if(!isDeepStrictEqual(writers,[...TRUSTED_REVIEW_COORDINATOR_IDS].sort((a,b)=>a-b)))throw Error('Bootstrap requires exactly the two existing trusted write collaborators');
- }
- const reviewedOwners=get(prefix+'/contents/.github/CODEOWNERS?ref='+review.mergeCommitSha);
- checkOwners(reviewedOwners,'Reviewed merge tree',review.mergeCommitSha);
+ // The first installation retains the existing trusted-maintainer review
+ // boundary. The coordinator actually verified the separate cloud AI session;
+ // its GitHub-signed COMMENTED record may use the same account as the PR author.
+ // This exception installs exactly one audited candidate on the frozen old BASE.
  if(bootstrap){
-  if(owners||env.GITHUB_EVENT_NAME!=='workflow_dispatch'||env.GITHUB_REF!=='refs/heads/'+pr.head.ref||env.GITHUB_SHA!==review.head)throw Error('Bootstrap must execute the exact approved migration candidate before CODEOWNERS installation');
- }else if(env.GITHUB_REF!=='refs/heads/'+settings.default_branch)throw Error('Gate must execute the trusted default branch workflow');
+  if(review.base!=='c2409ad750c15124b7b843c6bbfa5b222537cb75'||env.GITHUB_EVENT_NAME!=='workflow_dispatch'||env.GITHUB_REF!=='refs/heads/'+pr.head.ref||env.GITHUB_SHA!==review.head)throw Error('Bootstrap requires the exact independently reviewed candidate on the one-time frozen BASE');
+  const gateRun=get(prefix+'/actions/runs/'+Number(env.GITHUB_RUN_ID));
+  if(!TRUSTED_REVIEW_COORDINATOR_IDS.includes(review.coordinator?.id)||gateRun.actor?.id!==review.coordinator.id||gateRun.triggering_actor?.id!==review.coordinator.id||String(env.GITHUB_ACTOR_ID)!==String(review.coordinator.id))throw Error('Bootstrap must be dispatched by the actual trusted coordinator who signed the cloud review');
+ }else if(env.GITHUB_REF!=='refs/heads/'+settings.default_branch||env.GITHUB_SHA!==review.base)throw Error('Gate must execute the trusted actual BASE/default-branch source');
  const legacyReview={repo,prNumber:number,reviewId:review.reviewId,reviewedHeadSha:review.head,reviewedBaseSha:review.base,conclusion:'pass',unresolved:[]};
  const collected=collectPrDelivery(repo,number,legacyReview,query,loadCheckout);
  const errors=verifyDelivery(collected.evidence);
