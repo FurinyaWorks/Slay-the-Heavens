@@ -2,17 +2,17 @@
 
 ## 三仓库按需验证
 
-本地仍是一个 Git 仓库，按任务建立独立工作树；云端从远端短分支接续，无需本机持续在线。Backlog 是唯一任务账本，先核对已有任务、开放 PR、写入范围及依赖，不在 Fork 复制任务或批量推送历史分支。
+本地仍是一个 Git 仓库，按任务建立独立工作树；云端从远端短分支接续，无需本机持续在线。Backlog 是唯一任务账本，先核对已有任务、开放 PR、写入范围及依赖，不在 Fork 复制任务或批量推送历史分支。目标是先在 Fork 排掉明确错误，让主仓库正式集成尽量一次通过；Fork 空闲本身不构成问题。
 
 | remote | 仓库 / 固定 ID | 分工 |
 | --- | --- | --- |
 | origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | 正式集成；release/v2.0.0 仅发版必需修复，develop 接后续功能、优化与技术债 |
 | fork-a | FurinyaDev/Slay-the-Heavens-Fork-A / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
-| fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
+| fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 仅在风险需要完整回归时使用既有 Quality Full；与 A 按需互援 |
 
 只同步本次需要的短分支。首次使用用 `gh api /repositories/<固定ID>` 解析当前名称，再用 `gh api repos/<当前仓库名>` 核对 ID、权限及默认分支，核对 `gh workflow list -R <repo>`；仓库改名时同步 remote，不改历史证据。Fork 有工作流文件却列表为空时，管理员可用官方 `PUT /repos/<当前仓库名>/actions/permissions` 设置 `enabled=true` 并保留已读回的 allowed_actions 策略；读回工作流已登记后才 dispatch。无写权限时记录阻塞，使用有权限的另一个 Fork 互援，不请求付费或削弱主仓库保护。
 
-复用现有入口，不增加调度器、Runner 或跨仓库凭据。以下占位值须替换成已核对的仓库、任务分支及完整 SHA：
+复用现有入口，不增加调度器、Runner 或跨仓库凭据。以下是按需选择的入口，不是必须依次执行的清单；占位值须替换成已核对的仓库、任务分支及完整 SHA：
 
 ```sh
 git push fork-a <task-branch>:refs/heads/<task-branch>
@@ -21,9 +21,9 @@ git push fork-b <task-branch>:refs/heads/<task-branch>
 gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <task-branch> -f runner_pool=hosted
 ```
 
-Fast 是 advisory 有界选测，可能报告延期或零测试，不能称为双平台 Fast 准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
+Fast 是 advisory 有界选测，不能称为双平台 Fast 准入。先核对 plan/日志实际选中直接受影响的合同；新增或修改的合同未入选时，使用现有 Node/Lua 测试入口，在准确源码与所需环境中显式执行。零测试、延期或漏选后的绿灯不能证明该合同通过。B 的 Quality dispatch 仍按现有路由执行 Full，仅在核心/跨模块风险、未知影响或实际失败需要完整回归时分配，A 按同一边界互援；不因 Fork 闲置、做过一次 Fast 或希望再多一层绿灯启动 Full。先查同仓库准确 HEAD/BASE、环境、验证范围与模式的已有证据，保存真实 checkout、run/attempt、选集与失败，不轮询守候。
 
-成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。release 修复只移植必要代码并在该基线验证，后续工作留 develop；冻结候选的 Full 与官方容量、导入、ready、PC/手机仍逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
+成熟切片由维护者接续到 origin 短分支，核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，信任边界不变；主仓库 Required、Merge Queue 组合及合后验证照常。Fork 用于提前拦错，不构成主仓库必需状态或冻结 Full；不机械安排“Fork Full 后再跑主仓库 Full”。只有既有 freeze/收据入口已经接受的完整主仓库证据，且准确 HEAD、BASE/测试组合、环境、验证范围与最新 attempt 全部一致，才按原机制复用；无法证明一致或发生变更时重新核对，不能凭跨仓库同 SHA 替代正式目标组合，不新增跨仓库回传状态或减免门禁。release 仅移植必要修复并在该基线验证，后续工作留 develop；冻结 Full 与官方容量、导入、ready、PC/手机仍逐项验收。本次 freeze 发布入口改动由 #677/#707 接续，未合入前按现行主仓代码与 Ruleset 执行，不能从文档认定已生效。合并清理遵循现有生命周期，未保存工作及独立提交保留。
 
 算力分配复用已有 [Fast 选测](CI-FAST.md)、`scripts/ci-quality-shape.mjs` 的共享矩阵、`ci-shards.mjs` 的平台耗时权重、安全 Lua worker 与 Quality 原 `max-parallel`，不要在 Fork 另维护分片数或删测试。先分配互不重复的任务/准确提交，再让原矩阵自动铺开；以实际 job 排队和执行时间判断资源使用，保留失败成本。GitHub 并发上限按账号/组织套餐和 runner 可用性核对，不假定每个仓库天然拥有固定20/30槽位；沿用标准 hosted，不切付费 larger runner。[官方并发与矩阵说明](https://docs.github.com/en/actions/reference/limits)。
 
@@ -63,7 +63,7 @@ PR391 的官方超时与成功日志证明早期四片、六片及八加八规�
 
 来源范围与独立审查的真实性仍由现有协调/复审流程核实，历史审计不自证这些事项。复用现有 PR、Backlog、交付收据与队列，不新增常驻协调器或第二套任务锁。
 
-Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concurrency；新提交取消旧提交，PR 与 develop 的运行独立。已结束的 cancelled 保留历史；只有确认被更新 HEAD 或实际合入提交覆盖的非终态运行才手动取消。queued 先核对 runner/开始时间，pending 步骤表示依赖尚未执行，不能据此判断卡死。最终以最新 develop SHA 的完整必要检查成功为准。
+Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concurrency；新提交取消旧提交，PR 与 develop 的运行独立。已结束的 cancelled 保留历史；手动取消非终态旧运行前确认其已被更新 HEAD 或实际合入覆盖。旧 merge_group 仅在精确队列 ref 已删除或换到不同 SHA，且不再对应当前原生组合时才可取消，保留有效队列和 Required，不新增 watchdog。queued 先核对 runner/开始时间，pending 步骤表示依赖尚未执行，不能据此判断卡死。最终以最新 develop SHA 的完整必要检查成功为准。
 
 候选构建与证据合同见[ENGINEERING.md](ENGINEERING.md)。不要通过加超时、删种子、删断言或跳过有效测试处理红灯。
 
@@ -138,7 +138,7 @@ Full 未结束时，schemaVersion 4 授权保存精确组合和 pending run，�
 
 ### 异步交接与失败对账
 
-**边界**：独立评审与准入通过后立即运行 `npm run merge:auto`，不等待 CI 跑完。完成精确 HEAD/BASE 的原生 Auto-merge 授权并读回后，保存交接证据，结束当前回合；GitHub Merge Queue 接管后续等待、组合 Full 和 squash。禁止用 `gh run view` / `gh pr checks` / `gh run watch` / `sleep` 循环、定时查询或常驻监控守候，不以对账、合后验收或等待下一批基线为由继续轮询。仅在失败通知、明确依赖变化或用户要求时介入，诊断先读一次当前事实。依赖尚未落地时保留候选、证据及明确接续点并结束本轮，不谎报已授权或已入队。合后验证和清理按实际合并事实接续，不要求 Codex 会话常驻。
+**边界**：独立评审与准入通过后立即运行 `npm run merge:auto`，不等待 CI 跑完。完成精确 HEAD/BASE 的原生 Auto-merge 授权并读回后，保存交接证据后继续其他可独立推进的已授权工作；无其他可做工作时才结束本轮。GitHub Merge Queue 接管后续等待、组合 Full 和 squash。禁止用 `gh run view` / `gh pr checks` / `gh run watch` / `sleep` 循环、定时查询或常驻监控守候，不以对账、合后验收或等待下一批基线为由继续轮询。仅在失败通知、明确依赖变化或用户要求时介入，诊断先读一次当前事实。依赖尚未落地时保留候选、证据及明确接续点，继续其他可独立推进的已授权工作，无其他可做再结束；不谎报已授权或已入队。合后验证和清理按实际合并事实接续，不要求 Codex 会话常驻。
 
 **交接**：保留 PR 链接、当前精确 HEAD/BASE、原生授权结果、`build/delivery/auto-merge-*.json` 证明文件位置与下步 `verify:delivery --merged` 命令；在真正验收完成前不清理唯一证据来源/工作树，不把任务标 Done。授权证明目前是本地文件，不是 GitHub 自动持久化附件；跨机器接续缺失时必须报告证据缺失，不能用 PR 绿灯伪造预审证明。可继续其他不冲突的任务，或结束当前 Agent 会话。
 

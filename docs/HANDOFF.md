@@ -1,5 +1,19 @@
 # 交接说明
 
+## 2026-11-17 云端接续
+
+按[云端入口](TASK_EXECUTION.md#云端-agent-接手入口)推进：Fork先排错，A优先Fast、B仅风险必要Full；无其他可独立推进的已授权工作才结束，不守候CI。下方旧M7段落是历史。
+
+| PR / 目标 | 当前正式 HEAD | 下一步 |
+| --- | --- | --- |
+| #677 / develop | `873d4392` | 新独审PASS；旧6b授权已暂停，现有impact排队且路由未知，待确认后用原merge:auto重授权，不加ci:full绕过 |
+| #707 / release | `3f890cdc` | Fork Quick真实35/35合同、96/96原JS及Lua成功；旧e2授权暂停后正常接续，已读回新SQUASH授权，正式门禁仍待 |
+| #703 / release | `80114c7f` | 原授权有效，按现有正式门禁异步接续 |
+
+A先后拦下日志尾空白、漏选合同的假覆盖绿及真实入口缺import；修后873的33/33显式合同、96/96原JS及Lua相关步骤成功。主仓677 Quick44024833076与707 Quick44025702654两个Ready PR真实零runner跳过，Quality/Licenses仍排队、组织侧待核，原因未明；未手动重复Full。
+三PR仍未合并，主Required/MQ/冻结Full及同候选官方/设备验收未完成；F盘不可读，Full120 ledger未远端保全，不作已交付证据。
+准确SHA/BASE、run与旧MQ取消历史见[完整接续证据](evidence/three-repo-flow-20261117/README.md#2026-11-17-主仓尽量一次绿的云端接续)；[677独审JSON](evidence/three-repo-flow-20261117/pr677-review-873d4392.json)、[707独审JSON](evidence/three-repo-flow-20261117/pr707-review-3f890cdc.json)。
+
 **当前任务协作：已取消 Sprint。** 新任务按[任务执行](TASK_EXECUTION.md)核对 Backlog、实际依赖、独立审批、PR 与文件所有权，不再以周日期或 M7→M8→M9 阶段顺序限制领取；`task:pick` 仅作身份/状态/明确审批的只读初查。下文 Sprint 窗口、阶段封锁与窄并行例外保留为历史；TASK-85/96/97/62/64 等具体批准、已认领工作、未验 AC、独立评审、CI 和分支保护不变。
 
 **2026-11-06 M7 最后一轮收口：** PR521、530已合；PR531现已人工squash至develop `73aabce8`，实际父提交和源码树与当前HEAD的完整PR Full及独审一致。人工例外只免重复队列等待，六项Required和原生队列保护已原样恢复；合后Full另以该实际SHA的交付回执核验，不能把人工例外记成Fast队列成功。完整依赖图、全部函数复杂度和状态/RNG/事件/回滚证据见[有限核心切片](backlog-details/M7-FINAL-CORE-20261106.md)与[完整测量](evidence/m7-final-core-20261106.json)，成绩单只采用实际develop重新采集的结果。

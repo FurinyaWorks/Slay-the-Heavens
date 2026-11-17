@@ -5,7 +5,7 @@
 从主仓库 `FurinyaWorks/Slay-the-Heavens` 克隆一份即可；三个仓库共享项目和 Backlog，Fork 是开发验证资源，不是三个独立产品。按以下顺序接手：
 
 1. 运行 `backlog instructions overview`，读根 `AGENTS.md`、[范围](SCOPE.md)、[交接](HANDOFF.md)；再查目标 Backlog 任务及附件。任务记录必须区分已实现、待集成、待正式 CI、待实机，不把 In Progress 当作可重复领取。
-2. 按 [三仓库分流](CI.md#三仓库按需验证) 的固定 ID 解析当前名称，配置 origin/fork-a/fork-b；核对远端分支、三个仓库的开放 PR 和相关 dispatch。只取本任务需要的分支，不同步全部历史。主仓库 release/v2.0.0 收发版必需修复，develop 收后续工作；A 优先 Fast、B 优先 Full。
+2. 按 [三仓库分流](CI.md#三仓库按需验证) 的固定 ID 解析当前名称，配置 origin/fork-a/fork-b；核对远端分支、三个仓库的开放 PR 和相关 dispatch。只取本任务需要的分支，不同步全部历史。主仓库 release/v2.0.0 收发版必需修复，develop 收后续工作；A 优先 Fast 预检，B 仅按风险需要跑 Full；空闲无需补跑。
 3. 按下文“开始任务”核对认领、审批、依赖和文件范围，再建独立短分支。发版修复从最新 release 基线接续，不从 develop 整包带入未来内容。Fork 成果成熟后接续主仓库短分支及正式 PR，不能凭 Fork 绿灯合入。
 4. 首次 `npm ci --ignore-scripts`，工具及生成物按 [TOOLCHAIN](TOOLCHAIN.md)、验证按 [ENGINEERING](ENGINEERING.md)；日常先看 `npm run test:related -- --plan --base <准确目标SHA>`，需要时分配现有 hosted Fast/Full。源码、构建、官方导入、ready、设备体验是不同证据，不用一项代替其余。
 5. 按 [CI](CI.md) 完成独立复审及精确 HEAD/BASE 准入，读回原生授权后异步交接。离开前经 Backlog CLI 记录任务、目标分支、准确提交、PR/run 链接、已验证范围、具体阻塞和下一动作；代码及必要证据推到对应远端，不能仅留本机文件或聊天摘要。未合入不写 Done，不守候队列。

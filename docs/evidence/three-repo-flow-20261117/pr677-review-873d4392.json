@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "prNumber": 677,
+  "reviewId": "/root/cloud_handoff_review:ci-preflight-slim-873d4392",
+  "reviewedHeadSha": "873d4392c02fd5ac92e653e57a78fd59f6ae63c6",
+  "reviewedBaseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "comparisonBaseSha": "6b16b6e8ec74e5247dfee228d9ef4fb98a5b1583",
+  "conclusion": "pass",
+  "unresolved": [],
+  "limitations": [
+    "主仓 Quality/impact 与 Licenses 尚 queued；本审查不表示正式 CI 通过或已合并。",
+    "去重不构成 exactly-once 保证。",
+    "677 旧6b授权已暂停，新873尚待现有impact确认路由后通过既有 merge:auto 重新授权；不加ci:full绕过。"
+  ],
+  "nextAction": "复核现有 impact 的准确 run/attempt/HEAD 与路由；按本 JSON 与既有 merge:auto 接续，保留 Required、Strict 与原生队列。"
+}
