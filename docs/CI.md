@@ -1,5 +1,30 @@
 # 自动化检查
 
+## 三仓库按需验证
+
+本地仍是一个 Git 仓库，按任务建立独立工作树；云端从远端短分支接续，无需本机持续在线。Backlog 是唯一任务账本，先核对已有任务、开放 PR、写入范围及依赖，不在 Fork 复制任务或批量推送历史分支。
+
+| remote | 仓库 / 固定 ID | 分工 |
+| --- | --- | --- |
+| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | 正式集成；release/v2.0.0 仅发版必需修复，develop 接后续功能、优化与技术债 |
+| fork-a | FurinyaDev/Slay-the-Heavens / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
+| fork-b | v5g95m7t8m-max/Slay-the-Heavens / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
+
+只同步本次需要的短分支。首次使用用 `gh api repos/<owner>/Slay-the-Heavens` 核对 ID、权限及默认分支，再核对 `gh workflow list -R <repo>`。Fork 有工作流文件却列表为空时，管理员可用官方 `PUT /repos/<owner>/Slay-the-Heavens/actions/permissions` 设置 `enabled=true` 并保留已读回的 allowed_actions 策略；读回工作流已登记后才 dispatch。无写权限时记录阻塞，使用有权限的另一个 Fork 互援，不请求付费或削弱主仓库保护。
+
+复用现有入口，不增加调度器、Runner 或跨仓库凭据。以下占位值须替换成已核对的仓库、任务分支及完整 SHA：
+
+```sh
+git push fork-a <task-branch>:refs/heads/<task-branch>
+gh workflow run quick-feedback.yml -R FurinyaDev/Slay-the-Heavens --ref <task-branch> -f base_sha=<exact-base-sha>
+git push fork-b <task-branch>:refs/heads/<task-branch>
+gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens --ref <task-branch> -f runner_pool=hosted
+```
+
+Fast 是 advisory 有界选测，可能报告延期或零测试，不能称为双平台 Fast 准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
+
+成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。release 修复只移植必要代码并在该基线验证，后续工作留 develop；冻结候选的 Full 与官方容量、导入、ready、PC/手机仍逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
+
 2026-11-07已读回 develop Ruleset 25870651：原生 Merge Queue 已开启，Squash、ALLGREEN、单条构建/合并、Strict、空 bypass。六项 Required 为 Actions 来源的 `check`、`presentation`、`engineering-posix`、`inventory`、`pr-quality`，及 Any source 的 `independent-review`。安全且完整映射的 PR 默认走双平台 Fast；核心、高风险、未知或超预算改动仍走 PR Full。`full-quality` 仍只证明完整 Full，队列组合与合后 push 始终 Full。配置读回不等于真实链路已经验收，须分别核对 Fast、入队、组合 Full、实际 squash 与 push Full。当前操作合同见[Fast准入](CI-FAST.md)。
 
 2026-10-26起Quality/check使用GitHub-hosted `windows-2025`，固定Node 24.18.0、Pillow 12.3.0和Luacheck 1.2.0。Ubuntu的presentation和engineering-posix保留，真实执行Windows权限环境可能无法运行的符号链接/硬链接边界。三项均是正常合并前必需检查；基础设施故障的唯一应急流程见下文。
