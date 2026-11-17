@@ -1,0 +1,33 @@
+✖ Release bootstrap exact sources retain every old byte and reject missing drift and partial packets (2841.439651ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5081.431008
+
+✖ failing tests:
+
+test at tests/integrated-ci-source.cases.mjs:49:1
+✖ Release bootstrap exact sources retain every old byte and reject missing drift and partial packets (2841.439651ms)
+  AssertionError [ERR_ASSERTION]: fresh complete TASK-111 CI source: audio handoff / fresh complete integration source: scripts/build-native-audio-game.mjs
+  + actual - expected
+  
+  + '41042f4cb0ef9f36ae833ddb4bc4ccfb704d7a80f4bcb7fd44bea7953bc5fa2e'
+  - '38e7b36c6b6d3cadeba26e555e44080e532e4c875c42d899df25978f9287dfb1'
+  
+      at assertReleaseBootstrapCiCurrent (file:///workspace/scratch/c1a4970a76e0/picker696-current-1715/tests/helpers/release-bootstrap-ci-source.mjs:162:10)
+      at TestContext.<anonymous> (file:///workspace/scratch/c1a4970a76e0/picker696-current-1715/tests/integrated-ci-source.cases.mjs:50:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '41042f4cb0ef9f36ae833ddb4bc4ccfb704d7a80f4bcb7fd44bea7953bc5fa2e',
+    expected: '38e7b36c6b6d3cadeba26e555e44080e532e4c875c42d899df25978f9287dfb1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -2,9 +2,10 @@ import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
-import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiRead,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent} from './helpers/release-bootstrap-ci-source-picker-before-capacity.mjs';
 import {releasePickerControlsCiRead,releasePickerControlsPriorInventory} from './helpers/release-picker-controls-ci-source.mjs';
-import {integrationRead,integrationPriorInventory} from './helpers/release-picker-b9-integration.mjs';
+import {integrationRead,integrationPriorInventory,assertReleaseIntegrationCurrent} from './helpers/release-picker-b9-integration.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
@@ -47,6 +48,7 @@ test('integration copy closure requires its complete exact predecessor and curre
 });
 
 test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
+ assertReleaseIntegrationCurrent(rawReadFileSync);
  assertReleaseBootstrapCiCurrent(pickerBeforeRead);
  for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
   const source=pickerBeforeRead(path,'utf8').replaceAll('\r\n','\n');

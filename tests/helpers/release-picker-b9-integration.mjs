@@ -31,7 +31,7 @@ assert.equal(capacityJoin.prepCommit,'c2d32421e63f104675fb98d7af033cb5817555eb')
 assert.equal(capacityJoin.releaseCommit,'00ab3fe6d386f55aecfb063e59aeca2cf5065807');
 const currentImplementation=norm(readFileSync(new URL(import.meta.url),'utf8'));
 const preflightJoinBytes=norm(readFileSync(new URL('./release-picker-preflight-join.json',import.meta.url),'utf8'));
-assert.equal(hash(preflightJoinBytes),'ff8eb5a358444ad440c5680da967545250ad9ab37cb500b313cb4a3e547cc3b6','complete picker preflight join');
+assert.equal(hash(preflightJoinBytes),'8acaa764583a64585fb62803e89aaa64963101df9f9457b6bed6eb8eb489cfe7','complete picker preflight join');
 const preflightJoin=JSON.parse(preflightJoinBytes);
 assert.deepEqual(preflightJoin.parents,{picker:'af3ddb2eef8969959454c432cb2743288917a086',release:'af77fb2461c548f0faf104761d107397f75dca08'});
 function preflightJoinSource(path,source,domain){

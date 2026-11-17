@@ -1,0 +1,35 @@
+{
+  "source": "96727e37b680ed5a4a12c73eb1bf597bcfd9a41a",
+  "names": [
+    "complete native successful rows authenticate every observed file and only raise effective placement costs",
+    "historical physical Windows16 POSIX12 Full33 covers final inventory under original budgets and unchanged setup reserve",
+    "frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 Lua files within unchanged budgets",
+    "current Full38 retains full coverage and reports performance targets under unchanged execution guards",
+    "current placement authenticates 1458 complete successful assigned files without claiming failed containing jobs passed",
+    "pre-Flow current-integration inventory and planning forecasts remain reproducible without new files",
+    "isolated published sibling inventories and forecasts remain independently reproducible",
+    "pre-Relic equip published Full36 inventory and forecasts remain independently reproducible",
+    "pre-Silent final published Full36 inventory and forecasts remain independently reproducible",
+    "pre-Defect final published Full36 inventory and forecasts remain independently reproducible",
+    "pre-Formation Full36 inventory and forecasts remain independently reproducible and all 1410 original Lua files stay unchanged",
+    "pre-Formation unchanged complete weights reproduce the blocked POSIX14 forecast and the POSIX15 capacity allocation",
+    "combined Formation800 inventory preserves both blocked POSIX14 and feasible POSIX15 forecasts without reducing work or floors",
+    "official candidate floors authenticate complete serial runs and register only current inventory",
+    "current official flow floors bind four complete local files while long campaign remains standalone",
+    "joint historical inventory rejects missing duplicate and unknown files while current discovery remains complete",
+    "battle continuation retains exact historical sources and complete current Full coverage",
+    "ratchet current inventory preserves raw Full coverage and refuses source drift after a warm projection",
+    "current Golden Idol836 Full38 inventory adds only two files under unchanged budgets and complete effective costs",
+    "Defect Actor cost layer accepts only complete current bytes and authenticates the sole added inventory",
+    "complete current Defect Actor Full38 inventory fits original Windows18 POSIX15 budgets including the new floor and unchanged reserve",
+    "combined closeout validates raw current sources and complete Full discovery independently of immutable slice views",
+    "noncombat immutable added inventory keeps its full source and unknown-cost rejection checks",
+    "run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts"
+  ],
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern=^(?:complete\\ native\\ successful\\ rows\\ authenticate\\ every\\ observed\\ file\\ and\\ only\\ raise\\ effective\\ placement\\ costs|historical\\ physical\\ Windows16\\ POSIX12\\ Full33\\ covers\\ final\\ inventory\\ under\\ original\\ budgets\\ and\\ unchanged\\ setup\\ reserve|frozen\\ Windows17\\ POSIX13\\ Full35\\ receipt\\ covers\\ its\\ exact\\ 741\\ JS\\ and\\ 1401\\ Lua\\ files\\ within\\ unchanged\\ budgets|current\\ Full38\\ retains\\ full\\ coverage\\ and\\ reports\\ performance\\ targets\\ under\\ unchanged\\ execution\\ guards|current\\ placement\\ authenticates\\ 1458\\ complete\\ successful\\ assigned\\ files\\ without\\ claiming\\ failed\\ containing\\ jobs\\ passed|pre\\-Flow\\ current\\-integration\\ inventory\\ and\\ planning\\ forecasts\\ remain\\ reproducible\\ without\\ new\\ files|isolated\\ published\\ sibling\\ inventories\\ and\\ forecasts\\ remain\\ independently\\ reproducible|pre\\-Relic\\ equip\\ published\\ Full36\\ inventory\\ and\\ forecasts\\ remain\\ independently\\ reproducible|pre\\-Silent\\ final\\ published\\ Full36\\ inventory\\ and\\ forecasts\\ remain\\ independently\\ reproducible|pre\\-Defect\\ final\\ published\\ Full36\\ inventory\\ and\\ forecasts\\ remain\\ independently\\ reproducible|pre\\-Formation\\ Full36\\ inventory\\ and\\ forecasts\\ remain\\ independently\\ reproducible\\ and\\ all\\ 1410\\ original\\ Lua\\ files\\ stay\\ unchanged|pre\\-Formation\\ unchanged\\ complete\\ weights\\ reproduce\\ the\\ blocked\\ POSIX14\\ forecast\\ and\\ the\\ POSIX15\\ capacity\\ allocation|combined\\ Formation800\\ inventory\\ preserves\\ both\\ blocked\\ POSIX14\\ and\\ feasible\\ POSIX15\\ forecasts\\ without\\ reducing\\ work\\ or\\ floors|official\\ candidate\\ floors\\ authenticate\\ complete\\ serial\\ runs\\ and\\ register\\ only\\ current\\ inventory|current\\ official\\ flow\\ floors\\ bind\\ four\\ complete\\ local\\ files\\ while\\ long\\ campaign\\ remains\\ standalone|joint\\ historical\\ inventory\\ rejects\\ missing\\ duplicate\\ and\\ unknown\\ files\\ while\\ current\\ discovery\\ remains\\ complete|battle\\ continuation\\ retains\\ exact\\ historical\\ sources\\ and\\ complete\\ current\\ Full\\ coverage|ratchet\\ current\\ inventory\\ preserves\\ raw\\ Full\\ coverage\\ and\\ refuses\\ source\\ drift\\ after\\ a\\ warm\\ projection|current\\ Golden\\ Idol836\\ Full38\\ inventory\\ adds\\ only\\ two\\ files\\ under\\ unchanged\\ budgets\\ and\\ complete\\ effective\\ costs|Defect\\ Actor\\ cost\\ layer\\ accepts\\ only\\ complete\\ current\\ bytes\\ and\\ authenticates\\ the\\ sole\\ added\\ inventory|complete\\ current\\ Defect\\ Actor\\ Full38\\ inventory\\ fits\\ original\\ Windows18\\ POSIX15\\ budgets\\ including\\ the\\ new\\ floor\\ and\\ unchanged\\ reserve|combined\\ closeout\\ validates\\ raw\\ current\\ sources\\ and\\ complete\\ Full\\ discovery\\ independently\\ of\\ immutable\\ slice\\ views|noncombat\\ immutable\\ added\\ inventory\\ keeps\\ its\\ full\\ source\\ and\\ unknown\\-cost\\ rejection\\ checks|run\\ HUD\\ continuation\\ authenticates\\ complete\\ current\\ sources\\ and\\ raw\\ Full\\ inventory\\ without\\ rewriting\\ historical\\ receipts)$",
+    "tests/ci-complete-calibration.test.mjs"
+  ]
+}
