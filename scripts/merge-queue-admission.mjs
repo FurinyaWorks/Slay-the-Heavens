@@ -104,6 +104,8 @@ export function collectQueueAdmission(event,env,query,ruleset){
     run.repository?.full_name!==repo||status.target_url!==`https://github.com/${repo}/actions/runs/${run.id}`||
     !new RegExp(`^Exact (?:dual-platform Fast|Full) run ${run.id}, attempt ${run.run_attempt}$`).test(status.description??''))
     throw Error('Queue PR latest run/attempt admission is pending, failed or stale: '+p.number);
+   if(proof.runId!==run.id||proof.attempt!==run.run_attempt)
+    throw Error('Queue PR cloud review proof does not cover the current formal CI run/attempt: '+p.number);
    quality={status:status.id,run:run.id,attempt:run.run_attempt};
   }
   const dependencyEvidence=review.observations.dependencies.map(row=>({number:row.number,merge:row.pr.merge_commit_sha}));

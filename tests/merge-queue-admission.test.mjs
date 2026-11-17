@@ -178,10 +178,10 @@ test('Fast queue admission rechecks the latest PR run/attempt before and after r
   for(const duringDownload of [false,true]){
    const f=admissionFixture(),writes=[];
    f.ruleset.rules[1].parameters.required_status_checks.find(c=>c.context==='full-quality').context='pr-quality';
-   f.prRun={id:9,run_attempt:1,head_sha:f.pr.head.sha,event:'pull_request',path:'.github/workflows/quality.yml',
+   f.prRun={id:61,run_attempt:1,head_sha:f.pr.head.sha,event:'pull_request',path:'.github/workflows/quality.yml',
     status:'completed',conclusion:'success',repository:{full_name:'FurinyaWorks/Slay-the-Abyss'},pull_requests:[{number:510}]};
    f.qualityStatus={id:91,context:'pr-quality',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
-    target_url:'https://github.com/FurinyaWorks/Slay-the-Abyss/actions/runs/9',description:'Exact dual-platform Fast run 9, attempt 1'};
+    target_url:'https://github.com/FurinyaWorks/Slay-the-Abyss/actions/runs/61',description:'Exact dual-platform Fast run 61, attempt 1'};
    const underlying=admissionQuery(f,writes),query=(...args)=>{
     const endpoint=args.at(-1);
     if(endpoint.includes('/statuses?'))return JSON.stringify([[f.proofStatus,f.qualityStatus]]);
@@ -276,5 +276,30 @@ test('a newly valid artifact or status cannot replace the exact PR gate proof du
   assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
    mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
   }}),/authorization changed/);assert.deepEqual(writes,[]);
+ }
+});
+
+test('a newly successful formal run or attempt cannot reuse the old source-gate preflight proof',()=>{
+ for(const replaceRun of [false,true])for(const duringReceipt of [false,true]){
+  const f=admissionFixture(),writes=[];
+  f.ruleset.rules[1].parameters.required_status_checks.find(c=>c.context==='full-quality').context='pr-quality';
+  f.prRun=structuredClone(f.proof.preflight.run);
+  f.qualityStatus={id:93,context:'pr-quality',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
+   target_url:`https://github.com/${f.env.GITHUB_REPOSITORY}/actions/runs/61`,description:'Exact Full run 61, attempt 1'};
+  const underlying=admissionQuery(f,writes),query=(...args)=>{
+   const endpoint=args.at(-1);
+   if(endpoint.includes('/actions/workflows/')&&endpoint.includes('event=pull_request'))return JSON.stringify([{workflow_runs:[f.prRun]}]);
+   return underlying(...args);
+  };
+  const freshSuccess=()=>{
+   if(replaceRun)f.prRun.id++;else f.prRun.run_attempt++;
+   f.qualityStatus.id++;
+   f.qualityStatus.target_url=`https://github.com/${f.env.GITHUB_REPOSITORY}/actions/runs/${f.prRun.id}`;
+   f.qualityStatus.description=`Exact Full run ${f.prRun.id}, attempt ${f.prRun.run_attempt}`;
+  };
+  if(!duringReceipt)freshSuccess();
+  assert.throws(()=>execute(f,query,{loadCheckout:()=>{
+   if(duringReceipt)freshSuccess();return {checkout:f.checkout,checkoutArtifact:f.artifact};
+  }}),/proof.*formal|formal.*proof/);assert.deepEqual(writes,[]);
  }
 });
