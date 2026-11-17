@@ -1,0 +1,70 @@
+PASS 1 complete current candidate
+PASS 2 .github/workflows/quality.yml exact current
+PASS 3 .github/workflows/quality.yml exact Git freeze predecessor
+PASS 4 .github/workflows/quality.yml LF complete projection
+PASS 5 .github/workflows/quality.yml LF wrong before public source
+PASS 6 .github/workflows/quality.yml LF wrong before checked source
+PASS 7 .github/workflows/quality.yml LF wrong before public source
+PASS 8 .github/workflows/quality.yml LF wrong before checked source
+PASS 9 .github/workflows/quality.yml LF wrong before public source
+PASS 10 .github/workflows/quality.yml LF wrong before checked source
+PASS 11 .github/workflows/quality.yml CRLF complete projection
+PASS 12 .github/workflows/quality.yml CRLF wrong before public source
+PASS 13 .github/workflows/quality.yml CRLF wrong before checked source
+PASS 14 .github/workflows/quality.yml CRLF wrong before public source
+PASS 15 .github/workflows/quality.yml CRLF wrong before checked source
+PASS 16 .github/workflows/quality.yml CRLF wrong before public source
+PASS 17 .github/workflows/quality.yml CRLF wrong before checked source
+PASS 18 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 19 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 20 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 21 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 22 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 23 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 24 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 25 .github/workflows/quality.yml malformed/foreign input opaque
+PASS 26 .github/workflows/quality.yml unknown path opaque
+PASS 27 .github/workflows/quality.yml unknown path opaque
+PASS 28 .github/workflows/quality.yml unknown path opaque
+PASS 29 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 30 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 31 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 32 .github/workflows/quality.yml current rejects drift/stale parents
+PASS 33 .github/workflows/quality.yml current rejects missing owner
+PASS 34 tests/release-selection-map-source.test.mjs exact current
+PASS 35 tests/release-selection-map-source.test.mjs exact Git freeze predecessor
+PASS 36 tests/release-selection-map-source.test.mjs LF complete projection
+PASS 37 tests/release-selection-map-source.test.mjs LF wrong before public source
+PASS 38 tests/release-selection-map-source.test.mjs LF wrong before checked source
+PASS 39 tests/release-selection-map-source.test.mjs LF wrong before public source
+PASS 40 tests/release-selection-map-source.test.mjs LF wrong before checked source
+PASS 41 tests/release-selection-map-source.test.mjs LF wrong before public source
+PASS 42 tests/release-selection-map-source.test.mjs LF wrong before checked source
+PASS 43 tests/release-selection-map-source.test.mjs CRLF complete projection
+PASS 44 tests/release-selection-map-source.test.mjs CRLF wrong before public source
+PASS 45 tests/release-selection-map-source.test.mjs CRLF wrong before checked source
+PASS 46 tests/release-selection-map-source.test.mjs CRLF wrong before public source
+PASS 47 tests/release-selection-map-source.test.mjs CRLF wrong before checked source
+PASS 48 tests/release-selection-map-source.test.mjs CRLF wrong before public source
+PASS 49 tests/release-selection-map-source.test.mjs CRLF wrong before checked source
+PASS 50 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 51 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 52 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 53 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 54 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 55 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 56 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 57 tests/release-selection-map-source.test.mjs malformed/foreign input opaque
+PASS 58 tests/release-selection-map-source.test.mjs unknown path opaque
+PASS 59 tests/release-selection-map-source.test.mjs unknown path opaque
+PASS 60 tests/release-selection-map-source.test.mjs unknown path opaque
+PASS 61 tests/release-selection-map-source.test.mjs current rejects drift/stale parents
+PASS 62 tests/release-selection-map-source.test.mjs current rejects drift/stale parents
+PASS 63 tests/release-selection-map-source.test.mjs current rejects drift/stale parents
+PASS 64 tests/release-selection-map-source.test.mjs current rejects drift/stale parents
+PASS 65 tests/release-selection-map-source.test.mjs current rejects missing owner
+TOTAL 65 PASS; 0 FAIL
+SHA256 09d0619d2460a7494a5d8873f5625ef53ef0dc94c63fc4d858bc3d9662d8cd53 tests/helpers/release-selection-map-ci-source.mjs
+SHA256 60ed9b12e0bb15e69846473d4e45d9f72412cc2246b9d6430bea41d5956febb9 tests/helpers/release-fast-freeze-combination.json
+SHA256 d3a5b6ae5ad1cf9a1ee4a20cf9250da6908bb710398c8f3ae65a522460b129fc tests/release-selection-map-source.test.mjs
+SHA256 64085f537f925f55d8774f76d5b68de7113238484f6aee6b215ce99c09507b93 .github/workflows/quality.yml

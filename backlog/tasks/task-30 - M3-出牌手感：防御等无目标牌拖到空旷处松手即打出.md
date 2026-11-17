@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-23 00:59'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-16 09:34'
 labels:
   - ui
   - combat
@@ -35,6 +35,7 @@ references:
   - docs/backlog-details/MOBILE-QA-20261029-SOURCES.md
   - docs/evidence/m3-completion-20261031/
   - docs/backlog-details/MOBILE-RELEASE-QA-20261101.md
+  - docs/evidence/release-freeze-20261116/reproduce-p0.mjs
 priority: medium
 type: enhancement
 ordinal: 36000
@@ -163,4 +164,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-14清理旧窗口日期：原due_date=2026-10-28保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已有8/15项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+本轮Release冻结审查只读复现新增协议缺口（Release33d71575，正式UI/data、真实GameUI Host）：卡牌及playArea的Down/Up带ID、Click无ID时丢选择/出牌；补带IDClick即正常，9个拒绝/兼容场景PASS、2个预期RED。action_bindings仍有两处消费者未纳入#686目标归属协议。不得仅放松touch比较：同控件/跨控件多指覆盖held会误接。沿TASK30/#686统一有限指针归属协议接续，避免复制tracker/重复PR；busy、手柄、旧turn/回调与拖动尾事件保护必须保留。复现docs/evidence/release-freeze-20261116/reproduce-p0.mjs；当前未修、未官方/设备验收，不称手机根因或极致流畅通过，原AC/status保持。新数字键/快捷键/预输入仍仅TASK42.1/#670后续版本。
 <!-- SECTION:NOTES:END -->

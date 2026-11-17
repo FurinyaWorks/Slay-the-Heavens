@@ -10,7 +10,7 @@ import {gunzipSync} from 'node:zlib';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
-import {historicalSource,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {beforeFastFreezeCombination,historicalSource,releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
@@ -134,4 +134,20 @@ test('release selection map isolated production copy includes exact helper and p
  copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory});
  const adapter=join(directory,'tests/helpers/release-selection-map-source.mjs');writeFileSync(adapter,readFileSync(adapter,'utf8')+'\n');
  assert.throws(()=>copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory}),/fresh helper copy identity/);
+});
+
+
+test('Release freeze CI continuation authenticates fresh owners before historical projection',async()=>{
+ const {releaseFreezeCiPacket:p,releaseFreezeCiBefore:before}=await import('./helpers/release-selection-map-ci-source.mjs');
+ assert(p);assert.equal(p.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');assertReleaseSelectionMapCiCurrent();
+ for(const [path,row]of Object.entries(p.files)){
+  const raw=readFileSync(path,'utf8');assert.equal(hash(norm(beforeFastFreezeCombination(path,raw))),row.current.sha256);
+  for(const input of [raw,raw.replaceAll('\n','\r\n')])assert.equal(before(path,input),row.before?.source??input);
+  for(const input of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),null,{},17])assert.equal(before(path,input),input);
+  assert.equal(before('foreign/'+path,raw),raw);
+  for(const change of ['append','missing','stale'])assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{
+   if(p===path){if(change==='missing')throw Error('missing owner');if(change==='stale')return row.before?.source??'';return readFileSync(p,encoding)+'\n';}return readFileSync(p,encoding);
+  }));
+ }
+ const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');assertIntegratedCurrent();
 });

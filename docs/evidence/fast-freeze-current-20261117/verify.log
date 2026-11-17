@@ -1,0 +1,13 @@
+PASS 1 exact before Git source
+PASS 2 exact current Git source
+PASS 3 current identity
+PASS 4 before current consumer rejected
+PASS 5 changed current consumer rejected
+PASS 6 missing current consumer rejected
+PASS 7 empty current consumer rejected
+PASS 8 null current consumer rejected
+PASS 9 malformed current consumer rejected
+PASS 10 CRLF accepted
+PASS 11 changed continuation archive rejected
+PASS 12 restored current
+TOTAL 12 passed
