@@ -250,6 +250,9 @@ function nativeFixture(){
   else if(path?.includes('/contents/.github/CODEOWNERS?'))value={type:'file',sha:sha('c'),content:Buffer.from('* @FurinyaDev @v5g95m7t8m-max\n').toString('base64')};
   else if(path?.endsWith('/git/trees/'+sha('b'))||path?.endsWith('/git/trees/'+sha('d')))value={truncated:false,tree:[{path:'.github',mode:'040000',type:'tree',sha:sha('e')}]};
   else if(path?.endsWith('/git/trees/'+sha('e')))value={truncated:false,tree:[{path:'CODEOWNERS',mode:'100644',type:'blob',sha:sha('c')}]};
+  else if(path?.endsWith('/git/commits/'+f.baseSha))value={sha:f.baseSha,tree:{sha:sha('6')}};
+  else if(path?.endsWith('/git/trees/'+sha('6')))value={sha:sha('6'),truncated:false,tree:[{path:'scripts',mode:'040000',type:'tree',sha:sha('9')}]};
+  else if(path?.endsWith('/git/trees/'+sha('9')))value={sha:sha('9'),truncated:false,tree:[{path:'arm-auto-merge.mjs',mode:'100644',type:'blob',sha:sha('7')}]};
   else if(path?.endsWith('/actions/artifacts/99'))value=f.proofArtifact;
   else if(path?.endsWith('/actions/runs/9'))value=f.gateRun;
   else return JSON.stringify(api(path));
@@ -359,17 +362,17 @@ test('the existing zero-approval ruleset accepts an actual same-account signed i
 function bootstrapFixture(){
  const f=nativeFixture(),base='c2409ad750c15124b7b843c6bbfa5b222537cb75';
  f.gateRun.head_branch='feat/native';f.gateRun.head_sha=sha('a');
- f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
+ f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.report.installBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
  return f;
 }
 const bootstrapEnv=e=>{e.AI_REVIEW_BOOTSTRAP='true';e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');};
-test('first installation requires the fixed old BASE, exact audited source and actual signing dispatch actor',()=>{
+test('gate installation requires an explicitly reviewed uninstalled BASE and actual signing dispatch actor',()=>{
  assert.equal(gateExecute(bootstrapFixture(),{mutateEnv:bootstrapEnv}).result.state,'pr_passed');
  for(const change of [
   f=>f.gateRun.actor.id=999,f=>f.gateRun.triggering_actor.id=999,
   f=>f.gateRun.actor.id=337201427,
  ]){const f=bootstrapFixture();change(f);assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/coordinator dispatcher/);assert(!f.calls.some(a=>a.includes('POST')));}
- assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrapEnv}),/fixed BASE/);
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrapEnv}),/explicitly reviewed install BASE/);
  assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_SHA=sha('f');}}),/actual execution/);
  assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_ACTOR_ID='999';}}),/execution actor/);
 });
@@ -413,4 +416,21 @@ test('pending formal CI uses the installed completion callback without a pointle
  assert(!f.calls.some(a=>a.includes('POST')),'no gate dispatch until CI completion');
  const shadow=nativeFixture();shadow.run.status='queued';shadow.run.conclusion=null;assert.throws(()=>armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}),/formal CI must finish/);assert(!shadow.calls.some(a=>a.includes('POST')));
  const bootstrap=nativeFixture();bootstrap.run.status='queued';bootstrap.run.conclusion=null;assert.throws(()=>armAutoMerge(aiRepo,712,100,bootstrap.query,{bootstrapRef:'feat/native'}),/formal CI must finish/);assert(!bootstrap.calls.some(a=>a.includes('POST')));
+});
+
+test('a legitimately advanced uninstalled BASE can be explicitly signed without changing CI code',()=>{
+ const f=bootstrapFixture(),base=sha('f');f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.report.installBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
+ const result=gateExecute(f,{mutateEnv:bootstrapEnv});assert.equal(result.result.state,'pr_passed');assert.equal(result.proof.base,base);assert.equal(result.proof.sourceObservations.installation.commit.sha,base);
+});
+test('producer cannot bootstrap an already installed BASE or infer absence from denied Git metadata',()=>{
+ for(const broken of ['installed','denied']){
+  const f=bootstrapFixture(),normal=f.query;
+  f.query=(...args)=>{
+   if(args.at(-1)==='repos/'+aiRepo+'/git/trees/'+sha('9')){
+    if(broken==='denied')throw Error('HTTP 403 Git metadata denied');
+    return JSON.stringify({sha:sha('9'),truncated:false,tree:[{path:'independent-ai-review.mjs',mode:'120000',type:'blob',sha:sha('7')}]});
+   }return normal(...args);
+  };
+  assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/already contains|403/);assert(!f.calls.some(a=>a.includes('POST')));
+ }
 });

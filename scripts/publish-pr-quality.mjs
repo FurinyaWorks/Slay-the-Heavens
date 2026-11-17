@@ -4,7 +4,7 @@ import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
-import {collectIndependentAiReview,cloudGateSourceErrors} from './independent-ai-review.mjs';
+import {collectIndependentAiReview,collectCloudGateSource} from './independent-ai-review.mjs';
 import {collectPrDelivery,verifyDelivery} from './verify-delivery.mjs';
 import {autoMergeErrors} from './arm-auto-merge.mjs';
 import {projectRepositoryId,projectRepositoryMatches} from './repository-identity.mjs';
@@ -82,7 +82,8 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  // The coordinator verified the separate cloud AI session. Source identity is
  // enforced here and again by queue/post-merge consumers of the immutable proof.
  const sourceRun=get(prefix+'/actions/runs/'+Number(env.GITHUB_RUN_ID));
- const sourceErrors=cloudGateSourceErrors(sourceRun,{repo,head:review.head,base:review.base,ref:env.GITHUB_REF,bootstrap,coordinator:review.coordinator,reviewedBranch:pr.head.ref});
+ const source=collectCloudGateSource({api,run:sourceRun,repo,head:review.head,base:review.base,ref:env.GITHUB_REF,bootstrap,coordinator:review.coordinator,reviewedBranch:pr.head.ref,installBaseSha:review.report.installBaseSha});
+ const sourceErrors=source.errors;
  if(sourceRun.id!==Number(env.GITHUB_RUN_ID)||sourceRun.run_attempt!==Number(env.GITHUB_RUN_ATTEMPT)||sourceRun.event!==env.GITHUB_EVENT_NAME||sourceRun.head_sha!==env.GITHUB_SHA)sourceErrors.push('Cloud gate source or attempt differs from its actual execution');
  if(bootstrap&&String(env.GITHUB_ACTOR_ID)!==String(review.coordinator.id))sourceErrors.push('Bootstrap execution actor differs from the signing coordinator');
  if(!bootstrap&&env.GITHUB_REF!=='refs/heads/'+settings.default_branch)sourceErrors.push('Cloud gate is not executing the trusted default branch');
@@ -98,7 +99,7 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  const admissionErrors=autoMergeErrors({repo,settings,pr:freshPr,ruleset:policyNow,nativeReview:current});
  if(!isDeepStrictEqual(pr.labels,freshPr.labels)||pr.changed_files!==freshPr.changed_files||mode==='publish'&&admissionErrors.length)throw Error('PR labels, files or native admission changed during evidence collection');
  if(!isDeepStrictEqual(current,review)||!isDeepStrictEqual(policyNow,ruleset))throw Error('Review or native policy changed during evidence collection');
- const envelope={schemaVersion:1,kind:'native-ai-review-proof',mode,state:mode==='publish'?'pr_passed':'shadow_verified',repo,prNumber:number,head:review.head,base:review.base,nativeReview:review,nativePolicy:ruleset,preflight:collected.evidence,gate:{runId:Number(env.GITHUB_RUN_ID),attempt:Number(env.GITHUB_RUN_ATTEMPT),ref:env.GITHUB_REF,bootstrap},policyErrors};
+ const envelope={schemaVersion:1,kind:'native-ai-review-proof',mode,state:mode==='publish'?'pr_passed':'shadow_verified',repo,prNumber:number,head:review.head,base:review.base,nativeReview:review,nativePolicy:ruleset,sourceObservations:source.observations,preflight:collected.evidence,gate:{runId:Number(env.GITHUB_RUN_ID),attempt:Number(env.GITHUB_RUN_ATTEMPT),ref:env.GITHUB_REF,bootstrap},policyErrors};
  if(!release){mkdirSync(resolve(proofFile,'..'),{recursive:true});writeFileSync(proofFile,JSON.stringify(envelope,null,2)+'\n');return {state:envelope.state,policyErrors};}
  if(mode!=='publish')return {state:'shadow-no-status'};
  const saved=JSON.parse(readFileSync(proofFile,'utf8'));
