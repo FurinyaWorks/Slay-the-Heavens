@@ -27,7 +27,7 @@
 
 ## 证据和接续
 
-小型原始记录见 [本轮证据](../evidence/task25-7-fit-replay-20261118/replay.json)、同目录 fit-receipt/source-inventory、红绿输出与 manifest。manifest 另记录完整交付包内的几何图和采集脚本摘要；PNG、六pack、可重放脚本与原始源图保全在本轮聊天交付包，避免把重建图误称官方截图。原11-14 SDK 报告独立保留，不改写为本轮收据。
+原始记录见 [本轮证据](../evidence/task25-7-fit-replay-20261118/replay.json)、同目录 fit-receipt/source-inventory、红绿输出与 manifest；[几何对照](../evidence/task25-7-fit-replay-20261118/geometry-comparison.png)和采集脚本也在同目录，摘要由 manifest 绑定。六pack可用原 fit.py 和本页固定依赖重建，源像素继续保存在原 Git LFS，不重复入库。采集脚本保留本轮实际工作区路径，是原始执行记录，不承诺跨机器自动配置环境。避免把重建图误称官方截图。原11-14 SDK 报告独立保留，不改写为本轮收据。
 
 本轮 `verify:backlog`、`check:guidance`、`check:syntax`、单文件 Lua 回归及 diff 检查通过。受影响规划要求 Full；本轮未跑完整 Quality、未请求自动合并，仅保全实验候选。源 PNG 的临时 hydration 已恢复，不把像素文件误提交为源码变更。
 

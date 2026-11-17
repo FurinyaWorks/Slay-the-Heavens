@@ -1,0 +1,17 @@
+{
+  "scope": "Source/fit geometry contact sheet. Does not render native placement matrices.",
+  "imageSha256": "7b13154751d7f8eaff2738e0cb29efa61d9f64c7624a8bc2ff0a727f54e5fc25",
+  "fontSha256": "b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a",
+  "inputs": [
+    {
+      "enemy": "jaw_worm",
+      "sourceSha256": "064a91c5bf075224d5fd10f27febfc2424c7418762fbc64e8234afd9f1841e96",
+      "sidePixels": 173
+    },
+    {
+      "enemy": "hexaghost",
+      "sourceSha256": "6046dfd77a0c52f3b4489bcafa796903393a946e38ff621776840570c66fb600",
+      "sidePixels": 300
+    }
+  ]
+}
