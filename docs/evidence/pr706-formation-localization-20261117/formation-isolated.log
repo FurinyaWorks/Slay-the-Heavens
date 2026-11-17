@@ -1,0 +1,42 @@
+
+<--- Last few GCs --->
+
+[12:0x35886000]    22929 ms: Scavenge 2019.5 (2044.3) -> 2018.7 (2066.8) MB, pooled: 0 MB, 4.31 / 0.00 ms  (average mu = 0.951, current mu = 0.946) allocation failure; 
+[12:0x35886000]    22989 ms: Mark-Compact (reduce) 2034.0 (2066.8) -> 2033.4 (2050.8) MB, pooled: 0 MB, 38.43 / 0.00 ms  (+ 3.6 ms in 197 steps since start of marking, biggest step 3.1 ms, walltime since start of marking 60 ms) (average mu = 0.913, curren
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x91d810  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 2: 0x75bb1b node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 3: 0xc755c0  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 4: 0xc756bf  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 5: 0xf24835  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 6: 0xf372ac  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 7: 0xf09aab  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 8: 0xede634  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+ 9: 0xec9d18  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+10: 0x10a180d  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+11: 0x10aeee7  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+12: 0x10aede2  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+13: 0x10aede2  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+14: 0x10aede2  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+15: 0x10aede2  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+16: 0x10b072a  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+17: 0x10b0abc  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+18: 0xd04a9d  [/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node]
+19: 0x7fb873e768f6 
+✖ tests/encounter-formation-source-epoch.test.mjs (23122.153835ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23132.618785
+
+✖ failing tests:
+
+test at tests/encounter-formation-source-epoch.test.mjs:1:1
+✖ tests/encounter-formation-source-epoch.test.mjs (23122.153835ms)
+  'test failed'
