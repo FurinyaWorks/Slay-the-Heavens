@@ -58,9 +58,10 @@ function dispatchGate(repo,number,current,query,{shadow=false,bootstrapRef}={}){
 }
 export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=false,bootstrapRef,persist=()=>{}}={}){
  const before=collectEligibility(repo,number,review,query);
- if(before.errors.length)throw Error(before.errors.join('\n'));
+ const blocking=record=>shadow?record.errors.filter(error=>!nativeReviewPolicyErrors(record.ruleset).includes(error)):record.errors;
+ if(blocking(before).length)throw Error(blocking(before).join('\n'));
  const current=collectEligibility(repo,number,review,query);
- if(current.errors.length||!isDeepStrictEqual(before,current))throw Error('PR, native Review or policy changed before activation');
+ if(blocking(current).length||!isDeepStrictEqual(before,current))throw Error('PR, native Review or policy changed before activation');
  const runs=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/workflows/quality.yml/runs?event=pull_request&head_sha=${current.headSha}&per_page=100`).flatMap(p=>p.workflow_runs)
   .filter(r=>r.head_sha===current.headSha&&r.path==='.github/workflows/quality.yml'&&r.pull_requests?.some(p=>p.number===number)).sort((a,b)=>b.id-a.id);
  const run=runs[0];

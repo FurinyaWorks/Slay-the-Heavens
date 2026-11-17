@@ -246,7 +246,7 @@ test('native enable dispatches the existing gate and records an intent rather th
  assert.equal(r.state,'auto-merge-requested');assert.equal(r.proof.schemaVersion,9);assert.equal(r.proof.nativeAuto.confirmed,true);assert.equal(r.proof.gateRef,'refs/heads/develop');
  assert.equal(f.dispatched.inputs.ai_review_mode,'publish');assert(!('fullPreflight' in r.proof));
  assert(!f.calls.some(a=>a.some(v=>typeof v==='string'&&v.includes('/statuses/'))));
- const shadow=nativeFixture();assert.equal(armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}).state,'shadow-requested');assert(!shadow.calls.some(a=>a[1]==='graphql'));
+ const shadow=nativeFixture();shadow.ruleset.rules[0].parameters.required_approving_review_count=0;assert.equal(armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}).state,'shadow-requested');assert(!shadow.calls.some(a=>a[1]==='graphql'));
  const broken=nativeFixture();broken.run.conclusion='failure';assert.throws(()=>armAutoMerge(aiRepo,712,100,broken.query),/formal Quality/);assert(!broken.calls.some(a=>a.includes('POST')));
 });
 function gateExecute(f,{mode='publish',release=false,mutateEnv=()=>{},saved,proofFile}={}){
