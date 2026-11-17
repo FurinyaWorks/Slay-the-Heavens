@@ -56,6 +56,8 @@ export function integrationCiSource(path,source,side='picker',read=readFileSync)
 }
 function uncheckedRead(side,read){return(path,encoding)=>{
  const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+ // Freshly read opaque archives have no text projection in either exact domain.
+ if(Buffer.isBuffer(raw)&&!Object.hasOwn(integrationPacket.files,path)&&!Object.hasOwn(capacityJoin.files,path))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=uncheckedCiSource(path,text,side);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
@@ -263,6 +265,7 @@ function capacityJoinSource(path,source,domain){
 }
 function capacityJoinRead(domain,read){return(path,encoding)=>{
  const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+ if(Buffer.isBuffer(raw)&&!Object.hasOwn(capacityJoin.files,path))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityJoinSource(path,text,domain);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
