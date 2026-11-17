@@ -84,11 +84,17 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  let owners;
  try{owners=get(prefix+'/contents/.github/CODEOWNERS?ref='+review.base);}catch(error){if(!/404|Not Found/i.test(error.message))throw error;}
  const expectedOwners='* @FurinyaDev @v5g95m7t8m-max';
- const checkOwners=(file,label)=>{
+ const checkOwners=(file,label,ref)=>{
   const lines=Buffer.from(file?.content??'','base64').toString('utf8').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
   if(file?.type!=='file'||!isDeepStrictEqual(lines,[expectedOwners]))throw Error(label+' CODEOWNERS must retain exactly the existing trusted review coordinators');
+  // Contents dereferences symlinks. The native CODEOWNERS anchor must itself
+  // be a regular blob at this exact path, not a symlink to approved text.
+  const root=get(prefix+'/git/trees/'+ref),directory=root.tree?.find(row=>row.path==='.github');
+  if(root.truncated!==false||directory?.type!=='tree'||directory.mode!=='040000')throw Error(label+' CODEOWNERS directory is not an exact native tree');
+  const tree=get(prefix+'/git/trees/'+directory.sha),entry=tree.tree?.find(row=>row.path==='CODEOWNERS');
+  if(tree.truncated!==false||entry?.type!=='blob'||!['100644','100755'].includes(entry.mode)||entry.sha!==file.sha)throw Error(label+' CODEOWNERS must be the exact regular native blob');
  };
- if(owners)checkOwners(owners,'Baseline');
+ if(owners)checkOwners(owners,'Baseline',review.base);
  else{
   if(!bootstrap)throw Error('Missing baseline CODEOWNERS requires explicit one-time bootstrap');
   const collaborators=[];
@@ -100,7 +106,7 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
   if(!isDeepStrictEqual(writers,[...TRUSTED_REVIEW_COORDINATOR_IDS].sort((a,b)=>a-b)))throw Error('Bootstrap requires exactly the two existing trusted write collaborators');
  }
  const reviewedOwners=get(prefix+'/contents/.github/CODEOWNERS?ref='+review.mergeCommitSha);
- checkOwners(reviewedOwners,'Reviewed merge tree');
+ checkOwners(reviewedOwners,'Reviewed merge tree',review.mergeCommitSha);
  if(bootstrap){
   if(owners||env.GITHUB_EVENT_NAME!=='workflow_dispatch'||env.GITHUB_REF!=='refs/heads/'+pr.head.ref||env.GITHUB_SHA!==review.head)throw Error('Bootstrap must execute the exact approved migration candidate before CODEOWNERS installation');
  }else if(env.GITHUB_REF!=='refs/heads/'+settings.default_branch)throw Error('Gate must execute the trusted default branch workflow');

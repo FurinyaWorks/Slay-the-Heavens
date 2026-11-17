@@ -96,8 +96,10 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
   try{report=parseIndependentAiReview(selected.body);}catch(error){errors.push(error.message);}
   if(selected.state!=='APPROVED'||selected.commit_id!==head)
    errors.push('Signed Review is dismissed, rejected, unpublished or belongs to another HEAD');
-  if(signed.some(review=>review.state==='CHANGES_REQUESTED'&&reviewOrder(review,selected)>0))
-   errors.push('A later trusted Review requests changes');
+  const decisions=new Map();
+  for(const review of [...signed].sort(reviewOrder))if(['APPROVED','CHANGES_REQUESTED'].includes(review.state))decisions.set(review.user.id,review);
+  if([...decisions.values()].some(review=>review.state==='CHANGES_REQUESTED'))
+   errors.push('A trusted reviewer still requests changes');
   if(report){
    if(report.repositoryId!==projectRepositoryId||report.repositoryFullName!==repo||report.prNumber!==pr.number||
     report.reviewedHeadSha!==head||report.reviewedBaseSha!==baseSha||report.reviewedTreeSha!==tree)

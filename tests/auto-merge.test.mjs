@@ -225,7 +225,9 @@ function nativeFixture(){
   else if(path?.includes('/actions/workflows/quality.yml/runs?'))value=[{workflow_runs:[f.run]}];
   else if(path?.includes('/actions/runs/7/jobs?'))value=[{jobs:f.jobs}];
   else if(path?.endsWith('/commits/'+sha('d')))value={...f.sourceCommit,commit:{tree:f.sourceCommit.tree}};
-  else if(path?.includes('/contents/.github/CODEOWNERS?'))value={type:'file',content:Buffer.from('* @FurinyaDev @v5g95m7t8m-max\n').toString('base64')};
+  else if(path?.includes('/contents/.github/CODEOWNERS?'))value={type:'file',sha:sha('c'),content:Buffer.from('* @FurinyaDev @v5g95m7t8m-max\n').toString('base64')};
+  else if(path?.endsWith('/git/trees/'+sha('b'))||path?.endsWith('/git/trees/'+sha('d')))value={truncated:false,tree:[{path:'.github',mode:'040000',type:'tree',sha:sha('e')}]};
+  else if(path?.endsWith('/git/trees/'+sha('e')))value={truncated:false,tree:[{path:'CODEOWNERS',mode:'100644',type:'blob',sha:sha('c')}]};
   else if(path?.endsWith('/actions/artifacts/99'))value=f.proofArtifact;
   else if(path?.endsWith('/actions/runs/9'))value=f.gateRun;
   else return JSON.stringify(api(path));
@@ -342,4 +344,22 @@ test('explicit bootstrap requires the two native collaborators, exact approved s
 test('a hold added during artifact collection prevents the CI gate from releasing success',()=>{
  const f=nativeFixture(),load=f.loadCheckout;f.loadCheckout=()=>{const result=load();f.pr.labels=[{name:'hold'}];return result;};
  assert.throws(()=>gateExecute(f),/admission changed/);assert(!f.calls.some(a=>a.includes('POST')));
+});
+
+test('CODEOWNERS text returned through a symlink cannot masquerade as a native review anchor',()=>{
+ const f=nativeFixture(),normal=f.query;
+ f.query=(...args)=>args.at(-1)==='repos/'+aiRepo+'/git/trees/'+sha('e')?JSON.stringify({truncated:false,tree:[{path:'CODEOWNERS',mode:'120000',type:'blob',sha:sha('c')}]}):normal(...args);
+ assert.throws(()=>gateExecute(f),/regular native blob/);assert(!f.calls.some(a=>a.includes('POST')));
+});
+test('only each trusted actors latest active decisive review can request changes',()=>{
+ const f=aiFixture(),other={id:337201427,login:'v5g95m7t8m-max'};
+ f.permissions[other.id]={permission:'write',role_name:'maintain',user:other};
+ f.reviews.push({...f.reviews[0],id:101,user:other,state:'CHANGES_REQUESTED',body:'Fix issue',submitted_at:'2026-11-17T10:01:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ f.reviews.push({...f.reviews[1],id:102,state:'COMMENTED',body:'Discussion',submitted_at:'2026-11-17T10:02:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ f.reviews.push({...f.reviews[1],id:103,state:'APPROVED',body:'Verified fix',submitted_at:'2026-11-17T10:03:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ f.reviews.push({...f.reviews[1],id:104,state:'CHANGES_REQUESTED',submitted_at:'2026-11-17T10:04:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
 });
