@@ -864,3 +864,206 @@ test('documentation waiver rejects agent instruction entrypoints in every allowe
   assert.equal(isLowRiskDocumentationChange([{filename,status:'added',sha:'a'.repeat(40)}],1),false,filename);
  }
 });
+
+// The intent is a locator, never a fabricated replacement for PR preflight.
+import {createHash} from 'node:crypto';
+import {deflateRawSync} from 'node:zlib';
+import {currentFastQualityJobs} from '../scripts/pr-quality-evidence.mjs';
+import {validateIndependentAiReview,INDEPENDENT_AI_REVIEW_MARKER} from '../scripts/independent-ai-review.mjs';
+function nativeDeliveryFixture(){
+ const e=mergedEvidence(3),p=e.preflight,repo='FurinyaWorks/Slay-the-Heavens',repository={id:1429751262,full_name:repo};
+ p.repo=repo;p.run.repository=repository;p.currentRun.repository=repository;
+ e.repo=repo;e.run.repository=repository;e.currentRun.repository=repository;
+ const pr={number:p.prNumber,user:{id:111138384},state:'open',merged:false,draft:false,mergeable:true,body:'Depends-on: none',
+  head:{sha:p.head,ref:'feat/native-proof',repo:repository},base:{sha:p.base,ref:'develop',repo:repository},merge_commit_sha:p.tested};
+ const user={id:337201427,login:'v5g95m7t8m-max'},report={schemaVersion:1,kind:'independent-ai-review',repositoryId:repository.id,repositoryFullName:repo,
+  prNumber:p.prNumber,reviewedHeadSha:p.head,reviewedBaseSha:p.base,reviewedTreeSha:p.sourceTree,conclusion:'pass',unresolved:[],
+  reviewerAgent:'/root/delivery_reviewer',implementationAgents:['/root/implementer'],coordinator:{...user,verifiedActualSessions:true},
+  provenance:{kind:'coordinator-verified-agent-session',reviewId:p.review.reviewId,sessionId:'fixture-delivery-session'}};
+ const reviews=[{id:100,state:'APPROVED',commit_id:p.head,user,submitted_at:'2026-11-17T10:00:00Z',
+  body:INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(report)}];
+ const permissions={[user.id]:{permission:'write',role_name:'maintain',user}},sourceCommit={sha:p.tested,tree:{sha:p.sourceTree},parents:p.parents.map(sha=>({sha}))};
+ const target={ref:'refs/heads/develop',object:{type:'commit',sha:p.base}},snapshot={...pr,authorId:pr.user.id};delete snapshot.user;
+ const nativeReview={...validateIndependentAiReview({repository,pr,baseSha:p.base,sourceCommit,reviews,permissions,dependencies:[]}),
+  observations:{prBefore:snapshot,prAfter:structuredClone(snapshot),targetBefore:target,targetAfter:structuredClone(target),sourceCommit,reviews,permissions,dependencies:[]}};
+ assert.equal(nativeReview.conclusion,'pass');
+ const proof={schemaVersion:1,kind:'native-ai-review-proof',mode:'publish',state:'pr_passed',repo,prNumber:p.prNumber,head:p.head,base:p.base,
+  nativeReview,nativePolicy:{rules:[{type:'pull_request',parameters:{required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true}}]},preflight:p,
+  gate:{runId:50,attempt:1,ref:'refs/heads/develop',bootstrap:false},policyErrors:[]};
+ const intent={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:repository.id,prNumber:p.prNumber,
+  head:p.head,base:p.base,sourceTree:p.sourceTree,githubReviewId:100,nativeApprovalReviewId:100,gateRef:'refs/heads/develop',createdAt:'2026-11-17T10:01:00Z',nativeAuto:{confirmed:true,state:'waiting'}};
+ const gateRun={id:50,run_attempt:1,path:'.github/workflows/licenses.yml',event:'workflow_dispatch',status:'completed',conclusion:'success',repository,head_branch:'develop',head_sha:p.base};
+ const artifact={id:70,name:`independent-review-${p.prNumber}-${p.head.slice(0,12)}-50-1`,expired:false,workflow_run:{id:50,head_sha:p.base,repository_id:repository.id,head_repository_id:repository.id}};
+ const status={id:90,context:'independent-review',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
+  description:`AI review 100 [base:${p.base}] [proof:70]`,target_url:`https://github.com/${repo}/actions/runs/50`};
+ const f={e,proof,intent,repository,gateRun,artifact,status,calls:[]};
+ f.zip=()=>nativeStoredZip(Buffer.from(JSON.stringify(f.proof)));
+ artifact.digest='sha256:'+createHash('sha256').update(f.zip()).digest('hex');
+ return f;
+}
+function nativeStoredZip(data,name='native-ai-review-proof.json',compressed=false){
+ const filename=Buffer.from(name),local=Buffer.alloc(30),central=Buffer.alloc(46),end=Buffer.alloc(22);
+ const payload=compressed?deflateRawSync(data):data,method=compressed?8:0;
+ let crc=0xffffffff;for(const byte of data){crc^=byte;for(let i=0;i<8;i++)crc=(crc>>>1)^(-(crc&1)&0xedb88320);}crc=(crc^0xffffffff)>>>0;
+ local.writeUInt32LE(0x04034b50);local.writeUInt16LE(20,4);local.writeUInt16LE(method,8);local.writeUInt32LE(crc,14);local.writeUInt32LE(payload.length,18);local.writeUInt32LE(data.length,22);local.writeUInt16LE(filename.length,26);
+ central.writeUInt32LE(0x02014b50);central.writeUInt16LE(20,4);central.writeUInt16LE(20,6);central.writeUInt16LE(method,10);central.writeUInt32LE(crc,16);central.writeUInt32LE(payload.length,20);central.writeUInt32LE(data.length,24);central.writeUInt16LE(filename.length,28);
+ const first=Buffer.concat([local,filename,payload]),directory=Buffer.concat([central,filename]);
+ end.writeUInt32LE(0x06054b50);end.writeUInt16LE(1,8);end.writeUInt16LE(1,10);end.writeUInt32LE(directory.length,12);end.writeUInt32LE(first.length,16);
+ return Buffer.concat([first,directory,end]);
+}
+function nativeProofQuery(f,adjust=(_path,value)=>value){
+ return(...args)=>{
+  f.calls.push(args);
+  if(args[0]==='run'){
+   assert.equal(args[1],'download');writeFileSync(join(args[args.indexOf('--dir')+1],'native-ai-review-proof.json'),JSON.stringify(f.proof));return '';
+  }
+  const path=args.at(-1);let value;
+  if(path==='repositories/1429751262')value=f.repository;
+  else if(path.includes('/statuses?'))value=[[f.status]];
+  else if(path.endsWith('/actions/artifacts/70'))value=f.artifact;
+  else if(path.endsWith('/actions/runs/50'))value=f.gateRun;
+  else if(path.endsWith('/actions/runs/50/artifacts?per_page=100'))value=[{artifacts:[f.artifact]}];
+  else throw Error('Unexpected native proof query '+path);
+  return JSON.stringify(adjust(path,structuredClone(value)));
+ };
+}
+
+test('native intent resolves actual immutable downloaded proof without reconstructing the original PR observations',()=>{
+ const f=nativeDeliveryFixture(),actual=delivery.resolveNativePreflight(f.intent,nativeProofQuery(f));
+ assert.deepEqual(verifyDelivery(actual),[]);assert.equal(actual.schemaVersion,3);
+ for(const field of ['targetBeforeSha','targetAfterSha','run','currentRun','checkout','checkoutArtifact','jobs','testedCommit'])
+  assert.deepEqual(actual[field],f.proof.preflight[field],field+' remains the original pre-merge observation');
+ assert.equal(actual.nativeProof.artifact.id,70);assert.equal(actual.nativeReview.nativeApprovalReviewId,100);
+ assert(f.calls.some(args=>args[0]==='run'&&args.includes('download')));
+ assert.equal(f.calls.filter(args=>args.at(-1).endsWith('/actions/artifacts/70')).length,2);
+ assert(!f.calls.some(args=>args.includes('POST')||args.some(value=>String(value).includes('/rulesets/'))));
+});
+
+test('native proof ZIP adapter verifies the original API ZIP digest and rejects JSON or modified archive substitutes',()=>{
+ const f=nativeDeliveryFixture();
+ assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f),{loadProof:()=>f.zip()}).nativeReview.githubReviewId,100);
+ const deflated=nativeDeliveryFixture(),compressed=nativeStoredZip(Buffer.from(JSON.stringify(deflated.proof)),'native-ai-review-proof.json',true);
+ deflated.artifact.digest='sha256:'+createHash('sha256').update(compressed).digest('hex');
+ assert.equal(delivery.resolveNativePreflight(deflated.intent,nativeProofQuery(deflated),{loadProof:()=>compressed}).nativeReview.githubReviewId,100);
+ for(const data of [Buffer.from(JSON.stringify(f.proof)),Buffer.concat([f.zip(),Buffer.from('extra')]),{},f.proof])
+  assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f),{loadProof:()=>data}),/ZIP|digest/);
+ const bad=nativeDeliveryFixture(),bytes=nativeStoredZip(Buffer.from(JSON.stringify(bad.proof)),'foreign.json');
+ bad.artifact.digest='sha256:'+createHash('sha256').update(bytes).digest('hex');
+ assert.throws(()=>delivery.resolveNativePreflight(bad.intent,nativeProofQuery(bad),{loadProof:()=>bytes}),/ZIP entry/);
+});
+
+test('native proof never accepts shadow artifacts, false CI, self-authored reviews or stale exact identities',()=>{
+ for(const mutate of [
+  f=>f.intent.nativeAuto.confirmed=false,f=>f.intent.sourceTree=sha('f'),f=>f.intent.githubReviewId=101,
+  f=>f.status.creator.id=1,f=>f.status.creator.login='other',f=>f.status.state='failure',
+  f=>f.status.description=f.status.description.replace(f.intent.base,sha('f')),f=>f.status.description=f.status.description.replace('100 [','101 ['),
+  f=>f.artifact.expired=true,f=>f.artifact.id=71,f=>f.artifact.name='shadow-proof',
+  f=>f.artifact.workflow_run.id=51,f=>f.artifact.workflow_run.repository_id=1,
+  f=>f.gateRun.repository.id=1,f=>f.gateRun.head_repository={id:1,full_name:f.intent.repo},
+  f=>f.gateRun.event='pull_request',f=>f.gateRun.path='.github/workflows/quality.yml',
+  f=>f.gateRun.run_attempt=2,f=>f.gateRun.head_sha=sha('f'),f=>f.gateRun.conclusion='failure',
+  f=>f.proof.mode='shadow',f=>f.proof.state='shadow_verified',f=>f.proof.head=sha('f'),f=>f.proof.base=sha('f'),
+  f=>f.proof.gate.ref='refs/heads/foreign',f=>f.proof.policyErrors=['native gate disabled'],
+  f=>f.proof.nativePolicy.rules[0].parameters.required_approving_review_count=0,
+  f=>f.proof.preflight.jobs.pop(),f=>f.proof.preflight.currentRun.conclusion='failure',
+  f=>f.proof.preflight.targetBeforeSha=sha('f'),f=>f.proof.preflight.sourceTree=sha('f'),
+  f=>f.proof.nativeReview.report.coordinator.verifiedActualSessions=false,
+  f=>f.proof.nativeReview.observations.prBefore.authorId=337201427,
+  f=>f.proof.nativeReview.observations.reviews[0].state='COMMENTED',
+  f=>f.proof.nativeReview.observations.reviews[0].state='DISMISSED',
+ ]){
+  const f=nativeDeliveryFixture();mutate(f);
+  const zip=f.zip();f.artifact.digest='sha256:'+createHash('sha256').update(zip).digest('hex');
+  assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f),{loadProof:()=>zip}),undefined,String(mutate));
+ }
+});
+
+test('native proof retains the original schema7 dual-platform Fast receipt and plan',()=>{
+ const f=nativeDeliveryFixture(),p=f.proof.preflight;
+ Object.assign(p,{schemaVersion:7,kind:'pr-fast',number:p.prNumber,target:p.base,commit:p.testedCommit,
+  latestRun:p.currentRun,pr:{...f.proof.nativeReview.observations.prBefore,labels:[]},
+  plan:{mode:'fast',sha:p.tested,head:p.head,base:p.base,runId:p.runId,attempt:p.attempt,
+   changed:['scripts/value.mjs'],js:['tests/value.test.mjs'],lua:[],reason:'Complete affected set'}});
+ p.jobs=currentFastQualityJobs.map((name,i)=>({id:100+i,name,run_id:p.runId,run_attempt:p.attempt,head_sha:p.head,
+  status:'completed',conclusion:name.startsWith('needs.')?'skipped':'success'}));
+ p.checkoutArtifact.name=`quality-${p.runId}-${p.attempt}-fast`;
+ const zip=f.zip();f.artifact.digest='sha256:'+createHash('sha256').update(zip).digest('hex');
+ const actual=delivery.resolveNativePreflight(f.intent,nativeProofQuery(f),{loadProof:()=>zip});
+ assert.equal(actual.schemaVersion,7);assert.deepEqual(actual.plan,p.plan);assert.deepEqual(verifyDelivery(actual),[]);
+ f.proof.preflight.jobs.find(job=>job.name==='fast (windows-2025)').conclusion='failure';
+ const failed=f.zip();f.artifact.digest='sha256:'+createHash('sha256').update(failed).digest('hex');
+ assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f),{loadProof:()=>failed}),/delivery\/review verification/);
+});
+
+test('native proof refuses immutable ID/digest replacement and superseding status or gate attempts during download',()=>{
+ for(const mutate of [f=>f.artifact.id=71,f=>f.artifact.digest='sha256:'+'0'.repeat(64),
+  f=>f.gateRun.run_attempt++,f=>{f.status.id=91;f.status.state='failure';}]){
+  const f=nativeDeliveryFixture(),zip=f.zip();
+  assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f),{loadProof:()=>{mutate(f);return zip;}}));
+ }
+ const f=nativeDeliveryFixture();
+ assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f,(path,value)=>
+  path.endsWith('/artifacts?per_page=100')?[{artifacts:[f.artifact,{...f.artifact,id:71}]}]:value)),/ambiguous|replaced/);
+});
+
+test('native bootstrap proof must execute the exact reviewed source branch and SHA',()=>{
+ const f=nativeDeliveryFixture();f.intent.gateRef='refs/heads/feat/native-proof';
+ f.proof.gate.ref=f.intent.gateRef;f.proof.gate.bootstrap=true;f.gateRun.head_branch='feat/native-proof';f.gateRun.head_sha=f.intent.head;
+ f.artifact.workflow_run.head_sha=f.intent.head;
+ assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)).head,f.intent.head);
+ f.intent.gateRef=f.proof.gate.ref='refs/heads/foreign';f.gateRun.head_branch='foreign';
+ assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),/actual reviewed PR/);
+});
+
+function nativeQueueEvidence(preflight,mergedSha){
+ const repo=preflight.repo,branch=`gh-readonly-queue/develop/pr-${preflight.prNumber}-${preflight.base}`;
+ const run={id:21,run_attempt:1,event:'merge_group',head_sha:mergedSha,head_branch:branch,path:qualityWorkflowPath,
+  status:'completed',conclusion:'success',repository:{full_name:repo}};
+ const jobs=currentFullQualityJobs.map((name,i)=>({id:500+i,name,run_id:21,run_attempt:1,head_sha:mergedSha,status:'completed',conclusion:name==='fast'?'skipped':'success'}));
+ const licenseRun={id:22,run_attempt:1,event:'merge_group',head_sha:mergedSha,path:'.github/workflows/licenses.yml',status:'completed',conclusion:'success',repository:{full_name:repo}};
+ return {schemaVersion:8,kind:'native-queue-full',run,jobs,currentRun:structuredClone(run),
+  checkout:{schemaVersion:1,event:'merge_group',runId:21,attempt:1,tested:mergedSha,head:mergedSha,base:preflight.base,parents:[preflight.base]},
+  checkoutArtifact:{id:210,name:'quality-21-1-check',expired:false,workflow_run:{id:21,head_sha:mergedSha}},
+  statuses:['full-quality','pr-quality','independent-review'].map((context,i)=>({id:600+i,context,state:'success',creator:{id:41898282,login:'github-actions[bot]'},target_url:`https://github.com/${repo}/actions/runs/21`})),
+  licenses:{run:licenseRun,currentRun:structuredClone(licenseRun),jobs:[
+   {id:700,name:'inventory',run_id:22,run_attempt:1,head_sha:mergedSha,status:'completed',conclusion:'success'},
+   {id:701,name:'independent-ai-review',run_id:22,run_attempt:1,head_sha:mergedSha,status:'completed',conclusion:'skipped'}]}};
+}
+function nativeMergedFixture(){
+ const f=nativeDeliveryFixture(),e=f.e;e.preflight={...f.proof.preflight,nativeReview:f.proof.nativeReview};
+ e.queueFull=nativeQueueEvidence(e.preflight,e.pr.merge_commit_sha);return e;
+}
+test('native Full PR delivery requires actual queue Full and real inventory as well as independent push Full',()=>{
+ const e=nativeMergedFixture();assert.deepEqual(verifyMergedDelivery(e),{state:'merged_passed',errors:[]});
+ for(const mutate of [x=>delete x.queueFull,x=>x.queueFull.kind='fast-queue-full',x=>x.queueFull.jobs.pop(),
+  x=>x.queueFull.currentRun.run_attempt++,x=>x.queueFull.checkout.base=sha('f'),
+  x=>x.queueFull.statuses[0].creator.id=1,x=>x.queueFull.licenses.jobs[0].conclusion='skipped',
+  x=>x.queueFull.licenses.jobs[1].name='inventory',x=>x.queueFull.licenses.jobs[1].id=700,
+  x=>x.queueFull.licenses.jobs[1].conclusion='success',x=>x.queueFull.licenses.jobs=null,
+  x=>x.run.conclusion='failure',x=>x.commit.parents=[{sha:sha('f')}],x=>x.commit.commit.tree.sha=sha('f')]){
+  const x=structuredClone(e);mutate(x);assert.equal(verifyMergedDelivery(x).state,'merged_pending',String(mutate));
+ }
+ const legacy={...e.queueFull,kind:'fast-queue-full',licenses:{...e.queueFull.licenses,jobs:e.queueFull.licenses.jobs.slice(0,1)}};
+ assert.deepEqual(delivery.verifyFastQueueFull(legacy,e.preflight,e.pr.merge_commit_sha),[],'original schema8 Fast contract remains supported');
+});
+
+test('merged collector obtains queue Full for native-reviewed Full PRs without changing legacy preflight observations',()=>{
+ const e=nativeMergedFixture(),seen=[];
+ const query=(...args)=>{
+  const path=args.at(-1);
+  if(path.endsWith('/pulls/8'))return JSON.stringify(e.pr);
+  if(path.endsWith('/commits/'+e.pr.merge_commit_sha))return JSON.stringify(e.commit);
+  if(path.includes('/statuses?'))return JSON.stringify([e.queueFull.statuses]);
+  if(path.includes('/actions/workflows/quality.yml/'))return JSON.stringify([{workflow_runs:[path.includes('event=push')?e.run:e.queueFull.run]}]);
+  if(path.includes('/actions/workflows/licenses.yml/'))return JSON.stringify([{workflow_runs:[e.queueFull.licenses.run]}]);
+  const id=Number(path.match(/actions\/runs\/(\d+)\/jobs/)?.[1]);
+  if(id)return JSON.stringify([{jobs:id===9?e.jobs:id===21?e.queueFull.jobs:e.queueFull.licenses.jobs}]);
+  throw Error('Unexpected native merged query '+path);
+ };
+ const actual=collectMergedDelivery(e.repo,8,e.preflight,query,run=>{
+  seen.push(run.id);return run.id===9?{checkout:e.checkout,checkoutArtifact:e.checkoutArtifact}:
+   {checkout:e.queueFull.checkout,checkoutArtifact:e.queueFull.checkoutArtifact};
+ });
+ assert.deepEqual(seen,[9,21]);assert.equal(actual.queueFull.kind,'native-queue-full');
+ assert.deepEqual(actual.preflight,e.preflight);assert.deepEqual(verifyMergedDelivery(actual),{state:'merged_passed',errors:[]});
+});
