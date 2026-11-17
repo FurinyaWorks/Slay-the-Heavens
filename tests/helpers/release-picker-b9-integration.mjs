@@ -23,7 +23,7 @@ export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc');
 assert.equal(integrationPacket.base,'b9bca884ed9b9831965b409885d78f719b9a567a');
 const capacityJoinBytes=norm(readFileSync(new URL('./release-picker-capacity-join.json',import.meta.url),'utf8'));
-assert.equal(hash(capacityJoinBytes),'ade1a9ac2ccd9a293d12a45675f1b204729907c64c67540536004de5d0bbb85e','complete picker capacity join');
+assert.equal(hash(capacityJoinBytes),'c0acb1ca67272b88be37050885b0c11fd75a7aeb3d805c5aab0929fa5ef24125','complete picker capacity join');
 const capacityJoin=JSON.parse(capacityJoinBytes);
 assert.equal(capacityJoin.prepCommit,'c2d32421e63f104675fb98d7af033cb5817555eb');
 assert.equal(capacityJoin.releaseCommit,'00ab3fe6d386f55aecfb063e59aeca2cf5065807');
@@ -281,6 +281,18 @@ export function integrationCapacityCiRead(read=readFileSync){
   // Evaluate the pure historical transform from this one captured read.
   // Fresh authorization below still reads the original caller, not the capture.
   const value=originalCapacityCiRead(capacityJoinRead('capacity',()=>raw))(path,encoding);
+  const changed=Buffer.isBuffer(raw)&&Buffer.isBuffer(value)?!raw.equals(value):raw!==value;
+  if(changed)assertReleaseIntegrationCurrent(read);
+  return value;
+ };
+}
+
+// Exact #703 current view, distinct from its older capacity CI predecessors.
+// A transformed result always authenticates the complete live caller closure.
+export function integrationCapacityCurrentRead(read=readFileSync){
+ return(path,encoding)=>{
+  const raw=read(path,encoding);
+  const value=capacityJoinRead('capacity',()=>raw)(path,encoding);
   const changed=Buffer.isBuffer(raw)&&Buffer.isBuffer(value)?!raw.equals(value):raw!==value;
   if(changed)assertReleaseIntegrationCurrent(read);
   return value;

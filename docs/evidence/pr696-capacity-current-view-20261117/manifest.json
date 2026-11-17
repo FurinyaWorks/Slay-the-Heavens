@@ -1,0 +1,32 @@
+[
+  {
+    "path": "current-reader-probe.log.gz",
+    "uncompressedBytes": 172,
+    "sha256": "f2de9e04303359e302e232cb05816df04dfced352cc5731155b8a0c58dfaf222",
+    "complete": true
+  },
+  {
+    "path": "current-reader-probe.mjs.gz",
+    "uncompressedBytes": 1514,
+    "sha256": "65f1215876dd2bc71ccd18f1714a83da724aa543b2e140a5a79c3e0d98f01c9b",
+    "complete": true
+  },
+  {
+    "path": "selection-after.log.gz",
+    "uncompressedBytes": 254,
+    "sha256": "2242a9be5547b6c8abc94ac1bcf0877674295a15c39f503344ef0b03a073cc8e",
+    "complete": true
+  },
+  {
+    "path": "selection-before.log.gz",
+    "uncompressedBytes": 1399,
+    "sha256": "b3b1eeec7490b266d73f6b6bae01741ff412ef0bb2ece5259db710811ea0dae7",
+    "complete": true
+  },
+  {
+    "path": "selection-compose.log.gz",
+    "uncompressedBytes": 233,
+    "sha256": "111c2c14154e92369622f914068825bfd2bb95b6ba87b410b85fc103a9e27851",
+    "complete": true
+  }
+]

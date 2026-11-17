@@ -10,18 +10,19 @@ import {gunzipSync} from 'node:zlib';
 import {beforeCapacityB9Ci,capacityB9CiBindings,capacityB9CiRead} from './helpers/release-capacity-b9-ci-source.mjs';
 import {discoverJs as rawDiscoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch as jointSourceEpoch,releaseSelectionMapSourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
-import {integrationProductionRead,integrationPriorInventory,integrationCapacityCiRead} from './helpers/release-picker-b9-integration.mjs';
+import {integrationProductionRead,integrationPriorInventory,integrationCapacityCiRead,integrationCapacityCurrentRead} from './helpers/release-picker-b9-integration.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
 import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards,capacityReleaseCiBefore} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 // Preserve the full #697 standalone contract in its authenticated exact view.
 const readFileSync=integrationProductionRead('selection',rawReadFileSync);
+const capacityCurrentRead=integrationCapacityCurrentRead(rawReadFileSync);
 const discoverJs=()=>integrationPriorInventory(rawDiscoverJs(),'selection');
 const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'selection','lua').map(p=>p.slice(10)):rawReaddirSync(path);
 
 test('B9 capacity CI join binds both exact predecessors and refuses drift foreign paths wrong before and malformed inputs',()=>{
  for(const [path,row]of Object.entries(capacityB9CiBindings)){
-  const raw=rawReadFileSync(path,'utf8'),lf=norm(raw);
+  const raw=capacityCurrentRead(path,'utf8'),lf=norm(raw);
   assert.equal(hash(lf),row.currentSha256,path+' complete live source');
   for(const view of ['b9','capacity']){
    for(const input of [raw,lf,lf.replaceAll('\n','\r\n')]){
@@ -95,7 +96,7 @@ test('capacity and latest Release CI views compose without accepting stale or fo
  assertIntegratedCurrent();
  for(const [path,row]of Object.entries(integration.files)){
   assert.deepEqual(row.before,releaseSelectionMapCiPacket.files[path].current,'complete committed Release predecessor');
-  const current=norm(beforeCapacityB9Ci(path,rawReadFileSync(path,'utf8'),'capacity'));
+  const current=norm(beforeCapacityB9Ci(path,capacityCurrentRead(path,'utf8'),'capacity'));
   assert.equal(hash(current),row.current.sha256,path);
   assert.equal(adapter.capacityReleaseCiBefore(path,current),row.before.source);
   for(const input of [current,current.replaceAll('\n','\r\n')])assert.equal(releaseSelectionMapCiSource(path,input),row.before.source);
