@@ -1,0 +1,31 @@
+diff --git a/tests/session-menu-navigation.test.mjs b/tests/session-menu-navigation.test.mjs
+index 5c00fe45c..d05b534d5 100644
+--- a/tests/session-menu-navigation.test.mjs
++++ b/tests/session-menu-navigation.test.mjs
+@@ -2,7 +2,7 @@ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import {runLua} from '../scripts/test-lua.mjs';
+ import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
+-import {sourceEpoch,releaseSourceEpoch,preReleaseNavigationSourceEpoch} from './helpers/closeout-source-epoch.mjs';
++import {sourceEpoch,releaseSourceEpoch,preReleaseNavigationSourceEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+ import {toLua} from '../scripts/build-lua-data.mjs';
+ import {gameLayout} from '../scripts/game-ui-layout.mjs';
+ import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
+@@ -11,7 +11,8 @@ import {withViewport} from '../scripts/viewport-layout.mjs';
+ import {gunzipSync,gzipSync} from 'node:zlib';
+ import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
+ // Frozen menu receipts retain their complete original source closure.
+-// The independent navigation source contract validates the live after tree.
++// Navigation and PC22 retain the same complete prior menu corpus.
++// Both source contracts independently validate the live after tree.
+ const navigationCurrentRead=p=>readFileSync(p,'utf8');
+ const navigationHistoricalRead=p=>sourceEpoch.preCombinedSource(p,navigationCurrentRead(p),{target:'releaseNavigationPrior',readSource:navigationCurrentRead});
+ 
+@@ -23,6 +24,7 @@ test('session menu preserves live state, confirms destructive actions and uses p
+ 
+ test('deck notification continuation preserves immutable menu sources and authenticates both exact current owners',()=>{
+  const sourceEpoch=preReleaseNavigationSourceEpoch;
++ assert.deepEqual(preReleaseNavigationSourceEpoch.proof,preReleasePc22BasicFeedbackSourceEpoch.proof,'both reviewed branches retain the identical complete menu predecessor');
+  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz')));
+  assertNeowStaticPredecessor(packet);
+  const {neowRetirementStaticContinuation,neowRetirementContinuation,continuation,...menu}=packet;

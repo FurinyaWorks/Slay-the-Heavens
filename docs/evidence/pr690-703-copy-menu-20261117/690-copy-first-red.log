@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(!paths.some(p=>p.includes('ci-source')||p.includes('navigation-map-integration')||p.includes('release-card-contact-integration')||p.startsWith('src/')))
+
+    at file:///tmp/690-copy-check.mjs:12:2 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
