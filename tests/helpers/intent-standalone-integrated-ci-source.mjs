@@ -80,7 +80,5 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
 }
 export function renderIntegratedCiBinding(sha){
  assert.match(sha,/^[a-f0-9]{64}$/);
- return `// Fixed trust leaf; excluded from its own archive.\nimport assert from 'node:assert/strict';\nimport {readFileSync as fixtureRawReadFileSync} from 'node:fs';
-import {intentReleaseFixtureRead} from './intent-release-union.mjs';
-const readFileSync=intentReleaseFixtureRead('intent',fixtureRawReadFileSync);\nimport {createHash} from 'node:crypto';\nexport const integratedCiBytes=readFileSync(new URL('./integrated-ci-source.json.gz',import.meta.url));\nassert.equal(createHash('sha256').update(integratedCiBytes).digest('hex'),${JSON.stringify(sha)},'complete reviewed integration CI sources');\n`;
+ return `// Fixed trust leaf; excluded from its own archive.\nimport assert from 'node:assert/strict';\nimport {readFileSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nexport const integratedCiBytes=readFileSync(new URL('./integrated-ci-source.json.gz',import.meta.url));\nassert.equal(createHash('sha256').update(integratedCiBytes).digest('hex'),${JSON.stringify(sha)},'complete reviewed integration CI sources');\n`;
 }

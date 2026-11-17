@@ -8,7 +8,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {sourceSlice as liveSourceSlice,preIntentReleaseSourceEpoch} from './closeout-source-epoch.mjs';
 const sourceSlice=(p,s,t,r)=>liveSourceSlice(p,s,t,r,preIntentReleaseSourceEpoch);
-import {preRunHudCiSource,runHudPriorRead,runHudPriorInventory} from './run-hud-ci-source.mjs';
+import {preRunHudCiSource,runHudPriorRead,runHudPriorInventory} from './release-af77-fixture-run-hud-ci-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const capacityRoadmapBytes=readFileSync(new URL('./role-capacity-roadmap-source.json',import.meta.url));
 assert.equal(hash(capacityRoadmapBytes.toString('utf8').replaceAll('\r\n','\n')),'e0c27a383c57f64071a4c9b78fd027588ac2998d53f49119a2a8e99bb65fcd02');

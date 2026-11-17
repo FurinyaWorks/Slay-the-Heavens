@@ -327,3 +327,27 @@ test('e122 standalone: intent post697 union complete current production authenti
   }
  }
 });
+
+// Regression for exact current inputs unchanged at the outer union but changed
+// by a deeper historical layer. No historical fixture participates in admission.
+test('actual af77 intent deeper historical outputs authenticate the original raw reader',()=>{
+ const owner='src/lua/abyss_battle_intent_view.lua';let fault;
+ const paths=['.github/workflows/licenses.yml','.github/workflows/quick-feedback.yml','scripts/art/ready-card-runtime.mjs','scripts/audit-native-candidate.mjs','scripts/build-native-audio-game.mjs','scripts/build-native-bgm-candidate.mjs','scripts/build-native-candidate.mjs','scripts/build-ui.mjs'];
+ const read=(p,e)=>{
+  const raw=unionActualReadFileSync(p,e);if(p!==owner||!fault)return raw;
+  if(fault==='missing')throw Error('missing '+p);if(fault==='null')return null;
+  return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+ };
+ for(const path of paths){
+  const row=intentReleasePacket.files[path],source=unionActualReadFileSync(path,'utf8');
+  assert.equal(row.current.sha256,row.parents.release.sha256,'unchanged outer source is the necessary counterexample');
+  const reader=currentIntegratedRead('menu',{read});
+  const expected=currentIntegratedSource(path,source,'menu',read);assert.notEqual(expected,source);
+  for(const invoke of [()=>currentIntegratedSource(path,source,'menu',read),()=>reader(path,'utf8')]){
+   assert.equal(invoke(),expected);
+   for(const kind of ['missing','null','drift']){fault=kind;assert.throws(invoke);fault=undefined;assert.equal(invoke(),expected);}
+  }
+ }
+ const binary=Buffer.from([255,0,128]);assert.equal(currentIntegratedRead('menu',{read:()=>binary})('unknown/binary'),binary);
+ assert.equal(currentIntegratedRead('menu',{read:()=>null})('unknown/source'),null);
+});

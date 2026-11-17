@@ -1,4 +1,4 @@
-import {intentReleaseCiSource,intentReleaseHistoricalRead,intentReleasePriorInventory,intentReleasePacket,withIntentReleaseCurrent} from './intent-release-union.mjs';
+import {intentReleaseCiSource,intentReleaseHistoricalRead,intentReleasePriorInventory,intentReleasePacket,withIntentReleaseCurrent,assertIntentReleaseCurrent} from './intent-release-union.mjs';
 import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
 import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
@@ -21,8 +21,7 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
-export function integratedSource(path,source,target,read=readFileSync){
- source=intentReleaseCiSource(path,source,'release',read);
+function historicalIntegratedSource(path,source,target,read=readFileSync){
  source=beforePreflightSource(path,source);
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
@@ -33,15 +32,39 @@ export function integratedSource(path,source,target,read=readFileSync){
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
 }
-export function integratedRead(target,{read=readFileSync}={}){read=intentReleaseHistoricalRead('release',read);read=preflightPriorRead(read);return(path,encoding)=>{
- const raw=read(path,encoding);
- const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
- if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
-  const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
- }
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
- return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
-};}
+function isCurrentUnionInput(path,source){
+ const row=Object.hasOwn(intentReleasePacket.files,path)?intentReleasePacket.files[path]:null;
+ return row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))===row.current.sha256;
+}
+export function integratedSource(path,source,target,read=readFileSync){
+ const before=intentReleaseCiSource(path,source,'release',read);
+ const result=historicalIntegratedSource(path,before,target,intentReleaseHistoricalRead('release',read));
+ // Unchanged at this outer layer can still project deeper. Admission belongs
+ // to the final historical output, using the original caller's raw reader.
+ if(result!==source&&isCurrentUnionInput(path,source))assertIntentReleaseCurrent(read);
+ return result;
+}
+export function integratedRead(target,{read=readFileSync}={}){
+ const rawRead=read;
+ const historicalRead=preflightPriorRead(intentReleaseHistoricalRead('release',rawRead));
+ return(path,encoding)=>{
+  const original=rawRead(path,encoding);
+  if(typeof original!=='string'&&!Buffer.isBuffer(original))return original;
+  const raw=historicalRead(path,encoding);
+  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
+  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
+   const saved=binary.views[target],bytes=historicalRead(saved.path);
+   assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');
+   if(!bytes.equals(original))assertIntentReleaseCurrent(rawRead);
+   return bytes;
+  }
+  const text=typeof raw==='string'?raw:raw.toString('utf8');
+  const prior=historicalIntegratedSource(path,text,target,historicalRead);
+  const originalText=typeof original==='string'?original:original.toString('utf8');
+  if(prior!==originalText&&isCurrentUnionInput(path,originalText))assertIntentReleaseCurrent(rawRead);
+  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+ };
+}
 export function assertIntegratedCurrent(read=readFileSync){
  return withIntentReleaseCurrent('release',read,read=>{
  const capacityRead=read;assertCapacityPreflightCurrent(read);

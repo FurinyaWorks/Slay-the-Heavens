@@ -1,4 +1,4 @@
-const sourceSlice=(p,s,t,r)=>actualSourceSlice(p,s,t,r,currentEpoch);
+const sourceSlice=(p,s,t,r=path=>diskReadFileSync(path,'utf8'))=>actualSourceSlice(p,s,t,r,currentEpoch);
 import {preIntentReleaseSourceEpoch as currentEpoch} from './helpers/closeout-source-epoch.mjs';
 import {sourceSlice as actualSourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';

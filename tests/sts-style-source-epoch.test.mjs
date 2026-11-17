@@ -100,7 +100,7 @@ test('af77 standalone: real style source retains the complete CI-repair and ever
 
 test('af77 standalone: real style CI admits only full inventory, complete source and freshly verified executable helpers',async()=>{
  const readFileSync=integratedRead('sts');
- const {stsStyleCiProof:p,assertStsStyleCiCurrent,preStsStyleCiSource,stsStylePriorInventory}=await import('./helpers/sts-style-ci-source.mjs');
+ const {stsStyleCiProof:p,assertStsStyleCiCurrent,preStsStyleCiSource,stsStylePriorInventory}=await import('./helpers/release-af77-fixture-sts-style-ci-source.mjs');
  const files=discoverJs();assertStsStyleCiCurrent(files);assert.deepEqual(stsStylePriorInventory(files),p.beforeInventory);
  for(const [path,row]of Object.entries(p.files)){
   const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
@@ -216,7 +216,7 @@ test('af77 standalone: feedback real current source and CI preserve all four imm
   for(const missing of [null,raw(path)+'\n'])assert.throws(()=>sourceEpoch.preCombinedSource(anchor,raw(anchor),
    {target:'stsFeedbackPrior',readSource:p=>p===path?missing:raw(p)}),/linked owner identity/,path);
  }
- const {assertStsStyleCiCurrent,stsStyleCiProof,stsStyleBeforeFeedbackCiProof:previousCi}=await import('./helpers/sts-style-ci-source.mjs');assertStsStyleCiCurrent(discoverJs());
+ const {assertStsStyleCiCurrent,stsStyleCiProof,stsStyleBeforeFeedbackCiProof:previousCi}=await import('./helpers/release-af77-fixture-sts-style-ci-source.mjs');assertStsStyleCiCurrent(discoverJs());
  const {menuRedPriorEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
