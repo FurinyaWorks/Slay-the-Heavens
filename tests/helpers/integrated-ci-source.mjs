@@ -20,14 +20,14 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
 export function integratedSource(path,source,target,read=readFileSync){return releaseIntegratedSource(path,beforePreflightSource(path,source),target,read);}
-export function integratedRead(target,{read=readFileSync}={}){read=preflightPriorRead(read);return(path,encoding)=>{
+export function integratedRead(target,{read=readFileSync}={}){const rawRead=read;read=preflightPriorRead(read);return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
-  assertReleaseIntegrationCurrent(read);
+  assertReleaseIntegrationCurrent(rawRead);
   const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
  }
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,rawRead);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 // The joint validator runs the unchanged preflight assertion in its exact

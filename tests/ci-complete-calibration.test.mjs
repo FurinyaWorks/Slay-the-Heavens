@@ -44,7 +44,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releasePickerControlsCiRead,releasePickerControlsPriorInventory,assertReleasePickerControlsCiCurrent,releasePickerControlsCiPacket,assertReleasePickerControlsExecutionGuards} from './helpers/release-picker-controls-ci-source.mjs';
-import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiRead,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {assertReleaseBootstrapCiCurrent as assertPickerBootstrapCiCurrent} from './helpers/release-bootstrap-ci-source-picker-before-capacity.mjs';
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
 import {integrationRead,integrationCapacityCiRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-picker-b9-integration.mjs';
 const sideRead=integrationRead('picker',rawReleaseReadFileSync);
@@ -2038,7 +2039,8 @@ for(const [side,label,p,check,guards]of [
 });
 
 test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
- assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
+ assertReleaseIntegrationCurrent(rawReleaseReadFileSync);
+ assertPickerBootstrapCiCurrent(rawBootstrapReadFileSync);
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);

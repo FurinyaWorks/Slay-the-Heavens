@@ -1,0 +1,12 @@
+✔ V25 tests stay outside frozen observations and each missing registration is rejected (87593.690544ms)
+✔ Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic (58372.201178ms)
+ℹ win32: raw 876 JS / 1423 Lua; forecast 1755640ms; target 1800000ms; overrun 0ms; physical execution guard 2700000ms; prediction is not admission
+ℹ linux: raw 876 JS / 1423 Lua; forecast 1189630ms; target 1200000ms; overrun 0ms; physical execution guard 1800000ms; prediction is not admission
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 161999.512871

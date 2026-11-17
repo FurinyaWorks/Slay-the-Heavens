@@ -1,5 +1,12 @@
 {
-  "docs/evidence/pr696-consumers-20261117/README.md": "3db2a0218909195a5ee8c831b96cea3e330281f3902c80b1b59184208ff80280",
+  "docs/evidence/pr696-consumers-20261117/README.md": "5532371f32063c836b0a96985a9ed042154266d8ba91c02281785fb2f0778fea",
+  "docs/evidence/pr696-consumers-20261117/calibration.log": "a5ddea51bdee6f1933642a48fdc1da143d4b55a1d48cfd4f5099458c15cb49ef",
   "docs/evidence/pr696-consumers-20261117/copy.log": "5b02ea8a05420e6011a8329d9b17f0373ce9114a2c9f475a1536fded7aac9807",
-  "docs/evidence/pr696-consumers-20261117/inventory.log": "a93b481bc055e8538a810ae0ade5d4f77d08ae7b2a83a9fcca61c8e07df3d05f"
+  "docs/evidence/pr696-consumers-20261117/fixed-named.log": "5852134348a06ce73f40603373d06e63ec3eb531c7eae717ea098ecfef8633b1",
+  "docs/evidence/pr696-consumers-20261117/intermediate-controls-pin.log": "8f476ead044d35bb619b0327d470b9974765e00b6e1531ea199383c208b1e820",
+  "docs/evidence/pr696-consumers-20261117/intermediate-controls-target.log": "0c8df9e87e93e3341b6f3999e67da524163f5214023f363513446a5d8cbad37c",
+  "docs/evidence/pr696-consumers-20261117/intermediate-packet-pin.log": "93ca4cd8b7d0c424d1c951ac4490cc1ff971c80f580fc1aff24991759b1fb60f",
+  "docs/evidence/pr696-consumers-20261117/inventory.log": "a93b481bc055e8538a810ae0ade5d4f77d08ae7b2a83a9fcca61c8e07df3d05f",
+  "docs/evidence/pr696-consumers-20261117/raw-reader-controls.log": "71682061f2a134c3a3167f141d7db5a24d0ea10a229dab65acc77a0d041988d6",
+  "docs/evidence/pr696-consumers-20261117/raw-reader-controls.mjs": "08a9c3b61e5153dbd222984d772be209c1d9126d035c54989834243496619e46"
 }

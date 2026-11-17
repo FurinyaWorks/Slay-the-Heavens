@@ -1,0 +1,38 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: complete picker preflight join
++ actual - expected
+
++ 'ff8eb5a358444ad440c5680da967545250ad9ab37cb500b313cb4a3e547cc3b6'
+- '4032e96519d833a5d38a2447aabf7031a54e8701fc4e666c933abfa9c07c2ec9'
+
+    at file:///workspace/scratch/c1a4970a76e0/picker696-current-1715/tests/helpers/release-picker-b9-integration.mjs:34:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'ff8eb5a358444ad440c5680da967545250ad9ab37cb500b313cb4a3e547cc3b6',
+  expected: '4032e96519d833a5d38a2447aabf7031a54e8701fc4e666c933abfa9c07c2ec9',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
+✖ tests/ci-complete-calibration.test.mjs (1223.295657ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1233.695202
+
+✖ failing tests:
+
+test at tests/ci-complete-calibration.test.mjs:1:1
+✖ tests/ci-complete-calibration.test.mjs (1223.295657ms)
+  'test failed'
