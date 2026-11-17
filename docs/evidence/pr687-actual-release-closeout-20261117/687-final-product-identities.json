@@ -1,0 +1,12 @@
+[
+  {
+    "path": "src/lua/abyss_battle_intent_view.lua",
+    "sha256": "99e10a9eae432a1843758ec95e189a3805e21bd59c98a12b1cce5efb7843f237",
+    "matchesOriginalPrHead": "e1221ee0abc265a720cd71a87d01b9d109c51475"
+  },
+  {
+    "path": "src/lua/abyss_battle_render_actors.lua",
+    "sha256": "060df78c91a096b4075e4d84012956bd5b8d25265e3907d0969a8c9d72715767",
+    "matchesOriginalPrHead": "e1221ee0abc265a720cd71a87d01b9d109c51475"
+  }
+]

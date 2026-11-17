@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const archive='tests/helpers/intent-release-union.json.gz';
-const digest='acffd4dfca41c0c693e211a13b3fa66196f0cc3c9f78b036cb3ea920975dc416';
+const digest='194619f39fc24006d9678be9ace0babf788f8764e6633672ecb14b23e06bfef4';
 const bytes=readFileSync(new URL('./intent-release-union.json.gz',import.meta.url));
 assert.equal(hash(bytes),digest,'complete actual Release and intent union');
 const packet=JSON.parse(gunzipSync(bytes));

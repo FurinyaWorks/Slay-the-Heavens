@@ -120,8 +120,8 @@ const fixtureRepairs={
   ]
  }
 };
-export function releaseFreezeCiBefore(path,source){
- source=fastFreezeB9Source(path,source,'freeze');
+export function releaseFreezeCiBefore(path,source,read=readFileSync){
+ source=fastFreezeB9Source(path,source,'freeze',read);
  if(Object.hasOwn(fixtureRepairs,path)&&typeof source==='string'&&!source.includes('\r\r\n')){
   const row=fixtureRepairs[path],current=norm(source);
   if(hash(current)===row.current){

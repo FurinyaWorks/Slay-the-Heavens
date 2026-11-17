@@ -261,11 +261,13 @@ test('actual af77 intent union public admission freshly rejects each live source
  assert.notEqual(expected[0],source);assert.equal(expected[1],expected[0]);
  const corpus=[...Object.keys(p.files),...Object.keys(p.archives),'tests/helpers/intent-release-union.json.gz','tests/helpers/intent-release-union.mjs'];
  const representatives=['src/lua/abyss_battle_intent_view.lua','src/lua/abyss_card_flow.lua','tests/helpers/integrated-ci-source.mjs','tests/release-selection-map-source.test.mjs',Object.keys(p.archives)[0],'tests/helpers/intent-release-union.json.gz','tests/helpers/intent-release-union.mjs'];
- const probes=corpus.filter(path=>path!==anchor).map((path,index)=>({path,index:index%operations.length}));
- for(let index=0;index<operations.length;index++)for(const path of representatives)probes.push({path,index});
- // Exhaust the complete shared gate once per field/fault; independently prove
- // all four public entries cross that gate for production, CI and archives.
- for(const {path,index}of probes)for(const kind of ['missing','null','drift']){
+ // Exhaust each field/fault through the shared live gate, then prove all
+ // public entries delegate to it for each distinct production/CI/archive case.
+ for(const path of corpus)for(const kind of ['missing','null','drift']){
+  fault={path,kind};assert.throws(()=>assertIntentReleaseCurrent(read),undefined,path+' '+kind);
+  fault=undefined;assertIntentReleaseCurrent(read);
+ }
+ for(let index=0;index<operations.length;index++)for(const path of representatives)for(const kind of ['missing','null','drift']){
   const operation=operations[index];fault={path,kind};
   assert.throws(operation,undefined,'public '+index+' rejects '+path+' '+kind);
   fault=undefined;assert.deepEqual(operation(),expected[index],'warm recovery public '+index+' '+path);

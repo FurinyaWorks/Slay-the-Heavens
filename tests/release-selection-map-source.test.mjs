@@ -22,12 +22,12 @@ const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll(
 // Preserve the full #697 standalone contract in its authenticated exact view.
 const readFileSync=integrationProductionRead('selection',rawReadFileSync);
 const discoverJs=()=>integrationPriorInventory(rawDiscoverJs(),'selection');
-const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'selection','lua').map(p=>p.slice(10)):rawReaddirSync(path);
+const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(intentReleaseFixtureInventory('lua','release'),'selection','lua').map(p=>p.slice(10)):rawReaddirSync(path);
 
 test('af77 standalone: B9 capacity CI join binds both exact predecessors and refuses drift foreign paths wrong before and malformed inputs',()=>{
  for(const [path,row]of Object.entries(capacityB9CiBindings)){
   const raw=rawReadFileSync(path,'utf8'),lf=norm(raw);
-  assertCapacityPreflightCurrent();
+  assertCapacityPreflightCurrent(rawReadFileSync);
   assert.equal(hash(capacityPreflightSource(path,lf,'capacity')),row.currentSha256,path+' complete named capacity source');
   for(const view of ['b9','capacity']){
    for(const input of [raw,lf,lf.replaceAll('\n','\r\n')]){
@@ -97,7 +97,7 @@ test('af77 standalone: capacity and latest Release CI views compose without acce
  assert.equal(integration.capacityCommit,'bf74c0c391a0700740fee9b7cb8695bff615366a');
  assert.deepEqual(Object.keys(integration.files),['tests/helpers/release-bootstrap-ci-source.mjs','tests/release-selection-map-source.test.mjs']);
  assertReleaseSelectionMapCiCurrent(integrationCapacityCiRead(rawReadFileSync));
- const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
+ const {assertIntegratedCurrent}=await import('./helpers/release-af77-standalone-integrated-ci-source.mjs');
  assertIntegratedCurrent();
  for(const [path,row]of Object.entries(integration.files)){
   assert.deepEqual(row.before,releaseSelectionMapCiPacket.files[path].current,'complete committed Release predecessor');
@@ -119,7 +119,7 @@ test('af77 standalone: capacity and latest Release CI views compose without acce
 });
 
 test('af77 standalone: release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
- const inventories={js:discoverJs(),lua:intentReleaseFixtureInventory('lua','release')};
+ const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort()};
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);
   assertReleaseSelectionMapRawInventory(paths,kind);
@@ -196,9 +196,10 @@ test('af77 standalone: release selection map isolated production copy includes e
  assert.throws(()=>copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory}),/fresh helper copy identity/);
 });
 test('af77 standalone: Release freeze CI continuation authenticates fresh owners before historical projection',async()=>{
- const readFileSync=(path,encoding)=>{const raw=rawReadFileSync(path,encoding);return typeof raw==='string'?fastFreezeB9Source(path,raw,'freeze'):raw;};
+ const readFileSync=(path,encoding)=>{const raw=rawReadFileSync(path,encoding);return typeof raw==='string'?fastFreezeB9Source(path,raw,'freeze',rawReadFileSync):raw;};
  const assertReleaseSelectionMapCiCurrent=(read=rawReadFileSync)=>assertFastFreezeB9UnionCurrent(read);
- const {releaseFreezeCiPacket:p,releaseFreezeCiBefore:before}=await import('./helpers/release-selection-map-ci-source.mjs');
+ const {releaseFreezeCiPacket:p,releaseFreezeCiBefore:rawBefore}=await import('./helpers/release-selection-map-ci-source.mjs');
+ const before=(path,source)=>rawBefore(path,source,rawReadFileSync);
  assert(p);assert.equal(p.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');assertReleaseSelectionMapCiCurrent();
  for(const [path,row]of Object.entries(p.files)){
   const raw=readFileSync(path,'utf8');assert.equal(hash(norm(raw)),row.current.sha256);
@@ -209,12 +210,12 @@ test('af77 standalone: Release freeze CI continuation authenticates fresh owners
    if(p===path){if(change==='missing')throw Error('missing owner');if(change==='stale')return row.before?.source??'';return rawReadFileSync(p,encoding)+'\n';}return rawReadFileSync(p,encoding);
   }));
  }
- const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');assertIntegratedCurrent();
+ const {assertIntegratedCurrent}=await import('./helpers/release-af77-standalone-integrated-ci-source.mjs');assertIntegratedCurrent();
 });
 test('af77 standalone: prepared capacity and preflight views bind only complete named parent sources and fresh caller bytes',async()=>{
  const packet=JSON.parse(gunzipSync(rawReadFileSync('tests/helpers/release-capacity-preflight-source.json.gz')));
  const {releasePreflightUnionSource}=await import('./helpers/release-preflight-union-source.mjs');
- assertCapacityPreflightCurrent();
+ assertCapacityPreflightCurrent(rawReadFileSync);
  for(const [path,row]of Object.entries(packet.files)){
   const current=norm(rawReadFileSync(path,'utf8'));assert.equal(hash(current),row.currentSha256);
   assert.strictEqual(releasePreflightUnionSource(path,current,'advisory'),current,'a missing advisory path cannot gain a parent view');
@@ -237,7 +238,7 @@ test('af77 standalone: prepared capacity and preflight views bind only complete 
   assert.throws(()=>validate((p,e)=>p==='tests/helpers/release-capacity-preflight-source.json.gz'?Buffer.from('bad'):rawReadFileSync(p,e)),/fresh complete capacity\/preflight archive/);
 });
 test('af77 standalone: capacity and integrated readers retain caller rejection of a changed nonrequested union owner',async()=>{
- const {integratedRead}=await import('./helpers/integrated-ci-source.mjs');
+ const {integratedRead}=await import('./helpers/release-af77-standalone-integrated-ci-source.mjs');
  const workflow='.github/workflows/quality.yml',owner='tests/helpers/release-selection-map-ci-source.mjs',archive='tests/helpers/release-capacity-preflight-source.json.gz';
  for(const makeRead of [integrationCapacityCiRead,read=>integratedRead('native',{read})])for(const mode of ['changed','missing','archive']){
   const target=mode==='archive'?archive:owner;
