@@ -230,7 +230,7 @@ function nativeFixture(){
  f.jobs=currentFullQualityJobs.map((name,i)=>({id:100+i,name,run_id:7,run_attempt:1,head_sha:sha('a'),status:'completed',conclusion:name==='fast'?'skipped':'success'}));
  f.checkout={schemaVersion:1,event:'pull_request',runId:7,attempt:1,head:sha('a'),base:sha('b'),tested:sha('d'),prNumber:712,parents:[sha('b'),sha('a')]};
  f.artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:sha('a')}};
- f.gateRun={actor:{id:aiRoleId},triggering_actor:{id:aiRoleId},id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
+ f.gateRun={head_branch:'develop',actor:{id:aiRoleId},triggering_actor:{id:aiRoleId},id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
  f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12)+'-9-1',expired:false,workflow_run:{id:9,head_sha:sha('b')},digest:'sha256:'+ 'f'.repeat(64)};
  const api=aiApi(f).api,calls=[];
  const query=(...args)=>{
@@ -292,7 +292,7 @@ test('shadow cannot publish and stale signed review, policy, CI, artifact or unt
   const f=nativeFixture();mutate(f);assert.throws(()=>gateExecute(f));assert(!f.calls.some(a=>a.includes('POST')));
  }
  const f=nativeFixture(),p=gateExecute(f).proof;f.proofArtifact.expired=true;assert.throws(()=>gateExecute(f,{release:true,saved:p}),/artifact/);assert(!f.calls.some(a=>a.includes('POST')));
- assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:e=>e.GITHUB_REF='refs/heads/untrusted'}),/trusted actual BASE/);
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:e=>e.GITHUB_REF='refs/heads/untrusted'}),/actual develop BASE|foreign repository|trusted default|actual execution/);
 });
 test('gate-only workflow keeps Required inventory distinct and uses a separate concurrency group',()=>{
  const text=readFileSync(new URL('../.github/workflows/licenses.yml',import.meta.url),'utf8');
@@ -358,6 +358,7 @@ test('the existing zero-approval ruleset accepts an actual same-account signed i
 });
 function bootstrapFixture(){
  const f=nativeFixture(),base='c2409ad750c15124b7b843c6bbfa5b222537cb75';
+ f.gateRun.head_branch='feat/native';f.gateRun.head_sha=sha('a');
  f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
  return f;
 }
@@ -367,14 +368,14 @@ test('first installation requires the fixed old BASE, exact audited source and a
  for(const change of [
   f=>f.gateRun.actor.id=999,f=>f.gateRun.triggering_actor.id=999,
   f=>f.gateRun.actor.id=337201427,
- ]){const f=bootstrapFixture();change(f);assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/actual trusted coordinator/);assert(!f.calls.some(a=>a.includes('POST')));}
- assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrapEnv}),/one-time frozen BASE/);
- assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_SHA=sha('f');}}),/exact independently reviewed/);
- assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_ACTOR_ID='999';}}),/actual trusted coordinator/);
+ ]){const f=bootstrapFixture();change(f);assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/coordinator dispatcher/);assert(!f.calls.some(a=>a.includes('POST')));}
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrapEnv}),/fixed BASE/);
+ assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_SHA=sha('f');}}),/actual execution/);
+ assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_ACTOR_ID='999';}}),/execution actor/);
 });
 test('ordinary proof publication executes current actual BASE code and never PR or stale default code',()=>{
  for(const envChange of [e=>e.GITHUB_SHA=sha('a'),e=>{e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');}]){
-  const f=nativeFixture();assert.throws(()=>gateExecute(f,{mutateEnv:envChange}),/trusted actual BASE/);assert(!f.calls.some(a=>a.includes('POST')));
+  const f=nativeFixture();assert.throws(()=>gateExecute(f,{mutateEnv:envChange}),/actual develop BASE|foreign repository|trusted default|actual execution/);assert(!f.calls.some(a=>a.includes('POST')));
  }
 });
 
@@ -404,4 +405,12 @@ test('reusing an old signed pass cannot repost it over a newer actual fail or di
  const signed=signCloudReview(aiRepo,712,f.report,f.query);assert.equal(signed.githubReviewId,100);assert.equal(signed.reused,true);
  assert.throws(()=>armAutoMerge(aiRepo,712,signed,f.query,{dryRun:true}));assert(!f.calls.some(a=>a.includes('POST')));
  const dismissed=nativeFixture();dismissed.reviews[0].state='DISMISSED';const old=signCloudReview(aiRepo,712,dismissed.report,dismissed.query);assert.equal(old.reused,true);assert.throws(()=>armAutoMerge(aiRepo,712,old,dismissed.query,{dryRun:true}));
+});
+
+test('pending formal CI uses the installed completion callback without a pointless early gate run',()=>{
+ const f=nativeFixture();f.run.status='queued';f.run.conclusion=null;
+ const result=armAutoMerge(aiRepo,712,100,f.query);assert.equal(result.state,'auto-merge-requested');assert.equal(result.proof.gateRef,'refs/heads/develop');
+ assert(!f.calls.some(a=>a.includes('POST')),'no gate dispatch until CI completion');
+ const shadow=nativeFixture();shadow.run.status='queued';shadow.run.conclusion=null;assert.throws(()=>armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}),/formal CI must finish/);assert(!shadow.calls.some(a=>a.includes('POST')));
+ const bootstrap=nativeFixture();bootstrap.run.status='queued';bootstrap.run.conclusion=null;assert.throws(()=>armAutoMerge(aiRepo,712,100,bootstrap.query,{bootstrapRef:'feat/native'}),/formal CI must finish/);assert(!bootstrap.calls.some(a=>a.includes('POST')));
 });

@@ -128,7 +128,7 @@ npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
 
 既有 Licenses 工作流复用一个小型门禁作业：Quality 完成事件或准确 dispatch 时读取最新受信 Review，下载原 schema3/7 正式 CI 不可变收据，校验全部必要作业与当前 run/attempt，先上传唯一 `native-ai-review-proof.json`（artifact 名绑定 PR/HEAD/run/attempt），再重读相同身份，最后由 Actions 发布真实 `independent-review` success。shadow 只留证据、不写 Required success。常态 gate 的运行源码 SHA 必须等于实际受审 develop BASE；PR 文本只作为数据，不执行 PR 中的程序来发布独审证明。Gate-only 使用独立 concurrency 与非 Required 的跳过名称，避免取消审计或覆盖 `inventory`。
 
-首次安装保留现有可信维护者安装边界：只允许固定旧 BASE `c2409ad750c15124b7b843c6bbfa5b222537cb75`，由已亲自核实实际独审的同一协调者显式 `--bootstrap-ref=<本 PR 源分支>`，GitHub 服务端 dispatch actor、triggering actor、签署 Review 身份一致，且运行源 SHA 必须等于已审候选 HEAD。该一次性例外不是候选自行证明安全，也不新增用户操作；新 BASE 落地后不能重复使用。上线前先真实独审、正式 CI 和 shadow，再发布并验证队列闭环。
+首次安装保留现有可信维护者安装边界：例外仅限固定初始 BASE 安装窗口 `c2409ad750c15124b7b843c6bbfa5b222537cb75`，由已亲自核实实际独审的同一协调者显式 `--bootstrap-ref=<本 PR 源分支>`，GitHub 服务端 dispatch actor、triggering actor、签署 Review 身份一致，且运行源 SHA 必须等于已审候选 HEAD。该固定 BASE 安装窗口允许已实际独审候选的准确重试，不是候选自行证明安全，也不新增用户操作；新 BASE 落地后不能再使用。上线前先真实独审、正式 CI 和 shadow，再发布并验证队列闭环。
 
 PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，核队列 Full/inventory、squash 唯一父/树、最新 push Full 和 Backlog。shadow、替换附件、旧 run/attempt、旧 BASE、非 Actions 来源或缺队列证明均保持 `merged_pending`；旧 schema 证据继续按原合同读取，不改写历史。
 

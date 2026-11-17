@@ -4,7 +4,7 @@ import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
-import {collectIndependentAiReview,TRUSTED_REVIEW_COORDINATOR_IDS} from './independent-ai-review.mjs';
+import {collectIndependentAiReview,cloudGateSourceErrors} from './independent-ai-review.mjs';
 import {collectPrDelivery,verifyDelivery} from './verify-delivery.mjs';
 import {autoMergeErrors} from './arm-auto-merge.mjs';
 import {projectRepositoryId,projectRepositoryMatches} from './repository-identity.mjs';
@@ -79,15 +79,14 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  const ruleset=get(prefix+'/rulesets/25870651');
  const policyErrors=autoMergeErrors({repo,settings,pr,ruleset,nativeReview:review});
  if(mode==='publish'&&policyErrors.length)throw Error(policyErrors.join('\n'));
- // The first installation retains the existing trusted-maintainer review
- // boundary. The coordinator actually verified the separate cloud AI session;
- // its GitHub-signed COMMENTED record may use the same account as the PR author.
- // This exception installs exactly one audited candidate on the frozen old BASE.
- if(bootstrap){
-  if(review.base!=='c2409ad750c15124b7b843c6bbfa5b222537cb75'||env.GITHUB_EVENT_NAME!=='workflow_dispatch'||env.GITHUB_REF!=='refs/heads/'+pr.head.ref||env.GITHUB_SHA!==review.head)throw Error('Bootstrap requires the exact independently reviewed candidate on the one-time frozen BASE');
-  const gateRun=get(prefix+'/actions/runs/'+Number(env.GITHUB_RUN_ID));
-  if(!TRUSTED_REVIEW_COORDINATOR_IDS.includes(review.coordinator?.id)||gateRun.actor?.id!==review.coordinator.id||gateRun.triggering_actor?.id!==review.coordinator.id||String(env.GITHUB_ACTOR_ID)!==String(review.coordinator.id))throw Error('Bootstrap must be dispatched by the actual trusted coordinator who signed the cloud review');
- }else if(env.GITHUB_REF!=='refs/heads/'+settings.default_branch||env.GITHUB_SHA!==review.base)throw Error('Gate must execute the trusted actual BASE/default-branch source');
+ // The coordinator verified the separate cloud AI session. Source identity is
+ // enforced here and again by queue/post-merge consumers of the immutable proof.
+ const sourceRun=get(prefix+'/actions/runs/'+Number(env.GITHUB_RUN_ID));
+ const sourceErrors=cloudGateSourceErrors(sourceRun,{repo,head:review.head,base:review.base,ref:env.GITHUB_REF,bootstrap,coordinator:review.coordinator,reviewedBranch:pr.head.ref});
+ if(sourceRun.id!==Number(env.GITHUB_RUN_ID)||sourceRun.run_attempt!==Number(env.GITHUB_RUN_ATTEMPT)||sourceRun.event!==env.GITHUB_EVENT_NAME||sourceRun.head_sha!==env.GITHUB_SHA)sourceErrors.push('Cloud gate source or attempt differs from its actual execution');
+ if(bootstrap&&String(env.GITHUB_ACTOR_ID)!==String(review.coordinator.id))sourceErrors.push('Bootstrap execution actor differs from the signing coordinator');
+ if(!bootstrap&&env.GITHUB_REF!=='refs/heads/'+settings.default_branch)sourceErrors.push('Cloud gate is not executing the trusted default branch');
+ if(sourceErrors.length)throw Error(sourceErrors.join('\n'));
  const legacyReview={repo,prNumber:number,reviewId:review.reviewId,reviewedHeadSha:review.head,reviewedBaseSha:review.base,conclusion:'pass',unresolved:[]};
  const collected=collectPrDelivery(repo,number,legacyReview,query,loadCheckout);
  const errors=verifyDelivery(collected.evidence);

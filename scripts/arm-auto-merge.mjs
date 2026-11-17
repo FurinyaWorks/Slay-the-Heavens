@@ -113,7 +113,10 @@ export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=fa
  const jobs=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/runs/${run.id}/jobs?filter=latest&per_page=100`).flatMap(p=>p.jobs);
  if(jobs.some(j=>['failure','cancelled','timed_out','action_required'].includes(j.conclusion)))throw Error('Current formal Quality job failed');
  if(dryRun)return {state:'eligible',head:current.headSha,base:current.baseSha};
- const gateRef=dispatchGate(repo,number,current,query,{shadow,bootstrapRef});
+ if(run.status!=='completed'&&(shadow||bootstrapRef))throw Error('Exact formal CI must finish before shadow or first-installation proof dispatch');
+ // Once installed, the existing workflow_run callback releases proof after CI.
+ // Avoid dispatching a guaranteed-to-fail gate while formal tests are pending.
+ const gateRef=run.status==='completed'?dispatchGate(repo,number,current,query,{shadow,bootstrapRef}):'refs/heads/'+current.defaultBranch;
  if(shadow)return {state:'shadow-requested',head:current.headSha,base:current.baseSha,gateRef};
  const proof={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',head:current.headSha,base:current.baseSha,sourceTree:current.sourceTree,githubReviewId:current.nativeReview.githubReviewId,gateRef,nativeAuto:{confirmed:false,state:'prepared'},createdAt:new Date().toISOString()};
  persist({state:'prepared',proof});
