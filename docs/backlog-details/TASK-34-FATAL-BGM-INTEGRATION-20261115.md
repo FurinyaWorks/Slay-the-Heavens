@@ -75,3 +75,11 @@ node --test --test-concurrency=1 --test-name-pattern="combined epoch authenticat
 - 原 startup 用例关闭 BGM；这里只证明 imageModes 启动/滚动回收/取消/销毁回归在叠加后通过，不代表 #672 已接入本修复、BGM 与 imageModes 联合故障验收或真实设备听验。
 
 复现：TEMP/TMP 指向本树 `build`，以精确 #672 树为工作目录，Node24 执行本附件 probe 的绝对路径。
+
+## 2026-11-17：保全来源分支的原始 TASK-34 证据
+
+固定来源 `feat/bgm-stop-followup-1115@158c492a3f8a6e8d3bfc85b79634b06d2f4b3056` 没有开放 PR，但仍有未接入本 PR 的原始资料。此准备切片仅将 [原 TASK-34 说明](TASK-34-fatal-bgm-stop-20261115.md) 和其引用的 [十份原始 gzip 日志](../evidence/task34-fatal-bgm-stop/) 按来源 Git blob、原始压缩字节接回，供现有 [#682](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/682) / TASK-34 集成线接纳。这十一份资料共 12,147 字节，此前不在 #682 的 `1996e65c5647750bc9d907be6562909135e08e3d` 中。
+
+原说明的 `9f2f44e4` 基线、PR661/663–668 占用、3/3 与 16/16、原独审及“本轮”等措辞只代表原切片时点；旧日志中的失败和通过均原样保留，不作当前 #682 HEAD 的测试或 CI 证明。上文已记录的当前组合、source-epoch 后继接续和未验事项继续有效。本轮只核对原始字节、gzip 可读性、相对引用及变更范围，没有复跑旧矩阵、托管 CI、官方导入、ready 或设备听验。
+
+本准备提交不改变 #682 的任何源码、测试、配置、任务状态或 AC，也不接入来源分支中的 TASK-76 输入和共享来源工具；原分支仍有这些独立工作，继续保留。原说明提及的未推送/不建 PR 是其历史记录，不授权本轮直接改 #682 来源分支或绕过正常门禁。原执行线接纳后仍需绑定新的精确 HEAD/BASE 复审并按 Required、原生队列和实际交付验证；资料已保全不代表已合入 develop，也不构成删除来源分支的许可。
