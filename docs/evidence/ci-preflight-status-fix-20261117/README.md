@@ -25,3 +25,18 @@ run44026568101@b480 completed/failure：实际25个作业，15 success、7 failu
 独立复审确认的原设计阻塞：新增admission实际job尚不兼容verify-delivery、publish-full-quality和Fast证据的严格job集合。不得将unknown job普遍放行，须正确处理各事件的admission success/skipped或复用现有job入口。此候选不声称解决该缺口。
 
 下一步先解决剩余库存/作业集合兼容、完成新合并候选独审和必要定向验证，再统一进行一次必要Hosted验证。不要现在明知仍有阻塞便重复Full，不用b480结果认证本新SHA。
+
+
+## 剩余阻塞的最小修复候选
+
+本候选修复上一节两项已知缺口，不通过放宽清单：
+
+- 移除新增Quality/Licenses admission job，原预检脚本移入既有impact/inventory，只对主仓非master PR执行；先原pending状态失效，再预检，再规划/媒体恢复。presentation依成功impact。原七个Quality作业模板及Full/Fast验证器保持，队列/push/dispatch/master继续原验证。
+- 历史库存断言调用现有preflightPriorInventory，原878测试保留（含两个新增测试），仅旧视图为876；原库存对比RED，新实际库存/缺失/重复/foreign/字节漂移与EOL负控2/2。
+- 更新现有源码篡改负控以删当前真实needs: impact，原needs: admission已不存在会成为空操作。原回调RED→GREEN，保留其他漂移/Buffer/CRCRLF断言。
+
+C Node22有界原回调：作业复用3pass/4fail→7/7；库存原RED→2/2；最终真实leaf/完整来源映射/原始库存/状态及源码负控5/5。不能相加冒称完整覆盖，部分相互重叠；三整文件/全部来源闭包尚需Hosted验收。actionlint不在C PATH，未运行。正式工作流固定Node24.18.0，C结果不冒充该环境。
+
+新包fork-preflight-status-v3-source.json.gz SHA256 cf997f0cdeb697b9eb5302a01fe4c9e585e3d664567265f2d9b526325c787b64；旧所有包仍保留，既有before/beforeSha、原库存及未变身份不动；只绑定准确当前Quality/Licenses/Full测试/源码负控、新库存消费者与新预检测试。Backlog通过CLI追加计划/notes，负责人、状态、AC保持。
+
+独审最终增量后，查两Fork准确HEAD/BASE的已有运行，再只选择Fork B的一次必要Full；若有在途即交接不重复。Fork B当前FurinyaDev push=true且无在途Full；不得把本地测试当Hosted通过，成功后才接续原712。Fork仍不发布主仓Required或代替正式PR组合/队列。

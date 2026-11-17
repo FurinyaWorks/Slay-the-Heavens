@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-16 15:08'
-updated_date: '2026-11-17 06:16'
+updated_date: '2026-11-17 06:31'
 labels: []
 dependencies: []
 parent_task_id: TASK-88.1
@@ -34,6 +34,8 @@ ordinal: 183000
 2026-11-17接续：固定三仓库ID并配置remote；恢复Fork A原生Actions和精确SHA验证；Fork B权限不足单独记录；最小云端规则与现场证据经评审交付，不代替主仓库集成和RC实机。
 
 2026-11-17增量：接续PR712；Quick dispatch完整受影响JS/Lua，未知输入拒绝；Quality PR矩阵前只读核验固定Fork ID、精确HEAD/BASE及先完成的成功run，Full按未知影响升级；保留原生队列/Release策略；定向负控、独审和按需统计。
+
+2026-11-17严格作业集合兼容：以b164e6e205377386195f05f0aed6949a05866bb3为准，删除新增Quality和Licenses admission作业；将原只读Fork预检移入既有impact和inventory，在原pending失效之后、昂贵步骤之前执行。保持原Full/Fast精确作业集合和验证器，不放行unknown，不替代正式主CI；主控统一准确source绑定与说明文档。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -50,4 +52,6 @@ Owner已授权Fork B写入并启用四现有Actions，三remote可用。两Fork�
 2026-11-17增量：固定ID/HEAD/BASE/成功且先完成的Fork run准入已实现于Quality/Licenses入口；Quick完整受影响JS/Lua并补语法、Backlog、Lua棘轮，未知/零覆盖拒绝；不触碰保护和677/707策略。actionlint及定向负控通过，独审已消除Full base遗漏、Draft许可证抢跑与rerun时间身份问题。部署与真实跨仓库Actions token正链路仍待托管事件，不提前勾AC。
 
 2026-11-17真实失败诊断增量：ForkAFull44026568101/b480的Windows工程历史逆投影未接完整preflight前视图，原engineering-quality第189行断言真实RED；另POSIX并发EOL历史例返回null、Windows历史形状timeout20断言同源失败。90499a17为主控独立条件修复候选（两job条件及新status来源包，原包保留），主控报告该条件范围原RED→新2/2；不能视作整轮Full通过。本次独立C临时Node22用准确b480及904原包，各执行原工程callback、POSIX前三callback及Windows原cap/timeout断言，均2pass/3fail→5/5；最小三文件候选保留原断言/物理current/旧pin，历史输入仅接精确beforePreflightSource。新增helper/test身份须由主控纳入新status包后验完整闭包；POSIX第四历史callback、三整文件及完整Full尚未本轮验收；未推ref未重跑CI，状态与AC保持未完。
+
+2026-11-17复用既有job接续：仅准备四个执行或测试文件和证据；Quality保持原Ready语义且presentation依赖impact成功，Licenses保留Draft门禁并补既有inventory只读Actions权限。只对主仓非master PR运行inline gate，push/queue/dispatch/master跳过；完整Quick/Full及精确HEAD/BASE/attempt元数据核验不变。当前Full已终态失败，不等待；本轮未推ref或派CI，AC与负责人/status保持原状。
 <!-- SECTION:NOTES:END -->

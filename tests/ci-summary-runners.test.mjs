@@ -241,7 +241,7 @@ test('preflight continuation authenticates complete LF/CRLF input and rejects fo
   const input=live.replaceAll('\n',eol);
   assert.equal(beforePreflightSource(path,input),before.replaceAll('\n',eol));
   for(const drift of [input+'# foreign'+eol,input.replace('contents: read','contents: write'),
-   input.replace('    needs: admission'+eol,''),input.replace('run: node scripts/fork-preflight.mjs','run: echo forged')])
+   input.replace('    needs: impact'+eol,''),input.replace('run: node scripts/fork-preflight.mjs','run: echo forged')])
    assert.equal(beforePreflightSource(path,drift),drift,'unbound workflow stays visible');
  }
  assert.equal(beforePreflightSource(path,live.replaceAll('\n','\r\r\n')),live.replaceAll('\n','\r\r\n'));

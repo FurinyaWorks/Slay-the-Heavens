@@ -1,0 +1,42 @@
+{
+  "base": "b164e6e205377386195f05f0aed6949a05866bb3",
+  "node": "22.22.1",
+  "hosted": "not_run",
+  "actionlint": "unavailable_not_run",
+  "scope": "bounded source/callback checks, not complete test files or Full",
+  "inline": {
+    "red": {
+      "passed": 3,
+      "failed": 4
+    },
+    "green": {
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "inventory": {
+    "red": 1,
+    "green": 2,
+    "rawCount": 878,
+    "historicalCount": 876,
+    "newTestsRetained": true
+  },
+  "finalSourceAndStatus": {
+    "passed": 5,
+    "failed": 0
+  },
+  "summaryMutation": {
+    "red": 1,
+    "green": 1,
+    "reason": "obsolete admission mutation was a no-op; current impact dependency mutation preserves negative test"
+  },
+  "archive": {
+    "sha256": "cf997f0cdeb697b9eb5302a01fe4c9e585e3d664567265f2d9b526325c787b64",
+    "allPriorBeforePreserved": true,
+    "beforeInventoryPreserved": true
+  },
+  "requiredChecks": "unchanged",
+  "validatorScripts": "unchanged",
+  "newJobs": 0,
+  "ciDispatched": false
+}

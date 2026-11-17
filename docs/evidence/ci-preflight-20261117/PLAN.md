@@ -20,3 +20,10 @@
 - 本轮不变更 rulesets，不操作 merge，不加 ci:full 标签。正式部署须本 PR 正常通过保护合入；Fork Full、主仓库 token 跨公开仓库读取及实际先后次序仍须托管 run 记录，不能用单元测试冒充。
 
 结果记录：最终新门禁/指标/impact 定向26/26；既有8文件CI合同115/115；原始来源闭包4/4、StS11/11；actionlint、syntax/guidance/backlog、diff-check通过。另一个包含真实冷检出的6文件批次90/91，唯一失败因本Linux环境没有pwsh（status=null）；没有删该断言，留给托管Windows验证。统计gzip离线回放与存档report逐字节一致。
+
+
+## 失败后最小作业接续
+
+Fork Full44026568101在b480真实暴露dispatch的admission skipped传播及历史来源/CRLF问题。后续候选复用既有Quality impact和Licenses inventory的只读预检步骤，移除新增admission job，保留原Full/Fast精确job清单、收据与发布校验。Quality仍先失效旧状态，再核验预检，最后做计划；未取消且impact成功才运行其消费者。queue/push/dispatch/master按原验证走，不要求Fork证明新组合。不得将未知job普遍放行或把pending、failed、cancelled、旧HEAD/BASE证据作为通过。
+
+此段是修复接续计划，尚非正式集成/托管验收结果。原25-job失败快照和修复验证边界见../ci-preflight-status-fix-20261117/；新候选须精确独审并运行一次必要Hosted验证，不能沿用b480结果。
