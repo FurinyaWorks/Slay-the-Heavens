@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-16 15:08'
-updated_date: '2026-11-17 09:20'
+updated_date: '2026-11-17 09:50'
 labels: []
 dependencies: []
 parent_task_id: TASK-88.1
@@ -56,4 +56,6 @@ Owner轻量要求已实施：复用ci-run-costs及现有Quick/cost测试，撤�
 2026-11-17统一收口：已逐页核37个开放PR及三仓现有运行/准备分支。A Full44032429395的Windows18片成功但POSIX因skipped admission依赖未展开；在8c664瘦身基础仅复用4629必要内联准入及显式impact成功条件，保留原17条历史before、876库存与成功rerun。B44034686329 annotation明确由FurinyaDev人工取消，16作业获runner/105.53 runner-min，不再按旧403停工；无后续run。回归先红4再绿4，Quick/Full/summary既有三文件62/62。共享文件由现有PR线单写，原执行者/独审继续，实际合并及官方设备AC仍未完成。
 
 2026-11-17运行接续：Owner手动触发B Full44050580539，实读HEAD2089991e/BASEc240/attempt1，POSIX已真正展开；发现POSIX4/11仅两条旧current工作流regex未接显式成功/取消条件，定向2红转2绿，五文件114/114与原来源4/4通过，未回退运行时修复或放宽门禁。B安装现已新增182868876/Actions write，Agent成功自动触发703准确698候选Full44052937001，今后不逐次人工触发。主仓statuses仍read，677原握手POST403且未写pending/auto，权限阻塞单列，未改保护/伪造状态。
+
+Owner本轮明确CI疏通：主仓全部在途运行分页核实，已保存并取消4条无队列引用/确定失败旧候选运行（主仓44021706926/44025702622、Fork A44055271729、Fork B44055273547），均已实际cancelled读回。707最小二进制reader修复独审后仅派发Fork A准确558832b6/BASEb9新候选Full44058918461。712独审额外复现push收据PREFLIGHT_BASE_SHA空值吞掉event.before；现限定dispatch来源并新增真实CLI五事件/环境优先级回归，原before档案保持。当前主仓GitHub安装178440181为statuses=read且未含Administration读取，现有merge:auto安全拒绝；需补Commit statuses:write及Administration:read，未绕过。实际合并闭环仍待。
 <!-- SECTION:NOTES:END -->

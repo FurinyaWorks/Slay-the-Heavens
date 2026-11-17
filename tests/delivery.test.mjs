@@ -8,6 +8,31 @@ import { verifyDelivery, verifyMergedDelivery, collectPrDelivery, collectMergedD
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import * as delivery from '../scripts/verify-delivery.mjs';
 
+test('checkout writer binds BASE to the event and ignores an empty preflight environment',t=>{
+  const root=mkdtempSync(join(tmpdir(),'checkout-event-base-'));
+  t.after(()=>rmSync(root,{recursive:true,force:true}));
+  const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+  git('init','-q');writeFileSync(join(root,'fixture'),'checkout');git('add','.');
+  git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
+  const head=git('rev-parse','HEAD'),before='a'.repeat(40),dispatch='b'.repeat(40),foreign='c'.repeat(40);
+  writeFileSync(join(root,'writer.mjs'),readFileSync(new URL('../scripts/write-ci-receipt.mjs',import.meta.url)));
+  for(const [eventName,event,envBase,expected] of [
+    ['push',{before},'',before],['push',{before},foreign,before],
+    ['workflow_dispatch',{before},dispatch,dispatch],
+    ['pull_request',{before,pull_request:{number:12,head:{sha:head},base:{sha:before}}},foreign,before],
+    ['merge_group',{before,merge_group:{head_sha:head,base_sha:before}},foreign,before],
+  ]){
+    const eventPath=join(root,'event.json');writeFileSync(eventPath,JSON.stringify(event));
+    const r=spawnSync(process.execPath,['writer.mjs'],{cwd:root,encoding:'utf8',env:{...process.env,
+      GITHUB_EVENT_PATH:eventPath,GITHUB_EVENT_NAME:eventName,GITHUB_SHA:head,
+      GITHUB_RUN_ID:'12',GITHUB_RUN_ATTEMPT:'1',PREFLIGHT_BASE_SHA:envBase}});
+    assert.equal(r.status,0,r.stderr);
+    const receipt=JSON.parse(readFileSync(join(root,'build/ci-checkout.json'),'utf8'));
+    assert.equal(receipt.base,expected,eventName+' exact BASE');assert.equal(receipt.head,head);
+    assert.equal(receipt.tested,head);assert.equal(receipt.event,eventName);
+  }
+});
+
 test('merged delivery requires an explicit, AC-safe Backlog disposition',()=>{
   assert.equal(typeof delivery.planBacklogCloseout,'function');
   const records=[{id:'TASK-1',status:'In Progress',acCount:1,acCompleted:0,labels:[],source:'',location:'tasks',dependencies:[]}];
