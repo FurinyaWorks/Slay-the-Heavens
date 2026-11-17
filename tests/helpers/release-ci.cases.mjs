@@ -132,3 +132,169 @@ test('Release CI repair maps only complete reviewed helper and test bytes, retai
  assert.equal(hash(prior),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
  const bad=Buffer.concat([raw,Buffer.from('\n')]);assert.strictEqual(releaseSelectionMapCiRead(()=>bad)(path),bad);
 });
+
+
+import {releaseBootstrapWorkflowBefore,releaseBootstrapCiSource} from './release-bootstrap-ci-source.mjs';
+import {freezeReleaseFull} from '../../scripts/release-ci.mjs';
+import {runInNewContext} from 'node:vm';
+
+test('advisory job skips Ready PR duplicates while Draft and manual prechecks remain enabled',()=>{
+ const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ const gate=workflow.match(/^  related:\n    if: (.+)\n/m)?.[1];
+ assert.equal(gate,"github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true");
+ for(const [name,draft,expected]of [['pull_request',false,false],['pull_request',true,true],['workflow_dispatch',false,true]]) {
+  assert.equal(runInNewContext(gate,{github:{event_name:name,event:{pull_request:{draft}}}}),expected);
+ }
+ const prior=releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',workflow);
+ assert.match(prior,/  pull_request:\n    branches: \[develop\]/);
+ for(const source of [workflow,workflow.replaceAll('\n','\r\n')])
+  assert.equal(releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',source),prior);
+ for(const source of [workflow+'\n',workflow.replace(gate,gate+' || true'),workflow.replace('  related:\n','  related:\n    if: true\n')]) {
+  assert.equal(releaseBootstrapCiSource('.github/workflows/quick-feedback.yml',source),source);
+  assert.throws(()=>releaseBootstrapWorkflowBefore('.github/workflows/quick-feedback.yml',source));
+ }
+ assert.equal(releaseBootstrapCiSource('.github/workflows/quick-feedback.yml',workflow,{sha256:'0'.repeat(64)}),workflow);
+});
+
+function freezeFixture() {
+ const f=fixture();f.run.html_url=`https://github.com/${repo}/actions/runs/10`;
+ const calls=[],base=request(f);
+ const read=async(path,body)=>{
+  calls.push({path,body});
+  if(body)return null;
+  if(path==='/repos/'+repo)return {id:1429751262,full_name:repo};
+  if(path.includes('/workflows/'))return {workflow_runs:f.run?[structuredClone(f.run)]:[]};
+  return base(path);
+ };
+ return {f,calls,read};
+}
+const posts=calls=>calls.filter(call=>call.body);
+
+test('freeze waits for an existing exact pending Full instead of dispatching again',async()=>{
+ for(const state of ['queued','pending','waiting','requested','in_progress']) {
+  const {f,calls,read}=freezeFixture();f.run.status=state;f.run.conclusion=null;
+  const result=await freezeReleaseFull(repo,branch,sha,read,proof);
+  assert.equal(result.state,'waiting');assert.equal(result.runId,10);
+  assert.equal(result.url,f.run.html_url);assert.equal(posts(calls).length,0);
+ }
+});
+
+test('freeze reuses a successful run only through the unchanged complete receipt verifier',async()=>{
+ const good=freezeFixture();
+ const result=await freezeReleaseFull(repo,branch,sha,good.read,proof);
+ assert.equal(result.state,'verified');assert.equal(result.runId,10);assert.equal(posts(good.calls).length,0);
+ for(const mutate of [x=>x.jobs.pop(),x=>x.jobs[0].conclusion='failure',x=>x.run.run_attempt=2]) {
+  const {f,calls,read}=freezeFixture();mutate(f);
+  await assert.rejects(freezeReleaseFull(repo,branch,sha,read,proof));assert.equal(posts(calls).length,0);
+ }
+ for(const checkout of [()=>({}),()=>({...proof(),checkoutArtifact:{...proof().checkoutArtifact,expired:true}})]) {
+  const {calls,read}=freezeFixture();await assert.rejects(freezeReleaseFull(repo,branch,sha,read,checkout));assert.equal(posts(calls).length,0);
+ }
+});
+
+test('freeze refuses failed cancelled or foreign runs and never silently restarts them',async()=>{
+ for(const mutate of [x=>x.run.conclusion='failure',x=>x.run.conclusion='cancelled',
+  x=>x.run.conclusion='timed_out',x=>x.run.repository.id=1460097312,
+  x=>x.run.event='pull_request',x=>x.run.path='.github/workflows/other.yml',
+  x=>x.run.head_branch='develop',x=>delete x.run.head_sha]) {
+  const {f,calls,read}=freezeFixture();mutate(f);
+  await assert.rejects(freezeReleaseFull(repo,branch,sha,read,proof));assert.equal(posts(calls).length,0);
+ }
+});
+
+test('freeze dispatches once only when the exact Release candidate has no registered run',async()=>{
+ const {f,calls,read}=freezeFixture();f.run=null;
+ assert.equal((await freezeReleaseFull(repo,branch,sha,read,proof)).state,'requested');
+ assert.deepEqual(posts(calls),[{path:`/repos/${repo}/actions/workflows/quality.yml/dispatches`,body:{ref:branch,inputs:{runner_pool:'hosted'}}}]);
+});
+
+test('freeze rereads pending registration and moving HEAD without duplicate dispatch',async()=>{
+ const raced=freezeFixture();raced.f.run=null;let lists=0;
+ const result=await freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.includes('/workflows/')&&!body&&++lists===2) {
+   raced.f.run=fixture().run;raced.f.run.status='queued';raced.f.run.conclusion=null;
+  }
+  return raced.read(path,body);
+ },proof);
+ assert.equal(result.state,'waiting');assert.equal(posts(raced.calls).length,0);
+ const moved=freezeFixture();moved.f.run=null;let refs=0;
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.includes('/git/ref/')&&++refs===2)moved.f.head='b'.repeat(40);
+  return moved.read(path,body);
+ },proof),/HEAD/);
+ assert.equal(posts(moved.calls).length,0);
+});
+
+test('concurrent freeze callers reuse the same already registered pending run',async()=>{
+ const {f,calls,read}=freezeFixture();f.run.status='queued';f.run.conclusion=null;
+ const results=await Promise.all([freezeReleaseFull(repo,branch,sha,read,proof),freezeReleaseFull(repo,branch,sha,read,proof)]);
+ assert.deepEqual(results.map(result=>result.state),['waiting','waiting']);assert.equal(posts(calls).length,0);
+});
+
+test('freeze rejects a changed attempt and never falls back past a newer failure',async()=>{
+ const changed=freezeFixture();changed.f.run.status='queued';changed.f.run.conclusion=null;
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.endsWith('/actions/runs/10'))changed.f.run.run_attempt=2;
+  return changed.read(path,body);
+ },proof),/attempt/);
+ assert.equal(posts(changed.calls).length,0);
+ const latest=freezeFixture(),older=structuredClone(latest.f.run);latest.f.run.id=11;latest.f.run.conclusion='failure';
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>{
+  if(path.includes('/workflows/')&&!body)return {workflow_runs:[older,structuredClone(latest.f.run)]};
+  return latest.read(path,body);
+ },proof),/failed|cancelled/);
+ assert.equal(posts(latest.calls).length,0);
+});
+
+test('freeze rejects a foreign repository before any run or dispatch can be reused',async()=>{
+ const {calls,read}=freezeFixture();
+ await assert.rejects(freezeReleaseFull(repo,branch,sha,async(path,body)=>
+  path==='/repos/'+repo?{id:1460097312,full_name:repo}:read(path,body),proof),/repository identity/);
+ assert.equal(posts(calls).length,0);
+});
+
+
+test('advisory explicitly executes affected Release CI contracts and fails closed on Git errors',()=>{
+ const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ const block=workflow.match(/      - name: Verify affected Release CI contracts explicitly\n[\s\S]*?          NODE\n/)?.[0];
+ assert(block,'explicit contract step present');
+ assert.match(block,/BASE_SHA: \$\{\{ github.event.pull_request.base.sha \|\| inputs.base_sha \}\}/);
+ const code=block.split("          node --input-type=module <<'NODE'\n")[1].split('          NODE\n')[0]
+  .split('\n').map(line=>line.slice(10)).join('\n').replace("import {execFileSync} from 'node:child_process';",'');
+ function check(paths,{base='a'.repeat(40),gitError=false,testError=false}={}){
+  const calls=[],logs=[];
+  const invoke=()=>runInNewContext(code,{process:{env:{BASE_SHA:base},execPath:'/fixed/node'},Set,
+   console:{log:message=>logs.push(message)},execFileSync:(command,args,options)=>{
+    calls.push({command,args:Array.from(args),options:{...options}});
+    if(command==='git'){if(gitError)throw new Error('git failed');return paths.join('\0')+'\0';}
+    if(testError)throw new Error('contract failed');
+   }});
+  return {calls,logs,invoke};
+ }
+ for(const path of ['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']){
+  const f=check([path]);f.invoke();
+  assert.deepEqual(f.calls.map(c=>[c.command,c.args]),[['git',['diff','--name-only','-z','a'.repeat(40),'HEAD']],['/fixed/node',['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs']]]);
+  assert.deepEqual(f.calls[1].options,{stdio:'inherit'});assert.match(f.logs[0],/Executing affected Release CI contracts/);
+ }
+ for(const paths of [[],['docs/CI.md'],['src/lua/example.lua'],['scripts/release-ci.mjs;echo injected'],['foreign/scripts/release-ci.mjs']]){
+  const f=check(paths);f.invoke();assert.equal(f.calls.length,1);assert.equal(f.logs[0],'No Release CI contract changes');
+ }
+ const badBase=check([],{base:'HEAD;echo bad'});assert.throws(badBase.invoke,/exact comparison/);assert.equal(badBase.calls.length,0);
+ const badGit=check([],{gitError:true});assert.throws(badGit.invoke,/git failed/);assert.equal(badGit.calls.length,1);
+ assert.throws(check(['scripts/release-ci.mjs'],{testError:true}).invoke,/contract failed/);
+ assert.match(workflow,/run: node scripts\/test-affected.mjs --ci-fast --base "\$BASE_SHA"/);
+});
+
+
+test('B9 advisory continuation retains exact standalone Quick and bootstrap contracts before historical views',()=>{
+ const hash=s=>createHash('sha256').update(s).digest('hex');
+ for(const path of ['.github/workflows/quick-feedback.yml','tests/helpers/release-bootstrap-ci-source.mjs']){
+  const raw=readFileSync(path,'utf8'),row=releaseSelectionMapCiPacket.files[path];
+  for(const source of [raw,raw.replaceAll('\r\n','\n').replaceAll('\n','\r\n')]){
+   assert.equal(hash(releaseSelectionMapCiSource(path,source)),row.before.sha256,path);
+   assert.equal(releaseSelectionMapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
+  }
+  for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])
+   assert.strictEqual(releaseSelectionMapCiSource(path,source),source,path+' foreign or drift remains visible');
+ }
+});
