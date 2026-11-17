@@ -1,0 +1,2 @@
+STS focused run session 67379: started 2026-11-17T05:44:37Z; interrupted after approximately 39 minutes; exit 130; output 0 bytes; no totals.
+Integrated actual cases session 6241: external 120-second diagnostic timeout; exit 124; 0 pass, 0 fail, 1 cancelled; no test budget changed.

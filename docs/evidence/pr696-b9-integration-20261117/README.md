@@ -32,3 +32,24 @@ Command: `node --test tests/release-picker-map-integration.test.mjs tests/releas
 Fresh authentication increased a joint CI negative-control matrix from about 1.5 seconds to 31.7 seconds. Final timings and hosted budget behavior are not yet established. Preserve this as a preparation branch, not a new approved original-PR head, while the original process finishes. No gates or assertions were weakened to conceal the cost.
 
 The real `tests/integrated-ci-source.cases.mjs` still needs a separate focused run after the original process completes. Its public APIs were independently probed, but that does not substitute for executing the existing cases. Original execution tracking remains with the assigned implementation agent. This is not Full CI or the complete long-running calibration file. No claims of a single clean initial run, current hosted CI, merge, official import/ready, same-candidate capacity, or PC/mobile acceptance. Those remain independent release gates.
+
+
+## Follow-up after the preparation snapshot
+
+The original run completed: **85 tests, 82 passed, 3 failed, 0 skipped, 1040.832 seconds**. `final-sources.log.gz` is the complete result; the earlier partial snapshot remains as originally recorded. All three failures were in the StS contract's fault-injection boundary. One expected only an older error prefix although the new complete guard correctly rejected the injected file. Two callbacks read an already historical view and appended an empty string to all other returns, converting binary archives and making the validator reject the wrong source.
+
+The corrective test change uses the same current raw disk reader, changes only the requested target, preserves all other Buffer/string values, and requires the rejection to name that exact target. The original null/TypeError rejection is retained. No production, archive, budgets or unknown-input acceptance were changed. This fix is undergoing independent review and only the three failed tests are rerunning; the missing integrated cases remain pending separately. No combined all-green claim is made.
+
+Actual cost risk is now measured: the PC22 fresh-owner negative-control case took 877.602 seconds. Correctness review is not a hosted shard-budget approval.
+
+## Bounded follow-up outcome (2026-11-17 06:27 UTC)
+
+The three StS corrections passed independent source re-review, but their original focused process did not finish within approximately 39 minutes (started 05:44:37 UTC). It was explicitly interrupted at the diagnostic boundary, exit 130. Its output remained empty, so no passing or failing assertion total can be claimed. This is **incomplete validation**, not a test pass or a proven assertion failure.
+
+The previously missing real file was then actually executed: `timeout --signal=TERM --kill-after=10s 120s node --test tests/integrated-ci-source.cases.mjs`. It reached the diagnostic boundary, exit 124, 119.827 seconds; Node reported 0 pass, 0 fail, 1 cancelled file. Cancellation/event-loop text is a consequence of termination, not an independently diagnosed source failure. This is likewise incomplete validation. No test budget, workflow or assertion was changed to implement these external diagnostic bounds.
+
+A read-only process check could only see its own per-command PID namespace, not the test process; CPU saturation or deadlock cannot be concluded from that observation. The original session confirmed running until explicitly interrupted.
+
+Confirmed amplification path: `assertStsStyleCiCurrent` iterates `integratedRead`; each projected read authenticates the entire raw current closure, sometimes twice via `integrationCiSource` and the final integrated transform. `assertIntegratedCurrent` itself uses public `integrationProductionRead` after its initial full authorization, repeating complete authorization within internal loops. Earlier measured PC22 owner negative-control cost was 877.602 seconds.
+
+**Delivery remains blocked on cost and completed consumer validation.** A safe next implementation must move fixed validator internals behind private pure projections after one complete same-raw fresh authorization per validator call. Public APIs must still freshly authorize every invocation, reject warm mutation/missing packets, preserve binary/foreign behavior, and never expose unchecked readers, skipAuth flags, caches or callbacks that can leak them. This spans B9/integrated/StS validator boundaries, so no unreviewed shortcut was applied. Retain all source assertions and repeat only the affected consumers plus fresh-auth negative controls with an explicit diagnostic bound. No original PR promotion or merge is warranted.

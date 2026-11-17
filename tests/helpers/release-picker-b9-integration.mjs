@@ -8,7 +8,7 @@ import {releasePickerControlsCiPacket as picker,assertReleasePickerControlsCiCur
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=norm(readFileSync(new URL('./release-picker-b9-integration.json',import.meta.url),'utf8'));
-assert.equal(hash(bytes),'2b3a3f9b6fff1591bb343248f13f5f084c9b6abb425f2a1b47bc6ae8c39c41cd','complete Release card-contact integration bindings');
+assert.equal(hash(bytes),'f9b1ecc845564a649cb5644a6cccce7206f3182c1f7163ac7bd61698a2ce97e6','complete Release card-contact integration bindings');
 export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc');
 assert.equal(integrationPacket.base,'b9bca884ed9b9831965b409885d78f719b9a567a');

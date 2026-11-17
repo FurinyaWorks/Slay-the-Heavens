@@ -48,6 +48,12 @@
     "complete": true
   },
   {
+    "path": "final-sources.log.gz",
+    "uncompressedBytes": 16409,
+    "sha256": "4511ea74533eb046a9d1845b553ec73f1a9e530988efecc5de40b6c75b516d5d",
+    "complete": true
+  },
+  {
     "path": "final-sources.partial.log.gz",
     "uncompressedBytes": 5064,
     "sha256": "f09af06c35663625acc7bb949dc900ca67d19e8b8ea8102a3d86d15890143925",
@@ -70,6 +76,12 @@
     "uncompressedBytes": 556,
     "sha256": "d33d557c4df1f576cba022b32a6af03ee4e1b3cbb5e8cd08f2984185aca0919a",
     "complete": true
+  },
+  {
+    "path": "integrated-cases-bounded.log.gz",
+    "uncompressedBytes": 538,
+    "sha256": "fce326951bed8906ae98a684fe1ad79ee5ebb47a5b788c6093f27917eeb15139",
+    "complete": false
   },
   {
     "path": "joints-final.log.gz",
@@ -124,5 +136,11 @@
     "uncompressedBytes": 5689,
     "sha256": "e0338e3ecd43b28768ddf7f2039199121c82f0d58b6f4a0f432ddf9095ac6297",
     "complete": true
+  },
+  {
+    "path": "sts-failed-three-rerun.log.gz",
+    "uncompressedBytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "complete": false
   }
 ]

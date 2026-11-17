@@ -52,7 +52,7 @@
     "tests/release-selection-map-source.test.mjs": "e157c9ba29491d3abade73019fdde2ab86448b5fe30b6029526b5b0709512797",
     "tests/selection-overlay-scope.test.mjs": "e412e1173ae9d513b773546788feeea69ea4aae7f04ce98cbb0f7131c33b29f3",
     "tests/session-menu-navigation.test.mjs": "9f361e070a956f6e9c33bb50c700ef30f906f322bd988e96748913f1dc4edb5f",
-    "tests/sts-style-source-epoch.test.mjs": "527e6e9b954267e5d94b00b1bd45000cd4464e8c61a30e9d87a69232d0bd5cb2"
+    "tests/sts-style-source-epoch.test.mjs": "8c6a8609aa3086f01b2ec456302c640828b0a2ed52d70e66280e1c22ffc672df"
   },
   "archives": {
     "tests/helpers/release-picker-controls-ci-source.json.gz": "6e63658fe5a050f3972a90fc08d296fcd2eefaa35e1d5c1250d3effa391141ac",
