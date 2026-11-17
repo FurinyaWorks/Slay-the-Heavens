@@ -1,0 +1,73 @@
+#695 POSIX8 两项窄修复：原执行线接续入口
+
+唯一实现提交：6af56c6f995abdb518fbf475ca8ea14cb4caadeb
+精确父提交：e887258ce603292b94c8f342a8ce792b20fd19ab
+本任务准备分支：prepare/pr695-posix8-regressions-1117
+本目录只是证据归档；不增加实现、任务或PR，不授权合并/发布。
+
+交接前重新核对：#695 head仍为e887258，原inventory接续由
+v5g95m7t8m-max在6931121626领取、6931448609记录完成；Backlog负责人
+Furinya保持。远端实际release/v2.0.0为af77fb2461c548f0faf104761d107397f75dca08，
+PR元数据仍列旧base33d71575。现有其他准备分支没有本轮settings等价修复。
+本补丁针对e887258；最新Release组合必须由原执行线另行接续，不能称已验证。
+
+实现严格3文件：
+  tests/integrated-ci-source.cases.mjs
+  tests/helpers/settings-map-integration.mjs
+  tests/helpers/settings-map-cases-repair.json.gz
+25行新增、8行删除和5296B新gzip；旧manifest、旧inventory repair、原packets、
+integrated helper、生产Lua/HUD、JS/Lua发现清单、工作流和45/30分钟预算不变。
+
+具体修正：
+1. 原cases:19负控在更早fresh settings inventory helper层正确拒绝漂移，
+   旧regex未接受该精确层。现在逐路径绑定ERR_ASSERTION、拒绝首行和完整owner路径，
+   helper显式拒绝Buffer。没有放宽成任意异常或任意来源消息。
+2. 原cases:218直接将raw helper 8a48abcb…与历史pin d694ab25…比较。
+   现在先完整认证调用方当前raw输入，再以已有精确repair前像比较原历史pin。
+   cases自身以新固定hash packet接续before/current；before逐字等于e887原文件。
+   未知源、错误path、Buffer、CRCRLF及成功后漂移仍拒绝/保持可见，
+   普通reader仍读当前生产，不把历史读入产品。
+
+保留的验证身份（均为上一轮真实运行，不因归档再运行）：
+- 原两项分别RED和GREEN，见original-*.log.gz、*-green.log.gz。
+- 原cases同轮9/9 PASS，0 fail/cancel/skip，8296.420565ms：cases-green.log.gz。
+- 原inventory probe 118项PASS：inventory-review.log.gz。
+- 新精确接续probe 186项PASS（两次位置检查分别记录，不累计）：
+  continuation.log.gz、continuation-final-location.log.gz、verify-continuation.mjs。
+  包含98份旧gzip逐字节保全、缺失/Buffer/漂移/历史替换/CRLF与产品可见性。
+- 独立复审/root/review_pr695_regression_patch：PASS、unresolved=[]，
+  独立最小probe87项PASS，三文件SHA见independent-review.json。
+- check:guidance、verify:backlog、diff --check通过，原日志保留。
+- apply-validation.json：对e887独立index应用三文件补丁后tree恰等于候选tree
+  e6fe8d804cc9efd9d5e93a3baee414c9bd362bed。
+
+余下5项真实基线失败（本轮没有扩大）：
+额外两文件calibration/selection原运行81项76PASS/5FAIL，216266.02324ms；
+随后临时恢复未修订e887的两份源文件，对同5例复测为0PASS/5FAIL，18256.803488ms，
+再在finally恢复并核回全部已审字节。两轮完整日志均保留，不能宣称81/81绿。
+以下均位于tests/ci-complete-calibration.test.mjs：
+
+1. :1367 joint historical inventory rejects missing duplicate and unknown files while current discovery remains complete
+2. :1542 ratchet current inventory preserves raw Full coverage and refuses source drift after a warm projection
+   前两项把历史reader传给要求当前raw的守卫，先在fresh settings inventory helper
+   拒绝，尚未进入原历史库存断言；e887原字节同样失败。
+3. :1860 combined closeout validates raw current sources and complete Full discovery independently of immutable slice views
+4. :1946 run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts
+5. :1973 menu current complete JS and Lua workload retains Full budgets and every added Lua byte
+   后三项原负控reader用字符串拼接，非目标gzip Buffer也被转成string，
+   fresh settings inventory repair更早拒绝；与期望的added-source消息不符。
+   原e887与本增量同样失败，未删除负控或改预算掩盖。
+
+安全取用（仅原owner自己的后续独立工作树；不是要求覆盖#695）：
+  git fetch origin prepare/pr695-posix8-regressions-1117
+  git show --stat 6af56c6f995abdb518fbf475ca8ea14cb4caadeb
+  git cherry-pick 6af56c6f995abdb518fbf475ca8ea14cb4caadeb
+只取实现commit即可；证据在后继归档commit中，不必把归档误算成三文件实现。
+也可取该commit的GitHub .patch，或解压pr695-posix8-regressions.patch.gz后
+先git apply --check。manifest.json记录压缩与原始字节的SHA256，保持原日志。
+
+未写原#695/Release/他人分支，未新建PR，未手动启动或重跑CI。
+Quality/Licenses只在develop/master/release/** push时触发，quick-feedback只在PR
+或手动触发；本prepare分支push不匹配它们。没有改工作流来抑制CI。
+Windows旧cleanup、Hosted Full、最新Release组合、官方导入/ready、PC/手机
+和正式RC都未获本增量证明，保持未验证。

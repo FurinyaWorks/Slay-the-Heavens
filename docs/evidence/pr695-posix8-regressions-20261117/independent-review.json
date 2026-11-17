@@ -1,0 +1,20 @@
+{
+  "reviewId": "/root/review_pr695_regression_patch",
+  "baseSha": "e887258ce603292b94c8f342a8ce792b20fd19ab",
+  "conclusion": "pass",
+  "unresolved": [],
+  "independentChecks": 87,
+  "scope": "Local uncommitted three-file patch; not authorization to merge PR695",
+  "files": {
+    "tests/integrated-ci-source.cases.mjs": "731c21b3bd7d83fc1d3c1b352d986229499dbf078a4c02ff16ac59c29133518f",
+    "tests/helpers/settings-map-integration.mjs": "06106c29106d5d394b8bff904af8defe0e8d1f6df872ddb1b53c7009b8c3adfe",
+    "tests/helpers/settings-map-cases-repair.json.gz": "abc8d7011de288a1213f7332702cece3228a8107d9a2cc8abfc362e4cf793920"
+  },
+  "findings": [
+    "Exact before/current repair chain; cases before equals original BASE file",
+    "LF/CRLF accepted; missing, Buffer, drift and CRCRLF rejected",
+    "Unknown and production paths remain visible",
+    "Both materialized LFS blobs match original OID and size",
+    "Old packets, inventory repair, integrated helper, product, workflows and budgets unchanged"
+  ]
+}
