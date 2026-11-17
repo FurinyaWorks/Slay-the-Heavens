@@ -1,0 +1,88 @@
+[drag-cleanup] {"pid":6,"event":"parent-fork","elapsedMs":5.995,"childPid":14}
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK block_reset source=- target=player amount=0
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+PASS real Defend up does not lock later Click-only end turn
+DRAG_CLICK_COMPATIBILITY_CASE 1
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK block_reset source=- target=player amount=0
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+PASS real Defend endDrag does not lock later Click-only end turn
+DRAG_CLICK_COMPATIBILITY_CASE 2
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+PASS metadata-free drag consumes one ambiguous Click without a permanent lock
+DRAG_CLICK_COMPATIBILITY_CASE 3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK block_reset source=- target=player amount=0
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+PASS repeated same-touch up Clicks cannot end the turn on a Click-only host
+DRAG_CLICK_COMPATIBILITY_CASE 4
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK block_reset source=- target=player amount=0
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+PASS repeated same-touch endDrag Clicks cannot end the turn on a Click-only host
+DRAG_CLICK_COMPATIBILITY_CASE 5
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK play source=- target=- amount=0
+ABYSS_FEEDBACK block source=player target=player amount=5
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+ABYSS_FEEDBACK intent source=cultist_1 target=- amount=0
+ABYSS_FEEDBACK status source=cultist_1 target=cultist_1 amount=3
+ABYSS_FEEDBACK block_reset source=- target=player amount=0
+ABYSS_FEEDBACK reshuffle source=- target=- amount=0
+ABYSS_FEEDBACK player_turn source=- target=- amount=0
+ABYSS_FEEDBACK enemy_turn source=- target=- amount=0
+PASS two independent drags retain bounded latest-origin protection and fresh named Click-only actions
+DRAG_CLICK_COMPATIBILITY_CASE 6
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK action_wait source=- target=- amount=0
+ABYSS_FEEDBACK damage source=player target=acid_slime_s_1 amount=10
+ABYSS_FEEDBACK death source=- target=acid_slime_s_1 amount=0
+ABYSS_FEEDBACK victory source=- target=- amount=0
+PASS real drag kill cannot leak its Click into reward cards or lock reward entry
+DRAG_CLICK_COMPATIBILITY_CASE 7
+LUA_DRAG_CLICK_COMPATIBILITY 7 passed; 0 failed
+DRAG_CLICK_COMPATIBILITY_SLICE 1 7 7
+
+[drag-cleanup] {"pid":6,"event":"parent-close-send","elapsedMs":15522.773,"childPid":14}
+[drag-cleanup] {"pid":14,"event":"worker-close-received","elapsedMs":15442.85}
+[drag-cleanup] {"pid":14,"event":"worker-root-remove-start","elapsedMs":15443.058}
+[drag-cleanup] {"pid":14,"event":"worker-root-remove-done","elapsedMs":15453.181,"durationMs":10.108415999999124}
+[drag-cleanup] {"pid":6,"event":"parent-disconnect","elapsedMs":15533.917,"childPid":14}
+[drag-cleanup] {"pid":14,"event":"worker-disconnect","elapsedMs":15453.855}
+[drag-cleanup] {"pid":14,"event":"worker-before-exit","elapsedMs":15454.067,"code":0}
+[drag-cleanup] {"pid":14,"event":"worker-exit","elapsedMs":15454.233,"code":0}
+[drag-cleanup] {"pid":6,"event":"parent-exit","elapsedMs":15557.014,"childPid":14,"code":0,"signal":null}
+[drag-cleanup] {"pid":6,"event":"parent-close","elapsedMs":15557.426,"childPid":14,"code":0,"signal":null}

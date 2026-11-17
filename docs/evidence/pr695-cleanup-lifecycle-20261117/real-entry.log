@@ -1,0 +1,39 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '7eaa672a4fd40e8b7f049ae4d153dad4a7d663db4cc0ff8ba936e68a76816184'
+- '5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780'
+
+    at extendReleaseSourceEpoch (file:///workspace/scratch/c1a4970a76e0/drag-cleanup0215/tests/helpers/release-source-epoch.mjs:10:9)
+    at file:///workspace/scratch/c1a4970a76e0/drag-cleanup0215/tests/helpers/closeout-source-epoch.mjs:52:33
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '7eaa672a4fd40e8b7f049ae4d153dad4a7d663db4cc0ff8ba936e68a76816184',
+  expected: '5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
+✖ tests/battle-drag-click-compatibility.test.mjs (502.408089ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 509.495719
+
+✖ failing tests:
+
+test at tests/battle-drag-click-compatibility.test.mjs:1:1
+✖ tests/battle-drag-click-compatibility.test.mjs (502.408089ms)
+  'test failed'

@@ -1,0 +1,43 @@
+[drag-cleanup] {"pid":13,"event":"parent-fork","elapsedMs":18091.931,"childPid":21}
+✔ derived drag target equals every complete original inverse output and rejects foreign readers (487.976165ms)
+✔ real drag release preserves independent Click-only actions and original card ownership, cases 1–7 (15365.939973ms)
+ℹ Lua fixture tests/lua/battle_ui_drag_click_compatibility.lua: 15365 ms; original cases 1,2,3,4,5,6,7
+ℹ HISTORICAL_DRAG_PREPARATION {"stagedMs":378,"projectedMs":452,"builtMs":1142,"preparedMs":1175}
+ℹ PASS real Defend up does not lock later Click-only end turn
+PASS real Defend endDrag does not lock later Click-only end turn
+PASS metadata-free drag consumes one ambiguous Click without a permanent lock
+PASS repeated same-touch up Clicks cannot end the turn on a Click-only host
+PASS repeated same-touch endDrag Clicks cannot end the turn on a Click-only host
+PASS two independent drags retain bounded latest-origin protection and fresh named Click-only actions
+PASS real drag kill cannot leak its Click into reward cards or lock reward entry
+LUA_DRAG_CLICK_COMPATIBILITY 7 passed; 0 failed
+✔ real drag release preserves independent Click-only actions and original card ownership, cases 8–15 (16064.059674ms)
+ℹ Lua fixture tests/lua/battle_ui_drag_click_compatibility_slice_2.lua: 16063 ms; original cases 8,9,10,11,12,13,14,15
+ℹ HISTORICAL_DRAG_PREPARATION {"stagedMs":378,"projectedMs":452,"builtMs":1142,"preparedMs":1175}
+ℹ PASS foreign pointer and Click-only actions cannot steal a live drag
+PASS delayed old drag events cannot consume a fresh card selection
+PASS hand-return cancellation consumes the old drag without locking independent actions
+PASS busy or inactive controls cannot consume a finished drag marker
+PASS completed-drag consumption cannot clear a boolean resize cancellation barrier
+PASS busy same-touch Down cannot retire the latest completed drag origin
+PASS inactive same-touch Down cannot retire the latest completed drag origin
+PASS frozen Raiden V4 real E drag retains mechanics and later Click-only end turn
+LUA_DRAG_CLICK_COMPATIBILITY 8 passed; 0 failed
+[drag-cleanup] {"pid":13,"event":"parent-close-send","elapsedMs":82339.115,"childPid":21}
+✔ shared immutable drag preparation refuses actual warm source and generated-output mutation or deletion before starting another VM (1210.105602ms)
+✔ [historical 98fef source contract] bounded drag registrar preserves every original byte and rejects case, range or execution drift (255.513764ms)
+✔ raw and Node discovery retain both drag slices exactly once in every hosted scheduling plan (133.664878ms)
+✔ [historical 98fef source contract] drag-only historical inverse preserves complete old identities and rejects other drift (12747.367249ms)
+✔ [historical 98fef source contract] every ported Battle responsibility restores accepted PR311 bytes and rejects drift before historical replay (11290.834368ms)
+✔ [historical 98fef source contract] complete Battle composition rejects missing or unknown unchanged responsibilities before projection (7194.224842ms)
+[drag-cleanup] {"pid":13,"event":"parent-disconnect","elapsedMs":82351.771,"childPid":21}
+[drag-cleanup] {"pid":13,"event":"parent-exit","elapsedMs":82372.308,"childPid":21,"code":0,"signal":null}
+[drag-cleanup] {"pid":13,"event":"parent-close","elapsedMs":82372.939,"childPid":21,"code":0,"signal":null}
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 82599.864474
