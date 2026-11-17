@@ -17,7 +17,34 @@ for(const [path,row]of Object.entries(packet.files))for(const [view,binding]of O
  assert.equal(hash(binding.source),binding.sha256,path+' complete '+view+' predecessor');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
 }
+// Exact repair of the capacity-updated fixtures and the two reader callers.
+// The preceding B9 packet stays immutable; these full sources restore only its
+// named CI views, never actual Lua execution or production source ownership.
+const repairBytes=readFileSync(new URL('./release-capacity-b9-reader-repair.json.gz',import.meta.url));
+assert.equal(hash(repairBytes),'2b72f20cb3644959a3d1317052f9f03dbd9675b9a1de30f7e1df544ac4545a99','complete capacity B9 reader repair');
+const repair=JSON.parse(gunzipSync(repairBytes));
+assert.equal(repair.baseCommit,'80114c7f466ae8a6bf03e30409a3ba5259be7d4c');
+assert.equal(repair.normalization,'LF');
+assert.deepEqual(Object.keys(repair.files),['tests/art-feature-source-inverse.test.mjs','tests/lua/support/selection_budget_loading.lua','tests/lua/support/selection_portrait_preload.lua','tests/ci-complete-calibration.test.mjs','tests/helpers/release-card-contact-integration.mjs']);
+for(const [path,row]of Object.entries(repair.files))for(const binding of [row.before,row.current]){
+ assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete reader source');
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob,path);
+}
+export function assertCapacityB9ReaderRepairCurrent(read=readFileSync){
+ assert.equal(hash(read('tests/helpers/release-capacity-b9-reader-repair.json.gz')),hash(repairBytes),'fresh complete capacity B9 reader repair packet');
+ for(const [path,row]of Object.entries(repair.files)){
+  const source=read(path,'utf8');
+  assert.equal(typeof source,'string','fresh complete integration source: capacity B9 reader repair '+path);
+  assert(!source.includes('\r\r\n'),'fresh complete integration source: capacity B9 reader repair '+path);
+  assert.equal(hash(norm(source)),row.current.sha256,'fresh complete integration source: capacity B9 reader repair '+path);
+ }
+}
 export function beforeCapacityB9Ci(path,source,view='b9',before){
+ if(view==='b9'&&typeof path==='string'&&Object.hasOwn(repair.files,path)){
+  const row=repair.files[path];
+  if(typeof source!=='string'||source.includes('\r\r\n')||before&&before.sha256!==row.before.sha256||hash(norm(source))!==row.current.sha256)return source;
+  source=source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+ }
  const row=typeof path==='string'&&Object.hasOwn(packet.files,path)?packet.files[path]:null;
  const prior=row&&Object.hasOwn(row.before,view)?row.before[view]:null;
  if(!prior||typeof source!=='string'||source.includes('\r\r\n')||before&&before.sha256!==prior.sha256)return source;

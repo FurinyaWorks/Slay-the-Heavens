@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {beforeCapacityB9Ci,capacityB9CiBindings} from './release-capacity-b9-ci-source.mjs';
+import {beforeCapacityB9Ci,capacityB9CiBindings,assertCapacityB9ReaderRepairCurrent} from './release-capacity-b9-ci-source.mjs';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {releasePc22BasicFeedbackCiPacket as pc22,assertReleasePc22BasicFeedbackCiCurrent} from './release-pc22-basic-feedback-ci-source.mjs';
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
@@ -74,6 +74,7 @@ export function integrationPriorInventory(paths,side='pc22',kind='js',read=readF
  return [...prior];
 }
 export function assertReleaseIntegrationCurrent(read=readFileSync){
+ assertCapacityB9ReaderRepairCurrent(read);
  for(const [path,sha]of Object.entries(integrationPacket.files))assert.equal(hash(norm(beforeCapacityB9Ci(path,read(path,'utf8')))),sha,'fresh complete integration source: Release join '+path);
  for(const [path,sha]of Object.entries(integrationPacket.archives))assert.equal(hash(read(path)),sha,'retained complete immutable Release join predecessor: '+path);
  assertReleasePc22BasicFeedbackCiCurrent(integrationRead('pc22',read));

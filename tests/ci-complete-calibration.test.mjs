@@ -46,7 +46,7 @@ import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releasePc22BasicFeedbackCiRead,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackCiCurrent,releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
-import {integrationRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
+import {integrationRead,integrationCapacityCiRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
 const sideRead=integrationRead('pc22',rawReleaseReadFileSync);
 const rawBootstrapReadFileSync=releasePc22BasicFeedbackCiRead(sideRead);
 const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
@@ -2007,7 +2007,7 @@ for(const [side,label,p,check,guards]of [
  ['selection','selection map',releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards],
  ['joint','card-contact integration',{currentInventory:integrationPacket.inventory,priorInventory:releasePc22BasicFeedbackCiPacket.priorInventory},assertReleaseIntegrationCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
 ])test(`release ${label} retained Full inventory retains all tests, diagnostic forecasts and actual execution guards`,t=>{
- check(side==='joint'?rawReleaseReadFileSync:integrationRead(side,rawReleaseReadFileSync));
+ check(side==='joint'?rawReleaseReadFileSync:side==='selection'?integrationCapacityCiRead(rawReleaseReadFileSync):integrationRead(side,rawReleaseReadFileSync));
  guards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
  const js=side==='joint'?rawReleaseDiscoverJs():integrationPriorInventory(rawReleaseDiscoverJs(),side),lua=side==='joint'?rawReleaseLua():integrationPriorInventory(rawReleaseLua(),side,'lua');
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);

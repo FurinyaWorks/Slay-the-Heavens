@@ -1,0 +1,44 @@
+{
+  "red.log.gz": {
+    "rawSha256": "850c55b339da6807940633545745eb077a44a8c0178474965a07eced5f20e87f",
+    "rawBytes": 28280,
+    "gzipSha256": "666431231ed4e04bcbb7455d9f8e4bca56b76f28a8229e1a1c45f80daba9176b",
+    "gzipBytes": 4789
+  },
+  "partial-green-preload-red.log.gz": {
+    "rawSha256": "78b7deaddf96aab6a09a162d60c4b51eb6a892d14e88df799c09e906200ea02b",
+    "rawBytes": 3862,
+    "gzipSha256": "9218ba10d0026644f1a310d83a0d159f9447dcba1ffe79521bcbc18ae92fa41f",
+    "gzipBytes": 1130
+  },
+  "green.log.gz": {
+    "rawSha256": "564668483c01e4a7c6db8a7e4c8764818bfffa86769a63f1ae0c24d20f3e9785",
+    "rawBytes": 1227,
+    "gzipSha256": "ca63dbb7e7f404c8bf5eb54b500bf2e62b9f3b48c2afb45f1a1a11692fe3057f",
+    "gzipBytes": 592
+  },
+  "probe.log.gz": {
+    "rawSha256": "2f45d074f66d556114453e89405737b609d3178cca9c479777c06367ed47f16f",
+    "rawBytes": 80,
+    "gzipSha256": "feddd3b79bd72d8532478451b05f2f825c29757aec74e38b930c23a279724662",
+    "gzipBytes": 86
+  },
+  "adjacent.log.gz": {
+    "rawSha256": "ad72d672cb9f689b34b63d65057673c88e9b239226960b7d864e921587fba848",
+    "rawBytes": 1739,
+    "gzipSha256": "9677babaae11f4097755123a8518a15648095977ace8ac70e652fdaa0f9cf759",
+    "gzipBytes": 801
+  },
+  "guidance.log.gz": {
+    "rawSha256": "7e2a21112ec1339d2804dca05bcaf918632bc0ffad8f88406f27f81f488a042b",
+    "rawBytes": 383,
+    "gzipSha256": "b92ad3139b8f47b63039de8196ee1dd01cc23aa054b41da314ae03125d63b94a",
+    "gzipBytes": 223
+  },
+  "backlog.log.gz": {
+    "rawSha256": "81286e3625ae638c0b2e1e5d82da994cd2f0b7b50780c324ea29d6d99af71e07",
+    "rawBytes": 283,
+    "gzipSha256": "182004fe33da50e5ce18a915f5ae539107a50f32a9bf529cf00f31c148aef8a4",
+    "gzipBytes": 285
+  }
+}
