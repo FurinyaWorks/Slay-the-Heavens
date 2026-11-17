@@ -32,16 +32,12 @@ function historicalIntegratedSource(path,source,target,read=readFileSync){
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
 }
-function isCurrentUnionInput(path,source){
- const row=Object.hasOwn(intentReleasePacket.files,path)?intentReleasePacket.files[path]:null;
- return row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))===row.current.sha256;
-}
 export function integratedSource(path,source,target,read=readFileSync){
  const before=intentReleaseCiSource(path,source,'release',read);
  const result=historicalIntegratedSource(path,before,target,intentReleaseHistoricalRead('release',read));
  // Unchanged at this outer layer can still project deeper. Admission belongs
  // to the final historical output, using the original caller's raw reader.
- if(result!==source&&isCurrentUnionInput(path,source))assertIntentReleaseCurrent(read);
+ if(result!==source)assertIntentReleaseCurrent(read);
  return result;
 }
 export function integratedRead(target,{read=readFileSync}={}){
@@ -61,7 +57,7 @@ export function integratedRead(target,{read=readFileSync}={}){
   const text=typeof raw==='string'?raw:raw.toString('utf8');
   const prior=historicalIntegratedSource(path,text,target,historicalRead);
   const originalText=typeof original==='string'?original:original.toString('utf8');
-  if(prior!==originalText&&isCurrentUnionInput(path,originalText))assertIntentReleaseCurrent(rawRead);
+  if(prior!==originalText)assertIntentReleaseCurrent(rawRead);
   return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
  };
 }

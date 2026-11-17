@@ -1,0 +1,21 @@
+{
+  "sha256": "194619f39fc24006d9678be9ace0babf788f8764e6633672ecb14b23e06bfef4",
+  "size": 1753105,
+  "sources": 450,
+  "production": 352,
+  "archives": 117,
+  "inventory": {
+    "js": 882,
+    "lua": 1425
+  },
+  "parents": {
+    "release": {
+      "js": 881,
+      "lua": 1424
+    },
+    "intent": {
+      "js": 880,
+      "lua": 1424
+    }
+  }
+}

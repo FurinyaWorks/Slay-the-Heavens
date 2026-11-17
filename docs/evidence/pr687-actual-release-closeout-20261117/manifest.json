@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-11-17T15:44:16.396287+00:00",
+  "capturedAt": "2026-11-17T15:52:16.164006+00:00",
   "files": [
     {
       "path": "687-backlog.log.gz",
@@ -251,6 +251,34 @@
       "rawBytes": 13505,
       "rawSha256": "499758859d6362a8e8c519bc29c4e273bbec0d8a83382af9c67581cff3ee9fae",
       "gzipSha256": "a5106ddb666a578200ced9033f84d2989f7ee7297704f6c4ef81604bf4acaee1",
+      "status": "completed-command-output"
+    },
+    {
+      "path": "687-complete-capture-smoke.log.gz",
+      "rawBytes": 60,
+      "rawSha256": "f7823650e5a156f234b482bce97f49ba714e539bc0bf73e76304ccb89d794bc8",
+      "gzipSha256": "678a133b538404badb1faa7aa9fe8c75e144c6a4bcd34f7cd1cde9265d1d6d48",
+      "status": "completed-command-output"
+    },
+    {
+      "path": "687-dictionary-identities.log.gz",
+      "rawBytes": 148,
+      "rawSha256": "c968acc9bf074ab2b69137d2cbab8045059ce3a3e2762e1333ddb4fc152b1ebd",
+      "gzipSha256": "ffb833bd03f8b859e971597f958b9308f4d2fea5ef0903201127dfa4e6b490f9",
+      "status": "completed-command-output"
+    },
+    {
+      "path": "687-inherited-gate-final.log.gz",
+      "rawBytes": 227,
+      "rawSha256": "21292f71e0e9ec223873aaa12b2694380c92e4e14d231f2e574b81ebda3c1712",
+      "gzipSha256": "193747005573720d07d88a51b2671b67b19b5a10343ea083a745f05fd4ba122e",
+      "status": "completed-command-output"
+    },
+    {
+      "path": "687-final-complete-anchors.log.gz",
+      "rawBytes": 444,
+      "rawSha256": "376896d181f5708a550e5cdd1be3e8d13b3ef79092d83b416bde24ed727acd65",
+      "gzipSha256": "7e8347839232a544a14f681111a31b3eb5ad2eda40be55abed478e3026179172",
       "status": "completed-command-output"
     }
   ],

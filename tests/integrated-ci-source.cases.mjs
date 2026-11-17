@@ -353,3 +353,19 @@ test('actual af77 intent deeper historical outputs authenticate the original raw
  const binary=Buffer.from([255,0,128]);assert.equal(currentIntegratedRead('menu',{read:()=>binary})('unknown/binary'),binary);
  assert.equal(currentIntegratedRead('menu',{read:()=>null})('unknown/source'),null);
 });
+
+test('actual intent admission covers every inherited CI anchor before deeper historical output',()=>{
+ const owner='src/lua/abyss_battle_intent_view.lua';let fault;
+ const read=(p,e)=>p===owner&&fault?null:unionActualReadFileSync(p,e);
+ const reader=currentIntegratedRead('menu',{read});let changed=0;
+ for(const path of Object.keys(proof.files)){
+  assert(Object.hasOwn(intentReleasePacket.files,path),'inherited anchor in complete live capture: '+path);
+  const source=unionActualReadFileSync(path,'utf8'),expected=currentIntegratedSource(path,source,'menu',read);
+  if(expected===source)continue;changed++;
+  fault=true;assert.throws(()=>currentIntegratedSource(path,source,'menu',read),undefined,path+' source');
+  assert.throws(()=>reader(path,'utf8'),undefined,path+' reader');
+  fault=false;
+ }
+ assert(changed>=97,'original omitted inherited anchors must be exercised');
+ assertCurrentIntegrated();
+});

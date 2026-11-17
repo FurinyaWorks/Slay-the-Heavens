@@ -6,10 +6,22 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const archive='tests/helpers/intent-release-union.json.gz';
-const digest='194619f39fc24006d9678be9ace0babf788f8764e6633672ecb14b23e06bfef4';
+const digest='0a8c87eab8fb0c6a995c64052d7d252bc72cb6021c8a46aba87b915be5eb4ca5';
 const bytes=readFileSync(new URL('./intent-release-union.json.gz',import.meta.url));
 assert.equal(hash(bytes),digest,'complete actual Release and intent union');
-const packet=JSON.parse(gunzipSync(bytes));
+const packed=JSON.parse(gunzipSync(bytes));
+assert.equal(packed.storage,'sha256-record-dictionary-v1');
+const records=packed.records,used=new Set();
+function expand(id){
+ if(id===null)return null;
+ assert.equal(typeof id,'string');assert.match(id,/^[a-f0-9]{64}$/);
+ assert(Object.hasOwn(records,id),'complete union record reference');
+ const row=records[id];assert.equal(row.sha256,id,'exact content-addressed union record');used.add(id);return row;
+}
+const packet={...packed,files:Object.fromEntries(Object.entries(packed.files).map(([path,row])=>[path,{current:expand(row.current),parents:Object.fromEntries(Object.entries(row.parents).map(([side,id])=>[side,expand(id)]))}]))};
+assert.deepEqual([...used].sort(),Object.keys(records).sort(),'no missing or unreferenced complete record');
+delete packet.records;
+
 assert.deepEqual(packet.parents,{release:'af77fb2461c548f0faf104761d107397f75dca08',intent:'e1221ee0abc265a720cd71a87d01b9d109c51475'});
 assert.equal(packet.currentTreeCommitted,false,'CI capture is separate from committed product producers');
 for(const [path,row]of Object.entries(packet.files))for(const binding of [row.current,...Object.values(row.parents)].filter(Boolean)){

@@ -13,7 +13,9 @@ changed|=set(git('diff','--name-only',parents['release']).decode().splitlines())
 changed|={p.as_posix()for p in Path('tests/helpers').glob('intent-*.mjs')}
 changed|=set(git('ls-files','--others','--exclude-standard').decode().splitlines())
 changed|={'config/architecture.json'}|{p.as_posix()for p in Path('src/lua').glob('*.lua')}
-changed={p for p in changed if p.startswith(('src/','tests/','scripts/','config/','.github/')) and p.endswith(('.lua','.mjs','.json','.yml','.yaml')) and Path(p).exists()}
+required=set(json.loads(gzip.decompress(Path('tests/helpers/integrated-ci-source.json.gz').read_bytes()))['files'])
+changed|=required
+changed={p for p in changed if ((p.startswith(('src/','tests/','scripts/','config/','.github/')) and p.endswith(('.lua','.mjs','.json','.yml','.yaml'))) or p in required) and Path(p).exists()}
 changed.discard('tests/helpers/intent-release-union.mjs')
 packet=dict(schemaVersion=1,normalization='LF',parents=parents,currentTreeCommitted=False,files={},archives={},parentInventories={n:inventory(s)for n,s in files.items()},inventory=inventory({p.as_posix()for p in Path('tests').rglob('*')if p.is_file()}))
 template=Path('tests/helpers/intent-release-union.mjs').read_text().replace('\r\n','\n');template=re.sub(r"const digest='(?:UNION_PACKET_SHA|[a-f0-9]{64})';","const digest='UNION_PACKET_SHA';",template,count=1);packet['leafTemplateSha']=sha(template.encode())
@@ -22,7 +24,15 @@ for p in sorted(Path('tests/helpers').rglob('*.gz')):
  if p.as_posix()=='tests/helpers/intent-release-union.json.gz':continue
  raw=p.read_bytes();assert raw[:2]==b'\x1f\x8b',p
  packet['archives'][p.as_posix()]=sha(raw)
-raw=gzip.compress((json.dumps(packet,ensure_ascii=False,separators=(',',':'))+'\n').encode(),mtime=0)
+records={}
+for row in packet['files'].values():
+ for binding in [row['current'],*row['parents'].values()]:
+  if binding is not None:
+   key=binding['sha256']
+   if key in records:assert records[key]==binding
+   else:records[key]=binding
+storage={**packet,'storage':'sha256-record-dictionary-v1','records':records,'files':{path:{'current':row['current']['sha256'],'parents':{side:binding['sha256']if binding else None for side,binding in row['parents'].items()}}for path,row in packet['files'].items()}}
+raw=gzip.compress((json.dumps(storage,ensure_ascii=False,separators=(',',':'))+'\n').encode(),mtime=0)
 Path('tests/helpers/intent-release-union.json.gz').write_bytes(raw)
 p=Path('tests/helpers/intent-release-union.mjs');s=p.read_text();s=re.sub(r"const digest='(?:UNION_PACKET_SHA|[a-f0-9]{64})';","const digest='"+sha(raw)+"';",s,count=1);p.write_text(s,newline='\n')
 result=dict(sha256=sha(raw),size=len(raw),sources=len(packet['files']),production=len([p for p in packet['files']if p.startswith('src/')or p=='config/architecture.json']),archives=len(packet['archives']),inventory={k:len(v)for k,v in packet['inventory'].items()},parents={n:{k:len(v)for k,v in inv.items()}for n,inv in packet['parentInventories'].items()})
