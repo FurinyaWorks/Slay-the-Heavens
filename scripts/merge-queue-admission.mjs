@@ -62,7 +62,7 @@ export function collectQueueAdmission(event,env,query,ruleset){
    throw Error('Queue PR is held, changed or no longer eligible: '+p.number);
   const review=collectIndependentAiReview({api:path=>JSON.parse(query('api',path)),prNumber:p.number,
    expectedHeadSha:p.headRefOid,expectedBaseSha:base});
-  if(review.conclusion!=='pass')throw Error('Queue PR independent AI/native approval is invalid: '+p.number+'; '+review.errors.join('; '));
+  if(review.conclusion!=='pass')throw Error('Queue PR independent AI coordinator attestation is invalid: '+p.number+'; '+review.errors.join('; '));
   let quality;
   if(ruleset?.rules?.find(rule=>rule.type==='required_status_checks')?.parameters?.required_status_checks?.some(check=>check.context==='pr-quality')){
    const statuses=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/commits/${p.headRefOid}/statuses?per_page=100`));
@@ -85,7 +85,7 @@ export function collectQueueAdmission(event,env,query,ruleset){
   const dependencyEvidence=review.observations.dependencies.map(row=>({number:row.number,merge:row.pr.merge_commit_sha}));
   snapshot.push({id:entry.id,position:entry.position,base:entry.baseCommit.oid,head:entry.headCommit.oid,
    number:p.number,prHead:p.headRefOid,githubReviewId:review.githubReviewId,
-   nativeApprovalReviewId:review.nativeApprovalReviewId,coordinator:review.coordinator,
+   coordinator:review.coordinator,
    reviewedHead:review.head,reviewedBase:review.base,reviewedTree:review.tree,reviewedMergeCommit:review.mergeCommitSha,
    aiReviewId:review.reviewId,report:review.report,
    coordinatorPermission:review.observations.permissions[review.coordinator.id].permission,

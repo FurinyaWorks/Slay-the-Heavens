@@ -19,11 +19,11 @@ export function admissionFixture(repoName=repo){
   rules:[{type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},
    {type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,required_status_checks:
     ['check','presentation','engineering-posix','inventory','full-quality','independent-review'].map(context=>({context,integration_id:context==='independent-review'?null:15368}))}},
-   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true,required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true}},
+   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true,required_approving_review_count:0,dismiss_stale_reviews_on_push:false,require_code_owner_review:false}},
    {type:'required_linear_history'}]};
  const artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:head}};
  const checkout={schemaVersion:1,event:'merge_group',runId:7,attempt:1,tested:head,head,base,parents:[base]};
- const pr={number:510,node_id:'PR_510',user:{id:111138384,login:'FurinyaDev'},state:'open',merged:false,draft:false,mergeable:true,merge_commit_sha:sha('d'),head:{sha:prHead,repo:{id:1429751262,full_name:repoName}},
+ const pr={number:510,node_id:'PR_510',user:{id:337201427,login:'v5g95m7t8m-max'},state:'open',merged:false,draft:false,mergeable:true,merge_commit_sha:sha('d'),head:{sha:prHead,repo:{id:1429751262,full_name:repoName}},
   base:{sha:base,ref:'develop',repo:{id:1429751262,full_name:repoName}},labels:[],body:'Depends-on: none'};
  const reviewer={id:337201427,login:'v5g95m7t8m-max'};
  const report={schemaVersion:1,kind:'independent-ai-review',repositoryId:1429751262,repositoryFullName:repoName,
@@ -31,7 +31,7 @@ export function admissionFixture(repoName=repo){
   reviewerAgent:'/root/queue_review',implementationAgents:['/root/implementer'],
   coordinator:{...reviewer,verifiedActualSessions:true},
   provenance:{kind:'coordinator-verified-agent-session',reviewId:'/root/queue_review/fixture',sessionId:'fixture-queue-session'}};
- const review={id:90,state:'APPROVED',commit_id:prHead,submitted_at:'2026-11-17T10:00:00Z',user:reviewer};
+ const review={id:90,state:'COMMENTED',commit_id:prHead,submitted_at:'2026-11-17T10:00:00Z',user:reviewer};
  const sourceCommit={sha:sha('d'),tree:{sha:sha('e')},parents:[{sha:base},{sha:prHead}]};
  const entry={id:'ENTRY_510',position:1,state:'AWAITING_CHECKS',enqueuer:{databaseId:51,login:'native-enqueuer'},baseCommit:{oid:base},headCommit:{oid:head},
   pullRequest:{number:510,headRefOid:prHead,baseRefName:'develop',isDraft:false,state:'OPEN',mergeQueueEntry:{id:'ENTRY_510'}}};

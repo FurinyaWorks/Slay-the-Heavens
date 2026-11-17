@@ -874,13 +874,13 @@ function nativeDeliveryFixture(){
  const e=mergedEvidence(3),p=e.preflight,repo='FurinyaWorks/Slay-the-Heavens',repository={id:1429751262,full_name:repo};
  p.repo=repo;p.run.repository=repository;p.currentRun.repository=repository;
  e.repo=repo;e.run.repository=repository;e.currentRun.repository=repository;
- const pr={number:p.prNumber,user:{id:111138384},state:'open',merged:false,draft:false,mergeable:true,body:'Depends-on: none',
+ const pr={number:p.prNumber,user:{id:337201427},state:'open',merged:false,draft:false,mergeable:true,body:'Depends-on: none',
   head:{sha:p.head,ref:'feat/native-proof',repo:repository},base:{sha:p.base,ref:'develop',repo:repository},merge_commit_sha:p.tested};
  const user={id:337201427,login:'v5g95m7t8m-max'},report={schemaVersion:1,kind:'independent-ai-review',repositoryId:repository.id,repositoryFullName:repo,
   prNumber:p.prNumber,reviewedHeadSha:p.head,reviewedBaseSha:p.base,reviewedTreeSha:p.sourceTree,conclusion:'pass',unresolved:[],
   reviewerAgent:'/root/delivery_reviewer',implementationAgents:['/root/implementer'],coordinator:{...user,verifiedActualSessions:true},
   provenance:{kind:'coordinator-verified-agent-session',reviewId:p.review.reviewId,sessionId:'fixture-delivery-session'}};
- const reviews=[{id:100,state:'APPROVED',commit_id:p.head,user,submitted_at:'2026-11-17T10:00:00Z',
+ const reviews=[{id:100,state:'COMMENTED',commit_id:p.head,user,submitted_at:'2026-11-17T10:00:00Z',
   body:INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(report)}];
  const permissions={[user.id]:{permission:'write',role_name:'maintain',user}},sourceCommit={sha:p.tested,tree:{sha:p.sourceTree},parents:p.parents.map(sha=>({sha}))};
  const target={ref:'refs/heads/develop',object:{type:'commit',sha:p.base}},snapshot={...pr,authorId:pr.user.id};delete snapshot.user;
@@ -888,10 +888,10 @@ function nativeDeliveryFixture(){
   observations:{prBefore:snapshot,prAfter:structuredClone(snapshot),targetBefore:target,targetAfter:structuredClone(target),sourceCommit,reviews,permissions,dependencies:[]}};
  assert.equal(nativeReview.conclusion,'pass');
  const proof={schemaVersion:1,kind:'native-ai-review-proof',mode:'publish',state:'pr_passed',repo,prNumber:p.prNumber,head:p.head,base:p.base,
-  nativeReview,nativePolicy:{rules:[{type:'pull_request',parameters:{required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true}}]},preflight:p,
+  nativeReview,nativePolicy:{rules:[{type:'pull_request',parameters:{required_approving_review_count:0,dismiss_stale_reviews_on_push:false,require_code_owner_review:false}}]},preflight:p,
   gate:{runId:50,attempt:1,ref:'refs/heads/develop',bootstrap:false},policyErrors:[]};
  const intent={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:repository.id,prNumber:p.prNumber,
-  head:p.head,base:p.base,sourceTree:p.sourceTree,githubReviewId:100,nativeApprovalReviewId:100,gateRef:'refs/heads/develop',createdAt:'2026-11-17T10:01:00Z',nativeAuto:{confirmed:true,state:'waiting'}};
+  head:p.head,base:p.base,sourceTree:p.sourceTree,githubReviewId:100,gateRef:'refs/heads/develop',createdAt:'2026-11-17T10:01:00Z',nativeAuto:{confirmed:true,state:'waiting'}};
  const gateRun={id:50,run_attempt:1,path:'.github/workflows/licenses.yml',event:'workflow_dispatch',status:'completed',conclusion:'success',repository,head_branch:'develop',head_sha:p.base};
  const artifact={id:70,name:`independent-review-${p.prNumber}-${p.head.slice(0,12)}-50-1`,expired:false,workflow_run:{id:50,head_sha:p.base,repository_id:repository.id,head_repository_id:repository.id}};
  const status={id:90,context:'independent-review',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
@@ -933,7 +933,9 @@ test('native intent resolves actual immutable downloaded proof without reconstru
  assert.deepEqual(verifyDelivery(actual),[]);assert.equal(actual.schemaVersion,3);
  for(const field of ['targetBeforeSha','targetAfterSha','run','currentRun','checkout','checkoutArtifact','jobs','testedCommit'])
   assert.deepEqual(actual[field],f.proof.preflight[field],field+' remains the original pre-merge observation');
- assert.equal(actual.nativeProof.artifact.id,70);assert.equal(actual.nativeReview.nativeApprovalReviewId,100);
+ assert.equal(actual.nativeProof.artifact.id,70);assert.equal(actual.nativeReview.githubReviewId,100);
+ assert.equal(Object.hasOwn(actual.nativeReview,'nativeApprovalReviewId'),false);
+ assert.equal(actual.nativeReview.observations.prBefore.authorId,actual.nativeReview.coordinator.id);
  assert(f.calls.some(args=>args[0]==='run'&&args.includes('download')));
  assert.equal(f.calls.filter(args=>args.at(-1).endsWith('/actions/artifacts/70')).length,2);
  assert(!f.calls.some(args=>args.includes('POST')||args.some(value=>String(value).includes('/rulesets/'))));
@@ -952,7 +954,7 @@ test('native proof ZIP adapter verifies the original API ZIP digest and rejects 
  assert.throws(()=>delivery.resolveNativePreflight(bad.intent,nativeProofQuery(bad),{loadProof:()=>bytes}),/ZIP entry/);
 });
 
-test('native proof never accepts shadow artifacts, false CI, self-authored reviews or stale exact identities',()=>{
+test('native proof never accepts shadow artifacts, false CI, untrusted or non-independent reports or stale exact identities',()=>{
  for(const mutate of [
   f=>f.intent.nativeAuto.confirmed=false,f=>f.intent.sourceTree=sha('f'),f=>f.intent.githubReviewId=101,
   f=>f.status.creator.id=1,f=>f.status.creator.login='other',f=>f.status.state='failure',
@@ -964,12 +966,11 @@ test('native proof never accepts shadow artifacts, false CI, self-authored revie
   f=>f.gateRun.run_attempt=2,f=>f.gateRun.head_sha=sha('f'),f=>f.gateRun.conclusion='failure',
   f=>f.proof.mode='shadow',f=>f.proof.state='shadow_verified',f=>f.proof.head=sha('f'),f=>f.proof.base=sha('f'),
   f=>f.proof.gate.ref='refs/heads/foreign',f=>f.proof.policyErrors=['native gate disabled'],
-  f=>f.proof.nativePolicy.rules[0].parameters.required_approving_review_count=0,
   f=>f.proof.preflight.jobs.pop(),f=>f.proof.preflight.currentRun.conclusion='failure',
   f=>f.proof.preflight.targetBeforeSha=sha('f'),f=>f.proof.preflight.sourceTree=sha('f'),
   f=>f.proof.nativeReview.report.coordinator.verifiedActualSessions=false,
-  f=>f.proof.nativeReview.observations.prBefore.authorId=337201427,
-  f=>f.proof.nativeReview.observations.reviews[0].state='COMMENTED',
+  f=>f.proof.nativeReview.observations.reviews[0].user.id=999,
+  f=>f.proof.nativeReview.observations.reviews[0].state='PENDING',
   f=>f.proof.nativeReview.observations.reviews[0].state='DISMISSED',
  ]){
   const f=nativeDeliveryFixture();mutate(f);
@@ -1066,4 +1067,18 @@ test('merged collector obtains queue Full for native-reviewed Full PRs without c
  });
  assert.deepEqual(seen,[9,21]);assert.equal(actual.queueFull.kind,'native-queue-full');
  assert.deepEqual(actual.preflight,e.preflight);assert.deepEqual(verifyMergedDelivery(actual),{state:'merged_passed',errors:[]});
+});
+
+
+test('native intent needs no human approval policy and accepts an old review-ID alias only when it matches the signed report',()=>{
+ const f=nativeDeliveryFixture();
+ assert.equal(f.proof.nativeReview.observations.reviews[0].state,'COMMENTED');
+ assert.equal(f.proof.nativePolicy.rules[0].parameters.required_approving_review_count,0);
+ assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)).nativeReview.githubReviewId,100);
+ f.intent.nativeApprovalReviewId=100;f.proof.nativeReview.nativeApprovalReviewId=100;
+ assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)).nativeReview.githubReviewId,100);
+ f.intent.nativeApprovalReviewId=101;
+ assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),/intent locator/);
+ f.intent.nativeApprovalReviewId=100;f.proof.nativeReview.nativeApprovalReviewId=101;
+ assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),/different exact preflight/);
 });

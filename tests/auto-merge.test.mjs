@@ -9,20 +9,20 @@ import {independentReviewGate} from '../scripts/publish-pr-quality.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
 const sha=c=>c.repeat(40);
 import {INDEPENDENT_AI_REVIEW_MARKER as aiMarker,TRUSTED_REVIEW_COORDINATOR_IDS as aiCoordinators,
- parseIndependentAiReview,validateIndependentAiReview,collectIndependentAiReview,
+ parseIndependentAiReview,independentAiReportErrors,validateIndependentAiReview,collectIndependentAiReview,
  parseDependencies as parseAiDependencies} from '../scripts/independent-ai-review.mjs';
 const aiRepo='FurinyaWorks/Slay-the-Heavens',aiRoleId=111138384;
 const aiBody=report=>aiMarker+'\n'+JSON.stringify(report);
 function aiFixture(){
  const repository={id:projectRepositoryId,full_name:aiRepo},user={id:aiRoleId,login:'FurinyaDev'};
- const pr={number:712,user:{id:337201427,login:'implementer'},state:'open',merged:false,draft:false,mergeable:true,body:'Summary\nDepends-on: none',
+ const pr={number:712,user:{id:111138384,login:'FurinyaDev'},state:'open',merged:false,draft:false,mergeable:true,body:'Summary\nDepends-on: none',
   head:{sha:sha('a'),repo:repository},base:{ref:'develop',sha:sha('b'),repo:repository},merge_commit_sha:sha('d')};
  const report={schemaVersion:1,kind:'independent-ai-review',repositoryId:projectRepositoryId,repositoryFullName:aiRepo,
   prNumber:712,reviewedHeadSha:sha('a'),reviewedBaseSha:sha('b'),reviewedTreeSha:sha('e'),conclusion:'pass',unresolved:[],
   reviewerAgent:'/root/reviewer',implementationAgents:['/root/implementer'],
   coordinator:{...user,verifiedActualSessions:true},
   provenance:{kind:'coordinator-verified-agent-session',reviewId:'/root/reviewer/review-712',sessionId:'actual-review-session'}};
- const reviews=[{id:100,commit_id:sha('a'),state:'APPROVED',submitted_at:'2026-11-17T10:00:00Z',user,
+ const reviews=[{id:100,commit_id:sha('a'),state:'COMMENTED',submitted_at:'2026-11-17T10:00:00Z',user,
   html_url:'https://github.com/'+aiRepo+'/pull/712#pullrequestreview-100',body:aiBody(report)}];
  return {repository,pr,baseSha:sha('b'),sourceCommit:{sha:sha('d'),tree:{sha:sha('e')},parents:[{sha:sha('b')},{sha:sha('a')}]},
   reviews,permissions:{[aiRoleId]:{permission:'admin',role_name:'admin',user}},dependencies:[],report};
@@ -48,28 +48,43 @@ function aiApi(f=aiFixture(),alter=(_path,value)=>value){
 }
 const aiCollect=(f=aiFixture(),alter)=>collectIndependentAiReview({prNumber:712,...aiApi(f,alter)});
 
-test('independent AI gate accepts a maintain/admin native approval attesting a distinct real AI session',()=>{
+test('local AI payload validation binds the actual tuple but cannot substitute for a server-signed Review',()=>{
+ const f=aiFixture(),context={...f,coordinator:f.reviews[0].user};
+ assert.deepEqual(independentAiReportErrors(f.report,context),[]);
+ f.reviews=[];assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ for(const change of [
+  x=>{x.report={conclusion:'pass',unresolved:[]};},
+  x=>{x.report.schemaVersion=2;},
+  x=>{x.sourceCommit.tree.sha=sha('f');},
+  x=>{x.sourceCommit.parents.reverse();},
+  x=>{x.pr.base.sha=sha('c');},
+  x=>{x.coordinator={id:99,login:'forged'};},
+  x=>{x.coordinator.login='other';},
+  x=>{x.report.coordinator.verifiedActualSessions=false;},
+  x=>{x.report.reviewerAgent=x.report.implementationAgents[0];}
+ ]){const x=structuredClone({...context,report:f.report});change(x);assert(independentAiReportErrors(x.report,x).length);}
+ assert(independentAiReportErrors(null,context).length);
+ assert(independentAiReportErrors(f.report).length);
+});
+
+test('independent AI gate accepts a trusted same-account COMMENTED report attesting a distinct real cloud AI session',()=>{
  const f=aiFixture(),result=validateIndependentAiReview(f);
  assert.equal(result.conclusion,'pass');assert.deepEqual(result.errors,[]);assert.equal(result.githubReviewId,100);
  assert.equal(result.reviewId,f.report.provenance.reviewId);assert.equal(result.tree,sha('e'));
- assert.equal(result.nativeApprovalReviewId,100);
+ assert.equal(Object.hasOwn(result,'nativeApprovalReviewId'),false);
+ assert.equal(f.pr.user.id,result.coordinator.id,'same GitHub author is allowed; AI sessions must still be distinct');
  assert.deepEqual(aiCoordinators,[111138384,337201427]);
  assert.equal(aiCheck(x=>{x.permissions[aiRoleId].permission='write';x.permissions[aiRoleId].role_name='maintain';}).conclusion,'pass');
  assert.equal(aiCheck(x=>{delete x.report.coordinator.verifiedActualSessions;x.report.provenance.coordinatorVerified=true;}).conclusion,'pass');
 });
 
-test('independent AI gate requires the same complete report to be a current trusted non-author native approval',()=>{
- const f=aiFixture();f.reviews[0].state='COMMENTED';
- assert.equal(validateIndependentAiReview(f).conclusion,'fail');
- f.reviews.push({...f.reviews[0],id:101,state:'APPROVED',body:'Native approval after verifying the actual AI session'});
- assert.equal(validateIndependentAiReview(f).conclusion,'fail','an unrelated approval cannot be stitched to COMMENTED metadata');
- f.reviews[1].body=aiBody(f.report);
- assert.equal(validateIndependentAiReview(f).conclusion,'pass');
- for(const patch of [{state:'DISMISSED'},{state:'CHANGES_REQUESTED'},{commit_id:sha('c')},{user:f.pr.user}]){
-  const x=structuredClone(f);Object.assign(x.reviews[1],patch);assert.equal(validateIndependentAiReview(x).conclusion,'fail');
+test('independent AI gate accepts COMMENTED or APPROVED reports without requiring a human or non-author Review',()=>{
+ const f=aiFixture();assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ assert(!f.reviews.some(review=>review.state==='APPROVED'));
+ const approved=structuredClone(f);approved.pr.user.id=337201427;approved.reviews[0].state='APPROVED';assert.equal(validateIndependentAiReview(approved).conclusion,'pass');
+ for(const patch of [{state:'DISMISSED'},{state:'CHANGES_REQUESTED'},{state:'PENDING'},{commit_id:sha('c')}]){
+  const x=structuredClone(f);Object.assign(x.reviews[0],patch);assert.equal(validateIndependentAiReview(x).conclusion,'fail');
  }
- f.pr.user={...f.reviews[0].user};assert.equal(validateIndependentAiReview(f).conclusion,'fail');
- delete f.pr.user;assert.equal(validateIndependentAiReview(f).conclusion,'fail');
 });
 
 test('independent AI gate never substitutes a PR body, artifact declaration or arbitrary review text for a signed report',()=>{
@@ -132,8 +147,14 @@ test('independent AI gate rejects later trusted change requests and later fail/m
  }
  const f=aiFixture();f.reviews.push({...f.reviews[0],id:101,state:'CHANGES_REQUESTED',user:{id:999,login:'untrusted'},body:'No'});
  assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ f.pr.user.id=337201427;
  f.reviews.push({...f.reviews[0],id:99,submitted_at:'2026-11-17T09:59:00Z',state:'CHANGES_REQUESTED',body:'Earlier issue'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail','COMMENTED metadata does not clear a real native change request');
+ f.reviews.push({...f.reviews[0],id:102,submitted_at:'2026-11-17T10:02:00Z',state:'APPROVED',body:'Actually resolved the earlier native request'});
  assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ const commentOnly=aiFixture();commentOnly.reviews.unshift({...commentOnly.reviews[0],id:99,
+  submitted_at:'2026-11-17T09:59:00Z',body:aiBody({...commentOnly.report,conclusion:'fail',unresolved:['old AI finding']})});
+ assert.equal(validateIndependentAiReview(commentOnly).conclusion,'pass','a new real AI pass can replace an older COMMENTED failure without human approval');
 });
 
 function aiDependency(f){

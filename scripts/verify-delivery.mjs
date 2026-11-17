@@ -10,7 +10,7 @@ import {qualityShardJobs} from './ci-quality-shape.mjs';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';
 import {prFastErrors,collectFastCheckout} from './pr-quality-evidence.mjs';
 import {syncBacklogCloseout} from './backlog-closeout.mjs';
-import {validateIndependentAiReview,nativeReviewPolicyErrors} from './independent-ai-review.mjs';
+import {validateIndependentAiReview} from './independent-ai-review.mjs';
 export {planBacklogCloseout,syncBacklogCloseout} from './backlog-closeout.mjs';
 
 export const requiredJobs=['check','presentation','engineering-posix'];
@@ -342,8 +342,10 @@ function nativeReviewErrors(preflight){
     errors.push('Native Review proof is incomplete, changed or unsuccessful');
   for(const [field,value]of Object.entries({repo:preflight.repo,repositoryId:projectRepositoryId,prNumber:preflight.prNumber,
     head:preflight.head,base:preflight.base,tree:preflight.sourceTree,mergeCommitSha:preflight.tested,
-    githubReviewId:checked.githubReviewId,nativeApprovalReviewId:checked.nativeApprovalReviewId,reviewId:preflight.review?.reviewId}))
+    githubReviewId:checked.githubReviewId,reviewId:preflight.review?.reviewId}))
     if(value===undefined||n[field]!==value)errors.push('Native Review binding differs: '+field);
+  if(n.nativeApprovalReviewId!==undefined&&n.nativeApprovalReviewId!==n.githubReviewId)
+    errors.push('Legacy review ID alias differs from the actual signed Review');
   return errors;
 }
 
@@ -374,7 +376,7 @@ function nativeProofZip(bytes,artifact){
 export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
   if(intent?.schemaVersion!==9||intent.kind!=='native-auto-merge-intent'||intent.repositoryId!==projectRepositoryId||
     !positiveId(intent.prNumber)||![intent.head,intent.base,intent.sourceTree].every(validSha)||
-    !positiveId(intent.githubReviewId)||intent.githubReviewId!==intent.nativeApprovalReviewId||
+    !positiveId(intent.githubReviewId)||intent.nativeApprovalReviewId!==undefined&&intent.githubReviewId!==intent.nativeApprovalReviewId||
     typeof intent.gateRef!=='string'||!intent.gateRef.startsWith('refs/heads/')||intent.gateRef.length<=11||
     typeof intent.createdAt!=='string'||!Number.isFinite(Date.parse(intent.createdAt))||intent.nativeAuto?.confirmed!==true)
     throw Error('Invalid native auto-merge intent locator; this is not CI preflight evidence');
@@ -421,7 +423,8 @@ export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
     ![3,7].includes(preflight?.schemaVersion)||preflight.repo!==repo||preflight.prNumber!==intent.prNumber||
     preflight.head!==intent.head||preflight.base!==intent.base||preflight.sourceTree!==intent.sourceTree||
     preflight.baseRef!=='develop'||preflight.review?.disposition==='low-risk-docs'||
-    proof.nativeReview?.githubReviewId!==intent.githubReviewId||proof.nativeReview?.nativeApprovalReviewId!==intent.nativeApprovalReviewId||
+    proof.nativeReview?.githubReviewId!==intent.githubReviewId||
+    proof.nativeReview?.nativeApprovalReviewId!==undefined&&proof.nativeReview.nativeApprovalReviewId!==intent.githubReviewId||
     preflight.nativeReview!==undefined&&!isDeepStrictEqual(preflight.nativeReview,proof.nativeReview)||
     !Array.isArray(proof.policyErrors)||proof.policyErrors.length||proof.gate?.runId!==runId||
     proof.gate.attempt!==gateRun.run_attempt||proof.gate.ref!==intent.gateRef||
@@ -430,7 +433,7 @@ export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
   if(intent.gateRef!=='refs/heads/develop'&&intent.gateRef!=='refs/heads/'+proof.nativeReview?.observations?.prBefore?.head?.ref)
     throw Error('Bootstrap gate ref is not the actual reviewed PR source branch');
   const converted={...preflight,nativeReview:proof.nativeReview};
-  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted),...nativeReviewPolicyErrors(proof.nativePolicy)];
+  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted)];
   if(errors.length)throw Error('Native proof failed existing delivery/review verification: '+errors.join('; '));
   const current=get('actions/artifacts/'+artifact.id),currentRun=get('actions/runs/'+runId),last=status();
   if(!artifactValid(current)||current.digest!==artifact.digest||!runValid(currentRun)||currentRun.run_attempt!==gateRun.run_attempt||

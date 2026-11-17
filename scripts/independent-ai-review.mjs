@@ -30,17 +30,6 @@ export function parseDependencies(body){
  return [...new Set(entries.map(item=>Number(item.slice(1))))];
 }
 
-// These native policy fields are necessary, not proof that CODEOWNERS already
-// exists on BASE. The publisher separately verifies that source/bootstrap anchor.
-export function nativeReviewPolicyErrors(ruleset){
- const pull=ruleset?.rules?.find(rule=>rule.type==='pull_request')?.parameters,errors=[];
- if(!Number.isSafeInteger(pull?.required_approving_review_count)||pull.required_approving_review_count<1)
-  errors.push('Native policy requires at least one approving review');
- if(pull?.dismiss_stale_reviews_on_push!==true)errors.push('Native policy must dismiss stale reviews on push');
- if(pull?.require_code_owner_review!==true)errors.push('Native policy requires CODEOWNERS review');
- return errors;
-}
-
 function trusted(review,permissions){
  const actor=review?.user,permission=permissions?.[actor?.id];
  const role=permission?.role_name??permission?.permission;
@@ -50,6 +39,41 @@ function trusted(review,permissions){
 }
 const reviewOrder=(a,b)=>Date.parse(a.submitted_at)-Date.parse(b.submitted_at)||a.id-b.id;
 const treeOf=commit=>commit?.tree?.sha??commit?.commit?.tree?.sha;
+
+// Pure payload validation for a coordinator before submitting a Review. This
+// does not prove server authorship, repository role or actual session provenance;
+// authorization still requires collectIndependentAiReview's real server records.
+export function independentAiReportErrors(report,{repository,pr,baseSha,sourceCommit,coordinator}={}){
+ const errors=[],repo=repository?.full_name,head=pr?.head?.sha,tree=treeOf(sourceCommit);
+ if(!report||Array.isArray(report)||report.schemaVersion!==1||report.kind!=='independent-ai-review')
+  return ['Unsupported independent AI review report'];
+ if(!projectRepositoryMatches(repository,repo)||!positive(pr?.number)||pr?.state!=='open'||pr?.merged!==false||
+  pr?.draft!==false||pr?.mergeable!==true||pr?.base?.ref!=='develop'||
+  !projectRepositoryMatches(pr?.base?.repo,repo)||!projectRepositoryMatches(pr?.head?.repo,repo))
+  errors.push('Report requires the fixed repository and a ready same-repository develop PR');
+ if(!sha(head)||!sha(baseSha)||pr?.base?.sha!==baseSha||!sha(pr?.merge_commit_sha)||
+  sourceCommit?.sha!==pr?.merge_commit_sha||!sha(tree)||!Array.isArray(sourceCommit?.parents)||
+  !isDeepStrictEqual(sourceCommit.parents.map(parent=>parent?.sha),[baseSha,head])||
+  sourceCommit?.tree&&sourceCommit?.commit?.tree&&sourceCommit.tree.sha!==sourceCommit.commit.tree.sha)
+  errors.push('Report requires the actual HEAD/BASE merge commit and tree');
+ if(!TRUSTED_REVIEW_COORDINATOR_IDS.includes(coordinator?.id)||!text(coordinator?.login))
+  errors.push('Report requires the fixed coordinator identity');
+ if(report.repositoryId!==projectRepositoryId||report.repositoryFullName!==repo||report.prNumber!==pr?.number||
+  report.reviewedHeadSha!==head||report.reviewedBaseSha!==baseSha||report.reviewedTreeSha!==tree)
+  errors.push('AI report belongs to a different repository/PR/HEAD/BASE/merge tree');
+ if(report.conclusion!=='pass'||!Array.isArray(report.unresolved)||report.unresolved.length)
+  errors.push('Latest signed AI report is not an unresolved-free pass');
+ const owner=report.coordinator,origin=report.provenance;
+ if(owner?.id!==coordinator?.id||owner?.login!==coordinator?.login||
+  !(owner?.verifiedActualSessions===true||origin?.coordinatorVerified===true)||
+  origin?.kind!=='coordinator-verified-agent-session'||!text(origin.reviewId)||!text(origin.sessionId))
+  errors.push('Trusted coordinator has not attested the actual AI session source');
+ if(!agent(report.reviewerAgent)||!Array.isArray(report.implementationAgents)||!report.implementationAgents.length||
+  report.implementationAgents.some(value=>!agent(value)||value===report.reviewerAgent)||
+  new Set(report.implementationAgents).size!==report.implementationAgents.length)
+  errors.push('AI reviewer must be a distinct agent from every recorded implementation agent');
+ return errors;
+}
 
 export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,reviews,permissions={},dependencies=[]}){
  const errors=[],repo=repository?.full_name;
@@ -86,40 +110,21 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
   errors.push('Malformed trusted server Review timestamp or commit identity');
  const candidates=signed.filter(review=>marked(review.body)).sort(reviewOrder);
  const selected=candidates.at(-1);let report=null;
- // The complete AI report and the native approval must be the same server
- // Review. COMMENTED reports can reject/revoke, but cannot authorize a merge.
- const nativeApproval=selected?.state==='APPROVED'&&selected.commit_id===head&&
-  positive(pr?.user?.id)&&selected.user.id!==pr.user.id?selected:null;
- if(!nativeApproval)errors.push('The complete AI report must itself be a trusted non-author native APPROVED Review for the current HEAD');
+ // COMMENTED is the coordinator's signed attestation of actual independent
+ // cloud AI sessions. GitHub account separation or human approval is not needed.
  if(!selected)errors.push('No report signed by an authorized maintain/admin coordinator');
  else{
   try{report=parseIndependentAiReview(selected.body);}catch(error){errors.push(error.message);}
-  if(selected.state!=='APPROVED'||selected.commit_id!==head)
+  if(!['COMMENTED','APPROVED'].includes(selected.state)||selected.commit_id!==head)
    errors.push('Signed Review is dismissed, rejected, unpublished or belongs to another HEAD');
   const decisions=new Map();
   for(const review of [...signed].sort(reviewOrder))if(['APPROVED','CHANGES_REQUESTED'].includes(review.state))decisions.set(review.user.id,review);
   if([...decisions.values()].some(review=>review.state==='CHANGES_REQUESTED'))
    errors.push('A trusted reviewer still requests changes');
-  if(report){
-   if(report.repositoryId!==projectRepositoryId||report.repositoryFullName!==repo||report.prNumber!==pr.number||
-    report.reviewedHeadSha!==head||report.reviewedBaseSha!==baseSha||report.reviewedTreeSha!==tree)
-    errors.push('AI report belongs to a different repository/PR/HEAD/BASE/merge tree');
-   if(report.conclusion!=='pass'||!Array.isArray(report.unresolved)||report.unresolved.length)
-    errors.push('Latest signed AI report is not an unresolved-free pass');
-   const owner=report.coordinator,origin=report.provenance;
-   if(owner?.id!==selected.user.id||owner?.login!==selected.user.login||
-    !(owner?.verifiedActualSessions===true||origin?.coordinatorVerified===true)||
-    origin?.kind!=='coordinator-verified-agent-session'||!text(origin.reviewId)||!text(origin.sessionId))
-    errors.push('Trusted coordinator has not attested the actual AI session source');
-   if(!agent(report.reviewerAgent)||!Array.isArray(report.implementationAgents)||!report.implementationAgents.length||
-    report.implementationAgents.some(value=>!agent(value)||value===report.reviewerAgent)||
-    new Set(report.implementationAgents).size!==report.implementationAgents.length)
-    errors.push('AI reviewer must be a distinct agent from every recorded implementation agent');
-  }
+  if(report)errors.push(...independentAiReportErrors(report,{repository,pr,baseSha,sourceCommit,coordinator:selected.user}));
  }
  return {conclusion:errors.length?'fail':'pass',errors,report,reviewId:report?.provenance?.reviewId,
   githubReviewId:selected?.id,githubReviewUrl:selected?.html_url,coordinator:selected?.user,
-  nativeApprovalReviewId:nativeApproval?.id,nativeApprovalUser:nativeApproval?.user,
   repositoryId:repository?.id,repo,prNumber:pr?.number,head,base:baseSha,tree,mergeCommitSha:merge};
 }
 

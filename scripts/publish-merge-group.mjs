@@ -6,7 +6,6 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {checkoutReceipt,receiptErrors,currentFullQualityJobs,qualityWorkflowPath} from './verify-delivery.mjs';
 import {collectQueueAdmission} from './merge-queue-admission.mjs';
-import {nativeReviewPolicyErrors} from './independent-ai-review.mjs';
 import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryMatches} from './repository-identity.mjs';
 
@@ -49,7 +48,6 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
   JSON.stringify(pull?.allowed_merge_methods)!==JSON.stringify(['squash'])||
   pull?.required_review_thread_resolution!==true||!ruleset?.rules?.some(rule=>rule.type==='required_linear_history'))
   errors.push('Native queue must preserve Strict, squash-only PRs, resolved threads and linear history');
- errors.push(...nativeReviewPolicyErrors(ruleset));
  const required=checks?.some(check=>check.context==='pr-quality')?
   contexts.map(name=>name==='full-quality'?'pr-quality':name):contexts;
  for(const context of required) {

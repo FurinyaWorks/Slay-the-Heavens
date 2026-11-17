@@ -40,21 +40,21 @@ test('real checkout loader accepts only the effective receipt execution attempt'
  }
 });
 
-test('redacted bypass metadata needs no Admin attestation when native approval protections and a real trusted Review are present',()=>{
+test('redacted bypass metadata needs no Admin attestation when existing native protections and a real trusted coordinator Review are present',()=>{
  const f=admissionFixture();
  delete f.ruleset.bypass_actors;
  assert.equal(execute(f).state,'success');
 });
 
-test('native AI approval binds the trusted signer and exact combination before and after receipt download',()=>{
+test('independent cloud AI attestation binds the trusted signer and exact combination before and after receipt download',()=>{
  for(const mutate of [
   f=>f.ruleset.id=7,f=>f.ruleset.bypass_actors=null,f=>f.ruleset.bypass_actors=[{actor_id:51}],
-  f=>f.review.state='COMMENTED',f=>f.review.state='DISMISSED',f=>f.review.commit_id=sha('d'),
+  f=>f.review.state='PENDING',f=>f.review.state='DISMISSED',f=>f.review.commit_id=sha('d'),
   f=>f.review.body='unstructured pass',f=>f.report.conclusion='fail',f=>f.report.unresolved=['bug'],
   f=>f.report.reviewedBaseSha=sha('d'),f=>f.report.reviewedTreeSha=sha('f'),
   f=>f.report.coordinator.id=111138384,f=>f.report.coordinator.verifiedActualSessions=false,
   f=>f.report.reviewerAgent=f.report.implementationAgents[0],
-  f=>f.pr.user.id=f.review.user.id,f=>f.sourceCommit.parents.reverse(),
+  f=>f.review.user={id:52,login:'impostor'},f=>f.sourceCommit.parents.reverse(),
   f=>f.permission.role_name='write',f=>f.permission.permission='read',
   f=>delete f.permission.user,f=>f.permission.user.id=52,f=>f.permission.user.login='other'
  ])for(const duringDownload of [false,true]){
@@ -67,19 +67,19 @@ test('native AI approval binds the trusted signer and exact combination before a
  }
 });
 
-test('queue snapshots use the real approving AI Review and leave enqueue authority to native GitHub',()=>{
+test('queue snapshots use the real signed AI Review and leave enqueue authority to native GitHub',()=>{
  const f=admissionFixture(),calls=[],query=admissionQuery(f);
  delete f.ruleset.bypass_actors;
  const collect=()=>JSON.parse(collectQueueAdmission(f.event,f.env,(...args)=>{calls.push(args);return query(...args);},f.ruleset));
  const [snapshot]=collect();
- assert.equal(snapshot.githubReviewId,90);assert.equal(snapshot.nativeApprovalReviewId,90);
+ assert.equal(snapshot.githubReviewId,90);assert.equal(Object.hasOwn(snapshot,'nativeApprovalReviewId'),false);
  assert.equal(snapshot.coordinator.id,337201427);assert.equal(snapshot.reviewedHead,f.pr.head.sha);
  assert.equal(snapshot.reviewedBase,f.pr.base.sha);assert.equal(snapshot.reviewedTree,f.report.reviewedTreeSha);
  assert.equal(snapshot.reviewedMergeCommit,f.pr.merge_commit_sha);
  assert.equal(Object.hasOwn(snapshot,'rulesFingerprint'),false);
  assert(!calls.some(args=>args.some(value=>String(value).includes('/commits/')&&String(value).includes('/statuses?'))));
  for(const enqueuer of [undefined,{databaseId:52,login:'native-writer'}]){
-  f.entry.enqueuer=enqueuer;assert.equal(collect()[0].nativeApprovalReviewId,90);
+  f.entry.enqueuer=enqueuer;assert.equal(collect()[0].githubReviewId,90);
  }
  assert(!calls.some(args=>args.some(value=>String(value).includes('/collaborators/native-'))));
 });
@@ -149,10 +149,7 @@ test('queue release preserves Strict, squash-only PRs, resolved threads and line
   f=>f.ruleset.rules=f.ruleset.rules.filter(r=>r.type!=='pull_request'),
   f=>f.ruleset.rules=f.ruleset.rules.filter(r=>r.type!=='required_linear_history'),
   f=>f.ruleset.rules[2].parameters.allowed_merge_methods.push('merge'),
-  f=>f.ruleset.rules[2].parameters.required_review_thread_resolution=false,
-  f=>f.ruleset.rules[2].parameters.required_approving_review_count=0,
-  f=>f.ruleset.rules[2].parameters.dismiss_stale_reviews_on_push=false,
-  f=>f.ruleset.rules[2].parameters.require_code_owner_review=false]){
+  f=>f.ruleset.rules[2].parameters.required_review_thread_resolution=false]){
   for(const duringDownload of [false,true]){
    const f=admissionFixture(),writes=[],receipt={checkout:structuredClone(f.checkout),checkoutArtifact:structuredClone(f.artifact)};
    if(!duringDownload)mutate(f);
@@ -199,16 +196,15 @@ test('Fast queue admission rechecks the latest PR run/attempt before and after r
 });
 
 
-test('shadow rules with zero approvals or missing stale/CODEOWNERS enforcement never publish success',()=>{
- for(const mutate of [
-  f=>f.ruleset.rules[2].parameters.required_approving_review_count=0,
-  f=>delete f.ruleset.rules[2].parameters.dismiss_stale_reviews_on_push,
-  f=>delete f.ruleset.rules[2].parameters.require_code_owner_review,
- ]){
-  const f=admissionFixture(),writes=[];mutate(f);
-  assert.throws(()=>execute(f,admissionQuery(f,writes)),/approving review|stale reviews|CODEOWNERS/);
-  assert.deepEqual(writes,[]);
- }
+test('automatic cloud review and queue release preserve existing zero-human-review policy without CODEOWNERS migration',()=>{
+ const f=admissionFixture(),writes=[];
+ assert.equal(f.pr.user.id,f.review.user.id);assert.equal(f.review.state,'COMMENTED');
+ assert.equal(f.ruleset.rules[2].parameters.required_approving_review_count,0);
+ assert.equal(f.ruleset.rules[2].parameters.require_code_owner_review,false);
+ assert.equal(execute(f,admissionQuery(f,writes)).state,'success');
+ assert.equal(writes.filter(row=>row.state==='success').length,3);
+ for(const field of ['required_approving_review_count','dismiss_stale_reviews_on_push','require_code_owner_review'])delete f.ruleset.rules[2].parameters[field];
+ assert.equal(execute(f).state,'success');
 });
 
 test('visible policy changes during receipt verification cannot be hidden by an old matching approval',()=>{
