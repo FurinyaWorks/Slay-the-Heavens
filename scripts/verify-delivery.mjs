@@ -10,7 +10,7 @@ import {qualityShardJobs} from './ci-quality-shape.mjs';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';
 import {prFastErrors,collectFastCheckout} from './pr-quality-evidence.mjs';
 import {syncBacklogCloseout} from './backlog-closeout.mjs';
-import {validateIndependentAiReview,cloudGateSourceErrors} from './independent-ai-review.mjs';
+import {validateIndependentAiReview,cloudGateSourceErrors,collectCloudGateSource} from './independent-ai-review.mjs';
 export {planBacklogCloseout,syncBacklogCloseout} from './backlog-closeout.mjs';
 
 export const requiredJobs=['check','presentation','engineering-posix'];
@@ -429,13 +429,16 @@ export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
     throw Error('Native proof is shadow, unsuccessful or belongs to a different exact preflight');
   const converted={...preflight,nativeReview:proof.nativeReview};
   const sourceContext={repo,head:intent.head,base:intent.base,ref:intent.gateRef,bootstrap:proof.gate.bootstrap,
-    coordinator:proof.nativeReview?.coordinator,reviewedBranch:proof.nativeReview?.observations?.prBefore?.head?.ref};
-  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted),...cloudGateSourceErrors(gateRun,sourceContext)];
+    coordinator:proof.nativeReview?.coordinator,reviewedBranch:proof.nativeReview?.observations?.prBefore?.head?.ref,
+    installBaseSha:proof.nativeReview?.report?.installBaseSha};
+  const source=collectCloudGateSource({api:path=>JSON.parse(query('api',path)),run:gateRun,...sourceContext});
+  sourceContext.installation=source.observations.installation;
+  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted),...source.errors];
   if(errors.length)throw Error('Native proof failed existing delivery/review verification: '+errors.join('; '));
   const current=get('actions/artifacts/'+artifact.id),currentRun=get('actions/runs/'+runId),last=status();
   if(!artifactValid(current)||current.digest!==artifact.digest||!runValid(currentRun)||cloudGateSourceErrors(currentRun,sourceContext).length||currentRun.run_attempt!==gateRun.run_attempt||
     last.status.id!==first.status.id||!isDeepStrictEqual(last,first))throw Error('Native review artifact, gate attempt or latest status changed during download');
-  return {...converted,nativeProof:{artifact,gateRun,status:first.status}};
+  return {...converted,nativeProof:{artifact,gateRun,status:first.status,sourceObservations:source.observations}};
 }
 function gh(...args) {
   const result=spawnSync('gh',args,{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});

@@ -3,6 +3,12 @@ import {join} from 'node:path';
 import {currentFullQualityJobs,qualityWorkflowPath} from '../../scripts/verify-delivery.mjs';
 import {INDEPENDENT_AI_REVIEW_MARKER,validateIndependentAiReview} from '../../scripts/independent-ai-review.mjs';
 const sha=c=>c.repeat(40),repo='FurinyaWorks/Slay-the-Abyss';
+// Complete immutable Git object metadata returned by the actual tree endpoints.
+export function uninstalledReviewBase(base){
+ return {commit:{sha:base,tree:{sha:sha('6')}},
+  root:{sha:sha('6'),truncated:false,tree:[{path:'scripts',mode:'040000',type:'tree',sha:sha('7')}]},
+  scripts:{sha:sha('7'),truncated:false,tree:[{path:'arm-auto-merge.mjs',mode:'100644',type:'blob',sha:sha('8')}]}};
+}
 export function admissionFixture(repoName=repo,base=sha('b')){
  const head=sha('a'),prHead=sha('c');
  const env={GITHUB_EVENT_NAME:'merge_group',GITHUB_REPOSITORY:repoName,
@@ -93,6 +99,11 @@ export function admissionQuery(f,writes=[]){
    const page=Number(new URL('https://api.github.com/'+url).searchParams.get('page'));
    const reviews=f.reviews??[{...f.review,body:f.review.body??INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(f.report)}];
    return JSON.stringify(reviews.slice((page-1)*100,page*100));
+  }
+  if(f.installation){
+   if(url.endsWith('/git/commits/'+f.pr.base.sha))return JSON.stringify(f.installation.commit);
+   if(url.endsWith('/git/trees/'+f.installation.commit.tree.sha))return JSON.stringify(f.installation.root);
+   if(url.endsWith('/git/trees/'+f.installation.root.tree.find(row=>row.path==='scripts')?.sha))return JSON.stringify(f.installation.scripts);
   }
   if(url.endsWith('/git/commits/'+f.pr.merge_commit_sha))return JSON.stringify(f.sourceCommit);
   if(url.endsWith('/git/ref/heads/develop'))return JSON.stringify({ref:'refs/heads/develop',object:{type:'commit',sha:f.event.merge_group.base_sha}});

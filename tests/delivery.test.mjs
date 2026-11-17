@@ -869,7 +869,8 @@ test('documentation waiver rejects agent instruction entrypoints in every allowe
 import {createHash} from 'node:crypto';
 import {deflateRawSync} from 'node:zlib';
 import {currentFastQualityJobs} from '../scripts/pr-quality-evidence.mjs';
-import {validateIndependentAiReview,INDEPENDENT_AI_REVIEW_MARKER,CLOUD_GATE_BOOTSTRAP_BASE,cloudGateSourceErrors} from '../scripts/independent-ai-review.mjs';
+import {validateIndependentAiReview,INDEPENDENT_AI_REVIEW_MARKER,cloudGateSourceErrors,collectCloudGateSource} from '../scripts/independent-ai-review.mjs';
+import {uninstalledReviewBase} from './helpers/merge-queue-admission.mjs';
 function nativeDeliveryFixture(base=sha('b')){
  const e=mergedEvidence(3),p=e.preflight,repo='FurinyaWorks/Slay-the-Heavens',repository={id:1429751262,full_name:repo};
  if(base!==p.base){p.base=base;p.targetBeforeSha=base;p.targetAfterSha=base;p.parents[0]=base;
@@ -921,6 +922,9 @@ function nativeProofQuery(f,adjust=(_path,value)=>value){
   }
   const path=args.at(-1);let value;
   if(path==='repositories/1429751262')value=f.repository;
+  else if(f.installation&&path.endsWith('/git/commits/'+f.intent.base))value=f.installation.commit;
+  else if(f.installation&&path.endsWith('/git/trees/'+f.installation.commit.tree.sha))value=f.installation.root;
+  else if(f.installation&&path.endsWith('/git/trees/'+f.installation.root.tree.find(row=>row.path==='scripts')?.sha))value=f.installation.scripts;
   else if(path.includes('/statuses?'))value=[[f.status]];
   else if(path.endsWith('/actions/artifacts/70'))value=f.artifact;
   else if(path.endsWith('/actions/runs/50'))value=f.gateRun;
@@ -1009,17 +1013,19 @@ test('native proof refuses immutable ID/digest replacement and superseding statu
   path.endsWith('/artifacts?per_page=100')?[{artifacts:[f.artifact,{...f.artifact,id:71}]}]:value)),/ambiguous|replaced/);
 });
 
-function bootstrapDeliveryFixture(base=CLOUD_GATE_BOOTSTRAP_BASE){
+function bootstrapDeliveryFixture(base=sha('b')){
  const f=nativeDeliveryFixture(base);f.intent.gateRef='refs/heads/feat/native-proof';
+ f.installation=uninstalledReviewBase(base);f.proof.nativeReview.report.installBaseSha=base;
+ f.proof.nativeReview.observations.reviews[0].body=INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(f.proof.nativeReview.report);
  f.proof.gate.ref=f.intent.gateRef;f.proof.gate.bootstrap=true;f.gateRun.head_branch='feat/native-proof';f.gateRun.head_sha=f.intent.head;
  f.artifact.workflow_run.head_sha=f.intent.head;
  f.gateRun.actor={id:f.proof.nativeReview.coordinator.id};f.gateRun.triggering_actor={id:f.proof.nativeReview.coordinator.id};
  return f;
 }
-test('native bootstrap proof permits only the fixed first BASE and actual coordinator-dispatched reviewed source',()=>{
+test('native bootstrap proof permits an explicitly reviewed uninstalled BASE and actual coordinator-dispatched source',()=>{
  const f=bootstrapDeliveryFixture();assert.equal(delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)).head,f.intent.head);
- const arbitrary=bootstrapDeliveryFixture(sha('b'));
- assert.throws(()=>delivery.resolveNativePreflight(arbitrary.intent,nativeProofQuery(arbitrary)),/Bootstrap cloud review/);
+ const advanced=bootstrapDeliveryFixture(sha('f'));
+ assert.equal(delivery.resolveNativePreflight(advanced.intent,nativeProofQuery(advanced)).base,sha('f'));
  for(const mutate of [
   f=>delete f.gateRun.actor,f=>delete f.gateRun.triggering_actor,
   f=>f.gateRun.actor.id=111138384,f=>f.gateRun.triggering_actor.id=111138384,
@@ -1111,4 +1117,44 @@ test('native intent needs no human approval policy and accepts an old review-ID 
  assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),/intent locator/);
  f.intent.nativeApprovalReviewId=100;f.proof.nativeReview.nativeApprovalReviewId=101;
  assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),/different exact preflight/);
+});
+
+test('explicit install authorization and complete immutable Git trees are required; an installed module of any type blocks bootstrap',()=>{
+ const mutations=[
+  f=>delete f.proof.nativeReview.report.installBaseSha,f=>f.proof.nativeReview.report.installBaseSha=sha('f'),
+  f=>f.proof.nativeReview.report.installBaseSha='invalid',
+  f=>f.installation.commit.sha=sha('f'),f=>f.installation.root.sha=sha('f'),f=>f.installation.scripts.sha=sha('f'),
+  f=>f.installation.root.truncated=true,f=>f.installation.scripts.truncated=true,
+  f=>delete f.installation.root.truncated,f=>delete f.installation.scripts.tree,
+  f=>f.installation.root.tree.push({...f.installation.root.tree[0]}),
+  f=>{f.installation.root.tree[0].mode='120000';f.installation.root.tree[0].type='blob';},
+  f=>delete f.installation.scripts.tree[0].sha
+ ];
+ for(const [mode,type]of [['100644','blob'],['100755','blob'],['120000','blob'],['160000','commit'],['040000','tree']])
+  mutations.push(f=>f.installation.scripts.tree.push({path:'independent-ai-review.mjs',mode,type,sha:sha('9')}));
+ for(const mutate of mutations){
+  const f=bootstrapDeliveryFixture();mutate(f);
+  f.proof.nativeReview.observations.reviews[0].body=INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(f.proof.nativeReview.report);
+  assert.throws(()=>delivery.resolveNativePreflight(f.intent,nativeProofQuery(f)),undefined,String(mutate));
+ }
+ for(const suffix of ['/git/commits/','/git/trees/']){
+  const f=bootstrapDeliveryFixture(),normal=nativeProofQuery(f);
+  assert.throws(()=>delivery.resolveNativePreflight(f.intent,(...args)=>{
+   if(args.at(-1).includes(suffix))throw Error('HTTP 403 Git metadata unavailable');return normal(...args);
+  }),/403/);
+ }
+ const normal=nativeDeliveryFixture();delivery.resolveNativePreflight(normal.intent,nativeProofQuery(normal));
+ assert(!normal.calls.some(args=>args.at(-1).includes('/git/')),'normal mode does not add Git object reads');
+});
+test('shared source collector proves absence from authenticated immutable objects and fails closed on API errors',()=>{
+ const f=bootstrapDeliveryFixture(),calls=[],objects=f.installation;
+ const api=path=>{calls.push(path);if(path.endsWith('/git/commits/'+f.intent.base))return objects.commit;
+  if(path.endsWith('/git/trees/'+objects.commit.tree.sha))return objects.root;
+  if(path.endsWith('/git/trees/'+objects.root.tree[0].sha))return objects.scripts;throw Error('Unexpected Git read');};
+ const context={run:f.gateRun,repo:f.intent.repo,head:f.intent.head,base:f.intent.base,ref:f.intent.gateRef,bootstrap:true,
+  coordinator:f.proof.nativeReview.coordinator,reviewedBranch:'feat/native-proof',installBaseSha:f.intent.base};
+ const result=collectCloudGateSource({api,...context});assert.deepEqual(result.errors,[]);assert.equal(calls.length,3);
+ assert.deepEqual(result.observations.installation,objects);
+ assert(collectCloudGateSource({...context,api:()=>{throw Error('HTTP403');}}).errors.length);
+ assert(collectCloudGateSource({...context,api:async()=>objects.commit}).errors.length);
 });

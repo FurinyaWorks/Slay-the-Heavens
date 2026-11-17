@@ -6,8 +6,7 @@ import {tmpdir} from 'node:os';
 import {main} from '../scripts/publish-merge-group.mjs';
 import {collectQueueAdmission} from '../scripts/merge-queue-admission.mjs';
 
-import {admissionFixture,admissionQuery} from './helpers/merge-queue-admission.mjs';
-import {CLOUD_GATE_BOOTSTRAP_BASE} from '../scripts/independent-ai-review.mjs';
+import {admissionFixture,admissionQuery,uninstalledReviewBase} from './helpers/merge-queue-admission.mjs';
 import {queueRulesFingerprint} from '../scripts/merge-queue-policy.mjs';
 const sha=c=>c.repeat(40);
 function execute(f,query=admissionQuery(f),options){
@@ -245,16 +244,20 @@ test('queue release consumes the real immutable PR source-gate proof before publ
   }}),undefined,String(mutate));assert.deepEqual(writes,[],String(mutate));
  }
 });
-test('queue source proof bootstrap is bound to the sole fixed BASE and the actual attesting dispatcher',()=>{
- function fixture(base=CLOUD_GATE_BOOTSTRAP_BASE){
+test('queue source proof bootstrap requires explicit uninstalled BASE authorization and the actual attesting dispatcher',()=>{
+ function fixture(base=sha('b')){
   const f=admissionFixture('FurinyaWorks/Slay-the-Heavens',base);
+  f.report.installBaseSha=base;f.proof.nativeReview.report.installBaseSha=base;f.installation=uninstalledReviewBase(base);
+  f.proof.nativeReview.observations.reviews[0].body='<!-- independent-ai-review:v1 -->\n'+JSON.stringify(f.proof.nativeReview.report);
   f.proof.gate.ref='refs/heads/'+f.pr.head.ref;f.proof.gate.bootstrap=true;
   f.proofRun.head_branch=f.pr.head.ref;f.proofRun.head_sha=f.pr.head.sha;f.proofArtifact.workflow_run.head_sha=f.pr.head.sha;
   f.proofRun.actor={id:f.review.user.id};f.proofRun.triggering_actor={id:f.review.user.id};return f;
  }
  assert.equal(execute(fixture()).state,'success');
- const arbitrary=fixture(sha('b'));assert.throws(()=>execute(arbitrary),/Bootstrap cloud review/);
- for(const mutate of [f=>delete f.proofRun.actor,f=>delete f.proofRun.triggering_actor,
+ assert.equal(execute(fixture(sha('f'))).state,'success');
+ for(const mutate of [f=>delete f.proof.nativeReview.report.installBaseSha,
+  f=>f.installation.scripts.tree.push({path:'independent-ai-review.mjs',mode:'120000',type:'blob',sha:sha('9')}),
+  f=>delete f.proofRun.actor,f=>delete f.proofRun.triggering_actor,
   f=>f.proofRun.actor.id=111138384,f=>f.proofRun.triggering_actor.id=111138384,
   f=>f.proofRun.event='workflow_run',f=>f.proofRun.head_branch='other']){
   const f=fixture(),writes=[];mutate(f);assert.throws(()=>execute(f,admissionQuery(f,writes)));assert.deepEqual(writes,[]);

@@ -42,8 +42,7 @@ const treeOf=commit=>commit?.tree?.sha??commit?.commit?.tree?.sha;
 
 // Source trust is checked by both the running producer and its consumers.
 // Completion/attempt/artifact checks belong to the consumer, not this helper.
-export const CLOUD_GATE_BOOTSTRAP_BASE='c2409ad750c15124b7b843c6bbfa5b222537cb75';
-export function cloudGateSourceErrors(run,{repo,head,base,ref,bootstrap,coordinator,reviewedBranch}={}){
+export function cloudGateSourceErrors(run,{repo,head,base,ref,bootstrap,coordinator,reviewedBranch,installBaseSha,installation}={}){
  const errors=[];
  if(!projectRepositoryMatches(run?.repository,repo)||run?.path!=='.github/workflows/licenses.yml'||
   !['workflow_dispatch','workflow_run'].includes(run?.event)||!sha(head)||!sha(base)||
@@ -54,13 +53,51 @@ export function cloudGateSourceErrors(run,{repo,head,base,ref,bootstrap,coordina
   if(ref!=='refs/heads/develop'||run?.head_sha!==base)
    errors.push('Normal cloud review gate must execute the actual develop BASE source');
  }else if(bootstrap===true){
-  if(base!==CLOUD_GATE_BOOTSTRAP_BASE||run?.event!=='workflow_dispatch'||!text(reviewedBranch)||
+  if(!sha(installBaseSha)||installBaseSha!==base||run?.event!=='workflow_dispatch'||!text(reviewedBranch)||
    ref!=='refs/heads/'+reviewedBranch||ref==='refs/heads/develop'||run?.head_sha!==head||
    !TRUSTED_REVIEW_COORDINATOR_IDS.includes(coordinator?.id)||run?.actor?.id!==coordinator.id||
    run?.triggering_actor?.id!==coordinator.id)
-   errors.push('Bootstrap cloud review gate requires the fixed BASE, reviewed branch and actual coordinator dispatcher');
+   errors.push('Bootstrap cloud review gate requires the explicitly reviewed install BASE, branch and actual coordinator dispatcher');
+  errors.push(...installationErrors(base,installation));
  }else errors.push('Explicit cloud review bootstrap mode is required');
  return errors;
+}
+
+function completeTree(tree,expected){
+ if(!sha(expected)||tree?.sha!==expected||tree.truncated!==false||!Array.isArray(tree.tree))return false;
+ const names=new Set(),modes={'040000':'tree','100644':'blob','100755':'blob','120000':'blob','160000':'commit'};
+ return tree.tree.every(row=>text(row?.path)&&!row.path.includes('/')&&!['.','..'].includes(row.path)&&
+  !names.has(row.path)&&names.add(row.path)&&sha(row.sha)&&modes[row.mode]===row.type);
+}
+function installationErrors(base,installation){
+ const {commit,root,scripts}=installation??{},errors=[];
+ const entry=Array.isArray(root?.tree)?root.tree.filter(row=>row?.path==='scripts'):[];
+ if(commit?.sha!==base||!completeTree(root,commit?.tree?.sha)||entry.length!==1||
+  entry[0].mode!=='040000'||entry[0].type!=='tree'||!completeTree(scripts,entry[0].sha))
+  errors.push('Complete immutable install BASE commit/root/scripts Git trees are required');
+ if(Array.isArray(scripts?.tree)&&scripts.tree.some(row=>row?.path==='independent-ai-review.mjs'))
+  errors.push('Reviewed install BASE already contains the independent AI review module');
+ return errors;
+}
+// Read immutable Git objects only. Failed/truncated reads never prove absence.
+export function collectCloudGateSource({api,run,...context}){
+ const observations={};
+ try{
+  if(context.bootstrap===true){
+   if(typeof api!=='function')throw Error('Synchronous Git API is required for the install BASE');
+   const read=path=>{const value=api(path);if(value&&typeof value.then==='function')throw Error('Synchronous Git API required');return value;};
+   const prefix='repos/'+context.repo;
+   const commit=read(prefix+'/git/commits/'+context.base);
+   if(commit?.sha!==context.base||!sha(commit?.tree?.sha))throw Error('Immutable install BASE commit metadata is missing');
+   const root=read(prefix+'/git/trees/'+commit.tree.sha);
+   const entries=Array.isArray(root?.tree)?root.tree.filter(row=>row?.path==='scripts'):[];
+   if(!completeTree(root,commit.tree.sha)||entries.length!==1||entries[0].mode!=='040000'||entries[0].type!=='tree')
+    throw Error('Complete install BASE root with a unique scripts Git tree is required');
+   const scripts=read(prefix+'/git/trees/'+entries[0].sha);
+   observations.installation={commit,root,scripts};
+  }
+  return {errors:cloudGateSourceErrors(run,{...context,installation:observations.installation}),observations};
+ }catch(error){return {errors:[error.message],observations};}
 }
 
 // Pure payload validation for a coordinator before submitting a Review. This
@@ -79,6 +116,8 @@ export function independentAiReportErrors(report,{repository,pr,baseSha,sourceCo
   !isDeepStrictEqual(sourceCommit.parents.map(parent=>parent?.sha),[baseSha,head])||
   sourceCommit?.tree&&sourceCommit?.commit?.tree&&sourceCommit.tree.sha!==sourceCommit.commit.tree.sha)
   errors.push('Report requires the actual HEAD/BASE merge commit and tree');
+ if(report.installBaseSha!==undefined&&(!sha(report.installBaseSha)||report.installBaseSha!==baseSha))
+  errors.push('Explicit install BASE differs from the actual reviewed BASE');
  if(!TRUSTED_REVIEW_COORDINATOR_IDS.includes(coordinator?.id)||!text(coordinator?.login))
   errors.push('Report requires the fixed coordinator identity');
  if(report.repositoryId!==projectRepositoryId||report.repositoryFullName!==repo||report.prNumber!==pr?.number||
