@@ -67,6 +67,57 @@ export async function verifyReleaseFull(repo,branch,head,request,readCheckout=lo
  return {schemaVersion:1,kind:'release-full',repo,branch,head,runId:run.id,attempt:run.run_attempt,url:run.html_url};
 }
 
+export async function freezeReleaseFull(repo,branch,head,request,readCheckout=loadCheckout) {
+ if(!releaseBranch(branch)||!validSha(head))throw Error('Expected release/<name> and frozen 40-character HEAD');
+ const prefix=`/repos/${repo}`,refPath=`${prefix}/git/ref/heads/${branch}`;
+ if(!projectRepositoryMatches(await request(prefix),repo))throw Error('Unexpected Release repository identity');
+ const checkRef=async()=>{
+  const ref=await request(refPath);
+  if(ref?.ref!==`refs/heads/${branch}`||ref.object?.type!=='commit'||ref.object.sha!==head)
+   throw Error('Freeze HEAD differs from current Release');
+ };
+ const matching=async()=>{
+  const runs=await pages(request,`${prefix}/actions/workflows/quality.yml/runs?event=workflow_dispatch&branch=${encodeURIComponent(branch)}`,'workflow_runs');
+  if(runs.some(run=>!Number.isSafeInteger(run?.id)||run.id<1||!validSha(run.head_sha)))
+   throw Error('Missing or invalid Release run identity');
+  return runs.filter(run=>run.head_sha===head).sort((a,b)=>b.id-a.id)[0];
+ };
+ const validRun=run=>{
+  if(!Number.isSafeInteger(run?.id)||run.id<1||!Number.isSafeInteger(run.run_attempt)||run.run_attempt<1||
+   run.head_sha!==head||run.head_branch!==branch||run.event!=='workflow_dispatch'||
+   run.path!=='.github/workflows/quality.yml'||!projectRepositoryMatches(run.repository,repo))
+   throw Error('Existing frozen Release run identity is invalid');
+ };
+ const reuse=async selected=>{
+  validRun(selected);await checkRef();
+  const run=await request(`${prefix}/actions/runs/${selected.id}`);
+  validRun(run);
+  const latest=await matching();
+  if(run.id!==selected.id||run.run_attempt!==selected.run_attempt||latest?.id!==run.id||latest.run_attempt!==run.run_attempt)
+   throw Error('Release Full run/attempt changed; inspect the latest run before retrying');
+  if(run.status!=='completed') {
+   if(!['queued','pending','waiting','requested','in_progress'].includes(run.status)||run.conclusion!=null)
+    throw Error('Existing frozen Release run is not a pending Full candidate');
+   await checkRef();
+   return {state:'waiting',branch,head,runId:run.id,attempt:run.run_attempt,url:`https://github.com/${repo}/actions/runs/${run.id}`};
+  }
+  if(run.conclusion!=='success')throw Error('Existing frozen Release Full failed or was cancelled; inspect it before requesting another run');
+  const proof=await verifyReleaseFull(repo,branch,head,request,readCheckout);
+  if(proof.runId!==run.id||proof.attempt!==run.run_attempt)throw Error('Verified Release Full differs from the selected run');
+  return {state:'verified',...proof};
+ };
+ await checkRef();
+ const existing=await matching();if(existing)return reuse(existing);
+ // A second read catches a dispatch registered by another caller. GitHub's
+ // existing workflow/ref concurrency handles the remaining cross-client race.
+ await checkRef();
+ const registered=await matching();if(registered)return reuse(registered);
+ await checkRef();
+ await request(`${prefix}/actions/workflows/quality.yml/dispatches`,{ref:branch,inputs:{runner_pool:'hosted'}});
+ await checkRef();
+ return {state:'requested',branch,head};
+}
+
 export async function githubRequest(path,body) {
  const response=await fetch(`https://api.github.com${path}`,{
   method:body?'POST':'GET',headers:{Accept:'application/vnd.github+json',
@@ -87,10 +138,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   if(!['freeze','verify'].includes(command)||!releaseBranch(branch)||!validSha(head))
    throw Error('Usage: node scripts/release-ci.mjs freeze|verify release/<name> <frozen-HEAD>');
   if(command==='freeze') {
-   const ref=await githubRequest(`/repos/${repo}/git/ref/heads/${branch}`);
-   if(ref?.object?.sha!==head)throw Error('Freeze HEAD differs from current Release');
-   await githubRequest(`/repos/${repo}/actions/workflows/quality.yml/dispatches`,{ref:branch,inputs:{runner_pool:'hosted'}});
-   console.log(JSON.stringify({state:'requested',branch,head}));
+   console.log(JSON.stringify(await freezeReleaseFull(repo,branch,head,githubRequest)));
   } else console.log(JSON.stringify(await verifyReleaseFull(repo,branch,head,githubRequest),null,2));
  } catch(error) {console.error(error.message);process.exitCode=1;}
 }

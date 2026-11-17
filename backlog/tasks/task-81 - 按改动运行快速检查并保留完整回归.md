@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-16 09:34'
+updated_date: '2026-11-17 08:48'
 labels:
   - 待验
   - delivery-verify
@@ -59,6 +59,8 @@ PR332已复现Silent自然构筑夹具在Windows原30000ms超时；仅诊断并�
 2026-11-03 M9持续收口：独立核对至少20个自然Quality Fast PR样本，不将advisory或Full混入；保留高风险/develop Full及所有Required/身份合同，针对真实漏边/重复工作实施，分别报告性能目标达成与不足，不提前Done。
 
 2026-11-05复采同SHA队列/push原始run/jobs与最新100个Quality样本，区分已证明的工程AC与稳定Full30分钟/自然Fast20样本剩余出口；保持In Progress。
+
+2026-11-17 Release CI #707：从3f890cdc接续旧reader，精确全文映射component281/nativeCloseout及改动helper前驱；原pin、负控和完整库存不变，定向验证后交还协调者，不重复Full。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -112,5 +114,5 @@ e22本地重放验证：相对basename参考与短模式原生CLI对当前360个
 
 2026-11-14第二轮状态纠正：选测机制与前两项AC已交付，尚缺自然Fast样本及真实耗时；属于进行中待验，不重新实现选择器。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
 
-Release冻结审查：PR707为必要CI修复，已规范Change-Type/Target-Version/Release-Necessity，原PR正文Backlog:TASK110与#670后续卡牌流转需求撞名，已更正为沿本TASK81继续；未创建或搬入TASK110、未改CI功能代码/范围或开启新Feature。质量来源合同仍严格验，最终运行/合后/设备状态不外推。
+2026-11-17 #707@3f890cdc旧reader收口：component281/nativeCloseout完整前驱映射，保留原pin和库存；完整calibration76项及其余来源合同31项通过，ci-impact因初始缺luaparse单文件复跑26项通过；负控4项、真实隔离reviewed selection5项、guidance/backlog通过，独审通过。仅本地候选，尚未push/托管CI/合并；#709准备组合评估后不纳入此次窄修复。证据docs/evidence/release-fast-b9-ci-20261117。
 <!-- SECTION:NOTES:END -->
