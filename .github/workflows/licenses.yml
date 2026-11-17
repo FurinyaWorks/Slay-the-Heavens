@@ -2,6 +2,7 @@ name: Licenses
 on:
   pull_request:
     branches: [develop, master, 'release/**']
+    types: [opened, synchronize, reopened, ready_for_review]
   merge_group:
     types: [checks_requested]
     branches: [develop]
@@ -15,6 +16,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   inventory:
+    permissions:
+      contents: read
+      actions: read
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
@@ -24,6 +28,11 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.18.0'
+      - name: Require completed Fork preflight before formal test jobs
+        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/fork-preflight.mjs
       - name: Restore exact existing media for the license audit
         timeout-minutes: 2
         env:

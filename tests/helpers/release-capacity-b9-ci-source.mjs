@@ -1,9 +1,11 @@
+import {enemyFastRead,enemyFastSource} from './release-enemy-fast-source.mjs';
+import {assertEnemyCapacityCurrent,enemyCapacitySource} from './release-enemy-capacity-join.mjs';
+import {capacityPreflightSource,assertCapacityPreflightArchive} from './release-capacity-preflight-source.mjs';
 // CI-only exact join of the reviewed capacity and B9 card-contact sources.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {assertEnemyCapacityCurrent,enemyCapacitySource,enemyCapacityRead} from './release-enemy-capacity-join.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-capacity-b9-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'4b5149e4e932a51ef4e84784efb1fea3960249e27c21ceccaa35e3058929d49b','complete capacity B9 CI continuation');
@@ -33,21 +35,25 @@ for(const [path,row]of Object.entries(repair.files))for(const binding of [row.be
 }
 export function assertCapacityB9ReaderRepairCurrent(read=readFileSync){
  assertEnemyCapacityCurrent(read);
- read=enemyCapacityRead('release',read);
+ read=enemyFastRead('release',read);
+ assertCapacityPreflightArchive(read);
  assert.equal(hash(read('tests/helpers/release-capacity-b9-reader-repair.json.gz')),hash(repairBytes),'fresh complete capacity B9 reader repair packet');
  for(const [path,row]of Object.entries(repair.files)){
-  const source=read(path,'utf8');
+  const source=capacityPreflightSource(path,read(path,'utf8'),'capacity');
   assert.equal(typeof source,'string','fresh complete integration source: capacity B9 reader repair '+path);
   assert(!source.includes('\r\r\n'),'fresh complete integration source: capacity B9 reader repair '+path);
   assert.equal(hash(norm(source)),row.current.sha256,'fresh complete integration source: capacity B9 reader repair '+path);
  }
 }
 export function beforeCapacityB9Ci(path,source,view='b9',before,{read=readFileSync}={}){
- if(before){
-  const expected=typeof path==='string'?(view==='b9'&&Object.hasOwn(repair.files,path)?repair.files[path].before.sha256:packet.files[path]?.before?.[view]?.sha256):undefined;
-  if(before.sha256!==expected)return source;
- }
+ if(!['b9','capacity'].includes(view))return source;
+ const binding=view==='b9'&&Object.hasOwn(repair.files,path)?repair.files[path].before:packet.files[path]?.before?.[view];
+ if(before&&(!binding||before.sha256!==binding.sha256))return source;
+ const joinedSource=enemyFastSource(path,source,'release');
+ if(joinedSource!==source)assertEnemyCapacityCurrent(read);
+ source=joinedSource;
  source=enemyCapacitySource(path,source,'release',{read});
+ source=capacityPreflightSource(path,source,'capacity');
  if(view==='b9'&&typeof path==='string'&&Object.hasOwn(repair.files,path)){
   const row=repair.files[path];
   if(typeof source!=='string'||source.includes('\r\r\n')||before&&before.sha256!==row.before.sha256||hash(norm(source))!==row.current.sha256)return source;

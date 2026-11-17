@@ -1,3 +1,4 @@
+import {assertEnemyFastCurrent,enemyFastRead,enemyFastSource} from './release-enemy-fast-source.mjs';
 // Exact CI-only composition of the saved enemy repair and actual Release squash.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -13,6 +14,8 @@ assert.deepEqual(packet.parents,{enemy:'2f5335443338cf46e045e47ff9fada215fdef391
 for(const [path,row]of Object.entries(packet.files))for(const source of Object.values(row.before).filter(v=>v!==null))
  assert.equal(normalized(source),source,'complete LF predecessor '+path);
 export function assertEnemyCapacityCurrent(read=readFileSync){
+ assertEnemyFastCurrent(read);
+ read=enemyFastRead('enemy',read);
  assert.equal(hash(read(packetPath)),hash(bytes),'fresh complete integration source: '+packetPath);
  for(const [path,row]of Object.entries(packet.files)){
   const source=normalized(read(path,'utf8'));
@@ -25,7 +28,9 @@ export function enemyCapacitySource(path,source,side,{read=readFileSync}={}){
  assert(Object.hasOwn(packet.parents,side),'known enemy capacity parent');
  // This is a CI source view, never a production-owner authorization reader.
  if(typeof path!=='string'||path.startsWith('src/')||path.startsWith('data/')||path.startsWith('config/'))return source;
- const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,text=normalized(source);
+ if(!Object.hasOwn(packet.files,path))return source;
+ source=enemyFastSource(path,source,'enemy');
+ const row=packet.files[path],text=normalized(source);
  if(!row||row.before[side]===null||text===null||hash(text)!==row.current||text===row.before[side])return source;
  assertEnemyCapacityCurrent(read);
  return row.before[side];
