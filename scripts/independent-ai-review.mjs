@@ -193,6 +193,27 @@ export function validateIndependentAiReview({repository,pr,baseSha,sourceCommit,
   repositoryId:repository?.id,repo,prNumber:pr?.number,head,base:baseSha,tree,mergeCommitSha:merge};
 }
 
+// Queue consumption revalidates the original immutable reviewed combination
+// against fresh server Reviews and roles. The live PR is a separate observation;
+// its cached BASE is never rewritten to manufacture historical evidence.
+export function validateHistoricalIndependentAiReview({repository,preflight,livePr,reviews,permissions}){
+ const original=preflight?.nativeReview,recorded=original?.observations?.prBefore;
+ const historicalPr={...recorded,user:{id:recorded?.authorId}};
+ const result=validateIndependentAiReview({repository,pr:historicalPr,baseSha:preflight?.base,
+  sourceCommit:original?.observations?.sourceCommit,reviews,permissions,
+  dependencies:original?.observations?.dependencies});
+ if(livePr?.number!==preflight?.prNumber||livePr?.head?.sha!==preflight?.head||livePr?.user?.id!==recorded?.authorId||
+  livePr?.state!=='open'||livePr?.merged!==false||livePr?.draft!==false||livePr?.base?.ref!=='develop'||
+  !projectRepositoryMatches(livePr?.base?.repo,preflight?.repo)||!projectRepositoryMatches(livePr?.head?.repo,preflight?.repo))
+  result.errors.push('Live PR identity differs from the originally reviewed candidate');
+ if(result.githubReviewId!==original?.githubReviewId||!isDeepStrictEqual(result.report,original?.report)||
+  !isDeepStrictEqual(result.coordinator,original?.coordinator))
+  result.errors.push('Latest server Review differs from the immutable original review proof');
+ result.conclusion=result.errors.length?'fail':'pass';
+ return {...result,observations:{historicalPr:recorded,historicalSourceCommit:original?.observations?.sourceCommit,
+  livePr,reviews,permissions}};
+}
+
 // Complete server Review records also select the staged migration path. Any
 // marker from a fixed trusted actor opts into the new contract, even if invalid.
 export function collectIndependentAiReviewRecords({api,repo,prNumber}){

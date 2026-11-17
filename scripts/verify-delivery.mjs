@@ -245,17 +245,21 @@ export function verifyMergedDelivery(e) {
   if(e.pr?.number!==preflight.prNumber||!e.pr?.merged||e.pr?.state!=='closed')errors.push('Expected the verified PR to be merged');
   if(e.pr?.head?.sha!==preflight.head||e.pr?.base?.ref!==preflight.baseRef)errors.push('Merged PR head/target differs from preflight');
   if(!validSha(e.commit?.sha)||e.commit?.sha!==e.pr?.merge_commit_sha)errors.push('Actual merged commit does not match merge_commit_sha');
-  if(JSON.stringify(parentShas(e.commit))!==JSON.stringify([preflight.base]))errors.push('Actual squash parent differs from verified base; obtain fresh evidence for the new combination');
-  if(!validSha(e.commit?.commit?.tree?.sha)||e.commit?.commit?.tree?.sha!==preflight.sourceTree)errors.push('Actual merged source tree differs from the verified source tree');
+  const native=preflight.nativeReview!==undefined,squashBase=native?e.queueFull?.checkout?.base:preflight.base;
+  const testedTree=native?e.queueFull?.commit?.commit?.tree?.sha:preflight.sourceTree;
+  if(!validSha(squashBase)||JSON.stringify(parentShas(e.commit))!==JSON.stringify([squashBase]))
+    errors.push(native?'Actual squash parent differs from the verified native queue parent':'Actual squash parent differs from verified base; obtain fresh evidence for the new combination');
+  if(!validSha(e.commit?.commit?.tree?.sha)||e.commit.commit.tree.sha!==testedTree)
+    errors.push('Actual merged source tree differs from the verified source tree');
   if(e.current?.number!==e.pr?.number||e.current?.head?.sha!==e.pr?.head?.sha||e.current?.base?.ref!==e.pr?.base?.ref||!e.current?.merged||e.current?.state!=='closed'||e.current?.merge_commit_sha!==e.pr?.merge_commit_sha)errors.push('Merged PR identity changed during verification');
   errors.push(...runErrors(e.run,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));
   errors.push(...runErrors(e.currentRun,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));
   errors.push(...qualityErrors(e.jobs,{attempt:e.run?.run_attempt,runId:e.run?.id,head:e.commit?.sha,schemaVersion:e.schemaVersion}));
   errors.push(...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,e.run,e.schemaVersion));
-  for(const [field,value] of Object.entries({event:'push',runId:e.run?.id,tested:e.commit?.sha,head:e.commit?.sha,base:preflight.base})) {
+  for(const [field,value] of Object.entries({event:'push',runId:e.run?.id,tested:e.commit?.sha,head:e.commit?.sha,base:squashBase})) {
     if(value===undefined||e.checkout?.[field]!==value)errors.push(`Merged checkout ${field} is missing, stale or mismatched`);
   }
-  if(e.checkout?.prNumber!==undefined||JSON.stringify(e.checkout?.parents)!==JSON.stringify([preflight.base]))errors.push('Merged checkout is not the actual squash commit');
+  if(e.checkout?.prNumber!==undefined||JSON.stringify(e.checkout?.parents)!==JSON.stringify([squashBase]))errors.push('Merged checkout is not the actual squash commit');
   return {state:errors.length?'merged_pending':'merged_passed',errors};
 }
 
@@ -294,12 +298,23 @@ function verifyQueueFull(e,arm,mergedSha,kind){
     ...runErrors(e.currentRun,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),
     ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:mergedSha,schemaVersion:3}),
     ...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,run,3));
-  if(run.head_branch!==`gh-readonly-queue/develop/pr-${arm.prNumber}-${arm.base}`)
-    errors.push('Queue Full does not belong to the authorized PR/BASE');
+  const native=kind==='native-queue-full',queueBase=native?e.commit?.parents?.[0]?.sha:arm.base;
+  if(native){
+    const c=e.commit,comparison=e.reviewBaseAncestry?.comparison;
+    if(c?.sha!==mergedSha||!validSha(c?.commit?.tree?.sha)||!validSha(queueBase)||
+      JSON.stringify(parentShas(c))!==JSON.stringify([queueBase]))
+      errors.push('Actual native queue commit/tree/sole parent evidence is missing or mismatched');
+    if(e.reviewBaseAncestry?.before!==arm.base||e.reviewBaseAncestry?.after!==queueBase||comparison?.base_commit?.sha!==arm.base||!['ahead','identical'].includes(comparison?.status)||comparison?.merge_base_commit?.sha!==arm.base)
+      errors.push('Original reviewed BASE is not an ancestor of the actual native queue parent');
+    if(queueBase===arm.base&&c?.commit?.tree?.sha!==arm.sourceTree)
+      errors.push('First native group tree differs from the original reviewed combination');
+  }
+  if(run.head_branch!==`gh-readonly-queue/develop/pr-${arm.prNumber}-${queueBase}`)
+    errors.push('Queue Full does not belong to the authorized PR/actual queue parent');
   for(const [field,value]of Object.entries({schemaVersion:1,event:'merge_group',runId:run.id,
-    tested:mergedSha,head:mergedSha,base:arm.base}))
+    tested:mergedSha,head:mergedSha,base:queueBase}))
     if(e.checkout?.[field]!==value)errors.push('Queue Full checkout differs: '+field);
-  if(e.checkout?.prNumber!=null||JSON.stringify(e.checkout?.parents)!==JSON.stringify([arm.base]))
+  if(e.checkout?.prNumber!=null||JSON.stringify(e.checkout?.parents)!==JSON.stringify([queueBase]))
     errors.push('Queue Full checkout must be the exact native squash');
   for(const context of ['full-quality','pr-quality','independent-review']){
     const status=e.statuses?.filter(s=>s.context===context).sort((a,b)=>b.id-a.id)[0];
@@ -321,7 +336,7 @@ function verifyQueueFull(e,arm,mergedSha,kind){
     !Array.isArray(licenses.jobs)||inventory?.length!==1||!positiveId(inventory[0]?.id)||
     inventory[0].run_id!==licenses.run.id||inventory[0].run_attempt!==licenses.run.run_attempt||inventory[0].head_sha!==mergedSha||
     inventory[0].status!=='completed'||inventory[0].conclusion!=='success'||
-    (kind==='fast-queue-full'?extra.length!==0:extra.length>1||extra.some(job=>job?.name!=='independent-ai-review'||
+    (kind==='fast-queue-full'?extra.length!==0:extra.length>2||new Set(extra.map(job=>job?.name)).size!==extra.length||new Set(extra.map(job=>job?.id)).size!==extra.length||extra.some(job=>!['independent-ai-review','cancel-obsolete-queue'].includes(job?.name)||
       !positiveId(job.id)||job.id===inventory[0].id||job.run_id!==licenses.run.id||job.run_attempt!==licenses.run.run_attempt||job.head_sha!==mergedSha||
       job.status!=='completed'||job.conclusion!=='skipped')))
     errors.push('Queue inventory is missing, stale or unsuccessful');
@@ -550,8 +565,9 @@ export function collectMergedDelivery(repo,number,preflight,query=gh,loadCheckou
   const currentRun=latestQualityRun(query,repo,identity);
   let queueFull;
   if([6,7].includes(preflight.schemaVersion)||preflight.nativeReview!==undefined){
+    const native=preflight.nativeReview!==undefined,queueBase=native?parentShas(commit)[0]:preflight.base;
     const groupIdentity={event:'merge_group',head:pr.merge_commit_sha,
-      branch:`gh-readonly-queue/develop/pr-${number}-${preflight.base}`};
+      branch:`gh-readonly-queue/develop/pr-${number}-${queueBase}`};
     const groupRun=latestQualityRun(query,repo,groupIdentity);
     const groupJobs=groupRun?.status==='completed'?pages(query,`repos/${repo}/actions/runs/${groupRun.id}/jobs?filter=all&per_page=100`,'jobs'):[];
     const groupReceipt=groupRun?.conclusion==='success'?loadCheckout(groupRun,groupJobs):{};
@@ -559,7 +575,8 @@ export function collectMergedDelivery(repo,number,preflight,query=gh,loadCheckou
     const licenseRuns=pages(query,`repos/${repo}/actions/workflows/licenses.yml/runs?event=merge_group&head_sha=${pr.merge_commit_sha}&per_page=100`,'workflow_runs');
     const licenseRun=licenseRuns.filter(r=>r.head_sha===pr.merge_commit_sha&&r.event==='merge_group').sort((a,b)=>b.id-a.id)[0];
     const licenseJobs=licenseRun?pages(query,`repos/${repo}/actions/runs/${licenseRun.id}/jobs?filter=all&per_page=100`,'jobs'):[];
-    queueFull={schemaVersion:8,kind:preflight.nativeReview!==undefined?'native-queue-full':'fast-queue-full',run:groupRun,jobs:groupJobs,...groupReceipt,statuses,
+    queueFull={schemaVersion:8,kind:native?'native-queue-full':'fast-queue-full',
+      ...(native?{commit,reviewBaseAncestry:{before:preflight.base,after:queueBase,comparison:JSON.parse(query('api',`repos/${repo}/compare/${preflight.base}...${queueBase}`))}}:{}),run:groupRun,jobs:groupJobs,...groupReceipt,statuses,
       currentRun:latestQualityRun(query,repo,groupIdentity),licenses:{run:licenseRun,jobs:licenseJobs,
         currentRun:pages(query,`repos/${repo}/actions/workflows/licenses.yml/runs?event=merge_group&head_sha=${pr.merge_commit_sha}&per_page=100`,'workflow_runs')
           .filter(r=>r.head_sha===pr.merge_commit_sha&&r.event==='merge_group').sort((a,b)=>b.id-a.id)[0]}};

@@ -69,12 +69,14 @@ export function admissionFixture(repoName=repo,base=sha('b')){
   digest:'sha256:'+'0'.repeat(64),workflow_run:{id:60,head_sha:base,repository_id:1429751262,head_repository_id:1429751262}};
  const proofStatus={id:92,context:'independent-review',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
   created_at:'2026-11-17T10:01:00Z',description:`AI review 90 [base:${base}] [proof:80]`,target_url:`https://github.com/${repoName}/actions/runs/60`};
+ const groupCommit={sha:head,parents:[{sha:base}],commit:{tree:{sha:sha('9')}}};
+ const ancestry={[base+'...'+base]:{status:'identical',base_commit:{sha:base},merge_base_commit:{sha:base}}};
  const headInstallation=uninstalledReviewBase(prHead);headInstallation.commit.tree.sha=headInstallation.root.sha=sha('1');
  headInstallation.root.tree[0].sha=headInstallation.scripts.sha=sha('2');
  headInstallation.scripts.tree.push({path:'independent-ai-review.mjs',mode:'100644',type:'blob',sha:sha('9')});
  const mergeBaseInstallation=uninstalledReviewBase(base),comparison={status:'ahead',base_commit:{sha:base},merge_base_commit:{sha:base}};
  return {env,event,run,needs,jobs,ruleset,artifact,checkout,pr,review,report,sourceCommit,entry,repository,permission,
-  proof,proofRun,proofArtifact,proofStatus,headInstallation,mergeBaseInstallation,comparison};
+  proof,proofRun,proofArtifact,proofStatus,headInstallation,mergeBaseInstallation,comparison,groupCommit,ancestry};
 }
 export function admissionQuery(f,writes=[]){
  return (...args)=>{
@@ -105,7 +107,9 @@ export function admissionQuery(f,writes=[]){
    const reviews=f.reviews??[{...f.review,body:f.review.body??INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(f.report)}];
    return JSON.stringify(reviews.slice((page-1)*100,page*100));
   }
-  if(url.endsWith(`/compare/${f.pr.base.sha}...${f.pr.head.sha}`))return JSON.stringify(f.comparison);
+  const compared=url.split('/compare/')[1];
+  if(compared&&Object.hasOwn(f.ancestry,compared))return JSON.stringify(f.ancestry[compared]);
+  if(url.endsWith(`/compare/${f.repository.ref.target.oid}...${f.pr.head.sha}`))return JSON.stringify(f.comparison);
   for(const installation of [f.installation,f.headInstallation,f.mergeBaseInstallation].filter(Boolean)){
    if(url.endsWith('/git/commits/'+installation.commit.sha))return JSON.stringify(installation.commit);
    if(url.endsWith('/git/trees/'+installation.commit.tree.sha))return JSON.stringify(installation.root);
@@ -114,7 +118,7 @@ export function admissionQuery(f,writes=[]){
   if(url.endsWith('/git/commits/'+f.pr.merge_commit_sha))return JSON.stringify(f.sourceCommit);
   if(url.endsWith('/git/ref/heads/develop'))return JSON.stringify({ref:'refs/heads/develop',object:{type:'commit',sha:f.event.merge_group.base_sha}});
   if(url.includes('/collaborators/'))return JSON.stringify(f.permission);
-  if(url.endsWith('/commits/'+f.env.GITHUB_SHA))return JSON.stringify({sha:f.env.GITHUB_SHA,parents:[{sha:f.event.merge_group.base_sha}]});
+  if(url.endsWith('/commits/'+f.env.GITHUB_SHA))return JSON.stringify(f.groupCommit);
   if(url.includes(`/commits/${f.pr.head.sha}/statuses?`))return JSON.stringify([[...(f.proofStatus?[f.proofStatus]:[]),...(f.qualityStatus?[f.qualityStatus]:[])]]);
   if(url.endsWith('/git/ref/heads/'+f.env.GITHUB_REF.slice('refs/heads/'.length)))
    return JSON.stringify({ref:f.env.GITHUB_REF,object:{type:'commit',sha:f.env.GITHUB_SHA}});

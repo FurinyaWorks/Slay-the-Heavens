@@ -1058,7 +1058,8 @@ function nativeQueueEvidence(preflight,mergedSha){
   status:'completed',conclusion:'success',repository:{full_name:repo}};
  const jobs=currentFullQualityJobs.map((name,i)=>({id:500+i,name,run_id:21,run_attempt:1,head_sha:mergedSha,status:'completed',conclusion:name==='fast'?'skipped':'success'}));
  const licenseRun={id:22,run_attempt:1,event:'merge_group',head_sha:mergedSha,path:'.github/workflows/licenses.yml',status:'completed',conclusion:'success',repository:{full_name:repo}};
- return {schemaVersion:8,kind:'native-queue-full',run,jobs,currentRun:structuredClone(run),
+ return {schemaVersion:8,kind:'native-queue-full',commit:{sha:mergedSha,parents:[{sha:preflight.base}],commit:{tree:{sha:preflight.sourceTree}}},
+  reviewBaseAncestry:{before:preflight.base,after:preflight.base,comparison:{status:'identical',base_commit:{sha:preflight.base},merge_base_commit:{sha:preflight.base}}},run,jobs,currentRun:structuredClone(run),
   checkout:{schemaVersion:1,event:'merge_group',runId:21,attempt:1,tested:mergedSha,head:mergedSha,base:preflight.base,parents:[preflight.base]},
   checkoutArtifact:{id:210,name:'quality-21-1-check',expired:false,workflow_run:{id:21,head_sha:mergedSha}},
   statuses:['full-quality','pr-quality','independent-review'].map((context,i)=>({id:600+i,context,state:'success',creator:{id:41898282,login:'github-actions[bot]'},target_url:`https://github.com/${repo}/actions/runs/21`})),
@@ -1095,6 +1096,7 @@ test('merged collector obtains queue Full for native-reviewed Full PRs without c
   if(path.includes('/actions/workflows/licenses.yml/'))return JSON.stringify([{workflow_runs:[e.queueFull.licenses.run]}]);
   const id=Number(path.match(/actions\/runs\/(\d+)\/jobs/)?.[1]);
   if(id)return JSON.stringify([{jobs:id===9?e.jobs:id===21?e.queueFull.jobs:e.queueFull.licenses.jobs}]);
+  if(path.includes('/compare/'))return JSON.stringify(e.queueFull.reviewBaseAncestry.comparison);
   throw Error('Unexpected native merged query '+path);
  };
  const actual=collectMergedDelivery(e.repo,8,e.preflight,query,run=>{
@@ -1157,4 +1159,80 @@ test('shared source collector proves absence from authenticated immutable object
  assert.deepEqual(result.observations.installation,objects);
  assert(collectCloudGateSource({...context,api:()=>{throw Error('HTTP403');}}).errors.length);
  assert(collectCloudGateSource({...context,api:async()=>objects.commit}).errors.length);
+});
+
+function secondNativeMergedFixture(){
+ const e=nativeMergedFixture(),q=sha('4'),tree=sha('6');
+ e.commit.parents=[{sha:q}];e.commit.commit.tree.sha=tree;
+ e.queueFull.commit=structuredClone(e.commit);
+ e.queueFull.reviewBaseAncestry={before:e.preflight.base,after:q,
+  comparison:{status:'ahead',base_commit:{sha:e.preflight.base},merge_base_commit:{sha:e.preflight.base}}};
+ e.queueFull.run.head_branch=e.queueFull.currentRun.head_branch=`gh-readonly-queue/develop/pr-${e.preflight.prNumber}-${q}`;
+ for(const receipt of [e.checkout,e.queueFull.checkout]){receipt.base=q;receipt.parents=[q];}
+ return e;
+}
+test('native post-merge delivery verifies the actual second-group Q/G/tree without rewriting original B0/T0 preflight',()=>{
+ const e=secondNativeMergedFixture(),original=JSON.stringify(e.preflight);
+ assert.notEqual(e.queueFull.checkout.base,e.preflight.base);assert.notEqual(e.commit.commit.tree.sha,e.preflight.sourceTree);
+ assert.deepEqual(verifyMergedDelivery(e),{state:'merged_passed',errors:[]});assert.equal(JSON.stringify(e.preflight),original);
+ const legacy=structuredClone(e);delete legacy.preflight.nativeReview;
+ assert.equal(verifyMergedDelivery(legacy).state,'merged_pending','old schema3 merged contract is not loosened');
+ for(const mutate of [
+  x=>delete x.queueFull.commit,x=>x.queueFull.commit.sha=sha('f'),x=>x.queueFull.commit.commit.tree.sha=sha('f'),
+  x=>x.queueFull.commit.parents.push({sha:x.preflight.base}),x=>x.queueFull.checkout.base=x.preflight.base,
+  x=>x.queueFull.checkout.parents=[x.preflight.base],x=>x.checkout.base=x.preflight.base,
+  x=>x.checkout.parents=[x.preflight.base],x=>x.queueFull.reviewBaseAncestry.before=sha('f'),
+  x=>x.queueFull.reviewBaseAncestry.after=x.preflight.base,x=>x.queueFull.reviewBaseAncestry.comparison.status='diverged',
+  x=>x.queueFull.reviewBaseAncestry.comparison.merge_base_commit.sha=sha('f'),
+  x=>x.queueFull.run.head_branch=`gh-readonly-queue/develop/pr-${x.preflight.prNumber}-${x.preflight.base}`,
+  x=>x.preflight.base=x.queueFull.checkout.base,x=>x.preflight.sourceTree=x.commit.commit.tree.sha,
+  x=>x.queueFull.currentRun.run_attempt++,x=>x.queueFull.jobs.pop(),x=>x.currentRun.conclusion='failure'
+ ]){const bad=structuredClone(e);mutate(bad);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));}
+});
+test('native merged collector obtains actual Q/G/tree and immutable B0 ancestry from the API',()=>{
+ const e=secondNativeMergedFixture(),original=JSON.stringify(e.preflight),calls=[];
+ const query=(...args)=>{
+  const path=args.at(-1);calls.push(path);
+  if(path.endsWith('/pulls/8'))return JSON.stringify(e.pr);
+  if(path.endsWith('/commits/'+e.pr.merge_commit_sha))return JSON.stringify(e.commit);
+  if(path.includes('/compare/'))return JSON.stringify(e.queueFull.reviewBaseAncestry.comparison);
+  if(path.includes('/statuses?'))return JSON.stringify([e.queueFull.statuses]);
+  if(path.includes('/actions/workflows/quality.yml/'))return JSON.stringify([{workflow_runs:[path.includes('event=push')?e.run:e.queueFull.run]}]);
+  if(path.includes('/actions/workflows/licenses.yml/'))return JSON.stringify([{workflow_runs:[e.queueFull.licenses.run]}]);
+  const id=Number(path.match(/actions\/runs\/(\d+)\/jobs/)?.[1]);
+  if(id)return JSON.stringify([{jobs:id===9?e.jobs:id===21?e.queueFull.jobs:e.queueFull.licenses.jobs}]);
+  throw Error('Unexpected second native merged query '+path);
+ };
+ const actual=collectMergedDelivery(e.repo,8,e.preflight,query,run=>run.id===9?
+  {checkout:e.checkout,checkoutArtifact:e.checkoutArtifact}:{checkout:e.queueFull.checkout,checkoutArtifact:e.queueFull.checkoutArtifact});
+ assert.equal(actual.queueFull.commit.commit.tree.sha,e.commit.commit.tree.sha);
+ assert.equal(actual.queueFull.reviewBaseAncestry.after,e.queueFull.checkout.base);
+ assert(calls.some(path=>path.endsWith(`/compare/${e.preflight.base}...${e.queueFull.checkout.base}`)));
+ assert.deepEqual(verifyMergedDelivery(actual),{state:'merged_passed',errors:[]});assert.equal(JSON.stringify(e.preflight),original);
+});
+test('native queue Licenses permits only the exact skipped review and cleanup auxiliaries with unique execution identities',()=>{
+ const e=secondNativeMergedFixture(),jobs=e.queueFull.licenses.jobs;
+ jobs.push({...jobs[1],id:702,name:'cancel-obsolete-queue'});
+ assert.deepEqual(verifyMergedDelivery(e),{state:'merged_passed',errors:[]});
+ for(const mutate of [x=>x[2].name='unknown',x=>x[2].name=x[1].name,x=>x[2].id=x[1].id,
+  x=>x[2].run_id++,x=>x[2].run_attempt++,x=>x[2].head_sha=sha('f'),
+  x=>x[2].conclusion='success',x=>x[2].status='in_progress',x=>x.push({...x[2],id:703})]){
+  const bad=structuredClone(e);mutate(bad.queueFull.licenses.jobs);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));
+ }
+ const old=nativeMergedFixture();old.queueFull.kind='fast-queue-full';old.queueFull.licenses.jobs.push({...old.queueFull.licenses.jobs[1],id:702,name:'cancel-obsolete-queue'});
+ assert(delivery.verifyFastQueueFull(old.queueFull,old.preflight,old.pr.merge_commit_sha).length,'old Fast auxiliary contract stays strict');
+});
+
+test('the authentic obsolete PR682 receipt binds Q to the preceding native squash while incomplete Full still stays rejected',()=>{
+ // Original artifact14339846699, run44091042622/1; ZIP SHA256
+ // 9a7f1aeffddb5b7a44dc0f6cf164c93a76c92afd350e7583a60d3e788cc4891a.
+ const g='d5b0f25ee403c78030c38f7c3d56f125d58075aa',q='b85fe9f3c13e30f93ffeaab58d6b1d75b0dfbc8b',b0='c2409ad750c15124b7b843c6bbfa5b222537cb75';
+ const checkout={schemaVersion:1,event:'merge_group',runId:44091042622,attempt:1,tested:g,head:g,base:q,parents:[q]};
+ const evidence={schemaVersion:8,kind:'native-queue-full',checkout,
+  commit:{sha:g,parents:[{sha:q}],commit:{tree:{sha:'ddb9546d5e957438ff22db277f4817d1a03b6b1a'}}},
+  reviewBaseAncestry:{before:b0,after:q,comparison:{status:'ahead',base_commit:{sha:b0},merge_base_commit:{sha:b0}}},
+  run:{id:44091042622,run_attempt:1,event:'merge_group',head_sha:g,head_branch:`gh-readonly-queue/develop/pr-682-${q}`}};
+ const errors=delivery.verifyNativeQueueFull(evidence,{repo:'FurinyaWorks/Slay-the-Heavens',prNumber:682,base:b0},g);
+ assert(errors.length>0,'an authentic receipt alone is not a successful Full or native admission');
+ assert(!errors.some(error=>/actual native queue commit|Original reviewed BASE|authorized PR\/actual queue parent|checkout differs|checkout must/i.test(error)),errors.join('; '));
 });

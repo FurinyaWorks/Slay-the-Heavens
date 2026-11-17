@@ -4,7 +4,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {main} from '../scripts/publish-merge-group.mjs';
-import {collectQueueAdmission} from '../scripts/merge-queue-admission.mjs';
+import {collectQueueAdmission,queueAdmissionCompatible} from '../scripts/merge-queue-admission.mjs';
 
 import {admissionFixture,admissionQuery,uninstalledReviewBase} from './helpers/merge-queue-admission.mjs';
 import {queueRulesFingerprint} from '../scripts/merge-queue-policy.mjs';
@@ -54,7 +54,7 @@ test('independent cloud AI attestation binds the trusted signer and exact combin
   f=>f.report.reviewedBaseSha=sha('d'),f=>f.report.reviewedTreeSha=sha('f'),
   f=>f.report.coordinator.id=111138384,f=>f.report.coordinator.verifiedActualSessions=false,
   f=>f.report.reviewerAgent=f.report.implementationAgents[0],
-  f=>f.review.user={id:52,login:'impostor'},f=>f.sourceCommit.parents.reverse(),
+  f=>f.review.user={id:52,login:'impostor'},f=>f.proof.nativeReview.observations.sourceCommit.parents.reverse(),
   f=>f.permission.role_name='write',f=>f.permission.permission='read',
   f=>delete f.permission.user,f=>f.permission.user.id=52,f=>f.permission.user.login='other'
  ])for(const duringDownload of [false,true]){
@@ -114,7 +114,7 @@ test('queue release rejects paused, held, changed dependency and stale-base PR a
   f=>f.report.reviewedBaseSha=sha('d'),
   f=>f.pr.labels=[{name:'hold'}],f=>f.pr.body='Depends-on: #999',
   f=>f.pr.body='Depends-on: none\nDepends-on: #999',
-  f=>f.pr.draft=true,f=>f.pr.head.sha=sha('d'),f=>f.pr.base.sha=sha('d'),
+  f=>f.pr.draft=true,f=>f.pr.head.sha=sha('d'),
   f=>f.repository.ref.target.oid=sha('d'),f=>f.repository.databaseId=7,
   f=>f.repository.mergeQueue.entries.nodes=[],
   f=>f.repository.mergeQueue.entries.pageInfo.hasNextPage=true,
@@ -222,7 +222,7 @@ test('valid AI report or signer-role changes cannot replace the exact observed a
   const f=admissionFixture(),writes=[];
   assert.throws(()=>execute(f,admissionQuery(f,writes),{loadCheckout:()=>{
    mutate(f);return {checkout:f.checkout,checkoutArtifact:f.artifact};
-  }}),/authorization changed|proof differs/);assert.deepEqual(writes,[]);
+  }}),/authorization changed|proof.*differs|Review differs/);assert.deepEqual(writes,[]);
  }
 });
 
@@ -404,4 +404,121 @@ test('the migration selector reads all real Review pages and never treats malfor
  const f=legacyAdmissionFixture(),writes=[],underlying=admissionQuery(f,writes);
  assert.throws(()=>execute(f,(...args)=>{if(args.at(-1).includes('/reviews?'))throw Error('HTTP403');return underlying(...args);}),/server Review policy metadata.*403/);
  assert.deepEqual(writes,[]);
+});
+
+test('cached REST PR base and synthetic merge metadata do not replace immutable reviewed source facts',()=>{
+ const f=admissionFixture(),original=JSON.stringify(f.proof.preflight);f.pr.base.sha=sha('f');f.pr.merge_commit_sha=sha('5');
+ assert.equal(execute(f).state,'success');assert.equal(JSON.stringify(f.proof.preflight),original);
+});
+
+// Real native topology: D -> predecessor Q -> target G. B0 is the original
+// reviewed/PR-CI baseline, not the speculative predecessor or cached REST base.
+function secondGroupFixture({develop=sha('5')}={}){
+ const target=admissionFixture('FurinyaWorks/Slay-the-Heavens'),leading=legacyAdmissionFixture();
+ const original=target.proof.preflight.base,q=sha('4'),legacyHead=sha('6');
+ target.ruleset.rules[1].parameters.required_status_checks.find(row=>row.context==='full-quality').context='pr-quality';
+ target.prRun=structuredClone(target.proof.preflight.run);
+ target.qualityStatus={id:95,context:'pr-quality',state:'success',creator:{id:41898282,login:'github-actions[bot]'},
+  target_url:`https://github.com/${target.env.GITHUB_REPOSITORY}/actions/runs/61`,description:'Exact Full run 61, attempt 1'};
+ target.event.merge_group.base_sha=q;target.checkout.base=q;target.checkout.parents=[q];target.groupCommit.parents=[{sha:q}];
+ target.entry.baseCommit.oid=q;target.entry.position=2;target.repository.ref.target.oid=develop;
+ target.pr.base.sha=sha('f');target.comparison={status:'diverged',base_commit:{sha:develop},merge_base_commit:{sha:original}};
+ // The initial install proof was genuinely published on the original B0.
+ target.report.installBaseSha=original;target.proof.nativeReview.report.installBaseSha=original;
+ target.proof.nativeReview.observations.reviews[0].body='<!-- independent-ai-review:v1 -->\n'+JSON.stringify(target.proof.nativeReview.report);
+ target.installation=uninstalledReviewBase(original);target.proof.gate.ref='refs/heads/'+target.pr.head.ref;target.proof.gate.bootstrap=true;
+ target.proofRun.head_branch=target.pr.head.ref;target.proofRun.head_sha=target.pr.head.sha;
+ target.proofRun.actor={id:target.review.user.id};target.proofRun.triggering_actor={id:target.review.user.id};
+ target.proofArtifact.workflow_run.head_sha=target.pr.head.sha;
+ leading.pr.number=511;leading.pr.head.sha=legacyHead;leading.entry.id='ENTRY_511';leading.entry.baseCommit.oid=develop;leading.entry.headCommit.oid=q;
+ leading.entry.pullRequest={...leading.entry.pullRequest,number:511,headRefOid:legacyHead,mergeQueueEntry:{id:'ENTRY_511'}};
+ leading.headInstallation.commit.sha=legacyHead;leading.headInstallation.commit.tree.sha=leading.headInstallation.root.sha=sha('8');
+ leading.headInstallation.root.tree[0].sha=leading.headInstallation.scripts.sha=sha('9');
+ leading.repository.ref.target.oid=develop;leading.comparison={status:'diverged',base_commit:{sha:develop},merge_base_commit:{sha:original}};
+ leading.prRun={...leading.prRun,id:62,head_sha:legacyHead,pull_requests:[{number:511}]};
+ leading.qualityStatus.target_url=`https://github.com/${target.env.GITHUB_REPOSITORY}/actions/runs/62`;
+ leading.qualityStatus.description='Exact Full run 62, attempt 1';
+ target.repository.mergeQueue.entries.nodes=[leading.entry,target.entry];
+ const compare=(before,after)=>({status:before===after?'identical':'ahead',base_commit:{sha:before},merge_base_commit:{sha:before}});
+ for(const [before,after]of [[develop,q],[original,develop],[original,q],[q,q]])target.ancestry[before+'...'+after]=compare(before,after);
+ const tq=admissionQuery(target),lq=admissionQuery(leading);
+ const query=(...args)=>{
+  const url=args.at(-1),path=String(url);
+  if(args[0]==='api'&&args[1]==='graphql')return tq(...args);
+  if(path.includes('/pulls/511'))return lq(...args.slice(0,-1),path.replace('/pulls/511','/pulls/510'));
+  if(path.includes('/commits/'+legacyHead+'/statuses?')||path.includes('head_sha='+legacyHead)||
+   path.includes('/git/commits/'+legacyHead)||path.includes('/compare/'+target.repository.ref.target.oid+'...'+legacyHead)||
+   path.includes('/collaborators/FurinyaDev/')||path.includes('/git/trees/'+sha('8'))||path.includes('/git/trees/'+sha('9')))
+   return lq(...args);
+  return tq(...args);
+ };
+ const advance=()=>{
+  target.repository.ref.target.oid=q;target.repository.mergeQueue.entries.nodes=[target.entry];target.entry.position=1;
+  target.comparison.base_commit.sha=q;target.pr.base.sha=sha('0');
+ };
+ return {target,leading,query,advance,q,original,develop};
+}
+test('a real second native group separates original B0, protected D, actual parent Q and tested G/tree',()=>{
+ const f=secondGroupFixture(),snapshot=JSON.parse(collectQueueAdmission(f.target.event,f.target.env,f.query,f.target.ruleset));
+ assert.deepEqual(snapshot.map(row=>row.authorizationKind),['legacy','cloud']);
+ assert(snapshot.every(row=>row.reviewBase===f.original&&row.groupBase===f.q&&row.protectedDevelop===f.develop));
+ assert.equal(snapshot[1].reviewedBase,f.original);assert.equal(snapshot[1].reviewedTree,f.target.proof.preflight.sourceTree);
+ assert.equal(snapshot[1].groupTree,f.target.groupCommit.commit.tree.sha);assert.equal(snapshot[1].base,f.q);
+ const before=JSON.stringify(f.target.proof.preflight);
+ assert.equal(execute(f.target,f.query,{loadCheckout:()=>({checkout:f.target.checkout,checkoutArtifact:f.target.artifact})}).state,'success');
+ assert.equal(JSON.stringify(f.target.proof.preflight),before,'original B0/M0/T0 observations stay immutable');
+});
+test('a verified predecessor may land during receipt download without invalidating an unchanged target G/Q',()=>{
+ const f=secondGroupFixture({develop:sha('b')}),before=collectQueueAdmission(f.target.event,f.target.env,f.query,f.target.ruleset);
+ assert.equal(execute(f.target,f.query,{loadCheckout:()=>{
+  f.advance();return {checkout:f.target.checkout,checkoutArtifact:f.target.artifact};
+ }}).state,'success');
+ const after=collectQueueAdmission(f.target.event,f.target.env,f.query,f.target.ruleset);
+ assert.equal(queueAdmissionCompatible(before,after),true);
+ const wrong=JSON.parse(after);wrong[0].protectedDevelop=sha('7');assert.equal(queueAdmissionCompatible(before,JSON.stringify(wrong)),false);
+ const added=JSON.parse(after);added.unshift({...added[0],id:'NEW'});assert.equal(queueAdmissionCompatible(before,JSON.stringify(added)),false);
+ for(const field of ['groupBase','groupHead','groupTree','prHead','githubReviewId','coordinatorRole']){
+  const changed=JSON.parse(after);changed[0][field]='changed';assert.equal(queueAdmissionCompatible(before,JSON.stringify(changed)),false,field);
+ }
+});
+test('foreign, diverged or stale native ancestry and removed or altered prefixes cannot authorize a second group',()=>{
+ for(const mutate of [
+  f=>f.target.ancestry[f.original+'...'+f.develop].merge_base_commit.sha=sha('f'),
+  f=>f.target.ancestry[f.original+'...'+f.q].status='diverged',
+  f=>f.target.ancestry[f.develop+'...'+f.q].status='behind',
+  f=>f.target.groupCommit.parents=[{sha:f.original}],f=>f.target.groupCommit.commit.tree.sha='bad',
+  f=>f.target.repository.mergeQueue.entries.nodes.shift(),f=>f.leading.entry.headCommit.oid=sha('f'),
+  f=>f.target.entry.baseCommit.oid=f.original,f=>f.target.entry.pullRequest.headRefOid=sha('f'),
+  f=>f.target.review.state='CHANGES_REQUESTED',f=>f.target.permission.permission='read',
+  f=>f.target.report.provenance.reviewId+='-new',f=>f.target.prRun.run_attempt++
+ ]){
+  const f=secondGroupFixture();mutate(f);
+  assert.throws(()=>execute(f.target,f.query,{loadCheckout:()=>({checkout:f.target.checkout,checkoutArtifact:f.target.artifact})}),undefined,String(mutate));
+ }
+});
+
+test('removing a predecessor without landing its exact native head on protected develop is refused',()=>{
+ const f=secondGroupFixture({develop:sha('b')});
+ assert.throws(()=>execute(f.target,f.query,{loadCheckout:()=>{
+  f.target.repository.mergeQueue.entries.nodes=[f.target.entry];f.target.entry.position=1;
+  return {checkout:f.target.checkout,checkoutArtifact:f.target.artifact};
+ }}),/prefix/);
+});
+
+test('fresh live dependencies must be actually merged and contained in real Q, never just the original B0 or queue membership',()=>{
+ const f=secondGroupFixture(),dep={number:999,merged:true,base:{ref:'develop',repo:f.target.event.repository},merge_commit_sha:sha('7')};
+ f.target.pr.body='Depends-on: #999';
+ f.target.ancestry[dep.merge_commit_sha+'...'+f.q]={status:'ahead',base_commit:{sha:dep.merge_commit_sha},merge_base_commit:{sha:dep.merge_commit_sha}};
+ const query=(...args)=>String(args.at(-1)).endsWith('/pulls/999')?JSON.stringify(dep):f.query(...args);
+ assert.equal(execute(f.target,query,{loadCheckout:()=>({checkout:f.target.checkout,checkoutArtifact:f.target.artifact})}).state,'success');
+ for(const mutate of [()=>dep.merged=false,()=>f.target.ancestry[dep.merge_commit_sha+'...'+f.q].status='diverged']){
+  const original=structuredClone(dep),comparison=structuredClone(f.target.ancestry[dep.merge_commit_sha+'...'+f.q]);mutate();
+  assert.throws(()=>execute(f.target,query,{loadCheckout:()=>({checkout:f.target.checkout,checkoutArtifact:f.target.artifact})}),/dependency|ancestor/);
+  Object.assign(dep,original);f.target.ancestry[dep.merge_commit_sha+'...'+f.q]=comparison;
+ }
+ const before=collectQueueAdmission(f.target.event,f.target.env,query,f.target.ruleset),after=JSON.parse(before);
+ for(const field of ['coordinatorRole','githubReviewId','report','quality','dependencies','gateProof']){
+  const changed=structuredClone(after);changed.at(-1)[field]={changed:true};
+  assert.equal(queueAdmissionCompatible(before,JSON.stringify(changed)),false,field);
+ }
 });
