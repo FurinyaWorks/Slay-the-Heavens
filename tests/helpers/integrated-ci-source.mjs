@@ -8,7 +8,7 @@ import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releasePickerControlsCiSource,releasePickerControlsCiCheckedSource,releasePickerControlsPriorInventory,releasePickerControlsCiPacket,assertReleasePickerControlsCiCurrent} from './release-picker-controls-ci-source.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {releasePickerControlsCiRead} from './release-picker-controls-ci-source.mjs';
-import {integrationRead,integrationProductionRead,integrationCiSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-picker-b9-integration.mjs';
+import {integrationRead,assertReleaseIntegratedCurrent,integrationCiSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-picker-b9-integration.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -40,14 +40,7 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
-export function assertIntegratedCurrent(read=readFileSync){
- assertReleaseIntegrationCurrent(read);
- read=integrationProductionRead('picker',read);
- assertReleasePickerControlsCiCurrent(read);
- assertReleaseBootstrapCiCurrent(releasePickerControlsCiRead(read));
- for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releasePickerControlsCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
- for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,read(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
-}
+export function assertIntegratedCurrent(read=readFileSync){return assertReleaseIntegratedCurrent(read);}
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return integrationInventory(kind);}
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;

@@ -2,17 +2,26 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
+import {integratedCiBytes} from './integrated-ci-binding.mjs';
+import {stsStyleCiBytes} from './sts-style-ci-binding.mjs';
+import {feedbackCiPatch} from './sts-feedback-ci.mjs';
+import {extendFeedbackCiProof} from './sts-feedback-source-runtime.mjs';
+import {releasePickerControlsCiRead,releasePickerControlsCiSource,releasePickerControlsCiCheckedSource,releasePickerControlsPriorInventory} from './release-picker-controls-ci-source.mjs';
+import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {releasePc22BasicFeedbackCiPacket as pc22,assertReleasePc22BasicFeedbackCiCurrent} from './release-pc22-basic-feedback-ci-source.mjs';
 import {releasePickerControlsCiPacket as picker,assertReleasePickerControlsCiCurrent} from './release-picker-controls-ci-source.mjs';
 import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=norm(readFileSync(new URL('./release-picker-b9-integration.json',import.meta.url),'utf8'));
-assert.equal(hash(bytes),'f9b1ecc845564a649cb5644a6cccce7206f3182c1f7163ac7bd61698a2ce97e6','complete Release card-contact integration bindings');
+assert.equal(hash(bytes),'67680671ccfde4ae7aa84c4849c6b60e5c6c45f9c42db4a6083a426c7f13cef4','complete Release card-contact integration bindings');
 export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc');
 assert.equal(integrationPacket.base,'b9bca884ed9b9831965b409885d78f719b9a567a');
 const packets={picker,pc22,selection};
+assert.equal(integrationPacket.fixedStsValidatorBefore.sha256,'054113396d3db48407c2aee4f5c9563e6c4f2e8a80d37c979c79b6b3afac423a');
+assert.equal(hash(integrationPacket.fixedStsValidatorBefore.source),integrationPacket.fixedStsValidatorBefore.sha256,'exact fixed StS validator predecessor');
 assert.deepEqual(integrationPacket.addedJs,['tests/release-card-contact-integration.test.mjs','tests/release-picker-map-integration.test.mjs']);
 integrationPacket.inventory=Object.fromEntries(['js','lua'].map(kind=>[kind,[...new Set([
  ...pc22.currentInventory[kind],...picker.currentInventory[kind],...selection.currentInventory[kind],...(kind==='js'?integrationPacket.addedJs:[]),
@@ -27,6 +36,7 @@ function uncheckedCiSource(path,source,side='picker'){
  assert(Object.hasOwn(packets,side),'known Release integration side');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  if(typeof source!=='string'||source.includes('\r\r\n')||!Object.hasOwn(integrationPacket.files,path)||hash(norm(source))!==integrationPacket.files[path])return source;
+ if(path==='tests/helpers/sts-style-ci-source.mjs')return integrationPacket.fixedStsValidatorBefore.source;
  const own=packets[side].files[path],other=Object.values(packets).map(p=>p.files[path]).find(p=>p?.before);
  return own?.current.source??other?.before?.source??source;
 }
@@ -83,4 +93,99 @@ export function assertReleaseIntegrationCurrent(read=readFileSync){
  assertReleasePc22BasicFeedbackCiCurrent(uncheckedRead('pc22',read));
  assertReleasePickerControlsCiCurrent(uncheckedRead('picker',read));
  assertReleaseSelectionMapCiCurrent(uncheckedRead('selection',read));
+}
+
+// Fixed validator only: the private historical view never leaves this call.
+// Public readers above still freshly authenticate on every projected read.
+const fixedIntegratedProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
+function uncheckedPickerProductionRead(read){
+ const ciRead=uncheckedRead('picker',read);
+ return(path,encoding)=>{
+  if(!path.startsWith('src/')&&path!=='config/architecture.json')return ciRead(path,encoding);
+  const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+  const text=typeof raw==='string'?raw:raw.toString('utf8');
+  const prior=sourceEpoch.preCombinedSource(path,text,{target:'releasePickerControlsReviewed',readSource:p=>read(p,'utf8')});
+  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+ };
+}
+export function assertReleaseIntegratedCurrent(read=readFileSync){
+ assertReleaseIntegrationCurrent(read);
+ read=uncheckedPickerProductionRead(read);
+ assertReleasePickerControlsCiCurrent(read);
+ assertReleaseBootstrapCiCurrent(releasePickerControlsCiRead(read));
+ for(const [path,row]of Object.entries(fixedIntegratedProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releasePickerControlsCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(fixedIntegratedProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,read(path,'utf8')),fixedIntegratedProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
+}
+
+const fixedStsBeforeProof=JSON.parse(gunzipSync(stsStyleCiBytes));
+assert.equal(fixedStsBeforeProof.schemaVersion,1);assert.equal(fixedStsBeforeProof.normalization,'LF');
+assert.equal(fixedStsBeforeProof.baseCommit,'cb1eac63620b908d880b8a339ab834b1b533dfc1');
+for(const [path,row]of Object.entries(fixedStsBeforeProof.files))for(const side of ['before','after']){
+ const binding=row[side];if(binding===null)continue;
+ assert.equal(hash(binding.source),binding.sha256,path+'/'+side);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
+}
+for(const [path,row]of Object.entries(fixedStsBeforeProof.helperSources??{})){
+ assert.equal(hash(row.source),row.sha256,path+' complete helper record');
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.source)}\0`).update(row.source).digest('hex'),row.gitBlob);
+}
+freeze(fixedStsBeforeProof);
+const fixedStsProof=extendFeedbackCiProof(fixedStsBeforeProof,feedbackCiPatch);
+
+function uncheckedStsRead(read){return(path,encoding)=>{
+ const raw=read(path,encoding);
+ const binary=Object.hasOwn(fixedIntegratedProof.binaryViews,path)?fixedIntegratedProof.binaryViews[path]:null;
+ if(Buffer.isBuffer(raw)&&binary?.views.sts&&hash(raw)===binary.current){
+  const saved=binary.views.sts,bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
+ }
+ const text=typeof raw==='string'?raw:raw.toString('utf8');
+ let prior=text;
+ if(!path.startsWith('src/')&&path!=='config/architecture.json'){
+  const row=Object.hasOwn(fixedIntegratedProof.files,path)?fixedIntegratedProof.files[path]:null;
+  prior=uncheckedCiSource(path,prior,'picker');
+  prior=releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,prior),row?.current);
+  if(row?.views.sts&&typeof prior==='string'&&!prior.includes('\r\r\n')&&hash(norm(prior))===row.current.sha256&&row.views.sts.sha256!==row.current.sha256)prior=row.views.sts.source;
+ }
+ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+};}
+function uncheckedPickerInventory(paths,kind,read){
+ const current=integrationPacket.inventory[kind],prior=picker.currentInventory[kind],added=current.filter(p=>!prior.includes(p));
+ if(!added.some(p=>paths.includes(p)))return [...paths];
+ assertIntegrationRawInventory(paths,kind);
+ for(const path of added)assert.equal(hash(norm(read(path,'utf8'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
+ return [...prior];
+}
+function uncheckedStsInventory(paths,read){
+ const target='sts',kind='js';
+ const current=kind==='js'?fixedIntegratedProof.inventory:fixedIntegratedProof.luaInventory;
+ const prior=fixedIntegratedProof.inventories[target]?.[kind];
+ assert(prior,'known integration inventory');
+ const originalRead=read;
+ paths=uncheckedPickerInventory(paths,kind,originalRead);
+ read=uncheckedRead('picker',originalRead);
+ paths=releasePickerControlsPriorInventory(paths,kind,read);
+ // New standalone reviewed views consume raw discovery. Older chained views
+ // retain their existing idempotent prior-inventory contract.
+ if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
+ if(JSON.stringify([...paths].sort())===JSON.stringify(prior))return [...paths];
+ const added=current.filter(p=>!prior.includes(p));
+ if(added.length===0){
+  assert.deepEqual([...paths].sort(),current,'complete identical integration '+kind+' inventory');
+  return [...prior];
+ }
+ if(!added.some(path=>paths.includes(path)))return [...paths];
+ assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
+ for(const path of added){
+  const row=fixedIntegratedProof.files[path];assert(row,'complete added inventory source: '+path);
+   assert.equal(hash(norm(releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+ }
+ return [...prior];
+}
+export function assertReleaseStsStyleCiCurrent(paths,read=readFileSync){
+ assertReleaseIntegrationCurrent(read);
+ paths=uncheckedStsInventory(paths,read);
+ read=uncheckedStsRead(read);
+ assert.deepEqual([...paths].sort(),fixedStsProof.afterInventory,'complete StS current Full inventory');
+ for(const [p,row]of Object.entries(fixedStsProof.files))assert.equal(hash(norm(read(p,'utf8'))),row.after.sha256,'fresh complete StS CI source: '+p);
+ for(const [p,row]of Object.entries(fixedStsProof.helperSources))assert.equal(hash(norm(read(p,'utf8'))),row.sha256,'fresh StS helper source: '+p);
 }

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {assertReleaseStsStyleCiCurrent} from './release-picker-b9-integration.mjs';
 import {integratedSource,integratedRead,integratedPriorInventory} from './integrated-ci-source.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -39,10 +40,4 @@ export function stsStylePriorInventory(paths,read=readFileSync){
  for(const p of proof.addedTests)assert.equal(hash(norm(read(p,'utf8'))),proof.files[p].after.sha256,'StS added inventory source: '+p);
  return [...proof.beforeInventory];
 }
-export function assertStsStyleCiCurrent(paths,read=readFileSync){
- paths=integratedPriorInventory(paths,'sts','js',read);
- read=integratedRead('sts',{read});
- assert.deepEqual([...paths].sort(),stsStyleCiProof.afterInventory,'complete StS current Full inventory');
- for(const [p,row]of Object.entries(stsStyleCiProof.files))assert.equal(hash(norm(read(p,'utf8'))),row.after.sha256,'fresh complete StS CI source: '+p);
- for(const [p,row]of Object.entries(stsStyleCiProof.helperSources))assert.equal(hash(norm(read(p,'utf8'))),row.sha256,'fresh StS helper source: '+p);
-}
+export function assertStsStyleCiCurrent(paths,read=readFileSync){return assertReleaseStsStyleCiCurrent(paths,read);}

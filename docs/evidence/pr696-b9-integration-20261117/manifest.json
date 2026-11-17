@@ -66,6 +66,12 @@
     "complete": true
   },
   {
+    "path": "guidance-perf.log.gz",
+    "uncompressedBytes": 482,
+    "sha256": "000dc4c34277ce663054eccd43b8612e83e9118812493b4aa043fb03bea30b7f",
+    "complete": true
+  },
+  {
     "path": "guidance.log.gz",
     "uncompressedBytes": 482,
     "sha256": "000dc4c34277ce663054eccd43b8612e83e9118812493b4aa043fb03bea30b7f",
@@ -82,6 +88,30 @@
     "uncompressedBytes": 538,
     "sha256": "fce326951bed8906ae98a684fe1ad79ee5ebb47a5b788c6093f27917eeb15139",
     "complete": false
+  },
+  {
+    "path": "integrated-cases-perf.log.gz",
+    "uncompressedBytes": 518,
+    "sha256": "0e2610a6ea1c2b712b64a671b6b529e2f48d39e5242e8a0b42b31ac3b1823ac9",
+    "complete": false
+  },
+  {
+    "path": "integrated-fixed-perf-probe-first.log.gz",
+    "uncompressedBytes": 458,
+    "sha256": "144c5dd6b17527426e362e25da2f7e58f683a08a0e5216b659b22a5987b6daec",
+    "complete": true
+  },
+  {
+    "path": "integrated-fixed-perf-probe.log.gz",
+    "uncompressedBytes": 460,
+    "sha256": "5141cfcdd870713bddedcc0313ea029d2408ee8738aebc32b7c3b43948875bb1",
+    "complete": true
+  },
+  {
+    "path": "integrated-fixed-perf-probe.mjs.gz",
+    "uncompressedBytes": 1110,
+    "sha256": "9a3b376bac2b9ec38e367793129f627ee352a91b797a7a2a9ff04b46378e8b1e",
+    "complete": true
   },
   {
     "path": "joints-final.log.gz",
@@ -138,9 +168,51 @@
     "complete": true
   },
   {
+    "path": "sts-failed-three-perf.log.gz",
+    "uncompressedBytes": 524,
+    "sha256": "eb47f887ccd02c2500bba1273ef1afec5b4797f81fd78e831deb712b031c611d",
+    "complete": false
+  },
+  {
     "path": "sts-failed-three-rerun.log.gz",
     "uncompressedBytes": 0,
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "complete": false
+  },
+  {
+    "path": "sts-fixed-perf-probe-first.log.gz",
+    "uncompressedBytes": 1338,
+    "sha256": "315bd60177f5a1ae759fefcb226634a36d404b77be85c4553187bb9c9618f292",
+    "complete": true
+  },
+  {
+    "path": "sts-fixed-perf-probe.log.gz",
+    "uncompressedBytes": 465,
+    "sha256": "1eebdbe5664d9591e569b0a45feba4b69b009ac4bf31a2027fac9b872f9f95c6",
+    "complete": true
+  },
+  {
+    "path": "sts-fixed-perf-probe.mjs.gz",
+    "uncompressedBytes": 1264,
+    "sha256": "7118387949ea641a26ef85f5634b4f459358de9774fcd8fdb90bdf8dd2434e16",
+    "complete": true
+  },
+  {
+    "path": "sts-new-domain-probe-first.log.gz",
+    "uncompressedBytes": 733,
+    "sha256": "267c06f68e1a53914dfc6c3a22f92d09b98f11112eca819286833413bd8d04b2",
+    "complete": true
+  },
+  {
+    "path": "sts-new-domain-probe.log.gz",
+    "uncompressedBytes": 663,
+    "sha256": "0766b6b4ea653c9bb65d10e9aefcccc241ef4f83fbcc73bf8545f8051f47eaeb",
+    "complete": true
+  },
+  {
+    "path": "sts-new-domain-probe.mjs.gz",
+    "uncompressedBytes": 1500,
+    "sha256": "885b6efcfafff40f80e0e58138e79f73dbd62d8f9a0d71b328e29a30b5f938cf",
+    "complete": true
   }
 ]
