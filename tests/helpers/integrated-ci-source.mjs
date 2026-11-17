@@ -28,6 +28,14 @@ export function integratedSource(path,source,target,read=readFileSync){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
+ const input=source,originalRead=read;
+ const current=Object.hasOwn(releaseUnionCiPacket.files,path)?releaseUnionCiPacket.files[path].current:null;
+ // A legacy branch may convert a source that never enters the hand chain.
+ // Authorize every real current-to-history exit with this invocation's raw reader.
+ const expose=value=>{
+  if(value!==input&&typeof input==='string'&&!input.includes('\r\r\n')&&current?.sha256===hash(norm(input)))assertReleaseUnionCurrent(originalRead);
+  return value;
+ };
  source=handEnemyCiSource(path,source,undefined,read);read=handEnemyHistoricalRead('hand',read);
  source=handPost697CiSource(path,source,undefined,read);
  source=mobileHandCiSource(path,source,undefined,handPost697HistoricalRead('hand',read));
@@ -35,14 +43,15 @@ export function integratedSource(path,source,target,read=readFileSync){
  // Explicit standalone Release input remains available alongside the hand chain.
  source=integrationCiSource(path,source,'pc22');
  source=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,source),row?.current);
- if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
- if(row.views[target].sha256===row.current.sha256)return source;
- return row.views[target].source;
+ if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return expose(source);
+ if(row.views[target].sha256===row.current.sha256)return expose(source);
+ return expose(row.views[target].source);
 }
 export function integratedRead(target,{read=readFileSync}={}){return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
+  assertReleaseUnionCurrent(read);
   const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
  }
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);

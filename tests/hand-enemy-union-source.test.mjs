@@ -7,6 +7,42 @@ import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch as finalSourceEpoch,handEnemySourceEpoch as sourceEpoch,handPost697SourceEpoch,enemyPost697SourceEpoch,releaseJointSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {releaseUnionCiPacket,assertReleaseUnionCurrent,releaseUnionCiSource,releaseUnionPriorInventory} from './helpers/hand-enemy-release-ci-source.mjs';
 import {handEnemyCiPacket as p,handEnemyHistoricalRead,handEnemyPriorInventory,assertHandEnemyCiCurrent,assertHandEnemyRawInventory} from './helpers/hand-enemy-ci-source.mjs';
+import {integratedSource,integratedRead,integratedCiProof} from './helpers/integrated-ci-source.mjs';
+
+test('public integrated PC22 historical exits reauthenticate the original raw reader after warm success',()=>{
+ const owners=['src/lua/abyss_battle_card_view.lua','src/lua/abyss_card_flow.lua','tests/helpers/hand-enemy-release-ci-source.json.gz'];
+ for(const anchor of ['tests/helpers/release-pc22-basic-feedback-source.mjs','tests/lua/card_flow_contact_continuity.lua']){
+  const raw=readFileSync(anchor,'utf8');let fault;
+  const read=(path,encoding)=>{
+   if(path===fault?.path){if(fault.kind==='missing')throw Error('missing '+path);if(fault.kind==='null')return null;const bytes=readFileSync(path,encoding);return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);}
+   return readFileSync(path,encoding);
+  };
+  const reader=integratedRead('menu',{read}),expected=integratedSource(anchor,raw,'menu',read);
+  assert.notEqual(expected,raw,'the PC22 input must actually expose a historical source');
+  for(const invoke of [()=>integratedSource(anchor,raw,'menu',read),()=>reader(anchor,'utf8'),()=>reader(anchor)]){
+   const output=invoke();assert.equal(Buffer.isBuffer(output)?output.toString('utf8'):output,expected);
+   for(const path of owners)for(const kind of ['missing','null','drift']){
+    fault={path,kind};assert.throws(invoke,undefined,anchor+' '+path+' '+kind);fault=undefined;
+   }
+   const restored=invoke();assert.equal(Buffer.isBuffer(restored)?restored.toString('utf8'):restored,expected);
+  }
+ }
+});
+
+test('public integrated binary history reauthenticates current owners and archives before returning old bytes',()=>{
+ const anchor='tests/helpers/menu-red-production-source.json.gz',saved=integratedCiProof.binaryViews[anchor].views.menu;
+ let fault;const read=(path,encoding)=>{
+  if(path===fault?.path){if(fault.kind==='missing')throw Error('missing '+path);if(fault.kind==='null')return null;const bytes=readFileSync(path,encoding);return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);}
+  return readFileSync(path,encoding);
+ };
+ const reader=integratedRead('menu',{read}),expected=readFileSync(saved.path);
+ assert.notDeepEqual(expected,readFileSync(anchor),'the binary input must actually expose a historical archive');
+ assert.deepEqual(reader(anchor),expected);
+ for(const path of ['src/lua/abyss_battle_card_view.lua','src/lua/abyss_card_flow.lua','tests/helpers/hand-enemy-release-ci-source.json.gz',saved.path])for(const kind of ['missing','null','drift']){
+  fault={path,kind};assert.throws(()=>reader(anchor),undefined,path+' '+kind);fault=undefined;
+ }
+ assert.deepEqual(reader(anchor),expected);
+});
 
 test('hand enemy union preserves both entire historical production domains and every live owner',()=>{
  assertReleaseUnionCurrent();

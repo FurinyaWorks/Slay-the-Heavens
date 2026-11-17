@@ -6,8 +6,16 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./hand-enemy-release-ci-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'aa3e5a7db700c4b1746e455dee85b7441516af72147df8e82e3ea07fc403261f','complete hand enemy Release continuation');
-const packet=JSON.parse(gunzipSync(bytes));
+assert.equal(hash(bytes),'69515fa112d60dc9e2b675fc52f052fb273a31ea97a655fbf62a81f88ddd48c7','complete hand enemy Release continuation');
+const packed=JSON.parse(gunzipSync(bytes));
+assert.equal(packed.storageFormat,'deduplicated-complete-records-v1');
+const record=id=>{
+ if(id===null)return null;
+ assert(typeof id==='string'&&Object.hasOwn(packed.records,id),'complete stored source record');
+ const row=packed.records[id];assert.equal(row.sha256,id,'exact stored source identity');return row;
+};
+const packet={...packed,files:Object.fromEntries(Object.entries(packed.files).map(([path,row])=>[path,{...row,before:record(row.before),current:record(row.current),views:Object.fromEntries(Object.entries(row.views).map(([domain,id])=>[domain,record(id)]))}]))};
+delete packet.records;delete packet.storageFormat;
 assert.equal(packet.baseCommit,'5bb154a0649b2a5c372f0f08c0f93ee0ec716249');
 assert.equal(packet.viewCommits.release,'00ab3fe6d386f55aecfb063e59aeca2cf5065807');
 assert.equal(packet.viewCommits.enemyCalibration,'e229f7c4943915e33109e6bdc293c4dd3fcbedc2');
