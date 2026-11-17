@@ -1,0 +1,11 @@
+import subprocess, resource, time, json, sys
+name=sys.argv[1]
+command=sys.argv[2:]
+start=time.monotonic()
+with open(name+'.log','w') as f:
+ result=subprocess.run(command,stdout=f,stderr=subprocess.STDOUT)
+usage=resource.getrusage(resource.RUSAGE_CHILDREN)
+metrics=dict(command=command,exitCode=result.returncode,wallSeconds=time.monotonic()-start,maxRssKiB=usage.ru_maxrss,userSeconds=usage.ru_utime,systemSeconds=usage.ru_stime)
+with open(name+'.json','w') as f: json.dump(metrics,f,indent=2)
+print(json.dumps(metrics))
+sys.exit(result.returncode if result.returncode>=0 else 128-result.returncode)

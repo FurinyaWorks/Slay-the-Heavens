@@ -1,0 +1,18 @@
+{
+  "baseline-tree": {
+    "exitCode": 1,
+    "wallSeconds": 17.945775995999952,
+    "sampledTreeRssBytes": 2512064512,
+    "processesAtPeak": 2,
+    "sampleIntervalMs": 20
+  },
+  "experiment-tree": {
+    "exitCode": 0,
+    "wallSeconds": 21.678226256000016,
+    "sampledTreeRssBytes": 3359911936,
+    "processesAtPeak": 3,
+    "sampleIntervalMs": 20
+  },
+  "interpretation": "Rejected: subprocess serialization passed the same original proof/projection/drift assertions but raised sampled aggregate RSS. It is not a memory fix; no runtime patch or increased budget is adopted.",
+  "measurementLimit": "20ms sampled sum of RSS across one process group; conservative shared-page double counting, possible missed sub-20ms spikes. Raw experiment RUSAGE_CHILDREN fields can include the prior command inherited through shell exec; use only this comparison's wall and sampled tree metrics."
+}

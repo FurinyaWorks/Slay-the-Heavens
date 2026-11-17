@@ -1,0 +1,29 @@
+import fs from 'node:fs';
+import zlib from 'node:zlib';
+import {syncBuiltinESMExports} from 'node:module';
+const output=process.env.MEMORY_PROFILE;
+const memory=(op,bytes,stack)=>fs.appendFileSync(output,JSON.stringify({op,bytes,stack,pid:process.pid,...process.memoryUsage()})+'\n');
+const originalStringify=JSON.stringify;
+let serializing=false;
+JSON.stringify=function(value,...args){
+ if(serializing)return originalStringify(value,...args);
+ serializing=true;
+ try {
+  const result=originalStringify(value,...args);
+  if(result?.length>10*1024*1024)memory('stringify',result.length,new Error().stack.split('\n').slice(2,5));
+  return result;
+ }finally{serializing=false;}
+};
+const parse=JSON.parse;
+JSON.parse=function(value,...args){
+ const size=typeof value==='string'?value.length:value?.byteLength;
+ if(size>10*1024*1024)memory('before parse',size,new Error().stack.split('\n').slice(2,5));
+ const result=parse(value,...args);
+ if(size>10*1024*1024)memory('after parse',size);
+ return result;
+};
+const gunzip=zlib.gunzipSync;
+zlib.gunzipSync=function(...args){const result=gunzip(...args);if(result.length>10*1024*1024)memory('gunzip',result.length,new Error().stack.split('\n').slice(2,5));return result;};
+syncBuiltinESMExports();
+memory('start',0);
+process.on('exit',()=>memory('exit',0));

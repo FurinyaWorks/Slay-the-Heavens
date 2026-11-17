@@ -1,0 +1,68 @@
+{
+  "candidate": "1ee81fae20e725a89764ad3c422ebd1fccea02cb",
+  "repair": "32174844e7d679d68bca48e06851aa89f2178c5f",
+  "prHead": "dc74ab236c3df11a3e4cc394356c9b6e53e1b0ae",
+  "releaseReadback": "af77fb2461c548f0faf104761d107397f75dca08",
+  "node": "v24.19.0",
+  "nodeOptions": null,
+  "heapBoundaryMiB": 2048,
+  "defaultHeapLimitBytes": 4496293888,
+  "files": {
+    "AGENTS.md": {
+      "sha256": "6442187830dfa2c92ea9c8375972e3052afcab53db1576e382c9506f69518f6f",
+      "gitBlob": "ac2ba15bb25284119ef0fc0495e9ffb1bf8f36fe"
+    },
+    "docs/CI.md": {
+      "sha256": "1543510feefb0c1a5750e20a42e4c1677ce77fd9793f4313358c28e4b16784c4",
+      "gitBlob": "e4b6531675e5ecbebf0db05adcfee5aa71fcfb0f"
+    },
+    "docs/TASK_EXECUTION.md": {
+      "sha256": "a36798432329cf94c512df2951e6a4bf3d4418befbeda2c5443cf2641fce9f17",
+      "gitBlob": "9feb290528304412b715cbac64e08a04fa2f8781"
+    },
+    "docs/versions/V2-RELEASE-HANDOFF.md": {
+      "sha256": "63254cf64576d3b7ba3162a8a3324b26d3b3c069046fa1a5b35519bd685ea3e1",
+      "gitBlob": "a2282b7cdcd67f8ee702ec847d3ee2080a8418c0"
+    },
+    "tests/defect-final-source-epoch.test.mjs": {
+      "sha256": "5a4c3b06956ff1e65020a5e1ce8f58de3ee1886d80fd4f43cafa256c8b621c28",
+      "gitBlob": "2ac294d5c04ec786261ab9907268a2c6f31dd1ea"
+    },
+    "tests/encounter-formation-source-epoch.test.mjs": {
+      "sha256": "f53eba73f910629853604850fffcd537a8fccea84fb0fdf2108dc8500e4ea0d5",
+      "gitBlob": "6709558f5b68994d5ac0505378fc26473aee29f8"
+    },
+    "tests/helpers/combined-epoch/source-epoch-runtime.mjs": {
+      "sha256": "ee54191f327d412a5e37a76ff236af6f4aac692e51884a0e3afd33fe62e427e4",
+      "gitBlob": "8285c80044810548d529aaa7c128e30eb14cb9ac"
+    },
+    "tests/helpers/combined-epoch/source-epoch.mjs": {
+      "sha256": "7d8677de22edb9c4e6baed49daaf8391b87a294dee46a5c86df1afb212fcad8b",
+      "gitBlob": "74e74a416cce61f55ca7425a48aa2f19f347e733"
+    },
+    "tests/helpers/defect-final-source-epoch.mjs": {
+      "sha256": "8088008202072d1ce22492383861fe5ccb2b57d2bd9d1b06abb6653f835c2137",
+      "gitBlob": "38add45fd417cfc933f9a895cd3e8d89d56f591f"
+    },
+    "tests/helpers/encounter-formation-source-epoch.mjs": {
+      "sha256": "1c654029938e0d5eb0864adb2f76333d3e4a1ed1fe95d73e2e0c21a8fb376436",
+      "gitBlob": "24a9498e6cd40bb6a420aca7fd22a93ea3504d14"
+    },
+    "tests/helpers/room-ui-source-epoch.mjs": {
+      "sha256": "ddcb90da9fdaa1b93ccdc903cb348dd99c2ccaeaa2d5350bc2ed586631612500",
+      "gitBlob": "85d8c9d3f996c7996f11f5bcd0db3ec82fcb0e25"
+    }
+  },
+  "helperLfsInputs": [
+    {
+      "path": "tests/helpers/closeout-ci-source.json.gz",
+      "bytes": 2848271,
+      "sha256": "cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8"
+    },
+    {
+      "path": "tests/helpers/release-source-epoch.json.gz",
+      "bytes": 2587324,
+      "sha256": "5e41bb3cf23863526a60f15ce164419221c123f6d88a8b2fb3da18c9806ab780"
+    }
+  ]
+}
