@@ -148,8 +148,8 @@ test('Release freeze CI continuation authenticates fresh owners before historica
  assert(p);assert.equal(p.baseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');assertReleaseSelectionMapCiCurrent();
  for(const [path,row]of Object.entries(p.files)){
   const raw=readFileSync(path,'utf8');assert.equal(hash(norm(raw)),row.current.sha256);
-  for(const input of [raw,raw.replaceAll('\n','\r\n')])assert.equal(before(path,input),row.before?.source??input);
-  for(const input of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),null,{},17])assert.equal(before(path,input),input);
+  for(const input of [raw,norm(raw).replaceAll('\n','\r\n')])assert.equal(before(path,input),row.before?.source??input);
+  for(const input of [raw+'\n',raw.slice(1),norm(raw).replaceAll('\n','\r\r\n'),null,{},17])assert.equal(before(path,input),input);
   assert.equal(before('foreign/'+path,raw),raw);
   for(const change of ['append','missing','stale'])assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{
    if(p===path){if(change==='missing')throw Error('missing owner');if(change==='stale')return row.before?.source??'';return rawReadFileSync(p,encoding)+'\n';}return rawReadFileSync(p,encoding);
