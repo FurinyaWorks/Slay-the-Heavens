@@ -7,18 +7,18 @@
 | remote | 仓库 / 固定 ID | 分工 |
 | --- | --- | --- |
 | origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | 正式集成；release/v2.0.0 仅发版必需修复，develop 接后续功能、优化与技术债 |
-| fork-a | FurinyaDev/Slay-the-Heavens / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
-| fork-b | v5g95m7t8m-max/Slay-the-Heavens / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
+| fork-a | FurinyaDev/Slay-the-Heavens-Fork-A / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
+| fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
 
-只同步本次需要的短分支。首次使用用 `gh api repos/<owner>/Slay-the-Heavens` 核对 ID、权限及默认分支，再核对 `gh workflow list -R <repo>`。Fork 有工作流文件却列表为空时，管理员可用官方 `PUT /repos/<owner>/Slay-the-Heavens/actions/permissions` 设置 `enabled=true` 并保留已读回的 allowed_actions 策略；读回工作流已登记后才 dispatch。无写权限时记录阻塞，使用有权限的另一个 Fork 互援，不请求付费或削弱主仓库保护。
+只同步本次需要的短分支。首次使用用 `gh api /repositories/<固定ID>` 解析当前名称，再用 `gh api repos/<当前仓库名>` 核对 ID、权限及默认分支，核对 `gh workflow list -R <repo>`；仓库改名时同步 remote，不改历史证据。Fork 有工作流文件却列表为空时，管理员可用官方 `PUT /repos/<当前仓库名>/actions/permissions` 设置 `enabled=true` 并保留已读回的 allowed_actions 策略；读回工作流已登记后才 dispatch。无写权限时记录阻塞，使用有权限的另一个 Fork 互援，不请求付费或削弱主仓库保护。
 
 复用现有入口，不增加调度器、Runner 或跨仓库凭据。以下占位值须替换成已核对的仓库、任务分支及完整 SHA：
 
 ```sh
 git push fork-a <task-branch>:refs/heads/<task-branch>
-gh workflow run quick-feedback.yml -R FurinyaDev/Slay-the-Heavens --ref <task-branch> -f base_sha=<exact-base-sha>
+gh workflow run quick-feedback.yml -R FurinyaDev/Slay-the-Heavens-Fork-A --ref <task-branch> -f base_sha=<exact-base-sha>
 git push fork-b <task-branch>:refs/heads/<task-branch>
-gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens --ref <task-branch> -f runner_pool=hosted
+gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <task-branch> -f runner_pool=hosted
 ```
 
 Fast 是 advisory 有界选测，可能报告延期或零测试，不能称为双平台 Fast 准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
