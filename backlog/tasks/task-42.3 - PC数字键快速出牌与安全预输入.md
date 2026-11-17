@@ -1,0 +1,68 @@
+---
+id: TASK-42.3
+title: PC数字键快速出牌与安全预输入
+status: To Do
+assignee:
+  - Furinya
+created_date: '2026-11-17 03:56'
+updated_date: '2026-11-17 03:56'
+labels:
+  - pc
+  - combat-input
+  - post-release
+milestone: m-8
+dependencies: []
+references:
+  - TASK-42
+  - TASK-30
+  - TASK-29
+  - docs/research/battle-life-cards.md
+  - docs/backlog-details/TASK-42.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/670'
+  - >-
+    https://github.com/FurinyaWorks/Slay-the-Heavens/commit/479eb53080bd7cfcf5ff685021c1336169e4ef74
+  - docs/evidence/future-task-id-migration-20261117/README.md
+parent_task_id: TASK-42
+priority: medium
+type: feature
+ordinal: 175000
+---
+
+## Description
+
+<!-- SECTION:DESCRIPTION:BEGIN -->
+对齐《杀戮尖塔2》成熟的PC键鼠出牌习惯：数字键选牌、点击目标确认、无目标牌点击有效战场空白处确认、E结束回合，以及上一张牌演出未结束时的安全连续输入。保留现有鼠标拖牌、点选后备与手机触控，不改卡牌规则、数值、随机流和输入所有权。
+
+**排期：中高体验价值（Backlog档位 medium），当前2.0.0发版非必需、非阻塞；作为发版之后的体验迭代候选，具体归属版本由版本路线图另行排定。** 这是对TASK-42既有PC完整验收的独立功能增量，不替换其现有AC，也不要求当前发布候选具备预输入。
+<!-- SECTION:DESCRIPTION:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 查验当前千星原生键盘事件与游戏按键占用，并复核已实现的点选、拖牌及反馈忙碌锁；输出适配边界，不以原版/视频有功能代替平台可实现证据。
+- [ ] #2 PC支持手牌位置数字键1–9及第10张的可用快捷键（优先对齐原版0），手牌移位后下一次按键选择最新槽位；卡片可见数字提示与实际输入一致，非法/空槽不出牌。
+- [ ] #3 目标牌可按键/点击选中后单击合法敌人出牌；无目标牌在有效战场空白区确认；保留鼠标拖放、再次点牌取消及原有取消路径，敌人、菜单、牌堆和覆盖层不能被误当成空白确认。
+- [ ] #4 PC支持与平台不冲突的E结束回合；选牌、取消、弹窗、奖励、选牌分支、战斗切换与失焦时不错误结束回合，保留现有结束回合入口。
+- [ ] #5 实现真正的安全预输入：动画进行时可接收下一次合法操作；待执行项绑定卡牌UID与明确目标，在实际顺序执行前重新校验费用、可玩性、目标存活、战斗代次和当前阶段；不丢操作、不双扣、不重放、不修改规则/RNG顺序，失效项明确丢弃或拒绝并可取消。
+- [ ] #6 连续出牌及结束回合可按原版习惯快速操作；反馈动画允许有界加速/并行收尾，不靠强行关闭必要反馈或简单放开busy锁制造越权执行。排队必须有上限与中断清理，动作队列和预输入队列职责分离。
+- [ ] #7 自动回归覆盖连续选牌与牌位变化、十张手牌、目标死亡/失效、多敌、抽弃牌、无目标牌、先后E、重复输入、旧事件、弹窗与换战；同输入对照规则、费用、状态和RNG，并在同一候选记录PC实操与手机触控无回退证据，未实机不勾设备条款。
+<!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+先录制当前PC基线并对照《杀戮尖塔2》行为，复用现有输入状态机、Run.play/Run.endTurn、反馈队列与UID归属；仅在确有必要时新增薄的有界输入缓冲，规则提交继续串行且逐次验证。建立可重放键鼠事件回归，最后用同一正式候选分别验收PC与手机。不另造战斗引擎、不直接复制反编译代码。
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+2026-11-15 用户提交《杀戮尖塔2》快速出牌教学字幕（BV1m7Nwz7Emv）：00:18–01:13讲数字键选牌、牌位自动前移与E结束回合；01:14–01:49讲动画未完继续出牌、表现加速及结束回合预输入。这是玩家演示，仍需源码、千星原生接口与实机核对。社区反编译参考：Hexpion/Slay-the-spire-2 的 NPlayerHand / NMouseCardPlay / NCardPlayQueue；只参考行为、独立实现。
+
+现有abyss_battle_actions.lua的busy前置会在反馈播放期间拒绝提交；abyss_action_queue.lua管理规则动作延续而非玩家预输入。本任务负责这一新缺口，TASK-42继续负责整套PC操作与两幕流程验收。不得将已有点选/拖牌或原规则队列误记成已经支持预输入。
+
+本项不进入当前2.0.0发布清单，不改变release/master、不绑定当前发版日期、不绕过独立评审或平台性能/输入门禁；相关改动须待当前发版完成后单独实施与PR。
+
+2026-11-15 身份迁移：本项从PR #670原PC快速出牌TASK-109迁至TASK-42.1，避免与根手机专项TASK-109冲突。保留原7项未验AC、To Do、medium、post-release及TASK-42父项；不是新增功能、开工或发版批准。原记录通过CLI archive保留，源head f2b96b0d89966be897c80964114809b451dacafb。TASK-110中旧TASK-109引用沿归档映射指向本项，TASK-110正文未改。
+
+2026-11-17 身份二次迁移：PR #670@479eb53080bd7cfcf5ff685021c1336169e4ef74 的未来PC TASK-42.1迁至TASK-42.3，避开PR #676@e40b421104aed1a47f971dc5eaeae08431c5a130已占用的P0 TASK-42.1/42.2。原PC TASK-109→旧未来42.1→当前42.3的档案全文与JSON均保留。TASK-110旧动效引用当前映射为TASK-29.1.1；正文中历史编号不改写。保持To Do、原7条未验AC、原优先级/父项及post-release边界，不代表开工或发版批准。准备树依赖676未合，尚非成熟可合切片。
+<!-- SECTION:NOTES:END -->

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "479eb53080bd7cfcf5ff685021c1336169e4ef74",
+  "dependencyPr": 676,
+  "dependencyHead": "e40b421104aed1a47f971dc5eaeae08431c5a130",
+  "dependencyMerged": false,
+  "archives": {
+    "110": {
+      "newId": "29.1.1",
+      "archive": "backlog/archive/tasks/task-110 - 轻量卡牌流转动效精修与性能复验.md",
+      "originalGitBlob": "b7b7d926b6d6b673ac41b7ac80a7798b19eeb4a0",
+      "archivedGitBlob": "b7b7d926b6d6b673ac41b7ac80a7798b19eeb4a0",
+      "fullTextExact": true
+    },
+    "42.1": {
+      "newId": "42.3",
+      "archive": "backlog/archive/tasks/task-42.1 - PC数字键快速出牌与安全预输入.md",
+      "originalGitBlob": "7dddf7515682c6c66ca4b440cf538aaadc9b9c95",
+      "archivedGitBlob": "7dddf7515682c6c66ca4b440cf538aaadc9b9c95",
+      "fullTextExact": true
+    }
+  },
+  "p0": {
+    "42.1": {
+      "path": "backlog/tasks/task-42.1 - PC卡牌悬停拖放及牌组排序响应专项.md",
+      "gitBlob": "99e11ed0d054a56eeac587501634346dd4d85e53",
+      "unchangedFrom676": true
+    },
+    "42.2": {
+      "path": "backlog/tasks/task-42.2 - PC卡牌取消提示瞄准线与异常牌面复验.md",
+      "gitBlob": "d59dd2e7145a9a361ad9a5de3667f1a804e115f4",
+      "unchangedFrom676": true
+    }
+  },
+  "old109ArchiveRetained": "backlog/archive/tasks/task-109 - PC数字键快速出牌与安全预输入.md",
+  "originalFieldsAndAcPreserved": true,
+  "doctor": "pass",
+  "verifyBacklog": "pass",
+  "checkGuidance": "pass",
+  "diffCheck": "pass",
+  "productChangesRelativeTo676": [],
+  "pushed": false,
+  "readyToMerge": false
+}
