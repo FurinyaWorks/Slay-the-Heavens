@@ -1,3 +1,4 @@
+import {releaseBootstrapCiSource,capacityReviewCiPacket} from './helpers/release-bootstrap-ci-source.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -297,9 +298,12 @@ test('pre-component unsupported feature and art compositions expose their exact 
  // The outer admits only a complete known current source, never foreign drift.
  const readSource=path=>preComponentUiCiSource(path,readFileSync(path,'utf8'));
  const featurePath='scripts/art/ready-card-runtime.mjs',featureOwner='scripts/native-script-batch.mjs';
+ const featureRaw=readFileSync(featurePath,'utf8'),featureSource=releaseBootstrapCiSource(featurePath,featureRaw);
+ assert.equal(hash(featureRaw.replaceAll('\r\n','\n')),capacityReviewCiPacket.files[featurePath].current.sha256);
+ assert.equal(featureSource,capacityReviewCiPacket.files[featurePath].before.source);
  const featureActual=hash(readFileSync(featureOwner,'utf8').replaceAll('\r\n','\n')),featureExpected=betaSources[featureOwner].sha256;
  assert.notEqual(featureActual,featureExpected);
- for(const project of [currentFeature,currentHistory])assert.throws(()=>project(featurePath,readFileSync(featurePath,'utf8'),{readSource}),error=>{
+ for(const project of [currentFeature,currentHistory])assert.throws(()=>project(featurePath,featureSource,{readSource}),error=>{
   assert.equal(error.code,'ERR_ASSERTION');
   assert(error.message.startsWith('unreviewed beta linked owner; linked source drift: '+featureOwner));
   assert.equal(error.actual,featureActual);assert.equal(error.expected,featureExpected);return true;
@@ -322,9 +326,12 @@ test('pre-component unsupported feature and art compositions expose their exact 
  }finally{process.chdir(cwd);rmSync(directory,{recursive:true,force:true});}
 });
 
-test('current feature consumers reject the exact first unsupported component-era linked owner',()=>{
+test('pre-capacity feature consumers reject the exact first unsupported component-era linked owner',()=>{
  const path='scripts/art/ready-card-runtime.mjs',owner='scripts/native-candidate-ui-cache.mjs';
- const source=readFileSync(path,'utf8'),actual=hash(readFileSync(owner,'utf8').replaceAll('\r\n','\n')),expected=betaSources[owner].sha256;
+ const raw=readFileSync(path,'utf8'),source=releaseBootstrapCiSource(path,raw);
+ assert.equal(hash(raw.replaceAll('\r\n','\n')),capacityReviewCiPacket.files[path].current.sha256);
+ assert.equal(source,capacityReviewCiPacket.files[path].before.source);
+ const actual=hash(readFileSync(owner,'utf8').replaceAll('\r\n','\n')),expected=betaSources[owner].sha256;
  assert.notEqual(actual,expected);
  for(const project of [currentFeature,currentHistory])assert.throws(()=>project(path,source),error=>{
   assert.equal(error.code,'ERR_ASSERTION');assert(error.message.startsWith('unreviewed beta linked owner; linked source drift: '+owner));
@@ -384,4 +391,13 @@ test('original helper closure rejects changed reused or embedded bytes and wrong
   }else assert.throws(()=>originalHelperInputs({[path]:{...binding,source:binding.source+'\n'}}),/original helper complete bytes/);
   assert.throws(()=>originalHelperInputs({[path]:{...binding,gitBlob:'0'.repeat(40)}}),/original helper Git blob/);
  }
+});
+
+
+test('capacity ready-card source remains raw to unsupported old feature consumers without authorizing linked reads',()=>{
+ const path='scripts/art/ready-card-runtime.mjs',raw=readFileSync(path,'utf8');
+ const noRead=()=>{throw Error('unrecognized source must not authorize linked reads');};
+ for(const project of [currentFeature,currentHistory])for(const source of [raw,raw.replaceAll('\n','\r\n'),raw+'\n-- unknown'])
+  assert.equal(project(path,source,{readSource:noRead}),source);
+ for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n')])assert.equal(releaseBootstrapCiSource(path,source),source);
 });

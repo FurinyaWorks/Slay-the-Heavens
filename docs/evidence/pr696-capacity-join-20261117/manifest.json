@@ -1,0 +1,68 @@
+[
+  {
+    "path": "boundary-first.log.gz",
+    "uncompressedBytes": 31,
+    "sha256": "6388cc3fcd256f4e8e9d74f2d1c89904f4b2605f80e34ad568880160e66e93a5",
+    "complete": true
+  },
+  {
+    "path": "capacity-packet-closure.json.gz",
+    "uncompressedBytes": 4984,
+    "sha256": "5968f3e7336f0ca644e34b029507ca22958a51f481d61bd5569830dd8e3f39c4",
+    "complete": true
+  },
+  {
+    "path": "capacity-reader-probe.log.gz",
+    "uncompressedBytes": 137,
+    "sha256": "09a2daa26b0af75fd1c5cdb114dd73c0ac2202b354266718d1dc5ef81b39b0a9",
+    "complete": true
+  },
+  {
+    "path": "capacity-reader-probe.mjs.gz",
+    "uncompressedBytes": 1076,
+    "sha256": "b2b10e1df4ed921ec5ae8c1c887726376657b237f8138ac34fc3f7fd5345fb08",
+    "complete": true
+  },
+  {
+    "path": "capacity-source-consumer.log.gz",
+    "uncompressedBytes": 261,
+    "sha256": "c8d01b017efef42eb97e91714f895ab5ad2039b8f0b164219f83be007f96ed6c",
+    "complete": true
+  },
+  {
+    "path": "guidance.log.gz",
+    "uncompressedBytes": 482,
+    "sha256": "000dc4c34277ce663054eccd43b8612e83e9118812493b4aa043fb03bea30b7f",
+    "complete": true
+  },
+  {
+    "path": "native-fallback-schema.log.gz",
+    "uncompressedBytes": 227,
+    "sha256": "0f159d5baf033a44feb167dd19710dbb8b3058a5a404fc024c97ae1619881dce",
+    "complete": true
+  },
+  {
+    "path": "outer-boundary-probe.log.gz",
+    "uncompressedBytes": 946,
+    "sha256": "c45f338c68065c29d2a50208a1ab214d9d050915b680f7b3afc8d75ea9a72d73",
+    "complete": true
+  },
+  {
+    "path": "outer-boundary-probe.mjs.gz",
+    "uncompressedBytes": 1785,
+    "sha256": "70d7b53cca998a3c48b31204ea0fe70a4598a4cfc150b9bf1d70a2c0b105a774",
+    "complete": true
+  },
+  {
+    "path": "product-provenance.json.gz",
+    "uncompressedBytes": 2270,
+    "sha256": "639e3e3f8007dc299121b4c1f1a5a37b9dbe5d76949f1cf2df9bd3ae3668767e",
+    "complete": true
+  },
+  {
+    "path": "scope.json.gz",
+    "uncompressedBytes": 3006,
+    "sha256": "bf3ebafb643af334b95395d28c05d4b49c4a49c66fcb17a08e8c56d82e9375f0",
+    "complete": true
+  }
+]

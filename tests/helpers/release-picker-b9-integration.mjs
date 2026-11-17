@@ -8,17 +8,25 @@ import {stsStyleCiBytes} from './sts-style-ci-binding.mjs';
 import {feedbackCiPatch} from './sts-feedback-ci.mjs';
 import {extendFeedbackCiProof} from './sts-feedback-source-runtime.mjs';
 import {releasePickerControlsCiRead,releasePickerControlsCiSource,releasePickerControlsCiCheckedSource,releasePickerControlsPriorInventory} from './release-picker-controls-ci-source.mjs';
-import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source-picker-before-capacity.mjs';
+import {assertReleaseIntegrationCurrent as assertCapacityIntegrationCurrent,integrationRead as capacityIntegrationRead,integrationCapacityCiRead as originalCapacityCiRead} from './release-card-contact-integration.mjs';
+import {assertReleaseBootstrapCiCurrent as assertCapacityBootstrapCurrent} from './release-bootstrap-ci-source.mjs';
+import {releasePc22BasicFeedbackCiRead} from './release-pc22-basic-feedback-ci-source.mjs';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {releasePc22BasicFeedbackCiPacket as pc22,assertReleasePc22BasicFeedbackCiCurrent} from './release-pc22-basic-feedback-ci-source.mjs';
 import {releasePickerControlsCiPacket as picker,assertReleasePickerControlsCiCurrent} from './release-picker-controls-ci-source.mjs';
-import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
+import {releaseSelectionMapCiPacket as selection,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source-picker-before-capacity.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=norm(readFileSync(new URL('./release-picker-b9-integration.json',import.meta.url),'utf8'));
 assert.equal(hash(bytes),'06c515adc402c299dc1fa8210cc110622869c80660a6960d3a3cf9d62c7f8914','complete Release card-contact integration bindings');
 export const integrationPacket=JSON.parse(bytes);
 assert.equal(integrationPacket.head,'e9866fece8a01ed5fd5dc5530d8b4d9da4bbc9bc');
 assert.equal(integrationPacket.base,'b9bca884ed9b9831965b409885d78f719b9a567a');
+const capacityJoinBytes=norm(readFileSync(new URL('./release-picker-capacity-join.json',import.meta.url),'utf8'));
+assert.equal(hash(capacityJoinBytes),'ade1a9ac2ccd9a293d12a45675f1b204729907c64c67540536004de5d0bbb85e','complete picker capacity join');
+const capacityJoin=JSON.parse(capacityJoinBytes);
+assert.equal(capacityJoin.prepCommit,'c2d32421e63f104675fb98d7af033cb5817555eb');
+assert.equal(capacityJoin.releaseCommit,'00ab3fe6d386f55aecfb063e59aeca2cf5065807');
 const packets={picker,pc22,selection};
 assert.equal(integrationPacket.fixedStsValidatorBefore.sha256,'054113396d3db48407c2aee4f5c9563e6c4f2e8a80d37c979c79b6b3afac423a');
 assert.equal(hash(integrationPacket.fixedStsValidatorBefore.source),integrationPacket.fixedStsValidatorBefore.sha256,'exact fixed StS validator predecessor');
@@ -27,7 +35,7 @@ integrationPacket.inventory=Object.fromEntries(['js','lua'].map(kind=>[kind,[...
  ...pc22.currentInventory[kind],...picker.currentInventory[kind],...selection.currentInventory[kind],...(kind==='js'?integrationPacket.addedJs:[]),
 ])].sort()]));
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
-freeze(integrationPacket);
+freeze(integrationPacket);freeze(capacityJoin);
 for(const side of Object.keys(packets))for(const kind of ['js','lua'])
  assert(packets[side].currentInventory[kind].every(path=>integrationPacket.inventory[kind].includes(path)),'retain complete '+side+' '+kind+' inventory');
 // CI projections never intercept production authorization. Complete standalone
@@ -35,6 +43,7 @@ for(const side of Object.keys(packets))for(const kind of ['js','lua'])
 function uncheckedCiSource(path,source,side='picker'){
  assert(Object.hasOwn(packets,side),'known Release integration side');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ source=capacityJoinSource(path,source,'prep');
  if(typeof source!=='string'||source.includes('\r\r\n')||!Object.hasOwn(integrationPacket.files,path)||hash(norm(source))!==integrationPacket.files[path])return source;
  if(path==='tests/helpers/sts-style-ci-source.mjs')return integrationPacket.fixedStsValidatorBefore.source;
  const own=packets[side].files[path],other=Object.values(packets).map(p=>p.files[path]).find(p=>p?.before);
@@ -81,11 +90,11 @@ export function integrationPriorInventory(paths,side='picker',kind='js',read=rea
  const current=integrationPacket.inventory[kind],prior=packets[side].currentInventory[kind],added=current.filter(p=>!prior.includes(p));
  if(!added.some(p=>paths.includes(p)))return [...paths];
  assertIntegrationRawInventory(paths,kind);
- for(const path of added)assert.equal(hash(norm(read(path,'utf8'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
+ for(const path of added)assert.equal(hash(norm(capacityJoinSource(path,read(path,'utf8'),'prep'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
  assertReleaseIntegrationCurrent(read);
  return [...prior];
 }
-export function assertReleaseIntegrationCurrent(read=readFileSync){
+function assertPrepIntegrationCurrent(read){
  assert.equal(norm(read('tests/helpers/release-picker-b9-integration.json','utf8')),bytes,'fresh complete integration source: B9 trust packet');
  for(const path of sourceEpoch.proof.owners)assert.equal(hash(norm(read(path,'utf8'))),sourceEpoch.proof.current[path].sha256,'fresh complete integration source: linked owner '+path);
  for(const [path,sha]of Object.entries(integrationPacket.files))assert.equal(hash(norm(read(path,'utf8'))),sha,'fresh complete integration source: Release join '+path);
@@ -152,7 +161,7 @@ function uncheckedPickerInventory(paths,kind,read){
  const current=integrationPacket.inventory[kind],prior=picker.currentInventory[kind],added=current.filter(p=>!prior.includes(p));
  if(!added.some(p=>paths.includes(p)))return [...paths];
  assertIntegrationRawInventory(paths,kind);
- for(const path of added)assert.equal(hash(norm(read(path,'utf8'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
+ for(const path of added)assert.equal(hash(norm(capacityJoinSource(path,read(path,'utf8'),'prep'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
  return [...prior];
 }
 function uncheckedStsInventory(paths,read){
@@ -223,7 +232,7 @@ export function releaseIntegratedPriorInventory(paths,target,kind='js',read=read
  const addedJoin=currentJoin.filter(p=>!priorJoin.includes(p));
  if(addedJoin.some(p=>paths.includes(p))){
   assertIntegrationRawInventory(paths,kind);
-  for(const path of addedJoin)assert.equal(hash(norm(originalRead(path,'utf8'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
+  for(const path of addedJoin)assert.equal(hash(norm(capacityJoinSource(path,originalRead(path,'utf8'),'prep'))),integrationPacket.files[path],'fresh Release integration added inventory source: '+path);
   ensure();paths=[...priorJoin];
  }
  read=projected;
@@ -244,4 +253,36 @@ export function releaseIntegratedPriorInventory(paths,target,kind='js',read=read
    assert.equal(hash(norm(releaseBootstrapCiSource(path,releasePickerControlsCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
+}
+
+// Exact outer join: raw current identity is checked before either private domain.
+function capacityJoinSource(path,source,domain){
+ const row=Object.hasOwn(capacityJoin.files,path)?capacityJoin.files[path]:null;
+ if(!row?.[domain]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
+ return source.includes('\r\n')?row[domain].source.replaceAll('\n','\r\n'):row[domain].source;
+}
+function capacityJoinRead(domain,read){return(path,encoding)=>{
+ const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=capacityJoinSource(path,text,domain);
+ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+};}
+export function assertReleaseIntegrationCurrent(read=readFileSync){
+ assert.equal(norm(read('tests/helpers/release-picker-capacity-join.json','utf8')),capacityJoinBytes,'fresh complete picker capacity join packet');
+ for(const [path,row]of Object.entries(capacityJoin.files))assert.equal(hash(norm(read(path,'utf8'))),row.currentSha256,'fresh complete integration source: picker capacity '+path);
+ for(const [path,sha]of Object.entries(capacityJoin.archives))assert.equal(hash(read(path)),sha,'fresh complete picker capacity archive: '+path);
+ assertPrepIntegrationCurrent(capacityJoinRead('prep',read));
+ const capacityRead=capacityJoinRead('capacity',read);
+ assertCapacityIntegrationCurrent(capacityRead);
+ assertCapacityBootstrapCurrent(releasePc22BasicFeedbackCiRead(capacityIntegrationRead('pc22',capacityRead)));
+}
+export function integrationCapacityCiRead(read=readFileSync){
+ return(path,encoding)=>{
+  const raw=read(path,encoding);
+  // Evaluate the pure historical transform from this one captured read.
+  // Fresh authorization below still reads the original caller, not the capture.
+  const value=originalCapacityCiRead(capacityJoinRead('capacity',()=>raw))(path,encoding);
+  const changed=Buffer.isBuffer(raw)&&Buffer.isBuffer(value)?!raw.equals(value):raw!==value;
+  if(changed)assertReleaseIntegrationCurrent(read);
+  return value;
+ };
 }
