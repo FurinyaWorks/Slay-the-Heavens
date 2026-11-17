@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {beforeCapacityB9Ci} from './release-capacity-b9-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-selection-map-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03','complete release selection map CI continuation');
@@ -51,15 +52,16 @@ const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v
 export const releaseSelectionMapCiPacket=freeze(packet);
 export const capacityReleaseCiPacket=freeze(capacityRelease);
 export function capacityReleaseCiBefore(path,source){
+ source=beforeCapacityB9Ci(path,source,'capacity');
  const row=Object.hasOwn(capacityRelease.files,path)?capacityRelease.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
 function checkedSource(path,source,before){
- source=capacityReleaseCiBefore(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
+ if(before&&(!row?.before||row.before.sha256!==before.sha256))return source;
+ source=capacityReleaseCiBefore(path,source);
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
- if(before&&row.before.sha256!==before.sha256)return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
 // Only the explicit complete-CI validator may compare a production owner's
@@ -107,7 +109,7 @@ export function assertReleaseSelectionMapExecutionGuards(workflow){
 }
 export function assertReleaseSelectionMapCiCurrent(read=readFileSync){
  for(const [path,row]of Object.entries(capacityRelease.files))
-  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: capacity Release merge '+path);
+  assert.equal(hash(norm(beforeCapacityB9Ci(path,read(path,'utf8'),'capacity'))),row.current.sha256,'fresh complete integration source: capacity Release merge '+path);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(capacityReleaseCiBefore(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: release selection map '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
