@@ -1,0 +1,21 @@
+✔ Defect final outer epoch preserves every prior binding and exact frozen production byte (24.633767ms)
+✔ all advertised historical targets restore Defect final from LF and CRLF without rewriting originals (3.514427ms)
+✔ current facade retains exact config identity and rechecks all 50 owners after warm success (10.440157ms)
+✔ foreign bytes never authorize reads and composed readers preserve explicit raw reader ownership (2.410428ms)
+✔ isolated authenticated helper closure retains the exact Defect final epoch and rejects owner drift (6880.719357ms)
+✔ unknown source targets are rejected rather than gaining an identity fallback (0.475476ms)
+✔ configuration layout admission preserves exact tokens and freshly authenticates all 50 current raw owners (10.284176ms)
+✔ outer foreign-source fallback preserves invalid raw-reader semantics (0.618709ms)
+✔ live LF and CRLF raw owner reads authenticate 50 current owners on every call (2826.96801ms)
+✔ outer metadata preserves the full predecessor and rejects altered predecessor metadata (598.525835ms)
+✔ source and configuration reject unknown targets and malformed live readers after warm authorization (2.845043ms)
+✔ pre-feedback production retains original68, exact28, merchant and all 104 frozen owner assertions (41.557458ms)
+✔ current raw production retains the exact power-view owner and complete release owner continuation (19.873571ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25984.10803

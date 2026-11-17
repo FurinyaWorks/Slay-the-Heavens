@@ -1,0 +1,23 @@
+✔ Encounter formation outer epoch preserves every prior binding and exact frozen production byte (21.079405ms)
+✔ all advertised historical targets restore Encounter formation from LF and CRLF without rewriting originals (3.018949ms)
+✔ current facade retains exact config identity and rechecks all 51 owners after warm success (6.560974ms)
+✔ foreign bytes never authorize reads and composed readers preserve explicit raw reader ownership (1.904646ms)
+✔ isolated authenticated helper closure retains the exact Encounter formation epoch and rejects owner drift (11967.085727ms)
+✔ unknown source targets are rejected rather than gaining an identity fallback (0.469847ms)
+✔ configuration layout admission preserves exact tokens and freshly authenticates all 51 current raw owners (9.685687ms)
+✔ outer foreign-source fallback preserves invalid raw-reader semantics (0.603205ms)
+✔ live LF and CRLF raw owner reads authenticate 51 current owners on every call (37106.692881ms)
+✔ outer metadata preserves the full predecessor and rejects altered predecessor metadata (459.548232ms)
+✔ source and configuration reject unknown targets and malformed live readers after warm authorization (2.428094ms)
+✔ official repair adds exact complete-file identities without rewriting the battle predecessor (25.470057ms)
+✔ official repair helper closure imports in isolation and rejects new-file drift or removal (10954.255212ms)
+✔ pre-feedback UI facade retains all 104 frozen owners and their original authorization contract (1126.508182ms)
+✔ current UI facade authenticates all 117 disk owners once in order and rejects every warm drift or removal (2144.561303ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78992.358422

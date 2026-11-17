@@ -1,0 +1,10 @@
+{
+  "tests/defect-final-source-epoch.test.mjs": "2ac294d5c04ec786261ab9907268a2c6f31dd1ea",
+  "tests/encounter-formation-source-epoch.test.mjs": "6709558f5b68994d5ac0505378fc26473aee29f8",
+  "tests/helpers/integrated-ci-source.mjs": "0c9f9208ccd8279c6f7c5cf16439fdb1a65b67d5",
+  "tests/helpers/release-runtime-integration.json": "770eba56f9fd6df750f5ee50ee12767364a489a1",
+  "tests/helpers/release-runtime-integration.mjs": "229b5492d315c61bf8ff1be5c8b5de3eaf337ec4",
+  "tests/helpers/runtime-current-owner-repair.json": "adb5809ec7f3122bd118b81e9cf4d90e91b48ad9",
+  "tests/helpers/release-runtime-before-current-owner-repair.json": "14b217620cc3ddea6db46ba5465c478ea67ea0b2",
+  "tests/helpers/.gitattributes": "c0b5293c1058e7f45cf553c6aefcda81b6061c18"
+}
