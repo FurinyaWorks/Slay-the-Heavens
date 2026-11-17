@@ -32,3 +32,11 @@ node scripts/ci-run-costs.mjs --repo FurinyaWorks/Slay-the-Heavens --since 2026-
 原有 `ci-run-costs.mjs <raw-directory> <output.json>` 接口保留。runner分钟只累计实际分配的执行时间，取消前的排队不计；缺失时明确显示不完整。跨Fork复用统计只针对diagnostic dispatch，不能把PR、push或Merge Queue正式验证当作可省成本。后续按同口径短窗口比较实际故障、消耗、首次通过率和合并耗时，不靠反复重跑旧SHA刷指标，也不新增指标门禁。
 
 瘦身版本地验证：旧Full红项/工作流/Quick/消耗统计98/98，原始来源消费者85/85；actionlint、syntax、guidance、Backlog和diff-check通过。原有目录CLI的388.17分钟计算不变，固定基线回放与旧结果逐字节一致。独立复审确认未降低原生门禁；托管验收仍须使用新候选，不继承旧Full结果。
+
+## 集成接续：准确失败与取消
+
+8c664d4b 的 A Full [44032429395](https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A/actions/runs/44032429395) 已失败：18 个 Windows 分片成功，POSIX 矩阵因新增 admission 在 dispatch 被 skipped 而未展开，汇总明确失败，不能称作 runner 排队。增量复用 4629e6ae 的必要工作流修复，把预检移入原 impact/inventory，保留瘦身、原作业集合、原历史包的 before 字节及成功 rerun；两个消费者显式要求 impact 成功和非取消。未恢复额外指标脚本、库存逆投影或新测试文件。
+
+B Full [44034686329](https://github.com/v5g95m7t8m-max/Slay-the-Heavens-Fork-B/actions/runs/44034686329) / 4629e6ae 是已执行后人工取消；[rules7 annotation](https://api.github.com/repos/v5g95m7t8m-max/Slay-the-Heavens-Fork-B/check-runs/133874836362/annotations) 明确 `The run was canceled by @FurinyaDev.`，不是旧 403，也没有完成 Full 成功资格。该轮16个作业实际获配 runner，执行合计105.53 runner-min；未获 runner 的取消作业不计执行。例 rules7 创建06:55:11Z、开始06:55:15Z（等待4秒）、结束07:03:17Z（执行482秒）。API最近100条运行已穷尽B仓两条记录，核查时没有后续运行，不能虚构最新绿灯。
+
+本次依赖图回归先红4项，再绿4项；既有 Quick/Full/summary 三文件62/62通过。它们是定向本地验证，不是新候选托管 Full、主仓PR或队列组合通过。正式结果仍由准确候选的原有流水线与合后验证接续。

@@ -218,7 +218,7 @@ test('real publisher entrypoint collects API identities before current pending a
 test('Full publication reuses existing jobs and grants status writes only to planner and final aggregate',()=>{
  const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  const jobs=[...workflow.slice(workflow.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):\n([\s\S]*?)(?=^  [\w-]+:|(?![\s\S]))/gm)];
- assert.deepEqual(jobs.map(j=>j[1]),['admission','impact','fast','rules','check','presentation','engineering-posix-shards','engineering-posix']);
+ assert.deepEqual(jobs.map(j=>j[1]),['impact','fast','rules','check','presentation','engineering-posix-shards','engineering-posix']);
  for(const [,name,body]of jobs){
   if(['impact','check'].includes(name))assert.match(body,/^    permissions:\n      contents: read\n      actions: read\n      pull-requests: read\n      statuses: write$/m);
   else assert.doesNotMatch(body,/statuses: write|contents: write|pull-requests: write|checks: write/);

@@ -317,12 +317,21 @@ test('unknown preflight fails instead of silently passing or starting local Full
  const r=spawnSync(process.execPath,['scripts/test-affected.mjs','--preflight','--files','unknown.txt'],{encoding:'utf8'});
  assert.notEqual(r.status,0); assert.match(r.stderr,/Full required/);
 });
-test('all expensive PR jobs depend on admission; integration keeps native triggers',()=>{
+test('formal preflight reuses existing jobs and precedes costly PR work',()=>{
  const q=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
- assert.match(q,/admission:[\s\S]*node scripts\/fork-preflight.mjs/);
- for(const name of ['impact','presentation'])assert.match(q,new RegExp(`  ${name}:\\n    needs: admission`));
+ const jobs=[...q.slice(q.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]);
+ assert.deepEqual(jobs,['impact','fast','rules','check','presentation','engineering-posix-shards','engineering-posix']);
+ assert.doesNotMatch(q,/needs: admission/);
+ const impact=q.slice(q.indexOf('  impact:'),q.indexOf('  fast:'));
+ const gate=impact.indexOf('run: node scripts/fork-preflight.mjs');
+ assert(gate>impact.indexOf('uses: actions/setup-node@'));
+ for(const command of ['publish-full-quality.mjs --pending','publish-pr-quality.mjs --pending'])assert(gate>impact.indexOf(command));
+ for(const command of ['Check feature branch history','npm ci','node scripts/ci-impact.mjs'])assert(gate<impact.indexOf(command));
+ assert.match(impact,/actions: read/);
+ assert.doesNotMatch(impact,/continue-on-error:/);
+ assert.match(q,/  presentation:\n    needs: impact\n    if: \$\{\{ !cancelled\(\) && needs\.impact\.result == 'success' \}\}/);
  assert.match(q,/merge_group:/);assert.match(q,/branches: \[develop, master\]/);
- const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8');
+ const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
  assert.match(quick,/--preflight --base/); assert.doesNotMatch(quick,/--ci-fast --base/);
 });
 
@@ -339,12 +348,16 @@ test('newer failed or active dispatch invalidates older success across forks',()
   assert.equal(newestPreflight([old,{...old,...patch,id:2,created_at:'2026-11-17T04:00:00Z'}],{head,base}),null);
 });
 
-test('draft license inventory cannot run ahead and ready event retries native admission',()=>{
+test('draft license gate stays in the existing inventory before media and retries on ready',()=>{
  const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
- const gate=licenses.slice(licenses.indexOf('  admission:'),licenses.indexOf('  inventory:'));
- assert.doesNotMatch(gate,/draft == false/);
+ assert.doesNotMatch(licenses,/^  admission:|needs: admission|draft == false/m);
+ assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory']);
  assert.match(licenses,/types: \[opened, synchronize, reopened, ready_for_review\]/);
- assert.match(licenses,/  inventory:\n    needs: admission/);
+ assert.match(licenses,/  inventory:\n    permissions:\n      contents: read\n      actions: read/);
+ const gate=licenses.indexOf('run: node scripts/fork-preflight.mjs');
+ assert(gate>licenses.indexOf('uses: actions/setup-node@'));
+ for(const command of ['node scripts/ci-media-lfs.mjs','node scripts/ci-reviewed-lfs.mjs','node --test scripts/check-license.test.mjs','node scripts/check-license.mjs'])assert(gate<licenses.indexOf(command));
+ assert.doesNotMatch(licenses,/continue-on-error:/);
 });
 test('admission implementation always requires Full even with a tiny proven mapping',async()=>{
  const {impact}=await import('../scripts/ci-impact.mjs');
@@ -358,4 +371,48 @@ test('native successful reruns are valid preflight without making a new commit',
  assert.ok(validPreflight({...run,run_attempt:2},{head,base}));
 });
 
+});
+
+import {runInNewContext as evaluateJobIf} from 'node:vm';
+test('inline preflight preserves required Fast and POSIX fail-closed impact consumers',()=>{
+ const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ for(const [job,mode]of [['fast','fast'],['engineering-posix-shards','full']]){
+  const section=workflow.slice(workflow.indexOf('  '+job+':\n')).split(/\n  [a-z][\w-]*:\n/)[0];
+  const expression=section.match(/^    if: (.+)$/m)?.[1];
+  assert(expression,'required consumer condition exists: '+job);
+  assert.match(expression,/!cancelled\(\)/,'explicit status check removes default success(): '+job);
+  const js=expression.replace(/^\$\{\{\s*|\s*\}\}$/g,'');
+  const invoke=(result,cancelled=false,selected=mode)=>evaluateJobIf(js,{
+   cancelled:()=>cancelled,needs:{impact:{result,outputs:{mode:selected}}}
+  });
+  assert.equal(invoke('success'),true,job+' runs after a successful impact');
+  for(const result of ['failure','cancelled','skipped'])assert.equal(invoke(result),false,job+' rejects '+result);
+  assert.equal(invoke('success',true),false,job+' rejects cancellation');
+  assert.equal(invoke('success',false,mode==='full'?'fast':'full'),false,job+' respects route');
+ }
+});
+
+test('inline admission runs only for organization non-master PRs and downstream rejects gate failure',()=>{
+ const condition="github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'";
+ for(const file of ['quality','licenses']){
+  const source=readFileSync('.github/workflows/'+file+'.yml','utf8').replaceAll('\r\n','\n');
+  assert.equal(source.split('run: node scripts/fork-preflight.mjs').length,2);
+  const block=source.match(/      - name: Require completed Fork preflight before formal test jobs\n([\s\S]*?)        run: node scripts\/fork-preflight.mjs/)[1];
+  assert.equal(block.match(/^        if: (.+)$/m)[1],condition);
+  assert.match(block,/GH_TOKEN: \$\{\{ github.token \}\}/);
+  for(const [event,repo,base,expected]of [
+   ['pull_request','1429751262','develop',true],['pull_request','1429751262','release/v2.0.0',true],
+   ['pull_request','1429751262','master',false],['pull_request','1460097312','develop',false],
+   ['workflow_dispatch','1429751262','develop',false],['push','1429751262','develop',false],['merge_group','1429751262','develop',false]
+  ])for(const draft of [true,false])assert.equal(evaluateJobIf(condition,{github:{event_name:event,repository_id:repo,event:{pull_request:{base:{ref:base},draft}}}}),expected);
+ }
+ const quality=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const impact=quality.slice(quality.indexOf('  impact:'),quality.indexOf('  fast:'));
+ const impactIf=impact.match(/^    if: (.+)$/m)[1];
+ assert.equal(evaluateJobIf(impactIf,{github:{event_name:'pull_request',event:{pull_request:{draft:true}}}}),false);
+ assert.equal(evaluateJobIf(impactIf,{github:{event_name:'pull_request',event:{pull_request:{draft:false}}}}),true);
+ const presentation=quality.slice(quality.indexOf('  presentation:'),quality.indexOf('  engineering-posix-shards:'));
+ const downstream=presentation.match(/^    if: (.+)$/m)[1].replace(/^\$\{\{\s*|\s*\}\}$/g,'');
+ for(const result of ['success','failure','cancelled','skipped'])for(const cancelled of [false,true])
+  assert.equal(evaluateJobIf(downstream,{needs:{impact:{result}},cancelled:()=>cancelled}),result==='success'&&!cancelled);
 });
