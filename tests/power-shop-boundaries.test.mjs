@@ -104,7 +104,7 @@ test('Power ordering cannot reach an executor through immediate or deferred AST 
  }
  const graph=analyzeSources(sources,policy);assert.deepEqual(graph.errors,[]);check(graph);
  const groups=dependencyCycles(graph.nodes,graph.edges);
- assert.deepEqual(groups.filter(g=>g.members.includes('abyss_power_order')).map(g=>g.members),[['abyss_power_order','abyss_power_schedule']]);
+ assert.deepEqual(groups.filter(g=>g.members.includes('abyss_power_order')||g.members.includes('abyss_power_schedule')),[]);
  for(const text of ["local forbidden=require('abyss_turn_powers')\n","local function forbidden()return require('abyss_turn_powers')end\n"]){
   const changed={...sources,abyss_power_schedule:text+sources.abyss_power_schedule};
   assert.throws(()=>check(analyzeSources(changed,policy)),/ordering reaches executor/);

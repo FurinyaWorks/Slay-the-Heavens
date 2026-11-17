@@ -5,8 +5,10 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-17 16:16'
-labels: []
+updated_date: '2026-11-17 17:16'
+labels:
+  - 待验
+  - delivery-verify
 milestone: m-9
 dependencies: []
 documentation:
@@ -17,6 +19,7 @@ documentation:
   - docs/backlog-details/M7-IMPORT-MEMBERSHIP-20261111.md
   - docs/backlog-details/M7-ARCHITECTURE-GATES-COMBINED-20261111.md
   - docs/backlog-details/M7-DEFECT-ACTOR-BOUNDARY-20261111.md
+  - docs/backlog-details/DEVELOP-ARCHITECTURE-20261118.md
 parent_task_id: TASK-74
 priority: medium
 type: task
@@ -31,8 +34,8 @@ ordinal: 161000
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 以当前同一源码身份输出即时及延迟完整依赖图、SCC成员和内部边位置，逐类说明状态提交owner与风险依据
-- [ ] #2 消除已确证P0/P1反向依赖并以旧新状态、随机、事件、队列、别名及失败回滚对照验证；保留边有生命周期依据且新增边受可执行防回退门禁
+- [x] #1 以当前同一源码身份输出即时及延迟完整依赖图、SCC成员和内部边位置，逐类说明状态提交owner与风险依据
+- [x] #2 消除已确证P0/P1反向依赖并以旧新状态、随机、事件、队列、别名及失败回滚对照验证；保留边有生命周期依据且新增边受可执行防回退门禁
 - [ ] #3 公布同算法最终SCC绝对值、残余风险与责任；独立深审及实际合后Full通过，未确认残余不冒充低风险
 <!-- AC:END -->
 
@@ -134,4 +137,8 @@ DefectUtility最终历史消费者补齐：Formation12、Room6、Seven19完整�
 2026-11-14第二轮状态纠正：已有Protected/Defect能力边界等切片、全图与回滚证据；残余所有权/风险复核未完成，属于已开展工作的收口，不是待新开工。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
 
 本轮task:pick为HOLD，原因既有In Progress和待验标签；已核旧成果确实存在，但完整图仍有67/11/2残余。按用户明确要求续做原任务，保留Furinya与全部历史AC，不重新认领、不重复新建任务。Backlog CLI已在cloud-tools找到并可用。
+
+2026-11-18阶段实测：完整AST由67/11/2三个SCC降至0；已分类7个真实职责叶，当前358模块1984引用位置。新fullDependencyAcyclic门禁含延迟边，先红后绿16项架构回归；Run/Power定向及核心组合行为继续。当前无环不冒充最终完整回归/独立组合审查/Hosted/合后证据，全部AC仍按实际证据收口。实施记录docs/backlog-details/DEVELOP-ARCHITECTURE-20261118.md。
+
+2026-11-18产品提交5a47b106已通过真实Git增量棘轮（80份Lua，0新增违规）；最终新鲜工程入口360模块6440/6440测量、完整SCC0、maxCC30、31处>30清零、6旧告警无新增，4关键变异和6原生合同通过。主控重新组合10个产品测试文件28/28通过；独立产品复审PASS并结案ARCH-PRODUCT-001。机器前后清单、完整边位置、原始日志摘要与残余149个>15观察项已存对应evidence及本轮记录。AC1/2据源码/行为证据勾选；实际最终HEAD Hosted Full、原生队列与合后push Full尚未取得，保持In Progress/待验，不伪称Done或发版通过。
 <!-- SECTION:NOTES:END -->

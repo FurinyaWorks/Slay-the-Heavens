@@ -7,16 +7,12 @@ import {checkArchitecture,analyzeSources} from '../scripts/check-architecture.mj
 import {dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {buildLuaData} from '../scripts/build-lua-data.mjs';
 const consumers=['abyss_relic_card_rewards','abyss_relic_choices','abyss_relic_pending'];
-test('reward query consumers use capabilities and retain actual Run transaction dependencies',()=>{
+test('reward query consumers use explicit transaction capabilities and cannot return to the Run composition owner',()=>{
  const graph=checkArchitecture();assert.deepEqual(graph.errors,[]);
  assert.deepEqual(graph.edges.filter(e=>consumers.includes(e.from)&&e.to==='abyss_relic_hooks'),[],'[REWARD_BOUNDARY] mixed Session facade returned');
- for(const from of consumers)assert(graph.edges.some(e=>e.from===from&&e.to==='abyss_run'),'real transaction owner must remain visible');
+ for(const from of consumers)assert(!graph.edges.some(e=>e.from===from&&e.to==='abyss_run'),'transaction capability must come from the command owner');
  const cycle=dependencyCycles(graph.nodes,graph.edges).find(c=>c.members.includes('abyss_run'));
- // SCC size may shrink as unrelated command owners are separated. The real
- // boundary is that query providers cannot join the Run transaction cycle.
- assert((cycle?.members.length??0)<=15,'Run cycle cannot exceed the original member budget');
- assert((cycle?.edges.length??0)<=56,'Run cycle cannot exceed the original require-position budget');
- assert(new Set((cycle?.edges??[]).map(e=>e.from+':'+e.to)).size<=38,'Run cycle cannot exceed the original module-pair budget');
+ assert.equal(cycle,undefined,'the complete Run graph including deferred imports must remain acyclic');
  for(const from of consumers)assert(graph.edges.some(e=>e.from===from&&e.to==='abyss_relic_queries'),'query capability owner must remain visible');
  for(const provider of ['abyss_relic_queries','abyss_relic_family_combat'])assert(!cycle?.members.includes(provider),'[REWARD_BOUNDARY] query provider joined Run transaction cycle: '+provider);
 });

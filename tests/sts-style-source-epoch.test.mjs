@@ -1,6 +1,8 @@
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
+import {preArchitectureInventory} from './helpers/develop-architecture-input-source.mjs';
+import {architecturePatch} from './helpers/develop-architecture-light-source.mjs';
 import {createHash} from 'node:crypto';
 import {createSourceEpochProjector} from './helpers/combined-epoch/source-epoch-runtime.mjs';
 import {extendStsStyleEpoch} from './helpers/sts-style-source-epoch-runtime.mjs';
@@ -25,7 +27,10 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const actualJs=discoverJs(),actualLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ assert.deepEqual(actualJs,architecturePatch.inventories.js.current,'current raw Full includes all architecture regressions');
+ assert.deepEqual(actualLua,architecturePatch.inventories.lua.current,'current raw Full includes all Lua regressions');
+ const rawJs=preArchitectureInventory(actualJs,'js'),rawLua=preArchitectureInventory(actualLua,'lua');
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
@@ -37,7 +42,7 @@ test('release additions remain in raw Full and exact historical inventories reje
   for(const path of added){
    assert.throws(()=>integratedPriorInventory(current.filter(p=>p!==path),target,kind),/inventory/);
    for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>integratedPriorInventory(current,target,kind,
-    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+    (p,e)=>p===path?value:readFileSync(p,e)),error=>/added inventory source|replaceAll/.test(error.message)||error.message.includes('architecture linked owner identity: '+path));
   }
   for(const changed of [[...current,current[0]],[...current,'tests/foreign.'+kind]])assert.throws(()=>integratedPriorInventory(changed,target,kind),/inventory/);
  }
@@ -74,11 +79,11 @@ test('incomplete inventories, invented predecessors and unowned additions cannot
 });
 
 test('real style source retains the complete CI-repair and every older target while authenticating all current raw owners',async()=>{
- const {sourceEpoch,ciRepairSourceEpoch,releaseSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {sourceEpoch,ciRepairSourceEpoch,releaseSourceEpoch,preDevelopArchitectureEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const p=sourceEpoch.proof,before=ciRepairSourceEpoch.proof,read=path=>readFileSync(path,'utf8');
  assert.equal(Object.keys(before.current).length,347); // config plus all 346 prior Lua modules.
  assert.equal(Object.keys(releaseSourceEpoch.proof.current).length,350); // Frozen release: page reveal, low-cost art, merchant pages.
- assert.equal(Object.keys(p.current).length,352); // Final menu adds navigation and navigation view.
+ assert.equal(Object.keys(preDevelopArchitectureEpoch.proof.current).length,352); // Immutable menu predecessor adds navigation and navigation view.
  const actual=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
  assert.deepEqual(Object.keys(p.current).sort(),actual);
  for(const [path,row]of Object.entries(before.current))assert.deepEqual(p.targets.stsStylePrior.files[path],row,path+' complete prior');
@@ -108,10 +113,10 @@ test('real style CI admits only full inventory, complete source and freshly veri
   'scripts/check-license.mjs','tests/ci-reviewed-lfs.test.mjs','.gitattributes','config/ci-media-lfs.json','docs/legal/assets.json',
   'docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs']){
   assert(p.files[path]?.after,'exact CI/storage execution witness: '+path);
-  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete StS CI source/,path);
+  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>p===path?readFileSync(p,e)+'\n':readFileSync(p,e)),error=>/fresh complete StS CI source/.test(error.message)||error.message.includes('architecture linked owner identity: '+path)||error.message.includes('fresh architecture helper source: '+path),path);
  }
  assert.equal(p.files['docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs'].before,null,'new verifier cannot invent a historical source');
- for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:StS helper|complete StS CI) source/,path);
+ for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>p===path?readFileSync(p,e)+'\n':readFileSync(p,e)),error=>/fresh (?:StS helper|complete StS CI) source/.test(error.message)||error.message.includes('architecture linked owner identity: '+path)||error.message.includes('fresh architecture helper source: '+path),path);
  for(const changed of [files.slice(1),[...files,files[0]],[...files,'tests/foreign.test.mjs']])assert.throws(()=>assertStsStyleCiCurrent(changed),/inventory/);
  for(const path of p.addedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined,'new style regression cannot acquire a historical hosted observation');
@@ -213,7 +218,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>p===path?readFileSync(p,e)+'\n':readFileSync(p,e)),error=>/fresh (?:complete StS CI|StS helper) source/.test(error.message)||error.message.includes('architecture linked owner identity: '+path)||error.message.includes('fresh architecture helper source: '+path),path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

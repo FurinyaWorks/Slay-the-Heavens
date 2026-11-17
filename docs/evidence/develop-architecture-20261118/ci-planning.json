@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "jsFiles": 900,
+  "luaFiles": 1430,
+  "reserveMs": 60000,
+  "platforms": {
+    "win32": {
+      "shards": 18,
+      "budgetMs": 1800000,
+      "forecastMs": 1795110,
+      "marginMs": 4890,
+      "completeUniqueJs": true
+    },
+    "linux": {
+      "shards": 16,
+      "budgetMs": 1200000,
+      "forecastMs": 1159095,
+      "marginMs": 40905,
+      "completeUniqueJs": true
+    }
+  }
+}

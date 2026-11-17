@@ -202,7 +202,8 @@ else
   local rngBefore=SHIV_GRAPH(s.cardRandomRng);local aliases={hand=s.hand,draw=s.draw,discard=s.discard,rng=s.cardRandomRng,events=s.events}
   local before=#s.events;local history=SHIV_GRAPH(s.events)
   observe('combat-before-'..master,{state=s,aliases=aliases})
-  local r=table.pack(pcall(S.startTurn,s,Silent.generateShivs));eq(r[1],true,tostring(r[2]));eq(r[2],true);eq(#r[3],3)
+  local function generate(current,n,upgraded)return Silent.generateShivs(current,n,upgraded,C)end
+  local r=table.pack(pcall(S.startTurn,s,generate,C));eq(r[1],true,tostring(r[2]));eq(r[2],true);eq(#r[3],3)
   eq(#s.hand,10);eq(#s.discard,2);eq(SHIV_GRAPH(s.cardRandomRng),rngBefore,'generation RNG unchanged')
   local retained={};for i=1,before do retained[i]=s.events[i]end;eq(SHIV_GRAPH(retained),history,'real historical events unchanged')
   for _,pile in ipairs({s.hand,s.discard})do for _,c in ipairs(pile)do if c.cardId=='shiv'then

@@ -5,8 +5,10 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-17 16:16'
-labels: []
+updated_date: '2026-11-17 17:17'
+labels:
+  - 待验
+  - delivery-verify
 milestone: m-9
 dependencies: []
 documentation:
@@ -33,6 +35,7 @@ documentation:
   - docs/backlog-details/M7-FORMATION-POSIX15-INTEGRATION-20261109.md
   - docs/backlog-details/M7-SKILL-FEEDBACK-20261111.md
   - docs/backlog-details/M7-GOLDEN-IDOL-CURRENT-20261111.md
+  - docs/backlog-details/DEVELOP-ARCHITECTURE-20261118.md
 parent_task_id: TASK-74
 priority: medium
 type: task
@@ -47,8 +50,8 @@ ordinal: 162000
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 当前全函数含匿名及初始化块机器清单列出CC超过30、最长函数及超千行文件，并按调用链、变更频次和测试风险识别P0/P1
-- [ ] #2 已确证P0/P1职责达到CC15或以完整行为对照及明确分层接口证明安全，所有新增helper计入硬门禁；旧新随机、回滚、别名和失败轨迹保持
+- [x] #1 当前全函数含匿名及初始化块机器清单列出CC超过30、最长函数及超千行文件，并按调用链、变更频次和测试风险识别P0/P1
+- [x] #2 已确证P0/P1职责达到CC15或以完整行为对照及明确分层接口证明安全，所有新增helper计入硬门禁；旧新随机、回滚、别名和失败轨迹保持
 - [ ] #3 首份机器清单审查后确定绝对出口，公布最终分布与经Owner接受的残余范围；独立深审及实际合后Full通过
 - [ ] #4 首批Actor.status/applyPower/addStatus/endTurn及Combat.damage/draw六职责和全部新增helper受CC15硬门禁；完整旧新状态别名随机事件返回错误轨迹相等，真实语义负控检出，首批完成不代表其余61热点已验收
 <!-- AC:END -->
@@ -211,4 +214,8 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 2026-11-14逐项对账：重复元数据经用户批准修复；Joust/GoldenIdol及六核心已由634及历史交付承接，不重复拆分。原全库绝对出口与残余范围未被Owner正式接受，未来按实际内容阻塞接续。
 
 2026-11-14第二轮状态纠正：六核心、Joust、GoldenIdol等已实现并进入历史组合；剩全库出口与残余接受，保持进行中待复核，不重做既有重构。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+2026-11-18阶段实测：本轮31处CC>30已清零，358模块新增叶均CC15内，全库原max68降至30。角色五模块2项新旧全图回归及独立1260个hook检查点/96次渲染轨迹通过；准入事件899点/4负控通过，UI与中央展示定向通过。Actor/Combat额外中高状态owner仍在拆分及验证；最终出口、来源适配、独立组合审查与完整交付未认证，不提前Done。
+
+2026-11-18产品提交5a47b106已通过真实Git增量棘轮（80份Lua，0新增违规）；最终新鲜工程入口360模块6440/6440测量、完整SCC0、maxCC30、31处>30清零、6旧告警无新增，4关键变异和6原生合同通过。主控重新组合10个产品测试文件28/28通过；独立产品复审PASS并结案ARCH-PRODUCT-001。机器前后清单、完整边位置、原始日志摘要与残余149个>15观察项已存对应evidence及本轮记录。AC1/2据源码/行为证据勾选；实际最终HEAD Hosted Full、原生队列与合后push Full尚未取得，保持In Progress/待验，不伪称Done或发版通过。
 <!-- SECTION:NOTES:END -->

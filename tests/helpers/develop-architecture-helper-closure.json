@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "tests/helpers/closeout-source-epoch.mjs": {
+      "before": "163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7",
+      "after": "a531ee03f464352ade80dad2e75dcb878df056032a4a0f9881e2dc04d3962f6f"
+    },
+    "tests/helpers/develop-architecture-input-source.mjs": {
+      "before": null,
+      "after": "9876311f3903747f4640975e49c0fc34a48e82b68288e2cc61468f08307a225e"
+    },
+    "tests/helpers/develop-architecture-light-source.mjs": {
+      "before": null,
+      "after": "e92de660417a7c6ffbb131e5a51be048be9b09917cf17546ffe24a77e75ac148"
+    },
+    "tests/helpers/develop-architecture-source-epoch.json.gz": {
+      "before": null,
+      "after": "2aabf052632f8fd9de8f2a228db46dfab41366b6da084297f2a5e942f17c86da"
+    },
+    "tests/helpers/develop-architecture-source-epoch.mjs": {
+      "before": null,
+      "after": "63a9a5e3638538272890042f93065d01f4f01dca23b42af6ebe3e1e4fffc3a5d"
+    }
+  },
+  "sourceOnly": {
+    "tests/helpers/copy-integration-source-closure.mjs": {
+      "before": "17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0",
+      "after": "a59d5538525b5779dc2d1b1aeaf618a1a541c7187317fd580b0d8673aac868f2"
+    },
+    "tests/helpers/integrated-ci-source.mjs": {
+      "before": "b9f0a2a8e49bc2a6dfb9296ef55c823c96d6af72e2e37ccdd5fcd50fd6a8cc7f",
+      "after": "4023ef5740aafc8a0116bed4d23b5a13c3b7e2a92b58b6375e954b4193096442"
+    }
+  }
+}

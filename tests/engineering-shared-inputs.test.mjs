@@ -65,6 +65,7 @@ test('Node UI size reports are identical for independent and shared discovery or
 });
 
 function sourceTree(sources, policy, run) {
+  policy={...policy,fullDependencyAcyclic:true};
   const root=mkdtempSync(join(tmpdir(),'architecture-discovery-'));
   try {
     mkdirSync(join(root,'src/lua'),{recursive:true});

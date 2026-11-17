@@ -19,7 +19,7 @@ end
 local function apply(s,effects,target,run,defer)
     local loads={};local oldRequire=require
     require=function(name)loads[#loads+1]=name;return oldRequire(name)end
-    local result=table.pack(pcall(I.apply,s,effects,target,run,defer))
+    local result=table.pack(pcall(I.apply,s,effects,target,run,defer,C))
     require=oldRequire
     observe('apply',{state=s,effects=effects,target=target,run=run,result=result,loads=loads})
     return table.unpack(result,1,result.n)

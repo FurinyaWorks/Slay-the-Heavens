@@ -17,6 +17,9 @@ Lua手写源保存在平铺的 [src/lua](../src/lua/)；模块名用于 `require
 | 一局状态与节点事务 | [abyss_run.lua](../src/lua/abyss_run.lua)、[abyss_map.lua](../src/lua/abyss_map.lua)、[abyss_nodes.lua](../src/lua/abyss_nodes.lua) | 持有局内状态、路线与合法操作；奖励、商店、事件等规则在核心提交 |
 | 药水候选事务 | [abyss_run_potion_candidate.lua](../src/lua/abyss_run_potion_candidate.lua) | 分别准备资格、效果、局外及战斗候选；最终状态仍由Run提交，全部提取函数受复杂度上限约束 |
 | 战斗结算 | [abyss_combat.lua](../src/lua/abyss_combat.lua)、[abyss_action_queue.lua](../src/lua/abyss_action_queue.lua)、[abyss_effects.lua](../src/lua/abyss_effects.lua)、[abyss_actor.lua](../src/lua/abyss_actor.lua) | 出牌、动作队列、效果、伤害和状态；职业、敌人及遗物规则通过对应模块协作 |
+| 显式战斗能力 | [abyss_combat_commands.lua](../src/lua/abyss_combat_commands.lua) | 在原初始化和末尾位置创建owner/安装命令桥；策略接收显式宿主，不回导Combat，动态方法读取仍在调用时发生 |
+| Actor生命周期叶 | `abyss_combat_card_hooks`、`abyss_relic_actor_hooks`、`abyss_original_v4_actor_hooks` | 仅处理牌/遗物/资源反应与入队；Actor持有实际状态变更，叶不导入高层执行器 |
+| 算术、升级与Power成员 | `abyss_actor_artifact`、`abyss_actor_attack_math`、`abyss_stance_damage`、`abyss_card_upgrade`、`abyss_power_membership` | 窄职责持有算法或共享方法槽；保留普通动态读写、算术顺序及copy-on-write，不注册全局宿主 |
 | 两种出牌准备 | [abyss_combat_native_play.lua](../src/lua/abyss_combat_native_play.lua)、[abyss_combat_queued_play.lua](../src/lua/abyss_combat_queued_play.lua) | 分别保留原生与队列协议的快照、RNG、事件和暂停边界；公开事务仍由Combat持有 |
 | 构造与回合阶段 | [abyss_combat.lua](../src/lua/abyss_combat.lua) 的构造、开回合及两套结束协议 | 同模块窄职责保持原编排；原生/V4清理时机、保留恢复、敌人引用快照保持独立，公开结束入口持有事务owner与回滚 |
 | 卡牌定义查询 | [abyss_combat.lua](../src/lua/abyss_combat.lua) 的 `M.cardDefinition` | 脱离定义、原生计数、职业适配、伤害、费用和遗物收尾按原序读取；UI只取临时查询结果，零/nil/X及动态输入不作跨调用缓存 |
@@ -28,7 +31,7 @@ Lua手写源保存在平铺的 [src/lua](../src/lua/)；模块名用于 `require
 | 手牌几何与药水拖动 | [abyss_battle_card_view.lua](../src/lua/abyss_battle_card_view.lua)、[abyss_battle_potion_bindings.lua](../src/lua/abyss_battle_potion_bindings.lua) | 几何承诺按原生对象及binding隔离并在失败/重入时失效；药水每事件重新查询单槽，使用前重验规则 |
 | 内容与表现源 | [data](../data/README.md)、[主题](../data/presentation/ui_theme.json)、[设计依据](design/UI_DESIGN.md) | 数据和核心决定规则，界面读取状态；主题及批准稿决定视觉，不使用原型演示数值替代玩法数据 |
 
-模块逐项分类与延迟导入审查在 [config/architecture.json](../config/architecture.json)。[架构检查](../scripts/check-architecture.mjs)要求手写模块显式分类：`core`只依赖核心层且不直接访问平台全局，`ui`不依赖`platform`模块，平台API由入口注入。检查还拒绝未知/动态加载和未经审查的循环；函数内导入例外不能绕过层次限制。
+模块逐项分类与延迟导入审查在 [config/architecture.json](../config/architecture.json)。[架构检查](../scripts/check-architecture.mjs)要求手写模块显式分类：`core`只依赖核心层且不直接访问平台全局，`ui`不依赖`platform`模块，平台API由入口注入。检查还拒绝未知/动态加载和完整依赖循环，包括已登记的延迟导入；延迟登记记录装载时机，不豁免循环或层次限制。
 
 LivingWall的卡牌复制筛选直接使用Foundation的Copy；已验证边界拒绝其直接或延迟重新导入Combat。事件确认仍经Run公共命令提交，不能把筛选冷载减负称作整个事件脱离战斗编排。完整SCC和未治理热点继续由质量报告公开。
 
@@ -50,7 +53,7 @@ LivingWall的卡牌复制筛选直接使用Foundation的Copy；已验证边界�
 测试位于 [tests](../tests/)，Lua用例位于 [tests/lua](../tests/lua/)；[Lua执行器](../scripts/test-lua.mjs)通过Fengari加载`build/lua`和`src/lua`，构建失败或Lua错误必须传播。
 
 - 小改动先运行`npm run test:fast -- --base origin/develop --plan`或`npm run test:related -- --base origin/develop --plan`查看计划，再去掉`--plan`执行。未知或基础设施改动会保守回退完整检查。
-- `npm run check:engineering`执行架构、Lua静态、指定变异和原生UI契约检查。复杂度硬门槛只覆盖[静态检查器](../scripts/check-lua-static.mjs)声明的渲染及职责范围，其他热点保留诊断。
+- `npm run check:engineering`执行架构、Lua静态、指定变异和原生UI契约检查。[静态检查器](../scripts/check-lua-static.mjs)对全库执行CC30上限、对已治理职责/新helper执行CC15；精确旧AST身份仅保留既有较低债务额度，新增代码棘轮与更严专项门槛继续执行。
 - `npm run check`与当前提交的完整Quality用于合并验收；定向测试不能替代它们。安装依赖、固定工具、交付收据与UI实机门禁见[ENGINEERING](ENGINEERING.md)。
 
 模块数、静态基线和复杂度结果以当前配置及本轮`build/architecture.json`、`build/lua-static.json`、`build/ui-complexity.json`、`build/responsibility-complexity.json`为准；存在源码或通过离线检查不等于内容、平台或实机验收完成。

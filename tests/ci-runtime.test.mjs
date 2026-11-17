@@ -36,6 +36,7 @@ import { partition, jsShard, jsPlanningWeights, discoverJs, timings } from '../s
 import { shardLuaScripts } from '../scripts/test-lua.mjs';
 import {historicalTest,readHistoricalBaselineSource} from './helpers/historical-baseline-inputs.mjs';
 import {qualityShardMatrices} from '../scripts/ci-quality-shape.mjs';
+import {preArchitectureInputSource} from './helpers/develop-architecture-input-source.mjs';
 
 // Historical assertions consume exact predecessor bytes, while scheduling imports stay live.
 const readFileSync=(file,encoding)=>{
@@ -172,10 +173,12 @@ test('real executor preserves test failure, continues later files, reports timin
 });
 
 
-test('current timing records preserve all measured corrections without duplicate JSON keys',()=>{
- // This is the live scheduling contract. Historical callers retain the
- // separate exact predecessor reader above; current scheduling must stay raw.
- const raw=actualReadFileSync('scripts/ci-test-timings.json','utf8');
+test('c240 timing records preserve all measured corrections without duplicate JSON keys',()=>{
+ // This complete eight-floor oracle belongs to c240. The raw four additional
+ // floors and current scheduling remain covered by architecture-ci-budget
+ // and the unprojected scheduler contracts above. Authenticate every current
+ // owner before recovering the unchanged predecessor bytes.
+ const raw=preArchitectureInputSource('scripts/ci-test-timings.json',actualReadFileSync('scripts/ci-test-timings.json','utf8'));
  const timings=JSON.parse(raw);
  assert.equal((raw.match(/^  "jsCorrections":/gm)||[]).length,1,'one unambiguous correction inventory');
  assert.equal(timings.jsCorrections.length,3);

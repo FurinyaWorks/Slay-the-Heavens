@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "baseline": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "productCommit": "5a47b1066772778f018695a0f0eea9a7f6892421",
+  "evidence": {
+    "before-quality": {
+      "path": "docs/evidence/develop-architecture-20261118/before-quality.json.gz",
+      "sha256": "3f643e80c4a252b4fd1de983c12047b5333ee73ca72505703e00d12dafe41526",
+      "uncompressedSha256": "0ce8ff9981a075d90c191e786dd8caeb10bd5ee05cb020a47f04f975960143aa"
+    },
+    "after-quality": {
+      "path": "docs/evidence/develop-architecture-20261118/after-quality.json.gz",
+      "sha256": "7bdfe255e3e49829d321b3223f2b76d4eaca49430dbad22cacc694bcefa30b16",
+      "uncompressedSha256": "1ff13855f0fb63c3570a69c51303a525bcac446a852e8e4fbdc639f9b9c5281e"
+    },
+    "before-architecture": {
+      "path": "docs/evidence/develop-architecture-20261118/before-architecture.json.gz",
+      "sha256": "3870d702d2482265efa64a610da7e780ca28c0377d1c50c1c2d55740a0f03e53",
+      "uncompressedSha256": "d32ec27facf8aab9a5f816f434b49ccc4ca47f35d43bcc1c0652c3a83914c2b1"
+    },
+    "after-architecture": {
+      "path": "docs/evidence/develop-architecture-20261118/after-architecture.json.gz",
+      "sha256": "b35272d54fb32255b63c5020ca05c0ca2a78ea2c7d059c18a8336a041fa0259f",
+      "uncompressedSha256": "df2804e2117458deccffaa69a331a1bfddb3051b338a2dc28eb712db30f28ae3"
+    },
+    "engineering": {
+      "path": "docs/evidence/develop-architecture-20261118/engineering.log.gz",
+      "sha256": "adaf9716ced308b77a537e529607e19c7ba17b15d8707fa284fc6cb8e27e1241",
+      "uncompressedSha256": "217e57a5400988ef99e1c213b4e1303b2684445acab82d03aea27665e6acb277"
+    },
+    "product-combined": {
+      "path": "docs/evidence/develop-architecture-20261118/product-combined.log.gz",
+      "sha256": "8c05e7be1fdc0961fa082a9505d7bc59b3fadb74ccdb6eab34db8801c40ca1ec",
+      "uncompressedSha256": "f4025f8224241bbdef5ae2b208e1b93983ed9c85ca74a129bcee3689aee649ec"
+    },
+    "ratchet": {
+      "path": "docs/evidence/develop-architecture-20261118/ratchet.log.gz",
+      "sha256": "e5c4419a45f26ad2a9a9313e3a40875b069cf5fcfa195001ad66cc98190af44d",
+      "uncompressedSha256": "7fbd21dd3e84f9d8e4d958d2fec31ca0ae18406b547eb5dbdcd63a83a1b02a3d"
+    }
+  },
+  "verified": {
+    "modules": 360,
+    "measurements": 6440,
+    "fullScc": 0,
+    "ccOver30": 0,
+    "maximumCc": 30,
+    "ccOver15": 149,
+    "historicalDiagnostics": 6,
+    "productCombinedTests": 28,
+    "criticalMutationsKilled": 4,
+    "nativeContracts": 6,
+    "newRatchetViolations": 0,
+    "sourceContracts": 22,
+    "historicalCiContracts": 85,
+    "pythonPresentationContracts": 66,
+    "gateContracts": 8
+  },
+  "notCertified": [
+    "Hosted final HEAD Full",
+    "native Merge Queue result",
+    "merged push Full",
+    "official candidate or device acceptance"
+  ],
+  "sourceEpoch": {
+    "archiveSha256": "2aabf052632f8fd9de8f2a228db46dfab41366b6da084297f2a5e942f17c86da",
+    "helperClosureSha256": "1e36148f7371a00e29c5b7b5ed2b998dce44fdf015b8c506133e8a302ba16f4e",
+    "productionPaths": 361,
+    "auxiliaryInputs": 87
+  }
+}

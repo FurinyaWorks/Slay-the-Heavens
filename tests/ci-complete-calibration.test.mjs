@@ -42,7 +42,13 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as liveDiskReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as nativeArchitectureReadFileSync,readdirSync} from 'node:fs';
+import {preArchitectureInputSource,preArchitectureInventory} from './helpers/develop-architecture-input-source.mjs';
+// All Full38/current labels in this receipt file describe the complete c240
+// predecessor. Today's raw 900/1430, four new floors and 18/16 shape are checked
+// independently by architecture-ci-budget; no historical assertion is rewritten.
+// Linked source readers retain actual bytes for the existing nested projectors.
+const liveDiskReadFileSync=nativeArchitectureReadFileSync;
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
@@ -53,9 +59,17 @@ import {ciCompleteCalibrationProof as proof,preCiCompleteCalibrationSource as pr
 import {ciHostTimingProof,preCiHostTimingSource} from './helpers/ci-host-timing-source-inverse.mjs';
 import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-shape-source-inverse.mjs';
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
-import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
-import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const {qualityShardMatrices:currentQualityShardMatrices,qualityShardJobs:currentQualityShardJobs}=await import('data:text/javascript,'+encodeURIComponent(preArchitectureInputSource('scripts/ci-quality-shape.mjs',liveDiskReadFileSync('scripts/ci-quality-shape.mjs','utf8'))));
+import {requiredJobs as currentRequiredJobs} from '../scripts/verify-delivery.mjs';
+const currentFullQualityJobs=[...currentRequiredJobs,...currentQualityShardJobs,'impact','fast'];
+import {discoverJs as nativeArchitectureDiscoverJs,partition} from '../scripts/ci-shards.mjs';
+const liveDiscoverJs=()=>preArchitectureInventory(nativeArchitectureDiscoverJs(),'js');
+const rawCurrentTimings=JSON.parse(preArchitectureInputSource('scripts/ci-test-timings.json',liveDiskReadFileSync('scripts/ci-test-timings.json','utf8')));
+const rawCurrentJsPlanningWeights=(files,platform)=>{
+ const maps=Object.hasOwn(rawCurrentTimings.js,platform)?[rawCurrentTimings.js[platform]]:Object.values(rawCurrentTimings.js);
+ return Object.fromEntries(files.map(file=>[file,Math.max(...maps.map(map=>map[file]??rawCurrentTimings.unknownJsMs),rawCurrentTimings.jsPlanning.localLowerBounds[file]?.durationMs??0)]));
+};
+const rawCurrentJsShard=(files,value,platform)=>partition(files,value,rawCurrentJsPlanningWeights(files,platform),rawCurrentTimings.unknownJsMs,Array.from({length:Number(value.split('/')[1])},(_,i)=>i===0?rawCurrentTimings.initialMs[platform][0]:0));
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
 import {shardLuaScripts} from '../scripts/test-lua.mjs';
@@ -162,7 +176,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
-const liveCloseoutLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+const liveCloseoutLua=()=>preArchitectureInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua');
 const currentLua=()=>[...closeoutCiProof.targets.pr620.luaInventory];
 // Only these explicitly registered UI additions postdate the original M7
 // inventories. Current Full below still discovers and checks every file.
@@ -405,7 +419,7 @@ test('frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 L
  const workflow=beforeExecutionTimeoutWorkflow(read('.github/workflows/quality.yml'));assert.match(workflow,/max-parallel: 12/);assert.match(workflow,/timeout-minutes: 20/);assert.match(workflow,/local-special' && 75 \|\| 30/);
 });
 
-test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{
+test('c240 Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{
  const workflow=read('.github/workflows/quality.yml');assert.match(workflow,/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);assert.match(workflow,/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
  const js=discoverJs(),lua=currentLua();
  assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
@@ -1631,7 +1645,7 @@ test('Golden Idol recovery preserves exact predecessor CI receipt sources and re
  }
 });
 
-test('current Golden Idol836 Full38 inventory adds only two files under unchanged budgets and complete effective costs',t=>{
+test('immutable Golden Idol836 Full38 inventory adds only two files under unchanged budgets and complete effective costs',t=>{
  // Immutable pr614 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr614');
  const currentLua=()=>[...closeoutCiProof.targets.pr614.luaInventory];
@@ -1816,7 +1830,7 @@ test('Defect Actor floor binds the complete 18-case local run and actual behavio
 });
 
 
-test('complete current Defect Actor Full38 inventory fits original Windows18 POSIX15 budgets including the new floor and unchanged reserve',t=>{
+test('immutable Defect Actor Full38 inventory fits original Windows18 POSIX15 budgets including the new floor and unchanged reserve',t=>{
  // Immutable pr618 receipt; the combined raw tree is verified separately below.
  const slice=sliceTools('pr618');
  const currentLua=()=>[...closeoutCiProof.targets.pr618.luaInventory];
@@ -1962,7 +1976,7 @@ test('run HUD continuation authenticates complete current sources and raw Full i
  }
 });
 
-test('menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
+test('c240 menu complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
  assert.deepEqual(js,integratedCiProof.inventory,'all combined current cases execute through complete raw Full discovery');
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);

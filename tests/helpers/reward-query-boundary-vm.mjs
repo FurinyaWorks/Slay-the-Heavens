@@ -6,6 +6,7 @@ import {readFileSync,readdirSync,writeFileSync,mkdirSync,openSync,writeSync,clos
 import {createHash} from 'node:crypto';
 import {luaString} from '../../scripts/build-lua-data.mjs';
 import {installLuaGraphObserver} from './lua-graph-observer.mjs';
+import {preArchitectureProductSource} from './develop-architecture-light-source.mjs';
 const require=createRequire(import.meta.url),{lua,lauxlib,lualib,to_luastring,to_jsstring}=require('fengari');
 const [variant,group,directory,mutation='none']=process.argv.slice(2);
 assert(['old','current'].includes(variant));assert(['cold','dynamic','cards','shop'].includes(group));
@@ -19,7 +20,9 @@ for(const name of readdirSync('src/lua').filter(n=>n.endsWith('.lua')).sort()){
  const path='src/lua/'+name;let source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  const row=proof.files[path];
  if(row){
-  assert.equal(hash(source),row.afterSha256,path+' current full source');
+  // Authenticate today's complete owner through the common outer epoch; the
+  // actual current VM still executes the source bytes read above.
+  assert.equal(hash(preArchitectureProductSource(path,source)),row.afterSha256,path+' authenticated complete reward epoch');
   assert.equal(hash(row.beforeSource),row.beforeSha256,path+' historical full source');
   assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.beforeSource)}\0`).update(row.beforeSource).digest('hex'),row.beforeGitBlob);
   if(variant==='old')source=row.beforeSource;

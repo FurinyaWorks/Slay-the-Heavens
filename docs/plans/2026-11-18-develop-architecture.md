@@ -12,12 +12,12 @@
 
 ## 执行与验收
 
-- [ ] Power两模块环：提取成员展示叶，保留共享公开表和动态remove；冷加载/Guardian/copy-on-write与完整图无环。
-- [ ] Run十一模块环：显式永久命令能力贯穿遗物/奖励/商店；完整生产调用迁移、错误/嵌套事务/别名/RNG回滚与无环。
-- [ ] Combat/Actor大环：按完整图反馈切口逐片分层，保留原状态owner；全源含延迟图最终无环，新增反向边失败。
-- [ ] UI生命周期：Portraits、Choice、MapUI、DeckUI、TreasureUI、MatchEventUI热点；保留alive/token/generation/reentry/输入和布局。
-- [ ] 严格准入与事件：Map、EndingHistory、TreasureSource、Wheel/Winding/Act2/Act3事件；保持短路拒绝优先级、错误与事务。
-- [ ] 数据/中央展示/反馈：CharacterProfiles/Presentation/Select、WarriorStatus/WatcherFlow、OriginalV4Display、Colorless、PotionText、Feedback；文本/卡池顺序/别名及回调时序保持。
+- [x] Power两模块环：提取成员展示叶，保留共享公开表和动态remove；冷加载/Guardian/copy-on-write与完整图无环。
+- [x] Run十一模块环：显式永久命令能力贯穿遗物/奖励/商店；完整生产调用迁移、错误/嵌套事务/别名/RNG回滚与无环。
+- [x] Combat/Actor大环：按完整图反馈切口逐片分层，保留原状态owner；全源含延迟图最终无环，新增反向边失败。
+- [x] UI生命周期：Portraits、Choice、MapUI、DeckUI、TreasureUI、MatchEventUI热点；保留alive/token/generation/reentry/输入和布局。
+- [x] 严格准入与事件：Map、EndingHistory、TreasureSource、Wheel/Winding/Act2/Act3事件；保持短路拒绝优先级、错误与事务。
+- [x] 数据/中央展示/反馈：CharacterProfiles/Presentation/Select、WarriorStatus/WatcherFlow、OriginalV4Display、Colorless、PotionText、Feedback；文本/卡池顺序/别名及回调时序保持。
 - [ ] 每片先红后绿的架构或绝对复杂度检查及实际行为回归；组合全量工程、来源合同、完整check，独立深审，精确HEAD/base正常develop交付。未取得Hosted/合后/设备证据不填完成。
 
 ## 审查重点
