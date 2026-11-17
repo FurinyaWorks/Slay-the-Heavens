@@ -60,14 +60,14 @@ test('joint CI binds every current input, preserves both packets and never masks
    }
   }
   for(const mode of ['changed','missing'])assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>{
-   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing '+p);return e?source+'\n':Buffer.from(source+'\n');
+   if(p!==path)return diskReadFileSync(p,e);if(mode==='missing')throw Error('missing '+p);return e?source+'\n':Buffer.from(source+'\n');
   }),mode==='missing'?/missing/:/fresh complete integration source/);
  }
  for(const [side,packet]of [['pc22',releasePc22BasicFeedbackCiPacket],['selection',releaseSelectionMapCiPacket]]){
   const read=integrationRead(side);
   for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,path+' exact '+side+' current view');
  }
- for(const path of Object.keys(integrationPacket.archives))assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>p===path?Buffer.concat([readFileSync(p),Buffer.from('\n')]):readFileSync(p,e)),/immutable Release join predecessor/);
+ for(const path of Object.keys(integrationPacket.archives))assert.throws(()=>assertReleaseIntegrationCurrent((p,e)=>p===path?Buffer.concat([diskReadFileSync(p),Buffer.from('\n')]):diskReadFileSync(p,e)),/immutable Release join predecessor/);
 });
 
 test('joint raw inventories retain both additions and reject missing duplicate foreign and changed inputs',()=>{

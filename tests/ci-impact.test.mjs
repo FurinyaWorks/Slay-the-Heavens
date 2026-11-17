@@ -144,3 +144,4 @@ test('actual impact CLI routes Full Fast unknown and merge-group through the com
   }
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+import './helpers/release-ci.cases.mjs';

@@ -1,3 +1,5 @@
+import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
+import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -18,8 +20,8 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
-export function integratedSource(path,source,target,read=readFileSync){return releaseIntegratedSource(path,source,target,read);}
-export function integratedRead(target,{read=readFileSync}={}){return(path,encoding)=>{
+export function integratedSource(path,source,target,read=readFileSync){return releaseIntegratedSource(path,beforePreflightSource(path,source),target,read);}
+export function integratedRead(target,{read=readFileSync}={}){read=preflightPriorRead(read);return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
@@ -29,7 +31,7 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
-export function assertIntegratedCurrent(read=readFileSync){return assertReleaseIntegratedCurrent(read);}
+export function assertIntegratedCurrent(read=readFileSync){assertCapacityPreflightCurrent(read);return assertReleaseIntegratedCurrent(read);}
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return integrationInventory(kind);}
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;

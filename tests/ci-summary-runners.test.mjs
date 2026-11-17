@@ -1,3 +1,4 @@
+import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';
 import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -57,15 +58,18 @@ test('draft Quality is deferred, Ready and integration retain the real gates', (
     const condition = job(name).match(/^    if: (.+)$/m)?.[1];
     assert.ok(condition, name + ' must explicitly gate drafts');
     const expression = condition.replace(/^\$\{\{\s*|\s*\}\}$/g, '');
-    const evaluate = compileFunction('return (' + expression + ');', ['github', 'cancelled']);
+    const evaluate = compileFunction('return (' + expression + ');', ['github', 'cancelled', 'needs']);
     for (const draft of [true, false]) {
       const github = {event_name: 'pull_request', event: {pull_request: {draft}}};
-      assert.equal(evaluate(github, () => false), !draft, name + '/draft=' + draft);
-      if (['check', 'engineering-posix'].includes(name))
-        assert.equal(evaluate(github, () => true), false, name + '/cancelled');
+      const needs={impact:{result:draft?'skipped':'success'}};
+      assert.equal(evaluate(github, () => false, needs), !draft, name + '/draft=' + draft);
+      if (['check', 'engineering-posix', 'presentation'].includes(name))
+        assert.equal(evaluate(github, () => true, needs), false, name + '/cancelled');
     }
     for (const event_name of ['merge_group', 'push', 'workflow_dispatch'])
-      assert.equal(evaluate({event_name, event: {}}, () => false), true, name + '/' + event_name);
+      assert.equal(evaluate({event_name, event: {}}, () => false, {impact:{result:'success'}}), true, name + '/' + event_name);
+    if(name==='presentation')for(const result of ['failure','cancelled','skipped'])
+      assert.equal(evaluate({event_name:'pull_request',event:{pull_request:{draft:false}}},()=>false,{impact:{result}}),false,'presentation rejects '+result);
   }
   const fast = job('fast');
   assert.match(fast, /^        os: \[ubuntu-24\.04, windows-2025\]$/m);
@@ -79,7 +83,7 @@ test('[historical PR620 workflow] complete Draft/Fast projection restores exact 
   // Git blob 2d41d729 at develop 1eb28847, independently obtained before #584.
   const expected = 'aeb022f9209eda1311f3893acefc2c55a8d75c497b3b950a276d609964ea7535';
   for (const eol of ['\n', '\r\n']) {
-    const current = workflow.replaceAll('\n', eol);
+    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\n', eol);
     const old = beforeDraftQualityWorkflow(current);
     assert.notEqual(old, current);
     assert.equal(createHash('sha256').update(old.replaceAll('\r\n', '\n')).digest('hex'), expected);
@@ -95,7 +99,7 @@ test('[historical PR620 workflow] complete Draft/Fast projection restores exact 
 
 test('Draft/Fast projection refuses every partial migration, duplicate and changed policy block', () => {
   for (const eol of ['\n', '\r\n']) {
-    const current = workflow.replaceAll('\n', eol);
+    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\n', eol);
     const edits = draftQualityWorkflowEdits.map(pair => pair.map(value => value.replaceAll('\n', eol)));
     for (let mask = 1; mask < 2 ** edits.length; mask++) {
       let partial = current;
@@ -125,7 +129,7 @@ test('Draft/Fast projection refuses every partial migration, duplicate and chang
 
 test('Draft/Fast projection preserves unrelated drift and never partially restores execution slack', () => {
   for (const eol of ['\n', '\r\n']) {
-    const current = workflow.replaceAll('\n', eol);
+    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\n', eol);
     for (const [from, to] of [['contents: read', 'contents: write'], ['max-parallel: 12', 'max-parallel: 13'],
       ['npm run check:engineering', 'npm run check:missing']]) {
       const drift = current.replace(from, to), projected = beforeDraftQualityWorkflow(drift);
@@ -226,4 +230,30 @@ test('workflow-only historical views cannot project production sources or test i
  const raw=Buffer.from('current raw source\r\n'),read=closeoutRead('qualityRatchetIntegrated',()=>raw);
  for(const path of ['src/lua/abyss_game_ui.lua','config/architecture.json','data/relics.json'])assert.strictEqual(read(path),raw,path);
  assert.throws(()=>closeoutInventory(['tests/current.test.mjs'],'qualityRatchetIntegrated'),/workflow-only/);
+});
+
+// Authenticate the complete live input before using any historical test fixture.
+test('Release freeze fixture continuation rejects unknown paths and all byte drift', () => {
+  const predecessors = {
+  "tests/ci-summary-runners.test.mjs": "c13e584a22ca96185e638ec5e9da85fc45183eed3bb15c9170508f0385058e28",
+  "tests/ci-windows-shape-expansion.test.mjs": "d28a52f2e892ed88e68cbe5fd29d123dfe6a5b86de5d8053b48a6a117504c874",
+  "tests/engineering-quality.test.mjs": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
+  "tests/full-quality.test.mjs": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51"
+};
+  for (const [path, expected] of Object.entries(predecessors)) {
+    const live = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+    for (const eol of ['\n', '\r\n']) {
+      const source = live.replaceAll('\n', eol);
+      assert.equal(digest(releaseFreezeCiBefore(path, source)), expected);
+      for (const foreign of [source + eol, source.slice(1), source.replaceAll(eol, '\r\r\n'), null, {}, 17])
+        assert.equal(releaseFreezeCiBefore(path, foreign), foreign);
+      for (const unknown of ['__proto__', 'constructor', 'foreign/' + path])
+        assert.equal(releaseFreezeCiBefore(unknown, source), source);
+    }
+  }
+  assert.match(workflow, /reopened, edited, ready_for_review/);
+  assert(workflow.includes('node scripts/check-release-scope.mjs'));
+  for (const bad of [workflow + '\n', workflow.replace('reopened, edited,', 'reopened,'),
+    workflow.replace('node scripts/check-release-scope.mjs', 'echo bypass')])
+    assert.equal(releaseFreezeCiBefore('.github/workflows/quality.yml', bad), bad);
 });
