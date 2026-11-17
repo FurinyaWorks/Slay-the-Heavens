@@ -1,0 +1,22 @@
+[
+  {
+    "path": "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png",
+    "oid": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+    "bytes": 17710
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png",
+    "oid": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+    "bytes": 18329
+  },
+  {
+    "path": "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png",
+    "oid": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+    "bytes": 1092164
+  },
+  {
+    "path": "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif",
+    "oid": "0449a8b3094f0a628f493b27157ae2d8b27d646ceb9541f6f5e9ce98a9ebeff1",
+    "bytes": 1852035
+  }
+]

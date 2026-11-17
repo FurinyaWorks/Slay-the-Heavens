@@ -1,0 +1,21 @@
+{
+  "head": "be91df3a7b192827f5ede3937c50fb5f18e9afcb",
+  "cwd": "F:/New folder/.worktrees/release-pc-basic-feedback-1116",
+  "node": "F:/New folder/build/tools/node-v24.18.0-win-x64/node.exe",
+  "arguments": [
+    "--test",
+    "--test-concurrency=1",
+    "--test-name-pattern=^(PC22 owner fixture repair|release PC22 basic feedback CI validates|release PC22 basic feedback raw JS and Lua inventories|integration validates complete raw sources|release PC22 basic feedback raw Full inventory)",
+    "tests/release-pc22-basic-feedback-source.test.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/ci-complete-calibration.test.mjs"
+  ],
+  "temp": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\ci-owner-repair-1116\\pc22-temp",
+  "tmp": "F:\\New folder\\.artifacts\\release-pc-qa-20261115\\ci-owner-repair-1116\\pc22-temp",
+  "startUtc": "2026-11-15T22:27:17.1677627+00:00",
+  "endUtc": "2026-11-15T22:27:39.0576094+00:00",
+  "exitCode": 0,
+  "stdoutSha256": "cb35dfd50492c364b0673f5076e1c81287156d2fa2ff2402bb518c42193db4fe",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Bounded Source and CI contracts only; no repeated owner cases, Full, Host, product, push, PR or commit"
+}

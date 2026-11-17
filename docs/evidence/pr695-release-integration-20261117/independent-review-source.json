@@ -1,0 +1,43 @@
+{
+  "reviewId": "/root/review_pr695_regression_patch",
+  "reviewedSourceParentSha": "809130efa555fbd228a099efff7e4652f2295df7",
+  "reviewedBaseSha": "af77fb2461c548f0faf104761d107397f75dca08",
+  "conclusion": "pass",
+  "unresolved": [],
+  "scope": "19 non-document files; coordinator binds exact merge SHA after commit and verifies every source hash",
+  "stages": [
+    {
+      "checks": 759,
+      "scope": "raw/historical inventory, capacity domains and parent identities"
+    },
+    {
+      "checks": 520,
+      "scope": "explicit historical HUD reader and calibration domains"
+    },
+    {
+      "checks": 138,
+      "scope": "selection consumer raw authentication before parent view"
+    }
+  ],
+  "files": {
+    "scripts/official-battle-hud.mjs": "d24ea5a661b881c2ce1971895a31c987479dd77dd712d5adc2817a53c80b38b7",
+    "tests/ci-complete-calibration.test.mjs": "80004f4d496d20636b1b32974626ccd4fc0462eeb67774675b6706f2157b8943",
+    "tests/encounter-formation-source-epoch.test.mjs": "d978efbe859a3851667e98d7487b9daf833f8b5d145fb09151066c405766d7a2",
+    "tests/helpers/integrated-ci-source.mjs": "684edc4db2c72e3ebc930a2ad416df4e86b20ba54f9a3735f3c08951d523ce72",
+    "tests/helpers/pc06-settings-before-fixture-repair-ci-source.json.gz": "cef63cfac0c079e6f95a913c20a897464833bac8012404c4062fbb7ddebf87eb",
+    "tests/helpers/pc06-settings-ci-source.json.gz": "cebeefff8b88e89c3763879dfb56140d44f5a86b6e93f641088657293cca44df",
+    "tests/helpers/pc06-settings-ci-source.mjs": "9960aafa2e32a41e589a8002410e2462bba3977c54a18da6364861630d63c082",
+    "tests/helpers/release-capacity-preflight-source.mjs": "1a5835afe7c3dbafb9613305dd130018fd3d24c0c25b5ed613791b3fe3b09aa9",
+    "tests/helpers/settings-map-cases-repair.json.gz": "abc8d7011de288a1213f7332702cece3228a8107d9a2cc8abfc362e4cf793920",
+    "tests/helpers/settings-map-integration.json": "765c65d0dacfbe0fa4db3861416534d41a924ce226565ee1baaaa0416af19054",
+    "tests/helpers/settings-map-integration.mjs": "51527f219734d46c8b389e58446ff47163a0778e8bec81e4fbfb4deb588624dc",
+    "tests/helpers/settings-map-inventory-repair.json.gz": "0c0bc9781ac8bc5741ab26a387aec8374208cc9e513d845a46d9bd7432a13e09",
+    "tests/helpers/settings-release-integration.cases.mjs": "3cc16d6c01ccc388eac5d87194fdcf57fbcf545c2ec6d15d274fee59d0de6c8f",
+    "tests/helpers/settings-release-source.json.gz": "7af2c4c8ed9738ecf1e548679b83224f68870eef31c2faa0efd6e5a145e4c0c7",
+    "tests/helpers/settings-release-source.mjs": "23a15e48324ad628274043e2dabeccdb7f2813650a331fba3f3be00a62aa3fc8",
+    "tests/helpers/settings-standalone-selection-ci.mjs": "a268ae4c8a8c838e219e497adf1effea22a71b0ab944a4d009537c94ab526b1d",
+    "tests/integrated-ci-source.cases.mjs": "07a9b9b5f4d42d4a117094469c8ed05610d3b83b8cd2ae1c87628c091ea3d731",
+    "tests/official-run-chrome.test.mjs": "2570e40dd811ec84d43e5fd7bf3710a922a6dc206db738dcdcf49fbbf9f389b8",
+    "tests/release-selection-map-source.test.mjs": "8d3f365af1a5d2ff55c5416b3fad65313f1f7db4d15f80d7d78307780e9e423a"
+  }
+}

@@ -1,3 +1,4 @@
+import {releaseCalibrationReaderSource} from './release-calibration-reader-source.mjs';
 // Exact outer continuation into the immutable 903bf closeout CI corpus.
 // New files remain unmeasured raw Full work; no historical archive is rewritten.
 import assert from 'node:assert/strict';
@@ -32,6 +33,7 @@ const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value))
 freeze(runHudCiProof);
 freeze(runHudBeforeCiRepairProof);
 export function preRunHudCiSource(path,source){
+ source=releaseCalibrationReaderSource(path,source,'nativeCloseout');
  source=preMenuRedCiSource(path,source);
  source=preStsStyleCiSource(path,source);
  source=preNativePreviewCiSource(path,source);

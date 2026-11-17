@@ -1,0 +1,23 @@
+1c327f51b3880eebd73fc7ce3edd0402184e7abe
+100644 e49e57d90677659c01bbc8055df144d1b42135d1 1	tests/ci-complete-calibration.test.mjs
+100644 c7c250f5fafaa216225b66ae5b2861ca7ffafcc0 2	tests/ci-complete-calibration.test.mjs
+100644 fba973fa2f3e908be439d19050cba4210f3b0148 3	tests/ci-complete-calibration.test.mjs
+100644 8db7f1d159cfcd6c02a52cde24894e6f893f20fc 1	tests/helpers/integrated-ci-source.mjs
+100644 6884803c00a798442cda4e77bcbac541616cb91f 2	tests/helpers/integrated-ci-source.mjs
+100644 3cbd59035de6ba40f68e3c04716a75abbcf218eb 3	tests/helpers/integrated-ci-source.mjs
+100644 b1c9a4f90f23840a2708dd050f1edd4471153168 1	tests/integrated-ci-source.cases.mjs
+100644 871f9663cd58f5c4e32af4a6431a01342d3e8055 2	tests/integrated-ci-source.cases.mjs
+100644 1b1e2877867684d86ee3e6413c743d8711432754 3	tests/integrated-ci-source.cases.mjs
+100644 da5437071467555fe5e3eb54727bfc3a20b21d3e 1	tests/release-selection-map-source.test.mjs
+100644 8679fa017c9989dfc3ec23aeaf09223cf0b675af 2	tests/release-selection-map-source.test.mjs
+100644 65d1b429d40d24bc9e1c5bfbab14e930b7b8fe78 3	tests/release-selection-map-source.test.mjs
+
+Auto-merging tests/ci-complete-calibration.test.mjs
+CONFLICT (content): Merge conflict in tests/ci-complete-calibration.test.mjs
+Auto-merging tests/encounter-formation-source-epoch.test.mjs
+Auto-merging tests/helpers/integrated-ci-source.mjs
+CONFLICT (content): Merge conflict in tests/helpers/integrated-ci-source.mjs
+Auto-merging tests/integrated-ci-source.cases.mjs
+CONFLICT (content): Merge conflict in tests/integrated-ci-source.cases.mjs
+Auto-merging tests/release-selection-map-source.test.mjs
+CONFLICT (content): Merge conflict in tests/release-selection-map-source.test.mjs

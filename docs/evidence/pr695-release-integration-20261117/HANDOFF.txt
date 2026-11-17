@@ -1,0 +1,75 @@
+#695 接续最新 Release 的实际合流候选（源码与本地验证证据）
+
+本目录属于唯一执行线 prepare/pr695-posix8-regressions-1117；没有新PR。
+真实合流父来源：
+  settings/preparation 809130efa555fbd228a099efff7e4652f2295df7
+  actual Release       af77fb2461c548f0faf104761d107397f75dca08
+原PR仍为e887258ce603292b94c8f342a8ce792b20fd19ab；已审6af56c6f是本准备分支祖先，
+没有重做独立实现或重写原历史。最终merge SHA由原PR交接评论绑定，避免提交内自引用。
+
+实际解冲突
+- merge-tree实复现4个冲突：ci-complete-calibration.test.mjs、integrated-ci-source.mjs、
+  integrated-ci-source.cases.mjs、release-selection-map-source.test.mjs。
+- 保留最新Release的PC22/容量/preflight主链；旧设置独有6项case放到导入的
+  settings-release-integration.cases.mjs，连同Release共有3项仍是原9个名字，没有删除用例。
+- 新固定packet把47份当前完整源和两父完整源、JS/Lua清单逐字接续；旧packet/pin不改。
+- 当前真实raw入口严格要求881 JS/1424 Lua；旧完整876/1423只在原历史adapter域合法。
+  缺失、重复、foreign及删光新增不能冒充raw。settingsMapPriorInventory实际执行raw守卫。
+- settings的旧selection verifier逐字从809原helper保留为明确CI-only别名，避免把旧reader
+  传给新容量守卫；正式产品和隔离生产副本都不导入该trust leaf。
+- ordinary Source/Read保持当前HUD、Lua、config。旧HUD只在显式校准fixture reader中读取，
+  每次投影均重新认证packet及47份当前输入；没有缓存成功授权。
+- calibration三处inventory调用显式传递与源码相同的reader，修正默认physical读到新
+  official-run-chrome字节的问题。selection消费端先完整验证raw，再进入精确Release父视图。
+- capacity projector先核row/view/before/type；非法域返回原input，合法投影保持原LF/CRLF。
+
+保全与产品范围
+- 相对af77，scripts/src唯一差异是原official-battle-hud.mjs设置图标6行增量，逐字等于809。
+  最新Release其他产品、PC22动作与容量修复都保留。没有将develop整体反合入。
+- 两父既有JSON/gzip档案未改；101份旧settings gzip逐字或按LFS原OID核验。
+- 工作流相对af77没有差异，历史pin、真实发现集合、45/30分钟等预算及所有负控保持。
+- 旧copy的352/116历史proof继续验证，同时完整核对当前352/117-owner生产copy；不改旧pin。
+
+最终源码验证（各轮分别列出，不拼成Full）
+1. 原9项 + 旧5个真实blocker，同轮14/14 PASS，0 fail/cancel/skip，30590.258548ms。
+   final-fourteen.log.gz。原5个名称均在tests/ci-complete-calibration.test.mjs：
+   joint historical inventory rejects missing duplicate and unknown files while current discovery remains complete
+   ratchet current inventory preserves raw Full coverage and refuses source drift after a warm projection
+   combined closeout validates raw current sources and complete Full discovery independently of immutable slice views
+   run HUD continuation authenticates complete current sources and raw Full inventory without rewriting historical receipts
+   menu current complete JS and Lua workload retains Full budgets and every added Lua byte
+   原e887的reader域/二进制错误，以及合流后新增的显式历史reader接缝均已修正，不再留5项红灯。
+2. Release来源文件12/12 PASS，19426.804896ms：selection-v3.log.gz。
+3. 设置图标4态/原命中和deck/count/四profile原3项3/3 PASS，4350.50008ms：settings-product-v3.log.gz。
+4. 原StS完整历史库存、所有target与gap/source-drift负控1/1 PASS，8825.377678ms：sts-historical-v1.log.gz。
+5. 最终raw边界2257项PASS：final-raw-verify-v3.log.gz、verify.mjs。
+   覆盖47输入、两父来源、当前及历史域、删光新增、unknown/Buffer/missing/drift/CRCRLF、
+   capacity wrong-before/unknown path/view与CRLF、历史HUD每次fresh、101旧归档、原9名字及唯一产品差异。
+6. check:guidance、verify:backlog、diff --check通过。Backlog原owner/状态/AC未改。
+7. 独立复审/root/review_pr695_regression_patch PASS，unresolved=[]。
+   759项原域修正、520项历史HUD增量、138项消费端增量分别复核通过；不将三轮相加冒充同轮。
+   independent-review-source.json记录最终19个非文档文件SHA；提交后协调者逐一读回并绑定准确HEAD/BASE。
+
+中间RED全部保留
+- combined-original-red：真实组合原两例均RED。
+- 早期two-v1、all-cases-v1、five-final/five-v4、final-source-cases和selection-v1均是过程失败，
+  不能因为文件名包含final就当作通过；最终成功以本节明确列出的文件为准。
+- 独审发现并修正了两个真实实现问题：误拒完整历史库存，以及capacity先投影造成未知域中间字节泄露/CRLF丢失。
+- 图标profile前两轮2/3是冷检出LFS指针准备问题：按af77的原OID和size恢复背景及4份肖像后3/3。
+  product-lfs-materialized.json、portrait-lfs-materialized.json记录真实材料化；未改预算/素材源。
+  这些材料化文件不进入本候选差异。所有原始log gzip与解压SHA见log-manifest.json。
+
+原owner的最短接续
+- 取本prepare分支的最终准确merge提交（原PR交接评论给出完整SHA），它同时包含e887和af77。
+- 原#695、Release及他人ref均未由本执行者写入，门禁未解除，未合入/发版/删除分支。
+- 若实际HEAD/BASE仍匹配且此前未验证，原授权owner可按现行合同将此准确组合送Fork B做一次必要预检，
+  不移走A的#688/#710、不空跑。先核B身份/可用性和风险路由，不假定Quick足够。
+- 现行scripts/fork-preflight.mjs要求workflow_dispatch、精确head_sha和
+  “Preflight / HEAD / BASE”或风险所需“Full / HEAD / BASE”的成功记录；旧绿灯不可复用。
+  Fork结果只作preflight，不替代主仓Required。此候选新SHA此前尚未被发布/运行；本轮没有dispatch。
+- 在原owner接纳提交并确认实际Release BASE后再做正式PR准入；不能把旧e887 metadata冒充本候选。
+
+剩余边界
+本轮是可供接续的已审、本地已测组合。Fork B/A、主仓Hosted、Windows旧cleanup、冷checkout pack，
+官方导入/ready、PC/实体手机、正式RC均未由这些结果证明；不标正式ready，不改权限或跳门禁。
+未跑Full或全部回归。实际必要Hosted验证按精确候选与当时Base运行一次并保留失败，不以本地结果替代。

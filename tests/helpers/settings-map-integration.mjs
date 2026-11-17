@@ -1,10 +1,11 @@
 // Exact CI-only join. Both immutable standalone packets remain authoritative.
+import {assertSettingsReleaseCurrent,settingsReleaseRead,settingsReleaseSource,settingsReleasePriorInventory,assertSettingsReleaseRawInventory} from './settings-release-source.mjs';
 import {gunzipSync} from 'node:zlib';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {pc06CiPacket,assertPc06CiCurrent} from './pc06-settings-ci-source.mjs';
-import {releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
+import {releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent} from './settings-standalone-selection-ci.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const repairBytes=readFileSync(new URL('./settings-map-inventory-repair.json.gz',import.meta.url));
 assert.equal(hash(repairBytes),'0c0bc9781ac8bc5741ab26a387aec8374208cc9e513d845a46d9bd7432a13e09','complete settings inventory repair');
@@ -18,6 +19,7 @@ assert.equal(casesRepair.schemaVersion,1);assert.equal(casesRepair.parent,'e8872
 assert.equal(casesRepair.path,'tests/integrated-ci-source.cases.mjs');
 // Exact CI-only predecessors. Unknown bytes and all product paths stay visible.
 export function settingsMapBeforeRepairSource(path,source){
+ source=settingsReleaseSource(path,source,'settings');
  for(const patch of [repair,casesRepair])if(path===patch.path&&typeof source==='string'&&!source.includes('\r\r\n')&&norm(source)===patch.current)return patch.before;
  return source;
 }
@@ -45,10 +47,13 @@ export function settingsMapRead(side='selection',read=readFileSync){return(path,
 };}
 export function settingsMapPriorInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));
+ assertSettingsReleaseRawInventory(paths,kind);
+ paths=settingsReleasePriorInventory(paths,'settings',kind);
  assert.deepEqual([...paths].sort(),releaseSelectionMapCiPacket.currentInventory[kind],'complete settings/map raw discovery');
  return [...pc06CiPacket.inventory[kind]];
 }
 export function assertSettingsMapCurrent(read=readFileSync){
+ assertSettingsReleaseCurrent(read);read=settingsReleaseRead('settings',read);
  assert.equal(hash(read('tests/helpers/settings-map-inventory-repair.json.gz')),hash(repairBytes),'fresh settings inventory repair');
  assert.equal(hash(read('tests/helpers/settings-map-cases-repair.json.gz')),hash(casesRepairBytes),'fresh settings cases repair');
  for(const [patch,label]of [[repair,'inventory helper'],[casesRepair,'cases']]){
