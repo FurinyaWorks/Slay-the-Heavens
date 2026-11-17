@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {beforeCapacityB9Ci} from './helpers/release-capacity-b9-ci-source.mjs';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch,releasePc22BasicFeedbackSourceEpoch,releaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {integrationPacket,integrationCiSource,integrationRead,integrationInventory,integrationPriorInventory,assertIntegrationRawInventory,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
@@ -45,7 +46,7 @@ test('joint owner authorization freshly rejects every missing changed or mistype
 test('joint CI binds every current input, preserves both packets and never masks production or foreign drift',()=>{
  assertReleaseIntegrationCurrent();
  for(const [path,sha]of Object.entries(integrationPacket.files)){
-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),sha,path);
+  const source=norm(beforeCapacityB9Ci(path,readFileSync(path,'utf8')));assert.equal(hash(source),sha,path);
   for(const side of ['pc22','selection']){
    for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(integrationCiSource(path,foreign,side),foreign,path);
    for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(integrationCiSource(foreignPath,source,side),source);
