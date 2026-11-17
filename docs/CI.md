@@ -130,6 +130,8 @@ npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
 
 安装保留现有可信维护者边界：真实独审报告须显式签署 `installBaseSha`，与实际受审 BASE 一致，协调者用 `--bootstrap-ref=<本 PR 源分支>` 自动接续。GitHub 服务端 dispatch actor、triggering actor、签署身份一致，运行源码 SHA 等于已审候选 HEAD；生产者、Queue 和合后消费者各自读取该 immutable BASE 的 commit、完整 root tree 和 scripts tree，确认 `scripts/independent-ai-review.mjs` 尚不存在。同名任何 Git 类型、缺失/截断元数据或403均不得当作未安装。已安装的 BASE 必须走可信 BASE 源码，不能候选自签。该显式受审未安装 BASE 窗口不钉死某个旧提交，也不阻塞其他正常队列；BASE 前进后须新真实审查与 CI，不能复用旧组合。未来如模块被删除，缺失本身也不授权重装，仍必须新的明确安装签署。历史证明核其 immutable 原安装 BASE，不因合后已安装而伪造或否定历史。
 
+队列迁移只读保留尚未继承新模块、且无受信账号新 marker 的旧队列管理员合同，不签发 legacy 授权。受信新 marker（任意格式）、HEAD 或共同祖先 LCA 含同名模块，均强制完整新 proof；API 错误、缺失或截断元数据不得回退。旧路径仍核实际入队者与状态签署者一致、当前 admin、原规则指纹、精确 BASE、最新正式 CI 和已纳入基线的依赖；BASE 改变仍须原 owner 刷新授权，不保证现有队列免受其原有条件约束。
+
 PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，核队列 Full/inventory、squash 唯一父/树、最新 push Full 和 Backlog。shadow、替换附件、旧 run/attempt、旧 BASE、非 Actions 来源或缺队列证明均保持 `merged_pending`；旧 schema 证据继续按原合同读取，不改写历史。
 
 自动化边界：AI 由现有云端交付会话执行，Actions 验证预存的实际独审结果，不声称它能唤醒已退出的 Codex 会话。准确报告预存且组合未变时，后续 CI→Queue→Merge 无人值守；HEAD/BASE 改变必须重新实际独审，不能把旧报告改写成新 BASE。仍沿用现行可信维护者接纳 CI 源码的边界；Any-source 检查和 Actions artifact 不是供应商 AI 数字签名，也不声称能阻止有权限修改所有 CI 的恶意维护者。
