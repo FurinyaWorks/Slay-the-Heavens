@@ -1,0 +1,209 @@
+{
+  "repo": "FurinyaDev/Slay-the-Heavens-Fork-A",
+  "runId": 44026568101,
+  "head": "b4801643dc4371754ba98dbe96a389c546e1f9b8",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 133848263297,
+      "name": "impact",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017167",
+      "started_at": "2026-11-17T05:47:50Z"
+    },
+    {
+      "id": 133848263588,
+      "name": "presentation",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017168",
+      "started_at": "2026-11-17T05:47:49Z"
+    },
+    {
+      "id": 133848264948,
+      "name": "admission",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_name": null,
+      "started_at": "2026-11-17T05:47:47Z"
+    },
+    {
+      "id": 133848446335,
+      "name": "rules (4/18)",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017169",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446347,
+      "name": "rules (7/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017172",
+      "started_at": "2026-11-17T05:48:18Z"
+    },
+    {
+      "id": 133848446370,
+      "name": "rules (11/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017170",
+      "started_at": "2026-11-17T05:48:18Z"
+    },
+    {
+      "id": 133848446373,
+      "name": "rules (5/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017180",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446383,
+      "name": "rules (3/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017173",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446386,
+      "name": "rules (13/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017175",
+      "started_at": "2026-11-17T05:48:18Z"
+    },
+    {
+      "id": 133848446389,
+      "name": "rules (15/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017171",
+      "started_at": "2026-11-17T05:48:18Z"
+    },
+    {
+      "id": 133848446413,
+      "name": "rules (6/18)",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017174",
+      "started_at": "2026-11-17T05:48:18Z"
+    },
+    {
+      "id": 133848446416,
+      "name": "rules (18/18)",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017185",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446428,
+      "name": "rules (1/18)",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017179",
+      "started_at": "2026-11-17T05:48:20Z"
+    },
+    {
+      "id": 133848446431,
+      "name": "rules (17/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017182",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446440,
+      "name": "rules (9/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017183",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446448,
+      "name": "rules (16/18)",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017178",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446451,
+      "name": "rules (10/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017187",
+      "started_at": "2026-11-17T05:48:20Z"
+    },
+    {
+      "id": 133848446481,
+      "name": "rules (14/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017177",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446497,
+      "name": "rules (8/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017181",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446516,
+      "name": "rules (12/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017184",
+      "started_at": "2026-11-17T05:48:20Z"
+    },
+    {
+      "id": 133848446577,
+      "name": "rules (2/18)",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000017186",
+      "started_at": "2026-11-17T05:48:19Z"
+    },
+    {
+      "id": 133848446581,
+      "name": "engineering-posix",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017176",
+      "started_at": "2026-11-17T05:48:20Z"
+    },
+    {
+      "id": 133848447482,
+      "name": "fast",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_name": null,
+      "started_at": "2026-11-17T05:48:16Z"
+    },
+    {
+      "id": 133848447540,
+      "name": "needs.impact.outputs.mode == 'fast' && 'engineering-posix-shards' || format('engineering-posix ({0}/{1})', matrix.shard, strategy.job-total)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_name": null,
+      "started_at": "2026-11-17T05:48:16Z"
+    },
+    {
+      "id": 133859804170,
+      "name": "check",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000017188",
+      "started_at": "2026-11-17T06:17:42Z"
+    }
+  ]
+}

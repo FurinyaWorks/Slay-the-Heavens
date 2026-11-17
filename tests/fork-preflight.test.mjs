@@ -21,11 +21,11 @@ test('unknown preflight fails instead of silently passing or starting local Full
  assert.notEqual(r.status,0); assert.match(r.stderr,/Full required/);
 });
 test('all expensive PR jobs depend on admission; integration keeps native triggers',()=>{
- const q=readFileSync('.github/workflows/quality.yml','utf8');
+ const q=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  assert.match(q,/admission:[\s\S]*node scripts\/fork-preflight.mjs/);
  for(const name of ['impact','presentation'])assert.match(q,new RegExp(`  ${name}:\\n    needs: admission`));
  assert.match(q,/merge_group:/);assert.match(q,/branches: \[develop, master\]/);
- const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8');
+ const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
  assert.match(quick,/--preflight --base/); assert.doesNotMatch(quick,/--ci-fast --base/);
 });
 
@@ -43,7 +43,7 @@ test('newer failed or active dispatch invalidates older success across forks',()
 });
 
 test('draft license inventory cannot run ahead and ready event retries native admission',()=>{
- const licenses=readFileSync('.github/workflows/licenses.yml','utf8');
+ const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
  const gate=licenses.slice(licenses.indexOf('  admission:'),licenses.indexOf('  inventory:'));
  assert.doesNotMatch(gate,/draft == false/);
  assert.match(licenses,/types: \[opened, synchronize, reopened, ready_for_review\]/);

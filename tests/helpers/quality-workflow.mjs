@@ -1,6 +1,7 @@
 // Remove only this change's exact artifact additions when older workflow hash
 // guards reconstruct their historical source. The new tests assert these exact
 // blocks against the live workflow, including failure-path uploads.
+import {beforePreflightSource} from './fork-preflight-source.mjs';
 import { beforePlatformWorkflow, beforePlatformPackage } from './platform-load-wiring.mjs';
 export const qualityWindowsUpload = `      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always() && matrix.shard == 1
@@ -17,6 +18,7 @@ export const qualityPosixPaths = `            build/responsibility-complexity.js
             build/engineering-quality.md
 `;
 export function beforeQualityArtifacts(text) {
+  text=beforePreflightSource('.github/workflows/quality.yml',text);
   const platform = beforePlatformWorkflow(text);
   if (platform === null) return text;
   text = platform;

@@ -1,3 +1,4 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -33,8 +34,9 @@ test('current twelve and historical six both restore the exact original source',
 
 test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>{
   for(const eol of ['\n','\r\n']){
-    const old=current.replace(cap,'').replaceAll('\n',eol);
-    const capped=current.replaceAll('\n',eol);
+    const prior=beforePreflightSource('.github/workflows/quality.yml',current);
+    const old=prior.replace(cap,'').replaceAll('\n',eol);
+    const capped=prior.replaceAll('\n',eol);
     assert.equal(beforePosixConcurrencyWorkflow(old),old);
     assert.equal(beforePosixConcurrencyWorkflow(capped),old);
     // Existing layered callers normalize endings; this inverse alone preserves
@@ -46,7 +48,7 @@ test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>
 });
 
 historicalTest('cap inverse shares the platform and original whole-source guards without changing their hashes',()=>{
-  const old=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+  const old=beforePreflightSource('.github/workflows/quality.yml',readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
   const capped=addCap(old);
   assert.notEqual(capped,old);
   assert.equal(beforeAutoMergeWorkflow(capped),beforeAutoMergeWorkflow(old));
