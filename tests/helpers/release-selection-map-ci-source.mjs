@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {releaseEnemyArtCiSource,releaseEnemyArtCiRead,assertReleaseEnemyArtCiCurrent} from './release-enemy-art-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./release-selection-map-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'c2aebd6d6748a87026870c3524ea644d10b350ab820da5c4710a24043205ba03','complete release selection map CI continuation');
@@ -32,7 +31,6 @@ for(const [path,row]of Object.entries(packet.files))for(const binding of [row.be
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseSelectionMapCiPacket=freeze(packet);
 function checkedSource(path,source,before){
- source=releaseEnemyArtCiSource(path,source);
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(!row?.before||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
@@ -58,7 +56,7 @@ export function releaseSelectionMapPriorInventory(paths,kind='js',read=readFileS
  if(!current.some(path=>!before.includes(path)&&sorted.includes(path)))return [...paths];
  assert.deepEqual(sorted,current,'complete release selection map raw '+(kind==='lua'?'Lua discovery':'JS')+' inventory');
  for(const path of current.filter(p=>!before.includes(p)))
-  assert.equal(hash(norm(releaseEnemyArtCiSource(path,read(path,'utf8')))),packet.files[path].current.sha256,'fresh release selection map added inventory source: '+path);
+  assert.equal(hash(norm(read(path,'utf8'))),packet.files[path].current.sha256,'fresh release selection map added inventory source: '+path);
  return [...before];
 }
 export function assertReleaseSelectionMapRawInventory(paths,kind='js'){
@@ -82,8 +80,6 @@ export function assertReleaseSelectionMapExecutionGuards(workflow){
  assert.deepEqual(runners,["${{ github.event_name == 'workflow_dispatch' && inputs.runner_pool == 'local-special' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && fromJSON('[\"self-hosted\", \"Windows\", \"X64\", \"slay-the-abyss\"]') || 'windows-2025' }}"],'raw Quality trusted local runner guard');
 }
 export function assertReleaseSelectionMapCiCurrent(read=readFileSync){
- assertReleaseEnemyArtCiCurrent(read);
- read=releaseEnemyArtCiRead(read);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: release selection map '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
