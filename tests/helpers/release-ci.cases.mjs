@@ -97,13 +97,14 @@ test('Release CI repair maps only complete reviewed helper and test bytes, retai
   ['tests/helpers/draft-quality-workflow.mjs','5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986',releaseSelectionMapCiSource],
   ['tests/release-selection-map-source.test.mjs',releaseSelectionMapCiPacket.files['tests/release-selection-map-source.test.mjs'].current.sha256,historicalSource],
  ]){
-  const raw=readFileSync(path,'utf8');
-  for(const source of [raw,raw.replaceAll('\n','\r\n')])assert.equal(hash(project(path,source)),priorSha);
-  for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.equal(project(path,source),source);
+  const raw=readFileSync(path,'utf8'),lf=raw.replaceAll('\r\n','\n');
+  // Generate line-ending fixtures independently of checkout conversion.
+  for(const source of [raw,lf,lf.replaceAll('\n','\r\n')])assert.equal(hash(project(path,source)),priorSha);
+  for(const source of [raw+'\n',raw.slice(1),lf.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.equal(project(path,source),source);
   for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(project(foreign,raw),raw);
  }
- const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path);
- for(const source of [raw.toString(),raw.toString().replaceAll('\n','\r\n')]){
+ const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path),lf=raw.toString().replaceAll('\r\n','\n');
+ for(const source of [raw.toString(),lf,lf.replaceAll('\n','\r\n')]){
   assert.equal(hash(releaseSelectionMapCiSource(path,source,{sha256:'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986'})),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
   assert.equal(releaseSelectionMapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
  }
