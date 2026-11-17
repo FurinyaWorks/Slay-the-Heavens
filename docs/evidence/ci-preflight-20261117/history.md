@@ -40,3 +40,7 @@ node scripts/ci-run-costs.mjs --repo FurinyaWorks/Slay-the-Heavens --since 2026-
 B Full [44034686329](https://github.com/v5g95m7t8m-max/Slay-the-Heavens-Fork-B/actions/runs/44034686329) / 4629e6ae 是已执行后人工取消；[rules7 annotation](https://api.github.com/repos/v5g95m7t8m-max/Slay-the-Heavens-Fork-B/check-runs/133874836362/annotations) 明确 `The run was canceled by @FurinyaDev.`，不是旧 403，也没有完成 Full 成功资格。该轮16个作业实际获配 runner，执行合计105.53 runner-min；未获 runner 的取消作业不计执行。例 rules7 创建06:55:11Z、开始06:55:15Z（等待4秒）、结束07:03:17Z（执行482秒）。API最近100条运行已穷尽B仓两条记录，核查时没有后续运行，不能虚构最新绿灯。
 
 本次依赖图回归先红4项，再绿4项；既有 Quick/Full/summary 三文件62/62通过。它们是定向本地验证，不是新候选托管 Full、主仓PR或队列组合通过。正式结果仍由准确候选的原有流水线与合后验证接续。
+
+Owner已触发准确 B Full44050580539（HEAD2089991e/BASEc240/attempt1）。POSIX真实展开，4/11两片发现现有 ci-posix-shards/delivery 的 current 表达式断言仍要求旧隐式条件；仅把两条断言严格接续显式 impact 成功与非取消，保原运行时修复和门禁。原两例2红→2绿，五文件114/114、原来源4/4通过；原17条before逐字保持，仅为两份实际改动测试新增完整前驱映射，共19条，不增加测试库存。旧运行继续保留失败，不借旧绿认证新HEAD。
+
+一次性授权已读回：当前App新增B owner安装182868876且Actions write，Agent已成功触发703候选6980b909的Full44052937001；A的707候选845 Full44050034037亦由Agent触发。主仓安装仍statuses read，原merge:auto首次POST403且未写入review pending/auto_merge；与Runner排队、测试失败分开，不能用workflow权限声明代替协调凭据写权限。

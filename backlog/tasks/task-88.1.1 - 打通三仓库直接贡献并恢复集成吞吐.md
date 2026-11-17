@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-16 15:08'
-updated_date: '2026-11-17 08:41'
+updated_date: '2026-11-17 09:20'
 labels: []
 dependencies: []
 parent_task_id: TASK-88.1
@@ -54,4 +54,6 @@ Owner已授权Fork B写入并启用四现有Actions，三remote可用。两Fork�
 Owner轻量要求已实施：复用ci-run-costs及现有Quick/cost测试，撤销两项新增测试库存映射与重复预算测试，库存恢复原876。成功rerun直接有效，不再强制新commit/首attempt/时间证明；原生保护不变。旧b480 ForkFull失败已实读：388.17 runner-min、1808s，已定位验证层兼容/CRLF失败；定向98/98、来源85/85及独审PASS。固定基线资料保留b480历史引用，当前树不重复维护；未声称新Hosted Full通过或合入。
 
 2026-11-17统一收口：已逐页核37个开放PR及三仓现有运行/准备分支。A Full44032429395的Windows18片成功但POSIX因skipped admission依赖未展开；在8c664瘦身基础仅复用4629必要内联准入及显式impact成功条件，保留原17条历史before、876库存与成功rerun。B44034686329 annotation明确由FurinyaDev人工取消，16作业获runner/105.53 runner-min，不再按旧403停工；无后续run。回归先红4再绿4，Quick/Full/summary既有三文件62/62。共享文件由现有PR线单写，原执行者/独审继续，实际合并及官方设备AC仍未完成。
+
+2026-11-17运行接续：Owner手动触发B Full44050580539，实读HEAD2089991e/BASEc240/attempt1，POSIX已真正展开；发现POSIX4/11仅两条旧current工作流regex未接显式成功/取消条件，定向2红转2绿，五文件114/114与原来源4/4通过，未回退运行时修复或放宽门禁。B安装现已新增182868876/Actions write，Agent成功自动触发703准确698候选Full44052937001，今后不逐次人工触发。主仓statuses仍read，677原握手POST403且未写pending/auto，权限阻塞单列，未改保护/伪造状态。
 <!-- SECTION:NOTES:END -->

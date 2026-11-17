@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('./fork-preflight-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'b4a816dfa4ac0d4d74851f9a21e065d0295361a1e76615cc7ca443b1fc0b1aa5');
+assert.equal(hash(bytes),'34b76e29a9e1af356c9bfc6fe5672296521cb736dc57106eb170cc6612bc703f');
 const proof=JSON.parse(gunzipSync(bytes));
 for(const row of Object.values(proof.files))assert.equal(hash(row.before),row.beforeSha);
 const normalize=s=>s.replaceAll('\r\n','\n');
