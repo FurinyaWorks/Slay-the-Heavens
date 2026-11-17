@@ -1,4 +1,4 @@
-import {settingsMapRead,settingsMapSource,settingsMapPriorInventory,settingsMapPacket,assertSettingsMapCurrent} from './helpers/settings-map-integration.mjs';
+import {settingsMapRead,settingsMapSource,settingsMapBeforeRepairSource,settingsMapPriorInventory,settingsMapPacket,assertSettingsMapCurrent} from './helpers/settings-map-integration.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as physicalReadFileSync,readdirSync,mkdtempSync,rmSync,writeFileSync,unlinkSync,existsSync,mkdirSync} from 'node:fs';
@@ -33,7 +33,10 @@ test('integration validates complete raw sources and leaves every foreign byte a
   assert.throws(()=>assertIntegratedCurrent((p,e)=>{
    const value=physicalReadFileSync(p,e);
    return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
-  }),error=>{assert.match(error.message,/fresh complete integration source/);assert(error.message.includes(path),'reject the intended current owner');return true;});
+  }),error=>{
+   const label=path==='tests/helpers/integrated-ci-source.mjs'?'fresh settings inventory helper: ':path==='tests/helpers/closeout-source-epoch.mjs'?'fresh complete integration source: settings/map ':'fresh complete integration source: ';
+   assert.equal(error.code,'ERR_ASSERTION');assert.equal(error.message.split('\n')[0],label+path,'reject at the exact current owner guard');return true;
+  });
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
  assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');
 });
@@ -218,7 +221,7 @@ test('PC06 CI continuation leaves the complete isolated production copy independ
 test('settings and landed map authenticate every actual current input and reject post-success drift',()=>{
  assertSettingsMapCurrent();
  for(const [path,sha]of Object.entries(settingsMapPacket.files)){
-  const source=physicalReadFileSync(path,'utf8');assert.equal(hash(source.replaceAll('\r\n','\n')),sha,path);
+  const source=physicalReadFileSync(path,'utf8');assert.equal(hash(settingsMapBeforeRepairSource(path,source).replaceAll('\r\n','\n')),sha,path);
   for(const mode of ['missing','changed','buffer'])assert.throws(()=>assertSettingsMapCurrent((p,e)=>{
    if(p!==path)return physicalReadFileSync(p,e);if(mode==='missing')throw Error('missing '+p);
    return mode==='buffer'?Buffer.from(source):source+'\n';

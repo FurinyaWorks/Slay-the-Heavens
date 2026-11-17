@@ -11,7 +11,16 @@ assert.equal(hash(repairBytes),'0c0bc9781ac8bc5741ab26a387aec8374208cc9e513d845a
 const repair=JSON.parse(gunzipSync(repairBytes));
 assert.equal(repair.schemaVersion,1);assert.equal(repair.parent,'6cdfd8dbe23aa115e45c1c37a5bc7883d0c46c41');
 assert.equal(repair.path,'tests/helpers/integrated-ci-source.mjs');
-const repairSource=(path,source)=>path===repair.path&&typeof source==='string'&&!source.includes('\r\r\n')&&norm(source)===repair.current?repair.before:source;
+const casesRepairBytes=readFileSync(new URL('./settings-map-cases-repair.json.gz',import.meta.url));
+assert.equal(hash(casesRepairBytes),'abc8d7011de288a1213f7332702cece3228a8107d9a2cc8abfc362e4cf793920','complete settings cases repair');
+const casesRepair=JSON.parse(gunzipSync(casesRepairBytes));
+assert.equal(casesRepair.schemaVersion,1);assert.equal(casesRepair.parent,'e887258ce603292b94c8f342a8ce792b20fd19ab');
+assert.equal(casesRepair.path,'tests/integrated-ci-source.cases.mjs');
+// Exact CI-only predecessors. Unknown bytes and all product paths stay visible.
+export function settingsMapBeforeRepairSource(path,source){
+ for(const patch of [repair,casesRepair])if(path===patch.path&&typeof source==='string'&&!source.includes('\r\r\n')&&norm(source)===patch.current)return patch.before;
+ return source;
+}
 const bytes=norm(readFileSync(new URL('./settings-map-integration.json',import.meta.url),'utf8'));
 assert.equal(hash(bytes),'765c65d0dacfbe0fa4db3861416534d41a924ce226565ee1baaaa0416af19054','complete settings/map integration identity');
 export const settingsMapPacket=JSON.parse(bytes);
@@ -19,10 +28,11 @@ assert.equal(settingsMapPacket.head,'9cc1b85f49f49317824c6e6ef86f625dfa73c826');
 assert.equal(settingsMapPacket.base,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
 const packets={settings:pc06CiPacket,selection:releaseSelectionMapCiPacket};
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
-freeze(settingsMapPacket);freeze(repair);
+freeze(settingsMapPacket);freeze(repair);freeze(casesRepair);
 assert.equal(hash(repair.before),settingsMapPacket.files[repair.path],'exact inventory helper predecessor');
+assert.equal(hash(casesRepair.before),settingsMapPacket.files[casesRepair.path],'exact settings cases predecessor');
 export function settingsMapSource(path,source,side='selection'){
- source=repairSource(path,source);
+ source=settingsMapBeforeRepairSource(path,source);
  assert(Object.hasOwn(packets,side),'known standalone settings/map view');
  if(path.startsWith('src/')||path==='config/architecture.json'||path==='scripts/official-battle-hud.mjs')return source;
  if(!Object.hasOwn(settingsMapPacket.files,path)||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==settingsMapPacket.files[path])return source;
@@ -40,8 +50,12 @@ export function settingsMapPriorInventory(paths,kind='js'){
 }
 export function assertSettingsMapCurrent(read=readFileSync){
  assert.equal(hash(read('tests/helpers/settings-map-inventory-repair.json.gz')),hash(repairBytes),'fresh settings inventory repair');
- assert.equal(norm(read(repair.path,'utf8')),repair.current,'fresh settings inventory helper');
- const raw=read;read=(path,encoding)=>repairSource(path,raw(path,encoding));
+ assert.equal(hash(read('tests/helpers/settings-map-cases-repair.json.gz')),hash(casesRepairBytes),'fresh settings cases repair');
+ for(const [patch,label]of [[repair,'inventory helper'],[casesRepair,'cases']]){
+  const source=read(patch.path,'utf8'),message='fresh settings '+label+': '+patch.path;
+  assert.equal(typeof source,'string',message);assert.equal(norm(source),patch.current,message);
+ }
+ const raw=read;read=(path,encoding)=>settingsMapBeforeRepairSource(path,raw(path,encoding));
  for(const [path,sha]of Object.entries(settingsMapPacket.files)){
   const source=read(path,'utf8');assert.equal(typeof source,'string','fresh settings/map source: '+path);
   assert.equal(hash(norm(source)),sha,'fresh complete integration source: settings/map '+path);
