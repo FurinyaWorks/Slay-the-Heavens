@@ -128,19 +128,23 @@ npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
 
 既有 Licenses 工作流复用一个小型门禁作业：Quality 完成事件或准确 dispatch 时读取最新受信 Review，下载原 schema3/7 正式 CI 不可变收据，校验全部必要作业与当前 run/attempt，先上传唯一 `native-ai-review-proof.json`（artifact 名绑定 PR/HEAD/run/attempt），再重读相同身份，最后由 Actions 发布真实 `independent-review` success。shadow 只留证据、不写 Required success。常态 gate 的运行源码 SHA 必须等于实际受审 develop BASE；PR 文本只作为数据，不执行 PR 中的程序来发布独审证明。Gate-only 使用独立 concurrency 与非 Required 的跳过名称，避免取消审计或覆盖 `inventory`。
 
-安装保留现有可信维护者边界：真实独审报告须显式签署 `installBaseSha`，与实际受审 BASE 一致，协调者用 `--bootstrap-ref=<本 PR 源分支>` 自动接续。GitHub 服务端 dispatch actor、triggering actor、签署身份一致，运行源码 SHA 等于已审候选 HEAD；生产者、Queue 和合后消费者各自读取该 immutable BASE 的 commit、完整 root tree 和 scripts tree，确认 `scripts/independent-ai-review.mjs` 尚不存在。同名任何 Git 类型、缺失/截断元数据或403均不得当作未安装。已安装的 BASE 必须走可信 BASE 源码，不能候选自签。该显式受审未安装 BASE 窗口不钉死某个旧提交，也不阻塞其他正常队列；BASE 前进后须新真实审查与 CI，不能复用旧组合。未来如模块被删除，缺失本身也不授权重装，仍必须新的明确安装签署。历史证明核其 immutable 原安装 BASE，不因合后已安装而伪造或否定历史。
+安装保留现有可信维护者边界：真实独审报告须显式签署 `installBaseSha`，与实际受审 BASE 一致，协调者用 `--bootstrap-ref=<本 PR 源分支>` 自动接续。GitHub 服务端 dispatch actor、triggering actor、签署身份一致，运行源码 SHA 等于已审候选 HEAD；生产者、Queue 和合后消费者各自读取该 immutable BASE 的 commit、完整 root tree 和 scripts tree，确认 `scripts/independent-ai-review.mjs` 尚不存在。同名任何 Git 类型、缺失/截断元数据或403均不得当作未安装。已安装的 BASE 必须走可信 BASE 源码，不能候选自签。安装窗口不钉死某个旧提交；改变原受审组合或安装授权须新真实审查及 CI，不能改写旧报告。后续原生前缀正常推进按下述组合合同接续。未来如模块被删除，缺失本身也不授权重装，仍必须新的明确安装签署。历史证明核其 immutable 原安装 BASE，不因合后已安装而伪造或否定历史。
 
-队列迁移只读保留尚未继承新模块、且无受信账号新 marker 的旧队列管理员合同，不签发 legacy 授权。受信新 marker（任意格式）、HEAD 或共同祖先 LCA 含同名模块，均强制完整新 proof；API 错误、缺失或截断元数据不得回退。旧路径仍核实际入队者与状态签署者一致、当前 admin、原规则指纹、精确 BASE、最新正式 CI 和已纳入基线的依赖；BASE 改变仍须原 owner 刷新授权，不保证现有队列免受其原有条件约束。
+队列迁移只读接续尚未继承新模块、且无受信账号新 marker 的旧管理员授权，不签发 legacy 授权。受信新 marker（任意格式）、HEAD 或共同祖先 LCA 含同名模块，均强制完整新 proof；API 错误、缺失或截断元数据不得回退。旧路径仍核实际入队者与状态签署者一致、当前 admin、原规则指纹、签署的精确原基线、最新正式 CI 和已落地依赖；新路径必须消费真实 Actions 不可变 proof，并以最新服务端 Review、当前角色和正式 CI run/attempt 重核原独审。原签署基线必须可验证为当前受保护主线和实际组父提交的祖先，不能把分叉或任意旧基线当作有效授权。
 
-PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，核队列 Full/inventory、squash 唯一父/树、最新 push Full 和 Backlog。shadow、替换附件、旧 run/attempt、旧 BASE、非 Actions 来源或缺队列证明均保持 `merged_pending`；旧 schema 证据继续按原合同读取，不改写历史。
+原 PR 的受审/正式 CI 基线 `B0` 和合成树保留原样，分别核对当前受保护 develop `D`、实际队列父提交 `Q`、实际队列提交/树 `G/Tq`。非首组的 `Q` 可以是前一条原生 squash，尚未等于 `D`；GitHub 原生完整成员前缀、真实 ref、`G.parents=[Q]` 及完整组 Full 共同认证该组合。REST PR.base.sha 的缓存值只作审计，不冒充当前 Git ref。两次读取均须完整认证；仅允许已验证的连续前缀正常落地收缩，目标 entry、G/Q/HEAD 及剩余成员的审查、权限、依赖和测试身份须不变。不能因为普通前缀推进而重签原报告，也不能拿原 PR 的树冒充未来组合树。正常独审签署及正式 CI 的当前基线发布条件不因此放松。
 
-自动化边界：AI 由现有云端交付会话执行，Actions 验证预存的实际独审结果，不声称它能唤醒已退出的 Codex 会话。准确报告预存且组合未变时，后续 CI→Queue→Merge 无人值守；HEAD/BASE 改变必须重新实际独审，不能把旧报告改写成新 BASE。仍沿用现行可信维护者接纳 CI 源码的边界；Any-source 检查和 Actions artifact 不是供应商 AI 数字签名，也不声称能阻止有权限修改所有 CI 的恶意维护者。
+资源清尾复用 Licenses 的 `pull_request_target(dequeued)`，仅在主仓 develop 的可信 BASE 源码运行小型取消作业，不执行 PR HEAD 程序。独立 concurrency 和非 Required 的跳过名称避免取消或覆盖正常 inventory。只在完整队列、Quality 运行及 Git refs 元数据均可读、取消前重读仍确认旧 HEAD 已离队且其引用已删除时取消该旧 merge_group 运行；保留 PR/push/dispatch 与仍有效组。动作只获本作业的 Actions 写权限，不写检查、不改队列或分支，不新增工作流或定时调度。权限/分页/竞态不明确即跳过，HTTP 阶段及取消读回如实记录，接受请求不等于已经取消。
+
+PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，另核实际组 G/Tq/[Q]、原基线到 Q 的真实祖先比较、完整队列 Full/inventory、实际 squash 与 push Full 收据及 Backlog。shadow、替换附件、旧 run/attempt、祖先关系失效、非 Actions 来源或缺队列证明均保持 `merged_pending`；原 PR 合前树不改写，旧 schema/Fast 合后格式继续按原合同读取，不冒称本次修复了所有历史格式的基线限制。
+
+自动化边界：AI 由现有云端交付会话执行，Actions 验证预存的实际独审结果，不声称它能唤醒已退出的 Codex 会话。准确报告预存且原受审 HEAD/B0/树未变时，后续 CI→Queue→Merge 无人值守；改变原受审组合仍须真实重审，不能把旧报告改写成新 BASE。D/Q 的正常前缀推进由祖先链和真正组合 Full 验证，不冒充对新组合重新做了 AI 审查。仍沿用现行可信维护者接纳 CI 源码的边界；Any-source 检查和 Actions artifact 不是供应商 AI 数字签名，也不声称能阻止有权限修改所有 CI 的恶意维护者。
 
 **Backlog 同轮收口**：已合 PR 正文用唯一 `Backlog:` 行显式列出改动任务的 `done`、`verify`、`continue` 或 `superseded:TASK-承接`；无任务更新才写 `none`。上述合后入口在真实 `merged_passed` 后核对完整 PR 文件清单、实际最新 develop 与合入时任务快照，再通过 Backlog CLI 更新并读回。`done` 不自动勾 AC，全部已勾才移入 completed；`verify` 保持 In Progress/待验，已有 Blocked 须先明确解除，不能隐式恢复；`continue` 留本轮接续备注；替代归档必须有有效承接且活动依赖已迁移。未知声明、旧工作树、后续任务变化、CLI失败或读回不符保持 `Backlog pending`，不得把代码交付成功当作任务已同步；已写入步骤可安全接续。历史 PR 无声明时先人工对账，不补造其合前声明。该入口没有后台轮询，当前会话不必守候；下次合后验收执行同一命令即可。
 
 纯对账 PR 已通过 CLI 更新、归档或移入 completed 的任务用 `TASK-编号=recorded`：仍逐项验证合入快照和 Done 的全部 AC，但不再次改状态、归档或追加备注。它不是完成声明，也不消除原未验项，便于同一 PR 交付历史清理而不重复执行清理。
 
-暂停使用 `npm run merge:auto -- <PR> --pause`；若已在原生 Merge Queue，命令先调用 dequeue 并读回成员身份消失，再关闭并读回 Auto-merge；不改写独立评审事实或伪造失败状态。不能仅凭 `gh pr merge --disable-auto` 的退出码认定已出队。移除失败、能力未知或重新入队均不报告 paused。仅添加 hold 标签不是已确认取消。改变依赖/授权意图前先暂停，重新审查后再启用；已声明依赖必须是已纳入受审基线的提交，不允许授权未落地依赖。strict 会阻止落后的 head；更新分支形成新 head 后须有新审查状态，不自动强推、自动重基或假定旧审查仍有效。队列 BASE 变化仍要求新授权；原生 API 不提供可变正文/标签的原子条件，本流程不作此承诺。
+暂停使用 `npm run merge:auto -- <PR> --pause`；若已在原生 Merge Queue，命令先调用 dequeue 并读回成员身份消失，再关闭并读回 Auto-merge；不改写独立评审事实或伪造失败状态。不能仅凭 `gh pr merge --disable-auto` 的退出码认定已出队。移除失败、能力未知或重新入队均不报告 paused。仅添加 hold 标签不是已确认取消。改变依赖/授权意图前先暂停，重新审查后再启用；已声明依赖必须是已纳入受审基线的提交，不允许授权未落地依赖。Strict 保留；更新分支形成新 HEAD 后须有新审查状态，不自动强推、自动重基。队列正常前缀推进按上述合同认证，祖先分叉、组身份或原审条件改变不继承旧授权；原生 API 不提供可变正文/标签的原子条件，本流程不作此承诺。
 
 自动入口仅用于同仓库的 develop PR，不改变 master 的 release/hotfix CI。Fork 的只读 token 不能发布新必需状态，其成果须由维护者接续到同仓库短分支后重新审查、验证；不是直接绕过门禁手动合入 fork PR。旧 run/attempt 的 planner 与 aggregate 不得覆盖新运行已写入的 pending/success。
 

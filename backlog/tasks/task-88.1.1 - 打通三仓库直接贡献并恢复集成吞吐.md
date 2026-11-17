@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-16 15:08'
-updated_date: '2026-11-17 09:50'
+updated_date: '2026-11-17 15:57'
 labels: []
 dependencies: []
 parent_task_id: TASK-88.1
@@ -58,4 +58,6 @@ Owner轻量要求已实施：复用ci-run-costs及现有Quick/cost测试，撤�
 2026-11-17运行接续：Owner手动触发B Full44050580539，实读HEAD2089991e/BASEc240/attempt1，POSIX已真正展开；发现POSIX4/11仅两条旧current工作流regex未接显式成功/取消条件，定向2红转2绿，五文件114/114与原来源4/4通过，未回退运行时修复或放宽门禁。B安装现已新增182868876/Actions write，Agent成功自动触发703准确698候选Full44052937001，今后不逐次人工触发。主仓statuses仍read，677原握手POST403且未写pending/auto，权限阻塞单列，未改保护/伪造状态。
 
 Owner本轮明确CI疏通：主仓全部在途运行分页核实，已保存并取消4条无队列引用/确定失败旧候选运行（主仓44021706926/44025702622、Fork A44055271729、Fork B44055273547），均已实际cancelled读回。707最小二进制reader修复独审后仅派发Fork A准确558832b6/BASEb9新候选Full44058918461。712独审额外复现push收据PREFLIGHT_BASE_SHA空值吞掉event.before；现限定dispatch来源并新增真实CLI五事件/环境优先级回归，原before档案保持。当前主仓GitHub安装178440181为statuses=read且未含Administration读取，现有merge:auto安全拒绝；需补Commit statuses:write及Administration:read，未绕过。实际合并闭环仍待。
+
+2026-11-17本轮实际推进：703已原生自动合并00ab3fe6，707经Fork A Full44076227211和主仓Quality44086075879实际合为af77fb24，源分支均删除；709完整覆盖后关闭并清理。核实清理主仓17条、Fork A两条，共19条远端ref；两条Fork707来源作为现有归档9edf8592的父提交远端保留。全51页5062条Actions、32个开放PR已刷新；701真实checks_timed_out且最长job等待6760秒，失效后三旧组仍占15jobs，已留证并取消，非403/代码fail。旧merge:auto权限阻塞不再通过追加连接器Admin/status写权限解决，Owner拒绝三项额外审批配置后改用真实云端独审+同账号COMMENTED+既有Actions证明+原生队列。真实不同BASE收据又暴露重复基线P1，193未推广且取消过期Full；新组消费及事件驱动清尾正在独审，不能宣称闭环已完成。710最小CI修复3ad独审通过，Fork A Full44113901367在运行；同独立Fork B工作不互相阻塞。保留In Progress/未验AC，不伪报Done。实际合并和最终证据以 https://github.com/FurinyaWorks/Slay-the-Heavens/pull/712 及 https://github.com/FurinyaWorks/Slay-the-Heavens/pull/710 为准；已有归档 https://github.com/FurinyaWorks/Slay-the-Heavens/commit/9edf859232f70aa057e440d2eccbc22f8ede2851 。
 <!-- SECTION:NOTES:END -->
