@@ -4,7 +4,7 @@ import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {projectRepositoryId} from '../scripts/repository-identity.mjs';
-import {armAutoMerge,autoMergeErrors,collectEligibility,pauseAutoMerge} from '../scripts/arm-auto-merge.mjs';
+import {armAutoMerge,autoMergeErrors,collectEligibility,pauseAutoMerge,signCloudReview} from '../scripts/arm-auto-merge.mjs';
 import {independentReviewGate} from '../scripts/publish-pr-quality.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
 const sha=c=>c.repeat(40);
@@ -213,7 +213,7 @@ function nativeFixture(){
  f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12)+'-9-1',expired:false,workflow_run:{id:9,head_sha:sha('b')},digest:'sha256:'+ 'f'.repeat(64)};
  const api=aiApi(f).api,calls=[];
  const query=(...args)=>{
-  calls.push(args);const path=args.find(a=>typeof a==='string'&&(/^(repos|repositories)\//).test(a));
+  calls.push(args);const path=args.find(a=>typeof a==='string'&&((/^(repos|repositories)\//).test(a)||a==='user'));
   let value;
   if(args.includes('POST')){
    if(path?.endsWith('/dispatches')){f.dispatched=JSON.parse(readFileSync(args[args.indexOf('--input')+1],'utf8'));return '';}
@@ -221,7 +221,8 @@ function nativeFixture(){
   }else if(args[1]==='graphql'){
    if(args.some(a=>a.includes('enablePullRequestAutoMerge')))value={data:{enablePullRequestAutoMerge:{pullRequest:{number:712}}}};
    else value={data:{node:{id:'PR_712',number:712,state:'OPEN',baseRefName:'develop',headRefOid:sha('a'),repository:{databaseId:projectRepositoryId,nameWithOwner:aiRepo},isInMergeQueue:false,mergeQueueEntry:null,isMergeQueueEnabled:true,autoMergeRequest:{mergeMethod:'SQUASH'},mergeQueue:{id:'QUEUE',configuration:{mergeMethod:'SQUASH',mergingStrategy:'ALLGREEN'}}}}};
-  }else if(path?.endsWith('/rulesets/25870651'))value=f.ruleset;
+  }else if(path==='user')value=f.reviews[0]?.user??{id:aiRoleId,login:'FurinyaDev'};
+  else if(path?.endsWith('/rulesets/25870651'))value=f.ruleset;
   else if(path?.includes('/actions/workflows/quality.yml/runs?'))value=[{workflow_runs:[f.run]}];
   else if(path?.includes('/actions/runs/7/jobs?'))value=[{jobs:f.jobs}];
   else if(path?.endsWith('/commits/'+sha('d')))value={...f.sourceCommit,commit:{tree:f.sourceCommit.tree}};
@@ -354,4 +355,32 @@ test('ordinary proof publication executes current actual BASE code and never PR 
  for(const envChange of [e=>e.GITHUB_SHA=sha('a'),e=>{e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');}]){
   const f=nativeFixture();assert.throws(()=>gateExecute(f,{mutateEnv:envChange}),/trusted actual BASE/);assert(!f.calls.some(a=>a.includes('POST')));
  }
+});
+
+test('complete cloud reports are automatically signed as COMMENTED without another account or approval',()=>{
+ const f=nativeFixture(),normal=f.query,report=structuredClone(f.report);report.provenance.reviewId+='-fresh';let posts=0;
+ f.query=(...args)=>{
+  const path=args.find(a=>typeof a==='string'&&a.startsWith('repos/'));
+  if(args.includes('POST')&&path==='repos/'+aiRepo+'/pulls/712/reviews'){
+   posts++;const input=JSON.parse(readFileSync(args[args.indexOf('--input')+1],'utf8'));
+   assert.equal(input.event,'COMMENT');assert.equal(input.commit_id,f.pr.head.sha);
+   const row={id:101,state:'COMMENTED',commit_id:input.commit_id,body:input.body,user:f.reviews[0].user,submitted_at:'2026-11-17T10:10:00Z'};f.reviews.push(row);return JSON.stringify(row);
+  }return normal(...args);
+ };
+ const signed=signCloudReview(aiRepo,712,report,f.query);assert.equal(signed.githubReviewId,101);assert.equal(signed.reused,false);assert.equal(posts,1);
+ assert.equal(armAutoMerge(aiRepo,712,signed,f.query,{dryRun:true}).state,'eligible');
+ assert.equal(signCloudReview(aiRepo,712,report,f.query).reused,true);assert.equal(posts,1,'repeat command cannot repost the same opinion');
+});
+test('unsigned or mutated payloads cannot become eligible through dry-run or self-declared JSON',()=>{
+ for(const change of [r=>delete r.provenance,r=>r.reviewedBaseSha=sha('f'),r=>r.coordinator.id=999,r=>r.reviewerAgent=r.implementationAgents[0]]){
+  const f=nativeFixture(),report=structuredClone(f.report);change(report);assert.throws(()=>signCloudReview(aiRepo,712,report,f.query));assert(!f.calls.some(a=>a.includes('POST')));
+ }
+ const f=nativeFixture(),fresh=structuredClone(f.report);fresh.provenance.reviewId+='-fresh';assert.throws(()=>signCloudReview(aiRepo,712,fresh,f.query,{dryRun:true}),/not yet signed/);assert(!f.calls.some(a=>a.includes('POST')));
+ const sameId=structuredClone(f.report);sameId.provenance.sessionId='different-session-with-old-review-id';assert.throws(()=>signCloudReview(aiRepo,712,sameId,f.query),/identity already/);assert(!f.calls.some(a=>a.includes('POST')));
+});
+test('reusing an old signed pass cannot repost it over a newer actual fail or dismissal',()=>{
+ const f=nativeFixture();f.reviews.push({...f.reviews[0],id:101,submitted_at:'2026-11-17T10:10:00Z',body:aiBody({...f.report,conclusion:'fail',unresolved:['bug'],provenance:{...f.report.provenance,reviewId:'actual-later-review'}})});
+ const signed=signCloudReview(aiRepo,712,f.report,f.query);assert.equal(signed.githubReviewId,100);assert.equal(signed.reused,true);
+ assert.throws(()=>armAutoMerge(aiRepo,712,signed,f.query,{dryRun:true}));assert(!f.calls.some(a=>a.includes('POST')));
+ const dismissed=nativeFixture();dismissed.reviews[0].state='DISMISSED';const old=signCloudReview(aiRepo,712,dismissed.report,dismissed.query);assert.equal(old.reused,true);assert.throws(()=>armAutoMerge(aiRepo,712,old,dismissed.query,{dryRun:true}));
 });

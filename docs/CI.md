@@ -115,15 +115,16 @@ develop PR 的独立评审与 CI 并行。审查与准入通过后可挂起原�
 
 ### 常规使用
 
-PR 正文须恰有一行 `Depends-on: none` 或 `Depends-on: #123, #456`。可信协调账号确认真实独立 AI 会话后，以 GitHub COMMENTED Review 在当前 HEAD 提交完整报告：`<!-- independent-ai-review:v1 -->` 后紧跟一个 JSON，含 `schemaVersion: 1`、`kind: independent-ai-review`、固定仓库 ID/名称、PR、`reviewedHeadSha`、`reviewedBaseSha`、`reviewedTreeSha`、`conclusion: pass`、`unresolved: []`、不同于全部 `implementationAgents` 的实际 `reviewerAgent`，以及签署账号 `coordinator` 和真实 `provenance.reviewId/sessionId`（`kind: coordinator-verified-agent-session`、`coordinatorVerified: true`）。未核实会话的 JSON、本地测试绿灯、非可信账号、旧组合、被驳回/撤销或仍有问题的报告均不能放行。
+PR 正文须恰有一行 `Depends-on: none` 或 `Depends-on: #123, #456`。可信协调账号确认真实独立 AI 会话后，将完整报告交给原有命令自动以 GitHub COMMENTED Review 签署当前 HEAD（也可复用已存在的服务端记录）：`<!-- independent-ai-review:v1 -->` 后紧跟一个 JSON，含 `schemaVersion: 1`、`kind: independent-ai-review`、固定仓库 ID/名称、PR、`reviewedHeadSha`、`reviewedBaseSha`、`reviewedTreeSha`、`conclusion: pass`、`unresolved: []`、不同于全部 `implementationAgents` 的实际 `reviewerAgent`，以及签署账号 `coordinator` 和真实 `provenance.reviewId/sessionId`（`kind: coordinator-verified-agent-session`、`coordinatorVerified: true`）。未核实会话的 JSON、本地测试绿灯、非可信账号、旧组合、被驳回/撤销或仍有问题的报告均不能放行。
 
 ```bash
+npm run merge:auto -- <PR> <完整独审报告.json>
+# 已签署的记录可只读检查或先shadow；未签署本地JSON的dry-run不作eligible
 npm run merge:auto -- <PR> <GitHub-Review-record-ID> --dry-run
 npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
-npm run merge:auto -- <PR> <GitHub-Review-record-ID>
 ```
 
-云端交付协调者调用现有命令后，GitHub 负责 CI→Queue→Merge 等待，不需人工再审批。命令读取真实签署记录、当前协调者权限、已合且已纳入基线的依赖、当前完整 PR 合成树及公开保护，绑定 `expectedHeadOid` 请求原生 Auto-merge并读回；不直接发布独审状态，也不重复执行或下载 Full。schema9 `native-auto-merge-intent` 只是原生合并意图定位，不是测试通过凭证；缺失或已知失败/取消的正式 CI 拒绝。
+完整报告的reviewId幂等复用，已有同ID但不同证据拒绝；不能重复POST旧pass覆盖后来的fail/撤销，须新的实际独审。云端交付协调者调用现有命令后，GitHub 负责 CI→Queue→Merge 等待，不需人工再审批。命令读取真实签署记录、当前协调者权限、已合且已纳入基线的依赖、当前完整 PR 合成树及公开保护，绑定 `expectedHeadOid` 请求原生 Auto-merge并读回；不直接发布独审状态，也不重复执行或下载 Full。schema9 `native-auto-merge-intent` 只是原生合并意图定位，不是测试通过凭证；缺失或已知失败/取消的正式 CI 拒绝。
 
 既有 Licenses 工作流复用一个小型门禁作业：Quality 完成事件或准确 dispatch 时读取最新受信 Review，下载原 schema3/7 正式 CI 不可变收据，校验全部必要作业与当前 run/attempt，先上传唯一 `native-ai-review-proof.json`（artifact 名绑定 PR/HEAD/run/attempt），再重读相同身份，最后由 Actions 发布真实 `independent-review` success。shadow 只留证据、不写 Required success。常态 gate 的运行源码 SHA 必须等于实际受审 develop BASE；PR 文本只作为数据，不执行 PR 中的程序来发布独审证明。Gate-only 使用独立 concurrency 与非 Required 的跳过名称，避免取消审计或覆盖 `inventory`。
 

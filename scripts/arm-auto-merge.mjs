@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches} from './repository-identity.mjs';
-import {collectIndependentAiReview} from './independent-ai-review.mjs';
+import {collectIndependentAiReview,parseIndependentAiReview,independentAiReportErrors,INDEPENDENT_AI_REVIEW_MARKER,TRUSTED_REVIEW_COORDINATOR_IDS} from './independent-ai-review.mjs';
 export {parseDependencies} from './independent-ai-review.mjs';
 export const reviewContext='independent-review';
 export const requiredContexts=['check','presentation','engineering-posix','inventory',reviewContext,'pr-quality'];
@@ -19,7 +19,7 @@ const json=(query,...args)=>JSON.parse(query(...args));
 
 // GitHub owns merge authorization. This adapter validates the real independent
 // cloud AI report signed by the existing trusted coordinator and dispatches the existing CI gate; it never posts commit statuses.
-export function autoMergeErrors({repo,settings,pr,ruleset,nativeReview}){
+export function mergePolicyErrors({repo,settings,pr,ruleset}){
  const errors=[];
  if(!projectRepositoryMatches(settings,repo)||!projectRepositoryMatches(pr?.head?.repo,repo)||!projectRepositoryMatches(pr?.base?.repo,repo))errors.push('Unexpected project repository identity');
  if(settings?.allow_auto_merge!==true||settings?.allow_squash_merge!==true)errors.push('Native auto-merge and squash must be enabled');
@@ -33,8 +33,52 @@ export function autoMergeErrors({repo,settings,pr,ruleset,nativeReview}){
  if(q.length!==1||q[0].parameters?.merge_method!=='SQUASH'||q[0].parameters?.grouping_strategy!=='ALLGREEN')errors.push('Native SQUASH ALLGREEN queue must remain enabled');
  if(!isDeepStrictEqual(pull?.allowed_merge_methods,['squash'])||pull.required_review_thread_resolution!==true||!rules.some(r=>r.type==='required_linear_history'))errors.push('Squash, resolved threads and linear history must remain enabled');
  if(Object.hasOwn(ruleset??{},'bypass_actors')&&(!Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length))errors.push('Unexpected explicit bypass actors');
- if(nativeReview?.conclusion!=='pass')errors.push(...(nativeReview?.errors??['A trusted signed cloud AI review record is required']));
  return errors;
+}
+export function autoMergeErrors(options){
+ const errors=mergePolicyErrors(options),review=options.nativeReview;
+ if(review?.conclusion!=='pass')errors.push(...(review?.errors??['A trusted signed cloud AI review record is required']));
+ return errors;
+}
+// A complete report is an explicit attestation by the current trusted cloud
+// coordinator, who verified the actual independent session. The payload check
+// alone is not authorization: eligibility is collected again from real server
+// records after signing. Repeated commands reuse the same report identity and
+// cannot silently repost an old pass over a later rejection.
+export function signCloudReview(repo,number,report,query=gh,{dryRun=false}={}){
+ const api=path=>json(query,'api',path),repository=api('repositories/'+projectRepositoryId),actor=api('user');
+ if(!TRUSTED_REVIEW_COORDINATOR_IDS.includes(actor?.id)||typeof actor.login!=='string'||!/^[-a-z0-9]+$/i.test(actor.login))throw Error('Only the existing trusted cloud coordinator can attest an actual review');
+ const permission=api(`repos/${repo}/collaborators/${actor.login}/permission`),role=permission.role_name??permission.permission;
+ if(permission.user?.id!==actor.id||permission.user.login!==actor.login||!(role==='admin'&&permission.permission==='admin'||role==='maintain'&&['write','maintain'].includes(permission.permission)))throw Error('Current coordinator must retain maintain/admin authority');
+ const pr=api(`repos/${repo}/pulls/${number}`),target=api(`repos/${repo}/git/ref/heads/develop`),ruleset=api(`repos/${repo}/rulesets/25870651`);
+ const policyErrors=mergePolicyErrors({repo,settings:repository,pr,ruleset});
+ if(target.ref!=='refs/heads/develop'||target.object?.type!=='commit'||target.object.sha!==pr.base?.sha)policyErrors.push('Actual BASE changed before cloud attestation');
+ if(policyErrors.length)throw Error(policyErrors.join('\n'));
+ const sourceCommit=api(`repos/${repo}/git/commits/${pr.merge_commit_sha}`);
+ const payloadErrors=independentAiReportErrors(report,{repository,pr,baseSha:target.object.sha,sourceCommit,coordinator:actor});
+ if(payloadErrors.length)throw Error(payloadErrors.join('\n'));
+ const prior=[];
+ for(let page=1;;page++){
+  const rows=api(`repos/${repo}/pulls/${number}/reviews?per_page=100&page=${page}`);if(!Array.isArray(rows))throw Error('Complete server-side review records required');
+  prior.push(...rows);if(prior.some(row=>!Number.isSafeInteger(row?.id)||row.id<=0)||new Set(prior.map(row=>row.id)).size!==prior.length)throw Error('Malformed or duplicate server-side review page');
+  if(rows.length<100)break;
+ }
+ const sameId=prior.filter(row=>{
+  if(row.user?.id!==actor.id)return false;
+  try{return parseIndependentAiReview(row.body)?.provenance?.reviewId===report.provenance.reviewId;}catch{return false;}
+ });
+ if(sameId.length){
+  if(sameId.some(row=>row.commit_id!==pr.head.sha||!isDeepStrictEqual(parseIndependentAiReview(row.body),report)))throw Error('Review identity already belongs to different evidence; obtain a fresh actual independent review');
+  return {githubReviewId:sameId.sort((a,b)=>b.id-a.id)[0].id,reused:true};
+ }
+ if(dryRun)throw Error('Report is not yet signed on GitHub; dry-run cannot authorize an unsigned local JSON');
+ const dir=mkdtempSync(join(tmpdir(),'cloud-review-attestation-'));
+ try{
+  const file=join(dir,'review.json');writeFileSync(file,JSON.stringify({commit_id:pr.head.sha,event:'COMMENT',body:INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(report,null,2)}));
+  const written=json(query,'api','--method','POST',`repos/${repo}/pulls/${number}/reviews`,'--input',file);
+  if(!Number.isSafeInteger(written.id)||written.id<=0||written.state!=='COMMENTED'||written.user?.id!==actor.id||written.commit_id!==pr.head.sha)throw Error('GitHub cloud attestation identity was not confirmed');
+  return {githubReviewId:written.id,reused:false};
+ }finally{rmSync(dir,{recursive:true,force:true});}
 }
 export function collectEligibility(repo,number,review,query=gh){
  const api=path=>json(query,'api',path),settings=api('repositories/'+projectRepositoryId);
@@ -162,7 +206,8 @@ export function main(args=process.argv.slice(2),query=gh){
  if(!/^[1-9][0-9]*$/.test(numberArg??''))throw Error('Usage: merge:auto <PR> <GitHub-Review-record-ID|review.json> [--dry-run|--shadow] [--bootstrap-ref=branch]');
  if(reviewArg==='--pause'&&!flags.length){const r=pauseAutoMerge(repo,number,query);console.log(JSON.stringify(r));return r;}
  if(!reviewArg||flags.some(f=>!['--dry-run','--shadow'].includes(f)&&!f.startsWith('--bootstrap-ref='))||flags.filter(f=>f.startsWith('--bootstrap-ref=')).length>1||flags.includes('--dry-run')&&flags.includes('--shadow'))throw Error('Invalid native merge options');
- const review=/^[1-9][0-9]*$/.test(reviewArg)?Number(reviewArg):JSON.parse(readFileSync(reviewArg,'utf8'));
+ let review=/^[1-9][0-9]*$/.test(reviewArg)?Number(reviewArg):JSON.parse(readFileSync(reviewArg,'utf8'));
+ if(review?.schemaVersion===1&&review.kind==='independent-ai-review'&&!review.githubReviewId)review=signCloudReview(repo,number,review,query,{dryRun:flags.includes('--dry-run')});
  if(!flags.includes('--dry-run'))mkdirSync('build/delivery',{recursive:true});
  const journal=`build/delivery/native-auto-${number}-${Date.now()}-attempt.json`;
  const result=armAutoMerge(repo,number,review,query,{persist:record=>writeFileSync(journal,JSON.stringify(record,null,2)+'\n'),dryRun:flags.includes('--dry-run'),shadow:flags.includes('--shadow'),bootstrapRef:flags.find(f=>f.startsWith('--bootstrap-ref='))?.slice(16)});
