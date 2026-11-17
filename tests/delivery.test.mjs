@@ -1236,3 +1236,51 @@ test('the authentic obsolete PR682 receipt binds Q to the preceding native squas
  assert(errors.length>0,'an authentic receipt alone is not a successful Full or native admission');
  assert(!errors.some(error=>/actual native queue commit|Original reviewed BASE|authorized PR\/actual queue parent|checkout differs|checkout must/i.test(error)),errors.join('; '));
 });
+
+test('native merged collection rechecks latest push Full and PR identity after downloading queue evidence',()=>{
+ for(const mutate of [e=>e.run.run_attempt++,e=>e.run.conclusion='cancelled',e=>e.pr.head.sha=sha('f')]){
+  const e=secondNativeMergedFixture(),paths=[];
+  const query=(...args)=>{
+   const path=args.at(-1);paths.push(path);
+   if(path.endsWith('/pulls/8'))return JSON.stringify(e.pr);
+   if(path.endsWith('/commits/'+e.pr.merge_commit_sha))return JSON.stringify(e.commit);
+   if(path.includes('/compare/'))return JSON.stringify(e.queueFull.reviewBaseAncestry.comparison);
+   if(path.includes('/statuses?'))return JSON.stringify([e.queueFull.statuses]);
+   if(path.includes('/actions/workflows/quality.yml/'))return JSON.stringify([{workflow_runs:[path.includes('event=push')?e.run:e.queueFull.run]}]);
+   if(path.includes('/actions/workflows/licenses.yml/'))return JSON.stringify([{workflow_runs:[e.queueFull.licenses.run]}]);
+   const id=Number(path.match(/actions\/runs\/(\d+)\/jobs/)?.[1]);
+   if(id)return JSON.stringify([{jobs:id===9?e.jobs:id===21?e.queueFull.jobs:e.queueFull.licenses.jobs}]);
+   throw Error('Unexpected native freshness query '+path);
+  };
+  const actual=collectMergedDelivery(e.repo,8,e.preflight,query,run=>{
+   if(run.id===9)return {checkout:e.checkout,checkoutArtifact:e.checkoutArtifact};
+   mutate(e);return {checkout:e.queueFull.checkout,checkoutArtifact:e.queueFull.checkoutArtifact};
+  });
+  assert.equal(verifyMergedDelivery(actual).state,'merged_pending',String(mutate));
+  const lastLicense=paths.findLastIndex(path=>path.includes('/actions/workflows/licenses.yml/'));
+  assert(paths.findLastIndex(path=>path.endsWith('/pulls/8'))>lastLicense);
+  assert(paths.findLastIndex(path=>path.includes('event=push'))>lastLicense);
+ }
+});
+
+test('native queue Licenses folds authenticated filter-all history without rewriting attempts or borrowing older green rows',()=>{
+ const e=secondNativeMergedFixture(),licenses=e.queueFull.licenses,old=structuredClone(licenses.jobs);
+ licenses.run.run_attempt=licenses.currentRun.run_attempt=2;
+ licenses.jobs.push(...old.map(job=>({...job,id:job.id+100,run_attempt:2})));
+ const raw=JSON.stringify(licenses.jobs);assert.deepEqual(verifyMergedDelivery(e),{state:'merged_passed',errors:[]});
+ assert.equal(JSON.stringify(licenses.jobs),raw,'original historical execution attempts remain unchanged');
+ const previousFailure=structuredClone(e);previousFailure.queueFull.licenses.jobs[0].conclusion='failure';
+ assert.equal(verifyMergedDelivery(previousFailure).state,'merged_passed','a genuine new successful execution resolves old failure');
+ for(const mutate of [
+  x=>x.jobs.find(job=>job.name==='inventory'&&job.run_attempt===2).conclusion='failure',
+  x=>x.jobs=x.jobs.filter(job=>!(job.name==='inventory'&&job.run_attempt===2)),
+  x=>x.jobs.find(job=>job.name==='independent-ai-review'&&job.run_attempt===2).conclusion='success',
+  x=>x.jobs[0].id=x.jobs[1].id,x=>x.jobs.push({...x.jobs[0],id:999}),x=>x.jobs[0].name='unknown',
+  x=>x.jobs[0].run_attempt=3,x=>x.jobs[0].run_attempt=0,x=>x.jobs[0].run_id++,x=>x.jobs[0].head_sha=sha('f'),
+  x=>x.currentRun.run_attempt=3
+ ]){
+  const bad=structuredClone(e);mutate(bad.queueFull.licenses);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));
+ }
+ const legacy=structuredClone(e.queueFull);legacy.kind='fast-queue-full';
+ assert(delivery.verifyFastQueueFull(legacy,e.preflight,e.pr.merge_commit_sha).length,'the historical Fast contract is not relaxed');
+});

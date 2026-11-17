@@ -323,8 +323,27 @@ function verifyQueueFull(e,arm,mergedSha,kind){
       status.target_url!==`https://github.com/${arm.repo}/actions/runs/${run.id}`)
       errors.push('Queue Full/admission status is missing or no longer successful: '+context);
   }
-  const licenses=e.licenses,inventory=Array.isArray(licenses?.jobs)?licenses.jobs.filter(job=>job?.name==='inventory'):[],
-    extra=Array.isArray(licenses?.jobs)?licenses.jobs.filter(job=>job?.name!=='inventory'):[];
+  const licenses=e.licenses;
+  let licenseJobs=licenses?.jobs;
+  if(native&&Array.isArray(licenseJobs)){
+    const ids=new Set(),executions=new Set(),latest=new Map(),attempt=licenses?.run?.run_attempt;
+    for(const job of licenseJobs){
+      const key=job?.name+'@'+job?.run_attempt;
+      if(!['inventory','independent-ai-review','cancel-obsolete-queue'].includes(job?.name)||
+        !positiveId(job?.id)||ids.has(job?.id)||executions.has(key)||!positiveId(attempt)||
+        !positiveId(job?.run_attempt)||job.run_attempt>attempt||job.run_id!==licenses?.run?.id||job.head_sha!==mergedSha)
+        errors.push('Native queue inventory history contains unknown, duplicate or mismatched execution identities');
+      ids.add(job?.id);executions.add(key);
+      const previous=latest.get(job?.name);
+      if(!previous||job?.run_attempt>previous.run_attempt||job?.run_attempt===previous.run_attempt&&job?.id>previous.id)
+        latest.set(job?.name,job);
+    }
+    // Preserve the raw filter=all history; only current execution rows decide
+    // the latest attempt's conclusions. Never relabel an old successful row.
+    licenseJobs=[...latest.values()];
+  }
+  const inventory=Array.isArray(licenseJobs)?licenseJobs.filter(job=>job?.name==='inventory'):[],
+    extra=Array.isArray(licenseJobs)?licenseJobs.filter(job=>job?.name!=='inventory'):[];
   if(!positiveId(licenses?.run?.id)||!positiveId(licenses?.run?.run_attempt)||
     licenses.run.head_sha!==mergedSha||licenses.run.event!=='merge_group'||
     licenses.run.status!=='completed'||licenses.run.conclusion!=='success'||
@@ -561,8 +580,6 @@ export function collectMergedDelivery(repo,number,preflight,query=gh,loadCheckou
   const run=latestQualityRun(query,repo,identity);
   const jobs=run?.status==='completed'?pages(query,`repos/${repo}/actions/runs/${run.id}/jobs?filter=all&per_page=100`,'jobs'):[];
   const receipt=run?.status==='completed'&&run.conclusion==='success'?loadCheckout(run,jobs):{};
-  const current=JSON.parse(query('api',`repos/${repo}/pulls/${number}`));
-  const currentRun=latestQualityRun(query,repo,identity);
   let queueFull;
   if([6,7].includes(preflight.schemaVersion)||preflight.nativeReview!==undefined){
     const native=preflight.nativeReview!==undefined,queueBase=native?parentShas(commit)[0]:preflight.base;
@@ -581,6 +598,10 @@ export function collectMergedDelivery(repo,number,preflight,query=gh,loadCheckou
         currentRun:pages(query,`repos/${repo}/actions/workflows/licenses.yml/runs?event=merge_group&head_sha=${pr.merge_commit_sha}&per_page=100`,'workflow_runs')
           .filter(r=>r.head_sha===pr.merge_commit_sha&&r.event==='merge_group').sort((a,b)=>b.id-a.id)[0]}};
   }
+  // Queue artifact downloads may outlive a push rerun or PR update. These
+  // mutable observations must be read after every receipt and license query.
+  const current=JSON.parse(query('api',`repos/${repo}/pulls/${number}`));
+  const currentRun=latestQualityRun(query,repo,identity);
   const waived=preflight.review?.disposition==='low-risk-docs';
   const changedFileCount=waived?pr.changed_files:undefined;
   const changedFiles=waived?lowRiskFiles(query,repo,number,changedFileCount):undefined;
