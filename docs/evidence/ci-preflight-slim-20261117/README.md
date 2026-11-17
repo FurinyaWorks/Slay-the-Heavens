@@ -9,8 +9,12 @@
 
 ## 验证
 
-C 系统临时目录载入准确 API 源码，受限 Node REPL 无 process 全局且 spawnSync(node) 返回 EPERM。仅本地测试副本给 release-ci/verify-delivery 的 CLI 入口提供 argv=[]、env={}，实际函数、原 receiptErrors、真实共享矩阵与 bootstrap 原始 gzip 不变；网络/checkout 下载使用 mock。12项通过：3项原完整矩阵/收据负控、9项本切片条件与 freeze 回归。结果见 results.json。生产提交不含 CLI shim，不能将此结果称为固定 Node22/Node24、Hosted Full 或正式集成通过。
+C 系统临时目录载入准确 API 源码，受限 Node REPL 无 process 全局且 spawnSync(node) 返回 EPERM。仅本地测试副本给 release-ci/verify-delivery 的 CLI 入口提供 argv=[]、env={}，实际函数、原 receiptErrors、真实共享矩阵与 bootstrap 原始 gzip 不变；网络/checkout 下载使用 mock。13项通过：3项原完整矩阵/收据负控、9项本切片条件与 freeze 回归、1项显式合同步骤的路径/错误传播负控。结果见 results.json。生产提交不含 CLI shim，不能将此结果称为固定 Node22/Node24、Hosted Full 或正式集成通过。
 
-后续在本唯一提交经独审后，用 Fork A 既有 Quick feedback 手动预检一次，检查实际 Node24 与选测结果；不为此复制一轮 Full。真实 Release freeze 仍只接受主仓准确候选的正式 Full 证据，不接受 Fork 回传替代。
+首轮 Fork A Quick `44022319453` / `edf8ec949929cb0adc2f6aaf6be6d7a1242a9e38` 成功，但其 unknown-workflow 默认 feedback.fast 未选择新 Release CI 用例，因此只证明基础环境与原选测通过，不能声称新 CI 逻辑已在 Node24 验证。
+
+本接续保留普通 related 选测，在同 advisory job 增加显式合同步骤：已验证的准确 BASE→HEAD 用 git diff -z 得出文件名，只命中固定 4 条 Release CI 路径时执行 `node --test tests/ci-impact.test.mjs tests/ci-summary-runners.test.mjs` 并打印执行标记；非法 BASE、Git 错误与测试错误均失败。新 Quick 完整 LF SHA `7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9` 在原 helper 中只做完整精确逆投影，旧 packet/expected 不变。
+
+本新提交须独审后再进行一次必要 Quick，确认显式合同步骤真实执行；不重复 EDF，不跑额外 Full。真实 Release freeze 仍只接受主仓准确候选的正式 Full 证据，不接受 Fork 回传替代。
 
 官方机制：[job 条件](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-jobs-with-conditions)、[原生 concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)。

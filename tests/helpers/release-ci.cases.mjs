@@ -227,3 +227,35 @@ test('freeze rejects a foreign repository before any run or dispatch can be reus
   path==='/repos/'+repo?{id:1460097312,full_name:repo}:read(path,body),proof),/repository identity/);
  assert.equal(posts(calls).length,0);
 });
+
+
+test('advisory explicitly executes affected Release CI contracts and fails closed on Git errors',()=>{
+ const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ const block=workflow.match(/      - name: Verify affected Release CI contracts explicitly\n[\s\S]*?          NODE\n/)?.[0];
+ assert(block,'explicit contract step present');
+ assert.match(block,/BASE_SHA: \$\{\{ github.event.pull_request.base.sha \|\| inputs.base_sha \}\}/);
+ const code=block.split("          node --input-type=module <<'NODE'\n")[1].split('          NODE\n')[0]
+  .split('\n').map(line=>line.slice(10)).join('\n').replace("import {execFileSync} from 'node:child_process';",'');
+ function check(paths,{base='a'.repeat(40),gitError=false,testError=false}={}){
+  const calls=[],logs=[];
+  const invoke=()=>runInNewContext(code,{process:{env:{BASE_SHA:base},execPath:'/fixed/node'},Set,
+   console:{log:message=>logs.push(message)},execFileSync:(command,args,options)=>{
+    calls.push({command,args:Array.from(args),options:{...options}});
+    if(command==='git'){if(gitError)throw new Error('git failed');return paths.join('\0')+'\0';}
+    if(testError)throw new Error('contract failed');
+   }});
+  return {calls,logs,invoke};
+ }
+ for(const path of ['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']){
+  const f=check([path]);f.invoke();
+  assert.deepEqual(f.calls.map(c=>[c.command,c.args]),[['git',['diff','--name-only','-z','a'.repeat(40),'HEAD']],['/fixed/node',['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs']]]);
+  assert.deepEqual(f.calls[1].options,{stdio:'inherit'});assert.match(f.logs[0],/Executing affected Release CI contracts/);
+ }
+ for(const paths of [[],['docs/CI.md'],['src/lua/example.lua'],['scripts/release-ci.mjs;echo injected'],['foreign/scripts/release-ci.mjs']]){
+  const f=check(paths);f.invoke();assert.equal(f.calls.length,1);assert.equal(f.logs[0],'No Release CI contract changes');
+ }
+ const badBase=check([],{base:'HEAD;echo bad'});assert.throws(badBase.invoke,/exact comparison/);assert.equal(badBase.calls.length,0);
+ const badGit=check([],{gitError:true});assert.throws(badGit.invoke,/git failed/);assert.equal(badGit.calls.length,1);
+ assert.throws(check(['scripts/release-ci.mjs'],{testError:true}).invoke,/contract failed/);
+ assert.match(workflow,/run: node scripts\/test-affected.mjs --ci-fast --base "\$BASE_SHA"/);
+});
