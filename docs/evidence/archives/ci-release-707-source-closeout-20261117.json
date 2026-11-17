@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "kind": "retired-source-history-archive",
+  "reason": "Release PR707 actually merged; retain original Fork A preflight histories while removing obsolete branch refs. Archive ancestry is recovery, not product integration.",
+  "main_pr": "https://github.com/FurinyaWorks/Slay-the-Heavens/pull/707",
+  "actual_squash": "af77fb2461c548f0faf104761d107397f75dca08",
+  "formal_ci": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/44086075879",
+  "retired": [
+    {
+      "repo": "FurinyaDev/Slay-the-Heavens-Fork-A",
+      "branch": "feat/ci-preflight-slim-707-1117",
+      "sha": "1f74f10238fea67775dbbccdad18b61ec35a981e",
+      "disposition": "superseded alternative, cancelled Full44076632903, not claimed merged"
+    },
+    {
+      "repo": "FurinyaDev/Slay-the-Heavens-Fork-A",
+      "branch": "prepare/release-preflight-union-1117",
+      "sha": "a7cac1be3190e3fd8a24924b15b3b72ce50ec5e6",
+      "disposition": "exact reviewed preflight/source for actual707 native squash"
+    }
+  ],
+  "retention": "Both original commits are explicit parents of this archive commit; recover either original tree with git checkout <sha>. Existing archive tree preserved except this receipt."
+}
