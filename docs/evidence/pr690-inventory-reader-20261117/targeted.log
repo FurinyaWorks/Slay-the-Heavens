@@ -1,0 +1,12 @@
+✔ release navigation raw Full inventory retains all tests, conservative costs and original execution guards (1162.878726ms)
+ℹ win32: raw 879 JS / 1424 Lua; forecast 1757923ms; target 1800000ms; overrun 0ms; unchanged execution guard 2700000ms; not hosted completion
+ℹ linux: raw 879 JS / 1424 Lua; forecast 1191630ms; target 1200000ms; overrun 0ms; unchanged execution guard 1800000ms; not hosted completion
+✔ release navigation inventory reader rejects warm owner and packet drift without weakening historical contracts (9144.524004ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26657.855325

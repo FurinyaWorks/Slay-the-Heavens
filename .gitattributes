@@ -1436,3 +1436,4 @@ tests/helpers/release-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text c
 
 # Raw-byte navigation evidence must survive Windows checkout unchanged.
 tests/helpers/navigation-menu-reader-repair.json text eol=lf
+tests/helpers/navigation-inventory-reader-repair.json text eol=lf

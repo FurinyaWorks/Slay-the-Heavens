@@ -37,6 +37,24 @@ for(const row of Object.values(navigationMapPacket.files)){
  for(const id of Object.values(row.views))assert(id===null||Object.hasOwn(navigationMapPacket.sources,id),'complete standalone source reference');
 }
 freeze(navigationMapPacket);
+// Exact consumer continuation; the original Full assertions and pins remain intact.
+const inventoryBytes=readFileSync(new URL('./navigation-inventory-reader-repair.json',import.meta.url));
+assert.equal(hash(inventoryBytes),'d686e8952aabe44c466a72813d085093bbf8df0df27e93af7e1cb4c1bf4e53a9','complete inventory reader continuation');
+const inventoryPacket=freeze(JSON.parse(inventoryBytes));
+assert.equal(inventoryPacket.schemaVersion,1);assert.equal(inventoryPacket.normalization,'LF');
+assert.equal(inventoryPacket.baseCommit,'cd9106c0e302cb50f83ba8b5c85ce81560c6ed88');
+assert.deepEqual(Object.keys(inventoryPacket.files),['tests/ci-complete-calibration.test.mjs']);
+for(const [path,row]of Object.entries(inventoryPacket.files))for(const binding of [row.before,row.current]){
+ assert.equal(binding.source,norm(binding.source),path);assert.equal(hash(binding.source),binding.sha256,path);
+}
+function inventoryReaderBefore(path,source,read){
+ const row=Object.hasOwn(inventoryPacket.files,path)?inventoryPacket.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ assert.equal(hash(read('tests/helpers/navigation-inventory-reader-repair.json')),hash(inventoryBytes),'immutable inventory reader continuation');
+ const current=read(path,'utf8');assert.equal(typeof current,'string','fresh inventory reader: '+path);
+ assert.equal(hash(norm(current)),row.current.sha256,'fresh inventory reader: '+path);
+ return row.before.source;
+}
 // The real menus retired help; keep the complete earlier fixture assertions as
 // historical views, accepting only these reviewed replacement bytes on disk.
 const fixtureBytes=readFileSync(new URL('./navigation-help-retirement-fixtures.json.gz',import.meta.url));
@@ -77,6 +95,7 @@ export function assertNavigationFixturesCurrent(read=readFileSync){
  }
 }
 export function navigationFixtureBefore(path,source,read=readFileSync){
+ source=inventoryReaderBefore(path,source,read);
  source=menuReaderBefore(path,source,read);
  const row=Object.hasOwn(navigationFixturePacket.files,path)?navigationFixturePacket.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;

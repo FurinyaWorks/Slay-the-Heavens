@@ -1,4 +1,4 @@
-import {navigationMapPriorInventory} from './helpers/navigation-map-integration.mjs';
+import {navigationMapPriorInventory,navigationMapProductionRead} from './helpers/navigation-map-integration.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
 import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
@@ -45,6 +45,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReleaseReadFileSync,readdirSync} from 'node:fs';
 import {releaseNavigationCiRead,releaseNavigationPriorInventory,assertReleaseNavigationCiCurrent,releaseNavigationCiPacket} from './helpers/release-navigation-ci-source.mjs';
+import {releaseMergeRead as historicalMergeRead} from './helpers/release-bootstrap-merge-ci-source.mjs';
 import {releaseMergeRead,assertReleaseMergeCurrent} from './helpers/navigation-map-legacy-domains.mjs';
 const liveDiskReadFileSync=releaseNavigationCiRead(releaseMergeRead('slicePrior',rawReleaseReadFileSync));
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
@@ -2033,7 +2034,7 @@ test('release navigation actual execution guards reject job drift while forecast
 
 test('release navigation raw Full inventory retains all tests, conservative costs and original execution guards',t=>{
  assertReleaseMergeCurrent(rawReleaseReadFileSync);
- assertReleaseNavigationCiCurrent(releaseMergeRead('slicePrior',rawReleaseReadFileSync));
+ assertReleaseNavigationCiCurrent(historicalMergeRead('slicePrior',navigationMapProductionRead('navigation',rawReleaseReadFileSync)));
  const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseNavigationCiPacket;
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
  for(const path of p.priorInventory.js)assert(js.includes(path));
@@ -2096,4 +2097,22 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical execution guard ${guard}ms; prediction is not admission`);
  }
+});
+
+// Current consumer authorization is fresh; historical views never authorize drift.
+test('release navigation inventory reader rejects warm owner and packet drift without weakening historical contracts',()=>{
+ const validate=read=>{
+  assertReleaseMergeCurrent(read);
+  assertReleaseNavigationCiCurrent(historicalMergeRead('slicePrior',navigationMapProductionRead('navigation',read)));
+ };
+ validate(rawReleaseReadFileSync);
+ for(const path of ['src/lua/abyss_game_ui_input.lua','scripts/official-map-return-controls.mjs','tests/ci-complete-calibration.test.mjs','tests/helpers/navigation-inventory-reader-repair.json']){
+  let bad=false;
+  const read=(p,e)=>{const raw=rawReleaseReadFileSync(p,e);return bad&&p===path?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;};
+  validate(read);bad=true;assert.throws(()=>validate(read));bad=false;validate(read);
+  assert.throws(()=>validate((p,e)=>{if(p===path)throw Error('missing injected '+p);return rawReleaseReadFileSync(p,e);}));
+ }
+ const crlf=(p,e)=>{const raw=rawReleaseReadFileSync(p,e);return typeof raw==='string'?raw.replaceAll('\r\n','\n').replaceAll('\n','\r\n'):raw;};
+ validate(crlf);
+ assert.throws(()=>validate((p,e)=>p==='src/lua/abyss_game_ui_input.lua'?Buffer.from(rawReleaseReadFileSync(p)):rawReleaseReadFileSync(p,e)));
 });
