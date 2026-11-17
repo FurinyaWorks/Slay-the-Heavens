@@ -1,0 +1,14 @@
+--- a/tests/helpers/release-bootstrap-ci-source.mjs
++++ b/tests/helpers/release-bootstrap-ci-source.mjs
+@@ -178,3 +178,11 @@
+  for(const [path,sha]of Object.entries(packet.immutableArchives))
+   assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);
+ }
++
++// Original bootstrap epoch only; the current full validator above remains unchanged.
++export function assertReleaseBootstrapBaseCiCurrent(read=readFileSync){
++ for(const [path,row]of Object.entries(packet.files))
++  assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
++ for(const [path,sha]of Object.entries(packet.immutableArchives))
++  assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);
++}
