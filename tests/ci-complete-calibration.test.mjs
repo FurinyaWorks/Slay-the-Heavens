@@ -2178,3 +2178,25 @@ test('potion click raw Full keeps real discovery and execution guards',()=>{
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
 });
+
+// Exact #711 parent contracts run only after fresh union authentication.
+import {assertBattlePointerSparseCiCurrent,battlePointerSparseCiValidationRead,assertBattlePointerSparseRawInventory} from './helpers/battle-pointer-sparse-ci-source.mjs';
+import {battlePointerCiPacket,assertBattlePointerCiCurrent,assertBattlePointerRawInventory} from './helpers/battle-pointer-ci-source.mjs';
+function pointerDiscovery(kind){
+ const paths=kind==='js'?actualPost697DiscoverJs():readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ const added=kind==='js'?['tests/potion-popup-click-payload.test.mjs']:['tests/lua/potion_popup_click_payload.lua'];
+ assert.deepEqual([...paths].sort(),[...battlePointerCiPacket.currentInventory[kind],...added].sort(),'complete union inventory retains potion and pointer discovery');
+ return paths.filter(path=>!added.includes(path));
+}
+const rawReleaseDiscoverJs=()=>pointerDiscovery('js'),rawReleaseLua=()=>pointerDiscovery('lua');
+
+nodeTest('battle pointer raw Full retains every existing JS and Lua discovery input',()=>withPotionPointerCiUnionValidation('pointer',actualUnionReadFileSync,(rawReleaseReadFileSync)=>{
+ assertBattlePointerSparseCiCurrent(rawReleaseReadFileSync);
+ assertBattlePointerCiCurrent(battlePointerSparseCiValidationRead(rawReleaseReadFileSync));
+ assertBattlePointerRawInventory(rawReleaseDiscoverJs(),'js');assertBattlePointerRawInventory(rawReleaseLua(),'lua');
+}));
+
+nodeTest('sparse battle pointer raw Full retains every existing discovery input',()=>withPotionPointerCiUnionValidation('pointer',actualUnionReadFileSync,(rawReleaseReadFileSync)=>{
+ assertBattlePointerSparseCiCurrent(rawReleaseReadFileSync);
+ assertBattlePointerSparseRawInventory(rawReleaseDiscoverJs(),'js');assertBattlePointerSparseRawInventory(rawReleaseLua(),'lua');
+}));

@@ -1,0 +1,13 @@
+{
+  "tests/ci-complete-calibration.test.mjs": "86af5775918ddc911219cdbf1a3f7b9dff741ae6bde123b075fd7709514acc11",
+  "tests/helpers/battle-pointer-ci-source.json.gz": "c5a93b3780fe741cec5393eabf5fe4c0d684952eb2bcf3b50e6b62fcbc0983ea",
+  "tests/helpers/battle-pointer-ci-source.mjs": "df7e785d881d59623ae0376c5027f0136a58d39b1a56c26c41b954449e7b12b1",
+  "tests/helpers/battle-pointer-inspection-ci-source.json.gz": "eabdb32e61788967dd4377fa5d0f62039b3e37331ec54edb64f604b1feb60e4c",
+  "tests/helpers/battle-pointer-inspection-ci-source.mjs": "0ebc17e65ce18c0037ada7d4e93be45a70d2b52ee01f4be55c6d3c47a4c6a03e",
+  "tests/helpers/battle-pointer-sparse-ci-source.json.gz": "8e273356da55756ccb64b3fb37c1d8f70d1f0694bf2760605eb74ac26efa61d6",
+  "tests/helpers/battle-pointer-sparse-ci-source.mjs": "c80c0ba9699169726c9a9be6ad5743629c4b17ff35490a3242f962020d50f265",
+  "tests/helpers/copy-integration-source-closure.mjs": "a869520a0f37bb2afd377facc5062862f4d1d48aecad7f742536033cbbd5fac1",
+  "tests/helpers/potion-pointer-ci-copy-closure.json": "e7866b9be7ad2ae52d4c095b9b06ec7497f876661b17cfcd30ffad6c03534605",
+  "tests/helpers/potion-pointer-ci-union.json.gz": "59a9caa65c459476abd135caddd73a35ba4a69e7784207c089afd5084f555b52",
+  "tests/helpers/potion-pointer-ci-union.mjs": "ad4aaa1cec5425ee0cc191f038484663c2ddaf1bd0d003ac5b84aa7de530b134"
+}
