@@ -69,7 +69,7 @@ export function collect({repo,since,until,includeJobs=false,includePrs=false}) {
   const runs=[];
   for(const w of workflows.filter(w=>['Quality','Quick feedback'].includes(w.name))) {
     const pages=api(`repos/${repo}/actions/workflows/${w.id}/runs?created=${since}T00:00:00Z..${until}T23:59:59Z&per_page=100`);
-    const items=pages.flatMap(p=>p.workflow_runs);
+    const items=pages.flatMap(p=>p.workflow_runs).map(r=>({...r,name:w.name}));
     if(pages[0]?.total_count>items.length)throw Error(`GitHub run search truncated ${w.name}; use a shorter date interval`);
     runs.push(...items);
   }

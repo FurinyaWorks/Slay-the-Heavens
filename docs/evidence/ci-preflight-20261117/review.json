@@ -10,7 +10,7 @@
     "scripts/fork-preflight.mjs": "90cc6ee146d690eba09e77f474dcf7744e4c93d34d16a3ec35fc6db7923a95ec",
     "scripts/test-affected.mjs": "507a990e4a7aaba56a28455130f11e9ada8348e90631e6007dc713fdaf6f9068",
     "scripts/write-ci-receipt.mjs": "6b20a5cbcec0a24c7b181e77f2080f7a55fc9067065ac08dabb3635db4a5ed0c",
-    "scripts/ci-governance-metrics.mjs": "1e2e0d0eecf071796210309e74cf214bfe739af273c114393b1d8d481800cd32",
+    "scripts/ci-governance-metrics.mjs": "3a5c8130e11c880ff8a944681f6693622cc7784b883019ca607bcb18f8dea409",
     "tests/helpers/fork-preflight-source.mjs": "767188abc8a23062ae2af09b7df06a1d1e61bf236f6883f0dd8b53943b377f15",
     "tests/helpers/fork-preflight-source.json.gz": "817b912bff7c6caa4cf3ea8d565fcdabe47a25f31e16cea191d98d3b190ac65d",
     "scripts/ci-impact.mjs": "a1d1b508db28b6f9cf316b07437d863fb14b1a31dfa35dcd1747ac252dcc7da9"
@@ -28,5 +28,6 @@
     "Cross-Fork reuse excludes mandatory PR/push/queue",
     "Admission implementation classified as shared high-risk infrastructure"
   ],
-  "followupVerification": "New regression cases RED→GREEN; exact-source proof/current inventory guards remain fail-closed"
+  "followupVerification": "New regression cases RED→GREEN; exact-source proof/current inventory guards remain fail-closed",
+  "postReviewVerification": "Observed Actions run.name follows run-name; collector now normalizes via immutable workflow list. Root verified actual 2026-11-17 API still groups Quality/Quick feedback and metrics12/12. Gate source unchanged from independent review."
 }
