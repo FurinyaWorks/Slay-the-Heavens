@@ -2,6 +2,7 @@ name: Licenses
 on:
   pull_request:
     branches: [develop, master]
+    types: [opened, synchronize, reopened, ready_for_review]
   merge_group:
     types: [checks_requested]
     branches: [develop]
@@ -14,7 +15,27 @@ concurrency:
   group: licenses-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  admission:
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Require completed Fork preflight before formal test jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/fork-preflight.mjs
   inventory:
+    needs: admission
+    if: ${{ !cancelled() && (needs.admission.result == 'success' || needs.admission.result == 'skipped') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

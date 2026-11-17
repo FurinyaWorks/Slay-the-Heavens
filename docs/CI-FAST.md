@@ -12,7 +12,7 @@ Required Checks保留check、engineering-posix、presentation、inventory及inde
 
 原生Merge Queue对真实组合SHA强制原完整Full，同时发布`pr-quality`、`full-quality`和队列准入状态，全部必要检查通过才squash；develop push继续Full。失败、取消、漏片、旧HEAD/BASE/run/attempt、过期artifact及规则指纹漂移均拒绝。Fast不支持借用旧attempt的收据。`merge:auto`仅在原生队列已受保护时接受Fast，仍使用pending独审握手、精确HEAD及暂停读回。schema6授权和schema7 Fast证据与原schema3/4 Full证据分开；合后另外核验schema8真实队列Full、inventory及独立push Full。纯文字白名单也必须经过双平台治理和独审。
 
-Quick feedback 自动随 develop PR 运行，也保留手动诊断；它是 advisory，不进入 Required Checks。`npm run test:fast -- --base <commit>` 与 `--ci-fast` 共用选集：纯 JS 和按测量权重在 90 秒估算内安排的完整 Lua 夹具，优先直接修改的夹具；执行时先跑选中的直接修改 Lua，再跑 JS，最后跑其余 Lua，任一步失败立即停止，不重复夹具。估算不是超时，不更改夹具原断言和期限。`--plan` 的 `feedback` 可查看两入口的实际选集。`test:related` 仍运行完整受影响集合，未知输入回退 `check`。
+Quick feedback 仅手动运行，作为 Fork 完整受影响预检；操作见 [Fork 预检](CI-PREFLIGHT.md)。原本地 advisory CLI 保留裁剪语义，它是 advisory，不进入 Required Checks。`npm run test:fast -- --base <commit>` 与 `--ci-fast` 共用选集：纯 JS 和按测量权重在 90 秒估算内安排的完整 Lua 夹具，优先直接修改的夹具；执行时先跑选中的直接修改 Lua，再跑 JS，最后跑其余 Lua，任一步失败立即停止，不重复夹具。估算不是超时，不更改夹具原断言和期限。`--plan` 的 `feedback` 可查看两入口的实际选集。`test:related` 仍运行完整受影响集合，未知输入回退 `check`。
 
 fast/advisory 对未知输入只提供可独立映射部分的反馈，并明确要求完整 Quality；零测试显示未执行及非回归验收，不启动重复全量，也不声明覆盖。集成 JS 和未排入的 Lua 由完整 Quality 兜底。PR 使用精确 merge SHA 和事件 base SHA，在隔离托管 runner 上运行，只读权限且不持久化凭据；新提交取消同 PR 的旧 advisory。Node 固定 24.18.0。Full路径当前实测主耗时为测试本身，不能为了初始化优化破坏完整测试依赖。
 

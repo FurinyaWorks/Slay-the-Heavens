@@ -278,10 +278,10 @@ test('local and CI advisory plans select the same real Lua feedback', () => {
   assert.ok(plans[0].feedback.lua.includes('tests/lua/combat.lua'));
 });
 
-test('quick workflow is independent, read-only, exact-revision and cancels only superseded PR feedback', () => {
+test('quick preflight is manual, read-only, exact-revision and cancels superseded branch work', () => {
   const workflow = readFileSync('.github/workflows/quick-feedback.yml', 'utf8').replaceAll('\r\n', '\n');
   assert.match(workflow, /workflow_dispatch:/);
-  assert.match(workflow, /  pull_request:\n    branches: \[develop\]/);
+  assert.doesNotMatch(workflow, /^  pull_request:/m);
   assert.match(workflow, /permissions:\n  contents: read/);
   assert.match(workflow, /group: quick-feedback-\$\{\{ github.ref \}\}\n  cancel-in-progress: true/);
   assert.match(workflow, /ref: \$\{\{ github.sha \}\}/);
@@ -290,6 +290,9 @@ test('quick workflow is independent, read-only, exact-revision and cancels only 
   assert.match(workflow, /timeout-minutes: 2\n        env:\n          BASE_SHA:/);
   assert.match(workflow, /GIT_TERMINAL_PROMPT: '0'/);
   assert.match(workflow, /if ! git cat-file -e "\$\{BASE_SHA\}\^\{commit\}" 2>\/dev\/null; then\n            git -c credential.helper= -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=30 fetch --depth=1 --no-auto-maintenance --no-tags origin "\$BASE_SHA"\n          fi\n          git cat-file -e/);
-  assert.match(workflow, /node scripts\/test-affected.mjs --ci-fast --base "\$BASE_SHA"/);
-  assert.doesNotMatch(workflow, /pull_request_target|self-hosted|needs:|continue-on-error|npm run check/);
+  assert.match(workflow, /node scripts\/test-affected.mjs --preflight --base "\$BASE_SHA"/);
+  assert.doesNotMatch(workflow, /pull_request_target|self-hosted|needs:|continue-on-error/);
+  assert.match(workflow, /npm run check:guidance && npm run verify:backlog && npm run check:syntax/);
+  assert.match(workflow, /node scripts\/check-quality-ratchet.mjs/);
+  assert.match(workflow, /node scripts\/write-ci-receipt.mjs/);
 });

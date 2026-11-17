@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "repo": "FurinyaWorks/Slay-the-Heavens",
+  "since": "2026-11-01",
+  "until": "2026-11-16",
+  "collectedAt": "2026-11-17T05:28:51.008648+00:00",
+  "metrics": {
+    "runs": 1625,
+    "conclusions": {
+      "failure": 216,
+      "cancelled": 507,
+      "success": 776,
+      "skipped": 114,
+      "queued": 12
+    },
+    "sameIdentityExtraRuns": 77,
+    "sameIdentityExtraRate": 0.047384615384615386,
+    "provenReusableExtraRuns": 0,
+    "crossRepositoryReusableExtraRuns": 0,
+    "provenReusableExtraRate": null,
+    "reuseIdentityMissing": 1625,
+    "runnerMinutes": 254260.53333333333,
+    "jobCoverageRuns": 922,
+    "jobsWithoutCompletedTiming": 13,
+    "runnerMinutesComplete": false,
+    "firstPass": {
+      "eligibleCommits": 947,
+      "successfulCommits": 752,
+      "rate": 0.7940865892291447,
+      "excludedFirstRuns": 601
+    },
+    "mergeLeadMinutes": {
+      "count": 87,
+      "median": 112.51666666666667,
+      "p90": 529.85
+    }
+  },
+  "byWorkflow": {
+    "Quality": {
+      "runs": 922,
+      "conclusions": {
+        "cancelled": 417,
+        "success": 207,
+        "failure": 172,
+        "skipped": 114,
+        "queued": 12
+      },
+      "sameIdentityExtraRuns": 73,
+      "sameIdentityExtraRate": 0.07917570498915401,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 922,
+      "runnerMinutes": 254260.53333333333,
+      "jobCoverageRuns": 922,
+      "jobsWithoutCompletedTiming": 13,
+      "runnerMinutesComplete": false,
+      "firstPass": {
+        "eligibleCommits": 337,
+        "successfulCommits": 186,
+        "rate": 0.5519287833827893,
+        "excludedFirstRuns": 512
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    },
+    "Quick feedback": {
+      "runs": 703,
+      "conclusions": {
+        "failure": 44,
+        "cancelled": 90,
+        "success": 569
+      },
+      "sameIdentityExtraRuns": 4,
+      "sameIdentityExtraRate": 0.005689900426742532,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 703,
+      "runnerMinutes": null,
+      "jobCoverageRuns": 0,
+      "jobsWithoutCompletedTiming": 0,
+      "runnerMinutesComplete": false,
+      "firstPass": {
+        "eligibleCommits": 610,
+        "successfulCommits": 566,
+        "rate": 0.9278688524590164,
+        "excludedFirstRuns": 89
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    }
+  },
+  "byWorkflowEvent": {
+    "Quality/pull_request": {
+      "runs": 773,
+      "conclusions": {
+        "cancelled": 357,
+        "success": 145,
+        "failure": 146,
+        "skipped": 114,
+        "queued": 11
+      },
+      "sameIdentityExtraRuns": 73,
+      "sameIdentityExtraRate": 0.0944372574385511,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 773,
+      "runnerMinutes": 195784.33333333334,
+      "jobCoverageRuns": 773,
+      "jobsWithoutCompletedTiming": 13,
+      "runnerMinutesComplete": false,
+      "firstPass": {
+        "eligibleCommits": 255,
+        "successfulCommits": 129,
+        "rate": 0.5058823529411764,
+        "excludedFirstRuns": 445
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    },
+    "Quality/merge_group": {
+      "runs": 60,
+      "conclusions": {
+        "cancelled": 22,
+        "failure": 16,
+        "success": 21,
+        "queued": 1
+      },
+      "sameIdentityExtraRuns": 0,
+      "sameIdentityExtraRate": 0,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 60,
+      "runnerMinutes": 26735.216666666667,
+      "jobCoverageRuns": 60,
+      "jobsWithoutCompletedTiming": 0,
+      "runnerMinutesComplete": true,
+      "firstPass": {
+        "eligibleCommits": 37,
+        "successfulCommits": 21,
+        "rate": 0.5675675675675675,
+        "excludedFirstRuns": 23
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    },
+    "Quality/push": {
+      "runs": 87,
+      "conclusions": {
+        "success": 40,
+        "cancelled": 37,
+        "failure": 10
+      },
+      "sameIdentityExtraRuns": 0,
+      "sameIdentityExtraRate": 0,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 87,
+      "runnerMinutes": 30723.766666666666,
+      "jobCoverageRuns": 87,
+      "jobsWithoutCompletedTiming": 0,
+      "runnerMinutesComplete": true,
+      "firstPass": {
+        "eligibleCommits": 44,
+        "successfulCommits": 35,
+        "rate": 0.7954545454545454,
+        "excludedFirstRuns": 43
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    },
+    "Quality/workflow_dispatch": {
+      "runs": 2,
+      "conclusions": {
+        "success": 1,
+        "cancelled": 1
+      },
+      "sameIdentityExtraRuns": 0,
+      "sameIdentityExtraRate": 0,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 2,
+      "runnerMinutes": 1017.2166666666667,
+      "jobCoverageRuns": 2,
+      "jobsWithoutCompletedTiming": 0,
+      "runnerMinutesComplete": true,
+      "firstPass": {
+        "eligibleCommits": 1,
+        "successfulCommits": 1,
+        "rate": 1,
+        "excludedFirstRuns": 1
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    },
+    "Quick feedback/pull_request": {
+      "runs": 702,
+      "conclusions": {
+        "failure": 44,
+        "cancelled": 90,
+        "success": 568
+      },
+      "sameIdentityExtraRuns": 4,
+      "sameIdentityExtraRate": 0.005698005698005698,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 702,
+      "runnerMinutes": null,
+      "jobCoverageRuns": 0,
+      "jobsWithoutCompletedTiming": 0,
+      "runnerMinutesComplete": false,
+      "firstPass": {
+        "eligibleCommits": 609,
+        "successfulCommits": 565,
+        "rate": 0.9277504105090312,
+        "excludedFirstRuns": 89
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    },
+    "Quick feedback/workflow_dispatch": {
+      "runs": 1,
+      "conclusions": {
+        "success": 1
+      },
+      "sameIdentityExtraRuns": 0,
+      "sameIdentityExtraRate": 0,
+      "provenReusableExtraRuns": 0,
+      "crossRepositoryReusableExtraRuns": 0,
+      "provenReusableExtraRate": null,
+      "reuseIdentityMissing": 1,
+      "runnerMinutes": null,
+      "jobCoverageRuns": 0,
+      "jobsWithoutCompletedTiming": 0,
+      "runnerMinutesComplete": false,
+      "firstPass": {
+        "eligibleCommits": 1,
+        "successfulCommits": 1,
+        "rate": 1,
+        "excludedFirstRuns": 0
+      },
+      "mergeLeadMinutes": {
+        "count": 87,
+        "median": 112.51666666666667,
+        "p90": 529.85
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 name: Quality
+run-name: Full / ${{ github.sha }} / ${{ inputs.base_sha || github.event.pull_request.base.sha }}
 on:
   pull_request:
     branches: [develop, master]
@@ -10,6 +11,10 @@ on:
     branches: [develop, master]
   workflow_dispatch:
     inputs:
+      base_sha:
+        description: 'Exact comparison SHA for Fork Full preflight (not formal integration reuse)'
+        required: false
+        type: string
       runner_pool:
         description: 'Hosted normally; local-special only for trusted develop/master platform diagnostics'
         type: choice
@@ -21,8 +26,27 @@ concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  admission:
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Require completed Fork preflight before formal test jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/fork-preflight.mjs
   impact:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    needs: admission
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) && (needs.admission.result == 'success' || needs.admission.result == 'skipped') }}
     runs-on: ubuntu-slim
     permissions:
       contents: read
@@ -275,7 +299,7 @@ jobs:
         if: runner.environment == 'github-hosted'
         env:
           CI_COMPARISON_TOKEN: ${{ github.token }}
-          CI_COMPARISON_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          CI_COMPARISON_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
         run: node scripts/ci-comparison-blobs.mjs
       - name: Check hosted checkout Git pack payload
         if: runner.environment == 'github-hosted'
@@ -291,7 +315,7 @@ jobs:
       - name: Verify exact checkout and changed whitespace
         timeout-minutes: 2
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
           GIT_TERMINAL_PROMPT: '0'
           EXECUTION_ENVIRONMENT: ${{ runner.environment }}
         run: |
@@ -367,9 +391,9 @@ jobs:
       - run: npm run check:engineering
         if: matrix.shard == 1
       - name: Enforce incremental Lua CC and SCC ratchet
-        if: matrix.shard == 1 && (github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'push')
+        if: matrix.shard == 1 && (github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.base_sha != ''))
         env:
-          QUALITY_RATCHET_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          QUALITY_RATCHET_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
         run: node scripts/check-quality-ratchet.mjs
       - name: Check production platform load
         if: matrix.shard == 1
@@ -392,6 +416,8 @@ jobs:
           if-no-files-found: warn
       - run: node scripts/write-ci-receipt.mjs
         if: matrix.shard == 1
+        env:
+          PREFLIGHT_BASE_SHA: ${{ inputs.base_sha }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: matrix.shard == 1
         with:
@@ -453,7 +479,8 @@ jobs:
           FULL_NEEDS: ${{ toJSON(needs) }}
         run: node scripts/publish-merge-group.mjs
   presentation:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    needs: admission
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) && (needs.admission.result == 'success' || needs.admission.result == 'skipped') }}
     # These filesystem tests include symlinks; keep the local service unprivileged.
     runs-on: ubuntu-24.04
     timeout-minutes: 5

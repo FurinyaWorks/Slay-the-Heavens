@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-16 15:08'
-updated_date: '2026-11-17 03:31'
+updated_date: '2026-11-17 05:38'
 labels: []
 dependencies: []
 parent_task_id: TASK-88.1
@@ -32,6 +32,8 @@ ordinal: 183000
 1.保存实时CI与全部PR/分支现场，接续707/677/708。2.修复最小Fork可信准入和共用CI，补负控与独审。3.逐项收口成熟PR及可恢复分支，用真实Fork PR验证或记录外部阻塞。
 
 2026-11-17接续：固定三仓库ID并配置remote；恢复Fork A原生Actions和精确SHA验证；Fork B权限不足单独记录；最小云端规则与现场证据经评审交付，不代替主仓库集成和RC实机。
+
+2026-11-17增量：接续PR712；Quick dispatch完整受影响JS/Lua，未知输入拒绝；Quality PR矩阵前只读核验固定Fork ID、精确HEAD/BASE及先完成的成功run，Full按未知影响升级；保留原生队列/Release策略；定向负控、独审和按需统计。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -44,4 +46,6 @@ Owner已授权Fork B写入并启用四现有Actions，三remote可用。两Fork�
 云端交接要求：PR712在现有TASK_EXECUTION增加从云端克隆到任务认领、三remote、Fast/Full、独审、正式集成与本地验收的顺序入口；必要现场证据使用远端run/PR与仓库附件，不依赖F盘或本轮聊天。Fork实际名称按固定ID解析，旧名称仍留历史证据。
 
 当前交接：Fork A真实Fast44008650092已完成实际选测；Fork B Full44009128502按准确677新HEAD执行，正式集成未完成。707已正常接续最新Release b9，经来源适配46/46及独立Node24负控、主控独审后FF至e2feae68，原生SQUASH auto已读回；Release四项Required/Strict不变。677与712原merge:auto仅dry-run，当前impact路由未知故HOLD；未加ci:full或绕门槛。任务仅AC1有本轮实际处理证据，其他AC继续未完成。
+
+2026-11-17增量：固定ID/HEAD/BASE/成功且先完成的Fork run准入已实现于Quality/Licenses入口；Quick完整受影响JS/Lua并补语法、Backlog、Lua棘轮，未知/零覆盖拒绝；不触碰保护和677/707策略。actionlint及定向负控通过，独审已消除Full base遗漏、Draft许可证抢跑与rerun时间身份问题。部署与真实跨仓库Actions token正链路仍待托管事件，不提前勾AC。
 <!-- SECTION:NOTES:END -->

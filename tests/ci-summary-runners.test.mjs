@@ -1,7 +1,8 @@
+import {beforePreflightSource,preflightPriorInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync,readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { compileFunction } from 'node:vm';
 import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
@@ -11,7 +12,7 @@ import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpe
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
-const workflow = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
+const workflow = beforePreflightSource('.github/workflows/quality.yml', readFileSync('.github/workflows/quality.yml', 'utf8')).replaceAll('\r\n', '\n');
 const job = (name,source=workflow) => source.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [\\w-]+:|(?![\\s\\S]))`, 'm'))[1];
 const digest = text => createHash('sha256').update(text).digest('hex');
 
@@ -223,7 +224,36 @@ test('[historical ratchet integration workflow] ratchet gates project only their
 });
 
 test('workflow-only historical views cannot project production sources or test inventories',()=>{
+ const actual=closeoutRead('qualityRatchetIntegrated');
+ for(const path of ['scripts/test-affected.mjs','tests/ci-summary-runners.test.mjs']){
+  const raw=readFileSync(path);assert.deepEqual(actual(path),raw,'workflow-only preserves actual '+path);
+  assert.equal(actual(path,'utf8'),raw.toString('utf8'));
+ }
  const raw=Buffer.from('current raw source\r\n'),read=closeoutRead('qualityRatchetIntegrated',()=>raw);
  for(const path of ['src/lua/abyss_game_ui.lua','config/architecture.json','data/relics.json'])assert.strictEqual(read(path),raw,path);
  assert.throws(()=>closeoutInventory(['tests/current.test.mjs'],'qualityRatchetIntegrated'),/workflow-only/);
+});
+
+test('preflight continuation authenticates complete LF/CRLF input and rejects foreign or partial bytes',()=>{
+ const path='.github/workflows/quality.yml',live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const before=beforePreflightSource(path,live);assert.notEqual(before,live);
+ for(const eol of ['\n','\r\n']){
+  const input=live.replaceAll('\n',eol);
+  assert.equal(beforePreflightSource(path,input),before.replaceAll('\n',eol));
+  for(const drift of [input+'# foreign'+eol,input.replace('contents: read','contents: write'),
+   input.replace('    needs: admission'+eol,''),input.replace('run: node scripts/fork-preflight.mjs','run: echo forged')])
+   assert.equal(beforePreflightSource(path,drift),drift,'unbound workflow stays visible');
+ }
+ assert.equal(beforePreflightSource(path,live.replaceAll('\n','\r\r\n')),live.replaceAll('\n','\r\r\n'));
+ const buffer=Buffer.from(live);assert.equal(beforePreflightSource(path,buffer),buffer);
+ assert.equal(beforePreflightSource('foreign.yml',live),live);
+ assert.equal(beforePreflightSource(path,before),before);
+});
+
+test('preflight inventory keeps complete old discovery and authenticates added files',()=>{
+ const paths=readdirSync('tests').filter(p=>p.endsWith('.test.mjs')).map(p=>'tests/'+p).sort();
+ const prior=preflightPriorInventory(paths);
+ assert.deepEqual(prior,paths.filter(p=>!['tests/fork-preflight.test.mjs','tests/ci-governance-metrics.test.mjs'].includes(p)));
+ assert.throws(()=>preflightPriorInventory([...paths,'tests/foreign.test.mjs']),/complete preflight test inventory/);
+ assert.throws(()=>preflightPriorInventory(paths,(p,encoding)=>readFileSync(p,encoding)+'# drift'),/exact preflight added test/);
 });

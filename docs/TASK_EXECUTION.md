@@ -44,3 +44,5 @@ M7/m-7 已作为历史工程专项归档；当前活动里程碑只有 M8/m-8（
 历史 m-5 余项保留原 milestone、owner、状态、依赖、AC 和成果；合法 `To Do` 任务不会仅因 m-5 或其他 milestone 名称被 `task:pick` 判为 HOLD。旧 m-5→M8 接续表仍保存在 [Sprint 历史记录](SPRINT_EXECUTION.md#历史-m-5-余项的接续)，用于追溯工作分类，不再要求刷新为 M8 窗口。原任务的具体审批和验收要求照常。
 
 [旧 Sprint 说明](SPRINT_EXECUTION.md)、Backlog 文档中的旧 Sprint 说明、既有计划中的周日期、阶段顺序和例外名单均只作历史，不再作为认领依据。具体授权、禁止重复认领、已完成成果、未完成 AC、原 PR/Tag/发布记录及其他独立质量要求不变；取消 Sprint 不表示它们已经通过。
+
+三仓库实施须先完成 [Fork 预检准入](CI-PREFLIGHT.md)，再推送主仓库 PR head；不要先进入正式 CI 后补 Fork。

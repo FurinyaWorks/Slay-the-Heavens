@@ -1,3 +1,4 @@
+import {beforePreflightSource,preflightPriorRead,preflightPriorInventory} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -15,6 +16,7 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
 export function integratedSource(path,source,target){
+ source=beforePreflightSource(path,source);
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
@@ -22,7 +24,7 @@ export function integratedSource(path,source,target){
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
 }
-export function integratedRead(target,{read=readFileSync}={}){return(path,encoding)=>{
+export function integratedRead(target,{read=readFileSync}={}){read=preflightPriorRead(read);return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
@@ -32,6 +34,7 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ read=preflightPriorRead(read);
  for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(read(path,'utf8'))),row.after,'fresh integration copy owner: '+path);
 }
@@ -43,6 +46,7 @@ export function extendIntegratedHelperClosure(original){
 }
 // Exact complete inventories for historical receipts; raw Full discovery remains live.
 export function integratedPriorInventory(paths,target,kind='js',read=readFileSync){
+ if(kind==='js')paths=preflightPriorInventory(paths,read);read=preflightPriorRead(read);
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
