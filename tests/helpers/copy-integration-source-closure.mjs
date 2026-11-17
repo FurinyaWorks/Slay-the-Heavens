@@ -27,6 +27,11 @@ export const mobileHandHelperCopies=[
  {path:'tests/helpers/mobile-hand-source.mjs',before:null,after:'afb152f8e579c530b412319c3bcc2df6658e90bb9a13e4c6ccb02dbc38c6ce40'},
  {path:'tests/helpers/mobile-hand-source.json.gz',before:null,after:'f09812ac4f7c422d8a4530a8efa9ca0e35048eb1a2f4a7940495d76495f5ee4c'}
 ];
+export const releasePc22BasicFeedbackHelperCopies=[
+ {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'0c7ff98c42c47a1a48ad83537d1d7c37a6cc23aed55ada9c763122d4ea102d07'},
+ {path:'tests/helpers/release-pc22-basic-feedback-source.mjs',before:null,after:'395e3810c67852768340eb868ee7397bb9ed0b232ff112efa93fb4b520e80b96'},
+ {path:'tests/helpers/release-pc22-basic-feedback-source.json.gz',before:null,after:'1cb0fddfea365de7be5331dc169bd438f2cde36b372c4c15bf9c8ac8a2eed157'}
+];
 export const releaseSelectionMapHelperCopies=[
  {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
  {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
@@ -46,6 +51,16 @@ export const enemyGeometryHelperCopies=[
 export const enemyPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"ba08a39270805524521cb4751ff2bfd8ba142713b688e01af803315c51339419","after":"4866898adebc7f798ab4c7f72d0f2cd2f6fbfc4d875ed4df97a9639a65d7182b"},{"path":"tests/helpers/release-selection-map-source.mjs","before":null,"after":"920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52"},{"path":"tests/helpers/release-selection-map-source.json.gz","before":null,"after":"0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62"},{"path":"tests/helpers/enemy-post697-source.mjs","before":null,"after":"d259ada3af2652b17cce15d633a1b3489afe00a65c59b2c3aa30d4426adb0555"},{"path":"tests/helpers/enemy-post697-source.json.gz","before":null,"after":"fdae2d3627b986b59c9a3a87470e36b7e46a59df99cf22ea45a3cab3467e6da7"}];
 export const handEnemyHelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"560d7e2746766f12267a93bc171a8e015b776cec9ae5e843dbd42c9f4616a381","after":"b441679152df65b333c5787b7d7096d54d384936b7e8c9fe04fc78f6c4467e12"},{"path":"tests/helpers/enemy-geometry-source.mjs","before":null,"after":"7f3c4d9309537e5bfcc6af807f11c955968d572bffb856857a1104a24a2ce982"},{"path":"tests/helpers/enemy-geometry-source.json.gz","before":null,"after":"af5ac18b5bb3346fe000d22a184e04b8d064d38e723bd328a06cdf1b37fecfae"},{"path":"tests/helpers/enemy-post697-source.mjs","before":null,"after":"d259ada3af2652b17cce15d633a1b3489afe00a65c59b2c3aa30d4426adb0555"},{"path":"tests/helpers/enemy-post697-source.json.gz","before":null,"after":"fdae2d3627b986b59c9a3a87470e36b7e46a59df99cf22ea45a3cab3467e6da7"},{"path":"tests/helpers/hand-enemy-source.mjs","before":null,"after":"1bc797f731325dfc88c0fa9eb6082978e2d10084edd926b38148a4c57d32fcbf"}];
 for(const row of handEnemyHelperCopies){assert.equal(files[row.path]??null,row.before,'exact hand enemy copy predecessor: '+row.path);files[row.path]=row.after;}
+for(const row of releasePc22BasicFeedbackHelperCopies){
+ if(row.path==='tests/helpers/closeout-source-epoch.mjs'){
+  assert.equal(row.before,mobileHandHelperCopies[0].before,'exact common standalone Release predecessor');
+ }else{
+  assert.equal(files[row.path]??null,row.before,'exact standalone PC22 helper-copy predecessor: '+row.path);
+  files[row.path]=row.after;
+ }
+}
+export const releaseHandEnemyHelperCopies=[{path:'tests/helpers/closeout-source-epoch.mjs',before:'b441679152df65b333c5787b7d7096d54d384936b7e8c9fe04fc78f6c4467e12',after:'86c0448d03c491a3ae32d0d4324308f328e9d87e822222cc22fdc9fee1b76f4d'}];
+for(const row of releaseHandEnemyHelperCopies){assert.equal(files[row.path],row.before,'exact hand enemy Release copy predecessor');files[row.path]=row.after;}
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

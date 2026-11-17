@@ -222,6 +222,7 @@ stage.children.characterPanel.children.details=tree({officialSelectionFigure=sel
  portraits=tree({traveler_ironclad=tree()}),portraitNote=note})
 traveler:SetVisible(false)
 assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315,'full-source figure was replaced')
+assert(Asset.selection133==nil,'official selection must not carry its superseded 1940-row figure')
 assert(Asset.battlePixel.count==57 and #Asset.battlePixel.rows==57)
 local idle=assert(Asset.battleApprovedIdle)
 assert(idle.renderProfile=='approved-idle-v1' and idle.count==7303 and #idle.rows==7303)

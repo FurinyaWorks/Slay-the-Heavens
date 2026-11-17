@@ -7,12 +7,12 @@ import {prepareHandEnemyTestDomain,enemyTestRead} from './helpers/hand-enemy-tes
 beforeEach(()=>prepareHandEnemyTestDomain('enemy'));
 import assert from 'node:assert/strict';
 import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
-import {enemyPost697HistoricalRead,enemyPost697PriorInventory} from './helpers/enemy-post697-ci-source.mjs';
+import {enemyPost697HistoricalRead,enemyPost697PriorInventory} from './helpers/hand-enemy-enemy-post697-ci-source.mjs';
 const actualEnemyGeometryReadFileSync=enemyPost697HistoricalRead('enemy',actualEnemyPost697ReadFileSync);
 import {enemyGeometryCiRead,enemyGeometryCiPacket,enemyGeometryCiSource as priorEnemyGeometryCiSource,enemyGeometryPriorInventory,assertEnemyGeometryCiCurrent,assertEnemyGeometryRawInventory} from './helpers/enemy-geometry-ci-source.mjs';
 const rawReadFileSync=enemyGeometryCiRead(actualEnemyGeometryReadFileSync);
 const enemyGeometryCiSource=(path,source,before,read=actualEnemyGeometryReadFileSync)=>priorEnemyGeometryCiSource(path,source,before,read);
-import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent as priorBootstrapCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent as priorBootstrapCurrent,assertReleaseBootstrapRawInventory} from './helpers/hand-enemy-bootstrap-ci-source.mjs';
 const assertReleaseBootstrapCiCurrent=(read=rawReadFileSync)=>priorBootstrapCurrent(enemyGeometryCiRead(read));
 import {createHash} from 'node:crypto';
 import {discoverJs as unionActualDiscoverJs} from '../scripts/ci-shards.mjs';
@@ -400,7 +400,7 @@ test('enemy post697 union integrated reader and source forward the same raw read
  const binary=reader(anchor);assert(Buffer.isBuffer(binary));assert.equal(binary.toString('utf8'),expected);
 });
 
-import {enemyPost697CiRead,enemyPost697CiPacket,enemyPost697CiSource,assertEnemyPost697CiCurrent,assertEnemyPost697RawInventory} from './helpers/enemy-post697-ci-source.mjs';
+import {enemyPost697CiRead,enemyPost697CiPacket,enemyPost697CiSource,assertEnemyPost697CiCurrent,assertEnemyPost697RawInventory} from './helpers/hand-enemy-enemy-post697-ci-source.mjs';
 
 test('enemy post697 union production retains both complete real inputs and authenticates every current owner',async()=>{
  const {enemyPost697SourceEpoch:sourceEpoch,preEnemyPost697SourceEpoch,releaseSelectionMapLegacyEpoch}=await import('./helpers/closeout-source-epoch.mjs');

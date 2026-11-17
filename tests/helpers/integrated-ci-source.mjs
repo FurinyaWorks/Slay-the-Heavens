@@ -6,11 +6,15 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
-import {releaseSelectionMapCiSource,releaseSelectionMapCiCheckedSource,releaseSelectionMapPriorInventory,releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent} from './release-selection-map-ci-source.mjs';
+import {releasePc22BasicFeedbackCiSource,releasePc22BasicFeedbackCiCheckedSource,releasePc22BasicFeedbackPriorInventory,releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackCiCurrent} from './release-pc22-basic-feedback-ci-source.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
+import {releaseSelectionMapCiSource,releaseSelectionMapCiCheckedSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiRead} from './hand-enemy-selection-ci-source.mjs';
 import {mobileHandCiSource,mobileHandCiCheckedSource,mobileHandCiRead,mobileHandPriorInventory,assertMobileHandCiCurrent} from './mobile-hand-ci-source.mjs';
-import {releaseSelectionMapCiRead} from './release-selection-map-ci-source.mjs';
 import {handPost697CiSource,handPost697HistoricalRead,handPost697PriorInventory,handPost697CiPacket,assertHandPost697CiCurrent} from './hand-post697-ci-source.mjs';
+import {releasePc22BasicFeedbackCiRead} from './release-pc22-basic-feedback-ci-source.mjs';
+import {integrationRead,integrationProductionRead,integrationCiSource,integrationPriorInventory,assertReleaseIntegrationCurrent,integrationInventory} from './release-card-contact-integration.mjs';
+import {releaseUnionCiPacket,assertReleaseUnionCurrent,releaseUnionHistoricalRead,releaseUnionCiSource} from './hand-enemy-release-ci-source.mjs';
+import {releaseBootstrapCiSource as handBootstrapSource,releaseBootstrapCiCheckedSource as handBootstrapChecked,assertReleaseBootstrapCiCurrent as assertHandBootstrapCurrent} from './hand-enemy-bootstrap-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -26,7 +30,11 @@ export function integratedSource(path,source,target,read=readFileSync){
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
  source=handEnemyCiSource(path,source,undefined,read);read=handEnemyHistoricalRead('hand',read);
  source=handPost697CiSource(path,source,undefined,read);
- source=releaseBootstrapCiSource(path,releaseSelectionMapCiSource(path,source),row?.current);
+ source=mobileHandCiSource(path,source,undefined,handPost697HistoricalRead('hand',read));
+ source=handBootstrapSource(path,releaseSelectionMapCiSource(path,source),row?.current);
+ // Explicit standalone Release input remains available alongside the hand chain.
+ source=integrationCiSource(path,source,'pc22');
+ source=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,source),row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
@@ -41,12 +49,22 @@ export function integratedRead(target,{read=readFileSync}={}){return(path,encodi
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertHandEnemyCiCurrent(read);read=handEnemyHistoricalRead('hand',read);
+ assertReleaseUnionCurrent(read);
+ const originalRead=read;
+ // Local immutable inputs exist only during this validation invocation, after
+ // the complete real current corpus has been authenticated above.
+ const view=target=>(path,encoding)=>{
+  const row=releaseUnionCiPacket.files[path]?.views[target];
+  if(row)return encoding?row.source:Buffer.from(row.source);
+  return originalRead(path,encoding);
+ };
+ assertReleaseIntegrationCurrent(view('release'));
+ assertHandEnemyCiCurrent(read);read=view('hand');
  assertHandPost697CiCurrent(read);read=handPost697HistoricalRead('release',read);
  assertReleaseSelectionMapCiCurrent(read);
- assertReleaseBootstrapCiCurrent(releaseSelectionMapCiRead(read));
- for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releaseSelectionMapCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
- for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,releaseSelectionMapCiSource(path,read(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
+ assertHandBootstrapCurrent(releaseSelectionMapCiRead(read));
+ for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(handBootstrapChecked(path,releaseSelectionMapCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
+ for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(handBootstrapSource(path,releaseSelectionMapCiSource(path,read(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
 }
 export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return [...handEnemyCiPacket.currentInventory[kind]];}
 export function extendIntegratedHelperClosure(original){
@@ -76,7 +94,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
  for(const path of added){
   const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-  assert.equal(hash(norm(releaseBootstrapCiSource(path,releaseSelectionMapCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+   assert.equal(hash(norm(handBootstrapSource(path,releaseSelectionMapCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
 }

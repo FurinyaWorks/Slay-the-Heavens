@@ -5,11 +5,15 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {handEnemyCiPacket,assertHandEnemyCiCurrent} from './hand-enemy-ci-source.mjs';
+import {releaseUnionCiPacket} from './hand-enemy-release-ci-source.mjs';
 const domains=new Map();
 export function prepareHandEnemyTestDomain(target){
  assertHandEnemyCiCurrent(readFileSync);
  const files=new Map();
  for(const [path,row]of Object.entries(handEnemyCiPacket.files)){
+  const before=row.views[target];if(before)files.set(path,Buffer.from(before.source));
+ }
+ for(const [path,row]of Object.entries(releaseUnionCiPacket.files)){
   const before=row.views[target];if(before)files.set(path,Buffer.from(before.source));
  }
  for(const path of Object.keys(handEnemyCiPacket.immutableArchives))files.set(path,Buffer.from(readFileSync(path)));

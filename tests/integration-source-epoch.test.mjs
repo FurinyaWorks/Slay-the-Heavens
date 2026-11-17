@@ -86,6 +86,8 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  assert.equal(preReleaseSelectionMapSourceEpoch.proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  const {preMobileHandSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  assert.equal(preMobileHandSourceEpoch.proof.currentTreeCommitted,false,'hand and landed Map share the complete original predecessor');
+  const {preReleasePc22BasicFeedbackSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+  assert.equal(preReleasePc22BasicFeedbackSourceEpoch.proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
  for(const path of shopDeckPaths){
   assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);

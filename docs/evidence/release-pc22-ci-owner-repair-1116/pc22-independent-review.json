@@ -1,0 +1,57 @@
+{
+  "reviewer": "/root/pc695_ci_fixture_repair",
+  "role": "independent PC22 reviewer; did not implement PC22",
+  "baseline": "be91df3a7b192827f5ede3937c50fb5f18e9afcb",
+  "verdict": "PASS",
+  "blockingFindings": [],
+  "checks": [
+    "exact review baseline",
+    "old full packet retained byte-exact from reviewed HEAD",
+    "20 to 22 exact file union",
+    "19 old after bindings and all 20 old before rows unchanged",
+    "two exact actual Release Git preimages",
+    "22 live current rows and all source/hash/Git blob identities",
+    "96 old pins plus one complete packet, all 97 actual archives exact",
+    "honest false capture metadata, original producer retained",
+    "two frozen 116 bodies preserved verbatim except one local reader/epoch shadow",
+    "both current 117 cases retain all original live-reader failure/order loops",
+    "trust leaf operational logic unchanged",
+    "only authorized test/CI bindings and task changed; no product or workflow",
+    "pc22-four-cases-green saved logs authenticated against receipt",
+    "pc22-ci-owner-contracts saved logs authenticated against receipt",
+    "actual epoch has exactly 117 owners and only CardFlow added to frozen116"
+  ],
+  "files": {
+    "tests/defect-final-source-epoch.test.mjs": {
+      "sha256": "a703b7f13c43d6a6cfd00175d4be187e8f453ff2e0e725e9211c69b71e8f174d",
+      "lfSha256": "260b6ffc368ac69577eda11a34d3fde92861a03590769cc3dc49af3da035e9bf"
+    },
+    "tests/encounter-formation-source-epoch.test.mjs": {
+      "sha256": "28b207c1e96e2e6b628a00281636bd7de79c498aba8af9fb78a095cf2f64563c",
+      "lfSha256": "8d7fbb8179fd3b0d98ae7bd840d660a30d158c8a6614349571bd5d6d649b45cb"
+    },
+    "tests/release-pc22-basic-feedback-source.test.mjs": {
+      "sha256": "2a74fe38e3918ee896cc9f850c58e2a1d562a5df02b85da442f4cf8e22a32913",
+      "lfSha256": "2a74fe38e3918ee896cc9f850c58e2a1d562a5df02b85da442f4cf8e22a32913"
+    },
+    "tests/helpers/release-pc22-basic-feedback-ci-source.mjs": {
+      "sha256": "5e634413d0cb8022cd35e5582110b96cb3ce2a63f82912c65d239bb6a1a959da",
+      "lfSha256": "5e634413d0cb8022cd35e5582110b96cb3ce2a63f82912c65d239bb6a1a959da"
+    },
+    "tests/helpers/release-pc22-basic-feedback-ci-source.json.gz": {
+      "sha256": "d65e6170e254f376ca425035e489e89aedbedbd67d1585b1bd8bc611c991c610"
+    },
+    "tests/helpers/release-pc22-basic-feedback-ci-before-owner-repair-source.json.gz": {
+      "sha256": "313d904add6bb891c377790c55f0e64b28f0b429d78da630c7b9d57ae2748790"
+    }
+  },
+  "notRun": [
+    "heavy owner tests repeated",
+    "Full",
+    "Host",
+    "CI",
+    "commit",
+    "push"
+  ],
+  "basis": "Read exact diffs; independently ran bounded structural/Git/disk/archive probes and authenticated existing execution evidence."
+}

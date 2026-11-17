@@ -49,16 +49,23 @@ import assert from 'node:assert/strict';
 import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
 import {handPost697HistoricalRead,handPost697PriorInventory,handPost697CiPacket,assertHandPost697CiCurrent,assertHandPost697RawInventory} from './helpers/hand-post697-ci-source.mjs';
 const rawReleaseReadFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
-import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/hand-enemy-selection-ci-source.mjs';
 const actualHandReadFileSync=handPost697HistoricalRead('hand',actualHandPost697ReadFileSync);
 import {mobileHandCiRead,mobileHandCiPacket,mobileHandPriorInventory,assertMobileHandCiCurrent as priorAssertMobileHandCiCurrent,assertMobileHandRawInventory} from './helpers/mobile-hand-ci-source.mjs';
-import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/hand-enemy-bootstrap-ci-source.mjs';
 const assertMobileHandCiCurrent=(read=actualHandReadFileSync)=>priorAssertMobileHandCiCurrent(read);
 const rawBootstrapReadFileSync=releaseSelectionMapCiRead(rawReleaseReadFileSync);
 const historicalCiReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
 // Authenticate the final current production closure before historical projection.
 const liveDiskReadFileSync=(path,encoding)=>(path.startsWith('src/')||path==='config/architecture.json'
  ?unionActualReadFileSync:historicalCiReadFileSync)(path,encoding);
+import {releasePc22BasicFeedbackCiRead,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackCiCurrent,releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
+import {integrationRead,integrationCapacityCiRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
+import {releaseUnionHistoricalRead,releaseUnionPriorInventory} from './helpers/hand-enemy-release-ci-source.mjs';
+import {releaseSelectionMapCiPacket as currentSelectionPacket,assertReleaseSelectionMapCiCurrent as checkCurrentSelection} from './helpers/release-selection-map-ci-source.mjs';
+const realReleaseRead=releaseUnionHistoricalRead('release',unionActualReadFileSync);
+const realReleaseJs=()=>releaseUnionPriorInventory(unionActualDiscoverJs());
+const realReleaseLua=()=>releaseUnionPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua');
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
@@ -2014,10 +2021,14 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  }
 });
 
-test('release selection map raw Full inventory retains all tests, diagnostic forecasts and actual execution guards',t=>{
- assertReleaseSelectionMapCiCurrent(rawReleaseReadFileSync);
- assertReleaseSelectionMapExecutionGuards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
- const js=rawReleaseDiscoverJs(),lua=rawReleaseLua(),p=releaseSelectionMapCiPacket;
+for(const [side,label,p,check,guards]of [
+ ['pc22','PC22 basic feedback',releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackCiCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
+ ['selection','selection map',currentSelectionPacket,checkCurrentSelection,assertReleaseSelectionMapExecutionGuards],
+ ['joint','card-contact integration',{currentInventory:integrationPacket.inventory,priorInventory:releasePc22BasicFeedbackCiPacket.priorInventory},assertReleaseIntegrationCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
+])test(`release ${label} retained Full inventory retains all tests, diagnostic forecasts and actual execution guards`,t=>{
+ check(side==='joint'?realReleaseRead:side==='selection'?integrationCapacityCiRead(realReleaseRead):integrationRead(side,realReleaseRead));
+ guards(realReleaseRead('.github/workflows/quality.yml','utf8'));
+ const js=side==='joint'?realReleaseJs():integrationPriorInventory(realReleaseJs(),side,'js',realReleaseRead),lua=side==='joint'?realReleaseLua():integrationPriorInventory(realReleaseLua(),side,'lua',realReleaseRead);
  assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
  for(const path of p.priorInventory.js)assert(js.includes(path));
  for(const path of p.priorInventory.lua)assert(lua.includes(path));

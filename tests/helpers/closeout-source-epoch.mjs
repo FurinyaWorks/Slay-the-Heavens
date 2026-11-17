@@ -16,6 +16,7 @@ import {extendEnemyGeometrySource} from './enemy-geometry-source.mjs';
 import {extendEnemyPost697Source} from './enemy-post697-source.mjs';
 import {extendHandEnemyUnion} from './hand-enemy-source.mjs';
 import {extendHandPost697Source} from './hand-post697-source.mjs';
+import {extendReleasePc22BasicFeedbackSource} from './release-pc22-basic-feedback-source.mjs';
 import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
@@ -56,6 +57,7 @@ export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const preReleaseSelectionMapSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const preReleasePc22BasicFeedbackSourceEpoch=preReleaseSelectionMapSourceEpoch;
 export const preMobileHandSourceEpoch=preReleaseSelectionMapSourceEpoch;
 export const handBeforeMapSourceEpoch=extendMobileHandSource(preMobileHandSourceEpoch);
 export const preHandPost697SourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
@@ -64,7 +66,38 @@ export const preEnemyGeometrySourceEpoch=preReleaseSelectionMapSourceEpoch;
 export const preEnemyPost697SourceEpoch=extendEnemyGeometrySource(preEnemyGeometrySourceEpoch);
 export const releaseSelectionMapLegacyEpoch=preHandPost697SourceEpoch;
 export const enemyPost697SourceEpoch=extendEnemyPost697Source(preEnemyPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
-export const sourceEpoch=extendHandEnemyUnion(handPost697SourceEpoch,enemyPost697SourceEpoch);
+export const handEnemySourceEpoch=extendHandEnemyUnion(handPost697SourceEpoch,enemyPost697SourceEpoch);
+export const releasePc22BasicFeedbackSourceEpoch=extendReleasePc22BasicFeedbackSource(preReleasePc22BasicFeedbackSourceEpoch);
+export const releaseSelectionMapSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+// Join disjoint approved owners against their exact common predecessor. Both
+// standalone corpora and every original target retain their original identity.
+function joinReleaseSources(includeHandEnemy=false){
+const base=preReleasePc22BasicFeedbackSourceEpoch.proof;
+const pc22=releasePc22BasicFeedbackSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof;
+const current={...base.current},targets={...base.targets};
+ for(const side of [pc22,selection,...(includeHandEnemy?[handEnemySourceEpoch.proof]:[])]){
+ for(const [path,row]of Object.entries(side.current))if(row?.sha256!==base.current[path]?.sha256){
+   assert(current[path]?.sha256===base.current[path]?.sha256||current[path]?.sha256===row?.sha256,'disjoint or identical Release integration owner: '+path);
+  current[path]=row;
+ }
+ for(const [name,target]of Object.entries(side.targets)){
+  if(Object.hasOwn(targets,name))assert.deepEqual(targets[name],target,'unchanged common Release target: '+name);
+  else targets[name]=target;
+ }
+}
+targets.releasePc22BasicFeedbackReviewed={commit:pc22.currentCommit,files:pc22.current};
+targets.releaseSelectionMapReviewed={commit:selection.currentCommit,files:selection.current};
+ if(includeHandEnemy)targets.handEnemyReviewed={commit:handEnemySourceEpoch.proof.currentCommit,files:handEnemySourceEpoch.proof.current};
+const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
+return createSourceEpochProjector(freeze({...base,current,targets,owners,
+ currentTreeCommitted:false,currentCommit:'17580f25c742a7facb5626db8fc17efb4abe269b',
+ currentCommitRole:'integration worktree capture; standalone committed product producers are retained separately',
+ releasePc22BasicFeedbackProducers:pc22.releasePc22BasicFeedbackProducers,
+  ...(includeHandEnemy?Object.fromEntries(Object.entries(handEnemySourceEpoch.proof).filter(([key])=>key.endsWith('Producers'))):{}),
+  releaseSelectionMapProducers:selection.releaseSelectionMapProducers}),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+export const releaseJointSourceEpoch=joinReleaseSources();
+export const sourceEpoch=joinReleaseSources(true);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

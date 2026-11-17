@@ -14,8 +14,11 @@ import {gunzipSync} from 'node:zlib';
 import {readFileSync as unionActualReadFileSync,readdirSync} from 'node:fs';
 import {discoverJs as unionActualDiscoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {mobileHandPriorInventory,assertMobileHandRawInventory} from './helpers/mobile-hand-ci-source.mjs';
-import {releaseSelectionMapPriorInventory} from './helpers/release-selection-map-ci-source.mjs';
+import {releaseSelectionMapPriorInventory} from './helpers/hand-enemy-selection-ci-source.mjs';
 import {handPost697PriorInventory,handPost697HistoricalRead,assertHandPost697RawInventory,handPost697CiPacket} from './helpers/hand-post697-ci-source.mjs';
+import {releasePc22BasicFeedbackPriorInventory} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
+import {integrationRead,integrationPriorInventory} from './helpers/release-card-contact-integration.mjs';
+import {releaseUnionHistoricalRead,releaseUnionPriorInventory} from './helpers/hand-enemy-release-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 function fixture(){
@@ -59,6 +62,14 @@ test('release additions remain in raw Full and exact historical inventories reje
  // Keep the complete original receipt input; the selection map raw Full contract
  // independently hard-checks every current test and the unchanged budgets.
  const rawJs=releaseSelectionMapPriorInventory(handPost697PriorInventory(currentJs,'js',readFileSync),'js',releaseRead),rawLua=releaseSelectionMapPriorInventory(handPost697PriorInventory(currentLua,'lua',readFileSync),'lua',releaseRead);
+ {
+ // Keep the complete original receipt input; the PC22 basic feedback raw Full contract
+ // independently hard-checks every current test and the unchanged budgets.
+ const releaseRead=releaseUnionHistoricalRead('release',unionActualReadFileSync),sideRead=integrationRead('pc22',releaseRead);
+ const releaseJs=releaseUnionPriorInventory(unionActualDiscoverJs()),releaseLua=releaseUnionPriorInventory(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'lua');
+ const rawJs=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(releaseJs,'pc22','js',releaseRead),'js',sideRead),rawLua=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(releaseLua,'pc22','lua',releaseRead),'lua',sideRead);
+ assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
+ }
  assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));

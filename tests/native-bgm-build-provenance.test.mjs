@@ -1,3 +1,4 @@
+import {packNativeCardFaces} from '../scripts/native-ui-card-sharing.mjs';
 import {officialAssetFlags,officialAssetsProfile} from '../scripts/official-assets-profile.mjs';
 import {uiProfileReceipt,uiProfileSource,uiProfileFromReceipt} from '../scripts/ui-profile.mjs';
 import {artFeatureReceipt,artFeaturesSource} from '../scripts/art-features.mjs';
@@ -49,7 +50,9 @@ function fixture(t, corrupt, existing=false, official=false) {
     put(`full/payload/${name}.lua`, source); return [name, sha256(source)];
   }));
   const base = put('full/candidate.gil', 'full pre-audio candidate');
-  const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId, ...(official?{officialAssetsProfile,uiProfile:uiProfileReceipt(true)}:{}),artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
+  const face=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
+  const nativeUiPacking=official?undefined:{sharing:packNativeCardFaces({name:'Fixture',controls:[face('one'),face('two')]},[]).sharing,templateIndices:{AbyssSharedCardFace1:201}};
+  const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId,nativeUiPacking, ...(official?{officialAssetsProfile,uiProfile:uiProfileReceipt(true)}:{}),artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
   const tool = join(root, 'tool');
   put('tool/package.json', '{"type":"module","version":"fixture"}');
   put('tool/node_modules/@modelcontextprotocol/sdk/package.json', '{"type":"module"}');
@@ -61,7 +64,7 @@ function fixture(t, corrupt, existing=false, official=false) {
   const output = join(root, 'audio');
   const run = spawnSync(process.execPath, [builder, base, output, sourceReceipt], { encoding: 'utf8',
     env: { ...process.env, MILIASTRA_MCP_ROOT: tool, BGM_SCENARIO: scenario, BGM_CALLS: calls } });
-  return { root, sources, base, buildId, output, run, calls: readFileSync(calls, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse) };
+  return { root, sources, base, buildId, nativeUiPacking, output, run, calls: readFileSync(calls, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse) };
 }
 test('audio packaging reuses existing BGM graph and signals without duplicates',t=>{
  const f=fixture(t,undefined,true);assert.equal(f.run.status,0,f.run.stderr);
@@ -79,6 +82,7 @@ test('real BGM CLI preserves exact packaged startup marker and all entry paramet
   const receipt = JSON.parse(readFileSync(join(f.output, 'candidate.json')));
   assert.equal(receipt.mapPath, join(f.output, 'candidate.gil'));
   assert.deepEqual(receipt.candidate, fileRecord(receipt.mapPath));
+  assert.deepEqual(receipt.nativeUiPacking,f.nativeUiPacking,'BGM stage must retain the complete native storage identity');
   assert.deepEqual(receipt.officialBackground,{templateIndex:1470123456,peakDynamicControls:13201});
   assert.equal(receipt.buildId, f.buildId); assert.equal(receipt.sha256, receipt.candidate.sha256);
   assert.notEqual(receipt.candidate.sha256, fileRecord(f.base).sha256);

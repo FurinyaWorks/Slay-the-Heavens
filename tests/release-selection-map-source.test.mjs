@@ -1,25 +1,45 @@
-import {handEnemyHistoricalRead,handEnemyPriorInventory} from './helpers/hand-enemy-ci-source.mjs';
-const actualHandPost697ReadFileSync=handEnemyHistoricalRead('hand',unionActualReadFileSync);
-const actualHandPost697DiscoverJs=()=>handEnemyPriorInventory(unionActualDiscoverJs(),'js',unionActualReadFileSync);
-const handEnemyLegacyLua=()=>handEnemyPriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',unionActualReadFileSync);
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as unionActualReadFileSync,readdirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
-import {handPost697HistoricalRead,handPost697PriorInventory} from './helpers/hand-post697-ci-source.mjs';
-const readFileSync=handPost697HistoricalRead('release',actualHandPost697ReadFileSync);
+import {readFileSync as unionActualReadFileSync,readdirSync as rawReaddirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {releaseUnionHistoricalRead,releaseUnionPriorInventory} from './helpers/hand-enemy-release-ci-source.mjs';
+const rawReadFileSync=releaseUnionHistoricalRead('release',unionActualReadFileSync);
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {beforeCapacityB9Ci,capacityB9CiBindings,capacityB9CiRead} from './helpers/release-capacity-b9-ci-source.mjs';
 import {discoverJs as unionActualDiscoverJs} from '../scripts/ci-shards.mjs';
-const discoverJs=()=>handPost697PriorInventory(actualHandPost697DiscoverJs(),'js',actualHandPost697ReadFileSync);
-import {sourceEpoch as activeHandPost697Epoch,handPost697SourceEpoch,preHandPost697SourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+const rawDiscoverJs=()=>releaseUnionPriorInventory(unionActualDiscoverJs());
+import {sourceEpoch as jointSourceEpoch,handPost697SourceEpoch,releaseSelectionMapSourceEpoch as sourceEpoch,preReleaseSelectionMapSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {integrationProductionRead,integrationPriorInventory,integrationCapacityCiRead} from './helpers/release-card-contact-integration.mjs';
 import {releaseSelectionMapSourcePacket,extendReleaseSelectionMapSource} from './helpers/release-selection-map-source.mjs';
-import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent as priorSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
-const assertReleaseSelectionMapCiCurrent=(read=readFileSync)=>priorSelectionMapCiCurrent(read);
+import {releaseSelectionMapCiPacket,releaseSelectionMapCiSource,releaseSelectionMapPriorInventory,assertReleaseSelectionMapRawInventory,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards,capacityReleaseCiBefore} from './helpers/release-selection-map-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
+// Preserve the full #697 standalone contract in its authenticated exact view.
+const readFileSync=integrationProductionRead('selection',rawReadFileSync);
+const discoverJs=()=>integrationPriorInventory(rawDiscoverJs(),'selection','js',rawReadFileSync);
+const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(releaseUnionPriorInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'lua'),'selection','lua',rawReadFileSync).map(p=>p.slice(10)):rawReaddirSync(path);
+
+test('B9 capacity CI join binds both exact predecessors and refuses drift foreign paths wrong before and malformed inputs',()=>{
+ for(const [path,row]of Object.entries(capacityB9CiBindings)){
+  const raw=rawReadFileSync(path,'utf8'),lf=norm(raw);
+  assert.equal(hash(lf),row.currentSha256,path+' complete live source');
+  for(const view of ['b9','capacity']){
+   for(const input of [raw,lf,lf.replaceAll('\n','\r\n')]){
+    assert.equal(hash(norm(beforeCapacityB9Ci(path,input,view,{sha256:row[view]}))),row[view]);
+    assert.strictEqual(beforeCapacityB9Ci(path,input,view,{sha256:'0'.repeat(64)}),input);
+   }
+   for(const bad of [raw+'\n',raw.slice(1),lf.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.strictEqual(beforeCapacityB9Ci(path,bad,view),bad);
+   for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.strictEqual(beforeCapacityB9Ci(foreign,raw,view),raw);
+   const buffer=Buffer.from(raw),prior=capacityB9CiRead(()=>buffer,view)(path);
+   assert(Buffer.isBuffer(prior));assert.equal(hash(norm(prior.toString())),row[view]);
+   const badBuffer=Buffer.concat([buffer,Buffer.from('\n')]);assert.strictEqual(capacityB9CiRead(()=>badBuffer,view)(path),badBuffer);
+  }
+  assert.strictEqual(releaseSelectionMapCiSource(path,raw,{sha256:'0'.repeat(64)}),raw);
+ }
+});
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
  const bytes=readFileSync('tests/helpers/release-selection-map-base-source.json.gz');
@@ -51,27 +71,56 @@ test('legacy landed697 release selection map production preserves every complete
  assert.throws(()=>extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch,{...releaseSelectionMapSourcePacket,current:{}}),/only the approved selection map owners advance/);
 });
 
-test('legacy landed697 release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
- assertReleaseSelectionMapCiCurrent();
+test('release selection map CI validates complete live bindings while unknown or changed bytes stay visible',()=>{
+ assertReleaseSelectionMapCiCurrent(integrationCapacityCiRead(rawReadFileSync));
  for(const [path,row]of Object.entries(releaseSelectionMapCiPacket.files)){
-  const source=norm(readFileSync(path,'utf8'));assert.equal(hash(source),row.current.sha256,path);
+  const current=norm(readFileSync(path,'utf8')),source=capacityReleaseCiBefore(path,current);assert.equal(hash(source),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
-  assert.equal(releaseSelectionMapCiSource(path,source),production?source:row.before?.source??source,path);
-  for(const foreign of [source+'\n',source.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);
-  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,source),source);
-  assert.throws(()=>assertReleaseSelectionMapCiCurrent((p,encoding)=>{
-   const raw=readFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;
-  }),/fresh complete integration source/);
+  assert.equal(releaseSelectionMapCiSource(path,current),production?source:row.before?.source??source,path);
+  for(const foreign of [current+'\n',current.slice(1),null,{},17])assert.equal(releaseSelectionMapCiSource(path,foreign),foreign,path);
+  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseSelectionMapCiSource(foreignPath,current),current);
+  assert.throws(()=>assertReleaseSelectionMapCiCurrent(integrationCapacityCiRead((p,encoding)=>{
+   const raw=rawReadFileSync(p,encoding);return p===path?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;
+  })),/fresh complete integration source/);
  }
  for(const path of Object.keys(releaseSelectionMapSourcePacket.current))assert.equal(releaseSelectionMapCiSource(path,sourceEpoch.proof.current[path].source),sourceEpoch.proof.current[path].source,'CI does not intercept production authorization');
 });
 
-test('legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
- const inventories={js:discoverJs(),lua:handPost697PriorInventory(handEnemyLegacyLua(),'lua',actualHandPost697ReadFileSync)};
+test('capacity and latest Release CI views compose without accepting stale or foreign current owners',async()=>{
+ const adapter=await import('./helpers/release-selection-map-ci-source.mjs');
+ const integration=adapter.capacityReleaseCiPacket;
+ assert(integration,'complete exact merge continuation required');
+ assert.equal(integration.releaseCommit,'33d71575c5f186a1b54f7bf3e4f1826c145aa1d9');
+ assert.equal(integration.capacityCommit,'bf74c0c391a0700740fee9b7cb8695bff615366a');
+ assert.deepEqual(Object.keys(integration.files),['tests/helpers/release-bootstrap-ci-source.mjs','tests/release-selection-map-source.test.mjs']);
+ assertReleaseSelectionMapCiCurrent(integrationCapacityCiRead(rawReadFileSync));
+ const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
+ assertIntegratedCurrent();
+ for(const [path,row]of Object.entries(integration.files)){
+  assert.deepEqual(row.before,releaseSelectionMapCiPacket.files[path].current,'complete committed Release predecessor');
+  const current=norm(beforeCapacityB9Ci(path,rawReadFileSync(path,'utf8'),'capacity'));
+  assert.equal(hash(current),row.current.sha256,path);
+  assert.equal(adapter.capacityReleaseCiBefore(path,current),row.before.source);
+  for(const input of [current,current.replaceAll('\n','\r\n')])assert.equal(releaseSelectionMapCiSource(path,input),row.before.source);
+  for(const foreign of [current+'\n',current.slice(1),current.replaceAll('\n','\r\r\n'),null,{},17]){
+   assert.equal(adapter.capacityReleaseCiBefore(path,foreign),foreign);
+   assert.equal(releaseSelectionMapCiSource(path,foreign),foreign);
+  }
+  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(adapter.capacityReleaseCiBefore(foreignPath,current),current);
+  // Success above must never cache authorization for a later changed/missing owner.
+  for(const changed of [current+'\n',current.slice(1),row.before.source])
+   assert.throws(()=>assertIntegratedCurrent((p,e)=>p===path?changed:unionActualReadFileSync(p,e)),/fresh complete integration source/);
+  assert.throws(()=>assertIntegratedCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return unionActualReadFileSync(p,e);}),/missing/);
+ }
+ assertIntegratedCurrent();
+});
+
+test('release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions',()=>{
+ const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
  for(const [kind,paths]of Object.entries(inventories)){
   assert.deepEqual(paths,releaseSelectionMapCiPacket.currentInventory[kind]);
   assertReleaseSelectionMapRawInventory(paths,kind);
-  assert.deepEqual(releaseSelectionMapPriorInventory(paths,kind,readFileSync),releaseSelectionMapCiPacket.priorInventory[kind]);
+   assert.deepEqual(releaseSelectionMapPriorInventory(paths,kind,readFileSync),releaseSelectionMapCiPacket.priorInventory[kind]);
   const opaque=[`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`];
   assert.deepEqual(releaseSelectionMapPriorInventory(opaque,kind),opaque,'unrelated historical input stays opaque for its own validator');
   const noAdditions=paths.filter(path=>releaseSelectionMapCiPacket.priorInventory[kind].includes(path));
@@ -139,7 +188,7 @@ test('legacy landed697 release selection map isolated production copy includes e
  const copied=await import(pathToFileURL(join(directory,'tests/helpers/closeout-source-epoch.mjs')).href);
  assert.deepEqual(copied.preHandPost697SourceEpoch.proof,sourceEpoch.proof);
  assert.deepEqual(copied.handPost697SourceEpoch.proof,handPost697SourceEpoch.proof);
- assert.deepEqual(copied.sourceEpoch.proof,activeHandPost697Epoch.proof);
+ assert.deepEqual(copied.sourceEpoch.proof,jointSourceEpoch.proof);
  const sourceRoot=join(directory,'drift');mkdirSync(sourceRoot);
  // The original closure copier authenticates dependencies from a distinct root.
  copyIntegrationSourceClosure(sourceRoot,{sourceRoot:directory});

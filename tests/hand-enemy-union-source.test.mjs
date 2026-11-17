@@ -4,10 +4,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,rmSync,writeFileSync,unlinkSync} from 'node:fs';
 import {discoverJs} from '../scripts/ci-shards.mjs';
-import {sourceEpoch,handPost697SourceEpoch,enemyPost697SourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch as finalSourceEpoch,handEnemySourceEpoch as sourceEpoch,handPost697SourceEpoch,enemyPost697SourceEpoch,releaseJointSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {releaseUnionCiPacket,assertReleaseUnionCurrent,releaseUnionCiSource,releaseUnionPriorInventory} from './helpers/hand-enemy-release-ci-source.mjs';
 import {handEnemyCiPacket as p,handEnemyHistoricalRead,handEnemyPriorInventory,assertHandEnemyCiCurrent,assertHandEnemyRawInventory} from './helpers/hand-enemy-ci-source.mjs';
 
 test('hand enemy union preserves both entire historical production domains and every live owner',()=>{
+ assertReleaseUnionCurrent();
+ const readFileSync=(path,encoding)=>{
+  const source=sourceEpoch.proof.current[path]?.source;
+  return source===undefined?readRaw(path,encoding):encoding?source:Buffer.from(source);
+ };
  const c=sourceEpoch.proof;
  for(const old of [handPost697SourceEpoch,enemyPost697SourceEpoch])for(const [name,target]of Object.entries(old.proof.targets))assert.deepEqual(c.targets[name],target);
  assert.equal(Object.keys(c.current).length,352);
@@ -19,6 +25,39 @@ test('hand enemy union preserves both entire historical production domains and e
   let fault;const read=path=>{if(path===fault?.path)return fault.missing?null:readFileSync(path,'utf8')+'\n';return readFileSync(path,'utf8');};
   assert.equal(sourceEpoch.preCombinedSource(anchor,raw,{target,readSource:read}),old.proof.current[anchor].source);
   for(const path of c.owners)for(const missing of [false,true]){fault={path,missing};assert.throws(()=>sourceEpoch.preCombinedSource(anchor,raw,{target,readSource:read}),/linked owner identity/);fault=undefined;}
+ }
+});
+
+const readRaw=readFileSync;
+test('forward Release union authenticates every live production owner and retains both complete reviewed corpora and producers',()=>{
+ assertReleaseUnionCurrent();const current=finalSourceEpoch.proof;
+ for(const [path,row]of Object.entries(current.current))if(row)assert.equal(readRaw(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
+ for(const side of [sourceEpoch,releaseJointSourceEpoch]){
+  for(const [name,target]of Object.entries(side.proof.targets))assert.deepEqual(current.targets[name],target,name);
+  for(const [name,value]of Object.entries(side.proof).filter(([key])=>key.endsWith('Producers')))assert.deepEqual(current[name],value,name);
+ }
+ assert.deepEqual(current.targets.handEnemyReviewed.files,sourceEpoch.proof.current);
+ assert.deepEqual(current.targets.releasePc22BasicFeedbackReviewed.files,releaseJointSourceEpoch.proof.targets.releasePc22BasicFeedbackReviewed.files);
+ assert.equal(current.currentTreeCommitted,false);
+});
+
+test('forward Release CI continuation rejects every warm missing null drift and archive edit and preserves inventories and opaque inputs',()=>{
+ const packet=releaseUnionCiPacket,anchor='tests/helpers/closeout-source-epoch.mjs',raw=readRaw(anchor,'utf8');let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){if(fault.kind==='missing')throw Error('missing '+path);if(fault.kind==='null')return null;const b=readRaw(path,encoding);return typeof b==='string'?b+'\n':Buffer.concat([b,Buffer.from('\n')]);}
+  return readRaw(path,encoding);
+ };
+ const project=()=>releaseUnionCiSource(anchor,raw,'release',read);
+ assert.notEqual(project(),raw);
+ for(const path of [...Object.keys(packet.files),...Object.keys(packet.archives),'tests/helpers/hand-enemy-release-ci-source.json.gz'])for(const kind of ['missing','null','drift']){
+  fault={path,kind};assert.throws(project,undefined,path+' '+kind);fault=undefined;
+ }
+ assert.equal(project(),packet.files[anchor].views.release.source);
+ for(const bad of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),null,{},17])assert.strictEqual(releaseUnionCiSource(anchor,bad,'release',()=>{throw Error('opaque');}),bad);
+ for(const path of ['foreign/'+anchor,'__proto__','constructor','src/lua/abyss_card_flow.lua','config/architecture.json'])assert.strictEqual(releaseUnionCiSource(path,raw,'release',()=>{throw Error('opaque');}),raw);
+ for(const kind of ['js','lua']){
+  const paths=packet.currentInventory[kind];assert.deepEqual(releaseUnionPriorInventory(paths,kind,'release'),packet.viewInventories.release[kind]);
+  for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,'foreign']])assert.throws(()=>releaseUnionPriorInventory(bad,kind),/inventory/);
  }
 });
 test('hand enemy full raw inventories and both histories reject warm deletion null drift and archive changes',()=>{

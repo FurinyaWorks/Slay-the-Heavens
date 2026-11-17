@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {releaseUnionCiPacket,assertReleaseUnionCurrent} from './hand-enemy-release-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./hand-enemy-ci-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'846739b2262bae6420518f67c4515d01f3942fd64de0ebea71fa38d60d5d5eba','complete hand enemy CI packet');
@@ -27,7 +28,14 @@ for(const [path,row]of Object.entries(successor.files)){
  }
  files[path]={current:row.current,views:row.views};
 }
-const packet={...originalPacket,files,immutableArchives:{...originalPacket.immutableArchives,
+for(const [path,row]of Object.entries(releaseUnionCiPacket.files)){
+ if(files[path]){
+  assert.deepEqual(row.before,files[path].current,'exact reviewed union continuation predecessor: '+path);
+  for(const [target,view]of Object.entries(files[path].views))assert.deepEqual(row.views[target],view,'immutable original union history: '+path);
+  files[path]={current:row.current,views:files[path].views};
+ }
+}
+const packet={...originalPacket,files,currentInventory:releaseUnionCiPacket.currentInventory,immutableArchives:{...originalPacket.immutableArchives,
  'tests/helpers/hand-enemy-ci-source.json.gz':hash(bytes),
  'tests/helpers/hand-enemy-successor-ci.json.gz':hash(successorBytes),
  'tests/helpers/enemy-post697-ci-reader-repair.json.gz':'6498b91931c1d214c61d687ae5be3ec1816e0e1bb1685b414388f90dc1a45818'}};
@@ -42,7 +50,7 @@ const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v
 export const handEnemyCiPacket=freeze(packet);
 function checked(path,source,target,before){
  assert(Object.hasOwn(packet.viewCommits,target),'explicit hand enemy history domain');
- const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,view=row?.views[target];
+ const row=Object.hasOwn(packet.files,path)?packet.files[path]:Object.hasOwn(releaseUnionCiPacket.files,path)?releaseUnionCiPacket.files[path]:null,view=row?.views[target];
  // Already-historical and unchanged sources gain no authorization and remain
  // byte-for-byte raw, including CRLF and binary callers handled by the reader.
  if(!view||view.sha256===row.current.sha256||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -79,6 +87,7 @@ export function assertHandEnemyRawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete hand enemy raw discovery inventory');
 }
 export function assertHandEnemyCiCurrent(read=readFileSync){
+ assertReleaseUnionCurrent(read);
  for(const [path,row]of Object.entries(packet.files))assert.equal(hash(norm(read(path,'utf8'))),row.current.sha256,'fresh complete hand enemy source: '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))assert.equal(hash(read(path)),sha,'immutable hand enemy predecessor: '+path);
 }
