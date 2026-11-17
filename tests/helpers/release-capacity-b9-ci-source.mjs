@@ -42,6 +42,7 @@ export function assertCapacityB9ReaderRepairCurrent(read=readFileSync){
  }
 }
 export function beforeCapacityB9Ci(path,source,view='b9',before){
+ if(!['b9','capacity'].includes(view))return source;
  if(before){
   const prior=view==='b9'&&Object.hasOwn(repair.files,path)?repair.files[path].before:typeof path==='string'&&Object.hasOwn(packet.files,path)&&Object.hasOwn(packet.files[path].before,view)?packet.files[path].before[view]:null;
   if(!prior||before.sha256!==prior.sha256)return source;

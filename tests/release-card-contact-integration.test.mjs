@@ -95,7 +95,10 @@ test('capacity and Fast union authenticates all fresh current inputs before eith
    for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(hash(norm(capacityFastUnionSource(path,input,side))),row[side],path+'/'+side);
    for(const input of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n'),null,{},17,Buffer.from(source)])assert.equal(capacityFastUnionSource(path,input,side),input);
   }
-  for(const side of ['unknown','__proto__'])assert.equal(capacityFastUnionSource(path,source,side),source);
+  for(const side of ['unknown','__proto__']){
+   assert.equal(capacityFastUnionSource(path,source,side),source);
+   assert.equal(beforeCapacityB9Ci(path,source,side),source);
+  }
   for(const change of ['append','missing','stale'])assert.throws(()=>assertCapacityFastUnionCurrent((p,e)=>{
    if(p!==path)return rawReadFileSync(p,e);if(change==='missing')throw Error('missing current owner');return change==='stale'?'stale':rawReadFileSync(p,e)+'\n';
   }));

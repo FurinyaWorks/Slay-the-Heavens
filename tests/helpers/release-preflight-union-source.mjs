@@ -29,7 +29,7 @@ export function assertReleasePreflightUnionCurrent(read=readFileSync){
 }
 // The two fixed Release candidates retain complete independent CI histories.
 const capacityFastBytes=readFileSync(new URL('./release-capacity-fast-union.json.gz',import.meta.url));
-assert.equal(hash(capacityFastBytes),'7b65d5ae5ae75c0fdfcba38ed5ae10adf70d1fb26443ecbb97db287f631d57d4','complete capacity Fast union');
+assert.equal(hash(capacityFastBytes),'8d58d7570d2816c77616c6c381ebad9375c8d481f694ec6c0dcb0d1f2168f2b5','complete capacity Fast union');
 const capacityFast=JSON.parse(gunzipSync(capacityFastBytes));
 assert.deepEqual(capacityFast.parents,{fast:'620106856f4457501275db212c70a58ff79e5b67',capacity:'6980b909db9e3d1a2f425ebaf31524aebc156416'});
 assert.equal(capacityFast.currentTreeCommitted,false);
