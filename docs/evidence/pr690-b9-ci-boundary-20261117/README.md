@@ -1,0 +1,15 @@
+# PR690 navigation/PC22 CI boundary staging
+
+Inputs remain navigation cd9106c0e302cb50f83ba8b5c85ce81560c6ed88 and actual Release b9bca884ed9b9831965b409885d78f719b9a567a. No other owner update appeared on PR690. The active PR remains unchanged and conflicted. This continues reviewed product-stage preparation 1e1df817, not a finished integration.
+
+Implemented a strict outer reader prototype with exact before/current bindings for both old joint snapshots. It authenticates final staged raw sources and immutable archives before projection, preserves foreign/type/malformed-newline inputs unchanged without IO, keeps CI-only projection away from production, and requires an explicit production-view reader. Each accepted projection revalidates current source and archive bytes; no warm authorization cache.
+
+Independent first review correctly rejected a 405-source/104-archive list because simply unioning old packet lists omitted incoming PC22 helper/production-packet dependencies. The initial rejection is retained. The generator now recursively captures local static module, immutable-data dependencies and trust-helper root-constant JSON/archive reads. Final set: 814 sources and 117 archives. Packet SHA256 5ea1032ae83e2800323a6a8d4d5778c9d44b1e3f8e2f14bb5f1c1c0b0341d8d8.
+
+Final local evidence: 1762 checks PASS, including direct Git verification of both old views, explicit missing/drift checks for the previously omitted PC22 packet/helper and source-epoch runtime, warm failure/recovery, CRLF success, CRCRLF/foreign/prototype/wrong-type refusal, raw Buffer behavior and CI/production separation. Both existing joint validators pass using their respective mapped readers: navigation assertNavigationMapCurrent and PC22 assertReleaseIntegrationCurrent. This is not a Full run and does not establish actual PR consumer readiness.
+
+Reproduction: create the isolated product stage described in ../pr690-b9-product-stage-20261117, materialize the nonconflicting union of cd910 and b9 (retain navigation versions of the eight unresolved CI/test consumers), and bring in the c1bcdca LF/POSIX preparation. Runtime/checker/validator files and packet live together; execute checker and validator script with cwd at that staged repository. The capture generator currently writes /tmp/690-outer-packet.json.gz; its output must match the recorded hash.
+
+Remaining work: integrate the eight CI/test consumers and the isolated helper-copy closure; preserve both side inventories and every original assertion. When callers themselves change, regenerate exact staged current bindings and independently review again. Never feed an old side view to a validator expecting the new raw joint tree. Do not apply this prototype to the active PR or report all conflicts resolved yet.
+
+Final independent review PASS for prototype only: 1,106 static dependency edges checked with no missing edges, 21 null historical views checked against Git, and 12 additional missing-dependency controls passed. Full final report included.
