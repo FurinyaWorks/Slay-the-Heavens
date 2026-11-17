@@ -1,3 +1,4 @@
+import {releasePreflightUnionSource} from './release-preflight-union-source.mjs';
 import {fastFreezeB9Source} from './release-fast-freeze-b9-union.mjs';
 import {releaseCalibrationReaderSource} from './release-calibration-reader-source.mjs';
 // CI-only continuation of the exact #698 merge plus the reviewed Release gate.
@@ -27,6 +28,7 @@ const quickPath='.github/workflows/quick-feedback.yml',quickBefore='f83265202778
 export function beforeReleaseFastB9Ci(path,source,before,read=readFileSync){
  const binding=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(before&&(path===quickPath?before.sha256!==quickBefore:!binding||before.sha256!==binding.before.sha256))return source;
+ source=releasePreflightUnionSource(path,source,path===quickPath?'advisory':'release');
  source=fastFreezeB9Source(path,source,'fast',read);
  if(!before)source=releaseCalibrationReaderSource(path,source,'releaseIntegration');
  if(path===quickPath){

@@ -58,15 +58,18 @@ test('draft Quality is deferred, Ready and integration retain the real gates', (
     const condition = job(name).match(/^    if: (.+)$/m)?.[1];
     assert.ok(condition, name + ' must explicitly gate drafts');
     const expression = condition.replace(/^\$\{\{\s*|\s*\}\}$/g, '');
-    const evaluate = compileFunction('return (' + expression + ');', ['github', 'cancelled']);
+    const evaluate = compileFunction('return (' + expression + ');', ['github', 'cancelled', 'needs']);
     for (const draft of [true, false]) {
       const github = {event_name: 'pull_request', event: {pull_request: {draft}}};
-      assert.equal(evaluate(github, () => false), !draft, name + '/draft=' + draft);
-      if (['check', 'engineering-posix'].includes(name))
-        assert.equal(evaluate(github, () => true), false, name + '/cancelled');
+      const needs={impact:{result:draft?'skipped':'success'}};
+      assert.equal(evaluate(github, () => false, needs), !draft, name + '/draft=' + draft);
+      if (['check', 'engineering-posix', 'presentation'].includes(name))
+        assert.equal(evaluate(github, () => true, needs), false, name + '/cancelled');
     }
     for (const event_name of ['merge_group', 'push', 'workflow_dispatch'])
-      assert.equal(evaluate({event_name, event: {}}, () => false), true, name + '/' + event_name);
+      assert.equal(evaluate({event_name, event: {}}, () => false, {impact:{result:'success'}}), true, name + '/' + event_name);
+    if(name==='presentation')for(const result of ['failure','cancelled','skipped'])
+      assert.equal(evaluate({event_name:'pull_request',event:{pull_request:{draft:false}}},()=>false,{impact:{result}}),false,'presentation rejects '+result);
   }
   const fast = job('fast');
   assert.match(fast, /^        os: \[ubuntu-24\.04, windows-2025\]$/m);

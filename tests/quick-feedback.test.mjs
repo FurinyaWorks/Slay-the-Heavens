@@ -416,3 +416,57 @@ test('inline admission runs only for organization non-master PRs and downstream 
  for(const result of ['success','failure','cancelled','skipped'])for(const cancelled of [false,true])
   assert.equal(evaluateJobIf(downstream,{needs:{impact:{result}},cancelled:()=>cancelled}),result==='success'&&!cancelled);
 });
+
+import {releasePreflightUnionSource,assertReleasePreflightUnionCurrent} from './helpers/release-preflight-union-source.mjs';
+import {assertFastFreezeB9UnionCurrent,fastFreezeB9Source} from './helpers/release-fast-freeze-b9-union.mjs';
+import {beforeReleaseFastB9Ci} from './helpers/release-fast-b9-ci-source.mjs';
+import {gunzipSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
+test('current complete Quick preserves the exact Release contract step beside complete preflight and receipts',()=>{
+ const path='.github/workflows/quick-feedback.yml',raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const advisory=releasePreflightUnionSource(path,raw,'advisory');assert.notEqual(advisory,raw);
+ const block=source=>source.match(/      - name: Verify affected Release CI contracts explicitly\n[\s\S]*?          NODE\n/)?.[0];
+ assert(block(raw));assert.equal(block(raw),block(advisory),'the current execution keeps the complete reviewed command and its error propagation');
+ assert.match(raw,/run: node scripts\/test-affected.mjs --preflight --base "\$BASE_SHA"/);
+ assert.doesNotMatch(raw,/--ci-fast --base/);assert.doesNotMatch(raw,/^  pull_request:/m);
+ assert.match(raw,/PREFLIGHT_BASE_SHA: \$\{\{ inputs.base_sha \}\}/);
+ assert.match(raw,/name: preflight-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
+ const q=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const exact='${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}';
+ for(const variable of ['CI_COMPARISON_BASE','BASE_SHA','QUALITY_RATCHET_BASE'])assert(q.includes(variable+': '+exact),variable+' consumes the manual base');
+ assert(q.includes("github.event_name == 'workflow_dispatch' && inputs.base_sha != ''"));
+ assert.match(q,/      - run: node scripts\/write-ci-receipt.mjs\n        if: matrix.shard == 1\n        env:\n          PREFLIGHT_BASE_SHA: \$\{\{ inputs.base_sha \}\}/);
+});
+test('outer Release union retains complete named predecessors and rejects every changed source boundary',()=>{
+ const hash=s=>createHash('sha256').update(s).digest('hex');
+ const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/release-preflight-union-source.json.gz')));
+ assertReleasePreflightUnionCurrent();assertFastFreezeB9UnionCurrent();
+ for(const [target,files]of Object.entries(packet.views))for(const [path,row]of Object.entries(files)){
+  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');assert.equal(hash(raw),row.current.sha256);
+  for(const eol of ['\n','\r\n']){
+   const source=raw.replaceAll('\n',eol);
+   assert.equal(releasePreflightUnionSource(path,source,target).replaceAll('\r\n','\n'),row.before.source);
+   for(const foreign of [source+eol,source.slice(1),source.slice(0,-1),source.replaceAll(eol,'\r\r\n'),null,{},17])
+    assert.strictEqual(releasePreflightUnionSource(path,foreign,target),foreign);
+   for(const unknown of ['foreign/'+path,'__proto__','constructor','src/lua/abyss_ui.lua'])
+    assert.strictEqual(releasePreflightUnionSource(unknown,source,target),source);
+  }
+  for(const mode of ['changed','missing','null','buffer'])assert.throws(()=>assertReleasePreflightUnionCurrent((p,e)=>{
+   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing current source');if(mode==='null')return null;
+   if(mode==='buffer')return readFileSync(p);return readFileSync(p,e)+'\n';
+  }));
+ }
+ const path='.github/workflows/quick-feedback.yml',source=readFileSync(path,'utf8');
+ assert.notEqual(releasePreflightUnionSource(path,source,'release'),releasePreflightUnionSource(path,source,'advisory'));
+ assert.strictEqual(fastFreezeB9Source(path,source),source,'old union cannot gain a Quick target');
+ for(const before of [{},{sha256:'0'.repeat(64)}])assert.strictEqual(beforeReleaseFastB9Ci(path,source,before),source);
+ assert.strictEqual(releasePreflightUnionSource(path,source,'foreign'),source);
+});
+test('old union uses the supplied fresh dependency reader including its new archive',()=>{
+ for(const path of ['tests/helpers/release-preflight-union-source.json.gz','tests/helpers/release-ci.cases.mjs'])
+  for(const mode of ['changed','missing','null'])assert.throws(()=>assertFastFreezeB9UnionCurrent((p,e)=>{
+   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing dependency');if(mode==='null')return null;
+   const raw=readFileSync(p,e);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+  }));
+ assertFastFreezeB9UnionCurrent();
+});

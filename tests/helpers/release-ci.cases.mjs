@@ -1,3 +1,4 @@
+import {releasePreflightUnionSource} from './release-preflight-union-source.mjs';
 import {fastFreezeB9Source} from './release-fast-freeze-b9-union.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -97,7 +98,7 @@ import {beforeReleaseFastB9Ci,releaseFastB9CiBindings,releaseFastB9CiRead} from 
 test('B9 Release join projects only exact complete CI inputs and keeps wrong predecessors and drift visible',()=>{
  const hash=s=>createHash('sha256').update(s).digest('hex');
  for(const [path,row]of Object.entries(releaseFastB9CiBindings)){
-  const raw=fastFreezeB9Source(path,readFileSync(path,'utf8')),lf=raw.replaceAll('\r\n','\n');
+  const raw=fastFreezeB9Source(path,releasePreflightUnionSource(path,readFileSync(path,'utf8'),'advisory')),lf=raw.replaceAll('\r\n','\n');
   assert.equal(hash(lf),row.currentSha256,path+' actual complete current input');
   assert.equal(releaseSelectionMapCiSource(path,raw,{sha256:'0'.repeat(64)}),raw,path+' wrong standalone predecessor');
   for(const source of [raw,lf,lf.replaceAll('\n','\r\n')]){
@@ -140,7 +141,7 @@ import {freezeReleaseFull} from '../../scripts/release-ci.mjs';
 import {runInNewContext} from 'node:vm';
 
 test('advisory job skips Ready PR duplicates while Draft and manual prechecks remain enabled',()=>{
- const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ const workflow=releasePreflightUnionSource('.github/workflows/quick-feedback.yml',readFileSync('.github/workflows/quick-feedback.yml','utf8'),'advisory').replaceAll('\r\n','\n');
  const gate=workflow.match(/^  related:\n    if: (.+)\n/m)?.[1];
  assert.equal(gate,"github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true");
  for(const [name,draft,expected]of [['pull_request',false,false],['pull_request',true,true],['workflow_dispatch',false,true]]) {
@@ -256,7 +257,7 @@ test('freeze rejects a foreign repository before any run or dispatch can be reus
 
 
 test('advisory explicitly executes affected Release CI contracts and fails closed on Git errors',()=>{
- const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ const workflow=releasePreflightUnionSource('.github/workflows/quick-feedback.yml',readFileSync('.github/workflows/quick-feedback.yml','utf8'),'advisory').replaceAll('\r\n','\n');
  const block=workflow.match(/      - name: Verify affected Release CI contracts explicitly\n[\s\S]*?          NODE\n/)?.[0];
  assert(block,'explicit contract step present');
  assert.match(block,/BASE_SHA: \$\{\{ github.event.pull_request.base.sha \|\| inputs.base_sha \}\}/);
