@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch
+ok 1 - actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch
+  ---
+  duration_ms: 211.016436
+  type: 'test'
+  ...
+# Subtest: legacy landed697 release selection map production preserves every complete prior target and freshly authenticates the committed source tree
+ok 2 - legacy landed697 release selection map production preserves every complete prior target and freshly authenticates the committed source tree
+  ---
+  duration_ms: 157.699936
+  type: 'test'
+  ...
+# Subtest: legacy landed697 release selection map CI validates complete live bindings while unknown or changed bytes stay visible
+ok 3 - legacy landed697 release selection map CI validates complete live bindings while unknown or changed bytes stay visible
+  ---
+  duration_ms: 3351.347362
+  type: 'test'
+  ...
+# Subtest: legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions
+ok 4 - legacy landed697 release selection map raw JS and Lua inventories reject missing duplicate foreign and changed additions
+  ---
+  duration_ms: 252.481804
+  type: 'test'
+  ...
+# Subtest: legacy landed697 release selection map raw workflow checks each real execution deadline and trusted local route
+ok 5 - legacy landed697 release selection map raw workflow checks each real execution deadline and trusted local route
+  ---
+  duration_ms: 68.948202
+  type: 'test'
+  ...
+# Subtest: legacy landed697 release selection map production requires fresh complete owners and leaves foreign bytes visible
+ok 6 - legacy landed697 release selection map production requires fresh complete owners and leaves foreign bytes visible
+  ---
+  duration_ms: 96.851428
+  type: 'test'
+  ...
+# Subtest: legacy landed697 release selection map isolated production copy includes exact helper and packet without CI trust leaf
+ok 7 - legacy landed697 release selection map isolated production copy includes exact helper and packet without CI trust leaf
+  ---
+  duration_ms: 932.335434
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6169.013727

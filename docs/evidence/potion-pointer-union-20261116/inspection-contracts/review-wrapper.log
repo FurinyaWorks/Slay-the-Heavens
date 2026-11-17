@@ -1,0 +1,1 @@
+PASS actual wrapper: synchronous read, await teardown, current and historical reader drift rejection, recovery

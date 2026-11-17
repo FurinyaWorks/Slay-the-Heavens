@@ -1,0 +1,7 @@
+{
+  "tests/release-selection-map-source.test.mjs": "8899ad741daae6f2a35a30bfa76763ce449ed3624be2a3e9a0142e9a01e29be4",
+  "tests/helpers/potion-pointer-ci-union.mjs": "223e5f27f7ceb89f8d9be5a17d19cae26b122d3b615f9b31a8236f39ea793c8c",
+  "tests/helpers/potion-pointer-ci-union.json.gz": "96e6399468a6d82f5ad3c4345ef913d76fa29b564e1ae24b22ff70135dae603f",
+  "tests/helpers/potion-pointer-ci-copy-closure.json": "9245d446a0e748ad83a8c0ac862772c7eed29db01b76b50f1ad93f698575cbfc",
+  "tests/helpers/copy-integration-source-closure.mjs": "142e9c466bb9aabcb7cde1db9367fe00a8de9d4eb8a0cb23bca48df816df564f"
+}

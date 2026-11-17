@@ -181,6 +181,7 @@
     "tests/helpers/potion-click-source.mjs": "eb133eb610ed646a566bde84c1113083ef710f68ad6bb34cb219fd306837dc82",
     "tests/helpers/potion-pointer-ci-before-behavior.json.gz": "c3b5c1472a46517f1dd3c636cb9a639737829782a4b8651faeb1f12523193345",
     "tests/helpers/potion-pointer-ci-before-calibration.json.gz": "7b049aac614a17f37f3c272e11c45df127c43f83d5109567018ea548ac921081",
+    "tests/helpers/potion-pointer-ci-before-contracts.json.gz": "59a9caa65c459476abd135caddd73a35ba4a69e7784207c089afd5084f555b52",
     "tests/helpers/potion-pointer-ci-before-copy.json.gz": "0347d209241d64516606376302ecdd8d0c90d13237628eb3b9f702ec9c51dc79",
     "tests/helpers/potion-pointer-ci-before-integrated.json.gz": "4e21ceac3bdf6bf34a7f4c3d9426c8b26a3c6f7eee600b3688f79154fcc0b22b",
     "tests/helpers/potion-pointer-ci-before-pointer.json.gz": "d5654ff207845a19b5a3221b9e7e8ec27319d865a556c525f40972c1e0d99255",

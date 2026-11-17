@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: inspection continuation preserves 67 complete targets and exact two-owner committed producer
+ok 1 - inspection continuation preserves 67 complete targets and exact two-owner committed producer
+  ---
+  duration_ms: 158.81113
+  type: 'test'
+  ...
+# Subtest: inspection public source authenticates every raw owner and never caches authorization
+ok 2 - inspection public source authenticates every raw owner and never caches authorization
+  ---
+  duration_ms: 720.746838
+  type: 'test'
+  ...
+# Subtest: inspection CI validates fresh raw sources archives and reused public readers without projecting production
+ok 3 - inspection CI validates fresh raw sources archives and reused public readers without projecting production
+  ---
+  duration_ms: 2276.018326
+  type: 'test'
+  ...
+# Subtest: battle pointer production extends all eight committed owners and preserves every complete prior target
+ok 4 - battle pointer production extends all eight committed owners and preserves every complete prior target
+  ---
+  duration_ms: 72.428723
+  type: 'test'
+  ...
+# Subtest: battle pointer source rejects every stale missing or malformed linked owner and every partial packet
+ok 5 - battle pointer source rejects every stale missing or malformed linked owner and every partial packet
+  ---
+  duration_ms: 1566.165057
+  type: 'test'
+  ...
+# Subtest: battle pointer CI authenticates every current source while foreign bytes and production authorization stay visible
+ok 6 - battle pointer CI authenticates every current source while foreign bytes and production authorization stay visible
+  ---
+  duration_ms: 42307.056132
+  type: 'test'
+  ...
+# Subtest: battle pointer retains exact raw JS and Lua inventories with all missing duplicate and foreign negatives
+ok 7 - battle pointer retains exact raw JS and Lua inventories with all missing duplicate and foreign negatives
+  ---
+  duration_ms: 114.733793
+  type: 'test'
+  ...
+# Subtest: battle pointer isolated production closure includes both exact new dependencies without CI trust leaves
+ok 8 - battle pointer isolated production closure includes both exact new dependencies without CI trust leaves
+  ---
+  duration_ms: 994.286478
+  type: 'test'
+  ...
+# Subtest: battle pointer CI trust leaf rejects an incomplete or changed complete archive
+ok 9 - battle pointer CI trust leaf rejects an incomplete or changed complete archive
+  ---
+  duration_ms: 94.120429
+  type: 'test'
+  ...
+# Subtest: sparse battle pointer production advances only the committed card-binding owner and retains all 66 prior targets
+ok 10 - sparse battle pointer production advances only the committed card-binding owner and retains all 66 prior targets
+  ---
+  duration_ms: 76.469382
+  type: 'test'
+  ...
+# Subtest: sparse battle pointer source freshly rejects each missing changed or malformed owner and partial packets
+ok 11 - sparse battle pointer source freshly rejects each missing changed or malformed owner and partial packets
+  ---
+  duration_ms: 590.635913
+  type: 'test'
+  ...
+# Subtest: sparse battle pointer CI preserves every old archive, complete inventory and foreign-byte rejection
+ok 12 - sparse battle pointer CI preserves every old archive, complete inventory and foreign-byte rejection
+  ---
+  duration_ms: 4730.681394
+  type: 'test'
+  ...
+# Subtest: sparse battle pointer isolated production copy retains new dependencies and rejects changed or deleted bytes
+ok 13 - sparse battle pointer isolated production copy retains new dependencies and rejects changed or deleted bytes
+  ---
+  duration_ms: 978.117138
+  type: 'test'
+  ...
+# Subtest: sparse battle pointer CI trust leaf rejects changed and incomplete packets
+ok 14 - sparse battle pointer CI trust leaf rejects changed and incomplete packets
+  ---
+  duration_ms: 111.409522
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 56785.991823

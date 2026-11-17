@@ -1,0 +1,26 @@
+test('inspection guards direct old text and binary projections through reused readers',()=>{
+ const textPath='tests/ci-complete-calibration.test.mjs',binaryPath='tests/helpers/menu-red-production-source.json.gz';
+ const text=actualSource(textPath),binary=actualReadFileSync(binaryPath);
+ assert(!Object.hasOwn(inspectionCiPacket.files,textPath),'exercise the old layer outside the new continuation');
+ let drift=null;const read=(p,e)=>{const raw=actualReadFileSync(p,e);return p===drift?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;};
+ const binaryReader=integratedRead('menu',{read});
+ assert.equal(integratedSource(textPath,text,'native',read),integratedCiProof.files[textPath].views.native.source);
+ assert.notEqual(hash(binaryReader(binaryPath)),hash(binary));
+ for(const [path,target]of [[textPath,'release'],['tests/helpers/release-selection-map-ci-source.mjs','native'],['tests/integrated-ci-source.cases.mjs','native']]){
+  const raw=actualSource(path),expected=integratedSource(path,raw,target,read);assert.notEqual(expected,raw,path+' old-layer early return converts');
+  drift='src/lua/abyss_battle_input_state.lua';assert.throws(()=>integratedSource(path,raw,target,read),/linked owner/,path);drift=null;
+  assert.equal(integratedSource(path,raw,target,read),expected,path+' recovers');
+ }
+ drift='src/lua/abyss_battle_input_state.lua';
+ assert.throws(()=>releaseSelectionMapPriorInventory(discoverJs(),'js',read),/linked owner/,'raw inventory projector retains its caller reader');
+ drift=null;assert.deepEqual(releaseSelectionMapPriorInventory(discoverJs(),'js',read),releaseSelectionMapCiPacket.priorInventory.js);
+ for(const owner of inspectionSourceEpoch.proof.owners){
+  drift=owner;assert.throws(()=>integratedSource(textPath,text,'native',read),/linked owner/,owner);assert.throws(()=>binaryReader(binaryPath),/linked owner/,owner);drift=null;
+ }
+ for(const path of ['tests/helpers/battle-pointer-source.json.gz','tests/helpers/battle-pointer-sparse-source.json.gz']){
+  drift=path;assert.throws(()=>integratedSource(textPath,text,'native',read),/immutable sparse battle pointer predecessor/);assert.throws(()=>binaryReader(binaryPath),/immutable sparse battle pointer predecessor/);drift=null;
+ }
+ assert.equal(integratedSource(textPath,text,'native',read),integratedCiProof.files[textPath].views.native.source);
+ assert.notEqual(hash(binaryReader(binaryPath)),hash(binary));
+ for(const foreign of [text+'\n',text.slice(1),null,{},17]){let reads=0;assert.equal(integratedSource(textPath,foreign,'native',()=>{reads++;throw Error('foreign');}),foreign);assert.equal(reads,0);}
+});

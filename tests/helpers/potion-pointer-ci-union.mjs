@@ -4,11 +4,28 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
-const PACKET_SHA='59a9caa65c459476abd135caddd73a35ba4a69e7784207c089afd5084f555b52';
+const PACKET_SHA='96e6399468a6d82f5ad3c4345ef913d76fa29b564e1ae24b22ff70135dae603f';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./potion-pointer-ci-union.json.gz',import.meta.url));
 assert.equal(hash(bytes),PACKET_SHA,'immutable potion-pointer CI union');
 const packet=JSON.parse(gunzipSync(bytes));
+const contractsPriorPath='tests/helpers/potion-pointer-ci-before-contracts.json.gz';
+const contractsPriorSha='59a9caa65c459476abd135caddd73a35ba4a69e7784207c089afd5084f555b52';
+const contractsPriorBytes=readFileSync(new URL('./potion-pointer-ci-before-contracts.json.gz',import.meta.url));
+assert.equal(hash(contractsPriorBytes),contractsPriorSha,'exact pre-contracts union');
+assert.equal(packet.contractsPredecessorCommit,'80921cad5e545ce58b43a2fd8596a930fce71d51');
+assert.equal(packet.contractsPredecessorSha256,contractsPriorSha);
+const contractsPrior=JSON.parse(gunzipSync(contractsPriorBytes));
+const contractsChanges=['tests/release-selection-map-source.test.mjs','tests/helpers/copy-integration-source-closure.mjs','tests/helpers/potion-pointer-ci-copy-closure.json'];
+assert.deepEqual(Object.keys(packet.files),Object.keys(contractsPrior.files));
+for(const [path,row]of Object.entries(contractsPrior.files)){
+ if(!contractsChanges.includes(path))assert.deepEqual(packet.files[path],row,'unchanged pre-contracts input '+path);
+ assert.deepEqual(Object.keys(packet.files[path].views),Object.keys(row.views),'unchanged pre-contracts domains '+path);
+ for(const [target,view]of Object.entries(row.views)){
+  assert.equal(packet.files[path].views[target].sha256,view.sha256,'unchanged pre-contracts parent '+path);
+  if(view.source!==undefined)assert.equal(packet.files[path].views[target].source,view.source,'retained pre-contracts source '+path);
+ }
+}
 const pointerCiPriorPath='tests/helpers/potion-pointer-ci-before-pointer.json.gz';
 const pointerCiPriorSha='d5654ff207845a19b5a3221b9e7e8ec27319d865a556c525f40972c1e0d99255';
 const pointerCiPriorBytes=readFileSync(new URL('./potion-pointer-ci-before-pointer.json.gz',import.meta.url));
@@ -18,13 +35,13 @@ assert.equal(packet.pointerCiPredecessorSha256,pointerCiPriorSha);
 const pointerCiPrior=JSON.parse(gunzipSync(pointerCiPriorBytes));
 const addedPointerCiPaths=['battle-pointer-ci-source','battle-pointer-sparse-ci-source','battle-pointer-inspection-ci-source'].flatMap(name=>['mjs','json.gz'].map(ext=>'tests/helpers/'+name+'.'+ext));
 const pointerCiChanges=['tests/ci-complete-calibration.test.mjs','tests/helpers/copy-integration-source-closure.mjs','tests/helpers/potion-pointer-ci-copy-closure.json',...addedPointerCiPaths];
-assert.deepEqual(Object.keys(packet.files),[...Object.keys(pointerCiPrior.files),...addedPointerCiPaths].sort());
+assert.deepEqual(Object.keys(contractsPrior.files),[...Object.keys(pointerCiPrior.files),...addedPointerCiPaths].sort());
 for(const [path,row]of Object.entries(pointerCiPrior.files)){
- if(!pointerCiChanges.includes(path))assert.deepEqual(packet.files[path],row,'unchanged pre-pointer CI input '+path);
- assert.deepEqual(Object.keys(packet.files[path].views),Object.keys(row.views),'unchanged pre-pointer CI domains '+path);
+ if(!pointerCiChanges.includes(path))assert.deepEqual(contractsPrior.files[path],row,'unchanged pre-pointer CI input '+path);
+ assert.deepEqual(Object.keys(contractsPrior.files[path].views),Object.keys(row.views),'unchanged pre-pointer CI domains '+path);
  for(const [target,view]of Object.entries(row.views)){
-  assert.equal(packet.files[path].views[target].sha256,view.sha256,'unchanged pre-pointer CI parent '+path);
-  if(view.source!==undefined)assert.equal(packet.files[path].views[target].source,view.source,'retained pre-pointer CI parent source '+path);
+  assert.equal(contractsPrior.files[path].views[target].sha256,view.sha256,'unchanged pre-pointer CI parent '+path);
+  if(view.source!==undefined)assert.equal(contractsPrior.files[path].views[target].source,view.source,'retained pre-pointer CI parent source '+path);
  }
 }
 const behaviorPriorPath='tests/helpers/potion-pointer-ci-before-behavior.json.gz';
@@ -112,6 +129,7 @@ export const potionPointerCiUnionPacket=freeze(packet);
 const authenticatedSnapshots=new WeakSet();
 export function assertPotionPointerCiUnionCurrent(read=readFileSync){
  if(authenticatedSnapshots.has(read))return;
+ assert.equal(hash(read(contractsPriorPath)),contractsPriorSha,'fresh pre-contracts union');
  assert.equal(hash(read(pointerCiPriorPath)),pointerCiPriorSha,'fresh pre-pointer CI union');
  assert.equal(hash(read(behaviorPriorPath)),behaviorPriorSha,'fresh pre-behavior union');
  assert.equal(hash(read(copyPriorPath)),copyPriorSha,'fresh pre-copy union');
@@ -153,7 +171,7 @@ export function potionPointerCiUnionRead(target='potion',read=readFileSync,{prod
 export function withPotionPointerCiUnionValidation(target,read,validate){
  assert(Object.hasOwn(packet.viewCommits,target));
  const captured=new Map();
- for(const path of new Set([...Object.keys(sourceEpoch.proof.current),...Object.keys(packet.files),'tests/helpers/potion-pointer-ci-union.json.gz',priorPacketPath,calibrationPriorPath,readersPriorPath,copyPriorPath,behaviorPriorPath,pointerCiPriorPath,'tests/helpers/potion-pointer-ci-before-integrated.json.gz'])){
+ for(const path of new Set([...Object.keys(sourceEpoch.proof.current),...Object.keys(packet.files),'tests/helpers/potion-pointer-ci-union.json.gz',priorPacketPath,calibrationPriorPath,readersPriorPath,copyPriorPath,behaviorPriorPath,pointerCiPriorPath,contractsPriorPath,'tests/helpers/potion-pointer-ci-before-integrated.json.gz'])){
   if(sourceEpoch.proof.current[path]===null&&!Object.hasOwn(packet.files,path))continue;
   const bytes=read(path);assert(Buffer.isBuffer(bytes),'validation capture bytes '+path);captured.set(path,Buffer.from(bytes));
  }

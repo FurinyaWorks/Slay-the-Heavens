@@ -1,0 +1,31 @@
+
+ const actualReadFileSync=actualUnionReadFileSync,actualSource=path=>actualReadFileSync(path,'utf8'),inspectionSourceEpoch=activePost697Epoch,discoverJs=actualPost697DiscoverJs;
+ const textPath='tests/ci-complete-calibration.test.mjs',binaryPath='tests/helpers/menu-red-production-source.json.gz';
+ const text=actualSource(textPath),binary=actualReadFileSync(binaryPath);
+ assert(!Object.hasOwn(inspectionCiPacket.files,textPath),'exercise the old layer outside the new continuation');
+ let drift=null;const read=(p,e)=>{const raw=actualReadFileSync(p,e);return p===drift?typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]):raw;};
+ const binaryReader=integratedRead('menu',{read});
+ assert.equal(integratedSource(textPath,text,'native',read),integratedCiProof.files[textPath].views.native.source);
+ assert.notEqual(hash(binaryReader(binaryPath)),hash(binary));
+ const identityPath='tests/helpers/release-selection-map-ci-source.mjs',identitySource=actualSource(identityPath);
+ assert.equal(integratedSource(identityPath,identitySource,'native',read),identitySource,'current unchanged selection helper remains visible');
+ for(const foreign of [identitySource+'\n',identitySource.slice(1),null,{},17]){let reads=0;assert.equal(integratedSource(identityPath,foreign,'native',()=>{reads++;throw Error('foreign');}),foreign);assert.equal(reads,0);}
+ const ownerFailure=owner=>error=>{assert(error.message.includes('fresh union owner '+owner));return true;};
+ const archiveFailure=path=>error=>{assert(error.message.includes('fresh union input '+path));return true;};
+ for(const [path,target]of [[textPath,'release'],['tests/helpers/closeout-ci-source.mjs','native'],['tests/integrated-ci-source.cases.mjs','native']]){
+  const raw=actualSource(path),expected=integratedSource(path,raw,target,read);assert.notEqual(expected,raw,path+' old-layer early return converts');
+  drift='src/lua/abyss_battle_input_state.lua';assert.throws(()=>integratedSource(path,raw,target,read),ownerFailure('src/lua/abyss_battle_input_state.lua'),path);drift=null;
+  assert.equal(integratedSource(path,raw,target,read),expected,path+' recovers');
+ }
+ drift='src/lua/abyss_battle_input_state.lua';
+ assert.throws(()=>releaseSelectionMapPriorInventory(discoverJs(),'js',read),ownerFailure('src/lua/abyss_battle_input_state.lua'),'raw inventory projector retains its caller reader');
+ drift=null;assert.deepEqual(releaseSelectionMapPriorInventory(discoverJs(),'js',read),releaseSelectionMapCiPacket.priorInventory.js);
+ for(const owner of inspectionSourceEpoch.proof.owners){
+  drift=owner;assert.throws(()=>integratedSource(textPath,text,'native',read),ownerFailure(owner),owner);assert.throws(()=>binaryReader(binaryPath),ownerFailure(owner),owner);drift=null;
+ }
+ for(const path of ['tests/helpers/battle-pointer-source.json.gz','tests/helpers/battle-pointer-sparse-source.json.gz']){
+  drift=path;assert.throws(()=>integratedSource(textPath,text,'native',read),archiveFailure(path));assert.throws(()=>binaryReader(binaryPath),archiveFailure(path));drift=null;
+ }
+ assert.equal(integratedSource(textPath,text,'native',read),integratedCiProof.files[textPath].views.native.source);
+ assert.notEqual(hash(binaryReader(binaryPath)),hash(binary));
+ for(const foreign of [text+'\n',text.slice(1),null,{},17]){let reads=0;assert.equal(integratedSource(textPath,foreign,'native',()=>{reads++;throw Error('foreign');}),foreign);assert.equal(reads,0);}

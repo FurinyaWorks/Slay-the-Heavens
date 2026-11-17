@@ -114,7 +114,7 @@ import {lstatSync} from 'node:fs';
 import {potionPointerCiUnionPacket} from './potion-pointer-ci-union.mjs';
 const ciManifestPath='tests/helpers/potion-pointer-ci-copy-closure.json';
 const ciManifestBytes=readFileSync(new URL('./potion-pointer-ci-copy-closure.json',import.meta.url));
-assert.equal(hash(ciManifestBytes),'e7866b9be7ad2ae52d4c095b9b06ec7497f876661b17cfcd30ffad6c03534605','exact CI helper-copy manifest');
+assert.equal(hash(ciManifestBytes),'9245d446a0e748ad83a8c0ac862772c7eed29db01b76b50f1ad93f698575cbfc','exact CI helper-copy manifest');
 const ciManifest=JSON.parse(ciManifestBytes);
 assert.equal(ciManifest.schemaVersion,1);
 assert.equal(ciManifest.predecessorCommit,'0e1eae89f1240572a35f34af5cb07dd0c3816a92');
