@@ -1,0 +1,17 @@
+✔ historical physical Windows16 POSIX12 Full33 covers final inventory under original budgets and unchanged setup reserve (1658.986714ms)
+✔ frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 Lua files within unchanged budgets (1597.799146ms)
+✔ current Full38 retains full coverage and reports performance targets under unchanged execution guards (1619.832137ms)
+ℹ Windows pre-V25 forecast 1794163 ms; target 1800000 ms; overrun 0 ms; actual Full pass not claimed
+ℹ Windows current forecast 1726045 ms; target 1800000 ms; overrun 0 ms; actual Full pass not claimed
+ℹ POSIX pre-V25 forecast 1128812 ms; target 1200000 ms; overrun 0 ms; actual Full pass not claimed
+ℹ POSIX current forecast 1159466 ms; target 1200000 ms; overrun 0 ms; actual Full pass not claimed
+✔ pre-Formation unchanged complete weights reproduce the blocked POSIX14 forecast and the POSIX15 capacity allocation (1562.29913ms)
+✔ combined Formation800 inventory preserves both blocked POSIX14 and feasible POSIX15 forecasts without reducing work or floors (1516.675425ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24576.830596
