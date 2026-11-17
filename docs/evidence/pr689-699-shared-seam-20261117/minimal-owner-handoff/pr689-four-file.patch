@@ -1,0 +1,194 @@
+diff --git a/src/lua/abyss_battle_reward_layout.lua b/src/lua/abyss_battle_reward_layout.lua
+index 3fca40df0..14899b1ff 100644
+--- a/src/lua/abyss_battle_reward_layout.lua
++++ b/src/lua/abyss_battle_reward_layout.lua
+@@ -4,6 +4,8 @@ local Art=require('abyss_lowcost_art')
+ local RelicView=require('abyss_relic_view_ui')
+ local M={}
+ local rowFaces=setmetatable({},{__mode='k'})
++local iconImages=setmetatable({},{__mode='k'})
++local iconPools=setmetatable({},{__mode='k'})
+ local names={'goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward'}
+ local rowNames={};for _,name in ipairs(names)do rowNames[name]=true end
+ local function iconId(value)return type(value)=='table'and value.id or value end
+@@ -25,14 +27,21 @@ local function paintShared(cached,id,platform)
+  local ok,pool=pcall(owner.GetChild,owner,'rewardIconArt')
+  -- Retire only this row's previously observed real handle when lookup or
+  -- replacement loses it; Art cannot hide an unavailable pool by rediscovery.
+- if cached.pool~=pool then hidePool(cached.pool,owner)end
+- if ok and pool and pool.alive~=false then cached.pool=pool end
++ local previous=iconPools[icon]
++ if previous~=pool then hidePool(previous,owner)end
++ if ok and pool and pool.alive~=false then iconPools[icon]=pool end
+  icon:SetVisible(true)
+- if not Art.paint(icon,'relic',id,Theme.officialAssets.rewardRows.iconSize,platform)then hidePool(cached.pool,owner)end
++ if not Art.paint(icon,'relic',id,Theme.officialAssets.rewardRows.iconSize,platform)then hidePool(iconPools[icon],owner)end
+ end
+ local function paintIcon(cached,name,run,platform)
+  local id=rewardIcon(name,run)
+- if platform.imageSource and cached.id~=id then cached.icon:SetImage(platform.imageSource,id);cached.id=id end
++ local image=iconImages[cached.icon]
++ if platform.imageSource and (not image or image.source~=platform.imageSource or image.id~=id)then
++  iconImages[cached.icon]=nil
++  if cached.icon:SetImage(platform.imageSource,id)~=false then
++   iconImages[cached.icon]={source=platform.imageSource,id=id}
++  end
++ end
+  if cached.shared then
+   local rewards=run and run.rewards
+   local item=rewards and rewards.relics and rewards.relics[tonumber(name:sub(-1))]
+@@ -41,7 +50,11 @@ local function paintIcon(cached,name,run,platform)
+  end
+ end
+ local function faceCache(name,part)
+- local shared=name:match('^relicReward[12]$') and part.parent and part.parent:GetChild('rewardIcon')
++ local shared
++ if name:match('^relicReward[12]$') and part.parent then
++  local ok,icon=pcall(part.parent.GetChild,part.parent,'rewardIcon')
++  if ok then shared=icon end
++ end
+  return {parts=part:GetChild('stsRewardFace'):GetChildren(),icon=shared or part:GetChild('rewardIcon'),shared=shared~=nil}
+ end
+ function M.paintButton(name,part,state,run,platform,tint,ink)
+diff --git a/tests/helpers/reward-shared-state-cache.lua b/tests/helpers/reward-shared-state-cache.lua
+new file mode 100644
+index 000000000..df903c937
+--- /dev/null
++++ b/tests/helpers/reward-shared-state-cache.lua
+@@ -0,0 +1,60 @@
++-- Minimal production-painter regression with an unavailable art pool.
++-- Deliberate dependency stubs isolate shared native image ownership, not device behavior.
++package.loaded.abyss_theme={presentationProfile='official-assets-first',officialAssets={rewardRows={normal={},hover={},iconSize=28,ink={}}},color={textMuted={}},icon={}}
++package.loaded.abyss_lowcost_art={paint=function()return false end}
++package.loaded.abyss_relic_view_ui={icon=function(id)return id end}
++package.loaded.abyss_relic_hooks={localId=function(id)return id end}
++local painter=dofile(os.getenv('REWARD_PAINTER_SOURCE')or'src/lua/abyss_battle_reward_layout.lua')
++local icon={visible=true}
++function icon:SetImage(source,id)self.imageId=id;self.imageSource=source end
++function icon:SetVisible(value)self.visible=value end
++local owner={}
++function owner:GetChild(name)if name=='rewardIcon'then return icon end end
++icon.parent=owner
++local function part()
++ local face={parent=owner}
++ function face:GetChild(name)
++  if name=='stsRewardFace'then return {GetChildren=function()return {}end}end
++  if name=='label'then return {}end
++ end
++ return face
++end
++local normal,hover=part(),part()
++local run={rewards={relics={{id='blue_candle'}}}}
++local platform={imageSource='static'}
++local function paint(face,state,id)
++ run.rewards.relics[1].id=id
++ assert(painter.paintButton('relicReward1',face,state,run,platform,function()end,function()end))
++ assert(icon.visible,'unavailable pool must use native fallback')
++end
++paint(normal,'normal','blue_candle');paint(hover,'hover','blue_candle')
++paint(normal,'normal','calling_bell')
++assert(icon.imageId=='calling_bell')
++paint(hover,'hover','blue_candle')
++print('CROSS_STATE_NATIVE_IMAGE expected=blue_candle actual='..tostring(icon.imageId))
++assert(icon.imageId=='blue_candle','shared native icon must not reuse state-local identity cache')
++local setter=icon.SetImage
++icon.SetImage=function()return false end
++paint(normal,'normal','calling_bell')
++assert(icon.imageId=='blue_candle','rejected setter did not change image')
++icon.SetImage=setter;paint(normal,'normal','calling_bell')
++assert(icon.imageId=='calling_bell','false result must not cache success')
++icon.SetImage=function()error('injected image setter error')end
++assert(not pcall(paint,hover,'hover','blue_candle'))
++icon.SetImage=setter;paint(hover,'hover','blue_candle')
++assert(icon.imageId=='blue_candle','throw must not cache success')
++platform.imageSource='replacement-source';paint(normal,'normal','blue_candle')
++assert(icon.imageSource=='replacement-source','source change must repaint same identity')
++-- Plain state-local presentation may have a strict GetChild on its row.
++local plainIcon={}
++function plainIcon:SetImage(source,id)self.imageId=id end
++local plain={parent={GetChild=function()error('no shared child in plain layout')end}}
++function plain:GetChild(name)
++ if name=='rewardIcon'then return plainIcon end
++ if name=='stsRewardFace'then return {GetChildren=function()return {}end}end
++ if name=='label'then return {}end
++end
++run.rewards.relics[1].id='blue_candle'
++assert(painter.paintButton('relicReward1',plain,'normal',run,platform,function()end,function()end))
++assert(plainIcon.imageId=='blue_candle','plain state-local icon remains supported')
++print('CROSS_STATE_SHARED_NATIVE_IDENTITY_PASS')
+diff --git a/tests/helpers/reward-shared-state-pool.lua b/tests/helpers/reward-shared-state-pool.lua
+new file mode 100644
+index 000000000..483d49aea
+--- /dev/null
++++ b/tests/helpers/reward-shared-state-pool.lua
+@@ -0,0 +1,45 @@
++-- Minimal production-painter regression with an unavailable art pool.
++-- Deliberate dependency stubs isolate shared native image ownership, not device behavior.
++package.loaded.abyss_theme={presentationProfile='official-assets-first',officialAssets={rewardRows={normal={},hover={},iconSize=28,ink={}}},color={textMuted={}},icon={}}
++package.loaded.abyss_lowcost_art={paint=function(icon)
++ local pool=icon.parent:GetChild('rewardIconArt');if not pool then return false end
++ pool:SetVisible(true);icon:SetVisible(false);return true
++end}
++package.loaded.abyss_relic_view_ui={icon=function(id)return id end}
++package.loaded.abyss_relic_hooks={localId=function(id)return id end}
++local painter=dofile(os.getenv('REWARD_PAINTER_SOURCE')or'src/lua/abyss_battle_reward_layout.lua')
++local icon={visible=true}
++function icon:SetImage(source,id)self.imageId=id end
++function icon:SetVisible(value)self.visible=value end
++local owner={}
++function owner:GetChild(name)if name=='rewardIcon'then return icon elseif name=='rewardIconArt'then return self.pool end end
++local function newPool()
++ local p={parent=owner};function p:SetVisible(v)self.visible=v end;return p
++end
++owner.pool=newPool()
++icon.parent=owner
++local function part()
++ local face={parent=owner}
++ function face:GetChild(name)
++  if name=='stsRewardFace'then return {GetChildren=function()return {}end}end
++  if name=='label'then return {}end
++ end
++ return face
++end
++local normal,hover=part(),part()
++local run={rewards={relics={{id='blue_candle'}}}}
++local platform={imageSource='static'}
++local function paint(face,state,id)
++ run.rewards.relics[1].id=id
++ assert(painter.paintButton('relicReward1',face,state,run,platform,function()end,function()end))
++
++end
++paint(normal,'normal','blue_candle');paint(hover,'hover','blue_candle')
++local first=owner.pool;owner.pool=newPool();local second=owner.pool
++paint(normal,'normal','blue_candle');assert(second.visible and not first.visible)
++owner.pool=nil
++paint(hover,'hover','blue_candle')
++assert(icon.visible,'missing pool restores native fallback')
++print('CROSS_STATE_POOL expected=false actual='..tostring(second.visible))
++assert(not second.visible,'shared pool retirement must follow latest row owner across states')
++print('CROSS_STATE_SHARED_POOL_RETIREMENT_PASS')
+diff --git a/tests/reward-shared-state-cache.test.mjs b/tests/reward-shared-state-cache.test.mjs
+new file mode 100644
+index 000000000..ee6b06e54
+--- /dev/null
++++ b/tests/reward-shared-state-cache.test.mjs
+@@ -0,0 +1,19 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {spawnSync} from 'node:child_process';
++import {createRequire} from 'node:module';
++const require=createRequire(import.meta.url);
++for(const [file,marker]of [
++ ['reward-shared-state-cache.lua','CROSS_STATE_SHARED_NATIVE_IDENTITY_PASS'],
++ ['reward-shared-state-pool.lua','CROSS_STATE_SHARED_POOL_RETIREMENT_PASS'],
++])test(`shared reward owner cross-state regression: ${file}`,()=>{
++ const env={...process.env,LUA_PATH:'./src/lua/?.lua;;',LUA_PATH_5_3:'./src/lua/?.lua;;',LUA_INIT:'',LUA_INIT_5_3:''};
++ delete env.REWARD_PAINTER_SOURCE;
++ const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),`tests/helpers/${file}`],{
++  encoding:'utf8',timeout:10000,maxBuffer:1024*1024,windowsHide:true,env,
++ });
++ assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));
++ // Fengari can print a Lua error while returning 0; require the terminal assertion marker.
++ assert.match(result.stdout,new RegExp(`^${marker}$`,'m'),result.stdout+result.stderr);
++ assert.equal(result.stderr,'');
++});

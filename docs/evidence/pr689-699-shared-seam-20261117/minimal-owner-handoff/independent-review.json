@@ -1,0 +1,38 @@
+{
+  "reviewer": "independent code review",
+  "baseline": "30ead25768a2522be9ae9a1fac105b8c56fba67a",
+  "result": "PASS_FOR_OWNER_PATCH_HANDOFF_ONLY",
+  "merge_approval": false,
+  "staged_files": 4,
+  "patch_sha256": "1a06a903c2b15cdb6c38386f0d00a208cc76d15a1b33d40d58b2806b0844a6b2",
+  "source_sha256": "c853994d91d9fa5f7d80d5405ae8f3fe8b61878c8a279192a41b55d735ea00c6",
+  "independent_index_apply": {
+    "check": "PASS",
+    "tree": "0c93f8245d6f1a7c594944626fcba16f82f6f4f0",
+    "matches_staged_tree": true
+  },
+  "scope_review": [
+    "Only native icon identity cache, shared icon pool ownership cache, and optional strict GetChild fallback changed in production.",
+    "Original rewardIcon sourceId/id alias mapping and claimPotion icon lookup unchanged.",
+    "No #699 production helpers, potion paint path, lowcost-art edits, source-epoch evidence or integration snapshots added.",
+    "Added tests retain marker and empty-stderr assertions because Fengari can return 0 on Lua failures.",
+    "Strict missing root child falls back to plain state icon; assertion included."
+  ],
+  "validation": {
+    "provided_red_log": "reward689-minimal-red.log.json (decode log field for byte-identical original)",
+    "provided_red": "0 pass / 2 fail on exact baseline (implementation log); independently reproduced both failure signatures using exact git-show baseline and helper override",
+    "independent_red_logs": [
+      "reward689-review-red-cache.log",
+      "reward689-review-red-pool.log"
+    ],
+    "independent_green_log": "reward689-minimal-independent-green.log",
+    "green": "2 pass / 0 fail / 0 skip, 473.626578 ms",
+    "diff_check": "PASS"
+  },
+  "limits": [
+    "Narrow stubbed Lua production-painter tests only, not complete product integration or Full.",
+    "No Hosted CI, official client/device validation, source-epoch validation or merge approval.",
+    "Owner must apply patch onto appropriate current head, resolve any subsequent changes, and run required repository gates."
+  ],
+  "blocking_findings": []
+}

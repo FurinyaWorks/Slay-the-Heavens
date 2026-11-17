@@ -1,0 +1,10 @@
+✔ shared reward owner cross-state regression: reward-shared-state-cache.lua (181.647833ms)
+✔ shared reward owner cross-state regression: reward-shared-state-pool.lua (162.722467ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 473.626578

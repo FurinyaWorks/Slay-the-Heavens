@@ -1,0 +1,5 @@
+CROSS_STATE_NATIVE_IMAGE expected=blue_candle actual=calling_bell
+tests/helpers/reward-shared-state-cache.lua:35: shared native icon must not reuse state-local identity cache
+stack traceback:
+	[JS]: in function 'assert'
+	tests/helpers/reward-shared-state-cache.lua:35: in main chunk

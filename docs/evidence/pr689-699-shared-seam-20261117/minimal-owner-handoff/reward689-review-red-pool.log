@@ -1,0 +1,5 @@
+CROSS_STATE_POOL expected=false actual=true
+tests/helpers/reward-shared-state-pool.lua:44: shared pool retirement must follow latest row owner across states
+stack traceback:
+	[JS]: in function 'assert'
+	tests/helpers/reward-shared-state-pool.lua:44: in main chunk
