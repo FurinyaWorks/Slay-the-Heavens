@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-17 08:48'
+updated_date: '2026-11-17 08:57'
 labels:
   - 待验
   - delivery-verify
@@ -61,6 +61,8 @@ PR332已复现Silent自然构筑夹具在Windows原30000ms超时；仅诊断并�
 2026-11-05复采同SHA队列/push原始run/jobs与最新100个Quality样本，区分已证明的工程AC与稳定Full30分钟/自然Fast20样本剩余出口；保持In Progress。
 
 2026-11-17 Release CI #707：从3f890cdc接续旧reader，精确全文映射component281/nativeCloseout及改动helper前驱；原pin、负控和完整库存不变，定向验证后交还协调者，不重复Full。
+
+2026-11-17 Release三仓准入组合：复用b6准备后继合准确707@845，选择性接712@208内联准入/完整Quick与必要reader；保留709 edited/scope与707冻结Full。先验证严格job身份、同HEAD/BASE和Release合同；来源闭包过大时保留实际组合及具名失败，不批量扩映射或库存。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -115,4 +117,6 @@ e22本地重放验证：相对basename参考与短模式原生CLI对当前360个
 2026-11-14第二轮状态纠正：选测机制与前两项AC已交付，尚缺自然Fast样本及真实耗时；属于进行中待验，不重新实现选择器。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
 
 2026-11-17 #707@3f890cdc旧reader收口：component281/nativeCloseout完整前驱映射，保留原pin和库存；完整calibration76项及其余来源合同31项通过，ci-impact因初始缺luaparse单文件复跑26项通过；负控4项、真实隔离reviewed selection5项、guidance/backlog通过，独审通过。仅本地候选，尚未push/托管CI/合并；#709准备组合评估后不纳入此次窄修复。证据docs/evidence/release-fast-b9-ci-20261117。
+
+Release Fast×Freeze×三仓准入最小组合准备：107项定向96过11红；新增准入/完整Quick及Full/Fast/License运行合同通过，红为旧union/source pin及两条旧Quick行为视图。另Release metadata3项和严格delivery身份4项通过。尚不可推送/合并；旧包与断言完整保留，不批量添加source/inventory体系，后续按具名旧reader接续。
 <!-- SECTION:NOTES:END -->

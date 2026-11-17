@@ -1,4 +1,5 @@
 name: Quality
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Full / {0} / {1}', github.sha, inputs.base_sha) || github.workflow }}
 on:
   pull_request:
     branches: [develop, master, 'release/**']
@@ -10,6 +11,10 @@ on:
     branches: [develop, master]
   workflow_dispatch:
     inputs:
+      base_sha:
+        description: 'Exact comparison SHA for Fork Full preflight (not formal integration reuse)'
+        required: false
+        type: string
       runner_pool:
         description: 'Hosted normally; local-special only for trusted develop/master platform diagnostics'
         type: choice
@@ -57,6 +62,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/publish-merge-group.mjs --pending
+      - name: Require completed Fork preflight before formal test jobs
+        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/fork-preflight.mjs
       - name: Require frozen Release Full before publication
         if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'master' && startsWith(github.event.pull_request.head.ref, 'release/')
         env:
@@ -99,7 +109,7 @@ jobs:
           retention-days: 7
   fast:
     needs: impact
-    if: needs.impact.outputs.mode == 'fast'
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'fast' }}
     strategy:
       fail-fast: false
       matrix:
@@ -459,7 +469,8 @@ jobs:
           FULL_NEEDS: ${{ toJSON(needs) }}
         run: node scripts/publish-merge-group.mjs
   presentation:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    needs: impact
+    if: ${{ !cancelled() && needs.impact.result == 'success' }}
     # These filesystem tests include symlinks; keep the local service unprivileged.
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -489,7 +500,7 @@ jobs:
           ABYSS_PYTHON: python3
   engineering-posix-shards:
     needs: impact
-    if: needs.impact.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'full' }}
     name: ${{ needs.impact.outputs.mode == 'fast' && 'engineering-posix-shards' || format('engineering-posix ({0}/{1})', matrix.shard, strategy.job-total) }}
     # Separate hosted VMs keep generated files isolated. Twenty minutes is a
     # performance target; the hard guard allows host variance. Files execute once.
