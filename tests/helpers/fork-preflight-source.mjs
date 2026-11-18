@@ -1,3 +1,4 @@
+import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 // Full-source continuation for historical contracts; no partial/foreign projection.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -40,6 +41,7 @@ for(const [path,row] of Object.entries(transport.files)){
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeCharacterPreparationCiSource(path,source);
  const transportRow=Object.hasOwn(transport.files,path)?transport.files[path]:null;
  if(transportRow&&['prior','release-bootstrap'].includes(view)&&typeof source==='string'&&
   !source.includes('\r\r\n')&&hash(normalize(source))===transportRow.currentSha)

@@ -1,3 +1,4 @@
+import {assertCharacterPreparationSources,beforeCharacterPreparationSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
@@ -143,7 +144,13 @@ test('fresh authorization covers the complete changed-owner union without cachin
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
  assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
- for(const path of files)assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+ assertCharacterPreparationSources();
+ for(const path of files)assert.equal(beforeCharacterPreparationSource(path,readFileSync(path,'utf8')).replaceAll('\r\n','\n'),raw(path),path);
+ const [owner]=characterPreparationOwners, read=path=>readFileSync(path,'utf8'), current=read(owner);
+ assert.equal(beforeCharacterPreparationSource(owner,current,read),raw(owner));
+ assert.equal(beforeCharacterPreparationSource(owner,current+'\n',()=>{throw Error('foreign must not authorize reads');}),current+'\n');
+ for(const missing of characterPreparationOwners)
+  assert.throws(()=>beforeCharacterPreparationSource(owner,current,path=>path===missing?null:read(path)),/fresh character preparation source/);
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

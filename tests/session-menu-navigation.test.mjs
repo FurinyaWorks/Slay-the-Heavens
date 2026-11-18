@@ -1,3 +1,4 @@
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
@@ -115,7 +116,7 @@ test('menu source continuation retains the complete release corpus and rejects n
  assert.deepEqual(paths,Object.keys(sourceEpoch.proof.current).sort());
  const added=paths.filter(p=>!Object.hasOwn(releaseSourceEpoch.proof.current,p));
  assert.deepEqual(added,['src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua']);
- for(const p of paths)assert.equal(read(p),sourceEpoch.proof.current[p].source,p);
+ for(const p of paths)assert.equal(beforeCharacterPreparationSource(p,read(p)),sourceEpoch.proof.current[p].source,p);
  for(const p of added){
   assert.equal(sourceEpoch.proof.targets.sessionMenuPrior.files[p],null);
   assert.equal(JSON.parse(read('config/architecture.json')).layers[p.split('/').at(-1).slice(0,-4)],'ui');

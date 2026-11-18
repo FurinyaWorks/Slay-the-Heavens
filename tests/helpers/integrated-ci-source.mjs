@@ -65,7 +65,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
  for(const path of added){
   const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-  assert.equal(hash(norm(releaseBootstrapCiSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+  assert.equal(hash(norm(releaseBootstrapCiSource(path,beforePreflightSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
 }

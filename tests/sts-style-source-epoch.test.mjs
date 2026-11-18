@@ -1,3 +1,4 @@
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -83,7 +84,7 @@ test('real style source retains the complete CI-repair and every older target wh
  assert.deepEqual(Object.keys(p.current).sort(),actual);
  for(const [path,row]of Object.entries(before.current))assert.deepEqual(p.targets.stsStylePrior.files[path],row,path+' complete prior');
  for(const [name,target]of Object.entries(before.targets))for(const [path,row]of Object.entries(target.files))assert.deepEqual(p.targets[name].files[path],row,name+'/'+path);
- for(const path of actual)assert.equal(read(path).replaceAll('\r\n','\n'),p.current[path].source,path+' raw complete current');
+ for(const path of actual)assert.equal(beforeCharacterPreparationSource(path,read(path)).replaceAll('\r\n','\n'),p.current[path].source,path+' raw complete current');
  const config='config/architecture.json',raw=read(config),prior=p.targets.stsStylePrior.files[config].source;
  assert.equal(sourceEpoch.preCombinedSource(config,raw,{target:'stsStylePrior',readSource:read}),prior);
  for(const owner of p.owners.filter(path=>!before.owners.includes(path)))for(const missing of [null,read(owner)+'\n'])
@@ -200,7 +201,7 @@ test('feedback real current source and CI preserve all four immutable archives a
   assert.equal(p.targets.stsFeedbackPrior.files[path],null,'new module has no invented predecessor');
   for(const name of Object.keys(stsStyleEpoch.proof.targets))assert.equal(p.targets[name].files[path],null,name+'/'+path);
  }
- for(const [path,row]of Object.entries(p.current))assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
+ for(const [path,row]of Object.entries(p.current))assert.equal(beforeCharacterPreparationSource(path,readFileSync(path,'utf8')).replaceAll('\r\n','\n'),row.source,path);
  const anchor=feedbackProductionPaths[0],raw=path=>readFileSync(path,'utf8');
  assert.equal(sourceEpoch.preCombinedSource(anchor,raw(anchor),{target:'stsFeedbackPrior',readSource:raw}),stsStyleEpoch.proof.current[anchor].source);
  for(const path of feedbackProductionPaths){
