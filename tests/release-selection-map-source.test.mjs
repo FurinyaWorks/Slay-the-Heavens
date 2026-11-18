@@ -220,7 +220,7 @@ test('release enemy art advances one live Lua owner without rewriting historical
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name);
  for(const key of Object.keys(prior.current)){
   if(key==='src/lua/abyss_card_flow.lua')continue; // exact PC22 owner checked by joint test
-  assert.deepEqual(p.current[key],key===path?packet.current[path]:potion.current[key]);
+  assert.deepEqual(p.targets.releaseHandLayoutPrior.files[key],key===path?packet.current[path]:potion.current[key]);
  }
  const raw=key=>rawReadFileSync(key,'utf8');
  for(const [key,row]of Object.entries(p.current))if(row)assert.equal(norm(raw(key)),row.source,key+' live complete owner');

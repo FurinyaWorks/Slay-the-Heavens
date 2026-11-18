@@ -23,13 +23,15 @@ test('joint Release authenticates the full live production corpus and retains bo
  assert.equal(files.length,352);assert.deepEqual(files,Object.keys(p.current).filter(path=>p.current[path]!==null).sort());
  for(const path of files)assert.equal(norm(readFileSync(path,'utf8')),p.current[path].source,path+' fresh joint source');
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name+' complete immutable original target');
- assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,75);
+ assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,76);
+ const handPrior=p.targets.releaseHandLayoutPrior.files;
+ assert.deepEqual(Object.keys(handPrior).filter(path=>handPrior[path].sha256!==p.current[path].sha256),['src/lua/abyss_battle_card_view.lua']);
  assert.equal(prior.owners.length,116);assert.equal(p.owners.length,118);
  assert.deepEqual(p.targets.releasePc22BasicFeedbackReviewed.files,releasePc22BasicFeedbackSourceEpoch.proof.current);
  assert.deepEqual(p.targets.releaseSelectionMapReviewed.files,releaseSelectionMapSourceEpoch.proof.current);
  for(const side of [releasePc22BasicFeedbackSourceEpoch,releaseSelectionMapSourceEpoch])for(const [name,target]of Object.entries(side.proof.targets))assert.deepEqual(p.targets[name],target);
  const changed=files.filter(path=>p.current[path].sha256!==prior.current[path].sha256);
- assert.deepEqual(changed,['src/lua/abyss_battle_card_gestures.lua','src/lua/abyss_battle_potion_popup.lua','src/lua/abyss_battle_ui.lua','src/lua/abyss_card_flow.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_view.lua','src/lua/abyss_lowcost_art.lua']);
+ assert.deepEqual(changed,['src/lua/abyss_battle_card_gestures.lua','src/lua/abyss_battle_card_view.lua','src/lua/abyss_battle_potion_popup.lua','src/lua/abyss_battle_ui.lua','src/lua/abyss_card_flow.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_view.lua','src/lua/abyss_lowcost_art.lua']);
  const card=p.current['src/lua/abyss_card_flow.lua'].source;
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(card)}\0`).update(card).digest('hex'),'486b63e804f138ee7a1ba1dc8241bdf9d3b99731');
  assert(card.includes('position={flight.tx,flight.ty-(flight.stop or 0)}'));

@@ -32,3 +32,9 @@
 从 #688 取出 `f5169260880043c0fbf5d51ad869e1b493cea85d` 的同一生产变更和原回归，应用到 Release `9a5c56d5c786273feb0efcbfbd487754e9acba3c`。源 PR 最终头 `f03605d69b0943139a2d1f015edd953cb9958089` 的上述生产和回归文件 Git blob 一致。完整历史工件沿用[固定提交归档](https://github.com/FurinyaWorks/Slay-the-Heavens/tree/f03605d69b0943139a2d1f015edd953cb9958089/docs/evidence/hand-values-actual-release-20261116)。
 
 当前实际 Release 组合的原回归两项通过。JS/Lua 精确库存和历史生产快照仍需当前切片来源续接。已复现 `tests/integration-source-epoch.test.mjs` 因 `abyss_battle_card_view.lua` 的新字节拒绝授权。在保留原历史来源断言并通过新基线的这些门禁前，此提交只作可重放的提取点。设备与官方候选仍待验。
+
+## 实际 #679 合流后的续接
+
+重放至 Release `b63719b117e83676e20787e752d14bc66b63a6ed`，产品检查点 `c73465e5c322a1f8e3ecf493a2c8c161506c7d18`。保留 #679 药水输入的三个原样模块、原 CI 收据及全部历史来源目标。复用 #688 冻结的手牌 production packet 并接入现有来源阅读器，新增一个明确的历史目标。原顶部 JS/Lua 测试库存未改变，新用例进入已有 `tests/runtime-ui-hotpaths.test.mjs` 以常规方式执行。该用例包含手牌公式和 300 帧 Host 回放，以及来源旧字节、失效及缺失的负控。
+
+验证入口包括 `tests/runtime-ui-hotpaths.test.mjs`、`tests/integration-source-epoch.test.mjs`、`tests/release-card-contact-integration.test.mjs`、`tests/release-selection-map-source.test.mjs`，以及现有集成和规划合同。候选不改变操作协议、控制数量或规则。实际官方导入/ready、官方容量和 PC/手机性能仍由发布候选、独立设备流程验收。

@@ -34,7 +34,37 @@ for (const [path, row] of Object.entries(packet.files)) {
   }
 }
 
+// Advance the actual Release CI view without rewriting any potion or enemy receipt.
+const handArchive = 'tests/helpers/release-hand-layout-ci.json.gz';
+const handDigest = '6f26884c238ab815532f8480d710d4e069ccb60ff84ca0e79afa00b38a758beb';
+const handBytes = readFileSync(new URL('./release-hand-layout-ci.json.gz', import.meta.url));
+assert.equal(hash(handBytes), handDigest, 'fixed hand-layout CI continuation');
+const handCi = JSON.parse(gunzipSync(handBytes));
+assert.equal(handCi.base, 'b63719b117e83676e20787e752d14bc66b63a6ed');
+for (const row of Object.values(handCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+export function beforeHandLayoutCiSource(path, source) {
+  const row = Object.hasOwn(handCi.files, path) ? handCi.files[path] : null;
+  const text = normalized(source);
+  if (!row?.before || text === null || hash(text) !== row.afterSha256) return source;
+  return source.includes('\r\n') ? row.before.replaceAll('\n', '\r\n') : row.before;
+}
+
+export function assertHandLayoutCiCurrent(read = readFileSync) {
+  assert.equal(hash(read(handArchive)), handDigest, 'fresh hand-layout CI continuation');
+  assert.equal(hash(read('tests/helpers/mobile-hand-source.json.gz')),
+    handCi.productionArchive, 'fresh immutable hand-layout production archive');
+  for (const [path, row] of Object.entries(handCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: hand-layout ' + path);
+  }
+}
+
 export function releasePotionEnemySource(path, source, side) {
+  if (!Object.hasOwn(packet.parents, side)) return source;
+  source = beforeHandLayoutCiSource(path, source);
   const row = Object.hasOwn(packet.files, path) ? packet.files[path] : null;
   if (!row || !Object.hasOwn(row.parents, side)) return source;
   const text = normalized(source);
@@ -51,7 +81,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
     if (Buffer.isBuffer(source)) {
       const row = Object.hasOwn(packet.files, path) ? packet.files[path] : null;
       // Unbound binary archives remain byte-identical, without UTF-8 decoding.
-      if (!row || !Object.hasOwn(row.parents, side)) return source;
+      const handRow = Object.hasOwn(handCi.files, path) ? handCi.files[path] : null;
+      if (!handRow?.before && (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
     }
@@ -62,9 +93,10 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertHandLayoutCiCurrent(read);
   assert.equal(hash(read(archive)), digest, 'fresh complete potion Release CI archive');
   for (const [path, row] of Object.entries(packet.files)) {
-    const text = normalized(read(path, 'utf8'));
+    const text = normalized(beforeHandLayoutCiSource(path, read(path, 'utf8')));
     assert(text !== null && hash(text) === row.currentSha256,
       'fresh complete integration source: potion Release ' + path);
   }
@@ -79,7 +111,7 @@ export function releasePotionEnemyInventory(paths, inventory, kind, read = readF
   if (!extra.some(path => supplied.includes(path))) return [...paths];
   assert.deepEqual(supplied, current, 'complete potion Release raw ' + kind + ' inventory');
   for (const path of extra) {
-    const text = normalized(read(path, 'utf8'));
+    const text = normalized(beforeHandLayoutCiSource(path, read(path, 'utf8')));
     assert(text !== null && hash(text) === packet.files[path].currentSha256,
       'fresh potion Release added inventory source: ' + path);
   }
