@@ -53,6 +53,7 @@ function M.install(owner, ownership, host, dependencies)
             dependencies.listen(hit,function() owner:playSlot(slot) end,input)
             if owner.dragEnabled then
                 hit:AddCursorEventListener(host.cursor.CursorDown,function(event)
+                    local origin=dependencies.pointerBegin(input,event)
                     ownership.pointerObserved = true
                     dependencies.retireInterruptedPress(event)
                     if owner.gesture then return end
@@ -62,6 +63,7 @@ function M.install(owner, ownership, host, dependencies)
                     local g, instance, battle = cardToken(slot, input, event)
                     if not g then return end
                     input.held = g
+                    dependencies.pointerArm(input,g,event,origin)
                     dependencies.cancelPotionAim("已取消药水瞄准。")
                     owner:queueHelp(owner:cardHelpSpec(slot),hit,true,event and event.touchId,g)
                     beginCardDrag(g, instance, battle, event)

@@ -101,6 +101,7 @@ function M.install(owner, ownership, host, dependencies)
         return g
     end
     local function beginPotionPress(slot,control,input,event,helpOnly)
+        local origin=dependencies.pointerBegin(input,event)
         if owner.potionAim and owner.potionAim.moving and owner.potionAim.touch~=(event and event.touchId) then return end
         ownership.potionPointerObserved=true
         local dismissed=dependencies.down(event)
@@ -109,6 +110,7 @@ function M.install(owner, ownership, host, dependencies)
         local g=potionPressToken(slot,input,event,helpOnly)
         if g and dependencies.potionReady(g) then
             input.held=g
+            dependencies.pointerArm(input,g,event,origin)
             owner:queueHelp(owner:potionHelpSpec(slot),control,true,g.touch)
         end
     end
@@ -131,16 +133,17 @@ function M.install(owner, ownership, host, dependencies)
                 owner.suppressClick=false;return owner:openPotionMenu(slot)
             end,dependencies.controllerReady,30+slot,"potions")
             control:AddCursorEventListener(host.clickEvent, function(event)
-                if Controller.pointerBlocked(host.controller)then return false end
-                if input.consumed and input.consumed.touch == (event and event.touchId) then input.consumed=nil return end
-                if dependencies.swallowed(event) then return end
+                local released
                 if ownership.potionPointerObserved then
-                    local released = input.released
-                    if not released or released.touch ~= (event and event.touchId) then return end
-                    input.released = nil
-                    if not dependencies.potionReady(released) then return end
+                    released=dependencies.pointerTake(input,event)
+                    if not released then return end
                 end
-                if not dependencies.consumeReleasedDragClick(event) and not owner.suppressClick and not owner.gesture then
+                if Controller.pointerBlocked(host.controller)then return false end
+                local originEvent=dependencies.pointerEvent(released,event)
+                if input.consumed and input.consumed.touch == (originEvent and originEvent.touchId)then input.consumed=nil;return end
+                if dependencies.swallowed(originEvent)then return end
+                if released and not dependencies.potionReady(released)then return end
+                if not dependencies.consumeReleasedDragClick(originEvent) and not owner.suppressClick and not owner.gesture then
                     if helpOnly then return owner:openHelp(owner:potionHelpSpec(slot),control,false) end
                     return owner:openPotionMenu(slot)
                 end
@@ -153,6 +156,7 @@ function M.install(owner, ownership, host, dependencies)
                     if not helpOnly then return movePotion(event,input) end
                 end)
                 local function releasePotion(event, ended)
+                    dependencies.pointerEnd(input,event,ended)
                     if owner.potionAim and owner.potionAim.moving then return releasePotionDrag(event,input) end
                     local touch, held = event and event.touchId, input.held
                     if held and held.touch == touch then

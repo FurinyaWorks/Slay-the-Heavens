@@ -65,7 +65,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     })))
     install(services, require("abyss_battle_details").install(self, ownership, host, ports(links, {
         "tint", "ink", "child", "cancelPotionAim", "cancelCardInputs",
-        "cancelPotionInputs", "cancelActionInputs", "consumeReleasedDragClick"
+        "cancelPotionInputs", "cancelActionInputs", "consumeReleasedDragClick", "pointerClear"
     })))
     install(services, require("abyss_battle_card_layout").install(self, ownership, host, ports(links, {
     })))
@@ -96,24 +96,24 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     install(services, require("abyss_battle_card_gestures").install(self, ownership, host, ports(links, {
         "closeInfo", "cardReady", "dragTarget", "notice", "cancelCardInputs",
         "cancelActionInputs", "cancelPotionInputs", "cancelPotionAim", "refresh", "rewardScreen",
-        "movePotion", "releasePotionDrag", "aimReady"
+        "movePotion", "releasePotionDrag", "aimReady", "pointerEnd", "pointerClear"
     })))
     install(services, require("abyss_battle_action_bindings").install(self, ownership, host, ports(links, {
         "swallowed", "cardReady", "down", "point", "inPlayArea",
-        "child", "controllerReady", "actionReady", "consumeReleasedDragClick"
+        "child", "controllerReady", "actionReady", "consumeReleasedDragClick", "pointerBegin", "pointerArm", "pointerEnd", "pointerTake", "pointerClear", "pointerEvent"
     })))
     install(services, require("abyss_battle_potion_bindings").install(self, ownership, host, ports(links, {
         "potionBinding", "cancelPotionAim", "cancelCardInputs", "cancelActionInputs", "refresh",
         "child", "controllerReady", "swallowed", "potionReady", "down", "consumeReleasedDragClick",
-        "point", "beginPotionAim", "potionDragTarget"
+        "point", "beginPotionAim", "potionDragTarget", "pointerBegin", "pointerArm", "pointerEnd", "pointerTake", "pointerClear", "pointerEvent"
     })))
     install(services, require("abyss_battle_card_bindings").install(self, ownership, host, ports(links, {
         "point", "child", "controllerReady", "listen", "retireInterruptedPress",
-        "down", "cancelPotionAim", "move", "release"
+        "down", "cancelPotionAim", "move", "release", "pointerBegin", "pointerArm"
     })))
     install(services, require("abyss_battle_target_bindings").install(self, ownership, host, ports(links, {
         "child", "enemyAt", "controllerReady", "swallowed", "discardEnemyPointer",
-        "enemyReady", "down", "cancelPotionAim", "sameEnemySlot", "consumeReleasedDragClick"
+        "enemyReady", "down", "cancelPotionAim", "sameEnemySlot", "consumeReleasedDragClick", "pointerBegin", "pointerArm", "pointerEnd", "pointerTake", "pointerClear", "pointerEvent"
     })))
     install(services, require("abyss_battle_detail_bindings").install(self, ownership, host, ports(links, {
         "enemyAt", "listen", "child", "closeInfo", "controllerReady",
