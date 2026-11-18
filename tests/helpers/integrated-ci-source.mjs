@@ -1,3 +1,4 @@
+import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {mobilePotionPriorInventory,assertMobilePotionCiCurrent} from './mobile-potion-ci-source.mjs';
 import {potionBootstrapCiSource,potionBootstrapCiCheckedSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent} from './potion-bootstrap-ci-source.mjs';
 import {potionRegressionCiSource,potionRegressionCiCheckedSource,potionRegressionHistoricalRead,potionRegressionPriorInventory,assertPotionRegressionCiCurrent} from './potion-regression-ci-source.mjs';
@@ -57,10 +58,23 @@ export function integratedSource(path,source,target,read=readFileSync){
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
 }
+function assertReleaseReplayInputs(read) {
+  for (const [path,binding] of Object.entries(sourceEpoch.proof.current)) {
+    const source = read(path,'utf8');
+    if (binding === null) {
+      assert(source === null || source === undefined,'fresh Release replay owner: '+path);
+      continue;
+    }
+    assert(typeof source === 'string' && !source.includes('\r\r\n') &&
+      hash(norm(source)) === binding.sha256,'fresh Release replay owner: '+path);
+  }
+  assertReleasePotionEnemyCurrent(read);
+}
 export function integratedRead(target,{read=readFileSync}={}){return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
+  assertReleaseReplayInputs(read);
   const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
  }
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-18 14:27'
 labels:
   - 待验
   - delivery-verify
@@ -81,4 +81,8 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 2026-11-08 PR558冻结311089f9精确Full与源码独审通过，C官方首房闭环与C60正式startup分层留证，完整UI仍未过。独立sourceDirty E1两隐藏页native SetActive得到PC菜单51.70/选角53.65 FPS短窗与合法新Run恢复、Neow/首战拖牌证据；只支持继续实验，未声称稳定60或手机改善。显式开关源码接入与E2边界实测继续，To Do、负责人及手机AC3未验保持；入口experiments/native-2d-vertical-slice/IMPLEMENTATION.md。
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-18 Release 源码已承接 #688 两个性能切片。#721（1d8a2439）300 帧仍发布 1500 个拖牌原点快照，消除 1500 个八值临时表。#725（6f655ca8）300 帧敌人坐标路径 statusView 为 0，原对照为 900；原状态全量渲染、命中、握持和完整 Run/RNG 继续验过。官方同候选导入、ready、真实手机性能/加载 AC 未验，保留原负责人、状态与 3/4 AC。
+
+历史来源原样固定在 #688 f03605d69b0943139a2d1f015edd953cb9958089（https://github.com/FurinyaWorks/Slay-the-Heavens/tree/f03605d69b0943139a2d1f015edd953cb9958089/docs/evidence/enemy-geometry-actual-release-20261116）。原头的两个 PC22 文本锚点实际返回同一原始字节，原自动化「必须转成历史文本」断言失败；当前保留其透传合同并单独验证。历史二进制读取仍会转换，并在每次返回前验证当前生产文件、来源收据和所请求的原始归档。
 <!-- SECTION:NOTES:END -->

@@ -31,7 +31,7 @@ const actualPotionRegressionDiscoverJs=()=>potionPost697PriorInventory(actualPos
 const potionLegacyLua=()=>potionPost697PriorInventory(actualPost697Lua(),'lua',actualPost697ReadFileSync);
 const discoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
 const beforePotionRegressionLua=()=>potionRegressionPriorInventory(potionLegacyLua(),'lua',actualPotionRegressionReadFileSync);
-import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
+import {integratedCiProof as proof,integratedRead,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
@@ -530,5 +530,36 @@ test('post697 union both explicit histories reject warm cross-input faults and p
  for(const kind of ['js','lua']){
   const paths=potionPost697CiPacket.currentInventory[kind];assertPotionPost697RawInventory(paths,kind);
   for(const bad of [paths.slice(1),[...paths,paths[0]],[...paths,'foreign']])assert.throws(()=>assertPotionPost697RawInventory(bad,kind));
+ }
+});
+
+test('public integrated binary history reauthenticates current owners and archives before returning old bytes',()=>{
+ const anchor='tests/helpers/menu-red-production-source.json.gz', saved=proof.binaryViews[anchor].views.menu;
+ const owners=['src/lua/abyss_battle_card_view.lua','src/lua/abyss_card_flow.lua',
+  'tests/helpers/release-enemy-metrics-ci.json.gz',saved.path];
+ let fault;
+ const read=(path,encoding)=>{
+  if(path!==fault?.path)return mergedReadFileSync(path,encoding);
+  if(fault.kind==='missing')throw Error('missing '+path);
+  if(fault.kind==='null')return null;
+  const source=mergedReadFileSync(path,encoding);
+  return typeof source==='string'?source+'\n':Buffer.concat([source,Buffer.from('\n')]);
+ };
+ const reader=integratedRead('menu',{read}), expected=read(saved.path);
+ assert.notDeepEqual(expected,read(anchor),'the binary input must expose an earlier archive');
+ assert.deepEqual(reader(anchor),expected);
+ for(const path of owners)for(const kind of ['missing','null','drift']){
+  fault={path,kind};assert.throws(()=>reader(anchor),undefined,path+' '+kind);
+  fault=undefined;assert.deepEqual(reader(anchor),expected);
+ }
+});
+
+test('PC22 inputs without an earlier menu view retain their exact live bytes',()=>{
+ const reader=integratedRead('menu',{read:mergedReadFileSync});
+ for(const path of ['tests/helpers/release-pc22-basic-feedback-source.mjs','tests/lua/card_flow_contact_continuity.lua']){
+  const raw=mergedReadFileSync(path,'utf8');
+  assert.equal(integratedSource(path,raw,'menu',mergedReadFileSync),raw);
+  assert.equal(reader(path,'utf8'),raw);
+  assert.deepEqual(reader(path),mergedReadFileSync(path));
  }
 });

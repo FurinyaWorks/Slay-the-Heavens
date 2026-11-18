@@ -100,8 +100,28 @@ for (const row of Object.values(enemyCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+const historyArchive = 'tests/helpers/release-history-authorization-ci.json.gz';
+const historyDigest = 'a52241fb9b05cdcf97441bf2a00649902b8eb5cea8a4d670b9e3a15840e685f7';
+const historyBytes = readFileSync(new URL('./release-history-authorization-ci.json.gz', import.meta.url));
+assert.equal(hash(historyBytes), historyDigest, 'fixed historical replay authorization continuation');
+const historyCi = JSON.parse(gunzipSync(historyBytes));
+assert.equal(historyCi.base, '6f655ca8f741a0f060cafcb6958118d77c595dfe');
+for (const row of Object.values(historyCi.files)) assert.equal(hash(row.before), row.beforeSha256);
+
+function beforeHistoryCiSource(path, source) {
+  return priorCiSource(historyCi.files, path, source);
+}
+
+function assertHistoryCiCurrent(read) {
+  assert.equal(hash(read(historyArchive)), historyDigest, 'fresh historical replay authorization packet');
+  for (const [path, row] of Object.entries(historyCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256,'fresh complete integration source: replay authorization ' + path);
+  }
+}
+
 export function beforeEnemyMetricsCiSource(path, source) {
-  return priorCiSource(enemyCi.files, path, source);
+  return priorCiSource(enemyCi.files, path, beforeHistoryCiSource(path, source));
 }
 
 export function assertEnemyMetricsCiCurrent(read = readFileSync) {
@@ -109,7 +129,7 @@ export function assertEnemyMetricsCiCurrent(read = readFileSync) {
   assert.equal(hash(read('tests/helpers/enemy-geometry-source.json.gz')), enemyCi.productionArchive,
     'fresh immutable enemy metrics production archive');
   for (const [path, row] of Object.entries(enemyCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeHistoryCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: enemy metrics ' + path);
   }
 }
@@ -136,7 +156,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const handRow = Object.hasOwn(handCi.files, path) ? handCi.files[path] : null;
       const shelfRow = Object.hasOwn(shelfCi.files, path) ? shelfCi.files[path] : null;
       const enemyRow = Object.hasOwn(enemyCi.files, path) ? enemyCi.files[path] : null;
-      if (!handRow?.before && !shelfRow?.before && !enemyRow?.before && (!row || !Object.hasOwn(row.parents, side))) return source;
+      const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
+      if (!handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
     }
@@ -147,6 +168,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertHistoryCiCurrent(read);
   assertEnemyMetricsCiCurrent(read);
   assertHandLayoutCiCurrent(read);
   assertShopShelfCiCurrent(read);
