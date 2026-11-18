@@ -98,7 +98,27 @@ return createSourceEpochProjector(freeze({...base,current,targets,owners,
  releaseSelectionMapProducers:selection.releaseSelectionMapProducers,
  potionPost697Producers:potion.potionPost697Producers}),{allowConfigLayout:true,reuseFrozenInput:true});
 }
-export const sourceEpoch=joinReleaseSources();
+// Scope the hand continuation to the exact source bytes already preserved in #688.
+const jointRelease = joinReleaseSources().proof;
+const handBytes = readFileSync(new URL('./mobile-hand-source.json.gz', import.meta.url));
+assert.equal(hash(handBytes), 'f09812ac4f7c422d8a4530a8efa9ca0e35048eb1a2f4a7940495d76495f5ee4c');
+const hand = JSON.parse(gunzipSync(handBytes));
+const handPath = 'src/lua/abyss_battle_card_view.lua';
+assert.deepEqual(Object.keys(hand.current), [handPath]);
+assert.deepEqual(Object.keys(hand.before), [handPath]);
+assert.deepEqual(hand.before[handPath], jointRelease.current[handPath], 'exact Release hand source predecessor');
+const handCurrent = { ...jointRelease.current, [handPath]: hand.current[handPath] };
+const handTargets = {
+  ...jointRelease.targets,
+  releaseHandLayoutPrior: { commit: 'b63719b117e83676e20787e752d14bc66b63a6ed', files: jointRelease.current },
+};
+const handOwners = Object.keys(handCurrent).sort().filter(path =>
+  Object.values(handTargets).some(target => target.files[path]?.sha256 !== handCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...jointRelease, current: handCurrent, targets: handTargets, owners: handOwners,
+  currentCommit: 'c73465e5c322a1f8e3ecf493a2c8c161506c7d18',
+  currentCommitRole: 'exact hand optimization slice on the actual Release base',
+}), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
