@@ -175,10 +175,31 @@ const intentTargets = {
 };
 const intentOwners = Object.keys(intentCurrent).sort().filter(path =>
   Object.values(intentTargets).some(target => target.files[path]?.sha256 !== intentCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const beforeCorners = {
   ...sparseRelease, current: intentCurrent, targets: intentTargets, owners: intentOwners,
   currentCommit: 'b454466798656c6f3b00613bbca1effef2459317',
   currentCommitRole: 'exact composite intent on the actual Release base after enemy metrics',
+};
+const cornerBytes = readFileSync(new URL('./release-target-corners-source.json.gz', import.meta.url));
+assert.equal(hash(cornerBytes), 'bb788e637e44204cafc8bc32e4447825b35cd68d9c5a6a39e812460cb55dd01f', 'complete target corner source');
+const corner = JSON.parse(gunzipSync(cornerBytes));
+const cornerPath = 'src/lua/abyss_battle_unit_view.lua';
+assert.equal(corner.schemaVersion, 1);
+assert.equal(corner.owner, cornerPath);
+assert.equal(corner.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+assert.equal(corner.checkpoint, '13c9981431e04ac1be75592842da180225dbaf63');
+assert.deepEqual(corner.before, beforeCorners.current[cornerPath], 'exact Release target corner predecessor');
+const cornerCurrent = { ...beforeCorners.current, [cornerPath]: corner.current };
+const cornerTargets = {
+  ...beforeCorners.targets,
+  releaseTargetCornersPrior: { commit: corner.base, files: beforeCorners.current },
+};
+const cornerOwners = Object.keys(cornerCurrent).sort().filter(path =>
+  Object.values(cornerTargets).some(target => target.files[path]?.sha256 !== cornerCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...beforeCorners, current: cornerCurrent, targets: cornerTargets, owners: cornerOwners,
+  currentCommit: corner.checkpoint,
+  currentCommitRole: 'exact target corner geometry from #684 on the current Release baseline',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

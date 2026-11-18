@@ -129,8 +129,32 @@ for (const row of Object.values(intentCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+const cornerArchive = 'tests/helpers/release-target-corners-ci.json.gz';
+const cornerDigest = 'c60f1c35b345021dcab6014e5b968663e95b5d903d18711832e9d242b03f51bc';
+const cornerBytes = readFileSync(new URL('./release-target-corners-ci.json.gz', import.meta.url));
+assert.equal(hash(cornerBytes), cornerDigest, 'fixed Release target corner CI continuation');
+const cornerCi = JSON.parse(gunzipSync(cornerBytes));
+assert.equal(cornerCi.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+for (const row of Object.values(cornerCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforeCornerCiSource(path, source) {
+  return priorCiSource(cornerCi.files, path, source);
+}
+
+function assertCornerCiCurrent(read) {
+  assert.equal(hash(read(cornerArchive)), cornerDigest, 'fresh target corner CI continuation');
+  assert.equal(hash(read('tests/helpers/release-target-corners-source.json.gz')), cornerCi.productionArchive,
+    'fresh immutable target corner production archive');
+  for (const [path, row] of Object.entries(cornerCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: target corners ' + path);
+  }
+}
+
 function beforeIntentCiSource(path, source) {
-  return priorCiSource(intentCi.files, path, source);
+  return priorCiSource(intentCi.files, path, beforeCornerCiSource(path, source));
 }
 export function isCurrentIntentCiReplay(path, source) {
   return beforeIntentCiSource(path, source) !== source;
@@ -139,7 +163,7 @@ function assertIntentCiCurrent(read) {
   assert.equal(hash(read(intentArchive)), intentDigest, 'fresh composite intent CI continuation');
   assert.equal(hash(read('tests/helpers/release-composite-intent-source.json.gz')), intentCi.productionArchive, 'fresh immutable composite intent source archive');
   for (const [path, row] of Object.entries(intentCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeCornerCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: composite intent ' + path);
   }
 }
@@ -229,7 +253,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
       const sparseRow = Object.hasOwn(sparseCi.files, path) ? sparseCi.files[path] : null;
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
-      if (path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
+      const cornerRow = Object.hasOwn(cornerCi.files, path) ? cornerCi.files[path] : null;
+      if (path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !cornerRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -241,6 +266,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertCornerCiCurrent(read);
   assertSettingsCiCurrent(read);
   assertIntentCiCurrent(read);
   assertSparseCiCurrent(read);
