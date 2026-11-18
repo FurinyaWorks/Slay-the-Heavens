@@ -4,16 +4,17 @@ title: PC商店商品压盖及删牌浏览布局专项
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-15 20:14'
-updated_date: '2026-11-16 08:21'
+created_date: 2026-11-15 20:14
+updated_date: '2026-11-18T14:00:00Z'
 labels: []
 milestone: m-8
 dependencies: []
 references:
   - docs/backlog-details/PC-QA-20261115.md
-  - docs/qa/playtests/pc-20261115-verbatim.txt
   - TASK-103.2
   - TASK-4.15
+  - >-
+    https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e40b421104aed1a47f971dc5eaeae08431c5a130/docs/qa/playtests/pc-20261115-verbatim.txt
 parent_task_id: TASK-103
 priority: medium
 type: bug

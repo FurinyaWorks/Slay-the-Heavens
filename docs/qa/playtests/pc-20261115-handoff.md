@@ -1,6 +1,6 @@
 # 2026-11-15 PC QA：下一 Session 最小接续入口
 
-第一手依据：[约58分钟逐字记录](pc-20261115-verbatim.txt)；[38项覆盖矩阵/版本及任务状态](../../backlog-details/PC-QA-20261115.md)；[12张截图的名称与SHA](pc-20261115-image-manifest.json)。用户在本次交谈明确要求**先把工作管理起来，不重复报数、不丢任务；当前不用在此文档PR再修改游戏**。
+第一手依据：[约58分钟逐字记录](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e40b421104aed1a47f971dc5eaeae08431c5a130/docs/qa/playtests/pc-20261115-verbatim.txt)；[38项覆盖矩阵/版本及任务状态](../../backlog-details/PC-QA-20261115.md)；[12张截图的名称与SHA](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e40b421104aed1a47f971dc5eaeae08431c5a130/docs/qa/playtests/pc-20261115-image-manifest.json)。用户在本次交谈明确要求**先把工作管理起来，不重复报数、不丢任务；当前不用在此文档PR再修改游戏**。
 
 ## 源码交接
 

@@ -357,9 +357,15 @@ export function parseGitChanges(output) {
   }
   return paths;
 }
+export function completePreflight(plan) {
+  if (plan.full || !plan.fast.length && !plan.integration.length && !plan.lua.length)
+    throw new Error(`Full required: ${plan.reason}; preflight cannot certify unknown or empty coverage`);
+  return {tests: [...new Set([...plan.fast, ...plan.integration])], fixtures: [...new Set(plan.lua)]};
+}
 export function main(args) {
   const planStarted = Date.now();
   const ciFast = args.includes('--ci-fast');
+  const preflight = args.includes('--preflight');
   const advisory = ciFast || args.includes('--fast');
   const planOnly = args.includes('--plan'), tier = ciFast ? 'ci-fast' : args.includes('--fast') ? 'fast' : 'related';
   const at = args.indexOf('--files');
@@ -403,17 +409,18 @@ export function main(args) {
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   const npmRun = name => process.platform === 'win32'
     ? run('cmd.exe', ['/d', '/s', '/c', `npm run ${name}`]) : run(npm, ['run', name]);
+  const complete = preflight ? completePreflight(plan) : null;
   if (plan.full && !advisory) { npmRun('check'); return; }
-  const tests = advisory ? quick.fast : [...plan.fast, ...plan.integration];
-  const fixtures = advisory ? quick.lua : plan.lua;
+  const tests = complete ? complete.tests : advisory ? quick.fast : [...plan.fast, ...plan.integration];
+  const fixtures = complete ? complete.fixtures : advisory ? quick.lua : plan.lua;
   if (advisory) summary(`Advisory subset: ${tests.length} fast JS and ${fixtures.length} related Lua files selected; ${quickPlan.integration.length} integration JS and ${quickPlan.lua.length - fixtures.length} Lua files deferred to complete Quality. Lua scheduling estimate ${quick.estimatedLuaMs} ms, not a deadline.`);
   if (advisory && !tests.length && !fixtures.length) {
     summary('No quick tests selected. Complete Quality remains required; this is not a regression pass.');
     return;
   }
-  if (ciFast && tests.includes('tests/reviewed-traveler-geo-assets.test.mjs')) run(process.execPath, ['scripts/ci-reviewed-lfs.mjs']);
-  if (ciFast) prepareRuntimePreviews({needed: needsRuntimePreviews(tests)});
-  if (ciFast) delete process.env.CI_LFS_TOKEN;
+  if ((ciFast || preflight) && tests.includes('tests/reviewed-traveler-geo-assets.test.mjs')) run(process.execPath, ['scripts/ci-reviewed-lfs.mjs']);
+  if (ciFast || preflight) prepareRuntimePreviews({needed: needsRuntimePreviews(tests)});
+  if (ciFast || preflight) delete process.env.CI_LFS_TOKEN;
   timed('build', () => {
     npmRun('build:data'); npmRun('build:ui');
     run(process.execPath, ['scripts/map-ui-layout.mjs']);
