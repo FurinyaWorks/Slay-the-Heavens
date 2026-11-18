@@ -1,7 +1,0 @@
-{
-  "published": "5fe72de406f42ebbf406ac386d4c03a3a903373b",
-  "producer": "5bd55d7691480b10d00e947076e15c8870640474",
-  "currentBase": "2bc0d126e74d518664b6719274448624a1c67121",
-  "production": "src/lua/abyss_battle_card_bindings.lua",
-  "changes": "exact two author insertions, runtime memory only; no product file writes"
-}

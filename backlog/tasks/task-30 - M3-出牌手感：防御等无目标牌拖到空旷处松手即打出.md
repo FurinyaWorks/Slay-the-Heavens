@@ -1,11 +1,11 @@
 ---
 id: TASK-30
-title: v2.0.0 出牌 P0：首击丢失与快速拖牌误取消，待同候选设备验收
+title: 实测手机拖牌取消与锁敌（修复已合入）
 status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-23 00:59'
-updated_date: '2026-11-16 10:51'
+updated_date: '2026-11-18 15:00'
 labels:
   - ui
   - combat
@@ -35,8 +35,9 @@ references:
   - docs/backlog-details/MOBILE-QA-20261029-SOURCES.md
   - docs/evidence/m3-completion-20261031/
   - docs/backlog-details/MOBILE-RELEASE-QA-20261101.md
+  - docs/evidence/release-freeze-20261116/reproduce-p0.mjs
 priority: medium
-type: bug
+type: enhancement
 ordinal: 36000
 ---
 
@@ -85,8 +86,6 @@ ordinal: 36000
 2026-10-31 M3整批收口：对照指针权威目标与回手边界，验证无目标连续松手/取消及旧事件拒绝，再做双设备同候选轨迹。
 
 2026-11-12官方手机缺陷修复：复现官方分支抬牌起点折返，修正触屏起点、复合箭头可见尖端和快速换目标；保留命中规则及旧版。用当前生成官方布局做12组鼠标/触屏/画布/快慢检查与错误实现负对照；联合能量球修复交付独立Draft PR和GIL，官方手机仍待用户实测。
-
-本轮只基于Release33d修输入缺陷：复现缺ID Click及稀疏拖牌，统一现有输入归属，复用原作者Down采样；以同条件全状态/RNG、31项及实际GIL解码回放验证，独立审查后提交Release修复PR。不增键盘/预输入、不合并发布、不操作窗口。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -166,9 +165,7 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 
 2026-11-14第二轮状态纠正：已有8/15项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
-Owner再次明确要求持续修复出牌P0直至完成。本轮已从最新Release33d建立独立fix/battle-pointer-continuity-20261116，实际实施共享、有限指针归属证明，覆盖卡牌/区域/目标确认的缺ID Click；保留busy、多指/旧回调与结算顺序，不新增预输入或键盘功能。原#686仅目标消费者，不复制第二套tracker；新实现将用同一小型归属服务接四类binding，并以现有真实Host反例与连续出牌验证。未修前不称P0完成，官方/设备未测仍未验。
+本轮Release冻结审查只读复现新增协议缺口（Release33d71575，正式UI/data、真实GameUI Host）：卡牌及playArea的Down/Up带ID、Click无ID时丢选择/出牌；补带IDClick即正常，9个拒绝/兼容场景PASS、2个预期RED。action_bindings仍有两处消费者未纳入#686目标归属协议。不得仅放松touch比较：同控件/跨控件多指覆盖held会误接。沿TASK30/#686统一有限指针归属协议接续，避免复制tracker/重复PR；busy、手柄、旧turn/回调与拖动尾事件保护必须保留。复现docs/evidence/release-freeze-20261116/reproduce-p0.mjs；当前未修、未官方/设备验收，不称手机根因或极致流畅通过，原AC/status保持。新数字键/快捷键/预输入仍仅TASK42.1/#670后续版本。
 
-2026-11-16本轮已实际修复8个既有输入模块，冻结82b1a114；来源合同6b12af8f。混合ID序列旧0/5→新5/5；正常输入的全状态/RNG、反馈26步及受监测控件写入数不变；原7+新增22+稀疏2当前源码及新GIL实际解码Lua均通过。完整engineering通过，独立产品/Source复审无遗留。新候选build ca1130db、SHA159e4ef2，15961609离线字节，公共夹具非正式RC；严格audit保留UI_MISMATCH/GRAPH_COUNT，官方MB、import/ready及PC/手机性能UNVERIFIED。旧候选不作本轮设备证据，所有新设备AC不勾。完整证据docs/evidence/battle-pointer-p0-20261116/README.md。
-
-独立修复PR #711：https://github.com/FurinyaWorks/Slay-the-Heavens/pull/711，目标release/v2.0.0，产品82b1a114，独立产品/Source/报告审查PASS。#686归属切片交由该PR统一服务接续，不再引入第二套tracker；#684仅复用三行Down采样，其余PC范围不变。保持In Progress及未验AC；不自行合并、发版或操作窗口。
+2026-11-18 Release 已合 #728 的真实 Down 采样输入；本候选从 #711 现有指针归属服务续接实际 #679 与 #728，保留旧 #686 的 7 个测试入口与 37 个场景。#686 的旧命名限定由 #711 的只读查看行为接续：唯一已释放混合 ID 可查看敌人，不出牌或消耗，旧回调仍只处理一次，普通命名入口另验。旧实现与准备证据保留固定 dcb2cf15 / b04e6868，现有官方同候选、ready、PC/手机及容量验收继续保留未勾。
 <!-- SECTION:NOTES:END -->

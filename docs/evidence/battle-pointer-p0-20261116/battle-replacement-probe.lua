@@ -1,8 +1,0 @@
-local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local h,u,p,e=H.setup({'defend','defend'},nil,{touchScreen=function()return true end})
-e('card1','down',17)
-h.run.combat=H.F.Combat.new(H.F.Data,{deck={'defend','defend'},enemies={'cultist'}})
-h:refresh()
-e('card1','down',19);e('card1','up',19);e('card1','click',nil)
-assert(u.selected==h.run.combat.hand[1].uid,'new battle inherited an old active card pointer after stale gesture was cancelled')
-print('BATTLE_REPLACEMENT_POINTER_PASS')

@@ -1,3 +1,4 @@
+import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -24,6 +25,7 @@ function target(name){assert(Object.hasOwn(packed.targets,name),'known closeout 
 export function preCloseoutCiSource(path,source,view){
  const before=target(view);
  if(before.scope==='workflow-only'&&path!=='.github/workflows/quality.yml')return source;
+ source=beforePreflightSource(path,source);
  if(path===capacityRoadmapBinding.path&&typeof source==='string'&&hash(source.replaceAll('\r\n','\n'))===capacityRoadmapBinding.current)return capacityRoadmapBinding.source;
  if(path===naming.path&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===naming.current)return naming.source;
  // Production sources belong to the complete freshly authenticated owner
@@ -50,6 +52,7 @@ export function closeoutInventory(paths,view,readSource=readFileSync){
 }
 export function closeoutRead(view,read=readFileSync){
  const before=target(view);
+ if(before.scope!=='workflow-only')read=preflightPriorRead(read);
  return (path,encoding)=>{
   const value=read(path,encoding),source=typeof value==='string'?value:value.toString('utf8');
   let prior=preCloseoutCiSource(path,source,view);
