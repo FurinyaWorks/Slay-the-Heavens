@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 15:30'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-15 22:43'
 labels:
   - 待验
   - delivery-verify
@@ -59,6 +59,8 @@ PR332已复现Silent自然构筑夹具在Windows原30000ms超时；仅诊断并�
 2026-11-03 M9持续收口：独立核对至少20个自然Quality Fast PR样本，不将advisory或Full混入；保留高风险/develop Full及所有Required/身份合同，针对真实漏边/重复工作实施，分别报告性能目标达成与不足，不提前Done。
 
 2026-11-05复采同SHA队列/push原始run/jobs与最新100个Quality样本，区分已证明的工程AC与稳定Full30分钟/自然Fast20样本剩余出口；保持In Progress。
+
+2026-11-16 用户授权证据收尾：仅接入92e79424历史ci-throughput.json；离线核对来源树原run/jobs/timing与材料身份，追加核验边界和证据引用，最小验证后仅本地提交。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -111,4 +113,8 @@ e22本地重放验证：相对basename参考与短模式原生CLI对当前360个
 2026-11-14逐项对账：选测与保守Full边界已交付；仅剩自然Fast样本P50/P90和Full30分钟性能验收，不重写选择器。
 
 2026-11-14第二轮状态纠正：选测机制与前两项AC已交付，尚缺自然Fast样本及真实耗时；属于进行中待验，不重新实现选择器。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+2026-11-15 已完成e65两个Full历史run重新配对Licenses原数据收集，本次样本自然Fast=0，不得拿这两项冒充20个Fast P50/P90；仅记录当前可核样本不足，不触发CI凑样本、不轮询队列。
+
+2026-11-16 证据接续：原run/jobs核回同e65 push43615128387=4442秒、队列43605179989=6623秒，两项均Full；本子集自然Fast为0/20，P50/P90未知，Full30分钟未达。历史JSON：docs/evidence/backlog-closeout-20261115/ci-throughput.json；核算与原件哈希：docs/backlog-details/TASK-81-CI-EVIDENCE-INTEGRATION-20261116.md。原始材料仅留来源树ignored目录、未托管。保持Furinya/In Progress及AC3未勾。
 <!-- SECTION:NOTES:END -->
