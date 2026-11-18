@@ -7,9 +7,9 @@
 ## 已有成果与本轮接续
 
 - 原工作树 `F:/New folder/.worktrees/task-105-offline`、基线`903bf2a31e91f10fb24763ab4cea23d586d0bb83`，已有未提交离线实验、39份原始证据和B0静态候选审计；原PR641工作树已通过Backlog CLI认领In Progress。本轮是接续与对账，不是重新立项。
-- [原研究报告](../research/TASK-105-OFFLINE-20261113.md)按原字节保留。报告中的旧相对证据链接对应原树；[逐文件身份及恢复位置](../evidence/capacity-105-replay-20261115/legacy-source.json)保存39文件hash，不重复把34.57MB生成证据加入Git。
+- [原研究报告](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/6b901cd08f9255bf428320b1aaf48be99b6977da/docs/research/TASK-105-OFFLINE-20261113.md)按原字节保留。报告中的旧相对证据链接对应原树；[逐文件身份及恢复位置](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/6b901cd08f9255bf428320b1aaf48be99b6977da/docs/evidence/capacity-105-replay-20261115/legacy-source.json)保存39文件hash，不重复把34.57MB生成证据加入Git。
 - [重放入口](../../experiments/capacity-105/run.mjs)继续复用正式buildLuaData/buildUI、packageInventory、candidateScriptFiles与verifyPlatformRelease。只在独占生成目录进行合成数据/美术压力装配，不注册可玩角色、不生成或导入本轮GIL、不改正式皮肤/开放配置。
-- [本轮验证与结果](../evidence/capacity-105-replay-20261115/README.md)。旧与新测量属于不同源码，不能直接把数字变化称作容量优化。
+- [本轮验证与结果](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/6b901cd08f9255bf428320b1aaf48be99b6977da/docs/evidence/capacity-105-replay-20261115/README.md)。旧与新测量属于不同源码，不能直接把数字变化称作容量优化。
 - `2026-11-15` 在 `origin/develop@c2409ad7` 的[最小集成交接](../evidence/capacity-105-integration-20261115/README.md)：仅接续三个离线脚本及证据，定向验证合同并保全历史 g，不重跑历史矩阵、不产生当前容量数字。恢复大档只在本地忽略目录，清理工作树前须先转存；三张来源 LFS 还原文件没有修改。
 
 ## 重放
