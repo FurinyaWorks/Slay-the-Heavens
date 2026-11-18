@@ -31,11 +31,11 @@ const actualPotionRegressionDiscoverJs=()=>potionPost697PriorInventory(actualPos
 const potionLegacyLua=()=>potionPost697PriorInventory(actualPost697Lua(),'lua',actualPost697ReadFileSync);
 const discoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
 const beforePotionRegressionLua=()=>potionRegressionPriorInventory(potionLegacyLua(),'lua',actualPotionRegressionReadFileSync);
-import {integratedCiProof as proof,integratedRead,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
+import {integratedCiProof as proof,integratedCurrentInventory,integratedPriorInventory,integratedRead,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
-const newerReleaseOwners=['src/lua/abyss_battle_card_bindings.lua','src/lua/abyss_battle_card_view.lua','src/lua/abyss_battle_enemy_view.lua',
+const newerReleaseOwners=['src/lua/abyss_battle_card_bindings.lua','src/lua/abyss_battle_card_view.lua','src/lua/abyss_battle_enemy_view.lua','src/lua/abyss_battle_intent_view.lua',
  'src/lua/abyss_battle_render_actors.lua','src/lua/abyss_battle_targeting.lua',
  'src/lua/abyss_card_flow.lua','src/lua/abyss_lowcost_art.lua'];
 function readLegacyPotionProduction(read){
@@ -562,4 +562,55 @@ test('PC22 inputs without an earlier menu view retain their exact live bytes',()
   assert.equal(reader(path,'utf8'),raw);
   assert.deepEqual(reader(path),mergedReadFileSync(path));
  }
+});
+
+test('composite-intent text history checks the live Release owners before authorizing replay',()=>{
+ const anchor='tests/helpers/closeout-source-epoch.mjs',raw=mergedReadFileSync(anchor,'utf8');
+ const owners=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_battle_card_bindings.lua',
+  'src/lua/abyss_battle_render_actors.lua','tests/helpers/release-composite-intent-ci.json.gz'];
+ let fault;
+ const read=(path,encoding)=>{
+  if(path!==fault?.path)return mergedReadFileSync(path,encoding);
+  if(fault.kind==='missing')throw Error('missing '+path);
+  if(fault.kind==='null')return null;
+  const bytes=mergedReadFileSync(path,encoding);
+  return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+ };
+ const reader=integratedRead('menu',{read}), expected=reader(anchor,'utf8');
+ assert.notEqual(expected,raw,'the exact live CI input must expose a historical view');
+ for(const invoke of [()=>integratedSource(anchor,raw,'menu',read),()=>reader(anchor,'utf8'),()=>reader(anchor)]){
+  assert.equal(invoke().toString(),expected);
+  for(const path of owners)for(const kind of ['missing','null','drift']){
+   fault={path,kind};assert.throws(invoke,undefined,path+' '+kind);
+   fault=undefined;assert.equal(invoke().toString(),expected);
+  }
+ }
+ const production='src/lua/abyss_battle_render_actors.lua',unchanged=mergedReadFileSync(production,'utf8');
+ const noRead=()=>{throw Error('unbound source should not authorize a historical view');};
+ assert.equal(integratedSource('foreign/source',raw,'menu',noRead),raw);
+ assert.equal(integratedSource(anchor,raw+'\n','menu',noRead),raw+'\n');
+ assert.equal(integratedSource(production,unchanged,'menu',noRead),unchanged);
+});
+
+test('release Lua history authenticates the exact current raw inventory without changing discovery',()=>{
+ const raw=readdirSync('tests/lua').filter(path=>path.endsWith('.lua')).map(path=>'tests/lua/'+path).sort();
+ const expected=proof.inventories.menu.lua;
+ assert.deepEqual(raw,integratedCurrentInventory('lua'));
+ assert.notDeepEqual(raw,expected,'the exact current inventory must enter a distinct historical view');
+ assert.deepEqual(integratedPriorInventory(raw,'menu','lua'),expected);
+ const owners=['src/lua/abyss_game_ui_input.lua','tests/helpers/release-composite-intent-ci.json.gz'];
+ for(const owner of owners)for(const fault of ['missing','null','drift']){
+  const read=(path,encoding)=>{
+   if(path!==owner)return mergedReadFileSync(path,encoding);
+   if(fault==='missing')throw Error('missing '+path);
+   if(fault==='null')return null;
+   const bytes=mergedReadFileSync(path,encoding);
+   return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+  };
+  assert.throws(()=>integratedPriorInventory(raw,'menu','lua',read),undefined,owner+' '+fault);
+  assert.deepEqual(integratedPriorInventory(raw,'menu','lua'),expected);
+ }
+ const noRead=()=>{throw Error('historical inventory does not authorize a live projection');};
+ assert.deepEqual(integratedPriorInventory(expected,'menu','lua',noRead),expected);
+ assert.deepEqual(raw,integratedCurrentInventory('lua'));
 });

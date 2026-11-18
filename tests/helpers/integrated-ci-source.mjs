@@ -6,6 +6,7 @@ import {potionClickCiSource,potionClickCiCheckedSource,potionClickHistoricalRead
 import {potionPost697CiSource,potionPost697CiCheckedSource,potionPost697HistoricalRead,potionPost697PriorInventory,potionPost697CiPacket,assertPotionPost697CiCurrent} from './potion-post697-ci-source.mjs';
 import {
  assertReleasePotionEnemyCurrent,
+ isCurrentIntentCiReplay,
  releasePotionEnemyInventory,
  releasePotionEnemyRead,
  releasePotionEnemySource,
@@ -36,6 +37,11 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
 const potionPriorCiSource=(path,source,before,read=readFileSync)=>releaseBootstrapCiSource(path,potionBootstrapCiSource(path,potionRegressionCiSource(path,potionClickCiSource(path,potionPost697CiSource(path,source,undefined,read)))),before);
 export function integratedSource(path,source,target,read=readFileSync){
  read=typeof read==='function'?read:read?.read??readFileSync;
+ const result=projectIntegratedSource(path,source,target,read);
+ if(result!==source&&isCurrentIntentCiReplay(path,source))assertReleaseReplayInputs(read);
+ return result;
+}
+function projectIntegratedSource(path,source,target,read){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  if(typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -119,6 +125,15 @@ export function extendIntegratedHelperClosure(original){
 }
 // Exact complete inventories for historical receipts; raw Full discovery remains live.
 export function integratedPriorInventory(paths,target,kind='js',read=readFileSync){
+ const projected=projectIntegratedPriorInventory(paths,target,kind,read);
+ if(kind==='lua'&&projected.length!==paths.length){
+  const current=integratedCurrentInventory(kind);
+  if(paths.length===current.length&&[...paths].sort().every((path,index)=>path===current[index]))
+   assertReleaseReplayInputs(read);
+ }
+ return projected;
+}
+function projectIntegratedPriorInventory(paths,target,kind,read){
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
