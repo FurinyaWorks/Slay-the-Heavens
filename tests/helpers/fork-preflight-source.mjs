@@ -44,8 +44,11 @@ for(const [path,row] of Object.entries(transport.files)){
 const normalize=s=>s.replaceAll('\r\n','\n');
 
 // Reuse the existing immutable archive for historical inputs while authenticating
-// the exact live intake and production-source authorization helpers.
+// exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
+ 'data/presentation/narrative.zh-CN.json':'db6158e4abf8b19c3aa42018b88694205f288071d5ded593ac1fb8caa9b26f87',
+ 'tests/lore-v2.test.mjs':'6cc41ccaa1e3b51c324de489bb521eee0c28640d15f1d4ff8b82c043d4f7a7fa',
+ 'tests/lua/merchant_dialogue_lifecycle.lua':'25393fa6499858dbbf9551b416aca5930d93426b366c6f6c5123ee611bf3cb06',
  'scripts/check-task-intake.mjs':'972cbe675515a1fd4f7866170c37bd7568b94c6dbeca1e7bf340e46742e42029',
  'tests/sprint-intake.test.mjs':'daeabe161a8a7996b9961b46c37775ffb0e07639a4b34ab32f84f7a658d65929',
  'scripts/backlog-metadata.mjs':'082c419cbd0e20eae4ec4cb36f93541af3149f686dd064f06f5a12c983e27933',

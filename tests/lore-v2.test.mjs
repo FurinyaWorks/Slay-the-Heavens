@@ -28,13 +28,16 @@ function approvedCurrentCopy(core,support){
     assert.equal(owner[key].split(before).length,2,'exact approved name predecessor: '+path.join('.'));
     owner[key]=owner[key].replace(before,after);
   }
+  // #668 @ f0bb1f342d14f4bf58753c9c2ac88fc9112e9bc1: approved merchant.insufficientGold only.
+  assert.equal(expected.merchant.insufficientGold, '这可不够啊，小姑娘。', 'exact archived v2 merchant refusal');
+  expected.merchant.insufficientGold = '还差点钱。';
   return expected;
 }
 function assertNarrativeCopy(copy, core, support) {
   const expected=approvedCurrentCopy(core,support);
   for(const key of ['flow','merchant','combatIntros','eventCopy'])assert.deepEqual(copy[key],expected[key]);
 }
-test('shipped narrative preserves the user packet and exact reviewed Traveler names; event paragraphs fit without smaller type', () => {
+test('shipped narrative preserves archived or explicitly reviewed wording; event paragraphs fit without smaller type', () => {
   const copy = read('data/presentation/narrative.zh-CN.json');
   const core = read('docs/lore/v2/04-copy/core.zh-CN.json');
   const support = read('docs/lore/v2/04-copy/supporting.zh-CN.json');

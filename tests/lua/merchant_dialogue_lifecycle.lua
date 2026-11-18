@@ -53,8 +53,11 @@ test('reaction bubble closes without hiding the figure or preventing a second sa
  assert(merchant:tap() and bubble.visible,'clicking the figure must reopen the complete reaction')
  assert(ui:press('shopView/card2') and ui:press('confirm'),'bubble must never gate a consecutive sale')
  assert(merchant.current.kind=='buy' and bubble.visible and merchant.current.shown==0)
+ local deckSize=#ui.run.deck
  ui.run.gold=0;ui:render();assert(not ui:press('shopView/card3'))
  assert(merchant.current.kind=='poor' and bubble.visible and merchant.shake~=nil)
+ assert(merchant:tap() and box:GetChild('line').text=='「还差点钱。」','show the exact reviewed refusal')
+ assert(ui.run.gold==0 and #ui.run.deck==deckSize,'refused purchase must not mutate gold or cards')
 end)
 test('all encounter pages remain readable and idle waits for the long text to finish',function()
  local ui,root=setup();local merchant=ui.merchant;local pages={};local original=merchant.current
