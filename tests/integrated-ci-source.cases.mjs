@@ -53,6 +53,8 @@ const newerReleaseOwners=[
  'src/lua/abyss_card_flow.lua',
  'src/lua/abyss_lowcost_art.lua',
  'src/lua/abyss_monster_intent_particle_view.lua',
+ 'src/lua/abyss_node_ui_input.lua',
+ 'src/lua/abyss_shop_selection.lua',
 ];
 function readLegacyPotionProduction(read){
  const readSource=p=>mergedReadFileSync(p,'utf8');

@@ -24,7 +24,7 @@ test('joint Release authenticates the full live production corpus and retains bo
  assert.equal(files.length,352);assert.deepEqual(files,Object.keys(p.current).filter(path=>p.current[path]!==null).sort());
  for(const path of files)assert.equal(norm(readFileSync(path,'utf8')),p.current[path].source,path+' fresh joint source');
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name+' complete immutable original target');
- assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,82);
+ assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,83);
  const handPrior=p.targets.releaseHandLayoutPrior.files;
  const enemyPrior=p.targets.releaseEnemyMetricsPrior.files;
  assert.deepEqual(Object.keys(handPrior).filter(path=>handPrior[path].sha256!==enemyPrior[path].sha256),['src/lua/abyss_battle_card_view.lua']);
@@ -39,13 +39,15 @@ test('joint Release authenticates the full live production corpus and retains bo
  const cornersPrior=p.targets.releaseTargetCornersPrior.files;
  assert.deepEqual(files.filter(path=>particlePrior[path].sha256!==cornersPrior[path].sha256),['src/lua/abyss_monster_intent_particle_view.lua']);
  assert.deepEqual(files.filter(path=>cornersPrior[path].sha256!==pointerPrior[path].sha256),['src/lua/abyss_battle_unit_view.lua']);
- assert.deepEqual(files.filter(path=>pointerPrior[path].sha256!==p.current[path].sha256),[
+ const shopPrior=p.targets.releaseShopDismissalPrior.files;
+ assert.deepEqual(files.filter(path=>pointerPrior[path].sha256!==shopPrior[path].sha256),[
   'src/lua/abyss_battle_action_bindings.lua','src/lua/abyss_battle_card_bindings.lua',
   'src/lua/abyss_battle_card_gestures.lua','src/lua/abyss_battle_details.lua',
   'src/lua/abyss_battle_input_state.lua','src/lua/abyss_battle_potion_bindings.lua',
   'src/lua/abyss_battle_target_bindings.lua','src/lua/abyss_battle_ui.lua',
  ]);
- assert.equal(prior.owners.length,116);assert.equal(p.owners.length,127);
+ assert.deepEqual(files.filter(path=>shopPrior[path].sha256!==p.current[path].sha256),['src/lua/abyss_node_ui_input.lua', 'src/lua/abyss_shop_selection.lua']);
+ assert.equal(prior.owners.length,116);assert.equal(p.owners.length,129);
  assert.deepEqual(p.targets.releasePc22BasicFeedbackReviewed.files,releasePc22BasicFeedbackSourceEpoch.proof.current);
  assert.deepEqual(p.targets.releaseSelectionMapReviewed.files,releaseSelectionMapSourceEpoch.proof.current);
  for(const side of [releasePc22BasicFeedbackSourceEpoch,releaseSelectionMapSourceEpoch])for(const [name,target]of Object.entries(side.proof.targets))assert.deepEqual(p.targets[name],target);
@@ -71,6 +73,8 @@ test('joint Release authenticates the full live production corpus and retains bo
   'src/lua/abyss_game_ui_view.lua',
   'src/lua/abyss_lowcost_art.lua',
   'src/lua/abyss_monster_intent_particle_view.lua',
+  'src/lua/abyss_node_ui_input.lua',
+  'src/lua/abyss_shop_selection.lua',
 ]);
  const card=p.current['src/lua/abyss_card_flow.lua'].source;
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(card)}\0`).update(card).digest('hex'),'486b63e804f138ee7a1ba1dc8241bdf9d3b99731');

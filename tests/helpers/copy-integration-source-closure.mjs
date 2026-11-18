@@ -106,6 +106,8 @@ files['tests/helpers/release-target-corners-source.json.gz'] = '74900cc6bcc96f29
 assert.equal(files[closeoutPath], 'ed7b31a7e316c40fd15f770b7bca0e6a9460981a831de5966634241ad80270ba');
 files[closeoutPath] = '41acf3946b09caa2f1e03f5775597e7d8e62dd021fd4b394712a4339e814dbdf';
 files['tests/helpers/release-pointer-identity-source.json.gz'] = 'ad05f84a4d67d65b99f1469ffbd4080d2b9f92b88f0b6df214ecc0e9888138c1';
+files[closeoutPath] = 'd46b74955c6f955cde5bd1f3358986250f5b650ce3f0d0532e6d4b3a3a53b749';
+files['tests/helpers/release-shop-dismissal-source.json.gz'] = 'a8c7fd5bcba44c200ddfc644761adb69b35d7d2ab1e92d619f01fc050fb3ae24';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

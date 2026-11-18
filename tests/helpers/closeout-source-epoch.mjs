@@ -245,10 +245,30 @@ const pointerTargets = {
 };
 const pointerOwners = Object.keys(pointerCurrent).sort().filter(path =>
   Object.values(pointerTargets).some(target => target.files[path]?.sha256 !== pointerCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const preShopDismissal = {
   ...pointerPriorRelease, current: pointerCurrent, targets: pointerTargets, owners: pointerOwners,
   currentCommit: pointer.checkpoint,
   currentCommitRole: 'exact current composition of #679 and the remaining #711 pointer protocol',
+};
+const shopDismissalBytes = readFileSync(new URL('./release-shop-dismissal-source.json.gz', import.meta.url));
+assert.equal(hash(shopDismissalBytes), 'a8c7fd5bcba44c200ddfc644761adb69b35d7d2ab1e92d619f01fc050fb3ae24', 'complete shop dismissal production source');
+const shopDismissal = JSON.parse(gunzipSync(shopDismissalBytes));
+const shopDismissalPaths = ["src/lua/abyss_node_ui_input.lua", "src/lua/abyss_shop_selection.lua"];
+assert.deepEqual(Object.keys(shopDismissal.before), shopDismissalPaths);
+assert.deepEqual(Object.keys(shopDismissal.current), shopDismissalPaths);
+for (const path of shopDismissalPaths)
+  assert.deepEqual(shopDismissal.before[path], preShopDismissal.current[path], 'exact Release shop dismissal predecessor: ' + path);
+const shopDismissalCurrent = { ...preShopDismissal.current, ...shopDismissal.current };
+const shopDismissalTargets = {
+  ...preShopDismissal.targets,
+  releaseShopDismissalPrior: { commit: 'aba3e324f5947c81a0c2bc477806c4dd28f3970f', files: preShopDismissal.current },
+};
+const shopDismissalOwners = Object.keys(shopDismissalCurrent).sort().filter(path =>
+  Object.values(shopDismissalTargets).some(target => target.files[path]?.sha256 !== shopDismissalCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...preShopDismissal, current: shopDismissalCurrent, targets: shopDismissalTargets, owners: shopDismissalOwners,
+  currentCommit: '86bf158d124dd045677506625a4934287f3bdd64',
+  currentCommitRole: 'exact shop pointer dismissal slice from #680',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
