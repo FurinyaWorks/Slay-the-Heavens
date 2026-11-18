@@ -1,8 +1,8 @@
 # v2.0.0 Release 分支交接
 
-> 快照：2026-11-16（北京时间）；这是**分流入口与待验门禁**，不是实时 CI/PR 状态。每轮先读远端 refs、原生 Ruleset、当前 PR/Backlog 和准确候选身份。状态：**RELEASE_INTEGRATING / RULESET_ACTIVE / CI_POLICY_IN_PR / RC_NO_GO**。Release 集成分支不等于已冻结的发版候选。
+> 快照：2026-11-19（北京时间）；这是**分流入口与待验门禁**，不是实时 CI/PR 状态。每轮先读远端 refs、原生 Ruleset、当前 PR/Backlog 和准确候选身份。状态：**RELEASE_INTEGRATING / RULESET_ACTIVE / CI_POLICY_IN_RELEASE / RC_NO_GO**。本次只读核验 Release `1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2`、Develop `2ec45b9e52c870badc4d4888f6243a30556eecb4`；Release 集成分支不等于已冻结的发版候选。
 
-> 冻结规则唯一执行入口：[Release维护技能](../../.codebuddy/skills/release-maintenance/SKILL.md)。Quality元数据门禁要求类型/目标版本/发版必要性；Feature拒绝。TASK-42.1/#670的数字键、快捷键、预输入仅后续版本，不以调试便利等理由引入。声明不替代人工diff复审。既有Release保护已只读核验active，原文见[本轮规则读回](../evidence/release-freeze-20261116/release-ruleset-readback.json)；下文2026-11-15未配置状态仅历史快照。新增范围gate仍须正常合入后生效。
+> 冻结规则唯一执行入口：[Release维护技能](../../.codebuddy/skills/release-maintenance/SKILL.md)。Quality元数据门禁要求类型/目标版本/发版必要性；Feature拒绝。TASK-42.1/#670的数字键、快捷键、预输入仅后续版本，不以调试便利等理由引入。声明不替代人工diff复审。该门禁已由 [#707](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/707) 集成交付为 `af77fb2461c548f0faf104761d107397f75dca08`，上述 Release 源码已包含 `edited` 触发及 `check-release-scope.mjs` 接线，不再是待合入 PR。当前原生保护与来源见[本轮只读快照](../evidence/release-handoff-readback-20261119/snapshot.json)；[11 月 16 日读回](../evidence/release-freeze-20261116/release-ruleset-readback.json)保留为历史，不代表当前配置。本次源码核验不声称新增 Hosted CI 或 RC 验收通过。
 
 ## 所有 Agent 的分流规则
 
@@ -14,7 +14,7 @@
 ## Release 准入状态（必须核实）
 
 - `Quality`、`Licenses`、`Quick feedback` 保留 `release/**` PR 入口；日常已映射修复走完整受影响双平台 Fast，Release push 不再重复启动 Quality。未知范围/CI基础设施保守回退与显式 Full 请求见 [CI-FAST](../CI-FAST.md)。实际 GitHub 当前 SHA 检查才算通过，禁止借用旧结果。
-- Release Ruleset **27313515 已实际读回生效**：匹配 `refs/heads/release/*`，禁止删除/强推，必须 PR、解决讨论、Strict，Required 为 Actions 来源的 `check`、`presentation`、`engineering-posix`、`inventory`，无 bypass、无 Merge Queue。独立代码评审依原工程合同核查；Release 使用原生 Auto-merge 等待必要检查，`npm run merge:auto` 仍只用于 Develop。不得直接照抄 Develop 专属状态为 Release 必需项。
+- Release Ruleset **27313515 已实际读回生效**：匹配 `refs/heads/release/*`，禁止删除/强推，要求线性历史、PR/squash、解决讨论、Strict，Required 为 Actions 来源（integration_id=15368）的 `check`、`presentation`、`engineering-posix`、`inventory`，无 Merge Queue。11 月 18 日配置已存在 `RepositoryRole 5 / pull_request` bypass；这只是如实记录原生配置，**不授权 Agent 使用 bypass 或跳过任何门禁**，本轮未修改或使用该权限。独立代码评审依原工程合同核查；Release 使用原生 Auto-merge 等待必要检查，`npm run merge:auto` 仍只用于 Develop。不得直接照抄 Develop 专属状态为 Release 必需项。
 - **日常 Release 修复经独审及必要 Fast/质量检查通过即可自动合入，不等待候选 Full。** 集成完成、准备上线时才冻结准确 Release HEAD，显式请求一次现有 hosted Full；最新完整分片、不可变 checkout 收据与 HEAD/attempt 均通过才可发布，代码变化须重新验收。Release→master 的必需 Quality 自动验证此门禁。入口见 [CI-FAST](../CI-FAST.md)，不自动打 Tag 或上传平台。
 - RC 放行还要同一精确 `source SHA + buildId + GIL SHA256 + payloadDigest` 的官方导入/ready、PC/手机实测、两幕自然通关、平台关卡 ≤20MB / 服务器 ≤3MB、负载/性能与更新日志证据。遵循 [发布操作单](../PUBLISHING.md)、[平台负载](../PLATFORM_LOAD.md)、[CI](../CI.md) 及 Backlog 原有 TASK。**PR 绿灯不是正式发布许可**。
 

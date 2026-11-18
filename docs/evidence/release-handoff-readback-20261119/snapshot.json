@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-18T20:22:33Z",
+  "purpose": "Read-only Release handoff reconciliation; historical observation, not live status or authorization to bypass checks.",
+  "repository": "FurinyaWorks/Slay-the-Heavens",
+  "release": {
+    "ref": "release/v2.0.0",
+    "sha": "1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2",
+    "source": "https://api.github.com/repos/FurinyaWorks/Slay-the-Heavens/branches/release/v2.0.0"
+  },
+  "develop": {
+    "ref": "develop",
+    "sha": "2ec45b9e52c870badc4d4888f6243a30556eecb4",
+    "source": "https://api.github.com/repos/FurinyaWorks/Slay-the-Heavens/branches/develop"
+  },
+  "integratedPolicy": {
+    "pull": 707,
+    "mergedAt": "2026-11-17T14:15:38Z",
+    "mergeCommit": "af77fb2461c548f0faf104761d107397f75dca08",
+    "reviewedHead": "a7cac1be3190e3fd8a24924b15b3b72ce50ec5e6",
+    "source": "https://api.github.com/repos/FurinyaWorks/Slay-the-Heavens/pulls/707",
+    "sourceVerification": "At the Release SHA above, .github/workflows/quality.yml includes the edited PR event and invokes scripts/check-release-scope.mjs from PR metadata checks. That script requires unique Change-Type, matching Target-Version and Release-Necessity and rejects feature declarations. This is source presence, not a new Hosted CI result.",
+    "workflowBlob": "87166396822853d133d7f3d47fd3b376ab5f3ea4",
+    "scopeGateBlob": "d45978c66c00cd0da730a0113f419c036e6d4dcc"
+  },
+  "rulesetSource": "https://api.github.com/repos/FurinyaWorks/Slay-the-Heavens/rulesets/27313515",
+  "ruleset": {
+    "id": 27313515,
+    "name": "release - pull requests and affected Quality",
+    "target": "branch",
+    "source_type": "Repository",
+    "source": "FurinyaWorks/Slay-the-Heavens",
+    "enforcement": "active",
+    "conditions": {
+      "ref_name": {
+        "exclude": [],
+        "include": [
+          "refs/heads/release/*"
+        ]
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_linear_history"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "required_approving_review_count": 0,
+          "dismiss_stale_reviews_on_push": false,
+          "required_reviewers": [],
+          "require_code_owner_review": false,
+          "dismissal_restriction": {
+            "enabled": false,
+            "allowed_actors": []
+          },
+          "require_last_push_approval": false,
+          "required_review_thread_resolution": true,
+          "require_extra_approval_for_unattributed_changes": true,
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "strict_required_status_checks_policy": true,
+          "do_not_enforce_on_create": false,
+          "required_status_checks": [
+            {
+              "context": "check",
+              "integration_id": 15368
+            },
+            {
+              "context": "presentation",
+              "integration_id": 15368
+            },
+            {
+              "context": "engineering-posix",
+              "integration_id": 15368
+            },
+            {
+              "context": "inventory",
+              "integration_id": 15368
+            }
+          ]
+        }
+      }
+    ],
+    "node_id": "RRS_lACqUmVwb3NpdG9yec5VOEXezgGgxWs",
+    "created_at": "2026-11-15T20:56:23.929+08:00",
+    "updated_at": "2026-11-18T14:06:32.108+08:00",
+    "bypass_actors": [
+      {
+        "actor_id": 5,
+        "actor_type": "RepositoryRole",
+        "bypass_mode": "pull_request"
+      }
+    ],
+    "current_user_can_bypass": "pull_requests_only",
+    "_links": {
+      "self": {
+        "href": "https://api.github.com/repos/FurinyaWorks/Slay-the-Heavens/rulesets/27313515"
+      },
+      "html": {
+        "href": "https://github.com/FurinyaWorks/Slay-the-Heavens/rules/27313515"
+      }
+    }
+  },
+  "limits": {
+    "changedRepositorySettings": false,
+    "usedBypass": false,
+    "ranFull": false,
+    "claimedRCApproval": false,
+    "officialCandidateAndDevices": "UNVERIFIED"
+  }
+}
