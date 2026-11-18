@@ -194,10 +194,31 @@ const particleTargets = {
 };
 const particleOwners = Object.keys(particleCurrent).sort().filter(path =>
   Object.values(particleTargets).some(target => target.files[path]?.sha256 !== particleCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const beforeCorners = {
   ...intentRelease, current: particleCurrent, targets: particleTargets, owners: particleOwners,
   currentCommit: '22a5f5c36c9e3d47e11568a06ee0118c94118136',
   currentCommitRole: 'exact static intent particle slice from #706',
+};
+const cornerBytes = readFileSync(new URL('./release-target-corners-source.json.gz', import.meta.url));
+assert.equal(hash(cornerBytes), '74900cc6bcc96f29a430067d609bda9c7de8a2d3245b9fad59fc69ae4d3181c7', 'complete target corner source');
+const corner = JSON.parse(gunzipSync(cornerBytes));
+const cornerPath = 'src/lua/abyss_battle_unit_view.lua';
+assert.equal(corner.schemaVersion, 1);
+assert.equal(corner.owner, cornerPath);
+assert.equal(corner.base, '72870245228a2a9fbf036a516aa69332baa35973');
+assert.equal(corner.checkpoint, '13c9981431e04ac1be75592842da180225dbaf63');
+assert.deepEqual(corner.before, beforeCorners.current[cornerPath], 'exact Release target corner predecessor');
+const cornerCurrent = { ...beforeCorners.current, [cornerPath]: corner.current };
+const cornerTargets = {
+  ...beforeCorners.targets,
+  releaseTargetCornersPrior: { commit: corner.base, files: beforeCorners.current },
+};
+const cornerOwners = Object.keys(cornerCurrent).sort().filter(path =>
+  Object.values(cornerTargets).some(target => target.files[path]?.sha256 !== cornerCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...beforeCorners, current: cornerCurrent, targets: cornerTargets, owners: cornerOwners,
+  currentCommit: corner.checkpoint,
+  currentCommitRole: 'exact target corner geometry from #684 on the current Release baseline',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
