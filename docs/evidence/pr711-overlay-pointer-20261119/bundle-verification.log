@@ -1,0 +1,6 @@
+../release-overlay-pointer-evidence-20261119/overlay-pointer.bundle is okay
+The bundle contains this ref:
+d32bcca464f12271c7a8a48a6d2bc42d5c0bec3e refs/heads/fix/release-pointer-overlay-cancel-20261119
+The bundle requires this ref:
+5a86c6c2a3784d28fa819ab7487dd58cc7a778b1
+The bundle uses this hash algorithm: sha1

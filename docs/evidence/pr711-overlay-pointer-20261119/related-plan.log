@@ -1,0 +1,27 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> slay-the-abyss@1.0.0 test:related
+> node scripts/test-affected.mjs --base 5a86c6c2a3784d28fa819ab7487dd58cc7a778b1 --plan
+
+{
+  "tier": "related",
+  "changed": [
+    "src/lua/abyss_battle_actions.lua",
+    "src/lua/abyss_battle_card_gestures.lua",
+    "tests/helpers/closeout-source-epoch.mjs",
+    "tests/helpers/copy-integration-source-closure.mjs",
+    "tests/helpers/release-pointer-overlay-ci.json.gz",
+    "tests/helpers/release-pointer-overlay-source.json.gz",
+    "tests/helpers/release-potion-enemy-source.mjs",
+    "tests/integrated-ci-source.cases.mjs",
+    "tests/lua/support/target_anonymous_context.lua",
+    "tests/mobile-card-release.test.mjs",
+    "tests/release-card-contact-integration.test.mjs",
+    "node_modules"
+  ],
+  "full": true,
+  "reason": "Unmodelled or deleted input: tests/helpers/release-pointer-overlay-ci.json.gz",
+  "fast": [],
+  "integration": [],
+  "lua": []
+}

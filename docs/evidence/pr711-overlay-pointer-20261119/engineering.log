@@ -1,0 +1,16 @@
+HEAD=e2d07876bd74dd5a5a48c8e1bf55b16d4135dc59
+tree=fa89bcd768f968c961f2b2686fe3f87844422256
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> slay-the-abyss@1.0.0 check:syntax
+> node scripts/check-syntax.mjs
+
+JavaScript syntax checks passed.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice
+Quality reported: 351 modules; 6223/6223 measurements; new thresholds report-only. See build/engineering-quality.{json,md}
+Architecture passed: 351 modules, 1992 edges; build/architecture.json
+Luacheck 1.2.0: no new diagnostics; 6 explicit historical warnings. Battle render <=10; scoped functions <=15 (Enemy AI initialize <=21); 2215 governed responsibility measurements.

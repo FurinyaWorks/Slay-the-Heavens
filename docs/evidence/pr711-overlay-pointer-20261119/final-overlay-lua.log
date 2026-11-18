@@ -1,0 +1,15 @@
+HEAD=d32bcca464f12271c7a8a48a6d2bc42d5c0bec3e
+tree=a6c2182f59e28429485efbf5ee46adecb1305f2e
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK play source=- target=1 amount=0
+ABYSS_FEEDBACK recovered cancelled
+ABYSS_RUN seed=1 source=explicit
+ABYSS_RUN seed=1 source=explicit
+ABYSS_RUN seed=1 source=explicit
+BATTLE_OVERLAY_SURFACE_SAFETY_PASS input/pause/false/throw/recovery/death/terminal
+Lua fixture tests/lua/battle_overlay_surface_safety.lua: 7093 ms
+ABYSS_RUN seed=1 source=explicit
+OVERLAY_COUNTS 10 cycles creates=0 destroys=0
+BATTLE_OVERLAY_SURFACE_RETENTION_PASS
+Lua fixture tests/lua/battle_overlay_surface_retention.lua: 4358 ms
+exit=0

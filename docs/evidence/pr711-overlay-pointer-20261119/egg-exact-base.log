@@ -1,0 +1,16 @@
+HEAD=5a86c6c2a3784d28fa819ab7487dd58cc7a778b1
+tree=25e627940ad33a177f0bbd9e939bacc04643a94d
+HISTORICAL_HOST_REFACTOR exact complete runtime cb1eac63620b908d880b8a339ab834b1b533dfc1; current production is checked separately
+HISTORICAL_HOST_ORDERED_TRACE cb1 monolith-to-modules short-egg seed=1 7-11
+HOST_TRACE_BYTES ms=18242 encoded=1677109 decoded=22133503
+HOST_TRACE_BYTES ms=20446 encoded=1677109 decoded=22133503
+CURRENT_HOST_SCENARIO {"seed":1,"scenario":"short-egg","from":7,"to":11,"mutant":false,"status":0}
+✔ whole Host egg boundaries 7-11 (43697.601705ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44023.78487

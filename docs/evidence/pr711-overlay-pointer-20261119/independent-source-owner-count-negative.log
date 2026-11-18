@@ -1,0 +1,21 @@
+REVIEW PASS exact HEAD/tree, delta base and raw object chain to Release
+REVIEW PASS two product paths, PC35 Back body unchanged, old archives/timing/workflow blobs unchanged
+REVIEW PASS exact two production witnesses and six CI fixture/helper witnesses bound to Git; recovered seven unchanged blobs intact
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+129 !== 130
+
+    at file://docs/evidence/pr711-overlay-pointer-20261119/independent-source-probe.mjs:80:8 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 129,
+  expected: 130,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

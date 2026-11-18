@@ -1,0 +1,44 @@
+HEAD=d32bcca464f12271c7a8a48a6d2bc42d5c0bec3e
+tree=a6c2182f59e28429485efbf5ee46adecb1305f2e
+v24.22.1
+✔ integration validates complete raw sources and leaves every foreign byte and production owner visible (59926.989633ms)
+✔ integration copy closure requires its complete exact predecessor and current dependency bytes (860.911279ms)
+✔ mobile potion production packet retains all old views and rejects partial or stale owner bindings (145.012353ms)
+✔ mobile potion CI bindings authenticate complete fresh after sources and unchanged archives (91129.239168ms)
+✔ potion bootstrap combination authenticates raw union before either historical view and rejects fresh drift (24531.771956ms)
+✔ mobile potion raw inventories retain every new test and reject missing duplicate foreign or changed additions (69.852976ms)
+✔ Release bootstrap exact sources retain every old byte and reject missing drift and partial packets (6532.159122ms)
+✔ potion regression composition production sources retain original owners and reject partial fresh authorizations (343.458355ms)
+✔ potion regression composition CI keeps the bootstrap packet and rejects missing drift and incomplete after bytes (142544.85085ms)
+✔ potion regression composition raw JS and Lua inventory rejects missing duplicate foreign and source drift (55.004464ms)
+✔ legacy 3e potion click production closure authenticates new bytes and retains every complete predecessor (189.132164ms)
+✔ potion click CI authenticates new bytes and rejects drift missing packets and incomplete discovery (3621.128703ms)
+✔ potion click historical entry authenticates complete current bindings before replay and after warm success (5267.769641ms)
+✔ post697 union historical CI reader reauthenticates every current binding and archive after warm success (27474.398892ms)
+✔ post697 union public CI source authenticates the same raw reader before every historical conversion (27428.660541ms)
+✔ post697 union current inventory authenticates the complete corpus before entering prior inventory (27009.325536ms)
+✔ post697 union integrated reader and source forward the same raw reader before historical output (469.290849ms)
+✔ post697 union production retains both complete real inputs and authenticates every current owner (8648.584279ms)
+✔ post697 union both explicit histories reject warm cross-input faults and preserve unchanged before bytes (459.764915ms)
+✔ public integrated binary history reauthenticates current owners and archives before returning old bytes (339.827406ms)
+✔ PC22 inputs without an earlier menu view retain their exact live bytes (0.417989ms)
+✔ composite-intent text history checks the live Release owners before authorizing replay (5279.154028ms)
+✔ release Lua history authenticates the exact current raw inventory without changing discovery (230.951852ms)
+✔ historical potion production validates its current pointer owners before replay (7.479513ms)
+✔ pointer history authenticates fresh linked owners before reading earlier public text (271.693592ms)
+✔ default target corners preserve their native tree and clear on cancel/rebinding (4082.97739ms)
+✔ official target corners preserve their native tree and clear on cancel/rebinding (5997.170753ms)
+✔ joint Release authenticates the full live production corpus and retains both immutable standalone corpora (12.308234ms)
+✔ joint owner authorization freshly rejects every missing changed or mistyped owner and leaves foreign inputs visible (1664.236746ms)
+✔ joint CI binds every current input, preserves both packets and never masks production or foreign drift (39552.400607ms)
+✔ joint raw inventories retain both additions and reject missing duplicate foreign and changed inputs (314.486987ms)
+✔ actual 00ab enemy capacity join freshly rejects cross-input and archive drift through both public readers (1121.023758ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 488516.065714
+exit=0

@@ -1,0 +1,93 @@
+{
+  "reviewId": "release-overlay-pointer-20261119-independent-01",
+  "reviewedHeadSha": "38e0453848111ec372c61335b2dadc3d7e4fc552",
+  "reviewedBaseSha": "1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2",
+  "reviewedTree": "a6c2182f59e28429485efbf5ee46adecb1305f2e",
+  "reviewedBaseTree": "b4b58920d3c53e35e4c11388b745eb42c722e70d",
+  "reviewedDeltaBaseSha": "5a86c6c2a3784d28fa819ab7487dd58cc7a778b1",
+  "reviewedDeltaBaseTree": "25e627940ad33a177f0bbd9e939bacc04643a94d",
+  "scope": "Exact 11-path delta to recovered #711 Release; inherited pointer/history fingerprints and PC35 preservation.",
+  "conclusion": "pass",
+  "unresolved": [],
+  "sourceClosure": {
+    "rawProductionPaths": 352,
+    "distinctLinkedOwners": 129,
+    "targets": 85,
+    "preservedPriorTargets": 84
+  },
+  "verification": [
+    {
+      "scope": "independent",
+      "check": "git diff --check in exact scope",
+      "result": "pass"
+    },
+    {
+      "scope": "independent",
+      "check": "exact-source/archive/isolated-copy probes",
+      "result": "pass",
+      "groups": 6,
+      "log": "independent-source-probe-d32.log"
+    },
+    {
+      "scope": "independent",
+      "check": "Fengari mocked pointer and native visibility probes",
+      "result": "pass",
+      "groups": 5,
+      "log": "independent-pointer-probe-d32.log"
+    },
+    {
+      "scope": "implementer evidence reviewed",
+      "check": "node --test --test-concurrency=1 tests/integrated-ci-source.cases.mjs tests/release-card-contact-integration.test.mjs",
+      "result": "pass",
+      "tests": 32,
+      "passed": 32,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "exit": 0,
+      "log": "final-complete-source.log"
+    },
+    {
+      "scope": "implementer evidence reviewed",
+      "check": "exact candidate overlay safety and retention",
+      "result": "pass",
+      "log": "final-overlay-lua.log"
+    },
+    {
+      "scope": "implementer evidence reviewed",
+      "check": "unchanged-budget serial target context (11 Lua scenarios)",
+      "result": "pass",
+      "log": "sparse-green.log"
+    },
+    {
+      "scope": "implementer evidence reviewed",
+      "check": "isolated Host egg window with exact final runtime bytes and recovered precursor",
+      "result": "pass",
+      "logs": [
+        "egg-final.log",
+        "egg-exact-base.log"
+      ]
+    }
+  ],
+  "independentEvidenceSha256": {
+    "independent-pointer-probe-d32.log": "143bd64ef9529009480c1616f4dbfdc8d0fed591d8e5fd72b8000001dd4d4780",
+    "independent-pointer-probe.lua": "230acacd2bc90096de6317d18c705a365a2e787a5abd009ecfdc28e5c34702fc",
+    "independent-review-d32.md": "e914ee153fd702e48fe32e5d80dab70a52c301856cf04046eae709c84c6854df",
+    "independent-reviewed-sha256-d32.txt": "3e69169b826f4208accaaa982444eba6fb943e652778b8aeb3b1cd3f095561c5",
+    "independent-source-owner-count-negative.log": "d942527f51ffcfa9c84bd9aba10370ce245462e16ab913508f787e3850ba695c",
+    "independent-source-probe-d32.log": "5007402b513f0ca739e964d94188d10b569db550e733a0f520b3343772727ef5",
+    "independent-source-probe.mjs": "adb846384e1ef4f4e4ffcfdc2a9f9db8d459336e609cfb83462f1dc0cc86b78c",
+    "independent-source-readback.json": "15ef571edfcb24529918f180ebb33412366de5fce6c0d5dd5fbd4a48356f19f8"
+  },
+  "evidenceNormalization": "Independent probe log path prefixes were replaced with repository-relative paths; test output, counts and identities preserved. SHA-256 values bind the published copies.",
+  "limits": [
+    "Linux Node v24.22.1/Fengari; not native client or device behavior.",
+    "No project Full, hosted CI, GUI, official import, ready, official capacity, or physical PC/mobile acceptance.",
+    "Not GitHub approval or merge, production deployment or release authorization."
+  ],
+  "localValidatedHeadSha": "d32bcca464f12271c7a8a48a6d2bc42d5c0bec3e",
+  "remoteReadback": "independent-source-readback.json",
+  "relatedEvidenceSha256": {
+    "final-complete-source.log": "c1114bf3269492c7ba8bd507c33f24083c7414089b3c1997d52a20a27aa58373"
+  }
+}

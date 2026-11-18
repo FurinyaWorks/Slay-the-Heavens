@@ -1,0 +1,12 @@
+588ac56222241049e3ce6d61bf63ed39553b00f45db587e874de74d67907db50  src/lua/abyss_battle_actions.lua
+2e301d97733966ce8d22ee5d7e1a014f0e52307df4ec5286094a060d94741292  tests/lua/support/target_anonymous_context.lua
+✔ legacy released-target contract: target_anonymous_context (18646.046648ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18942.203882
+exit=0
