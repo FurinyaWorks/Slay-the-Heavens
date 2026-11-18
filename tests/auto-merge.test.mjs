@@ -232,6 +232,7 @@ function nativeFixture(){
  f.artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:sha('a')}};
  f.gateRun={head_branch:'develop',actor:{id:aiRoleId},triggering_actor:{id:aiRoleId},id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
  f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12)+'-9-1',expired:false,workflow_run:{id:9,head_sha:sha('b')},digest:'sha256:'+ 'f'.repeat(64)};
+ f.nativeSettings={databaseId:projectRepositoryId,nameWithOwner:aiRepo,autoMergeAllowed:true,squashMergeAllowed:true};
  const api=aiApi(f).api,calls=[];
  const query=(...args)=>{
   calls.push(args);const path=args.find(a=>typeof a==='string'&&((/^(repos|repositories)\//).test(a)||a==='user'));
@@ -241,6 +242,10 @@ function nativeFixture(){
    value={state:'success',context:'independent-review',creator:{id:41898282}};
   }else if(args[1]==='graphql'){
    if(args.some(a=>a.includes('enablePullRequestAutoMerge')))value={data:{enablePullRequestAutoMerge:{pullRequest:{number:712}}}};
+   else if(args.some(a=>a.includes('autoMergeAllowed'))){
+    assert(args.includes('owner=FurinyaWorks')&&args.includes('name=Slay-the-Heavens'));
+    value={data:{repository:f.nativeSettings}};
+   }
    else value={data:{node:{id:'PR_712',number:712,state:'OPEN',baseRefName:'develop',headRefOid:sha('a'),repository:{databaseId:projectRepositoryId,nameWithOwner:aiRepo},isInMergeQueue:false,mergeQueueEntry:null,isMergeQueueEnabled:true,autoMergeRequest:{mergeMethod:'SQUASH'},mergeQueue:{id:'QUEUE',configuration:{mergeMethod:'SQUASH',mergingStrategy:'ALLGREEN'}}}}};
   }else if(path==='user')value=f.reviews[0]?.user??{id:aiRoleId,login:'FurinyaDev'};
   else if(path?.endsWith('/rulesets/25870651'))value=f.ruleset;
@@ -268,6 +273,17 @@ test('native merge dry-run requires actual Review and retained policy without Ad
   const bad=nativeFixture();mutate(bad);assert.throws(()=>armAutoMerge(aiRepo,712,100,bad.query));assert(!bad.calls.some(a=>a.includes('POST')));
  }
 });
+test('native merge accepts only the current administrator pull-request bypass',()=>{
+ const admin={actor_id:5,actor_type:'RepositoryRole',bypass_mode:'pull_request'};
+ const f=nativeFixture();f.ruleset.bypass_actors=[admin];
+ assert.equal(armAutoMerge(aiRepo,712,100,f.query,{dryRun:true}).state,'eligible');
+ for(const actors of [[{...admin,bypass_mode:'always'}],[{...admin,actor_id:4}],
+  [{...admin,actor_type:'OrganizationAdmin'}],[admin,admin],null]){
+  const denied=nativeFixture();denied.ruleset.bypass_actors=actors;
+  assert.throws(()=>armAutoMerge(aiRepo,712,100,denied.query,{dryRun:true}),/bypass/);
+  assert(!denied.calls.some(args=>args.includes('POST')));
+ }
+});
 test('native enable dispatches the existing gate and records an intent rather than manufacturing preflight',()=>{
  const f=nativeFixture(),r=armAutoMerge(aiRepo,712,100,f.query);
  assert.equal(r.state,'auto-merge-requested');assert.equal(r.proof.schemaVersion,9);assert.equal(r.proof.nativeAuto.confirmed,true);assert.equal(r.proof.gateRef,'refs/heads/develop');
@@ -287,6 +303,42 @@ test('CI native review gate uploads genuine preflight before releasing a truthfu
  assert(!f.calls.some(a=>a.includes('POST')));
  const released=gateExecute(f,{release:true,saved:prepared.proof});assert.equal(released.result.state,'published');assert.equal(released.result.artifactId,99);
  assert(f.calls.some(a=>a.includes('POST')&&a.includes('context=independent-review')));
+});
+test('hosted review gate verifies redacted repository settings before preparing and releasing proof',()=>{
+ const f=nativeFixture();
+ delete f.repository.allow_auto_merge;delete f.repository.allow_squash_merge;
+ f.ruleset.bypass_actors=[{actor_id:5,actor_type:'RepositoryRole',bypass_mode:'pull_request'}];
+ const prepared=gateExecute(f);
+ assert.equal(prepared.result.state,'pr_passed');
+ assert.equal(f.calls.filter(args=>args.some(arg=>arg.includes('autoMergeAllowed'))).length,2);
+ const released=gateExecute(f,{release:true,saved:prepared.proof});
+ assert.equal(released.result.state,'published');
+ assert.equal(f.calls.filter(args=>args.some(arg=>arg.includes('autoMergeAllowed'))).length,4);
+});
+test('hosted review gate denies false or malformed settings and foreign or changed GraphQL answers',()=>{
+ for(const field of ['allow_auto_merge','allow_squash_merge'])for(const invalid of [false,null,'true']){
+  const f=nativeFixture();
+  delete f.repository.allow_auto_merge;delete f.repository.allow_squash_merge;
+  f.repository[field]=invalid;
+  assert.throws(()=>gateExecute(f),/auto-merge and squash/);
+  assert(!f.calls.some(args=>args[1]==='graphql'||args.includes('POST')));
+ }
+ for(const change of [settings=>{settings.autoMergeAllowed=false;},settings=>{delete settings.squashMergeAllowed;},
+  settings=>{settings.databaseId=1;},settings=>{settings.nameWithOwner='other/repo';}]){
+  const f=nativeFixture();
+  delete f.repository.allow_auto_merge;delete f.repository.allow_squash_merge;
+  change(f.nativeSettings);
+  assert.throws(()=>gateExecute(f),/merge settings|auto-merge and squash/);
+  assert(!f.calls.some(args=>args.includes('POST')));
+ }
+ const f=nativeFixture(),original=f.query;let reads=0;
+ delete f.repository.allow_auto_merge;delete f.repository.allow_squash_merge;
+ f.query=(...args)=>{
+  if(args.some(arg=>arg.includes('autoMergeAllowed'))&&++reads===2)f.nativeSettings.squashMergeAllowed=false;
+  return original(...args);
+ };
+ assert.throws(()=>gateExecute(f),/native admission changed/);
+ assert(!f.calls.some(args=>args.includes('POST')));
 });
 test('shadow cannot publish and stale signed review, policy, CI, artifact or untrusted source fails closed',()=>{
  const shadow=nativeFixture(),s=gateExecute(shadow,{mode:'shadow'});assert.equal(s.result.state,'shadow_verified');

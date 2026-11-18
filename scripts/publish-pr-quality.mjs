@@ -17,6 +17,23 @@ function gh(...args){
  if(p.error||p.status!==0)throw Error('PR quality query failed: '+(p.error?.message??p.stderr));
  return p.stdout;
 }
+
+function hostedMergeSettings(repo,settings,query){
+ // The Actions installation may omit repository settings from REST.
+ const fields=['allow_auto_merge','allow_squash_merge'];
+ const visible=fields.filter(field=>Object.hasOwn(settings,field));
+ if(visible.length===fields.length||visible.some(field=>settings[field]!==true))return settings;
+ const [owner,name]=repo.split('/');
+ const response=JSON.parse(query('api','graphql','-f',
+  'query=query($owner:String!,$name:String!){repository(owner:$owner,name:$name){databaseId nameWithOwner autoMergeAllowed squashMergeAllowed}}',
+  '-f','owner='+owner,'-f','name='+name));
+ const repository=response?.data?.repository;
+ if((Object.hasOwn(response??{},'errors')&&(!Array.isArray(response.errors)||response.errors.length))||
+  !projectRepositoryMatches({id:repository?.databaseId,full_name:repository?.nameWithOwner},repo))
+  throw Error('Native merge settings repository identity could not be confirmed');
+ return {...settings,allow_auto_merge:repository.autoMergeAllowed,allow_squash_merge:repository.squashMergeAllowed};
+}
+
 export function main(env=process.env,query=gh,{pending=false,loadCheckout}={}){
  const event=JSON.parse(readFileSync(env.GITHUB_EVENT_PATH,'utf8')),pr=event.pull_request;
  if(env.GITHUB_EVENT_NAME!=='pull_request'||pr?.base?.ref!=='develop'||pr.head?.repo?.full_name!==env.GITHUB_REPOSITORY)return;
@@ -77,7 +94,7 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  const review=collectIndependentAiReview({api,prNumber:number,expectedHeadSha:expectedHead});
  if(review.conclusion!=='pass')throw Error(review.errors.join('\n'));
  const ruleset=get(prefix+'/rulesets/25870651');
- const policyErrors=autoMergeErrors({repo,settings,pr,ruleset,nativeReview:review});
+ const policyErrors=autoMergeErrors({repo,settings:hostedMergeSettings(repo,settings,query),pr,ruleset,nativeReview:review});
  if(mode==='publish'&&policyErrors.length)throw Error(policyErrors.join('\n'));
  // The coordinator verified the separate cloud AI session. Source identity is
  // enforced here and again by queue/post-merge consumers of the immutable proof.
@@ -96,9 +113,10 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  const current=collectIndependentAiReview({api,prNumber:number,expectedHeadSha:review.head,expectedBaseSha:review.base,expectedTreeSha:review.tree});
  const policyNow=get(prefix+'/rulesets/25870651');
  const freshPr=get(prefix+'/pulls/'+number);
- const admissionErrors=autoMergeErrors({repo,settings,pr:freshPr,ruleset:policyNow,nativeReview:current});
+ const settingsNow=get('repositories/'+projectRepositoryId);
+ const admissionErrors=autoMergeErrors({repo,settings:hostedMergeSettings(repo,settingsNow,query),pr:freshPr,ruleset:policyNow,nativeReview:current});
  if(!isDeepStrictEqual(pr.labels,freshPr.labels)||pr.changed_files!==freshPr.changed_files||mode==='publish'&&admissionErrors.length)throw Error('PR labels, files or native admission changed during evidence collection');
- if(!isDeepStrictEqual(current,review)||!isDeepStrictEqual(policyNow,ruleset))throw Error('Review or native policy changed during evidence collection');
+ if(!isDeepStrictEqual(current,review)||!isDeepStrictEqual(policyNow,ruleset)||settings.default_branch!==settingsNow.default_branch)throw Error('Review or native policy changed during evidence collection');
  const envelope={schemaVersion:1,kind:'native-ai-review-proof',mode,state:mode==='publish'?'pr_passed':'shadow_verified',repo,prNumber:number,head:review.head,base:review.base,nativeReview:review,nativePolicy:ruleset,sourceObservations:source.observations,preflight:collected.evidence,gate:{runId:Number(env.GITHUB_RUN_ID),attempt:Number(env.GITHUB_RUN_ATTEMPT),ref:env.GITHUB_REF,bootstrap},policyErrors};
  if(!release){mkdirSync(resolve(proofFile,'..'),{recursive:true});writeFileSync(proofFile,JSON.stringify(envelope,null,2)+'\n');return {state:envelope.state,policyErrors};}
  if(mode!=='publish')return {state:'shadow-no-status'};

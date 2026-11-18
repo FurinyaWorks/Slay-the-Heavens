@@ -73,6 +73,21 @@ test('queue full requires every shard, immutable receipt and actual native admis
  }
 });
 
+test('queue Full accepts only the administrator pull-request bypass and cloud authorization',()=>{
+ const admin={actor_id:5,actor_type:'RepositoryRole',bypass_mode:'pull_request'};
+ const f=fixture();f.ruleset.bypass_actors=[admin];
+ f.admission=JSON.stringify([{authorizationKind:'cloud'}]);
+ assert.deepEqual(queueFullErrors(f),[]);
+ for(const value of [undefined,'[]','invalid',JSON.stringify([{authorizationKind:'legacy'}]),
+  JSON.stringify([{authorizationKind:'cloud'},{authorizationKind:'legacy'}])]){
+  assert(queueFullErrors({...f,admission:value}).some(error=>error.includes('bypass')));
+ }
+ for(const actors of [[{...admin,bypass_mode:'always'}],[{...admin,actor_id:4}],
+  [{...admin,actor_type:'OrganizationAdmin'}],[admin,admin],null]){
+  assert(queueFullErrors({...f,ruleset:{...f.ruleset,bypass_actors:actors}}).some(error=>error.includes('bypass')));
+ }
+});
+
 test('native queue rejects old 13/9, 14/9, 16/9, 16/12, 17/13, 17/14 or 17/15 green jobs, missing rules18 or POSIX15, duplicates and forged totals or source receipts',()=>{
  const windows=qualityShardMatrices.windows.length,posix=qualityShardMatrices.posix.length;
  const last=`rules (${windows}/${windows})`,lastPosix=`engineering-posix (${posix}/${posix})`;

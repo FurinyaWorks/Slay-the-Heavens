@@ -17,6 +17,13 @@ function gh(...args){
 }
 const json=(query,...args)=>JSON.parse(query(...args));
 
+export function queueBypassActorsAllowed(ruleset,{allowAdministratorPullRequest=false}={}) {
+ if(!Object.hasOwn(ruleset??{},'bypass_actors'))return true; // Redacted metadata.
+ const actors=ruleset.bypass_actors;
+ return Array.isArray(actors)&&(actors.length===0||allowAdministratorPullRequest&&
+  isDeepStrictEqual(actors,[{actor_id:5,actor_type:'RepositoryRole',bypass_mode:'pull_request'}]));
+}
+
 // GitHub owns merge authorization. This adapter validates the real independent
 // cloud AI report signed by the existing trusted coordinator and dispatches the existing CI gate; it never posts commit statuses.
 export function mergePolicyErrors({repo,settings,pr,ruleset}){
@@ -32,7 +39,7 @@ export function mergePolicyErrors({repo,settings,pr,ruleset}){
  const q=rules.filter(r=>r.type==='merge_queue'),pull=rules.find(r=>r.type==='pull_request')?.parameters;
  if(q.length!==1||q[0].parameters?.merge_method!=='SQUASH'||q[0].parameters?.grouping_strategy!=='ALLGREEN')errors.push('Native SQUASH ALLGREEN queue must remain enabled');
  if(!isDeepStrictEqual(pull?.allowed_merge_methods,['squash'])||pull.required_review_thread_resolution!==true||!rules.some(r=>r.type==='required_linear_history'))errors.push('Squash, resolved threads and linear history must remain enabled');
- if(Object.hasOwn(ruleset??{},'bypass_actors')&&(!Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length))errors.push('Unexpected explicit bypass actors');
+ if(!queueBypassActorsAllowed(ruleset,{allowAdministratorPullRequest:true}))errors.push('Unexpected explicit bypass actors');
  return errors;
 }
 export function autoMergeErrors(options){

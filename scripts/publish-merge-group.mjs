@@ -6,6 +6,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {checkoutReceipt,receiptErrors,currentFullQualityJobs,qualityWorkflowPath} from './verify-delivery.mjs';
 import {collectQueueAdmission,queueAdmissionCompatible} from './merge-queue-admission.mjs';
+import {queueBypassActorsAllowed} from './arm-auto-merge.mjs';
 import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryMatches} from './repository-identity.mjs';
 
@@ -38,9 +39,7 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
  if(ruleset?.id!==25870651||ruleset?.target!=='branch'||ruleset?.enforcement!=='active'||
   JSON.stringify(ruleset?.conditions?.ref_name?.include)!==JSON.stringify(['refs/heads/develop'])||
   JSON.stringify(ruleset?.conditions?.ref_name?.exclude)!=='[]'||
-  // A missing field is redacted metadata, not an inferred empty bypass list.
-  (Object.hasOwn(ruleset??{},'bypass_actors')&&
-   (!Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length!==0))||
+  !queueBypassActorsAllowed(ruleset,{allowAdministratorPullRequest:cloudAuthorizationOnly(admission)})||
   !ruleset.rules?.some(rule=>rule.type==='merge_queue'&&
    rule.parameters?.merge_method==='SQUASH'&&rule.parameters?.grouping_strategy==='ALLGREEN'))
   errors.push('Native develop Merge Queue protection is not active or has bypass actors');
@@ -92,6 +91,12 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
   errors.push('Immutable queue checkout receipt does not match tested group');
  if(!metadataOnly)errors.push(...receiptErrors(receipt,checkout?.checkoutArtifact,jobs,run,3));
  return errors;
+}
+function cloudAuthorizationOnly(admission){
+ try{
+  const members=JSON.parse(admission);
+  return Array.isArray(members)&&members.length>0&&members.every(member=>member?.authorizationKind==='cloud');
+ }catch{return false;}
 }
 
 function gh(...args) {

@@ -21,7 +21,12 @@ for(const [path,row]of Object.entries(proof.files))if(row.releaseBootstrapBefore
 const currentHashes=Object.freeze({
  '.github/workflows/quality.yml':'5975715d9b983b6c586aa88be78e950358ff833c6ec7a73f1843fdf420d4cb6c',
  '.github/workflows/licenses.yml':'86f6e0b8b021c1724b96458c13d87cf27b9f758864b9e5147288594b033a9bc6',
+ 'scripts/arm-auto-merge.mjs':'f9bb0f3615be546dec27376c8acf3ac139fe1e4d0632c5a6b8f1bb1fd4d88248',
+ 'scripts/publish-merge-group.mjs':'06ae5526a678b0b5f36863b310ac901687251cd9ac9563ce6cf72f14aadedf52',
+ 'scripts/publish-pr-quality.mjs':'1781a4eccbbab86528f60efc65a541f51117b98433f1fda0add85d946a4eefb3',
+ 'tests/auto-merge.test.mjs':'20322a7956e61fdf2938eb519dfb83756dbde7b1f3940ba0227e1ca4e4380c81',
  'tests/ci-summary-runners.test.mjs':'4d3654d6309e49bd9a2984e071243659db59223d3cd9c8fe7633665ebf38d7ca',
+ 'tests/merge-queue.test.mjs':'083d1b134bcf73abbbd5fdbe1783358992fb99fdb5b7d87d1a33e94d22b6ccbd',
  'tests/quick-feedback.test.mjs':'ef3a2a86ebdd206ccb7bc83501465a0f3ea4a9e02ff41cb6bd406aaccd146e0c',
 });
 const transportBytes=readFileSync(new URL('./ci-media-transport-source.json.gz',import.meta.url));
