@@ -107,4 +107,79 @@ test('existing resize controller cover and hide retire active contacts before a 
         assert(battle.energy==2,kind..' blocked fresh pointer after retiring old contact')
     end
 end)
+test('deck round trip recovers a fresh anonymous target without an old terminal',function()
+    local host,ui,panel,event,tap,drain,cover=H.setup({'strike'},{'cultist'}, {touchScreen=function()return true end})
+    local battle=host.run.combat
+    local hit=F.actorControl(panel,'enemy1'):GetChild('hit')
+    local hp=battle.enemies[1].hp
+    tap('card1',1);event('enemy1','down',2);cover()
+    assert(not ui.selected,'deck entry must clear selected Strike')
+    tap('card1',3);assert(ui.selected==battle.hand[1].uid,'Strike was not reselected')
+    -- No Up/EndDrag for ID 2 before the next complete tap.
+    event('enemy1','down',4);event('enemy1','up',4);hit.click({})
+    assert(battle.energy==2 and battle.enemies[1].hp==hp-6,'old covered contact blocked fresh target')
+    drain()
+    event('enemy1','up',2);event('enemy1','endDrag',2);event('enemy1','click',2);hit.click({})
+    assert(battle.energy==2 and battle.enemies[1].hp==hp-6,'late old tail repeated the play')
+end)
+test('deck round trip retires cross-control contacts even when a number is reused',function()
+    for _,fresh in ipairs({4,2})do
+        local host,ui,panel,event,tap,_,cover=H.setup({'strike','defend'},{'cultist'}, {touchScreen=function()return true end})
+        local battle=host.run.combat
+        local strike,defend
+        for i,card in ipairs(battle.hand)do
+            if card.cardId=='strike'then strike=i elseif card.cardId=='defend'then defend=i end
+        end
+        assert(strike and defend)
+        local card='card'..defend
+        tap('card'..strike,1);event('enemy1','down',2);cover()
+        assert(not ui.selected)
+        event(card,'down',fresh);event(card,'up',fresh)
+        panel:GetChild(card):GetChild('hit').click({})
+        local uid=battle.hand[defend].uid
+        assert(ui.selected==uid and battle.energy==3,'orphan enemy contact blocked Defend, fresh ID '..fresh)
+        event('enemy1','up',2);event('enemy1','endDrag',2);event('enemy1','click',2)
+        assert(ui.selected==uid and not ui.info and battle.energy==3,'old enemy tail affected new card owner')
+    end
+end)
+test('Down delivered while the battle is covered does not claim the resumed epoch',function()
+    local host,ui,panel,event,tap=H.setup({'strike'},{'cultist'}, {touchScreen=function()return true end})
+    local battle=host.run.combat
+    tap('card1',1);assert(host:openDeck() and not ui.active)
+    event('enemy1','down',2)
+    assert(host:closeDeck() and ui.active)
+    tap('card1',3);event('enemy1','down',4);event('enemy1','up',4)
+    F.actorControl(panel,'enemy1'):GetChild('hit').click({})
+    assert(battle.energy==2,'Down received under the overlay blocked fresh input')
+end)
+test('cover cancels moving potion and keeps its old named Click suppressed until fresh Down',function()
+    local host,ui,panel,event,tap,drain,cover=H.setup({'defend'},{'cultist'}, {touchScreen=function()return true end})
+    local battle=host.run.combat
+    assert(H.Run.obtainPotion(host.run,'fire_potion'));host:refresh()
+    local enemy=F.actorControl(panel,'enemy1')
+    local hp=battle.enemies[1].hp
+    event('potion1','down',2);event('potion1','drag',2,enemy.x,enemy.y)
+    assert(ui.potionAim and ui.potionAim.moving,'moving potion was not armed')
+    cover();assert(not ui.potionAim and not panel:GetChild('dragLayer').visible)
+    assert(host.run.potions[1]=='fire_potion' and battle.enemies[1].hp==hp)
+    event('dragLayer','up',2,enemy.x,enemy.y);event('potion1','click',2)
+    event('endTurn','click',2);event('endTurn','click',2)
+    assert(battle.turn==1 and not ui.potionMenu and host.run.potions[1]=='fire_potion' and battle.enemies[1].hp==hp,
+        'cancelled potion tail opened a popup, used a potion, or ended the turn')
+    tap('endTurn',2);drain()
+    assert(battle.turn==2,'fresh Down could not reclaim numeric ID')
+end)
+test('cover clears the retained enemy contact beyond a retired slot',function()
+    local host,ui,panel,event,tap,_,cover=H.setup({'strike'},{'cultist','jaw_worm'}, {touchScreen=function()return true end})
+    local surfaces=assert(require('abyss_monster_surfaces').get(panel))
+    local battle=host.run.combat
+    local survivor=assert(surfaces:control(2))
+    battle.enemies[1].hp=0;host:refresh()
+    assert(not surfaces:control(1) and surfaces:control(2)==survivor,'fixture must retain a sparse enemy slot')
+    tap('card1',1);event('enemy2','down',2);cover()
+    assert(surfaces:control(2)==survivor,'cover must reuse the surviving actor control')
+    tap('card1',3);event('enemy2','down',4);event('enemy2','up',4)
+    survivor:GetChild('hit').click({})
+    assert(battle.energy==2,'sparse enemy contact survived the cover')
+end)
 print('TARGET_ANONYMOUS_CONTEXT_PASS '..passed)

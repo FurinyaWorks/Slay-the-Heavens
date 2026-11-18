@@ -658,6 +658,10 @@ test('pointer history authenticates fresh linked owners before reading earlier p
  const path='tests/ci-complete-calibration.test.mjs';
  const owner='src/lua/abyss_battle_input_state.lua';
  const archive='tests/helpers/release-pointer-identity-ci.json.gz';
+ const overlay='src/lua/abyss_battle_actions.lua';
+ const overlayArchive='tests/helpers/release-pointer-overlay-ci.json.gz';
+ const overlayProduction='tests/helpers/release-pointer-overlay-source.json.gz';
+ const overlayFixture='tests/lua/support/target_anonymous_context.lua';
  const current=mergedReadFileSync(path,'utf8');
  let fault;
  const read=(file,encoding)=>{
@@ -674,6 +678,14 @@ test('pointer history authenticates fresh linked owners before reading earlier p
   assert.throws(project,/fresh Release replay owner: src\/lua\/abyss_battle_input_state\.lua/);
   fault=archive;
   assert.throws(project,/fresh pointer identity CI continuation/);
+  fault=overlay;
+  assert.throws(project,/fresh Release replay owner: src\/lua\/abyss_battle_actions\.lua/);
+  fault=overlayArchive;
+  assert.throws(project,/fresh pointer overlay CI continuation/);
+  fault=overlayProduction;
+  assert.throws(project,/fresh immutable pointer overlay production archive/);
+  fault=overlayFixture;
+  assert.throws(project,/fresh complete integration source: pointer overlay tests\/lua\/support\/target_anonymous_context\.lua/);
   fault=undefined;
   assert.equal(project(),prior);
  }

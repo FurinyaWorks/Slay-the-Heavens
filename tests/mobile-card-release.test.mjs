@@ -32,7 +32,7 @@ test('released pointer identity survives mixed Click metadata without admitting 
 for(const [fixture,marker] of [
  ['target_anonymous_click','TARGET_ANONYMOUS_CLICK_PASS 6'],
  ['target_anonymous_ownership','TARGET_ANONYMOUS_OWNERSHIP_PASS 4'],
- ['target_anonymous_context','TARGET_ANONYMOUS_CONTEXT_PASS 6'],
+ ['target_anonymous_context','TARGET_ANONYMOUS_CONTEXT_PASS 11'],
  ['target_anonymous_terminal','TARGET_ANONYMOUS_TERMINAL_PASS 7'],
  ['target_consumed_origin','TARGET_CONSUMED_ORIGIN_PASS 7'],
  ['potion_tap_anonymous','POTION_TAP_ANONYMOUS_PASS 4'],

@@ -285,12 +285,29 @@ const pointerTargets = {
   ...pointerPriorRelease.targets,
   releasePointerIdentityPrior: { commit: pointer.base, files: pointerPriorRelease.current },
 };
-const pointerOwners = Object.keys(pointerCurrent).sort().filter(path =>
-  Object.values(pointerTargets).some(target => target.files[path]?.sha256 !== pointerCurrent[path]?.sha256));
+// Bind only the overlay delta. The eight-owner pointer witness remains unchanged.
+const overlayBytes = readFileSync(new URL('./release-pointer-overlay-source.json.gz', import.meta.url));
+assert.equal(hash(overlayBytes), 'f4023eb4d2c8540c3a409f78d3acfa191346dfa438d9838f8da86eddf7efe700', 'complete pointer overlay production continuation');
+const overlay = JSON.parse(gunzipSync(overlayBytes));
+const overlayPaths = ['src/lua/abyss_battle_actions.lua', 'src/lua/abyss_battle_card_gestures.lua'];
+assert.equal(overlay.schemaVersion, 1);
+assert.equal(overlay.base, '5a86c6c2a3784d28fa819ab7487dd58cc7a778b1');
+assert.deepEqual(Object.keys(overlay.before), overlayPaths);
+assert.deepEqual(Object.keys(overlay.current), overlayPaths);
+for (const path of overlayPaths)
+  assert.deepEqual(overlay.before[path], pointerCurrent[path], 'exact pointer overlay predecessor: ' + path);
+const overlayCurrent = { ...pointerCurrent, ...overlay.current };
+const overlayTargets = {
+  ...pointerTargets,
+  releasePointerOverlayPrior: { commit: overlay.base, files: pointerCurrent },
+};
+const overlayOwners = Object.keys(overlayCurrent).sort().filter(path =>
+  Object.values(overlayTargets).some(target => target.files[path]?.sha256 !== overlayCurrent[path]?.sha256));
 export const sourceEpoch = createSourceEpochProjector(freeze({
-  ...pointerPriorRelease, current: pointerCurrent, targets: pointerTargets, owners: pointerOwners,
-  currentCommit: pointer.checkpoint,
-  currentCommitRole: 'exact current composition of #679 and the remaining #711 pointer protocol',
+  ...pointerPriorRelease, current: overlayCurrent, targets: overlayTargets, owners: overlayOwners,
+  currentTreeCommitted: false,
+  currentCommit: overlay.base,
+  currentCommitRole: 'committed pointer recovery predecessor only; live pointer overlay continuation is bound by exact source bytes',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

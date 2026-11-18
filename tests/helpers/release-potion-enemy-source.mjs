@@ -132,8 +132,47 @@ for (const row of Object.values(pointerCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+// Continue the exact recovery without altering any pointer-era archive.
+const overlayArchive = 'tests/helpers/release-pointer-overlay-ci.json.gz';
+const overlayDigest = '3a3007eae6d024859bfa5745e557f390f39a835504cf85fd09d59ba79c42a252';
+const overlayBytes = readFileSync(new URL('./release-pointer-overlay-ci.json.gz', import.meta.url));
+assert.equal(hash(overlayBytes), overlayDigest, 'fixed pointer overlay CI continuation');
+const overlayCi = JSON.parse(gunzipSync(overlayBytes));
+const overlayProductionArchive = 'tests/helpers/release-pointer-overlay-source.json.gz';
+const overlayOwners = ['src/lua/abyss_battle_actions.lua', 'src/lua/abyss_battle_card_gestures.lua'];
+assert.equal(overlayCi.schemaVersion, 1);
+assert.equal(overlayCi.base, sourceEpoch.proof.targets.releasePointerOverlayPrior.commit);
+assert.deepEqual(Object.keys(overlayCi.files), [
+  'tests/helpers/closeout-source-epoch.mjs',
+  'tests/helpers/copy-integration-source-closure.mjs',
+  'tests/integrated-ci-source.cases.mjs',
+  'tests/mobile-card-release.test.mjs',
+  'tests/release-card-contact-integration.test.mjs',
+  'tests/lua/support/target_anonymous_context.lua',
+]);
+for (const [path, row] of Object.entries(overlayCi.files)) {
+  assert.equal(normalized(row.before), row.before);
+  assert.equal(hash(row.before), row.beforeSha256);
+  assert.equal(row.beforeSha256, pointerCi.files[path].afterSha256, 'exact pointer overlay CI predecessor: ' + path);
+}
+
 function beforePointerIdentityCiSource(path, source) {
-  return priorCiSource(pointerCi.files, path, source);
+  const row = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+  if (!row?.before) return source; // Do not hide newly introduced fixtures.
+  return priorCiSource(pointerCi.files, path, priorCiSource(overlayCi.files, path, source));
+}
+
+function assertPointerOverlayCiCurrent(read) {
+  assert.equal(hash(read(overlayArchive)), overlayDigest, 'fresh pointer overlay CI continuation');
+  assert.equal(hash(read(overlayProductionArchive)), overlayCi.productionArchive, 'fresh immutable pointer overlay production archive');
+  for (const path of overlayOwners) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === sourceEpoch.proof.current[path].sha256, 'fresh pointer overlay production owner: ' + path);
+  }
+  for (const [path, row] of Object.entries(overlayCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer overlay ' + path);
+  }
 }
 
 function assertPointerIdentityCiCurrent(read) {
@@ -141,7 +180,7 @@ function assertPointerIdentityCiCurrent(read) {
   assert.equal(hash(read('tests/helpers/release-pointer-identity-source.json.gz')), pointerCi.productionArchive,
     'fresh immutable pointer identity production archive');
   for (const [path, row] of Object.entries(pointerCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(priorCiSource(overlayCi.files, path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer identity ' + path);
   }
   for (const [path, sha] of Object.entries(pointerCi.replayInputs)) {
@@ -396,6 +435,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertPointerOverlayCiCurrent(read);
   assertPointerIdentityCiCurrent(read);
   assertCancelCiCurrent(read);
   assertShopDismissalCiCurrent(read);

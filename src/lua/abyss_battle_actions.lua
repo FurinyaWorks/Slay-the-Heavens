@@ -158,9 +158,13 @@ function M.install(owner, _ownership, host, dependencies)
     end
     function owner:setActive(active, suspend, deferRender)
         assert(type(active) == "boolean", "active must be boolean")
+        local changed = self.active ~= active
         self.active = active
         -- Only the host may request a temporary same-battle cover. Plain false still unmounts.
         self.suspendedBattle = not active and suspend == true and self.run and self.run.combat or nil
+        -- Covers keep same-battle native bindings, not contacts. Clear again
+        -- at resume in case a hidden binding received a Down without a terminal.
+        if changed then self:cancelControllerPointers() end
         if not active then self.help=nil;dependencies.cancelPotionAim("已取消药水瞄准。") end
         host.root:SetVisible(active)
         -- GameUI can commit its battle render after all page visibility writes.
