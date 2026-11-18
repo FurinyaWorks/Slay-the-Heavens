@@ -34,7 +34,7 @@ const fixtureModulePath=join(fixtureModuleDir,'ci-reviewed-lfs.mjs');
 writeFileSync(fixtureModulePath,fixtureSource(source));
 const fixtureLfs=await import(pathToFileURL(fixtureModulePath).href);
 
-const shardStep = `      - name: Materialize reviewed PNGs for this shard\n        timeout-minutes: 2\n        env:\n          CI_LFS_TOKEN: \${{ github.token }}\n        run: node scripts/ci-shards.mjs --prepare=\${{ matrix.shard }}/\${{ strategy.job-total }}\n`;
+const shardStep = `      - name: Materialize reviewed PNGs for this shard\n        timeout-minutes: 2\n        env:\n          CI_LFS_TOKEN: \${{ github.token }}\n          CI_MEDIA_BUNDLE: \${{ inputs.runner_pool != 'local-special' && format('{0}/verified-ci-media', runner.temp) || '' }}\n        run: node scripts/ci-shards.mjs --prepare=\${{ matrix.shard }}/\${{ strategy.job-total }}\n`;
 const licenseStep = `      - name: Materialize reviewed PNGs for the license audit\n        timeout-minutes: 2\n        env:\n          CI_LFS_TOKEN: \${{ github.token }}\n        run: node scripts/ci-reviewed-lfs.mjs\n`;
 function temp(t) { const dir = mkdtempSync(join(tmpdir(), 'abyss-reviewed-lfs-')); t.after(() => rmSync(dir, { recursive: true, force: true })); return dir; }
 function git(cwd, ...args) {

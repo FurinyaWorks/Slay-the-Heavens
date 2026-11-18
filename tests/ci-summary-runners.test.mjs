@@ -1,3 +1,4 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -11,9 +12,21 @@ import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpe
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
-const workflow = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
+const workflow = beforePreflightSource('.github/workflows/quality.yml', readFileSync('.github/workflows/quality.yml', 'utf8')).replaceAll('\r\n', '\n');
 const job = (name,source=workflow) => source.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [\\w-]+:|(?![\\s\\S]))`, 'm'))[1];
 const digest = text => createHash('sha256').update(text).digest('hex');
+
+test('current control jobs use the existing standard hosted pool after slim acquisition failures', () => {
+  const current = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
+  for (const name of ['impact', 'check', 'engineering-posix']) {
+    assert.match(job(name, current), /^    runs-on: ubuntu-24\.04$/m);
+    assert.match(job(name, current), new RegExp(`^    timeout-minutes: ${name === 'impact' ? 6 : 2}$`, 'm'));
+  }
+  assert.match(job('check', current), /^    needs: \[impact, rules, fast, presentation, engineering-posix\]$/m);
+  assert.match(job('engineering-posix', current), /^    needs: \[impact, engineering-posix-shards, fast\]$/m);
+  const licenses = readFileSync('.github/workflows/licenses.yml', 'utf8').replaceAll('\r\n', '\n');
+  assert.match(job('cancel-obsolete-queue', licenses), /^    runs-on: ubuntu-24\.04$/m);
+});
 
 test('only the lightweight impact planner and two required summaries use slim', () => {
   assert.equal((workflow.match(/^    runs-on: ubuntu-slim$/gm) ?? []).length, 3);
@@ -223,7 +236,47 @@ test('[historical ratchet integration workflow] ratchet gates project only their
 });
 
 test('workflow-only historical views cannot project production sources or test inventories',()=>{
+ const actual=closeoutRead('qualityRatchetIntegrated');
+ for(const path of ['scripts/test-affected.mjs','tests/ci-summary-runners.test.mjs']){
+  const raw=readFileSync(path);assert.deepEqual(actual(path),raw,'workflow-only preserves actual '+path);
+  assert.equal(actual(path,'utf8'),raw.toString('utf8'));
+ }
  const raw=Buffer.from('current raw source\r\n'),read=closeoutRead('qualityRatchetIntegrated',()=>raw);
  for(const path of ['src/lua/abyss_game_ui.lua','config/architecture.json','data/relics.json'])assert.strictEqual(read(path),raw,path);
  assert.throws(()=>closeoutInventory(['tests/current.test.mjs'],'qualityRatchetIntegrated'),/workflow-only/);
+});
+
+test('preflight continuation authenticates complete LF/CRLF input and rejects foreign or partial bytes',()=>{
+ const path='.github/workflows/quality.yml',live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const before=beforePreflightSource(path,live);assert.notEqual(before,live);
+ for(const eol of ['\n','\r\n']){
+  const input=live.replaceAll('\n',eol);
+  assert.equal(beforePreflightSource(path,input),before.replaceAll('\n',eol));
+  for(const drift of [input+'# foreign'+eol,input.replace('contents: read','contents: write'),
+   input.replace('    needs: impact'+eol,''),input.replace('run: node scripts/ci-media-lfs.mjs','run: echo forged')])
+   assert.equal(beforePreflightSource(path,drift),drift,'unbound workflow stays visible');
+ }
+ assert.equal(beforePreflightSource(path,live.replaceAll('\n','\r\r\n')),live.replaceAll('\n','\r\r\n'));
+ const buffer=Buffer.from(live);assert.equal(beforePreflightSource(path,buffer),buffer);
+ assert.equal(beforePreflightSource('foreign.yml',live),live);
+ assert.equal(beforePreflightSource(path,before),before);
+});
+
+test('combined preflight selects a complete fixed Release predecessor without masking source drift',()=>{
+ const path='.github/workflows/quality.yml',live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const prior=beforePreflightSource(path,live),release=beforePreflightSource(path,live,'release-bootstrap');
+ assert.notEqual(prior,release);assert.notEqual(live,release);
+ assert.match(release,/release-ci.mjs verify-pr/);assert.doesNotMatch(release,/fork-preflight.mjs/);
+ assert.doesNotMatch(prior,/release-ci.mjs verify-pr|fork-preflight.mjs/);
+ for(const eol of ['\n','\r\n']){
+  const source=live.replaceAll('\n',eol);
+  assert.equal(beforePreflightSource(path,source,'release-bootstrap'),release.replaceAll('\n',eol));
+  for(const changed of [source+'# foreign'+eol,source.replace('verify-pr','forged'),
+   source.replace('run: node scripts/ci-media-lfs.mjs','run: echo skipped')])
+   assert.equal(beforePreflightSource(path,changed,'release-bootstrap'),changed);
+ }
+ const bad=live.replaceAll('\n','\r\r\n');assert.equal(beforePreflightSource(path,bad,'release-bootstrap'),bad);
+ for(const source of [Buffer.from(live),null,{},17])assert.equal(beforePreflightSource(path,source,'release-bootstrap'),source);
+ assert.equal(beforePreflightSource('__proto__',live,'release-bootstrap'),live);
+ assert.throws(()=>beforePreflightSource(path,live,'unknown'),/explicit preflight predecessor/);
 });

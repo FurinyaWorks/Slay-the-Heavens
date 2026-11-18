@@ -1,3 +1,4 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
@@ -8,6 +9,7 @@ import {currentFullQualityJobs,qualityWorkflowPath} from '../scripts/verify-deli
 import {qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {beforeAutoMergeWorkflow,beforeExecutionTimeoutWorkflow} from './helpers/auto-merge-workflow.mjs';
 import {beforeDraftQualityWorkflow} from './helpers/draft-quality-workflow.mjs';
+import {releaseBootstrapWorkflowBefore} from './helpers/release-bootstrap-ci-source.mjs';
 import {spawnSync} from 'node:child_process';
 test('pre-install CI status publishers load without npm packages',()=>{
  const urls=['publish-full-quality.mjs','publish-pr-quality.mjs','publish-merge-group.mjs'].map(name=>new URL('../scripts/'+name,import.meta.url).href);
@@ -226,7 +228,12 @@ test('Full publication reuses existing jobs and grants status writes only to pla
  assert.match(jobs.find(j=>j[1]==='check')[2],/^    needs: \[impact, rules, fast, presentation, engineering-posix\]$/m);
 });
 test('reviewed workflow inverse rejects partial wiring and preserves original arbitrary source drift',()=>{
- const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ assert.match(physical,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+ assert.match(physical,/permissions:\n  contents: read/);
+ assert.match(physical,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
+ assert(physical.includes('run: node scripts/publish-full-quality.mjs'));
+ const workflow=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',physical);
  const before=beforeAutoMergeWorkflow(workflow);assert.equal(typeof before,'string');assert(!before.includes('full-quality'));
  for(const drift of [workflow.replace('statuses: write','statuses: read'),
   workflow.replace('run: node scripts/publish-full-quality.mjs','run: echo forged'),
@@ -237,7 +244,7 @@ test('reviewed workflow inverse rejects partial wiring and preserves original ar
 });
 
 test('execution slack restores only the complete approved workflow edit for historical guards',()=>{
- const current=beforeDraftQualityWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
+ const current=beforeDraftQualityWorkflow(beforePreflightSource('.github/workflows/quality.yml',readFileSync('.github/workflows/quality.yml','utf8')).replaceAll('\r\n','\n'));
  for(const eol of ['\n','\r\n']){
   const source=current.replaceAll('\n',eol),old=beforeExecutionTimeoutWorkflow(source);
   assert.notEqual(old,source);

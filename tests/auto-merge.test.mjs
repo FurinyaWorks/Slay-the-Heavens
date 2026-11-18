@@ -1,820 +1,436 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {parseDependencies,autoMergeErrors,collectEligibility,armAutoMerge as activate,pauseAutoMerge,reviewContext,requiredContexts,main} from '../scripts/arm-auto-merge.mjs';
-import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
-import {verifyAutoMergeArm,verifyDelivery,verifyHistoricalAutoFull,verifyMergedDelivery,collectMergedDelivery,currentFullQualityJobs,qualityWorkflowPath} from '../scripts/verify-delivery.mjs';
-import {projectRepositoryId,currentProjectRepository,collectIdentityWitness} from '../scripts/repository-identity.mjs';
-import {queueRulesFingerprint} from '../scripts/merge-queue-policy.mjs';
-
+import {tmpdir} from 'node:os';
+import {projectRepositoryId} from '../scripts/repository-identity.mjs';
+import {armAutoMerge,autoMergeErrors,collectEligibility,pauseAutoMerge,signCloudReview} from '../scripts/arm-auto-merge.mjs';
+import {independentReviewGate} from '../scripts/publish-pr-quality.mjs';
+import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
 const sha=c=>c.repeat(40);
-const armAutoMerge=(repo,number,review,query,options={})=>activate(repo,number,review,query,{loadCheckout:query.loadCheckout,...options});
-const repo='CHNISam/Slay-the-Abyss';
-test('renamed repository retains its immutable identity and rejects impostors',()=>{
- const canonical='FurinyaWorks/Slay-the-Heavens';
- const read=value=>()=>JSON.stringify(value);
- assert.equal(currentProjectRepository(read({id:projectRepositoryId,full_name:canonical})).full_name,canonical);
- for(const value of [{id:1,full_name:canonical},{id:projectRepositoryId,full_name:'someone/Slay-the-Heavens'}])
-  assert.throws(()=>currentProjectRepository(read(value)),/identity/);
- assert.deepEqual(autoMergeErrors(fixture(canonical)),[]);
-});
-function fixture(repoName=repo) {
-  const pr={number:510,node_id:'PR_reviewed_510',state:'open',merged:false,draft:false,mergeable:true,changed_files:1,
-    head:{sha:sha('a'),ref:'feat/reviewed',repo:{id:projectRepositoryId,full_name:repoName}},base:{ref:'develop',sha:sha('b'),repo:{id:projectRepositoryId,full_name:repoName}},merge_commit_sha:sha('d'),body:'Summary\n\nDepends-on: none',
-    labels:[]};
-  const review={reviewId:'independent-agent-evidence-100',reviewedHeadSha:sha('a'),
-    reviewedBaseSha:sha('b'),conclusion:'pass',unresolved:[],repo:repoName,prNumber:510};
-  const settings={id:projectRepositoryId,full_name:repoName,allow_auto_merge:true,allow_squash_merge:true};
-  const ruleset={target:'branch',enforcement:'active',conditions:{ref_name:{include:['refs/heads/develop'],exclude:[]}},
-    rules:[
-      {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
-      {type:'required_linear_history'},
-      {type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,
-        required_status_checks:requiredContexts.map(context=>({context,integration_id:context===reviewContext?null:15368}))}}
-    ]};
-  return {pr,review,settings,ruleset,repo:repoName,baseSha:sha('b'),dependencies:[]};
+import {INDEPENDENT_AI_REVIEW_MARKER as aiMarker,TRUSTED_REVIEW_COORDINATOR_IDS as aiCoordinators,
+ parseIndependentAiReview,independentAiReportErrors,validateIndependentAiReview,collectIndependentAiReview,
+ parseDependencies as parseAiDependencies} from '../scripts/independent-ai-review.mjs';
+const aiRepo='FurinyaWorks/Slay-the-Heavens',aiRoleId=111138384;
+const aiBody=report=>aiMarker+'\n'+JSON.stringify(report);
+function aiFixture(){
+ const repository={id:projectRepositoryId,full_name:aiRepo},user={id:aiRoleId,login:'FurinyaDev'};
+ const pr={number:712,user:{id:111138384,login:'FurinyaDev'},state:'open',merged:false,draft:false,mergeable:true,body:'Summary\nDepends-on: none',
+  head:{sha:sha('a'),repo:repository},base:{ref:'develop',sha:sha('b'),repo:repository},merge_commit_sha:sha('d')};
+ const report={schemaVersion:1,kind:'independent-ai-review',repositoryId:projectRepositoryId,repositoryFullName:aiRepo,
+  prNumber:712,reviewedHeadSha:sha('a'),reviewedBaseSha:sha('b'),reviewedTreeSha:sha('e'),conclusion:'pass',unresolved:[],
+  reviewerAgent:'/root/reviewer',implementationAgents:['/root/implementer'],
+  coordinator:{...user,verifiedActualSessions:true},
+  provenance:{kind:'coordinator-verified-agent-session',reviewId:'/root/reviewer/review-712',sessionId:'actual-review-session'}};
+ const reviews=[{id:100,commit_id:sha('a'),state:'COMMENTED',submitted_at:'2026-11-17T10:00:00Z',user,
+  html_url:'https://github.com/'+aiRepo+'/pull/712#pullrequestreview-100',body:aiBody(report)}];
+ return {repository,pr,baseSha:sha('b'),sourceCommit:{sha:sha('d'),tree:{sha:sha('e')},parents:[{sha:sha('b')},{sha:sha('a')}]},
+  reviews,permissions:{[aiRoleId]:{permission:'admin',role_name:'admin',user}},dependencies:[],report};
 }
-test('repository transfer resolves the pinned project and rejects namespace reuse and forks',()=>{
- const canonical='FurinyaWorks/Slay-the-Abyss';
- const resource={id:projectRepositoryId,full_name:canonical};
- assert.equal(currentProjectRepository((...args)=>{assert.equal(args.at(-1),'repositories/'+projectRepositoryId);return JSON.stringify(resource);}).full_name,canonical);
- assert.throws(()=>currentProjectRepository(()=>JSON.stringify({...resource,id:1})),/identity/);
- assert.throws(()=>currentProjectRepository(()=>JSON.stringify({...resource,full_name:'someone/unknown'})),/identity/);
- const f=fixture();assert.deepEqual(autoMergeErrors(f),[]);
- const moved=structuredClone(f);moved.repo=canonical;moved.settings.full_name=canonical;
- moved.pr.head.repo.full_name=canonical;moved.pr.base.repo.full_name=canonical;moved.review.repo=canonical;
- assert.deepEqual(autoMergeErrors(moved),[]);
- for(const mutate of [f=>f.settings.id=1,f=>f.pr.head.repo.id=1,f=>f.pr.base.repo.id=1,
-  f=>f.settings.full_name=canonical,f=>f.pr.head.repo.full_name=canonical]){
-  const bad=structuredClone(f);mutate(bad);assert(autoMergeErrors(bad).length,String(mutate));
- }
-});
-test('renamed project keeps its pinned ID, historical witnesses and exact auto-merge authorization',()=>{
- const canonical='FurinyaWorks/Slay-the-Heavens',resource={id:projectRepositoryId,full_name:canonical};
- assert.equal(currentProjectRepository(()=>JSON.stringify(resource)).full_name,canonical);
- assert.throws(()=>currentProjectRepository(()=>JSON.stringify({...resource,id:1})),/identity/);
- const text=JSON.stringify({repo:'FurinyaWorks/Slay-the-Abyss',head:sha('a')});
- assert.equal(collectIdentityWitness(text,canonical,()=>JSON.stringify(resource)).canonicalFullName,canonical);
- const m=mock({repository:canonical,pending:true});
- assert.equal(armAutoMerge(canonical,510,m.f.review,m.query).state,'auto-merge-requested');
-});
-test('the observed Slay-the-Heavens rename preserves immutable repository and historical receipt identity',()=>{
- const canonical='FurinyaWorks/Slay-the-Heavens',resource={id:projectRepositoryId,full_name:canonical};
- assert.equal(currentProjectRepository(()=>JSON.stringify(resource)).full_name,canonical);
- assert.deepEqual(autoMergeErrors(fixture(canonical)),[]);
- assert.throws(()=>currentProjectRepository(()=>JSON.stringify({...resource,id:1})),/identity/);
- assert.throws(()=>currentProjectRepository(()=>JSON.stringify({...resource,full_name:'someone/Slay-the-Heavens'})),/identity/);
- const text=JSON.stringify({repo:'FurinyaWorks/Slay-the-Abyss',head:sha('a')});
- const witness=collectIdentityWitness(text,canonical,()=>JSON.stringify(resource));
- assert.equal(witness.canonicalFullName,canonical);
- assert.equal(witness.preflightText,text);
- assert.throws(()=>collectIdentityWitness(text,canonical,(...args)=>JSON.stringify(args.at(-1).startsWith('repos/')?{...resource,id:1}:resource)),/identity/);
-});
-function mock(opts={}) {
-  const repo=opts.repository??'CHNISam/Slay-the-Abyss';
-  const f=fixture(repo),calls=[];let pulls=0,armed=false,statusId=10;
-  let reviewStatus={id:statusId,context:reviewContext,state:'success'};
-  const run={id:7,run_attempt:1,event:'pull_request',head_sha:sha('a'),path:qualityWorkflowPath,
-    repository:{full_name:repo},status:'completed',conclusion:'success',pull_requests:[{number:510}]};
-  const jobs=currentFullQualityJobs.map((name,i)=>({id:100+i,name,status:'completed',
-    conclusion:name==='fast'?'skipped':'success',run_attempt:1,run_id:7,head_sha:sha('a')}));
-  if(opts.fastOnly)jobs.find(j=>j.name.startsWith('rules')).conclusion='skipped';
-  if(opts.pending){run.status='in_progress';run.conclusion=null;for(const job of jobs)if(job.name!=='fast'){job.status='queued';job.conclusion=null;}}
-  if(opts.unrouted){run.status='queued';jobs.splice(0,jobs.length,...jobs.filter(job=>['impact','presentation'].includes(job.name)));}
-  if(opts.pendingFailure)jobs.find(j=>j.name.startsWith('rules')).conclusion='failure';
-  const checkout={schemaVersion:1,attempt:1,event:'pull_request',runId:7,prNumber:510,
-    head:sha('a'),base:sha('b'),tested:sha('d'),parents:[sha('b'),sha('a')]};
-  const checkoutArtifact={id:200,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:sha('a')}};
-  const query=(...args)=>{
-    calls.push(args);
-    if(args[0]==='api'&&args[1]==='graphql'){
-      if(args.some(arg=>arg.includes('... on PullRequest')))
-        return JSON.stringify({data:{node:{id:f.pr.node_id,number:510,state:'OPEN',baseRefName:'develop',headRefOid:f.pr.head.sha,
-          repository:{databaseId:projectRepositoryId,nameWithOwner:repo},isInMergeQueue:false,mergeQueueEntry:null}}});
-      assert(args.some(arg=>arg.includes('enablePullRequestAutoMerge')));
-      assert(!args.some(arg=>arg.includes('mergePullRequest(input')));
-      assert.equal(reviewStatus.state,'pending','native enable must be held behind the review gate');
-      if(opts.activationFails)throw Error('activation failed');armed=true;return '{}';
-    }
-    if(args[0]==='pr') {
-      if(args[1]==='merge'&&args.includes('--disable-auto')){armed=false;return '';}
-      throw Error('Unexpected gh pr invocation');
-    }
-    const last=args.includes('--method')?args.find(x=>x.startsWith('repos/')):args.at(-1);
-    if(last==='repositories/'+projectRepositoryId)return JSON.stringify(f.settings);
-    if(args.includes('POST')){
-      reviewStatus={id:++statusId,context:reviewContext,state:args.find(a=>a.startsWith('state=')).slice(6)};
-      return JSON.stringify(reviewStatus);
-    }
-    if(last===`repos/${repo}/commits/${sha('a')}/statuses?per_page=100`)
-      return JSON.stringify([[opts.overwrittenGate&&armed?{...reviewStatus,id:reviewStatus.id+1,state:'success'}:reviewStatus]]);
-    if(last==='repos/'+repo+'/pulls/510') {
-      ++pulls;
-      const pr=structuredClone(f.pr);
-      pr.auto_merge=null;pr.mergeable_state=reviewStatus.state==='pending'||opts.pending?'blocked':'clean';
-      if(opts.missingAutoField)delete pr.auto_merge;
-      if(opts.nextHead&&pulls>=2)pr.head.sha=opts.nextHead;
-      if(opts.nextBase&&pulls>=2)pr.base.sha=opts.nextBase;
-      if(opts.foreignRepository&&armed)pr.head.repo.id=1;
-      if(armed&&(opts.mergeBeforeRelease||opts.mergeImmediately&&reviewStatus.state==='success')){pr.merged=true;pr.state='closed';pr.merge_commit_sha=sha('e');}
-      if(armed&&!opts.missingAutoMerge)pr.auto_merge={merge_method:opts.mergeMethod??'squash'};
-      if(pulls===7&&opts.finalTarget)pr.base.ref=opts.finalTarget;
-      if(pulls===7&&opts.finalNumber)pr.number=opts.finalNumber;
-      if(pulls===7&&opts.finalFork)pr.head.repo.full_name='other/repository';
-      if(pulls===7&&opts.finalMergeCommit)pr.merge_commit_sha=sha('e');
-      if(armed&&opts.finalHold){pr.labels=['hold'];pr.base.sha=sha('e');}
-      return JSON.stringify(pr);
-    }
-    if(last==='repos/'+repo)return JSON.stringify(f.settings);
-    if(last==='repos/'+repo+'/rulesets/25870651')return JSON.stringify(f.ruleset);
-    if(last==='repos/'+repo+'/git/ref/heads/develop')
-      return JSON.stringify({ref:'refs/heads/develop',object:{type:'commit',sha:opts.nextTarget&&pulls>=2?opts.nextTarget:f.baseSha}});
-    if(last.includes('/actions/workflows/'))return JSON.stringify([{workflow_runs:[opts.rerun&&pulls>=5||opts.afterQueueRerun&&armed?{...run,run_attempt:2,status:'in_progress',conclusion:null}:run]}]);
-    if(last.includes('/jobs?'))return JSON.stringify([{jobs}]);
-    if(last==='repos/'+repo+'/commits/'+sha('d'))
-      return JSON.stringify({sha:sha('d'),parents:[{sha:sha('b')},{sha:sha('a')}],commit:{tree:{sha:sha('f')}}});
-    if(last==='repos/'+repo+'/commits/'+sha('e'))
-      return JSON.stringify({sha:sha('e'),parents:[{sha:opts.wrongSquashParent?sha('c'):sha('b')}],commit:{tree:{sha:sha('f')}}});
-    if(last==='repos/'+repo+'/pulls/509')
-      return JSON.stringify({number:509,merged:opts.depMerged??true,base:{ref:opts.depBase??'develop'},merge_commit_sha:sha('c')});
-    if(last==='repos/'+repo+'/compare/'+sha('c')+'...'+sha('b'))
-      return JSON.stringify({status:opts.depCompare??'ahead',merge_base_commit:{sha:opts.depMergeBase??sha('c')}});
-    if(last==='repos/'+repo+'/pulls/510/files?per_page=100')
-      return JSON.stringify([opts.files??[{filename:'README.md',status:'modified',sha:sha('c')}]]);
-    throw Error('Unexpected mock query '+JSON.stringify(args));
-  };
-  query.loadCheckout=()=>({checkout,checkoutArtifact});
-  return {query,calls,f};
-}
-
-test('review, waiver and pause CLI paths resolve canonical identity and never upgrade an old review',()=>{
- const canonical='FurinyaWorks/Slay-the-Abyss',dir=mkdtempSync(join(tmpdir(),'auto-merge-cli-')),file=join(dir,'review.json');
- try{
-  writeFileSync(file,JSON.stringify(fixture(canonical).review));
-  for(const mode of ['review','waiver','pause']){
-   const m=mock({repository:canonical,pending:true}),calls=[];
-   const query=(...args)=>{
-    calls.push(args);
-    const endpoint=args.find(a=>a.startsWith('repos/'))??args.at(-1);
-    if(endpoint.startsWith('repos/'))assert(endpoint===`repos/${canonical}`||endpoint.startsWith(`repos/${canonical}/`));
-    if(args[0]==='pr')assert(args.includes(canonical));
-    if(endpoint.endsWith('/files?per_page=100'))return JSON.stringify([[{filename:'README.md',status:'modified',sha:sha('a')}]]);
-    return m.query(...args);
-   };
-   const args=mode==='pause'?['510','--pause']:['510',mode==='waiver'?'--low-risk-docs':file,'--dry-run'];
-   assert.equal(main(args,query).state,mode==='pause'?'paused':'eligible');
-   if(mode!=='pause')assert(!calls.some(c=>c.includes('POST')||c[0]==='pr'));
-   const badCalls=[];
-   assert.throws(()=>main(args,(...args)=>{badCalls.push(args);return JSON.stringify({id:1,full_name:canonical});}),/identity/);
-   assert(!badCalls.some(c=>c.includes('POST')||c[0]==='pr'));
-  }
-  const old={...fixture(canonical).review,repo};writeFileSync(file,JSON.stringify(old));
-  const m=mock({repository:canonical,pending:true});
-  assert.throws(()=>main(['510',file],m.query),/different repository\/PR/);
-  assert(!m.calls.some(c=>c.includes('POST')||c[0]==='pr'));
-  assert.deepEqual(JSON.parse(readFileSync(file,'utf8')),old);
- }finally{assert(dir.startsWith(join(tmpdir(),'auto-merge-cli-')));rmSync(dir,{recursive:true,force:true});}
-});
-
-test('dependency declarations are mandatory, unambiguous and same-repo',()=>{
-  assert.deepEqual(parseDependencies('Depends-on: none'),[]);
-  assert.deepEqual(parseDependencies('x\nDepends-on: #1, #2 #1'),[1,2]);
-  for(const body of ['', 'Depends-on: #1\nDepends-on: none','Depends-on: other/repo#12',
-    'Depends-on:','#3','Depends-on: #0','Depends-on: #3 / #4'])
-    assert.throws(()=>parseDependencies(body),/Depends-on/);
-});
-test('review eligibility is separate from the mandatory Full CI activation preflight',()=>{
-  const f=fixture();
-  assert.deepEqual(autoMergeErrors(f),[]);
-  assert(!Object.hasOwn(f.pr,'statusChecks'),'CI jobs must not be part of the eligibility input');
-  assert.deepEqual(collectEligibility(repo,510,f.review,mock().query).errors,[]);
-});
-test('missing review, stale SHA or target changes fail closed',()=>{
-  for(const change of [
-    f=>f.review.reviewedHeadSha=sha('c'),
-    f=>f.review.reviewedBaseSha=sha('c'),
-    f=>f.review.reviewId='',
-    f=>f.review.unresolved=['bad contract'],
-    f=>f.review.conclusion='pending',
-    f=>f.review.prNumber=511,
-    f=>f.review.repo='someone/else',
-    f=>f.pr.head.sha=sha('e'),
-    f=>f.baseSha=sha('d')
-  ]) {
-    const f=fixture();change(f);
-    assert(autoMergeErrors(f).length,'Should reject '+change);
-  }
-});
-test('draft, conflicting, blocked, fork, wrong target and unmerged dependencies fail closed',()=>{
-  const mutations=[
-    f=>f.pr.draft=true,f=>f.pr.mergeable=false,f=>f.pr.mergeable=null,
-    f=>f.pr.labels=[{name:'do-not-merge'}],
-    f=>f.pr.head.repo.full_name='other/fork',
-    f=>f.pr.base.ref='master',
-    f=>f.dependencies=[{merged:false}],f=>f.settings.allow_auto_merge=false
-  ];
-  for(const change of mutations) {
-    const f=fixture();change(f);assert(autoMergeErrors(f).length,'Should reject '+change);
-  }
-});
-test('review status must be a real required check; CI and squash protection cannot be omitted',()=>{
-  for(const change of [
-    f=>f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.required_status_checks=
-      f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.required_status_checks.filter(x=>x.context!==reviewContext),
-    f=>f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.required_status_checks=
-      f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.required_status_checks.filter(x=>x.context!=='inventory'),
-    f=>f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.required_status_checks.find(x=>x.context===reviewContext).integration_id=15368,
-    f=>f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.required_status_checks.find(x=>x.context==='check').integration_id=null,
-    f=>f.ruleset.rules.find(r=>r.type==='pull_request').parameters.allowed_merge_methods.push('merge'),
-    f=>f.ruleset.rules.find(r=>r.type==='pull_request').parameters.required_review_thread_resolution=false,
-    f=>f.ruleset.enforcement='disabled',
-    f=>f.ruleset.rules=f.ruleset.rules.filter(r=>r.type!=='required_linear_history')
-  ]) {
-    const f=fixture();change(f);assert(autoMergeErrors(f).length,'Must reject '+change);
-  }
-});
-test('dependency resolution reads actual PRs, not a self-declared merged claim',()=>{
-  const {f,query}=mock({depMerged:false});
-  f.pr.body='Depends-on: #509';
-  // Use a fresh mock that serves that body.
-  const q=(...args)=>args.at(-1)==='repos/'+repo+'/pulls/510'?
-    JSON.stringify(f.pr):query(...args);
-  const evidence=collectEligibility(repo,510,f.review,q);
-  assert(evidence.errors.some(e=>e.includes('prerequisite')));
-});
-test('low-risk waiver checks every changed file, not the authors declaration',()=>{
-  const f=fixture();f.review={disposition:'low-risk-docs',reviewedHeadSha:sha('a'),reviewedBaseSha:sha('b')};
-  assert(autoMergeErrors({...f,review:f.review,changedFiles:[{filename:'README.md',status:'modified',sha:sha('c')}]}).length===0);
-  assert(autoMergeErrors({...f,review:f.review,changedFiles:[{filename:'scripts/run.mjs',status:'modified',sha:sha('c')}]}).length>0);
-  assert(autoMergeErrors({...f,review:f.review,changedFiles:[]}).length>0);
-});
-test('dry run makes no writes; activation confirms pending review before enable and releases success only after queue validation',()=>{
-  const a=mock();
-  const dry=armAutoMerge(repo,510,a.f.review,a.query,{dryRun:true});
-  assert.equal(dry.state,'eligible');
-  assert(!a.calls.some(call=>call.includes('POST')||call[0]==='pr'));
-  const b=mock();
-  const r=armAutoMerge(repo,510,b.f.review,b.query);
-  assert.equal(r.state,'auto-merge-requested');
-  const write=b.calls.findIndex(call=>call.includes('POST')),merge=b.calls.findIndex(call=>call[1]==='graphql');
-  assert(write>=0&&merge>write);
-  assert(b.calls[write].includes('context='+reviewContext));
-  assert(b.calls[write].includes('repos/'+repo+'/statuses/'+sha('a')));
-  assert(b.calls[write].includes('state=pending'));
-  assert(b.calls[merge].includes('head='+sha('a')));
-  assert(b.calls[merge].includes('id=PR_reviewed_510'));
-  assert(b.calls[merge].some(arg=>arg.includes('expectedHeadOid:$head,mergeMethod:SQUASH')));
-  assert(b.calls.findIndex(call=>call.includes('state=success'))>merge);
-  assert(!b.calls.some(c=>c[0]==='pr'&&c[1]==='merge'&&!c.includes('--disable-auto')),'no synchronous merge fallback');
-});
-test('successful review authorization binds the exact BASE in the published status',()=>{
- for(const waiver of [false,true]){
-  const m=mock({pending:true});
-  const review=waiver?{...m.f.review,disposition:'low-risk-docs'}:m.f.review;
-  assert.equal(armAutoMerge(repo,510,review,m.query).state,'auto-merge-requested');
-  const posts=m.calls.filter(args=>args.includes('POST'));
-  const description=args=>args.find(arg=>arg.startsWith('description=')).slice('description='.length);
-  const success=posts.find(args=>args.includes('state=success'));
-  assert(description(success).endsWith(' [base:'+sha('b')+']'));
-  assert(description(success).length<=140);
-  assert(!description(posts.find(args=>args.includes('state=pending'))).includes('[base:'));
- }
-});
-test('a new HEAD or develop tip blocks status writes and merge even after an earlier pass',()=>{
-  for(const [options,pattern] of [[{nextHead:sha('e')},/changed|stale/i],
-    [{nextTarget:sha('e')},/changed|differs|stale/i],
-    [{nextBase:sha('e')},/changed|differs/i]]) {
-    const m=mock(options);
-    assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),pattern);
-    assert(!m.calls.some(call=>call.includes('POST')||call[0]==='pr'));
-  }
-});
-
-test('arm proof embeds exact Full preflight and still requires later merge verification',()=>{
-  const a=mock();
-  const proof=armAutoMerge(repo,510,a.f.review,a.query,{dryRun:true}).proof;
-  assert.equal(proof.schemaVersion,4);
-  assert.equal(proof.kind,'auto-merge-arm');
-  assert.equal(proof.tested,sha('d'));
-  assert.equal(proof.sourceTree,sha('f'));
-  assert.deepEqual(verifyAutoMergeArm(proof),[]);
-  assert.deepEqual(verifyDelivery(proof),[]);
-  for(const mutate of [
-    p=>p.parents=[sha('b'),sha('e')],
-    p=>p.head=sha('e'),
-    p=>p.targetAfterSha=sha('e'),
-    p=>p.review.reviewedHeadSha=sha('e'),
-    p=>p.sourceTree='invalid',
-    p=>p.review.unresolved=['unfinished'],
-    p=>p.kind='preflight',
-  ]) {
-    const broken=structuredClone(proof);mutate(broken);
-    assert(verifyAutoMergeArm(broken).length,'Reject '+mutate);
-  }
-});
-
-test('inactive target scopes and non-strict base protection fail closed',()=>{
-  for(const mutate of [f=>f.ruleset.target='tag',f=>f.ruleset.conditions.ref_name.exclude=['refs/heads/develop'],
-    f=>f.ruleset.conditions.ref_name.exclude=['refs/heads/*'],f=>f.ruleset.conditions.ref_name.include=['~ALL'],
-    f=>f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.strict_required_status_checks_policy=false]) {
-    const f=fixture();mutate(f);assert(autoMergeErrors(f).length,'Reject '+mutate);
-  }
-});
-test('merged dependencies must target develop and be proven contained in the reviewed base',()=>{
-  for(const dep of [{merged:true,base:{ref:'master'},contained:true},{merged:true,base:{ref:'develop'}},
-    {merged:true,base:{ref:'develop'},contained:false}]) {
-    assert(autoMergeErrors({...fixture(),dependencies:[dep]}).length);
-  }
-  assert.deepEqual(autoMergeErrors({...fixture(),dependencies:[{merged:true,base:{ref:'develop'},contained:true}]}),[]);
-});
-test('activation must be read back and failure revokes review success and native auto-merge',()=>{
-  for(const options of [{missingAutoMerge:true},{mergeMethod:'merge'},{finalHold:true},{activationFails:true}]) {
-    const m=mock(options);assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query));
-    assert(m.calls.some(c=>c.includes('state=failure')),'Revoke status for '+JSON.stringify(options));
-    assert(m.calls.some(c=>c.includes('--disable-auto')),'Cancel native queue for '+JSON.stringify(options));
-  }
-});
-
-test('same-named Fast green contexts cannot authorize Full preflight',()=>{
-  const m=mock({fastOnly:true});
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),/Full CI/);
-  assert(!m.calls.some(c=>c.includes('POST')||c[0]==='pr'));
-});
-test('attempt evidence is saved before status success and on cleanup failure',()=>{
-  const m=mock({activationFails:true}),records=[];
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query,{persist:r=>records.push(r.state)}));
-  assert.deepEqual(records,['prepared','authorizing','activation-failed']);
-});
-
-test('dependency collector proves squash ancestry in the actual develop ref',()=>{
-  for(const [options,ok] of [[{},true],[{depBase:'master'},false],[{depCompare:'diverged'},false],
-    [{depCompare:'behind'},false],[{depMergeBase:sha('e')},false]]) {
-    const m=mock(options);m.f.pr.body='Depends-on: #509';
-    const e=collectEligibility(repo,510,m.f.review,m.query);
-    assert.equal(e.errors.length===0,ok,JSON.stringify(options));
-  }
-});
-test('immediate merge readback verifies the actual squash parent and source tree',()=>{
-  const good=mock({mergeImmediately:true});
-  assert.equal(armAutoMerge(repo,510,good.f.review,good.query).state,'merged');
-  const bad=mock({mergeImmediately:true,wrongSquashParent:true});
-  assert.throws(()=>armAutoMerge(repo,510,bad.f.review,bad.query),/squash/);
-});
-test('missing Full proof cannot be relabeled into a valid authorization',()=>{
-  const m=mock(),p=armAutoMerge(repo,510,m.f.review,m.query,{dryRun:true}).proof;
-  for(const mutate of [p=>delete p.fullPreflight,p=>p.fullPreflight.schemaVersion=4,
-    p=>p.fullPreflight.sourceTree=sha('e'),p=>p.fullPreflight.review={...p.fullPreflight.review,reviewId:'another'}]) {
-    const broken=structuredClone(p);mutate(broken);assert(verifyAutoMergeArm(broken).length);
-  }
-});
-test('revocation failures remain explicitly uncertain in the error and attempt journal',()=>{
-  const m=mock({activationFails:true}),records=[];
-  const query=(...args)=>{
-    if(args.includes('state=failure')||args.includes('--disable-auto'))throw Error('cleanup transport error');
-    return m.query(...args);
-  };query.loadCheckout=m.query.loadCheckout;
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,query,{persist:r=>records.push(r)}),/revocation uncertain.*\n.*cancellation uncertain/s);
-  assert.equal(records.at(-1).cleanup.length,2);
-});
-
-test('same-head rerun during final eligibility invalidates Full proof before authorization',()=>{
-  const m=mock({rerun:true});
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),/Quality|Full/);
-  assert(!m.calls.some(c=>c.includes('state=success')||c[0]==='pr'));
-});
-test('waiver normalizes API file ordering and optional identity metadata into valid proof',()=>{
-  const files=['docs/research/z.md','README.md'].map(filename=>({filename,status:'modified',sha:sha('c')}));
-  const m=mock({files});m.f.pr.changed_files=2;
-  const review={disposition:'low-risk-docs',repo,prNumber:510,reviewedHeadSha:sha('a'),reviewedBaseSha:sha('b')};
-  const p=armAutoMerge(repo,510,review,m.query,{dryRun:true}).proof;
-  assert.deepEqual(p.changedFiles,p.fullPreflight.changedFiles);
-  assert.deepEqual(verifyAutoMergeArm(p),[]);
-});
-
-test('last Full readback must retain complete PR identity before any remote mutation',()=>{
- for(const options of [{finalTarget:'master'},{finalNumber:511},{finalFork:true},{finalMergeCommit:true}]) {
-  const m=mock(options);
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),/admission|identity|Full|changed/);
-  assert(!m.calls.some(c=>c.includes('POST')||c[0]==='pr'),'No mutation for '+JSON.stringify(options));
- }
-});
-
-test('independent review can arm while Full is pending without claiming Full success or downloading its artifact',()=>{
- const m=mock({pending:true});m.query.loadCheckout=()=>{throw Error('Pending CI has no passing checkout');};
- const result=armAutoMerge(repo,510,m.f.review,m.query);
- assert.equal(result.state,'auto-merge-requested');
- assert.equal(result.proof.fullPreflight,undefined);
- assert(!m.calls.some(c=>c[0]==='pr'&&!c.includes('--disable-auto')),'pending path cannot use CLI immediate-merge dispatch');
- const mutation=m.calls.find(c=>c[1]==='graphql');
- assert(mutation.includes('id=PR_reviewed_510'));assert(mutation.includes('head='+sha('a')));
- assert(mutation.some(c=>c.includes('expectedHeadOid:$head,mergeMethod:SQUASH')));
- assert.deepEqual(result.proof.pendingRun,{id:7,attempt:1,head:sha('a')});
- assert.deepEqual(verifyAutoMergeArm(result.proof),[]);
- assert(verifyDelivery(result.proof).some(e=>e.includes('not successful Full')));
- for(const mutate of [p=>p.pendingRun.head=sha('c'),p=>p.pendingRun.attempt=0,p=>delete p.pendingRun]){
-  const broken=structuredClone(result.proof);mutate(broken);assert(verifyAutoMergeArm(broken).length);
- }
-});
-test('pending activation rejects known Full failure, a changed final identity and a new attempt',()=>{
- const failed=mock({pending:true,pendingFailure:true});
- assert.throws(()=>armAutoMerge(repo,510,failed.f.review,failed.query),/failed/);
- assert(!failed.calls.some(c=>c.includes('POST')||c[0]==='pr'));
- for(const mutate of [p=>p.base.ref='master',p=>p.head.repo.full_name='other/fork',p=>p.labels=['hold']]){
-  const m=mock({pending:true});let reads=0;
-  const query=(...args)=>{
-   const result=m.query(...args);
-   if(args.at(-1)===`repos/${repo}/pulls/510`&&++reads>=3){const p=JSON.parse(result);mutate(p);return JSON.stringify(p);}return result;
-  };
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,query),/changed/);
-  assert(!m.calls.some(c=>c.includes('POST')||c[0]==='pr'));
- }
- const m=mock({pending:true});let runs=0;
- const query=(...args)=>{const result=m.query(...args);if(args.at(-1).includes('/actions/workflows/')&&++runs>1){const p=JSON.parse(result);p[0].workflow_runs[0].run_attempt=2;return JSON.stringify(p);}return result;};
- assert.throws(()=>armAutoMerge(repo,510,m.f.review,query),/attempt changed/);
-});
-test('Full gate cannot be omitted or lose the Actions source when arming',()=>{
- for(const source of ['missing',null,123]){
-  const f=fixture(),checks=f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters;
-  if(source==='missing')checks.required_status_checks=checks.required_status_checks.filter(c=>c.context!=='full-quality');
-  else checks.required_status_checks.find(c=>c.context==='full-quality').integration_id=source;
-  assert(autoMergeErrors(f).length);
- }
-});
-test('completed Full uses the same native handshake and never a bypass-capable synchronous fallback',()=>{
- const m=mock();assert.equal(m.f.pr.state,'open');
- assert.equal(armAutoMerge(repo,510,m.f.review,m.query).state,'auto-merge-requested');
- assert(m.calls.some(c=>c.includes('state=pending')));
- assert(!m.calls.some(c=>c[0]==='pr'&&c[1]==='merge'&&!c.includes('--disable-auto')));
-});
-test('overwritten review gate, replaced CI attempt and a merge before release are handshake failures',()=>{
- for(const options of [{overwrittenGate:true},{pending:true,afterQueueRerun:true},{mergeBeforeRelease:true},
-  {activationFails:true},{missingAutoField:true,missingAutoMerge:true},{foreignRepository:true}]){
-  const m=mock(options);assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query));
-  assert(!m.calls.some(c=>c.includes('state=success')),'never release review success after a handshake failure');
-  assert(m.calls.some(c=>c.includes('--disable-auto')));
-  assert(m.calls.some(c=>c.includes('state=failure')));
- }
-});
-
-function nativeArmFixture({queuedAt='release',corrupt=()=>{},stuck=false,dequeueError=false,wrongDequeue=false,failAfterRelease=false,noAuto=false,mergeBeforeRelease=false,driftRules=false,requeue=false,unrouted=false}={}){
-  const m=mock({pending:unrouted,unrouted}),calls=[];let queued=false,released=false,enabled=false;
-  if(unrouted)m.f.pr.labels=[{name:'ci:full'}];
- m.f.ruleset.bypass_actors=[];
- m.f.ruleset.id=25870651;m.f.ruleset.updated_at='2026-11-04T17:51:23.025+08:00';
- m.f.ruleset.rules.push({type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}});
- const query=(...args)=>{
-  calls.push(args);
-  if(args[1]==='graphql'&&args.some(a=>a.includes('dequeuePullRequest('))){
-   assert(args.includes('id='+m.f.pr.node_id));
-   if(dequeueError)return JSON.stringify({errors:[{message:'denied'}],data:{dequeuePullRequest:null}});
-   if(!stuck)queued=false;
-   return JSON.stringify({data:{dequeuePullRequest:{mergeQueueEntry:{id:wrongDequeue?'OTHER':'MQE_510'}}}});
-  }
-  if(args[1]==='graphql'&&args.some(a=>a.includes('... on PullRequest'))){
-   const node={id:m.f.pr.node_id,number:510,state:'OPEN',baseRefName:'develop',headRefOid:m.f.pr.head.sha,
-    repository:{databaseId:projectRepositoryId,nameWithOwner:repo},isMergeQueueEnabled:true,
-    isInMergeQueue:queued,autoMergeRequest:enabled&&!queued&&!noAuto?{mergeMethod:'MERGE'}:null,
-    mergeQueue:{id:'MQ_develop',configuration:{mergeMethod:'SQUASH',mergingStrategy:'ALLGREEN'}},
-    mergeQueueEntry:queued?{id:'MQE_510',state:'AWAITING_CHECKS',mergeQueue:{id:'MQ_develop'},
-     pullRequest:{id:m.f.pr.node_id,number:510,headRefOid:m.f.pr.head.sha,baseRefName:'develop'}}:null};
-   const response={data:{node}};corrupt(response,{released,queued});return JSON.stringify(response);
-  }
-  const response=m.query(...args);
-  if(args.some(a=>a.includes('enablePullRequestAutoMerge'))){enabled=true;if(queuedAt==='enable')queued=true;}
-  if(args.includes('state=success')){released=true;if(queuedAt==='release')queued=true;}
-  if(args[0]==='pr'&&args.includes('--disable-auto')){enabled=false;if(requeue)queued=true;}
-  if(driftRules&&enabled&&args.at(-1)==='repos/'+repo+'/rulesets/25870651'){
-   const rules=JSON.parse(response);rules.rules=rules.rules.filter(r=>r.type!=='merge_queue');return JSON.stringify(rules);
-  }
-  if(args.at(-1)===`repos/${repo}/pulls/510`){
-   const pr=JSON.parse(response);
-   // The queue chooses its own SQUASH policy; the auto-merge input method is ignored.
-   pr.auto_merge=enabled&&!queued&&!noAuto?{merge_method:'merge'}:null;
-   if(failAfterRelease&&released)pr.labels=['hold'];
-   if(mergeBeforeRelease&&enabled&&!released){pr.merged=true;pr.state='closed';}
-   return JSON.stringify(pr);
-  }
-  return response;
+function aiCheck(change=()=>{}){const f=aiFixture();change(f);f.reviews[0].body=aiBody(f.report);return validateIndependentAiReview(f);}
+function aiApi(f=aiFixture(),alter=(_path,value)=>value){
+ const calls=[],prefix='repos/'+aiRepo;let prReads=0,targetReads=0;
+ const api=path=>{
+  calls.push(path);let value;
+  if(path==='repositories/'+projectRepositoryId)value=f.repository;
+  else if(path===prefix+'/git/ref/heads/develop'){targetReads++;value={ref:'refs/heads/develop',object:{type:'commit',sha:f.baseSha}};}
+  else if(path===prefix+'/pulls/712'){prReads++;value=f.pr;}
+  else if(path===prefix+'/git/commits/'+f.pr.merge_commit_sha)value=f.sourceCommit;
+  else if(path.startsWith(prefix+'/pulls/712/reviews?')){
+   const page=Number(new URL('https://api.github.com/'+path).searchParams.get('page'));value=f.reviews.slice((page-1)*100,page*100);
+  }else if(path===prefix+'/collaborators/FurinyaDev/permission')value=f.permissions[aiRoleId];
+  else if(path===prefix+'/pulls/11')value=f.dependencies[0]?.pr;
+  else if(path===prefix+'/compare/'+sha('f')+'...'+f.baseSha)value=f.dependencies[0]?.comparison;
+  else throw Error('Unexpected API read: '+path);
+  return alter(path,structuredClone(value),{prReads,targetReads,calls});
  };
- query.loadCheckout=m.query.loadCheckout;
- return {...m,query,calls,queued:()=>queued};
+ return {api,calls};
 }
+const aiCollect=(f=aiFixture(),alter)=>collectIndependentAiReview({prNumber:712,...aiApi(f,alter)});
 
-test('native queue arm accepts waiting and exact queued readback independently of REST auto_merge',()=>{
- for(const queuedAt of ['never','release','enable']){
-  const m=nativeArmFixture({queuedAt});
-  assert.equal(armAutoMerge(repo,510,m.f.review,m.query).state,'auto-merge-requested',queuedAt);
-  assert.equal(m.queued(),queuedAt!=='never');
-  assert(!m.calls.some(c=>c.includes('state=failure')));
- }
+test('local AI payload validation binds the actual tuple but cannot substitute for a server-signed Review',()=>{
+ const f=aiFixture(),context={...f,coordinator:f.reviews[0].user};
+ assert.deepEqual(independentAiReportErrors(f.report,context),[]);
+ f.reviews=[];assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ for(const change of [
+  x=>{x.report={conclusion:'pass',unresolved:[]};},
+  x=>{x.report.schemaVersion=2;},
+  x=>{x.sourceCommit.tree.sha=sha('f');},
+  x=>{x.sourceCommit.parents.reverse();},
+  x=>{x.pr.base.sha=sha('c');},
+  x=>{x.coordinator={id:99,login:'forged'};},
+  x=>{x.coordinator.login='other';},
+  x=>{x.report.coordinator.verifiedActualSessions=false;},
+  x=>{x.report.reviewerAgent=x.report.implementationAgents[0];}
+ ]){const x=structuredClone({...context,report:f.report});change(x);assert(independentAiReportErrors(x.report,x).length);}
+ assert(independentAiReportErrors(null,context).length);
+ assert(independentAiReportErrors(f.report).length);
 });
-test('reviewed explicit Full PR can register native auto-merge while impact is queued',()=>{
- const m=nativeArmFixture({queuedAt:'never',unrouted:true});
- const result=armAutoMerge(repo,510,m.f.review,m.query);
- assert.equal(result.state,'auto-merge-requested');
- assert.equal(result.proof.pendingRun.awaitingRouting,true);
- assert.equal(result.proof.fullPreflight,undefined);
- assert.equal(result.proof.nativeQueue.state,'waiting');
- assert.deepEqual(verifyAutoMergeArm(result.proof),[]);
- assert(!m.calls.some(call=>call.includes('context=full-quality')&&call.includes('state=success')));
+
+test('independent AI gate accepts a trusted same-account COMMENTED report attesting a distinct real cloud AI session',()=>{
+ const f=aiFixture(),result=validateIndependentAiReview(f);
+ assert.equal(result.conclusion,'pass');assert.deepEqual(result.errors,[]);assert.equal(result.githubReviewId,100);
+ assert.equal(result.reviewId,f.report.provenance.reviewId);assert.equal(result.tree,sha('e'));
+ assert.equal(Object.hasOwn(result,'nativeApprovalReviewId'),false);
+ assert.equal(f.pr.user.id,result.coordinator.id,'same GitHub author is allowed; AI sessions must still be distinct');
+ assert.deepEqual(aiCoordinators,[111138384,337201427]);
+ assert.equal(aiCheck(x=>{x.permissions[aiRoleId].permission='write';x.permissions[aiRoleId].role_name='maintain';}).conclusion,'pass');
+ assert.equal(aiCheck(x=>{delete x.report.coordinator.verifiedActualSessions;x.report.provenance.coordinatorVerified=true;}).conclusion,'pass');
 });
-test('queued registration still rejects unknown routing, failed jobs, wrong impact identity and Fast expansion',()=>{
- for(const variant of ['no-full-request','no-native-queue','failed-impact','wrong-job-head','fast-expanded']) {
-  const m=nativeArmFixture({unrouted:true});
-  if(variant==='no-full-request')m.f.pr.labels=[];
-  if(variant==='no-native-queue')m.f.ruleset.rules=m.f.ruleset.rules.filter(rule=>rule.type!=='merge_queue');
-  const query=(...args)=>{
-   const raw=m.query(...args);
-   if(!args.some(arg=>typeof arg==='string'&&arg.includes('/jobs?')))return raw;
-   const pages=JSON.parse(raw),jobs=pages[0].jobs,impact=jobs.find(job=>job.name==='impact');
-   if(variant==='failed-impact'){impact.status='completed';impact.conclusion='failure';}
-   if(variant==='wrong-job-head')impact.head_sha=sha('c');
-   if(variant==='fast-expanded')jobs.push({...impact,id:999,name:'fast (windows-2025)'});
-   return JSON.stringify(pages);
-  };
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,query),/routing|failed|Full/,variant);
-  assert(!m.calls.some(call=>call.includes('POST')||call.some(arg=>typeof arg==='string'&&arg.includes('enablePullRequestAutoMerge'))),variant);
- }
-});
-test('queued Full registration revokes authorization if impact fails or turns Fast during the handshake',()=>{
- for(const failure of ['failed-impact','fast-expansion']) {
-  const m=nativeArmFixture({queuedAt:'never',unrouted:true});let activated=false;
-  const query=(...args)=>{
-   const raw=m.query(...args);
-   if(args.some(arg=>typeof arg==='string'&&arg.includes('enablePullRequestAutoMerge')))activated=true;
-   if(!activated||!args.some(arg=>typeof arg==='string'&&arg.includes('/jobs?')))return raw;
-   const pages=JSON.parse(raw),impact=pages[0].jobs.find(job=>job.name==='impact');
-   if(failure==='failed-impact'){impact.status='completed';impact.conclusion='failure';}
-   else pages[0].jobs.push({...impact,id:999,name:'fast (windows-2025)'});
-   return JSON.stringify(pages);
-  };
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,query),/failed|routing/);
-  assert(!m.calls.some(call=>call.includes('POST')&&call.includes('state=success')));
-  assert(m.calls.some(call=>call.includes('POST')&&call.includes('state=failure')));
+
+test('independent AI gate accepts COMMENTED or APPROVED reports without requiring a human or non-author Review',()=>{
+ const f=aiFixture();assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ assert(!f.reviews.some(review=>review.state==='APPROVED'));
+ const approved=structuredClone(f);approved.pr.user.id=337201427;approved.reviews[0].state='APPROVED';assert.equal(validateIndependentAiReview(approved).conclusion,'pass');
+ for(const patch of [{state:'DISMISSED'},{state:'CHANGES_REQUESTED'},{state:'PENDING'},{commit_id:sha('c')}]){
+  const x=structuredClone(f);Object.assign(x.reviews[0],patch);assert.equal(validateIndependentAiReview(x).conclusion,'fail');
  }
 });
 
-test('native queue review status and journal bind the privileged policy version within 140 characters',()=>{
- const m=nativeArmFixture();m.f.review.reviewId='independent-agent-'.repeat(20);
- const result=armAutoMerge(repo,510,m.f.review,m.query);
- const digest=queueRulesFingerprint(m.f.ruleset);
- assert.equal(result.proof.queueRulesFingerprint,digest);
- const status=m.calls.find(args=>args.includes('state=success'));
- const description=status.find(arg=>arg.startsWith('description=')).slice(12);
- assert(description.endsWith(` [rules:${digest}] [base:${sha('b')}]`));
- assert(description.length<=140);
- assert.equal(result.proof.review.reviewId,m.f.review.reviewId,'journal keeps untruncated provenance');
- for(const mutate of [f=>delete f.ruleset.updated_at,f=>delete f.ruleset.bypass_actors,f=>f.ruleset.id=7]){
-  const invalid=nativeArmFixture();mutate(invalid.f);
-  assert.throws(()=>armAutoMerge(repo,510,invalid.f.review,invalid.query));
-  assert(!invalid.calls.some(args=>args.includes('POST')));
+test('independent AI gate never substitutes a PR body, artifact declaration or arbitrary review text for a signed report',()=>{
+ const f=aiFixture();f.pr.body+='\n'+aiBody(f.report);f.artifact={report:f.report};f.reviews=[];
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ for(const body of [JSON.stringify(f.report),'quoted report '+aiBody(f.report),'```json\n'+JSON.stringify(f.report)+'\n```'])
+  assert.equal(parseIndependentAiReview(body),null);
+ for(const body of [aiMarker+'\n{}',aiMarker+'\n'+JSON.stringify({...f.report,schemaVersion:2}),aiBody(f.report)+'\n{}'])
+  assert.throws(()=>parseIndependentAiReview(body));
+});
+
+test('independent AI gate requires both the fixed coordinator user ID and current repository maintain/admin role',()=>{
+ for(const change of [
+  x=>{x.reviews[0].user={id:999,login:'FurinyaDev'};},
+  x=>{x.permissions[aiRoleId].role_name='write';},
+  x=>{x.permissions[aiRoleId].permission='read';},
+  x=>{x.permissions[aiRoleId].user={id:999,login:'FurinyaDev'};},
+  x=>{x.permissions[aiRoleId].user={id:aiRoleId,login:'impostor'};},
+  x=>{x.report.coordinator.id=337201427;},x=>{x.report.coordinator.login='impostor';},
+  x=>{delete x.permissions[aiRoleId];},
+ ])assert.equal(aiCheck(change).conclusion,'fail');
+});
+
+test('independent AI gate binds the current merge combination, not merely a familiar HEAD or head tree',()=>{
+ for(const change of [
+  x=>{x.repository={...x.repository,id:1};},x=>{x.repository={...x.repository,full_name:'foreign/repo'};},
+  x=>{x.pr.head={...x.pr.head,repo:{id:1,full_name:aiRepo}};},x=>{x.pr.base.ref='master';},
+  x=>{x.pr.state='closed';},x=>{x.pr.draft=true;},x=>{x.pr.mergeable=null;},
+  x=>{x.pr.base.sha=sha('c');},x=>{x.sourceCommit.sha=sha('c');},
+  x=>{x.sourceCommit.parents.reverse();},x=>{x.sourceCommit.parents=[{sha:sha('b')}];},
+  x=>{x.sourceCommit.parents={};},x=>{x.sourceCommit.parents=[null,null];},
+  x=>{x.sourceCommit.tree.sha=sha('c');},x=>{x.sourceCommit.commit={tree:{sha:sha('c')}};},
+  x=>{x.reviews[0].commit_id=sha('c');},x=>{x.reviews[0].state='DISMISSED';},
+  x=>{x.report.repositoryId=1;},x=>{x.report.repositoryFullName='foreign/repo';},x=>{x.report.prNumber=713;},
+  x=>{x.report.reviewedHeadSha=sha('c');},x=>{x.report.reviewedBaseSha=sha('c');},x=>{x.report.reviewedTreeSha=sha('c');},
+ ])assert.equal(aiCheck(change).conclusion,'fail');
+});
+
+test('independent AI gate requires explicit verified session provenance and a reviewer outside the implementation agents',()=>{
+ for(const change of [
+  x=>{x.report.reviewerAgent='/root/implementer';},x=>{x.report.implementationAgents=[];},
+  x=>{x.report.implementationAgents=['/root/implementer','/root/implementer'];},
+  x=>{x.report.reviewerAgent='/root/reviewer ';},x=>{x.report.provenance.sessionId='';},
+  x=>{delete x.report.coordinator.verifiedActualSessions;},x=>{x.report.provenance.reviewId='';},
+  x=>{x.report.provenance.kind='artifact-self-assertion';},x=>{x.report.unresolved=['unfixed'];},
+  x=>{x.report.conclusion='fail';},
+ ])assert.equal(aiCheck(change).conclusion,'fail');
+});
+
+test('independent AI gate rejects later trusted change requests and later fail/malformed/stale reports without falling back',()=>{
+ for(const patch of [
+  {state:'CHANGES_REQUESTED',body:'Fix the transaction bug'},
+  {state:'COMMENTED',body:aiBody({...aiFixture().report,conclusion:'fail',unresolved:['bug']})},
+  {state:'COMMENTED',body:aiMarker+'\nnot JSON'},
+  {state:'COMMENTED',body:aiBody({...aiFixture().report,reviewedBaseSha:sha('c')})},
+  {state:'DISMISSED'},
+ ]){
+  const f=aiFixture();f.reviews.push({...f.reviews[0],id:101,submitted_at:'2026-11-17T10:01:00Z',...patch});
+  assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ }
+ const f=aiFixture();f.reviews.push({...f.reviews[0],id:101,state:'CHANGES_REQUESTED',user:{id:999,login:'untrusted'},body:'No'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ f.pr.user.id=337201427;
+ f.reviews.push({...f.reviews[0],id:99,submitted_at:'2026-11-17T09:59:00Z',state:'CHANGES_REQUESTED',body:'Earlier issue'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail','COMMENTED metadata does not clear a real native change request');
+ f.reviews.push({...f.reviews[0],id:102,submitted_at:'2026-11-17T10:02:00Z',state:'APPROVED',body:'Actually resolved the earlier native request'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ const commentOnly=aiFixture();commentOnly.reviews.unshift({...commentOnly.reviews[0],id:99,
+  submitted_at:'2026-11-17T09:59:00Z',body:aiBody({...commentOnly.report,conclusion:'fail',unresolved:['old AI finding']})});
+ assert.equal(validateIndependentAiReview(commentOnly).conclusion,'pass','a new real AI pass can replace an older COMMENTED failure without human approval');
+});
+
+function aiDependency(f){
+ f.pr.body='Depends-on: #11, #11';
+ f.dependencies=[{number:11,comparedBaseSha:f.baseSha,pr:{number:11,merged:true,merge_commit_sha:sha('f'),base:{ref:'develop',repo:f.repository}},
+  comparison:{status:'ahead',merge_base_commit:{sha:sha('f')}}}];return f;
+}
+test('independent AI gate preserves the existing complete Depends-on containment semantics',()=>{
+ assert.deepEqual(parseAiDependencies('Depends-on: #11, #12 #11'),[11,12]);
+ assert.deepEqual(parseAiDependencies('Depends-on: none'),[]);
+ for(const body of ['', 'Depends-on: none\nDepends-on: #11','Depends-on: #0','Depends-on: external/11'])assert.throws(()=>parseAiDependencies(body));
+ const f=aiDependency(aiFixture());assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ for(const change of [
+  x=>{x.dependencies=[];},x=>{x.dependencies[0].pr.merged=false;},x=>{x.dependencies[0].pr.base.ref='master';},
+  x=>{x.dependencies[0].comparison.status='behind';},x=>{x.dependencies[0].comparison.merge_base_commit.sha=sha('c');},
+  x=>{x.dependencies[0].comparedBaseSha=sha('c');},x=>{x.pr.body='Depends-on: #712';},
+ ]){const x=aiDependency(aiFixture());change(x);assert.equal(validateIndependentAiReview(x).conclusion,'fail');}
+});
+
+test('independent AI gate collector reads actual merge parents/tree, all reviews, current roles and HEAD/BASE twice without Admin or writes',()=>{
+ const f=aiDependency(aiFixture()),{api,calls}=aiApi(f);
+ const result=collectIndependentAiReview({api,prNumber:712,expectedHeadSha:sha('a'),expectedBaseSha:sha('b'),expectedTreeSha:sha('e')});
+ assert.equal(result.conclusion,'pass');assert.equal(result.observations.prAfter.merge_commit_sha,sha('d'));
+ assert.equal(calls.filter(p=>p.endsWith('/pulls/712')).length,2);
+ assert.equal(calls.filter(p=>p.endsWith('/git/ref/heads/develop')).length,2);
+ assert(calls.some(p=>p.endsWith('/git/commits/'+sha('d'))));
+ assert(calls.some(p=>p.includes('/collaborators/FurinyaDev/permission')));
+ assert(!calls.some(p=>/rulesets|statuses|\/actions\/|\/admin/.test(p)));
+});
+
+test('independent AI gate collector detects HEAD/BASE/merge/dependency declaration movement during collection',()=>{
+ for(const mutate of [x=>{x.head.sha=sha('c');},x=>{x.base.sha=sha('c');},x=>{x.merge_commit_sha=sha('c');},x=>{x.body='Depends-on: #11';}]){
+  const result=aiCollect(aiFixture(),(path,value,count)=>{if(path.endsWith('/pulls/712')&&count.prReads===2)mutate(value);return value;});
+  assert.equal(result.conclusion,'fail');assert.match(result.errors.join('\n'),/changed during collection/);
+ }
+ const moved=aiCollect(aiFixture(),(path,value,count)=>{if(path.endsWith('/git/ref/heads/develop')&&count.targetReads===2)value.object.sha=sha('c');return value;});
+ assert.equal(moved.conclusion,'fail');
+ for(const field of ['expectedHeadSha','expectedBaseSha','expectedTreeSha']){
+  const {api}=aiApi();assert.equal(collectIndependentAiReview({api,prNumber:712,[field]:sha('c')}).conclusion,'fail');
  }
 });
 
-test('policy version changes before activation or final release require fresh authorization',()=>{
- for(const changedRead of [2,3,4]){
-  const m=nativeArmFixture(),query=m.query;let reads=0;
-  const drifting=(...args)=>{
-   if(args.at(-1)===`repos/${repo}/rulesets/25870651`&&++reads>=changedRead)
-    m.f.ruleset.updated_at='2026-11-04T09:51:24.025Z';
-   return query(...args);
-  };
-  drifting.loadCheckout=query.loadCheckout;
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,drifting),/admission|eligibility/i,'policy read '+changedRead);
-  assert(!m.calls.some(args=>args.includes('state=success')));
- }
+test('independent AI gate collector paginates to completion and observes a rejection beyond the first hundred reviews',()=>{
+ const f=aiFixture(),valid=f.reviews[0];
+ f.reviews=Array.from({length:99},(_,i)=>({...valid,id:i+1,user:{id:999,login:'untrusted'},body:'ordinary review'}));
+ f.reviews.push(valid,{...valid,id:101,state:'CHANGES_REQUESTED',submitted_at:'2026-11-17T10:01:00Z',body:'later rejection'});
+ const {api,calls}=aiApi(f),result=collectIndependentAiReview({api,prNumber:712});
+ assert.equal(result.conclusion,'fail');assert(calls.some(p=>p.endsWith('page=2')));assert.match(result.errors.join('\n'),/trusted reviewer still requests changes/);
+ f.reviews.pop();assert.equal(aiCollect(f).conclusion,'pass');
+ const duplicate=aiCollect(f,(path,value)=>path.endsWith('page=2')?[valid]:value);
+ assert.equal(duplicate.conclusion,'fail');assert.match(duplicate.errors.join('\n'),/duplicate/i);
 });
 
-test('native queue arm rejects unknown capability, policy, PR and entry identities before release',()=>{
- const mutations=[r=>r.errors=[{message:'partial'}],r=>delete r.data,r=>delete r.data.node.isInMergeQueue,
-  r=>r.data.node.repository.databaseId=1,r=>r.data.node.headRefOid=sha('c'),r=>r.data.node.number=511,
-  r=>r.data.node.id='OTHER',r=>r.data.node.repository.nameWithOwner='other/repository',
-  r=>r.data.node.baseRefName='master',r=>r.data.node.isMergeQueueEnabled=false,
-  r=>r.data.node.mergeQueue.configuration.mergeMethod='MERGE',r=>r.data.node.mergeQueue.configuration.mergingStrategy='HEADGREEN',
-  r=>r.data.node.mergeQueueEntry=null,r=>r.data.node.mergeQueueEntry.id='',
-  r=>r.data.node.mergeQueueEntry.pullRequest.id='OTHER',r=>r.data.node.mergeQueueEntry.pullRequest.headRefOid=sha('c'),
-  r=>r.data.node.mergeQueueEntry.pullRequest.number=511,r=>r.data.node.mergeQueueEntry.pullRequest.baseRefName='master',
-  r=>r.data.node.mergeQueueEntry.state='UNMERGEABLE',
-  r=>r.data.node.mergeQueueEntry.mergeQueue.id='OTHER'];
- for(const mutate of mutations){
-  const m=nativeArmFixture({queuedAt:'enable',corrupt:mutate});
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),/queue|identity|capability/i,String(mutate));
-  assert(!m.calls.some(c=>c.includes('state=success')),'invalid native state cannot release review');
- }
- const m=nativeArmFixture({queuedAt:'never',noAuto:true});
- assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),/queue|auto-merge/i);
- assert(!m.calls.some(c=>c.includes('state=success')));
+test('independent AI gate collector fails closed on malformed pages, missing permission evidence, API failure or async adapters',()=>{
+ for(const modify of [
+  (path,value)=>path.includes('/reviews?')?{reviews:value}:value,
+  (path,value)=>path.endsWith('/permission')?{}:value,
+  (path,value)=>{if(path.endsWith('/permission'))throw Error('permission unavailable');return value;},
+ ])assert.equal(aiCollect(aiFixture(),modify).conclusion,'fail');
+ assert.equal(collectIndependentAiReview({api:()=>Promise.resolve({}),prNumber:712}).conclusion,'fail');
+ const f=aiFixture();f.reviews.push({...f.reviews[0]});assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ f.reviews=[{...f.reviews[0],submitted_at:'invalid timestamp'}];assert.equal(validateIndependentAiReview(f).conclusion,'fail');
 });
 
-test('native queue release rejects a replacement entry, policy removal and a pre-release merge',()=>{
- const replace=nativeArmFixture({queuedAt:'enable',corrupt:(r,{released})=>{if(released)r.data.node.mergeQueueEntry.id='REPLACED';}});
- assert.throws(()=>armAutoMerge(repo,510,replace.f.review,replace.query),/queue|identity/i);
- for(const options of [{driftRules:true},{mergeBeforeRelease:true}]){
-  const m=nativeArmFixture(options);
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query),/admission|handshake/i);
-  assert(!m.calls.some(c=>c.includes('state=success')));
- }
-});
-
-test('native queue policy must retain SQUASH, ALLGREEN and all original protections before mutation',()=>{
- for(const mutate of [f=>f.ruleset.rules.at(-1).parameters.merge_method='MERGE',
-  f=>f.ruleset.rules.at(-1).parameters.grouping_strategy='HEADGREEN',f=>f.ruleset.bypass_actors=[{actor_id:1}],
-  f=>f.ruleset.rules.find(r=>r.type==='required_status_checks').parameters.strict_required_status_checks_policy=false,
-  f=>f.ruleset.rules.find(r=>r.type==='pull_request').parameters.allowed_merge_methods=['merge','squash'],
-  f=>f.ruleset.rules=f.ruleset.rules.filter(r=>r.type!=='required_linear_history')]){
-  const m=nativeArmFixture();mutate(m.f);
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query));
-  assert(!m.calls.some(c=>c.includes('POST')||c[1]==='graphql'),'unsafe policy rejected before authorization');
- }
-});
-
-test('failed native queue activation dequeues and reads back absence; uncertain cleanup is retained',()=>{
- for(const options of [{},{stuck:true},{dequeueError:true},{wrongDequeue:true},{requeue:true}]){
-  const m=nativeArmFixture({...options,failAfterRelease:true}),journal=[];
-  assert.throws(()=>armAutoMerge(repo,510,m.f.review,m.query,{persist:r=>journal.push(r)}),/changed|confirmed/);
-  assert(m.calls.some(c=>c.some(a=>a.includes('dequeuePullRequest('))),'failed activation must dequeue');
-  assert(m.calls.some(c=>c.includes('state=failure')));
-  const failure=journal.at(-1);assert.equal(failure.state,'activation-failed');
-  if(Object.keys(options).length){assert(failure.cleanup.some(s=>/queue|cancellation/i.test(s)));}
-  else{assert.equal(m.queued(),false);assert.deepEqual(failure.cleanup,[]);}
- }
-});
-function pauseFixture({queued=true,stuck=false,unavailable=false,foreign=false,missing=false,mutationError=false,autoStuck=false,requeue=false}={}) {
- const f=fixture(),calls=[];let disabled=false,inQueue=queued;
+function nativeFixture(){
+ const f=aiFixture();f.repository.allow_auto_merge=true;f.repository.allow_squash_merge=true;f.repository.default_branch='develop';
+ f.pr.node_id='PR_712';f.pr.head.ref='feat/native';f.pr.labels=[];f.pr.user=f.reviews[0].user;f.reviews[0].state='COMMENTED';
+ f.ruleset={id:25870651,target:'branch',enforcement:'active',conditions:{ref_name:{include:['refs/heads/develop'],exclude:[]}},rules:[
+  {type:'pull_request',parameters:{required_approving_review_count:0,dismiss_stale_reviews_on_push:false,require_code_owner_review:false,allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
+  {type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},{type:'required_linear_history'},
+  {type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,required_status_checks:['check','presentation','engineering-posix','inventory','independent-review','pr-quality'].map(context=>({context,integration_id:context==='independent-review'?null:15368}))}}]};
+ f.run={id:7,run_attempt:1,head_sha:sha('a'),path:'.github/workflows/quality.yml',event:'pull_request',status:'completed',conclusion:'success',repository:{full_name:aiRepo},pull_requests:[{number:712}]};
+ f.jobs=currentFullQualityJobs.map((name,i)=>({id:100+i,name,run_id:7,run_attempt:1,head_sha:sha('a'),status:'completed',conclusion:name==='fast'?'skipped':'success'}));
+ f.checkout={schemaVersion:1,event:'pull_request',runId:7,attempt:1,head:sha('a'),base:sha('b'),tested:sha('d'),prNumber:712,parents:[sha('b'),sha('a')]};
+ f.artifact={id:42,name:'quality-7-1-check',expired:false,workflow_run:{id:7,head_sha:sha('a')}};
+ f.gateRun={head_branch:'develop',actor:{id:aiRoleId},triggering_actor:{id:aiRoleId},id:9,run_attempt:1,event:'workflow_dispatch',head_sha:sha('b'),status:'in_progress',path:'.github/workflows/licenses.yml',repository:f.repository};
+ f.proofArtifact={id:99,name:'independent-review-712-'+sha('a').slice(0,12)+'-9-1',expired:false,workflow_run:{id:9,head_sha:sha('b')},digest:'sha256:'+ 'f'.repeat(64)};
+ const api=aiApi(f).api,calls=[];
  const query=(...args)=>{
-  calls.push(args);
-  if(args[0]==='api'&&args[1]==='graphql'){
-   if(unavailable)throw Error('queue capability unavailable');
-   if(args.some(arg=>arg.includes('dequeuePullRequest('))){
-    assert(args.includes('id='+f.pr.node_id));
-    if(mutationError)return JSON.stringify({errors:[{message:'denied'}],data:{dequeuePullRequest:null}});
-    if(!stuck)inQueue=false;
-    return JSON.stringify({data:{dequeuePullRequest:{mergeQueueEntry:{id:'MQE_510'}}}});
+  calls.push(args);const path=args.find(a=>typeof a==='string'&&((/^(repos|repositories)\//).test(a)||a==='user'));
+  let value;
+  if(args.includes('POST')){
+   if(path?.endsWith('/dispatches')){f.dispatched=JSON.parse(readFileSync(args[args.indexOf('--input')+1],'utf8'));return '';}
+   value={state:'success',context:'independent-review',creator:{id:41898282}};
+  }else if(args[1]==='graphql'){
+   if(args.some(a=>a.includes('enablePullRequestAutoMerge')))value={data:{enablePullRequestAutoMerge:{pullRequest:{number:712}}}};
+   else value={data:{node:{id:'PR_712',number:712,state:'OPEN',baseRefName:'develop',headRefOid:sha('a'),repository:{databaseId:projectRepositoryId,nameWithOwner:aiRepo},isInMergeQueue:false,mergeQueueEntry:null,isMergeQueueEnabled:true,autoMergeRequest:{mergeMethod:'SQUASH'},mergeQueue:{id:'QUEUE',configuration:{mergeMethod:'SQUASH',mergingStrategy:'ALLGREEN'}}}}};
+  }else if(path==='user')value=f.reviews[0]?.user??{id:aiRoleId,login:'FurinyaDev'};
+  else if(path?.endsWith('/rulesets/25870651'))value=f.ruleset;
+  else if(path?.includes('/actions/workflows/quality.yml/runs?'))value=[{workflow_runs:[f.run]}];
+  else if(path?.includes('/actions/runs/7/jobs?'))value=[{jobs:f.jobs}];
+  else if(path?.endsWith('/commits/'+sha('d')))value={...f.sourceCommit,commit:{tree:f.sourceCommit.tree}};
+  else if(path?.includes('/contents/.github/CODEOWNERS?'))value={type:'file',sha:sha('c'),content:Buffer.from('* @FurinyaDev @v5g95m7t8m-max\n').toString('base64')};
+  else if(path?.endsWith('/git/trees/'+sha('b'))||path?.endsWith('/git/trees/'+sha('d')))value={truncated:false,tree:[{path:'.github',mode:'040000',type:'tree',sha:sha('e')}]};
+  else if(path?.endsWith('/git/trees/'+sha('e')))value={truncated:false,tree:[{path:'CODEOWNERS',mode:'100644',type:'blob',sha:sha('c')}]};
+  else if(path?.endsWith('/git/commits/'+f.baseSha))value={sha:f.baseSha,tree:{sha:sha('6')}};
+  else if(path?.endsWith('/git/trees/'+sha('6')))value={sha:sha('6'),truncated:false,tree:[{path:'scripts',mode:'040000',type:'tree',sha:sha('9')}]};
+  else if(path?.endsWith('/git/trees/'+sha('9')))value={sha:sha('9'),truncated:false,tree:[{path:'arm-auto-merge.mjs',mode:'100644',type:'blob',sha:sha('7')}]};
+  else if(path?.endsWith('/actions/artifacts/99'))value=f.proofArtifact;
+  else if(path?.endsWith('/actions/runs/9'))value=f.gateRun;
+  else return JSON.stringify(api(path));
+  return JSON.stringify(value);
+ };
+ return Object.assign(f,{query,calls,loadCheckout:()=>({checkout:f.checkout,checkoutArtifact:f.artifact})});
+}
+test('native merge dry-run requires actual Review and retained policy without Admin or status writes',()=>{
+ const f=nativeFixture();assert.equal(armAutoMerge(aiRepo,712,100,f.query,{dryRun:true}).state,'eligible');
+ assert(f.calls.every(args=>!args.includes('POST')&&args[1]!=='graphql'));
+ assert.throws(()=>armAutoMerge(aiRepo,712,{reviewId:'local-pass'},f.query),/server-side Review/);
+ for(const mutate of [f=>f.ruleset.rules[3].parameters.strict_required_status_checks_policy=false,f=>f.ruleset.rules[1].parameters.merge_method='MERGE',f=>f.ruleset.rules[3].parameters.required_status_checks.pop(),f=>f.ruleset.bypass_actors=[{actor_id:1}]]){
+  const bad=nativeFixture();mutate(bad);assert.throws(()=>armAutoMerge(aiRepo,712,100,bad.query));assert(!bad.calls.some(a=>a.includes('POST')));
+ }
+});
+test('native enable dispatches the existing gate and records an intent rather than manufacturing preflight',()=>{
+ const f=nativeFixture(),r=armAutoMerge(aiRepo,712,100,f.query);
+ assert.equal(r.state,'auto-merge-requested');assert.equal(r.proof.schemaVersion,9);assert.equal(r.proof.nativeAuto.confirmed,true);assert.equal(r.proof.gateRef,'refs/heads/develop');
+ assert.equal(f.dispatched.inputs.ai_review_mode,'publish');assert(!('fullPreflight' in r.proof));
+ assert(!f.calls.some(a=>a.some(v=>typeof v==='string'&&v.includes('/statuses/'))));
+ const shadow=nativeFixture();shadow.ruleset.rules[0].parameters.required_approving_review_count=0;assert.equal(armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}).state,'shadow-requested');assert(!shadow.calls.some(a=>a[1]==='graphql'));
+ const broken=nativeFixture();broken.run.conclusion='failure';assert.throws(()=>armAutoMerge(aiRepo,712,100,broken.query),/formal Quality/);assert(!broken.calls.some(a=>a.includes('POST')));
+});
+function gateExecute(f,{mode='publish',release=false,mutateEnv=()=>{},saved,proofFile}={}){
+ const dir=mkdtempSync(join(tmpdir(),'native-gate-test-')),event=join(dir,'event.json');writeFileSync(event,'{}');
+ const file=proofFile??join(dir,'proof.json');if(saved)writeFileSync(file,JSON.stringify(saved));
+ const env={GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_EVENT_PATH:event,GITHUB_REPOSITORY:aiRepo,GITHUB_REPOSITORY_ID:String(projectRepositoryId),GITHUB_SHA:sha('b'),GITHUB_REF:'refs/heads/develop',GITHUB_ACTOR_ID:String(aiRoleId),GITHUB_RUN_ID:'9',GITHUB_RUN_ATTEMPT:'1',AI_REVIEW_PR:'712',AI_REVIEW_HEAD:sha('a'),AI_REVIEW_MODE:mode,AI_REVIEW_ARTIFACT_ID:'99'};mutateEnv(env);
+ try{const result=independentReviewGate(env,f.query,{release,loadCheckout:f.loadCheckout,proofFile:file});return {result,proof:JSON.parse(readFileSync(file,'utf8'))};}finally{rmSync(dir,{recursive:true,force:true});}
+}
+test('CI native review gate uploads genuine preflight before releasing a truthful Required status',()=>{
+ const f=nativeFixture(),prepared=gateExecute(f);assert.equal(prepared.result.state,'pr_passed');assert.equal(prepared.proof.preflight.schemaVersion,3);
+ assert(!f.calls.some(a=>a.includes('POST')));
+ const released=gateExecute(f,{release:true,saved:prepared.proof});assert.equal(released.result.state,'published');assert.equal(released.result.artifactId,99);
+ assert(f.calls.some(a=>a.includes('POST')&&a.includes('context=independent-review')));
+});
+test('shadow cannot publish and stale signed review, policy, CI, artifact or untrusted source fails closed',()=>{
+ const shadow=nativeFixture(),s=gateExecute(shadow,{mode:'shadow'});assert.equal(s.result.state,'shadow_verified');
+ gateExecute(shadow,{mode:'shadow',release:true,saved:s.proof});assert(!shadow.calls.some(a=>a.includes('POST')));
+ for(const mutate of [f=>f.ruleset.rules[3].parameters.strict_required_status_checks_policy=false,f=>f.reviews[0].state='DISMISSED',f=>f.run.conclusion='failure',f=>f.jobs[0].conclusion='failure']){
+  const f=nativeFixture();mutate(f);assert.throws(()=>gateExecute(f));assert(!f.calls.some(a=>a.includes('POST')));
+ }
+ const f=nativeFixture(),p=gateExecute(f).proof;f.proofArtifact.expired=true;assert.throws(()=>gateExecute(f,{release:true,saved:p}),/artifact/);assert(!f.calls.some(a=>a.includes('POST')));
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:e=>e.GITHUB_REF='refs/heads/untrusted'}),/actual develop BASE|foreign repository|trusted default|actual execution/);
+});
+test('gate-only workflow keeps Required inventory distinct and uses a separate concurrency group',()=>{
+ const text=readFileSync(new URL('../.github/workflows/licenses.yml',import.meta.url),'utf8');
+ assert.match(text,/license-audit-not-requested/);assert.match(text,/format\('ai-review-/);assert.match(text,/statuses: write/);
+ assert(text.indexOf('--independent-review')<text.indexOf('id: proof'));assert(text.indexOf('id: proof')<text.indexOf('--release-independent-review'));
+});
+
+test('rerun proof names bind the immutable gate run and attempt without overwriting earlier evidence',()=>{
+ const f=nativeFixture(),p=gateExecute(f).proof;
+ f.proofArtifact.name=f.proofArtifact.name.replace('-9-1','-9-2');
+ assert.throws(()=>gateExecute(f,{release:true,saved:p}),/artifact/);assert(!f.calls.some(a=>a.includes('POST')));
+});
+test('native mutation reply loss is recovered only by exact server-side auto/queue readback',()=>{
+ const f=nativeFixture(),normal=f.query,records=[];
+ f.query=(...args)=>{if(args[1]==='graphql'&&args.some(a=>a.includes('enablePullRequestAutoMerge')))throw Error('EOF after server commit');return normal(...args);};
+ const result=armAutoMerge(aiRepo,712,100,f.query,{persist:r=>records.push(structuredClone(r))});
+ assert.equal(result.proof.nativeAuto.confirmed,true);assert.equal(records[0].proof.nativeAuto.confirmed,false);assert.equal(records.at(-1).state,'auto-merge-requested');
+ assert(!f.calls.some(a=>a.some(v=>typeof v==='string'&&v.includes('/statuses/'))));
+});
+test('activation readback failure or changed combination cancels native intent and preserves uncertainty',()=>{
+ for(const scenario of ['readback-fails','head-changes','base-changes','cleanup-unreadable']){
+  const f=nativeFixture(),normal=f.query,records=[];let enabled=false,failedOnce=false,disabled=false;
+  f.query=(...args)=>{
+   if(args[0]==='pr'){assert(args.includes('--disable-auto'));disabled=true;return '';}
+   if(args[1]==='graphql'){
+    if(args.some(a=>a.includes('enablePullRequestAutoMerge'))){enabled=true;if(scenario==='head-changes')f.pr.head.sha=sha('f');if(scenario==='base-changes')f.pr.base.sha=sha('f');}
+    const parsed=JSON.parse(normal(...args));if(parsed.data?.node){parsed.data.node.headRefOid=f.pr.head.sha;if(disabled)parsed.data.node.autoMergeRequest=null;}return JSON.stringify(parsed);
    }
-   const node={id:f.pr.node_id,number:510,state:'OPEN',baseRefName:'develop',headRefOid:f.pr.head.sha,
-    repository:{databaseId:foreign?1:projectRepositoryId,nameWithOwner:repo},
-    isInMergeQueue:inQueue,mergeQueueEntry:inQueue?{id:'MQE_510'}:null};
-   if(missing)delete node.isInMergeQueue;
-   return JSON.stringify({data:{node}});
-  }
-  if(args[0]==='pr'){assert(args.includes('--disable-auto'));disabled=true;if(requeue)inQueue=true;return '';}
-  if(args.includes('POST'))return JSON.stringify({state:'failure',context:reviewContext});
-  return JSON.stringify({...f.pr,auto_merge:disabled&&!autoStuck?null:{merge_method:'squash'}});
- };
- return {query,calls,queued:()=>inQueue};
-}
-test('pause dequeues a native queue entry and confirms absence before reporting paused',()=>{
- const m=pauseFixture();
- assert.equal(pauseAutoMerge(repo,510,m.query).state,'paused');
- assert.equal(m.queued(),false,'a successful disable-auto must not substitute for native dequeue');
- assert(m.calls.some(args=>args.some(arg=>arg.includes('dequeuePullRequest('))));
-});
-test('pause cannot report success when dequeue is ineffective or queue capability is unknown',()=>{
- for(const options of [{stuck:true},{unavailable:true},{foreign:true},{missing:true},{mutationError:true},{requeue:true}]){
-  const m=pauseFixture(options);
-  assert.throws(()=>pauseAutoMerge(repo,510,m.query),/queue|identity|capability|denied/i,JSON.stringify(options));
-  assert(!m.calls.some(args=>args.includes('POST')),'uncertain queue removal must not claim review revocation');
- }
-});
-test('pause cancels native auto-merge before revoking review and refuses uncertain cancellation',()=>{
- for(const blocked of [false,true]){
-  const {query,calls}=pauseFixture({queued:false,autoStuck:blocked});
-  if(blocked){assert.throws(()=>pauseAutoMerge(repo,510,query),/not confirmed/);assert(!calls.some(c=>c.includes('POST')));}
-  else{assert.equal(pauseAutoMerge(repo,510,query).state,'paused');assert(calls.findIndex(c=>c[0]==='pr')<calls.findIndex(c=>c.includes('POST')));}
- }
-});
-test('early authorization requires separate exact historical PR Full and actual push Full after merge',()=>{
- const m=mock(),completed=armAutoMerge(repo,510,m.f.review,m.query,{dryRun:true}).proof;
- const arm={...completed,pendingRun:{id:7,attempt:1,head:sha('a')}};delete arm.fullPreflight;
- const p=completed.fullPreflight;
- const historical={schemaVersion:5,kind:'historical-auto-full',...Object.fromEntries(['run','jobs','checkout','checkoutArtifact','testedCommit','currentRun'].map(key=>[key,p[key]]))};
- assert.deepEqual(verifyHistoricalAutoFull(historical,arm),[]);
- const detachedLink=structuredClone(historical);detachedLink.run.pull_requests=[];detachedLink.currentRun.pull_requests=[];
- assert.deepEqual(verifyHistoricalAutoFull(detachedLink,arm),[],'GitHub may clear PR association after merge; immutable checkout still binds the PR');
- detachedLink.checkout.prNumber=511;
- assert(verifyHistoricalAutoFull(detachedLink,arm).length,'empty API link must not permit a different artifact PR');
- const futureArm={...arm,pendingRun:{...arm.pendingRun,attempt:2}};
- assert(verifyHistoricalAutoFull(historical,futureArm).length,'older attempt cannot certify a newer authorization');
- const pushRun={...p.run,id:9,head_sha:sha('e'),event:'push',head_branch:'develop'};
- const pr={number:510,merged:true,state:'closed',head:{sha:arm.head},base:{ref:'develop'},merge_commit_sha:sha('e')};
- const e={schemaVersion:3,repo,preflight:arm,pr,current:pr,prFull:historical,
-  commit:{sha:sha('e'),parents:[{sha:arm.base}],commit:{tree:{sha:arm.sourceTree}}},run:pushRun,currentRun:pushRun,
-  jobs:p.jobs.map(j=>({...j,run_id:9,head_sha:sha('e')})),
-  checkout:{...p.checkout,event:'push',runId:9,head:sha('e'),tested:sha('e'),parents:[arm.base]},
-  checkoutArtifact:{id:250,name:'quality-9-1-check',expired:false,workflow_run:{id:9,head_sha:sha('e')}}};delete e.checkout.prNumber;
- assert.equal(verifyMergedDelivery(e).state,'merged_passed');
- const canonical='FurinyaWorks/Slay-the-Abyss',resource={id:projectRepositoryId,full_name:canonical};
- const transferred=structuredClone(e);transferred.repo=canonical;
- for(const pr of [transferred.pr,transferred.current]){pr.head.repo={...resource};pr.base.repo={...resource};}
- for(const run of [transferred.run,transferred.currentRun,transferred.prFull.run,transferred.prFull.currentRun])run.repository={...resource};
- assert.equal(verifyMergedDelivery(transferred).state,'merged_pending','fullname changes require an explicit witness');
- const originalText=JSON.stringify(arm,null,2)+'\n';
- transferred.identityWitness=collectIdentityWitness(originalText,canonical,(...args)=>{
-  assert(['repositories/'+projectRepositoryId,'repos/'+repo].includes(args.at(-1)));return JSON.stringify(resource);
- });
- assert.equal(JSON.stringify(transferred.preflight),JSON.stringify(arm),'never rewrite the original authorization');
- assert.equal(verifyMergedDelivery(transferred).state,'merged_passed');
- for(const mutate of [e=>delete e.identityWitness,e=>e.identityWitness.preflightSha256=sha('f'),
-  e=>e.identityWitness.preflightText+=' ',e=>e.identityWitness.originalFullName='someone/unknown',
-  e=>e.identityWitness.aliasRepository.id=1,e=>e.identityWitness.canonicalRepository.id=1,
-  e=>e.pr.head.repo.id=1,e=>e.current.base.repo.id=1,e=>e.run.repository.id=1,e=>e.prFull.currentRun.repository.id=1,
-  e=>e.prFull.checkout.base=sha('c'),e=>e.commit.commit.tree.sha=sha('c'),e=>e.run.run_attempt=2]){
-  const bad=structuredClone(transferred);mutate(bad);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));
- }
- for(const mutate of [e=>delete e.prFull,e=>e.prFull.jobs.pop(),e=>e.jobs.pop(),
-  e=>e.prFull.checkout.base=sha('c'),e=>e.commit.parents=[{sha:sha('c')}],
-  e=>e.prFull.currentRun.run_attempt=2,e=>e.prFull.checkoutArtifact.id=0]){
-  const broken=structuredClone(e);mutate(broken);assert.equal(verifyMergedDelivery(broken).state,'merged_pending',String(mutate));
- }
-});
-test('merged collector accepts real empty PR links and selects the authorized source branch',()=>{
- const m=mock(),completed=armAutoMerge(repo,510,m.f.review,m.query,{dryRun:true}).proof;
- const arm={...completed,pendingRun:{id:7,attempt:1,head:sha('a')}};delete arm.fullPreflight;
- const p=completed.fullPreflight,branch='feat/reviewed-source';
- const pr={number:510,merged:true,state:'closed',head:{sha:arm.head,ref:branch},base:{ref:'develop'},merge_commit_sha:sha('e')};
- const prRun={...p.run,head_branch:branch,pull_requests:[]};
- const pushRun={...prRun,id:9,event:'push',head_sha:sha('e'),head_branch:'develop'};
- const query=(...args)=>{
-  const endpoint=args.at(-1);
-  if(endpoint.endsWith('/pulls/510'))return JSON.stringify(pr);
-  if(endpoint.endsWith('/commits/'+sha('d')))return JSON.stringify(p.testedCommit);
-  if(endpoint.endsWith('/commits/'+sha('e')))return JSON.stringify({sha:sha('e'),parents:[{sha:arm.base}],commit:{tree:{sha:arm.sourceTree}}});
-  if(endpoint.includes('/actions/workflows/')&&endpoint.includes('event=pull_request'))return JSON.stringify([{workflow_runs:[prRun,{...prRun,id:8,head_branch:'feat/other-source'}]}]);
-  if(endpoint.includes('/actions/workflows/')&&endpoint.includes('event=push'))return JSON.stringify([{workflow_runs:[pushRun]}]);
-  if(endpoint.includes('/actions/runs/7/jobs'))return JSON.stringify([{jobs:p.jobs}]);
-  if(endpoint.includes('/actions/runs/9/jobs'))return JSON.stringify([{jobs:p.jobs.map(j=>({...j,run_id:9,head_sha:sha('e')}))}]);
-  throw Error('Unexpected query '+endpoint);
- };
- const evidence=collectMergedDelivery(repo,510,arm,query,(run)=>run.id===7?
-  {checkout:p.checkout,checkoutArtifact:p.checkoutArtifact}:
-  {checkout:{...p.checkout,prNumber:undefined,event:'push',runId:9,head:sha('e'),tested:sha('e'),parents:[arm.base]},
-   checkoutArtifact:{id:250,name:'quality-9-1-check',expired:false,workflow_run:{id:9,head_sha:sha('e')}}});
- assert.deepEqual(evidence.prFull.run.pull_requests,[],'preserve actual API response');
- assert.equal(evidence.prFull.run.id,7);
- assert.equal(verifyMergedDelivery(evidence).state,'merged_passed');
-});
-
-test('all canonical CLI paths reject incomplete identity metadata before any remote mutation',()=>{
- const canonical='FurinyaWorks/Slay-the-Abyss',dir=mkdtempSync(join(tmpdir(),'auto-merge-identity-')),file=join(dir,'review.json');
- const mutations=[['missing ID',r=>delete r.id],['string ID',r=>r.id=String(projectRepositoryId)],
-  ['missing full name',r=>delete r.full_name],['wrong full name',r=>r.full_name='someone/Slay-the-Abyss']];
- try{
-  writeFileSync(file,JSON.stringify(fixture(canonical).review));
-  for(const mode of ['review','waiver','pause'])for(const target of ['canonical','settings','head','base']){
-   if(mode==='pause'&&target==='settings')continue; // Pause binds the current resolver and actual PR repositories.
-   for(const [label,mutate]of mutations){
-    const m=mock({repository:canonical,pending:true}),calls=[];let injected=0;
-    const query=(...args)=>{
-     calls.push(args);const response=m.query(...args),endpoint=args.at(-1);
-     const resource=target==='canonical'&&endpoint==='repositories/'+projectRepositoryId||
-      target==='settings'&&endpoint==='repos/'+canonical;
-     const pull=['head','base'].includes(target)&&endpoint===`repos/${canonical}/pulls/510`;
-     if(!resource&&!pull)return response;
-     const value=JSON.parse(response);mutate(pull?value[target].repo:value);injected++;
-     return JSON.stringify(value);
-    };
-    const args=mode==='pause'?['510','--pause']:['510',mode==='waiver'?'--low-risk-docs':file];
-    assert.throws(()=>main(args,query),/identity|Pause requires/,`${mode}/${target}/${label}`);
-    assert(injected>0,`must exercise ${mode}/${target}/${label}`);
-    assert(!calls.some(c=>c.includes('POST')||c[0]==='pr'||c[1]==='graphql'),
-     `no remote mutation for ${mode}/${target}/${label}`);
+   if(enabled&&args.at(-1)==='repos/'+aiRepo+'/pulls/712'){
+    if(scenario==='cleanup-unreadable'||scenario==='readback-fails'&&!failedOnce){failedOnce=true;throw Error('readback unavailable');}
+    return JSON.stringify({...f.pr,auto_merge:disabled?null:{merge_method:'squash'}});
    }
-  }
- }finally{assert(dir.startsWith(join(tmpdir(),'auto-merge-identity-')));rmSync(dir,{recursive:true,force:true});}
-});
-
-test('old Full repository names cannot certify new canonical authorization without a transfer witness',()=>{
- const canonical='FurinyaWorks/Slay-the-Abyss',m=mock({repository:canonical});
- const proof=armAutoMerge(canonical,510,m.f.review,m.query,{dryRun:true}).proof;
- assert.deepEqual(verifyDelivery(proof),[]);
- for(const fields of [['run'],['currentRun'],['run','currentRun']]){
-  const old=structuredClone(proof);
-  for(const field of fields)old.fullPreflight[field].repository.full_name=repo;
-  assert(verifyDelivery(old).length>0,'reject unbound legacy Full identity: '+fields.join(','));
+   return normal(...args);
+  };
+  assert.throws(()=>armAutoMerge(aiRepo,712,100,f.query,{persist:r=>records.push(structuredClone(r))}),scenario==='cleanup-unreadable'?/cancellation uncertain/:/changed|unavailable/);
+  assert.equal(records[0].state,'prepared');assert.equal(records.at(-1).state,'activation-failed');assert.equal(records.at(-1).proof.nativeAuto.confirmed,false);
+  assert.equal(disabled,scenario!=='cleanup-unreadable');assert.equal(records.at(-1).cleanup.length,scenario==='cleanup-unreadable'?1:0);
  }
 });
 
-function assertCanonicalCiExamples(source){
- const ci=source.replaceAll('\r\n','\n'),canonical='FurinyaWorks/Slay-the-Abyss';
- const setup=ci.split('### 一次性仓库门禁配置\n')[1]?.split('### 常规使用\n')[0];
- assert(setup,'current gate setup section exists');
- assert(setup.includes(`https://github.com/${canonical}/rules/25870651`));
- assert.match(ci,new RegExp(`^gh api --method PUT repos/${canonical}/pulls/<PR>/merge --input approved-merge\\.json$`,'m'));
- assert(ci.includes('`CHNISam/Slay-the-Abyss`'),'registered historical alias remains documented');
- assert(ci.includes('https://github.com/CHNISam/Slay-the-Abyss/pull/220'),'historical audit URL is not rewritten');
-}
-
-test('current CI operation examples use canonical repository routes while historical aliases remain',()=>{
- assertCanonicalCiExamples(readFileSync('docs/CI.md','utf8'));
+test('a hold added during artifact collection prevents the CI gate from releasing success',()=>{
+ const f=nativeFixture(),load=f.loadCheckout;f.loadCheckout=()=>{const result=load();f.pr.labels=[{name:'hold'}];return result;};
+ assert.throws(()=>gateExecute(f),/admission changed/);assert(!f.calls.some(a=>a.includes('POST')));
 });
 
-test('canonical CI example checks accept LF and CRLF but reject a missing setup heading',()=>{
- const lf=readFileSync('docs/CI.md','utf8').replaceAll('\r\n','\n');
- for(const eol of ['\n','\r\n']){
-  const ci=lf.replaceAll('\n',eol);
-  assertCanonicalCiExamples(ci);
-  assert.throws(()=>assertCanonicalCiExamples(ci.replace('### 一次性仓库门禁配置','### Missing setup')),
-   /current gate setup section exists/);
+test('only each trusted actors latest active decisive review can request changes',()=>{
+ const f=aiFixture(),other={id:337201427,login:'v5g95m7t8m-max'};
+ f.permissions[other.id]={permission:'write',role_name:'maintain',user:other};
+ f.reviews.push({...f.reviews[0],id:101,user:other,state:'CHANGES_REQUESTED',body:'Fix issue',submitted_at:'2026-11-17T10:01:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ f.reviews.push({...f.reviews[1],id:102,state:'COMMENTED',body:'Discussion',submitted_at:'2026-11-17T10:02:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+ f.reviews.push({...f.reviews[1],id:103,state:'APPROVED',body:'Verified fix',submitted_at:'2026-11-17T10:03:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'pass');
+ f.reviews.push({...f.reviews[1],id:104,state:'CHANGES_REQUESTED',submitted_at:'2026-11-17T10:04:00Z'});
+ assert.equal(validateIndependentAiReview(f).conclusion,'fail');
+});
+
+test('the existing zero-approval ruleset accepts an actual same-account signed independent cloud review',()=>{
+ const f=nativeFixture();assert.equal(f.pr.user.id,f.reviews[0].user.id);assert.equal(f.reviews[0].state,'COMMENTED');
+ const prepared=gateExecute(f);assert.equal(prepared.result.state,'pr_passed');
+ assert(!f.calls.some(a=>a.some(v=>typeof v==='string'&&(/CODEOWNERS|collaborators\?/).test(v))),'no new owner/reviewer infrastructure');
+});
+function bootstrapFixture(){
+ const f=nativeFixture(),base='c2409ad750c15124b7b843c6bbfa5b222537cb75';
+ f.gateRun.head_branch='feat/native';f.gateRun.head_sha=sha('a');
+ f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.report.installBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
+ return f;
+}
+const bootstrapEnv=e=>{e.AI_REVIEW_BOOTSTRAP='true';e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');};
+test('gate installation requires an explicitly reviewed uninstalled BASE and actual signing dispatch actor',()=>{
+ assert.equal(gateExecute(bootstrapFixture(),{mutateEnv:bootstrapEnv}).result.state,'pr_passed');
+ for(const change of [
+  f=>f.gateRun.actor.id=999,f=>f.gateRun.triggering_actor.id=999,
+  f=>f.gateRun.actor.id=337201427,
+ ]){const f=bootstrapFixture();change(f);assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/coordinator dispatcher/);assert(!f.calls.some(a=>a.includes('POST')));}
+ assert.throws(()=>gateExecute(nativeFixture(),{mutateEnv:bootstrapEnv}),/explicitly reviewed install BASE/);
+ assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_SHA=sha('f');}}),/actual execution/);
+ assert.throws(()=>gateExecute(bootstrapFixture(),{mutateEnv:e=>{bootstrapEnv(e);e.GITHUB_ACTOR_ID='999';}}),/execution actor/);
+});
+test('ordinary proof publication executes current actual BASE code and never PR or stale default code',()=>{
+ for(const envChange of [e=>e.GITHUB_SHA=sha('a'),e=>{e.GITHUB_REF='refs/heads/feat/native';e.GITHUB_SHA=sha('a');}]){
+  const f=nativeFixture();assert.throws(()=>gateExecute(f,{mutateEnv:envChange}),/actual develop BASE|foreign repository|trusted default|actual execution/);assert(!f.calls.some(a=>a.includes('POST')));
+ }
+});
+
+test('complete cloud reports are automatically signed as COMMENTED without another account or approval',()=>{
+ const f=nativeFixture(),normal=f.query,report=structuredClone(f.report);report.provenance.reviewId+='-fresh';let posts=0;
+ f.query=(...args)=>{
+  const path=args.find(a=>typeof a==='string'&&a.startsWith('repos/'));
+  if(args.includes('POST')&&path==='repos/'+aiRepo+'/pulls/712/reviews'){
+   posts++;const input=JSON.parse(readFileSync(args[args.indexOf('--input')+1],'utf8'));
+   assert.equal(input.event,'COMMENT');assert.equal(input.commit_id,f.pr.head.sha);
+   const row={id:101,state:'COMMENTED',commit_id:input.commit_id,body:input.body,user:f.reviews[0].user,submitted_at:'2026-11-17T10:10:00Z'};f.reviews.push(row);return JSON.stringify(row);
+  }return normal(...args);
+ };
+ const signed=signCloudReview(aiRepo,712,report,f.query);assert.equal(signed.githubReviewId,101);assert.equal(signed.reused,false);assert.equal(posts,1);
+ assert.equal(armAutoMerge(aiRepo,712,signed,f.query,{dryRun:true}).state,'eligible');
+ assert.equal(signCloudReview(aiRepo,712,report,f.query).reused,true);assert.equal(posts,1,'repeat command cannot repost the same opinion');
+});
+test('unsigned or mutated payloads cannot become eligible through dry-run or self-declared JSON',()=>{
+ for(const change of [r=>delete r.provenance,r=>r.reviewedBaseSha=sha('f'),r=>r.coordinator.id=999,r=>r.reviewerAgent=r.implementationAgents[0]]){
+  const f=nativeFixture(),report=structuredClone(f.report);change(report);assert.throws(()=>signCloudReview(aiRepo,712,report,f.query));assert(!f.calls.some(a=>a.includes('POST')));
+ }
+ const f=nativeFixture(),fresh=structuredClone(f.report);fresh.provenance.reviewId+='-fresh';assert.throws(()=>signCloudReview(aiRepo,712,fresh,f.query,{dryRun:true}),/not yet signed/);assert(!f.calls.some(a=>a.includes('POST')));
+ const sameId=structuredClone(f.report);sameId.provenance.sessionId='different-session-with-old-review-id';assert.throws(()=>signCloudReview(aiRepo,712,sameId,f.query),/identity already/);assert(!f.calls.some(a=>a.includes('POST')));
+});
+test('reusing an old signed pass cannot repost it over a newer actual fail or dismissal',()=>{
+ const f=nativeFixture();f.reviews.push({...f.reviews[0],id:101,submitted_at:'2026-11-17T10:10:00Z',body:aiBody({...f.report,conclusion:'fail',unresolved:['bug'],provenance:{...f.report.provenance,reviewId:'actual-later-review'}})});
+ const signed=signCloudReview(aiRepo,712,f.report,f.query);assert.equal(signed.githubReviewId,100);assert.equal(signed.reused,true);
+ assert.throws(()=>armAutoMerge(aiRepo,712,signed,f.query,{dryRun:true}));assert(!f.calls.some(a=>a.includes('POST')));
+ const dismissed=nativeFixture();dismissed.reviews[0].state='DISMISSED';const old=signCloudReview(aiRepo,712,dismissed.report,dismissed.query);assert.equal(old.reused,true);assert.throws(()=>armAutoMerge(aiRepo,712,old,dismissed.query,{dryRun:true}));
+});
+
+test('pending formal CI uses the installed completion callback without a pointless early gate run',()=>{
+ const f=nativeFixture();f.run.status='queued';f.run.conclusion=null;
+ const result=armAutoMerge(aiRepo,712,100,f.query);assert.equal(result.state,'auto-merge-requested');assert.equal(result.proof.gateRef,'refs/heads/develop');
+ assert(!f.calls.some(a=>a.includes('POST')),'no gate dispatch until CI completion');
+ const shadow=nativeFixture();shadow.run.status='queued';shadow.run.conclusion=null;assert.throws(()=>armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}),/formal CI must finish/);assert(!shadow.calls.some(a=>a.includes('POST')));
+ const bootstrap=nativeFixture();bootstrap.run.status='queued';bootstrap.run.conclusion=null;assert.throws(()=>armAutoMerge(aiRepo,712,100,bootstrap.query,{bootstrapRef:'feat/native'}),/formal CI must finish/);assert(!bootstrap.calls.some(a=>a.includes('POST')));
+});
+
+test('a legitimately advanced uninstalled BASE can be explicitly signed without changing CI code',()=>{
+ const f=bootstrapFixture(),base=sha('f');f.baseSha=base;f.pr.base.sha=base;f.report.reviewedBaseSha=base;f.report.installBaseSha=base;f.sourceCommit.parents[0].sha=base;f.checkout.base=base;f.checkout.parents[0]=base;f.reviews[0].body=aiBody(f.report);
+ const result=gateExecute(f,{mutateEnv:bootstrapEnv});assert.equal(result.result.state,'pr_passed');assert.equal(result.proof.base,base);assert.equal(result.proof.sourceObservations.installation.commit.sha,base);
+});
+test('producer cannot bootstrap an already installed BASE or infer absence from denied Git metadata',()=>{
+ for(const broken of ['installed','denied']){
+  const f=bootstrapFixture(),normal=f.query;
+  f.query=(...args)=>{
+   if(args.at(-1)==='repos/'+aiRepo+'/git/trees/'+sha('9')){
+    if(broken==='denied')throw Error('HTTP 403 Git metadata denied');
+    return JSON.stringify({sha:sha('9'),truncated:false,tree:[{path:'independent-ai-review.mjs',mode:'120000',type:'blob',sha:sha('7')}]});
+   }return normal(...args);
+  };
+  assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/already contains|403/);assert(!f.calls.some(a=>a.includes('POST')));
  }
 });
