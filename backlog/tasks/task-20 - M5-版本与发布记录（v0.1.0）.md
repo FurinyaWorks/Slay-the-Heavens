@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-22 13:48'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 12:59'
 labels:
   - 待验
   - delivery-verify
@@ -82,4 +82,6 @@ PR249评审修正：负责人按现行AGENTS保持Furinya。实际14版宿主遍
 2026-11-14清理旧窗口日期：原due_date=2026-10-30保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-15 Owner明确将2.0.0冲刺迁至release/v2.0.0并授权配置保护。已新增并独立读回Release Ruleset27313515：仅release/*、active空bypass、禁删/强推、PR解决讨论、Squash/linear及strict四Actions来源检查；protected=true，旧Core/develop/master规则前后hash相同。引导提交36b9b157的Release Push Full已触发但初次观察queued，未宣称通过；手机药水/小屋旧develop自动合并已撤回，必要修复独立迁移Release，合入后再同步Develop。证据docs/evidence/release-v2-protection-20261115.json与docs/versions/V2-RELEASE-HANDOFF.md；保留本任务状态/负责人/依赖及未验AC，不代表RC或正式发行完成。
 <!-- SECTION:NOTES:END -->

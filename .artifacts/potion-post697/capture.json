@@ -1,0 +1,21 @@
+{
+  "sha256": "d420bd70be20294eb58edc4b87f61b83c4117e3a444b0c9d1546534e325d9ce7",
+  "bytes": 339965,
+  "bindings": 42,
+  "archives": 105,
+  "currentInventory": {
+    "js": 880,
+    "lua": 1424
+  },
+  "viewInventories": {
+    "potion": {
+      "js": 877,
+      "lua": 1424
+    },
+    "selection": {
+      "js": 879,
+      "lua": 1423
+    }
+  },
+  "materialized": []
+}

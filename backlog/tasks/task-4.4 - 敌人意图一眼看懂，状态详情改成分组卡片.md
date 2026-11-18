@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-24 10:34'
-updated_date: '2026-11-15 13:28'
+updated_date: '2026-11-18 14:55'
 labels:
   - awaiting-live
   - 待验
@@ -17,7 +17,6 @@ references:
   - docs/backlog-details/MOBILE-QA-20261028.md
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/backlog-details/MOBILE-QA-20261029-SOURCES.md
-  - docs/backlog-details/TASK-4.4-MOBILE-COMPOSITE-20261115.md
 parent_task_id: TASK-4
 priority: medium
 type: feature
@@ -48,8 +47,6 @@ ordinal: 85000
 修正用户截图指出的虚弱上箭头语义：虚弱/缠绕改用主题既有削弱图标，排查其他状态映射并运行主题/布局与战斗UI回归。
 
 2026-10-31 修复PR432意图回归合同未同步：保留独立原版constructor事实及x/root/命中框，显式核原生适配后的art/hitbox净空、单图标、右侧同高伤害数值和多段文本；不修改生产。保留现有8类可读性负对照，仅迁移旧坐标/左下数字合同并定向复验。
-
-2026-11-15 Owner支持切片M08：从release/v2.0.0独立fix分支复现真实Host石颚兽自然复合意图，保留source主图与伤害/隐藏/切怪语义，复用现有intentBadge表达其次要强化；不动AI规则、perf几何接口或资产。定向RED→GREEN及独审后单独Release PR。M09仅记录受控状态撞图，设备AC不勾。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -85,9 +82,5 @@ PR #304：手机反馈己方与敌方详情关闭不一致，可能为旧线上�
 
 2026-11-14第二轮状态纠正：已有4/8项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
-2026-11-15 M08修前RED：真实官方生成树GameUI，jaw_solo在真实核心1次endTurn后自然选jaw_worm_3，当前strength/block仍0，详情力量3+格挡6完整；actor仅盾102036，intentBadge/Extra均隐藏。#672与b56e1c39未覆盖。当前只在独立树接续，不重新认领整个In Progress任务；依据#673追加合同但不复制其未合AC。证据将追加docs/backlog-details/TASK-4.4-MOBILE-COMPOSITE-20261115.md。
-
-2026-11-15 M08源码切片：selectedDescriptor仅DEFEND_BUFF保留buff角标，复用原intentBadge与主题值；主图/伤害/几何/随机不变，下一攻击/换怪/Dome退役负控通过。新默认/官方Host2/2、源/几何/可见性29/29、最终缓存2/2及静态工程通过；Fast计划要求Full，本地未重复Full，托管Release沿原门禁。证据docs/backlog-details/TASK-4.4-MOBILE-COMPOSITE-20261115.md；M09仅证受控strength/ritual撞图未实施，新候选官方/手机仍未验，不勾AC不Done。
-
-补充真实未通过项：附加Act2意图UI第一slice在原30s预算超时；一次Release原两模块+原helper同预算对照也超时，机器有22个Node进程，原因/时间仍未验，不称该wrapper通过、不改预算或断言。原字节见证及boss调用方通过，详细日志见M08附件，交由独审/托管CI核对。
+2026-11-18 Release 候选从 #687 的 f448a9df 提取既有防御强化角标修复，与当前敌人坐标剪枝及稀疏拖牌保留组合。原审批、当前状态、负责人和设备验收不变。永久保留原始复合意图、控制状态碰撞、真实生成 Host 地图返回、零时限放宽及未验记录 https://github.com/FurinyaWorks/Slay-the-Heavens/tree/e1221ee0abc265a720cd71a87d01b9d109c51475/docs/evidence/intent-ci-reader-repair-20261116 。保留真实文本历史投影的逐次来源校验。官方同候选导入、ready、容量与手机 AC 保持未验。
 <!-- SECTION:NOTES:END -->
