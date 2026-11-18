@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {queueEventErrors,queueFullErrors,statusWriteResponse,main} from '../scripts/publish-merge-group.mjs';
+import {queueEventErrors,queueFullErrors,statusWriteResponse,cancelObsoleteQueueRuns,main} from '../scripts/publish-merge-group.mjs';
 import {currentFullQualityJobs,qualityWorkflowPath} from '../scripts/verify-delivery.mjs';
 import {impact} from '../scripts/ci-impact.mjs';
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
@@ -20,12 +20,12 @@ function fixture(){
   merge_group:{head_sha:head,base_sha:base,base_ref:'refs/heads/develop',head_ref:ref}};
  const needs={impact:{result:'success'},rules:{result:'success'},fast:{result:'skipped'},
   presentation:{result:'success'},'engineering-posix':{result:'success'}};
- const ruleset={target:'branch',enforcement:'active',bypass_actors:[],
+ const ruleset={id:25870651,target:'branch',enforcement:'active',bypass_actors:[],
   conditions:{ref_name:{include:['refs/heads/develop'],exclude:[]}},
   rules:[{type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},{type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,required_status_checks:
    ['check','presentation','engineering-posix','inventory','full-quality','independent-review']
     .map(context=>({context,integration_id:context==='independent-review'?null:15368}))}},
-   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
+   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true,required_approving_review_count:0,dismiss_stale_reviews_on_push:false,require_code_owner_review:false}},
    {type:'required_linear_history'}]};
  const run={id:7,run_attempt:1,event:'merge_group',head_sha:head,status:'in_progress',path:qualityWorkflowPath,repository:{full_name:repo}};
  const jobs=currentFullQualityJobs.map((name,i)=>({name,id:100+i,run_id:7,run_attempt:1,head_sha:head,
@@ -54,7 +54,7 @@ test('queue full requires every shard, immutable receipt and actual native admis
   x=>x.env.FULL_MODE='fast',x=>x.needs.fast.result='success',
   x=>x.needs.rules.result='skipped',x=>x.needs.presentation.result='failure',
   x=>x.ruleset.rules=x.ruleset.rules.filter(r=>r.type!=='merge_queue'),
-  x=>x.ruleset.bypass_actors=[{actor_id:1}],x=>delete x.ruleset.bypass_actors,
+  x=>x.ruleset.bypass_actors=[{actor_id:1}],
   x=>x.ruleset.bypass_actors=null,x=>x.ruleset.enforcement='disabled',
   x=>x.ruleset.conditions.ref_name.exclude=['refs/heads/develop'],
   x=>x.ruleset.rules[1].parameters.required_status_checks.pop(),
@@ -70,6 +70,21 @@ test('queue full requires every shard, immutable receipt and actual native admis
   x=>x.checkout.checkoutArtifact=null
  ]){
   const f=fixture();mutate(f);assert(queueFullErrors(f).length,String(mutate));
+ }
+});
+
+test('queue Full accepts only the administrator pull-request bypass and cloud authorization',()=>{
+ const admin={actor_id:5,actor_type:'RepositoryRole',bypass_mode:'pull_request'};
+ const f=fixture();f.ruleset.bypass_actors=[admin];
+ f.admission=JSON.stringify([{authorizationKind:'cloud'}]);
+ assert.deepEqual(queueFullErrors(f),[]);
+ for(const value of [undefined,'[]','invalid',JSON.stringify([{authorizationKind:'legacy'}]),
+  JSON.stringify([{authorizationKind:'cloud'},{authorizationKind:'legacy'}])]){
+  assert(queueFullErrors({...f,admission:value}).some(error=>error.includes('bypass')));
+ }
+ for(const actors of [[{...admin,bypass_mode:'always'}],[{...admin,actor_id:4}],
+  [{...admin,actor_type:'OrganizationAdmin'}],[admin,admin],null]){
+  assert(queueFullErrors({...f,ruleset:{...f.ruleset,bypass_actors:actors}}).some(error=>error.includes('bypass')));
  }
 });
 
@@ -209,10 +224,10 @@ test('success transport recovery revalidates the current attempt and complete qu
  }finally{m.cleanup();}
  for(const mutate of [
   f=>{f.run.status='completed';f.run.conclusion='cancelled';},f=>f.run.run_attempt++,
-  f=>f.pr.labels.push({name:'hold'}),f=>f.review.description+=' stale',
+  f=>f.pr.labels.push({name:'hold'}),f=>f.report.reviewedBaseSha=sha('f'),
  ]){
   const stale=statusTransportFixture({state:'success',mutate});try{
-   assert.throws(stale.run,/run|attempt|authoriz|eligible|paused|Full/i);
+   assert.throws(stale.run,/run|attempt|attestation|review|authoriz|eligible|paused|Full/i);
    assert.equal(stale.attempts.length,1,'stale authorization must not be posted again');
    assert.equal(stale.writes.length,0,'no later success context may release a stale group');
   }finally{stale.cleanup();}
@@ -305,4 +320,129 @@ test('all thirty-three actual shard identities are mandatory for current native 
   else job.conclusion=mutation;
   assert.ok(queueFullErrors(e).length,`${name}/${mutation} cannot certify queue Full`);
  }
+});
+
+function cleanupFixture(){
+ const repository={id:1429751262,full_name:repo},base=sha('b');
+ const env={GITHUB_EVENT_NAME:'pull_request_target',GITHUB_REPOSITORY:repo,GITHUB_REPOSITORY_ID:'1429751262',GITHUB_REF:'refs/heads/develop',GITHUB_SHA:base};
+ const event={action:'dequeued',repository,pull_request:{base:{ref:'develop',sha:base,repo:repository}}};
+ const run={id:77,run_attempt:1,event:'merge_group',head_sha:sha('a'),head_branch:'gh-readonly-queue/develop/pr-701-old',status:'in_progress',conclusion:null,workflow_id:90,path:qualityWorkflowPath,repository,head_repository:repository};
+ return {env,event,repository,base,run,entries:[],refs:[],lists:{queued:[],in_progress:[run]}};
+}
+function cleanupQuery(f,hook=()=>{}){
+ const calls=[],cancelled=[];
+ const query=(...args)=>{
+  calls.push(args);const request={args,path:args.find(x=>typeof x==='string'&&x.startsWith('repos/')),cancelled};
+  const override=hook(request);if(override!==undefined)return JSON.stringify(override);
+  if(args[1]==='graphql')return JSON.stringify({data:{repository:{databaseId:1429751262,nameWithOwner:repo,ref:{target:{oid:f.base}},mergeQueue:{entries:{pageInfo:{hasNextPage:false},nodes:f.entries}}}}});
+  if(args[1]==='repositories/1429751262')return JSON.stringify(f.repository);
+  const path=request.path?.slice(('repos/'+repo+'/').length);
+  if(path==='git/ref/heads/develop')return JSON.stringify({ref:'refs/heads/develop',object:{type:'commit',sha:f.base}});
+  if(path==='actions/workflows/quality.yml')return JSON.stringify({id:90,path:qualityWorkflowPath});
+  if(path?.startsWith('actions/workflows/quality.yml/runs?')){
+   const p=new URL('https://api.invalid/'+path).searchParams,status=p.get('status'),page=Number(p.get('page'));
+   return JSON.stringify({total_count:f.lists[status].length,workflow_runs:f.lists[status].slice((page-1)*100,page*100)});
+  }
+  if(path?.startsWith('git/matching-refs/')){const page=Number(new URL('https://api.invalid/'+path).searchParams.get('page'));return JSON.stringify(f.refs.slice((page-1)*100,page*100));}
+  if(path===`actions/runs/${f.run.id}/cancel`&&args.includes('POST')){cancelled.push(f.run.id);return '';}
+  if(path===`actions/runs/${f.run.id}`)return JSON.stringify(cancelled.length?{...f.run,status:'completed',conclusion:'cancelled'}:f.run);
+  throw Error('unexpected test request');
+ };
+ return {query,calls,cancelled};
+}
+test('dequeued cleanup cancels only an exact obsolete same-main active merge group and reads back terminal state',()=>{
+ const f=cleanupFixture(),q=cleanupQuery(f),result=cancelObsoleteQueueRuns(f.event,f.env,q.query);
+ assert.deepEqual(q.cancelled,[77]);assert.equal(result.state,'inspected');
+ assert.deepEqual(result.results,[{runId:77,attempt:1,head:sha('a'),ref:'refs/heads/'+f.run.head_branch,state:'terminal',status:'completed',conclusion:'cancelled'}]);
+ assert(q.calls.filter(a=>a[1]==='graphql').length>=2);
+ assert(q.calls.every(a=>!a.some(x=>typeof x==='string'&&/statuses|DELETE|dispatches/.test(x))));
+});
+test('cleanup rejects untrusted event repository branch and checkout identities without API writes',()=>{
+ for(const mutate of [f=>f.env.GITHUB_EVENT_NAME='merge_group',f=>f.event.action='checks_requested',f=>f.env.GITHUB_REPOSITORY_ID='42',f=>f.event.repository={id:42,full_name:repo},f=>f.event.pull_request.base.ref='release/v2.0.0',f=>f.event.pull_request.base.sha=sha('c'),f=>f.env.GITHUB_REF='refs/pull/701/merge',f=>f.env.GITHUB_SHA='bad',f=>f.event.pull_request.base.repo={id:42,full_name:repo}]){
+  const f=cleanupFixture();mutate(f);const q=cleanupQuery(f);assert.equal(cancelObsoleteQueueRuns(f.event,f.env,q.query).state,'skipped');assert.equal(q.calls.length,0);
+ }
+});
+test('cleanup never cancels PR push dispatch completed foreign or wrong-workflow runs or a live group ref',()=>{
+ for(const mutate of [f=>f.run.event='pull_request',f=>f.run.event='push',f=>f.run.event='workflow_dispatch',f=>f.run.status='completed',f=>f.run.repository={id:42,full_name:repo},f=>f.run.head_repository={id:42,full_name:repo},f=>f.run.path='.github/workflows/other.yml',f=>f.run.workflow_id=91,f=>f.run.head_branch='develop',f=>f.refs=[{ref:'refs/heads/'+f.run.head_branch,object:{type:'commit',sha:sha('c')}}],f=>f.entries=[{id:'live',position:1,state:'AWAITING_CHECKS',headCommit:{oid:f.run.head_sha},pullRequest:{number:701,headRefOid:sha('d'),baseRefName:'develop'}}]]){
+  const f=cleanupFixture();mutate(f);const q=cleanupQuery(f);cancelObsoleteQueueRuns(f.event,f.env,q.query);assert.deepEqual(q.cancelled,[],String(mutate));
+ }
+});
+test('cleanup requires complete readable repository develop queue runs and ref inventories; 403 and 404 are never deletion',()=>{
+ for(const endpoint of ['repositories/1429751262','git/ref/heads/develop','graphql','actions/workflows/quality.yml','runs?','matching-refs'])for(const failure of ['403','404','bad-json']){
+  const f=cleanupFixture(),q=cleanupQuery(f,({args,path})=>{if(args.some(a=>typeof a==='string'&&a.includes(endpoint))){if(failure==='bad-json')return {};throw Error('HTTP '+failure+' secret-token');}});
+  const result=cancelObsoleteQueueRuns(f.event,f.env,q.query);assert.deepEqual(q.cancelled,[]);assert.equal(result.state,'skipped');assert(!JSON.stringify(result).includes('secret'));if(failure!=='bad-json')assert.equal(result.httpStatus,Number(failure));assert.equal(typeof result.phase,'string');
+ }
+ for(const mode of ['truncated-runs','run-cap','duplicate-runs','duplicate-refs','malformed-ref','graphql-errors']){
+  const f=cleanupFixture(),q=cleanupQuery(f,({args,path})=>{
+   if(path?.includes('runs?')&&path.includes('status=in_progress')){
+    if(mode==='truncated-runs')return {total_count:101,workflow_runs:[f.run]};
+    if(mode==='run-cap')return {total_count:1001,workflow_runs:[]};
+    if(mode==='duplicate-runs')return {total_count:2,workflow_runs:[f.run,f.run]};
+   }
+   if(path?.includes('matching-refs')){
+    const row={ref:'refs/heads/'+f.run.head_branch,object:{type:'commit',sha:sha('c')}};
+    if(mode==='duplicate-refs')return [row,row];if(mode==='malformed-ref')return [{...row,object:{type:'commit',sha:'bad'}}];
+   }
+   if(mode==='graphql-errors'&&args[1]==='graphql')return {errors:[{message:'private server error'}]};
+  });
+  assert.equal(cancelObsoleteQueueRuns(f.event,f.env,q.query).state,'skipped',mode);assert.deepEqual(q.cancelled,[]);
+ }
+ const f=cleanupFixture(),q=cleanupQuery(f,({args})=>args[1]==='graphql'?{data:{repository:{databaseId:1429751262,nameWithOwner:repo,ref:{target:{oid:f.base}},mergeQueue:{entries:{pageInfo:{hasNextPage:true},nodes:[]}}}}}:undefined);
+ assert.equal(cancelObsoleteQueueRuns(f.event,f.env,q.query).state,'skipped');assert.deepEqual(q.cancelled,[]);
+});
+test('cleanup paginates both active statuses and all queue refs before touching an obsolete run',()=>{
+ const f=cleanupFixture();f.lists.in_progress=Array.from({length:100},(_,i)=>({...f.run,id:1000+i,event:'push'})).concat(f.run);
+ f.refs=Array.from({length:101},(_,i)=>({ref:'refs/heads/gh-readonly-queue/develop/pr-'+(i+1)+'-live',object:{type:'commit',sha:sha('c')}}));
+ const q=cleanupQuery(f);assert.equal(cancelObsoleteQueueRuns(f.event,f.env,q.query).results[0].state,'terminal');assert.deepEqual(q.cancelled,[77]);
+ assert(q.calls.some(a=>a.some(x=>typeof x==='string'&&x.includes('status=queued'))));
+ assert(q.calls.some(a=>a.some(x=>typeof x==='string'&&x.includes('status=in_progress')&&x.includes('page=2'))));
+ assert.equal(q.calls.filter(a=>a.some(x=>typeof x==='string'&&x.includes('matching-refs')&&x.includes('page=2'))).length,2);
+});
+test('cleanup rechecks fresh queue ref run attempt and identity and skips every race or unavailable read',()=>{
+ for(const kind of ['queue','ref','attempt','completed','head','foreign','403']){
+  const f=cleanupFixture();let queueReads=0,refReads=0;
+  const q=cleanupQuery(f,({args,path})=>{
+   if(args[1]==='graphql'&&++queueReads===2&&kind==='queue')return {data:{repository:{databaseId:1429751262,nameWithOwner:repo,ref:{target:{oid:f.base}},mergeQueue:{entries:{pageInfo:{hasNextPage:false},nodes:[{id:'new',position:1,state:'AWAITING_CHECKS',headCommit:{oid:f.run.head_sha},pullRequest:{number:701,headRefOid:sha('d'),baseRefName:'develop'}}]}}}}};
+   if(path?.includes('matching-refs')&&++refReads===2&&kind==='ref')return [{ref:'refs/heads/'+f.run.head_branch,object:{type:'commit',sha:sha('c')}}];
+   if(path?.endsWith('actions/runs/77')){
+    if(kind==='403')throw Error('HTTP 403');
+    return {...f.run,...(kind==='attempt'?{run_attempt:2}:kind==='completed'?{status:'completed',conclusion:'success'}:kind==='head'?{head_sha:sha('d')}:kind==='foreign'?{repository:{id:42,full_name:repo}}:{})};
+   }
+  });
+  const result=cancelObsoleteQueueRuns(f.event,f.env,q.query);assert.deepEqual(q.cancelled,[],kind);assert.equal(result.results[0].state,'skipped');
+ }
+});
+test('cleanup reports cancellation as pending until verified terminal and never fabricates a successful cancel',()=>{
+ for(const mode of ['pending','readback-403','post-403']){
+  const f=cleanupFixture();let reads=0;
+  const q=cleanupQuery(f,({args,path})=>{
+   if(mode==='post-403'&&path?.endsWith('/cancel'))throw Error('HTTP 403');
+   if(path?.endsWith('actions/runs/77')&&++reads===2){if(mode==='readback-403')throw Error('HTTP 403');return f.run;}
+  });
+  const result=cancelObsoleteQueueRuns(f.event,f.env,q.query);assert.equal(result.results[0].state,'cancel-requested');
+  if(mode==='post-403'){assert.equal(result.results[0].uncertain,true);assert.equal(result.results[0].cancelHttpStatus,403);}
+  assert(!JSON.stringify(result).includes('terminal'));
+ }
+});
+test('queue cleanup reuses only trusted base code in existing Licenses without scheduler or extra credential',()=>{
+ const s=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
+ assert.match(s,/pull_request_target:\n    branches: \[develop\]\n    types: \[dequeued\]/);
+ const cleanup=s.slice(s.indexOf('  cancel-obsolete-queue:'));
+ for(const token of ["github.repository_id == '1429751262'","github.event_name == 'pull_request_target'","github.event.action == 'dequeued'","github.event.pull_request.base.ref == 'develop'","github.ref == 'refs/heads/develop'",'runs-on: ubuntu-24.04','actions: write','pull-requests: read','ref: ${{ github.sha }}','--cancel-obsolete'])assert(cleanup.includes(token),token);
+ assert(!/pull_request.head|npm |secrets\.|schedule:|destroyed/.test(cleanup));
+ assert.match(s,/github.event_name == 'pull_request_target' && format\('queue-cleanup-/);
+ assert.match(s,/name: .*github.event_name == 'pull_request_target'.*license-audit-not-requested/);
+ assert.match(s,/if: github.event_name != 'pull_request_target' && github.event_name != 'workflow_run'/);
+ assert(!s.includes('schedule:'));assert(!s.includes('destroyed'));
+});
+
+test('cancel POST EOF is read back once without retry and reports the actual matching terminal result',()=>{
+ const f=cleanupFixture(),q=cleanupQuery(f,({args,path,cancelled})=>{
+  if(path?.endsWith('/cancel')){cancelled.push(77);throw Error('EOF secret-token');}
+ });
+ const result=cancelObsoleteQueueRuns(f.event,f.env,q.query),entry=result.results[0];
+ assert.equal(entry.state,'terminal');assert.equal(entry.status,'completed');assert.equal(entry.conclusion,'cancelled');
+ assert.equal(entry.uncertain,true);assert.equal(entry.cancelHttpStatus,null);
+ assert.equal(q.calls.filter(a=>a.includes('POST')).length,1);assert.equal(q.calls.filter(a=>a.at(-1)==='repos/'+repo+'/actions/runs/77').length,2);
+ assert(!JSON.stringify(result).includes('secret'));
 });

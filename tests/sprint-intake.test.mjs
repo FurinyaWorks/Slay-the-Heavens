@@ -251,3 +251,19 @@ test('normalized target identity cannot bypass approval or duplicate and locatio
   writeFileSync(join(root,'backlog/completed/task-30 - fixture.md'),'---\nid: TASK-30\nstatus: To Do\n---\n');
   assert.equal(loadTask('TASK-30',root),null,'completed is dependency-only, even if its status claims To Do');
 });
+
+test('short-branch start holds blocked dependencies even with a valid plan',t=>{
+  const root=fixture(t);
+  writeRawTask(root,'---\nid: TASK-25\nstatus: To Do\ndependencies: [TASK-26]\n---\n');
+  writeTask(root,'TASK-26','Blocked');
+  const script=fileURLToPath(new URL('../scripts/check-pr-slice.mjs',import.meta.url));
+  const run=()=>spawnSync(process.execPath,[script,'--start','TASK-25','--slice','Update one caller','--verify','npm run test:related'],{cwd:root,encoding:'utf8'});
+  const held=run();
+  assert.equal(held.status,1,held.stdout+held.stderr);
+  assert.match(held.stdout,/^HOLD TASK-25\n/);
+  assert.match(held.stderr,/TASK-25 -> TASK-26: dependency not Done \(Blocked\)/);
+  writeTask(root,'TASK-26','Done');
+  const allowed=run();
+  assert.equal(allowed.status,0,allowed.stdout+allowed.stderr);
+  assert.match(allowed.stdout,/^ALLOW TASK-25\n/);
+});

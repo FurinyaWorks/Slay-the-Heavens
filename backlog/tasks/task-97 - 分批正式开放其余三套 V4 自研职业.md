@@ -4,8 +4,8 @@ title: 分批正式开放其余三套 V4 自研职业
 status: Blocked
 assignee:
   - Furinya
-created_date: '2026-11-03 02:45'
-updated_date: '2026-11-15 13:26'
+created_date: 2026-11-03 02:45
+updated_date: '2026-11-18T15:07:00Z'
 labels: []
 milestone: m-9
 dependencies:
@@ -44,5 +44,5 @@ ordinal: 139000
 2026-11-13：仅本任务批量量产/正式开放依赖TASK-105容量GO；单角色试验和近期版本的修复、发布不受此依赖阻断，Owner独立审批仍保留。
 当前编号映射（2026-11-03）：本任务属于 M9/m-9 内容扩充；下文及未勾 AC4 的旧称“M7 核心体验/基础 UI”均对应当前 M8/m-8 的体验、触屏、性能与稳定性门槛。保留原 AC4 文字和未勾状态，不改验收实质。
 
-2026-11-15依赖纠偏：补回TASK-96设计前置，保留TASK-105容量前置。旧正文有条件但原生图漏边；普通研究Done不等于适用方案GO或Owner实施批准。未交付人工设计前不接正式技能/入口；已授权单角色隔离实验另按原范围，不受本任务量产门槛一刀切。详见docs/backlog-details/TASK-87.2-DEPENDENCY-GUARD.md。
+补齐 TASK-96 设计前置，保留 TASK-105 容量前置。两项完成保留独立的 Owner 实施审批与适用容量证据，原 Blocked 状态和验收项不变。
 <!-- SECTION:NOTES:END -->

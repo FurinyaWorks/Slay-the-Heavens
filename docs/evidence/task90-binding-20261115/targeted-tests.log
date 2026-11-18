@@ -1,0 +1,20 @@
+✔ Act2 events reuse the unchanged event rows, picker, confirm and back controls (31.556347ms)
+✔ mock-local generated NodeUI plus real Nodes/Run: act2_event_ui.lua (8987.178889ms)
+✔ mock-local generated NodeUI plus real Nodes/Run: act2_event_ui_hooks.lua (17096.480363ms)
+✔ mock-local generated NodeUI plus real Nodes/Run: act2_event_ui_gestures.lua (7236.099605ms)
+✔ mock-local generated NodeUI plus real Nodes/Run: act2_event_ui_exchanges.lua (5475.240683ms)
+✔ BackToBasics source fixes eight starter tags, free purge, four-argument grid, empty success and separate Leave (2.456109ms)
+✔ BackToBasics source-faithful public commands and generated NodeUI: back_to_basics_event.lua (11957.203592ms)
+✔ BackToBasics source-faithful public commands and generated NodeUI: back_to_basics_ui.lua (13520.756105ms)
+✔ source uncommon relic callbacks produce real combat and permanent state changes (2033.191338ms)
+✔ uncommon effects activate after the normal Run obtain and combat paths (15295.999356ms)
+✔ Chemical X adds two once across all X cards while preserving zero cost and free autoplay energy (11409.56514ms)
+✔ source TOP, BOTTOM, and synchronous opening relics have real event-frame order evidence (8637.137164ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39143.081167

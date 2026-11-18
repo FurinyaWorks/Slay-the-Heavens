@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 07:34'
-updated_date: '2026-11-15 14:48'
+updated_date: '2026-11-14 06:51'
 labels:
   - P1
   - bgm
@@ -28,7 +28,6 @@ references:
   - docs/evidence/audio-richness-integrated-20261025.json
   - docs/BACKLOG-AUDIT-20261026.md
   - TASK-29
-  - docs/backlog-details/TASK-34-FATAL-BGM-INTEGRATION-20261115.md
 priority: medium
 type: enhancement
 ordinal: 46000
@@ -56,10 +55,6 @@ ordinal: 46000
 2026-10-24用户要求地图和每场战斗有音乐：保留已认可战斗曲，新增默认带BGM的完整构建入口，沿用原生分场景切歌；实际选曲听感和混音继续留待同候选实测。
 
 2026-11-01依赖复核：场景音乐配置与候选读回已交付，与TASK-29/29.1并行复验；最终仍须在同一候选联合听验混音、切歌与演出。TASK-29保留为关联参考，不再以其整体Done作为本任务开工前置。
-
-2026-11-15 用户明确接续授权：独立树 .worktrees/fatal-bgm-integration-1115，分支 feat/fatal-bgm-integration-1115，基线 origin/develop@c2409ad750c15124b7b843c6bbfa5b222537cb75。仅从 158c492a3f8a6e8d3bfc85b79634b06d2f4b3056 最小移植 abyss_ui.lua 七行及 fatal BGM 八场景；不带 TASK-76 输入或角色设计。先红后绿，定向复验失败退出与 imageModes 销毁；来源合同只准精确后继并分别认证旧source/新current，若需大范围 helper 变更则停在证据与最小建议。仅本地提交交主控；不推送、不PR、不合并、不改release。AC3–6未有本轮官方/设备听验，继续未勾。
-
-本轮执行止点：七行生产修复与原八场景已移植，来源认证基线绿/补丁红；按授权保留原 guard，不扩大修改 #672 所持 helper/六来源合同。交主控按附件的一 owner 精确后继及旧source/新current分期认证接续；本地代码仅为待独审候选。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -86,12 +81,4 @@ ordinal: 46000
 2026-11-14清理旧窗口日期：原due_date=2026-10-28保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已有2/6项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
-
-本轮已核对 #672 OPEN（1f7ce04c，包含 abyss_ui.lua 与来源合同改动）、#679 OPEN（29b10877，release/v2.0.0 输入线）；各自成果保持由原执行者管理。指定工作树已由 c2409ad7 创建，父目录与 ignore 已验证，源工作树未修改。
-
-本轮证据：docs/backlog-details/TASK-34-FATAL-BGM-INTEGRATION-20261115.md。原缺陷红→绿，Node定向30/30、失败退出7组、原BGM3组/Host2组及原生启动负控通过。source-epoch完整当前源码认证在基线通过、补丁后拒绝入口；保持BLOCKED，不宣称可合入。#672精确HEAD只读内存叠加通过imageModes运行时及启动/回收/销毁用例，非本分支已集成证明。额外monster模板失败已在原基线同条件复现；TEMP权限失败与定向恢复均记录。状态仍In Progress，AC3–6无官方/设备听验继续未勾；不推送/PR/合并/release。
-
-本地最小代码提交 1fdad7300a93778a4431edd7a546a28efebcae94（3文件127行，生产7行）；待主控独审/source-epoch接续，不是可合入绿灯。补充 Node 两文件语法检查及 Lua 两文件5.3解析通过；所有源码/测试改动仅在指定新树。
-
-2026-11-15主控继续：将fatal STOP窄切片及证据接至PR682受检组合，已补齐单UI精确后继、旧/新混期拒绝与CI原文/发现集合/复制闭包，原来源门禁阻塞已由定向回归解除。保留原BGM八场景与设备未验边界；独审发现自包含生成问题已修复，待最终HEAD复核及PR重新授权，未宣称Hosted、实际声音、官方候选或设备通过。原树b3a4637e保留，不携入TASK76输入。
 <!-- SECTION:NOTES:END -->

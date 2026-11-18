@@ -7,7 +7,7 @@ const event=JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')),teste
 if(tested!==process.env.GITHUB_SHA)throw new Error('CI checkout SHA mismatch');
 const receipt={schemaVersion:1,event:process.env.GITHUB_EVENT_NAME,runId:Number(process.env.GITHUB_RUN_ID),attempt:Number(process.env.GITHUB_RUN_ATTEMPT),
   tested,head:event.pull_request?.head.sha??event.merge_group?.head_sha??tested,
-  base:event.pull_request?.base.sha??event.merge_group?.base_sha??event.before,
+  base:event.pull_request?.base.sha??event.merge_group?.base_sha??(process.env.GITHUB_EVENT_NAME==='workflow_dispatch'&&process.env.PREFLIGHT_BASE_SHA||event.before),
   prNumber:event.pull_request?.number,parents:git('show','-s','--format=%P','HEAD').split(' ')};
 mkdirSync('build',{recursive:true});writeFileSync('build/ci-checkout.json',JSON.stringify(receipt,null,2)+'\n');
 if(process.argv[2]==='--fast')writeFileSync('build/ci-impact.json',readFileSync('ci-impact.json'));

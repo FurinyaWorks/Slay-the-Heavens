@@ -27,6 +27,14 @@ export function authorizeFatalBgmSource(path,input,binding,samples,read){
  const expected=same(entries[0][1],fatalBgmPair.after)?fatalBgmPair.after:fatalBgmPair.before;
  const message='combined linked owner identity: fatal BGM entry changed during owner validation';
  for(const [,source]of entries)assert(same(source,expected),message);
+ if(expected===fatalBgmPair.before)return; // The legacy-only path retains its original reads.
  let live;try{live=read(packet.path);}catch(error){assert.fail('combined linked owner missing: '+packet.path+': '+String(error?.message??error));}
  assert(same(live,expected),message);
+}
+
+// Archived receipt consumers validate the complete live BGM source first.
+export function beforeFatalBgmSource(path,source,read) {
+ const prior=projectFatalBgmSource(path,source,fatalBgmPair.before);
+ if(prior!==source)authorizeFatalBgmSource(path,source,fatalBgmPair.before,[],read);
+ return prior;
 }

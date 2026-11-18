@@ -1,3 +1,4 @@
+import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -7,7 +8,7 @@ import {sourceSlice} from './closeout-source-epoch.mjs';
 import {preRunHudCiSource,runHudPriorRead,runHudPriorInventory} from './run-hud-ci-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const capacityRoadmapBytes=readFileSync(new URL('./role-capacity-roadmap-source.json',import.meta.url));
-assert.equal(hash(capacityRoadmapBytes.toString('utf8').replaceAll('\r\n','\n')),'7b3e29eb24252c265bbde8121d4787200ccd1786ee8ba78843ac4b1fb8566217');
+assert.equal(hash(capacityRoadmapBytes.toString('utf8').replaceAll('\r\n','\n')),'e0c27a383c57f64071a4c9b78fd027588ac2998d53f49119a2a8e99bb65fcd02');
 const capacityRoadmapBinding=JSON.parse(capacityRoadmapBytes);
 assert.equal(hash(capacityRoadmapBinding.source),capacityRoadmapBinding.before);
 const namingBytes=readFileSync(new URL('./naming-package-source.json',import.meta.url),'utf8').replaceAll('\r\n','\n');
@@ -24,6 +25,7 @@ function target(name){assert(Object.hasOwn(packed.targets,name),'known closeout 
 export function preCloseoutCiSource(path,source,view){
  const before=target(view);
  if(before.scope==='workflow-only'&&path!=='.github/workflows/quality.yml')return source;
+ source=beforePreflightSource(path,source);
  if(path===capacityRoadmapBinding.path&&typeof source==='string'&&hash(source.replaceAll('\r\n','\n'))===capacityRoadmapBinding.current)return capacityRoadmapBinding.source;
  if(path===naming.path&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===naming.current)return naming.source;
  // Production sources belong to the complete freshly authenticated owner
@@ -50,6 +52,7 @@ export function closeoutInventory(paths,view,readSource=readFileSync){
 }
 export function closeoutRead(view,read=readFileSync){
  const before=target(view);
+ if(before.scope!=='workflow-only')read=preflightPriorRead(read);
  return (path,encoding)=>{
   const value=read(path,encoding),source=typeof value==='string'?value:value.toString('utf8');
   let prior=preCloseoutCiSource(path,source,view);

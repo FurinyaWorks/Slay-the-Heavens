@@ -28,11 +28,15 @@ export function loadTask(id,root='.',records=loadDependencyRecords(root)) {
   const {fileId,identityClaims,filePath,location,metadataErrors,...task}=matches[0];
   return task;
 }
+export function checkTaskIntake(id,root='.') {
+  const policy=JSON.parse(readFileSync(resolve(root,'config/task-intake.json'),'utf8'));
+  const records=loadDependencyRecords(root);
+  return evaluateIntake({id,task:loadTask(id,root,records),policy,...records});
+}
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const id=process.argv[2]||'';
-  const policy=JSON.parse(readFileSync('config/task-intake.json','utf8'));
-  const records=loadDependencyRecords();
-  const result=evaluateIntake({id,task:loadTask(id,'.',records),policy,...records});
+  const result=checkTaskIntake(id);
   console.log(result.decision+' '+id);
   if(result.reasons.length){console.error(result.reasons.join('\n'));process.exitCode=1}
   else console.log('Still check approvals, open PRs, task claims and file ownership; this command does not claim the task.');

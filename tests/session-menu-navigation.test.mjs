@@ -1,8 +1,9 @@
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,sessionMenuSourceEpoch,releaseSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch,releaseSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
@@ -32,7 +33,7 @@ test('deck notification continuation preserves immutable menu sources and authen
  const changed=structuredClone(menu),owner=Object.keys(changed.current)[0];
  changed.current[owner].source+='\n';
  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
- const proof=sessionMenuSourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  assert.equal(proof.currentCommit,neowRetirementStaticContinuation.currentCommit);
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);
  for(const p of Object.keys(continuation.current)){
@@ -78,7 +79,7 @@ test('Neow retirement continuation keeps the complete prior corpus and rejects f
 test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sessionMenuSourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
  const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
  const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
  assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);
@@ -115,7 +116,7 @@ test('menu source continuation retains the complete release corpus and rejects n
  assert.deepEqual(paths,Object.keys(sourceEpoch.proof.current).sort());
  const added=paths.filter(p=>!Object.hasOwn(releaseSourceEpoch.proof.current,p));
  assert.deepEqual(added,['src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua']);
- for(const p of paths)assert.equal(read(p),sourceEpoch.proof.current[p].source,p);
+ for(const p of paths)assert.equal(beforeCharacterPreparationSource(p,read(p)),sourceEpoch.proof.current[p].source,p);
  for(const p of added){
   assert.equal(sourceEpoch.proof.targets.sessionMenuPrior.files[p],null);
   assert.equal(JSON.parse(read('config/architecture.json')).layers[p.split('/').at(-1).slice(0,-4)],'ui');

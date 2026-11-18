@@ -4,13 +4,15 @@ title: 阻止设计前置与任务依赖漏检
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-15 13:10'
-updated_date: '2026-11-16 02:53'
+created_date: 2026-11-15 13:10
+updated_date: '2026-11-18T15:07:00Z'
 labels: []
 dependencies: []
 references:
-  - docs/backlog-details/TASK-87.2-DEPENDENCY-GUARD.md
-  - docs/evidence/pr682-full-correction-20261115.md
+  - >-
+    https://github.com/FurinyaWorks/Slay-the-Heavens/blob/1996e65c5647750bc9d907be6562909135e08e3d/docs/backlog-details/TASK-87.2-DEPENDENCY-GUARD.md
+  - >-
+    https://github.com/FurinyaWorks/Slay-the-Heavens/blob/1996e65c5647750bc9d907be6562909135e08e3d/docs/evidence/pr682-full-correction-20261115.md
 parent_task_id: TASK-87
 priority: medium
 type: bug
@@ -55,4 +57,6 @@ ordinal: 178000
 2026-11-16用户指定修PR682已失败Rules15/POSIX12。HEAD仍1b60f71c4733ced0c91dc814dc5c7a6644c8fe56，origin/develop仍c2409ad7；原PR树干净，comments/reviews无并发写入认领。新树从最新develop建立后FF保留原PR历史；写入范围仅StS负控测试、collector输出、对应证据及本任务记录。已读两job原始日志，并本地原样复现同一fresh added inventory source先于有意变异guard的RED。
 
 2026-11-16 PR682最小接续：StS负控历史reader遮蔽raw读取，导致菜单库存guard先拒绝；局部历史读取更名readSts，仅历史原文比较用投影视图，原负控regex与全部guard未改。原例RED，真实源码更新未采集仍被source guard拒绝，collector接续后GREEN；定向三文件最终60/60无跳过，28次探针变异精确命中各自路径guard，raw菜单漂移/缺失/历史reader继续拒绝。首次组测9pass4fail源于新树LFS pointer，恢复既有对象后重采集通过；历史包未改。新包96603字节/24源，旧23binding及6copy closure保持，sha293c36c61a5b14eb3bc069d2a6ae8e9357cba730e4b053ee0323b058aa279cbe。syntax/backlog/guidance/diff通过，证据见pr682-full-correction附件及同目录pr682-source-negative-20261116.mjs。仅本地候选交主控独审和既有PR集成，AC4保持未勾。
+
+领取入口已由 #729 交付。本片接续全库依赖审计与 TASK-97 设计依赖，保留 #682 的证据和停点。合后验收仍按 AC4 核对。
 <!-- SECTION:NOTES:END -->

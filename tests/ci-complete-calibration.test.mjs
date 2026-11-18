@@ -1,3 +1,4 @@
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
 import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
@@ -42,7 +43,14 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as liveDiskReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as rawBootstrapReadFileSync,readdirSync} from 'node:fs';
+import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+const liveDiskReadFileSync=releaseBootstrapCiRead((path,encoding)=>{
+ const raw=rawBootstrapReadFileSync(path,encoding);
+ if(path!=='src/lua/abyss_ui.lua')return raw;
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforeCharacterPreparationSource(path,text);
+ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+});
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
@@ -1078,7 +1086,7 @@ test('Defect final floors authenticate complete fresh local files without invent
   for(const line of ['tests '+floor.tests,'pass '+floor.tests,'fail 0','cancelled 0','skipped 0','duration_ms '+floor.nodeReportedDurationMs])assert.ok(log.includes('ℹ '+line),line);
   assert.match(floor.kind,/not .*hosted/);assert.match(floor.measurementScope,/not an isolated or hosted benchmark/);
   assert.ok(Object.keys(floor.inputSha256).length>0);
-  for(const [file,sha]of Object.entries(floor.inputSha256)){const raw=rawReadFileSync(file);assert.equal(hash(file.endsWith('.gz')?raw:raw.toString('utf8').replaceAll('\r\n','\n')),sha,file);}
+  for(const [file,sha]of Object.entries(floor.inputSha256)){const raw=rawReadFileSync(file);assert.equal(hash(file.endsWith('.gz')?raw:beforeCharacterPreparationSource(file,raw.toString('utf8')).replaceAll('\r\n','\n')),sha,file);}
   for(const platform of ['win32','linux']){assert.equal(actualCurrentTimings.js[platform][key],undefined);assert.equal(currentJsPlanningWeights([key],platform)[key],Math.max(10000,floor.durationMs));}
  }
 });
@@ -1133,7 +1141,7 @@ test('Encounter formation floors authenticate complete recurring files without f
   for(const line of ['tests '+floor.tests,'pass '+floor.tests,'fail 0','cancelled 0','skipped 0','duration_ms '+floor.nodeReportedDurationMs])assert.ok(log.includes('ℹ '+line),line);
   assert.match(floor.kind,/not .*hosted/);assert.match(floor.measurementScope,/not an isolated or hosted benchmark/);
   assert.ok(Object.keys(floor.inputSha256).length>0);
-  for(const [file,sha]of Object.entries(floor.inputSha256)){const raw=componentReadFileSync(file);assert.equal(hash(file.endsWith('.gz')?raw:raw.toString('utf8').replaceAll('\r\n','\n')),sha,file);}
+  for(const [file,sha]of Object.entries(floor.inputSha256)){const raw=componentReadFileSync(file);assert.equal(hash(file.endsWith('.gz')?raw:beforeCharacterPreparationSource(file,raw.toString('utf8')).replaceAll('\r\n','\n')),sha,file);}
   for(const platform of ['win32','linux']){assert.equal(actualCurrentTimings.js[platform][key],undefined);assert.equal(currentJsPlanningWeights([key],platform)[key],Math.max(10000,floor.durationMs));}
  }
  assert.equal(encounterFormationPlanningFloors['tests/encounter-formation-responsibilities.test.mjs'].durationMs,7322);
@@ -1304,7 +1312,7 @@ test('official candidate floors authenticate complete serial runs and register o
   assert.equal(receipt.durationMs,floor.nodeReportedDurationMs);assert.equal(receipt.wallDurationMs,floor.wallDurationMs);
   assert.equal(floor.durationMs,Math.ceil(Math.max(receipt.durationMs,receipt.wallDurationMs)));
   assert.equal(receipt.inputHashes[file],floor.testSha256);
-  for(const [input,sha]of Object.entries(receipt.inputHashes))assert.equal(hash(receiptToolingSource(input,diskReadFileSync(input,'utf8'),'official').replaceAll('\r\n','\n')),sha,input);
+  for(const [input,sha]of Object.entries(receipt.inputHashes))assert.equal(hash(beforeCharacterPreparationSource(input,receiptToolingSource(input,diskReadFileSync(input,'utf8'),'official')).replaceAll('\r\n','\n')),sha,input);
   for(const line of ['tests '+floor.tests,'pass '+floor.tests,'fail 0','cancelled 0','skipped 0','duration_ms '+receipt.durationMs])assert.ok(log.toString().includes('ℹ '+line),line);
   assert.equal(hash(diskReadFileSync(floor.sourceLog.replace('stdout.log','stderr.log'))),receipt.stderrSha256);
   for(const platform of ['win32','linux']){assert.equal(actualCurrentTimings.js[platform][file],undefined);assert.equal(currentJsPlanningWeights([file],platform)[file],Math.max(actualCurrentTimings.unknownJsMs,floor.durationMs));}
@@ -1348,7 +1356,7 @@ test('current official flow floors bind four complete local files while long cam
   assert.equal(receipt.durationMs,floor.nodeReportedDurationMs);assert.equal(receipt.wallDurationMs,floor.wallDurationMs);
   assert.equal(floor.durationMs,Math.max(firstOfficialAssetsPlanningFloors[file]?.durationMs??0,Math.ceil(Math.max(receipt.durationMs,receipt.wallDurationMs))));
   assert.equal(receipt.inputHashes[file],floor.testSha256);
-  for(const [input,sha]of Object.entries(receipt.inputHashes))assert.equal(hash(receiptToolingSource(input,diskReadFileSync(input,'utf8'),'official').replaceAll('\r\n','\n')),sha,input);
+  for(const [input,sha]of Object.entries(receipt.inputHashes))assert.equal(hash(beforeCharacterPreparationSource(input,receiptToolingSource(input,diskReadFileSync(input,'utf8'),'official')).replaceAll('\r\n','\n')),sha,input);
   for(const line of ['tests '+floor.tests,'pass '+floor.tests,'fail 0','cancelled 0','skipped 0','duration_ms '+receipt.durationMs])assert.ok(log.toString().includes('ℹ '+line),line);
   assert.equal(hash(diskReadFileSync(floor.sourceLog.replace('stdout.log','stderr.log'))),receipt.stderrSha256);
   for(const platform of ['win32','linux']){assert.equal(actualCurrentTimings.js[platform][file],undefined);assert.equal(currentJsPlanningWeights([file],platform)[file],Math.max(actualCurrentTimings.unknownJsMs,floor.durationMs));}
@@ -1422,7 +1430,7 @@ test('Curses planning floors authenticate complete current file runs without hos
   assert.deepEqual([receipt.tests,receipt.pass,receipt.fail,receipt.cancelled,receipt.skipped,receipt.todo],[count,count,0,0,0,0]);
   assert.deepEqual(receipt.inputHashes,receipt.afterInputHashes);
   for(const [path,sha]of Object.entries(receipt.inputHashes)){
-   const raw=diskReadFileSync(path),value=path.endsWith('.gz')?raw:receiptToolingSource(path,raw.toString('utf8'),'curses').replaceAll('\r\n','\n');assert.equal(hash(value),sha,path);
+   const raw=diskReadFileSync(path),value=path.endsWith('.gz')?raw:beforeCharacterPreparationSource(path,receiptToolingSource(path,raw.toString('utf8'),'curses')).replaceAll('\r\n','\n');assert.equal(hash(value),sha,path);
   }
   assert.equal(hash(output),receipt.stdoutSha256);assert.equal(hash(errors),receipt.stderrSha256);assert.equal(errors.length,0);
   for(const line of ['tests '+count,'pass '+count,'fail 0','cancelled 0','skipped 0','duration_ms '+receipt.durationMs])assert.ok(output.toString().includes('ℹ '+line),line);
@@ -1711,7 +1719,7 @@ test('Golden Idol complete local floors authenticate actual files and preserve e
   for(const line of ['tests '+floor.tests,'pass '+floor.tests,'fail 0','cancelled 0','skipped 0','duration_ms '+floor.nodeReportedDurationMs])assert.ok(log.includes('ℹ '+line),line);
   assert.ok(Object.keys(receipt.inputSha256).length>0);
   for(const [file,sha]of Object.entries(receipt.inputSha256)){
-   const raw=actualDiskReadFileSync(file);assert.equal(hash(file.endsWith('.gz')?raw:raw.toString('utf8').replaceAll('\r\n','\n')),sha,file);
+   const raw=actualDiskReadFileSync(file);assert.equal(hash(file.endsWith('.gz')?raw:beforeCharacterPreparationSource(file,raw.toString('utf8')).replaceAll('\r\n','\n')),sha,file);
   }
  }
  assert.deepEqual(current,actualCurrentTimings,'all old costs, hosted measurements, safety inputs and thresholds remain unchanged');
@@ -1988,5 +1996,42 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
   }
   const forecast=Math.max(...combined)+60000;assert(forecast<budget,'complete current menu workload and unchanged reserve');
   t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms < ${budget}ms`);
+ }
+});
+
+test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
+ assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
+ const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
+ assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
+ const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ for(const path of ['.github/workflows/quality.yml','.github/workflows/licenses.yml']){
+  const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+  assert.match(source,path==='.github/workflows/quality.yml'?
+   /  push:\n    branches: \[develop, master\]\n/:/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+  assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
+  assert.match(source,/permissions:\n  contents: read/);
+ }
+ const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
+ assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
+ assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
+ assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical execution guard ${guard}ms; prediction is not admission`);
  }
 });

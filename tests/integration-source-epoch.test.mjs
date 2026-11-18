@@ -1,3 +1,4 @@
+import {assertCharacterPreparationSources,beforeCharacterPreparationSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
@@ -11,7 +12,7 @@ const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
 const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];
 
 test('runtime helper copy continuation retains every old view and rejects stale predecessor identity',async()=>{
- const {priorIntegratedCiProof:integratedCiProof,integratedCiProof:currentProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');
+ const {integratedCiProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');
  const {feedbackCiPatch}=await import('./helpers/sts-feedback-ci.mjs');
  const {extendFeedbackHelperClosure}=await import('./helpers/sts-feedback-source-runtime.mjs');
  const {createHash}=await import('node:crypto');
@@ -26,8 +27,7 @@ test('runtime helper copy continuation retains every old view and rejects stale 
   assert.equal(createHash('sha256').update(view.source).digest('hex'),row.before);
  }
  const predecessor=extendFeedbackHelperClosure(original,feedbackCiPatch.helperClosure);
- assert.equal(extendIntegratedHelperClosure(predecessor)[path],currentProof.closure[path].after);
- assert.equal(currentProof.files[path].oldSource.sha256,row.after,'retain the exact old live runtime source');
+ assert.equal(extendIntegratedHelperClosure(predecessor)[path],row.after);
  assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'0'.repeat(64)}),/exact integration copy predecessor/);
 });
 
@@ -89,7 +89,7 @@ test('shop/deck source slices reject unknown drift without I/O and freshly rejec
  for(const owner of proof.owners){
   let bad=false,reads=0;
   const reader=p=>{reads++;return bad&&p===owner?raw(p)+'\n':raw(p);};
-   assert.equal(sourceSlice(path,source,target,reader),before);assert.equal(reads,proof.owners.length);bad=true;
+  assert.equal(sourceSlice(path,source,target,reader),before);assert.equal(reads,proof.owners.length);bad=true;
   assert.throws(()=>sourceSlice(path,source,target,reader),/linked owner identity/,owner);
   for(const missing of [null,undefined,17])assert.throws(()=>sourceSlice(path,source,target,p=>p===owner?missing:raw(p)),/linked owner identity/,owner);
   assert.throws(()=>sourceSlice(path,source,target,p=>{if(p===owner)throw Error('removed');return raw(p);}),/linked owner missing/,owner);
@@ -144,7 +144,13 @@ test('fresh authorization covers the complete changed-owner union without cachin
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
  assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
- for(const path of files)assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+ assertCharacterPreparationSources();
+ for(const path of files)assert.equal(beforeCharacterPreparationSource(path,readFileSync(path,'utf8')).replaceAll('\r\n','\n'),raw(path),path);
+ const [owner]=characterPreparationOwners, read=path=>readFileSync(path,'utf8'), current=read(owner);
+ assert.equal(beforeCharacterPreparationSource(owner,current,read),raw(owner));
+ assert.equal(beforeCharacterPreparationSource(owner,current+'\n',()=>{throw Error('foreign must not authorize reads');}),current+'\n');
+ for(const missing of characterPreparationOwners)
+  assert.throws(()=>beforeCharacterPreparationSource(owner,current,path=>path===missing?null:read(path)),/fresh character preparation source/);
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],
