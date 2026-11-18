@@ -144,7 +144,27 @@ function assertIntentCiCurrent(read) {
   }
 }
 
+const settingsArchive = 'tests/helpers/release-settings-icon-ci.json.gz';
+const settingsDigest = '761217b7167cc43aa12d0402dbaa820b34cd2c6b2395c85743230d73f8c63b51';
+const settingsBytes = readFileSync(new URL('./release-settings-icon-ci.json.gz', import.meta.url));
+assert.equal(hash(settingsBytes), settingsDigest, 'fixed settings icon CI continuation');
+const settingsCi = JSON.parse(gunzipSync(settingsBytes));
+const settingsHud = 'scripts/official-battle-hud.mjs';
+const settingsTest = 'tests/official-run-chrome.test.mjs';
+assert.equal(settingsCi.base, '174fecfe4561b58f402c4c140ee5520d96e18b3c');
+assert.deepEqual(Object.keys(settingsCi.files), [settingsHud, settingsTest]);
+for (const row of Object.values(settingsCi.files)) assert.equal(hash(row.before), row.beforeSha256);
+
+function assertSettingsCiCurrent(read) {
+  assert.equal(hash(read(settingsArchive)), settingsDigest, 'fresh settings icon CI continuation');
+  for (const [path, row] of Object.entries(settingsCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: settings icon ' + path);
+  }
+}
+
 function beforeSparseCiSource(path, source) {
+  if (path === settingsTest) source = priorCiSource(settingsCi.files, path, source);
   return priorCiSource(sparseCi.files, path, beforeIntentCiSource(path, source));
 }
 
@@ -209,7 +229,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
       const sparseRow = Object.hasOwn(sparseCi.files, path) ? sparseCi.files[path] : null;
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
-      if (!handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
+      if (path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -221,6 +241,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertSettingsCiCurrent(read);
   assertIntentCiCurrent(read);
   assertSparseCiCurrent(read);
   assertHistoryCiCurrent(read);
