@@ -1,20 +1,22 @@
 ---
 id: TASK-4.10.1
 title: 修复商人同句拆页并统一对白阅读节奏
-status: To Do
+status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-14 03:03'
-updated_date: '2026-11-14 05:36'
+created_date: 2026-11-14 03:03
+updated_date: '2026-11-18T18:30:00Z'
 labels:
   - ui
   - text
   - owner-review
+  - 待验
 milestone: m-8
 dependencies: []
 references:
   - docs/TOOLCHAIN.md
   - docs/TASK_EXECUTION.md
+  - docs/backlog-details/RELEASE-TASK-LEDGER-20261119.md
 parent_task_id: TASK-4.10
 priority: medium
 type: bug
@@ -40,4 +42,6 @@ ordinal: 175000
 
 <!-- SECTION:NOTES:BEGIN -->
 源码候选PR655完整纳入当前单主角版integration-next并保留原独审与阅读回归；本次仅集中集成，实际连续画面/设备/人工阅读验收仍按原AC保留。
+
+本轮仅纠正 Release 分叉账本：既有商人语义分页源码和回归已在树内，develop 2ec45b9e 也已将本任务纠正为 In Progress；按 TASK_EXECUTION 的整体进展定义同步为待验阶段，不重新领取、不改变 Furinya 所有权、不声称另有实现正在施工。原 PR #655 已关闭但未直接合并，其候选经 integration-next 纳入的事实沿用既有记录；实际连续画面、最终语义规则、成熟游戏对照、用户确认与设备验收仍未满足，原五项 AC 全部保持未勾。本轮不修改商人代码、文案、布局或设备状态。详见 RELEASE-TASK-LEDGER-20261119.md。
 <!-- SECTION:NOTES:END -->
