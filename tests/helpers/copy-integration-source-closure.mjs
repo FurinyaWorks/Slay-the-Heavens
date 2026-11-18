@@ -98,6 +98,9 @@ files[closeoutPath] = 'a935712406ce226efd237b76416bf9e1a7d3c141f8a5f0f126181e84c
 files['tests/helpers/release-sparse-pointer-source.json.gz'] = '24126de8efaf5088cc67d045391bbd2ba19a464e0a616d9d2483a12f70648340';
 files[closeoutPath] = '3405d434f2c38c42ac48aea22eee27ab05d9912ac4915584fcc89f291e7b26f6';
 files['tests/helpers/release-composite-intent-source.json.gz'] = '813ee7d1c86932e518c8b5c2d23c339c8dbd86b73d53151531c58ed8414ae7ef';
+assert.equal(files[closeoutPath], '3405d434f2c38c42ac48aea22eee27ab05d9912ac4915584fcc89f291e7b26f6');
+files[closeoutPath] = '82a452a956038c6b0eb4093b9cefb796a842ca6feb69a7ea0f77bb2ee6c3d96e';
+files['tests/helpers/release-pointer-identity-source.json.gz'] = '677aa2cb479410391931509c3d0187ec96f0c0a608063d8446b2a7b434cdbe27';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

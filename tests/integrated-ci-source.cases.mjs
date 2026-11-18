@@ -35,9 +35,23 @@ import {integratedCiProof as proof,integratedCurrentInventory,integratedPriorInv
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
-const newerReleaseOwners=['src/lua/abyss_battle_card_bindings.lua','src/lua/abyss_battle_card_view.lua','src/lua/abyss_battle_enemy_view.lua','src/lua/abyss_battle_intent_view.lua',
- 'src/lua/abyss_battle_render_actors.lua','src/lua/abyss_battle_targeting.lua',
- 'src/lua/abyss_card_flow.lua','src/lua/abyss_lowcost_art.lua'];
+const newerReleaseOwners=[
+ 'src/lua/abyss_battle_action_bindings.lua',
+ 'src/lua/abyss_battle_card_bindings.lua',
+ 'src/lua/abyss_battle_card_gestures.lua',
+ 'src/lua/abyss_battle_card_view.lua',
+ 'src/lua/abyss_battle_details.lua',
+ 'src/lua/abyss_battle_enemy_view.lua',
+ 'src/lua/abyss_battle_input_state.lua',
+ 'src/lua/abyss_battle_intent_view.lua',
+ 'src/lua/abyss_battle_potion_bindings.lua',
+ 'src/lua/abyss_battle_render_actors.lua',
+ 'src/lua/abyss_battle_target_bindings.lua',
+ 'src/lua/abyss_battle_targeting.lua',
+ 'src/lua/abyss_battle_ui.lua',
+ 'src/lua/abyss_card_flow.lua',
+ 'src/lua/abyss_lowcost_art.lua',
+];
 function readLegacyPotionProduction(read){
  const readSource=p=>mergedReadFileSync(p,'utf8');
  // Authenticate the later Release owners before constructing each historical fixture.
@@ -613,4 +627,24 @@ test('release Lua history authenticates the exact current raw inventory without 
  const noRead=()=>{throw Error('historical inventory does not authorize a live projection');};
  assert.deepEqual(integratedPriorInventory(expected,'menu','lua',noRead),expected);
  assert.deepEqual(raw,integratedCurrentInventory('lua'));
+});
+
+test('historical potion production validates its current pointer owners before replay',()=>{
+ const path='src/lua/abyss_battle_card_gestures.lua';
+ const linked='src/lua/abyss_battle_target_bindings.lua';
+ const raw=mergedReadFileSync(path,'utf8');
+ const expected=jointProductionEpoch.proof.targets.releasePointerIdentityPrior.files[path].source;
+ assert.notEqual(raw,expected);
+ let drift=false;
+ const read=(file,encoding)=>{
+  const source=mergedReadFileSync(file,encoding);
+  return drift&&file===linked?source+'\n':source;
+ };
+ const historical=releasePotionEnemyRead('potion',read);
+ assert.equal(historical(path,'utf8'),expected);
+ assert.equal(releasePotionEnemyRead('release',read)(path,'utf8'),raw);
+ drift=true;
+ assert.throws(()=>historical(path,'utf8'),/combined linked owner identity: src\/lua\/abyss_battle_target_bindings\.lua/);
+ drift=false;
+ assert.equal(historical(path,'utf8'),expected);
 });

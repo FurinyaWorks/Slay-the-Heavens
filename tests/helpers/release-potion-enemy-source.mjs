@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
+import { sourceEpoch } from './closeout-source-epoch.mjs';
 
 const archive = 'tests/helpers/release-potion-enemy-source.json.gz';
 const digest = '098a7668d6ce0070d6e8644707fd0d303b324b1f187f9f29743d97b9e713bee4';
@@ -119,6 +120,31 @@ for (const row of Object.values(sparseCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+// Continue the standalone Down sample with the independently reviewed pointer protocol.
+const pointerArchive = 'tests/helpers/release-pointer-identity-ci.json.gz';
+const pointerDigest = '6550d7a7fdeef8cab772709e1fb540cd032fa0abcf5e860afe2ae1f3e8ba5cde';
+const pointerBytes = readFileSync(new URL('./release-pointer-identity-ci.json.gz', import.meta.url));
+assert.equal(hash(pointerBytes), pointerDigest, 'fixed pointer identity CI continuation');
+const pointerCi = JSON.parse(gunzipSync(pointerBytes));
+assert.equal(pointerCi.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+for (const row of Object.values(pointerCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforePointerIdentityCiSource(path, source) {
+  return priorCiSource(pointerCi.files, path, source);
+}
+
+function assertPointerIdentityCiCurrent(read) {
+  assert.equal(hash(read(pointerArchive)), pointerDigest, 'fresh pointer identity CI continuation');
+  assert.equal(hash(read('tests/helpers/release-pointer-identity-source.json.gz')), pointerCi.productionArchive,
+    'fresh immutable pointer identity production archive');
+  for (const [path, row] of Object.entries(pointerCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer identity ' + path);
+  }
+}
+
 const intentArchive = 'tests/helpers/release-composite-intent-ci.json.gz';
 const intentDigest = '598cdbb2f2b285424af0b945ac23ef87cbf7851e583e1c5e99b8cb5c0889b5d4';
 const intentBytes = readFileSync(new URL('./release-composite-intent-ci.json.gz', import.meta.url));
@@ -130,16 +156,17 @@ for (const row of Object.values(intentCi.files)) {
 }
 
 function beforeIntentCiSource(path, source) {
-  return priorCiSource(intentCi.files, path, source);
+  return priorCiSource(intentCi.files, path, beforePointerIdentityCiSource(path, source));
 }
 export function isCurrentIntentCiReplay(path, source) {
-  return beforeIntentCiSource(path, source) !== source;
+  const beforePointer = beforePointerIdentityCiSource(path, source);
+  return beforeIntentCiSource(path, beforePointer) !== beforePointer;
 }
 function assertIntentCiCurrent(read) {
   assert.equal(hash(read(intentArchive)), intentDigest, 'fresh composite intent CI continuation');
   assert.equal(hash(read('tests/helpers/release-composite-intent-source.json.gz')), intentCi.productionArchive, 'fresh immutable composite intent source archive');
   for (const [path, row] of Object.entries(intentCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforePointerIdentityCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: composite intent ' + path);
   }
 }
@@ -220,6 +247,17 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
   assert(Object.hasOwn(packet.parents, side), 'known exact potion Release CI parent');
   return (path, encoding) => {
     const source = read(path, encoding);
+    // #679's historical potion tests need their actual predecessor production.
+    // The generic CI source projection and current Release reader remain raw.
+    if (side === 'potion' && typeof path === 'string' && path.startsWith('src/lua/') &&
+        (typeof source === 'string' || Buffer.isBuffer(source))) {
+      const text = typeof source === 'string' ? source : source.toString('utf8');
+      const prior = sourceEpoch.preCombinedSource(path, text, {
+        target: 'releasePointerIdentityPrior',
+        readSource: owner => read(owner, 'utf8'),
+      });
+      return typeof source === 'string' ? prior : prior === text ? source : Buffer.from(prior);
+    }
     if (Buffer.isBuffer(source)) {
       const row = Object.hasOwn(packet.files, path) ? packet.files[path] : null;
       // Unbound binary archives remain byte-identical, without UTF-8 decoding.
@@ -229,7 +267,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
       const sparseRow = Object.hasOwn(sparseCi.files, path) ? sparseCi.files[path] : null;
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
-      if (path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
+      const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+      if (path !== settingsTest && !pointerRow?.before && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -241,6 +280,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertPointerIdentityCiCurrent(read);
   assertSettingsCiCurrent(read);
   assertIntentCiCurrent(read);
   assertSparseCiCurrent(read);
