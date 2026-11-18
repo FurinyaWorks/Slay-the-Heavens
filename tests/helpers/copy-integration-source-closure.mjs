@@ -103,6 +103,9 @@ files['tests/helpers/runtime-particle-source.json.gz'] = '2cef28e3bd47c3638c421c
 assert.equal(files[closeoutPath], '430dcaa055be3c350047256f7b6b8ceefd9aeff0fb0401f911a7589cad98eb5c');
 files[closeoutPath] = 'ed7b31a7e316c40fd15f770b7bca0e6a9460981a831de5966634241ad80270ba';
 files['tests/helpers/release-target-corners-source.json.gz'] = '74900cc6bcc96f29a430067d609bda9c7de8a2d3245b9fad59fc69ae4d3181c7';
+assert.equal(files[closeoutPath], 'ed7b31a7e316c40fd15f770b7bca0e6a9460981a831de5966634241ad80270ba');
+files[closeoutPath] = '41acf3946b09caa2f1e03f5775597e7d8e62dd021fd4b394712a4339e814dbdf';
+files['tests/helpers/release-pointer-identity-source.json.gz'] = 'ad05f84a4d67d65b99f1469ffbd4080d2b9f92b88f0b6df214ecc0e9888138c1';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

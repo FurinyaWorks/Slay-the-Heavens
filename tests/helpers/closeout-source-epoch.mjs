@@ -215,10 +215,40 @@ const cornerTargets = {
 };
 const cornerOwners = Object.keys(cornerCurrent).sort().filter(path =>
   Object.values(cornerTargets).some(target => target.files[path]?.sha256 !== cornerCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const pointerPriorRelease = {
   ...beforeCorners, current: cornerCurrent, targets: cornerTargets, owners: cornerOwners,
   currentCommit: corner.checkpoint,
   currentCommitRole: 'exact target corner geometry from #684 on the current Release baseline',
+};
+const pointerBytes = readFileSync(new URL('./release-pointer-identity-source.json.gz', import.meta.url));
+assert.equal(hash(pointerBytes), 'ad05f84a4d67d65b99f1469ffbd4080d2b9f92b88f0b6df214ecc0e9888138c1', 'complete current pointer identity production inputs');
+const pointer = JSON.parse(gunzipSync(pointerBytes));
+const pointerPaths = [
+  'src/lua/abyss_battle_action_bindings.lua',
+  'src/lua/abyss_battle_card_bindings.lua',
+  'src/lua/abyss_battle_card_gestures.lua',
+  'src/lua/abyss_battle_details.lua',
+  'src/lua/abyss_battle_input_state.lua',
+  'src/lua/abyss_battle_potion_bindings.lua',
+  'src/lua/abyss_battle_target_bindings.lua',
+  'src/lua/abyss_battle_ui.lua',
+];
+assert.equal(pointer.base, '91d6f955e16dcf91d24971450abaa72d12a4efa3');
+assert.deepEqual(Object.keys(pointer.before), pointerPaths);
+assert.deepEqual(Object.keys(pointer.current), pointerPaths);
+for (const path of pointerPaths)
+  assert.deepEqual(pointer.before[path], pointerPriorRelease.current[path], 'exact Release pointer identity predecessor: ' + path);
+const pointerCurrent = { ...pointerPriorRelease.current, ...pointer.current };
+const pointerTargets = {
+  ...pointerPriorRelease.targets,
+  releasePointerIdentityPrior: { commit: pointer.base, files: pointerPriorRelease.current },
+};
+const pointerOwners = Object.keys(pointerCurrent).sort().filter(path =>
+  Object.values(pointerTargets).some(target => target.files[path]?.sha256 !== pointerCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...pointerPriorRelease, current: pointerCurrent, targets: pointerTargets, owners: pointerOwners,
+  currentCommit: pointer.checkpoint,
+  currentCommitRole: 'exact current composition of #679 and the remaining #711 pointer protocol',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
