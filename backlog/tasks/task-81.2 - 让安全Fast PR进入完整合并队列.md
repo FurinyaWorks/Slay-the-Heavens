@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 15:41'
-updated_date: '2026-11-14 10:13'
+updated_date: '2026-11-17 15:57'
 labels:
   - 待验
   - delivery-verify
@@ -38,6 +38,8 @@ TASK-81已有按影响选测，但当前develop Ruleset 25870651强制full-quali
 接续#529；实现精确Fast收据与PR准入，保留高风险Full、队列完整Full及合后Full；独审和当前SHA CI通过后切换Ruleset，真实安全PR验证入队、squash与合后验收。
 
 2026-11-10 接续既有 PR584，不新增自主领取。鲜查12个开放PR与当前HEAD53b55d4d，独立复跑四个策略合同21/21，另复现历史工作流投影失败。仅补完整Draft/Fast工作流外层历史投影及LF/CRLF、部分/重复/漂移拒绝控制；保持正式工作流、旧档案/hash/断言、预算与全部队列门禁。定向原失败回归、独立复审后接续原PR；不重复Full、不改Owner/status/AC或用户设备。
+
+2026-11-16经Owner批准独立修复Release bootstrap Full43715790645的10个命名来源/工作流合同缺口，基36b9，不依赖P0玩法。先B1/B2/B4在相同当前测试与helper下只替完整workflow c240/36做控制，再使用已有exact CI packet/投影机制认证3workflow前驱；旧逆变换使用明确历史输入，物理Release触发/cap/artifact/readonly职责保留加强。只来源/helper/4raw测试及必要calibration接线，raw876/1423完整发现、旧gzip/hash/成本/分片/预算不改，定向10命名+缺/漂移/部分packet/当前合同，独审后再协调PR；不73/Full/实机。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -56,4 +58,10 @@ PR584本地历史合同修复：六项Draft/Fast完整外层投影接入既有�
 2026-11-14逐项对账：已实现pr-quality/严格队列及双平台Fast收据；原539安全Fast后未完成完整自动链路，不能据Full PR634代验Fast真实成功闭环。仅保留该验收缺口，不重配Ruleset或重做门禁。
 
 2026-11-14第二轮状态纠正：pr-quality、双平台Fast收据与严格队列已经实现；尚缺安全Fast真实入队完整链路，是验收中而非未开始。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+2026-11-16 Release bootstrap43715790645原14JS失败job日志归并10唯一断言。独立36b9树以相同测试/helper仅替完整quality.yml，B1/B2/B4 c240=3/3 PASS、36=3/3 RED，确认bootstrap前驱边界。仅bootstrap3workflow完整认证接续，不依赖P0；保当前物理Release触发/cap/artifact/readonly/实际硬超时，历史逆变换与原负控用明确旧输入。10原失败名+新exact/raw及2旧来源合同14/14通过，raw仍876JS/1423Lua，92旧gzip与workflow/runtime/调度配置未改；新增live预测仅诊断，原frozen预算断言保留。原日志矩阵在主树.artifacts/release-bootstrap-failures-1116，当前证据在独立树.artifacts/bootstrap-compat-1116。未73/Full/手机，状态/Owner/AC不变；独立审后再协调PR。
+
+政策来源补记：Owner已明确docs/CI.md的2026-11-07决定仍有效，Windows30/POSIX20是性能目标，预测与60秒预留只作提示，不凭预测阻交付。#684(ae5194a7)及#690(11ec36bf/base36b9)新增live target门禁不是新的Owner指令；本bootstrap-only raw合同不机械采用它们，保原实际执行guard并输出预测/overrun。#690 PC navigation不是本片4raw来源，不重复产品实现，不改他人PR/JSON或冻结业务。
+
+2026-11-17本轮CI治理：主仓规则保持Required/Strict/SQUASH-ALLGREEN及原发版保护，不采用额外三项原生人工审批。真实682队列收据证明原审B0=c240与实际非首组父Q=b85不同，旧同BASE夹具不足，193可部署判定已撤销，正在分离原独审/正式CI与实际Queue Full证明；不改写旧收据。703与707已完成Release原生自动合并，但Release无Queue；本次712高风险Full也不能代验安全Fast样本。AC与待验状态保持，真实安全Fast闭环尚未完成。追溯 https://github.com/FurinyaWorks/Slay-the-Heavens/pull/712 。
 <!-- SECTION:NOTES:END -->

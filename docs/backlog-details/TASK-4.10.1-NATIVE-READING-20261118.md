@@ -29,6 +29,6 @@
 
 开始两次探针失败均保留：首次误用了SDK不存在的 `Time` 全局，改为已存在原生 `OnUpdate(dt)` 签名；第二次在JavaScript侧根据Lua `tostring(shown)` 判断完成，浮点数被格式化舍入后提前采样，造成重复的采样文本。最终在Lua内部计算布尔complete，并按kind/page记录一次完整页，仍严格断言拼接原文及pointer/auto完全一致；没有修改产品代码或放宽断言来通过探针。失败轮不是产品失败/修复证明。
 
-本轮成功记录：[总收据](../evidence/merchant-native-reading-20261118/receipt.json)、同目录两套trace、原始回归输出、两次探针失败及 `manifest.json`。小型replay-inputs.zip保留成功轮挂载Lua/主题/轨迹；源码src/data/scripts工作树无改动且绑定上述Git基线，列出的直接输入与工具/SDK摘要另存收据。这不是正式candidate的完整payloadDigest或官方来源证明。
+成功轮的总收据、两套轨迹、原始回归输出、两次探针失败和挂载输入包保存在[原提交证据目录](https://github.com/FurinyaWorks/Slay-the-Heavens/tree/ed50199b5fb74f420de93d3c1769c893f5006c60/docs/evidence/merchant-native-reading-20261118)。各原始文件大小与 SHA-256 见[清单](../evidence/merchant-native-reading-20261118/manifest.json)。小型replay-inputs.zip保留成功轮挂载Lua/主题/轨迹；源码src/data/scripts工作树无改动且绑定上述Git基线，列出的直接输入与工具/SDK摘要另存收据。这不是正式candidate的完整payloadDigest或官方来源证明。
 
 五项任务AC均未勾，状态纠正为 `In Progress`。渲染、连续画面、真实字体/裁切、官方候选/ready、PC/手机、成熟游戏阅读例证及Owner最终体验确认继续待验。下一步应沿同一批准候选补这些证据后再决定长句方案，不重新领取已交付实现或把诊断写成产品完成。

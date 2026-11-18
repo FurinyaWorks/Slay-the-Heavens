@@ -1,0 +1,106 @@
+TASK-90 current-baseline evidence integration, 2026-11-15 UTC
+Base: c2409ad750c15124b7b843c6bbfa5b222537cb75
+Worktree: F:\New folder\.worktrees\task90-evidence-integration-1115
+Branch: feat/task90-evidence-integration-1115
+Runtime: Node v24.18.0, Windows PowerShell
+Node directory: C:\Users\Administrator\AppData\Local\npm-cache\_npx\4aa47c519def57bc\node_modules\node\bin
+The node directory was prepended to PATH for all commands below.
+Transcript copied from this round's tool output; historical receipts are separate.
+
+SETUP
+Command: npm ci --ignore-scripts --offline
+Exit: 0
+added 11 packages, and audited 12 packages in 2s
+2 packages are looking for funding
+  run `npm fund` for details
+found 0 vulnerabilities
+
+Command: npm run build:data && npm run build:theme && npm run build:ui
+Exit: 0
+> slay-the-abyss@1.0.0 build:data
+> node scripts/build-lua-data.mjs
+Validated Lua data module built.
+> slay-the-abyss@1.0.0 build:theme
+> node scripts/build-ui-theme.mjs
+UI theme Lua module built.
+> slay-the-abyss@1.0.0 build:ui
+> node scripts/build-ui.mjs
+Native battle UI and Traveler display module built.
+
+CURRENT NODE REGRESSION
+Command: node --test --test-reporter=spec --test-concurrency=1 tests/uncommon-relics.test.mjs tests/event-card-picker-ui.test.mjs tests/back-to-basics-event.test.mjs
+Exit: 0
+✔ BackToBasics source fixes eight starter tags, free purge, four-argument grid, empty success and separate Leave (0.918ms)
+✔ BackToBasics source-faithful public commands and generated NodeUI: back_to_basics_event.lua (9872.6021ms)
+✔ BackToBasics source-faithful public commands and generated NodeUI: back_to_basics_ui.lua (6331.0555ms)
+✔ source mandatory event grids keep candidate/order/identity and interrupted native ownership (3984.8963ms)
+✔ source uncommon relic callbacks produce real combat and permanent state changes (946.5398ms)
+✔ uncommon effects activate after the normal Run obtain and combat paths (6893.4291ms)
+✔ Chemical X adds two once across all X cards while preserving zero cost and free autoplay energy (6507.3085ms)
+✔ source TOP, BOTTOM, and synchronous opening relics have real event-frame order evidence (6869.6189ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42081.5846
+
+CURRENT LUA CONTRACTS AND UNMODIFIED HISTORICAL DISPLAY PROBE
+Command: node --input-type=module -e "import {runLua} from './scripts/test-lua.mjs'; for (const file of ['tests/lua/opening_hand.lua','tests/lua/permanent_purge_routes.lua','docs/evidence/task90-reconcile-20261114/display-probe.txt']) { console.log('FIXTURE '+file); const r=runLua(file); process.stdout.write(r.stdout); process.stderr.write(r.stderr); console.log('EXIT '+r.status); if(r.status!==0){process.exitCode=r.status??1;break;} }"
+Exit: 0
+FIXTURE tests/lua/opening_hand.lua
+ok opening_hand 1 - stable partition preserves instance identity and both original subsequences
+ok opening_hand 2 - upgraded-only Innate follows effective definition override
+ok opening_hand 3 - runtime explicit flags are validated and override static metadata
+ok opening_hand 4 - zero, below, equal and above opening draw counts match independent source partition
+ok opening_hand 5 - excess Innate draw drains in prebattle before normal Draw5 and battle-start draw
+ok opening_hand 6 - generated opening card consumes a real slot; more than ten Innate stay on draw top
+ok opening_hand 7 - no new RNG calls occur after the one full-deck source shuffle
+ok opening_hand 8 - empty and singleton staging do not replace the mandatory prior source shuffle
+ok opening_hand 9 - bottles bind exact instances with innate upgrade high costs and hand capacity
+ok opening_hand 10 - malformed arrays, IDs, duplicate UIDs and flag types fail closed
+OPENING_HAND_PASS 10
+EXIT 0
+FIXTURE tests/lua/permanent_purge_routes.lua
+PASS purge shop rejects bottled UID atomically and accepts eligible UID
+PASS purge cleric rejects bottled UID atomically and accepts eligible UID
+PASS purge purifier rejects bottled UID atomically and accepts eligible UID
+PASS purge golden_wing rejects bottled UID atomically and accepts eligible UID
+PASS purge shop pays and disables Maw Bank before permanent remove hook
+PASS purge shop remove-hook exception rolls payment counters and card back
+PASS purge native purge pickers use the shared legal group in all four rooms
+PERMANENT_PURGE_ROUTES 7 passed
+EXIT 0
+FIXTURE docs/evidence/task90-reconcile-20261114/display-probe.txt
+UI_OPTION 免费移除一张可移除永久牌，遗物绑定牌除外。
+UI_PICKER 选择一张可移除永久牌；被遗物指定为战斗起手的牌不能移除。
+VIEW_REASON 选择一张可移除永久牌；被遗物指定为战斗起手的牌不能移除。
+TASK90_CURRENT_DISPLAY_AND_SELECTION_PASS
+EXIT 0
+
+METADATA AND HISTORY CHECKS
+Command: npm run verify:backlog
+Exit: 0
+> slay-the-abyss@1.0.0 verify:backlog
+> node scripts/verify-backlog-roadmap.mjs
+任务编号、首发排期、负责人及仅岩系旅行者前两幕规划范围检查通过；当前任务均有优先级、未完成High不超过5项；不认证运行时准入、平台或实机。
+
+Historical Git blob comparison (git rev-parse 796c5a9e:<path> vs git hash-object -- <path>):
+MATCH 653bf168706fb312dd44ebfc095258b849007eac docs/backlog-details/TASK-90-RECONCILE-20261114.md
+MATCH d46d58ad89753e62c62e457b71b0f402948e333d docs/evidence/task90-reconcile-20261114/display-probe.txt
+MATCH 55b714cac81c4c141df8c76a4c38853c9b2c7630 docs/evidence/task90-reconcile-20261114/display.json
+MATCH ab6d08023081a4afb9ea0da0c0ea565d3429f393 docs/evidence/task90-reconcile-20261114/historical-quality-jobs.json
+MATCH 229593a30dea8d828f3abec7113fc46768199deb docs/evidence/task90-reconcile-20261114/mechanism.json
+
+git diff --exit-code -- src tests scripts package.json package-lock.json: exit 0, no changes.
+git diff --check: exit 0, no whitespace errors.
+Backlog CLI readback: TASK-90 Done, AC1/AC2 checked; no task-specific DoD items.
+Read-only PR #682 file list: no overlapping paths with this slice.
+
+BOUNDARY
+This round ran existing source/Fengari checks and generated NodeUI with native surface mocks.
+No new/changed production source, tests, helpers, or display probe.
+No new GIL candidate, candidate write/readback, official import, real ready, natural event draw, PC client or physical-phone acceptance.
+No Full run or current-commit GitHub CI receipt; old CI JSON remains historical only.

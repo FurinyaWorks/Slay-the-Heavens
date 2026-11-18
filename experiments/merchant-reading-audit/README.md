@@ -6,7 +6,7 @@
 
 ## 复现
 
-安装仓库既有依赖后运行 `node experiments/merchant-reading-audit/run.mjs`。脚本直接调用当前 `abyss_merchant_pages.lua`，读取当前 narrative 与 theme，不重写一套分页算法。`result.json` 记录四个输入 SHA256、六条真实文案在 default/official 两种预算下的完整逐页结果；每行断言拼接原文不变、无空页、长度不超预算。
+安装仓库既有依赖后运行 `node experiments/merchant-reading-audit/run.mjs`。脚本直接调用当前 `abyss_merchant_pages.lua`，读取当前 narrative 与 theme，不重写一套分页算法。`result.json` 为本地生成结果。[原始结果](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/ed50199b5fb74f420de93d3c1769c893f5006c60/experiments/merchant-reading-audit/result.json)记录四个输入 SHA256、六条真实文案在 default/official 两种预算下的完整逐页结果；每行断言拼接原文不变、无空页、长度不超预算。
 
 结果：12/12 行满足上述软件合同，但共 6 页只有 2–3 字符。短页不自动等于 bug；下面是值得人工判断的具体现象。
 

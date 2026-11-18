@@ -1,2 +1,0 @@
-{"profile":"default","status":"component_passed","controls":30,"remaining":0,"fullPages":9}
-{"profile":"official-projection","status":"component_passed","controls":30,"remaining":0,"fullPages":6}

@@ -1,0 +1,26 @@
+{
+  "scope": "Current source/Fengari; no official or device acceptance",
+  "cases": [
+    {
+      "file": "tests/lua/uncommon_relics_effects.lua",
+      "status": 0,
+      "wallMs": 2082.6724000000004,
+      "stdout": "PASS Sundial persists exact shuffle thirds\nPASS attack triples give independent Strength Dexterity and fixed block\nPASS Letter Opener uses fixed damage to every enemy\nPASS Ink Bottle counts all types and draws at tenth\nPASS Horn Cleat second turn and Mercury each turn\nPASS Gremlin Horn excludes final enemy and escape\nPASS Clay queues next turn block for each actual HP loss\nPASS Blue Candle loses HP and exhausts the exact curse\nPASS Mummified Hand selects eligible hand only and sets this turn cost\nPASS Eternal Feather floors deck groups and Meat has half HP gate\nPASS Strike Dummy Paper Frog Question Card modifiers are ownership gated\nPASS Matryoshka spends two nonboss chest charges with 75 percent common\nPASS three bottles choose exact permanent UID and Singing Bowl delegates health\nLUA_UNCOMMON_RELICS_PASS 13\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/lua/opening_hand.lua",
+      "status": 0,
+      "wallMs": 2125.4455000000003,
+      "stdout": "ok opening_hand 1 - stable partition preserves instance identity and both original subsequences\nok opening_hand 2 - upgraded-only Innate follows effective definition override\nok opening_hand 3 - runtime explicit flags are validated and override static metadata\nok opening_hand 4 - zero, below, equal and above opening draw counts match independent source partition\nok opening_hand 5 - excess Innate draw drains in prebattle before normal Draw5 and battle-start draw\nok opening_hand 6 - generated opening card consumes a real slot; more than ten Innate stay on draw top\nok opening_hand 7 - no new RNG calls occur after the one full-deck source shuffle\nok opening_hand 8 - empty and singleton staging do not replace the mandatory prior source shuffle\nok opening_hand 9 - bottles bind exact instances with innate upgrade high costs and hand capacity\nok opening_hand 10 - malformed arrays, IDs, duplicate UIDs and flag types fail closed\nOPENING_HAND_PASS 10\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/lua/permanent_purge_routes.lua",
+      "status": 0,
+      "wallMs": 11722.189900000001,
+      "stdout": "PASS purge shop rejects bottled UID atomically and accepts eligible UID\nPASS purge cleric rejects bottled UID atomically and accepts eligible UID\nPASS purge purifier rejects bottled UID atomically and accepts eligible UID\nPASS purge golden_wing rejects bottled UID atomically and accepts eligible UID\nPASS purge shop pays and disables Maw Bank before permanent remove hook\nPASS purge shop remove-hook exception rolls payment counters and card back\nPASS purge native purge pickers use the shared legal group in all four rooms\nPERMANENT_PURGE_ROUTES 7 passed\n",
+      "stderr": ""
+    }
+  ]
+}

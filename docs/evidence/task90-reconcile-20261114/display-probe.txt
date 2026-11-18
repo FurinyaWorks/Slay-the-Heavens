@@ -1,0 +1,17 @@
+local H=dofile('tests/helpers/act2_event_ui.lua')
+local r,m=H.fixture('back_to_basics',{{uid=7,cardId='strike',inBottleFlame=true},{uid=8,cardId='defend'}},0)
+local ui,get=H.setup(r,m)
+local explanation=get('eventView/option1/description').text
+assert(explanation:find('遗物绑定牌除外',1,true));assert(not explanation:find('非瓶装',1,true))
+print('UI_OPTION '..explanation)
+assert(ui:press('eventView/option1'))
+local title=get('notice').text
+print('UI_PICKER '..title)
+assert(title:find('被遗物指定为战斗起手的牌不能移除',1,true))
+local body=H.Nodes.view(r,m).node.event.body
+assert(body:find('被遗物指定为战斗起手的牌不能移除',1,true));print('VIEW_REASON '..body)
+assert(#ui.removeRows==1 and ui.removeRows[1].uid==8)
+assert(ui:press('pickerView/card1'));assert(ui:press('confirm'))
+assert(#r.deck==1 and r.deck[1].uid==7 and r.deck[1].inBottleFlame)
+assert(ui:press('eventView/option1'));assert(r.phase=='map')
+print('TASK90_CURRENT_DISPLAY_AND_SELECTION_PASS')
