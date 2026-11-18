@@ -155,10 +155,30 @@ const sparseTargets = {
 };
 const sparseOwners = Object.keys(sparseCurrent).sort().filter(path =>
   Object.values(sparseTargets).some(target => target.files[path]?.sha256 !== sparseCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const sparseRelease = {
   ...enemyRelease, current: sparseCurrent, targets: sparseTargets, owners: sparseOwners,
   currentCommit: sparse.checkpoint,
   currentCommitRole: 'exact coalesced Down sample slice from #711',
+};
+const intentBytes = readFileSync(new URL('./release-composite-intent-source.json.gz', import.meta.url));
+assert.equal(hash(intentBytes), '813ee7d1c86932e518c8b5c2d23c339c8dbd86b73d53151531c58ed8414ae7ef');
+const intent = JSON.parse(gunzipSync(intentBytes));
+const intentPaths = ["src/lua/abyss_battle_intent_view.lua", "src/lua/abyss_battle_render_actors.lua"];
+assert.deepEqual(Object.keys(intent.before), intentPaths);
+assert.deepEqual(Object.keys(intent.current), intentPaths);
+for (const path of intentPaths)
+  assert.deepEqual(intent.before[path], sparseRelease.current[path], 'exact Release composite intent predecessor: ' + path);
+const intentCurrent = { ...sparseRelease.current, ...intent.current };
+const intentTargets = {
+  ...sparseRelease.targets,
+  releaseCompositeIntentPrior: { commit: '174fecfe4561b58f402c4c140ee5520d96e18b3c', files: sparseRelease.current },
+};
+const intentOwners = Object.keys(intentCurrent).sort().filter(path =>
+  Object.values(intentTargets).some(target => target.files[path]?.sha256 !== intentCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...sparseRelease, current: intentCurrent, targets: intentTargets, owners: intentOwners,
+  currentCommit: 'b454466798656c6f3b00613bbca1effef2459317',
+  currentCommitRole: 'exact composite intent on the actual Release base after enemy metrics',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
