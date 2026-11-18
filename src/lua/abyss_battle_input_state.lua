@@ -4,12 +4,139 @@ local Actors = require("abyss_actor")
 local Run = require("abyss_run")
 local EnemyView = require('abyss_battle_enemy_view')
 local RewardOwner = require("abyss_battle_reward_owner")
+local Controller = require("abyss_controller")
 local M = {}
 local function needsTarget(state, instance)
     -- Ask the core to validate the same card with and without a target.
     local _, reason = Combat.canPlay(state, instance.uid, nil)
     return reason == "invalid_target"
 end
+-- Finite current pointer evidence, shared by card, action, potion and target consumers.
+-- It runs only on input callbacks, never in the frame loop; no queued commands.
+local noTouch={}
+local emptyInputs={}
+local saturatedOrigin={ambiguous=true}
+local MAX_POINTER_ORIGINS=16
+local inputGroups={'cardInputs','potionInputs','actionInputs','enemyInputs'}
+local function touchKey(event)return event and event.touchId or noTouch end
+local function tokenOrigin(token)return token and (token.touch or noTouch)end
+local function eachInput(ownership,visit)
+    for _,name in ipairs(inputGroups)do
+        for _,input in pairs(ownership[name] or emptyInputs)do if visit(input)then return true end end
+    end
+    return false
+end
+local function revokeInput(input)
+    if input.held then input.held.anonymousSafe=false end
+    if input.released then input.released.anonymousSafe=false end
+end
+local function clearPointer(input)
+    revokeInput(input)
+    input.held,input.released,input.pointerOverflow=nil,nil,nil
+    for key,state in pairs(input.active or emptyInputs)do state.ambiguous=true;input.active[key]=nil end
+end
+local function retireOrigin(owner,input,origin)
+    if input.active then input.active[origin]=nil end
+    for _,name in ipairs({'held','released'})do
+        local token=input[name]
+        if tokenOrigin(token)==origin then
+            token.anonymousSafe=false;input[name]=nil
+            if owner.cardAim==token then owner.cardAim=nil end
+        end
+    end
+end
+local function uniqueOrigin(input)
+    local origin
+    for key in pairs(input.active or emptyInputs)do if origin then return end;origin=key end
+    local held,released=tokenOrigin(input.held),tokenOrigin(input.released)
+    if held and released and held~=released then return end
+    local pending=held or released
+    if origin and pending and origin~=pending then return end
+    return origin or pending
+end
+local function pointerContext(owner,ownership)
+    local run=owner.run
+    local battle=run and run.combat
+    local turn=battle and battle.turn
+    local phase=run and run.phase
+    if ownership.pointerRun~=run or ownership.pointerBattle~=battle
+        or ownership.pointerTurn~=turn or ownership.pointerPhase~=phase then
+        eachInput(ownership,clearPointer)
+        ownership.pointerRun,ownership.pointerBattle=run,battle
+        ownership.pointerTurn,ownership.pointerPhase=turn,phase
+    end
+end
+local function beginPointer(owner,ownership,input,event)
+    pointerContext(owner,ownership)
+    input.active=input.active or {}
+    if event and event.touchId~=nil then retireOrigin(owner,input,touchKey(event))end
+    local ambiguous=false
+    eachInput(ownership,function(other)
+        if other.held or other.released or other.active and next(other.active)then ambiguous=true end
+        revokeInput(other)
+        for _,state in pairs(other.active or emptyInputs)do state.ambiguous=true end
+    end)
+    local count=0
+    for _ in pairs(input.active)do count=count+1 end
+    -- Missing terminal callbacks cannot create an unbounded touch-ID history.
+    -- Saturation revokes anonymous recovery until the existing cancel barrier.
+    if count>=MAX_POINTER_ORIGINS then input.pointerOverflow=true end
+    if input.pointerOverflow then return saturatedOrigin end
+    local state={ambiguous=ambiguous}
+    input.active[touchKey(event)]=state
+    return state
+end
+local function armPointer(input,token,event,state)
+    token.originState=state
+    token.anonymousSafe=state and not state.ambiguous and input.active[touchKey(event)]==state
+end
+local function endPointer(owner,input,event,ended)
+    local origin=touchKey(event)
+    if origin==noTouch and not(input.active and input.active[origin])then
+        origin=uniqueOrigin(input);revokeInput(input)
+        if origin then
+            local gesture=owner.gesture
+            retireOrigin(owner,input,origin)
+            if gesture and gesture.input==input and tokenOrigin(gesture)==origin then
+                owner.gesture,owner.selected,owner.hover,owner.suppressClick=nil,nil,nil,true
+                owner:render()
+            end
+        end
+        return
+    end
+    local state=input.active and input.active[origin]
+    if input.active then input.active[origin]=nil end
+    if ended and (state or tokenOrigin(input.held)==origin or tokenOrigin(input.released)==origin)then revokeInput(input)end
+end
+local function pointerEvent(token,event)
+    if not token then return event end
+    return {touchId=token.touch}
+end
+local function anonymousPointerReady(owner,input,token)
+    return token and not input.pointerOverflow and token.anonymousSafe and token.originState
+        and not token.originState.ambiguous and not owner.gesture and not owner.potionMenu
+        and not(token.aim and token.aim.moving)
+end
+local function takePointer(owner,ownership,input,event,allowHeld,canAnonymous)
+    local touch=event and event.touchId
+    local token=input.released or touch~=nil and allowHeld and input.held
+    if touch~=nil then
+        if not token or token.touch~=touch then return end
+    else
+        input.released=nil -- blocked Clicks cannot replay after busy/turn recovery
+        if canAnonymous and not canAnonymous(token)then return end
+        if not anonymousPointerReady(owner,input,token)then return end
+        local ambiguous=eachInput(ownership,function(other)
+            return other.active and next(other.active) or other~=input and (other.held or other.released)
+        end)
+        if ambiguous then return end
+    end
+    input.held,input.released=nil,nil
+    if input.active then input.active[touchKey(event)]=nil end
+    token.anonymousSafe=false
+    return token
+end
+
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, _dependencies)
     function owner:setData(nextData, nextPresentation)
@@ -60,14 +187,14 @@ function M.install(owner, ownership, host, _dependencies)
         return Run.rewardOptions(owner.run)[g.slot] == g.uid
     end
     local function cancelCardInputs()
-        for _, input in ipairs(ownership.cardInputs) do input.held, input.released = nil, nil end
+        for _, input in ipairs(ownership.cardInputs) do clearPointer(input) end
     end
     local function potionReady(g)
         return dragReady(g) and owner.run.potions == g.inventory
             and owner.run.potions[g.slot] == g.id
     end
     local function cancelPotionInputs()
-        for _, input in ipairs(ownership.potionInputs) do input.held, input.released = nil, nil end
+        for _, input in ipairs(ownership.potionInputs) do clearPointer(input) end
     end
     local function cancelPotionAim(message)
         if not owner.potionAim then return false end
@@ -142,7 +269,7 @@ function M.install(owner, ownership, host, _dependencies)
         return g.name == "continue" and not host.options.embedded and run.phase == "map"
     end
     local function cancelActionInputs()
-        for _, input in ipairs(ownership.actionInputs) do input.held, input.released = nil, nil end
+        for _, input in ipairs(ownership.actionInputs) do clearPointer(input) end
     end
     local function enemyAt(slot,battle)
         battle=battle or owner.run and owner.run.combat
@@ -176,6 +303,13 @@ function M.install(owner, ownership, host, _dependencies)
         return g.touch == touch
     end
     return {
+        pointerBegin=function(input,event)return beginPointer(owner,ownership,input,event)end,
+        pointerArm=function(input,token,event,state)
+            armPointer(input,token,event,state)
+            if Controller.pointerBlocked(host.controller)then token.anonymousSafe=false end
+        end,pointerEnd=function(input,event,ended)return endPointer(owner,input,event,ended)end,
+        pointerTake=function(input,event,allowHeld,canAnonymous)return takePointer(owner,ownership,input,event,allowHeld,canAnonymous)end,
+        pointerClear=clearPointer,pointerEvent=pointerEvent,
         child=child, show=show, label=label, colour=colour, tint=tint,
         ink=ink, picture=picture, notice=notice, rewardScreen=rewardScreen, dragReady=dragReady,
         rewardReady=rewardReady, cardReady=cardReady, cancelCardInputs=cancelCardInputs, potionReady=potionReady, cancelPotionInputs=cancelPotionInputs,

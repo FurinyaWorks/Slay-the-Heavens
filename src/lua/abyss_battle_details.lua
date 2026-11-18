@@ -34,7 +34,7 @@ function M.install(owner, ownership, host, dependencies)
         dependencies.cancelCardInputs()
         dependencies.cancelPotionInputs()
         dependencies.cancelActionInputs()
-        for _, input in ipairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
+        for _, input in ipairs(ownership.enemyInputs) do dependencies.pointerClear(input) end
         if cancelled then self.gesture, self.carry, self.selected, self.suppressClick = nil, nil, nil, true end
         if closeInfo() then cancelled = true end
         self.canvasWidth, self.canvasHeight = width, height
