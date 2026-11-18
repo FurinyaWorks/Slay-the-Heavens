@@ -1,3 +1,4 @@
+import {beforeEndingTerminalSource} from './ending-terminal-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -27,7 +28,8 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  if (!Object.hasOwn(packet.production, path) || typeof source !== 'string' || source.includes('\r\r\n')) return source;
+  if (!Object.hasOwn(packet.production, path)) return beforeEndingTerminalSource(path, source, read);
+  if (typeof source !== 'string' || source.includes('\r\r\n')) return source;
   const row = packet.production[path];
   if (digest(normalize(source)) !== row.after) return source;
   assertCharacterPreparationSources(read);
