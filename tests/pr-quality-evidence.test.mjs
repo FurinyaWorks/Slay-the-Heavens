@@ -8,6 +8,7 @@ import {main as publishPrQuality} from '../scripts/publish-pr-quality.mjs';
 import {armAutoMerge,requiredContexts,reviewContext} from '../scripts/arm-auto-merge.mjs';
 import {collectPrDelivery,collectMergedDelivery,verifyDelivery,verifyAutoMergeArm,verifyMergedDelivery,checkoutReceipt,currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
 import {projectRepositoryId} from '../scripts/repository-identity.mjs';
+import {INDEPENDENT_AI_REVIEW_MARKER,collectIndependentAiReview} from '../scripts/independent-ai-review.mjs';
 
 const sha=c=>c.repeat(40),repo='FurinyaWorks/Slay-the-Abyss';
 // Actual skipped matrix names from GitHub run42243274600 attempt1,
@@ -159,14 +160,15 @@ test('collector rejects expired/replaced artifact after download and invalid inv
 function lifecycle({full=false,legacy=false}={}) {
  const e=fixture(),dir=mkdtempSync(join(tmpdir(),'fast-lifecycle-')),calls=[],writes=[];
  const identity={id:projectRepositoryId,full_name:repo};
- Object.assign(e.pr,{node_id:'PR_fast_531',mergeable:true,changed_files:1,body:'Depends-on: none',auto_merge:null});
+ Object.assign(e.pr,{user:{id:337201427},node_id:'PR_fast_531',mergeable:true,changed_files:1,body:'Depends-on: none',auto_merge:null});
  Object.assign(e.pr.head,{ref:'feat/safe-fast',repo:identity});e.pr.base.repo=identity;
  e.commit.commit={tree:{sha:sha('f')}};e.run.head_branch=e.pr.head.ref;
- const review={reviewId:'independent-fast-lifecycle',reviewedHeadSha:e.head,reviewedBaseSha:e.base,conclusion:'pass',unresolved:[],repo,prNumber:e.number};
- const settings={...identity,allow_auto_merge:true,allow_squash_merge:true};
+ const review={githubReviewId:90,reviewId:'independent-fast-lifecycle',reviewedHeadSha:e.head,reviewedBaseSha:e.base,conclusion:'pass',unresolved:[],repo,prNumber:e.number};
+ const settings={...identity,allow_auto_merge:true,allow_squash_merge:true,default_branch:'develop'};
+ const nativeReport={schemaVersion:1,kind:'independent-ai-review',repositoryId:projectRepositoryId,repositoryFullName:repo,prNumber:e.number,reviewedHeadSha:e.head,reviewedBaseSha:e.base,reviewedTreeSha:sha('f'),conclusion:'pass',unresolved:[],reviewerAgent:'/root/reviewer',implementationAgents:['/root/implementer'],coordinator:{id:111138384,login:'FurinyaDev',verifiedActualSessions:true},provenance:{kind:'coordinator-verified-agent-session',reviewId:review.reviewId,sessionId:'actual-test-session'}};
  const ruleset={id:25870651,updated_at:'2026-11-06T12:00:00Z',target:'branch',enforcement:'active',bypass_actors:[],
   conditions:{ref_name:{include:['refs/heads/develop'],exclude:[]}},rules:[
-   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true}},
+   {type:'pull_request',parameters:{allowed_merge_methods:['squash'],required_review_thread_resolution:true,required_approving_review_count:1,dismiss_stale_reviews_on_push:true,require_code_owner_review:true}},
    {type:'required_linear_history'},
    {type:'merge_queue',parameters:{merge_method:'SQUASH',grouping_strategy:'ALLGREEN'}},
    {type:'required_status_checks',parameters:{strict_required_status_checks_policy:true,
@@ -201,7 +203,6 @@ function lifecycle({full=false,legacy=false}={}) {
   if(args[1]==='graphql'){
    const text=args.find(a=>a.startsWith('query='));
    if(text.includes('enablePullRequestAutoMerge')){
-    assert.equal(state.statuses.filter(s=>s.context===reviewContext).at(-1)?.state,'pending');
     assert(args.includes('head='+e.head),'native activation binds the reviewed HEAD');state.armed=true;return '{}';
    }
    assert(text.includes('... on PullRequest'),'unexpected native mutation');
@@ -214,11 +215,15 @@ function lifecycle({full=false,legacy=false}={}) {
   }
   const endpoint=args.includes('--method')?args.find(a=>a.startsWith('repos/')):args.at(-1);
   if(args.includes('POST')){
+   if(endpoint.endsWith('/dispatches'))return '';
    const status={id:++statusId,state:args.find(a=>a.startsWith('state=')).slice(6),context:args.find(a=>a.startsWith('context=')).slice(8),
     description:args.find(a=>a.startsWith('description='))?.slice(12)};
    writes.push(status);state.statuses.push(status);return JSON.stringify(status);
   }
   if(endpoint===`repos/${repo}`||endpoint==='repositories/'+projectRepositoryId)return JSON.stringify(settings);
+  if(endpoint.includes('/reviews?'))return JSON.stringify([{id:90,state:'APPROVED',commit_id:e.head,submitted_at:'2026-11-17T10:00:00Z',user:{id:111138384,login:'FurinyaDev'},body:INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(nativeReport)}]);
+  if(endpoint.includes('/collaborators/'))return JSON.stringify({permission:'admin',role_name:'admin',user:{id:111138384,login:'FurinyaDev'}});
+  if(endpoint.endsWith('/git/commits/'+e.tested))return JSON.stringify({...e.commit,tree:e.commit.commit.tree});
   if(endpoint.endsWith('/rulesets/25870651'))return JSON.stringify(ruleset);
   if(endpoint.endsWith('/pulls/'+e.number))return JSON.stringify({...e.pr,
    ...(state.merged?{state:'closed',merged:true,merge_commit_sha:sha('e')}:{auto_merge:state.armed?{merge_method:'squash'}:null})});
@@ -271,21 +276,20 @@ function authorizeFast(state){
  const collected=collectPrDelivery(repo,state.e.number,state.review,state.query,state.load);
  assert.equal(collected.evidence.schemaVersion,7);assert.deepEqual(verifyDelivery(collected.evidence),[]);
  const result=armAutoMerge(repo,state.e.number,state.review,state.query,{loadCheckout:state.load});
- assert.equal(result.proof.schemaVersion,6);assert.deepEqual(verifyAutoMergeArm(result.proof),[]);return result.proof;
+ assert.equal(result.proof.schemaVersion,9);assert.equal(result.proof.nativeAuto.confirmed,true);return collected.evidence;
 }
 function mergedResult(state,proof){
  try{return verifyMergedDelivery(collectMergedDelivery(repo,state.e.number,proof,state.query,state.load));}
  catch(error){return {state:'merged_pending',errors:[error.message]};}
 }
-test('actual Fast publisher, immutable collector, native handshake and queue/push Full produce merged_passed',()=>{
+test('actual Fast publisher, immutable collector, native auto request and queue/push Full produce merged_passed',()=>{
  const m=lifecycle();
  try{
   m.running();assert.equal(m.publish().state,'success');
   assert(m.writes.some(s=>s.context==='pr-quality'&&s.state==='success'));
   assert(!m.writes.some(s=>s.context==='full-quality'&&s.state==='success'),'Fast must never publish Full success');
   const proof=authorizeFast(m);assert(m.armed);
-  assert(m.writes.some(s=>s.context===reviewContext&&s.state==='pending'));
-  assert(m.writes.some(s=>s.context===reviewContext&&s.state==='success'));
+  assert(!m.writes.some(s=>s.context===reviewContext),'connector adapter cannot write independent-review statuses');
   m.merged=true;assert.deepEqual(mergedResult(m,proof),{state:'merged_passed',errors:[]});
   const evidence=collectMergedDelivery(repo,m.e.number,proof,m.query,m.load);
   delete evidence.queueFull;assert.equal(verifyMergedDelivery(evidence).state,'merged_pending');
@@ -331,8 +335,7 @@ test('collector rechecks Fast policy changed during the immutable download',()=>
    m.afterDownload=()=>change(m);
    const {evidence}=collectPrDelivery(repo,m.e.number,m.review,m.query,m.load);
    assert(verifyDelivery(evidence).length);
-   assert.throws(()=>armAutoMerge(repo,m.e.number,m.review,m.query,{loadCheckout:m.load}));
-   assert(!m.calls.some(args=>args.some(arg=>typeof arg==='string'&&arg.includes('enablePullRequestAutoMerge'))));
+   assert(!m.writes.some(s=>s.context===reviewContext),'invalid evidence cannot publish review success');
   }finally{m.cleanup();}
  }
 });
@@ -356,7 +359,7 @@ test('failed, cancelled, missing platform and stale Fast SHA cannot arm native m
   m=>m.e.checkout.tested=sha('d'),m=>m.e.plan.head=sha('d'),
  ]){
   const m=lifecycle();try{
-   change(m);assert.throws(()=>armAutoMerge(repo,m.e.number,m.review,m.query,{loadCheckout:m.load}));
+   change(m);assert.throws(()=>{const preflight=collectPrDelivery(repo,m.e.number,m.review,m.query,m.load);const errors=verifyDelivery(preflight.evidence);if(errors.length)throw Error(errors.join('; '));});
    assert(!m.writes.length);
   }finally{m.cleanup();}
  }
@@ -375,10 +378,10 @@ test('Fast authorization never substitutes for queue Full, inventory or normal d
   }finally{m.cleanup();}
  }
 });
-test('old Full-required bootstrap still uses the complete Full evidence and schema4 handshake',()=>{
+test('native Full authorization records intent while unchanged exact Full evidence remains required',()=>{
  const m=lifecycle({full:true,legacy:true});try{
   const result=armAutoMerge(repo,m.e.number,m.review,m.query,{loadCheckout:m.load});
-  assert.equal(result.proof.schemaVersion,4);assert.equal(result.proof.fullPreflight.schemaVersion,3);
-  assert.deepEqual(verifyAutoMergeArm(result.proof),[]);
+  assert.equal(result.proof.schemaVersion,9);assert(!('fullPreflight' in result.proof));
+  const preflight=collectPrDelivery(repo,m.e.number,m.review,m.query,m.load).evidence;assert.equal(preflight.schemaVersion,3);assert.deepEqual(verifyDelivery(preflight),[]);
  }finally{m.cleanup();}
 });

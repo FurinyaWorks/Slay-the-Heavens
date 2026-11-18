@@ -1,10 +1,13 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
+import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs} from '../scripts/ci-shards.mjs';
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
-const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
+const raw=p=>beforePreflightSource(p,readFileSync(p,'utf8')).replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
+const readFileSync=releaseBootstrapCiRead(rawReadFileSync);
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
  assertIntegratedCurrent();assert.deepEqual(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
@@ -20,7 +23,10 @@ test('integration validates complete raw sources and leaves every foreign byte a
   for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);
  }
  for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])
-  assert.throws(()=>assertIntegratedCurrent((p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete integration source/);
+  assert.throws(()=>assertIntegratedCurrent((p,e)=>{
+   const value=rawReadFileSync(p,e);
+   return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
+  }),error=>{assert.match(error.message,/fresh complete integration source/);assert(error.message.includes(path),'reject the intended current owner');return true;});
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
  assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');
 });
@@ -34,4 +40,41 @@ test('integration copy closure requires its complete exact predecessor and curre
   assert.equal(hash(path.endsWith('.gz')?readFileSync(path):raw(path)),row.after);
   assert.throws(()=>extendIntegratedHelperClosure({...predecessor,[path]:'f'.repeat(64)}),/copy predecessor/);
  }
+});
+
+test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
+ assertReleaseBootstrapCiCurrent();
+ for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
+  const source=rawReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  assert.equal(releaseBootstrapCiSource(path,source),row.before.source,path);
+  for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(releaseBootstrapCiSource(path,foreign),foreign);
+  for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseBootstrapCiSource(foreignPath,source),source);
+  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{
+   const value=rawReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+  }),error=>{assert(error.message.includes(path));return true;});
+  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return rawReadFileSync(p,e);}),/missing/);
+  if(path.startsWith('.github/')){
+   for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(releaseBootstrapWorkflowBefore(path,input),row.before.source);
+   const changedScope=source.includes('release/**')?source.replace('release/**','foreign/**'):source.replace('workflow_dispatch:','foreign_dispatch:');
+   for(const foreign of [source+'\n',source.slice(1),changedScope]){
+    assert.notEqual(foreign,source,'negative fixture changes the current workflow');
+    assert.throws(()=>releaseBootstrapWorkflowBefore(path,foreign),/fresh complete Release bootstrap workflow/);
+   }
+  }
+ }
+ const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
+ assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?rawReadFileSync(p).subarray(1):rawReadFileSync(p,e)),/immutable bootstrap predecessor/);
+ const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
+ for(const [kind,paths]of Object.entries(inventories)){
+  assertReleaseBootstrapRawInventory(paths,kind);
+  for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
+   assert.throws(()=>assertReleaseBootstrapRawInventory(bad,kind),/raw discovery inventory/);
+ }
+ const leaf=rawReadFileSync('tests/helpers/release-bootstrap-ci-source.mjs','utf8');
+ const bytes=rawReadFileSync('tests/helpers/release-bootstrap-ci-source.json.gz');
+ const marker="const bytes=readFileSync(new URL('./release-bootstrap-ci-source.json.gz',import.meta.url));";
+ assert.equal(leaf.split(marker).length,2);
+ const broken=leaf.replace("from './fork-preflight-source.mjs'",'from '+JSON.stringify(new URL('./helpers/fork-preflight-source.mjs',import.meta.url).href))
+  .replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);
+ await assert.rejects(import('data:text/javascript;base64,'+Buffer.from(broken).toString('base64')),/complete Release bootstrap CI continuation/);
 });
