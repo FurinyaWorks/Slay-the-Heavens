@@ -304,6 +304,14 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
   assert(Object.hasOwn(packet.parents, side), 'known exact potion Release CI parent');
   return (path, encoding) => {
     const source = read(path, encoding);
+    // Frozen calibration views precede the settings icon shipped in #695.
+    if (side === 'potion' && path === settingsHud && (typeof source === 'string' || Buffer.isBuffer(source))) {
+      const text = typeof source === 'string' ? source : source.toString('utf8');
+      const prior = priorCiSource(settingsCi.files, path, text);
+      if (prior === text) return source;
+      assertSettingsCiCurrent(read);
+      return typeof source === 'string' ? prior : Buffer.from(prior);
+    }
     // #679's historical potion tests need their actual predecessor production.
     // The generic CI source projection and current Release reader remain raw.
     if (side === 'potion' && typeof path === 'string' && path.startsWith('src/lua/') &&
