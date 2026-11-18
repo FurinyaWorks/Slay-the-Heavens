@@ -163,26 +163,22 @@ PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full succes
 - 判定与动作：仍在正常运行/排队则静默；新失败、超时、出队、冲突、Ruleset/HEAD/BASE 变化或缺必需收据则记录阻塞及可追溯链接，再由 Agent 按风险诊断。基础设施瞬断只在有证据时做有界重试；业务失败必须修复再重审，不自动重入队、不绕过独审/原六项检查、不更改严格基线。已合入但 push Full 未完成为 `merged_pending`，须以原授权证明及当前实际合入 SHA 执行 `verify:delivery --merged` 才能报 `merged_passed`。
 - 补偿与事件共用同一套状态判定；由 PR/Backlog 与 GitHub 作为持久事实来源，勿另造第二套合并队列、守候进程、Full 回归或后台 Codex 轮询。若需要外部自动唤醒 Agent，必须另有明确的编排接收者；GitHub Actions 事件本身不会重启已退出的交互式 Codex 会话。
 
-## 一次批准的基础设施应急合并
+## Owner 授权的 PR-only 应急合并
 
-本轮 master/develop 均无 PR bypass；下列流程保存历史批准与验证合同，不代表当前账号仍有应急合并能力。不能为赶进度自行修改保护或恢复历史豁免；正常排队与业务失败继续按原门禁处理。
+当前主仓库 develop Ruleset 25870651 与 release Ruleset 27313515 使用仓库管理员角色 `pull_request` 豁免。每次使用前读回 Ruleset 和实际账号权限。日常准入继续使用原生 Required Checks 和队列。Owner 明确授权的范围内，已经过独立审查及必要定向验证的低风险切片可直接 squash，保留 PR 及批准记录。核心行为、正式候选及高风险组合须取得各自必要的完整证据。
 
-正常开发仍须当前SHA的完整Quality成功。GitHub的用户豁免是能力；聊天批准是Agent使用这项能力的前提，GitHub不会识别聊天记录，也不会自动区分业务失败和基础设施故障。
-
-1. 先确认是Harness/CI基础设施故障，保存真实运行/日志、故障原因和范围。业务断言失败、代码未验证、正常排队或赶工不是豁免理由。
-2. Agent在聊天中一次性报告仓库、PR编号、目标分支、完整40位HEAD SHA、修改文件/内容范围、故障证据及独立验证结果，明确缺失的验证。Owner明确批准该PR/SHA后，保存聊天批准的原文/来源；一般性的“继续”或旧PR批准不能替代精确批准。
-3. 执行前只读核对`gh api user`的真实身份、PR仍open且目标正确、HEAD仍为批准SHA、diff仍在批准范围内、无合并冲突、批准未撤回。仅使用已有的两个指定GitHub身份，不升级角色、不寻找或转交凭证。身份不可用则报告阻塞。
-4. 匹配后立即用REST API绑定批准SHA合并，无需再问一次；用JSON文件传参数，避免shell插值。下例`approved-merge.json`是本次批准的临时请求，不是常驻工具：
+1. 复核所有依赖已落地、无冲突和未解决审查，记录完整 HEAD、实时目标分支 BASE、候选树、缺失的 CI 与验证证据。已在 develop 队列的 PR 先用 `npm run merge:auto -- <PR> --pause` 出队并读回。
+2. 立即重读 PR 和目标分支，确认身份与风险仍在已授权范围内。提交包含精确 HEAD 和 squash 方法的临时 JSON 文件。
 
 ```json
-{"sha":"<Owner批准的完整HEAD SHA>","merge_method":"squash"}
+{"sha":"<完整已审 HEAD SHA>","merge_method":"squash"}
 ```
 
-```powershell
-gh api --method PUT repos/FurinyaWorks/Slay-the-Abyss/pulls/<PR>/merge --input approved-merge.json
+```sh
+gh api --method PUT repos/FurinyaWorks/Slay-the-Heavens/pulls/<PR>/merge --input approved-merge.json
 ```
 
-5. 仅HTTP成功且响应`merged: true`后，再读PR核对`merged`、`head.sha`、`base.ref`、`merge_commit_sha`和执行身份，保存批准/请求/响应与故障及验证证据。超时或返回不确定先读回，不能盲重试。HEAD变化、范围扩大、目标变化或批准无效时停止并重新询问；HTTP409不是让Agent换成最新SHA继续。权限拒绝时不改规则绕过，不把应急合并宣称为完整CI通过。仅在确认自己的分支无新工作后按既有规范清理。
+3. 读回 `merged: true`、目标分支、合入 SHA、合入者、实际父提交与树。遇到冲突、并发变化或接口拒绝先核对远端状态。合后按可取得的精确证据完成交付核验，单独报告真实 Hosted 检查结果。按分支生命周期核实来源和下游依赖后再清理。
 
 2026-10-26隔离实测：[PR220](https://github.com/CHNISam/Slay-the-Abyss/pull/220)在无生产祖先、无工作流的临时分支上执行。Owner已授权本轮安全测试：临时失败状态使无豁免合并返回405；同一Owner在无豁免规则下也不能直接推送/强推/删除；加入两个User的PR-only豁免后上述引用操作仍422；错误SHA返回409；精确HEAD通过上述同步REST接口合并成功，无需`gh pr merge --admin`。临时规则和分支随后删除，PR保留证据。当前只有CHNISam登录，未用第二人身份或第三个普通Write账号实测，不能把规则配置读回当作这两种身份的实测；第二人Write角色已独立读回。详细证据见[任务附件](backlog-details/task-70.md)。
 

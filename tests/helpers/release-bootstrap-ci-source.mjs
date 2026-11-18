@@ -67,8 +67,20 @@ export function releaseBootstrapCiSource(path,source,before){
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  return checkedSource(path,source,before);
 }
+function guidanceBefore(path,source){
+ if(path==='scripts/check-agent-guidance.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
+  const lf=norm(source);
+  if(hash(lf)==='11be776ae6439e6da881571324707944475c5ef7e34ec482f8994dd47bd86af0'){
+   const prior=lf.replace("import { checkHostedSlice } from './check-pr-slice.mjs';\n",'')
+    .replace('  else {\n    try { checkHostedSlice(); }\n    catch (error) { console.error(error.message); process.exitCode = 1; }\n  }\n','');
+   if(hash(prior)!=='7e668ec2609dff8de73f0e39a048cd93780f4ad42d2ef2fb2f3a5be346532b18')throw Error('Invalid guidance receipt predecessor');
+   return prior;
+  }
+ }
+ return source;
+}
 export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,text);
+ const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,text));
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
