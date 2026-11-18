@@ -301,13 +301,29 @@ const overlayTargets = {
   ...pointerTargets,
   releasePointerOverlayPrior: { commit: overlay.base, files: pointerCurrent },
 };
-const overlayOwners = Object.keys(overlayCurrent).sort().filter(path =>
-  Object.values(overlayTargets).some(target => target.files[path]?.sha256 !== overlayCurrent[path]?.sha256));
+const fatalBgmBytes = readFileSync(new URL('./release-fatal-bgm-source.json.gz', import.meta.url));
+assert.equal(hash(fatalBgmBytes), 'c2c29f4689fac772c883e90ef8b10bd7da14ba16aad9ca9b81901cfc66f88d31', 'complete fatal BGM production source');
+const fatalBgm = JSON.parse(gunzipSync(fatalBgmBytes));
+const fatalBgmPath = 'src/lua/abyss_ui.lua';
+assert.equal(fatalBgm.schemaVersion, 1);
+assert.equal(fatalBgm.owner, fatalBgmPath);
+assert.equal(fatalBgm.base, '1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2');
+assert.equal(fatalBgm.producer, '2ce3e130a04392a1206c3eb6a76b55eaa838c790');
+assert.equal(fatalBgm.sourceCommit, 'c2280832488a54479ee90a1fc9344d89594ef0e6');
+assert.deepEqual(fatalBgm.before, pointerPriorRelease.current[fatalBgmPath], 'exact Release fatal BGM predecessor');
+assert(!pointerPaths.includes(fatalBgmPath) && !overlayPaths.includes(fatalBgmPath), 'disjoint published production fixes');
+const fatalBgmCurrent = { ...overlayCurrent, [fatalBgmPath]: fatalBgm.current };
+const fatalBgmTargets = {
+  ...overlayTargets,
+  releaseFatalBgmPrior: { commit: fatalBgm.base, files: pointerPriorRelease.current },
+};
+const fatalBgmOwners = Object.keys(fatalBgmCurrent).sort().filter(path =>
+  Object.values(fatalBgmTargets).some(target => target.files[path]?.sha256 !== fatalBgmCurrent[path]?.sha256));
 export const sourceEpoch = createSourceEpochProjector(freeze({
-  ...pointerPriorRelease, current: overlayCurrent, targets: overlayTargets, owners: overlayOwners,
+  ...pointerPriorRelease, current: fatalBgmCurrent, targets: fatalBgmTargets, owners: fatalBgmOwners,
   currentTreeCommitted: false,
-  currentCommit: overlay.base,
-  currentCommitRole: 'committed pointer recovery predecessor only; live pointer overlay continuation is bound by exact source bytes',
+  currentCommit: pointer.base,
+  currentCommitRole: 'common committed Release predecessor only; independently published pointer and fatal BGM sources are composed by exact live bytes',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

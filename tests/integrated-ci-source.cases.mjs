@@ -36,6 +36,7 @@ const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
 const newerReleaseOwners=[
+ 'src/lua/abyss_ui.lua',
  'src/lua/abyss_battle_action_bindings.lua',
  'src/lua/abyss_battle_card_bindings.lua',
  'src/lua/abyss_battle_card_gestures.lua',
@@ -688,5 +689,61 @@ test('pointer history authenticates fresh linked owners before reading earlier p
   assert.throws(project,/fresh complete integration source: pointer overlay tests\/lua\/support\/target_anonymous_context\.lua/);
   fault=undefined;
   assert.equal(project(),prior);
+ }
+});
+
+test('composed pointer and BGM history requires BOTH live branches and the outer join',()=>{
+ const anchors=['tests/ci-complete-calibration.test.mjs','tests/native-startup-contract.test.mjs'];
+ const linked=[
+  'src/lua/abyss_ui.lua','src/lua/abyss_battle_input_state.lua','src/lua/abyss_battle_actions.lua',
+  ...['fatal-bgm','pointer-identity','pointer-overlay'].flatMap(name=>[
+   `tests/helpers/release-${name}-source.json.gz`,`tests/helpers/release-${name}-ci.json.gz`]),
+  'tests/helpers/release-pointer-bgm-ci.json.gz',
+ ];
+ let fault;
+ const read=(path,encoding)=>{
+  if(path!==fault?.path)return mergedReadFileSync(path,encoding);
+  if(fault.kind==='missing')throw Error('missing '+path);
+  if(fault.kind==='null')return null;
+  const bytes=mergedReadFileSync(path,encoding);
+  return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+ };
+ const reader=integratedRead('native',{read});
+ for(const path of anchors){
+  const current=mergedReadFileSync(path,'utf8'),prior=reader(path,'utf8');
+  assert.notEqual(prior,current,'real current source must actually project: '+path);
+  for(const project of [()=>integratedSource(path,current,'native',read),()=>reader(path,'utf8'),()=>reader(path)]){
+   assert.equal(project().toString(),prior);
+   for(const owner of linked)for(const kind of ['missing','null','drift']){
+    fault={path:owner,kind};assert.throws(project,undefined,owner+' '+kind);
+    fault=undefined;assert.equal(project().toString(),prior);
+   }
+  }
+  const noRead=()=>{throw Error('foreign bytes cannot authorize history');};
+  assert.equal(integratedSource(path,current+'\n','native',noRead),current+'\n');
+  assert.equal(integratedSource('foreign/path',current,'native',noRead),current);
+ }
+});
+
+test('composed live CI leaves reject drift and new branch fixtures remain visible',()=>{
+ const leaves=['tests/helpers/closeout-source-epoch.mjs','tests/helpers/copy-integration-source-closure.mjs',
+  'tests/integrated-ci-source.cases.mjs','tests/release-card-contact-integration.test.mjs'];
+ for(const leaf of leaves){
+  const read=(path,encoding)=>{
+   const bytes=mergedReadFileSync(path,encoding);
+   if(path!==leaf)return bytes;
+   return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+  };
+  assert.throws(()=>assertIntegratedCurrent(read),undefined,'live composed drift '+leaf);
+  const current=mergedReadFileSync(leaf,'utf8'),noRead=()=>{throw Error('foreign bytes cannot authorize history');};
+  assert.equal(integratedSource(leaf,current+'\n','native',noRead),current+'\n');
+ }
+ assertIntegratedCurrent(mergedReadFileSync);
+ const reader=integratedRead('native',{read:mergedReadFileSync});
+ for(const fixture of ['tests/lua/support/fatal_bgm_stop.lua','tests/lua/support/target_anonymous_context.lua']){
+  const current=mergedReadFileSync(fixture,'utf8');
+  assert.equal(integratedSource(fixture,current,'native',mergedReadFileSync),current);
+  assert.equal(reader(fixture,'utf8'),current);
+  assert.deepEqual(reader(fixture),mergedReadFileSync(fixture));
  }
 });
