@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { evaluateIntake, loadTask } from './check-task-intake.mjs';
+import { checkTaskIntake } from './check-task-intake.mjs';
 
 const production = /^(?:src|scripts|tools|experiments|config|data|schemas|\.github\/workflows)\/|^package(?:-lock)?\.json$/;
 const evidence = /^(?:\.artifacts|docs\/(?:evidence|reviews))\//;
@@ -60,15 +60,14 @@ export function checkHostedSlice(env = process.env) {
 }
 
 function startSlice([id = '', sliceOption, slice, verifyOption, verify, ...extra]) {
-  const policy = JSON.parse(readFileSync('config/task-intake.json', 'utf8'));
-  const result = evaluateIntake({ id, task: loadTask(id), policy });
+  const result = checkTaskIntake(id);
   if (result.decision === 'ALLOW' && (sliceOption !== '--slice' || !slice?.trim() || verifyOption !== '--verify' || !verify?.trim() || extra.length)) {
     result.decision = 'HOLD';
     result.reasons.push('Supply the first independently mergeable slice: --slice "<scope>" --verify "<command>"');
   }
   console.log(result.decision + ' ' + id);
   if (result.reasons.length) throw new Error(result.reasons.join('\n'));
-  console.log('Before claiming, record this slice and verification in the task. Check dependencies, approvals, open PRs, claims and file ownership. Finish or hand off your current slice before claiming another.');
+  console.log('Before claiming, record this slice and verification in the task. Check approvals, open PRs, claims and file ownership. Finish or hand off your current slice before claiming another.');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

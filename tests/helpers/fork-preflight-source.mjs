@@ -1,4 +1,6 @@
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
+import {integratedCiBytes} from './integrated-ci-binding.mjs';
+import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
 // Full-source continuation for historical contracts; no partial/foreign projection.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -40,8 +42,37 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+
+// Both intake entry points now share dependency readiness. Reuse the existing
+// immutable archive for historical inputs while authenticating the live sources.
+const intakeSuccessors=Object.freeze({
+ 'scripts/check-task-intake.mjs':'972cbe675515a1fd4f7866170c37bd7568b94c6dbeca1e7bf340e46742e42029',
+ 'tests/sprint-intake.test.mjs':'daeabe161a8a7996b9961b46c37775ffb0e07639a4b34ab32f84f7a658d65929',
+});
+const archiveFiles=JSON.parse(gunzipSync(integratedCiBytes)).files;
+function beforeDependencyIntake(path,source){
+ if(!Object.hasOwn(intakeSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
+   ||hash(normalize(source))!==intakeSuccessors[path])return source;
+ const prior=archiveFiles[path].current;
+ assert.equal(hash(prior.source),prior.sha256,'immutable intake predecessor: '+path);
+ return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
+}
+export function assertDependencyIntakeCurrent(read=readFileSync){
+ for(const [path,sha] of Object.entries(intakeSuccessors)){
+  const source=read(path,'utf8');
+  assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
+ }
+}
 export function beforePreflightSource(path,source,view='prior'){
  source=beforeCharacterPreparationCiSource(path,source);
+ source=beforeDependencyIntake(path,source);
+ // Only the exact flag-registry successor enters the earlier Release witness.
+ if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')
+  &&hash(normalize(source))==='b45c87c321573e91d3c8e838e837e3db839d79d2758459a67543b763df8c1734'){
+  const prior=stsStylePriorRuntime.files[path];
+  assert.equal(prior.sha256,'2df6c3fd8f16f41a36db51bd76bdd53f2e805ee92a35ca0d03e91f50d93dfdd3','archived candidate policy predecessor');
+  return prior.source;
+ }
  const transportRow=Object.hasOwn(transport.files,path)?transport.files[path]:null;
  if(transportRow&&['prior','release-bootstrap'].includes(view)&&typeof source==='string'&&
   !source.includes('\r\r\n')&&hash(normalize(source))===transportRow.currentSha)

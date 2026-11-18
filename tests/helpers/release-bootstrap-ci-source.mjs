@@ -1,5 +1,4 @@
-import {beforePreflightSource} from './fork-preflight-source.mjs';
-import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
+import {assertDependencyIntakeCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -28,13 +27,6 @@ const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v
 export const releaseBootstrapCiPacket=freeze(packet);
 function historicalSource(path,source){
  source=beforePreflightSource(path,source,'release-bootstrap');
- // Only an exact flag-registry successor enters the earlier receipt witnesses.
- if(path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')
-  &&hash(norm(source))==='b45c87c321573e91d3c8e838e837e3db839d79d2758459a67543b763df8c1734'){
-  const prior=stsStylePriorRuntime.files[path];
-  assert.equal(prior.sha256,'2df6c3fd8f16f41a36db51bd76bdd53f2e805ee92a35ca0d03e91f50d93dfdd3','archived candidate policy predecessor');
-  return prior.source;
- }
  if(path==='.github/workflows/quick-feedback.yml'&&typeof source==='string'&&!source.includes('\r\r\n')&&['ec23dcec59adc0a6de7a1f1ba30304e6e6e3b0262fdc369b1fdb533b4f4c9800','7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9'].includes(hash(norm(source)))){
   const prior=norm(source).replace("      - name: Verify affected Release CI contracts explicitly\n        env:\n          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}\n        run: |\n          node --input-type=module <<'NODE'\n          import {execFileSync} from 'node:child_process';\n          const base=process.env.BASE_SHA;\n          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');\n          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\\0');\n          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);\n          if(changed.some(path=>contracts.has(path))){\n            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');\n            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});\n          }else console.log('No Release CI contract changes');\n          NODE\n",'').replace("    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\n",'');
   return hash(prior)===packet.files[path].current.sha256?prior:source;
@@ -113,6 +105,7 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
+ assertDependencyIntakeCurrent(read);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
