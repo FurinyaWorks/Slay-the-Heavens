@@ -175,10 +175,29 @@ const intentTargets = {
 };
 const intentOwners = Object.keys(intentCurrent).sort().filter(path =>
   Object.values(intentTargets).some(target => target.files[path]?.sha256 !== intentCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const intentRelease = {
   ...sparseRelease, current: intentCurrent, targets: intentTargets, owners: intentOwners,
   currentCommit: 'b454466798656c6f3b00613bbca1effef2459317',
   currentCommitRole: 'exact composite intent on the actual Release base after enemy metrics',
+};
+const particlesBytes = readFileSync(new URL('./runtime-particle-source.json.gz', import.meta.url));
+assert.equal(hash(particlesBytes), '2cef28e3bd47c3638c421c9f152453b7e446501f69e32bdaac39417a3731ad6a', 'exact original runtime particle source');
+const particles = JSON.parse(gunzipSync(particlesBytes));
+const particlePath = 'src/lua/abyss_monster_intent_particle_view.lua';
+assert.deepEqual(Object.keys(particles.current), [particlePath]);
+assert.deepEqual(Object.keys(particles.before), [particlePath]);
+assert.deepEqual(particles.before[particlePath], intentRelease.current[particlePath], 'exact Release intent particle predecessor');
+const particleCurrent = { ...intentRelease.current, ...particles.current };
+const particleTargets = {
+  ...intentRelease.targets,
+  releaseIntentParticlePrior: { commit: 'cdf5fe42fa7962f004966842e05d8ab35781df31', files: intentRelease.current },
+};
+const particleOwners = Object.keys(particleCurrent).sort().filter(path =>
+  Object.values(particleTargets).some(target => target.files[path]?.sha256 !== particleCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...intentRelease, current: particleCurrent, targets: particleTargets, owners: particleOwners,
+  currentCommit: '22a5f5c36c9e3d47e11568a06ee0118c94118136',
+  currentCommitRole: 'exact static intent particle slice from #706',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
