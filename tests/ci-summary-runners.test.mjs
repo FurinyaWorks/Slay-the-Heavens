@@ -20,7 +20,7 @@ test('current control jobs use the existing standard hosted pool after slim acqu
   const current = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
   for (const name of ['impact', 'check', 'engineering-posix']) {
     assert.match(job(name, current), /^    runs-on: ubuntu-24\.04$/m);
-    assert.match(job(name, current), new RegExp(`^    timeout-minutes: ${name === 'impact' ? 3 : 2}$`, 'm'));
+    assert.match(job(name, current), new RegExp(`^    timeout-minutes: ${name === 'impact' ? 6 : 2}$`, 'm'));
   }
   assert.match(job('check', current), /^    needs: \[impact, rules, fast, presentation, engineering-posix\]$/m);
   assert.match(job('engineering-posix', current), /^    needs: \[impact, engineering-posix-shards, fast\]$/m);
@@ -253,7 +253,7 @@ test('preflight continuation authenticates complete LF/CRLF input and rejects fo
   const input=live.replaceAll('\n',eol);
   assert.equal(beforePreflightSource(path,input),before.replaceAll('\n',eol));
   for(const drift of [input+'# foreign'+eol,input.replace('contents: read','contents: write'),
-   input.replace('    needs: impact'+eol,''),input.replace('run: node scripts/fork-preflight.mjs','run: echo forged')])
+   input.replace('    needs: impact'+eol,''),input.replace('run: node scripts/ci-media-lfs.mjs','run: echo forged')])
    assert.equal(beforePreflightSource(path,drift),drift,'unbound workflow stays visible');
  }
  assert.equal(beforePreflightSource(path,live.replaceAll('\n','\r\r\n')),live.replaceAll('\n','\r\r\n'));
@@ -272,7 +272,7 @@ test('combined preflight selects a complete fixed Release predecessor without ma
   const source=live.replaceAll('\n',eol);
   assert.equal(beforePreflightSource(path,source,'release-bootstrap'),release.replaceAll('\n',eol));
   for(const changed of [source+'# foreign'+eol,source.replace('verify-pr','forged'),
-   source.replace('run: node scripts/fork-preflight.mjs','run: echo skipped')])
+   source.replace('run: node scripts/ci-media-lfs.mjs','run: echo skipped')])
    assert.equal(beforePreflightSource(path,changed,'release-bootstrap'),changed);
  }
  const bad=live.replaceAll('\n','\r\r\n');assert.equal(beforePreflightSource(path,bad,'release-bootstrap'),bad);

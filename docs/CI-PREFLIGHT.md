@@ -4,7 +4,7 @@ A/B 使用各自已有 runner，并行处理不同任务；同一候选默认只
 
 1. 读取目标分支准确 BASE，先用已有 `node scripts/test-affected.mjs --plan --base <BASE>` 查看影响。A 优先完整受影响 Quick；共享 CI、未知或零覆盖交给一个 Fork Full，B 优先、A 可互援。
 2. dispatch 前查看 A/B：相同 HEAD/BASE 已成功则复用；运行中则交接，不重复 dispatch。原生 rerun 成功同样有效，不必为获取预检资格再造一个提交。
-3. 成功后把原提交推到主仓库分支，再创建或更新 PR。Quality/Licenses 的轻量准入只核对固定 Fork ID、准确 HEAD/BASE 和最新已完成的成功结果，正式测试依赖此步。缺证据就失败；补齐后原生重跑失败作业即可，不自动 dispatch、不轮询。
+3. 原执行者按风险判断是否先在 Fork 验证。已有运行核对固定 Fork ID、准确 HEAD/BASE 和最新对应 attempt。候选成熟后把原提交推到主仓库，再创建或更新 PR。主仓 Quality/Licenses 独立执行正式检查，缺少 Fork 记录或跨仓读取故障不会触发重跑或阻断正式检查。
 4. Fork HEAD 与 PR merge SHA、Merge Queue SHA 分别验收；Fork 成功不替代正式检查。Release/hotfix→master 继续走既有冻结 Full，日常 Release Fast 由 #677/#707 接续，不额外要求双 Full。
 
 ```sh
@@ -13,9 +13,9 @@ gh workflow run quick-feedback.yml --repo FurinyaDev/Slay-the-Heavens-Fork-A --r
 gh workflow run quality.yml --repo v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <branch> -f base_sha=<BASE>
 ```
 
-固定仓库 ID：主1429751262、A1460097312、B1460133275；名称变化按 ID 解析。HEAD 已绑定工作流、测试、依赖和配置，不另建配置签名注册表。成功结果在准入步骤读取，依赖它的正式作业随后才能开始，因此不额外校验工作流创建时间或拒绝成功 rerun。读取权限不足明确失败，由已有授权维护者执行，不提供写 token 或改用 pull_request_target。
+固定仓库 ID：主1429751262、A1460097312、B1460133275；名称变化按 ID 解析。HEAD 已绑定工作流、测试、依赖和配置。成功 rerun 可以复用；读取权限不足时保留精确 HEAD/BASE 与运行链接，由已有授权维护者核对。
 
-准入复用 Quality 的 impact 与 Licenses 的 inventory，在昂贵步骤之前执行，不增加作业身份。Concurrency 只能取消同仓库/ref 的旧运行，不能原子锁住 A/B。沿用 Backlog 认领和 dispatch 前查重，不另造全局调度器。
+Concurrency 只能取消同仓库/ref 的旧运行。A/B 沿用 Backlog 认领和 dispatch 前查重，同一候选只保留一个预检负责人。
 
 协调者统一收口，原执行者继续自己的 PR 与独审；共享工作流、来源 helper 和输入模块由该 PR 当前执行者写入，其他线先交准确补丁/来源，不各自覆盖。先推进基础设施与任务定义，再按真实依赖推进已准备的 Release 修复；#711 承接 #686 的唯一输入实现，#678/#685/#691 接续 #679。develop 用原生队列，Release 用现有保护下的自动合并，Release 修复选择性回流 develop。
 

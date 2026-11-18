@@ -18,10 +18,16 @@ for(const [path,row]of Object.entries(proof.files))if(row.releaseBootstrapBefore
  assert.equal(hash(prior.source),prior.sha256,path+' complete Release predecessor');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(prior.source)}\0`).update(prior.source).digest('hex'),prior.gitBlob,path);
 }
+const currentHashes=Object.freeze({
+ '.github/workflows/quality.yml':'5975715d9b983b6c586aa88be78e950358ff833c6ec7a73f1843fdf420d4cb6c',
+ '.github/workflows/licenses.yml':'86f6e0b8b021c1724b96458c13d87cf27b9f758864b9e5147288594b033a9bc6',
+ 'tests/ci-summary-runners.test.mjs':'4d3654d6309e49bd9a2984e071243659db59223d3cd9c8fe7633665ebf38d7ca',
+ 'tests/quick-feedback.test.mjs':'ef3a2a86ebdd206ccb7bc83501465a0f3ea4a9e02ff41cb6bd406aaccd146e0c',
+});
 const normalize=s=>s.replaceAll('\r\n','\n');
 export function beforePreflightSource(path,source,view='prior'){
  const row=Object.hasOwn(proof.files,path)?proof.files[path]:null;
- if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==row.currentSha)return source;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==(Object.hasOwn(currentHashes,path)?currentHashes[path]:row.currentSha))return source;
  assert(['prior','release-bootstrap'].includes(view),'explicit preflight predecessor view');
  const prior=view==='release-bootstrap'?row.releaseBootstrapBefore?.source:row.before;
  // Newly introduced gates have no historical implementation to invent or hide.
