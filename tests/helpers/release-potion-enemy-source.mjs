@@ -120,6 +120,36 @@ for (const row of Object.values(sparseCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+// Continue the standalone Down sample with the independently reviewed pointer protocol.
+const pointerArchive = 'tests/helpers/release-pointer-identity-ci.json.gz';
+const pointerDigest = '192bf663277c4c7df347da046269d77e6467b1f629aee779419e52a610930143';
+const pointerBytes = readFileSync(new URL('./release-pointer-identity-ci.json.gz', import.meta.url));
+assert.equal(hash(pointerBytes), pointerDigest, 'fixed pointer identity CI continuation');
+const pointerCi = JSON.parse(gunzipSync(pointerBytes));
+assert.equal(pointerCi.base, '1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2');
+assert.deepEqual(Object.keys(pointerCi.replayInputs), ['tests/ci-complete-calibration.test.mjs']);
+for (const row of Object.values(pointerCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforePointerIdentityCiSource(path, source) {
+  return priorCiSource(pointerCi.files, path, source);
+}
+
+function assertPointerIdentityCiCurrent(read) {
+  assert.equal(hash(read(pointerArchive)), pointerDigest, 'fresh pointer identity CI continuation');
+  assert.equal(hash(read('tests/helpers/release-pointer-identity-source.json.gz')), pointerCi.productionArchive,
+    'fresh immutable pointer identity production archive');
+  for (const [path, row] of Object.entries(pointerCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer identity ' + path);
+  }
+  for (const [path, sha] of Object.entries(pointerCi.replayInputs)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === sha, 'fresh pointer identity replay input: ' + path);
+  }
+}
+
 const intentArchive = 'tests/helpers/release-composite-intent-ci.json.gz';
 const intentDigest = '598cdbb2f2b285424af0b945ac23ef87cbf7851e583e1c5e99b8cb5c0889b5d4';
 const intentBytes = readFileSync(new URL('./release-composite-intent-ci.json.gz', import.meta.url));
@@ -186,7 +216,7 @@ for (const row of Object.values(cancelCi.files)) {
 }
 
 function beforeCancelCiSource(path, source) {
-  return priorCiSource(cancelCi.files, path, source);
+  return priorCiSource(cancelCi.files, path, beforePointerIdentityCiSource(path, source));
 }
 
 function assertCancelCiCurrent(read) {
@@ -194,7 +224,7 @@ function assertCancelCiCurrent(read) {
   assert.equal(hash(read('tests/helpers/release-card-cancel-notice-source.json.gz')), cancelCi.productionArchive,
     'fresh immutable card cancel notice production archive');
   for (const [path, row] of Object.entries(cancelCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforePointerIdentityCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: card cancel notice ' + path);
   }
 }
@@ -228,8 +258,12 @@ function assertParticlesCiCurrent(read) {
 function beforeIntentCiSource(path, source) {
   return priorCiSource(intentCi.files, path, beforeParticlesCiSource(path, source));
 }
-export function isCurrentIntentCiReplay(path, source) {
-  return beforeIntentCiSource(path, source) !== source;
+export function isCurrentReleaseCiReplay(path, source) {
+  const text = normalized(source);
+  if (text === null) return false;
+  const beforePointer = beforePointerIdentityCiSource(path, source);
+  if (beforePointer !== source || beforeIntentCiSource(path, beforePointer) !== beforePointer) return true;
+  return Object.hasOwn(pointerCi.replayInputs, path) && hash(text) === pointerCi.replayInputs[path];
 }
 function assertIntentCiCurrent(read) {
   assert.equal(hash(read(intentArchive)), intentDigest, 'fresh composite intent CI continuation');
@@ -324,12 +358,14 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       assertSettingsCiCurrent(read);
       return typeof source === 'string' ? prior : Buffer.from(prior);
     }
-    // The authenticated older potion view keeps the exact gesture owner from before PC35.
-    if (side === 'potion' && path === 'src/lua/abyss_battle_card_gestures.lua' &&
+    // #679's historical potion tests need their actual predecessor production.
+    // The generic CI source projection and current Release reader remain raw.
+    if (side === 'potion' && typeof path === 'string' && path.startsWith('src/lua/') &&
         (typeof source === 'string' || Buffer.isBuffer(source))) {
       const text = typeof source === 'string' ? source : source.toString('utf8');
       const prior = sourceEpoch.preCombinedSource(path, text, {
-        target: 'releaseCardCancelNoticePrior',
+        target: path === 'src/lua/abyss_battle_card_gestures.lua'
+          ? 'releaseCardCancelNoticePrior' : 'releasePointerIdentityPrior',
         readSource: owner => read(owner, 'utf8'),
       });
       return typeof source === 'string' ? prior : prior === text ? source : Buffer.from(prior);
@@ -347,7 +383,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const cornerRow = Object.hasOwn(cornerCi.files, path) ? cornerCi.files[path] : null;
       const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
-      if (!shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
+      const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+      if (!pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -359,6 +396,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertPointerIdentityCiCurrent(read);
   assertCancelCiCurrent(read);
   assertShopDismissalCiCurrent(read);
   assertCornerCiCurrent(read);

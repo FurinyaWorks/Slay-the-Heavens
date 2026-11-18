@@ -6,7 +6,7 @@ import {potionClickCiSource,potionClickCiCheckedSource,potionClickHistoricalRead
 import {potionPost697CiSource,potionPost697CiCheckedSource,potionPost697HistoricalRead,potionPost697PriorInventory,potionPost697CiPacket,assertPotionPost697CiCurrent} from './potion-post697-ci-source.mjs';
 import {
  assertReleasePotionEnemyCurrent,
- isCurrentIntentCiReplay,
+ isCurrentReleaseCiReplay,
  releasePotionEnemyInventory,
  releasePotionEnemyRead,
  releasePotionEnemySource,
@@ -38,7 +38,7 @@ const potionPriorCiSource=(path,source,before,read=readFileSync)=>releaseBootstr
 export function integratedSource(path,source,target,read=readFileSync){
  read=typeof read==='function'?read:read?.read??readFileSync;
  const result=projectIntegratedSource(path,source,target,read);
- if(result!==source&&isCurrentIntentCiReplay(path,source))assertReleaseReplayInputs(read);
+ if(result!==source&&isCurrentReleaseCiReplay(path,source))assertReleaseReplayInputs(read);
  return result;
 }
 function projectIntegratedSource(path,source,target,read){

@@ -108,6 +108,9 @@ files['tests/helpers/release-shop-dismissal-source.json.gz'] = 'a8c7fd5bcba44c20
 assert.equal(files[closeoutPath], '9032d8a3f16e816c4d6161566c593fb5759041bfdfc0f357960407ac1128bd1a');
 files[closeoutPath] = 'db62afcde4326ccd03291c0c8dc7e76bd9fe6a6aea891c02c9fdf042cd152b53';
 files['tests/helpers/release-card-cancel-notice-source.json.gz'] = '639ea6a234785a1a492aae6d911b6d7c8a6051a1b610d5b5d530f5d9711569d5';
+assert.equal(files[closeoutPath], 'db62afcde4326ccd03291c0c8dc7e76bd9fe6a6aea891c02c9fdf042cd152b53');
+files[closeoutPath] = '6eec6cb55d02ade627b20d7b8bb558ff6008e1a79f30959c2a87b8ec456f911a';
+files['tests/helpers/release-pointer-identity-source.json.gz'] = 'da52daa0546b805a695ec5c06c228f2a268bd24d464f30bf5755f114df01005b';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
