@@ -1,4 +1,5 @@
 import {enemyFastRead} from './helpers/release-enemy-fast-source.mjs';
+import {releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import {artFeatureReceipt} from '../scripts/art-features.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -223,7 +224,10 @@ test('generated default and Official configurations are recorded separately and 
 test('capacity CI continuation authenticates every current source before replaying immutable predecessors',async()=>{
  const adapter=await import('./helpers/release-bootstrap-ci-source.mjs');
  const {integratedCiProof,assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
- const historicalRead=enemyFastRead('release',readFileSync);
+ const historicalRead=enemyFastRead('release',releasePotionEnemyRead('release',readFileSync));
+ const rejectChangedSource=(path,changed)=>assert.throws(
+  ()=>assertIntegratedCurrent((file,encoding)=>file===path?changed:readFileSync(file,encoding)),
+  error=>error.code==='ERR_ASSERTION'&&error.message.split('\n')[0]===`fresh complete integration source: potion Release ${path}`);
  const packet=adapter.capacityCiPacket;
  assert.ok(packet,'explicit complete capacity CI continuation is required');
  assert.deepEqual(Object.keys(packet.files).sort(),['scripts/official-portraits.mjs','scripts/platform-load.mjs','tests/official-portraits-build.test.mjs','tests/platform-load.test.mjs','tests/v25-portrait-profile.test.mjs']);
@@ -236,18 +240,18 @@ test('capacity CI continuation authenticates every current source before replayi
   assert.equal(adapter.releaseBootstrapCiSource(path,current,row.before),row.before.source);
   for(const changed of [current+'\n',current.replace(/./,'!')]){
    assert.equal(adapter.releaseBootstrapCiSource(path,changed,row.before),changed,'unknown bytes cannot receive a trusted source view');
-   assert.throws(()=>assertIntegratedCurrent((file,encoding)=>file===path?changed:readFileSync(file,encoding)),/fresh complete TASK-111 CI source/);
+   rejectChangedSource(path,changed);
   }
-  assert.throws(()=>assertIntegratedCurrent((file,encoding)=>{if(file===path)throw Error('ENOENT '+path);return readFileSync(file,encoding);}),/ENOENT/);
+  assert.throws(()=>assertIntegratedCurrent((file,encoding)=>{if(file===path)throw Error('ENOENT '+path);return readFileSync(file,encoding);}),error=>error.message==='ENOENT '+path);
  }
  for(const [path,row]of Object.entries(adapter.capacityReviewCiPacket.files)){
   const current=historicalRead(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(createHash('sha256').update(current).digest('hex'),row.current.sha256);
   for(const changed of [current+'\n',current.replace(/./,'!')]){
    assert.equal(adapter.releaseBootstrapCiSource(path,changed),changed);
-   assert.throws(()=>assertIntegratedCurrent((file,encoding)=>file===path?changed:readFileSync(file,encoding)),/fresh complete TASK-111 CI source/);
+   rejectChangedSource(path,changed);
   }
-  assert.throws(()=>assertIntegratedCurrent((file,encoding)=>{if(file===path)throw Error('ENOENT '+path);return readFileSync(file,encoding);}),/ENOENT/);
+  assert.throws(()=>assertIntegratedCurrent((file,encoding)=>{if(file===path)throw Error('ENOENT '+path);return readFileSync(file,encoding);}),error=>error.message==='ENOENT '+path);
  }
  assertIntegratedCurrent();
 });

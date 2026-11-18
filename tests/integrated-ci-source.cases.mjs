@@ -1,4 +1,6 @@
 import {releasePotionEnemyRead,releasePotionEnemyInventory} from './helpers/release-potion-enemy-source.mjs';
+import {enemyFastRead} from './helpers/release-enemy-fast-source.mjs';
+import {sourceEpoch as jointProductionEpoch} from './helpers/closeout-source-epoch.mjs';
 import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,10 +12,16 @@ import {potionClickHistoricalRead,potionClickCiSource,potionClickCiPacket,assert
 const actualPotionRegressionReadFileSync=potionClickHistoricalRead(actualPotionClickReadFileSync);
 import {potionRegressionHistoricalRead,potionRegressionCiRead,potionRegressionCiPacket,potionRegressionCiSource,potionRegressionPriorInventory,assertPotionRegressionCiCurrent,assertPotionRegressionRawInventory} from './helpers/potion-regression-ci-source.mjs';
 const actualDiskReadFileSync=potionRegressionHistoricalRead(actualPotionRegressionReadFileSync);
-import {releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory,
+ capacityCiPacket,capacityReviewCiPacket,defaultReductionCiPacket,defaultReductionAudioCiPacket} from './helpers/release-bootstrap-ci-source.mjs';
 import {potionBootstrapCiPacket,potionBootstrapCiSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent,assertPotionBootstrapRawInventory} from './helpers/potion-bootstrap-ci-source.mjs';
 const rawReadFileSync=potionBootstrapHistoricalRead('potion',actualDiskReadFileSync);
-const rawBootstrapReadFileSync=potionBootstrapHistoricalRead('bootstrap',actualDiskReadFileSync);
+const historicalBootstrapRead=potionBootstrapHistoricalRead('bootstrap',actualDiskReadFileSync);
+const currentCapacityRead=enemyFastRead('release',releasePotionEnemyRead('release',mergedReadFileSync));
+const capacityOwnerPaths=new Set(Object.keys({...capacityCiPacket.files,...capacityReviewCiPacket.files,
+ ...defaultReductionCiPacket.files,...defaultReductionCiPacket.addedFiles,...defaultReductionAudioCiPacket.files}));
+const rawBootstrapReadFileSync=(path,encoding)=>capacityOwnerPaths.has(path)
+ ?currentCapacityRead(path,encoding):historicalBootstrapRead(path,encoding);
 import {mobilePotionCiRead,mobilePotionPriorInventory,mobilePotionCiPacket,mobilePotionCiSource,assertMobilePotionCiCurrent,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 import {createHash} from 'node:crypto';
 import {discoverJs as discoverMergedJs} from '../scripts/ci-shards.mjs';
@@ -27,6 +35,22 @@ import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,rend
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
+const newerReleaseOwners=['src/lua/abyss_card_flow.lua','src/lua/abyss_lowcost_art.lua'];
+function readLegacyPotionProduction(read){
+ const readSource=p=>mergedReadFileSync(p,'utf8');
+ // Authenticate both later Release owners before constructing each historical fixture.
+ const prior=new Map(newerReleaseOwners.map(path=>[path,
+  jointProductionEpoch.preCombinedSource(path,readSource(path),{target:'potionBeforeSelection',readSource})]));
+ return path=>prior.has(path)?prior.get(path):read(path,'utf8');
+}
+function readHistoricalFixture(read){
+ const inputs=new Map();
+ return (path,encoding)=>{
+  const key=`${encoding??''}\0${path}`;
+  if(!inputs.has(key))inputs.set(key,read(path,encoding));
+  return inputs.get(key);
+ };
+}
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
  assertIntegratedCurrent();assert.deepEqual(mobilePotionPriorInventory(discoverJs(),'js',rawReadFileSync),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
@@ -77,7 +101,8 @@ test('mobile potion production packet retains all old views and rejects partial 
  assert.equal(current.currentTreeCommitted,true,'only the unchanged committed product corpus is claimed committed');
  const files=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
  assert.deepEqual(files,Object.keys(current.current).filter(path=>current.current[path]!==null).sort());
- for(const path of files)assert.equal(rawReadFileSync(path,'utf8').replaceAll('\r\n','\n'),current.current[path].source,path);
+ const productionRead=readLegacyPotionProduction(rawReadFileSync);
+ for(const path of files)assert.equal(productionRead(path).replaceAll('\r\n','\n'),current.current[path].source,path);
  for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)}])
   assert.throws(()=>extendMobilePotionSource(preMobilePotionSourceEpoch,bad));
  const path=Object.keys(p.current)[0],source=current.current[path].source;
@@ -117,8 +142,9 @@ test('potion bootstrap combination authenticates raw union before either histori
  assertPotionBootstrapCiCurrent(actualDiskReadFileSync);
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
  assertMobilePotionCiCurrent(rawReadFileSync);
+ const readFixture=readHistoricalFixture(actualDiskReadFileSync);
  for(const [path,row]of Object.entries(potionBootstrapCiPacket.files)){
-  const source=actualDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const source=readFixture(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(hash(source),row.current.sha256,path);
   const production=path.startsWith('src/')||path==='config/architecture.json';
   assert.equal(potionBootstrapCiSource(path,source),production?source:row.before?.source??source,path);
@@ -126,12 +152,12 @@ test('potion bootstrap combination authenticates raw union before either histori
   for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(potionBootstrapCiSource(foreignPath,source),source);
   assert.equal(potionBootstrapCiSource(path,source,{sha256:'0'.repeat(64)}),source,'wrong predecessor stays visible');
   assert.throws(()=>assertPotionBootstrapCiCurrent((p,e)=>{
-   const value=actualDiskReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+   const value=readFixture(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
   }),error=>{assert(error.message.includes(path),'the exact raw current owner rejects');return true;});
-  assert.throws(()=>assertPotionBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return actualDiskReadFileSync(p,e);}),/missing/);
+  assert.throws(()=>assertPotionBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return readFixture(p,e);}),/missing/);
  }
  for(const path of Object.keys(potionBootstrapCiPacket.immutableArchives))
-  assert.throws(()=>assertPotionBootstrapCiCurrent((p,e)=>p===path?actualDiskReadFileSync(p).subarray(1):actualDiskReadFileSync(p,e)),/immutable.*predecessor/);
+  assert.throws(()=>assertPotionBootstrapCiCurrent((p,e)=>p===path?readFixture(p).subarray(1):readFixture(p,e)),/immutable.*predecessor/);
  const inventories={js:discoverJs(),lua:beforePotionRegressionLua()};
  for(const [kind,paths]of Object.entries(inventories)){
   assertPotionBootstrapRawInventory(paths,kind);
@@ -163,15 +189,16 @@ test('mobile potion raw inventories retain every new test and reject missing dup
 });
 test('Release bootstrap exact sources retain every old byte and reject missing drift and partial packets',async()=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
+ const readFixture=readHistoricalFixture(rawBootstrapReadFileSync);
  for(const [path,row]of Object.entries(releaseBootstrapCiPacket.files)){
-  const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const source=readFixture(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(releaseBootstrapCiSource(path,source),row.before.source,path);
   for(const foreign of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(releaseBootstrapCiSource(path,foreign),foreign);
   for(const foreignPath of ['__proto__','constructor','foreign/'+path])assert.equal(releaseBootstrapCiSource(foreignPath,source),source);
   assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{
-   const value=rawBootstrapReadFileSync(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
+   const value=readFixture(p,e);return p!==path?value:typeof value==='string'?value.slice(1):value.subarray(1);
   }),error=>{assert(error.message.includes(path));return true;});
-  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return rawBootstrapReadFileSync(p,e);}),/missing/);
+  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>{if(p===path)throw Error('missing '+p);return readFixture(p,e);}),/missing/);
   if(path.startsWith('.github/')){
    for(const input of [source,source.replaceAll('\n','\r\n')])assert.equal(releaseBootstrapWorkflowBefore(path,input),row.before.source);
    for(const foreign of [source+'\n',source.slice(1),source.replace('release/**','foreign/**')])
@@ -179,7 +206,7 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
   }
  }
  const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
- assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?rawBootstrapReadFileSync(p).subarray(1):rawBootstrapReadFileSync(p,e)),/immutable bootstrap predecessor/);
+ assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?readFixture(p).subarray(1):readFixture(p,e)),/immutable bootstrap predecessor/);
  const inventories={js:mobilePotionPriorInventory(discoverJs()),lua:beforePotionRegressionLua()};
  inventories.lua=mobilePotionPriorInventory(inventories.lua,'lua');
  for(const [kind,paths]of Object.entries(inventories)){
@@ -203,12 +230,13 @@ test('potion regression composition production sources retain original owners an
  assert.deepEqual(current.targets.potionRegressionPrior.files,prior.current);
  assert.equal(current.currentCommit,'567f259158e592491bd1fc44fb82ffb78c47789f');assert.equal(current.currentTreeCommitted,true);
  assert.equal(Object.keys(p.combinedProducers).length,3);
- for(const [path,row]of Object.entries(p.inheritedSources))assert.equal(actualPotionRegressionReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
- for(const [path,row]of Object.entries(p.current))assert.equal(actualPotionRegressionReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
+ const productionRead=readLegacyPotionProduction(actualPotionRegressionReadFileSync);
+ for(const [path,row]of Object.entries(p.inheritedSources))assert.equal(productionRead(path).replaceAll('\r\n','\n'),row.source,path);
+ for(const [path,row]of Object.entries(p.current))assert.equal(productionRead(path).replaceAll('\r\n','\n'),row.source,path);
  for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)},{...p,prerequisites:[]},{...p,inheritedSources:{}},{...p,combinedProducers:{}}])
   assert.throws(()=>extendPotionRegressionSource(prePotionRegressionSourceEpoch,bad));
  const path=Object.keys(p.current)[0],source=p.current[path].source;
- const read=p=>{try{return actualPotionRegressionReadFileSync(p,'utf8');}catch(e){if(e.code==='ENOENT')return null;throw e;}};
+ const read=p=>{try{return productionRead(p);}catch(e){if(e.code==='ENOENT')return null;throw e;}};
  for(const owner of [...Object.keys(p.current),...Object.keys(p.inheritedSources)]){
   assert.equal(sourceEpoch.preCombinedSource(path,source,{target:'potionRegressionPrior',readSource:read}),prior.current[path].source);
   for(const missing of [false,true])assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'potionRegressionPrior',readSource:p=>p===owner?missing?null:read(p)+'\n':read(p)}),/linked owner identity/);
@@ -264,7 +292,8 @@ test('legacy 3e potion click production closure authenticates new bytes and reta
  assert.deepEqual(current.targets.potionClickPrior,{commit:p.baseCommit,files:prior.current});
  const files=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
  assert.deepEqual(files,Object.keys(current.current).filter(path=>current.current[path]!==null).sort());
- for(const path of files)assert.equal(actualPotionClickReadFileSync(path,'utf8').replaceAll('\r\n','\n'),current.current[path].source,path);
+ const productionRead=readLegacyPotionProduction(actualPotionClickReadFileSync);
+ for(const path of files)assert.equal(productionRead(path).replaceAll('\r\n','\n'),current.current[path].source,path);
  for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)},{...p,prerequisites:[]},{...p,inheritedSources:{}},{...p,combinedProducers:{}}])
   assert.throws(()=>extendPotionClickSource(prePotionClickSourceEpoch,bad));
  const path=Object.keys(p.current)[0],source=p.current[path].source;
@@ -459,7 +488,7 @@ test('post697 union integrated reader and source forward the same raw reader bef
 import {potionPost697CiRead,potionPost697CiPacket,potionPost697CiSource,assertPotionPost697CiCurrent,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
 
 test('post697 union production retains both complete real inputs and authenticates every current owner',async()=>{
- const {sourceEpoch,prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {potionPost697SourceEpoch:sourceEpoch,prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {potionPost697SourcePacket:p,extendPotionPost697Source}=await import('./helpers/potion-post697-source.mjs');
  const current=sourceEpoch.proof,prior=prePotionPost697SourceEpoch.proof,legacy=releaseSelectionMapLegacyEpoch.proof;
  assert.equal(current.currentCommit,'a9df9dff11779cb1d850dc97b715c711881cf9c6');assert.equal(current.currentTreeCommitted,true);
@@ -467,12 +496,13 @@ test('post697 union production retains both complete real inputs and authenticat
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(current.targets[name],target,name);
  assert.deepEqual(current.targets.selectionMapLanded,{commit:p.selectionCommit,files:legacy.current});
  assert.deepEqual(current.targets.potionBeforeSelection,{commit:p.baseCommit,files:prior.current});
- for(const [path,row]of Object.entries(current.current))if(row!==null)assert.equal(actualPost697ReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source,path);
+ const productionRead=readLegacyPotionProduction(actualPost697ReadFileSync);
+ for(const [path,row]of Object.entries(current.current))if(row!==null)assert.equal(productionRead(path).replaceAll('\r\n','\n'),row.source,path);
  for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,inheritedPotion:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)},{...p,inputs:[]}])assert.throws(()=>extendPotionPost697Source(prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch,bad));
  const anchor=Object.keys(p.current)[0],source=current.current[anchor].source,expected=prior.current[anchor].source;
  for(const crlf of [false,true]){
   let fault;const seen=[];
-  const read=path=>{seen.push(path);if(path===fault?.path&&fault.missing)return null;const text=actualPost697ReadFileSync(path,'utf8').replaceAll('\r\n','\n');return path===fault?.path?text+'\n':crlf?text.replaceAll('\n','\r\n'):text;};
+  const read=path=>{seen.push(path);if(path===fault?.path&&fault.missing)return null;const text=productionRead(path).replaceAll('\r\n','\n');return path===fault?.path?text+'\n':crlf?text.replaceAll('\n','\r\n'):text;};
   for(const path of current.owners){
    seen.length=0;assert.equal(sourceEpoch.preCombinedSource(anchor,source,{target:'potionBeforeSelection',readSource:read}),expected);assert.deepEqual(seen,current.owners);
    for(const missing of [false,true]){fault={path,missing};assert.throws(()=>sourceEpoch.preCombinedSource(anchor,source,{target:'potionBeforeSelection',readSource:read}),/linked owner identity/);}

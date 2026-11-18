@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 
 const archive = 'tests/helpers/release-potion-enemy-source.json.gz';
-const digest = '7d62e7b4441ee42925f7171bc8b43599ca9396c607fdf28f4a081c9dfd1fa94c';
+const digest = '098a7668d6ce0070d6e8644707fd0d303b324b1f187f9f29743d97b9e713bee4';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const normalized = text => typeof text === 'string' && !text.includes('\r\r\n')
   ? text.replaceAll('\r\n', '\n')
