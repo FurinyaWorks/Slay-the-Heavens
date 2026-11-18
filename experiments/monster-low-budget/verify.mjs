@@ -3,10 +3,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-const out=path.resolve(process.argv[2]??'build/monster-low-budget');
+const args=process.argv.slice(2),controlsOnly=args.includes('--controls-only');
+assert(args.filter(arg=>arg==='--controls-only').length<=1,'Duplicate --controls-only');
+assert(!args.some(arg=>arg.startsWith('--')&&arg!=='--controls-only'),'Unknown verification option');
+const positional=args.filter(arg=>arg!=='--controls-only');assert(positional.length<=1,'Expected one output directory');
+const out=path.resolve(positional[0]??'build/monster-low-budget');
 const read=p=>JSON.parse(fs.readFileSync(p)),sha=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const fit=read(path.join(out,'fit-receipt.json')),runtime=read(path.join(out,'runtime-receipt.json'));
 const switching=read(path.join(out,'switch-receipt.json'));
+assert.equal(runtime.status,controlsOnly?'controls_passed':'pass','Controls-only receipts cannot satisfy full visual verification');
+if(controlsOnly){
+ assert.equal(runtime.rendering,'NOT_RUN');assert.equal(runtime.galleryComparison,'NOT_RUN');
+ assert.equal(runtime.rendererSha256,null);assert.deepEqual(runtime.officialAssets,[]);
+}else{
 const comparison=read(path.join(out,'comparison-receipt.json'));
 assert.equal(comparison.compareScriptSha256,sha('experiments/monster-low-budget/compare.py'));
 assert.equal(comparison.pngSha256,sha(path.join(out,'comparison.png')));
@@ -14,7 +23,9 @@ for(const input of comparison.inputs){
  assert.equal(input.sourceSha256,fit.samples.find(s=>s.enemy===input.enemy).sourceSha256);
  assert.equal(input.runtimePngSha256,sha(path.join(out,input.enemy,'native-runtime.png')));
 }
-assert.equal(runtime.status,'pass');assert.equal(runtime.fitReceiptSha256,sha(path.join(out,'fit-receipt.json')));
+assert.equal(runtime.rendering,'pass');assert.equal(runtime.galleryComparison,'pass');
+}
+assert.equal(runtime.fitReceiptSha256,sha(path.join(out,'fit-receipt.json')));
 assert.equal(runtime.runtimeScriptSha256,sha('experiments/monster-low-budget/runtime.mjs'));
 assert.equal(fit.fitterSha256,sha('scripts/art/segment-lowpoly.py'));
 assert.equal(fit.placementSha256,sha('scripts/art/native-triangle-placement.py'));
@@ -22,10 +33,12 @@ assert.equal(fit.fitScriptSha256,sha('experiments/monster-low-budget/fit.py'));
 assert.equal(runtime.geometrySourceSha256,sha('src/lua/abyss_battle_enemy_view.lua'));
 for(const input of runtime.sourceInputs)assert.equal(input.sha256,sha(input.path),'Runtime construction source changed');
 assert.equal(switching.status,'pass');assert.equal(switching.remainingControls,0);
+assert.equal(switching.sdkSha256,runtime.sdkSha256,'Switch and construction must use the same SDK');
 assert.equal(switching.luaSha256,sha('experiments/monster-low-budget/switch.lua'));
 assert.equal(switching.driverSha256,sha('experiments/monster-low-budget/switch.mjs'));
 assert.equal(switching.surfaceTemplatesCreated,3);assert.equal(switching.surfaceTemplatesDestroyed,3);
-assert.equal(switching.sameIdentityReuses,1);assert.equal(switching.staleCallbacksRejected,3);
+assert.equal(switching.sameIdentityReuses,2);assert.equal(switching.staleCallbacksRejected,3);
+assert.equal(switching.pendingReplacementCancellations,1);assert.equal(switching.retainedOwnerClicksAccepted,1);
 assert.equal(switching.cancelledCreationAllocated,0);assert(switching.reusedHost);
 for(const record of switching.sampleSaves)assert.equal(record.sha256,sha(path.join(out,record.enemy,'sample.save.json')));
 assert.equal(runtime.officialCapacity,'UNVERIFIED');assert.equal(runtime.pcAndMobile,'UNVERIFIED');
@@ -36,7 +49,11 @@ for(const sample of runtime.samples){
  assert.equal(source.sourceApprovals.owner,false);assert.equal(source.sourceApprovals.device,false);
  assert.equal(sample.remainingControls,0);assert.equal(sample.reuseAllocated,0);assert.equal(sample.reuseCycles,5);
  assert.equal(sample.inputs.length,4);assert(sample.inputs.every(i=>i.passed));
- assert.equal(sample.pngSha256,sha(path.join(out,sample.enemy,'native-runtime.png')));
+ if(controlsOnly){assert.equal(sample.pngSha256,null);assert.equal(sample.renderMs,null)}
+ else assert.equal(sample.pngSha256,sha(path.join(out,sample.enemy,'native-runtime.png')));
+ const save=read(path.join(out,sample.enemy,'sample.save.json'));
+ let controls=0;const visit=node=>{controls++;for(const child of node.children??[])visit(child)};visit(save.assets.server.root);
+ assert.equal(save.assets.server.root.kind,'server-container');assert.equal(sample.initialControls,controls-1);
  assert.deepEqual(sample.costs.map(c=>c.budget),[100,200,400]);
  for(const cost of sample.costs){
   const file=path.join(out,sample.enemy,`budget-${cost.budget}.json`),pack=read(file);
@@ -49,4 +66,5 @@ for(const sample of runtime.samples){
   assert.equal(cost.fiveActorRemaining,0);
  }
 }
-console.log('PASS: six packs, actual image/whole-scene counts, source identities, 8 hits, same-host replacement/cancel, stale callbacks and zero cleanup residue');
+console.log((controlsOnly?'PASS controls only; rendering/gallery NOT_RUN: ':'PASS full saved experiment: ')+
+ 'six packs, actual image/whole-scene counts, source identities, 8 hits, same-host replacement/cancel, stale callbacks and zero cleanup residue');

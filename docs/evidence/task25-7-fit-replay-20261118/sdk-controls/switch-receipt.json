@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "scope": "Actual SDK template instances in one persistent host. Experimental lifecycle only; not production actor manager.",
+  "sdkSha256": "da2f7489a35f67309552f8fe091a6574134851f9a732c391ecd8245c788a37a4",
+  "luaSha256": "5df0a7b9c392f4013571f222622981a019eace0eb05d5d53ae744b2b1397290d",
+  "driverSha256": "ba765c573f2e718652ccc82d7cd61dbcfb2475025fae2b6dc3660cb981337125",
+  "sampleSaves": [
+    {
+      "enemy": "jaw_worm",
+      "sha256": "26da8e5dffc5e62d2275b56655a78a64c7be56c3c7395b72016c9b68cf53ed7d"
+    },
+    {
+      "enemy": "hexaghost",
+      "sha256": "279f2fb4cb37e74ecdf561eca4f088ec982568147d4221356d58fd0e9a21ccdf"
+    }
+  ],
+  "steps": [
+    {
+      "name": "jaw100",
+      "controls": 106,
+      "hostId": 1
+    },
+    {
+      "name": "assert-jaw100",
+      "controls": 106,
+      "hostId": 1
+    },
+    {
+      "name": "cancel-pending-replacement",
+      "controls": 106,
+      "hostId": 1
+    },
+    {
+      "name": "retained-owner-click",
+      "controls": 106,
+      "hostId": 1
+    },
+    {
+      "name": "same-identity-reuse",
+      "controls": 106,
+      "hostId": 1
+    },
+    {
+      "name": "replace-with-hex400",
+      "controls": 411,
+      "hostId": 1
+    },
+    {
+      "name": "old-callback-rejected",
+      "controls": 411,
+      "hostId": 1
+    },
+    {
+      "name": "replace-with-jaw200",
+      "controls": 198,
+      "hostId": 1
+    },
+    {
+      "name": "close",
+      "controls": 1,
+      "hostId": 1
+    },
+    {
+      "name": "cancel-before-construction",
+      "controls": 1,
+      "hostId": 1
+    },
+    {
+      "name": "cancel-old-callback-rejected",
+      "controls": 1,
+      "hostId": 1
+    }
+  ],
+  "reusedHost": true,
+  "surfaceTemplatesCreated": 3,
+  "surfaceTemplatesDestroyed": 3,
+  "sameIdentityReuses": 2,
+  "staleCallbacksRejected": 3,
+  "cancelledCreationAllocated": 0,
+  "pendingReplacementCancellations": 1,
+  "retainedOwnerClicksAccepted": 1,
+  "remainingControls": 0
+}

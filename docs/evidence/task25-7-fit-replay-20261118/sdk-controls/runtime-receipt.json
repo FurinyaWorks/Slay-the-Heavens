@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "status": "controls_passed",
+  "scope": "Actual installed Simulator native control construction and hit only; rendering and gallery comparison NOT_RUN. Not official client/GPU/physical device/capacity",
+  "runtimeScriptSha256": "a488bf21b67b3e036f6409d5a9e593cfcd53b1623f3f3c0da51502b927055498",
+  "fitReceiptSha256": "ec955422823eb931b16fd51d1e8c3df918b9f1607e87e26b92b48016e3b7fb11",
+  "sourceInputs": [
+    {
+      "path": "data/presentation/ui_theme.json",
+      "sha256": "6e2fbf19879f05a1efa79c8f8d0533c1cce8c2c407c588d05e439d57f9c59f64"
+    },
+    {
+      "path": "src/lua/abyss_monster_source_geometry.lua",
+      "sha256": "72e5b5b88b3788f88597fb84d9e8df8c7369dbb38c75d2f99e9e81866f597d47"
+    },
+    {
+      "path": "scripts/v25-battle-scene.mjs",
+      "sha256": "7456e0019b9762ee2d81a75ff6ee773f69cf7df38a0ce9cc9664231baea09beb"
+    },
+    {
+      "path": "experiments/art-tech-lab/seed.save.json",
+      "sha256": "8bfeab5aa6337226834404bb96c5d435ccfee03114e3c13ccc9f559dbda2157b"
+    }
+  ],
+  "sdkSha256": "da2f7489a35f67309552f8fe091a6574134851f9a732c391ecd8245c788a37a4",
+  "rendererSha256": null,
+  "rendering": "NOT_RUN",
+  "galleryComparison": "NOT_RUN",
+  "geometrySourceSha256": "25894f61ea8084bf59db4f948d1a5ad9644c08e0d35ffb7cf651cbc335a171df",
+  "geometry": {
+    "jaw_worm": {
+      "portrait": 173.33333333333,
+      "hitWidth": 173.33333333333,
+      "hitHeight": 113.33333333333,
+      "healthY": -115.33333333333,
+      "intentY": 110.66666666667
+    },
+    "hexaghost": {
+      "portrait": 300,
+      "hitWidth": 300,
+      "hitHeight": 300,
+      "healthY": -162,
+      "intentY": 174
+    }
+  },
+  "officialCapacity": "UNVERIFIED",
+  "pcAndMobile": "UNVERIFIED",
+  "samples": [
+    {
+      "enemy": "jaw_worm",
+      "createMs": 63.11651299999994,
+      "renderMs": null,
+      "initialControls": 721,
+      "sampleSaveBytes": 1448502,
+      "costs": [
+        {
+          "budget": 100,
+          "packSha256": "bdfb21ac974f13e95bfca691db00778bf3d86fcf94bbd40bab9d71f9a4041c0e",
+          "drawImages": 98,
+          "batchContainers": 2,
+          "hostContainers": 1,
+          "masks": 38,
+          "packBytes": 22133,
+          "fiveActorDrawingImages": 490,
+          "fiveActorContainers": 15,
+          "syntheticFiveActorStress": true,
+          "fiveActorCreatedMs": 18.352182999999968,
+          "fiveActorActualControls": 527,
+          "fiveActorRemaining": 0
+        },
+        {
+          "budget": 200,
+          "packSha256": "67b7d00bb5333f62559814716a5d66babc4806a81a13ff7188fd174d53aeacc9",
+          "drawImages": 188,
+          "batchContainers": 4,
+          "hostContainers": 1,
+          "masks": 62,
+          "packBytes": 45046,
+          "fiveActorDrawingImages": 940,
+          "fiveActorContainers": 25,
+          "syntheticFiveActorStress": true,
+          "fiveActorCreatedMs": 19.814419999999927,
+          "fiveActorActualControls": 987,
+          "fiveActorRemaining": 0
+        },
+        {
+          "budget": 400,
+          "packSha256": "ce23d3bc60d4191ca516b29dba1261cb8d1533aed9dd4ba501b5aa829ca13251",
+          "drawImages": 399,
+          "batchContainers": 7,
+          "hostContainers": 1,
+          "masks": 108,
+          "packBytes": 101337,
+          "fiveActorDrawingImages": 1995,
+          "fiveActorContainers": 40,
+          "syntheticFiveActorStress": true,
+          "fiveActorCreatedMs": 84.35584900000003,
+          "fiveActorActualControls": 2057,
+          "fiveActorRemaining": 0
+        }
+      ],
+      "inputs": [
+        {
+          "actor": 0,
+          "passed": true
+        },
+        {
+          "actor": 1,
+          "passed": true
+        },
+        {
+          "actor": 2,
+          "passed": true
+        },
+        {
+          "actor": 3,
+          "passed": true
+        }
+      ],
+      "reuseCycles": 5,
+      "reuseAllocated": 0,
+      "pngSha256": null,
+      "remainingControls": 0
+    },
+    {
+      "enemy": "hexaghost",
+      "createMs": 14.812504999999874,
+      "renderMs": null,
+      "initialControls": 731,
+      "sampleSaveBytes": 1468788,
+      "costs": [
+        {
+          "budget": 100,
+          "packSha256": "9c1d0b489ee64bc68497722d86077c940a586d37a275513672c7893042ee245f",
+          "drawImages": 100,
+          "batchContainers": 2,
+          "hostContainers": 1,
+          "masks": 24,
+          "packBytes": 26777,
+          "fiveActorDrawingImages": 500,
+          "fiveActorContainers": 15,
+          "syntheticFiveActorStress": true,
+          "fiveActorCreatedMs": 7.034620999999788,
+          "fiveActorActualControls": 537,
+          "fiveActorRemaining": 0
+        },
+        {
+          "budget": 200,
+          "packSha256": "f29192180c8bc6b2ab49c07c99c304abea96306dc1732ba11f482075ab862fc3",
+          "drawImages": 197,
+          "batchContainers": 4,
+          "hostContainers": 1,
+          "masks": 46,
+          "packBytes": 52640,
+          "fiveActorDrawingImages": 985,
+          "fiveActorContainers": 25,
+          "syntheticFiveActorStress": true,
+          "fiveActorCreatedMs": 32.21065399999998,
+          "fiveActorActualControls": 1032,
+          "fiveActorRemaining": 0
+        },
+        {
+          "budget": 400,
+          "packSha256": "d6cb264884d7a4fac29a68d43596acc3dd123cfdd81e901de73ce88573ba1b68",
+          "drawImages": 398,
+          "batchContainers": 7,
+          "hostContainers": 1,
+          "masks": 94,
+          "packBytes": 105318,
+          "fiveActorDrawingImages": 1990,
+          "fiveActorContainers": 40,
+          "syntheticFiveActorStress": true,
+          "fiveActorCreatedMs": 34.960883000000194,
+          "fiveActorActualControls": 2052,
+          "fiveActorRemaining": 0
+        }
+      ],
+      "inputs": [
+        {
+          "actor": 0,
+          "passed": true
+        },
+        {
+          "actor": 1,
+          "passed": true
+        },
+        {
+          "actor": 2,
+          "passed": true
+        },
+        {
+          "actor": 3,
+          "passed": true
+        }
+      ],
+      "reuseCycles": 5,
+      "reuseAllocated": 0,
+      "pngSha256": null,
+      "remainingControls": 0
+    }
+  ],
+  "officialAssets": []
+}

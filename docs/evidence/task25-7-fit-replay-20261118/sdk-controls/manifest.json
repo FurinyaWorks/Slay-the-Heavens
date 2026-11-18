@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "baseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "previousCandidate": "d4e4fe988bd4e59ec11308aa648692acf0c4b9b7",
+  "scope": "Fresh SDK native-control model and callback dispatch; no renderer, gallery, official client, capacity or physical device acceptance",
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "node": "v24.22.1"
+  },
+  "sourceInputs": [
+    {
+      "path": "experiments/monster-low-budget/runtime.mjs",
+      "sha256": "a488bf21b67b3e036f6409d5a9e593cfcd53b1623f3f3c0da51502b927055498"
+    },
+    {
+      "path": "experiments/monster-low-budget/switch.lua",
+      "sha256": "5df0a7b9c392f4013571f222622981a019eace0eb05d5d53ae744b2b1397290d"
+    },
+    {
+      "path": "experiments/monster-low-budget/switch.mjs",
+      "sha256": "ba765c573f2e718652ccc82d7cd61dbcfb2475025fae2b6dc3660cb981337125"
+    },
+    {
+      "path": "experiments/monster-low-budget/verify.mjs",
+      "sha256": "d94fd6664168bd567a8ec3094110489d74dc1732254674efc6d84925b2074436"
+    },
+    {
+      "path": "experiments/monster-low-budget/verify-controls.test.mjs",
+      "sha256": "414b8832fc1fd267a4e2b511bf3252bb3b158c2965e282c1609382ac796d2dca"
+    },
+    {
+      "path": "experiments/monster-low-budget/switch.test.lua",
+      "sha256": "11e5af26755e300a0b57574dbc1c2a32f4061dc8d31908f6bb5ec9b12ec9435d"
+    },
+    {
+      "path": "scripts/art/segment-lowpoly.py",
+      "sha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293"
+    },
+    {
+      "path": "scripts/art/native-triangle-placement.py",
+      "sha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002"
+    },
+    {
+      "path": "data/presentation/ui_theme.json",
+      "sha256": "6e2fbf19879f05a1efa79c8f8d0533c1cce8c2c407c588d05e439d57f9c59f64"
+    },
+    {
+      "path": "src/lua/abyss_battle_enemy_view.lua",
+      "sha256": "25894f61ea8084bf59db4f948d1a5ad9644c08e0d35ffb7cf651cbc335a171df"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "controls-inputs.zip",
+      "bytes": 287087,
+      "sha256": "366387293fc4423059b73d7330f6fab52693beb6bd573f5202e1af139c913457"
+    },
+    {
+      "file": "engineering.txt",
+      "bytes": 1704,
+      "sha256": "e597fda2d8f2c874e9263089ac645163e2ee7363a2551290c0a9bb2f633a38cc"
+    },
+    {
+      "file": "original-controller-sdk-red.json",
+      "bytes": 227,
+      "sha256": "7d2998dde262982f88db03c3051cca559dc6a2121b6ef44cd76ae3b409bf3b4b"
+    },
+    {
+      "file": "original-controller-sdk-red.txt",
+      "bytes": 429,
+      "sha256": "12c89898a1e72b7410bd42a3e9c79ced463b786635e6ab0857cb99391abc9d6b"
+    },
+    {
+      "file": "runtime-receipt.json",
+      "bytes": 6154,
+      "sha256": "5a262b5391912ab58510740cf8c860634cfb86318aaddc483fab59f3edcfb6f1"
+    },
+    {
+      "file": "sdk-export-receipt.json",
+      "bytes": 1019,
+      "sha256": "0cf45c71079a067aeb795d56af8c773e425cb6c56be782b0457f3b0b36c64584"
+    },
+    {
+      "file": "sdk-negative-controls.txt",
+      "bytes": 478,
+      "sha256": "aa5fee80f1f9f19b4e86286efb147109e37c06350bfb356e77ff2a2c0ef49c8a"
+    },
+    {
+      "file": "sdk-runtime.txt",
+      "bytes": 190,
+      "sha256": "dd8d28823483616355eaecb6aa39b0fe97898a7bc3636e336259da85e9b9f005"
+    },
+    {
+      "file": "sdk-switch.txt",
+      "bytes": 51,
+      "sha256": "c6781cdd3ce43123020dbfbefc687c0569027d52edf4c9470eb9c75a8f2ea26d"
+    },
+    {
+      "file": "switch-receipt.json",
+      "bytes": 1982,
+      "sha256": "d700b9cb4b54e5459a50e3ddb5c3a3b0a9064d579b2c66a1d4074eb2fef9a714"
+    }
+  ]
+}

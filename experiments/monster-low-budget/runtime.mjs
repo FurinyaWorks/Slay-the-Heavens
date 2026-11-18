@@ -7,12 +7,15 @@ import {createHash} from 'node:crypto';
 import {nativeShape} from '../../scripts/v25-battle-scene.mjs';
 import {runLua} from '../../scripts/test-lua.mjs';
 import {toLua} from '../../scripts/build-lua-data.mjs';
-const [sdkPath,rendererPath,imageRoot,outArg='build/monster-low-budget']=process.argv.slice(2);
+const args=process.argv.slice(2),noRender=args.includes('--no-render');
+assert.equal(args.filter(arg=>arg==='--no-render').length,noRender?1:0,'--no-render may only be supplied once');
+assert(!args.some(arg=>arg.startsWith('--')&&arg!=='--no-render'),'Unknown runtime option');
+const [sdkPath,rendererPath,imageRoot,outArg='build/monster-low-budget']=args.filter(arg=>arg!=='--no-render');
 assert(sdkPath&&rendererPath&&imageRoot,'runtime.mjs <existing SDK session> <renderer> <image cache> [output]');
 const out=path.resolve(outArg),theme=JSON.parse(fs.readFileSync('data/presentation/ui_theme.json'));
 const sha=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const sdk=await import(pathToFileURL(path.resolve(sdkPath)));
-const {vc}=await import(pathToFileURL(path.resolve(rendererPath)));
+const vc=noRender?null:(await import(pathToFileURL(path.resolve(rendererPath)))).vc;
 const seed=JSON.parse(fs.readFileSync('experiments/art-tech-lab/seed.save.json'));
 const samples={};function find(n){samples[n.kind]??=n;for(const c of n.children??[])find(c)}find(seed.assets.server.root);
 let serial=50000;
@@ -48,13 +51,16 @@ const geometry=Object.fromEntries(geometryResult.stdout.trim().split(/\r?\n/).ma
  const [id,...v]=line.split(/\s+/);const [portrait,hitWidth,hitHeight,healthY,intentY]=v.map(Number);
  return [id,{portrait,hitWidth,hitHeight,healthY,intentY}];
 }));
-const report={schemaVersion:1,status:'running',scope:'Actual installed Simulator native control construction, hit and software PNG; not official client/GPU/physical device/capacity',
+const report={schemaVersion:1,status:'running',scope:noRender?
+ 'Actual installed Simulator native control construction and hit only; rendering and gallery comparison NOT_RUN. Not official client/GPU/physical device/capacity':
+ 'Actual installed Simulator native control construction, hit and software PNG; not official client/GPU/physical device/capacity',
  runtimeScriptSha256:sha(new URL(import.meta.url)),fitReceiptSha256:sha(path.join(out,'fit-receipt.json')),
  sourceInputs:['data/presentation/ui_theme.json','src/lua/abyss_monster_source_geometry.lua','scripts/v25-battle-scene.mjs','experiments/art-tech-lab/seed.save.json'].map(file=>({path:file,sha256:sha(file)})),
- sdkSha256:sha(sdkPath),rendererSha256:sha(rendererPath),geometrySourceSha256:sha('src/lua/abyss_battle_enemy_view.lua'),
+ sdkSha256:sha(sdkPath),rendererSha256:noRender?null:sha(rendererPath),rendering:noRender?'NOT_RUN':'requested',
+ galleryComparison:noRender?'NOT_RUN':'requested',geometrySourceSha256:sha('src/lua/abyss_battle_enemy_view.lua'),
  geometry,officialCapacity:'UNVERIFIED',pcAndMobile:'UNVERIFIED',samples:[]};
 const images=new Map(),officialAssets=[];
-for(const id of [112038,112022]){
+if(!noRender)for(const id of [112038,112022]){
  for(const dir of fs.readdirSync(path.join(imageRoot,'sprite-v1'))){
   const file=path.join(imageRoot,'sprite-v1',dir,id+'.png');
   if(fs.existsSync(file)){
@@ -63,7 +69,7 @@ for(const id of [112038,112022]){
   }
  }
 }
-for(const id of [112038,112022])assert(images.has('StaticReference:'+id),'Missing actual official comparison asset '+id);
+if(!noRender)for(const id of [112038,112022])assert(images.has('StaticReference:'+id),'Missing actual official comparison asset '+id);
 report.officialAssets=officialAssets;
 for(const enemy of ['jaw_worm','hexaghost']){
  const g=geometry[enemy],project=structuredClone(seed.assets.server);
@@ -118,12 +124,16 @@ for(const enemy of ['jaw_worm','hexaghost']){
  const beforeReuse=runtime.controlsById.size;
  for(let i=0;i<5;i++){runtime.runChunk(script.env,'Hide();Show()','reuse-'+i)}
  assert.equal(runtime.controlsById.size,beforeReuse,'Visibility switching allocated new controls');
- const snapshot=sdk.ya(session,{view:true,paint:true,compact:true}),renderStart=performance.now();
- const png=vc(snapshot.scene,snapshot.canvasWidth,snapshot.canvasHeight,{images});
- fs.writeFileSync(path.join(out,enemy,'native-runtime.png'),png.data);
- const row={enemy,createMs,renderMs:performance.now()-renderStart,initialControls,sampleSaveBytes:saveBytes.length,costs,inputs,
+ let pngSha256=null,renderMs=null;
+ if(!noRender){
+  const snapshot=sdk.ya(session,{view:true,paint:true,compact:true}),renderStart=performance.now();
+  const png=vc(snapshot.scene,snapshot.canvasWidth,snapshot.canvasHeight,{images});
+  fs.writeFileSync(path.join(out,enemy,'native-runtime.png'),png.data);
+  renderMs=performance.now()-renderStart;pngSha256=createHash('sha256').update(png.data).digest('hex');
+ }
+ const row={enemy,createMs,renderMs,initialControls,sampleSaveBytes:saveBytes.length,costs,inputs,
   reuseCycles:5,reuseAllocated:runtime.controlsById.size-beforeReuse,
-  pngSha256:createHash('sha256').update(png.data).digest('hex')};
+  pngSha256};
  assert.equal(runtime.logs.filter(l=>l.level==='lua-error').length,0,JSON.stringify(runtime.logs));
  runtime.destroy();row.remainingControls=runtime.controlsById.size;assert.equal(row.remainingControls,0);
  // Actual five-instance allocation probe. Five bosses is deliberately synthetic,
@@ -148,4 +158,6 @@ for(const enemy of ['jaw_worm','hexaghost']){
  }
  report.samples.push(row);console.log(JSON.stringify({enemy,createMs,initialControls,remainingControls:row.remainingControls}));
 }
-report.status='pass';fs.writeFileSync(path.join(out,'runtime-receipt.json'),JSON.stringify(report,null,2)+'\n');
+report.status=noRender?'controls_passed':'pass';
+if(!noRender){report.rendering='pass';report.galleryComparison='pass'}
+fs.writeFileSync(path.join(out,'runtime-receipt.json'),JSON.stringify(report,null,2)+'\n');

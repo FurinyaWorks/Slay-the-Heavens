@@ -2,7 +2,7 @@
 
 TASK-25.7 的独立离线样品，保留旧源图，不改正式怪物登记、图库ID或发布构建。
 
-2026-11-18 在最新 `develop@c2409ad7` 接续了原 `d31c4009` 的实验。本轮重新执行六组几何拟合，并修复独立切换控制器的待处理请求覆盖问题；下文 SDK 场景、点击和释放数字仍是 11-14 历史结果，不是本轮重验。新证据和未验边界见 [本轮接续](../../docs/backlog-details/TASK-25.7-REPLAY-20261118.md)。
+2026-11-18 在最新 `develop@c2409ad7` 接续了原 `d31c4009` 的实验。本轮重新执行六组几何拟合，修复独立切换控制器的待处理请求覆盖问题，并在固定0.5.2 SDK重新执行控件、命中和释放验证。图库/截图与设备没有重验，下文完整软件画面仍为11-14历史结果。新证据和未验边界见 [本轮接续](../../docs/backlog-details/TASK-25.7-REPLAY-20261118.md)。
 
 不依赖 Windows SDK 的控制器回归：
 
@@ -11,6 +11,19 @@ node scripts/test-lua.mjs experiments/monster-low-budget/switch.test.lua
 ```
 
 该回归执行真实 `switch.lua`，以最小宿主替身覆盖「A当前→排队B→再请求A」、连续替换、关闭前取消、过期回调及重新打开。它验证 Lua 请求与实例所有权，不证明原生输入派发、图像或设备性能；完整 SDK 样品仍按下列命令另验。
+
+没有图库缓存时，可用显式控件模式复验 SDK 的实例/输入派发。先在新目录生成拟合包（`fit.py --output <新目录>`），再运行：
+
+```sh
+node experiments/monster-low-budget/runtime.mjs <existing-sdk-session> - - <新目录> --no-render
+node experiments/monster-low-budget/switch.mjs <existing-sdk-session> <新目录>
+node experiments/monster-low-budget/verify.mjs <新目录> --controls-only
+node experiments/monster-low-budget/verify-controls.test.mjs <新目录>
+```
+
+`--no-render` 不导入renderer、不读图库或写PNG；收据为 `controls_passed`，画面/图库明确 `NOT_RUN`。默认完整验证仍拒绝这种收据，不可作为视觉或设备通过记录。`switch` 另用真实 SDK pointer 点击确认取消替换后保留的 A 回调仍可接受输入。负控检查默认模式误用、伪造状态/画面、SDK混用、包漂移/缺失及旧控制器身份；只改临时副本，前后原始基线均须通过。
+
+本轮固定 SDK 的 npm bundle 来源、精确前缀导出边界和摘要见证据目录 `sdk-controls/sdk-export-receipt.json`；只在本地使用 GPL 工具，没有复制其源码入库。要核查保存的当前控件证据，可在保持源码LF字节的检出中，将该目录的 `controls-inputs.zip` 解压至新目录，执行上述后两条命令。这是保存证据检查，重新执行 SDK 仍用前两条命令。
 
 复用 `scripts/art/segment-lowpoly.py` 的分区、轮廓简化和三角剖分，及既有单轴放置器。实验适配器只处理透明轮廓、同源轮廓底层和100/200/400预算；没有全画布底色，没有新增拟合算法。原始PNG的Git LFS oid从Git blob读取，因此源工作树已hydrate或未hydrate都不会把PNG当文本。所选两图的实际像素必须与该oid和原asset/source-review一致。
 

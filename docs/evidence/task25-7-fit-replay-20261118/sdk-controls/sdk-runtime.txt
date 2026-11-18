@@ -1,0 +1,2 @@
+{"enemy":"jaw_worm","createMs":63.11651299999994,"initialControls":721,"remainingControls":0}
+{"enemy":"hexaghost","createMs":14.812504999999874,"initialControls":731,"remainingControls":0}

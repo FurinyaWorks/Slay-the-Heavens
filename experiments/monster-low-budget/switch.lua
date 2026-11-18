@@ -40,8 +40,9 @@ function Close()
  generation=generation+1;requestGeneration=requestGeneration+1
  pending=nil;release();host:SetVisible(false)
 end
-function AssertState(created,destroyed,reused,stale)
+function AssertState(created,destroyed,reused,stale,accepted)
  assert(metrics.created==created and metrics.destroyed==destroyed and metrics.reused==reused and metrics.staleRejected==stale)
+ if accepted~=nil then assert(metrics.accepted==accepted)end
 end
 function DelayedOldCallback()assert(firstCallback and firstCallback()==false)end
 function OnDestroy()Close()end

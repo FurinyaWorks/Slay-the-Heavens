@@ -1,0 +1,7 @@
+{
+  "status": 1,
+  "expectedAssertion": "Returning to live A must cancel queued B",
+  "controllerSource": "d31c400972d380d119c48e4ef92573670cd5a2e8",
+  "driverSource": "unchanged current switch.mjs",
+  "remainingControls": 0
+}
