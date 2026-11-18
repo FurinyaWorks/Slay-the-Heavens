@@ -48,6 +48,9 @@ const normalize=s=>s.replaceAll('\r\n','\n');
 const sourceSuccessors=Object.freeze({
  'scripts/check-task-intake.mjs':'972cbe675515a1fd4f7866170c37bd7568b94c6dbeca1e7bf340e46742e42029',
  'tests/sprint-intake.test.mjs':'daeabe161a8a7996b9961b46c37775ffb0e07639a4b34ab32f84f7a658d65929',
+ 'scripts/backlog-metadata.mjs':'082c419cbd0e20eae4ec4cb36f93541af3149f686dd064f06f5a12c983e27933',
+ 'scripts/verify-backlog-roadmap.mjs':'1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb',
+ 'tests/backlog-roadmap.test.mjs':'b4a523a6a7763e825804404a270da6a401a17b59b9855b701a82cb8571f3b17d',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'6f0b589319c4e5b26a6179f0a2677318765c7db050d7c3525d19bda503f256f7',
  'tests/helpers/copy-integration-source-closure.mjs':'4ae212873b5642f45387b0989e57ded51c49cf04b344997aca623d1a67999f0a',
  'tests/ci-complete-calibration.test.mjs':'9052ed30943de4a2e6eba52b78111ef60b7e934c6ecf92ddd4188b2679a75487',
