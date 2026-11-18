@@ -1,3 +1,4 @@
+import {assertEnemyFastArchive,assertEnemyFastCurrent,enemyFastRead,enemyFastSource} from './release-enemy-fast-source.mjs';
 // Exact CI-only parent views for the prepared 359 + 703 source join.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -12,8 +13,10 @@ assert.deepEqual(packet.parents,{preflight:'359b426f456f7445345f1a014ac4eb18b938
 for(const row of Object.values(packet.files))for(const binding of Object.values(row.views)){
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,'complete named parent source');
 }
-export function assertCapacityPreflightArchive(read=readFileSync){assert.equal(hash(read(path)),sha,'fresh complete capacity/preflight archive');}
+export function assertCapacityPreflightArchive(read=readFileSync){assertEnemyFastArchive(read);assert.equal(hash(read(path)),sha,'fresh complete capacity/preflight archive');}
 export function assertCapacityPreflightCurrent(read=readFileSync){
+ assertEnemyFastCurrent(read);
+ read=enemyFastRead('release',read);
  assertCapacityPreflightArchive(read);
  for(const [p,row]of Object.entries(packet.files)){
   const source=read(p,'utf8');assert.equal(typeof source,'string');assert(!source.includes('\r\r\n'));
@@ -22,6 +25,11 @@ export function assertCapacityPreflightCurrent(read=readFileSync){
 }
 export function capacityPreflightSource(path,source,view,before){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,binding=row&&Object.hasOwn(row.views,view)?row.views[view]:null;
- if(!binding||before&&before.sha256!==binding.sha256||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
+ // These two prepared sources were unchanged in af77; the existing outer seam now binds their runner-only successor.
+ if(!row&&view==='preflight'&&before===undefined&&['.github/workflows/quality.yml','tests/ci-summary-runners.test.mjs'].includes(path))
+  return enemyFastSource(path,source,'release');
+ if(!binding||before&&before.sha256!==binding.sha256)return source;
+ source=enemyFastSource(path,source,'release');
+ if(typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
  return source.includes('\r\n')?binding.source.replaceAll('\n','\r\n'):binding.source;
 }
