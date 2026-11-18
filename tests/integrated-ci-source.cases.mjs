@@ -49,8 +49,10 @@ const newerReleaseOwners=[
  'src/lua/abyss_battle_target_bindings.lua',
  'src/lua/abyss_battle_targeting.lua',
  'src/lua/abyss_battle_ui.lua',
+ 'src/lua/abyss_battle_unit_view.lua',
  'src/lua/abyss_card_flow.lua',
  'src/lua/abyss_lowcost_art.lua',
+ 'src/lua/abyss_monster_intent_particle_view.lua',
 ];
 function readLegacyPotionProduction(read){
  const readSource=p=>mergedReadFileSync(p,'utf8');
@@ -581,7 +583,7 @@ test('PC22 inputs without an earlier menu view retain their exact live bytes',()
 test('composite-intent text history checks the live Release owners before authorizing replay',()=>{
  const anchor='tests/helpers/closeout-source-epoch.mjs',raw=mergedReadFileSync(anchor,'utf8');
  const owners=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_battle_card_bindings.lua',
-  'src/lua/abyss_battle_render_actors.lua','tests/helpers/release-composite-intent-ci.json.gz'];
+  'src/lua/abyss_battle_render_actors.lua','src/lua/abyss_monster_intent_particle_view.lua','tests/helpers/release-composite-intent-ci.json.gz'];
  let fault;
  const read=(path,encoding)=>{
   if(path!==fault?.path)return mergedReadFileSync(path,encoding);

@@ -180,8 +180,48 @@ const intentRelease = {
   currentCommit: 'b454466798656c6f3b00613bbca1effef2459317',
   currentCommitRole: 'exact composite intent on the actual Release base after enemy metrics',
 };
+const particlesBytes = readFileSync(new URL('./runtime-particle-source.json.gz', import.meta.url));
+assert.equal(hash(particlesBytes), '2cef28e3bd47c3638c421c9f152453b7e446501f69e32bdaac39417a3731ad6a', 'exact original runtime particle source');
+const particles = JSON.parse(gunzipSync(particlesBytes));
+const particlePath = 'src/lua/abyss_monster_intent_particle_view.lua';
+assert.deepEqual(Object.keys(particles.current), [particlePath]);
+assert.deepEqual(Object.keys(particles.before), [particlePath]);
+assert.deepEqual(particles.before[particlePath], intentRelease.current[particlePath], 'exact Release intent particle predecessor');
+const particleCurrent = { ...intentRelease.current, ...particles.current };
+const particleTargets = {
+  ...intentRelease.targets,
+  releaseIntentParticlePrior: { commit: 'cdf5fe42fa7962f004966842e05d8ab35781df31', files: intentRelease.current },
+};
+const particleOwners = Object.keys(particleCurrent).sort().filter(path =>
+  Object.values(particleTargets).some(target => target.files[path]?.sha256 !== particleCurrent[path]?.sha256));
+const beforeCorners = {
+  ...intentRelease, current: particleCurrent, targets: particleTargets, owners: particleOwners,
+  currentCommit: '22a5f5c36c9e3d47e11568a06ee0118c94118136',
+  currentCommitRole: 'exact static intent particle slice from #706',
+};
+const cornerBytes = readFileSync(new URL('./release-target-corners-source.json.gz', import.meta.url));
+assert.equal(hash(cornerBytes), '74900cc6bcc96f29a430067d609bda9c7de8a2d3245b9fad59fc69ae4d3181c7', 'complete target corner source');
+const corner = JSON.parse(gunzipSync(cornerBytes));
+const cornerPath = 'src/lua/abyss_battle_unit_view.lua';
+assert.equal(corner.schemaVersion, 1);
+assert.equal(corner.owner, cornerPath);
+assert.equal(corner.base, '72870245228a2a9fbf036a516aa69332baa35973');
+assert.equal(corner.checkpoint, '13c9981431e04ac1be75592842da180225dbaf63');
+assert.deepEqual(corner.before, beforeCorners.current[cornerPath], 'exact Release target corner predecessor');
+const cornerCurrent = { ...beforeCorners.current, [cornerPath]: corner.current };
+const cornerTargets = {
+  ...beforeCorners.targets,
+  releaseTargetCornersPrior: { commit: corner.base, files: beforeCorners.current },
+};
+const cornerOwners = Object.keys(cornerCurrent).sort().filter(path =>
+  Object.values(cornerTargets).some(target => target.files[path]?.sha256 !== cornerCurrent[path]?.sha256));
+const pointerPriorRelease = {
+  ...beforeCorners, current: cornerCurrent, targets: cornerTargets, owners: cornerOwners,
+  currentCommit: corner.checkpoint,
+  currentCommitRole: 'exact target corner geometry from #684 on the current Release baseline',
+};
 const pointerBytes = readFileSync(new URL('./release-pointer-identity-source.json.gz', import.meta.url));
-assert.equal(hash(pointerBytes), '677aa2cb479410391931509c3d0187ec96f0c0a608063d8446b2a7b434cdbe27', 'complete current pointer identity production inputs');
+assert.equal(hash(pointerBytes), 'ad05f84a4d67d65b99f1469ffbd4080d2b9f92b88f0b6df214ecc0e9888138c1', 'complete current pointer identity production inputs');
 const pointer = JSON.parse(gunzipSync(pointerBytes));
 const pointerPaths = [
   'src/lua/abyss_battle_action_bindings.lua',
@@ -193,20 +233,20 @@ const pointerPaths = [
   'src/lua/abyss_battle_target_bindings.lua',
   'src/lua/abyss_battle_ui.lua',
 ];
-assert.equal(pointer.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+assert.equal(pointer.base, '91d6f955e16dcf91d24971450abaa72d12a4efa3');
 assert.deepEqual(Object.keys(pointer.before), pointerPaths);
 assert.deepEqual(Object.keys(pointer.current), pointerPaths);
 for (const path of pointerPaths)
-  assert.deepEqual(pointer.before[path], intentRelease.current[path], 'exact Release pointer identity predecessor: ' + path);
-const pointerCurrent = { ...intentRelease.current, ...pointer.current };
+  assert.deepEqual(pointer.before[path], pointerPriorRelease.current[path], 'exact Release pointer identity predecessor: ' + path);
+const pointerCurrent = { ...pointerPriorRelease.current, ...pointer.current };
 const pointerTargets = {
-  ...intentRelease.targets,
-  releasePointerIdentityPrior: { commit: pointer.base, files: intentRelease.current },
+  ...pointerPriorRelease.targets,
+  releasePointerIdentityPrior: { commit: pointer.base, files: pointerPriorRelease.current },
 };
 const pointerOwners = Object.keys(pointerCurrent).sort().filter(path =>
   Object.values(pointerTargets).some(target => target.files[path]?.sha256 !== pointerCurrent[path]?.sha256));
 export const sourceEpoch = createSourceEpochProjector(freeze({
-  ...intentRelease, current: pointerCurrent, targets: pointerTargets, owners: pointerOwners,
+  ...pointerPriorRelease, current: pointerCurrent, targets: pointerTargets, owners: pointerOwners,
   currentCommit: pointer.checkpoint,
   currentCommitRole: 'exact current composition of #679 and the remaining #711 pointer protocol',
 }), { allowConfigLayout: true, reuseFrozenInput: true });

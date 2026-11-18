@@ -122,11 +122,11 @@ for (const row of Object.values(sparseCi.files)) {
 
 // Continue the standalone Down sample with the independently reviewed pointer protocol.
 const pointerArchive = 'tests/helpers/release-pointer-identity-ci.json.gz';
-const pointerDigest = 'cc900b4dccc5483058dcd0f9c6f8af4e8c0b389ec3e701352876d09f4b841f88';
+const pointerDigest = '284d98d6073f43f725529d2e096a5b2ed1178d693709e417249f69a8b78454da';
 const pointerBytes = readFileSync(new URL('./release-pointer-identity-ci.json.gz', import.meta.url));
 assert.equal(hash(pointerBytes), pointerDigest, 'fixed pointer identity CI continuation');
 const pointerCi = JSON.parse(gunzipSync(pointerBytes));
-assert.equal(pointerCi.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+assert.equal(pointerCi.base, '91d6f955e16dcf91d24971450abaa72d12a4efa3');
 assert.deepEqual(Object.keys(pointerCi.replayInputs), ['tests/ci-complete-calibration.test.mjs']);
 for (const row of Object.values(pointerCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
@@ -160,8 +160,57 @@ for (const row of Object.values(intentCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+// Authenticate the existing #706 particle slice before using older CI inputs.
+const particlesArchive = 'tests/helpers/release-intent-particles-ci.json.gz';
+const particlesDigest = '5f7874d67978c07d3794acf563e197a49511cc49b22ab7bdfd8da8eba35b35eb';
+const particlesBytes = readFileSync(new URL('./release-intent-particles-ci.json.gz', import.meta.url));
+assert.equal(hash(particlesBytes), particlesDigest, 'fixed intent particle CI continuation');
+const particlesCi = JSON.parse(gunzipSync(particlesBytes));
+assert.equal(particlesCi.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+for (const row of Object.values(particlesCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+const cornerArchive = 'tests/helpers/release-target-corners-ci.json.gz';
+const cornerDigest = '9f3f104ed1ab46bcc648d66c7d8c3667947a440861197d82b542c2d9e7e7d6af';
+const cornerBytes = readFileSync(new URL('./release-target-corners-ci.json.gz', import.meta.url));
+assert.equal(hash(cornerBytes), cornerDigest, 'fixed Release target corner CI continuation');
+const cornerCi = JSON.parse(gunzipSync(cornerBytes));
+assert.equal(cornerCi.base, '72870245228a2a9fbf036a516aa69332baa35973');
+for (const row of Object.values(cornerCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforeCornerCiSource(path, source) {
+  return priorCiSource(cornerCi.files, path, beforePointerIdentityCiSource(path, source));
+}
+
+function assertCornerCiCurrent(read) {
+  assert.equal(hash(read(cornerArchive)), cornerDigest, 'fresh target corner CI continuation');
+  assert.equal(hash(read('tests/helpers/release-target-corners-source.json.gz')), cornerCi.productionArchive,
+    'fresh immutable target corner production archive');
+  for (const [path, row] of Object.entries(cornerCi.files)) {
+    const source = normalized(beforePointerIdentityCiSource(path, read(path, 'utf8')));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: target corners ' + path);
+  }
+}
+
+function beforeParticlesCiSource(path, source) {
+  return priorCiSource(particlesCi.files, path, beforeCornerCiSource(path, source));
+}
+
+function assertParticlesCiCurrent(read) {
+  assert.equal(hash(read(particlesArchive)), particlesDigest, 'fresh intent particle CI continuation');
+  assert.equal(hash(read('tests/helpers/runtime-particle-source.json.gz')), particlesCi.productionArchive,
+    'fresh immutable intent particle production archive');
+  for (const [path, row] of Object.entries(particlesCi.files)) {
+    const source = normalized(beforeCornerCiSource(path, read(path, 'utf8')));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: intent particles ' + path);
+  }
+}
+
 function beforeIntentCiSource(path, source) {
-  return priorCiSource(intentCi.files, path, beforePointerIdentityCiSource(path, source));
+  return priorCiSource(intentCi.files, path, beforeParticlesCiSource(path, source));
 }
 export function isCurrentReleaseCiReplay(path, source) {
   const text = normalized(source);
@@ -174,7 +223,7 @@ function assertIntentCiCurrent(read) {
   assert.equal(hash(read(intentArchive)), intentDigest, 'fresh composite intent CI continuation');
   assert.equal(hash(read('tests/helpers/release-composite-intent-source.json.gz')), intentCi.productionArchive, 'fresh immutable composite intent source archive');
   for (const [path, row] of Object.entries(intentCi.files)) {
-    const source = normalized(beforePointerIdentityCiSource(path, read(path, 'utf8')));
+    const source = normalized(beforeParticlesCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: composite intent ' + path);
   }
 }
@@ -275,8 +324,10 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
       const sparseRow = Object.hasOwn(sparseCi.files, path) ? sparseCi.files[path] : null;
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
+      const particlesRow = Object.hasOwn(particlesCi.files, path) ? particlesCi.files[path] : null;
+      const cornerRow = Object.hasOwn(cornerCi.files, path) ? cornerCi.files[path] : null;
       const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
-      if (path !== settingsTest && !pointerRow?.before && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
+      if (path !== settingsTest && !pointerRow?.before && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -289,7 +340,9 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
   assertPointerIdentityCiCurrent(read);
+  assertCornerCiCurrent(read);
   assertSettingsCiCurrent(read);
+  assertParticlesCiCurrent(read);
   assertIntentCiCurrent(read);
   assertSparseCiCurrent(read);
   assertHistoryCiCurrent(read);

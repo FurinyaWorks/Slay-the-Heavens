@@ -98,9 +98,14 @@ files[closeoutPath] = 'a935712406ce226efd237b76416bf9e1a7d3c141f8a5f0f126181e84c
 files['tests/helpers/release-sparse-pointer-source.json.gz'] = '24126de8efaf5088cc67d045391bbd2ba19a464e0a616d9d2483a12f70648340';
 files[closeoutPath] = '3405d434f2c38c42ac48aea22eee27ab05d9912ac4915584fcc89f291e7b26f6';
 files['tests/helpers/release-composite-intent-source.json.gz'] = '813ee7d1c86932e518c8b5c2d23c339c8dbd86b73d53151531c58ed8414ae7ef';
-assert.equal(files[closeoutPath], '3405d434f2c38c42ac48aea22eee27ab05d9912ac4915584fcc89f291e7b26f6');
-files[closeoutPath] = '82a452a956038c6b0eb4093b9cefb796a842ca6feb69a7ea0f77bb2ee6c3d96e';
-files['tests/helpers/release-pointer-identity-source.json.gz'] = '677aa2cb479410391931509c3d0187ec96f0c0a608063d8446b2a7b434cdbe27';
+files[closeoutPath] = '430dcaa055be3c350047256f7b6b8ceefd9aeff0fb0401f911a7589cad98eb5c';
+files['tests/helpers/runtime-particle-source.json.gz'] = '2cef28e3bd47c3638c421c9f152453b7e446501f69e32bdaac39417a3731ad6a';
+assert.equal(files[closeoutPath], '430dcaa055be3c350047256f7b6b8ceefd9aeff0fb0401f911a7589cad98eb5c');
+files[closeoutPath] = 'ed7b31a7e316c40fd15f770b7bca0e6a9460981a831de5966634241ad80270ba';
+files['tests/helpers/release-target-corners-source.json.gz'] = '74900cc6bcc96f29a430067d609bda9c7de8a2d3245b9fad59fc69ae4d3181c7';
+assert.equal(files[closeoutPath], 'ed7b31a7e316c40fd15f770b7bca0e6a9460981a831de5966634241ad80270ba');
+files[closeoutPath] = '41acf3946b09caa2f1e03f5775597e7d8e62dd021fd4b394712a4339e814dbdf';
+files['tests/helpers/release-pointer-identity-source.json.gz'] = 'ad05f84a4d67d65b99f1469ffbd4080d2b9f92b88f0b6df214ecc0e9888138c1';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
