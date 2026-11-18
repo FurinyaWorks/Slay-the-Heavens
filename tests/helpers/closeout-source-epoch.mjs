@@ -136,10 +136,29 @@ const enemyTargets = {
 };
 const enemyOwners = Object.keys(enemyCurrent).sort().filter(path =>
   Object.values(enemyTargets).some(target => target.files[path]?.sha256 !== enemyCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const enemyRelease = {
   ...handRelease, current: enemyCurrent, targets: enemyTargets, owners: enemyOwners,
   currentCommit: 'aa94670285691a41d6c0e9629ad540ccb4efe159',
   currentCommitRole: 'exact enemy metrics slice on actual Release with the hand optimization already merged',
+};
+const sparseBytes = readFileSync(new URL('./release-sparse-pointer-source.json.gz', import.meta.url));
+assert.equal(hash(sparseBytes), '24126de8efaf5088cc67d045391bbd2ba19a464e0a616d9d2483a12f70648340', 'complete sparse Down sample source');
+const sparse = JSON.parse(gunzipSync(sparseBytes));
+const sparsePath = 'src/lua/abyss_battle_card_bindings.lua';
+assert.equal(sparse.owner, sparsePath);
+assert.equal(sparse.base, 'c5e98d55250636cf2c3d4bbb395b30304c3a5807');
+assert.deepEqual(sparse.before, enemyRelease.current[sparsePath], 'exact Release sparse pointer predecessor');
+const sparseCurrent = { ...enemyRelease.current, [sparsePath]: sparse.current };
+const sparseTargets = {
+  ...enemyRelease.targets,
+  releaseSparsePointerPrior: { commit: sparse.base, files: enemyRelease.current },
+};
+const sparseOwners = Object.keys(sparseCurrent).sort().filter(path =>
+  Object.values(sparseTargets).some(target => target.files[path]?.sha256 !== sparseCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...enemyRelease, current: sparseCurrent, targets: sparseTargets, owners: sparseOwners,
+  currentCommit: sparse.checkpoint,
+  currentCommitRole: 'exact coalesced Down sample slice from #711',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

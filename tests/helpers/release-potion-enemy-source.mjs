@@ -108,14 +108,39 @@ const historyCi = JSON.parse(gunzipSync(historyBytes));
 assert.equal(historyCi.base, '6f655ca8f741a0f060cafcb6958118d77c595dfe');
 for (const row of Object.values(historyCi.files)) assert.equal(hash(row.before), row.beforeSha256);
 
+// Bind this independently landed sparse pointer slice before replaying older CI input.
+const sparseArchive = 'tests/helpers/release-sparse-pointer-ci.json.gz';
+const sparseDigest = '00d8fbe8451680c01b5bbed88b0cf5220b3bde835aaf395b503b880b806e3f1c';
+const sparseBytes = readFileSync(new URL('./release-sparse-pointer-ci.json.gz', import.meta.url));
+assert.equal(hash(sparseBytes), sparseDigest, 'fixed sparse pointer CI continuation');
+const sparseCi = JSON.parse(gunzipSync(sparseBytes));
+assert.equal(sparseCi.base, 'c5e98d55250636cf2c3d4bbb395b30304c3a5807');
+for (const row of Object.values(sparseCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforeSparseCiSource(path, source) {
+  return priorCiSource(sparseCi.files, path, source);
+}
+
+function assertSparseCiCurrent(read) {
+  assert.equal(hash(read(sparseArchive)), sparseDigest, 'fresh sparse pointer CI continuation');
+  assert.equal(hash(read('tests/helpers/release-sparse-pointer-source.json.gz')), sparseCi.productionArchive,
+    'fresh immutable sparse pointer production archive');
+  for (const [path, row] of Object.entries(sparseCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: sparse pointer ' + path);
+  }
+}
+
 function beforeHistoryCiSource(path, source) {
-  return priorCiSource(historyCi.files, path, source);
+  return priorCiSource(historyCi.files, path, beforeSparseCiSource(path, source));
 }
 
 function assertHistoryCiCurrent(read) {
   assert.equal(hash(read(historyArchive)), historyDigest, 'fresh historical replay authorization packet');
   for (const [path, row] of Object.entries(historyCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeSparseCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256,'fresh complete integration source: replay authorization ' + path);
   }
 }
@@ -157,7 +182,9 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const shelfRow = Object.hasOwn(shelfCi.files, path) ? shelfCi.files[path] : null;
       const enemyRow = Object.hasOwn(enemyCi.files, path) ? enemyCi.files[path] : null;
       const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
-      if (!handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && (!row || !Object.hasOwn(row.parents, side))) return source;
+      const sparseRow = Object.hasOwn(sparseCi.files, path) ? sparseCi.files[path] : null;
+      if (!handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before &&
+        (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
     }
@@ -168,6 +195,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertSparseCiCurrent(read);
   assertHistoryCiCurrent(read);
   assertEnemyMetricsCiCurrent(read);
   assertHandLayoutCiCurrent(read);

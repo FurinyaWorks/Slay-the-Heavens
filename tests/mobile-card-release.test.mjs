@@ -6,3 +6,13 @@ test('mobile drag release clears invalid selections and preserves desktop target
  assert.equal(result.status,0,result.stdout+result.stderr);
  assert.match(result.stdout,/MOBILE_CARD_RELEASE 7 passed; 0 failed/);
 });
+
+for(const [fixture,marker] of [
+ ['battle_sparse_pointer_cases','BATTLE_SPARSE_POINTER 2 passed'],
+ ['sparse_card_flick','SPARSE_CARD_FLICK_PASS 12'],
+ ['sparse_card_flick_safety','SPARSE_CARD_FLICK_SAFETY_PASS 8'],
+])test(`sparse native card Down sample: ${fixture}`,()=>{
+ const result=runLua(`tests/lua/support/${fixture}.lua`);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.ok(result.stdout.includes(marker),result.stdout);
+});
