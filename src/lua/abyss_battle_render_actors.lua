@@ -238,7 +238,7 @@ function M.install(owner, ownership, host, dependencies)
             local box=host.monsterSurfaces:find(entry.id)
             if box then
             local face=enemyIntentFace({battle=battle,enemyPlayback=owner.feedback.busy},actor,entry.index)
-            local g=EnemyView.geometry(actor)
+            local g=EnemyView.geometry(actor,false)
             local dying,escaping=owner.feedback.dying[entry.id],owner.feedback.escaping[entry.id]
             host.monsterIntentParticles:update(entry.id,dt,face,g,dying,escaping)
             renderEnemyIntent(box,face,g.portrait,g,enemyIntentAllowed(actor,battle),
@@ -268,7 +268,7 @@ function M.install(owner, ownership, host, dependencies)
             local id,actor=entry.id,entry.actor;wanted[id]=true
             local state=ownership.nameStates[id] or {timer=0,alpha=0}
             ownership.nameStates[id]=state
-            local g=EnemyView.geometry(actor)
+            local g=EnemyView.geometry(actor,false)
             local hovered=x and y and math.abs(x-g.hitX)<g.hitWidth/2 and math.abs(y-g.hitY)<g.hitHeight/2
             local offset
             state.timer,state.alpha,offset=EnemyView.nameStep(state.timer,state.alpha,dt,hovered,nameBlocked(actor),1)

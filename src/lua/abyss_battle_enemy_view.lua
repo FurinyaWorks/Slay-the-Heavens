@@ -68,7 +68,9 @@ local function presentationScale(source,bottom,sy)
  local ceiling=top-line-Theme.space.xs
  return math.min(sy,math.max(1,ceiling-bottom)/math.max(source.width,source.height,source.hbY+source.height))
 end
-function M.geometry(actor)
+-- Coordinate consumers do not need to materialize the ordered Power list.
+-- Full renderers retain current status metrics by default; nothing is cached.
+function M.geometry(actor,withStatusMetrics)
  local source=SourceGeometry.resolve(actor)
  local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
  local x=(1440+source.x)*sx-Theme.canvas.base[1]/2
@@ -79,7 +81,8 @@ function M.geometry(actor)
  local rootY=bottom+portrait/2
  return {x=x,y=rootY,portrait=portrait,
   hitX=hitX,hitY=hitBottom+source.height*bodyScale/2,hitWidth=source.width*bodyScale,hitHeight=source.height*bodyScale,
-  statusWidth=source.width*sx,statusCountWidth=Theme.presentationProfile=='official-assets-first' and statusCountWidth(actor)or L.nativeText.lineHeight,
+  statusWidth=source.width*sx,statusCountWidth=withStatusMetrics~=false and
+   (Theme.presentationProfile=='official-assets-first' and statusCountWidth(actor)or L.nativeText.lineHeight)or nil,
   nameX=hitX-x,nameY=hitBottom-36*sy-rootY,sourceScale=sy,
   healthX=hitX-x,healthY=hitBottom-18*sy-rootY,healthTextY=hitBottom-17*sy-rootY,healthHeight=20*sy,
   blockX=hitX-source.width*bodyScale/2-14*sx-x,blockY=hitBottom-14*sy-rootY,blockTextY=hitBottom-16*sy-rootY,
@@ -91,9 +94,9 @@ function M.geometry(actor)
   intentHitWidth=64*sx,intentHitHeight=64*sy}
 
 end
-function M.rowY(_,_,actor)return M.geometry(actor).y end
+function M.rowY(_,_,actor)return M.geometry(actor,false).y end
 function M.position(_,_,actor)
- local g=M.geometry(actor)
+ local g=M.geometry(actor,false)
  return g.x,L.battleUnit.nameWidth,g.portrait,g.hitWidth,g.y
 end
 local function fade(value,dt,speed)
