@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '转过一道石廊，旅行者看到一块旧毯子，上面摆着卷册和古物。毯子后坐着一位毯子后坐着一位老人人，像是早就知道会有客人来到这里人来到这里。'
+- '转过一道石廊，旅行者看到一块旧毯子，上面摆着卷册和古物。毯子后坐着一位老人，像是早就知道会有客人来到这里。'
+
+    at file:///workspace/work/merchant-native-proof/experiments/merchant-native-reading/run.mjs:77:85 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '转过一道石廊，旅行者看到一块旧毯子，上面摆着卷册和古物。毯子后坐着一位毯子后坐着一位老人人，像是早就知道会有客人来到这里人来到这里。',
+  expected: '转过一道石廊，旅行者看到一块旧毯子，上面摆着卷册和古物。毯子后坐着一位老人，像是早就知道会有客人来到这里。',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

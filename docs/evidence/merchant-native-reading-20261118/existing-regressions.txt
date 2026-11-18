@@ -1,0 +1,14 @@
+✔ merchant bubble sits above an independent figure in the real shop clearance (17.937178ms)
+✔ official merchant projection has room beside seven unchanged offers including hover (767.970359ms)
+✔ V25 final merchant projects the whole head-relative bubble and preserves live handles (33.380271ms)
+✔ grouped merchant purchase actions preserve mouse and touch trade and dialogue (7950.970258ms)
+✔ merchant delayed taps and transaction gestures follow the visible dialogue lifecycle (12292.681069ms)
+✔ merchant pages preserve sentences and original copy within existing budgets (247.046736ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22012.194755
