@@ -114,10 +114,32 @@ const handTargets = {
 };
 const handOwners = Object.keys(handCurrent).sort().filter(path =>
   Object.values(handTargets).some(target => target.files[path]?.sha256 !== handCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const handRelease = {
   ...jointRelease, current: handCurrent, targets: handTargets, owners: handOwners,
   currentCommit: 'c73465e5c322a1f8e3ecf493a2c8c161506c7d18',
   currentCommitRole: 'exact hand optimization slice on the actual Release base',
+};
+// Advance the other #688 slice using its unchanged original three-owner packet.
+const enemyBytes = readFileSync(new URL('./enemy-geometry-source.json.gz', import.meta.url));
+assert.equal(hash(enemyBytes), 'af5ac18b5bb3346fe000d22a184e04b8d064d38e723bd328a06cdf1b37fecfae');
+const enemyMetrics = JSON.parse(gunzipSync(enemyBytes));
+const enemyPaths = ['src/lua/abyss_battle_enemy_view.lua', 'src/lua/abyss_battle_render_actors.lua',
+  'src/lua/abyss_battle_targeting.lua'];
+assert.deepEqual(Object.keys(enemyMetrics.current), enemyPaths);
+assert.deepEqual(Object.keys(enemyMetrics.before), enemyPaths);
+for (const path of enemyPaths)
+  assert.deepEqual(enemyMetrics.before[path], handRelease.current[path], 'exact Release enemy metrics predecessor: ' + path);
+const enemyCurrent = { ...handRelease.current, ...enemyMetrics.current };
+const enemyTargets = {
+  ...handRelease.targets,
+  releaseEnemyMetricsPrior: { commit: '6aaed54a56c3d2769a71feea3580798ae421a0e8', files: handRelease.current },
+};
+const enemyOwners = Object.keys(enemyCurrent).sort().filter(path =>
+  Object.values(enemyTargets).some(target => target.files[path]?.sha256 !== enemyCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...handRelease, current: enemyCurrent, targets: enemyTargets, owners: enemyOwners,
+  currentCommit: 'aa94670285691a41d6c0e9629ad540ccb4efe159',
+  currentCommitRole: 'exact enemy metrics slice on actual Release with the hand optimization already merged',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

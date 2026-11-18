@@ -35,7 +35,9 @@ import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,rend
 const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
-const newerReleaseOwners=['src/lua/abyss_battle_card_view.lua','src/lua/abyss_card_flow.lua','src/lua/abyss_lowcost_art.lua'];
+const newerReleaseOwners=['src/lua/abyss_battle_card_view.lua','src/lua/abyss_battle_enemy_view.lua',
+ 'src/lua/abyss_battle_render_actors.lua','src/lua/abyss_battle_targeting.lua',
+ 'src/lua/abyss_card_flow.lua','src/lua/abyss_lowcost_art.lua'];
 function readLegacyPotionProduction(read){
  const readSource=p=>mergedReadFileSync(p,'utf8');
  // Authenticate the later Release owners before constructing each historical fixture.
