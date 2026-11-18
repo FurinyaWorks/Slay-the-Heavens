@@ -648,3 +648,29 @@ test('historical potion production validates its current pointer owners before r
  drift=false;
  assert.equal(historical(path,'utf8'),expected);
 });
+
+
+test('pointer history authenticates fresh linked owners before reading earlier public text',()=>{
+ const path='tests/ci-complete-calibration.test.mjs';
+ const owner='src/lua/abyss_battle_input_state.lua';
+ const archive='tests/helpers/release-pointer-identity-ci.json.gz';
+ const current=mergedReadFileSync(path,'utf8');
+ let fault;
+ const read=(file,encoding)=>{
+  const source=mergedReadFileSync(file,encoding);
+  if(file!==fault)return source;
+  return typeof source==='string'?source+'\n':Buffer.concat([source,Buffer.from('\n')]);
+ };
+ const reader=integratedRead('native',{read});
+ const prior=reader(path,'utf8');
+ assert.notEqual(prior,current);
+ for(const project of [()=>integratedSource(path,current,'native',read),()=>reader(path,'utf8')]){
+  assert.equal(project(),prior);
+  fault=owner;
+  assert.throws(project,/fresh Release replay owner: src\/lua\/abyss_battle_input_state\.lua/);
+  fault=archive;
+  assert.throws(project,/fresh pointer identity CI continuation/);
+  fault=undefined;
+  assert.equal(project(),prior);
+ }
+});

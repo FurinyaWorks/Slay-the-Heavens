@@ -122,11 +122,12 @@ for (const row of Object.values(sparseCi.files)) {
 
 // Continue the standalone Down sample with the independently reviewed pointer protocol.
 const pointerArchive = 'tests/helpers/release-pointer-identity-ci.json.gz';
-const pointerDigest = '6550d7a7fdeef8cab772709e1fb540cd032fa0abcf5e860afe2ae1f3e8ba5cde';
+const pointerDigest = 'cc900b4dccc5483058dcd0f9c6f8af4e8c0b389ec3e701352876d09f4b841f88';
 const pointerBytes = readFileSync(new URL('./release-pointer-identity-ci.json.gz', import.meta.url));
 assert.equal(hash(pointerBytes), pointerDigest, 'fixed pointer identity CI continuation');
 const pointerCi = JSON.parse(gunzipSync(pointerBytes));
 assert.equal(pointerCi.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+assert.deepEqual(Object.keys(pointerCi.replayInputs), ['tests/ci-complete-calibration.test.mjs']);
 for (const row of Object.values(pointerCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
@@ -143,6 +144,10 @@ function assertPointerIdentityCiCurrent(read) {
     const source = normalized(read(path, 'utf8'));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer identity ' + path);
   }
+  for (const [path, sha] of Object.entries(pointerCi.replayInputs)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === sha, 'fresh pointer identity replay input: ' + path);
+  }
 }
 
 const intentArchive = 'tests/helpers/release-composite-intent-ci.json.gz';
@@ -158,9 +163,12 @@ for (const row of Object.values(intentCi.files)) {
 function beforeIntentCiSource(path, source) {
   return priorCiSource(intentCi.files, path, beforePointerIdentityCiSource(path, source));
 }
-export function isCurrentIntentCiReplay(path, source) {
+export function isCurrentReleaseCiReplay(path, source) {
+  const text = normalized(source);
+  if (text === null) return false;
   const beforePointer = beforePointerIdentityCiSource(path, source);
-  return beforeIntentCiSource(path, beforePointer) !== beforePointer;
+  if (beforePointer !== source || beforeIntentCiSource(path, beforePointer) !== beforePointer) return true;
+  return Object.hasOwn(pointerCi.replayInputs, path) && hash(text) === pointerCi.replayInputs[path];
 }
 function assertIntentCiCurrent(read) {
   assert.equal(hash(read(intentArchive)), intentDigest, 'fresh composite intent CI continuation');
