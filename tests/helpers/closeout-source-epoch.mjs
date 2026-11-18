@@ -235,10 +235,32 @@ const shopDismissalTargets = {
 };
 const shopDismissalOwners = Object.keys(shopDismissalCurrent).sort().filter(path =>
   Object.values(shopDismissalTargets).some(target => target.files[path]?.sha256 !== shopDismissalCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const beforeCardCancel = {
   ...preShopDismissal, current: shopDismissalCurrent, targets: shopDismissalTargets, owners: shopDismissalOwners,
   currentCommit: '9d02659021c893f9919d17bd5a8ce13876f1bcf8',
   currentCommitRole: 'exact shop pointer dismissal slice from #680',
+};
+
+const cancelBytes = readFileSync(new URL('./release-card-cancel-notice-source.json.gz', import.meta.url));
+assert.equal(hash(cancelBytes), '639ea6a234785a1a492aae6d911b6d7c8a6051a1b610d5b5d530f5d9711569d5', 'complete card cancel notice source');
+const cancel = JSON.parse(gunzipSync(cancelBytes));
+const cancelPath = 'src/lua/abyss_battle_card_gestures.lua';
+assert.equal(cancel.schemaVersion, 1);
+assert.equal(cancel.owner, cancelPath);
+assert.equal(cancel.base, '4628caadac5f419a4253c85ddbcc3870192a1fa7');
+assert.equal(cancel.producer, '99ab019a329497725d98d6a475db4fc0910054fe');
+assert.deepEqual(cancel.before, beforeCardCancel.current[cancelPath], 'exact Release card cancel notice predecessor');
+const cancelCurrent = { ...beforeCardCancel.current, [cancelPath]: cancel.current };
+const cancelTargets = {
+  ...beforeCardCancel.targets,
+  releaseCardCancelNoticePrior: { commit: cancel.base, files: beforeCardCancel.current },
+};
+const cancelOwners = Object.keys(cancelCurrent).sort().filter(path =>
+  Object.values(cancelTargets).some(target => target.files[path]?.sha256 !== cancelCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...beforeCardCancel, current: cancelCurrent, targets: cancelTargets, owners: cancelOwners,
+  currentCommit: cancel.base,
+  currentCommitRole: 'PC35 cancel notice from #684 against actual Release, preserving existing pointer policy',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

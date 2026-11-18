@@ -16,3 +16,9 @@ for(const [fixture,marker] of [
  assert.equal(result.status,0,result.stdout+result.stderr);
  assert.ok(result.stdout.includes(marker),result.stdout);
 });
+
+test('cancelling a selected card clears its previous rejection notice',()=>{
+ const result=runLua('tests/lua/support/card_cancel_notice.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/CARD_CANCEL_NOTICE_PASS failure\/cancel\/repeat/);
+});

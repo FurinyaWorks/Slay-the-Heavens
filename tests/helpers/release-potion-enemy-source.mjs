@@ -1,3 +1,4 @@
+import {sourceEpoch} from './closeout-source-epoch.mjs';
 // Exact CI source views for the preserved potion preparation and actual Release.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -174,14 +175,38 @@ for (const row of Object.values(shopDismissalCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+const cancelArchive = 'tests/helpers/release-card-cancel-notice-ci.json.gz';
+const cancelDigest = '04335a161f9f01a49b26cf4db166bb00e588295197bc8862e928c1403bbd965c';
+const cancelBytes = readFileSync(new URL('./release-card-cancel-notice-ci.json.gz', import.meta.url));
+assert.equal(hash(cancelBytes), cancelDigest, 'fixed card cancel notice CI continuation');
+const cancelCi = JSON.parse(gunzipSync(cancelBytes));
+assert.equal(cancelCi.base, '4628caadac5f419a4253c85ddbcc3870192a1fa7');
+for (const row of Object.values(cancelCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforeCancelCiSource(path, source) {
+  return priorCiSource(cancelCi.files, path, source);
+}
+
+function assertCancelCiCurrent(read) {
+  assert.equal(hash(read(cancelArchive)), cancelDigest, 'fresh card cancel notice CI continuation');
+  assert.equal(hash(read('tests/helpers/release-card-cancel-notice-source.json.gz')), cancelCi.productionArchive,
+    'fresh immutable card cancel notice production archive');
+  for (const [path, row] of Object.entries(cancelCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: card cancel notice ' + path);
+  }
+}
+
 function beforeShopDismissalCiSource(path, source) {
-  return priorCiSource(shopDismissalCi.files, path, source);
+  return priorCiSource(shopDismissalCi.files, path, beforeCancelCiSource(path, source));
 }
 function assertShopDismissalCiCurrent(read) {
   assert.equal(hash(read(shopDismissalArchive)), shopDismissalDigest, 'fresh shop dismissal CI continuation');
   assert.equal(hash(read('tests/helpers/release-shop-dismissal-source.json.gz')), shopDismissalCi.productionArchive, 'fresh immutable shop dismissal production archive');
   for (const [path, row] of Object.entries(shopDismissalCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeCancelCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: shop dismissal ' + path);
   }
 }
@@ -291,6 +316,16 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
   assert(Object.hasOwn(packet.parents, side), 'known exact potion Release CI parent');
   return (path, encoding) => {
     const source = read(path, encoding);
+    // The authenticated older potion view keeps the exact gesture owner from before PC35.
+    if (side === 'potion' && path === 'src/lua/abyss_battle_card_gestures.lua' &&
+        (typeof source === 'string' || Buffer.isBuffer(source))) {
+      const text = typeof source === 'string' ? source : source.toString('utf8');
+      const prior = sourceEpoch.preCombinedSource(path, text, {
+        target: 'releaseCardCancelNoticePrior',
+        readSource: owner => read(owner, 'utf8'),
+      });
+      return typeof source === 'string' ? prior : prior === text ? source : Buffer.from(prior);
+    }
     if (Buffer.isBuffer(source)) {
       const row = Object.hasOwn(packet.files, path) ? packet.files[path] : null;
       // Unbound binary archives remain byte-identical, without UTF-8 decoding.
@@ -302,8 +337,9 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
       const particlesRow = Object.hasOwn(particlesCi.files, path) ? particlesCi.files[path] : null;
       const cornerRow = Object.hasOwn(cornerCi.files, path) ? cornerCi.files[path] : null;
+      const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
-      if (!shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before &&
+      if (!shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -315,6 +351,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertCancelCiCurrent(read);
   assertShopDismissalCiCurrent(read);
   assertCornerCiCurrent(read);
   assertSettingsCiCurrent(read);
