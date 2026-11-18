@@ -1,4 +1,3 @@
-import {releaseSettingsEnemyParentSource} from './release-settings-enemy-source.mjs';
 // Dedicated exact CI source seam for PR710 and the actual PR707 Release base.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -19,7 +18,7 @@ export function assertEnemyFastArchive(read=readFileSync){assert.equal(hash(read
 export function assertEnemyFastCurrent(read=readFileSync){
  assertEnemyFastArchive(read);
  for(const [path,row]of Object.entries(packet.files)){
-  const source=normalized(releaseSettingsEnemyParentSource(path,read(path,'utf8'),'enemy'));
+  const source=normalized(read(path,'utf8'));
   assert(source!==null&&hash(source)===row.currentSha256,'fresh complete integration source: '+(row.owner==='enemy'?'enemy capacity ':'enemy/Fast ')+path);
  }
 }
@@ -27,13 +26,12 @@ export function assertEnemyFastCurrent(read=readFileSync){
 export function assertEnemyFastStsOwners(paths,read=readFileSync){
  for(const path of paths){
   const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;if(!row)continue;
-  const source=normalized(releaseSettingsEnemyParentSource(path,read(path,'utf8'),'enemy'));
+  const source=normalized(read(path,'utf8'));
   assert(source!==null&&hash(source)===row.currentSha256,'fresh complete StS CI source: '+path);
  }
 }
 export function enemyFastSource(path,source,side){
  if(!Object.hasOwn(packet.parents,side)||typeof path!=='string'||path.startsWith('src/')||path.startsWith('data/')||path.startsWith('config/'))return source;
- source=releaseSettingsEnemyParentSource(path,source,'enemy');
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,binding=row?.views[side],text=normalized(source);
  if(!binding||text===null||hash(text)!==row.currentSha256)return source;
  return source.includes('\r\n')?binding.source.replaceAll('\n','\r\n'):binding.source;

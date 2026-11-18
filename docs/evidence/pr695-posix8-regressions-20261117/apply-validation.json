@@ -1,9 +1,0 @@
-{
-  "status": "PASS",
-  "base": "e887258ce603292b94c8f342a8ce792b20fd19ab",
-  "candidate": "6af56c6f995abdb518fbf475ca8ea14cb4caadeb",
-  "gitApplyCheck": true,
-  "appliedTree": "e6fe8d804cc9efd9d5e93a3baee414c9bd362bed",
-  "candidateTree": "e6fe8d804cc9efd9d5e93a3baee414c9bd362bed",
-  "reviewedBytesMatch": true
-}

@@ -1,3 +1,4 @@
+import {releasePotionEnemyInventory,releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -10,10 +11,20 @@ import {extendFeedbackSourceEpoch,extendFeedbackCiProof,extendFeedbackHelperClos
 import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
-import {releasePc22BasicFeedbackPriorInventory} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
-import {integrationRead,integrationPriorInventory} from './helpers/release-card-contact-integration.mjs';
+import {mobilePotionPriorInventory,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
+import {potionPost697PriorInventory,potionPost697CiPacket,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
+const exactSourceError=(layer,path)=>error=>{
+ assert(error instanceof assert.AssertionError);
+ assert.equal(error.message.split('\n')[0],`${layer}: ${path}`);return true;
+};
+const styleSourceError=path=>exactSourceError([
+ 'scripts/official-run-layout.mjs','tests/defect-final-source-epoch.test.mjs',
+ 'tests/encounter-formation-source-epoch.test.mjs','tests/helpers/closeout-source-epoch.mjs',
+ 'tests/helpers/copy-integration-source-closure.mjs','tests/official-assets-runtime.test.mjs',
+ 'tests/sts-style-source-epoch.test.mjs',
+].includes(path)?'fresh complete post697 source':'fresh complete StS CI source',path);
 function fixture(){
  const config='config/architecture.json',one='src/lua/one.lua',two='src/lua/two.lua',added='src/lua/abyss_page_reveal.lua';
  const current={[config]:bind('{}\n'),[one]:bind('return 1\n'),[two]:bind('return 2\n')};
@@ -27,12 +38,24 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- // Keep the complete original receipt input; the PC22 basic feedback raw Full contract
- // independently hard-checks every current test and the unchanged budgets.
- const sideRead=integrationRead('pc22');
- const rawJs=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(discoverJs(),'pc22'),'js',sideRead),rawLua=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'pc22','lua'),'lua',sideRead);
- assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
- for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
+ const mergedJs=discoverJs(),mergedLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const rawJs=releasePotionEnemyInventory(mergedJs,potionPost697CiPacket.currentInventory.js,'js');
+ const rawLua=releasePotionEnemyInventory(mergedLua,potionPost697CiPacket.currentInventory.lua,'lua');
+ const potionRead=releasePotionEnemyRead('potion');
+ const historical={};
+ for(const [kind,combined]of [['js',rawJs],['lua',rawLua]]){
+  assertPotionPost697RawInventory(combined,kind);
+  const raw=potionPost697PriorInventory(combined,kind,potionRead);
+  assertMobilePotionRawInventory(raw,kind);
+  historical[kind]=mobilePotionPriorInventory(raw,kind);
+  for(const path of raw.filter(p=>!historical[kind].includes(p))){
+   assert.throws(()=>assertMobilePotionRawInventory(raw.filter(p=>p!==path),kind),/inventory/);
+   for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>mobilePotionPriorInventory(raw,kind,
+    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+  }
+ }
+ assert.deepEqual(historical.js,integratedCiProof.inventory);assert.deepEqual(historical.lua,integratedCiProof.luaInventory);
+ for(const [kind,current]of Object.entries(historical))for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
   if(target==='release'&&kind==='js'&&added.length===0){
    assert.deepEqual(current,prior,'source-only continuation retains the complete identical JS inventory');
@@ -42,7 +65,9 @@ test('release additions remain in raw Full and exact historical inventories reje
   for(const path of added){
    assert.throws(()=>integratedPriorInventory(current.filter(p=>p!==path),target,kind),/inventory/);
    for(const value of [null,readFileSync(path,'utf8')+'\n'])assert.throws(()=>integratedPriorInventory(current,target,kind,
-    (p,e)=>p===path?value:readFileSync(p,e)),/added inventory source|replaceAll/);
+    (p,e)=>p===path?value:readFileSync(p,e)),value===null?
+     {name:'TypeError',message:"Cannot read properties of null (reading 'replaceAll')"}:
+     exactSourceError(path==='tests/sts-style-source-epoch.test.mjs'?'fresh complete post697 source':'fresh added inventory source',path));
   }
   for(const changed of [[...current,current[0]],[...current,'tests/foreign.'+kind]])assert.throws(()=>integratedPriorInventory(changed,target,kind),/inventory/);
  }
@@ -96,11 +121,11 @@ test('real style source retains the complete CI-repair and every older target wh
 });
 
 test('real style CI admits only full inventory, complete source and freshly verified executable helpers',async()=>{
- const readFileSync=integratedRead('sts');
+ const styleRead=integratedRead('sts');
  const {stsStyleCiProof:p,assertStsStyleCiCurrent,preStsStyleCiSource,stsStylePriorInventory}=await import('./helpers/sts-style-ci-source.mjs');
  const files=discoverJs();assertStsStyleCiCurrent(files);assert.deepEqual(stsStylePriorInventory(files),p.beforeInventory);
  for(const [path,row]of Object.entries(p.files)){
-  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const raw=styleRead(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(preStsStyleCiSource(path,raw),row.before?.source??raw);
   for(const foreign of [raw+'\n',null,{},17])assert.equal(preStsStyleCiSource(path,foreign),foreign);
  }
@@ -113,10 +138,10 @@ test('real style CI admits only full inventory, complete source and freshly veri
   'scripts/check-license.mjs','tests/ci-reviewed-lfs.test.mjs','.gitattributes','config/ci-media-lfs.json','docs/legal/assets.json',
   'docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs']){
   assert(p.files[path]?.after,'exact CI/storage execution witness: '+path);
-  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh complete StS CI source/,path);
+  assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\n':value;}),styleSourceError(path),path);
  }
  assert.equal(p.files['docs/evidence/sts-neow-reference-20261113/verify-runtime-equivalence.mjs'].before,null,'new verifier cannot invent a historical source');
- for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>readFileSync(p,e)+(p===path?'\n':'')),/fresh (?:StS helper|complete StS CI) source/,path);
+ for(const path of Object.keys(p.helperSources))assert.throws(()=>assertStsStyleCiCurrent(files,(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\n':value;}),styleSourceError(path),path);
  for(const changed of [files.slice(1),[...files,files[0]],[...files,'tests/foreign.test.mjs']])assert.throws(()=>assertStsStyleCiCurrent(changed),/inventory/);
  for(const path of p.addedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined,'new style regression cannot acquire a historical hosted observation');
@@ -218,7 +243,7 @@ test('feedback real current source and CI preserve all four immutable archives a
  assert.equal(stsStyleCiProof.feedback.sourceCommit,menuRedPriorEpoch.proof.currentCommit,'feedback production and CI retain their exact source slice before the explicit menu continuation');
  assert.deepEqual(stsStyleCiProof.afterInventory,[...previousCi.afterInventory,...feedbackAddedTests].sort());
  for(const [path,row]of Object.entries(previousCi.files))assert.deepEqual(stsStyleCiProof.files[path].before,row.before,'complete original CI before: '+path);
- for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\n':value;}),/fresh (?:complete StS CI|StS helper) source/,path);
+ for(const path of feedbackCiPaths)assert.throws(()=>assertStsStyleCiCurrent(discoverJs(),(p,e)=>{const value=readFileSync(p,e);return p===path?value+'\n':value;}),styleSourceError(path),path);
  for(const path of feedbackAddedTests)for(const platform of ['win32','linux']){
   assert.equal(timings.js[platform][path],undefined);assert(jsPlanningWeights([path],platform)[path]>=timings.unknownJsMs);
  }

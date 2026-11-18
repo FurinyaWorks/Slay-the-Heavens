@@ -96,7 +96,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     install(services, require("abyss_battle_card_gestures").install(self, ownership, host, ports(links, {
         "closeInfo", "cardReady", "dragTarget", "notice", "cancelCardInputs",
         "cancelActionInputs", "cancelPotionInputs", "cancelPotionAim", "refresh", "rewardScreen",
-        "movePotion", "releasePotionDrag"
+        "movePotion", "releasePotionDrag", "aimReady"
     })))
     install(services, require("abyss_battle_action_bindings").install(self, ownership, host, ports(links, {
         "swallowed", "cardReady", "down", "point", "inPlayArea",
@@ -312,8 +312,19 @@ function M.new(root, data, presentation, clickEvent, platform, options)
                 self.suppressClick=false
             end
         end,
-        pointerClick=function(event)
-            return not services.consumeReleasedDragClick(event) and not self.suppressClick and not self.gesture
+        pointerClick=function(event,token)
+            local origin=token and {touchId=token.touch} or event
+            return not services.consumeReleasedDragClick(origin) and not self.suppressClick and not self.gesture
+        end,
+        pointerConsumed=function(event,token)
+            -- Only a host with neither Down nor Up is truly click-only. Partial
+            -- pointer capabilities still need the attributed tail barrier.
+            if not (host.cursor and (host.cursor.CursorDown or host.cursor.CursorUp)) then return end
+            -- Reuse the finite release barrier after the popup command closes
+            -- its menu. Keep the owned ID and the native Click's one ambiguous
+            -- tail separately when that Click omitted its ID.
+            local touch=token and token.touch or event and event.touchId
+            ownership.releasedDragTouch=touch;self.suppressClick={touch=event and event.touchId}
         end,
         item=function(slot)return Run.potionSlotView(self.run,slot)end,
         text=function(item,battle)return potionText(item,battle,true):match("\n(.*)") or ''end,

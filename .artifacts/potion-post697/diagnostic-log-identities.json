@@ -1,0 +1,37 @@
+[
+  {
+    "path": ".artifacts/potion-post697/affected-source-first.log.gz",
+    "rawSha256": "dcec2e4f81051b3fae26e544c3d8cb1ce70684bde7eec354d23ac8ada1d62c50",
+    "rawBytes": 4633
+  },
+  {
+    "path": ".artifacts/potion-post697/gameui-combo-first.log.gz",
+    "rawSha256": "61be900b60d92752e70755353b6ff10e168ea31573129c9747a21f8165cbc3df",
+    "rawBytes": 1109
+  },
+  {
+    "path": ".artifacts/potion-post697/gameui-combo-second.log.gz",
+    "rawSha256": "0e6fba39b5cff3da0f7c470491f37046d8677ecea1130e797a1a5c48645c52a4",
+    "rawBytes": 1242
+  },
+  {
+    "path": ".artifacts/potion-post697/gameui-combo-third.log.gz",
+    "rawSha256": "82fe5843922d3395d4ea38818380eeb26a0056c91c9cde8a5f985caf4af44a06",
+    "rawBytes": 1474
+  },
+  {
+    "path": ".artifacts/potion-post697/gameui-combo-fourth.log.gz",
+    "rawSha256": "53240e755d8e28d97b83c4b7d97637bf0941d8b8ddd61a832a346aa247c887bf",
+    "rawBytes": 1512
+  },
+  {
+    "path": ".artifacts/potion-post697/gameui-combo-fifth.log.gz",
+    "rawSha256": "dbffda4d5a0960641c806a94053f80d7ec37a04bb8bb6b2e6b233dc20c46cf0f",
+    "rawBytes": 1538
+  },
+  {
+    "path": ".artifacts/potion-post697/gameui-combo-sixth.log.gz",
+    "rawSha256": "4cde7c701cf2133633454ea3016d87e1cfeba20bc6d6a34da00184e49281d682",
+    "rawBytes": 1538
+  }
+]

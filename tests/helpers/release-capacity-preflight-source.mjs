@@ -1,6 +1,5 @@
 import {assertEnemyFastArchive,assertEnemyFastCurrent,enemyFastRead,enemyFastSource} from './release-enemy-fast-source.mjs';
 // Exact CI-only parent views for the prepared 359 + 703 source join.
-import {settingsReleaseSource,assertSettingsReleaseArchive} from './settings-release-source.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -16,25 +15,21 @@ for(const row of Object.values(packet.files))for(const binding of Object.values(
 }
 export function assertCapacityPreflightArchive(read=readFileSync){assertEnemyFastArchive(read);assert.equal(hash(read(path)),sha,'fresh complete capacity/preflight archive');}
 export function assertCapacityPreflightCurrent(read=readFileSync){
- assertSettingsReleaseArchive(read);
  assertEnemyFastCurrent(read);
  read=enemyFastRead('release',read);
  assertCapacityPreflightArchive(read);
  for(const [p,row]of Object.entries(packet.files)){
-  const source=settingsReleaseSource(p,read(p,'utf8'),'release');assert.equal(typeof source,'string');assert(!source.includes('\r\r\n'));
+  const source=read(p,'utf8');assert.equal(typeof source,'string');assert(!source.includes('\r\r\n'));
   assert.equal(hash(norm(source)),row.currentSha256,'fresh complete integration source: capacity/preflight '+p);
  }
 }
 export function capacityPreflightSource(path,source,view,before){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null,binding=row&&Object.hasOwn(row.views,view)?row.views[view]:null;
- // Continue the exact preflight sources that were unchanged in af77.
- if(!row&&view==='preflight'&&before===undefined){
-  if(path==='tests/integrated-ci-source.cases.mjs')return settingsReleaseSource(path,source,'release');
-  if(['.github/workflows/quality.yml','tests/ci-summary-runners.test.mjs'].includes(path))
-   return enemyFastSource(path,source,'release');
- }
- if(!binding||before&&before.sha256!==binding.sha256||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const current=settingsReleaseSource(path,enemyFastSource(path,source,'release'),'release');
- if(hash(norm(current))!==row.currentSha256)return source;
+ // These two prepared sources were unchanged in af77; the existing outer seam now binds their runner-only successor.
+ if(!row&&view==='preflight'&&before===undefined&&['.github/workflows/quality.yml','tests/ci-summary-runners.test.mjs'].includes(path))
+  return enemyFastSource(path,source,'release');
+ if(!binding||before&&before.sha256!==binding.sha256)return source;
+ source=enemyFastSource(path,source,'release');
+ if(typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.currentSha256)return source;
  return source.includes('\r\n')?binding.source.replaceAll('\n','\r\n'):binding.source;
 }

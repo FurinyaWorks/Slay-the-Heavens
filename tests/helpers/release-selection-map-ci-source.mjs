@@ -1,4 +1,5 @@
 import {fastFreezeB9Source} from './release-fast-freeze-b9-union.mjs';
+import {releasePotionEnemyRead} from './release-potion-enemy-source.mjs';
 // CI-only trust leaf; production and isolated production copies never import it.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -120,8 +121,9 @@ const fixtureRepairs={
   ]
  }
 };
+const readReleaseFreezeSource=releasePotionEnemyRead('release');
 export function releaseFreezeCiBefore(path,source){
- source=fastFreezeB9Source(path,source,'freeze');
+ source=fastFreezeB9Source(path,source,'freeze',readReleaseFreezeSource);
  if(Object.hasOwn(fixtureRepairs,path)&&typeof source==='string'&&!source.includes('\r\r\n')){
   const row=fixtureRepairs[path],current=norm(source);
   if(hash(current)===row.current){
