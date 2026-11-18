@@ -2,6 +2,13 @@ local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Theme=require('abyss_theme')
 local host,ui,panel,_,tap=H.setup({'defend'},{'cultist'})
 local popup=panel:GetChild('potionHelp'):GetChild('potionPopup')
+local function dismiss(touch)
+ local control=popup:GetChild('dismiss')
+ for _,kind in ipairs({'down','up','click'})do control.listeners[kind]({touchId=touch})end
+ assert(not ui.potionMenu and not popup.visible,'fresh dismissal closes the reading panel')
+ -- A queued anonymous action is still the old physical gesture, not a retry.
+ assert(popup:GetChild('use').listeners.click({})==false,'anonymous popup tail cannot use a bottle')
+end
 local function bottom(p)return p.y-p.sizeDeltaY/2 end
 local function top(p)return p.y+p.sizeDeltaY/2 end
 local ids={}
@@ -17,13 +24,19 @@ for i,id in ipairs(ids)do
  assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,id..' popup outside viewport horizontally')
  if id=='flex_potion' then assert(effect.text:gsub('\n',''):find('人工制品可抵挡减益',1,true),'full temporary strength effect retained')end
  assert(host.run.potions[1]==id,'reading must not consume')
- popup:GetChild('dismiss').listeners.click({touchId=990+i})
+ dismiss(990+i)
+ assert(host.run.potions[1]==id,'dismissal and its queued tail must not consume')
 end
 assert(H.Run.obtainRelic(host.run,'Potion Belt'))
+-- Preserve the public menu command's five-capacity geometry contract. This
+-- fixture's direct-panel tap helper does not resolve slots 4/5 in potionHelp.
+host.run.potions[1]='flex_potion';host:refresh();tap('potion1',2000)
+assert(ui:controllerBack(),'a fresh native press may return through the controller command')
 for slot=1,5 do
  host.run.potions[slot]='flex_potion';host:refresh()
  assert(ui:openPotionMenu(slot));assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)
- popup:GetChild('dismiss').listeners.click({touchId=1000+slot})
+ assert(ui:controllerBack(),'public capacity inspection returns without another pointer action')
+ assert(host.run.potions[slot]=='flex_potion','physical-slot reading and dismissal must not consume')
 end
 host.run.potions={'strength_potion','fire_potion','speed_potion'};host:refresh()
 local function bottle(slot)return panel:GetChild('potion'..slot):GetChild('normal'):GetChild('bottle')end

@@ -1,3 +1,5 @@
+import "./helpers/shop-shelf-clearance.cases.mjs";
+import './helpers/shop-dismiss.cases.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { nodeLayout } from '../scripts/node-ui-layout.mjs';

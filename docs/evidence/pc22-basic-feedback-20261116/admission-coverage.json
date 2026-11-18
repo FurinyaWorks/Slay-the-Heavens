@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "base": "36b9b157ee6f05b65eb9f1da7e2978647d36c210",
+  "executableCheckpoint": "197ef837a35961eb36a3c86dc9dd52cb664cffd5",
+  "product": "1b272ab7f57f2a8bde67fe8796d3a894445ae052",
+  "source": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+  "inputs": 15,
+  "uncovered": [],
+  "rows": [
+    {
+      "path": "src/lua/abyss_card_flow.lua",
+      "gitBlob": "486b63e804f138ee7a1ba1dc8241bdf9d3b99731",
+      "kind": "product",
+      "reviewedHead": "1b272ab7f57f2a8bde67fe8796d3a894445ae052",
+      "reviewSha256": "8ea0a24c57302c1e6b2b79a719b578b7ed59dfa15bf0b1c2a2ac3d5e0aa192ae"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "gitBlob": "3907b7ca91cc673f202c0c516bd7c8fd4581ca38",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "gitBlob": "12eb628a5cc3df8876c111a9aa94312815416045",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "gitBlob": "b63c3e97211ce050db87fdb3f370795e6f5dd8d3",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "gitBlob": "809d2e3b5117b43618b1061aaa77cb9daf19d86f",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/release-pc22-basic-feedback-ci-source.json.gz",
+      "gitBlob": "5b44224f7e07c11551901e322e141d04ec4231b9",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/release-pc22-basic-feedback-ci-source.mjs",
+      "gitBlob": "1b949f55e16bba415ec931af09cd8def428d3437",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/release-pc22-basic-feedback-source.json.gz",
+      "gitBlob": "954ce61d1ba5cdb0f8d1e4f745dc49a5f7a13576",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/helpers/release-pc22-basic-feedback-source.mjs",
+      "gitBlob": "dedb23ae1af2f4c555e6c688501cf3761c837a12",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/integrated-ci-source.cases.mjs",
+      "gitBlob": "9f401bd8b3c2a179d452277762930f9fa08a6e80",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/integration-source-epoch.test.mjs",
+      "gitBlob": "d40ca628eb8a23035c8763eb04857f1c4c63960b",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/lua/card_flow_contact_continuity.lua",
+      "gitBlob": "6a69df8ba7a9c2906ffd3377f1bc09325c793f08",
+      "kind": "product",
+      "reviewedHead": "1b272ab7f57f2a8bde67fe8796d3a894445ae052",
+      "reviewSha256": "8ea0a24c57302c1e6b2b79a719b578b7ed59dfa15bf0b1c2a2ac3d5e0aa192ae"
+    },
+    {
+      "path": "tests/release-pc22-basic-feedback-source.test.mjs",
+      "gitBlob": "4272f34973d742c15c4a6020fe78a5bcd41f3372",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "gitBlob": "abdc82e33075e9020c0f4ebab5016e33c7179f59",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "gitBlob": "48403fe27bf0fc28893126cde498a90ba3ff9555",
+      "kind": "source",
+      "reviewedHead": "249511a29f4fb4ae1c9954ef8ab5f9e2c27f6db0",
+      "reviewSha256": "f7121ea1ca5e0e771dfdd737a28e00a4c745d48f23152896b01cc99463e0251a"
+    }
+  ],
+  "limits": [
+    "Only PC22 contact-center continuity; shape/scale/decorative feedback not accepted.",
+    "No hosted Required CI, candidate/import/ready, PC/mobile/capacity acceptance.",
+    "PR692 actual Release integration requires fresh shared source binding."
+  ]
+}

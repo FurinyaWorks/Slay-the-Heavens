@@ -1,0 +1,15 @@
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=61 source=explicit
+ABYSS_FEEDBACK damage source=player target=acid_slime_m_2 amount=20
+ABYSS_FEEDBACK recovered cancelled
+POST697_GAMEUI_MAP_POTION_PASS 1
+
+✔ generated official Host preserves pointer, controller and read-only return behavior (6517.4866ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6647.121

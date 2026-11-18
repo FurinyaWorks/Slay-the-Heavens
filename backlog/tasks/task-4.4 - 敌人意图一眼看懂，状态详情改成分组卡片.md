@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-24 10:34'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-18 14:55'
 labels:
   - awaiting-live
   - 待验
@@ -81,4 +81,6 @@ PR #304：手机反馈己方与敌方详情关闭不一致，可能为旧线上�
 2026-11-14清理旧窗口日期：原due_date=2026-10-26保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已有4/8项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-18 Release 候选从 #687 的 f448a9df 提取既有防御强化角标修复，与当前敌人坐标剪枝及稀疏拖牌保留组合。原审批、当前状态、负责人和设备验收不变。永久保留原始复合意图、控制状态碰撞、真实生成 Host 地图返回、零时限放宽及未验记录 https://github.com/FurinyaWorks/Slay-the-Heavens/tree/e1221ee0abc265a720cd71a87d01b9d109c51475/docs/evidence/intent-ci-reader-repair-20261116 。保留真实文本历史投影的逐次来源校验。官方同候选导入、ready、容量与手机 AC 保持未验。
 <!-- SECTION:NOTES:END -->
