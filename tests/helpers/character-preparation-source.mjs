@@ -1,4 +1,5 @@
 import {beforeSelectorSource} from './character-selector-source.mjs';
+import {beforePotionTextSource} from './potion-text-source.mjs';
 import {beforeFatalBgmSource} from './fatal-bgm-source-continuation.mjs';
 import {beforeEndingTerminalSource} from './ending-terminal-source.mjs';
 import assert from 'node:assert/strict';
@@ -31,7 +32,7 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   if (!Object.hasOwn(packet.production, path)) {
-    source = beforeSelectorSource(path, source, read);
+    source = beforePotionTextSource(path, beforeSelectorSource(path, source, read), read);
     return beforeEndingTerminalSource(path, beforeFatalBgmSource(path, source, read), read);
   }
   if (typeof source !== 'string' || source.includes('\r\r\n')) return source;
@@ -46,7 +47,7 @@ export function beforeCharacterPreparationCiSource(path, source) {
   const row = packet.suite[path];
   const sha = digest(normalize(source));
   const calibration = path === 'tests/ci-complete-calibration.test.mjs' &&
-    sha === 'aebc72a58e98e2127e4bb9b60e23eb29c0158149202a6a13db8826b53f41e510';
+    sha === '0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268';
   if (sha !== row.after && !calibration) return source;
   return source.includes('\r\n') ? row.before.replaceAll('\n','\r\n') : row.before;
 }

@@ -54,9 +54,9 @@ const sourceSuccessors=Object.freeze({
  'scripts/backlog-metadata.mjs':'082c419cbd0e20eae4ec4cb36f93541af3149f686dd064f06f5a12c983e27933',
  'scripts/verify-backlog-roadmap.mjs':'1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb',
  'tests/backlog-roadmap.test.mjs':'b4a523a6a7763e825804404a270da6a401a17b59b9855b701a82cb8571f3b17d',
- 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'8eb2d051c81edaecc07dae3468c46d05172740c9c771e4c4da83bd3d37bc1f0e',
- 'tests/helpers/copy-integration-source-closure.mjs':'ea3db696c0f1332635214335089aa8647a4af3af649b1e8b714b17dec9eac7a0',
- 'tests/ci-complete-calibration.test.mjs':'aebc72a58e98e2127e4bb9b60e23eb29c0158149202a6a13db8826b53f41e510',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99',
+ 'tests/helpers/copy-integration-source-closure.mjs':'888b4675e665dafc2c110e417ae5b01cdeec6235b05b723238e890dcfedac269',
+ 'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
 });
 const archiveFiles=JSON.parse(gunzipSync(integratedCiBytes)).files;
 function beforeIntegrationSuccessor(path,source){

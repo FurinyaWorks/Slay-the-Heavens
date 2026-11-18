@@ -47,7 +47,7 @@ import {readFileSync as rawBootstrapReadFileSync,readdirSync} from 'node:fs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 const liveDiskReadFileSync=releaseBootstrapCiRead((path,encoding)=>{
  const raw=rawBootstrapReadFileSync(path,encoding);
- if(path!=='src/lua/abyss_ui.lua'&&path!=='src/lua/abyss_character_select_view.lua')return raw;
+ if(!['src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua','src/lua/abyss_potion_text.lua'].includes(path))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforeCharacterPreparationSource(path,text);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 });
