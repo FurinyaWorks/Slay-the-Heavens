@@ -115,9 +115,10 @@ test('Fast plan binds exact head/base/attempt and complete unique canonical test
  ]) {const e=fixture();mutate(e);assert(prFastErrors(e).length,String(mutate));}
 });
 test('explicit prose-only Fast may have zero tests; unknown prose cannot borrow that exception',()=>{
- const e=fixture();e.plan.js=[];e.plan.changed=['docs/CI.md','docs/HANDOFF.md','docs/CI-FAST.md'];
+ const e=fixture();e.plan.js=[];e.plan.changed=['docs/CI.md','docs/HANDOFF.md','docs/CI-FAST.md','docs/CI-PREFLIGHT.md',
+  'docs/art/MULTI_MONSTER_DRAWINGS.md','docs/art/NATIVE_MONSTER_PRODUCTION.md','docs/art/PIPELINE.md'];
  assert.deepEqual(prFastErrors(e),[]);
- for(const path of ['docs/design/UI_DESIGN.md','docs/evidence/test.json','README.md','unknown']) {
+ for(const path of ['docs/design/UI_DESIGN.md','docs/evidence/test.json','docs/art/unknown.md','backlog/tasks/task-1.md','README.md','unknown']) {
   e.plan.changed=['docs/CI.md',path];assert(prFastErrors(e).length,path);
  }
 });

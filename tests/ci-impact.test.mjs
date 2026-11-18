@@ -21,8 +21,14 @@ test('complete mapped set is eligible; unknown, deleted, core and release change
   assert.equal(impact(['scripts/value.mjs'], sources, event, { ...timing, unknownJsMs: 180001 }).mode, 'fast');
 });
 test('prose allowlist cannot hide additional unmodelled changes', () => {
-  assert.equal(impact(['docs/CI.md'], sources, event, timing).mode, 'fast');
-  assert.equal(impact(['docs/CI.md', 'unknown'], sources, event, timing).mode, 'full');
+  const prose = ['docs/CI.md', 'docs/CI-PREFLIGHT.md', 'docs/art/MULTI_MONSTER_DRAWINGS.md',
+    'docs/art/NATIVE_MONSTER_PRODUCTION.md', 'docs/art/PIPELINE.md'];
+  const plan = impact(prose, sources, event, timing);
+  assert.equal(plan.mode, 'fast');
+  assert.deepEqual([plan.js, plan.lua], [[], []]);
+  for (const path of ['unknown', 'docs/art/NEW.md', 'docs/evidence/result.md', 'docs/SCOPE.md', 'backlog/tasks/task-1.md'])
+    assert.equal(impact([...prose, path], sources, event, timing).mode, 'full', path);
+  assert.deepEqual(impact([...prose, 'scripts/value.mjs'], sources, event, timing).js, ['tests/value.test.mjs']);
 });
 
 test('admission control changes require Full even with proven tiny affected tests',()=>{
@@ -113,19 +119,28 @@ test('actual impact CLI routes Full Fast unknown and merge-group through the com
  const root=mkdtempSync(join(tmpdir(),'impact-posix15-')),cli=resolve('scripts/ci-impact.mjs');
  const git=(...args)=>{const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.ifError(result.error);assert.equal(result.status,0,result.stderr);return result.stdout.trim();};
  try{
-  for(const dir of ['src/lua','scripts','tests','docs'])mkdirSync(join(root,dir),{recursive:true});
+  for(const dir of ['src/lua','scripts','tests','docs/art'])mkdirSync(join(root,dir),{recursive:true});
   writeFileSync(join(root,'scripts/ci-test-timings.json'),JSON.stringify(timing));
   writeFileSync(join(root,'docs/CI.md'),'initial\n');
   git('init','--quiet');git('add','.');git('-c','user.name=CI Fixture','-c','user.email=ci@example.invalid','commit','--quiet','-m','initial');
   const base=git('rev-parse','HEAD'),head='a'.repeat(40),ref='refs/heads/gh-readonly-queue/develop/pr-1-fixture';
   for(const scenario of [
-   {name:'fast',file:'docs/CI.md',mode:'fast'},
+   {name:'fast edit',file:'docs/CI.md',mode:'fast'},
+   {name:'fast new',file:'docs/art/NATIVE_MONSTER_PRODUCTION.md',mode:'fast'},
+   {name:'invalid UTF-8',file:'docs/CI.md',bytes:Buffer.from([0xc0,0x80]),mode:'full'},
+   {name:'embedded NUL',file:'docs/CI.md',bytes:Buffer.from('a\0b'),mode:'full'},
+   {name:'deleted',file:'docs/CI.md',remove:true,mode:'full'},
    {name:'full',file:'scripts/ci-quality-shape.mjs',mode:'full'},
    {name:'unknown',file:'unmapped-input',mode:'full'},
    {name:'merge-group',mode:'full',eventName:'merge_group'},
   ]){
    git('reset','--hard',base);git('clean','-fd');
-   if(scenario.file){writeFileSync(join(root,scenario.file),'changed\n');git('add','.');git('-c','user.name=CI Fixture','-c','user.email=ci@example.invalid','commit','--quiet','-m',scenario.name);}
+   if(scenario.file){
+    const file=join(root,scenario.file);
+    if(scenario.remove)rmSync(file);
+    else{mkdirSync(resolve(file,'..'),{recursive:true});writeFileSync(file,scenario.bytes??'文字修改\n');}
+    git('add','.');git('-c','user.name=CI Fixture','-c','user.email=ci@example.invalid','commit','--quiet','-m',scenario.name);
+   }
    // git does not retain empty directories. The real CLI still scans its three source roots.
    for(const dir of ['src/lua','scripts','tests'])mkdirSync(join(root,dir),{recursive:true});
    const eventPath=join(root,'event.json'),output=join(root,'output'),summary=join(root,'summary');

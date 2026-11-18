@@ -1,20 +1,20 @@
 import { readFileSync, readdirSync, writeFileSync, appendFileSync } from 'node:fs';
+import { isUtf8 } from 'node:buffer';
 import {qualityShardMatrices} from './ci-quality-shape.mjs';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { selectTests, parseGitChanges } from './test-affected.mjs';
+import { isGovernanceProsePath } from './pr-quality-evidence.mjs';
 const architectureLayers = JSON.parse(readFileSync(new URL('../config/architecture.json', import.meta.url), 'utf8')).layers;
 
-export function impact(changed, sources, event, timings) {
+export function impact(changed, sources, event, timings, isProse = isGovernanceProsePath) {
   const full = reason => ({ mode: 'full', reason, changed, js: [], lua: [] });
   const release = /^release\/[\w][\w./-]*$/.test(event.base ?? '');
   if (event.eventName !== 'pull_request' || event.base !== 'develop' && !release || event.forceFull) return full('Integration or explicit full validation');
   if (!changed.length) return full('Empty comparison');
-  // Documentation is not generally inert: evidence, design, source ledgers and
-  // backlog are consumed by gates. Only this explicit prose allowlist is inert.
-  const inert = p => /^docs\/(?:HANDOFF|CI|CI-FAST)\.md$/.test(p);
-  const active = changed.filter(p => !inert(p));
+  if (changed.some(p => isGovernanceProsePath(p) && !isProse(p))) return full('Documentation change is not a regular UTF-8 text addition or edit');
+  const active = changed.filter(p => !isGovernanceProsePath(p));
   if (!active.length) return { mode: 'fast', reason: 'Prose only; governance gates still run', changed, js: [], lua: [] };
   // develop keeps conservative core Full; Release fixes use proven affected tests.
   if (active.some(p => /^(?:data\/|config\/|\.github\/|package|vendor\/)/.test(p)
@@ -39,6 +39,22 @@ export function impact(changed, sources, event, timings) {
 function scan(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? scan(`${dir}/${e.name}`) : [`${dir}/${e.name}`]);
 }
+
+function regularProseChanges(base, changed) {
+  const candidates = changed.filter(isGovernanceProsePath);
+  if (!candidates.length) return new Set();
+  const git = spawnSync('git', ['diff', '--raw', '-z', '--no-renames', base, 'HEAD', '--', ...candidates], { encoding: 'utf8' });
+  if (git.status !== 0) throw new Error(git.stderr || 'Cannot inspect documentation changes');
+  const fields = git.stdout.split('\0');
+  const prose = new Set();
+  for (let i = 0; i < fields.length - 1; i += 2) {
+    if (!/^:(?:000000|100644) 100644 [0-9a-f]+ [0-9a-f]+ [AM]$/.test(fields[i])) continue;
+    const path = fields[i + 1], bytes = readFileSync(path);
+    if (isUtf8(bytes) && !/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(bytes.toString('utf8'))) prose.add(path);
+  }
+  return prose;
+}
+
 export function main() {
   const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
   // A merge queue group is a new integration commit, not an ordinary PR.
@@ -59,8 +75,9 @@ export function main() {
     changed = [...new Set(parseGitChanges(git.stdout))];
   }
   const sources = Object.fromEntries(['src/lua', 'scripts', 'tests'].flatMap(scan).filter(p => /\.(lua|mjs)$/.test(p)).map(p => [p, readFileSync(p, 'utf8')]));
+  const prose = regularProseChanges(event.pull_request?.base.sha, changed);
   const plan = impact(changed, sources, { eventName: process.env.GITHUB_EVENT_NAME, base: event.pull_request?.base.ref,
-    forceFull: event.pull_request?.labels?.some(l => l.name === 'ci:full') }, JSON.parse(readFileSync('scripts/ci-test-timings.json', 'utf8')));
+    forceFull: event.pull_request?.labels?.some(l => l.name === 'ci:full') }, JSON.parse(readFileSync('scripts/ci-test-timings.json', 'utf8')), path => prose.has(path));
   plan.sha = process.env.GITHUB_SHA;
   plan.head = event.pull_request?.head.sha;
   plan.base = event.pull_request?.base.sha;

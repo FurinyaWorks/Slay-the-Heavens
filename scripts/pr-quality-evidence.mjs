@@ -15,6 +15,14 @@ export const currentFastQualityJobs=Object.freeze([
  'fast (ubuntu-24.04)','fast (windows-2025)',...skippedJobs,
 ]);
 
+// These operator and art process documents are outside build and test inputs.
+// Backlog records, design inputs and evidence stay subject to normal selection.
+const governanceProsePaths=new Set([
+ 'docs/HANDOFF.md','docs/CI.md','docs/CI-FAST.md','docs/CI-PREFLIGHT.md',
+ 'docs/art/MULTI_MONSTER_DRAWINGS.md','docs/art/NATIVE_MONSTER_PRODUCTION.md','docs/art/PIPELINE.md',
+]);
+export const isGovernanceProsePath=path=>governanceProsePaths.has(path);
+
 // Fast has a separate inventory. A Full-shaped green or a single successful
 // platform is never a substitute for the two complete affected executions.
 export function fastQualityJobErrors(jobs,{attempt,runId,head,allowRunningAggregate=false}) {
@@ -92,7 +100,7 @@ export function prFastErrors(e,{allowRunningAggregate=false,metadataOnly=false}=
   !paths(p.changed,/^[^/].*$/)||!p.changed.length||
   !paths(p.js,/^tests\/[^/]+\.test\.mjs$/)||!paths(p.lua,/^tests\/lua\/[^/]+\.lua$/))
   errors.push('Missing, malformed or mismatched complete Fast impact plan');
- else if(!p.js.length&&!p.lua.length&&!p.changed.every(path=>/^docs\/(?:HANDOFF|CI|CI-FAST)\.md$/.test(path)))
+ else if(!p.js.length&&!p.lua.length&&!p.changed.every(isGovernanceProsePath))
   errors.push('Zero tests only qualify for the explicit prose allowlist');
  if(e.receiptError)errors.push('Fast checkout collection failed: '+e.receiptError);
  return errors;
