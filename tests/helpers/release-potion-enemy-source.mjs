@@ -316,6 +316,14 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
   assert(Object.hasOwn(packet.parents, side), 'known exact potion Release CI parent');
   return (path, encoding) => {
     const source = read(path, encoding);
+    // Frozen calibration views precede the settings icon shipped in #695.
+    if (side === 'potion' && path === settingsHud && (typeof source === 'string' || Buffer.isBuffer(source))) {
+      const text = typeof source === 'string' ? source : source.toString('utf8');
+      const prior = priorCiSource(settingsCi.files, path, text);
+      if (prior === text) return source;
+      assertSettingsCiCurrent(read);
+      return typeof source === 'string' ? prior : Buffer.from(prior);
+    }
     // The authenticated older potion view keeps the exact gesture owner from before PC35.
     if (side === 'potion' && path === 'src/lua/abyss_battle_card_gestures.lua' &&
         (typeof source === 'string' || Buffer.isBuffer(source))) {
