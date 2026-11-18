@@ -24,8 +24,21 @@ const currentHashes=Object.freeze({
  'tests/ci-summary-runners.test.mjs':'4d3654d6309e49bd9a2984e071243659db59223d3cd9c8fe7633665ebf38d7ca',
  'tests/quick-feedback.test.mjs':'ef3a2a86ebdd206ccb7bc83501465a0f3ea4a9e02ff41cb6bd406aaccd146e0c',
 });
+const transportBytes=readFileSync(new URL('./ci-media-transport-source.json.gz',import.meta.url));
+assert.equal(hash(transportBytes),'56f69f4abc8687edd75d2087dfa890f94cf8d5f1d67fe2450338a0d2258355b2','complete CI media transport predecessor');
+const transport=JSON.parse(gunzipSync(transportBytes));
+assert.equal(transport.schemaVersion,1);
+assert.equal(transport.base,'fe878280c74eb0461f6f1212b34e50550b80b681');
+for(const [path,row] of Object.entries(transport.files)){
+ assert.equal(hash(row.before),row.beforeSha,path+' complete media transport predecessor');
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
+}
 const normalize=s=>s.replaceAll('\r\n','\n');
 export function beforePreflightSource(path,source,view='prior'){
+ const transportRow=Object.hasOwn(transport.files,path)?transport.files[path]:null;
+ if(transportRow&&['prior','release-bootstrap'].includes(view)&&typeof source==='string'&&
+  !source.includes('\r\r\n')&&hash(normalize(source))===transportRow.currentSha)
+  source=source.includes('\r\n')?transportRow.before.replaceAll('\n','\r\n'):transportRow.before;
  const row=Object.hasOwn(proof.files,path)?proof.files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==(Object.hasOwn(currentHashes,path)?currentHashes[path]:row.currentSha))return source;
  assert(['prior','release-bootstrap'].includes(view),'explicit preflight predecessor view');
