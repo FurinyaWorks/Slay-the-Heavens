@@ -40,6 +40,11 @@
       "sha256": "2c5262498184208b5dc9c441fbb4e861a73d7d022bbc60f0eff0db310288dce1"
     },
     {
+      "file": "sdk-export-receipt.json",
+      "bytes": 1019,
+      "sha256": "0cf45c71079a067aeb795d56af8c773e425cb6c56be782b0457f3b0b36c64584"
+    },
+    {
       "file": "sdk-run.txt",
       "bytes": 196,
       "sha256": "0e69eda29b9460dd375c3df3084eb74d25efe5c664ee361e55b5222b35d11132"

@@ -1,0 +1,22 @@
+[
+  {
+    "package": "beyond-simulator-mcp@0.5.2",
+    "input": "worker.js",
+    "inputSha256": "de72d4f80b230cfac330ab0ac6fa9d05e51bb8f51d352f08dd1ee6bcba0fe09d",
+    "retainedPrefixBytes": 371769,
+    "marker": "var W=null,Oa=",
+    "output": "actual-session.mjs",
+    "outputSha256": "da2f7489a35f67309552f8fe091a6574134851f9a732c391ecd8245c788a37a4",
+    "method": "Exact original bundle prefix plus explicit named exports; worker transport/timer or MCP controller excluded, no SDK behavior changed"
+  },
+  {
+    "package": "beyond-simulator-mcp@0.5.2",
+    "input": "index.js",
+    "inputSha256": "5a64b946fac68d29052e387de11cfb64b90bd5c8a559a74b0fe5d90241be1bca",
+    "retainedPrefixBytes": 413355,
+    "marker": "var wu=Math.max(",
+    "output": "actual-renderer.mjs",
+    "outputSha256": "c9880850acc4a77d5e4477223ef174304bb26170a10933d92ad3185eca2dc0e4",
+    "method": "Exact original bundle prefix plus explicit named exports; worker transport/timer or MCP controller excluded, no SDK behavior changed"
+  }
+]
