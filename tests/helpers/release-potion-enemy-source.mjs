@@ -185,8 +185,33 @@ for (const row of Object.values(cancelCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
+// One new outer view for the exact Release backport; no earlier packet is rewritten.
+const fatalBgmArchive = 'tests/helpers/release-fatal-bgm-ci.json.gz';
+const fatalBgmDigest = 'a35eceb882be23849035539e26a33cab0f415f3da475af21079b5c90ac1c182a';
+const fatalBgmBytes = readFileSync(new URL('./release-fatal-bgm-ci.json.gz', import.meta.url));
+assert.equal(hash(fatalBgmBytes), fatalBgmDigest, 'complete fatal BGM CI continuation');
+const fatalBgmCi = JSON.parse(gunzipSync(fatalBgmBytes));
+assert.equal(fatalBgmCi.schemaVersion, 1);
+assert.equal(fatalBgmCi.base, '1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2');
+assert.deepEqual(Object.keys(fatalBgmCi.files), ["tests/helpers/closeout-source-epoch.mjs", "tests/helpers/copy-integration-source-closure.mjs", "tests/integrated-ci-source.cases.mjs", "tests/native-startup-contract.test.mjs", "tests/lua/support/fatal_bgm_stop.lua"]);
+for (const [path, row] of Object.entries(fatalBgmCi.files)) {
+  assert(!/^(?:src|data|config)\//.test(path), 'CI continuation cannot replace production');
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+function beforeFatalBgmCiSource(path, source) {
+  return priorCiSource(fatalBgmCi.files, path, source);
+}
+function assertFatalBgmCiCurrent(read) {
+  assert.equal(hash(read(fatalBgmArchive)), fatalBgmDigest, 'fresh fatal BGM CI continuation');
+  assert.equal(hash(read('tests/helpers/release-fatal-bgm-source.json.gz')), fatalBgmCi.productionArchive,
+    'fresh immutable fatal BGM production archive');
+  for (const [path, row] of Object.entries(fatalBgmCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: fatal BGM ' + path);
+  }
+}
 function beforeCancelCiSource(path, source) {
-  return priorCiSource(cancelCi.files, path, source);
+  return priorCiSource(cancelCi.files, path, beforeFatalBgmCiSource(path, source));
 }
 
 function assertCancelCiCurrent(read) {
@@ -194,7 +219,7 @@ function assertCancelCiCurrent(read) {
   assert.equal(hash(read('tests/helpers/release-card-cancel-notice-source.json.gz')), cancelCi.productionArchive,
     'fresh immutable card cancel notice production archive');
   for (const [path, row] of Object.entries(cancelCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeFatalBgmCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: card cancel notice ' + path);
   }
 }
@@ -324,6 +349,16 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       assertSettingsCiCurrent(read);
       return typeof source === 'string' ? prior : Buffer.from(prior);
     }
+    // Earlier potion fixtures retain the exact UI before the fatal-only stop port.
+    if (side === 'potion' && path === 'src/lua/abyss_ui.lua' &&
+        (typeof source === 'string' || Buffer.isBuffer(source))) {
+      const text = typeof source === 'string' ? source : source.toString('utf8');
+      const prior = sourceEpoch.preCombinedSource(path, text, {
+        target: 'releaseFatalBgmPrior',
+        readSource: owner => read(owner, 'utf8'),
+      });
+      return typeof source === 'string' ? prior : prior === text ? source : Buffer.from(prior);
+    }
     // The authenticated older potion view keeps the exact gesture owner from before PC35.
     if (side === 'potion' && path === 'src/lua/abyss_battle_card_gestures.lua' &&
         (typeof source === 'string' || Buffer.isBuffer(source))) {
@@ -345,9 +380,10 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
       const particlesRow = Object.hasOwn(particlesCi.files, path) ? particlesCi.files[path] : null;
       const cornerRow = Object.hasOwn(cornerCi.files, path) ? cornerCi.files[path] : null;
+      const fatalBgmRow = Object.hasOwn(fatalBgmCi.files, path) ? fatalBgmCi.files[path] : null;
       const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
-      if (!shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
+      if (!fatalBgmRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -359,6 +395,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertFatalBgmCiCurrent(read);
   assertCancelCiCurrent(read);
   assertShopDismissalCiCurrent(read);
   assertCornerCiCurrent(read);

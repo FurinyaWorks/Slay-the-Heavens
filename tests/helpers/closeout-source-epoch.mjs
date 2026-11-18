@@ -257,10 +257,32 @@ const cancelTargets = {
 };
 const cancelOwners = Object.keys(cancelCurrent).sort().filter(path =>
   Object.values(cancelTargets).some(target => target.files[path]?.sha256 !== cancelCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+const beforeFatalBgm = {
   ...beforeCardCancel, current: cancelCurrent, targets: cancelTargets, owners: cancelOwners,
   currentCommit: cancel.base,
   currentCommitRole: 'PC35 cancel notice from #684 against actual Release, preserving existing pointer policy',
+};
+const fatalBgmBytes = readFileSync(new URL('./release-fatal-bgm-source.json.gz', import.meta.url));
+assert.equal(hash(fatalBgmBytes), 'c2c29f4689fac772c883e90ef8b10bd7da14ba16aad9ca9b81901cfc66f88d31', 'complete fatal BGM production source');
+const fatalBgm = JSON.parse(gunzipSync(fatalBgmBytes));
+const fatalBgmPath = 'src/lua/abyss_ui.lua';
+assert.equal(fatalBgm.schemaVersion, 1);
+assert.equal(fatalBgm.owner, fatalBgmPath);
+assert.equal(fatalBgm.base, '1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2');
+assert.equal(fatalBgm.producer, '2ce3e130a04392a1206c3eb6a76b55eaa838c790');
+assert.equal(fatalBgm.sourceCommit, 'c2280832488a54479ee90a1fc9344d89594ef0e6');
+assert.deepEqual(fatalBgm.before, beforeFatalBgm.current[fatalBgmPath], 'exact Release fatal BGM predecessor');
+const fatalBgmCurrent = { ...beforeFatalBgm.current, [fatalBgmPath]: fatalBgm.current };
+const fatalBgmTargets = {
+  ...beforeFatalBgm.targets,
+  releaseFatalBgmPrior: { commit: fatalBgm.base, files: beforeFatalBgm.current },
+};
+const fatalBgmOwners = Object.keys(fatalBgmCurrent).sort().filter(path =>
+  Object.values(fatalBgmTargets).some(target => target.files[path]?.sha256 !== fatalBgmCurrent[path]?.sha256));
+export const sourceEpoch = createSourceEpochProjector(freeze({
+  ...beforeFatalBgm, current: fatalBgmCurrent, targets: fatalBgmTargets, owners: fatalBgmOwners,
+  currentCommit: fatalBgm.producer,
+  currentCommitRole: 'exact seven-line fatal UI BGM fix from develop #730 on actual Release',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

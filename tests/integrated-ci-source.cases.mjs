@@ -36,6 +36,7 @@ const raw=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('
 // Keep every original complete predecessor assertion; new raw after contracts follow.
 const readFileSync=mobilePotionCiRead(rawReadFileSync);
 const newerReleaseOwners=[
+ 'src/lua/abyss_ui.lua',
  'src/lua/abyss_battle_card_bindings.lua',
  'src/lua/abyss_battle_card_view.lua',
  'src/lua/abyss_battle_enemy_view.lua',
