@@ -56,11 +56,11 @@ const newerReleaseOwners=[
  'src/lua/abyss_node_ui_input.lua',
  'src/lua/abyss_shop_selection.lua',
 ];
-function readLegacyPotionProduction(read){
+function readLegacyPotionProduction(read,target='potionBeforeSelection'){
  const readSource=p=>mergedReadFileSync(p,'utf8');
  // Authenticate the later Release owners before constructing each historical fixture.
  const prior=new Map(newerReleaseOwners.map(path=>[path,
-  jointProductionEpoch.preCombinedSource(path,readSource(path),{target:'potionBeforeSelection',readSource})]));
+  jointProductionEpoch.preCombinedSource(path,readSource(path),{target,readSource})]));
  return path=>prior.has(path)?prior.get(path):read(path,'utf8');
 }
 function readHistoricalFixture(read){
@@ -121,7 +121,7 @@ test('mobile potion production packet retains all old views and rejects partial 
  assert.equal(current.currentTreeCommitted,true,'only the unchanged committed product corpus is claimed committed');
  const files=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
  assert.deepEqual(files,Object.keys(current.current).filter(path=>current.current[path]!==null).sort());
- const productionRead=readLegacyPotionProduction(rawReadFileSync);
+ const productionRead=readLegacyPotionProduction(rawReadFileSync,'potionRegressionPrior');
  for(const path of files)assert.equal(productionRead(path).replaceAll('\r\n','\n'),current.current[path].source,path);
  for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)}])
   assert.throws(()=>extendMobilePotionSource(preMobilePotionSourceEpoch,bad));
@@ -250,7 +250,7 @@ test('potion regression composition production sources retain original owners an
  assert.deepEqual(current.targets.potionRegressionPrior.files,prior.current);
  assert.equal(current.currentCommit,'567f259158e592491bd1fc44fb82ffb78c47789f');assert.equal(current.currentTreeCommitted,true);
  assert.equal(Object.keys(p.combinedProducers).length,3);
- const productionRead=readLegacyPotionProduction(actualPotionRegressionReadFileSync);
+ const productionRead=readLegacyPotionProduction(actualPotionRegressionReadFileSync,'potionClickPrior');
  for(const [path,row]of Object.entries(p.inheritedSources))assert.equal(productionRead(path).replaceAll('\r\n','\n'),row.source,path);
  for(const [path,row]of Object.entries(p.current))assert.equal(productionRead(path).replaceAll('\r\n','\n'),row.source,path);
  for(const bad of [{...p,current:{}},{...p,before:{}},{...p,producers:{}},{...p,currentTreeCommitted:false},{...p,currentCommit:'0'.repeat(40)},{...p,prerequisites:[]},{...p,inheritedSources:{}},{...p,combinedProducers:{}}])

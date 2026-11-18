@@ -1,0 +1,12 @@
+✔ mobile potion production packet retains all old views and rejects partial or stale owner bindings (584.273294ms)
+✔ potion regression composition production sources retain original owners and reject partial fresh authorizations (338.833464ms)
+✔ historical potion production validates its current pointer owners before replay (7.893938ms)
+✔ pointer history authenticates fresh linked owners before reading earlier public text (213.323109ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3097.806736

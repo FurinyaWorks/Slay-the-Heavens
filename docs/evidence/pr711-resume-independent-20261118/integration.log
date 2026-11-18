@@ -1,0 +1,15 @@
+✔ default target corners preserve their native tree and clear on cancel/rebinding (4499.30866ms)
+✔ official target corners preserve their native tree and clear on cancel/rebinding (5524.781674ms)
+✔ joint Release authenticates the full live production corpus and retains both immutable standalone corpora (12.703941ms)
+✔ joint owner authorization freshly rejects every missing changed or mistyped owner and leaves foreign inputs visible (1695.042427ms)
+✔ joint CI binds every current input, preserves both packets and never masks production or foreign drift (38399.070233ms)
+✔ joint raw inventories retain both additions and reject missing duplicate foreign and changed inputs (321.841393ms)
+✔ actual 00ab enemy capacity join freshly rejects cross-input and archive drift through both public readers (1103.586833ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53120.063113

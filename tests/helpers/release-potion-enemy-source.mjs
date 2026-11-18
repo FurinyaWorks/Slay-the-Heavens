@@ -122,7 +122,7 @@ for (const row of Object.values(sparseCi.files)) {
 
 // Continue the standalone Down sample with the independently reviewed pointer protocol.
 const pointerArchive = 'tests/helpers/release-pointer-identity-ci.json.gz';
-const pointerDigest = '192bf663277c4c7df347da046269d77e6467b1f629aee779419e52a610930143';
+const pointerDigest = '30a9623522d856f4db959712c2aed1a9481170081a8d47e8e46a0facf3d43fe7';
 const pointerBytes = readFileSync(new URL('./release-pointer-identity-ci.json.gz', import.meta.url));
 assert.equal(hash(pointerBytes), pointerDigest, 'fixed pointer identity CI continuation');
 const pointerCi = JSON.parse(gunzipSync(pointerBytes));
