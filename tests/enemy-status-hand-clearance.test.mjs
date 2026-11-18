@@ -1,3 +1,5 @@
+import './helpers/mobile-composite-intent.cases.mjs';
+import './helpers/enemy-geometry-metrics.cases.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,readdirSync,readFileSync,rmSync,writeFileSync} from 'node:fs';

@@ -1,13 +1,19 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')
 local function setup()
- local h,root=F.fixture();assert(F.start(h));assert(Run.startCombat(h.run,'cultist_solo'))
+ local cursor={CursorDown='down',CursorDrag='drag',CursorUp='up',CursorEndDrag='endDrag',CursorEnter='enter',CursorExit='exit'}
+ local h,root=F.fixture(nil,nil,nil,cursor);assert(F.start(h));assert(Run.startCombat(h.run,'cultist_solo'))
  for _,id in ipairs({'block_potion','energy_potion','fire_potion'})do assert(Run.obtainPotion(h.run,id))end
  h:refresh();assert(h.battleUI:openPotionMenu(1))
  local panel=root:GetChild('battlePanel');local stage=panel:GetChild('stage')or panel
  return h,h.battleUI,stage,stage:GetChild('potionHelp'):GetChild('potionPopup')
 end
 local h,u,_,popup=setup()
+local function use(touch)
+ local control=popup:GetChild('use')
+ control.listeners.down({touchId=touch});control.listeners.up({touchId=touch})
+ return control.listeners.click({touchId=touch})
+end
 local prepares=0;local prepare=Candidate.prepare
 Candidate.prepare=function(...)prepares=prepares+1;return prepare(...)end
 local saved={};local function remember(v)
@@ -29,11 +35,13 @@ assert(prepares==0 and not popup.visible and not u.potionMenu,'busy reused eligi
 u.busy=false;u:render();assert(u:openPotionMenu(1))
 -- No refresh before the actual click: actions.item must query the changed model.
 h.run.combat.player.block=2147483647
-assert(popup:GetChild('use').click()==false,'stale Use consumed a newly invalid potion')
+assert(use(401)==false,'stale Use consumed a newly invalid potion')
 assert(h.run.potions[1]=='block_potion' and not u.busy)
+assert(popup:GetChild('use').click({})==false,'anonymous old retry needs a fresh physical press')
+assert(h.run.potions[1]=='block_potion' and h.run.combat.player.block==2147483647)
 h.run.combat.player.block=0
 u:render(true);assert(popup:GetChild('use').interactable)
-assert(popup:GetChild('use').click())
+assert(use(402))
 for _=1,400 do if not u.busy then break end;h:update(.05)end
 assert(not u.busy and not h.run.potions[1] and h.run.combat.player.block==12,'fresh valid Use failed')
 Candidate.prepare=prepare

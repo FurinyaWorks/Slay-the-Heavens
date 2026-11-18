@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31 23:38'
-updated_date: '2026-11-16 03:33'
+updated_date: '2026-11-18 14:27'
 labels:
   - 待验
   - delivery-verify
@@ -48,8 +48,6 @@ ordinal: 136000
 2026-11-02 fresh单槽药水查询：拒绝跨hover和跨native渲染间隔复用frame缓存，不引全模型revision改造；将原药水row构造抽为共用helper，完整potionView保持原槽序与候选规则，仅popup每次open/render/act改为fresh单槽查询，实际使用前完整重验不变。覆盖全药水parity、非法/空/第五槽、后续合法目标、busy、原地状态改变、真实Host重入与使用；按465合入后的最新develop组合TASK81输入路径切片，保留全部历史证据和未验实机AC。
 
 2026-11-02 牌库注册生命周期小切片：先用真实 DeckUI/Controller 与原生 Grid 销毁语义复现记录累积；只对确认销毁的牌面保存 hit 并调用现有 Controller.unbind，覆盖关闭后的及时释放及存活复用。新增重复开关、翻页/过滤/排序、刷新销毁/回收、原生失效、键鼠/手柄和旧回调回归；先红后绿、定向检查及独审，不改设计/Controller 架构，不推断手机性能，AC3 保持未验。
-
-2026-11-16 Owner授权独立Release运行时白盒归因。基1cc5479b，已查19个开放PR；688敌坐标状态派生与694手牌八值表不重复，703容量排除。先复用TASK100 Host观察器，固定seed/生成UI，计量300静止帧、真实连续出牌、20次切屏与长循环的调用、native写入、已知分配及VM耗时；依据热点做最小修复，原视觉/交互/规则/RNG逐帧等价，失败/重入回归及独审，独立PR只指Release，不合并发版。SDK原件/官方手机缺项如实UNVERIFIED。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -84,7 +82,7 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 
-2026-11-16 Owner授权Release白盒运行时切片：基1cc5479b，核对19在途PR，不重复688/694，不接703。唯一生产producer befd4808为意图粒子首次成功静态配置；正式美术同源三配对300帧native17270→9530、属性30860→20540，七UI模块表字面量16157→15297。5120更新所测字段及完整Run/RNG一致，20次切屏和3600帧循环驻留对账；普通待机/连续牌调用不变，部分墙钟样本升高保留。机制入口 scripts/benchmark-battle-runtime.mjs；报告 docs/research/2026-11-16-runtime-attribution.md。图片false/重入与来源raw/历史混用独审RED→GREEN，最终独审及PR接续。无官方SDK/同候选/ready/手机温度FPS数据，UNVERIFIED；状态/Owner/AC不改，不合并发版。
+2026-11-18 Release 源码已承接 #688 两个性能切片。#721（1d8a2439）300 帧仍发布 1500 个拖牌原点快照，消除 1500 个八值临时表。#725（6f655ca8）300 帧敌人坐标路径 statusView 为 0，原对照为 900；原状态全量渲染、命中、握持和完整 Run/RNG 继续验过。官方同候选导入、ready、真实手机性能/加载 AC 未验，保留原负责人、状态与 3/4 AC。
 
-2026-11-16测量覆盖纠正：c56dcd7的17270→9530是真实UNKNOWN-only，不应称UNKNOWN/STUN联合；首次refresh后改raw意图不触发Displayed.createIntent。已保留旧数据/旧审结论并撤回联合标签，真实Host缺类断言RED后，将两个move移到首次呈现前。新一轮三配对+allocation/visual均成功，实际每块同时存在两类粒子，300帧native30469→14881、属性49912→29128、七UI模块表21801→20069，5120字段更新与Run/RNG一致。普通待机/连续牌调用不变且部分VM时长升高公开；每轮驻留扣除存活粒子及容器后27578不变。报告同入口，手机/SDK/Hosted仍UNVERIFIED，最终新SHA独审及独立PR接续，不合并。
+历史来源原样固定在 #688 f03605d69b0943139a2d1f015edd953cb9958089（https://github.com/FurinyaWorks/Slay-the-Heavens/tree/f03605d69b0943139a2d1f015edd953cb9958089/docs/evidence/enemy-geometry-actual-release-20261116）。原头的两个 PC22 文本锚点实际返回同一原始字节，原自动化「必须转成历史文本」断言失败；当前保留其透传合同并单独验证。历史二进制读取仍会转换，并在每次返回前验证当前生产文件、来源收据和所请求的原始归档。
 <!-- SECTION:NOTES:END -->

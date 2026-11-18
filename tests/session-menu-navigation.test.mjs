@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,releaseSourceEpoch,preRuntimeParticleSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch,releaseSourceEpoch,preReleasePc22BasicFeedbackSourceEpoch,preMobilePotionSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
@@ -11,9 +11,9 @@ import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
 // Read the exact old menu corpus only after authenticating live current owners.
-// The particle basic feedback source contract separately validates the complete current tree.
-const particleCurrentRead=p=>readFileSync(p,'utf8');
-const particleHistoricalRead=p=>sourceEpoch.preCombinedSource(p,particleCurrentRead(p),{target:'runtimeParticlePrior',readSource:particleCurrentRead});
+// The PC22 basic feedback source contract separately validates the complete current tree.
+const pc22CurrentRead=p=>readFileSync(p,'utf8');
+const pc22HistoricalRead=p=>sourceEpoch.preCombinedSource(p,pc22CurrentRead(p),{target:'releasePc22BasicFeedbackPrior',readSource:pc22CurrentRead});
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -21,7 +21,7 @@ test('session menu preserves live state, confirms destructive actions and uses p
 });
 
 test('deck notification continuation preserves immutable menu sources and authenticates both exact current owners',()=>{
- const sourceEpoch=preRuntimeParticleSourceEpoch;
+ const sourceEpoch=preReleasePc22BasicFeedbackSourceEpoch;
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz')));
  assertNeowStaticPredecessor(packet);
  const {neowRetirementStaticContinuation,neowRetirementContinuation,continuation,...menu}=packet;
@@ -37,27 +37,27 @@ test('deck notification continuation preserves immutable menu sources and authen
  const changed=structuredClone(menu),owner=Object.keys(changed.current)[0];
  changed.current[owner].source+='\n';
  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
- const proof=sourceEpoch.proof,read=p=>particleHistoricalRead(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,read=p=>pc22HistoricalRead(p).replaceAll('\r\n','\n');
  assert.equal(proof.currentCommit,neowRetirementStaticContinuation.currentCommit);
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);
  for(const p of Object.keys(continuation.current)){
   assert.deepEqual(proof.targets.sessionMenuReviewed.files[p],menu.current[p]);
   assert.deepEqual(continuation.before[p],menu.current[p]);
   assert.equal(proof.current[p].source,read(p));
-  assert.equal(sourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:read}),menu.current[p].source);
+  assert.equal(preMobilePotionSourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:read}),menu.current[p].source);
   for(const owner of Object.keys(continuation.current))for(const replacement of [null,read(owner)+'\n'])
-   assert.throws(()=>sourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:q=>q===owner?replacement:read(q)}),/linked owner identity/);
+   assert.throws(()=>preMobilePotionSourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:q=>q===owner?replacement:read(q)}),/linked owner identity/);
   const foreign=read(p)+'\n';let reads=0;
-  assert.equal(sourceEpoch.preCombinedSource(p,foreign,{target:'sessionMenuReviewed',readSource:()=>{reads++;return null;}}),foreign);
+  assert.equal(preMobilePotionSourceEpoch.preCombinedSource(p,foreign,{target:'sessionMenuReviewed',readSource:()=>{reads++;return null;}}),foreign);
   assert.equal(reads,0);
  }
 });
 
 test('Neow retirement continuation keeps the complete prior corpus and rejects fresh owner drift',()=>{
- const sourceEpoch=preRuntimeParticleSourceEpoch;
+ const sourceEpoch=preReleasePc22BasicFeedbackSourceEpoch;
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),retirement=packet.neowRetirementContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>particleHistoricalRead(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>pc22HistoricalRead(p).replaceAll('\r\n','\n');
  const {navigationRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
  assert.equal(navigationRetirementPrior.commit,'808a310cfc9a0c2734ec424d7ac80d3a040557c8');
  assert.deepEqual(Object.keys(navigationRetirementPrior.files),Object.keys(proof.current));
@@ -82,10 +82,10 @@ test('Neow retirement continuation keeps the complete prior corpus and rejects f
 });
 
 test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
- const sourceEpoch=preRuntimeParticleSourceEpoch;
+ const sourceEpoch=preReleasePc22BasicFeedbackSourceEpoch;
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>particleHistoricalRead(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>pc22HistoricalRead(p).replaceAll('\r\n','\n');
  const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
  const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
  assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);

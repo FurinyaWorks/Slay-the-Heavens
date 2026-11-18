@@ -559,7 +559,7 @@ test('normal delivery includes the current complete hosted Quality matrices',()=
     assert.deepEqual(currentFullQualityJobs.filter(name=>name.startsWith('engineering-posix (')),
       Array.from({length:15},(_,i)=>`engineering-posix (${i+1}/15)`));
     assert.match(workflow,/^  impact:\n/m);
-    assert.match(workflow,/^  fast:\n[\s\S]*?if: needs\.impact\.outputs\.mode == 'fast'\n/m);
+    assert.match(workflow,/^  fast:\n[\s\S]*?if: \$\{\{ !cancelled\(\) && needs\.impact\.result == 'success' && needs\.impact\.outputs\.mode == 'fast' \}\}\n/m);
     assert.match(workflow,/os: \[ubuntu-24\.04, windows-2025\]/);
   }
 });
