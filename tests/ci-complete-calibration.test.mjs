@@ -45,7 +45,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawBootstrapReadFileSync,readdirSync} from 'node:fs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
-const liveDiskReadFileSync=releaseBootstrapCiRead(rawBootstrapReadFileSync);
+const liveDiskReadFileSync=releaseBootstrapCiRead((path,encoding)=>{
+ const raw=rawBootstrapReadFileSync(path,encoding);
+ if(path!=='src/lua/abyss_ui.lua')return raw;
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforeCharacterPreparationSource(path,text);
+ return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+});
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;

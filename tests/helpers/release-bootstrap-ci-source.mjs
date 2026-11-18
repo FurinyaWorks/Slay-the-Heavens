@@ -1,4 +1,4 @@
-import {assertDependencyIntakeCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
+import {assertIntegrationSuccessorsCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -105,7 +105,7 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
- assertDependencyIntakeCurrent(read);
+ assertIntegrationSuccessorsCurrent(read);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))

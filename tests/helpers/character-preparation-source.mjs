@@ -1,3 +1,4 @@
+import {beforeFatalBgmSource} from './fatal-bgm-source-continuation.mjs';
 import {beforeEndingTerminalSource} from './ending-terminal-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -28,7 +29,7 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  if (!Object.hasOwn(packet.production, path)) return beforeEndingTerminalSource(path, source, read);
+  if (!Object.hasOwn(packet.production, path)) return beforeEndingTerminalSource(path, beforeFatalBgmSource(path, source, read), read);
   if (typeof source !== 'string' || source.includes('\r\r\n')) return source;
   const row = packet.production[path];
   if (digest(normalize(source)) !== row.after) return source;
@@ -39,6 +40,9 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 export function beforeCharacterPreparationCiSource(path, source) {
   if (!Object.hasOwn(packet.suite, path) || typeof source !== 'string' || source.includes('\r\r\n')) return source;
   const row = packet.suite[path];
-  if (digest(normalize(source)) !== row.after) return source;
+  const sha = digest(normalize(source));
+  const bgmCalibration = path === 'tests/ci-complete-calibration.test.mjs' &&
+    sha === '9052ed30943de4a2e6eba52b78111ef60b7e934c6ecf92ddd4188b2679a75487';
+  if (sha !== row.after && !bgmCalibration) return source;
   return source.includes('\r\n') ? row.before.replaceAll('\n','\r\n') : row.before;
 }

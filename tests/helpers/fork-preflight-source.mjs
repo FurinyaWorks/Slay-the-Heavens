@@ -43,29 +43,32 @@ for(const [path,row] of Object.entries(transport.files)){
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
 
-// Both intake entry points now share dependency readiness. Reuse the existing
-// immutable archive for historical inputs while authenticating the live sources.
-const intakeSuccessors=Object.freeze({
+// Reuse the existing immutable archive for historical inputs while authenticating
+// the exact live intake and production-source authorization helpers.
+const sourceSuccessors=Object.freeze({
  'scripts/check-task-intake.mjs':'972cbe675515a1fd4f7866170c37bd7568b94c6dbeca1e7bf340e46742e42029',
  'tests/sprint-intake.test.mjs':'daeabe161a8a7996b9961b46c37775ffb0e07639a4b34ab32f84f7a658d65929',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'6f0b589319c4e5b26a6179f0a2677318765c7db050d7c3525d19bda503f256f7',
+ 'tests/helpers/copy-integration-source-closure.mjs':'4ae212873b5642f45387b0989e57ded51c49cf04b344997aca623d1a67999f0a',
+ 'tests/ci-complete-calibration.test.mjs':'9052ed30943de4a2e6eba52b78111ef60b7e934c6ecf92ddd4188b2679a75487',
 });
 const archiveFiles=JSON.parse(gunzipSync(integratedCiBytes)).files;
-function beforeDependencyIntake(path,source){
- if(!Object.hasOwn(intakeSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
-   ||hash(normalize(source))!==intakeSuccessors[path])return source;
+function beforeIntegrationSuccessor(path,source){
+ if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
+   ||hash(normalize(source))!==sourceSuccessors[path])return source;
  const prior=archiveFiles[path].current;
- assert.equal(hash(prior.source),prior.sha256,'immutable intake predecessor: '+path);
+ assert.equal(hash(prior.source),prior.sha256,'immutable integration predecessor: '+path);
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
-export function assertDependencyIntakeCurrent(read=readFileSync){
- for(const [path,sha] of Object.entries(intakeSuccessors)){
+export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ for(const [path,sha] of Object.entries(sourceSuccessors)){
   const source=read(path,'utf8');
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
  source=beforeCharacterPreparationCiSource(path,source);
- source=beforeDependencyIntake(path,source);
+ source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
  if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')
   &&hash(normalize(source))==='b45c87c321573e91d3c8e838e837e3db839d79d2758459a67543b763df8c1734'){

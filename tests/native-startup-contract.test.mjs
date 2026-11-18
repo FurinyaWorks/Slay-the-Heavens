@@ -20,3 +20,9 @@ test('generated host starts under native capability guards and rejects the escap
     assert.match(result.stdout,/NATIVE_STARTUP_CONTRACT_PASS/);
   } finally {unlinkSync(entry);}
 });
+
+test('fatal native bootstrap failure stops enabled BGM without weakening cleanup or engine teardown',()=>{
+  const result=runLua('tests/lua/support/fatal_bgm_stop.lua');
+  assert.equal(result.status,0,result.stdout+result.stderr);
+  assert.match(result.stdout,/FATAL_BGM_STOP_PASS 8/);
+});
