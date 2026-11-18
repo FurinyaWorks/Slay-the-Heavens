@@ -55,6 +55,14 @@ GameUI入口及全部`abyss_game_ui_*`模块另受绝对门禁约束：入口文
 
 `officialImport` / `playtest` 保持 `not_run`，实际启动证据另存 `startup-evidence.json`；静态成功不提升产品任务状态。失败轮保留 `failure.json` 和MCP逐次响应。当前dirty候选的收据会明确标记，不能报告为某个干净HEAD已验收。
 
+## 候选 Feature Flag
+
+`--feature=<登记名称>=true|false` 复用 Node 构建选项、生成的 `abyss_ui_profile.lua` 和候选收据。临时功能在 [候选开关表](../scripts/ui-profile.mjs)登记负责人、移除条件、构建和收据的适用范围。新开关默认关闭，禁止在正式 RC 启用。开关决定候选内的策略，运行中不读远程配置。历史选项和已经冻结的收据沿用原身份。
+
+渐进重构先让新旧实现共享调用契约，在现有工厂处选实现。原生页面生命周期使用现有 `refreshPageVisibility`。`--feature=native-page-lifecycle=true` 只在显式限定的实验配置启用原生页可见性。关闭时沿用旧策略。`build-ui.mjs` 和 `build-native-candidate.mjs` 支持显式 `false`，可用于配对对照。音频入口的 `--official-assets` 沿用既有生命周期策略。
+
+合入前用同一基线分别验证开关两种构建、生成模块和收据身份、初始化、资源与状态变化。原生页面的复验依次运行 `npm run build:data`、`npm run build:ui` 和 `node --test tests/native-page-lifecycle.test.mjs`。涉及容量或设备的变化还须按本页现行验收取证。满足移除条件后沿原任务删除开关、旧分支与过渡测试。实验被否决时移除实验分支和开关。
+
 ## 日志与UI迁移
 
 启动验证要求调用方传入真实start返回的runId/runDir、调用时刻、实际mapPath摘要与buildId，核对MCP落盘request。以当前MCP `inspectDebugLog` 实际重解码原始GIA；空/旧/跨目录文件、错run/候选、与原始文件不符的prints、错构建标记或runtime fault拒绝。解码适配只覆盖已观察格式，不为文件来源真实性提供密码学保证。
