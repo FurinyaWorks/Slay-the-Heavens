@@ -19,17 +19,16 @@ function M.install(owner, ownership, host, dependencies)
                 function()return owner.active and not owner.busy end)
         end
         control:AddCursorEventListener(host.clickEvent,function(event)
-            if Controller.pointerBlocked(host.controller)then return false end
-            if dependencies.swallowed(event) then return end
+            local released
             if input and ownership.pointerObserved then
-                local released = input.released
-                -- Never borrow a foreign or missing touch ID, nor fall back to
-                -- click-only after this controller has observed pointer input.
-                if not released or released.touch ~= (event and event.touchId) then return end
-                input.released = nil -- a valid matching click can be consumed only once
-                if not dependencies.cardReady(released) then return end
+                released=dependencies.pointerTake(input,event)
+                if not released then return end
             end
-            if not dependencies.consumeReleasedDragClick(event) and not owner.suppressClick and not owner.gesture then return fn(event) end
+            if Controller.pointerBlocked(host.controller)then return false end
+            local originEvent=dependencies.pointerEvent(released,event)
+            if dependencies.swallowed(originEvent)then return end
+            if released and not dependencies.cardReady(released)then return end
+            if not dependencies.consumeReleasedDragClick(originEvent) and not owner.suppressClick and not owner.gesture then return fn(event) end
         end)
         if owner.dragEnabled and not input then control:AddCursorEventListener(host.cursor.CursorDown,dependencies.down) end
     end
@@ -68,26 +67,29 @@ function M.install(owner, ownership, host, dependencies)
             return false
         end,name=="endTurn" and 90 or 50)
         control:AddCursorEventListener(host.clickEvent, function(event)
-            if Controller.pointerBlocked(host.controller)then return false end
-            if dependencies.swallowed(event) then return end
+            local released
             if name == "playArea" and ownership.fieldPointerObserved or name ~= "playArea" and ownership.actionPointerObserved then
-                local released = input.released
-                if not released or released.touch ~= (event and event.touchId) then return end
-                input.released = nil
-                if not dependencies.actionReady(released) then return end
+                released=dependencies.pointerTake(input,event)
+                if not released then return end
             end
-            if not dependencies.consumeReleasedDragClick(event) and not owner.suppressClick and not owner.gesture then return fn(event) end
+            if Controller.pointerBlocked(host.controller)then return false end
+            local originEvent=dependencies.pointerEvent(released,event)
+            if dependencies.swallowed(originEvent)then return end
+            if released and not dependencies.actionReady(released)then return end
+            if not dependencies.consumeReleasedDragClick(originEvent) and not owner.suppressClick and not owner.gesture then return fn(event) end
         end)
         if owner.dragEnabled then
             control:AddCursorEventListener(host.cursor.CursorDown, function(event)
                 if name == "playArea" then ownership.fieldPointerObserved = true else ownership.actionPointerObserved = true end
+                local origin=dependencies.pointerBegin(input,event)
                 local dismissed = dependencies.down(event)
                 input.held, input.released = nil, nil
                 if dismissed then return end
                 local g = actionToken(name, event)
-                if not g.invalidPoint and dependencies.actionReady(g) then input.held = g end
+                if not g.invalidPoint and dependencies.actionReady(g) then input.held = g;dependencies.pointerArm(input,g,event,origin) end
             end)
             local function releaseAction(event, ended)
+                dependencies.pointerEnd(input,event,ended)
                 local touch, held = event and event.touchId, input.held
                 if held and held.touch == touch then
                     input.held = nil
