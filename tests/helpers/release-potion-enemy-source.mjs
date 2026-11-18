@@ -78,13 +78,13 @@ for (const row of Object.values(shelfCi.files)) {
 }
 
 export function beforeShopShelfCiSource(path, source) {
-  return priorCiSource(shelfCi.files, path, source);
+  return priorCiSource(shelfCi.files, path, beforeShopDismissalCiSource(path, source));
 }
 
 export function assertShopShelfCiCurrent(read = readFileSync) {
   assert.equal(hash(read(shelfArchive)), shelfDigest, 'fresh shop shelf CI continuation');
   for (const [path, row] of Object.entries(shelfCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeShopDismissalCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: shop shelf ' + path);
   }
 }
@@ -151,7 +151,7 @@ for (const row of Object.values(cornerCi.files)) {
 }
 
 function beforeCornerCiSource(path, source) {
-  return priorCiSource(cornerCi.files, path, source);
+  return priorCiSource(cornerCi.files, path, beforeShopDismissalCiSource(path, source));
 }
 
 function assertCornerCiCurrent(read) {
@@ -159,8 +159,30 @@ function assertCornerCiCurrent(read) {
   assert.equal(hash(read('tests/helpers/release-target-corners-source.json.gz')), cornerCi.productionArchive,
     'fresh immutable target corner production archive');
   for (const [path, row] of Object.entries(cornerCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeShopDismissalCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: target corners ' + path);
+  }
+}
+
+const shopDismissalArchive = 'tests/helpers/release-shop-dismissal-ci.json.gz';
+const shopDismissalDigest = '71d70f6661d4b5431c05ce334636be561e915b66e46654fea8e80bccdec0f9fc';
+const shopDismissalBytes = readFileSync(new URL('./release-shop-dismissal-ci.json.gz', import.meta.url));
+assert.equal(hash(shopDismissalBytes), shopDismissalDigest, 'fixed shop dismissal CI continuation');
+const shopDismissalCi = JSON.parse(gunzipSync(shopDismissalBytes));
+assert.equal(shopDismissalCi.base, '91d6f955e16dcf91d24971450abaa72d12a4efa3');
+for (const row of Object.values(shopDismissalCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforeShopDismissalCiSource(path, source) {
+  return priorCiSource(shopDismissalCi.files, path, source);
+}
+function assertShopDismissalCiCurrent(read) {
+  assert.equal(hash(read(shopDismissalArchive)), shopDismissalDigest, 'fresh shop dismissal CI continuation');
+  assert.equal(hash(read('tests/helpers/release-shop-dismissal-source.json.gz')), shopDismissalCi.productionArchive, 'fresh immutable shop dismissal production archive');
+  for (const [path, row] of Object.entries(shopDismissalCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: shop dismissal ' + path);
   }
 }
 
@@ -280,7 +302,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
       const particlesRow = Object.hasOwn(particlesCi.files, path) ? particlesCi.files[path] : null;
       const cornerRow = Object.hasOwn(cornerCi.files, path) ? cornerCi.files[path] : null;
-      if (path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before &&
+      const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
+      if (!shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -292,6 +315,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertShopDismissalCiCurrent(read);
   assertCornerCiCurrent(read);
   assertSettingsCiCurrent(read);
   assertParticlesCiCurrent(read);
