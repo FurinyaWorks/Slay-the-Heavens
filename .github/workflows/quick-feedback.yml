@@ -1,7 +1,6 @@
 name: Quick feedback
+run-name: Preflight / ${{ github.sha }} / ${{ inputs.base_sha || github.event.pull_request.base.sha }}
 on:
-  pull_request:
-    branches: [develop]
   workflow_dispatch:
     inputs:
       base_sha:
@@ -15,9 +14,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   related:
-    name: Advisory related tests
+    name: Complete affected preflight
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -53,9 +52,25 @@ jobs:
         env:
           CI_LFS_TOKEN: ${{ github.token }}
         run: node scripts/ci-media-lfs.mjs
-      - name: Quick related subset; complete Quality runs independently
+      - name: Cheap governance and syntax preflight
+        run: npm run check:guidance && npm run verify:backlog && npm run check:syntax
+      - name: Enforce existing changed Lua quality ratchet
+        env:
+          QUALITY_RATCHET_BASE: ${{ inputs.base_sha }}
+        run: node scripts/check-quality-ratchet.mjs
+      - name: Complete affected JS and Lua preflight
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
           CI_LFS_TOKEN: ${{ github.token }}
           ABYSS_PYTHON: python3
-        run: node scripts/test-affected.mjs --ci-fast --base "$BASE_SHA"
+        run: node scripts/test-affected.mjs --preflight --base "$BASE_SHA"
+      - name: Record exact tested checkout
+        run: node scripts/write-ci-receipt.mjs
+        env:
+          PREFLIGHT_BASE_SHA: ${{ inputs.base_sha }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci-checkout.json
+          if-no-files-found: error
+          retention-days: 7

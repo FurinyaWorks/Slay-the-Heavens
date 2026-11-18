@@ -1,3 +1,4 @@
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -7,6 +8,7 @@ import {beforeAutoMergeWorkflow} from './helpers/auto-merge-workflow.mjs';
 import {beforePlatformWorkflow} from './helpers/platform-load-wiring.mjs';
 import {originalWorkflow} from './helpers/ci-runtime-workflow.mjs';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
+import {releaseBootstrapWorkflowBefore} from './helpers/release-bootstrap-ci-source.mjs';
 
 const current = readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
 const cap = '      max-parallel: 12\n';
@@ -32,6 +34,8 @@ test('current twelve and historical six both restore the exact original source',
 });
 
 test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>{
+  assert.match(current,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',current);
   for(const eol of ['\n','\r\n']){
     const old=current.replace(cap,'').replaceAll('\n',eol);
     const capped=current.replaceAll('\n',eol);
@@ -39,9 +43,10 @@ test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>
     assert.equal(beforePosixConcurrencyWorkflow(capped),old);
     // Existing layered callers normalize endings; this inverse alone preserves
     // the original bytes, including a Windows checkout's CRLF.
-    const projected=beforeAutoMergeWorkflow(capped.replaceAll('\r\n','\n'));
+    const historicalCapped=historical.replaceAll('\n',eol),historicalOld=historical.replace(cap,'').replaceAll('\n',eol);
+    const projected=beforeAutoMergeWorkflow(historicalCapped.replaceAll('\r\n','\n'));
     assert.equal(typeof projected,'string');
-    assert.equal(projected,beforeAutoMergeWorkflow(old.replaceAll('\r\n','\n')));
+    assert.equal(projected,beforeAutoMergeWorkflow(historicalOld.replaceAll('\r\n','\n')));
   }
 });
 

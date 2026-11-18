@@ -1,7 +1,8 @@
 name: Quality
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Full / {0} / {1}', github.sha, inputs.base_sha) || github.workflow }}
 on:
   pull_request:
-    branches: [develop, master]
+    branches: [develop, master, 'release/**']
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, labeled, unlabeled]
   merge_group:
     types: [checks_requested]
@@ -10,6 +11,10 @@ on:
     branches: [develop, master]
   workflow_dispatch:
     inputs:
+      base_sha:
+        description: 'Exact comparison SHA for Fork Full preflight (not formal integration reuse)'
+        required: false
+        type: string
       runner_pool:
         description: 'Hosted normally; local-special only for trusted develop/master platform diagnostics'
         type: choice
@@ -23,13 +28,13 @@ concurrency:
 jobs:
   impact:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       actions: read
       pull-requests: read
       statuses: write
-    timeout-minutes: 3
+    timeout-minutes: 6
     outputs:
       mode: ${{ steps.plan.outputs.mode }}
       windows_shards: ${{ steps.plan.outputs.windows_shards }}
@@ -57,6 +62,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/publish-merge-group.mjs --pending
+      - name: Require frozen Release Full before publication
+        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'master' && startsWith(github.event.pull_request.head.ref, 'release/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release-ci.mjs verify-pr
       - name: Check feature branch history
         if: github.event_name == 'pull_request'
         env:
@@ -91,9 +101,25 @@ jobs:
           path: ci-impact.json
           if-no-files-found: error
           retention-days: 7
+          overwrite: true
+      - name: Fetch and verify the shared Full media once
+        if: steps.plan.outputs.mode == 'full' && inputs.runner_pool != 'local-special'
+        env:
+          CI_LFS_TOKEN: ${{ github.token }}
+          CI_MEDIA_OUTPUT: ${{ runner.temp }}/verified-ci-media
+        run: node scripts/ci-media-lfs.mjs --bundle "$CI_MEDIA_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: steps.plan.outputs.mode == 'full' && inputs.runner_pool != 'local-special'
+        with:
+          name: verified-ci-media
+          path: ${{ runner.temp }}/verified-ci-media/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+          overwrite: true
   fast:
     needs: impact
-    if: needs.impact.outputs.mode == 'fast'
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'fast' }}
     strategy:
       fail-fast: false
       matrix:
@@ -160,7 +186,7 @@ jobs:
   rules:
     needs: impact
     name: ${{ needs.impact.outputs.mode == 'fast' && 'rules' || format('rules ({0}/{1})', matrix.shard, strategy.job-total) }}
-    if: ${{ needs.impact.outputs.mode == 'full' && !cancelled() && (inputs.runner_pool != 'local-special' || github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')) }}
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'full' && (inputs.runner_pool != 'local-special' || github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')) }}
     # Only an explicit dispatch of a trusted integration branch may use the laptop.
     # All ordinary pushes and PRs, including forks, use a disposable hosted VM.
     runs-on: ${{ github.event_name == 'workflow_dispatch' && inputs.runner_pool == 'local-special' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && fromJSON('["self-hosted", "Windows", "X64", "slay-the-abyss"]') || 'windows-2025' }}
@@ -275,7 +301,7 @@ jobs:
         if: runner.environment == 'github-hosted'
         env:
           CI_COMPARISON_TOKEN: ${{ github.token }}
-          CI_COMPARISON_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          CI_COMPARISON_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
         run: node scripts/ci-comparison-blobs.mjs
       - name: Check hosted checkout Git pack payload
         if: runner.environment == 'github-hosted'
@@ -291,7 +317,7 @@ jobs:
       - name: Verify exact checkout and changed whitespace
         timeout-minutes: 2
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
           GIT_TERMINAL_PROMPT: '0'
           EXECUTION_ENVIRONMENT: ${{ runner.environment }}
         run: |
@@ -341,10 +367,16 @@ jobs:
         if: matrix.shard == 1
       - run: npm run check:syntax
         if: matrix.shard == 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        if: inputs.runner_pool != 'local-special'
+        with:
+          name: verified-ci-media
+          path: ${{ runner.temp }}/verified-ci-media/
       - name: Materialize reviewed PNGs for this shard
         timeout-minutes: 2
         env:
           CI_LFS_TOKEN: ${{ github.token }}
+          CI_MEDIA_BUNDLE: ${{ inputs.runner_pool != 'local-special' && format('{0}/verified-ci-media', runner.temp) || '' }}
         run: node scripts/ci-shards.mjs --prepare=${{ matrix.shard }}/${{ strategy.job-total }}
       - name: JavaScript regression shard
         run: |
@@ -367,9 +399,9 @@ jobs:
       - run: npm run check:engineering
         if: matrix.shard == 1
       - name: Enforce incremental Lua CC and SCC ratchet
-        if: matrix.shard == 1 && (github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'push')
+        if: matrix.shard == 1 && (github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.base_sha != ''))
         env:
-          QUALITY_RATCHET_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          QUALITY_RATCHET_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
         run: node scripts/check-quality-ratchet.mjs
       - name: Check production platform load
         if: matrix.shard == 1
@@ -392,6 +424,8 @@ jobs:
           if-no-files-found: warn
       - run: node scripts/write-ci-receipt.mjs
         if: matrix.shard == 1
+        env:
+          PREFLIGHT_BASE_SHA: ${{ inputs.base_sha }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: matrix.shard == 1
         with:
@@ -404,7 +438,7 @@ jobs:
     # never turn the aggregate green; fail-fast=false collects all shard results.
     needs: [impact, rules, fast, presentation, engineering-posix]
     if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions:
       contents: read
@@ -453,7 +487,8 @@ jobs:
           FULL_NEEDS: ${{ toJSON(needs) }}
         run: node scripts/publish-merge-group.mjs
   presentation:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    needs: impact
+    if: ${{ !cancelled() && needs.impact.result == 'success' }}
     # These filesystem tests include symlinks; keep the local service unprivileged.
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -483,7 +518,7 @@ jobs:
           ABYSS_PYTHON: python3
   engineering-posix-shards:
     needs: impact
-    if: needs.impact.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.impact.result == 'success' && needs.impact.outputs.mode == 'full' }}
     name: ${{ needs.impact.outputs.mode == 'fast' && 'engineering-posix-shards' || format('engineering-posix ({0}/{1})', matrix.shard, strategy.job-total) }}
     # Separate hosted VMs keep generated files isolated. Twenty minutes is a
     # performance target; the hard guard allows host variance. Files execute once.
@@ -512,10 +547,16 @@ jobs:
       - run: python3 -m pip install --disable-pip-version-check --retries 0 --timeout 30 Pillow==12.3.0
       - run: npm ci --ignore-scripts --prefer-offline --no-audit --no-fund --fetch-retries=0 --fetch-timeout=30000
       - run: npm run setup:lua-static
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        if: inputs.runner_pool != 'local-special'
+        with:
+          name: verified-ci-media
+          path: ${{ runner.temp }}/verified-ci-media/
       - name: Materialize reviewed PNGs for this shard
         timeout-minutes: 2
         env:
           CI_LFS_TOKEN: ${{ github.token }}
+          CI_MEDIA_BUNDLE: ${{ inputs.runner_pool != 'local-special' && format('{0}/verified-ci-media', runner.temp) || '' }}
         run: node scripts/ci-shards.mjs --prepare=${{ matrix.shard }}/${{ strategy.job-total }}
       - name: POSIX JavaScript regression shard
         run: |
@@ -555,7 +596,7 @@ jobs:
     # Preserve the required check name and reject every non-success outcome.
     needs: [impact, engineering-posix-shards, fast]
     if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
       - name: Require every POSIX regression shard
