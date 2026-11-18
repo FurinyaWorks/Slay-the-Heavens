@@ -1,3 +1,4 @@
+import {releasePotionEnemyRead} from './release-potion-enemy-source.mjs';
 import {assertEnemyFastStsOwners} from './release-enemy-fast-source.mjs';
 import assert from 'node:assert/strict';
 import {integratedSource,integratedRead,integratedPriorInventory} from './integrated-ci-source.mjs';
@@ -41,8 +42,9 @@ export function stsStylePriorInventory(paths,read=readFileSync){
  return [...proof.beforeInventory];
 }
 export function assertStsStyleCiCurrent(paths,read=readFileSync){
- assertEnemyFastStsOwners([...Object.keys(stsStyleCiProof.files),...Object.keys(stsStyleCiProof.helperSources)],read);
  paths=integratedPriorInventory(paths,'sts','js',read);
+ const owners=[...Object.keys(stsStyleCiProof.files),...Object.keys(stsStyleCiProof.helperSources)];
+ assertEnemyFastStsOwners(owners,releasePotionEnemyRead('release',read));
  read=integratedRead('sts',{read});
  assert.deepEqual([...paths].sort(),stsStyleCiProof.afterInventory,'complete StS current Full inventory');
  for(const [p,row]of Object.entries(stsStyleCiProof.files))assert.equal(hash(norm(read(p,'utf8'))),row.after.sha256,'fresh complete StS CI source: '+p);

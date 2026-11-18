@@ -1,0 +1,9 @@
+✔ presence planning adds only one authenticated complete local observation and rejects failed or partial evidence (14.9954ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13165.1489

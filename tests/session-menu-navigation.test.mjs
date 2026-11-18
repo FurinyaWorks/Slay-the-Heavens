@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,releaseSourceEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch,releaseSourceEpoch,preReleasePc22BasicFeedbackSourceEpoch,preMobilePotionSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
@@ -44,11 +44,11 @@ test('deck notification continuation preserves immutable menu sources and authen
   assert.deepEqual(proof.targets.sessionMenuReviewed.files[p],menu.current[p]);
   assert.deepEqual(continuation.before[p],menu.current[p]);
   assert.equal(proof.current[p].source,read(p));
-  assert.equal(sourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:read}),menu.current[p].source);
+  assert.equal(preMobilePotionSourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:read}),menu.current[p].source);
   for(const owner of Object.keys(continuation.current))for(const replacement of [null,read(owner)+'\n'])
-   assert.throws(()=>sourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:q=>q===owner?replacement:read(q)}),/linked owner identity/);
+   assert.throws(()=>preMobilePotionSourceEpoch.preCombinedSource(p,read(p),{target:'sessionMenuReviewed',readSource:q=>q===owner?replacement:read(q)}),/linked owner identity/);
   const foreign=read(p)+'\n';let reads=0;
-  assert.equal(sourceEpoch.preCombinedSource(p,foreign,{target:'sessionMenuReviewed',readSource:()=>{reads++;return null;}}),foreign);
+  assert.equal(preMobilePotionSourceEpoch.preCombinedSource(p,foreign,{target:'sessionMenuReviewed',readSource:()=>{reads++;return null;}}),foreign);
   assert.equal(reads,0);
  }
 });

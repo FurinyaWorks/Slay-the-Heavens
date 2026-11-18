@@ -1,6 +1,17 @@
+import {mobilePotionPriorInventory,assertMobilePotionCiCurrent} from './mobile-potion-ci-source.mjs';
+import {potionBootstrapCiSource,potionBootstrapCiCheckedSource,potionBootstrapHistoricalRead,assertPotionBootstrapCiCurrent} from './potion-bootstrap-ci-source.mjs';
+import {potionRegressionCiSource,potionRegressionCiCheckedSource,potionRegressionHistoricalRead,potionRegressionPriorInventory,assertPotionRegressionCiCurrent} from './potion-regression-ci-source.mjs';
+import {potionClickCiSource,potionClickCiCheckedSource,potionClickHistoricalRead,assertPotionClickCiCurrent} from './potion-click-ci-source.mjs';
+import {potionPost697CiSource,potionPost697CiCheckedSource,potionPost697HistoricalRead,potionPost697PriorInventory,potionPost697CiPacket,assertPotionPost697CiCurrent} from './potion-post697-ci-source.mjs';
+import {
+ assertReleasePotionEnemyCurrent,
+ releasePotionEnemyInventory,
+ releasePotionEnemyRead,
+ releasePotionEnemySource,
+} from './release-potion-enemy-source.mjs';
 import {enemyFastRead} from './release-enemy-fast-source.mjs';
 import {assertCapacityPreflightCurrent} from './release-capacity-preflight-source.mjs';
-import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
+import {beforePreflightSource} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -21,31 +32,60 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(binding.source,norm(binding.source));assert.equal(hash(binding.source),binding.sha256,path+' complete source');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
+const potionPriorCiSource=(path,source,before,read=readFileSync)=>releaseBootstrapCiSource(path,potionBootstrapCiSource(path,potionRegressionCiSource(path,potionClickCiSource(path,potionPost697CiSource(path,source,undefined,read)))),before);
 export function integratedSource(path,source,target,read=readFileSync){
  read=typeof read==='function'?read:read?.read??readFileSync;
- source=beforePreflightSource(path,source);
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ if(typeof source!=='string'||source.includes('\r\r\n'))return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- source=integrationCiSource(path,source,'pc22',read);
- source=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,source),row?.current);
- if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
+ const view=row?.views[target];
+ // Already authenticated historical corpus inputs need no current projector.
+ // Exact live changes still go through the owner-aware Release/potion routes.
+ if(view&&hash(norm(source))===row.current.sha256)
+  return view.sha256===row.current.sha256?source:view.source;
+ const releaseRead=releasePotionEnemyRead('release',read);
+ const release=beforePreflightSource(path,releasePotionEnemySource(path,source,'release'));
+ const legacy=releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,integrationCiSource(path,release,'pc22',releaseRead)),row?.current);
+ if(!view)return legacy;
+ if(typeof legacy==='string'&&hash(norm(legacy))===row.current.sha256)source=legacy;
+ else{
+  const potionRead=releasePotionEnemyRead('potion',read);
+  source=potionPriorCiSource(path,releasePotionEnemySource(path,source,'potion'),row.current,potionRead);
+  if(typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return legacy;
+ }
  if(row.views[target].sha256===row.current.sha256)return source;
  return row.views[target].source;
 }
-export function integratedRead(target,{read=readFileSync}={}){const currentRead=read;read=preflightPriorRead(read);return(path,encoding)=>{
+export function integratedRead(target,{read=readFileSync}={}){return(path,encoding)=>{
  const raw=read(path,encoding);
  const binary=Object.hasOwn(integratedCiProof.binaryViews,path)?integratedCiProof.binaryViews[path]:null;
  if(Buffer.isBuffer(raw)&&binary?.views[target]&&hash(raw)===binary.current){
   const saved=binary.views[target],bytes=read(saved.path);assert.equal(hash(bytes),saved.sha256,'complete immutable integration binary predecessor');return bytes;
  }
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,currentRead);
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=integratedSource(path,text,target,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
+function checkedHistoricalRead(read, project){return(path,encoding)=>{
+ const source=read(path,encoding);
+ if(typeof source!=='string'&&!Buffer.isBuffer(source))return source;
+ const text=typeof source==='string'?source:source.toString('utf8'),prior=project(path,text);
+ return typeof source==='string'?prior:prior===text?source:Buffer.from(prior);
+};}
 export function assertIntegratedCurrent(read=readFileSync){
+ const potionParent=releasePotionEnemyRead('potion',read);
+ assertPotionPost697CiCurrent(potionParent);
+ const potionRead=checkedHistoricalRead(potionParent,potionPost697CiCheckedSource);
+ assertPotionClickCiCurrent(potionRead);
+ const clickPriorRead=checkedHistoricalRead(potionRead,potionClickCiCheckedSource);
+ assertPotionRegressionCiCurrent(clickPriorRead);
+ const priorRead=potionRegressionHistoricalRead(clickPriorRead);
+ assertPotionBootstrapCiCurrent(priorRead);
+ assertMobilePotionCiCurrent(potionBootstrapHistoricalRead('potion',priorRead));
+ assertReleasePotionEnemyCurrent(read);
+ read=releasePotionEnemyRead('release',read);
  assertCapacityOwnersCurrent(enemyFastRead('release',read));
  const capacityRead=read;assertCapacityPreflightCurrent(read);
- read=preflightPriorRead(read);
  assertReleaseIntegrationCurrent(capacityRead,capacityRead);
  read=integrationProductionRead('pc22',capacityRead);
  assertReleasePc22BasicFeedbackCiCurrent(read);
@@ -53,7 +93,10 @@ export function assertIntegratedCurrent(read=readFileSync){
  for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,releasePc22BasicFeedbackCiCheckedSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh complete integration source: '+path);
  for(const [path,row]of Object.entries(integratedCiProof.closure))assert.equal(hash(path.endsWith('.gz')?read(path):norm(releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,read(path,'utf8')),integratedCiProof.files[path]?.current))),row.after,'fresh integration copy owner: '+path);
 }
-export function integratedCurrentInventory(kind='js'){assert(['js','lua'].includes(kind));return integrationInventory(kind);}
+export function integratedCurrentInventory(kind='js'){
+ assert(['js','lua'].includes(kind));
+ return [...new Set([...integrationInventory(kind),...potionPost697CiPacket.currentInventory[kind]])].sort();
+}
 export function extendIntegratedHelperClosure(original){
  const current={...original},patch=integratedCiProof.closure;
  assert.deepEqual(Object.keys(patch).sort(),['tests/helpers/closeout-source-epoch.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs','tests/helpers/menu-presentation-source.json.gz','tests/helpers/menu-red-production-source.json.gz','tests/helpers/menu-red-source-epoch.mjs','tests/helpers/release-source-epoch.json.gz','tests/helpers/release-source-epoch.mjs','tests/helpers/session-menu-source-epoch.json.gz','tests/helpers/session-menu-source-epoch.mjs']);
@@ -65,10 +108,13 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const current=kind==='js'?integratedCiProof.inventory:integratedCiProof.luaInventory;
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
- const originalRead=read;
- paths=integrationPriorInventory(paths,'pc22',kind,originalRead);
- read=integrationRead('pc22',originalRead);
- paths=releasePc22BasicFeedbackPriorInventory(paths,kind,read);
+ const potionParent=releasePotionEnemyRead('potion',read);
+ paths=releasePotionEnemyInventory(paths,potionPost697CiPacket.currentInventory[kind],kind,read);
+ paths=potionPost697PriorInventory(paths,kind,potionParent);
+ read=potionClickHistoricalRead(potionPost697HistoricalRead('potion',potionParent));
+ paths=potionRegressionPriorInventory(paths,kind,read);
+ read=potionRegressionHistoricalRead(read);
+ paths=mobilePotionPriorInventory(paths,kind,read);
  // New standalone reviewed views consume raw discovery. Older chained views
  // retain their existing idempotent prior-inventory contract.
  if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');
@@ -82,7 +128,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  assert.deepEqual([...paths].sort(),current,kind==='lua'?'complete integration Lua discovery inventory':'complete integration js inventory');
  for(const path of added){
   const row=integratedCiProof.files[path];assert(row,'complete added inventory source: '+path);
-   assert.equal(hash(norm(releaseBootstrapCiSource(path,releasePc22BasicFeedbackCiSource(path,read(path,'utf8')),row.current))),row.current.sha256,'fresh added inventory source: '+path);
+   assert.equal(hash(norm(potionPriorCiSource(path,read(path,'utf8'),row.current,read))),row.current.sha256,'fresh added inventory source: '+path);
  }
  return [...prior];
 }

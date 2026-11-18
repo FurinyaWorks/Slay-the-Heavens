@@ -418,6 +418,7 @@ test('inline admission runs only for organization non-master PRs and downstream 
   assert.equal(evaluateJobIf(downstream,{needs:{impact:{result}},cancelled:()=>cancelled}),result==='success'&&!cancelled);
 });
 
+import {releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import {releasePreflightUnionSource,assertReleasePreflightUnionCurrent} from './helpers/release-preflight-union-source.mjs';
 import {assertFastFreezeB9UnionCurrent,fastFreezeB9Source} from './helpers/release-fast-freeze-b9-union.mjs';
 import {beforeReleaseFastB9Ci} from './helpers/release-fast-b9-ci-source.mjs';
@@ -440,10 +441,11 @@ test('current complete Quick preserves the exact Release contract step beside co
 });
 test('outer Release union retains complete named predecessors and rejects every changed source boundary',()=>{
  const hash=s=>createHash('sha256').update(s).digest('hex');
- const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/release-preflight-union-source.json.gz')));
- assertReleasePreflightUnionCurrent();assertFastFreezeB9UnionCurrent();
+ const releaseRead=releasePotionEnemyRead('release',readFileSync);
+ const packet=JSON.parse(gunzipSync(releaseRead('tests/helpers/release-preflight-union-source.json.gz')));
+ assertReleasePreflightUnionCurrent(releaseRead);assertFastFreezeB9UnionCurrent(releaseRead);
  for(const [target,files]of Object.entries(packet.views))for(const [path,row]of Object.entries(files)){
-  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');assert.equal(hash(capacityPreflightSource(path,raw,'preflight')),row.current.sha256);
+  const raw=releaseRead(path,'utf8').replaceAll('\r\n','\n');assert.equal(hash(capacityPreflightSource(path,raw,'preflight')),row.current.sha256);
   for(const eol of ['\n','\r\n']){
    const source=raw.replaceAll('\n',eol);
    assert.equal(releasePreflightUnionSource(path,source,target).replaceAll('\r\n','\n'),row.before.source);
@@ -452,22 +454,39 @@ test('outer Release union retains complete named predecessors and rejects every 
    for(const unknown of ['foreign/'+path,'__proto__','constructor','src/lua/abyss_ui.lua'])
     assert.strictEqual(releasePreflightUnionSource(unknown,source,target),source);
   }
-  for(const mode of ['changed','missing','null','buffer'])assert.throws(()=>assertReleasePreflightUnionCurrent((p,e)=>{
-   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing current source');if(mode==='null')return null;
-   if(mode==='buffer')return readFileSync(p);return readFileSync(p,e)+'\n';
-  }));
+  for(const mode of ['changed','missing','null','buffer']){
+   let injected=false;
+   const mutationRead=releasePotionEnemyRead('release',(p,e)=>{
+    if(p!==path)return readFileSync(p,e);
+    injected=true;
+    if(mode==='missing')throw Error('missing current source: '+p);
+    if(mode==='null')return null;
+    return mode==='buffer'?readFileSync(p):readFileSync(p,e)+'\n';
+   });
+   assert.throws(()=>assertReleasePreflightUnionCurrent(mutationRead));
+   assert(injected,mode+' '+path);
+  }
  }
- const path='.github/workflows/quick-feedback.yml',source=readFileSync(path,'utf8');
+ const path='.github/workflows/quick-feedback.yml',source=releaseRead(path,'utf8');
  assert.notEqual(releasePreflightUnionSource(path,source,'release'),releasePreflightUnionSource(path,source,'advisory'));
  assert.strictEqual(fastFreezeB9Source(path,source),source,'old union cannot gain a Quick target');
  for(const before of [{},{sha256:'0'.repeat(64)}])assert.strictEqual(beforeReleaseFastB9Ci(path,source,before),source);
  assert.strictEqual(releasePreflightUnionSource(path,source,'foreign'),source);
 });
 test('old union uses the supplied fresh dependency reader including its new archive',()=>{
- for(const path of ['tests/helpers/release-capacity-preflight-source.json.gz','tests/helpers/release-preflight-union-source.json.gz','tests/helpers/release-ci.cases.mjs'])
-  for(const mode of ['changed','missing','null'])assert.throws(()=>assertFastFreezeB9UnionCurrent((p,e)=>{
-   if(p!==path)return readFileSync(p,e);if(mode==='missing')throw Error('missing dependency');if(mode==='null')return null;
-   const raw=readFileSync(p,e);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
-  }));
- assertFastFreezeB9UnionCurrent();
+ for(const path of ['tests/helpers/release-capacity-preflight-source.json.gz','tests/helpers/release-preflight-union-source.json.gz','tests/helpers/release-ci.cases.mjs']){
+  for(const mode of ['changed','missing','null']){
+   let injected=false;
+   const mutationRead=releasePotionEnemyRead('release',(p,e)=>{
+    if(p!==path)return readFileSync(p,e);
+    injected=true;
+    if(mode==='missing')throw Error('missing dependency: '+p);
+    if(mode==='null')return null;
+    const raw=readFileSync(p,e);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+   });
+   assert.throws(()=>assertFastFreezeB9UnionCurrent(mutationRead));
+   assert(injected,mode+' '+path);
+  }
+ }
+ assertFastFreezeB9UnionCurrent(releasePotionEnemyRead('release',readFileSync));
 });

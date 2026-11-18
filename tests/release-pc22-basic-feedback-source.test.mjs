@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as rawReadFileSync,readdirSync as rawReaddirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
+import {readFileSync as mergedReadFileSync,readdirSync as rawReaddirSync,mkdtempSync,mkdirSync,rmSync,existsSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {unlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -10,15 +10,18 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {discoverJs as rawDiscoverJs} from '../scripts/ci-shards.mjs';
 import {sourceEpoch as jointSourceEpoch,releasePc22BasicFeedbackSourceEpoch as sourceEpoch,preReleasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
-import {integrationProductionRead,integrationPriorInventory} from './helpers/release-card-contact-integration.mjs';
+import {releasePotionEnemyRead,releasePotionEnemyInventory} from './helpers/release-potion-enemy-source.mjs';
+import {integrationProductionRead,integrationPriorInventory,integrationInventory} from './helpers/release-card-contact-integration.mjs';
 import {releasePc22BasicFeedbackSourcePacket,extendReleasePc22BasicFeedbackSource} from './helpers/release-pc22-basic-feedback-source.mjs';
 import {releasePc22BasicFeedbackCiPacket,releasePc22BasicFeedbackCiSource,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackRawInventory,assertReleasePc22BasicFeedbackCiCurrent,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 // Replay the complete immutable standalone contract after authenticating the
 // joint current input. The integration contract separately checks raw discovery.
+const rawReadFileSync=releasePotionEnemyRead('release',mergedReadFileSync);
 const readFileSync=integrationProductionRead('pc22',rawReadFileSync);
-const discoverJs=()=>integrationPriorInventory(rawDiscoverJs(),'pc22');
-const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'pc22','lua').map(p=>p.slice(10)):rawReaddirSync(path);
+const releaseInventory=(paths,kind)=>releasePotionEnemyInventory(paths,integrationInventory(kind),kind,mergedReadFileSync,'release');
+const discoverJs=()=>integrationPriorInventory(releaseInventory(rawDiscoverJs(),'js'),'pc22','js',rawReadFileSync);
+const readdirSync=path=>path==='tests/lua'?integrationPriorInventory(releaseInventory(rawReaddirSync(path).filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p),'lua'),'pc22','lua',rawReadFileSync).map(p=>p.slice(10)):rawReaddirSync(path);
 
 test('actual merged Release authenticates every unchanged Lua and architecture predecessor without advancing the product epoch',()=>{
  const bytes=readFileSync('tests/helpers/release-pc22-basic-feedback-base-source.json.gz');

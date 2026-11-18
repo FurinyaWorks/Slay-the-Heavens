@@ -1,4 +1,5 @@
 import {enemyFastRead} from './helpers/release-enemy-fast-source.mjs';
+import {releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, linkSync, symlinkSync, rmSync, existsSync, realpathSync } from 'node:fs';
@@ -351,7 +352,7 @@ test('packed candidates cannot reuse the legacy logical-only UI cache',async t=>
 test('default reduction CI continuation authenticates every new current owner without rewriting prior packets',async()=>{
  const adapter=await import('./helpers/release-bootstrap-ci-source.mjs');
  const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
- const historicalRead=enemyFastRead('release',readFileSync);
+ const historicalRead=enemyFastRead('release',releasePotionEnemyRead('release',readFileSync));
  const packet=adapter.defaultReductionCiPacket;assert.ok(packet,'complete default reduction continuation required');
  assert.equal(packet.baseCommit,'396b55757a9e536b052f6c960daf1159351f57b1');
  assertIntegratedCurrent();
@@ -359,11 +360,15 @@ test('default reduction CI continuation authenticates every new current owner wi
  assert.equal(audio.baseCommit,'d46bf7aa9a27e0a47528412d7f0ad8fd7e2cbf2b');
  for(const [file,row]of Object.entries({...packet.files,...packet.addedFiles,...audio.files})){
   const source=historicalRead(file,'utf8').replaceAll('\r\n','\n');assert.equal(sha256(source),row.current.sha256);
+  const owner=file==='scripts/native-ui-card-sharing.mjs'
+   ?'fresh complete TASK-111 CI source: default reduction / fresh complete integration source:'
+   :'fresh complete integration source: potion Release';
   for(const changed of [source+'\n',source.replace(/./,'!')]){
    assert.equal(adapter.releaseBootstrapCiSource(file,changed),changed);
-   assert.throws(()=>assertIntegratedCurrent((path,encoding)=>path===file?changed:readFileSync(path,encoding)),/fresh complete TASK-111 CI source/);
+   assert.throws(()=>assertIntegratedCurrent((path,encoding)=>path===file?changed:readFileSync(path,encoding)),
+    error=>error.code==='ERR_ASSERTION'&&error.message.split('\n')[0]===`${owner} ${file}`);
   }
-  assert.throws(()=>assertIntegratedCurrent((path,encoding)=>{if(path===file)throw Error('ENOENT '+file);return readFileSync(path,encoding);}),/ENOENT/);
+  assert.throws(()=>assertIntegratedCurrent((path,encoding)=>{if(path===file)throw Error('ENOENT '+file);return readFileSync(path,encoding);}),error=>error.message==='ENOENT '+file);
  }
  assertIntegratedCurrent();
 });
