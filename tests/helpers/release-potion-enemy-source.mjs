@@ -78,13 +78,14 @@ for (const row of Object.values(shelfCi.files)) {
 }
 
 export function beforeShopShelfCiSource(path, source) {
+  if (Object.hasOwn(shelfCi.files, path)) source = beforeMenuTitleCiSource(path, source);
   return priorCiSource(shelfCi.files, path, source);
 }
 
 export function assertShopShelfCiCurrent(read = readFileSync) {
   assert.equal(hash(read(shelfArchive)), shelfDigest, 'fresh shop shelf CI continuation');
   for (const [path, row] of Object.entries(shelfCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeMenuTitleCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: shop shelf ' + path);
   }
 }
@@ -163,9 +164,36 @@ function assertSettingsCiCurrent(read) {
   }
 }
 
+const titleArchive = 'tests/helpers/release-menu-title-ci.json.gz';
+const titleDigest = 'eb2937bf6c45388a87bd67aa2b89e71297aac7109d192ee4cb63bffa695e74a9';
+const titleBytes = readFileSync(new URL('./release-menu-title-ci.json.gz', import.meta.url));
+assert.equal(hash(titleBytes), titleDigest, 'fixed menu title CI continuation');
+const titleCi = JSON.parse(gunzipSync(titleBytes));
+assert.equal(titleCi.base, 'cdf5fe42fa7962f004966842e05d8ab35781df31');
+assert.equal(titleCi.producer, 'c41b162b1d01069d7f78f647a28a6ca70a9d8097');
+assert.deepEqual(Object.keys(titleCi.files), [
+  'data/presentation/menu-title-mark.json', 'data/presentation/ui_theme.json',
+  'scripts/v25-menu-layout.mjs', 'tests/menu-red-background.cases.mjs',
+]);
+for (const row of Object.values(titleCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+function beforeMenuTitleCiSource(path, source) {
+  return priorCiSource(titleCi.files, path, source);
+}
+
+function assertMenuTitleCiCurrent(read) {
+  assert.equal(hash(read(titleArchive)), titleDigest, 'fresh menu title CI continuation');
+  for (const [path, row] of Object.entries(titleCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: menu title ' + path);
+  }
+}
+
 function beforeSparseCiSource(path, source) {
   if (path === settingsTest) source = priorCiSource(settingsCi.files, path, source);
-  return priorCiSource(sparseCi.files, path, beforeIntentCiSource(path, source));
+  return priorCiSource(sparseCi.files, path, beforeIntentCiSource(path, beforeMenuTitleCiSource(path, source)));
 }
 
 function assertSparseCiCurrent(read) {
@@ -229,7 +257,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const historyRow = Object.hasOwn(historyCi.files, path) ? historyCi.files[path] : null;
       const sparseRow = Object.hasOwn(sparseCi.files, path) ? sparseCi.files[path] : null;
       const intentRow = Object.hasOwn(intentCi.files, path) ? intentCi.files[path] : null;
-      if (path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
+      const titleRow = Object.hasOwn(titleCi.files, path) ? titleCi.files[path] : null;
+      if (path !== settingsTest && !titleRow?.before && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -241,6 +270,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertMenuTitleCiCurrent(read);
   assertSettingsCiCurrent(read);
   assertIntentCiCurrent(read);
   assertSparseCiCurrent(read);
