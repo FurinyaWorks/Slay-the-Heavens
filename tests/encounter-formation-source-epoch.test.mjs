@@ -15,7 +15,7 @@ import {componentUiSourceEpoch} from './helpers/component-ui-source-epoch.mjs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {encounterFormationEpoch} from './helpers/encounter-formation-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
-import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preMobilePotionSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preReleasePc22BasicFeedbackSourceEpoch,preMobilePotionSourceEpoch,potionPost697SourceEpoch,releasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 const path='src/lua/abyss_encounter_formation.lua',proof=sourceEpoch.proof,prior=preEncounterFormationEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
 // The original 51-owner assertions describe the frozen Formation predecessor.
@@ -211,7 +211,8 @@ test('pre-feedback UI facade retains all 104 frozen owners and their original au
  }
 });
 
-test('current UI facade authenticates all 117 disk owners once in order and rejects every warm drift or removal',()=>{
+test('frozen post697 potion UI facade authenticates all 117 owners once in order and rejects every warm drift or removal',()=>{
+ const currentSourceEpoch=potionPost697SourceEpoch,diskReadFileSync=file=>currentSourceEpoch.proof.current[file]?.source??null;
  const current=currentSourceEpoch.proof,file='config/architecture.json',input=diskReadFileSync(file,'utf8'),target='develop';
  const pad=files=>Object.fromEntries(Object.keys(current.current).map(path=>[path,files[path]??null]));
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current),'complete 104-owner predecessor remains available, new modules have no invented source');
@@ -222,6 +223,26 @@ test('current UI facade authenticates all 117 disk owners once in order and reje
  assert.equal(preMobilePotionSourceEpoch.proof.owners.length,116);
  assert.deepEqual(current.owners,[...preMobilePotionSourceEpoch.proof.owners,'src/lua/abyss_battle_potion_popup.lua'].sort());
  assert.equal(current.owners.length,117);
+ const expected=current.targets[target].files[file].source;
+ for(const crlf of [false,true]){
+  const reads=[];let bad=null,missing=false;
+  const live=owner=>{reads.push(owner);if(owner===bad&&missing)return null;const bytes=diskReadFileSync(owner,'utf8').replaceAll('\r\n','\n');return owner===bad?bytes+'\n':crlf?bytes.replaceAll('\n','\r\n'):bytes;};
+  for(let repeat=0;repeat<2;repeat++){reads.length=0;assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),expected);assert.deepEqual(reads,current.owners);}
+  for(const owner of current.owners){
+   for(const absent of [false,true]){bad=owner;missing=absent;reads.length=0;assert.throws(()=>currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),/linked owner identity/,owner);assert.deepEqual(reads,current.owners.slice(0,current.owners.indexOf(owner)+1));}
+   bad=null;reads.length=0;assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),expected);assert.deepEqual(reads,current.owners);
+  }
+  reads.length=0;assert.equal(currentSourceEpoch.preCombinedSource(file,'foreign source',{target,readSource:live}),'foreign source');assert.deepEqual(reads,[]);
+ }
+});
+
+test('standalone PC22 UI facade authenticates all 117 owners once in order and rejects every warm drift or removal',()=>{
+ const currentSourceEpoch=releasePc22BasicFeedbackSourceEpoch,diskReadFileSync=file=>currentSourceEpoch.proof.current[file]?.source??null;
+ const current=currentSourceEpoch.proof,prior=preReleasePc22BasicFeedbackSourceEpoch.proof,file='config/architecture.json',input=diskReadFileSync(file,'utf8'),target='develop';
+ assert.equal(prior.owners.length,116);
+ assert.deepEqual(current.owners,[...prior.owners,'src/lua/abyss_card_flow.lua'].sort());
+ assert.equal(current.owners.length,117);
+ assert.deepEqual(current.targets.releasePc22BasicFeedbackPrior.files,prior.current);
  const expected=current.targets[target].files[file].source;
  for(const crlf of [false,true]){
   const reads=[];let bad=null,missing=false;

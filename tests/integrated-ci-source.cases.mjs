@@ -1,7 +1,10 @@
+import {releasePotionEnemyRead,releasePotionEnemyInventory} from './helpers/release-potion-enemy-source.mjs';
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualPost697ReadFileSync,readdirSync} from 'node:fs';
+import {readFileSync as mergedReadFileSync,readdirSync} from 'node:fs';
 import {potionPost697HistoricalRead,potionPost697PriorInventory} from './helpers/potion-post697-ci-source.mjs';
+const actualPost697ReadFileSync=releasePotionEnemyRead('potion',mergedReadFileSync);
 const actualPotionClickReadFileSync=potionPost697HistoricalRead('potion',actualPost697ReadFileSync);
 import {potionClickHistoricalRead,potionClickCiSource,potionClickCiPacket,assertPotionClickCiCurrent,assertPotionClickRawInventory} from './helpers/potion-click-ci-source.mjs';
 const actualPotionRegressionReadFileSync=potionClickHistoricalRead(actualPotionClickReadFileSync);
@@ -13,9 +16,11 @@ const rawReadFileSync=potionBootstrapHistoricalRead('potion',actualDiskReadFileS
 const rawBootstrapReadFileSync=potionBootstrapHistoricalRead('bootstrap',actualDiskReadFileSync);
 import {mobilePotionCiRead,mobilePotionPriorInventory,mobilePotionCiPacket,mobilePotionCiSource,assertMobilePotionCiCurrent,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
 import {createHash} from 'node:crypto';
-import {discoverJs as actualPost697DiscoverJs} from '../scripts/ci-shards.mjs';
+import {discoverJs as discoverMergedJs} from '../scripts/ci-shards.mjs';
+const actualPost697DiscoverJs=()=>releasePotionEnemyInventory(discoverMergedJs(),potionPost697CiPacket.currentInventory.js,'js',mergedReadFileSync);
+const actualPost697Lua=()=>releasePotionEnemyInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n),potionPost697CiPacket.currentInventory.lua,'lua',mergedReadFileSync);
 const actualPotionRegressionDiscoverJs=()=>potionPost697PriorInventory(actualPost697DiscoverJs(),'js',actualPost697ReadFileSync);
-const potionLegacyLua=()=>potionPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualPost697ReadFileSync);
+const potionLegacyLua=()=>potionPost697PriorInventory(actualPost697Lua(),'lua',actualPost697ReadFileSync);
 const discoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
 const beforePotionRegressionLua=()=>potionRegressionPriorInventory(potionLegacyLua(),'lua',actualPotionRegressionReadFileSync);
 import {integratedCiProof as proof,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';
@@ -36,17 +41,17 @@ test('integration validates complete raw sources and leaves every foreign byte a
   for(const input of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(integratedSource(path,input,target),input);
   for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);
  }
- for(const [path,layer]of [
+ for(const [path,layer,owner='']of [
   ['.gitattributes','integration'],
   ['docs/legal/assets.json','integration'],
   ['tests/helpers/closeout-source-epoch.mjs','post697'],
-  ['tests/helpers/run-hud-ci-source.mjs','integration'],
+  ['tests/helpers/run-hud-ci-source.mjs','integration','potion Release '],
   ['tests/helpers/integrated-ci-source.mjs','post697'],
  ])
   assert.throws(()=>assertIntegratedCurrent((p,e)=>{
-   const value=actualPost697ReadFileSync(p,e);
+   const value=mergedReadFileSync(p,e);
    return p!==path?value:typeof value==='string'?value+'\n':Buffer.concat([value,Buffer.from('\n')]);
-  }),error=>{assert.equal(error.message.split('\n')[0],`fresh complete ${layer} source: ${path}`,'the intended first rejecting owner must match exactly');return true;});
+  }),error=>{assert.equal(error.code,'ERR_ASSERTION');assert.equal(error.message.split('\n')[0],`fresh complete ${layer} source: ${owner}${path}`,'the intended first rejecting owner must match exactly');return true;});
  assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));
  assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');
 });
@@ -401,7 +406,7 @@ test('post697 union public CI source authenticates the same raw reader before ev
 });
 
 test('post697 union current inventory authenticates the complete corpus before entering prior inventory',()=>{
- const inventories={js:actualPost697DiscoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};let fault;
+ const inventories={js:actualPost697DiscoverJs(),lua:actualPost697Lua()};let fault;
  const read=(path,encoding)=>{
   if(path===fault?.path){
    if(fault.kind==='missing')throw Error('missing '+path);

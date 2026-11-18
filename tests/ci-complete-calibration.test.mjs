@@ -1,3 +1,4 @@
+import {releasePotionEnemyRead,releasePotionEnemyInventory} from './helpers/release-potion-enemy-source.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
 import {integratedCiProof} from './helpers/integrated-ci-source.mjs';
@@ -42,8 +43,10 @@ import {preWatcherPlanningSource,watcherPlanningKey,watcherPlanningFloor} from '
 import {preClassPotionPlanningSource,classPotionPlanningKey,classPotionPlanningFloor} from './helpers/class-potion-planning-source-inverse.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync as actualPost697ReadFileSync,readdirSync} from 'node:fs';
-import {potionPost697HistoricalRead,potionPost697PriorInventory} from './helpers/potion-post697-ci-source.mjs';
+import {readFileSync as actualRawReadFileSync,readdirSync} from 'node:fs';
+const actualPost697ReadFileSync=releasePotionEnemyRead('potion',actualRawReadFileSync);
+const rawReleaseReadFileSync=releasePotionEnemyRead('release',actualRawReadFileSync);
+import {potionPost697HistoricalRead,potionPost697PriorInventory,potionPost697CiPacket} from './helpers/potion-post697-ci-source.mjs';
 const actualPotionClickReadFileSync=potionPost697HistoricalRead('potion',actualPost697ReadFileSync);
 import {potionClickHistoricalRead,assertPotionClickCiCurrent,assertPotionClickRawInventory} from './helpers/potion-click-ci-source.mjs';
 const actualPotionRegressionReadFileSync=potionClickHistoricalRead(actualPotionClickReadFileSync);
@@ -57,8 +60,12 @@ const historicalCiReadFileSync=releaseBootstrapCiRead(potionBootstrapCiRead(rawM
 // Historical CI receipts retain their own files; production owners must enter
 // sourceSlice in the final current epoch before its complete fresh authentication.
 const liveDiskReadFileSync=(path,encoding)=>(path.startsWith('src/')||path==='config/architecture.json'
- ?actualPost697ReadFileSync:historicalCiReadFileSync)(path,encoding);
+ ?actualRawReadFileSync:historicalCiReadFileSync)(path,encoding);
 const rawBootstrapReadFileSync=potionBootstrapHistoricalRead('bootstrap',rawMobilePotionReadFileSync);
+import {releasePc22BasicFeedbackCiRead,releasePc22BasicFeedbackPriorInventory,assertReleasePc22BasicFeedbackCiCurrent,releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackExecutionGuards} from './helpers/release-pc22-basic-feedback-ci-source.mjs';
+import {releaseSelectionMapCiRead,releaseSelectionMapPriorInventory,assertReleaseSelectionMapCiCurrent,releaseSelectionMapCiPacket,assertReleaseSelectionMapExecutionGuards} from './helpers/release-selection-map-ci-source.mjs';
+import {integrationRead,integrationCapacityCiRead,integrationPriorInventory,integrationPacket,assertReleaseIntegrationCurrent} from './helpers/release-card-contact-integration.mjs';
+const sideRead=integrationRead('pc22',rawReleaseReadFileSync);
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 const currentReadFileSync=liveDiskReadFileSync;
@@ -71,9 +78,10 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as actualPost697DiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as rawReleaseDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+const actualPost697DiscoverJs=()=>releasePotionEnemyInventory(rawReleaseDiscoverJs(),potionPost697CiPacket.currentInventory.js,'js',actualRawReadFileSync);
 const actualPotionRegressionDiscoverJs=()=>potionPost697PriorInventory(actualPost697DiscoverJs(),'js',actualPost697ReadFileSync);
-const potionLegacyLua=()=>potionPost697PriorInventory(readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort(),'lua',actualPost697ReadFileSync);
+const potionLegacyLua=()=>potionPost697PriorInventory(releasePotionEnemyInventory(rawReleaseLua(),potionPost697CiPacket.currentInventory.lua,'lua',actualRawReadFileSync),'lua',actualPost697ReadFileSync);
 const rawMobilePotionDiscoverJs=()=>potionRegressionPriorInventory(actualPotionRegressionDiscoverJs(),'js',actualPotionRegressionReadFileSync);
 const liveDiscoverJs=()=>mobilePotionPriorInventory(rawMobilePotionDiscoverJs(),'js',rawMobilePotionReadFileSync);
 // Frozen receipts retain their complete inventory; current Full remains raw.
@@ -182,6 +190,7 @@ const componentAddedLua=['tests/lua/v25_texture_runtime.lua','tests/lua/componen
  'tests/lua/component_page_failures.lua'];
 postPlacementJs.push(...currentV25Js,...componentAddedJs,...postSnapshotJs);postPlacementJs.sort();
 postPlacementLua.push(...componentAddedLua);postPlacementLua.sort();
+const rawReleaseLua=()=>readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
 const actualPotionRegressionLua=()=>potionLegacyLua();
 const rawMobilePotionLua=()=>potionRegressionPriorInventory(actualPotionRegressionLua(),'lua',actualPotionRegressionReadFileSync);
 const liveCloseoutLua=()=>mobilePotionPriorInventory(rawMobilePotionLua(),'lua',rawMobilePotionReadFileSync);
@@ -2080,14 +2089,55 @@ test('potion bootstrap combination raw entry retains complete current inventory 
  assertMobilePotionExecutionGuards(rawMobilePotionReadFileSync('.github/workflows/quality.yml','utf8'));
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
 });
+// Preserve the exact standalone Release workloads as well as the live union.
+const releaseParentJs=()=>releasePotionEnemyInventory(rawReleaseDiscoverJs(),integrationPacket.inventory.js,'js',actualRawReadFileSync,'release');
+const releaseParentLua=()=>releasePotionEnemyInventory(rawReleaseLua(),integrationPacket.inventory.lua,'lua',actualRawReadFileSync,'release');
+
+for(const [side,label,p,check,guards]of [
+ ['pc22','PC22 basic feedback',releasePc22BasicFeedbackCiPacket,assertReleasePc22BasicFeedbackCiCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
+ ['selection','selection map',releaseSelectionMapCiPacket,assertReleaseSelectionMapCiCurrent,assertReleaseSelectionMapExecutionGuards],
+ ['joint','card-contact integration',{currentInventory:integrationPacket.inventory,priorInventory:releasePc22BasicFeedbackCiPacket.priorInventory},assertReleaseIntegrationCurrent,assertReleasePc22BasicFeedbackExecutionGuards],
+])test(`release ${label} retained Full inventory retains all tests, diagnostic forecasts and actual execution guards`,t=>{
+ check(side==='joint'?rawReleaseReadFileSync:side==='selection'?integrationCapacityCiRead(rawReleaseReadFileSync):integrationRead(side,rawReleaseReadFileSync));
+ guards(rawReleaseReadFileSync('.github/workflows/quality.yml','utf8'));
+ const js=side==='joint'?releaseParentJs():integrationPriorInventory(releaseParentJs(),side,'js',rawReleaseReadFileSync),lua=side==='joint'?releaseParentLua():integrationPriorInventory(releaseParentLua(),side,'lua',rawReleaseReadFileSync);
+ assert.deepEqual(js,p.currentInventory.js);assert.deepEqual(lua,p.currentInventory.lua);
+ for(const path of p.priorInventory.js)assert(js.includes(path));
+ for(const path of p.priorInventory.lua)assert(lua.includes(path));
+ assert.equal(rawCurrentTimings.unknownJsMs,10000);
+ for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+  for(const path of js.filter(path=>!p.priorInventory.js.includes(path)))
+   assert(rawCurrentJsPlanningWeights([path],platform)[path]>=rawCurrentTimings.unknownJsMs,'new unmeasured test retains its conservative cost: '+path);
+  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
+  assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
+  const loads=bins[0].loads;let combined=loads;
+  if(platform==='win32'){
+   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
+   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
+   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
+   combined=luaBins.map((bin,i)=>{
+    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
+    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
+   });
+  }
+  const forecast=Math.max(...combined)+60000;
+  t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; unchanged execution guard ${guard}ms; not hosted completion`);
+  // Owner 2026-11-07: forecasts and reserve are advisory. The job-scoped
+  // raw workflow deadlines above remain hard assertions.
+ }
+});
+
 test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
- assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
- const js=liveDiscoverJs(),lua=liveCloseoutLua();
+ const releaseBootstrapRead=releasePc22BasicFeedbackCiRead(sideRead);
+ assertReleaseBootstrapCiCurrent(releaseBootstrapRead);
+ const js=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(releaseParentJs(),'pc22','js',rawReleaseReadFileSync),'js',sideRead);
+ const lua=releasePc22BasicFeedbackPriorInventory(integrationPriorInventory(releaseParentLua(),'pc22','lua',rawReleaseReadFileSync),'lua',sideRead);
  assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
- const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const physical=releaseBootstrapRead('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  for(const path of ['.github/workflows/quality.yml','.github/workflows/licenses.yml']){
-  const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const source=releaseBootstrapRead(path,'utf8').replaceAll('\r\n','\n');
   assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);

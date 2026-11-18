@@ -1,3 +1,4 @@
+import {releasePotionEnemyInventory,releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ import {gunzipSync} from 'node:zlib';
 import {readFileSync,readdirSync} from 'node:fs';
 import {discoverJs,jsPlanningWeights,timings} from '../scripts/ci-shards.mjs';
 import {mobilePotionPriorInventory,assertMobilePotionRawInventory} from './helpers/mobile-potion-ci-source.mjs';
-import {potionPost697PriorInventory,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
+import {potionPost697PriorInventory,potionPost697CiPacket,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
 const exactSourceError=(layer,path)=>error=>{
@@ -37,11 +38,14 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const mergedJs=discoverJs(),mergedLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const rawJs=releasePotionEnemyInventory(mergedJs,potionPost697CiPacket.currentInventory.js,'js');
+ const rawLua=releasePotionEnemyInventory(mergedLua,potionPost697CiPacket.currentInventory.lua,'lua');
+ const potionRead=releasePotionEnemyRead('potion');
  const historical={};
  for(const [kind,combined]of [['js',rawJs],['lua',rawLua]]){
   assertPotionPost697RawInventory(combined,kind);
-  const raw=potionPost697PriorInventory(combined,kind,readFileSync);
+  const raw=potionPost697PriorInventory(combined,kind,potionRead);
   assertMobilePotionRawInventory(raw,kind);
   historical[kind]=mobilePotionPriorInventory(raw,kind);
   for(const path of raw.filter(p=>!historical[kind].includes(p))){

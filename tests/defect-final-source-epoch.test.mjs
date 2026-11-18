@@ -1,4 +1,4 @@
-import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preMobilePotionSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,preReleasePc22BasicFeedbackSourceEpoch,preMobilePotionSourceEpoch,potionPost697SourceEpoch,releasePc22BasicFeedbackSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -168,7 +168,8 @@ test('pre-feedback production retains original68, exact28, merchant and all 104 
  for(const foreign of [source+'-- foreign',expected,null,undefined,{},17]){reads=[];assert.equal(project(foreign),foreign);assert.deepEqual(reads,[]);}
 });
 
-test('current raw production retains the exact power-view owner and complete release owner continuation',()=>{
+test('frozen post697 potion production retains the exact power-view owner and complete 117-owner continuation',()=>{
+ const currentEpoch=potionPost697SourceEpoch,diskReadFileSync=path=>currentEpoch.proof.current[path]?.source??null;
  const current=currentEpoch.proof,file='config/architecture.json',source=diskReadFileSync(file,'utf8'),owner='src/lua/abyss_monster_power_view.lua';
  const pad=files=>Object.fromEntries(Object.keys(current.current).map(path=>[path,files[path]??null]));
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current));
@@ -176,6 +177,23 @@ test('current raw production retains the exact power-view owner and complete rel
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
  assert.deepEqual(preMobilePotionSourceEpoch.proof.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(preMobilePotionSourceEpoch.proof.owners.length,116);
  assert.deepEqual(current.owners,[...preMobilePotionSourceEpoch.proof.owners,'src/lua/abyss_battle_potion_popup.lua'].sort());assert.equal(current.owners.length,117);
+ const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
+ const expected=current.targets.develop.files[file].source;
+ assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);
+ for(const replacement of [null,diskReadFileSync(owner,'utf8')+'\n',new Error('missing current power view')]){
+  reads.length=0;
+  assert.throws(()=>currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:path=>{if(path===owner){reads.push(path);if(replacement instanceof Error)throw replacement;return replacement;}return raw(path);}}),/combined linked owner/);
+  assert.deepEqual(reads,current.owners.slice(0,current.owners.indexOf(owner)+1));
+ }
+});
+
+test('standalone PC22 production retains the exact power-view owner and complete 117-owner continuation',()=>{
+ const currentEpoch=releasePc22BasicFeedbackSourceEpoch,diskReadFileSync=path=>currentEpoch.proof.current[path]?.source??null;
+ const current=currentEpoch.proof,prior=preReleasePc22BasicFeedbackSourceEpoch.proof,file='config/architecture.json',source=diskReadFileSync(file,'utf8'),owner='src/lua/abyss_monster_power_view.lua';
+ assert.equal(prior.owners.length,116);
+ assert.deepEqual(current.owners,[...prior.owners,'src/lua/abyss_card_flow.lua'].sort());
+ assert.equal(current.owners.length,117);
+ assert.deepEqual(current.targets.releasePc22BasicFeedbackPrior.files,prior.current);
  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
  const expected=current.targets.develop.files[file].source;
  assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);

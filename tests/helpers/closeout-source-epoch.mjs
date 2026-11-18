@@ -14,8 +14,10 @@ import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendMobilePotionSource} from './mobile-potion-source.mjs';
 import {extendPotionRegressionSource} from './potion-regression-source.mjs';
 import {extendPotionClickSource} from './potion-click-source.mjs';
-import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
 import {extendPotionPost697Source} from './potion-post697-source.mjs';
+import {extendReleasePc22BasicFeedbackSource} from './release-pc22-basic-feedback-source.mjs';
+import {extendReleaseSelectionMapSource} from './release-selection-map-source.mjs';
+import {extendReleaseEnemyArtSource} from './release-enemy-art-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -54,13 +56,49 @@ export const menuRedPriorEpoch=extendFeedbackSourceEpoch(stsStyleEpoch,feedbackP
 export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
-export const preMobilePotionSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const preReleasePc22BasicFeedbackSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const preReleaseSelectionMapSourceEpoch=preReleasePc22BasicFeedbackSourceEpoch;
+export const releasePc22BasicFeedbackSourceEpoch=extendReleasePc22BasicFeedbackSource(preReleasePc22BasicFeedbackSourceEpoch);
+export const releaseSelectionMapSourceEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
+export const preReleaseEnemyArtSourceEpoch=releaseSelectionMapSourceEpoch;
+export const releaseEnemyArtSourceEpoch=extendReleaseEnemyArtSource(preReleaseEnemyArtSourceEpoch);
+export const preMobilePotionSourceEpoch=preReleasePc22BasicFeedbackSourceEpoch;
 export const prePotionRegressionSourceEpoch=extendMobilePotionSource(preMobilePotionSourceEpoch);
 export const prePotionClickSourceEpoch=extendPotionRegressionSource(prePotionRegressionSourceEpoch);
 export const prePotionPost697SourceEpoch=extendPotionClickSource(prePotionClickSourceEpoch);
-export const preReleaseSelectionMapSourceEpoch=preMobilePotionSourceEpoch;
-export const releaseSelectionMapLegacyEpoch=extendReleaseSelectionMapSource(preReleaseSelectionMapSourceEpoch);
-export const sourceEpoch=extendPotionPost697Source(prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
+export const releaseSelectionMapLegacyEpoch=releaseSelectionMapSourceEpoch;
+export const potionPost697SourceEpoch=extendPotionPost697Source(prePotionPost697SourceEpoch,releaseSelectionMapLegacyEpoch);
+// Preserve each standalone history. The enemy-art and potion sides inherit selection;
+// a repeated owner must be exactly identical to the already joined row.
+function joinReleaseSources(){
+const base=preReleasePc22BasicFeedbackSourceEpoch.proof;
+const pc22=releasePc22BasicFeedbackSourceEpoch.proof,selection=releaseSelectionMapSourceEpoch.proof;
+const current={...base.current},targets={...base.targets};
+const enemy=releaseEnemyArtSourceEpoch.proof;
+const potion=potionPost697SourceEpoch.proof;
+for(const side of [pc22,selection,enemy,potion]){
+ for(const [path,row]of Object.entries(side.current))if(row?.sha256!==base.current[path]?.sha256){
+  if(current[path]?.sha256===row?.sha256)assert.deepEqual(current[path],row,'identical inherited Release integration owner: '+path);
+  else assert.deepEqual(current[path],base.current[path],'disjoint Release integration owner: '+path);
+  current[path]=row;
+ }
+ for(const [name,target]of Object.entries(side.targets)){
+  if(Object.hasOwn(targets,name))assert.deepEqual(targets[name],target,'unchanged common Release target: '+name);
+  else targets[name]=target;
+ }
+}
+targets.releasePc22BasicFeedbackReviewed={commit:pc22.currentCommit,files:pc22.current};
+targets.releaseSelectionMapReviewed={commit:selection.currentCommit,files:selection.current};
+targets.releaseEnemyArtReviewed={commit:enemy.currentCommit,files:enemy.current};
+const owners=Object.keys(current).sort().filter(path=>Object.values(targets).some(target=>target.files[path]?.sha256!==current[path]?.sha256));
+return createSourceEpochProjector(freeze({...base,current,targets,owners,
+ currentTreeCommitted:false,currentCommit:'ead341112170308b5c80582ef016253af5944e81',
+ currentCommitRole:'integration worktree capture against actual Release ead34111; standalone source producers are retained separately',
+ releasePc22BasicFeedbackProducers:pc22.releasePc22BasicFeedbackProducers,
+ releaseSelectionMapProducers:selection.releaseSelectionMapProducers,
+ potionPost697Producers:potion.potionPost697Producers}),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+export const sourceEpoch=joinReleaseSources();
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
