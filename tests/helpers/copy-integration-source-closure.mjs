@@ -26,9 +26,12 @@ const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
 assert.equal(predecessor[runtime],'ee54191f327d412a5e37a76ff236af6f4aac692e51884a0e3afd33fe62e427e4','fatal BGM helper copy predecessor');
 const files=Object.freeze({
  ...predecessor,
- [runtime]:'6f0b589319c4e5b26a6179f0a2677318765c7db050d7c3525d19bda503f256f7',
- 'tests/helpers/fatal-bgm-source-continuation.mjs':'4850382e7ac7b13613606ec42af4d25258e49e2f2c8a8c0de841c6ffd9311bd8',
+ [runtime]:'8eb2d051c81edaecc07dae3468c46d05172740c9c771e4c4da83bd3d37bc1f0e',
+ 'tests/helpers/fatal-bgm-source-continuation.mjs':'c0a1f30805b3c5c0680888ee9de4ff77cef2bc8a729271d5ff7f967dada02382',
  'tests/fixtures/fatal-bgm-e65-source.json.gz':'3e560e461232785753f5a574732ec834b19c51cfd700f09cce212009dd4a22fb',
+ 'tests/helpers/exact-source-continuation.mjs':'9046457a50fa3c137985906423be546424287dc5a06ef940f6ffbeb553d63ccf',
+ 'tests/helpers/character-selector-source.mjs':'7b3e77e5a190772e6a7d063eb2134aeabd928a6db691705ffa220fa92b71b974',
+ 'tests/fixtures/develop-character-architecture-before.json.gz':'7a5ab46cd4e7d27fc414f05bebb1ffe06dcba742f990412205113f672b8db541',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
