@@ -45,11 +45,15 @@ for (const row of Object.values(handCi.files)) {
   if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
 }
 
-export function beforeHandLayoutCiSource(path, source) {
-  const row = Object.hasOwn(handCi.files, path) ? handCi.files[path] : null;
+function priorCiSource(files, path, source) {
+  const row = Object.hasOwn(files, path) ? files[path] : null;
   const text = normalized(source);
   if (!row?.before || text === null || hash(text) !== row.afterSha256) return source;
   return source.includes('\r\n') ? row.before.replaceAll('\n', '\r\n') : row.before;
+}
+
+export function beforeHandLayoutCiSource(path, source) {
+  return priorCiSource(handCi.files, path, beforeEnemyMetricsCiSource(path, source));
 }
 
 export function assertHandLayoutCiCurrent(read = readFileSync) {
@@ -57,7 +61,7 @@ export function assertHandLayoutCiCurrent(read = readFileSync) {
   assert.equal(hash(read('tests/helpers/mobile-hand-source.json.gz')),
     handCi.productionArchive, 'fresh immutable hand-layout production archive');
   for (const [path, row] of Object.entries(handCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeEnemyMetricsCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: hand-layout ' + path);
   }
 }
@@ -74,10 +78,7 @@ for (const row of Object.values(shelfCi.files)) {
 }
 
 export function beforeShopShelfCiSource(path, source) {
-  const row = Object.hasOwn(shelfCi.files, path) ? shelfCi.files[path] : null;
-  const text = normalized(source);
-  if (!row?.before || text === null || hash(text) !== row.afterSha256) return source;
-  return source.includes('\r\n') ? row.before.replaceAll('\n', '\r\n') : row.before;
+  return priorCiSource(shelfCi.files, path, source);
 }
 
 export function assertShopShelfCiCurrent(read = readFileSync) {
@@ -85,6 +86,31 @@ export function assertShopShelfCiCurrent(read = readFileSync) {
   for (const [path, row] of Object.entries(shelfCi.files)) {
     const source = normalized(read(path, 'utf8'));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: shop shelf ' + path);
+  }
+}
+
+// Preserve the original Release fixtures while authorizing this exact next #688 slice.
+const enemyArchive = 'tests/helpers/release-enemy-metrics-ci.json.gz';
+const enemyDigest = 'eb317490fcec41483ef7c1e666a7a344bc924733043c48a8990da4ddde179810';
+const enemyBytes = readFileSync(new URL('./release-enemy-metrics-ci.json.gz', import.meta.url));
+assert.equal(hash(enemyBytes), enemyDigest, 'fixed enemy metrics CI continuation');
+const enemyCi = JSON.parse(gunzipSync(enemyBytes));
+assert.equal(enemyCi.base, '6aaed54a56c3d2769a71feea3580798ae421a0e8');
+for (const row of Object.values(enemyCi.files)) {
+  if (row.before !== null) assert.equal(hash(row.before), row.beforeSha256);
+}
+
+export function beforeEnemyMetricsCiSource(path, source) {
+  return priorCiSource(enemyCi.files, path, source);
+}
+
+export function assertEnemyMetricsCiCurrent(read = readFileSync) {
+  assert.equal(hash(read(enemyArchive)), enemyDigest, 'fresh enemy metrics CI continuation');
+  assert.equal(hash(read('tests/helpers/enemy-geometry-source.json.gz')), enemyCi.productionArchive,
+    'fresh immutable enemy metrics production archive');
+  for (const [path, row] of Object.entries(enemyCi.files)) {
+    const source = normalized(read(path, 'utf8'));
+    assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: enemy metrics ' + path);
   }
 }
 
@@ -109,7 +135,8 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       // Unbound binary archives remain byte-identical, without UTF-8 decoding.
       const handRow = Object.hasOwn(handCi.files, path) ? handCi.files[path] : null;
       const shelfRow = Object.hasOwn(shelfCi.files, path) ? shelfCi.files[path] : null;
-      if (!handRow?.before && !shelfRow?.before && (!row || !Object.hasOwn(row.parents, side))) return source;
+      const enemyRow = Object.hasOwn(enemyCi.files, path) ? enemyCi.files[path] : null;
+      if (!handRow?.before && !shelfRow?.before && !enemyRow?.before && (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
     }
@@ -120,6 +147,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertEnemyMetricsCiCurrent(read);
   assertHandLayoutCiCurrent(read);
   assertShopShelfCiCurrent(read);
   assert.equal(hash(read(archive)), digest, 'fresh complete potion Release CI archive');
