@@ -32,17 +32,18 @@ test('utility planner frozen complete source remains authenticated to develop d8
 
 test('the explicit historical reader requires current owners and rejects a stale configuration after warm success',()=>{
  const proof=currentEpoch.proof,config='config/architecture.json';
+ const admittedReads=[...proof.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
  const actual=Object.fromEntries(proof.owners.map(p=>[p,read(p)]));let reads=[],changed,value;
  const reader=currentDefectActorReader(p=>{reads.push(p);if(p===changed){if(value instanceof Error)throw value;return value;}return actual[p];});
  for(let warm=0;warm<2;warm++){
   reads=[];assert.equal(reader(config),defectActorEpoch.proof.current[config].source);
-  assert.deepEqual(reads,proof.owners,'all raw current owners precede historical bytes');
+  assert.deepEqual(reads,admittedReads,'all raw current owners precede historical bytes');
  }
  changed=config;value=defectActorEpoch.proof.current[config].source;
  assert.throws(()=>reader(config),/combined linked owner identity: config\/architecture\.json/,'an otherwise correct old Actor config is not current permission');
  changed=proof.owners.find(p=>!Object.hasOwn(defectActorEpoch.proof.current,p));
  for(value of [actual[changed]+'\n',null,new Error('unavailable')])assert.throws(()=>reader(config),/combined linked owner/);
- changed=undefined;reads=[];assert.equal(reader(config),defectActorEpoch.proof.current[config].source);assert.deepEqual(reads,proof.owners);
+ changed=undefined;reads=[];assert.equal(reader(config),defectActorEpoch.proof.current[config].source);assert.deepEqual(reads,admittedReads);
  assert.throws(()=>reader('src/lua/not_an_actor_owner.lua'),/known Actor owner/,'unknown paths cannot receive projected source');
 });
 test('independent old/new VMs preserve plans, input graphs, validation order, dynamic reads and original errors',()=>{
