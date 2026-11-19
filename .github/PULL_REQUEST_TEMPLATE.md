@@ -11,7 +11,7 @@ Branch closeout owner (Agent / takeover coordinator): [name or session]
 Supersedes / inherits: none
 Expected exit: DELIVERED_VERIFIED / SUPERSEDED / FROZEN / DISCARDED (select one; pending is not Done)
 <!-- On actual closeout, post a single CLOSEOUT receipt in this PR or existing Backlog task (fixed HEAD SHA, evidence, successor, remote deletion/retention). Do not mark delivery complete just because auto-merge was enabled. -->
-- [ ] v2.0.0 defect or stabilization → `release/v2.0.0` (source based on release)
+- [ ] v2.0.0 recovery, defect or stabilization → `develop` (source based on latest develop)
 - [ ] future feature or non-release docs → `develop` (source based on develop)
 - [ ] release cut or production hotfix → `master` (then sync back to develop)
 - [ ] frozen experiment / HOLD (normally no merge PR)
