@@ -1,3 +1,3 @@
-# Claude 入口
+@AGENTS.md
 
-按任务查阅 [AGENTS](AGENTS.md)。
+在 GitHub 上浏览时，打开[项目协作指引](AGENTS.md#项目协作)。
