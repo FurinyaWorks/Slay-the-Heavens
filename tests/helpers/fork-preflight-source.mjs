@@ -1,3 +1,4 @@
+import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -42,6 +43,30 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+const coopLabCiBytes=readFileSync(new URL('./coop-lab-ci-predecessors.json.gz',import.meta.url));
+assert.equal(hash(coopLabCiBytes),'280ebb9a866e2dd064f7d8466fe0fe934fe7ffdf63edb95dc76dc6cc919700bc','complete co-op lab CI predecessors');
+const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
+assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
+for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
+function beforeCoopCiSource(path,source){
+ const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
+ if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
+ return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+}
+const coopLabTest='tests/coop-primitive-lab.test.mjs';
+const coopLabTestSha='93a22f446fec66df1339fc135071c929a3cc07d0c2473424510842af689d18dc';
+export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
+ const current=[...preceding,coopLabTest].sort();
+ assert.deepEqual([...paths].sort(),current,'complete current raw discovery inventory');
+ const testSource=read(coopLabTest,'utf8');
+ assert(typeof testSource==='string'&&!testSource.includes('\r\r\n')&&
+  hash(normalize(testSource))===coopLabTestSha,'fresh added inventory source: '+coopLabTest);
+}
+export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
+ if(!paths.includes(coopLabTest))return paths;
+ assertCurrentJsInventory(paths,preceding,read);
+ return paths.filter(path=>path!==coopLabTest);
+}
 const closeoutSuccessors=Object.freeze({
  'tests/defect-integration-source.test.mjs':'e20ed02229b4e316bce92decaec45037eeceb8116f31216b8970c7964674f1c0',
  'tests/defect-utility-planning.test.mjs':'b93215b0cece7151a1929d0535c40595f7a3d9586f237ba0a3966f52687142c1',
@@ -51,6 +76,7 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
+ 'docs/legal/assets.json':'1092785bd84163abd9ba779f6447807513c3ddf1bb8c0787584a93b1fb468b70',
  'data/presentation/narrative.zh-CN.json':'5db5e77f3789a98e49335bb2443e44f8703ebe349e9e1cd524cfb64a0a3006aa',
  'tests/lore-v2.test.mjs':'2aee46188d476f8ee24b0a736da4d2dcfb214c9f2fe54d5593f1c937a7d67d9f',
  'tests/lua/merchant_dialogue_lifecycle.lua':'25393fa6499858dbbf9551b416aca5930d93426b366c6f6c5123ee611bf3cb06',
@@ -96,13 +122,17 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- for(const [path,sha] of Object.entries(sourceSuccessors)){
+ for(const [path,row] of Object.entries(coopLabCi.files)){
   const source=read(path,'utf8');
+  assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
+ }
+ for(const [path,sha] of Object.entries(sourceSuccessors)){
+  const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
- source=beforeCharacterPreparationCiSource(path,source);
+ source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
  if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')

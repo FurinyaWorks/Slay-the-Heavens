@@ -1,4 +1,4 @@
-import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
+import {assertCurrentJsInventory,beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawReadFileSync,readdirSync} from 'node:fs';
@@ -10,7 +10,7 @@ const raw=p=>beforePreflightSource(p,readFileSync(p,'utf8')).replaceAll('\r\n','
 const readFileSync=releaseBootstrapCiRead(rawReadFileSync);
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
- assertIntegratedCurrent();assert.deepEqual(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
+ assertIntegratedCurrent();assertCurrentJsInventory(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
  for(const [path,row]of Object.entries(proof.files))for(const target of Object.keys(proof.sources)){
   const source=raw(path),production=path.startsWith('src/')||path==='config/architecture.json';
   const expected=production?source:row.views[target]?.source??source;

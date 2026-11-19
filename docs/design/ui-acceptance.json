@@ -1,5 +1,5 @@
 {
-  "approvedBaseline": "Current active docs/design/ui-canvas (PatchNotes retired), PR19 prototype/screens where not superseded, latest user decisions",
+  "approvedBaseline": "Approved v2.0.0 references from docs/design/ui-references.json",
   "note": "Candidate-specific native UI evidence only. Source/mock/layout checks do not certify PC or mobile. Final integration requires character selection, potions and exit in addition to existing screens.",
   "screens": {
     "menu": {

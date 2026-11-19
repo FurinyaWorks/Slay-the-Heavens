@@ -3,6 +3,7 @@ local CharacterSelect = require("abyss_character_select")
 local Controller = require("abyss_controller")
 local Theme = require('abyss_theme')
 local V25View=require('abyss_v25_menu_view')
+local Navigation=require('abyss_game_ui_navigation')
 local M = {}
 local menuKinds={start=true,settle=true,egg_open=true,titleQuit=true,continueRun=true}
 local function titleAvailable(self,kind)
@@ -110,7 +111,10 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 return resultAvailable()
             end
             local function runMenuAvailable()
-                if runMenuAction then return self.exitOpen and self.menuOpen == true and not self.routeOpen and (not enabled or enabled()) end
+                if runMenuAction then
+                    if kind~='run_mainMenu' and Navigation.minimalRunMenu(self) then return false end
+                    return self.exitOpen and self.menuOpen == true and not self.routeOpen and (not enabled or enabled())
+                end
                 if self.menuOpen or self.routeOpen then return false end
                 return characterAvailable()
             end
@@ -291,13 +295,13 @@ function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside
     end)
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)
     bindCommand(runMenu:GetChild('mainMenu'),'run_mainMenu',function()return self:returnToMainMenu()end,
-        function()return require('abyss_game_ui_navigation').hasRun(self) and not self.sessionPaused end)
+        function()return Navigation.hasRun(self) and not self.sessionPaused end)
     bindCommand(runMenu:GetChild('quit'),'run_quit',function()
         owner.exitGeneration=owner.exitGeneration+1
         self.menuOpen=false;self.navigationAction=nil;self:refresh();return true
-    end,function()return require('abyss_game_ui_navigation').hasRun(self) and not self.sessionPaused end)
+    end,function()return Navigation.hasRun(self) and not self.sessionPaused end)
     bindCommand(runMenu:GetChild('abandon'), 'run_abandon', function()
-        if require('abyss_game_ui_navigation').hasRun(self) then return self:requestNavigation('abandon') end
+        if Navigation.hasRun(self) then return self:requestNavigation('abandon') end
         owner.exitGeneration = owner.exitGeneration + 1
         self.menuOpen = false
         self:refresh()

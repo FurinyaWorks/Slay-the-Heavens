@@ -3,6 +3,18 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "battle-character-visual-reference": {
+      "status": "Owner-selected, session-generated Genshin character derivative visual references for the project fitting experiment. Asset and platform rights remain separate. Project comparison only, with no official distribution authorization, asset sublicense, or native runtime approval.",
+      "evidence": "art/characters/battle-figure-reference/2026-11-19/README.md and manifest.json; two original references from PR #744"
+    },
+    "v2-native-menu-layout-evidence": {
+      "status": "Project diagnostic renders of native geometry over the existing red menu background; system font rasterized in screenshots only. Scope is offline comparison, with upstream IP rights reserved.",
+      "evidence": "docs/evidence/v2-ui-20261119/README.md"
+    },
+    "approved-menu-design-reference": {
+      "status": "Owner-supplied full menu design reference for project comparison. Original artist and independent license remain unconfirmed. No runtime use or third-party sublicense.",
+      "evidence": "docs/design/reference-assets/v2.0.0/README.md; original bytes preserved by PR #753"
+    },
     "menu-red-reference-native": {
       "status": "User-supplied character illustration and screenshots of its native geometric reconstruction for this platform project. Original artist and source license not established; no separate asset/IP sublicense or commercial clearance. Reference PNG is offline fitting input only; runtime uses native primitive IDs. Screenshots do not prove official import or device acceptance.",
       "evidence": "docs/legal/MENU_REFERENCE_PROVENANCE.md; experiments/menu-red-fit/README.md; docs/evidence/menu-red-quality-20261114/README.md"
@@ -209,6 +221,18 @@
     }
   },
   "files": {
+    "art/characters/battle-figure-reference/2026-11-19/lowpoly-style-probe.png": {
+      "sha256": "990018355b9b17f0f4b1c34c848b5122e8e00333061f22a77e24c819e25fd13f",
+      "category": "battle-character-visual-reference"
+    },
+    "art/characters/battle-figure-reference/2026-11-19/manifest.json": {
+      "sha256": "013542a0b8e15212e4e7a64e2df498645f3e7167d6b4745e5aa417b726c03a06",
+      "category": "battle-character-visual-reference"
+    },
+    "art/characters/battle-figure-reference/2026-11-19/pose-lineup.jpeg": {
+      "sha256": "bc28cb3c2b2e34c2466af7d618100c411e1b9ef7d4b0d326e10309bd0bb67114",
+      "category": "battle-character-visual-reference"
+    },
     "experiments/menu-red-fit/input/source.png": {
       "sha256": "16bdf7b614f0fb6fdbc2414271682446c0012a9e8ff8da70abad3b7a0374480d",
       "category": "menu-red-reference-native"
@@ -228,6 +252,18 @@
     "docs/evidence/menu-red-quality-20261114/before.png": {
       "sha256": "b12e36c8cc3e1b127134678b1087f7226b34dab4365cf2ab1bda17b56bdae622",
       "category": "menu-red-reference-native"
+    },
+    "docs/evidence/v2-ui-20261119/menu-hover.png": {
+      "sha256": "2484d47a03f5032b1c8e97f49daa48ca34becda442c881feba9b1f7ae6742e6e",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/menu-normal.png": {
+      "sha256": "4144110cb483ab236d7657e1ecebc53726e7450c5ac7f20e65019faf15e656e2",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png": {
+      "sha256": "655f4926a86d1135d468b31bf0c225352c65de03ba09a0d684ffa875265741dd",
+      "category": "approved-menu-design-reference"
     },
     "docs/evidence/menu-red-quality-20261114/menu.png": {
       "sha256": "23ac07b19542c110d6bb443a0c56e7477b40a2c6cc4bd38617326b3a59f44b9a",
