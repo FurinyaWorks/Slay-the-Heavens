@@ -117,10 +117,19 @@ assert(c:release() and LiveCount()==0)
 test('official runtime refuses a missing approved figure even when the old pixel payload is still present',()=>withPortraitVm(`
 assert(Asset.selectionUses=='lowpolyLumine')
 Asset.battlePixel={count=57} -- Retained historical payload must not become a fallback.
+local approved=Asset.battleApprovedNative
 Asset.battleApprovedNative=nil
 local ok,err=pcall(function()Portraits.new(stage,nil,{battlePortrait=true,selectionAvatar=false})end)
 assert(not ok and tostring(err):find('official battle requires the approved native Lumine drawing',1,true),'runtime silently restored the pixel placeholder')
 assert(LiveCount()==0,'missing approved figure created a substitute')
+for _,key in ipairs({'literalSha256','jsonSha256'})do
+  Asset.battleApprovedNative=approved
+  local original=approved[key];approved[key]=string.rep('0',64)
+  local valid,reason=pcall(Portraits.new,stage,nil,{battlePortrait=true,selectionAvatar=false})
+  assert(not valid and tostring(reason):find('unexpected native Lumine drawing identity',1,true),'unknown drawing bytes were accepted')
+  assert(LiveCount()==0,'rejected drawing created controls')
+  approved[key]=original
+end
 `,{officialAssets:true,runtimeV2:true}));
 
 test('the historical idle still creates and releases its complete cache',t=>{

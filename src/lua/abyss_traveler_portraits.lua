@@ -488,7 +488,10 @@ function M.new(stage,report,flags,cardTemplates)
         battleDrawing=official and assert(Asset.battleApprovedNative,'official battle requires the approved native Lumine drawing') or Asset.battle133
         if official then
             assert(lowpoly(battleDrawing) and battleDrawing.width==133 and battleDrawing.height==133
-                and battleDrawing.count==464 and digest(battleDrawing.literalSha256),'unexpected native Lumine drawing')
+                and battleDrawing.count==464
+                and battleDrawing.literalSha256=='73070e14234502e7a61b0be601b9ada017bb4d90b0f58cccd305673cd2fddfef'
+                and battleDrawing.jsonSha256=='a0c792109a74f71be0a52d9a59f39828e1d4818ce8d1bba915606b984d89f831',
+                'unexpected native Lumine drawing identity')
         else
             validate(battleDrawing,133,4315,'ae2161957033d688b1bed1c7ab2ad2891d5f7bf5e34b291f9ecaef7cfa11f880','f8a7af7b079aa5bbb7e16b502b222f1fd7dbfaa2c30f6eef1bf0d76af0a0a248')
         end
