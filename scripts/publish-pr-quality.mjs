@@ -1,4 +1,4 @@
-import {readFileSync,mkdtempSync,rmSync,mkdirSync,writeFileSync} from 'node:fs';
+import {readFileSync,mkdtempSync,rmSync,mkdirSync,writeFileSync,appendFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -131,8 +131,20 @@ export function independentReviewGate(env=process.env,query=gh,{release=false,lo
  return {state:'published',head:review.head,artifactId,reviewId:review.githubReviewId};
 }
 function getStatusWrite(query,repo,head,description,runId){return JSON.parse(query('api','--method','POST',`repos/${repo}/statuses/${head}`,'-f','state=success','-f','context=independent-review','-f','description='+description,'-f',`target_url=https://github.com/${repo}/actions/runs/${runId}`));}
+export function independentReviewProofReady(result){
+ if(['pr_passed','shadow_verified'].includes(result?.state))return true;
+ if(['not-requested','superseded'].includes(result?.state))return false;
+ throw Error('Unexpected independent review preparation result');
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
- try{console.log(JSON.stringify(process.argv[2]==='--independent-review'||process.argv[2]==='--release-independent-review'?
-  independentReviewGate(process.env,gh,{release:process.argv[2]==='--release-independent-review'}):main(process.env,gh,{pending:process.argv[2]==='--pending'})));}
+ try{
+  const result=process.argv[2]==='--independent-review'||process.argv[2]==='--release-independent-review'?
+   independentReviewGate(process.env,gh,{release:process.argv[2]==='--release-independent-review'}):main(process.env,gh,{pending:process.argv[2]==='--pending'});
+  if(process.argv[2]==='--independent-review'){
+   const ready=independentReviewProofReady(result);
+   if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,`proof_ready=${ready}\n`);
+  }
+  console.log(JSON.stringify(result));
+ }
  catch(error){console.error(error.message);process.exitCode=1;}
 }

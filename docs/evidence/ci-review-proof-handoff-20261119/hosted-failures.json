@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "source": "GitHub Actions job logs, read only; excerpts are not a new test run",
+  "rows": [
+    {
+      "runId": 44423671854,
+      "jobId": 135222850282,
+      "runUrl": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/44423671854",
+      "checkoutSha": "2ec45b9e52c870badc4d4888f6243a30556eecb4",
+      "aiReviewHead": "990cb29c961090c05f468179c8cf1109d8a63f5b",
+      "aiReviewPr": "",
+      "excerpts": [
+        "2026-11-19T00:09:26.8865986Z {\"state\":\"not-requested\"}",
+        "2026-11-19T00:09:26.9235908Z   name: independent-review--990cb29c9610-44423671854-1",
+        "2026-11-19T00:09:27.0480325Z ##[error]No files were found with the provided path: build/native-ai-review-proof.json. No artifacts will be uploaded."
+      ]
+    },
+    {
+      "runId": 44426729639,
+      "jobId": 135233386439,
+      "runUrl": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/44426729639",
+      "checkoutSha": "2ec45b9e52c870badc4d4888f6243a30556eecb4",
+      "aiReviewHead": "0cc0668c747f6c8ac8f16943942a7ba62f0427cc",
+      "aiReviewPr": "",
+      "excerpts": [
+        "2026-11-19T00:18:31.6213870Z {\"state\":\"not-requested\"}",
+        "2026-11-19T00:18:31.6624714Z   name: independent-review--0cc0668c747f-44426729639-1",
+        "2026-11-19T00:18:31.7932410Z ##[error]No files were found with the provided path: build/native-ai-review-proof.json. No artifacts will be uploaded."
+      ]
+    }
+  ],
+  "recordedAt": "2026-11-19T00:31:35.522535+00:00"
+}
