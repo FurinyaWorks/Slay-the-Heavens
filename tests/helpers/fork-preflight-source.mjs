@@ -64,12 +64,25 @@ const sourceSuccessors=Object.freeze({
  'tests/room-ui-source-epoch.test.mjs':'230214c3b5f21e8f440c21178afd5636fc1219b528bfb2fffe446150e15e1d20',
  'tests/watcher-actor-boundary.test.mjs':'1954759b210bc333d65550e9abda023e0fe5aaa9b7253ce6aa1ea1939cabc909',
  'tests/helpers/replay-reviewed-selection.mjs':'47ba348e9a26348b1ed0255cd16bb9099cf5767986a70a28f2f132c39f4c278d',
+ 'tests/defect-integration-source.test.mjs':'e20ed02229b4e316bce92decaec45037eeceb8116f31216b8970c7964674f1c0',
+ 'tests/defect-utility-planning.test.mjs':'b93215b0cece7151a1929d0535c40595f7a3d9586f237ba0a3966f52687142c1',
 });
 const archiveFiles=JSON.parse(gunzipSync(integratedCiBytes)).files;
+let closeoutArchive;
+function closeoutPredecessor(path){
+ if(!closeoutArchive){
+  const archive=readFileSync(new URL('./closeout-ci-source.json.gz',import.meta.url));
+  assert.equal(hash(archive),'cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8','immutable closeout CI sources');
+  closeoutArchive=JSON.parse(gunzipSync(archive));
+ }
+ const sha256=closeoutArchive.current[path];
+ assert.match(sha256??'',/^[a-f0-9]{64}$/,'archived closeout predecessor: '+path);
+ return {sha256,source:closeoutArchive.records[sha256]};
+}
 function beforeIntegrationSuccessor(path,source){
  if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
    ||hash(normalize(source))!==sourceSuccessors[path])return source;
- const prior=archiveFiles[path].current;
+ const prior=archiveFiles[path]?.current??closeoutPredecessor(path);
  assert.equal(hash(prior.source),prior.sha256,'immutable integration predecessor: '+path);
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
