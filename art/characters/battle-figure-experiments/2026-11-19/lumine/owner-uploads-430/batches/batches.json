@@ -1,0 +1,59 @@
+{
+  "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546",
+  "canvas": [
+    133.0,
+    133.0
+  ],
+  "literalSha256": "4fcd90c7f7eaccbd0c5ce4309b543d3b0733112bdabed13c81cfc70a1dbbd8d2",
+  "sceneSha256": "ca86836210d9a290ab588dec50bbb8f9e0511657f045807d83a440df94d36465",
+  "batches": [
+    {
+      "name": "LumineArtBatch01",
+      "start": 0,
+      "count": 60,
+      "sha256": "7d56da36bb62f38f0fd86171cea17df8bbae8f22e9484cfc7162040d7ebcc239"
+    },
+    {
+      "name": "LumineArtBatch02",
+      "start": 60,
+      "count": 60,
+      "sha256": "78a55254c056972928f991920c378c1e42782cb6e9b0adc03924c89caf3cde8d"
+    },
+    {
+      "name": "LumineArtBatch03",
+      "start": 120,
+      "count": 60,
+      "sha256": "d41c61e65db795652b30d85f7d76c48d5bcbf29388e40fd82ea5669b7849d996"
+    },
+    {
+      "name": "LumineArtBatch04",
+      "start": 180,
+      "count": 60,
+      "sha256": "d67c816a2628cdd2b3c55ff8c2f7e6c2d965583f84f1c6bd855ed003833bd6a8"
+    },
+    {
+      "name": "LumineArtBatch05",
+      "start": 240,
+      "count": 60,
+      "sha256": "d1c7d352c018417e5d1be6e2f0a591b61a66f68a1d7c3d7f28b851baf5c059e6"
+    },
+    {
+      "name": "LumineArtBatch06",
+      "start": 300,
+      "count": 60,
+      "sha256": "b6df6614a0e4c8ff8408bcb230e16e84ebc53cf9454a963765389c736673c530"
+    },
+    {
+      "name": "LumineArtBatch07",
+      "start": 360,
+      "count": 60,
+      "sha256": "91cc83a4e921c2e4d4600ac8c4128f1eaaa90186ddf58ab0c5b7121169bbee0d"
+    },
+    {
+      "name": "LumineArtBatch08",
+      "start": 420,
+      "count": 10,
+      "sha256": "c9f8ea4df73582d31c08f85ad7b95c1ad6c5cd47ea42ec0bc364d93db79bcb7c"
+    }
+  ]
+}

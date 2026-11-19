@@ -1,0 +1,147 @@
+{
+  "inputSHA256": "bc28cb3c2b2e34c2466af7d618100c411e1b9ef7d4b0d326e10309bd0bb67114",
+  "cropLTRB": [
+    0,
+    325,
+    221,
+    866
+  ],
+  "cropIsolationPolygon": [
+    [
+      0,
+      0
+    ],
+    [
+      190,
+      0
+    ],
+    [
+      189,
+      160
+    ],
+    [
+      190,
+      199
+    ],
+    [
+      187,
+      225
+    ],
+    [
+      195,
+      242
+    ],
+    [
+      204,
+      268
+    ],
+    [
+      193,
+      281
+    ],
+    [
+      209,
+      302
+    ],
+    [
+      214,
+      327
+    ],
+    [
+      213,
+      367
+    ],
+    [
+      219,
+      400
+    ],
+    [
+      219,
+      541
+    ],
+    [
+      0,
+      541
+    ]
+  ],
+  "maxRgbThreshold": 32,
+  "directReferences": {
+    "medium": "4ec799a2b3fa7ebfb494777598e05f2308d7e0173432e30c1d8285925e07db79",
+    "high": "d3e7e5ec624988ad107da04882e23547acfecab03c799800808044158205cd22",
+    "low": "920e03c122a73a9aed39eb82065c8e4d0cc68049b3b69c8d723143bf49fac68e"
+  },
+  "actualInputSHA256": {
+    "medium": "4ec799a2b3fa7ebfb494777598e05f2308d7e0173432e30c1d8285925e07db79",
+    "high": "d3e7e5ec624988ad107da04882e23547acfecab03c799800808044158205cd22",
+    "low": "920e03c122a73a9aed39eb82065c8e4d0cc68049b3b69c8d723143bf49fac68e"
+  },
+  "facetSha256": "c6e516d8b4a8d603b5458a7bb3ccd2b7453b8de0e68ce2370119aaa6cc59c067",
+  "traceLevel": 8,
+  "untrimmed": 652,
+  "trim": {
+    "requested": 430,
+    "removed": 222,
+    "ordering": "greedy visible loss vs pinned medium, rescore every six",
+    "visibleWorstScore": 209.57833935817078
+  },
+  "fit": {
+    "cape": 33,
+    "legs": 91,
+    "arms": 30,
+    "outfit": 96,
+    "sword": 47,
+    "face": 133
+  },
+  "nativeControls": 430,
+  "assets": {
+    "100003": 430
+  },
+  "canvas": [
+    133,
+    133
+  ],
+  "versions": {
+    "opencv": "4.12.0",
+    "shapely": "2.1.2",
+    "numpy": "2.3.5",
+    "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546"
+  },
+  "files": {
+    "editable.json": {
+      "bytes": 260264,
+      "sha256": "ca86836210d9a290ab588dec50bbb8f9e0511657f045807d83a440df94d36465"
+    },
+    "literal-drawing.json": {
+      "bytes": 73882,
+      "sha256": "4fcd90c7f7eaccbd0c5ce4309b543d3b0733112bdabed13c81cfc70a1dbbd8d2"
+    },
+    "native-4x.png": {
+      "bytes": 17094,
+      "sha256": "123ea0c119671f5a68c653571a2b7c1aebec52d7c1caf92b0a947702259da4f9"
+    },
+    "native.gia": {
+      "bytes": 321841,
+      "sha256": "733c60cdad829089e83dbbc2f8bfa1d046e3e27b817907a70e25da82e52bd1a0"
+    },
+    "native.lua": {
+      "bytes": 322093,
+      "sha256": "05e13292c979a2e86a6481b6b3ff27273990a88a0e902e24f9ab01642c32592b"
+    },
+    "native.png": {
+      "bytes": 4314,
+      "sha256": "dbee37d1bcce59fd7314e7a7bf21d7462e70a8257bf060bc858b5be974ad7cb6"
+    },
+    "runtime.lua": {
+      "bytes": 78418,
+      "sha256": "b7e2716698f53ea2cd6e780d9df44f850c146748a230f322b48008c094b63a28"
+    },
+    "source-4x.png": {
+      "bytes": 130003,
+      "sha256": "d20674ac67a0edd68b4d59c56286947aed844d44e470a280f9400c0037b05cfe"
+    },
+    "source.png": {
+      "bytes": 13710,
+      "sha256": "ecc31e609a0c9921169ac3d9882ce896235fdd47701a57003fdaf0624ae62388"
+    }
+  }
+}
