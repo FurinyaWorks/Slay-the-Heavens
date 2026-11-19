@@ -6,14 +6,22 @@ import { exactSourceContinuation } from './exact-source-continuation.mjs';
 
 const bytes = readFileSync(new URL('../fixtures/v2-ui-hud-source.json.gz', import.meta.url));
 const digest = source => createHash('sha256').update(source).digest('hex');
-assert.equal(digest(bytes), 'b32ad72e63f520598fd414e2b789dbfa7634be069656ec3f287d3d94ab9431c4', 'historical v2 UI owner identities');
+assert.equal(digest(bytes), '07fad808963c81ef4bbc0b02748c35ba14308701a5d6869df57df294ad3eaf46', 'historical v2 UI owner identities');
 const continuations = new Map(Object.entries(JSON.parse(gunzipSync(bytes))).map(([path, row]) => {
   assert.equal(row.path,path);
   assert.equal(digest(row.before.source),row.before.sha256);
-  return [path,exactSourceContinuation(row)];
+  const original = exactSourceContinuation(row);
+  const successor = row.successor && exactSourceContinuation({...row, after:row.successor});
+  return [path, {original, successor, successorSha:row.successor?.sha256}];
 }));
 
 export const v2UiHudSourcePaths = Object.freeze([...continuations.keys()]);
+
+function forSource(entry, source) {
+  if (entry?.successor && typeof source === 'string' &&
+      digest(source.replaceAll('\r\n','\n')) === entry.successorSha) return entry.successor;
+  return entry?.original;
+}
 
 // The exact v2 run-menu receipt predates the explicit blob field.
 function v2RunMenuBinding(path, binding) {
@@ -24,16 +32,17 @@ function v2RunMenuBinding(path, binding) {
 }
 
 export function projectV2UiHudSource(path, source, binding) {
-  return continuations.get(path)?.project(path,source,v2RunMenuBinding(path,binding)) ?? source;
+  return forSource(continuations.get(path),source)?.project(path,source,v2RunMenuBinding(path,binding)) ?? source;
 }
 
 export function authorizeV2UiHudSource(path, source, binding, samples, read) {
   const linked = samples.map(([owner,input,expected]) => [owner,input,v2RunMenuBinding(owner,expected)]);
-  for (const continuation of continuations.values()) {
-    continuation.authorize(path,source,v2RunMenuBinding(path,binding),linked,read);
+  for (const [owner,entry] of continuations) {
+    const input = owner === path ? source : linked.find(sample => sample[0] === owner)?.[1];
+    forSource(entry,input).authorize(path,source,v2RunMenuBinding(path,binding),linked,read);
   }
 }
 
 export function beforeV2UiHudSource(path, source, read) {
-  return continuations.get(path)?.predecessor(path,source,read) ?? source;
+  return forSource(continuations.get(path),source)?.predecessor(path,source,read) ?? source;
 }
