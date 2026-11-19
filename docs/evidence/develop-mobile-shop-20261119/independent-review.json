@@ -1,0 +1,85 @@
+{
+  "task": "M05 / TASK-38.6",
+  "repository": "FurinyaWorks/Slay-the-Heavens",
+  "target": "develop",
+  "head": "c9f35ebf96a96383b46506330c5a3996a813a4fb",
+  "base": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "mergeTree": "fbc447a6e18759cbd65b50c6fa8f37ded8c91538",
+  "productAndTestReview": "PASS_OFFLINE",
+  "overall": "HOLD_ON_REVIEWED_FORWARD_SOURCE_CONTINUATION",
+  "productFindings": [],
+  "verified": {
+    "production": "3 files, +81/-0, patch identical to 41334b11 ignoring blob IDs/hunk offsets",
+    "originalTests": "M05 JS identical to 41334b11; Lua identical to final b3d550f3 support fixture; layout test patch identical to 41334b11, classifies only the new noninteractive-in-layout backdrop receiver separately; no original assertion removed",
+    "preservedBoundaries": "Outside receiver nonfocusable and behind approved layout controls; readiness binds visible, nonbusy shop, exact selected offer and unchanged run/flow; foreground actions, token cleanup, controller block and click-only fallback retain separate roles; cancel cannot invoke purchase or leave",
+    "backlog": "Furinya remains assignee, In Progress, all 3 original task ACs identical and unchecked",
+    "logs": "Committed archive SHA256/length match receipt and 31 archived files byte-match working copies; 6 local materializations independently match committed LFS SHA256 and sizes and are not part of the commit",
+    "gateIntegrity": "No historical proof, CI config, calibration assertion or timing changes. 27 JS inventory failures (25 integrated, 1 combined, 1 Release bootstrap) and 4 input-owner digest failures; directly checked separately gated raw Lua inventory."
+  },
+  "independentlyExecuted": [
+    {
+      "command": "node --test tests/shop-dismiss.test.mjs tests/node-ui-layout.test.mjs",
+      "result": "14/14 default, exit 0",
+      "log": "focused.log"
+    },
+    {
+      "command": "node scripts/test-lua.mjs tests/lua/shop_dismiss.lua",
+      "result": "SHOP_DISMISS_PASS 12, exit 0",
+      "log": "runtime.log"
+    },
+    {
+      "command": "git diff --check HEAD^ HEAD",
+      "result": "pass"
+    },
+    {
+      "command": "backlog task view TASK-38.6 --plain",
+      "result": "Furinya / In Progress / 0 of 3 ACs checked"
+    },
+    {
+      "command": "Call assertReleaseBootstrapRawInventory directly on discovered Lua inventory and on a prior-only in-memory control",
+      "result": "actual 1424 vs pinned 1423; sole extra tests/lua/shop_dismiss.lua; actual rejected and prior-only control passed, no files edited",
+      "log": "lua-inventory-probe.log"
+    }
+  ],
+  "reviewedAuthorLogsNotRerun": {
+    "baseM05": "0/2 (actual missing shopDismiss layout and runtime control)",
+    "officialAssetsM05": "2/2 including 12 groups, offline generated host only",
+    "defaultAdjacentLua": "3 entries passed",
+    "oldOfficialMocks": "GetChildren absent on the same two pre-existing mock entries on base and migration; shop rules still passed; not fixed in this slice",
+    "nativeContracts": "7/7",
+    "ciCompleteCalibration": "base 73/73; migration 42/73 (31 failed)"
+  },
+  "notRun": [
+    "Hosted CI",
+    "Full",
+    "GIL write/readback",
+    "official import/ready",
+    "physical phone, desktop or controller",
+    "release"
+  ],
+  "next": "Source owner must provide exact forward source and inventory bindings in the actual develop combination, preserve historical archives/negative controls/discovery/copy closure, rerun calibration and required CI, and obtain fresh review for the resulting exact identity. This review is not PR admission, a merge recommendation or device acceptance.",
+  "remoteAttestation": {
+    "method": "Independent GitHub REST GET readback: Git ref, Git commit, and non-recursive root tree",
+    "ref": "refs/heads/fix/develop-mobile-shop-dismiss-20261119",
+    "remoteHead": "b11f1db674589988cca349c2b05c1f894c38e8cf",
+    "refObjectType": "commit",
+    "commitSha": "b11f1db674589988cca349c2b05c1f894c38e8cf",
+    "commitUrl": "https://github.com/FurinyaWorks/Slay-the-Heavens/commit/b11f1db674589988cca349c2b05c1f894c38e8cf",
+    "parents": [
+      "62328bdac7703c3ab241e0ddb19e0fa05474f76a"
+    ],
+    "tree": "fbc447a6e18759cbd65b50c6fa8f37ded8c91538",
+    "remoteTreeSha": "fbc447a6e18759cbd65b50c6fa8f37ded8c91538",
+    "remoteTreeTruncated": false,
+    "remoteObjectVerification": {
+      "verified": false,
+      "reason": "unsigned"
+    },
+    "productAndTestReview": "PASS_OFFLINE",
+    "overall": "HOLD_ON_REVIEWED_FORWARD_SOURCE_CONTINUATION",
+    "testsRerun": false,
+    "scope": "Exact same repository tree and sole parent as local reviewed commit; original scoped result applies to the remote copy. Not merge admission, a native PR review, or device acceptance.",
+    "rootTreeEntriesVerified": 32,
+    "localReviewedHead": "c9f35ebf96a96383b46506330c5a3996a813a4fb"
+  }
+}
