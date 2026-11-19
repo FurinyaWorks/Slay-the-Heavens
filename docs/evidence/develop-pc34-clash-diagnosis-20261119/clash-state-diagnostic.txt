@@ -1,0 +1,8 @@
+PC34 base_attack_only id=clash name=全力进攻 base=14 shown=14 colour=text canPlay=true reason=nil actualHpLoss=14 text=只有剩余手牌全部为攻击牌时才能打出。对目标造成 14 点伤害。
+PC34 weak_attack_only id=clash name=全力进攻 base=14 shown=10↓ colour=cardValueDecrease canPlay=true reason=nil actualHpLoss=10 text=只有剩余手牌全部为攻击牌时才能打出。对目标造成 <color=#EF7672>10↓</color> 点伤害。
+PC34 base_with_skill id=clash name=全力进攻 base=14 shown=14 colour=text canPlay=false reason=requires_only_attacks actualHpLoss=0 text=只有剩余手牌全部为攻击牌时才能打出。对目标造成 14 点伤害。
+PC34 weak_with_skill id=clash name=全力进攻 base=14 shown=10↓ colour=cardValueDecrease canPlay=false reason=requires_only_attacks actualHpLoss=0 text=只有剩余手牌全部为攻击牌时才能打出。对目标造成 <color=#EF7672>10↓</color> 点伤害。
+PC34 upgraded_weak id=clash name=全力进攻 base=18 shown=13↓ colour=cardValueDecrease canPlay=true reason=nil actualHpLoss=13 text=只有剩余手牌全部为攻击牌时才能打出。对目标造成 <color=#EF7672>13↓</color> 点伤害。
+PC34 negative_strength id=clash name=全力进攻 base=14 shown=11↓ colour=cardValueDecrease canPlay=true reason=nil actualHpLoss=11 text=只有剩余手牌全部为攻击牌时才能打出。对目标造成 <color=#EF7672>11↓</color> 点伤害。
+PC34_DIAGNOSTIC_PASS 6; controlled states only, original screenshot state unknown
+Lua fixture .artifacts/pc34/clash-state-diagnostic.lua: 2199 ms

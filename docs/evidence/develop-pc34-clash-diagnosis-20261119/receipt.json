@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "offline-controlled-lua-diagnostic",
+  "date": "2026-11-19",
+  "repository": "FurinyaWorks/Slay-the-Heavens",
+  "base": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "baseTree": "420171af6a98385c3641cf7d59fbb8f0e53a50d0",
+  "case": "PC34",
+  "cardId": "clash",
+  "result": {
+    "exitCode": 0,
+    "casesPassed": 6,
+    "productionDefectProven": false,
+    "historicalQAResolved": false,
+    "deviceValidation": false
+  },
+  "originalCommand": "node scripts/test-lua.mjs .artifacts/pc34/clash-state-diagnostic.lua",
+  "originalCapture": {
+    "manifestCommit": "e40b421104aed1a47f971dc5eaeae08431c5a130",
+    "path": "screenshots/11-all-out-attack-card.png",
+    "size": 486967,
+    "sha256": "10fc7d11aa6b67fbc61cd38e937a344e4d5e37d544376b0e4c6cbb21e571ca20",
+    "bytesRetrieved": false,
+    "pixelsInspected": false
+  },
+  "files": {
+    "clash-state-diagnostic.lua": {
+      "bytes": 2422,
+      "sha256": "f4611952748a1afff5981c4413523b3eae3c27bde6f842f71576164d48abfe63"
+    },
+    "clash-state-diagnostic.txt": {
+      "bytes": 1600,
+      "sha256": "968b4044aefc67caea357025f22429b70464e735db624f443b9b18325c5783fa"
+    }
+  }
+}
