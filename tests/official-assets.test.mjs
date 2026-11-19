@@ -414,7 +414,10 @@ test('official selection information board and exit share the live layout withou
  assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
  const back=child(child(panel,'cancel'),'hit');
  for(const state of children(hit)){
-  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
+  const flag=child(state,'v25Flag');
+  assert.deepEqual(flag,child(child(back,state.name),'v25Flag'));
+  assert.ok(children(child(flag,'rim')).length>1,'The approved notched flag must preserve its native outline');
+  assert.ok(child(flag,'upperThread'),'The approved flag keeps its thread detail');
   assert.equal(child(state,'label').text.content,'退出游戏');
  }
 });

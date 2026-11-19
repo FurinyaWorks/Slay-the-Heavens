@@ -8,7 +8,7 @@
       "evidence": "art/characters/battle-figure-reference/2026-11-19/README.md and manifest.json; two original references from PR #744"
     },
     "v2-native-menu-layout-evidence": {
-      "status": "Project diagnostic renders of native geometry over the existing red menu background; system font rasterized in screenshots only. Scope is offline comparison, with upstream IP rights reserved.",
+      "status": "Project diagnostic renders of current and prior native UI geometry and text. System fonts are rasterized for offline comparison. No atlas textures or font binaries are distributed; upstream IP rights are reserved.",
       "evidence": "docs/evidence/v2-ui-20261119/README.md"
     },
     "approved-menu-design-reference": {
@@ -263,6 +263,30 @@
     },
     "docs/evidence/v2-ui-20261119/menu-normal.png": {
       "sha256": "4144110cb483ab236d7657e1ecebc53726e7450c5ac7f20e65019faf15e656e2",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/run-menu-before.png": {
+      "sha256": "40636675732471cceac8ebbfbc50a3c181deb998b38e9b319d00b97f94450ebf",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/runtime-character.png": {
+      "sha256": "735591484c2dcc81a6b4abf16d2adcc706c04972219344ea8633bd75cdad7f59",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/runtime-map-boss.png": {
+      "sha256": "f781751593272b06daccf42b435ad8a4e44c7582f92e0e1d781fc4b04f0b892a",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/runtime-map.png": {
+      "sha256": "236f7fe85b910b2c9b2fe486b61f8ae83dd2e7565b04d21eb637f844f3fe8efb",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/runtime-neow.png": {
+      "sha256": "deb5c9f22141d237758c03794086649205427a507aa2ad3de8fc8a702ac0a67f",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/runtime-run-menu.png": {
+      "sha256": "8c598a7b61a32cb33ffe07b175bbd5f8f08931efd0571a6c488979c8342a2a6a",
       "category": "v2-native-menu-layout-evidence"
     },
     "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png": {

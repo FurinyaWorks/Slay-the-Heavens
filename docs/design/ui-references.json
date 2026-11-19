@@ -119,7 +119,7 @@
       "backlogTask": "TASK-103.3",
       "reference": null,
       "supersedes": [],
-      "note": "待补当前整屏截图及选角往返对照。"
+      "note": "[当前选角布局投影](../evidence/v2-ui-20261119/runtime-character.png)。官方整屏画面待取证。"
     },
     {
       "codePath": "scripts/exit-ui-layout.mjs",
@@ -135,9 +135,10 @@
       "supersedes": [
         "reference-ui-lab"
       ],
-      "note": "只取截图左下原生返回红旗的材质与轮廓。沿用其四态；局内仅显示「退出游戏」并返回主菜单保留会话。",
+      "note": "沿用截图左下红旗的轮廓、材质与四态。[局内退出布局投影](../evidence/v2-ui-20261119/runtime-run-menu.png)展示单一操作，返回主菜单时保留会话。",
       "codePaths": [
-        "src/lua/abyss_game_ui_navigation_view.lua"
+        "src/lua/abyss_game_ui_navigation_view.lua",
+        "scripts/character-selection-composition.mjs"
       ],
       "themeKeys": [
         "layout.runMenu"
@@ -227,7 +228,7 @@
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "以现有祝福界面取证，待补当前截图。",
+      "note": "[当前祝福布局投影](../evidence/v2-ui-20261119/runtime-neow.png)。官方画面待取证。",
       "codePaths": [
         "scripts/sts-neow-guide-layout.mjs",
         "scripts/sts-neow-choice-layout.mjs"
@@ -258,7 +259,7 @@
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "按当前共用栏与原生路线取证。",
+      "note": "[当前地图布局投影](../evidence/v2-ui-20261119/runtime-map.png)展示共用栏和路线，官方图标待取证。",
       "codePaths": [
         "scripts/map-ui-layout.mjs"
       ]
@@ -288,7 +289,7 @@
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "待补首领地图当前截图。"
+      "note": "[当前首领区布局投影](../evidence/v2-ui-20261119/runtime-map-boss.png)使用同一局地图滚动取证，官方首领图标待取证。"
     },
     {
       "codePath": "scripts/v25-map-layout.mjs",
