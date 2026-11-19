@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 
-const path = 'src/lua/abyss_ending_history.lua';
+export const endingTerminalSourcePath = 'src/lua/abyss_ending_history.lua';
 const digest = source => createHash('sha256').update(source).digest('hex');
 const candidateSha = '63b94ebe69ab457b5237a908071d0647c3be9cb64e0831cfd6cf2f800158b66e';
 const predecessorSha = '65c718fc07c01542e4aee1911d347d017e97b6ec3df4a789fcc3d8f09fb7ba9d';
@@ -21,11 +21,11 @@ const predecessorTerminal = `local function terminal(run,map,entry)
 `;
 
 export function beforeEndingTerminalSource(file, source, read) {
-  if (file !== path || typeof source !== 'string' || source.includes('\r\r\n')) return source;
+  if (file !== endingTerminalSourcePath || typeof source !== 'string' || source.includes('\r\r\n')) return source;
   const current = source.replaceAll('\r\n', '\n');
   if (digest(current) !== candidateSha) return source;
 
-  const fresh = read(path);
+  const fresh = read(endingTerminalSourcePath);
   assert(typeof fresh === 'string' && !fresh.includes('\r\r\n') &&
     digest(fresh.replaceAll('\r\n', '\n')) === candidateSha, 'fresh ending terminal source');
   const start = current.indexOf('local function terminalIdentity(');

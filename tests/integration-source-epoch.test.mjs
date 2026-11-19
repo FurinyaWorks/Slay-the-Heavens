@@ -1,4 +1,4 @@
-import {assertCharacterPreparationSources,beforeCharacterPreparationSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
+import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
@@ -151,6 +151,15 @@ test('combined epoch authenticates the complete current production tree',()=>{
  assert.equal(beforeCharacterPreparationSource(owner,current+'\n',()=>{throw Error('foreign must not authorize reads');}),current+'\n');
  for(const missing of characterPreparationOwners)
   assert.throws(()=>beforeCharacterPreparationSource(owner,current,path=>path===missing?null:read(path)),/fresh character preparation source/);
+ for(const path of files){
+  const latest=read(path),previous=raw(path);
+  assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),previous,path);
+  if(latest.replaceAll('\r\n','\n')===previous)continue;
+  for(const invalid of [previous,latest+'\n',null]){
+   assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh current production owner/);
+   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|combined linked owner identity/);
+  }
+ }
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

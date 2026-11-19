@@ -57,6 +57,7 @@ const sourceSuccessors=Object.freeze({
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99',
  'tests/helpers/copy-integration-source-closure.mjs':'888b4675e665dafc2c110e417ae5b01cdeec6235b05b723238e890dcfedac269',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
+ 'tests/integration-source-epoch.test.mjs':'52c1cb8227f7849a1757d531c82611d36f7d73cad3462185599d18b9be096440',
 });
 const archiveFiles=JSON.parse(gunzipSync(integratedCiBytes)).files;
 function beforeIntegrationSuccessor(path,source){
