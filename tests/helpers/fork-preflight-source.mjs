@@ -1,3 +1,4 @@
+import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -108,7 +109,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
- source=beforeCharacterPreparationCiSource(path,source);
+ source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,source));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
  if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')

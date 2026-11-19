@@ -236,3 +236,5 @@ test('historical guidance receipts verify their exact predecessor and preserve f
     assert.equal(project(checker, 'scripts/foreign.mjs'), checker);
   }
 });
+
+import './helpers/v2-ui-reference-cases.mjs';
