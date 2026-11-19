@@ -90,4 +90,31 @@ test('old pointer releases cannot return, continue or replace a later context',f
  assert(tap(resume,4) and h.mode=='map')
  h:disable()
 end)
+test('official run menu excludes hidden commands and preserves the current session',function()
+ local Theme=require('abyss_theme')
+ local h,r=F.fixture(nil,nil,nil,cursor);assert(F.start(h))
+ local run=h.run
+ local oldProfile=Theme.presentationProfile
+ Theme.presentationProfile='official-assets-first'
+ assert(h:openMenu())
+ local panel=r:GetChild('runMenu')
+ assert(panel.visible and panel:GetChild('mainMenu').visible)
+ for _,name in ipairs({'title','resume','help','map','abandon','quit','dismissHint','catch'})do
+  assert(not panel:GetChild(name).visible,name..' is hidden')
+ end
+ assert(not tap(hit(r,'runMenu','abandon'),10) and h.run==run and h.menuOpen)
+ assert(panel:GetChild('blocker').listeners.click({touchId=11}) and not h.exitOpen and h.run==run)
+ assert(h:openMenu())
+ -- This legacy fixture has no official title faces. Switch after the dispatch
+ -- validates official command availability, before the title refresh.
+ local original=h.returnToMainMenu
+ h.returnToMainMenu=function(self)
+  Theme.presentationProfile=oldProfile
+  return original(self)
+ end
+ assert(tap(hit(r,'runMenu','mainMenu'),12))
+ assert(h.sessionPaused and h.run==run and h.mode=='menu')
+ assert(tap(hit(r,'menuPanel','continueRun'),13) and h.mode=='map' and h.run==run)
+ h:disable()
+end)
 print('SESSION_MENU_NAVIGATION_PASS '..cases)

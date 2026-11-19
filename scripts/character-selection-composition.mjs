@@ -11,10 +11,31 @@ function placeText(n,box,font,colour){
 function surface(name,w,h,colour,theme){
  return {name,kind:'container',size:[w,h],children:[{name:'fill',kind:'image',position:[0,0],size:[w,h],image:theme.image.rect,colour}]};
 }
+export function styleCharacterFlag(button,key,theme){
+ const hit=child(button,'hit');
+ const [rim,cloth]=key==='cancel'?['#BCA348','#8C3739']:['#A2B4B5','#477B89'];
+ for(const state of children(hit)){
+  for(const name of ['officialButtonBacking','border','plate']){
+   const part=child(state,name);if(part)part.visible=false;
+  }
+  const previous=child(state,'v25Flag'),label=child(state,'label');
+  const factor=state.name==='hover'?1.17:state.name==='pressed'?.9:state.name==='disabled'?.6:1;
+  const tint=hex=>'#'+hex.slice(1).match(/../g).map(v=>Math.min(255,Math.round(parseInt(v,16)*factor)).toString(16).padStart(2,'0')).join('');
+  const face={name:'v25Flag',kind:'container',size:[180,60],children:[
+   surface('rim',180,60,tint(rim),theme),surface('cloth',176,56,tint(cloth),theme)]};
+  if(previous)state.children.splice(state.children.indexOf(previous),1,face);
+  else state.children.splice(state.children.indexOf(label),0,face);
+  label.position=[0,0];label.text.fontSize=24;label.text.minFontSize=24;
+ }
+}
 export function characterSelectionComposition(panel,theme){
  const modal=child(panel,'deckView');modal.visible=false;modal.children=[];
  for(const name of ['title','v25HeadingEmblem','v25HeadingDivider','v25HeadingRule'])child(panel,name).visible=false;
  const details=child(panel,'details');
+ const board=surface('informationBoard',536,344,'#10121D',theme);
+ Object.assign(board,frame(96,184,536,344));
+ child(board,'fill').opacity=.58;
+ details.children.unshift(board);
  const specs={name:[[115,216,505,60],48,'#E8C75C'],stats:[[145,280,145,30],18,'#F36C65'],gold:[[328,280,160,30],18,'#DFC552'],
   v25Story:[[115,326,475,48],17,'#F3EFDA'],relic:[[162,379,430,30],20,'#E7CA5A'],relicText:[[162,403,440,35],17,'#F3EFDA'],
   deckTitle:[[115,444,425,28],17,'#E7CA5A'],deckSummary:[[115,472,470,50],16,'#F3EFDA']};
@@ -41,20 +62,7 @@ export function characterSelectionComposition(panel,theme){
  const roster=child(panel,'v25Roster');
  Object.assign(child(roster,'selected'),frame(360,533,124,124));
  for(let i=1;i<=3;i++)Object.assign(child(roster,'locked'+i),frame(510+(i-1)*147,544.5,101,101));
- for(const key of ['cancel','confirm']){
-  const hit=child(child(panel,key),'hit');
-  for(const state of children(hit)){
-   const backing=child(state,'officialButtonBacking');if(backing)backing.visible=false;
-   const previous=child(state,'v25Flag'),label=child(state,'label');
-   const factor=state.name==='hover'?1.17:state.name==='pressed'?.9:state.name==='disabled'?.6:1;
-   const tint=hex=>'#'+hex.slice(1).match(/../g).map(v=>Math.min(255,Math.round(parseInt(v,16)*factor)).toString(16).padStart(2,'0')).join('');
-   const face={name:'v25Flag',kind:'container',size:[180,60],children:[
-    surface('rim',180,60,tint(key==='cancel'?'#BCA348':'#A2B4B5'),theme),
-    surface('cloth',176,56,tint(key==='cancel'?'#8C3739':'#477B89'),theme)]};
-   state.children.splice(state.children.indexOf(previous),1,face);
-   label.position=[0,0];label.text.fontSize=24;label.text.minFontSize=24;
-  }
- }
+ for(const name of ['cancel','confirm'])styleCharacterFlag(child(panel,name),name,theme);
  // Same existing native portrait controller; a bottom-most, dedicated host.
  panel.children.unshift({name:'lumineSelectionBackground',kind:'container',position:[0,0],size:[1280,720],visible:false,children:[]});
 }

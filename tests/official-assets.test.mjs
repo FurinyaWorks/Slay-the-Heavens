@@ -87,7 +87,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  // geometry/input field to that projection while retaining unrelated pages.
  const expectedMenuLayout=structuredClone(layout);
  applyOfficialNoncombatLayout(expectedMenuLayout,theme);
- const menuProjection=new Map(paths(child(expectedMenuLayout,'menuPanel'),'/SlayTheAbyss'));
+ const menuProjection=new Map(['menuPanel','runMenu'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
  const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
   .map(([path,node])=>[path,node,structuredClone(node)]);
  const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
@@ -389,3 +389,32 @@ test('audio wrapper forwards the explicit official profile and lifecycle without
  }}),error=>error===stop);assert(called);
 });
 import {replayReviewedSelection} from './helpers/replay-reviewed-selection.mjs';
+
+test('official selection information board and exit share the live layout without changing hit owners',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const panel=child(layout,'characterPanel'),details=child(panel,'details');
+ const hit=child(child(child(layout,'runMenu'),'mainMenu'),'hit');
+ applyOfficialNoncombatLayout(layout,theme);
+ const board=child(details,'informationBoard');
+ assert.equal(children(details)[0],board);
+ assert.deepEqual(board.position,[-276,4]);
+ assert.deepEqual(board.size,[536,344]);
+ const fill=child(board,'fill');
+ assert.equal(fill.kind,'image');
+ assert.equal(fill.image,theme.image.rect);
+ assert.ok(fill.opacity>0&&fill.opacity<1);
+ for(const name of ['name','stats','gold','v25Story','relic','relicText','deckTitle','deckSummary']){
+  const control=child(details,name);
+  for(const axis of [0,1])assert.ok(Math.abs(control.position[axis]-board.position[axis])+control.size[axis]/2<=board.size[axis]/2,name);
+ }
+ assert.equal(child(panel,'scrim').visible,false);
+ assert.strictEqual(child(child(child(layout,'runMenu'),'mainMenu'),'hit'),hit);
+ assert.deepEqual(hit.size,[180,60]);
+ assert.equal(hit.kind,'presetButton');
+ assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
+ const back=child(child(panel,'cancel'),'hit');
+ for(const state of children(hit)){
+  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
+  assert.equal(child(state,'label').text.content,'退出游戏');
+ }
+});

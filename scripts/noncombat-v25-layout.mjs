@@ -3,7 +3,7 @@
 import {applyV25MenuLayout} from './v25-menu-layout.mjs';
 import {applyV25CharacterLayout} from './v25-character-layout.mjs';
 import {constellationGeometry} from './constellation-geometry.mjs';
-import {characterSelectionComposition} from './character-selection-composition.mjs';
+import {characterSelectionComposition,styleCharacterFlag} from './character-selection-composition.mjs';
 const parts=n=>n?.controls??n?.children??[];
 const child=(n,name)=>parts(n).find(c=>c.name===name);
 export function applyOfficialNoncombatLayout(layout,theme){
@@ -27,5 +27,14 @@ export function applyOfficialNoncombatLayout(layout,theme){
  child(child(panel,'details'),'portraitNote').visible=false;
  panel.children=panel.children.filter(n=>n.name!=='lumineSelectionBackground');
  characterSelectionComposition(panel,theme);
+ const exit=child(child(stage,'runMenu'),'mainMenu');
+ exit.size=[180,60];child(exit,'hit').size=[180,60];
+ for(const state of parts(child(exit,'hit'))){
+  state.size=[180,60];
+  const label=child(state,'label');
+  label.text.content='退出游戏';label.size=[160,52];
+  label.text.colour=state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk;
+ }
+ styleCharacterFlag(exit,'cancel',theme);
  return layout;
 }
