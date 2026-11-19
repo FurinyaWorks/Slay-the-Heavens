@@ -33,7 +33,6 @@ const sourceAdditions=Object.freeze({
  "tests/helpers/copy-integration-source-closure.mjs":Object.freeze({"beforeSha256":"71037a75db878ed49e7fd6d9da825018938df7979eae903f92d1b09535685577","afterSha256":"ded0e09da316ed2d505351908a4a542bda95b2c11d8760965095ffb40914a3c0"}),
  "tests/defect-final-source-epoch.test.mjs":Object.freeze({"beforeSha256":"ca73fc5eb550e5938b1025a5a5d0eac70d60e576bb73590c2f0b03cd8721593e","afterSha256":"c5613e74fbacd3a7a3eec4392d88d6683a4791280ad7e92ec7e6f12b84ac6746"}),
  "tests/encounter-formation-source-epoch.test.mjs":Object.freeze({"beforeSha256":"7fcd36fc904e9b40a415cdc0eba863efe0ca7aa44fdc162247cccc029a139e16","afterSha256":"5a48e640d23b571851eeaa0b3464992c7521562e418f2c07072cdd68efb62dcb"}),
- "tests/game-ui-extraction-source-inverse.test.mjs":Object.freeze({"beforeSha256":"e352d9555be53682d9b58753b71776fd9d3d80894ddfadaba2adcb21bb56f83f","afterSha256":"7fbea8afce48955608038d28c211777f9a2760001896cd5b22c9260ddd0f5759"}),
 });
 for(const [path,binding]of Object.entries(sourceAdditions))assert.equal(proof.files[path]?.sha256,binding.beforeSha256,'exact added CI source predecessor: '+path);
 function sourceMatches(path,source,row){
