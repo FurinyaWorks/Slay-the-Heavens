@@ -17,7 +17,7 @@ test('official runtime inventory preserves every producer field and rejects sele
  const actual=portraitRuntimeInventory(dir),expected=portraitInventory(officialAssetFlags,{officialAssets:true});
  assert.deepEqual(actual,expected,'complete production inventory, including order, profile, budgets and hashes');
  assert.equal(actual.renderProfile,'selection-budget-v1');
- assert.deepEqual(actual.assets.map(row=>row.asset),['traveler-geo/portraits/avatar96','lowpolyLumine','traveler-geo/idle-approved-v1']);
+ assert.deepEqual(actual.assets.map(row=>row.asset),['traveler-geo/portraits/avatar96','lowpolyLumine','traveler-geo/portraits/lumine-native-v1']);
  assert.equal(actual.assets[1].sourceSha256,'29c47e50581951d1f3cf509eb39b1a73bf8d6ae4934a5b0606a3c76f9857c050');
  const receipt={officialAssetsProfile,artFeatures:artFeatureReceipt(officialAssetFlags),officialPortraits:{...actual,
   imageTemplateIndex:77,containerTemplateIndex:88,selectionHalfImageTemplateIndex:99,inputs:portraitRuntimeInputs(officialAssetFlags).map(path=>({path}))}};
@@ -31,8 +31,8 @@ test('official runtime inventory preserves every producer field and rejects sele
   source.replace(selected,selected+'\n'+selected),source.replace(selected,'-- '+selected+',\nlowpolyLumine={count=1,rows={{1}}},'),
   source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpolyLumine']=")),
   source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpoly'..'Lumine']=")),
-  source.replace('battleApprovedIdle=','battleApprovedIdleChanged=')]){
-  writeFileSync(file,invalid);assert.throws(()=>portraitRuntimeInventory(dir),/official selection|Official battle idle/);
+  source.replace('battleApprovedNative=','battleApprovedNativeChanged=')]){
+  writeFileSync(file,invalid);assert.throws(()=>portraitRuntimeInventory(dir),/official selection|Official battle drawing/);
  }
 });
 test('V25 inventory counts the actual independent selection and result source instances',async t=>{
@@ -73,7 +73,7 @@ test('official shared selection inventory requires the explicit producer schema 
  assert.equal(portraitRuntimeInventory(dir).assets.find(row=>row.asset==='traveler-geo/portraits/battle133-selection').images,4315);
  const battleOnly=writePortraitModule(dir,{officialAssets:true,selectionAvatar:false,battlePortrait:true});
  assert.doesNotMatch(battleOnly,/^selectionUses=/m);
-  assert.equal(portraitRuntimeInventory(dir).assets.find(row=>row.asset==='traveler-geo/idle-approved-v1').images,7303);
+  assert.equal(portraitRuntimeInventory(dir).assets.find(row=>row.asset==='traveler-geo/portraits/lumine-native-v1').images,464);
 });
 test('native selection budget changes only selection art and preserves the frozen battle literal',async t=>{
  const {writePortraitModule,selectionBudget,portraitRuntimeInventory}=await import(modulePath);

@@ -51,6 +51,12 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
+ 'docs/legal/assets.json':'89f21adc4246a8b42892af4092fa7011513c77e4ca4fbc2b7c9d2b655d2de3d4',
+ 'scripts/official-portraits.mjs':'03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186',
+ 'tests/lumine-idle.test.mjs':'a1d9de1b0b2ae845feee046503794cee8c3634d8e1cfe41929d01558d530269a',
+ 'tests/official-assets.test.mjs':'893bf452eb606938d5abd1f516d3372fe04a5cbfb36e3be3bd0233df66baf62e',
+ 'tests/official-portraits-build.test.mjs':'06280b8717f0c0194479cab956e3fea53d00b7d26c06f3fbb37b1152224e4a63',
+ 'tests/v25-portrait-profile.test.mjs':'def7e70b4e64fbb5a901407ade2a379af647220afc900de2b4f550ee7c214403',
  'data/presentation/narrative.zh-CN.json':'5db5e77f3789a98e49335bb2443e44f8703ebe349e9e1cd524cfb64a0a3006aa',
  'tests/lore-v2.test.mjs':'2aee46188d476f8ee24b0a736da4d2dcfb214c9f2fe54d5593f1c937a7d67d9f',
  'tests/lua/merchant_dialogue_lifecycle.lua':'25393fa6499858dbbf9551b416aca5930d93426b366c6f6c5123ee611bf3cb06',
@@ -59,9 +65,9 @@ const sourceSuccessors=Object.freeze({
  'scripts/backlog-metadata.mjs':'082c419cbd0e20eae4ec4cb36f93541af3149f686dd064f06f5a12c983e27933',
  'scripts/verify-backlog-roadmap.mjs':'1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb',
  'tests/backlog-roadmap.test.mjs':'b4a523a6a7763e825804404a270da6a401a17b59b9855b701a82cb8571f3b17d',
- 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'c875f2290f59590c6b06e851b627dcac3d684a4e288f6ae88ff839cb3b79c017',
  'tests/helpers/closeout-source-epoch.mjs':'5c47cf4cfa424551010f1e12f39fc84363ad77c93733c4f3d3e8932e00e1c4c9',
- 'tests/helpers/copy-integration-source-closure.mjs':'f5287b2c8b68ce2c86ea8b79b70b9732b1fbf43299aedf2ac8b469967d3f1147',
+ 'tests/helpers/copy-integration-source-closure.mjs':'af7f683acff76e4e264829002e21853bb2b09ec65f96375c26a0d8166e09f276',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
  'tests/integration-source-epoch.test.mjs':'52c1cb8227f7849a1757d531c82611d36f7d73cad3462185599d18b9be096440',
  'tests/defect-actor-boundary.test.mjs':'bd3deb3006a06adb5b8cb5f1bbda90a354882b015d5a57bd1c1623df35dfb039',

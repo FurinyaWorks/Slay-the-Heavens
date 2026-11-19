@@ -84,21 +84,21 @@ assert(c:begin());c:pose(0,0,1,1,0,'idle');assert(paints>writes,'resume lost idl
 assert(c:release() and LiveCount()==0)
 `));
 
-test('official battle publishes only the source-locked approved idle and rejects a missing or changed pack',t=>{
+test('official battle publishes only the source-locked native drawing and retains the frozen historical idle',t=>{
  const dir=mkdtempSync(join(tmpdir(),'approved-idle-build-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  const asset=approvedBattleIdle();assert.equal(asset.count,7303);assert.equal(asset.bands.length,18);
  const hash=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
  assert.equal(hash('art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png'),asset.sourceSha256);
  assert.equal(hash('art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif'),'0449a8b3094f0a628f493b27157ae2d8b27d646ceb9541f6f5e9ce98a9ebeff1');
  const source=writePortraitModule(dir,{officialAssets:true,selectionAvatar:false,battlePortrait:true});
- const row=portraitRuntimeInventory(dir).assets.find(a=>a.asset==='traveler-geo/idle-approved-v1');
- assert.equal(row.images,7303);assert.equal(row.pages,18);assert.equal(row.periodSeconds,2.2);
+ const row=portraitRuntimeInventory(dir).assets.find(a=>a.asset==='traveler-geo/portraits/lumine-native-v1');
+ assert.equal(row.images,464);assert.equal(row.pages,1);assert.equal(row.motion,'shared-actor-root-only');
  assert(!portraitRuntimeInventory(dir).assets.some(a=>a.asset==='temporary-pixel-traveler'));
  const file=join(dir,portraitModule+'.lua');
- writeFileSync(file,source.replace(/^battleApprovedIdle=.*\r?\n/m,''));
- assert.throws(()=>portraitRuntimeInventory(dir),/battle idle differs/);
- writeFileSync(file,source.replace('battleApprovedIdle={','battleApprovedIdle={motion="static",'));
- assert.throws(()=>portraitRuntimeInventory(dir),/battle idle differs/);
+ writeFileSync(file,source.replace(/^battleApprovedNative=.*\r?\n/m,''));
+ assert.throws(()=>portraitRuntimeInventory(dir),/battle drawing differs/);
+ writeFileSync(file,source.replace('battleApprovedNative={','battleApprovedNative={motion="static",'));
+ assert.throws(()=>portraitRuntimeInventory(dir),/battle drawing differs/);
 });
 
 test('approved band idle replaces whole-body breathing while hit and action poses remain owned by feedback',()=>withPortraitVm(setup+`
@@ -117,16 +117,14 @@ assert(c:release() and LiveCount()==0)
 test('official runtime refuses a missing approved figure even when the old pixel payload is still present',()=>withPortraitVm(`
 assert(Asset.selectionUses=='lowpolyLumine')
 Asset.battlePixel={count=57} -- Retained historical payload must not become a fallback.
-Asset.battleApprovedIdle=nil
+Asset.battleApprovedNative=nil
 local ok,err=pcall(function()Portraits.new(stage,nil,{battlePortrait=true,selectionAvatar=false})end)
-assert(not ok and tostring(err):find('official battle requires the approved Lumine idle',1,true),'runtime silently restored the pixel placeholder')
+assert(not ok and tostring(err):find('official battle requires the approved native Lumine drawing',1,true),'runtime silently restored the pixel placeholder')
 assert(LiveCount()==0,'missing approved figure created a substitute')
 `,{officialAssets:true,runtimeV2:true}));
 
-test('the adopted full asset creates its measured native rows once and releases the complete cache',t=>{
- const data=approvedBattleIdle(),dir=mkdtempSync(join(tmpdir(),'idle-native-count-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
- writePortraitModule(dir,{officialAssets:true,selectionAvatar:false,battlePortrait:true});
- const row=portraitRuntimeInventory(dir).assets.find(a=>a.asset==='traveler-geo/idle-approved-v1');
+test('the historical idle still creates and releases its complete cache',t=>{
+ const data=approvedBattleIdle(),row={images:7303,groups:138,pages:18};
  const expected=row.images+row.groups+row.pages;
  withPortraitVm(`
 local data=${toLua(data)}

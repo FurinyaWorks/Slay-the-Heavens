@@ -1,3 +1,4 @@
+import {beforeLumineSource,luminePortraitSourcePath} from './lumine-portrait-source.mjs';
 import {beforeSelectorSource,selectorSourcePair} from './character-selector-source.mjs';
 import {beforePotionTextSource,potionTextSourcePair} from './potion-text-source.mjs';
 import {beforeFatalBgmSource,fatalBgmPair} from './fatal-bgm-source-continuation.mjs';
@@ -33,6 +34,7 @@ export function assertCharacterPreparationSources(read = readRaw) {
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   if (!Object.hasOwn(packet.production, path)) {
     source = beforePotionTextSource(path, beforeSelectorSource(path, source, read), read);
+    source = beforeLumineSource(path, source, read);
     return beforeEndingTerminalSource(path, beforeFatalBgmSource(path, source, read), read);
   }
   if (typeof source !== 'string' || source.includes('\r\r\n')) return source;
@@ -44,7 +46,7 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 
 const currentContinuationOwners = new Set([
   ...characterPreparationOwners, selectorSourcePair.path, potionTextSourcePair.path,
-  fatalBgmPair.path, endingTerminalSourcePath,
+  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath,
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
