@@ -12,7 +12,7 @@
 | 修改玩法、UI、数据或构建 | [模块与生成物](docs/ARCHITECTURE.md)；[产品范围](docs/SCOPE.md) |
 | 定位故障、选择验证或使用平台工具 | [工具任务索引](docs/TOOLCHAIN.md#工具任务索引)；[工程与候选证据](docs/ENGINEERING.md) |
 | 独立评审、CI 或合并 | [PR 自动合并准入](docs/CI.md#pr-自动合并准入) |
-| 修改美术、角色方案或数值 | [角色生产规范](docs/design/characters/PRODUCTION.md)；[UI 批准稿](docs/design/UI_DESIGN.md) |
+| 修改美术、角色方案或数值 | [角色生产规范](docs/design/characters/PRODUCTION.md)；[当前 UI 参考](docs/design/UI_REFERENCES.md)；[UI 规范](docs/design/UI_DESIGN.md) |
 | 核对 v2 来源、实机验收或发布 | [v2 候选交接](docs/versions/V2-RELEASE-HANDOFF.md)；[发布](docs/PUBLISHING.md)；[平台负载](docs/PLATFORM_LOAD.md) |
 | 维护指引 | [指引与执行机制](docs/AGENT_GUIDANCE.md) |
 
