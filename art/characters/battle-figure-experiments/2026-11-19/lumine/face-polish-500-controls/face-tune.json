@@ -1,0 +1,62 @@
+{
+  "cheek-plane": [
+    0,
+    0.3,
+    "#FED7B7"
+  ],
+  "hairline-shadow": [
+    -0.3,
+    0.15,
+    "#FECD94"
+  ],
+  "temple-shadow": [
+    -0.3,
+    0.3,
+    "#FCD29C"
+  ],
+  "near-sclera": [
+    0.3,
+    0.15,
+    "#FCDAC5"
+  ],
+  "near-iris": [
+    -0.15,
+    -0.3,
+    "#E06C24"
+  ],
+  "near-iris-amber": [
+    -0.3,
+    -0.15,
+    "#F68845"
+  ],
+  "near-iris-shadow": [
+    -0.15,
+    -0.3,
+    "#C66A2A"
+  ],
+  "near-lash": [
+    -0.3,
+    0.15,
+    "#6A3D1E"
+  ],
+  "far-sclera": [
+    -0.15,
+    -0.3,
+    "#FCDBBF"
+  ],
+  "far-iris": [
+    -0.3,
+    0,
+    "#C95C24"
+  ],
+  "far-iris-amber": [
+    -0.3,
+    0,
+    "#DD7A3B"
+  ],
+  "far-lash": [
+    0.15,
+    0.3,
+    "#9C5E39"
+  ]
+}
