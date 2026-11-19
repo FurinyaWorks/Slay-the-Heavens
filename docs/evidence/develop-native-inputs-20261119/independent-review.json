@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "repository": "FurinyaWorks/Slay-the-Heavens",
+  "baseline": {
+    "ref": "develop",
+    "commit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+    "tree": "420171af6a98385c3641cf7d59fbb8f0e53a50d0"
+  },
+  "verdict": "PASS_OFFLINE_NATIVE_DEFAULT_INPUT_GENERATION_ONLY",
+  "blockingFindings": [],
+  "sourceBoundary": "No tracked source changes; five path differences are local LFS materializations that exactly match the HEAD pointers. No Git worktree, source, PR or remote writes during review.",
+  "recovered": {
+    "path": "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+    "sha256": "e23d1daac5e7046f9119edbd6179fd16fa31abd245c24d395adfd1af31a91a43",
+    "bytes": 81155,
+    "source": "https://media.githubusercontent.com/media/FurinyaWorks/Slay-the-Heavens/62328bdac7703c3ab241e0ddb19e0fa05474f76a/art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+    "matches": [
+      "exact Git LFS pointer",
+      "asset.json files.preview-native.png",
+      "scripts/official-background.mjs frozen digest"
+    ],
+    "independentVerification": "PNG signature, exact SHA256 and length match committed Git LFS pointer, committed asset.json and production background writer. Exact commit URL and transfer log checked; I did not independently redownload."
+  },
+  "sourceInputs": {
+    "reviewedCount": 643,
+    "regularGitBlobsVerified": 638,
+    "lfsPayloadsVerified": 5,
+    "lfsPointersRemaining": 0,
+    "digest": "403702c242a089a1203ff208fab2355eb01fbd309a9131ab52834ec7e7acfcac",
+    "digestMatchesAfterIndependentBuild": true
+  },
+  "defaultOptions": {
+    "releaseCandidate": false,
+    "workKey": "alpha-test",
+    "artFeatures": {
+      "cards": false,
+      "menuBackground": true,
+      "selectionAvatar": true,
+      "battlePortrait": true,
+      "monsters": false
+    }
+  },
+  "independentBuild": {
+    "output": "fresh temporary directory",
+    "steps": [
+      {
+        "script": "scripts/build-lua-data.mjs",
+        "exit": 0
+      },
+      {
+        "script": "scripts/build-ui.mjs",
+        "exit": 0
+      }
+    ],
+    "verifiedByteIdenticalOutputCount": 24,
+    "rawLog": "independent-rerun.log"
+  },
+  "negativeControls": {
+    "authorRawBuildUi": "pointer and single-byte drift each rejected with code 1 and Background budget data changed; final restoration code 0",
+    "independent": "writeBackgroundModule with an isolated temporary source root rejected both changes with the original error and accepted exact restored bytes"
+  },
+  "archive": {
+    "membersByteVerified": 16,
+    "regularFilesOnly": true,
+    "bytes": 42371,
+    "sha256": "ff8765e2c38d5840c22c3f0e972d7b66d84c7eadf763dae83615a3edad8234ba",
+    "receiptAndRunLogConsistency": true
+  },
+  "offlineBackground": {
+    "renderProfile": "background-budget-v1",
+    "images": 4500,
+    "peakDynamicControls": 4577,
+    "only": "offline runtime control contract, not platform capacity/performance"
+  },
+  "reviewedEvidence": {
+    "README.md": "3f92057b86aba1bf8acc4a5e5078235a2b4d02316bb6b71893af50fd735d95c8",
+    "receipt.json": "cc12c46d30895529f2e08054b8f32a3cecdd18037dc725bbd55c025097242e1f",
+    "validation-logs.tar.gz": "ff8765e2c38d5840c22c3f0e972d7b66d84c7eadf763dae83615a3edad8234ba"
+  },
+  "notVerified": [
+    "GIL or candidate write/readback",
+    "native toolchain",
+    "official import/ready",
+    "client or GUI",
+    "device performance/capacity",
+    "Full/Hosted CI",
+    "release"
+  ],
+  "handoff": "Missing exact PNG input is resolved. Packaging owner still needs the confirmed official base GIL and matching native toolchain/encoder to generate a full candidate and run official import/ready and same-candidate device acceptance. The input digest omits native encoder/toolchain inputs and cannot stand in for a complete candidate receipt."
+}

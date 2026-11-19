@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "sourceTree": "420171af6a98385c3641cf7d59fbb8f0e53a50d0",
+  "scope": "native default input generation only; not packaging/client/official import",
+  "defaultOptions": {
+    "releaseCandidate": false,
+    "workKey": "alpha-test",
+    "artFeatures": {
+      "cards": false,
+      "menuBackground": true,
+      "selectionAvatar": true,
+      "battlePortrait": true,
+      "monsters": false
+    }
+  },
+  "sourceInputCount": 643,
+  "sourcePayloadDigest": "403702c242a089a1203ff208fab2355eb01fbd309a9131ab52834ec7e7acfcac",
+  "allSelectedSourceInputsMaterialized": true,
+  "runs": [
+    {
+      "label": "negative-pointer",
+      "command": [
+        "node",
+        "scripts/build-ui.mjs",
+        ".artifacts/native-inputs/negative-pointer-build",
+        "--art-cards=false",
+        "--art-menu-background=true",
+        "--art-selection-avatar=true",
+        "--art-battle-portrait=true",
+        "--art-monsters=false",
+        "--work-key=alpha-test"
+      ],
+      "status": 1
+    },
+    {
+      "label": "negative-byte-drift",
+      "command": [
+        "node",
+        "scripts/build-ui.mjs",
+        ".artifacts/native-inputs/negative-drift-build",
+        "--art-cards=false",
+        "--art-menu-background=true",
+        "--art-selection-avatar=true",
+        "--art-battle-portrait=true",
+        "--art-monsters=false",
+        "--work-key=alpha-test"
+      ],
+      "status": 1
+    },
+    {
+      "label": "final-build-data",
+      "command": [
+        "node",
+        "scripts/build-lua-data.mjs",
+        "data",
+        ".artifacts/native-inputs/final/abyss_data.lua"
+      ],
+      "status": 0
+    },
+    {
+      "label": "final-build-ui",
+      "command": [
+        "node",
+        "scripts/build-ui.mjs",
+        ".artifacts/native-inputs/final",
+        "--art-cards=false",
+        "--art-menu-background=true",
+        "--art-selection-avatar=true",
+        "--art-battle-portrait=true",
+        "--art-monsters=false",
+        "--work-key=alpha-test"
+      ],
+      "status": 0
+    }
+  ],
+  "generatedOutputs": [
+    {
+      "path": "abyss_art_features.lua",
+      "bytes": 199,
+      "sha256": "3496d5246dfc2f894cccc8120b854b0921fcc1ae943377791044abb8979bf45d"
+    },
+    {
+      "path": "abyss_component_binding.lua",
+      "bytes": 83,
+      "sha256": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8"
+    },
+    {
+      "path": "abyss_data.lua",
+      "bytes": 212819,
+      "sha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18"
+    },
+    {
+      "path": "abyss_map_controls.lua",
+      "bytes": 102846,
+      "sha256": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507"
+    },
+    {
+      "path": "abyss_map_layout.lua",
+      "bytes": 612,
+      "sha256": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3"
+    },
+    {
+      "path": "abyss_menu_background_asset.lua",
+      "bytes": 310011,
+      "sha256": "5b1239c98b8ffe174de3fc3351ca73142786fb0059088465bb319cd09b7ec33e"
+    },
+    {
+      "path": "abyss_monster_actor_binding.lua",
+      "bytes": 176,
+      "sha256": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de"
+    },
+    {
+      "path": "abyss_monster_art_data.lua",
+      "bytes": 65,
+      "sha256": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb"
+    },
+    {
+      "path": "abyss_narrative.lua",
+      "bytes": 6879,
+      "sha256": "8e7b8abe0d8390fbd535434818fad709ed7cb7b10b0eb62d8d9699fba4f5cd48"
+    },
+    {
+      "path": "abyss_original_v4_data.lua",
+      "bytes": 577904,
+      "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+    },
+    {
+      "path": "abyss_presentation.lua",
+      "bytes": 74514,
+      "sha256": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c"
+    },
+    {
+      "path": "abyss_ready_card_assets.lua",
+      "bytes": 81,
+      "sha256": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9"
+    },
+    {
+      "path": "abyss_ready_card_binding.lua",
+      "bytes": 149,
+      "sha256": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086"
+    },
+    {
+      "path": "abyss_theme.lua",
+      "bytes": 140202,
+      "sha256": "bb81179d37b73c3fe7a707d929c645c68ec8fdf2993e493ea7891cb9e2a21ca1"
+    },
+    {
+      "path": "abyss_traveler_portrait_assets.lua",
+      "bytes": 736760,
+      "sha256": "347c7ba0189fe2f7666d8438c83bb4e4f0eea849971507e3065255bcc4ff5bac"
+    },
+    {
+      "path": "abyss_ui_layout.lua",
+      "bytes": 1879513,
+      "sha256": "e798c7fa4663df8c2b2ac8561210a17a820c56d7e6c5b7d4e7be916fc605f086"
+    },
+    {
+      "path": "abyss_ui_profile.lua",
+      "bytes": 110,
+      "sha256": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69"
+    },
+    {
+      "path": "abyss_ui_templates.lua",
+      "bytes": 25331,
+      "sha256": "45694d886a4fea2730540fd9b7af0cd378055b2158598d27c4c6bd123371d6cb"
+    },
+    {
+      "path": "abyss_v25_card_assets.lua",
+      "bytes": 72,
+      "sha256": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503"
+    },
+    {
+      "path": "art-render-v2.json",
+      "bytes": 80,
+      "sha256": "b6d991b0e9d37abfdfde58d6c7beacd035d70eca1881fdc3f47c6f77fbcd77ec"
+    },
+    {
+      "path": "battle-ui.json",
+      "bytes": 1347621,
+      "sha256": "c586ac4b69826db5bc85e0d0d3aa7ffeea236b33c4ac4bb4216399487e141c5c"
+    },
+    {
+      "path": "game-ui-templates.json",
+      "bytes": 67900,
+      "sha256": "bf40667522dd57298cba00fc6d0bc91470649ae40590b98c2b45ae2d9cf8c8c4"
+    },
+    {
+      "path": "game-ui.json",
+      "bytes": 7620707,
+      "sha256": "0798f272cba727cf099dd7676b80c0cdf15cd4c4f447904f35e01d44c4c0a7bf"
+    },
+    {
+      "path": "map-ui.json",
+      "bytes": 334229,
+      "sha256": "9819abe824097acf9e339ec84f81981e73a34bacccef29f234488b7147d9b7a2"
+    }
+  ],
+  "notRun": [
+    "GIL or candidate write/readback",
+    "native toolchain",
+    "official import/ready",
+    "client or GUI",
+    "device performance/capacity",
+    "Full/Hosted CI",
+    "release"
+  ],
+  "retrieved": {
+    "path": "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+    "sha256": "e23d1daac5e7046f9119edbd6179fd16fa31abd245c24d395adfd1af31a91a43",
+    "bytes": 81155,
+    "source": "https://media.githubusercontent.com/media/FurinyaWorks/Slay-the-Heavens/62328bdac7703c3ab241e0ddb19e0fa05474f76a/art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+    "matches": [
+      "exact Git LFS pointer",
+      "asset.json files.preview-native.png",
+      "scripts/official-background.mjs frozen digest"
+    ]
+  },
+  "materialized": [
+    {
+      "path": "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+      "sha256": "e23d1daac5e7046f9119edbd6179fd16fa31abd245c24d395adfd1af31a91a43",
+      "bytes": 81155,
+      "source": "exact commit GitHub media",
+      "verifiedAgainst": "62328bda Git LFS pointer"
+    },
+    {
+      "path": "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif",
+      "sha256": "0449a8b3094f0a628f493b27157ae2d8b27d646ceb9541f6f5e9ce98a9ebeff1",
+      "bytes": 1852035,
+      "source": "previously verified authorized workspace original",
+      "verifiedAgainst": "62328bda Git LFS pointer"
+    },
+    {
+      "path": "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png",
+      "sha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+      "bytes": 1092164,
+      "source": "previously verified authorized workspace original",
+      "verifiedAgainst": "62328bda Git LFS pointer"
+    },
+    {
+      "path": "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png",
+      "sha256": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+      "bytes": 17710,
+      "source": "previously verified authorized workspace original",
+      "verifiedAgainst": "62328bda Git LFS pointer"
+    },
+    {
+      "path": "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png",
+      "sha256": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+      "bytes": 18329,
+      "source": "previously verified authorized workspace original",
+      "verifiedAgainst": "62328bda Git LFS pointer"
+    }
+  ],
+  "archive": {
+    "path": "validation-logs.tar.gz",
+    "bytes": 42371,
+    "sha256": "ff8765e2c38d5840c22c3f0e972d7b66d84c7eadf763dae83615a3edad8234ba",
+    "members": [
+      "build-data-after.log",
+      "build-data-before.log",
+      "build-ui-after.log",
+      "build-ui-before.log",
+      "final-build-data.log",
+      "final-build-ui.log",
+      "materialization.json",
+      "media-download.log",
+      "negative-byte-drift.log",
+      "negative-pointer.log",
+      "npm-ci.log",
+      "preflight-dependency-not-ready.log",
+      "preflight-receipt.json",
+      "preflight-summary.log",
+      "source-input-scan.json",
+      "verify-input-preflight.mjs"
+    ]
+  },
+  "sourceBoundary": "Git-tracked source unchanged; only five exact LFS payloads materialized locally. sourcePayloadDigest excludes unavailable native encoder/toolchain inputs and is not a complete candidate receipt."
+}
