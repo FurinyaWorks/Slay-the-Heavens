@@ -17,7 +17,7 @@ function exactLumine(){
  assert.equal(gitBlob,'3046e3ba9443517d9254d8001b7b5acc6db8d847');
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex'),gitBlob);
  const before=Object.freeze({source,sha256,gitBlob});
- const after=Object.freeze({sha256:'a1812c7f168091b38b0ff9e7116127fb873558d1169c864aed9982b87f135706',gitBlob:'49ee0c66905ba9689426cdd2b7155e233ced9248'});
+ const after=Object.freeze({sha256:'ce06dcef6ba1232d411dd2fda696dd153478ea068731408a3ba6ef3966227a4a',gitBlob:'d0b9eadb7ac53a21e059d9b34a52153cb76cab9b'});
  continuation=exactSourceContinuation({path:owner,before,after});
  return continuation;
 }

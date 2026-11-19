@@ -51,7 +51,7 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
- 'docs/legal/assets.json':'89f21adc4246a8b42892af4092fa7011513c77e4ca4fbc2b7c9d2b655d2de3d4',
+ 'docs/legal/assets.json':'10d4dc70d14c169f2ae305a3b4c69bd5c8aa7d33e5037d0fafc3dacd8118b2ee',
  'scripts/official-portraits.mjs':'03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186',
  'tests/lumine-idle.test.mjs':'183cc0be21ca7a757e3cde25529064a62d5315915e88c3427412786e9ad69e09',
  'tests/official-assets.test.mjs':'893bf452eb606938d5abd1f516d3372fe04a5cbfb36e3be3bd0233df66baf62e',
@@ -67,7 +67,7 @@ const sourceSuccessors=Object.freeze({
  'tests/backlog-roadmap.test.mjs':'b4a523a6a7763e825804404a270da6a401a17b59b9855b701a82cb8571f3b17d',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'c875f2290f59590c6b06e851b627dcac3d684a4e288f6ae88ff839cb3b79c017',
  'tests/helpers/closeout-source-epoch.mjs':'5c47cf4cfa424551010f1e12f39fc84363ad77c93733c4f3d3e8932e00e1c4c9',
- 'tests/helpers/copy-integration-source-closure.mjs':'c10d50494b8d2b5617b499104932919893bf5a182853536161609d7baac2f6bc',
+ 'tests/helpers/copy-integration-source-closure.mjs':'c0a43b2cfca0c01bc6608fbd4f8bcd279c4d91c3d839d92654daf0513bc6d2f3',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
  'tests/integration-source-epoch.test.mjs':'52c1cb8227f7849a1757d531c82611d36f7d73cad3462185599d18b9be096440',
  'tests/defect-actor-boundary.test.mjs':'bd3deb3006a06adb5b8cb5f1bbda90a354882b015d5a57bd1c1623df35dfb039',

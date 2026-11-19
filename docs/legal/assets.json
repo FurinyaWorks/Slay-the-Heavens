@@ -3,6 +3,10 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "approved-menu-design-reference": {
+      "status": "Owner-supplied full menu design reference for project comparison. Original artist and independent license remain unconfirmed. No runtime use or third-party sublicense.",
+      "evidence": "docs/design/reference-assets/v2.0.0/README.md; original bytes preserved by PR #753"
+    },
     "lumine-battle-native-v1": {
       "status": "Owner-approved battle portrait geometry for the project's Miliastra UGC. Only native primitive IDs, colors and transforms; the private raster design is not distributed. Character/IP rights remain with the respective owners; offline rendering is not official game import or device acceptance.",
       "evidence": "https://github.com/FurinyaWorks/Slay-the-Heavens/tree/9e57c6e489377143acc13d171b0f527fcbac3bfe/art/characters/battle-figure-experiments/2026-11-19/lumine/eye-rebuild-133"
@@ -228,6 +232,10 @@
     "docs/evidence/menu-red-quality-20261114/before.png": {
       "sha256": "b12e36c8cc3e1b127134678b1087f7226b34dab4365cf2ab1bda17b56bdae622",
       "category": "menu-red-reference-native"
+    },
+    "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png": {
+      "sha256": "655f4926a86d1135d468b31bf0c225352c65de03ba09a0d684ffa875265741dd",
+      "category": "approved-menu-design-reference"
     },
     "docs/evidence/menu-red-quality-20261114/menu.png": {
       "sha256": "23ac07b19542c110d6bb443a0c56e7477b40a2c6cc4bd38617326b3a59f44b9a",

@@ -393,6 +393,19 @@ local function selectionFigure(Asset,official,profile)
     return official and assert(Asset.lowpolyLumine,'official selection requires approved 1600 background')
                 or profile and Asset.battle133 or lowpoly(Asset.lowpolyHero) and Asset.lowpolyHero or Asset.selection133 or Asset.battle133
 end
+local function battleFigure(Asset,official)
+    if not official then
+        local drawing=Asset.battle133
+        validate(drawing,133,4315,'ae2161957033d688b1bed1c7ab2ad2891d5f7bf5e34b291f9ecaef7cfa11f880','f8a7af7b079aa5bbb7e16b502b222f1fd7dbfaa2c30f6eef1bf0d76af0a0a248')
+        return drawing
+    end
+    local drawing=assert(Asset.battleApprovedNative,'official battle requires the approved native Lumine drawing')
+    assert(lowpoly(drawing) and drawing.width==133 and drawing.height==133 and drawing.count==464
+        and drawing.literalSha256=='73070e14234502e7a61b0be601b9ada017bb4d90b0f58cccd305673cd2fddfef'
+        and drawing.jsonSha256=='a0c792109a74f71be0a52d9a59f39828e1d4818ce8d1bba915606b984d89f831',
+        'unexpected native Lumine drawing identity')
+    return drawing
+end
 -- cardTemplates: ready-card image/container template indices, used when only the cards flag is on.
 local function requiredPortrait(row,scope,wanted,mode)
     return (not scope or scope[row.name]) and (wanted[row.name] or row.name=='result' and (mode=='victory' or mode=='defeat'))
@@ -485,16 +498,7 @@ function M.new(stage,report,flags,cardTemplates)
     end
     local battleDrawing
     if fighting then
-        battleDrawing=official and assert(Asset.battleApprovedNative,'official battle requires the approved native Lumine drawing') or Asset.battle133
-        if official then
-            assert(lowpoly(battleDrawing) and battleDrawing.width==133 and battleDrawing.height==133
-                and battleDrawing.count==464
-                and battleDrawing.literalSha256=='73070e14234502e7a61b0be601b9ada017bb4d90b0f58cccd305673cd2fddfef'
-                and battleDrawing.jsonSha256=='a0c792109a74f71be0a52d9a59f39828e1d4818ce8d1bba915606b984d89f831',
-                'unexpected native Lumine drawing identity')
-        else
-            validate(battleDrawing,133,4315,'ae2161957033d688b1bed1c7ab2ad2891d5f7bf5e34b291f9ecaef7cfa11f880','f8a7af7b079aa5bbb7e16b502b222f1fd7dbfaa2c30f6eef1bf0d76af0a0a248')
-        end
+        battleDrawing=battleFigure(Asset,official)
         local hero=assert(stage:GetChild('battlePanel'):GetChild('hero'))
         battle=controller(hero:GetChild('officialFigure'),battleDrawing,profile and profile.battleDisplay or official and theme.layout.player.portrait or 400/3,Asset,
             {retryFailedOnPause=true,position=profile and profile.battlePosition or official and theme.officialAssets.battlePortraitPosition,
