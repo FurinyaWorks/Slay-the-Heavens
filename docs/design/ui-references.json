@@ -265,14 +265,37 @@
       "codePath": "scripts/noncombat-neow-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "neowFigure",
+      "revision": "2026-11-19-geo-statue",
+      "status": "APPROVED",
+      "backlogTask": "TASK-4.12",
+      "reference": {
+        "path": "docs/evidence/neow-geo-statue-preview.png",
+        "sha256": "18cf82689b2a3185d51aaa90979acd0fc40e7150fd744bde5716db95d33aa92d"
+      },
+      "supersedes": [
+        "develop"
+      ],
+      "note": "Owner 确认坐姿岩系神像，带阶梯石座与掌上金色方块。用原生静态图元实现，原神客户端待取证。",
+      "codePaths": [
+        "scripts/sts-neow-guide-layout.mjs",
+        "scripts/sts-neow-choice-layout.mjs"
+      ]
+    },
+    {
+      "codePath": "scripts/noncombat-neow-layout.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "neowFigure",
       "revision": "develop",
-      "status": "CURRENT_IMPLEMENTATION",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-103.3",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/runtime-neow.png",
+        "sha256": "ad6d1e3d0b19885a71d016e53431ea14a63f24869c266e90e96a21555ade0c31"
+      },
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "[当前祝福布局投影](../evidence/v2-ui-20261119/runtime-neow.png)。官方画面待取证。",
+      "note": "历史兜帽祝福者布局投影。",
       "codePaths": [
         "scripts/sts-neow-guide-layout.mjs",
         "scripts/sts-neow-choice-layout.mjs"
