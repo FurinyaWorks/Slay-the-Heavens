@@ -825,3 +825,94 @@ test('Full follow-up binds cancellation recovery and exact outer rejection check
  }
  assertIntegratedCurrent(read);
 });
+
+// No-op projections must not turn a Windows checkout into archived LF bytes.
+// Keep the raw input and buffer identity only after the exact boundary accepts it.
+import {integrationCiSource,integrationRead} from './helpers/release-card-contact-integration.mjs';
+import {releaseSelectionMapCiPacket as pc22NoopSelection} from './helpers/release-selection-map-ci-source.mjs';
+
+test('PC22 authenticated no-op preserves raw LF CRLF text and Buffer identities',()=>{
+ for(const path of ['tests/helpers/release-pc22-basic-feedback-source.mjs','tests/lua/card_flow_contact_continuity.lua']){
+  const lf=mergedReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+  for(const source of [lf,lf.replaceAll('\n','\r\n')]){
+   const bytes=Buffer.from(source),read=(p,e)=>p===path?(e?source:bytes):mergedReadFileSync(p,e);
+   assert.equal(integrationCiSource(path,source,'pc22',read),source,'authenticated no-op boundary');
+   assert.equal(integrationCiSource(path,bytes,'pc22',read),bytes,'non-text direct input stays raw');
+   assert.equal(integratedSource(path,source,'menu',read),source,'public direct input');
+   assert.equal(integratedSource(path,bytes,'menu',read),bytes,'public direct Buffer input');
+   for(const reader of [integrationRead('pc22',read),integratedRead('menu',{read})]){
+    assert.equal(reader(path,'utf8'),source,'text read keeps exact EOL');
+    assert.equal(reader(path),bytes,'unchanged Buffer keeps original object');
+   }
+  }
+ }
+});
+
+test('PC22 real historical projections and foreign-byte rejection remain exact',()=>{
+ const path='scripts/noncombat-v25-layout.mjs',lf=mergedReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const prior=pc22NoopSelection.files[path].before.source,menu=proof.files[path].views.menu.source;
+ assert.notEqual(lf,prior);assert.notEqual(lf,menu);
+ for(const source of [lf,lf.replaceAll('\n','\r\n')]){
+  const bytes=Buffer.from(source),read=(p,e)=>p===path?(e?source:bytes):mergedReadFileSync(p,e);
+  assert.equal(integrationCiSource(path,source,'pc22',read),prior);
+  assert.equal(integratedSource(path,source,'menu',read),menu);
+  for(const [reader,expected]of [[integrationRead('pc22',read),prior],[integratedRead('menu',{read}),menu]]){
+   assert.equal(reader(path,'utf8'),expected);
+   assert.deepEqual(reader(path),Buffer.from(expected));
+   assert.notEqual(reader(path),bytes,'a genuine projection cannot retain the live Buffer');
+  }
+ }
+ for(const anchor of [path,'tests/helpers/release-pc22-basic-feedback-source.mjs','tests/lua/card_flow_contact_continuity.lua']){
+  const source=mergedReadFileSync(anchor,'utf8').replaceAll('\r\n','\n');
+  for(const foreign of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n')]){
+   const bytes=Buffer.from(foreign),read=(p,e)=>p===anchor?(e?foreign:bytes):mergedReadFileSync(p,e);
+   assert.equal(integrationCiSource(anchor,foreign,'pc22',read),foreign);
+   assert.equal(integratedSource(anchor,foreign,'menu',read),foreign);
+   for(const reader of [integrationRead('pc22',read),integratedRead('menu',{read})]){
+    assert.equal(reader(anchor,'utf8'),foreign);assert.equal(reader(anchor),bytes);
+   }
+  }
+ }
+ const noRead=()=>{throw Error('foreign paths must not authenticate linked inputs');};
+ for(const foreignPath of ['__proto__','constructor','foreign/'+path]){
+  assert.equal(integrationCiSource(foreignPath,lf,'pc22',noRead),lf);
+  assert.equal(integratedSource(foreignPath,lf,'menu',noRead),lf);
+ }
+ const binary=Buffer.from([255,0,128]);
+ assert.equal(integrationRead('pc22',()=>binary)('unknown/binary'),binary);
+ assert.equal(integratedRead('menu',{read:()=>binary})('unknown/binary'),binary);
+});
+
+test('PC22 no-op repair keeps complete live source and archive drift rejection',()=>{
+ const archive='tests/helpers/release-pc22-noop-ci.json.gz';
+ const packet=JSON.parse(gunzipSync(mergedReadFileSync(archive)));
+ assert.equal(packet.base,'6d267ca80abd80efb334f8f7581111166174de2d');
+ assert.deepEqual(Object.keys(packet.files),['tests/helpers/release-card-contact-integration.mjs','tests/integrated-ci-source.cases.mjs']);
+ const anchor='tests/native-startup-contract.test.mjs',source=mergedReadFileSync(anchor,'utf8');let fault;
+ const read=(path,encoding)=>{
+  if(path!==fault?.path)return mergedReadFileSync(path,encoding);
+  if(fault.kind==='missing')throw Error('missing '+path);
+  if(fault.kind==='null')return null;
+  if(fault.kind==='prior')return encoding?packet.files[path].before:Buffer.from(packet.files[path].before);
+  const raw=mergedReadFileSync(path,encoding);
+  return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
+ };
+ const reader=integratedRead('menu',{read}),expected=reader(anchor,'utf8');
+ assert.notEqual(expected,source,'existing genuine replay must authenticate the repair too');
+ assertIntegratedCurrent(read);
+ for(const path of [...Object.keys(packet.files),archive])for(const kind of ['drift','missing','null',...(packet.files[path]?['prior']:[])]){
+  fault={path,kind};
+  assert.throws(()=>integratedSource(anchor,source,'menu',read),undefined,path+' '+kind+' direct');
+  assert.throws(()=>reader(anchor,'utf8'),undefined,path+' '+kind+' text');
+  assert.throws(()=>reader(anchor),undefined,path+' '+kind+' Buffer');
+  fault=undefined;assert.equal(reader(anchor,'utf8'),expected,'restoration must reauthenticate');
+ }
+ for(const path of Object.keys(packet.files)){
+  const live=mergedReadFileSync(path,'utf8'),prior=reader(path,'utf8');
+  assert.notEqual(prior,live,'each changed CI leaf retains its exact predecessor');
+  fault={path:archive,kind:'drift'};
+  assert.throws(()=>integratedSource(path,live,'menu',read));
+  assert.throws(()=>reader(path,'utf8'));assert.throws(()=>reader(path));
+  fault=undefined;assert.equal(reader(path,'utf8'),prior);
+ }
+});

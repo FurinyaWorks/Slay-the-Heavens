@@ -36,7 +36,9 @@ export function integrationCiSource(path,source,side='pc22',read=readFileSync){
  source=beforeCapacityB9Ci(path,source,'b9',undefined,{read});
  if(typeof source!=='string'||source.includes('\r\r\n')||!Object.hasOwn(integrationPacket.files,path)||hash(norm(source))!==integrationPacket.files[path])return source;
  const own=packets[side].files[path],other=packets[side==='pc22'?'selection':'pc22'].files[path];
- return own?.current.source??other?.before?.source??source;
+ const projected=own?.current.source??other?.before?.source??source;
+ // Authentication above permits LF/CRLF equivalence, not rewriting a no-op.
+ return norm(projected)===norm(source)?source:projected;
 }
 export function integrationRead(side='pc22',read=readFileSync){return(path,encoding)=>{
  const raw=read(path,encoding);

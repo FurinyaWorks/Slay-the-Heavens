@@ -343,13 +343,37 @@ for(const [path,row]of Object.entries(followupCi.files)){
  if(repairCi.files[path])assert.equal(row.beforeSha256,repairCi.files[path].afterSha256,'exact first repair CI predecessor: '+path);
  assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
 }
-function beforeFollowupCiSource(path,source){return priorCiSource(followupCi.files,path,source);}
+// Exact CI-only no-op repair; all prior Full witnesses remain byte-identical.
+const pc22NoopArchive='tests/helpers/release-pc22-noop-ci.json.gz';
+const pc22NoopDigest='04d4c523ec702192eae1a2464c440ada8ed96bc44a7b762747b5d5fa54df7e4c';
+const pc22NoopBytes=readFileSync(new URL('./release-pc22-noop-ci.json.gz',import.meta.url));
+assert.equal(hash(pc22NoopBytes),pc22NoopDigest,'complete PC22 no-op CI continuation');
+const pc22NoopCi=JSON.parse(gunzipSync(pc22NoopBytes));
+assert.equal(pc22NoopCi.schemaVersion,1);
+assert.equal(pc22NoopCi.base,'6d267ca80abd80efb334f8f7581111166174de2d');
+assert.deepEqual(Object.keys(pc22NoopCi.files),['tests/helpers/release-card-contact-integration.mjs','tests/integrated-ci-source.cases.mjs']);
+for(const [path,row]of Object.entries(pc22NoopCi.files)){
+ assert.equal(normalized(row.before),row.before);
+ assert.equal(hash(row.before),row.beforeSha256,'complete PC22 no-op predecessor: '+path);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.beforeGitBlob);
+ if(followupCi.files[path])assert.equal(row.beforeSha256,followupCi.files[path].afterSha256,'exact Full follow-up predecessor: '+path);
+ assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
+}
+function beforePc22NoopCiSource(path,source){return priorCiSource(pc22NoopCi.files,path,source);}
+function assertPc22NoopCiCurrent(read){
+ assert.equal(hash(read(pc22NoopArchive)),pc22NoopDigest,'fresh PC22 no-op CI archive');
+ for(const [path,row]of Object.entries(pc22NoopCi.files)){
+  const source=normalized(read(path,'utf8'));
+  assert(source!==null&&hash(source)===row.afterSha256,'fresh PC22 no-op source: '+path);
+ }
+}
+function beforeFollowupCiSource(path,source){return priorCiSource(followupCi.files,path,beforePc22NoopCiSource(path,source));}
 function assertFollowupCiCurrent(read){
  assert.equal(hash(read(followupArchive)),followupDigest,'fresh Full follow-up CI archive');
  assert.equal(hash(read('tests/helpers/release-full-followup-source.json.gz')),followupCi.productionArchive,
   'fresh Full follow-up production archive');
  for(const [path,row]of Object.entries(followupCi.files)){
-  const source=normalized(read(path,'utf8'));
+  const source=normalized(beforePc22NoopCiSource(path,read(path,'utf8')));
   assert(source!==null&&hash(source)===row.afterSha256,'fresh Full follow-up source: '+path);
  }
 }
@@ -563,10 +587,11 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
       const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+      const pc22NoopRow = Object.hasOwn(pc22NoopCi.files, path) ? pc22NoopCi.files[path] : null;
       const followupRow = Object.hasOwn(followupCi.files, path) ? followupCi.files[path] : null;
       const repairRow = Object.hasOwn(repairCi.files, path) ? repairCi.files[path] : null;
       const fatalBgmRow = Object.hasOwn(fatalBgmCi.files, path) ? fatalBgmCi.files[path] : null;
-      if (!followupRow?.before && !repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
+      if (!pc22NoopRow?.before && !followupRow?.before && !repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -578,6 +603,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertPc22NoopCiCurrent(read);
   assertFollowupCiCurrent(read);
   assertRepairCiCurrent(read);
   assertComposedCiCurrent(read);
