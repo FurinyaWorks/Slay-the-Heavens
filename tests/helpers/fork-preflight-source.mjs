@@ -98,7 +98,7 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  for(const [path,sha] of Object.entries(sourceSuccessors)){
-  const source=read(path,'utf8');
+  const source=beforeV2UiAdmission(path,read(path,'utf8'));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }

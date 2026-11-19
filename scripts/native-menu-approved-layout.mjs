@@ -61,6 +61,7 @@ function styleButton(button, points, primary, lift = 0) {
   const label = find(button,'label');
   label.position = [0,0];
   label.size = [218,52];
+  if (button.name==='start') label.text.content = '开始游戏';
   Object.assign(label.text,{align:'centre',valign:'middle',fontSize:32,minFontSize:32,colour:ivory});
   button.children = button.children.filter(child=>child.name!=='menuAccent');
   const colours = {

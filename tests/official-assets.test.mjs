@@ -451,7 +451,7 @@ test('approved native title and button artwork preserve the official menu hit su
     assert.deepEqual(hit.size,frame.slice(2));
     assert.equal(hit.kind,'cursorArea');
     assert.equal(child(button,'label').text.align,'centre');
-    if (name==='titleQuit') assert.equal(child(button,'label').text.content,text);
+    assert.equal(child(button,'label').text.content,text);
     const faces=children(child(button,'v25MenuFace'));
     assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
     assert(faces.every(face=>children(child(face,'rim')).length===2 && children(child(face,'fill')).length===2));
