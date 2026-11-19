@@ -73,18 +73,20 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/check-pr-history.mjs
       - run: npm ci --ignore-scripts --prefer-offline --no-audit --no-fund --fetch-retries=0 --fetch-timeout=30000
-      - name: Validate concise agent entry points
-        run: npm run check:guidance
       - name: Resolve exact comparison base
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group' || inputs.base_sha != ''
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha }}
         run: |
           [[ "$BASE_SHA" =~ ^[a-f0-9]{40}$ ]]
           if ! git cat-file -e "${BASE_SHA}^{commit}"; then
             git -c credential.helper= -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=30 fetch --depth=1 --no-tags origin "$BASE_SHA"
           fi
           git diff --check "$BASE_SHA" HEAD
+      - name: Validate agent guidance and UI reference governance
+        run: npm run check:guidance
+      - name: Validate versioned UI references
+        run: node scripts/check-ui-references.mjs --hosted
       - name: Validate PR metadata
         if: github.event_name == 'pull_request'
         env:
