@@ -1,0 +1,77 @@
+{
+  "inputSHA256": "bc9118f85b57b2ca70ec027c43a520c3bb2d0f403e4f0f6e167d4297c63a1ff5",
+  "cropLTRB": [
+    0,
+    280,
+    234,
+    834
+  ],
+  "maxRgbThreshold": 32,
+  "profile": "balanced",
+  "untrimmed": 844,
+  "trim": {
+    "requested": 530,
+    "removed": 314,
+    "ordering": "greedy visible loss vs pinned medium, rescore every six",
+    "visibleWorstScore": 180.91666666666666
+  },
+  "fit": {
+    "underpaint": 29,
+    "outfit": 209,
+    "face": 172,
+    "legs": 139
+  },
+  "nativeControls": 549,
+  "assets": {
+    "100003": 542,
+    "100002": 7
+  },
+  "canvas": [
+    133,
+    133
+  ],
+  "versions": {
+    "opencv": "4.12.0",
+    "shapely": "2.1.2",
+    "numpy": "2.3.5",
+    "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546"
+  },
+  "files": {
+    "editable.json": {
+      "bytes": 331682,
+      "sha256": "212a991a4753bdafc24997186c0fa5eea2ff6d00bcf01007abaee64cf0049075"
+    },
+    "literal-drawing.json": {
+      "bytes": 94588,
+      "sha256": "31c09835806c670fcca866a7f545f454f19ac5b7dadcc7831b56eecc29919a3b"
+    },
+    "native-4x.png": {
+      "bytes": 13352,
+      "sha256": "e2e4b301be3fd920ef80e465a8c7fbe7b22a3b48bb245bcc801482241fe4b1a0"
+    },
+    "native.gia": {
+      "bytes": 409880,
+      "sha256": "64428fbbd16eb35e587c16fe6c7ba092071b7d16bc6627ec7e2da888bbee74c8"
+    },
+    "native.lua": {
+      "bytes": 410378,
+      "sha256": "66858ec2fdc5efd669bec25001d35f0bbf4dfcc165e043cd71b37a615c0a7098"
+    },
+    "native.png": {
+      "bytes": 3404,
+      "sha256": "305392ccbc69746d771eaeaf72335966e7c142d28fda3e8bcb1931244b23ab54"
+    },
+    "runtime.lua": {
+      "bytes": 99719,
+      "sha256": "77b8c0dbd25bbce920376a6afe85187952c9accf1a671305fd405fbe167ee3fe"
+    },
+    "source-4x.png": {
+      "bytes": 106960,
+      "sha256": "d5a489300c66b89ab6fad81fe8291391e2cba7d2717e91b09eb718ce6c17004c"
+    },
+    "source.png": {
+      "bytes": 12373,
+      "sha256": "6973f9923690cf89cf9ad902fb129c38634947540c23e488cd7463549b0c284e"
+    }
+  }
+}

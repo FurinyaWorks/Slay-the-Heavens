@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "scope": "Existing official editor sample-derived offline GIL. Not a project save or release; no official import/device shot/startup/fps claims.",
+  "toolPin": "bcc75795ebf17271612332fc81645336686bd94c",
+  "baseSHA256": "b3b46b0412caf865ebc259c15ad8215b33a1797ab7940861eb562320541e13a2",
+  "baseBytes": 25793,
+  "literalSHA256": "31c09835806c670fcca866a7f545f454f19ac5b7dadcc7831b56eecc29919a3b",
+  "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546",
+  "name": "LumineArtOnly",
+  "rootId": 1073741847,
+  "dedicatedHost": {
+    "id": 1073741848,
+    "name": "LumineFigureHost",
+    "canvas": [
+      133,
+      133
+    ]
+  },
+  "file": "Lumine-Art-Only-OFFLINE.gil",
+  "sha256": "d0987097237a43f3d05b9f6086167c9e0d4508fd8c5fb2572925b20e06cb5406",
+  "fileBytes": 157761,
+  "template": {
+    "id": 1073741845,
+    "name": "LumineShapeTemplate"
+  },
+  "count": {
+    "mountedBatches": 10,
+    "staticShapeControls": 0,
+    "predictedNativeImagesOnStart": 549,
+    "maxDirectChildrenPerBatch": 60,
+    "dedicatedHostContainers": 1,
+    "interfaceRootContainers": 1
+  },
+  "sourceBytes": 122138,
+  "tests": [
+    "ordered host and batch ID readback",
+    "native image template readback with mask disabled",
+    "each bound Lua source byte-for-byte readback",
+    "all client scripts syntax-checked by existing setClientScript"
+  ],
+  "validation": "offline only; actual native renderer and device import unverified",
+  "batches": [
+    {
+      "name": "LumineArtBatch01",
+      "start": 0,
+      "count": 60,
+      "sha256": "1ee57d45a6bae57b5dd19c7da232a4191d2e583f8a9bc0d17789f728ef2bbbf9",
+      "boundSHA256": "95a402faae3ed75a54aa19aeb8306b051d3934a3a12cc7633e5c47e06ed460c1",
+      "boundBytes": 13177,
+      "scriptId": 1073741826,
+      "containerId": 1073741849
+    },
+    {
+      "name": "LumineArtBatch02",
+      "start": 60,
+      "count": 60,
+      "sha256": "6d82c1fb683bd946206fe0f64f9d3b07d23443995b66b83e6862c027fd15ef16",
+      "boundSHA256": "ecc0c9bf0282a900537aba95fea524049bbc47f9d78c5ae6f805d8f46f5ba2a9",
+      "boundBytes": 13148,
+      "scriptId": 1073741827,
+      "containerId": 1073741850
+    },
+    {
+      "name": "LumineArtBatch03",
+      "start": 120,
+      "count": 60,
+      "sha256": "f8e34124908d0476db418d7d83bd0682a427b352cab9dc115c7819bc564d841b",
+      "boundSHA256": "558fb58e6e04be71212b11a8fc0be99598a15ac58250fe90a4a4d08862d4e937",
+      "boundBytes": 13237,
+      "scriptId": 1073741828,
+      "containerId": 1073741851
+    },
+    {
+      "name": "LumineArtBatch04",
+      "start": 180,
+      "count": 60,
+      "sha256": "e2b9c63c3d33d12d7493415f72c98b73c91908c46db327ab80bec1937401137c",
+      "boundSHA256": "4ffa33b103ccc8c658d0b0475442b42f0fbfea7cb4c31e79c0fb286922be1bbc",
+      "boundBytes": 13173,
+      "scriptId": 1073741829,
+      "containerId": 1073741852
+    },
+    {
+      "name": "LumineArtBatch05",
+      "start": 240,
+      "count": 60,
+      "sha256": "580f9d6d27ac237c80505020637849c44d32d905a5258ac14674d0acb6955972",
+      "boundSHA256": "7ff02b9811353be75f73d984d2e390314632fa25f18a2ee131e069e09b008b32",
+      "boundBytes": 13202,
+      "scriptId": 1073741830,
+      "containerId": 1073741853
+    },
+    {
+      "name": "LumineArtBatch06",
+      "start": 300,
+      "count": 60,
+      "sha256": "fbb294db6b96d841ada4f9fca899fea606600024c76c8d3adf41c18e7b63070b",
+      "boundSHA256": "8dcb1f07fd857958f6d90aad34fb79fe775240ca0a18a6f7c3801e38c734665d",
+      "boundBytes": 13261,
+      "scriptId": 1073741831,
+      "containerId": 1073741854
+    },
+    {
+      "name": "LumineArtBatch07",
+      "start": 360,
+      "count": 60,
+      "sha256": "11a2ee962a0e1230167e0530519da2716de0075f1e79c2589ea73813102d703c",
+      "boundSHA256": "e9fa97f2379051060577537313bb2b04a04a93c4bb33e7cd07a97afcb83ead5d",
+      "boundBytes": 13173,
+      "scriptId": 1073741832,
+      "containerId": 1073741855
+    },
+    {
+      "name": "LumineArtBatch08",
+      "start": 420,
+      "count": 60,
+      "sha256": "f85351890d5b6ff0bc4448c62f6609a8f0f5a5d5a315df1d685ce1b6a7723f4c",
+      "boundSHA256": "27b40da12e01114eee7c0cf3257c5f90aff962c8a2147a48c812f4f537590c90",
+      "boundBytes": 13123,
+      "scriptId": 1073741833,
+      "containerId": 1073741856
+    },
+    {
+      "name": "LumineArtBatch09",
+      "start": 480,
+      "count": 60,
+      "sha256": "f7b19bde15c313ac9c2dbd4a58efeaaa6ed410aedcca0079a13821a51ccecb52",
+      "boundSHA256": "fca2660df32dbca828f0b4ab6fdeb98d9614c9f2c58e211d4968f4adfc0b4f83",
+      "boundBytes": 12765,
+      "scriptId": 1073741834,
+      "containerId": 1073741857
+    },
+    {
+      "name": "LumineArtBatch10",
+      "start": 540,
+      "count": 9,
+      "sha256": "5d4c9776d20b653468079a8a59070aa61f0e2138823d609faf2ead1504e00bfc",
+      "boundSHA256": "7aa24077680be7bc99476e619cef83da010721a3578c8bc963abb117461df2e7",
+      "boundBytes": 3879,
+      "scriptId": 1073741835,
+      "containerId": 1073741858
+    }
+  ]
+}
