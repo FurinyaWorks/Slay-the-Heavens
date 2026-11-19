@@ -6,3 +6,9 @@ test('mobile drag release clears invalid selections and preserves desktop target
  assert.equal(result.status,0,result.stdout+result.stderr);
  assert.match(result.stdout,/MOBILE_CARD_RELEASE 7 passed; 0 failed/);
 });
+
+test('cancelling a rejected card clears its previous notice',()=>{
+ const result=runLua('tests/lua/support/card_cancel_notice.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/CARD_CANCEL_NOTICE_PASS failure\/cancel\/repeat/);
+});
