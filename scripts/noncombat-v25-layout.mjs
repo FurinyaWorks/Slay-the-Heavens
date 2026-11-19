@@ -1,5 +1,6 @@
 // Reuse the frozen V25 page layout and existing input paths. Native textures
 // replace bounded decorative surfaces; no new page owner or image rasterizer.
+import {styleLiyuePageReveal} from './cinematic-ui-layout.mjs';
 import {applyV25MenuLayout} from './v25-menu-layout.mjs';
 import {applyV25CharacterLayout} from './v25-character-layout.mjs';
 import {constellationGeometry} from './constellation-geometry.mjs';
@@ -36,5 +37,6 @@ export function applyOfficialNoncombatLayout(layout,theme){
   label.text.colour=state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk;
  }
  styleCharacterFlag(exit,'cancel',theme);
+ styleLiyuePageReveal(child(stage,'pageReveal'),theme);
  return layout;
 }

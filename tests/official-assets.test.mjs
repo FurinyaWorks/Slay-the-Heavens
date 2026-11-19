@@ -87,7 +87,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  // geometry/input field to that projection while retaining unrelated pages.
  const expectedMenuLayout=structuredClone(layout);
  applyOfficialNoncombatLayout(expectedMenuLayout,theme);
- const menuProjection=new Map(['menuPanel','runMenu'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
+ const menuProjection=new Map(['menuPanel','runMenu','pageReveal'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
  const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
   .map(([path,node])=>[path,node,structuredClone(node)]);
  const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
@@ -417,4 +417,19 @@ test('official selection information board and exit share the live layout withou
   assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
   assert.equal(child(state,'label').text.content,'退出游戏');
  }
+});
+
+test('ordinary readiness overlay uses the same Liyue crest and seven elements',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const cover=child(layout,'pageReveal'),blocker=child(cover,'blocker'),cancel=child(cover,'cancel');
+ const scene=child(child(layout,'prologuePanel'),'scene');
+ applyOfficialNoncombatLayout(layout,theme);
+ assert.deepEqual(child(cover,'seal'),child(scene,'seal'));
+ for(let i=1;i<=7;i++){
+  const name='element'+i,lit=child(cover,name);
+  assert.deepEqual(lit,{...child(scene,name),colour:theme.layout.prologue.ink});
+ }
+ assert.strictEqual(child(cover,'blocker'),blocker);
+ assert.strictEqual(child(cover,'cancel'),cancel);
+ assert.equal(child(cover,'message').text.content,'正在准备画面…');
 });
