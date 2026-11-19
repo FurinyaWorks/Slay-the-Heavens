@@ -1,0 +1,2933 @@
+{
+  "schemaVersion": 1,
+  "base": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "devicePerformance": "UNVERIFIED",
+  "room": {
+    "sourceSha256": "23f5baae7dea5f58133072e270bc5aab2579d78b4ae51f60cdaa6b67be6766d3",
+    "candidate": "scenes/saves/coop-room-lab.gil",
+    "sha256": "4ec5e31141a5979078fec404264a107b58e82976d3e5d85fede2a08653296f78",
+    "before": {
+      "min": 1,
+      "max": 8
+    },
+    "after": {
+      "min": 1,
+      "max": 2
+    },
+    "officialImport": "UNVERIFIED",
+    "lobbyAdmission": "UNVERIFIED",
+    "tool": {
+      "repository": "8itlab/genshin-miliastra-mcp",
+      "revision": "70470757d6fcb319c5afec13b178c87f2d8d54b3",
+      "source": "knowledge/samples/gil/mhw64cr51fue_环境配置.gil"
+    }
+  },
+  "fit": {
+    "300": {
+      "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+      "width": 266,
+      "height": 391,
+      "matte": "#182433",
+      "sourceCrop": [
+        0,
+        29,
+        1024,
+        1536
+      ],
+      "segmentation": {
+        "colors": 12,
+        "minimum_area": 3,
+        "spatial": 5,
+        "color_range": 18
+      },
+      "fitterSha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293",
+      "placementSha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002",
+      "versions": {
+        "opencv": "4.12.0",
+        "shapely": "2.1.2",
+        "numpy": "2.2.6",
+        "pillow": "11.3.0"
+      },
+      "budget": 300,
+      "epsilon": 14.762121582031249,
+      "trimmed": 2,
+      "nativeImages": 334,
+      "rgbMeanAbsoluteError": 20.767215728759766,
+      "foregroundRgbMeanAbsoluteError": 61.20228576660156,
+      "rawPrimitives": 300,
+      "maskFallbacks": 34
+    },
+    "400": {
+      "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+      "width": 266,
+      "height": 391,
+      "matte": "#182433",
+      "sourceCrop": [
+        0,
+        29,
+        1024,
+        1536
+      ],
+      "segmentation": {
+        "colors": 12,
+        "minimum_area": 3,
+        "spatial": 5,
+        "color_range": 18
+      },
+      "fitterSha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293",
+      "placementSha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002",
+      "versions": {
+        "opencv": "4.12.0",
+        "shapely": "2.1.2",
+        "numpy": "2.2.6",
+        "pillow": "11.3.0"
+      },
+      "budget": 400,
+      "epsilon": 11.701820678710938,
+      "trimmed": 0,
+      "nativeImages": 451,
+      "rgbMeanAbsoluteError": 19.341787338256836,
+      "foregroundRgbMeanAbsoluteError": 57.03642654418945,
+      "rawPrimitives": 400,
+      "maskFallbacks": 51
+    },
+    "600": {
+      "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+      "width": 266,
+      "height": 391,
+      "matte": "#182433",
+      "sourceCrop": [
+        0,
+        29,
+        1024,
+        1536
+      ],
+      "segmentation": {
+        "colors": 12,
+        "minimum_area": 3,
+        "spatial": 5,
+        "color_range": 18
+      },
+      "fitterSha256": "3e8ef3d9ac4977832f48a877b9bf07f2bb5966721bf1cd556f8a4783eb6f6293",
+      "placementSha256": "213ca42805a67623b58a4cebb5e27f75142374ca84bc1798534a22b157cb0002",
+      "versions": {
+        "opencv": "4.12.0",
+        "shapely": "2.1.2",
+        "numpy": "2.2.6",
+        "pillow": "11.3.0"
+      },
+      "budget": 600,
+      "epsilon": 7.784147338867188,
+      "trimmed": 0,
+      "nativeImages": 677,
+      "rgbMeanAbsoluteError": 16.491825103759766,
+      "foregroundRgbMeanAbsoluteError": 48.176700592041016,
+      "rawPrimitives": 600,
+      "maskFallbacks": 77
+    }
+  },
+  "simulator": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "simulator": "beyond-simulator-mcp@0.5.2",
+    "canvas": "mobile-16-9",
+    "clockMode": "manual"
+  },
+  "foregroundRgbErrorCalibration": {
+    "sourceAlphaThreshold": 128,
+    "palette32": [
+      81.73,
+      73.79,
+      64.19
+    ],
+    "palette12": [
+      61.20228576660156,
+      57.03642654418945,
+      48.176700592041016
+    ]
+  },
+  "cases": [
+    {
+      "id": "capacity-999",
+      "filename": "capacity-999.save.json",
+      "sha256": "c0ea781dc2f1d0d3efa8d2fa03f6880c06fca0ee0e9d9f8a3a44fc6feb72259a",
+      "groups": {
+        "flat": {
+          "created": 1000,
+          "visible": 1000,
+          "containers": 1,
+          "images": 999,
+          "directChildren": 999
+        }
+      },
+      "layout": {
+        "created": 1000,
+        "visible": 1000,
+        "containers": 1,
+        "images": 999
+      },
+      "templates": {
+        "created": 0,
+        "visible": 0,
+        "containers": 0,
+        "images": 0
+      },
+      "templateGroups": {},
+      "dynamic": 0,
+      "expectedCreated": 1000,
+      "expectedInitialVisible": 1000,
+      "expectedPeakVisible": 1000,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1000,
+            "visible": 1000,
+            "containers": 1,
+            "images": 999,
+            "paintEntries": 999
+          }
+        ],
+        "hostStartRpcMs": 1099.281321,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [],
+        "peakVisible": 1000,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-999 · 服务器控件模板.gia",
+            "bytes": 857281,
+            "sha256": "b7ea61aa1f021fe75584a8f297791f25912c262d390cdb49f2f15648a841c430",
+            "warningCount": 1,
+            "warningCategories": {
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-1000",
+      "filename": "capacity-1000.save.json",
+      "sha256": "4a2e814612b161c44e54aedc881c957c70c3a5d43e4f4a23c1f0e6d413b34dbc",
+      "groups": {
+        "flat": {
+          "created": 1001,
+          "visible": 1001,
+          "containers": 1,
+          "images": 1000,
+          "directChildren": 1000
+        }
+      },
+      "layout": {
+        "created": 1001,
+        "visible": 1001,
+        "containers": 1,
+        "images": 1000
+      },
+      "templates": {
+        "created": 0,
+        "visible": 0,
+        "containers": 0,
+        "images": 0
+      },
+      "templateGroups": {},
+      "dynamic": 0,
+      "expectedCreated": 1001,
+      "expectedInitialVisible": 1001,
+      "expectedPeakVisible": 1001,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1001,
+            "visible": 1001,
+            "containers": 1,
+            "images": 1000,
+            "paintEntries": 1000
+          }
+        ],
+        "hostStartRpcMs": 1059.6936620000006,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [],
+        "peakVisible": 1001,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-1000 · 服务器控件模板.gia",
+            "bytes": 858138,
+            "sha256": "89ae2c3237871eed638e5a60dc9344c9b0c2d340138b636ef03c07046e70de6c",
+            "warningCount": 1,
+            "warningCategories": {
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-1001",
+      "filename": "capacity-1001.save.json",
+      "sha256": "b882e4412f2ac293d030305eee1dab8536474dc83c44c8034d2d050263fe30c6",
+      "groups": {
+        "flat": {
+          "created": 1002,
+          "visible": 1002,
+          "containers": 1,
+          "images": 1001,
+          "directChildren": 1001
+        }
+      },
+      "layout": {
+        "created": 1002,
+        "visible": 1002,
+        "containers": 1,
+        "images": 1001
+      },
+      "templates": {
+        "created": 0,
+        "visible": 0,
+        "containers": 0,
+        "images": 0
+      },
+      "templateGroups": {},
+      "dynamic": 0,
+      "expectedCreated": 1002,
+      "expectedInitialVisible": 1002,
+      "expectedPeakVisible": 1002,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1002,
+            "visible": 1002,
+            "containers": 1,
+            "images": 1001,
+            "paintEntries": 1001
+          }
+        ],
+        "hostStartRpcMs": 1000.1266180000002,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [],
+        "peakVisible": 1002,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-1001 · 服务器控件模板.gia",
+            "bytes": 858997,
+            "sha256": "c68d0845dd6d296747c06387918fb747a99983dc0b878c7ae8d61367267657f0",
+            "warningCount": 1,
+            "warningCategories": {
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-1100",
+      "filename": "capacity-1100.save.json",
+      "sha256": "d733da537a3ce18f1826a014763f8eba7c0b4f123ecb24c76d1d925fb688730f",
+      "groups": {
+        "flat": {
+          "created": 1101,
+          "visible": 1101,
+          "containers": 1,
+          "images": 1100,
+          "directChildren": 1100
+        }
+      },
+      "layout": {
+        "created": 1101,
+        "visible": 1101,
+        "containers": 1,
+        "images": 1100
+      },
+      "templates": {
+        "created": 0,
+        "visible": 0,
+        "containers": 0,
+        "images": 0
+      },
+      "templateGroups": {},
+      "dynamic": 0,
+      "expectedCreated": 1101,
+      "expectedInitialVisible": 1101,
+      "expectedPeakVisible": 1101,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1101,
+            "visible": 1101,
+            "containers": 1,
+            "images": 1100,
+            "paintEntries": 1100
+          }
+        ],
+        "hostStartRpcMs": 992.2554309999996,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [],
+        "peakVisible": 1101,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-1100 · 服务器控件模板.gia",
+            "bytes": 944038,
+            "sha256": "f8946c36baf5b603f34616c6bf2941466b9b89ede6371aced5bda10232787efa",
+            "warningCount": 1,
+            "warningCategories": {
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-split-A",
+      "filename": "capacity-split-A.save.json",
+      "sha256": "7cba88a126ab78573a5331afc44a64c835b750dc1a9320f96db79bc6041bb1b6",
+      "groups": {
+        "groupA": {
+          "created": 551,
+          "visible": 551,
+          "containers": 1,
+          "images": 550,
+          "directChildren": 550
+        }
+      },
+      "layout": {
+        "created": 551,
+        "visible": 551,
+        "containers": 1,
+        "images": 550
+      },
+      "templates": {
+        "created": 0,
+        "visible": 0,
+        "containers": 0,
+        "images": 0
+      },
+      "templateGroups": {},
+      "dynamic": 0,
+      "expectedCreated": 551,
+      "expectedInitialVisible": 551,
+      "expectedPeakVisible": 551,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 551,
+            "visible": 551,
+            "containers": 1,
+            "images": 550,
+            "paintEntries": 550
+          }
+        ],
+        "hostStartRpcMs": 625.6140429999996,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [],
+        "peakVisible": 551,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-split-A · 服务器控件模板.gia",
+            "bytes": 472491,
+            "sha256": "5f20b3a01e7fcb85169eda09b51fd2532645e12169e57025ad8163eb6bc19372",
+            "warningCount": 1,
+            "warningCategories": {
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-split-B",
+      "filename": "capacity-split-B.save.json",
+      "sha256": "a3b45cd63951ee328752d01224877942c82c6e739c66b51eb8a7356723e862ac",
+      "groups": {
+        "groupB": {
+          "created": 551,
+          "visible": 551,
+          "containers": 1,
+          "images": 550,
+          "directChildren": 550
+        }
+      },
+      "layout": {
+        "created": 551,
+        "visible": 551,
+        "containers": 1,
+        "images": 550
+      },
+      "templates": {
+        "created": 0,
+        "visible": 0,
+        "containers": 0,
+        "images": 0
+      },
+      "templateGroups": {},
+      "dynamic": 0,
+      "expectedCreated": 551,
+      "expectedInitialVisible": 551,
+      "expectedPeakVisible": 551,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 551,
+            "visible": 551,
+            "containers": 1,
+            "images": 550,
+            "paintEntries": 550
+          }
+        ],
+        "hostStartRpcMs": 557.0222470000008,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [],
+        "peakVisible": 551,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-split-B · 服务器控件模板.gia",
+            "bytes": 472911,
+            "sha256": "de9da3061a79d0e6cfe4c8a367917f2ae17dd4e84f32e38870f2b7eca184f30d",
+            "warningCount": 1,
+            "warningCategories": {
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-nested",
+      "filename": "capacity-nested.save.json",
+      "sha256": "2c5113f30db9a901b0c58dbe1e9324631b18a65cd0b2aebd6e63257d00e2aefc",
+      "groups": {
+        "nestedHost": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 1123,
+        "visible": 1123,
+        "containers": 23,
+        "images": 1100
+      },
+      "templateGroups": {
+        "nested": {
+          "created": 1123,
+          "visible": 1123,
+          "containers": 23,
+          "images": 1100
+        }
+      },
+      "dynamic": 1123,
+      "expectedCreated": 1124,
+      "expectedInitialVisible": 1124,
+      "expectedPeakVisible": 1124,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1124,
+            "visible": 1124,
+            "containers": 24,
+            "images": 1100,
+            "paintEntries": 1100
+          }
+        ],
+        "hostStartRpcMs": 845.0429510000013,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB dynamic created=1",
+            "time": 0
+          }
+        ],
+        "peakVisible": 1124,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-nested · 服务器控件模板.gia",
+            "bytes": 1379,
+            "sha256": "2932f80c6f0668e4109b2a3631113af1b6a10aec92657e4b88267606eefabb59",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "capacity-nested · 客户端控件模板.gia",
+            "bytes": 962479,
+            "sha256": "1c2385c160574469c8beae387093c31b193cbb8e1d1ae8c317bc9bfec7fbcc78",
+            "warningCount": 1,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "capacity-nested · 脚本.gia",
+            "bytes": 2362,
+            "sha256": "514e393c91889e5e4a24718685e179cc912a730e1032812fbc9f10dfe6b383f5",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "capacity-dynamic",
+      "filename": "capacity-dynamic.save.json",
+      "sha256": "945ea9361ac86fe7643753d61e4c852593024707caca46f0f60825957005d3be",
+      "groups": {
+        "dynamic": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 23,
+        "visible": 23,
+        "containers": 1,
+        "images": 22
+      },
+      "templateGroups": {
+        "cellTemplate": {
+          "created": 23,
+          "visible": 23,
+          "containers": 1,
+          "images": 22
+        }
+      },
+      "dynamic": 1150,
+      "expectedCreated": 1151,
+      "expectedInitialVisible": 1151,
+      "expectedPeakVisible": 1151,
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1151,
+            "visible": 1151,
+            "containers": 51,
+            "images": 1100,
+            "paintEntries": 1100
+          }
+        ],
+        "hostStartRpcMs": 453.669269,
+        "viewPlayerIndex": 1,
+        "playerCount": 1,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB dynamic created=50",
+            "time": 0
+          }
+        ],
+        "peakVisible": 1151,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "capacity-dynamic · 服务器控件模板.gia",
+            "bytes": 1373,
+            "sha256": "6c93827d56a18a898be041039353f0eb9d2a88c96713db66f7ad41bfa60bd3bd",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "capacity-dynamic · 客户端控件模板.gia",
+            "bytes": 19645,
+            "sha256": "a6f387559f613bbca56917dfde85e2a6d4289354830611cab05dc611a4446060",
+            "warningCount": 1,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "capacity-dynamic · 脚本.gia",
+            "bytes": 2363,
+            "sha256": "a651e9d6ad6d0d39d18e545ebc360ff48e699d9904cf9bfd0156273f9a41fbed",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "stress-300-A",
+      "filename": "stress-300-A.save.json",
+      "sha256": "fc3e54928cfe9f980f921e2d47a049958d475ecc4f48f7bd811ef17abcbae5d4",
+      "groups": {
+        "battle": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 1604,
+        "visible": 1450,
+        "containers": 48,
+        "images": 1518
+      },
+      "templateGroups": {
+        "local": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "partner": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "enemies": {
+          "created": 409,
+          "visible": 409,
+          "containers": 13,
+          "images": 392
+        },
+        "hand": {
+          "created": 201,
+          "visible": 201,
+          "containers": 11,
+          "images": 160
+        },
+        "hud": {
+          "created": 154,
+          "visible": 154,
+          "containers": 4,
+          "images": 148
+        },
+        "effects": {
+          "created": 154,
+          "visible": 0,
+          "containers": 4,
+          "images": 150
+        }
+      },
+      "dynamic": 1604,
+      "expectedCreated": 1605,
+      "expectedInitialVisible": 1451,
+      "expectedPeakVisible": 1605,
+      "fit": {
+        "rawPrimitives": 300,
+        "emittedImages": 334,
+        "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+        "packSha256": "83c41e7ce6880b188ec4bb4eb2431f5abb44b1b6eea8a93cc74939053432f169",
+        "packBytes": 102203
+      },
+      "modules": {
+        "local": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "partner": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "enemies": {
+          "created": 409,
+          "visible": 409,
+          "containers": 13,
+          "images": 392
+        },
+        "hand": {
+          "created": 201,
+          "visible": 201,
+          "containers": 11,
+          "images": 160
+        },
+        "hud": {
+          "created": 154,
+          "visible": 154,
+          "containers": 4,
+          "images": 148
+        },
+        "effects": {
+          "created": 154,
+          "visible": 0,
+          "containers": 4,
+          "images": 150
+        }
+      },
+      "seats": [
+        {
+          "seat": 1,
+          "playerId": "A"
+        },
+        {
+          "seat": 2,
+          "playerId": "B"
+        }
+      ],
+      "view": "A",
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518,
+            "paintEntries": 1406
+          },
+          {
+            "time": 1.001,
+            "frame": 1,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 2.002,
+            "frame": 2,
+            "created": 1605,
+            "visible": 1431,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 3.0029999999999997,
+            "frame": 3,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 4.004,
+            "frame": 4,
+            "created": 1605,
+            "visible": 1605,
+            "containers": 49,
+            "images": 1518,
+            "paintEntries": 1556
+          },
+          {
+            "time": 5.004999999999999,
+            "frame": 5,
+            "created": 1605,
+            "visible": 0,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 6.0059999999999985,
+            "frame": 6,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 7.006999999999998,
+            "frame": 7,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 8.007999999999997,
+            "frame": 8,
+            "created": 1605,
+            "visible": 1431,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 9.008999999999997,
+            "frame": 9,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 10.009999999999996,
+            "frame": 10,
+            "created": 1605,
+            "visible": 1605,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 11.010999999999996,
+            "frame": 11,
+            "created": 1605,
+            "visible": 0,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 12.011999999999995,
+            "frame": 12,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          }
+        ],
+        "hostStartRpcMs": 1486.499068000001,
+        "viewPlayerIndex": 1,
+        "playerCount": 2,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB ready view=A",
+            "time": 0
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 1.001
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 2.002
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 3.0029999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 4.004
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 5.004999999999999
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 6.0059999999999985
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 7.006999999999998
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 8.007999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 9.008999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 10.009999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 11.010999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 12.011999999999995
+          }
+        ],
+        "screenshot": {
+          "canvasId": "mobile-16-9",
+          "frame": 0,
+          "time": 0,
+          "clockMode": "manual",
+          "width": 1280,
+          "height": 720,
+          "pixelWidth": 1280,
+          "pixelHeight": 720,
+          "assetWarnings": [],
+          "sha256": "9b2618da28b167c3ebfc1df288681a2ff7450ce0880af29abd952b712ae4d222"
+        },
+        "peakVisible": 1605,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "stress-300-A · 服务器控件模板.gia",
+            "bytes": 1371,
+            "sha256": "d9d8e4605de068c08f1b7c98095980ac04df23c94fcd96e80a02b345f0ab8399",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "stress-300-A · 客户端控件模板.gia",
+            "bytes": 1389987,
+            "sha256": "5082f45678dfd324cf0c9005452b53a9bb14d7b2b8ea37953376abb85731278a",
+            "warningCount": 13,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 6,
+              "垂直居中按推定值导出，尚待实机确认。": 7
+            }
+          },
+          {
+            "filename": "stress-300-A · 脚本.gia",
+            "bytes": 4164,
+            "sha256": "e188d44b20a252e26d1f1c3d1edd6f3f51bfd475beb024dd1fb4939e8333c9e8",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "stress-300-B",
+      "filename": "stress-300-B.save.json",
+      "sha256": "665da8da0c47cf8277f6e56f1e8d3c55d41231fccff6b1d437caedc5a7201ed7",
+      "groups": {
+        "battle": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 1604,
+        "visible": 1450,
+        "containers": 48,
+        "images": 1518
+      },
+      "templateGroups": {
+        "local": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "partner": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "enemies": {
+          "created": 409,
+          "visible": 409,
+          "containers": 13,
+          "images": 392
+        },
+        "hand": {
+          "created": 201,
+          "visible": 201,
+          "containers": 11,
+          "images": 160
+        },
+        "hud": {
+          "created": 154,
+          "visible": 154,
+          "containers": 4,
+          "images": 148
+        },
+        "effects": {
+          "created": 154,
+          "visible": 0,
+          "containers": 4,
+          "images": 150
+        }
+      },
+      "dynamic": 1604,
+      "expectedCreated": 1605,
+      "expectedInitialVisible": 1451,
+      "expectedPeakVisible": 1605,
+      "fit": {
+        "rawPrimitives": 300,
+        "emittedImages": 334,
+        "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+        "packSha256": "83c41e7ce6880b188ec4bb4eb2431f5abb44b1b6eea8a93cc74939053432f169",
+        "packBytes": 102203
+      },
+      "modules": {
+        "local": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "partner": {
+          "created": 343,
+          "visible": 343,
+          "containers": 8,
+          "images": 334
+        },
+        "enemies": {
+          "created": 409,
+          "visible": 409,
+          "containers": 13,
+          "images": 392
+        },
+        "hand": {
+          "created": 201,
+          "visible": 201,
+          "containers": 11,
+          "images": 160
+        },
+        "hud": {
+          "created": 154,
+          "visible": 154,
+          "containers": 4,
+          "images": 148
+        },
+        "effects": {
+          "created": 154,
+          "visible": 0,
+          "containers": 4,
+          "images": 150
+        }
+      },
+      "seats": [
+        {
+          "seat": 1,
+          "playerId": "A"
+        },
+        {
+          "seat": 2,
+          "playerId": "B"
+        }
+      ],
+      "view": "B",
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518,
+            "paintEntries": 1406
+          },
+          {
+            "time": 1.001,
+            "frame": 1,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 2.002,
+            "frame": 2,
+            "created": 1605,
+            "visible": 1431,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 3.0029999999999997,
+            "frame": 3,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 4.004,
+            "frame": 4,
+            "created": 1605,
+            "visible": 1605,
+            "containers": 49,
+            "images": 1518,
+            "paintEntries": 1556
+          },
+          {
+            "time": 5.004999999999999,
+            "frame": 5,
+            "created": 1605,
+            "visible": 0,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 6.0059999999999985,
+            "frame": 6,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 7.006999999999998,
+            "frame": 7,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 8.007999999999997,
+            "frame": 8,
+            "created": 1605,
+            "visible": 1431,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 9.008999999999997,
+            "frame": 9,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 10.009999999999996,
+            "frame": 10,
+            "created": 1605,
+            "visible": 1605,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 11.010999999999996,
+            "frame": 11,
+            "created": 1605,
+            "visible": 0,
+            "containers": 49,
+            "images": 1518
+          },
+          {
+            "time": 12.011999999999995,
+            "frame": 12,
+            "created": 1605,
+            "visible": 1451,
+            "containers": 49,
+            "images": 1518
+          }
+        ],
+        "hostStartRpcMs": 877.292257000001,
+        "viewPlayerIndex": 2,
+        "playerCount": 2,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB ready view=B",
+            "time": 0
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 1.001
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 2.002
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 3.0029999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 4.004
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 5.004999999999999
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 6.0059999999999985
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 7.006999999999998
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 8.007999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 9.008999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 10.009999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 11.010999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 12.011999999999995
+          }
+        ],
+        "screenshot": {
+          "canvasId": "mobile-16-9",
+          "frame": 0,
+          "time": 0,
+          "clockMode": "manual",
+          "width": 1280,
+          "height": 720,
+          "pixelWidth": 1280,
+          "pixelHeight": 720,
+          "assetWarnings": [],
+          "sha256": "fe1d5bb0a664339b25fb279fc66d1da5e0296dbf7182df1627599f7109d7d46c"
+        },
+        "peakVisible": 1605,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "stress-300-B · 服务器控件模板.gia",
+            "bytes": 1371,
+            "sha256": "8be71721414e633b3a024185a8877fd78171f67d31d08aeaf7f224358075f220",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "stress-300-B · 客户端控件模板.gia",
+            "bytes": 1389987,
+            "sha256": "7c4eb58945a44783a1fe1fe9e6137101e2ec67f9f958b4fe27ea6e472ad41899",
+            "warningCount": 13,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 6,
+              "垂直居中按推定值导出，尚待实机确认。": 7
+            }
+          },
+          {
+            "filename": "stress-300-B · 脚本.gia",
+            "bytes": 4164,
+            "sha256": "b8eec03e25e596fecbf911e1ab683d1a567c8cc9569bba8d0b9e34f10d61ded9",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "stress-400-A",
+      "filename": "stress-400-A.save.json",
+      "sha256": "b43685ccabe401cbb96fa8e2d72ebe2a918c3b99de42c308a4d5c51fbd7be94b",
+      "groups": {
+        "battle": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 2454,
+        "visible": 2045,
+        "containers": 64,
+        "images": 2352
+      },
+      "templateGroups": {
+        "local": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "partner": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "enemies": {
+          "created": 613,
+          "visible": 613,
+          "containers": 17,
+          "images": 592
+        },
+        "hand": {
+          "created": 301,
+          "visible": 301,
+          "containers": 11,
+          "images": 260
+        },
+        "hud": {
+          "created": 205,
+          "visible": 205,
+          "containers": 5,
+          "images": 198
+        },
+        "effects": {
+          "created": 409,
+          "visible": 0,
+          "containers": 9,
+          "images": 400
+        }
+      },
+      "dynamic": 2454,
+      "expectedCreated": 2455,
+      "expectedInitialVisible": 2046,
+      "expectedPeakVisible": 2455,
+      "fit": {
+        "rawPrimitives": 400,
+        "emittedImages": 451,
+        "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+        "packSha256": "c3a6a907a0d916175a73df933c73903edf8d788685e35187d675f467ab2b0114",
+        "packBytes": 134503
+      },
+      "modules": {
+        "local": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "partner": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "enemies": {
+          "created": 613,
+          "visible": 613,
+          "containers": 17,
+          "images": 592
+        },
+        "hand": {
+          "created": 301,
+          "visible": 301,
+          "containers": 11,
+          "images": 260
+        },
+        "hud": {
+          "created": 205,
+          "visible": 205,
+          "containers": 5,
+          "images": 198
+        },
+        "effects": {
+          "created": 409,
+          "visible": 0,
+          "containers": 9,
+          "images": 400
+        }
+      },
+      "seats": [
+        {
+          "seat": 1,
+          "playerId": "A"
+        },
+        {
+          "seat": 2,
+          "playerId": "B"
+        }
+      ],
+      "view": "A",
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352,
+            "paintEntries": 1990
+          },
+          {
+            "time": 1.001,
+            "frame": 1,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 2.002,
+            "frame": 2,
+            "created": 2455,
+            "visible": 2016,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 3.0029999999999997,
+            "frame": 3,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 4.004,
+            "frame": 4,
+            "created": 2455,
+            "visible": 2455,
+            "containers": 65,
+            "images": 2352,
+            "paintEntries": 2390
+          },
+          {
+            "time": 5.004999999999999,
+            "frame": 5,
+            "created": 2455,
+            "visible": 0,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 6.0059999999999985,
+            "frame": 6,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 7.006999999999998,
+            "frame": 7,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 8.007999999999997,
+            "frame": 8,
+            "created": 2455,
+            "visible": 2016,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 9.008999999999997,
+            "frame": 9,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 10.009999999999996,
+            "frame": 10,
+            "created": 2455,
+            "visible": 2455,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 11.010999999999996,
+            "frame": 11,
+            "created": 2455,
+            "visible": 0,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 12.011999999999995,
+            "frame": 12,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          }
+        ],
+        "hostStartRpcMs": 2062.7111729999997,
+        "viewPlayerIndex": 1,
+        "playerCount": 2,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB ready view=A",
+            "time": 0
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 1.001
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 2.002
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 3.0029999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 4.004
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 5.004999999999999
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 6.0059999999999985
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 7.006999999999998
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 8.007999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 9.008999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 10.009999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 11.010999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 12.011999999999995
+          }
+        ],
+        "screenshot": {
+          "canvasId": "mobile-16-9",
+          "frame": 0,
+          "time": 0,
+          "clockMode": "manual",
+          "width": 1280,
+          "height": 720,
+          "pixelWidth": 1280,
+          "pixelHeight": 720,
+          "assetWarnings": [],
+          "sha256": "5c51d080c663f6548f4bfc8821f358c925f0baa67f9e9bb3178b95cbae050f18"
+        },
+        "peakVisible": 2455,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "stress-400-A · 服务器控件模板.gia",
+            "bytes": 1371,
+            "sha256": "ee8ebf9b11e22decb6c57f53fd85711100d3de8473c9076ad51d74610068e7df",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "stress-400-A · 客户端控件模板.gia",
+            "bytes": 2134851,
+            "sha256": "b2aaabbd23c0d0b92a2bb9f8c7eb482f45aeb82269c8e23e6c62c0fe5270422e",
+            "warningCount": 13,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 6,
+              "垂直居中按推定值导出，尚待实机确认。": 7
+            }
+          },
+          {
+            "filename": "stress-400-A · 脚本.gia",
+            "bytes": 5016,
+            "sha256": "9e45ac88772e7d0c57e45c0117a0464165f59013a7133bdecadb6c031407de55",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "stress-400-B",
+      "filename": "stress-400-B.save.json",
+      "sha256": "810656b9c4e190327ebf64fdac739b6a9465fb93b65a8cb0be2158be96353422",
+      "groups": {
+        "battle": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 2454,
+        "visible": 2045,
+        "containers": 64,
+        "images": 2352
+      },
+      "templateGroups": {
+        "local": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "partner": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "enemies": {
+          "created": 613,
+          "visible": 613,
+          "containers": 17,
+          "images": 592
+        },
+        "hand": {
+          "created": 301,
+          "visible": 301,
+          "containers": 11,
+          "images": 260
+        },
+        "hud": {
+          "created": 205,
+          "visible": 205,
+          "containers": 5,
+          "images": 198
+        },
+        "effects": {
+          "created": 409,
+          "visible": 0,
+          "containers": 9,
+          "images": 400
+        }
+      },
+      "dynamic": 2454,
+      "expectedCreated": 2455,
+      "expectedInitialVisible": 2046,
+      "expectedPeakVisible": 2455,
+      "fit": {
+        "rawPrimitives": 400,
+        "emittedImages": 451,
+        "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+        "packSha256": "c3a6a907a0d916175a73df933c73903edf8d788685e35187d675f467ab2b0114",
+        "packBytes": 134503
+      },
+      "modules": {
+        "local": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "partner": {
+          "created": 463,
+          "visible": 463,
+          "containers": 11,
+          "images": 451
+        },
+        "enemies": {
+          "created": 613,
+          "visible": 613,
+          "containers": 17,
+          "images": 592
+        },
+        "hand": {
+          "created": 301,
+          "visible": 301,
+          "containers": 11,
+          "images": 260
+        },
+        "hud": {
+          "created": 205,
+          "visible": 205,
+          "containers": 5,
+          "images": 198
+        },
+        "effects": {
+          "created": 409,
+          "visible": 0,
+          "containers": 9,
+          "images": 400
+        }
+      },
+      "seats": [
+        {
+          "seat": 1,
+          "playerId": "A"
+        },
+        {
+          "seat": 2,
+          "playerId": "B"
+        }
+      ],
+      "view": "B",
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352,
+            "paintEntries": 1990
+          },
+          {
+            "time": 1.001,
+            "frame": 1,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 2.002,
+            "frame": 2,
+            "created": 2455,
+            "visible": 2016,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 3.0029999999999997,
+            "frame": 3,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 4.004,
+            "frame": 4,
+            "created": 2455,
+            "visible": 2455,
+            "containers": 65,
+            "images": 2352,
+            "paintEntries": 2390
+          },
+          {
+            "time": 5.004999999999999,
+            "frame": 5,
+            "created": 2455,
+            "visible": 0,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 6.0059999999999985,
+            "frame": 6,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 7.006999999999998,
+            "frame": 7,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 8.007999999999997,
+            "frame": 8,
+            "created": 2455,
+            "visible": 2016,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 9.008999999999997,
+            "frame": 9,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 10.009999999999996,
+            "frame": 10,
+            "created": 2455,
+            "visible": 2455,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 11.010999999999996,
+            "frame": 11,
+            "created": 2455,
+            "visible": 0,
+            "containers": 65,
+            "images": 2352
+          },
+          {
+            "time": 12.011999999999995,
+            "frame": 12,
+            "created": 2455,
+            "visible": 2046,
+            "containers": 65,
+            "images": 2352
+          }
+        ],
+        "hostStartRpcMs": 1570.2867259999985,
+        "viewPlayerIndex": 2,
+        "playerCount": 2,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB ready view=B",
+            "time": 0
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 1.001
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 2.002
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 3.0029999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 4.004
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 5.004999999999999
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 6.0059999999999985
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 7.006999999999998
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 8.007999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 9.008999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 10.009999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 11.010999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 12.011999999999995
+          }
+        ],
+        "screenshot": {
+          "canvasId": "mobile-16-9",
+          "frame": 0,
+          "time": 0,
+          "clockMode": "manual",
+          "width": 1280,
+          "height": 720,
+          "pixelWidth": 1280,
+          "pixelHeight": 720,
+          "assetWarnings": [],
+          "sha256": "a6207f9e08fe9613c21f4e5629ab54c3c9d0b396c83817cffa0df9ddee9c92b8"
+        },
+        "peakVisible": 2455,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "stress-400-B · 服务器控件模板.gia",
+            "bytes": 1371,
+            "sha256": "86aafefef8a8931d87ffe77f21c621e652c41b52457c631bc9656871dbbd7cf5",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "stress-400-B · 客户端控件模板.gia",
+            "bytes": 2134851,
+            "sha256": "4b75755f668519f8f88aa6ee3c49c576c49a7f2db0ba41b3aa4dba719b8e9b70",
+            "warningCount": 13,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 6,
+              "垂直居中按推定值导出，尚待实机确认。": 7
+            }
+          },
+          {
+            "filename": "stress-400-B · 脚本.gia",
+            "bytes": 5016,
+            "sha256": "962a90b61a0415fc9053b650bba76e1a568286c9a6c57fa542705f122071c078",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "stress-600-A",
+      "filename": "stress-600-A.save.json",
+      "sha256": "c0ffbaf4fef6a5738206ff4f9aa1566c0af256f39a265861c85222d01e67fba5",
+      "groups": {
+        "battle": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 3422,
+        "visible": 2911,
+        "containers": 80,
+        "images": 3304
+      },
+      "templateGroups": {
+        "local": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "partner": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "enemies": {
+          "created": 817,
+          "visible": 817,
+          "containers": 21,
+          "images": 792
+        },
+        "hand": {
+          "created": 401,
+          "visible": 401,
+          "containers": 11,
+          "images": 360
+        },
+        "hud": {
+          "created": 307,
+          "visible": 307,
+          "containers": 7,
+          "images": 298
+        },
+        "effects": {
+          "created": 511,
+          "visible": 0,
+          "containers": 11,
+          "images": 500
+        }
+      },
+      "dynamic": 3422,
+      "expectedCreated": 3423,
+      "expectedInitialVisible": 2912,
+      "expectedPeakVisible": 3423,
+      "fit": {
+        "rawPrimitives": 600,
+        "emittedImages": 677,
+        "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+        "packSha256": "1e7fc7a8bdfd7685d7ee69193c2dafef0905db8c44e6bf56444bd5cd6dee8c2f",
+        "packBytes": 200927
+      },
+      "modules": {
+        "local": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "partner": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "enemies": {
+          "created": 817,
+          "visible": 817,
+          "containers": 21,
+          "images": 792
+        },
+        "hand": {
+          "created": 401,
+          "visible": 401,
+          "containers": 11,
+          "images": 360
+        },
+        "hud": {
+          "created": 307,
+          "visible": 307,
+          "containers": 7,
+          "images": 298
+        },
+        "effects": {
+          "created": 511,
+          "visible": 0,
+          "containers": 11,
+          "images": 500
+        }
+      },
+      "seats": [
+        {
+          "seat": 1,
+          "playerId": "A"
+        },
+        {
+          "seat": 2,
+          "playerId": "B"
+        }
+      ],
+      "view": "A",
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304,
+            "paintEntries": 2842
+          },
+          {
+            "time": 1.001,
+            "frame": 1,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 2.002,
+            "frame": 2,
+            "created": 3423,
+            "visible": 2872,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 3.0029999999999997,
+            "frame": 3,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 4.004,
+            "frame": 4,
+            "created": 3423,
+            "visible": 3423,
+            "containers": 81,
+            "images": 3304,
+            "paintEntries": 3342
+          },
+          {
+            "time": 5.004999999999999,
+            "frame": 5,
+            "created": 3423,
+            "visible": 0,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 6.0059999999999985,
+            "frame": 6,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 7.006999999999998,
+            "frame": 7,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 8.007999999999997,
+            "frame": 8,
+            "created": 3423,
+            "visible": 2872,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 9.008999999999997,
+            "frame": 9,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 10.009999999999996,
+            "frame": 10,
+            "created": 3423,
+            "visible": 3423,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 11.010999999999996,
+            "frame": 11,
+            "created": 3423,
+            "visible": 0,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 12.011999999999995,
+            "frame": 12,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          }
+        ],
+        "hostStartRpcMs": 2322.9478979999985,
+        "viewPlayerIndex": 1,
+        "playerCount": 2,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB ready view=A",
+            "time": 0
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 1.001
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 2.002
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 3.0029999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 4.004
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 5.004999999999999
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 6.0059999999999985
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 7.006999999999998
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 8.007999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 9.008999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 10.009999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 11.010999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 12.011999999999995
+          }
+        ],
+        "screenshot": {
+          "canvasId": "mobile-16-9",
+          "frame": 0,
+          "time": 0,
+          "clockMode": "manual",
+          "width": 1280,
+          "height": 720,
+          "pixelWidth": 1280,
+          "pixelHeight": 720,
+          "assetWarnings": [],
+          "sha256": "3ee198760e076f3c8807aa06bb244995efd7126c3036a3873bf13cbf54b03373"
+        },
+        "peakVisible": 3423,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "stress-600-A · 服务器控件模板.gia",
+            "bytes": 1371,
+            "sha256": "96a6d865fbc7cd3820ed957bbb5c505b5c47d51d076af47e00a4b27bfe51d1ee",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "stress-600-A · 客户端控件模板.gia",
+            "bytes": 2982233,
+            "sha256": "bdba33f76b18e0333b4ac1b63c07b274bc3f815b92212b5d8446041bb80e26b6",
+            "warningCount": 13,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 6,
+              "垂直居中按推定值导出，尚待实机确认。": 7
+            }
+          },
+          {
+            "filename": "stress-600-A · 脚本.gia",
+            "bytes": 6384,
+            "sha256": "903f106bbbe8e708e8dfd390263e64fafb4f0e21939ab5df001080e117645eb7",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "stress-600-B",
+      "filename": "stress-600-B.save.json",
+      "sha256": "f83b795ea85843564b2a17713ce34e0a35efd0d675483fb59419c5dc0cc711f1",
+      "groups": {
+        "battle": {
+          "created": 1,
+          "visible": 1,
+          "containers": 1,
+          "images": 0,
+          "directChildren": 0
+        }
+      },
+      "layout": {
+        "created": 1,
+        "visible": 1,
+        "containers": 1,
+        "images": 0
+      },
+      "templates": {
+        "created": 3422,
+        "visible": 2911,
+        "containers": 80,
+        "images": 3304
+      },
+      "templateGroups": {
+        "local": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "partner": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "enemies": {
+          "created": 817,
+          "visible": 817,
+          "containers": 21,
+          "images": 792
+        },
+        "hand": {
+          "created": 401,
+          "visible": 401,
+          "containers": 11,
+          "images": 360
+        },
+        "hud": {
+          "created": 307,
+          "visible": 307,
+          "containers": 7,
+          "images": 298
+        },
+        "effects": {
+          "created": 511,
+          "visible": 0,
+          "containers": 11,
+          "images": 500
+        }
+      },
+      "dynamic": 3422,
+      "expectedCreated": 3423,
+      "expectedInitialVisible": 2912,
+      "expectedPeakVisible": 3423,
+      "fit": {
+        "rawPrimitives": 600,
+        "emittedImages": 677,
+        "sourceSha256": "4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e",
+        "packSha256": "1e7fc7a8bdfd7685d7ee69193c2dafef0905db8c44e6bf56444bd5cd6dee8c2f",
+        "packBytes": 200927
+      },
+      "modules": {
+        "local": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "partner": {
+          "created": 693,
+          "visible": 693,
+          "containers": 15,
+          "images": 677
+        },
+        "enemies": {
+          "created": 817,
+          "visible": 817,
+          "containers": 21,
+          "images": 792
+        },
+        "hand": {
+          "created": 401,
+          "visible": 401,
+          "containers": 11,
+          "images": 360
+        },
+        "hud": {
+          "created": 307,
+          "visible": 307,
+          "containers": 7,
+          "images": 298
+        },
+        "effects": {
+          "created": 511,
+          "visible": 0,
+          "containers": 11,
+          "images": 500
+        }
+      },
+      "seats": [
+        {
+          "seat": 1,
+          "playerId": "A"
+        },
+        {
+          "seat": 2,
+          "playerId": "B"
+        }
+      ],
+      "view": "B",
+      "observed": {
+        "samples": [
+          {
+            "time": 0,
+            "frame": 0,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304,
+            "paintEntries": 2842
+          },
+          {
+            "time": 1.001,
+            "frame": 1,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 2.002,
+            "frame": 2,
+            "created": 3423,
+            "visible": 2872,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 3.0029999999999997,
+            "frame": 3,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 4.004,
+            "frame": 4,
+            "created": 3423,
+            "visible": 3423,
+            "containers": 81,
+            "images": 3304,
+            "paintEntries": 3342
+          },
+          {
+            "time": 5.004999999999999,
+            "frame": 5,
+            "created": 3423,
+            "visible": 0,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 6.0059999999999985,
+            "frame": 6,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 7.006999999999998,
+            "frame": 7,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 8.007999999999997,
+            "frame": 8,
+            "created": 3423,
+            "visible": 2872,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 9.008999999999997,
+            "frame": 9,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 10.009999999999996,
+            "frame": 10,
+            "created": 3423,
+            "visible": 3423,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 11.010999999999996,
+            "frame": 11,
+            "created": 3423,
+            "visible": 0,
+            "containers": 81,
+            "images": 3304
+          },
+          {
+            "time": 12.011999999999995,
+            "frame": 12,
+            "created": 3423,
+            "visible": 2912,
+            "containers": 81,
+            "images": 3304
+          }
+        ],
+        "hostStartRpcMs": 1817.2780330000023,
+        "viewPlayerIndex": 2,
+        "playerCount": 2,
+        "canvas": [
+          1280,
+          720
+        ],
+        "logs": [
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB ready view=B",
+            "time": 0
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 1.001
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 2.002
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 3.0029999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 4.004
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 5.004999999999999
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 6.0059999999999985
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=1",
+            "time": 7.006999999999998
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=2",
+            "time": 8.007999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=3",
+            "time": 9.008999999999997
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=4",
+            "time": 10.009999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=5",
+            "time": 11.010999999999996
+          },
+          {
+            "source": "client",
+            "level": "info",
+            "text": "COOP_LAB phase=0",
+            "time": 12.011999999999995
+          }
+        ],
+        "screenshot": {
+          "canvasId": "mobile-16-9",
+          "frame": 0,
+          "time": 0,
+          "clockMode": "manual",
+          "width": 1280,
+          "height": 720,
+          "pixelWidth": 1280,
+          "pixelHeight": 720,
+          "assetWarnings": [],
+          "sha256": "30262e62c5660591cfdfb820729b9b372ce561276939bd1e019dc1bf2d6c80df"
+        },
+        "peakVisible": 3423,
+        "simulator": "PASS",
+        "exports": [
+          {
+            "filename": "stress-600-B · 服务器控件模板.gia",
+            "bytes": 1371,
+            "sha256": "7ff0519b8dd5c17e2208727e72bdd7ae5d56c4b034067d21f8353bc6eaee1073",
+            "warningCount": 2,
+            "warningCategories": {
+              "当前服务器控件 GIA 不包含 1 个 Lua 脚本的源码；请使用「资产包 GIA 整合包」，或另行导入脚本包并核对挂载。": 1,
+              "新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 1
+            }
+          },
+          {
+            "filename": "stress-600-B · 客户端控件模板.gia",
+            "bytes": 2982233,
+            "sha256": "617460386bd7ba7e4d6ef99d0c4afe89796db9b527f577142f237bf59d5109ff",
+            "warningCount": 13,
+            "warningCategories": {
+              "新客户端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。": 6,
+              "垂直居中按推定值导出，尚待实机确认。": 7
+            }
+          },
+          {
+            "filename": "stress-600-B · 脚本.gia",
+            "bytes": 6384,
+            "sha256": "ebee9b568643fae39ad28a3a4ecd34b2acbc9408bae7a3427ea5f86ec7c5a733",
+            "warningCount": 1,
+            "warningCategories": {
+              "脚本挂载关系不进入 GIA：官方 script.gia 只含映射（ID/名称/路径/源码），导入后需重新挂载。": 1
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
