@@ -1,0 +1,19 @@
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ok pc11 1 - pre-run and same-map menu hide and reject redundant route
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ok pc11 2 - camp menu route remains reachable and returns in one Back without stale input
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+...docs/evidence/develop-pc11-navigation-20261119/probe.lua:24: attempt to index a nil value (field 'listeners')
+stack traceback:
+	...docs/evidence/develop-pc11-navigation-20261119/probe.lua:24: in upvalue 'release'
+	...docs/evidence/develop-pc11-navigation-20261119/probe.lua:28: in upvalue 'tap'
+	...docs/evidence/develop-pc11-navigation-20261119/probe.lua:81: in local 'fn'
+	...docs/evidence/develop-pc11-navigation-20261119/probe.lua:48: in local 'test'
+	...docs/evidence/develop-pc11-navigation-20261119/probe.lua:75: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

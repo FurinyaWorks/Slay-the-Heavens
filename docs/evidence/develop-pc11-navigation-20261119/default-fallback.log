@@ -1,0 +1,10 @@
+ABYSS_RUN seed=1 source=explicit
+ok pc11 1 - pre-run and same-map menu hide and reject redundant route
+ABYSS_RUN seed=1 source=explicit
+ok pc11 2 - camp menu route remains reachable and returns in one Back without stale input
+ABYSS_RUN seed=1 source=explicit
+PC11_DEFAULT_FALLBACK_PASS
+ok pc11 3 - profile route ownership exposes the current official duplicate and retains fallback
+ABYSS_RUN seed=1 source=explicit
+ok pc11 4 - node title round trips preserve live session and do not invoke platform settlement
+PC11_CURRENT_OBSERVATIONS_PASS 4 profile=default

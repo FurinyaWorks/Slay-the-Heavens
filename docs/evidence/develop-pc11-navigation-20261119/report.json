@@ -1,0 +1,80 @@
+{
+  "baseCommit": "b1669c6db9d268f897f5380523bb82595279cdcf",
+  "baseTree": "3bb61d1a4f8e5300a729fbfbe1faafcc78726dde",
+  "node": "v24.22.1",
+  "platform": "linux",
+  "lfsInputs": {
+    "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png": {
+      "sha256": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+      "bytes": 17710
+    },
+    "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png": {
+      "sha256": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+      "bytes": 18329
+    }
+  },
+  "boundary": "Current-source offline Host/navigation only; no official device, GIL, ready, combat or two-act proof",
+  "profiles": {
+    "default-fallback": {
+      "observations": "4/4",
+      "singleRouteEntryRequirement": "PASS",
+      "generated": {
+        "abyss_art_features.lua": "1323fbeb388563db4ae50198d4d231edeec8d337ce95ea7288bde014a6bce91e",
+        "abyss_component_binding.lua": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+        "abyss_data.lua": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+        "abyss_map_controls.lua": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+        "abyss_map_layout.lua": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+        "abyss_menu_background_asset.lua": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+        "abyss_monster_actor_binding.lua": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+        "abyss_monster_art_data.lua": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+        "abyss_narrative.lua": "8e7b8abe0d8390fbd535434818fad709ed7cb7b10b0eb62d8d9699fba4f5cd48",
+        "abyss_original_v4_data.lua": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+        "abyss_presentation.lua": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+        "abyss_ready_card_assets.lua": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+        "abyss_ready_card_binding.lua": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+        "abyss_theme.lua": "bb81179d37b73c3fe7a707d929c645c68ec8fdf2993e493ea7891cb9e2a21ca1",
+        "abyss_traveler_portrait_assets.lua": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c",
+        "abyss_ui_layout.lua": "932b94763870fdff25485f90a4ef98078a74b2567762c610203e59564967bad5",
+        "abyss_ui_profile.lua": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69",
+        "abyss_ui_templates.lua": "4b35600d348dfff390b3b77d01f6fb960adf29d537e63212e6de9efbf335e6c0",
+        "abyss_v25_card_assets.lua": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+        "game-ui.json": "467566fe5f7433175c3f4258c0af4fc20bc708c66592cff1399a91bac1b9bbec"
+      }
+    },
+    "official-assets-nonrelease": {
+      "observations": "4/4",
+      "singleRouteEntryRequirement": "FAIL",
+      "generated": {
+        "abyss_art_features.lua": "30c57fdb2a8d739ae6d523973f10ebbc1d7e2c55915fef669af56cb86cf74d9b",
+        "abyss_component_binding.lua": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+        "abyss_data.lua": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+        "abyss_map_controls.lua": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+        "abyss_map_layout.lua": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+        "abyss_menu_background_asset.lua": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+        "abyss_monster_actor_binding.lua": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+        "abyss_monster_art_data.lua": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+        "abyss_narrative.lua": "8e7b8abe0d8390fbd535434818fad709ed7cb7b10b0eb62d8d9699fba4f5cd48",
+        "abyss_original_v4_data.lua": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+        "abyss_presentation.lua": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+        "abyss_ready_card_assets.lua": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+        "abyss_ready_card_binding.lua": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+        "abyss_theme.lua": "0b4dccd04f0ab2667f052ab4c267a8a48a6cc8d800c0aaaa5ca60d6182991b83",
+        "abyss_traveler_portrait_assets.lua": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb",
+        "abyss_ui_layout.lua": "e171dd02d368614c322c2abdcb9078ea4611be7a6137f70434c0c90670340e66",
+        "abyss_ui_profile.lua": "18dca490638f500f0e97c6e1463310b4f2e88f59c1754de8faad49ac140d3e8a",
+        "abyss_ui_templates.lua": "3baf7555847ae548d7fe9ca78fd28c6093ad5d2e29da2d4a14aadbf192260974",
+        "abyss_v25_card_assets.lua": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+        "game-ui.json": "72725f195d15431b1edfc557c8208cceda93a68d350ca59c83e7b1cdb61d4a31"
+      }
+    }
+  },
+  "inputs": {
+    "src/lua/abyss_game_ui_input.lua": "b3e87c57b5b8940ae3ccf5bba323074d4f0cad1d978233105c772f2035d8db47",
+    "src/lua/abyss_game_ui_navigation_view.lua": "5f1011667a49bf2726250be24949a411efc0b3747a57b4207f168edc47578b2d",
+    "src/lua/abyss_game_ui_overlays.lua": "c576f46a30c8e954a856fc91a38f25f8abb576a5423378e3a4fc28c9e3aa6b00",
+    "tests/lua/support/game_ui_fixture.lua": "a6ee3fa20ff4211d5ae5a4236f0e65bfb68dd7e8880ed3ba3eeb5314daa387f3",
+    "tests/lua/support/map_routes.lua": "493ded9796bae666af2929e61430f099942f60e28beb90c651aa588c329741e8",
+    "docs/evidence/develop-pc11-navigation-20261119/probe.lua": "3b635abc0898571243754193a7f55c8abec1bafd01bcd9c2eb5ab3ec05a014c1",
+    "docs/evidence/develop-pc11-navigation-20261119/run.mjs": "dee3598c3f3b4f873010d7014c0e1796e5afb4d25174b818feacb98c7a19d521"
+  }
+}

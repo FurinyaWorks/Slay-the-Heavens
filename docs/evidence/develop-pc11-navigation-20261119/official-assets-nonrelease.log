@@ -1,0 +1,21 @@
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ok pc11 1 - pre-run and same-map menu hide and reject redundant route
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ok pc11 2 - camp menu route remains reachable and returns in one Back without stale input
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+PC11_SINGLE_ENTRY_REQUIREMENT_FAIL: official runRoute AND runMenu/map are reachable
+ok pc11 3 - profile route ownership exposes the current official duplicate and retains fallback
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_RUN seed=1 source=explicit
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+ok pc11 4 - node title round trips preserve live session and do not invoke platform settlement
+PC11_CURRENT_OBSERVATIONS_PASS 4 profile=official-assets-first
