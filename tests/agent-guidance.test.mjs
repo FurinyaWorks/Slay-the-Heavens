@@ -70,12 +70,14 @@ test('small adapters resolve links relative to their own directory', t => {
 });
 test('navigation resolves Markdown headings and rejects stale fragments', t => {
   const result = fixture(t, {
-    'AGENTS.md': '# Project\n[Self](#project)\n[Heading](docs/guide.md#工具索引)\n[Second](docs/guide.md#工具索引-1)\n[Missing](docs/guide.md#missing)\n[Sample](docs/guide.md#sample)\n',
-    'docs/guide.md': '## 工具索引\n## 工具索引\n```md\n## Sample\n```\n',
+    'AGENTS.md': '# Project\n[Self](#project)\n[Heading](docs/guide.md#工具索引)\n[Second](docs/guide.md#工具索引-1)\n[After](docs/guide.md#after)\n[Missing](docs/guide.md#missing)\n[Sample](docs/guide.md#sample)\n[Example](docs/guide.md#example)\n[Unclosed](docs/guide.md#unclosed)\n',
+    'docs/guide.md': '## 工具索引\r\n## 工具索引\r\n```md\r\n## Sample\r\n````\r\n## After\r\n~~~\r\n## Example\r\n~~~\r\n~~~\r\n## Unclosed\r\n',
   });
   assert.deepEqual(result.errors, [
     'AGENTS.md: invalid local link docs/guide.md#missing',
     'AGENTS.md: invalid local link docs/guide.md#sample',
+    'AGENTS.md: invalid local link docs/guide.md#example',
+    'AGENTS.md: invalid local link docs/guide.md#unclosed',
   ]);
 });
 test('both line and Unicode character budgets fail closed', t => {

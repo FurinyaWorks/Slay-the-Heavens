@@ -12,8 +12,19 @@ const outside = path => path === '..' || path.startsWith('../') || path.startsWi
 
 function headingIds(source) {
   const ids = new Set();
-  const withoutCode = source.replace(/^ *(`{3,}|~{3,})[^\n]*\n[\s\S]*?^ *\1 *$/gm, '');
-  for (const [, heading] of withoutCode.matchAll(/^ {0,3}#{1,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$/gm)) {
+  let fence;
+  for (const line of source.split(/\r\n?|\n/)) {
+    const [, marker, rest] = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line) ?? [];
+    if (fence) {
+      if (marker?.[0] === fence[0] && marker.length >= fence.length && /^[ \t]*$/.test(rest)) fence = undefined;
+      continue;
+    }
+    if (marker && (marker[0] === '~' || !rest.includes('`'))) {
+      fence = marker;
+      continue;
+    }
+    const [, heading] = /^ {0,3}#{1,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$/.exec(line) ?? [];
+    if (heading === undefined) continue;
     const slug = heading.trim().toLowerCase().replace(/[^\p{L}\p{M}\p{N}_ \t-]/gu, '').replace(/[ \t]/g, '-');
     let id = slug;
     for (let suffix = 1; ids.has(id); suffix++) id = `${slug}-${suffix}`;

@@ -70,7 +70,7 @@ export function releaseBootstrapCiSource(path,source,before){
 function guidanceBefore(path,source){
  if(path==='scripts/check-agent-guidance.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
   const lf=norm(source),sha=hash(lf),sliceGuardSha='11be776ae6439e6da881571324707944475c5ef7e34ec482f8994dd47bd86af0';
-  const anchorValidationSha='b2078e07e261450972581c6ecbd23314ce19ca34f810eac99d30820120aa6d20';
+  const anchorValidationSha='afe7bd73f6e26168e3241e249a77e457b020eabf55d1b35483a38ea18e6abcd6';
   if(sha===sliceGuardSha||sha===anchorValidationSha){
    const checker=sha===sliceGuardSha?lf:norm(readFileSync(new URL('../fixtures/guidance-checker-7a3d1bba.txt',import.meta.url),'utf8'));
    assert.equal(hash(checker),sliceGuardSha,'complete guidance checker before anchor validation');
