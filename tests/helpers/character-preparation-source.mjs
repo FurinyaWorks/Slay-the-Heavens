@@ -1,3 +1,4 @@
+import {beforeCardCancelSource} from './card-cancel-notice-source.mjs';
 import {beforeSelectorSource} from './character-selector-source.mjs';
 import {beforePotionTextSource} from './potion-text-source.mjs';
 import {beforeFatalBgmSource} from './fatal-bgm-source-continuation.mjs';
@@ -32,6 +33,7 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   if (!Object.hasOwn(packet.production, path)) {
+    source = beforeCardCancelSource(path, source, read);
     source = beforePotionTextSource(path, beforeSelectorSource(path, source, read), read);
     return beforeEndingTerminalSource(path, beforeFatalBgmSource(path, source, read), read);
   }

@@ -355,6 +355,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             services.cancelCardInputs()
             self.gesture,self.carry,self.selected,self.hover = nil,nil,nil,nil
             self.suppressClick = true
+            services.notice("")
             self:render()
             return true
         end)

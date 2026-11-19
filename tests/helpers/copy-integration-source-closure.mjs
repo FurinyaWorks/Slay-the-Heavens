@@ -26,7 +26,9 @@ const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
 assert.equal(predecessor[runtime],'ee54191f327d412a5e37a76ff236af6f4aac692e51884a0e3afd33fe62e427e4','fatal BGM helper copy predecessor');
 const files=Object.freeze({
  ...predecessor,
- [runtime]:'55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99',
+ [runtime]:'edced658855cc25f9ac73ac631206d0de96f2b1f5c85e8ec806b61762b3ad061',
+ 'tests/helpers/card-cancel-notice-source.mjs':'0c8ca596c52cd39b2b3e47a64895864ccb6d45f670c98c3bd1d5095e6d882c39',
+ 'tests/helpers/card-cancel-notice-source.json.gz':'9f2c65a557e96d2cece4f568135d42521dbba88760af6acfeba5797ccd85fe1b',
  'tests/helpers/fatal-bgm-source-continuation.mjs':'c0a1f30805b3c5c0680888ee9de4ff77cef2bc8a729271d5ff7f967dada02382',
  'tests/fixtures/fatal-bgm-e65-source.json.gz':'3e560e461232785753f5a574732ec834b19c51cfd700f09cce212009dd4a22fb',
  'tests/helpers/exact-source-continuation.mjs':'9046457a50fa3c137985906423be546424287dc5a06ef940f6ffbeb553d63ccf',

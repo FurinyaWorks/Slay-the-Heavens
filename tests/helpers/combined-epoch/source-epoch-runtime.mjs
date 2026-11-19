@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {projectFatalBgmSource,authorizeFatalBgmSource} from '../fatal-bgm-source-continuation.mjs';
 import {projectSelectorSource,authorizeSelectorSource} from '../character-selector-source.mjs';
+import {projectCardCancelSource,authorizeCardCancelSource} from '../card-cancel-notice-source.mjs';
 import {projectPotionTextSource,authorizePotionTextSource} from '../potion-text-source.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -110,10 +111,15 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  };
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
+ function projectCurrentSource(path, source, binding) {
+  const previous = projectFatalBgmSource(path, source, binding);
+  const selector = projectSelectorSource(path, previous, binding);
+  return projectPotionTextSource(path, projectCardCancelSource(path, selector, binding), binding);
+ }
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const inputSource=source;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
-  source=projectPotionTextSource(path,projectSelectorSource(path,projectFatalBgmSource(path,source,current),current),current);
+  source=projectCurrentSource(path,source,current);
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
   if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return inputSource;
@@ -122,12 +128,13 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];samples.push([owner,actual,binding]);
-   actual=projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding);
+   actual=projectCurrentSource(owner,actual,binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   authorizeFatalBgmSource(path,inputSource,current,samples,readSource);
   authorizeSelectorSource(path,inputSource,current,samples,readSource);
   authorizePotionTextSource(path,inputSource,current,samples,readSource);
+  authorizeCardCancelSource(path,inputSource,current,samples,readSource);
   return before.source;
  }
  function combinedReader(readSource=readLive,target){
