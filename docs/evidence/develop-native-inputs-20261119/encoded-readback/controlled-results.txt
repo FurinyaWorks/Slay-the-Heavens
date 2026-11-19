@@ -1,0 +1,13 @@
+✔ physical paths, mount, payload bindings and modules pass on controlled inputs (7.867021ms)
+✔ strict direct traversal rejects reference despite apparent descendant (1.33214ms)
+✔ missing target, missing physical id, duplicate sibling and terminal alias all fail closed (2.624802ms)
+✔ receipt rejects changed map bytes, wrong commit, dirty tree, and official-assets lab profile (4.391471ms)
+✔ missing mount, replaced module or forged build marker are rejected (1.806522ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 227.812313
