@@ -13,6 +13,8 @@ const continuations = new Map(Object.entries(JSON.parse(gunzipSync(bytes))).map(
   return [path,exactSourceContinuation(row)];
 }));
 
+export const v2UiHudSourcePaths = Object.freeze([...continuations.keys()]);
+
 export function projectV2UiHudSource(path, source, binding) {
   return continuations.get(path)?.project(path,source,binding) ?? source;
 }
