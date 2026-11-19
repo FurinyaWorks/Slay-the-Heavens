@@ -53,7 +53,9 @@ jobs:
           CI_LFS_TOKEN: ${{ github.token }}
         run: node scripts/ci-media-lfs.mjs
       - name: Cheap governance and syntax preflight
-        run: npm run check:guidance && node scripts/check-ui-references.mjs --hosted && npm run verify:backlog && npm run check:syntax
+        run: npm run check:guidance && npm run verify:backlog && npm run check:syntax
+      - name: Validate versioned UI references
+        run: node scripts/check-ui-references.mjs --hosted
       - name: Enforce existing changed Lua quality ratchet
         env:
           QUALITY_RATCHET_BASE: ${{ inputs.base_sha }}
