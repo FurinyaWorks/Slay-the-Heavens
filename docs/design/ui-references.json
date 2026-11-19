@@ -20,7 +20,8 @@
       "note": "Owner 定稿，含背景、双语标题、两枚斜切按钮及高亮。原生还原。",
       "codePaths": [
         "scripts/menu-red-scene.mjs",
-        "src/lua/abyss_game_ui_menu_view.lua"
+        "src/lua/abyss_game_ui_menu_view.lua",
+        "src/lua/abyss_v25_menu_view.lua"
       ],
       "themeKeys": [
         "menuPresentation"
@@ -71,7 +72,7 @@
       "note": "早期菜单状态规范。"
     },
     {
-      "codePath": "scripts/sts-character-select-layout.mjs",
+      "codePath": "scripts/character-selection-composition.mjs",
       "targetVersion": "v2.0.0",
       "state": "details",
       "revision": "2026-11-19",
@@ -87,15 +88,13 @@
       "note": "批准的是原作左侧信息构成及局部半透明板。外部链接保存原图，生产资产沿用原生 UI。",
       "codePaths": [
         "scripts/character-ui-layout.mjs",
-        "scripts/v25-character-layout.mjs"
-      ],
-      "themeKeys": [
-        "layout.stsCharacter"
+        "scripts/v25-character-layout.mjs",
+        "scripts/noncombat-v25-layout.mjs"
       ],
       "source": "https://interfaceingame.com/screenshots/slay-the-spire-choose-your-character/"
     },
     {
-      "codePath": "scripts/sts-character-select-layout.mjs",
+      "codePath": "scripts/character-selection-composition.mjs",
       "targetVersion": "v2.0.0",
       "state": "details",
       "revision": "reference-ui-lab",
@@ -109,7 +108,7 @@
       "note": "旧选角原型。"
     },
     {
-      "codePath": "scripts/sts-character-select-layout.mjs",
+      "codePath": "scripts/character-selection-composition.mjs",
       "targetVersion": "v2.0.0",
       "state": "characterPanel",
       "revision": "develop",
@@ -215,9 +214,9 @@
       "note": "复用就绪驱动。待补普通页面同候选转场取证。"
     },
     {
-      "codePath": "scripts/sts-neow-choice-layout.mjs",
+      "codePath": "scripts/noncombat-neow-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "neowPanel",
+      "state": "neowFigure",
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.3",
@@ -227,13 +226,14 @@
       ],
       "note": "以现有祝福界面取证，待补当前截图。",
       "codePaths": [
-        "scripts/sts-neow-guide-layout.mjs"
+        "scripts/sts-neow-guide-layout.mjs",
+        "scripts/sts-neow-choice-layout.mjs"
       ]
     },
     {
-      "codePath": "scripts/sts-neow-choice-layout.mjs",
+      "codePath": "scripts/noncombat-neow-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "neowPanel",
+      "state": "neowFigure",
       "revision": "2026-11-10",
       "status": "SUPERSEDED",
       "backlogTask": "TASK-103.3",
@@ -277,7 +277,7 @@
     {
       "codePath": "scripts/v25-map-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "mapBoss",
+      "state": "boss",
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-4.13",
@@ -290,7 +290,7 @@
     {
       "codePath": "scripts/v25-map-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "mapBoss",
+      "state": "boss",
       "revision": "2026-11-10",
       "status": "SUPERSEDED",
       "backlogTask": "TASK-4.13",
@@ -362,7 +362,7 @@
     {
       "codePath": "scripts/sts-reward-row-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "reward",
+      "state": "rewardList",
       "revision": "develop",
       "status": "NEEDS_REF",
       "backlogTask": "TASK-103.2",
@@ -373,7 +373,7 @@
     {
       "codePath": "scripts/v25-node-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "shop",
+      "state": "shopView",
       "revision": "develop",
       "status": "NEEDS_REF",
       "backlogTask": "TASK-103.7",
@@ -384,7 +384,7 @@
     {
       "codePath": "scripts/v25-node-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "camp",
+      "state": "campView",
       "revision": "develop",
       "status": "NEEDS_REF",
       "backlogTask": "TASK-103.2",
@@ -395,7 +395,7 @@
     {
       "codePath": "scripts/v25-node-layout.mjs",
       "targetVersion": "v2.0.0",
-      "state": "event",
+      "state": "eventView",
       "revision": "develop",
       "status": "NEEDS_REF",
       "backlogTask": "TASK-103.2",
@@ -404,9 +404,9 @@
       "note": "核对选项、结果及说明。"
     },
     {
-      "codePath": "scripts/v25-result-layout.mjs",
+      "codePath": "src/lua/abyss_game_ui_menu_view.lua",
       "targetVersion": "v2.0.0",
-      "state": "resultPanel",
+      "state": "result",
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103",
