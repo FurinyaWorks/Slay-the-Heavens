@@ -1,0 +1,81 @@
+{
+  "base": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "tree": "420171af6a98385c3641cf7d59fbb8f0e53a50d0",
+  "trackedEntryCount": 10476,
+  "flags": "all H, no skip-worktree or assume-unchanged",
+  "sparseCheckout": "false",
+  "status": "",
+  "gitSourceIdentity": {
+    "sourceCommit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+    "sourceDirty": false
+  },
+  "materialized": [
+    {
+      "path": "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+      "bytes": 81155,
+      "sha256": "e23d1daac5e7046f9119edbd6179fd16fa31abd245c24d395adfd1af31a91a43",
+      "gitBlob": "aa91d6a75b185b9ed1c9f1eb2deb82b066752496",
+      "filteredGitBlob": "aa91d6a75b185b9ed1c9f1eb2deb82b066752496",
+      "attributes": [
+        "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png: filter: lfs",
+        "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png: diff: lfs",
+        "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png: merge: lfs",
+        "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png: text: unset"
+      ]
+    },
+    {
+      "path": "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif",
+      "bytes": 1852035,
+      "sha256": "0449a8b3094f0a628f493b27157ae2d8b27d646ceb9541f6f5e9ce98a9ebeff1",
+      "gitBlob": "70057f4a6542c52c2405c21a29d68398bb0cdc89",
+      "filteredGitBlob": "70057f4a6542c52c2405c21a29d68398bb0cdc89",
+      "attributes": [
+        "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif: filter: lfs",
+        "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif: diff: unset",
+        "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif: merge: lfs",
+        "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif: text: unset"
+      ]
+    },
+    {
+      "path": "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png",
+      "bytes": 1092164,
+      "sha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+      "gitBlob": "bfefff2d90289ef3c24363107ff3a294cba4b2a5",
+      "filteredGitBlob": "bfefff2d90289ef3c24363107ff3a294cba4b2a5",
+      "attributes": [
+        "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png: filter: lfs",
+        "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png: diff: unset",
+        "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png: merge: lfs",
+        "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png: text: unset"
+      ]
+    },
+    {
+      "path": "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png",
+      "bytes": 17710,
+      "sha256": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+      "gitBlob": "246f556359184e5494dd7881971e39e37b5a26a7",
+      "filteredGitBlob": "246f556359184e5494dd7881971e39e37b5a26a7",
+      "attributes": [
+        "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png: filter: lfs",
+        "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png: diff: unset",
+        "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png: merge: lfs",
+        "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png: text: unset"
+      ]
+    },
+    {
+      "path": "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png",
+      "bytes": 18329,
+      "sha256": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+      "gitBlob": "35c3492634e763473c9a4101b5abb0078525858e",
+      "filteredGitBlob": "35c3492634e763473c9a4101b5abb0078525858e",
+      "attributes": [
+        "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png: filter: lfs",
+        "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png: diff: unset",
+        "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png: merge: lfs",
+        "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png: text: unset"
+      ]
+    }
+  ],
+  "sharedMetadataUnchanged": true,
+  "scope": "independent temporary index and LFS storage; no shared worktree/index/global config mutation; no GIL/build/client proof"
+}
