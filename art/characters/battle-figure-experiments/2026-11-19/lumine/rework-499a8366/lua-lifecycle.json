@@ -1,0 +1,59 @@
+{
+  "scope": "Exact Lua bodies read from fixture-derived GIL, existing Fengari/native API mock verification, NOT official import or device runtime",
+  "gilSHA256": "36ba71b53f79256c52c22f0547fc33aea60b88a7a781120393250d682b22e3c6",
+  "literalSHA256": "63a886837c945c4f09404ca4941cfd9021cd4dbf5d42fdeace534f8eb4533418",
+  "checkerGitBlob": "ced76db25cd9e386d9c2dd683ea8f0aeef1b35aa",
+  "templateIndex": 1073741845,
+  "verifiedImages": 447,
+  "extraMasks": 0,
+  "results": [
+    {
+      "group": "LumineArtBatch01",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch02",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch03",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch04",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch05",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch06",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch07",
+      "images": 60,
+      "verifiedOrderedControlRows": 60,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    },
+    {
+      "group": "LumineArtBatch08",
+      "images": 27,
+      "verifiedOrderedControlRows": 27,
+      "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "inputSHA256": "bc28cb3c2b2e34c2466af7d618100c411e1b9ef7d4b0d326e10309bd0bb67114",
+  "cropLTRB": [
+    0,
+    325,
+    221,
+    866
+  ],
+  "cropIsolationPolygon": [
+    [
+      0,
+      0
+    ],
+    [
+      191,
+      0
+    ],
+    [
+      191,
+      175
+    ],
+    [
+      190,
+      198
+    ],
+    [
+      204,
+      240
+    ],
+    [
+      202,
+      260
+    ],
+    [
+      209,
+      278
+    ],
+    [
+      205,
+      326
+    ],
+    [
+      211,
+      331
+    ],
+    [
+      220,
+      370
+    ],
+    [
+      220,
+      541
+    ],
+    [
+      0,
+      541
+    ]
+  ],
+  "maxRgbThreshold": 27,
+  "styleReferenceSHA256": "2e01270dffe694490a4632215f7cf382af213a11a23bd39a377201043df9a03a",
+  "lowDetailReferenceSHA256": "c00af2225a2d02dba87ae747828839dc0b01380d734f1dd5cbfc8f9336084d34",
+  "traceLevel": 6,
+  "fit": {
+    "cape": 26,
+    "legs": 63,
+    "body": 100,
+    "arm": 22,
+    "sword": 50,
+    "face": 186
+  },
+  "nativeControls": 447,
+  "assets": {
+    "100003": 447
+  },
+  "canvas": [
+    133,
+    133
+  ],
+  "versions": {
+    "opencv": "4.12.0",
+    "shapely": "2.1.2",
+    "numpy": "2.3.5",
+    "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546"
+  },
+  "files": {
+    "editable.json": {
+      "bytes": 270404,
+      "sha256": "514d4a560e49dc2abc2a642e5653ab970bd29c3fb3aa370bf685f7c588a0b175"
+    },
+    "literal-drawing.json": {
+      "bytes": 76639,
+      "sha256": "63a886837c945c4f09404ca4941cfd9021cd4dbf5d42fdeace534f8eb4533418"
+    },
+    "native-4x.png": {
+      "bytes": 16469,
+      "sha256": "c6bb82b5c47586845e9fd4a568ddd521c3ca4ed676c666b8a138e5682737184c"
+    },
+    "native.gia": {
+      "bytes": 334478,
+      "sha256": "a47c89c1d3e4ac41a386d70c6754f71845127771c5525e692b8afd8386ab5097"
+    },
+    "native.lua": {
+      "bytes": 334423,
+      "sha256": "d40ee7a324c55b54d8c42b3dfec6bf0ee2e64d3cd5a1010ad0ca439754799c67"
+    },
+    "native.png": {
+      "bytes": 4331,
+      "sha256": "1b8b11540b7bd190180d202b0ba5e1f860b404b22ec5b9d81ffa324a83205326"
+    },
+    "runtime.lua": {
+      "bytes": 81260,
+      "sha256": "2ab5a54eff5d2e156976dfa62c7c3d8f8b35b4b4b9343c09070d52f164ae3997"
+    },
+    "source-4x.png": {
+      "bytes": 147715,
+      "sha256": "a3afcedc673f637c71d2a306b4f44c2ab607ceec87e5f3f62dd94785874c40fd"
+    },
+    "source.png": {
+      "bytes": 13727,
+      "sha256": "652b0893600f5d3291b82658764f2628775ee331d08410f320c6654a41c8da9e"
+    }
+  }
+}
