@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "reviewer": "independent coordinating session",
+  "scope": "focused current-source runtime reproduction only",
+  "reportedChecks": {
+    "sourceIdentity": "exact clean HEAD 62328bda for src/tests/scripts",
+    "entrypoint": ".artifacts/potion-scope/focused-native-click.lua using repository Lua runner",
+    "exit": 0,
+    "namedClick": "closed/consumed/energy5",
+    "anonymousClick": "remains/retained/energy3",
+    "both": "hand2/nil selection",
+    "originalFixture": {
+      "sourceCommit": "1e100dcea21cac88bcfe14a2e6bb2684819e174f",
+      "path": "tests/lua/potion_popup_click_payload.lua",
+      "sha256": "83b300f9550fd40f5b5f503785c1f42b5662c76db86d67e3d13683e747046119",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "firstFailure": "line 29",
+      "independentRerun": true
+    }
+  },
+  "result": "CONFIRMED_CURRENT_SOURCE_ANONYMOUS_CLICK_REJECTION",
+  "notClaimed": [
+    "all other #679 suite entries",
+    "verified migration",
+    "historical calibration",
+    "Full",
+    "device reproduction",
+    "PR or merge readiness"
+  ],
+  "provenance": "Independent session reported its completed checks before this preservation commit; this is the check receipt, not a fabricated raw process log."
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "path": "src/lua/abyss_battle_card_gestures.lua",
+    "baseBlob": "81eed260f3ad33aa042f3aecfbab0cf650ee5634",
+    "original679Blob": "fd2922d7734a4826a25b84f483143a252e4909da",
+    "pr741Blob": "282e3fa8c20710cbc050b11083c4083f44f6ef86"
+  },
+  {
+    "path": "src/lua/abyss_battle_potion_popup.lua",
+    "baseBlob": "7e858fd11141927cf6a5004b34ef018cff0e0f60",
+    "original679Blob": "f30106bd67da368ea40a6ba3f8f1a2d57874f4d6",
+    "pr741Blob": "7e858fd11141927cf6a5004b34ef018cff0e0f60"
+  },
+  {
+    "path": "src/lua/abyss_battle_ui.lua",
+    "baseBlob": "1dfefb14189dc33d34967aef98390a7f7e925ec2",
+    "original679Blob": "51ee6a07324acfdaa5db956715b31b46c1cfeb8b",
+    "pr741Blob": "1dfefb14189dc33d34967aef98390a7f7e925ec2"
+  }
+]

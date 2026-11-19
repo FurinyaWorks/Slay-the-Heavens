@@ -1,0 +1,82 @@
+{
+  "sourceCommit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "originalSource": "1e100dcea21cac88bcfe14a2e6bb2684819e174f",
+  "originalFixture": "tests/lua/potion_popup_click_payload.lua",
+  "originalFixtureSha256": "83b300f9550fd40f5b5f503785c1f42b5662c76db86d67e3d13683e747046119",
+  "originalResult": {
+    "exit": 1,
+    "firstFailure": "potion_popup_click_payload.lua:29: assertion failed"
+  },
+  "focusedControl": {
+    "exit": 0,
+    "namedClick": {
+      "menu": false,
+      "potion": null,
+      "energy": 5,
+      "hand": 2,
+      "selected": false
+    },
+    "anonymousClick": {
+      "menu": true,
+      "potion": "energy_potion",
+      "energy": 3,
+      "hand": 2,
+      "selected": false
+    },
+    "meaning": "anonymous Click after unique named Down/Up is rejected; not a proof of accidental card use"
+  },
+  "admission": "ALLOW TASK-38.4 is preliminary only; ownership overlap prevents claim",
+  "taskStatus": "To Do, Furinya, original AC unchanged",
+  "productionDelta": {
+    "files": 3,
+    "additions": 142,
+    "deletions": 28
+  },
+  "sourceScope": [
+    {
+      "path": "src/lua/abyss_battle_card_gestures.lua",
+      "baseBlob": "81eed260f3ad33aa042f3aecfbab0cf650ee5634",
+      "original679Blob": "fd2922d7734a4826a25b84f483143a252e4909da",
+      "pr741Blob": "282e3fa8c20710cbc050b11083c4083f44f6ef86"
+    },
+    {
+      "path": "src/lua/abyss_battle_potion_popup.lua",
+      "baseBlob": "7e858fd11141927cf6a5004b34ef018cff0e0f60",
+      "original679Blob": "f30106bd67da368ea40a6ba3f8f1a2d57874f4d6",
+      "pr741Blob": "7e858fd11141927cf6a5004b34ef018cff0e0f60"
+    },
+    {
+      "path": "src/lua/abyss_battle_ui.lua",
+      "baseBlob": "1dfefb14189dc33d34967aef98390a7f7e925ec2",
+      "original679Blob": "51ee6a07324acfdaa5db956715b31b46c1cfeb8b",
+      "pr741Blob": "1dfefb14189dc33d34967aef98390a7f7e925ec2"
+    }
+  ],
+  "activeOwnerReference": "https://github.com/FurinyaWorks/Slay-the-Heavens/pull/741#issuecomment-6999340636",
+  "decision": "HOLD_SHARED_GESTURES_OWNER; no production or test edits",
+  "archive": {
+    "bytes": 8341,
+    "sha256": "03c7577fa47cfe05f18c4d8261b752c6d77080449d9a2c399bd5fcc2aeaa5b3e",
+    "members": [
+      "active741-gesture-scope.patch",
+      "build-data.log",
+      "build-ui.log",
+      "focused-native-click.log",
+      "focused-native-click.lua",
+      "intake.log",
+      "npm-ci.log",
+      "original-payload-red.log",
+      "original679-three-owner-scope.patch",
+      "potion_popup_click_payload.lua",
+      "source-scope.json"
+    ]
+  },
+  "notRun": [
+    "Full",
+    "Hosted CI",
+    "GUI/client/device",
+    "GIL",
+    "implementation migration",
+    "source proof changes"
+  ]
+}

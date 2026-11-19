@@ -1,0 +1,9 @@
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK potion source=- target=- amount=0
+...9/.artifacts/potion-scope/potion_popup_click_payload.lua:29: assertion failed!
+stack traceback:
+	[JS]: in function 'assert'
+	...9/.artifacts/potion-scope/potion_popup_click_payload.lua:29: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
+Lua fixture .artifacts/potion-scope/potion_popup_click_payload.lua: 3910 ms

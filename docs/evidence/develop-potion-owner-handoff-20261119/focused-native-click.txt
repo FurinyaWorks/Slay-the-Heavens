@@ -1,0 +1,6 @@
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK potion source=- target=- amount=0
+POTION_NATIVE_CLICK named=true menu=false inventory=nil energy=5.0 hand=2 selected=nil payloadId=17
+ABYSS_RUN seed=1 source=explicit
+POTION_NATIVE_CLICK named=false menu=true inventory=energy_potion energy=3 hand=2 selected=nil payloadId=nil
+Lua fixture .artifacts/potion-scope/focused-native-click.lua: 5643 ms
