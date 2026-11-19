@@ -1,0 +1,10 @@
+ABYSS_RUN seed=1 source=explicit
+ok pc38 observation 1 - menu help remains reachable through current visible native listeners
+ABYSS_RUN seed=1 source=explicit
+ok pc38 observation 2 - abandon confirmation still opens help, blocks confirm, and returns to warning
+ABYSS_RUN seed=1 source=explicit
+ok pc38 observation 3 - repeated abandon cancellation preserves session; confirmation discards only the run
+ABYSS_RUN seed=1 source=explicit
+ok pc38 observation 4 - platform exit cancellation, failed settlement retry and duplicate suppression remain intact
+PC38_CURRENT_OBSERVATIONS_PASS 4
+PC38_REMOVAL_REQUIREMENT_FAIL: active runMenu/help and exitPanel/help still open guide

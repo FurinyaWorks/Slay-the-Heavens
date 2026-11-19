@@ -1,0 +1,12 @@
+ABYSS_RUN seed=1 source=explicit
+tests/lua/support/game_ui_fixture.lua:38: Native CursorArea has no interactable field; use raycastTarget
+stack traceback:
+	[JS]: in function 'assert'
+	tests/lua/support/game_ui_fixture.lua:38: in upvalue 'nativeField'
+	tests/lua/support/game_ui_fixture.lua:43: in metamethod '__index'
+	...61119/docs/evidence/develop-pc38-exit-20261119/probe.lua:9: in upvalue 'tap'
+	...61119/docs/evidence/develop-pc38-exit-20261119/probe.lua:27: in local 'fn'
+	...61119/docs/evidence/develop-pc38-exit-20261119/probe.lua:20: in local 'test'
+	...61119/docs/evidence/develop-pc38-exit-20261119/probe.lua:22: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
