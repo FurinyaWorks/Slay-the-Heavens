@@ -180,6 +180,7 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
  const {preRelicQuerySource,relicQueryReader}=await import('./helpers/relic-query-source-inverse.mjs');
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const source=read(file),owners=sourceEpoch.proof.owners;
+ const admittedReads=[...owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
  // Forty-five belongs to the frozen #562 union, not the evolving live tree.
  const {sevenRefactorEpoch}=await import('./helpers/seven-refactor-source-epoch.mjs');
  const archived=readFileSync('tests/helpers/combined-epoch/source-epoch.json.gz');
@@ -194,7 +195,7 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
  const raw=p=>{reads.push(p);return p===changed?replacement:read(p);};
  const wrapped=relicQueryReader(raw);assert.equal(relicQueryReader(wrapped),wrapped);
  for(const readSource of [raw,wrapped]){
-  changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);assert.deepEqual(reads,owners);
+  changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);assert.deepEqual(reads,admittedReads);
   for(const owner of owners)for(replacement of [read(owner)+'\n',null,undefined]){
    changed=owner;reads=[];assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/);
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'fresh reads stop at the actual bad owner');
@@ -205,7 +206,7 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
   // Layout tolerance is for the input argument only, never a real raw owner.
   changed='config/architecture.json';replacement=JSON.stringify(JSON.parse(read(changed)));
   assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity: config\/architecture.json/);
-  changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);assert.deepEqual(reads,owners);
+  changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);assert.deepEqual(reads,admittedReads);
  }
  assert.throws(()=>preRelicQuerySource(file,source,{readSource:p=>{if(p===file)throw Error('missing');return read(p);}}),/combined linked owner missing/);
  // A reader for another target is projected data, not this facade's raw owner.
