@@ -361,11 +361,11 @@ test('official selection keeps its approved 1600 background while battle and opt
  assert.match(portrait,/battlePixel=/);
  const inventory=portraitInventory(officialAssetFlags,{officialAssets:true});
  assert.equal(inventory.assets.some(a=>a.asset==='temporary-pixel-traveler'),false);
- assert.match(portrait,/battleApprovedIdle=/);
+ assert.match(portrait,/battleApprovedNative=/);
  const selected=inventory.assets.find(a=>a.asset==='lowpolyLumine');
- const fighting=inventory.assets.find(a=>a.asset==='traveler-geo/idle-approved-v1');
- assert.equal(fighting?.images,7303);
- assert.equal(fighting.motion,'approved-source-field-native-band-approximation');
+ const fighting=inventory.assets.find(a=>a.asset==='traveler-geo/portraits/lumine-native-v1');
+ assert.equal(fighting?.images,464);
+ assert.equal(fighting.motion,'shared-actor-root-only');
  assert.equal(inventory.selectionUses,'lowpolyLumine');assert.equal(selected?.images,1600);
  assert.notEqual(selected.sourceSha256,fighting.sourceSha256,'approved background and combat idle retain distinct source identities');
  assert.equal(inventory.assets.some(a=>a.asset==='traveler-geo/portraits/battle133-selection'),false);

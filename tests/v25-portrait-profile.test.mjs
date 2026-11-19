@@ -214,7 +214,7 @@ assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
 
-test('official selection retains its bounded cache while battle uses the approved idle and full-body literals remain available',()=>{
+test('official selection retains its bounded cache while battle uses the approved native figure and full-body literals remain available',()=>{
  withPortraitVm(`
 local selectionHost=tree();stage.children.characterPanel.children.lumineSelectionBackground=selectionHost;local frame=tree();rawset(frame,'sizeDeltaX',440)
 local note=tree();note.text=''
@@ -223,10 +223,10 @@ stage.children.characterPanel.children.details=tree({officialSelectionFigure=sel
 traveler:SetVisible(false)
 assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315,'full-source figure was replaced')
 assert(Asset.battlePixel.count==57 and #Asset.battlePixel.rows==57)
-local idle=assert(Asset.battleApprovedIdle)
-assert(idle.renderProfile=='approved-idle-v1' and idle.count==7303 and #idle.rows==7303)
-assert(#idle.bands==18 and #idle.bandByRow==7303 and idle.samplesPerCycle==20 and idle.period==2.2)
-assert(idle.sourceSha256=='32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de')
+local native=assert(Asset.battleApprovedNative)
+assert(native.renderProfile=='lowpoly-v1' and native.count==464 and #native.rows==464)
+assert(native.literalSha256=='73070e14234502e7a61b0be601b9ada017bb4d90b0f58cccd305673cd2fddfef')
+assert(native.runtimeV2 and native.cache and not native.bandByRow)
 local a=Portraits.new(stage,nil,{selectionAvatar=true,battlePortrait=true})
 assert(a:sync('menu',true,false,'ironclad'))
 for _=1,1000 do a:tick();if a:status().selection.phase=='ready' then break end end
@@ -240,8 +240,8 @@ end
 assert(a:sync('battle',false,false,'ironclad'))
 for _=1,1000 do a:tick();if a:status().battle.phase=='ready' then break end end
 local both=Images();local battle=a:status().battle
-assert(battle.phase=='ready' and battle.total==7303 and battle.owned==7459,'approved source did not reach its measured native cache')
-assert(#both==1600+7303,'selection and approved combat did not keep their exact independent image counts')
+assert(battle.phase=='ready' and battle.total==464 and battle.owned==473,'approved source did not reach its measured native cache')
+assert(#both==1600+464,'selection and approved combat did not keep their exact independent image counts')
 for i=1,1600 do assert(both[i]==selected[i],'battle replaced the selection cache');Equal(selectedTraces[i],selected[i].trace)end
 local generation=battle.generation;local complete=LiveCount()
 assert(a:sync('menu',true,false,'ironclad'));a:tick()
@@ -503,4 +503,57 @@ assert(a:syncResult('defeat')==false)
 assert(a:syncResult('defeat')==false,'failed result reported success on repeated sync')
 assert(a:status().result.phase=='failed' and not subject.visible and LiveCount()==0)
 `);
+});
+
+const drawingPath='art/characters/traveler-geo/portraits/battle133/lumine-native-v1.json';
+const pin='a0c792109a74f71be0a52d9a59f39828e1d4818ce8d1bba915606b984d89f831';
+
+test('approved Lumine official battle mounts the exact native drawing and retains its cheap cached lifecycle',()=>{
+ const raw=readFileSync(drawingPath,'utf8').replaceAll('\r\n','\n');
+ assert.equal(createHash('sha256').update(raw).digest('hex'),pin);
+ const data=JSON.parse(raw);
+ assert.equal(data.count,464);
+ assert.equal(data.rows.filter(r=>r[17]!==255).length,20);
+ assert.equal(data.rows.filter(r=>r[18]||r[19]).length,448);
+ withPortraitVm(`
+Asset.v25PortraitProfile=${toLua(v25PortraitRuntimeProfile(nativeTheme))}
+local data=assert(Asset.battleApprovedNative,'official battle module omitted approved native Lumine')
+local expected=${toLua(data.rows)}
+Equal(data.rows,expected)
+local owner=Portraits.new(stage,nil,{battlePortrait=true,selectionAvatar=false})
+assert(owner:sync('battle',false,false,'ironclad'))
+for i=1,120 do
+ owner:tick()
+ if owner:status().battle.phase=='ready' then break end
+end
+local q=owner:status().battle
+assert(q.phase=='ready' and q.owned==473 and LiveCount()==473,'battle did not mount exactly 464 images, 8 groups, 1 page: '..tostring(q.reason))
+local images=Images()
+Equal(figure.SetAnchoredPositionValue,Asset.v25PortraitProfile.battlePosition)
+Equal(figure.SetLocalScaleValue,{210/133,210/133,1})
+assert(#images==464,'incorrect image count')
+for i,c in ipairs(images)do
+ local r=expected[i]
+ assert(c.imageId==r[1] and c.imageSource=='static' and c.visible and c.active,'asset/state drift at '..i)
+ assert(c.parent.parent.parent==figure and c.parent.parent.isGroup,'render escaped dedicated host')
+ Equal(c.SetAnchoredPositionValue,{r[2],r[3]})
+ Equal(c.SetSizeDeltaValue,{r[4],r[5]})
+ Equal(c.SetPivotValue,{r[6],r[7]})
+ Equal(c.SetAnchorMinValue,{r[8],r[9]})
+ Equal(c.SetAnchorMaxValue,{r[10],r[11]})
+ Equal(c.SetLocalScaleValue,{r[12],r[13],1})
+ Equal(c.SetLocalRotationValue,{r[19],r[20],r[14]})
+ Equal(c.imageColor,{r[15],r[16],r[17],r[18]})
+end
+local writes={}
+for i,c in ipairs(controls)do writes[i]=#c.trace end
+for _=1,120 do owner:battlePose(0,0,1,1,1/60,'idle');owner:tick()end
+assert(#controls==473 and LiveCount()==473,'idle reallocated draw controls')
+for i,c in ipairs(controls)do assert(#c.trace==writes[i],'idle wrote child '..i)end
+assert(owner:sync('map',false,false,'ironclad') and not figure.visible,'leave battle failed to hide portrait')
+assert(LiveCount()==473 and #controls==473,'leave battle discarded its cache')
+assert(owner:sync('battle',false,false,'ironclad') and figure.visible,'return to battle failed to reveal portrait')
+assert(LiveCount()==473 and #controls==473,'return to battle rebuilt its cache')
+assert(owner:release() and LiveCount()==0,'release failed to retire complete native cache')
+`,{officialAssets:true});
 });
