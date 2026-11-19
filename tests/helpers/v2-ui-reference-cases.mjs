@@ -5,10 +5,10 @@ import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { sha256 } from '../scripts/evidence-files.mjs';
-import { indexPath, tablePath, renderTable } from '../scripts/render-ui-reference-table.mjs';
+import { sha256 } from '../../scripts/evidence-files.mjs';
+import { indexPath, tablePath, renderTable } from '../../scripts/render-ui-reference-table.mjs';
 
-const guidance = fileURLToPath(new URL('../scripts/check-ui-references.mjs', import.meta.url));
+const guidance = fileURLToPath(new URL('../../scripts/check-ui-references.mjs', import.meta.url));
 const menu = 'scripts/menu-layout.mjs', map = 'scripts/map-layout.mjs';
 const target = 'docs/design/targets/menu.png', old = 'docs/evidence/old-menu.png';
 const candidate = 'docs/design/targets/new-menu.png';
