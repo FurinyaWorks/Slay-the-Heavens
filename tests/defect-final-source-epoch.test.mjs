@@ -1,4 +1,4 @@
-import {sourceSlice,closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
+import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -11,9 +11,11 @@ import {defectFinalEpoch} from './helpers/defect-final-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.mjs';
 import {sourceEpoch as currentEpoch,preRoomUiEpoch as componentEpoch} from './helpers/combined-epoch/source-epoch.mjs';
-// The original50-owner source contracts retain the frozen Defect epoch;
-// Actual current68+28+merchant admission is independently exercised below.
-const readFileSync=(file,...args)=>preComponentUiCiSource(file,sourceSlice(file,diskReadFileSync(file,...args).replaceAll('\r\n','\n'),'encounterFormationPrior'));
+// Authenticate current sources and exact continuations before entering the frozen Defect epoch.
+const readFileSync=(file,...args)=>{
+ const source=diskReadFileSync(file,...args).replaceAll('\r\n','\n');
+ return preComponentUiCiSource(file,currentEpoch.preCombinedSource(file,source,{target:'encounterFormationPrior'}));
+};
 const path='src/lua/abyss_defect_final_cards.lua',proof=sourceEpoch.proof,prior=preDefectFinalEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
 test('Defect final outer epoch preserves every prior binding and exact frozen production byte',()=>{
@@ -175,9 +177,10 @@ test('current raw production retains the exact power-view owner and complete rel
  assert.deepEqual(menuRedEpoch.proof.owners,[...stsStyleEpoch.proof.owners,owner].sort());assert.equal(menuRedEpoch.proof.owners.length,105);
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
  assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(current.owners.length,116);
+ const admittedReads=[...current.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
  const expected=current.targets.develop.files[file].source;
- assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,current.owners);
+ assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,admittedReads);
  for(const replacement of [null,diskReadFileSync(owner,'utf8')+'\n',new Error('missing current power view')]){
   reads.length=0;
   assert.throws(()=>currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:path=>{if(path===owner){reads.push(path);if(replacement instanceof Error)throw replacement;return replacement;}return raw(path);}}),/combined linked owner/);

@@ -158,20 +158,30 @@ test('original Run and Nodes config closure rejects relabeled, missing and chang
 test('current Run architecture admission uses its declared target and rereads every raw owner on each call',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),owners=sourceEpoch.proof.owners;
+ // The #730 and #733 continuations revalidate their changed sources after
+ // the main closure. The potion text continuation needs no extra read here.
+ const recheckedOwners=['src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...owners,...recheckedOwners];
  // Independent complete Git config at the declared develop target d8a57cae,
  // not a hash obtained from the projector's own return value or current proof.
  const targetHash='0e75d9e1f08cfb7738215b9a31cce141f03cc2469077bce0db3376fe1f446a9c';
- let changed,replacement,reads=[];
- const reader=file=>{reads.push(file);if(file===changed){if(replacement instanceof Error)throw replacement;return replacement;}return readFileSync(file,'utf8');};
+ let changed,replacement,onlyOnReread=false,reads=[];
+ const reader=file=>{
+  const seen=onlyOnReread&&reads.includes(file);
+  reads.push(file);
+  if(file!==changed||(onlyOnReread&&!seen))return readFileSync(file,'utf8');
+  if(replacement instanceof Error)throw replacement;
+  return replacement;
+ };
  const project=source=>sourceEpoch.preCombinedSource(path,source,{target:'develop',readSource:reader});
  const accepted=project(raw);assert.equal(hash(accepted),targetHash);assert.notEqual(accepted,raw);
  assert.notEqual(hash(accepted),expected.combined,'current develop target is not the ancient Run target');
- assert.deepEqual(reads,owners,'complete fresh raw closure in admission order');
+ assert.deepEqual(reads,admittedReads,'complete fresh raw closure in admission order');
  const layers=JSON.parse(raw).layers;
  for(const name of [...run,...nodes,'abyss_max_hp_relics'])assert.equal(layers[name],'core','current registration: '+name);
  for(const name of battle)assert.equal(layers[name],'ui','current registration: '+name);
  for(const source of [raw,raw.replaceAll('\n','\r\n')]){
-  reads=[];assert.equal(project(source),accepted);assert.deepEqual(reads,owners,'warm calls still read the complete raw owner closure');
+  reads=[];assert.equal(project(source),accepted);assert.deepEqual(reads,admittedReads,'warm calls still read the complete raw owner closure');
  }
  for(const owner of owners){
   changed=owner;
@@ -180,10 +190,22 @@ test('current Run architecture admission uses its declared target and rereads ev
     assert.ok(error.message.startsWith('combined linked owner '+(replacement instanceof Error?'missing: ':'identity: ')+owner),error.message);return true;
    });
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'first bad raw owner stops validation: '+owner);
-   changed=undefined;reads=[];assert.equal(project(raw),accepted);assert.deepEqual(reads,owners,'restoration validates afresh after every failure');changed=owner;
+   changed=undefined;reads=[];assert.equal(project(raw),accepted);assert.deepEqual(reads,admittedReads,'restoration validates afresh after every failure');changed=owner;
   }
  }
- changed=undefined;
+ onlyOnReread=true;
+ for(const [index,owner] of recheckedOwners.entries()){
+  changed=owner;
+  replacement=readFileSync(owner,'utf8')+'\n';
+  reads=[];
+  assert.throws(()=>project(raw),{
+   message:'combined linked owner identity: '+owner+' changed during owner validation',
+  });
+  assert.deepEqual(reads,admittedReads.slice(0,owners.length+index+1),'stop when revalidation detects drift');
+ }
+ changed=undefined;reads=[];
+ assert.equal(project(raw),accepted);
+ assert.deepEqual(reads,admittedReads,'re-read closure still authenticates after restoring the live source');
  for(const unknown of [null,undefined,'',raw+'unreviewed',raw.replace('"abyss_run_initialization": "core"','"abyss_run_initialization": "ui"')]){
   reads=[];assert.equal(project(unknown),unknown);assert.deepEqual(reads,[],'unknown input grants no owner reads');
  }

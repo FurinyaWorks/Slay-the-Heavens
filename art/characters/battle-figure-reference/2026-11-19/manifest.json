@@ -1,12 +1,11 @@
 {
   "schemaVersion": 1,
-  "revision": "2026-11-19-style-precision",
+  "revision": "2026-11-19",
   "scope": "battle-character-visual-reference-only",
   "runtimeBound": false,
   "review": {
     "poseLineup": "owner-selected identity/pose reference",
-    "lowpolyStyle": "owner-selected trial direction; not native/runtime approved",
-    "styleVariants": "three visual-detail candidates pending Owner comparison; not native-fitted or runtime approved"
+    "lowpolyStyle": "owner-selected trial direction; not native/runtime approved"
   },
   "images": [
     {
@@ -26,36 +25,6 @@
       "sha256": "990018355b9b17f0f4b1c34c848b5122e8e00333061f22a77e24c819e25fd13f",
       "gitBlob": "017ae0f8b19f80c11ea2b47db12ecdc243276ebf",
       "role": "stylization-reference-only"
-    },
-    {
-      "path": "style-high-detail.png",
-      "width": 1448,
-      "height": 1086,
-      "sizeBytes": 1442344,
-      "sha256": "d0f2615556a73e153540c6e498fc1f35f387041a3cd7784b5fa9da35d8b08da0",
-      "gitBlob": "d5a65df67f3294e945fe637262f3f894af15d68b",
-      "role": "stylization-comparison-high-detail",
-      "precisionTier": "high"
-    },
-    {
-      "path": "style-medium-detail.png",
-      "width": 1448,
-      "height": 1086,
-      "sizeBytes": 1245718,
-      "sha256": "2e01270dffe694490a4632215f7cf382af213a11a23bd39a377201043df9a03a",
-      "gitBlob": "7108049ec98b8070af3a6a1df1c5ff44a52a029d",
-      "role": "stylization-comparison-medium-detail",
-      "precisionTier": "medium"
-    },
-    {
-      "path": "style-low-detail.png",
-      "width": 1448,
-      "height": 1086,
-      "sizeBytes": 1160918,
-      "sha256": "c00af2225a2d02dba87ae747828839dc0b01380d734f1dd5cbfc8f9336084d34",
-      "gitBlob": "c29157c25a2e9cbc5b328bd71453428fbec126c5",
-      "role": "stylization-comparison-low-detail",
-      "precisionTier": "low"
     }
   ]
 }

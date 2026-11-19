@@ -1,15 +1,16 @@
 ---
 id: TASK-38.5
-title: 修复小屋首领遗物领取后空白选择页阻断
+title: 修复首领遗物「小屋」选择，让玩家继续第二幕
 status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-15 19:11'
+updated_date: '2026-11-19 03:49'
 labels:
   - mobile
   - playtest-20261115
   - p0
+  - v2.0.0
 milestone: m-8
 dependencies: []
 references:
@@ -25,7 +26,21 @@ ordinal: 176000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-第一幕选首领遗物“小屋”后，进入未提前说明的遗物效果选择，四条空白选项（IMG_1407/1408）。用户说“代价”是困惑，不是已证实规则。
+### 情况
+
+第一幕领取「小屋」后进入遗物效果页，画面显示四条空白选项。截图 IMG_1407、IMG_1408 记录了页面与遗物说明。
+
+### 任务
+
+核对来源规则、奖励数据和前置说明，使合法选项可读可选，或按规则结束领奖并继续第二幕。
+
+### 边界
+
+保留奖励数值与随机流。「代价」是玩家的疑问，按来源核实。
+
+### 验收
+
+自然领取后可继续第二幕，奖励只结算一次；覆盖空、一、多选项及重入、取消、失败。 使用同一候选完成原任务列出的回归、独立评审和手机验收。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

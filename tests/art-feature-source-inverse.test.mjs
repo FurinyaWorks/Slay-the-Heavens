@@ -16,6 +16,7 @@ import {nativeMonsterSourceLayer} from './helpers/epochs/develop/tests/helpers/n
 import {betaSources} from './helpers/beta-integration-source.mjs';
 import {round3CatalogProof} from './helpers/epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.mjs';
+import {projectFatalBgmSource} from './helpers/fatal-bgm-source-continuation.mjs';
 
 // Execute the exact original 98fef helper closure on the original 98fef inputs.
 // The reviewed ready-art manifest supplies 34 files; this extension adds only
@@ -275,17 +276,22 @@ test('current feature and history entries authenticate supported intermediates a
 test('current feature entries preserve unsupported input bytes and never use unknown input to authorize raw reads',()=>{
  for(const [path,intermediate]of Object.entries(currentTargets)){
   const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const binding=sourceEpoch.proof.current[path],epochSource=projectFatalBgmSource(path,source,binding);
+  assert.equal(epochSource,binding.source,'exact current or approved fatal BGM input: '+path);
   for(const project of [currentFeature,currentHistory]){
    for(const input of [source+'\n-- unknown',source.slice(1),source+source,null,undefined,{},intermediate]){
     const seen=[],readSource=owner=>{seen.push(owner);throw Error('unknown source must not authorize reads');};
     assert.equal(project(path,input,{readSource}),input);assert.deepEqual(seen,[]);
    }
    for(const readSource of [null,{},'not a reader']){
-    assert.throws(()=>project(path,source,{readSource}),/GameUI extraction linked reader must be a function/);
-    assert.throws(()=>project(path,source+'\n-- unknown',{readSource}),error=>{
-     assert.equal(error.code,'ERR_ASSERTION');assert(error.message.startsWith('final M7 linked reader must be a function'));
-     assert.equal(error.actual,typeof readSource);assert.equal(error.expected,'function');return true;
+    const reject=(input,message)=>assert.throws(()=>project(path,input,{readSource}),{
+     code:'ERR_ASSERTION',actual:typeof readSource,expected:'function',message,
     });
+    reject(epochSource,/^GameUI extraction linked reader must be a function/);
+    // The exact BGM continuation still rejects an invalid reader through the
+    // frozen inner guard. It reaches the outer epoch only with a real reader.
+    if(epochSource!==source)reject(source,/^final M7 linked reader must be a function/);
+    reject(source+'\n-- unknown',/^final M7 linked reader must be a function/);
    }
   }
  }

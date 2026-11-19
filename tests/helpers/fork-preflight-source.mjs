@@ -42,6 +42,11 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+const closeoutSuccessors=Object.freeze({
+ 'tests/defect-integration-source.test.mjs':'e20ed02229b4e316bce92decaec45037eeceb8116f31216b8970c7964674f1c0',
+ 'tests/defect-utility-planning.test.mjs':'b93215b0cece7151a1929d0535c40595f7a3d9586f237ba0a3966f52687142c1',
+ 'tests/art-feature-source-inverse.test.mjs':'6627174ae56ab48b831a69e947fa30fb355879095d35f5cdd92b4ae641d1d1dd',
+});
 
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
@@ -55,14 +60,38 @@ const sourceSuccessors=Object.freeze({
  'scripts/verify-backlog-roadmap.mjs':'1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb',
  'tests/backlog-roadmap.test.mjs':'b4a523a6a7763e825804404a270da6a401a17b59b9855b701a82cb8571f3b17d',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99',
- 'tests/helpers/copy-integration-source-closure.mjs':'888b4675e665dafc2c110e417ae5b01cdeec6235b05b723238e890dcfedac269',
+ 'tests/helpers/closeout-source-epoch.mjs':'5c47cf4cfa424551010f1e12f39fc84363ad77c93733c4f3d3e8932e00e1c4c9',
+ 'tests/helpers/copy-integration-source-closure.mjs':'f5287b2c8b68ce2c86ea8b79b70b9732b1fbf43299aedf2ac8b469967d3f1147',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
+ 'tests/integration-source-epoch.test.mjs':'52c1cb8227f7849a1757d531c82611d36f7d73cad3462185599d18b9be096440',
+ 'tests/defect-actor-boundary.test.mjs':'bd3deb3006a06adb5b8cb5f1bbda90a354882b015d5a57bd1c1623df35dfb039',
+ 'tests/defect-final-source-epoch.test.mjs':'c5d27da04e6430a3bb4da253075cf0b7fe5baf5599c86dad8d9b922eafb72651',
+ 'tests/encounter-formation-source-epoch.test.mjs':'1a624e24e88927828d3d09012145046bcc0317c99757c6aa2d8b30e4ff55e399',
+ 'tests/room-ui-source-epoch.test.mjs':'230214c3b5f21e8f440c21178afd5636fc1219b528bfb2fffe446150e15e1d20',
+ 'tests/watcher-actor-boundary.test.mjs':'1954759b210bc333d65550e9abda023e0fe5aaa9b7253ce6aa1ea1939cabc909',
+ 'tests/helpers/replay-reviewed-selection.mjs':'47ba348e9a26348b1ed0255cd16bb9099cf5767986a70a28f2f132c39f4c278d',
+ ...closeoutSuccessors,
 });
 const archiveFiles=JSON.parse(gunzipSync(integratedCiBytes)).files;
+let closeoutPredecessors;
+function closeoutPredecessor(path){
+ assert(Object.hasOwn(closeoutSuccessors,path),'registered closeout CI successor: '+path);
+ if(!closeoutPredecessors){
+  const archive=readFileSync(new URL('./closeout-ci-source.json.gz',import.meta.url));
+  assert.equal(hash(archive),'cfc72306af30d0d4b0b61398e3ed0eea36767d6e005c146eb215897fc431a8f8','immutable closeout CI sources');
+  const {current,records}=JSON.parse(gunzipSync(archive));
+  closeoutPredecessors=new Map(Object.keys(closeoutSuccessors).map(file=>{
+   const sha256=current[file];
+   assert.match(sha256??'',/^[a-f0-9]{64}$/,'archived closeout predecessor: '+file);
+   return [file,{sha256,source:records[sha256]}];
+  }));
+ }
+ return closeoutPredecessors.get(path);
+}
 function beforeIntegrationSuccessor(path,source){
  if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
    ||hash(normalize(source))!==sourceSuccessors[path])return source;
- const prior=archiveFiles[path].current;
+ const prior=archiveFiles[path]?.current??closeoutPredecessor(path);
  assert.equal(hash(prior.source),prior.sha256,'immutable integration predecessor: '+path);
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }

@@ -68,6 +68,18 @@ test('historical package replay accepts only the exact guidance additions', () =
 test('small adapters resolve links relative to their own directory', t => {
   assert.deepEqual(fixture(t).errors, []);
 });
+test('navigation resolves Markdown headings and rejects stale fragments', t => {
+  const result = fixture(t, {
+    'AGENTS.md': '# Project\n[Self](#project)\n[Heading](docs/guide.md#工具索引)\n[Second](docs/guide.md#工具索引-1)\n[After](docs/guide.md#after)\n[Missing](docs/guide.md#missing)\n[Sample](docs/guide.md#sample)\n[Example](docs/guide.md#example)\n[Unclosed](docs/guide.md#unclosed)\n',
+    'docs/guide.md': '## 工具索引\r\n## 工具索引\r\n```md\r\n## Sample\r\n````\r\n## After\r\n~~~\r\n## Example\r\n~~~\r\n~~~\r\n## Unclosed\r\n',
+  });
+  assert.deepEqual(result.errors, [
+    'AGENTS.md: invalid local link docs/guide.md#missing',
+    'AGENTS.md: invalid local link docs/guide.md#sample',
+    'AGENTS.md: invalid local link docs/guide.md#example',
+    'AGENTS.md: invalid local link docs/guide.md#unclosed',
+  ]);
+});
 test('both line and Unicode character budgets fail closed', t => {
   assert.match(fixture(t, { 'AGENTS.md': '# Rules\n'.repeat(81) }).errors.join('\n'), /budget exceeded/);
   assert.match(fixture(t, { 'AGENTS.md': '规'.repeat(5001) }).errors.join('\n'), /budget exceeded/);
@@ -108,8 +120,35 @@ test('requires a reason and verification for an oversized slice', () => {
   assert.equal(assessSlice(rows, 'Slice-exception: atomic | interface migration | npm run test:related').decision, 'REVIEW_EXCEPTION');
   assert.equal(assessSlice(rows, '<!--\nSlice-exception: atomic | placeholder | placeholder\n-->').decision, 'SPLIT_REQUIRED');
   assert.equal(assessSlice('-\t-\tsrc/asset.bin\0').decision, 'SPLIT_REQUIRED');
-  assert.equal(assessSlice('401\t0\tdocs/evidence/output.log\0').decision, 'SPLIT_REQUIRED');
-  assert.equal(assessSlice('401\t0\ttests/necessary.test.mjs\0').decision, 'WITHIN_BUDGET');
+});
+
+test('large tests, fixtures, snapshots and verification evidence do not consume the production budget', () => {
+  const paths = [
+    ...Array.from({ length: 11 }, (_, i) => `tests/fixtures/${i}.json`),
+    ...Array.from({ length: 11 }, (_, i) => `docs/evidence/${i}.log`),
+    'tests/necessary.test.mjs', 'tests/snapshots/expected.snap',
+    'scripts/check-license.test.mjs', 'tools/card-value-feedback/fixture.lua',
+    'experiments/figma-map-native-spike/tests/curve.lua',
+    'experiments/lumine-native-fit/evidence/validation.json',
+  ];
+  const exempt = paths.map(path => `401\t0\t${path}\0`).join('');
+  const small = '200\t200\tsrc/a.lua\0';
+  const result = assessSlice(small + exempt + '-\t-\t.artifacts/run.log.gz\0');
+  assert.equal(result.decision, 'WITHIN_BUDGET');
+  assert.equal(result.productionLines, 400);
+  assert.equal(result.productionFiles, 1);
+  assert.equal(result.evidenceLines, 12 * 401);
+  assert.equal(result.evidenceFiles, 13);
+});
+
+test('production scripts, config and build files still count regardless of names', () => {
+  for (const path of [
+    'scripts/test-affected.mjs', 'scripts/unregistered.test.mjs', 'scripts/build-ui.mjs',
+    'src/generated/snapshot.lua', 'src/tests/runtime.lua', 'config/validation.log',
+    'tools/card-value-feedback/build-fixture.mjs', 'package-lock.json', '.github/workflows/quality.yml',
+  ]) {
+    assert.equal(assessSlice(`401\t0\t${path}\0`).decision, 'SPLIT_REQUIRED', path);
+  }
 });
 
 test('hosted size check binds both exact PR parents and consumes the visible exception', t => {
@@ -119,31 +158,58 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
   git('init', '--initial-branch=develop', '--quiet');
   git('config', 'user.name', 'Integration fixture');
   git('config', 'user.email', 'integration@example.invalid');
-  git('commit', '--allow-empty', '-qm', 'base');
-  const base = git('rev-parse', 'HEAD');
-  git('checkout', '-qb', 'slice');
   mkdirSync(join(root, 'src'));
-  writeFileSync(join(root, 'src', 'large.lua'), 'local row\n'.repeat(401));
+  writeFileSync(join(root, 'src', 'runtime.lua'), 'local runtime\n'.repeat(250));
   git('add', 'src');
-  git('commit', '-qm', 'slice');
-  const head = git('rev-parse', 'HEAD');
-  git('checkout', '-q', 'develop');
-  git('merge', '--no-ff', '-qm', 'candidate', 'slice');
+  git('commit', '-qm', 'base');
+  const base = git('rev-parse', 'HEAD');
+  function candidate(branch, change) {
+    git('checkout', '-qb', branch, base);
+    change();
+    git('add', '-A');
+    git('commit', '-qm', branch);
+    const head = git('rev-parse', 'HEAD');
+    git('checkout', '--detach', '-q', base);
+    git('merge', '--no-ff', '-qm', 'candidate', head);
+    return { head, merge: git('rev-parse', 'HEAD') };
+  }
 
   const event = join(root, 'event.json');
   const guard = fileURLToPath(new URL('../scripts/check-pr-slice.mjs', import.meta.url)).replaceAll('\\', '/');
-  const env = { ...process.env, GITHUB_ACTIONS: 'true', GITHUB_EVENT_NAME: 'pull_request',
-    GITHUB_EVENT_PATH: event, GITHUB_SHA: git('rev-parse', 'HEAD') };
-  function run(ref, sha, body = '') {
+  function run({ head, merge }, ref, sha, body = '') {
+    git('checkout', '--detach', '-q', merge);
     writeFileSync(event, JSON.stringify({ pull_request: { base: { ref, sha }, head: { sha: head }, body } }));
     return spawnSync(process.execPath, ['--input-type=module', '-e',
       `import { checkHostedSlice } from ${JSON.stringify(new URL('../scripts/check-pr-slice.mjs', import.meta.url).href)}; checkHostedSlice();`],
-      { cwd: root, env, encoding: 'utf8' });
+      { cwd: root, encoding: 'utf8', env: { ...process.env, GITHUB_ACTIONS: 'true', GITHUB_EVENT_NAME: 'pull_request',
+        GITHUB_EVENT_PATH: event, GITHUB_SHA: merge } });
   }
-  assert.match(run('develop', head).stderr, /differs from the event HEAD\/BASE/);
-  assert.match(run('develop', base).stderr, /Split the production change/);
-  assert.match(run('develop', base, 'Slice-exception: atomic | compatibility migration | npm run test:related').stdout, /REVIEW_EXCEPTION/);
-  assert.equal(run('release/v2.0.0', base).status, 0);
+  const small = candidate('small', () => writeFileSync(join(root, 'src', 'small.lua'), 'return 1\n'));
+  const large = candidate('large', () => writeFileSync(join(root, 'src', 'large.lua'), 'local row\n'.repeat(401)));
+  const moved = candidate('moved', () => {
+    mkdirSync(join(root, 'tests'));
+    git('mv', 'src/runtime.lua', 'tests/runtime.test.lua');
+  });
+  const exception = 'Slice-exception: atomic | compatibility migration | npm run test:related';
+  for (const ref of ['develop', 'release/v2.0.0']) {
+    const withinBudget = run(small, ref, base);
+    assert.equal(withinBudget.status, 0, withinBudget.stderr);
+    assert.match(withinBudget.stdout, /WITHIN_BUDGET/, ref);
+    const wrongBase = run(large, ref, large.head);
+    assert.notEqual(wrongBase.status, 0, ref);
+    assert.match(wrongBase.stderr, /differs from the event HEAD\/BASE/, ref);
+    const oversized = run(large, ref, base);
+    assert.notEqual(oversized.status, 0, ref);
+    assert.match(oversized.stderr, /Split the production change/, ref);
+    const reviewed = run(large, ref, base, exception);
+    assert.equal(reviewed.status, 0, reviewed.stderr);
+    assert.match(reviewed.stdout, /REVIEW_EXCEPTION/, ref);
+    const movedProduction = run(moved, ref, base);
+    assert.notEqual(movedProduction.status, 0, ref);
+    assert.match(movedProduction.stdout, /"productionLines":500,"productionFiles":2/, ref);
+    assert.match(movedProduction.stderr, /Split the production change/, ref);
+  }
+  assert.equal(run(large, 'master', base).stdout, '');
 
   mkdirSync(join(root, 'backlog', 'tasks'), { recursive: true });
   mkdirSync(join(root, 'config'));
@@ -156,11 +222,17 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
 
 test('historical guidance receipts verify their exact predecessor and preserve foreign inputs', () => {
   const path = 'scripts/check-agent-guidance.mjs';
-  const source = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  const source = readFileSync(new URL('./fixtures/guidance-checker-7a3d1bba.txt', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
+  assert.equal(createHash('sha256').update(source).digest('hex'), '11be776ae6439e6da881571324707944475c5ef7e34ec482f8994dd47bd86af0');
   const project = (value, file = path) => releaseBootstrapCiRead(() => value)(file, 'utf8');
   const predecessor = project(source);
   assert.equal(createHash('sha256').update(predecessor).digest('hex'), '7e668ec2609dff8de73f0e39a048cd93780f4ad42d2ef2fb2f3a5be346532b18');
-  assert.equal(project(source.replaceAll('\n', '\r\n')), predecessor);
-  for (const unknown of [source+'\n', source.slice(1), source.replaceAll('\n', '\r\r\n')]) assert.equal(project(unknown), unknown);
-  assert.equal(project(source, 'scripts/foreign.mjs'), source);
+  const current = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  assert.notEqual(current, source);
+  for (const checker of [source, current]) {
+    assert.equal(project(checker), predecessor);
+    assert.equal(project(checker.replaceAll('\n', '\r\n')), predecessor);
+    for (const unknown of [checker+'\n', checker.slice(1), checker.replaceAll('\n', '\r\r\n')]) assert.equal(project(unknown), unknown);
+    assert.equal(project(checker, 'scripts/foreign.mjs'), checker);
+  }
 });

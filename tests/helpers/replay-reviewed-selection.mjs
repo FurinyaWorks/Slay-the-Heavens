@@ -6,6 +6,7 @@ import {spawnSync,execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.mjs';
+import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const reviewedContracts=Object.freeze({
  'tests/sts-character-reference.test.mjs':5,
@@ -17,8 +18,10 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
  assert(Object.hasOwn(reviewedContracts,script),'exact reviewed selection contract');
  const expected=reviewedContracts[script],root=process.cwd();
  assertIntegratedCurrent();
- for(const [path,row]of Object.entries(sourceEpoch.proof.current))
-  assert.equal(hash(norm(readFileSync(path,'utf8'))),row.sha256,'fresh current production owner: '+path);
+ for(const [path,row]of Object.entries(sourceEpoch.proof.current)){
+  const source=beforeCurrentProductionSource(path,readFileSync(path,'utf8'));
+  assert.equal(hash(norm(source)),row.sha256,'fresh current production owner: '+path);
+ }
  assert.equal(integratedCiProof.sources.release,'900527d931df941eed642a9667ccde92f76b73db');
  const original=integratedCiProof.files[script].views.release;assert(original,'complete original selection contract');
  const directory=mkdtempSync(join(tmpdir(),'abyss-reviewed-selection-'));

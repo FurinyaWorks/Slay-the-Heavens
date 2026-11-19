@@ -2,11 +2,11 @@
 
 ## 三仓库按需验证
 
-本地仍是一个 Git 仓库，按任务建立独立工作树；云端从远端短分支接续，无需本机持续在线。Backlog 是唯一任务账本，先核对已有任务、开放 PR、写入范围及依赖，不在 Fork 复制任务或批量推送历史分支。
+Fork 是可选诊断，主仓 PR 和正式 CI 无需 Fork 记录。调用和结果复用见 [Fork 预检](CI-PREFLIGHT.md)。旧 `release/v2.0.0` 冻结，表内旧路由保留供追溯，当前修复从 `develop` 接续。
 
 | remote | 仓库 / 固定 ID | 分工 |
 | --- | --- | --- |
-| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | 正式集成；release/v2.0.0 仅发版必需修复，develop 接后续功能、优化与技术债 |
+| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | develop 承接 v2.0.0 重建与后续研发；旧 release/v2.0.0 冻结 |
 | fork-a | FurinyaDev/Slay-the-Heavens-Fork-A / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
 | fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
 
@@ -23,33 +23,11 @@ gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <tas
 
 Fork Quick 手动预检执行完整受影响 JS/Lua 和便宜治理检查，未知或空覆盖明确要求一次必要 Full；本地 fast/advisory 仍保留有界选测和延期报告。两者都不能称为双平台正式准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
 
-成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。release 修复只移植必要代码并在该基线验证，后续工作留 develop；冻结候选的 Full 与官方容量、导入、ready、PC/手机仍逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
+成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。重建只接回 develop 仍缺且属于本版的切片，在实际 develop 合并树验证；候选的 Full 与官方容量、导入、ready、PC/手机逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
 
 算力分配复用已有 [Fast 选测](CI-FAST.md)、`scripts/ci-quality-shape.mjs` 的共享矩阵、`ci-shards.mjs` 的平台耗时权重、安全 Lua worker 与 Quality 原 `max-parallel`，不要在 Fork 另维护分片数或删测试。先分配互不重复的任务/准确提交，再让原矩阵自动铺开；以实际 job 排队和执行时间判断资源使用，保留失败成本。GitHub 并发上限按账号/组织套餐和 runner 可用性核对，不假定每个仓库天然拥有固定20/30槽位；沿用标准 hosted，不切付费 larger runner。[官方并发与矩阵说明](https://docs.github.com/en/actions/reference/limits)。
 
-2026-11-16 已通过 GitHub 管理 API 将 develop Ruleset 25870651 的 `max_entries_to_build` 从 1 改为 3；其余队列参数与 Required Checks 逐字段读回不变。Release Ruleset 27313515 仅修正名称，保留四个 Actions 来源的必需检查、Strict、空 bypass 和无队列；master 与公共保护未修改。下方旧配置记录中的“单条构建”仅为历史。Release 日常 Fast 与冻结 HEAD 的 Full 验收见 [CI-FAST](CI-FAST.md)。规则变化会使旧队列授权指纹失效，须对仍需入队的准确 HEAD/BASE 正常重新授权，不能复用旧指纹。
-
-2026-11-07已读回 develop Ruleset 25870651：原生 Merge Queue 已开启，Squash、ALLGREEN、单条构建/合并、Strict、空 bypass。六项 Required 为 Actions 来源的 `check`、`presentation`、`engineering-posix`、`inventory`、`pr-quality`，及 Any source 的 `independent-review`。安全且完整映射的 PR 默认走双平台 Fast；核心、高风险、未知或超预算改动仍走 PR Full。`full-quality` 仍只证明完整 Full，队列组合与合后 push 始终 Full。配置读回不等于真实链路已经验收，须分别核对 Fast、入队、组合 Full、实际 squash 与 push Full。当前操作合同见[Fast准入](CI-FAST.md)。
-
-2026-10-26起Quality/check使用GitHub-hosted `windows-2025`，固定Node 24.18.0、Pillow 12.3.0和Luacheck 1.2.0。Ubuntu的presentation和engineering-posix保留，真实执行Windows权限环境可能无法运行的符号链接/硬链接边界。三项均是正常合并前必需检查；基础设施故障的唯一应急流程见下文。
-
-日常官方Runner无需用户电脑保持开机或联网。沿用PR215的可信develop/master手动local-special诊断入口，只有显式选择才使用旧本机；PR和日常push不会走它。未停止、注销或改动旧机器/其他项目的服务。原self-hosted设置与掉线记录可从Git历史和[工程审计](backlog-details/task-68.md)追溯。用户已明确批准停用额外Remote Task Claim任务锁；采用Backlog、独立分支/工作树、PR审查和当前SHA完整Quality。
-
-TASK-74正式退役已停用任务锁的源码和29项专属测试，并移除两个npm入口；旧基线中这些测试占Windows约6分51秒。历史从[固定Git提交](REMOTE_TASK_CLAIMS.md)取回，当前游戏、构建和交付门禁覆盖保持。
-
-日常使用 `npm run test:fast -- --base origin/develop` 获取 advisory 快速反馈，`npm run test:related -- --base origin/develop` 验证完整受影响集合；`--plan`只生成计划。未知输入及基础设施变更仍要求全量，fast 只报告独立可映射部分，不自动启动重复全量。Fork Quick 仅手动运行完整受影响预检，本地 fast 的选集、延期与零测试仍显式报告，详见 [CI-FAST](CI-FAST.md)。最终集成执行完整 Quality，不能把快速层的成功当作完整验收。
-
-完整 Windows 回归使用独立 VM 的 `rules (i/N)`，片数由[共享形状](../scripts/ci-quality-shape.mjs)定义。JS 使用 `ci-shards.mjs --shard=i/N` 按逐文件权重分配；Lua 使用 `--shard i/N`，计入前置 JS 负载后分配，JS 片内串行，Lua 按安全规则最多两个 worker、长夹具独占，普通 hosted Windows 作业保持原30分钟总预算（JS与随后Lua合计）。POSIX 的完整 JS 回归使用 `engineering-posix (i/N)`，不运行raw Lua，每个JS文件在该平台执行一次；第一片执行完整工程门禁，所有片保持原20分钟作业预算，矩阵最多同时12项。调度使用本平台实际观测成本与明确标注本地下界的逐文件最大值；未知平台才使用跨平台最大值回退。准备图片与执行使用同一平台计划。impact输出共享形状的实际矩阵，交付验证器使用同一份完整job名；任意片数均为第一片预留原平台门禁耗时。每个脚本保持独立进程、原超时和完整断言，输出按文件聚合，失败仍跑完剩余文件并非零退出。`check` 与 `engineering-posix` 分别汇总各自所有分片，失败、取消或跳过均不放行；三个必需检查名称不变，完整身份包括所有分片、三个汇总作业、impact与预期跳过的fast。schema 2的旧15作业历史合同保留，旧分片形状的绿灯不能认证当前完整集合。可信local-special手动诊断仍单片串行、保留原75分钟作业预算。当前完整校准、容量选择与实际耗时见[M7本批证据](backlog-details/M7-HOST-BATCH-20261105.md)。
-
-PR391 的官方超时与成功日志证明早期四片、六片及八加八规划已过时：失败快返不能作为完整执行成本。现仅按各平台 `CI_FILE_TIMING success:true` 记录只升不降校准，来源身份保存在 timing JSON 元数据中；本地测量明确作为下界，例如 M3-integration 完整8/8组约403秒，不冒充 hosted/Linux 测量。f7成功完成的 raw Lua 记录继续升权后，Windows 11片已接近或越过原30分钟预算，最终采用13片；JS 加安全双 worker Lua 规划最大值约1,488秒，原1,800秒预算毛余约312秒，扣60秒安装敏感性后余约252秒；Linux 9片已含首片44秒门禁，规划最大值1,006.013秒，原1,200秒预算毛余193.987秒，扣53秒安装及 harness 敏感性后余140.987秒。这是规划代理与敏感性分析，实际完成时长仍须当前SHA官方CI验证。相较此前十一加九仅增加两份短安装，不重复执行测试文件；保留完整纯合同矩阵与真实 public 桥接检查、原作业与单fixture超时、Formal 180秒选择预算及全部断言。
-
-本地 `npm run check` 保持完整串行；需要诊断某片时可用 `npm run test:lua -- --shard 1/4`，单片成功不代替完整检查。进程和文件系统测试保留独立临时目录。UI保护矩阵每个用例仍拥有新data/out目录，不共享可变状态。
-
-每分支原生concurrency取消过时运行；移除跨PR的self-hosted全局队列。依赖安装使用锁文件、setup-node的npm下载缓存、prefer-offline与有界重试。保留增量Git引用、按分支有界引用缓存、pack大小摘要与128MiB异常门禁；它不是网络账单。GitHub-hosted是临时机器，其缓存无需通过本机代理下载。
-
-合并须核对 PR 精确 head、base 和当前 attempt 的完整必要作业，通过下文原生 APPROVED Review、CI 证据门禁及 `npm run merge:auto` 申请入队。完整源码检查、平台构建、官方导入、实机与UI体验仍分层记录。日志空白时读取对应job的原始日志，不能判为通过。
-
-2026-11-13分离主干保护与来源分支历史：develop 仍仅允许 squash 并要求线性历史，master 的 release/hotfix merge 流程不变。`check-pr-history.mjs` 保留精确 base/head SHA、分页完整性、提交唯一性与父提交身份检查；功能/集成分支中的 merge commit 不再单独导致失败，而在日志的 `mergeCommits` 中列出，`status` 为 `linear` 或 `nonlinear`。两者仅表示历史形状，不表示代码已通过审查或测试。读取失败、缺页、重复、错误 HEAD/BASE 或无效父提交仍失败；不检查 GitHub 合成 merge commit，不增加作业、锁、轮询或完整回归层。此规则替代2026-10-28的来源分支一律线性要求，不放宽主干保护。
+按 [CI-FAST](CI-FAST.md) 选择本地反馈和正式验证。实际触发、矩阵和作业预算以 [Quality](../.github/workflows/quality.yml)、[Licenses](../.github/workflows/licenses.yml) 和[共享形状](../scripts/ci-quality-shape.mjs)为准。早期矩阵、Runner 和保护快照见[CI 历史与退役流程](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/2ec45b9e52c870badc4d4888f6243a30556eecb4/docs/CI.md)。
 
 ## 多 Agent 协调集成
 
@@ -71,21 +49,13 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 
 ## 核心分支原生保护
 
-2026-10-26将旧Branch Protection迁为三份active Repository Rulesets：
+以 GitHub 实时生效规则为准。用 `gh api repos/FurinyaWorks/Slay-the-Heavens/rules/branches/develop` 读取匹配规则；需判定例外权限时，另读取返回 ID 对应的 Ruleset 与实际账号角色。旧快照中的检查名、合并队列参数、豁免及旧仓库名只用于历史证据。
 
-| 规则 | 分支 | 生效要求 | 豁免 |
-|---|---|---|---|
-| [25870646](https://github.com/FurinyaWorks/Slay-the-Abyss/rules/25870646) | master、develop | 禁止强推、禁止删除 | 无，包含Owner |
-| [25870648](https://github.com/FurinyaWorks/Slay-the-Abyss/rules/25870648) | master | 必须PR、解决讨论；不绑定未验证的CI | 无 |
-| [25870651](https://github.com/FurinyaWorks/Slay-the-Abyss/rules/25870651) | develop | 必须PR、仅squash、线性历史、解决讨论、严格基线、原四项检查及independent-review/pr-quality、Squash/ALLGREEN队列 | 无 |
-
-历史 PR 豁免曾为 CHNISam（111138384）和 v5g95m7t8m-max（337201427），`actor_type: User`、`bypass_mode: pull_request`；本轮三份规则均读回 `bypass_actors: []`，不能沿用历史豁免。防强推/删除单独成规则且不列豁免。原生额外审批保持现有配置；真实云端独审通过同一可信协调账号的签署记录接入 Actions，不要求第二个账号。
-
-2026-11-04已读回 develop 的 `strict_required_status_checks_policy: true` 与六项必需 context。原四项及 full-quality 指定 GitHub Actions 15368，independent-review 为 Any source；旧 ownership 作业不恢复，原保护与 PR 豁免保留。
+`develop` 正常合并要求 PR、squash、线性历史、讨论解决、Strict 和原生队列。必需状态为 `check`、`presentation`、`engineering-posix`、`inventory`、`pr-quality` 和 `independent-review`；`full-quality` 表示完整 Full 的独立证明。真实独审由可信协调者核实，GitHub 原生批准数以线上规则为准。Release 的保护及候选证据按 [CI-FAST](CI-FAST.md) 和[发布入口](PUBLISHING.md)核对。
 
 ## GitHub 原生 Merge Queue
 
-当前已启用原生队列，保护状态见本文开头的本轮读回。未增加第三方 App、Runner 或常驻调度服务。下列机制仍生效；后面的早期上线顺序属于历史切换步骤，不能据其重复配置或把排队当作 Full 通过。
+当前已启用原生队列，以[生效规则](#核心分支原生保护)为准。未增加第三方 App、Runner 或常驻调度服务。下列机制仍生效；后面的早期上线顺序属于历史切换步骤，不能据其重复配置或把排队当作 Full 通过。
 
 - `quality.yml` / `licenses.yml` 监听 `merge_group(checks_requested)`，只针对 develop。impact 在非 PR 事件强制 **Full**；共享矩阵包含 Windows、POSIX、presentation、inventory 及汇总作业；片数直接以 `scripts/ci-quality-shape.mjs` 为准，Fast 不能放行队列。
 - 队列生成的组合提交与原 PR HEAD 不相同。现有 PR 侧 `independent-review` 仍由协调 Agent 核实真实独立审查；队列侧同名状态仅在 GitHub 原生队列准入、原六项 Required contexts 和整个组合 Full 均经校验后发布。**它不是对组合代码重新做独立人工审查**。队列的代码组合由 Full 验证。
@@ -101,17 +71,13 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 
 ## PR 自动合并准入
 
-2026-11-14 GitHub已将同一固定仓库ID `1429751262` 的当前名称改为 `FurinyaWorks/Slay-the-Heavens`，原两个Slay-the-Abyss名称均重定向到该ID。当前准入从 `/repositories/1429751262` 解析真实名称；同名fork、被重新占用的旧命名空间或不同ID仍拒绝。历史授权原文不重写，通过既有身份见证连接新名称。下段的旧名称保留原迁移记录。
-
-当前仓库为 `FurinyaWorks/Slay-the-Abyss`，固定 ID 为 `1429751262`。协调入口通过 `/repositories/1429751262` 解析当前名称，核对 settings、PR head/base 的真实 ID；不能用同名仓库或 fork 接续。迁移前的授权和 schema2/3/4/5 收据保留原文。合后验收仅可用单独的迁移见证衔接登记的旧名 `CHNISam/Slay-the-Abyss`：保存原授权文本及 SHA-256、固定 ID 的当前响应与旧名重定向响应，并核对本轮 PR/run 的仓库 ID，不能改写旧证据中的 owner。迁移前取消的 event 不作新 Full 证明，使用迁移后的新提交触发完整验证。
+主仓身份以 `/repositories/1429751262` 返回的当前名称和实际 PR/run 仓库 ID 为准。迁移前的授权和收据保留原文，合后验收按[仓库身份代码](../scripts/repository-identity.mjs)校验迁移见证。
 
 develop PR 的独立评审与 CI 并行。审查与准入通过后可挂起原生 Auto-merge；这只是授权，不是 `pr_passed`。PR 侧必须等原四项门禁、`independent-review`、`pr-quality` 全绿并满足严格基线才能入队，实际 squash 还须组合 Full 通过。Draft、冲突、未落地依赖、已知 CI 失败及锁定标签在启用前拒绝。
 
 ### 现有云端独审与 Actions 门禁
 
-本次迁移保留现有 Ruleset、六项 Required Checks 及来源、Strict、SQUASH/ALLGREEN 队列、发版保护、讨论解决和线性历史；不增加 Required approvals、不启用额外 stale-approval/CODEOWNERS 要求，不强制第二 GitHub 账号逐 PR 审批。只保留一个组织主仓和两个既有个人 Fork，不另造工作流、调度器或付费 AI 后台。
-
-独审复用现有云端 Codex 的真实独立子会话，在代码交付环节自动完成。现有可信维护协调者亲自核实实际会话与未解决问题，再以自己的 GitHub 身份提交绑定精确 HEAD/实际 develop BASE/合并树的 COMMENTED Review；同 PR 作者账号也可使用。APPROVED 历史记录仍可读取，但不是准入所需的第二人审批。原生记录证明签署账号与提交，不自证 AI 独立，报告中的 agent 名称也不自证会话；沿用现有“可信协调者核实实际独审”的边界。后续 Actions 从受保护的实际 BASE 源码校验报告、依赖和正式 CI 证据，发布真实独审状态；移除连接器直接写状态、隐藏 bypass 字段认证及重复的入队者 Admin 授权。
+由真实、独立的 Agent 会话在合并前审查。现有可信维护协调者亲自核实实际会话与未解决问题，再以自己的 GitHub 身份提交绑定精确 HEAD/实际 develop BASE/合并树的 COMMENTED Review；同 PR 作者账号也可使用。APPROVED 历史记录仍可读取，但不是准入所需的第二人审批。原生记录证明签署账号与提交，不自证 AI 独立，报告中的 agent 名称也不自证会话；沿用现有“可信协调者核实实际独审”的边界。后续 Actions 从受保护的实际 BASE 源码校验报告、依赖和正式 CI 证据，发布真实独审状态；移除连接器直接写状态、隐藏 bypass 字段认证及重复的入队者 Admin 授权。
 
 ### 常规使用
 
@@ -136,8 +102,6 @@ npm run merge:auto -- <PR> <GitHub-Review-record-ID> --shadow
 
 资源清尾复用 Licenses 的 `pull_request_target(dequeued)`，仅在主仓 develop 的可信 BASE 源码运行小型取消作业，不执行 PR HEAD 程序。独立 concurrency 和非 Required 的跳过名称避免取消或覆盖正常 inventory。只在完整队列、Quality 运行及 Git refs 元数据均可读、取消前重读仍确认旧 HEAD 已离队且其引用已删除时取消该旧 merge_group 运行；保留 PR/push/dispatch 与仍有效组。动作只获本作业的 Actions 写权限，不写检查、不改队列或分支，不新增工作流或定时调度。权限/分页/竞态不明确即跳过，HTTP 阶段及取消读回如实记录，接受请求不等于已经取消。
 
-控制作业使用已有标准 `ubuntu-24.04` hosted 池：Fork A 的[真实汇总作业](https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A/actions/runs/44113901367/job/134179946668)等待 Slim Runner 15 分钟后收到 `The job was not acquired by Runner of type hosted even after multiple attempts`，未执行步骤；Fork B 的规划也出现同类无 Runner 排队。规划、两个 Required 汇总及清尾因此沿用已能实际执行测试的标准 Ubuntu，不新增 Runner 或付费机型，检查名称、依赖、权限、矩阵和执行超时不变。旧 Slim 合同保留历史身份，当前实际工作流另有原始源码检查；等待或接受重跑请求不等于托管 CI 成功。
-
 PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full success，真实队列组合与合后 develop push 仍 Full。合后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged`，从最新真实 Actions 状态及不可变 artifact 恢复原 schema3/7 合前观测，另核实际组 G/Tq/[Q]、原基线到 Q 的真实祖先比较、完整队列 Full/inventory、实际 squash 与 push Full 收据及 Backlog。shadow、替换附件、旧 run/attempt、祖先关系失效、非 Actions 来源或缺队列证明均保持 `merged_pending`；原 PR 合前树不改写，旧 schema/Fast 合后格式继续按原合同读取，不冒称本次修复了所有历史格式的基线限制。
 
 自动化边界：AI 由现有云端交付会话执行，Actions 验证预存的实际独审结果，不声称它能唤醒已退出的 Codex 会话。准确报告预存且原受审 HEAD/B0/树未变时，后续 CI→Queue→Merge 无人值守；改变原受审组合仍须真实重审，不能把旧报告改写成新 BASE。D/Q 的正常前缀推进由祖先链和真正组合 Full 验证，不冒充对新组合重新做了 AI 审查。仍沿用现行可信维护者接纳 CI 源码的边界；Any-source 检查和 Actions artifact 不是供应商 AI 数字签名，也不声称能阻止有权限修改所有 CI 的恶意维护者。
@@ -152,20 +116,13 @@ PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full succes
 
 ### 异步交接与失败对账
 
-**边界**：独立评审与准入通过后立即运行 `npm run merge:auto`，不等待 CI 跑完。完成精确 HEAD/BASE 的原生 Auto-merge 授权并读回后，保存交接证据，结束当前回合；GitHub Merge Queue 接管后续等待、组合 Full 和 squash。禁止用 `gh run view` / `gh pr checks` / `gh run watch` / `sleep` 循环、定时查询或常驻监控守候，不以对账、合后验收或等待下一批基线为由继续轮询。仅在失败通知、明确依赖变化或用户要求时介入，诊断先读一次当前事实。依赖尚未落地时保留候选、证据及明确接续点并结束本轮，不谎报已授权或已入队。合后验证和清理按实际合并事实接续，不要求 Codex 会话常驻。
+独审和准入核实后，按上文运行 `npm run merge:auto`，读回原生授权并交接。GitHub 接管正常等待和合并。按失败通知、依赖变化或验收需要查看当前 run/attempt，避免持续轮询。依赖未落地时记录阻塞和接续点。
 
-**交接**：保留 PR 链接、当前精确 HEAD/BASE、原生授权结果、`build/delivery/auto-merge-*.json` 证明文件位置与下步 `verify:delivery --merged` 命令；在真正验收完成前不清理唯一证据来源/工作树，不把任务标 Done。schema9 意图文件是本地定位记录，真实合前证据保存于 CI 不可变 artifact；跨机器接续仍必须核实签署状态、artifact ID、run/attempt 及全部原观测，不能用 PR 绿灯伪造预审证明。可继续其他不冲突的任务，或结束当前 Agent 会话。
-
-**恢复架构**（事件优先、低频对账兜底；需要单独实现和验收，不因本文而视为已上线）：
-
-- 事件提示：`workflow_run.completed`（Quality / Licenses）、PR 合并/出队事件，以及 develop push 的结果，用于触发轻量状态复核；事件只是一条提示，绝不单凭事件载荷授权合并或认定完成。GitHub Webhook 可能投递失败，不将“没收到通知”视为仍在运行。
-- 低频补偿：在既有巡检/编排入口以固定低频（建议每数小时，非每分钟）复核尚未收口的 PR；复核只读 GitHub 最新状态、队列成员和当前 run/attempt，比较上次已处理的状态，幂等去重。发现长期无进展时按实时 Ruleset 的 merge-queue 检查超时及 Quality 作业预算判断，不靠反复模型调用；GitHub Actions 的 `schedule` 自身也可能延迟或漏触发，不能称为严格实时保障。
-- 判定与动作：仍在正常运行/排队则静默；新失败、超时、出队、冲突、Ruleset/HEAD/BASE 变化或缺必需收据则记录阻塞及可追溯链接，再由 Agent 按风险诊断。基础设施瞬断只在有证据时做有界重试；业务失败必须修复再重审，不自动重入队、不绕过独审/原六项检查、不更改严格基线。已合入但 push Full 未完成为 `merged_pending`，须以原授权证明及当前实际合入 SHA 执行 `verify:delivery --merged` 才能报 `merged_passed`。
-- 补偿与事件共用同一套状态判定；由 PR/Backlog 与 GitHub 作为持久事实来源，勿另造第二套合并队列、守候进程、Full 回归或后台 Codex 轮询。若需要外部自动唤醒 Agent，必须另有明确的编排接收者；GitHub Actions 事件本身不会重启已退出的交互式 Codex 会话。
+保留 PR、精确 HEAD/BASE、授权结果和 `build/delivery/auto-merge-*.json`。实际合入后运行 `npm run verify:delivery -- <PR> <schema9意图.json> --merged` 核对合入、push Full 与 Backlog；未取得对应证据保持待交付。
 
 ## Owner 授权的 PR-only 应急合并
 
-当前主仓库 develop Ruleset 25870651 与 release Ruleset 27313515 使用仓库管理员角色 `pull_request` 豁免。每次使用前读回 Ruleset 和实际账号权限。日常准入继续使用原生 Required Checks 和队列。Owner 明确授权的范围内，已经过独立审查及必要定向验证的低风险切片可直接 squash，保留 PR 及批准记录。核心行为、正式候选及高风险组合须取得各自必要的完整证据。
+当前主仓库 develop Ruleset 25870651 与 release Ruleset 27313515 使用仓库管理员角色 `pull_request` 豁免。每次使用前读回 Ruleset 和实际账号权限。日常准入继续使用原生 Required Checks 和队列。Owner 明确授权的范围内，已经过独立审查及必要定向验证的低风险切片可直接 squash，保留 PR 及批准记录。核心行为、正式候选及高风险组合须取得各自必要的完整证据。CI 尚未完成或自身故障时记录真实状态与已取得验证。已确认由本 PR 引入的回归必须修复，正式发布仍须完成全部必需验收。
 
 1. 复核所有依赖已落地、无冲突和未解决审查，记录完整 HEAD、实时目标分支 BASE、候选树、缺失的 CI 与验证证据。已在 develop 队列的 PR 先用 `npm run merge:auto -- <PR> --pause` 出队并读回。
 2. 立即重读 PR 和目标分支，确认身份与风险仍在已授权范围内。提交包含精确 HEAD 和 squash 方法的临时 JSON 文件。
@@ -180,9 +137,7 @@ gh api --method PUT repos/FurinyaWorks/Slay-the-Heavens/pulls/<PR>/merge --input
 
 3. 读回 `merged: true`、目标分支、合入 SHA、合入者、实际父提交与树。遇到冲突、并发变化或接口拒绝先核对远端状态。合后按可取得的精确证据完成交付核验，单独报告真实 Hosted 检查结果。按分支生命周期核实来源和下游依赖后再清理。
 
-2026-10-26隔离实测：[PR220](https://github.com/CHNISam/Slay-the-Abyss/pull/220)在无生产祖先、无工作流的临时分支上执行。Owner已授权本轮安全测试：临时失败状态使无豁免合并返回405；同一Owner在无豁免规则下也不能直接推送/强推/删除；加入两个User的PR-only豁免后上述引用操作仍422；错误SHA返回409；精确HEAD通过上述同步REST接口合并成功，无需`gh pr merge --admin`。临时规则和分支随后删除，PR保留证据。当前只有CHNISam登录，未用第二人身份或第三个普通Write账号实测，不能把规则配置读回当作这两种身份的实测；第二人Write角色已独立读回。详细证据见[任务附件](backlog-details/task-70.md)。
-
-GitHub官方语义：[Rulesets API](https://docs.github.com/en/rest/repos/rules)、[PR Merge API及sha参数](https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request)。本轮验证的是同步`PUT /merge`；未测试异步merge-async，也未依赖管理员专用命令。
+历史隔离实测和 API 证据见 [TASK-70](backlog-details/task-70.md)。
 
 ## 已审阅 PNG 的按需 LFS 读取
 

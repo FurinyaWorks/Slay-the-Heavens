@@ -134,14 +134,15 @@ test('foreign capability source bytes cannot trigger reader calls or hide unknow
 });
 test('the full current facade freshly checks every original owner including after warm success',()=>{
  const epoch=actorCurrentEpoch,proof=epoch.proof,p=actorPaths[0],source=read(p);
+ const admittedReads=[...proof.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
  const actual=Object.fromEntries(proof.owners.map(q=>[q,read(q)]));let bad,value,reads=[];
  const reader=q=>{reads.push(q);if(q===bad){if(value instanceof Error)throw value;return value;}return actual[q];};
  const project=()=>epoch.preCombinedSource(p,source,{target:'develop',readSource:reader});
  const expected=proof.targets.develop.files[p].source;
- assert.equal(project(),expected);assert.deepEqual(reads,proof.owners);
+ assert.equal(project(),expected);assert.deepEqual(reads,admittedReads);
  for(const owner of proof.owners)for(value of [actual[owner]+'\n',null,new Error('unavailable')]){
   bad=owner;reads=[];assert.throws(project,/combined linked owner/);assert.deepEqual(reads,proof.owners.slice(0,proof.owners.indexOf(owner)+1));
-  bad=undefined;reads=[];assert.equal(project(),expected);assert.deepEqual(reads,proof.owners);
+  bad=undefined;reads=[];assert.equal(project(),expected);assert.deepEqual(reads,admittedReads);
  }
 });
 test('capability config layout accepts only an input spelling and still binds exact raw owners',()=>{
