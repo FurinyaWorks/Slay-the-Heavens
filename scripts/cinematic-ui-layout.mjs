@@ -43,8 +43,7 @@ export function vistaControl(theme = nativeTheme, name = 'vista') {
   ] };
 }
 
-export function prologueControl(theme = nativeTheme) {
-  const { picture, plate, text } = helpers(theme), p = theme.layout.prologue;
+function liyueSeal(picture, p) {
   const scale = p.seal[2] / p.symbolBase;
   const shapes = liyueReference.controls.map(s => picture(`part${s.sourceIndex}`,
     [...s.position.map(v => v * scale), ...s.size.map(v => v * scale)], s.image, s.colour, { rotation: s.rotation }));
@@ -52,14 +51,34 @@ export function prologueControl(theme = nativeTheme) {
   const groups = [shapes.slice(0, 48), shapes.slice(48)].map((children, i) => ({
     name: `parts${i + 1}`, kind: 'container', size: p.seal.slice(2), children,
   }));
+  return { name: 'seal', kind: 'container', position: p.seal.slice(0, 2), size: p.seal.slice(2), children: groups };
+}
+
+function liyueElements(picture, p, colour) {
+  return p.elements.images.map((image, i) => picture(`element${i + 1}`,
+    [(i - 3) * p.elements.step, p.elements.y, p.elements.size, p.elements.size], image, colour));
+}
+
+export function styleLiyuePageReveal(cover, theme) {
+  const { picture } = helpers(theme), p = theme.layout.prologue;
+  const part = name => cover.children.find(node => node.name === name);
+  const veil = part('veil'), message = part('message'), cancel = part('cancel');
+  veil.colour = p.shade;
+  message.text.colour = p.ink;
+  message.position = p.title.slice(0, 2);
+  cancel.position = [0, -318];
+  cover.children.splice(cover.children.indexOf(veil) + 1, 0, liyueSeal(picture, p), ...liyueElements(picture, p, p.ink));
+}
+
+export function prologueControl(theme = nativeTheme) {
+  const { picture, plate, text } = helpers(theme), p = theme.layout.prologue;
   return { name: 'prologuePanel', kind: 'container', size: [...theme.canvas.base], visible: false, children: [
     { name: 'scene', kind: 'container', size: [...theme.canvas.base], children: [
       plate('shade', [0, 0, ...theme.canvas.base], p.shade),
-      { name: 'seal', kind: 'container', position: p.seal.slice(0, 2), size: p.seal.slice(2), children: groups },
+      liyueSeal(picture, p),
       text('title', p.title, '璃月', theme.font.heading, p.ink),
       text('line', p.line, '岩层深处传来了异常的共鸣。', theme.font.body, p.ink),
-      ...p.elements.images.map((image, i) => picture(`element${i + 1}`,
-        [(i - 3) * p.elements.step, p.elements.y, p.elements.size, p.elements.size], image, p.dim)),
+      ...liyueElements(picture, p, p.dim),
     ] },
     plate('fade', [0, 0, ...theme.canvas.base], p.shade),
     { name: 'blocker', kind: 'cursorArea', size: [...theme.canvas.base], focusable: false },

@@ -1,3 +1,4 @@
+import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -51,6 +52,7 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
+ 'docs/legal/assets.json':'1092785bd84163abd9ba779f6447807513c3ddf1bb8c0787584a93b1fb468b70',
  'data/presentation/narrative.zh-CN.json':'5db5e77f3789a98e49335bb2443e44f8703ebe349e9e1cd524cfb64a0a3006aa',
  'tests/lore-v2.test.mjs':'2aee46188d476f8ee24b0a736da4d2dcfb214c9f2fe54d5593f1c937a7d67d9f',
  'tests/lua/merchant_dialogue_lifecycle.lua':'25393fa6499858dbbf9551b416aca5930d93426b366c6f6c5123ee611bf3cb06',
@@ -97,12 +99,12 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  for(const [path,sha] of Object.entries(sourceSuccessors)){
-  const source=read(path,'utf8');
+  const source=beforeV2UiAdmission(path,read(path,'utf8'));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
- source=beforeCharacterPreparationCiSource(path,source);
+ source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,source));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
  if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')

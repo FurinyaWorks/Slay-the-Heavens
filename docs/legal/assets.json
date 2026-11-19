@@ -7,6 +7,10 @@
       "status": "Owner-selected, session-generated Genshin character derivative visual references for the project fitting experiment. Asset and platform rights remain separate. Project comparison only, with no official distribution authorization, asset sublicense, or native runtime approval.",
       "evidence": "art/characters/battle-figure-reference/2026-11-19/README.md and manifest.json; two original references from PR #744"
     },
+    "v2-native-menu-layout-evidence": {
+      "status": "Project diagnostic renders of native geometry over the existing red menu background; system font rasterized in screenshots only. Scope is offline comparison, with upstream IP rights reserved.",
+      "evidence": "docs/evidence/v2-ui-20261119/README.md"
+    },
     "approved-menu-design-reference": {
       "status": "Owner-supplied full menu design reference for project comparison. Original artist and independent license remain unconfirmed. No runtime use or third-party sublicense.",
       "evidence": "docs/design/reference-assets/v2.0.0/README.md; original bytes preserved by PR #753"
@@ -244,6 +248,14 @@
     "docs/evidence/menu-red-quality-20261114/before.png": {
       "sha256": "b12e36c8cc3e1b127134678b1087f7226b34dab4365cf2ab1bda17b56bdae622",
       "category": "menu-red-reference-native"
+    },
+    "docs/evidence/v2-ui-20261119/menu-hover.png": {
+      "sha256": "2484d47a03f5032b1c8e97f49daa48ca34becda442c881feba9b1f7ae6742e6e",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/menu-normal.png": {
+      "sha256": "4144110cb483ab236d7657e1ecebc53726e7450c5ac7f20e65019faf15e656e2",
+      "category": "v2-native-menu-layout-evidence"
     },
     "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png": {
       "sha256": "655f4926a86d1135d468b31bf0c225352c65de03ba09a0d684ffa875265741dd",

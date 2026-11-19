@@ -5,6 +5,7 @@
       "targetVersion": "v2.0.0",
       "state": "menuPanel",
       "revision": "2026-11-19",
+      "acceptanceScreen": "menu",
       "status": "APPROVED",
       "backlogTask": "TASK-103.5",
       "reference": {
@@ -20,7 +21,10 @@
       "codePaths": [
         "scripts/menu-red-scene.mjs",
         "src/lua/abyss_game_ui_menu_view.lua",
-        "src/lua/abyss_v25_menu_view.lua"
+        "src/lua/abyss_v25_menu_view.lua",
+        "scripts/native-menu-approved-layout.mjs",
+        "scripts/noncombat-v25-layout.mjs",
+        "scripts/official-assets-layout.mjs"
       ],
       "themeKeys": [
         "menuPresentation"

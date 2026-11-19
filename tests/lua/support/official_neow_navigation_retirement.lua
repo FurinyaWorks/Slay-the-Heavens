@@ -31,9 +31,22 @@ for _,action in ipairs({'abandon','new'})do
  local host,root,signals=setup();assert(F.start(host));neow(host,root)
  local oldRun=host.run
  assert(host:openMenu())
+ if OFFICIAL_NEOW_RETIREMENT then
+  local runMenu=root:GetChild('runMenu')
+  assert(runMenu.visible and runMenu:GetChild('mainMenu').visible)
+  for _,name in ipairs({'title','resume','help','map','abandon','quit','dismissHint','catch'})do
+   assert(not runMenu:GetChild(name).visible,name..' is hidden')
+  end
+  assert(not tap(hit(root,'runMenu','abandon'),10) and host.run==oldRun and host.menuOpen)
+  assert(runMenu:GetChild('blocker').listeners.click({touchId=11}))
+  assert(not host.exitOpen and host.run==oldRun and host:openMenu())
+ end
  if action=='new'then
-  assert(host:returnToMainMenu());assert(host.sessionPaused)
+  assert(tap(hit(root,'runMenu','mainMenu'),12));assert(host.sessionPaused and host.run==oldRun)
+  assert(tap(hit(root,'menuPanel','continueRun'),13) and host.run==oldRun)
+  assert(host:openMenu() and tap(hit(root,'runMenu','mainMenu'),14))
   assert(tap(hit(root,'menuPanel','start'),1))
+ elseif OFFICIAL_NEOW_RETIREMENT then assert(host:requestNavigation('abandon'))
  else assert(tap(hit(root,'runMenu','abandon'),2))end
  assert(host.navigationAction==action)
  local option=root:GetChild('nodePanel'):GetChild('eventView'):GetChild('option1')

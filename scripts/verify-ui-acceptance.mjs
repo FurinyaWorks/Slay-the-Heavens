@@ -1,5 +1,5 @@
 import {artBuildOptionsFromReceipt} from './art-features.mjs';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import Ajv from 'ajv';
 import { resolve, dirname, join } from 'node:path';
@@ -9,24 +9,18 @@ import { inside } from './evidence-files.mjs';
 import { requireStartupEvidence } from './native-playtest-evidence.mjs';
 import { sourceInputs, payloadDigest } from './build-native-candidate.mjs';
 import { verifyNativeCardArtReceipt } from './card-art-samples.mjs';
+import { loadUiReferences } from './check-ui-references.mjs';
 
 const validate=new Ajv({strict:true,allErrors:true}).compile(JSON.parse(readFileSync(new URL('../schemas/ui-acceptance.schema.json',import.meta.url),'utf8')));
 function decodeImage(file) {
   const result=spawnSync(process.env.ABYSS_PYTHON||'python',['-c','from PIL import Image; import sys; im=Image.open(sys.argv[1]); im.verify(); im=Image.open(sys.argv[1]); im.load(); assert im.width>0 and im.height>0',file],{encoding:'utf8',timeout:10000});
   if(result.error || result.status!==0)throw new Error(`Image decode failed: ${result.error?.message||result.stderr}`);
 }
-export function approvedDesignDigest(root=resolve('docs/design')) {
-  const files=['UI_DESIGN.md'];
-  function walk(dir){for(const entry of readdirSync(join(root,dir),{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){const path=`${dir}/${entry.name}`;if(entry.isDirectory())walk(path);else files.push(path);}}
-  walk('prototype');walk('screens');
-  // The current canvas supersedes PR19 on the screens it specifies. Retired
-  // PatchNotes remains historical source and must never certify the product.
-  if (existsSync(join(root, 'ui-canvas'))) {
-    for (const entry of readdirSync(join(root, 'ui-canvas')).sort()) {
-      if (entry !== 'PatchNotes.dc.html' && /\.(html|json|md)$/.test(entry)) files.push(`ui-canvas/${entry}`);
-    }
-  }
-  return sha256(JSON.stringify(files.sort().map(path=>({path,sha256:fileRecord(join(root,path),root).sha256}))));
+const targetVersion = 'v2.0.0';
+export function approvedDesignDigest(root=resolve('docs/design'), references=loadUiReferences(resolve(root,'../..'))) {
+  const active = references.filter(row => row.targetVersion === targetVersion && row.status === 'APPROVED');
+  return sha256(JSON.stringify(active.map(({codePath,state,revision,reference,acceptanceScreen,note}) =>
+    JSON.stringify({codePath,state,revision,reference,acceptanceScreen,note})).sort()));
 }
 
 // Critical information/actions from the approved PR19 specification. Decoration
@@ -54,7 +48,7 @@ export const criticalUiChecks = {
 for (const checks of Object.values(criticalUiChecks)) checks.push(
   'native1280x720', 'pcSafeArea', 'mobileSafeArea', 'fontAndLayers', 'input', 'capacityAndPerformance');
 
-export function reviewUiAcceptance(manifest, expected, {evidenceRoot=process.cwd(),baselineRoot=resolve('docs/design')}={}) {
+export function reviewUiAcceptance(manifest, expected, {evidenceRoot=process.cwd(),baselineRoot=resolve('docs/design'),references=[]}={}) {
   const errors = [];
   if(!validate(manifest))errors.push(`Evidence schema: ${validate.errors.map(row=>row.instancePath+' '+row.message).join('; ')}`);
   const candidateHash=typeof expected==='string'?expected:expected.candidateHash;
@@ -73,6 +67,14 @@ export function reviewUiAcceptance(manifest, expected, {evidenceRoot=process.cwd
         if(!row[field])throw new Error('missing');
         const record=fileRecord(resolve(root,row[field]),root);
         if(record.sha256!==row[`${field}Hash`])throw new Error('hash mismatch');
+        if (field === 'baseline') {
+          const applicable = references.filter(entry => entry.targetVersion === targetVersion);
+          const approved = applicable.find(entry => entry.acceptanceScreen === screen && entry.status === 'APPROVED');
+          if (approved && record.sha256 !== approved.reference.sha256) throw new Error('approved screen reference required');
+          if (applicable.some(entry => ['SUPERSEDED','REJECTED'].includes(entry.status) && entry.reference.sha256 === record.sha256)) {
+            throw new Error('retired design reference');
+          }
+        }
         if(!images.has(record.path)){decodeImage(record.path);images.add(record.path);}
         if(field==='screenshot') {
           const previous=used.get(record.sha256);
@@ -107,8 +109,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const toolRoot=process.env.MILIASTRA_MCP_ROOT||'D:/MiliastraTools/genshin-miliastra-mcp';
   const {inspectDebugLog}=await import(pathToFileURL(join(toolRoot,'src/debug-log.mjs')));
   requireStartupEvidence(startup.statusSnapshot,startup.expected,{decodeLog:bytes=>inspectDebugLog(bytes,{limit:100000}),parserVersion:fileRecord(join(toolRoot,'src/debug-log.mjs')).sha256});
-  const errors = reviewUiAcceptance(manifest,{candidateHash:hash,buildId:receipt.buildId,runId:startup.runId,payloadDigest:receipt.payloadDigest,baselineRevision:approvedDesignDigest()},
-    {evidenceRoot:startup.expected.runDir});
+  const references = loadUiReferences();
+  const errors = reviewUiAcceptance(manifest,{candidateHash:hash,buildId:receipt.buildId,runId:startup.runId,payloadDigest:receipt.payloadDigest,baselineRevision:approvedDesignDigest(undefined,references)},
+    {evidenceRoot:startup.expected.runDir,references});
   if (errors.length) { console.error('UI acceptance incomplete:\n' + errors.map(row => `- ${row}`).join('\n')); process.exitCode = 1; }
   else console.log('Critical UI information/actions accepted against approved baseline for this exact candidate.');
 }

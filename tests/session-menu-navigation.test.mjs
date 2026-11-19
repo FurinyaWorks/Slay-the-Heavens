@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync,writeFileSync,unlinkSync,readdirSync} from 'node:fs';
-import {sourceEpoch,releaseSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {sourceEpoch as liveEpoch,sessionMenuSourceEpoch as sourceEpoch,releaseSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {applyV25MenuLayout,v25MenuRuntimeLayout} from '../scripts/v25-menu-layout.mjs';
@@ -11,6 +11,7 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
+const readHistoricalMenu = liveEpoch.combinedReader(undefined,'v2RunMenuPrior');
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -33,7 +34,7 @@ test('deck notification continuation preserves immutable menu sources and authen
  const changed=structuredClone(menu),owner=Object.keys(changed.current)[0];
  changed.current[owner].source+='\n';
  assert.throws(()=>assertOriginalSessionMenuWitness(changed),/immutable original session menu source witness/);
- const proof=sourceEpoch.proof,read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
  assert.equal(proof.currentCommit,neowRetirementStaticContinuation.currentCommit);
  assert.equal(proof.owners.length,116);assert.equal(Object.keys(proof.current).length,352);
  for(const p of Object.keys(continuation.current)){
@@ -52,7 +53,7 @@ test('deck notification continuation preserves immutable menu sources and authen
 test('Neow retirement continuation keeps the complete prior corpus and rejects fresh owner drift',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),retirement=packet.neowRetirementContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
  const {navigationRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
  assert.equal(navigationRetirementPrior.commit,'808a310cfc9a0c2734ec424d7ac80d3a040557c8');
  assert.deepEqual(Object.keys(navigationRetirementPrior.files),Object.keys(proof.current));
@@ -79,7 +80,7 @@ test('Neow retirement continuation keeps the complete prior corpus and rejects f
 test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
  const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
  const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
  assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);
@@ -111,7 +112,7 @@ test('real V25 menu controls support controller round trips without overlapping 
 });
 
 test('menu source continuation retains the complete release corpus and rejects new owner drift',()=>{
- const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
  const paths=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
  assert.deepEqual(paths,Object.keys(sourceEpoch.proof.current).sort());
  const added=paths.filter(p=>!Object.hasOwn(releaseSourceEpoch.proof.current,p));
@@ -126,5 +127,16 @@ test('menu source continuation retains the complete release corpus and rejects n
  for(const owner of added){
   assert.throws(()=>sourceEpoch.preCombinedSource(p,current,{target:'sessionMenuPrior',readSource:q=>q===owner?read(q)+'\n':read(q)}),/linked owner identity/);
   assert.throws(()=>sourceEpoch.preCombinedSource(p,current,{target:'sessionMenuPrior',readSource:q=>q===owner?null:read(q)}),/linked owner identity/);
+ }
+});
+
+test('v2 run menu continuation preserves the prior owner and rejects changed siblings',()=>{
+ const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const changed=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'];
+ for(const path of changed) {
+  assert.equal(read(path),liveEpoch.proof.current[path].source);
+  assert.equal(liveEpoch.preCombinedSource(path,read(path),{target:'v2RunMenuPrior',readSource:read}),sourceEpoch.proof.current[path].source);
+  for(const missing of changed) assert.throws(()=>liveEpoch.preCombinedSource(path,read(path),
+   {target:'v2RunMenuPrior',readSource:p=>p===missing?null:read(p)}),/linked owner identity/);
  }
 });

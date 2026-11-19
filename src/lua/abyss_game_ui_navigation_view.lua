@@ -44,17 +44,31 @@ local function compact(menu,routeEnabled,mainEnabled)
         c:SetSizeDelta(R.panel[3]-inset,R.panel[4]-gap-inset)
     end
 end
+local function showRunOptions(menu,show)
+    for _,name in ipairs({'border','face','catch','title','resume','help','rule','abandon','dismissHint'}) do
+        menu:GetChild(name):SetVisible(show)
+    end
+    menu:GetChild('catch').raycastTarget=show
+end
 function M.runMenu(self,menu,routeEnabled)
+    local minimal=Navigation.minimalRunMenu(self)
+    showRunOptions(menu,not minimal)
+    if minimal then routeEnabled=false end
     local hasRun=Navigation.hasRun(self)
     local mainEnabled=hasRun and not self.sessionPaused
     menu:GetChild('mainMenu'):SetVisible(mainEnabled)
-    menu:GetChild('quit'):SetVisible(mainEnabled)
+    menu:GetChild('quit'):SetVisible(mainEnabled and not minimal)
     for _,state in ipairs({'normal','hover','pressed','disabled'})do
         menu:GetChild('abandon'):GetChild('hit'):GetChild(state):GetChild('label').text=hasRun and '放弃本局' or '退出游戏'
     end
     local route=menu:GetChild('map')
     route:SetVisible(routeEnabled)
     route:GetChild('hit').interactable,route:GetChild('hit').raycastTarget=routeEnabled,routeEnabled
-    compact(menu,routeEnabled,mainEnabled)
+    if minimal then
+        local R=Theme.layout.runMenu
+        menu:GetChild('mainMenu'):SetAnchoredPosition(R.panel[1],R.title[2]-20)
+    else
+        compact(menu,routeEnabled,mainEnabled)
+    end
 end
 return M

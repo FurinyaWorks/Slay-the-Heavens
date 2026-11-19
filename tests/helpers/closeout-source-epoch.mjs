@@ -11,6 +11,7 @@ import {feedbackProductionPatch} from './sts-feedback-production.mjs';
 import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-source-epoch.mjs';
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
+import {extendV2RunMenuEpoch} from './v2-run-menu-source-epoch.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -49,7 +50,8 @@ export const menuRedPriorEpoch=extendFeedbackSourceEpoch(stsStyleEpoch,feedbackP
 export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
-export const sourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const sessionMenuSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
+export const sourceEpoch=extendV2RunMenuEpoch(sessionMenuSourceEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
