@@ -1,0 +1,778 @@
+{
+  "imageEditor": "103025f9095d8089e3f9bf097f4d0c5fe039d546",
+  "giaGroupName": "Furina_Battle_Fit_744",
+  "archiveSceneSHA256": "90f00dcf66d672b46f16ddb6a3f78bdac9d8d817754c227296b9e03282f04c8b",
+  "literalCanonicalSHA256": "c43b5ba84cae6f55c892b2856aee38af4db5d592a25e08d0af0e5e00f2c75d6e",
+  "primitiveCount": 573,
+  "controls": 585,
+  "fit": {
+    "inputSHA256": "bc9118f85b57b2ca70ec027c43a520c3bb2d0f403e4f0f6e167d4297c63a1ff5",
+    "inputCropHalfOpen": [
+      414,
+      263,
+      636,
+      820
+    ],
+    "foregroundComponentSeed": [
+      540,
+      369
+    ],
+    "foregroundThreshold": 32,
+    "canvas": [
+      133,
+      133
+    ],
+    "figureDisplayHeight": 125,
+    "sourceEdgeStrength": 0.56,
+    "lashOpacityMultiplier": 0.65,
+    "files": {
+      "native.png": {
+        "sha256": "1dc29ade0c6f6b10d13b9b787f3083a7345110c81b3d3ab4687d728227f3656d"
+      },
+      "native-4x.png": {
+        "sha256": "f892c7552e24a4d5235b0851a7e69518a30c88b3463cc8e17926ab56b7d5f995"
+      }
+    }
+  },
+  "gil": {
+    "schemaVersion": 1,
+    "scope": "Existing official editor sample-derived offline GIL. Not a project save or release; no official import/device shot/startup/fps claims.",
+    "toolPin": "bcc75795ebf17271612332fc81645336686bd94c",
+    "baseSHA256": "b3b46b0412caf865ebc259c15ad8215b33a1797ab7940861eb562320541e13a2",
+    "baseBytes": 25793,
+    "literalSHA256": "3717700065aea8d67d00d0ff3527dd1cfcf66d8decbd8c77ead8deda047a8805",
+    "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546",
+    "name": "LumineArtOnly",
+    "rootId": 1073741847,
+    "dedicatedHost": {
+      "id": 1073741848,
+      "name": "LumineFigureHost",
+      "canvas": [
+        133,
+        133
+      ]
+    },
+    "file": "Lumine-Art-Only-OFFLINE.gil",
+    "sha256": "5b0058cc98cf8e66c3bdd34076951fd6aab27ec17b20553121027b424b88fd5d",
+    "fileBytes": 161165,
+    "template": {
+      "id": 1073741845,
+      "name": "LumineShapeTemplate"
+    },
+    "count": {
+      "mountedBatches": 10,
+      "staticShapeControls": 0,
+      "predictedNativeImagesOnStart": 573,
+      "maxDirectChildrenPerBatch": 60,
+      "dedicatedHostContainers": 1,
+      "interfaceRootContainers": 1
+    },
+    "sourceBytes": 125542,
+    "tests": [
+      "ordered host and batch ID readback",
+      "native image template readback with mask disabled",
+      "each bound Lua source byte-for-byte readback",
+      "all client scripts syntax-checked by existing setClientScript"
+    ],
+    "validation": "offline only; actual native renderer and device import unverified",
+    "batches": [
+      {
+        "name": "LumineArtBatch01",
+        "start": 0,
+        "count": 60,
+        "sha256": "d4bb689366c3f5cfd38673ab413c1ddb594ab6e8ca2b2a058ccc3ef247a85e43",
+        "boundSHA256": "fa38a73bf1d287fa198de61c92b7db28c99c30ecaf44fc119c43c99b259da5f9",
+        "boundBytes": 13100,
+        "scriptId": 1073741826,
+        "containerId": 1073741849
+      },
+      {
+        "name": "LumineArtBatch02",
+        "start": 60,
+        "count": 60,
+        "sha256": "3e4b9f5193802821350ee3afff12d03046212c569798b2f31138e5651b0d9991",
+        "boundSHA256": "79003df726cc01f2c526a821ee5b4f9907a4f8692bac8197104ca8272ba81606",
+        "boundBytes": 13095,
+        "scriptId": 1073741827,
+        "containerId": 1073741850
+      },
+      {
+        "name": "LumineArtBatch03",
+        "start": 120,
+        "count": 60,
+        "sha256": "b701c79f20a5277ee85039cce144f0bed2f274c0f2e1b0a1f7f25a9f63b6f55c",
+        "boundSHA256": "38fc5141098542c1c05fcc381f244bb5894c43e29fa572187d7bec73e4dafcd3",
+        "boundBytes": 13171,
+        "scriptId": 1073741828,
+        "containerId": 1073741851
+      },
+      {
+        "name": "LumineArtBatch04",
+        "start": 180,
+        "count": 60,
+        "sha256": "ae0fba92df0db376025e46cf3aafb90340d484e5395150eb757da8f65f1e1406",
+        "boundSHA256": "b54f1f08955873f68e3e88f06961b0e218e323cab8e19171d2d8872f28218b18",
+        "boundBytes": 13188,
+        "scriptId": 1073741829,
+        "containerId": 1073741852
+      },
+      {
+        "name": "LumineArtBatch05",
+        "start": 240,
+        "count": 60,
+        "sha256": "2eb40e9f108519a1bac2e8faa514e96790493590e4a5041e2dfebf3e698f4e25",
+        "boundSHA256": "56d41d6b7f3c85879335ac6c7e60b4757f05c56a9c261a97a2f8dafb59707cfe",
+        "boundBytes": 13028,
+        "scriptId": 1073741830,
+        "containerId": 1073741853
+      },
+      {
+        "name": "LumineArtBatch06",
+        "start": 300,
+        "count": 60,
+        "sha256": "553e9d8f6e0eb83c5a67683ae67780d9da36cfc7342c2ae62b15e5d58e231938",
+        "boundSHA256": "eeae07bb67b633acc91db662c0581d40ad855a2bc20c1dd0d35300569d527fdd",
+        "boundBytes": 12894,
+        "scriptId": 1073741831,
+        "containerId": 1073741854
+      },
+      {
+        "name": "LumineArtBatch07",
+        "start": 360,
+        "count": 60,
+        "sha256": "44952f62ac0f00655a34ae469010f8e5666d9af2d365554e927cffc492f6c6fb",
+        "boundSHA256": "81c1d642c129fc55935f57a3b2f68da37366b3b55ebc9981f305ce6e726e2d70",
+        "boundBytes": 12996,
+        "scriptId": 1073741832,
+        "containerId": 1073741855
+      },
+      {
+        "name": "LumineArtBatch08",
+        "start": 420,
+        "count": 60,
+        "sha256": "200af5767f2795b4dd53df1a89b17f207c547c3b352157d2f9da4cf5b755bc0f",
+        "boundSHA256": "28683a8fe0ba91139c0f325881d276d11b836a043d49a89b2423df0ec300ac75",
+        "boundBytes": 13010,
+        "scriptId": 1073741833,
+        "containerId": 1073741856
+      },
+      {
+        "name": "LumineArtBatch09",
+        "start": 480,
+        "count": 60,
+        "sha256": "57d02e6f9dfe0d8b88c76e9fbfb2f9fba288d53c142fc002f253776fe93f3306",
+        "boundSHA256": "d51dd8ab43d69d97690b6e1fdd10dfbd748e0a6b4cc23aeca46f9a14bb3de792",
+        "boundBytes": 13089,
+        "scriptId": 1073741834,
+        "containerId": 1073741857
+      },
+      {
+        "name": "LumineArtBatch10",
+        "start": 540,
+        "count": 33,
+        "sha256": "1728012d1bdb51b5d1a942adb9fffffc46529d529934500598f47e809151b725",
+        "boundSHA256": "f41ad3dbdaa7527c38f233eac38c1af607aeda991adc029d8823af8aac89b9f9",
+        "boundBytes": 7971,
+        "scriptId": 1073741835,
+        "containerId": 1073741858
+      }
+    ]
+  },
+  "lifecycle": {
+    "scope": "Exact Lua bodies read from fixture-derived GIL, existing Fengari/native API mock verification, NOT official import or device runtime",
+    "gilSHA256": "5b0058cc98cf8e66c3bdd34076951fd6aab27ec17b20553121027b424b88fd5d",
+    "literalSHA256": "3717700065aea8d67d00d0ff3527dd1cfcf66d8decbd8c77ead8deda047a8805",
+    "checkerGitBlob": "ced76db25cd9e386d9c2dd683ea8f0aeef1b35aa",
+    "templateIndex": 1073741845,
+    "verifiedImages": 573,
+    "extraMasks": 0,
+    "results": [
+      {
+        "group": "LumineArtBatch01",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch02",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch03",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch04",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch05",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch06",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch07",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch08",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch09",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch10",
+        "images": 33,
+        "verifiedOrderedControlRows": 33,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      }
+    ]
+  },
+  "smallSizeAudit": {
+    "上一版": {
+      "sha256": "12646de673aef77e957b1cec6d336b442ed560ff46401b1826d9474b95e7c962",
+      "rows": 320,
+      "diagnostics": {
+        "64": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              19.609,
+              26.278
+            ],
+            "light_whole_head": [
+              16.288,
+              19.851
+            ],
+            "silhouette_iou": 0.8658
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              23.143,
+              28.059
+            ],
+            "light_whole_head": [
+              18.866,
+              21.128
+            ],
+            "silhouette_iou": 0.8547
+          }
+        ],
+        "72": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              20.5,
+              26.997
+            ],
+            "light_whole_head": [
+              16.848,
+              20.027
+            ],
+            "silhouette_iou": 0.867
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              21.296,
+              25.245
+            ],
+            "light_whole_head": [
+              17.755,
+              19.619
+            ],
+            "silhouette_iou": 0.8612
+          }
+        ],
+        "80": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              19.803,
+              23.374
+            ],
+            "light_whole_head": [
+              16.453,
+              17.693
+            ],
+            "silhouette_iou": 0.8955
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              20.39,
+              25.041
+            ],
+            "light_whole_head": [
+              17.369,
+              19.535
+            ],
+            "silhouette_iou": 0.8777
+          }
+        ],
+        "88": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              20.544,
+              22.508
+            ],
+            "light_whole_head": [
+              17.208,
+              17.351
+            ],
+            "silhouette_iou": 0.8796
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.454,
+              23.368
+            ],
+            "light_whole_head": [
+              16.472,
+              18.39
+            ],
+            "silhouette_iou": 0.896
+          }
+        ],
+        "96": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              19.275,
+              22.216
+            ],
+            "light_whole_head": [
+              16.267,
+              17.319
+            ],
+            "silhouette_iou": 0.8803
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.782,
+              22.964
+            ],
+            "light_whole_head": [
+              16.81,
+              17.94
+            ],
+            "silhouette_iou": 0.8986
+          }
+        ],
+        "104": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              18.831,
+              21.427
+            ],
+            "light_whole_head": [
+              15.904,
+              16.663
+            ],
+            "silhouette_iou": 0.9078
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.315,
+              20.915
+            ],
+            "light_whole_head": [
+              16.628,
+              16.522
+            ],
+            "silhouette_iou": 0.8915
+          }
+        ],
+        "112": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              19.567,
+              21.775
+            ],
+            "light_whole_head": [
+              16.67,
+              17.228
+            ],
+            "silhouette_iou": 0.8956
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.51,
+              22.334
+            ],
+            "light_whole_head": [
+              16.655,
+              17.378
+            ],
+            "silhouette_iou": 0.8975
+          }
+        ],
+        "133": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              18.676,
+              20.176
+            ],
+            "light_whole_head": [
+              16.19,
+              16.202
+            ],
+            "silhouette_iou": 0.914
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              20.106,
+              24.002
+            ],
+            "light_whole_head": [
+              17.146,
+              18.85
+            ],
+            "silhouette_iou": 0.8967
+          }
+        ]
+      }
+    },
+    "R6 候选": {
+      "sha256": "eebaba75eb0c72dcfcc5b5ca5ec77e00c06287fbbb27474a03452635e2b4b2da",
+      "rows": 573,
+      "diagnostics": {
+        "64": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              20.315,
+              31.789
+            ],
+            "light_whole_head": [
+              16.883,
+              23.922
+            ],
+            "silhouette_iou": 0.857
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              22.591,
+              31.905
+            ],
+            "light_whole_head": [
+              18.613,
+              24.933
+            ],
+            "silhouette_iou": 0.8431
+          }
+        ],
+        "72": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              20.344,
+              28.942
+            ],
+            "light_whole_head": [
+              17.425,
+              22.822
+            ],
+            "silhouette_iou": 0.8686
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              21.816,
+              30.338
+            ],
+            "light_whole_head": [
+              18.103,
+              23.152
+            ],
+            "silhouette_iou": 0.859
+          }
+        ],
+        "80": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              19.882,
+              27.478
+            ],
+            "light_whole_head": [
+              17.008,
+              21.37
+            ],
+            "silhouette_iou": 0.8893
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.776,
+              27.762
+            ],
+            "light_whole_head": [
+              16.826,
+              22.127
+            ],
+            "silhouette_iou": 0.8843
+          }
+        ],
+        "88": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              19.373,
+              25.015
+            ],
+            "light_whole_head": [
+              16.782,
+              19.963
+            ],
+            "silhouette_iou": 0.8871
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.696,
+              26.124
+            ],
+            "light_whole_head": [
+              16.826,
+              20.298
+            ],
+            "silhouette_iou": 0.8864
+          }
+        ],
+        "96": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              18.081,
+              24.987
+            ],
+            "light_whole_head": [
+              15.965,
+              19.607
+            ],
+            "silhouette_iou": 0.9058
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.888,
+              24.017
+            ],
+            "light_whole_head": [
+              16.838,
+              18.745
+            ],
+            "silhouette_iou": 0.8936
+          }
+        ],
+        "104": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              18.768,
+              22.917
+            ],
+            "light_whole_head": [
+              16.368,
+              18.419
+            ],
+            "silhouette_iou": 0.9191
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.05,
+              23.938
+            ],
+            "light_whole_head": [
+              16.796,
+              18.827
+            ],
+            "silhouette_iou": 0.9013
+          }
+        ],
+        "112": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              18.752,
+              23.045
+            ],
+            "light_whole_head": [
+              16.296,
+              18.089
+            ],
+            "silhouette_iou": 0.9011
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.987,
+              22.949
+            ],
+            "light_whole_head": [
+              17.46,
+              18.142
+            ],
+            "silhouette_iou": 0.9103
+          }
+        ],
+        "133": [
+          {
+            "phase": [
+              0.0,
+              0.0
+            ],
+            "dark_whole_head": [
+              18.367,
+              21.9
+            ],
+            "light_whole_head": [
+              16.28,
+              17.484
+            ],
+            "silhouette_iou": 0.927
+          },
+          {
+            "phase": [
+              0.5,
+              0.5
+            ],
+            "dark_whole_head": [
+              19.348,
+              21.363
+            ],
+            "light_whole_head": [
+              17.05,
+              17.139
+            ],
+            "silhouette_iou": 0.9081
+          }
+        ]
+      }
+    }
+  }
+}
