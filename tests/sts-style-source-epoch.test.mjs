@@ -1,4 +1,5 @@
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
+import {assertCurrentJsInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -27,8 +28,15 @@ function fixture(){
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
- assert.deepEqual(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
- for(const [kind,current]of [['js',rawJs],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
+ assertCurrentJsInventory(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
+ const newTest=rawJs.find(path=>!integratedCiProof.inventory.includes(path));
+ assert.throws(()=>assertCurrentJsInventory(integratedCiProof.inventory,integratedCiProof.inventory),/inventory/);
+ for(const target of Object.keys(integratedCiProof.sources)){
+  assert.deepEqual(integratedPriorInventory(rawJs,target),integratedCiProof.inventories[target].js);
+  assert.throws(()=>integratedPriorInventory(rawJs,target,'js',(path,encoding)=>
+   readFileSync(path,encoding)+(path===newTest?'\n':'')),/fresh added inventory source/);
+ }
+ for(const [kind,current]of [['js',integratedCiProof.inventory],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
   if(target==='release'&&kind==='js'&&added.length===0){
    assert.deepEqual(current,prior,'source-only continuation retains the complete identical JS inventory');
