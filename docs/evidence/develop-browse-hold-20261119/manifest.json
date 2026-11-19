@@ -1,0 +1,101 @@
+{
+  "base": "2ec45b9e52c870badc4d4888f6243a30556eecb4",
+  "baseTree": "80bbcdd06283e0c272da4221eb35df457c6e8dac",
+  "sourceFiles": {
+    "src/lua/abyss_battle_actions.lua": {
+      "gitBlob": "613b53efecb936aad8e759a451b00f622a551b92",
+      "sha256": "11222422d46898fdc10f26eb5cc17fc700f8bbb3d4aaba375ab53721206af5e0"
+    },
+    "src/lua/abyss_battle_card_gestures.lua": {
+      "gitBlob": "81eed260f3ad33aa042f3aecfbab0cf650ee5634",
+      "sha256": "de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153"
+    },
+    "src/lua/abyss_battle_card_bindings.lua": {
+      "gitBlob": "af9561f79c59834549a3114f5ebb99a843f0b2fd",
+      "sha256": "add73e13c968039d9eee32dacd3d7d866c21ec6e2ccc89182d4f199d2ee9b7e7"
+    },
+    "src/lua/abyss_ui.lua": {
+      "gitBlob": "ade0429d561b58ddfc479c24d539bb289020ad85",
+      "sha256": "5ce18f5cd92624d57af9ccb522a3b1f5882f8f42b6658e0d10463b8d992a8cb8"
+    },
+    "tests/lua/drag_input_boundaries.lua": {
+      "gitBlob": "743a3bb2724a1089b4f1a1f1c0df8743c74c16ec",
+      "sha256": "aee1135ab3546391079afbda5de1df367cb2fde973d07575b3d0d229af4c24b4"
+    },
+    "tests/lua/card_help_release.lua": {
+      "gitBlob": "42bbce59c7062143e2a26d5e5ca43209dfaa44bd",
+      "sha256": "6397ae74f503aa7bb1be03969c3eb46ff7f8abfe5fc50cca48c254ea2ac7bdc0"
+    },
+    "tests/lua/card_help_release_slice_2.lua": {
+      "gitBlob": "7741accb826bc7afde6e3eee747b2428520c2d67",
+      "sha256": "acab9bad3b07b975938162ca4cbaadfb4854663338c32fec18368bdd337ef7e8"
+    },
+    "tests/lua/card_help_release_slice_3.lua": {
+      "gitBlob": "0fcc994ef4bbb2965da80f909ff3a0f72ef22c7b",
+      "sha256": "abfc72a8f6735cbd38d05a72bd0538431ff9091dc06f28f01b3eef4d82d8dbdd"
+    },
+    "tests/helpers/combined-epoch/source-epoch-runtime.mjs": {
+      "gitBlob": "fc8f5a58e7fd9afcf2e8c12d1e97b9728ee94c21",
+      "sha256": "55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99"
+    }
+  },
+  "proofSha256": "616e174cef1227eb1adf51b7ea89c2978c32a464123e37997b46b0fe44b4723c",
+  "logRecords": [
+    {
+      "originalName": "build.log",
+      "bytes": 459,
+      "originalSha256": "88b25cab04f8c99b51f36429e4fd45d23768d8511da33445da48f5895cc04108",
+      "publicBytes": 459,
+      "publicSha256": "88b25cab04f8c99b51f36429e4fd45d23768d8511da33445da48f5895cc04108"
+    },
+    {
+      "originalName": "intake-hold.log",
+      "bytes": 178,
+      "originalSha256": "9a68cc5ccd7d750a0a261399681e22f0f7fe59a80b84a663cfce50b2a9f60726",
+      "publicBytes": 178,
+      "publicSha256": "9a68cc5ccd7d750a0a261399681e22f0f7fe59a80b84a663cfce50b2a9f60726"
+    },
+    {
+      "originalName": "browse-red.log",
+      "bytes": 447,
+      "originalSha256": "eebd9398a1ae0275ec6efcf305fa856b53fdd5e2ef26685f25a1c6a7abfdba2f",
+      "publicBytes": 375,
+      "publicSha256": "754c90002facded12edd48cae3f54345a8118e9e83d40b579333982e11224681"
+    },
+    {
+      "originalName": "original-drag-red.log",
+      "bytes": 1666,
+      "originalSha256": "1c4e64fff38e5857abb197ab71eb32376eddaaf53229feeb4b90296f28158e91",
+      "publicBytes": 1666,
+      "publicSha256": "1c4e64fff38e5857abb197ab71eb32376eddaaf53229feeb4b90296f28158e91"
+    },
+    {
+      "originalName": "genuine-hold-baseline.log",
+      "bytes": 458,
+      "originalSha256": "1c5b34dbd48e58551806a6ccf7f467911f2e7e8433832997ab0163a2000e3485",
+      "publicBytes": 458,
+      "publicSha256": "1c5b34dbd48e58551806a6ccf7f467911f2e7e8433832997ab0163a2000e3485"
+    },
+    {
+      "originalName": "static-hold-baseline.log",
+      "bytes": 468,
+      "originalSha256": "9383a99b0f05d7ae01de1450bdf8c53d707391e3add59adbb0e47a55caf84547",
+      "publicBytes": 468,
+      "publicSha256": "9383a99b0f05d7ae01de1450bdf8c53d707391e3add59adbb0e47a55caf84547"
+    }
+  ],
+  "publicBundle": {
+    "file": "logs.txt.gz",
+    "sha256": "c53ca8e6450abca0eebed096f77c3eb5ad75491a61b40b76a52027ae97840616",
+    "uncompressedSha256": "3b8ca119efcc76eb0afc8d4bd1e85d20728ec9dec685e2244c8e39cc41f78338"
+  },
+  "independentReview": {
+    "kind": "single independent run; complete tool stdout exported after execution, not a second run or shell-captured log",
+    "file": "independent-tool-stdout.txt.gz",
+    "stdoutBytes": 558,
+    "stdoutSha256": "c43baab3e5620d7c13cecd6121883ddbeeae74179589348b1fefa17982edb2d8",
+    "storedSha256": "59446c47318c7b8870c44095de0180f74252d4be0bfa6368ca7ef5e897155aa6",
+    "expectedExit": 1,
+    "elapsedMs": 3464
+  }
+}
