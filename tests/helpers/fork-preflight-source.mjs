@@ -55,7 +55,7 @@ const sourceSuccessors=Object.freeze({
  'scripts/verify-backlog-roadmap.mjs':'1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb',
  'tests/backlog-roadmap.test.mjs':'b4a523a6a7763e825804404a270da6a401a17b59b9855b701a82cb8571f3b17d',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'55db2a893bb6ac20d3ec42d41d9e6396d51acd783c974bd573e5b4ce3443fc99',
- 'tests/helpers/copy-integration-source-closure.mjs':'32c95e4329b981215af447d2b49ed80712a6acbeb27848200c920af8ee3eeaf2',
+ 'tests/helpers/copy-integration-source-closure.mjs':'888b4675e665dafc2c110e417ae5b01cdeec6235b05b723238e890dcfedac269',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
  'tests/integration-source-epoch.test.mjs':'52c1cb8227f7849a1757d531c82611d36f7d73cad3462185599d18b9be096440',
  'tests/defect-actor-boundary.test.mjs':'bd3deb3006a06adb5b8cb5f1bbda90a354882b015d5a57bd1c1623df35dfb039',

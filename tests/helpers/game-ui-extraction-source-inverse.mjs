@@ -2,9 +2,6 @@
 export * from './epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 import { preGameUiExtractionSource as original } from './epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
-import {projectFatalBgmSource} from './fatal-bgm-source-continuation.mjs';
-import {projectSelectorSource} from './character-selector-source.mjs';
-import {projectPotionTextSource} from './potion-text-source.mjs';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {existsSync,realpathSync,statSync,rmSync} from 'node:fs';
@@ -16,10 +13,7 @@ const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');
 export function preGameUiExtractionSource(path,source,{readSource=live}={}){
  readSource=readers.get(readSource)??readSource;
  if(typeof readSource!=='function'){
-  const current=sourceEpoch.proof.current[path];
-  // Classify the reviewed continuations without reading or projecting owners.
-  const admitted=projectPotionTextSource(path,projectSelectorSource(path,projectFatalBgmSource(path,source,current),current),current);
-  if(typeof admitted==='string'&&current?.sha256===hash(admitted))
+  if(typeof source==='string'&&sourceEpoch.proof.current[path]?.sha256===hash(source))
    assert.equal(typeof readSource,'function','GameUI extraction linked reader must be a function');
   return original(path,source,{readSource});
  }
