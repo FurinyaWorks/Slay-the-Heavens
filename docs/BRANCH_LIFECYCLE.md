@@ -19,15 +19,15 @@
 | 分支 / 工作 | 正确来源与目标 | 清理原则 |
 | --- | --- | --- |
 | master | 已发行生产历史；只接正式 release 或 hotfix | 长期保护 |
-| release/v2.0.0 | 本轮 v2.0.0 修复、性能及稳定性（不引入新 Feature） | 长期保留至该版本发版/回合完成 |
-| fix/*（v2.0.0 缺陷） | 从 release/v2.0.0 起；PR 目标 release/v2.0.0 | 经本版验收、合入后核对并删 head |
-| develop | 下一个版本与后续工作主线 | 长期保护 |
+| release/v2.0.0 | 冻结的旧集成来源，供取证及接续 | 保留分支与精确提交，见 [2.0 重建交接](versions/V2-RELEASE-HANDOFF.md) |
+| fix/*（v2.0.0 缺陷） | 从最新 develop 起；PR 目标 develop | 经本版验收、合入后核对并删 head |
+| develop | v2.0.0 重建及后续工作主线 | 长期保护 |
 | feat/*、docs/*（非本版） | 从 develop 起；PR 目标 develop | 经合入/验收清理 |
 | archive/*、冻结实验 | 有明确用途、来源 SHA、负责人和复核点 | 不因年龄自动删除；不用长期占用日常活跃 WIP |
 | gh-readonly-queue/*、handoff/* | 临时测试/交接引用 | 先确认对应 PR/作业结束、无后续引用再清理 |
 | 关闭未合并 PR 的来源 | 保留至 Backlog 和继承者记录完整 | 不等于“已交付”或“可以直接删” |
 
-发版从 release/v2.0.0 → master 后，将已发布修复按既有受保护流程回同步 develop。后续特性不得以“顺带修一下”为由混入 release。实际目标以 PR base 和任务批准为准，不能仅凭 feat/fix 前缀判断。
+完成 develop 集成和全量回归后，才从已验证提交重建发布候选，并按既有受保护流程和 Owner 确认执行发布。实际目标以 PR base 和任务批准为准。
 
 ## 分支入口：先查重再开工
 

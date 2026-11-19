@@ -5,8 +5,8 @@
 从主仓库 `FurinyaWorks/Slay-the-Heavens` 克隆一份即可；三个仓库共享项目和 Backlog，Fork 是开发验证资源，不是三个独立产品。按以下顺序接手：
 
 1. 运行 `backlog instructions overview`，读根 `AGENTS.md`、[范围](SCOPE.md)、[交接](HANDOFF.md)；再查目标 Backlog 任务及附件。任务记录必须区分已实现、待集成、待正式 CI、待实机，不把 In Progress 当作可重复领取。
-2. 按 [三仓库分流](CI.md#三仓库按需验证) 的固定 ID 解析当前名称，配置 origin/fork-a/fork-b；核对远端分支、三个仓库的开放 PR 和相关 dispatch。只取本任务需要的分支，不同步全部历史。主仓库 release/v2.0.0 收发版必需修复，develop 收后续工作；A 优先 Fast、B 优先 Full。
-3. 按下文“开始任务”核对认领、审批、依赖和文件范围，再建独立短分支。发版修复从最新 release 基线接续，不从 develop 整包带入未来内容。Fork 成果成熟后接续主仓库短分支及正式 PR，不能凭 Fork 绿灯合入。
+2. 按 [三仓库分流](CI.md#三仓库按需验证) 的固定 ID 解析当前名称，配置 origin/fork-a/fork-b；核对远端分支、三个仓库的开放 PR 和相关 dispatch。只取本任务需要的分支，不同步全部历史。主仓库在 develop 统一接续，旧 release/v2.0.0 冻结；A 优先 Fast、B 优先 Full。
+3. 按下文“开始任务”核对认领、审批、依赖和文件范围，再建独立短分支。发版修复从最新 develop 基线接续，按 [2.0 重建交接](versions/V2-RELEASE-HANDOFF.md) 核对旧来源并逐项接回。Fork 成果成熟后接续主仓库短分支及正式 PR，不能凭 Fork 绿灯合入。
 4. 首次 `npm ci --ignore-scripts`，工具及生成物按 [TOOLCHAIN](TOOLCHAIN.md)、验证按 [ENGINEERING](ENGINEERING.md)；日常先看 `npm run test:related -- --plan --base <准确目标SHA>`，需要时分配现有 hosted Fast/Full。源码、构建、官方导入、ready、设备体验是不同证据，不用一项代替其余。
 5. 按 [CI](CI.md) 完成独立复审及精确 HEAD/BASE 准入，读回原生授权后异步交接。离开前经 Backlog CLI 记录任务、目标分支、准确提交、PR/run 链接、已验证范围、具体阻塞和下一动作；代码及必要证据推到对应远端，不能仅留本机文件或聊天摘要。未合入不写 Done，不守候队列。
 
@@ -15,6 +15,10 @@
 **2026-11-13 产品优先决策：** 不再设独立M7架构优化里程碑。先交付M8/M9的真实可玩体验、角色与内容；架构治理仅在复现的缺陷、明确扩展阻塞、CI/容量硬门禁失败或有量化证据的交付成本问题发生时作为对应产品任务的最小工程切片。旧CC/SCC/fan-out数字本身不是自动开工条件。M7历史任务不得仅因In Progress被Agent无条件继续；已合 #634 质量棘轮持续执行且不放宽。归档/迁移与保留的未验AC见 [移交清单](backlog-details/M7-PRODUCT-FIRST-HANDOFF-20261113.md)。
 
 **当前执行入口：不再使用 Sprint。** 任务不因日期到期、尚未开窗、所属里程碑或 M7→M8→M9 阶段顺序而暂停；不再维护周窗口、窄并行例外或等待 Owner 刷新日期。优先级按用户最新指令、Backlog、实际依赖和可交付切片判断。
+
+## 任务标题与正文
+
+本版活动任务和新任务用 Backlog CLI 维护。标题写清「动词＋对象＋预期结果」，任务编号用于引用。正文用「情况、任务、边界、验收」四节说明玩家遇到的问题、要完成的结果、修改边界和验证方式。已有任务的编号、历史、类型、优先级、状态、依赖和有效验收项继续保留。已完成和归档历史按原记录保留。
 
 ## 开始任务
 
