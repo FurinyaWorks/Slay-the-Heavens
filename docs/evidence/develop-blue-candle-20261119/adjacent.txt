@@ -1,0 +1,10 @@
+✔ official relic material is shared across run phases while the legacy profile and owned detail identity remain exact (9393.962735ms)
+✔ real reward button writer retains measured state colours, resolves changing rewards and caches idle icons (849.203532ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9577.885377

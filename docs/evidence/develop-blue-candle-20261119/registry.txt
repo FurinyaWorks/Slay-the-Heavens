@@ -1,0 +1,9 @@
+✔ authored art covers every placeholder relic and every two-act enemy within small fixed pools (6.413275ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 191.102313

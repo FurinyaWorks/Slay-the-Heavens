@@ -1,0 +1,18 @@
+ABYSS_RUN seed=1 source=explicit
+PROFILE official-assets-first
+IDENTITY Blue Candle -> blue_candle
+REWARD_SHARED_POOL false
+REWARD_STATE normal fallback=102028 pool=false
+REWARD_STATE hover fallback=102028 pool=false
+REWARD_STATE pressed fallback=102028 pool=false
+REWARD_STATE disabled fallback=102028 pool=false
+OWNED_BAR blue_candle recipe=7 fallbackVisible=false
+OWNED_DETAIL blue_candle recipe=7 fallbackVisible=false
+CLAIM_AND_RNG_PASS; other reward remains unclaimed
+
+...ity-20261119/.artifacts/mobile-blue-candle/reproduce.lua:55: BLUE_CANDLE_REWARD_IDENTITY_GAP: reward has no candle recipe although owned bar/detail do
+stack traceback:
+	[JS]: in function 'assert'
+	...ity-20261119/.artifacts/mobile-blue-candle/reproduce.lua:55: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
