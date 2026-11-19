@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "revision": "2026-11-19",
+  "scope": "battle-character-visual-reference-only",
+  "runtimeBound": false,
+  "review": {
+    "poseLineup": "owner-selected identity/pose reference",
+    "lowpolyStyle": "owner-selected trial direction; not native/runtime approved"
+  },
+  "images": [
+    {
+      "path": "pose-lineup.jpeg",
+      "width": 1448,
+      "height": 1086,
+      "sizeBytes": 364419,
+      "sha256": "bc28cb3c2b2e34c2466af7d618100c411e1b9ef7d4b0d326e10309bd0bb67114",
+      "gitBlob": "deff90f08f30dd066ed9b510c467a9a32832ff40",
+      "role": "primary-identity-pose-and-weapons-reference"
+    },
+    {
+      "path": "lowpoly-style-probe.png",
+      "width": 1448,
+      "height": 1086,
+      "sizeBytes": 1297520,
+      "sha256": "990018355b9b17f0f4b1c34c848b5122e8e00333061f22a77e24c819e25fd13f",
+      "gitBlob": "017ae0f8b19f80c11ea2b47db12ecdc243276ebf",
+      "role": "stylization-reference-only"
+    }
+  ]
+}
