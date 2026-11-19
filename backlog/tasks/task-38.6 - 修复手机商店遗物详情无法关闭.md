@@ -1,15 +1,16 @@
 ---
 id: TASK-38.6
-title: 修复手机商店遗物详情无法关闭
+title: 修复手机商店遗物说明，让点空白可以关闭
 status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-15 19:11'
+updated_date: '2026-11-19 03:49'
 labels:
   - mobile
   - playtest-20261115
   - p1
+  - v2.0.0
 milestone: m-8
 dependencies: []
 references:
@@ -24,7 +25,21 @@ ordinal: 177000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-商店点击遗物说明后点空白仍悬浮无法退出；与开放#672的PC商店弹窗修复先去重，IMG_1404只证布局。
+### 情况
+
+点开商店遗物说明后，点空白仍挡住商品。IMG_1404 可对照布局，实际点按现象来自录音。
+
+### 任务
+
+核对 #672 与 #680 的现有处理，接回仍缺的说明关闭行为。
+
+### 边界
+
+空白触点只关闭最上层。保留购买、离店和相邻 PC、手柄行为。
+
+### 验收
+
+点开说明再点空白，确认旧说明和触点都清理干净，之后可正常查看、购买和离店。 使用同一候选完成原任务列出的回归、独立评审和手机验收。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
