@@ -6,7 +6,7 @@
 
 | remote | 仓库 / 固定 ID | 分工 |
 | --- | --- | --- |
-| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | 正式集成；release/v2.0.0 仅发版必需修复，develop 接后续功能、优化与技术债 |
+| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | develop 承接 v2.0.0 重建与后续研发；旧 release/v2.0.0 冻结 |
 | fork-a | FurinyaDev/Slay-the-Heavens-Fork-A / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
 | fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
 
@@ -23,7 +23,7 @@ gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <tas
 
 Fork Quick 手动预检执行完整受影响 JS/Lua 和便宜治理检查，未知或空覆盖明确要求一次必要 Full；本地 fast/advisory 仍保留有界选测和延期报告。两者都不能称为双平台正式准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
 
-成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。release 修复只移植必要代码并在该基线验证，后续工作留 develop；冻结候选的 Full 与官方容量、导入、ready、PC/手机仍逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
+成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。重建只接回 develop 仍缺且属于本版的切片，在实际 develop 合并树验证；候选的 Full 与官方容量、导入、ready、PC/手机逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
 
 算力分配复用已有 [Fast 选测](CI-FAST.md)、`scripts/ci-quality-shape.mjs` 的共享矩阵、`ci-shards.mjs` 的平台耗时权重、安全 Lua worker 与 Quality 原 `max-parallel`，不要在 Fork 另维护分片数或删测试。先分配互不重复的任务/准确提交，再让原矩阵自动铺开；以实际 job 排队和执行时间判断资源使用，保留失败成本。GitHub 并发上限按账号/组织套餐和 runner 可用性核对，不假定每个仓库天然拥有固定20/30槽位；沿用标准 hosted，不切付费 larger runner。[官方并发与矩阵说明](https://docs.github.com/en/actions/reference/limits)。
 

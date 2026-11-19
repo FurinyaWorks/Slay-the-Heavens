@@ -19,15 +19,15 @@
 | 分支 / 工作 | 正确来源与目标 | 清理原则 |
 | --- | --- | --- |
 | master | 已发行生产历史；只接正式 release 或 hotfix | 长期保护 |
-| release/v2.0.0 | 本轮 v2.0.0 修复、性能及稳定性（不引入新 Feature） | 长期保留至该版本发版/回合完成 |
-| fix/*（v2.0.0 缺陷） | 从 release/v2.0.0 起；PR 目标 release/v2.0.0 | 经本版验收、合入后核对并删 head |
-| develop | 下一个版本与后续工作主线 | 长期保护 |
+| release/v2.0.0 | 冻结的旧集成来源，供取证及接续 | 保留分支与精确提交，见 [2.0 重建交接](versions/V2-RELEASE-HANDOFF.md) |
+| fix/*（v2.0.0 缺陷） | 从最新 develop 起；PR 目标 develop | 经本版验收、合入后核对并删 head |
+| develop | v2.0.0 重建及后续工作主线 | 长期保护 |
 | feat/*、docs/*（非本版） | 从 develop 起；PR 目标 develop | 经合入/验收清理 |
 | archive/*、冻结实验 | 有明确用途、来源 SHA、负责人和复核点 | 不因年龄自动删除；不用长期占用日常活跃 WIP |
 | gh-readonly-queue/*、handoff/* | 临时测试/交接引用 | 先确认对应 PR/作业结束、无后续引用再清理 |
 | 关闭未合并 PR 的来源 | 保留至 Backlog 和继承者记录完整 | 不等于“已交付”或“可以直接删” |
 
-发版从 release/v2.0.0 → master 后，将已发布修复按既有受保护流程回同步 develop。后续特性不得以“顺带修一下”为由混入 release。实际目标以 PR base 和任务批准为准，不能仅凭 feat/fix 前缀判断。
+完成 develop 集成和全量回归后，才从已验证提交重建发布候选，并按既有受保护流程和 Owner 确认执行发布。实际目标以 PR base 和任务批准为准。
 
 ## 分支入口：先查重再开工
 
@@ -65,7 +65,7 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 
 ## WIP 预警与处置（软阈值）
 
-- 本版 release 开放 PR **超过 12 条**：协调者优先解决阻塞、整合同源切片及验收；P0 修复不受硬性数量阻拦。
+- develop 的并行工作按现行动态 WIP 控制。协调者优先解决阻塞、整合同源切片及验收，优先响应 P0 修复。
 - 无关联 PR 的普通分支 **超过 10 条**：暂停无必要的新实验分支，逐一标注 Owner/版本/继承关系。
 - 无 PR/已关闭分支 **7 天无更新**：提醒负责 Agent 对账；**14 天**：要求具体合并、继承、冻结或删分支方案；**30 天**：升级人工复核。时间不是自动删除条件。
 - 每次 Agent 完成一个任务，核对分支/PR/Backlog 的闭环后才领取下一项；多 Agent 的 WIP 应按真实运行数而非允许无限堆积。
@@ -77,4 +77,4 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 - .github/workflows/branch-hygiene.yml 改为 **手动触发的只读证据工具**，需要详细库存时由协调者运行并下载结果；不再和云端任务重复每日调度。
 - scripts/branch-hygiene.mjs 通过 GitHub API 分页核对全部分支及全部 PR，绝不调用 DELETE、合并或开 issue。它提供待复核线索，**不是自动删除清单**。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
-- 治理更新走 develop 的正常 PR。当前 Release 的[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)通过独立 Release PR 同步。两类分支沿用各自 Fast、Full、独立评审及规则集。
+- 治理更新走 develop 的正常 PR。Develop 与后续批准的 Release PR 使用同一[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)。两类分支沿用各自 Fast、Full、独立评审及规则集。
