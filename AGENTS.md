@@ -1,48 +1,36 @@
 # 项目协作
 
-《杀戮原塔2》是原神千星奇域 UGC。当前比赛仅开放岩系旅行者第一、二幕；完整范围以 [SCOPE](docs/SCOPE.md) 为准，进度看 [HANDOFF](docs/HANDOFF.md)，验收看 [MILESTONES](docs/MILESTONES.md)。不在指引中维护历史决定和任务快照。
+《杀戮原塔2》是原神千星奇域 UGC。先核对用户目标、最新目标分支、已有任务和在途 PR；复用相关成果，在独立短分支交付可单独验证的切片。保护他人的提交、脏工作树和唯一证据。
+
+旧 `release/v2.0.0` 已冻结。本版修复在 `develop` 接续，以下旧 Release 路由仅作为历史引用。Fork 预检按需使用。
+
+## 按任务查阅
+
+| 要做的事 | 入口 |
+| --- | --- |
+| 认领任务、核对依赖或准备 PR | [任务执行](docs/TASK_EXECUTION.md#开始任务)；[分支收口与 WIP](docs/BRANCH_LIFECYCLE.md) |
+| 修改玩法、UI、数据或构建 | [模块与生成物](docs/ARCHITECTURE.md)；[产品范围](docs/SCOPE.md) |
+| 定位故障、选择验证或使用平台工具 | [工具任务索引](docs/TOOLCHAIN.md#工具任务索引)；[工程与候选证据](docs/ENGINEERING.md) |
+| 独立评审、CI 或合并 | [PR 自动合并准入](docs/CI.md#pr-自动合并准入) |
+| 修改美术、角色方案或数值 | [角色生产规范](docs/design/characters/PRODUCTION.md)；[UI 批准稿](docs/design/UI_DESIGN.md) |
+| 核对 v2 来源、实机验收或发布 | [v2 候选交接](docs/versions/V2-RELEASE-HANDOFF.md)；[发布](docs/PUBLISHING.md)；[平台负载](docs/PLATFORM_LOAD.md) |
+| 维护指引 | [指引与执行机制](docs/AGENT_GUIDANCE.md) |
+
+按当前任务选择入口。阈值、测试集合和线上保护分别以仓库可执行配置、测试及实时 GitHub Rulesets 为准。保持现有质量门槛与断言，合并按实际 HEAD、BASE 和独立评审证据交付。
 
 ## 开始与交付
 
 - 三仓库沿用同一本 Backlog：主仓库在 develop 统一集成，旧 release/v2.0.0 冻结；Fork A 优先 Fast、Fork B 优先 Full，按需互援。先读 [三仓库分流](docs/CI.md#三仓库按需验证)，使用原生 dispatch；Fork 结果不替代主仓库集成和同候选实机验收，云端开发不依赖本机在线。
 - 每次会话先运行 `backlog instructions overview`；创建、执行、收口前分别读对应的 `backlog instructions task-creation`、`backlog instructions task-execution`、`backlog instructions task-finalization`。任务与里程碑只用 Backlog CLI 修改，先查重；负责人沿用 Furinya，任务正文用简洁中文，技术证据放对应附件。 内部单人多agent事项只进Backlog；GitHub Issues保留给外部协作和公开反馈，既有内部Issue迁入后关闭并保留来源链接。
-- **自主领取前**按[任务执行](docs/TASK_EXECUTION.md)检查 Backlog、依赖、明确审批和开放 PR，再运行 `node scripts/check-pr-slice.mjs --start TASK-编号 --slice "行为范围" --verify "定向命令"`；HOLD 处理具体原因，ALLOW 后仍须核对认领/文件所有权并用 Backlog CLI 认领。先拆出可单独验证、合并的最小切片。每位执行者同时只推进一个未集成切片，优先收口再认领。
+- 自主认领前按 [任务执行](docs/TASK_EXECUTION.md#开始任务) 检查范围、审批与依赖。
 - **产品优先、工程按需**：M7已归档，只在M8/M9实际功能、稳定性、容量或CI门禁受阻且有证据时实施最小架构修复；质量棘轮照常拦截新增债务，不为清零旧CC/SCC/Fan-out自主开工。按[工程移交](docs/backlog-details/M7-PRODUCT-FIRST-HANDOFF-20261113.md)追踪未验AC。
 - 先核对任务、PR、现有同范围分支及脏文件，独立工作树/短分支开发，尽量当天集成：**从最新 `origin/develop` 开发，PR 指向 develop**。旧分支只取证，按 [2.0 重建交接](docs/versions/V2-RELEASE-HANDOFF.md) 拆分接回。按 [分支生命周期](docs/BRANCH_LIFECYCLE.md) 登记版本、收口责任与来源，保留他人的改动。Conventional Commits；独立云端 AI 复审须由现有可信协调账号核实真实不同会话，并随原生 COMMENTED Review 绑定精确 HEAD/BASE/合并树（可与PR作者同账号，不要求第二人审批）；门禁验证后可用 `npm run merge:auto -- <PR> <GitHub-Review-ID>` 挂起，GitHub 的严格基线、Full 与原门禁全部通过才 squash → develop；暂停用同入口 `--pause` 并读回，不以标签冒充撤销。master 只接发布；release 从 develop、hotfix 从 master，均合回 master 与 develop。保护及精确 SHA 合并流程见 [CI](docs/CI.md)。不恢复旧任务锁。
 - **先分支、后 PR**：实现与基本验证完成、明确审批已取得、依赖已落地并可评审合并后才提 PR。任务占位、HOLD 和长期探索留在 Backlog；不成熟的既有 PR 关闭并保留分支/来源。Draft 用于 Owner 明确要求的提前协作评审或冻结留痕，具体收口见[任务执行](docs/TASK_EXECUTION.md#pr-生命周期)。
 - 任务收尾按 [分支生命周期](docs/BRANCH_LIFECYCLE.md#分支出口agent-的最小收口协议definition-of-done) 选择 DELIVERED_VERIFIED / SUPERSEDED / FROZEN / DISCARDED，记录固定 SHA、继任者、责任人和证据；仅入队或已关闭 PR 不等于交付。合并后核对分支没有新工作，保留可恢复历史并清理自己的干净工作树和分支；脏树与独立提交保留。每日云端巡检只发现未收口异常，不代替执行 Agent。版本与不可移动的注释 Tag 按 [PUBLISHING](docs/PUBLISHING.md)，不自动发版或创建归档 Tag。
-- **CI 交接不守候**：独立评审与准入通过后即用 `merge:auto`；精确授权读回后保存 PR/HEAD/BASE 和授权证据，结束当前回合，不等 CI 完成。禁止 `gh run view`、`gh pr checks`、`gh run watch`、`sleep` 循环或定时盯守；失败通知、明确依赖变化或用户要求时再介入，不以对账、合后验收或下批等待为由继续轮询。依赖未落地则保留候选与接续点并结束本轮。实际合并后仍须 `verify:delivery --merged`，入队不等于完成。见 [CI](docs/CI.md#异步交接与失败对账)。
-- Owner 明确授权应急范围时，按 [PR-only 流程](docs/CI.md#owner-授权的-pr-only-应急合并) 用独立审查和精确 HEAD/BASE/合并树放行已验证低风险切片，读取实际合入提交。
-- 代码切片完成后按风险合并前评审：仅非执行说明文档可由交付验证器核实后免独立 Sub-agent；其余改动需可追溯独立复审，关键重构/跨模块逻辑深审；评审与 CI 可并行，不重复整套测试。详见 [ENGINEERING](docs/ENGINEERING.md)。
-- 完成须有本轮对应证据：源码检查、候选写入/读回、官方导入、真实 ready、各设备实测分别报告；未验证的要求保持未完成。可独立试玩的切片及时交付，启动失败优先修复。
 
-- 修缺陷、做 UI 前先查[工具索引](docs/TOOLCHAIN.md#工具任务索引)，复用现有工具并遵守其验证边界。
-- 角色设计、技能命名与数值评审先读[角色生产规范](docs/design/characters/PRODUCTION.md)；候选、冻结数据及历史归档分开，不因迁移擅改数值。
-- 重大体验阻塞先复现症状，再按[产品结果闭环](docs/backlog-details/TASK-104-PRODUCT-OUTCOME-LOOP-20261109.md#6-可执行入口与任务收口)运行同条件实验与纠偏；诊断任务的 DIAGNOSED 不代表产品验收。登记的诊断任务由 verify:backlog 拦截缺证据或错误 Done。
+## 授权与验收边界
 
-## 验证入口
-
-| 用途 | 命令 / 事实来源 |
-| --- | --- |
-| 日常反馈 | `npm run test:fast` / `npm run test:related` |
-| 完整验证 | `npm run check`；工程门槛见 [ENGINEERING](docs/ENGINEERING.md) |
-| 指引防回退 | `npm run check:guidance`；长度、入口、命令及薄适配器 |
-| 任务范围与队列 | `npm run verify:backlog`；检查负责人、优先级、High 上限与当前比赛范围 |
-| UI 候选验收 | `npm run verify:ui -- <候选.gil>`；[批准稿](docs/design/UI_DESIGN.md)、[平台差异](docs/design/PLATFORM_PARITY.md) |
-| 候选交付 | `npm run verify:delivery`；[冒烟与取证](docs/P0-SMOKE.md) |
-| 平台负载 | 日常 `npm run check:platform-load`；RC `npm run verify:platform-load`；[容量与证据合同](docs/PLATFORM_LOAD.md) |
-
-规则参数、阈值和测试合同以可执行配置为准，不在此重复。新增核心 Lua 模块在 [架构配置](config/architecture.json) 分类；不靠放宽门槛、删断言或跳过有效测试解决失败。UI 只读核心状态、发命令；主题来源为 [ui_theme](data/presentation/ui_theme.json)，由 `npm run build:theme` 生成。遵循批准稿，平台降级记录原因与实测状态，保留 C 档点选。
-
-## 必要边界
-
-- 正式RC负载须有同候选官方容量、静态/动态、上传启动与手机证据；缺项保持 BLOCKED/UNVERIFIED，不阻止普通PR。不得用GIL/Lua/网络量冒充官方读数、提高负载档位掩盖问题或复用旧候选。限值与内部预算见平台负载合同；CI通过不等于发布许可。
-
-- 任何鼠标、键盘、抢焦点或切前台操作，先说明应用、目的、开始时间及预计时长，等待用户明确让出本轮窗口；历史测试授权不延续。只在窗口内由一个执行者操作；用户收回控制、正在操作或到期时立即停止输入和自动重试，告知已归还控制。无窗口则继续离线工作。
-- 关卡与 MCP 操作先读 [TOOLCHAIN](docs/TOOLCHAIN.md) 和 [千星技能](.codebuddy/skills/miliastra-wonderland/SKILL.md)，使用 MCP 前读 miliastra://workflow 与 miliastra://platform-rules。MILIASTRA_ALLOW_LIVE_WRITE 保持 0，只写存档副本，发布由人完成。
-- 实机需本轮候选身份、日志/ready 和设备证据；自动试玩显式 clientScriptLog: true，工具确保每次新导入后订阅。不得用旧日志、离线模拟或 PC 结果代替当前手机实测。
-- 原版对照、无 Lv.4 持久存档依赖和同局状态要求见 [SCOPE](docs/SCOPE.md)。不自行调平衡、升级账号或引入后端绕过限制；保留 full-source 内容及历史证据。
-- 保留 [LICENSE](LICENSE) 的非商业许可及项目商业权利；第三方素材保留各自授权，不擅自更换许可。
-- Codex 负责决策、集成和验收；适合的短任务优先免费 OpenCode，配置、最高推理档位及验收方式见 [委派记录](docs/backlog-details/TASK-51.md)。明确限额后暂停，恢复窗口未知时不试探、不切收费模型；仅有恢复依据后做一次短任务验证。
-
-门禁覆盖与维护方式见 [指引维护](docs/AGENT_GUIDANCE.md)。
+- 产品范围、数值、账号等级及平台限制按 [SCOPE](docs/SCOPE.md) 和已批准方案执行，有变更先获 Owner 授权。保持 [LICENSE](LICENSE) 及第三方素材各自的授权。
+- 占用用户桌面输入、抢焦点或切前台前，说明应用、目的、开始时间与预计时长，取得当轮明确授权。窗口内仅一个执行者操作。用户收回控制、操作中或到期即停止输入和重试并告知已归还。
+- 使用千星 MCP 前按 [工具链](docs/TOOLCHAIN.md) 读取技能和平台资源，保持 `MILIASTRA_ALLOW_LIVE_WRITE=0`，只写存档副本。正式发布由 Owner 确认并人工操作。
+- 分别报告源码验证、候选写入与读回、官方导入、当前 ready 和设备实测。实机使用同一候选身份与当前日志，自动试玩显式开启 `clientScriptLog: true`。RC 按 [负载证据合同](docs/PLATFORM_LOAD.md) 逐项核对同候选官方容量、静态/动态负载、上传启动及手机实测，缺项保持待验。
