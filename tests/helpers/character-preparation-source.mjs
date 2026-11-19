@@ -1,7 +1,7 @@
-import {beforeSelectorSource} from './character-selector-source.mjs';
-import {beforePotionTextSource} from './potion-text-source.mjs';
-import {beforeFatalBgmSource} from './fatal-bgm-source-continuation.mjs';
-import {beforeEndingTerminalSource} from './ending-terminal-source.mjs';
+import {beforeSelectorSource,selectorSourcePair} from './character-selector-source.mjs';
+import {beforePotionTextSource,potionTextSourcePair} from './potion-text-source.mjs';
+import {beforeFatalBgmSource,fatalBgmPair} from './fatal-bgm-source-continuation.mjs';
+import {beforeEndingTerminalSource,endingTerminalSourcePath} from './ending-terminal-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -40,6 +40,19 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   if (digest(normalize(source)) !== row.after) return source;
   assertCharacterPreparationSources(read);
   return row.before;
+}
+
+const currentContinuationOwners = new Set([
+  ...characterPreparationOwners, selectorSourcePair.path, potionTextSourcePair.path,
+  fatalBgmPair.path, endingTerminalSourcePath,
+]);
+
+export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  const prior = beforeCharacterPreparationSource(path, source, read);
+  if (currentContinuationOwners.has(path)) {
+    assert.notEqual(prior, source, 'fresh current production owner: '+path);
+  }
+  return prior;
 }
 
 export function beforeCharacterPreparationCiSource(path, source) {
