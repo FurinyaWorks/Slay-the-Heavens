@@ -2,11 +2,13 @@
 
 TASK-81。快速反馈、完整受影响回归、集成验收分层报告；性能验收仍须真实当前版本的样本，不沿用旧 PR 或取消运行的资格。
 
+当前 v2.0.0 在 develop 重建，旧 `release/v2.0.0` 冻结。下文 Release 门禁适用于后续批准的发布分支。见 [重建交接](versions/V2-RELEASE-HANDOFF.md)。
+
 普通 develop PR 使用完整受影响集合，不采用原 advisory 的90秒截断。Windows和POSIX均执行选中的完整JS文件和Lua夹具。所有原断言、子进程预算及失败语义保持。180秒仅为反馈目标，`exceedsFastTarget` 明确报告超目标；已证明的完整选集不会因耗时扩大为整仓，也不截断慢测试。Fast 作业采用与 Full 相同的平台硬守护（Windows 45分钟、POSIX 30分钟），这是终止失控执行的上限，不是速度承诺；原夹具期限不变。只有明确列出的纯文字文件可免业务回归，仍执行治理、许可和presentation门禁。
 
 develop 按 `config/architecture.json` 分类，核心模块仍保守 Full。`release/*` 日常修复（含核心 Lua）默认使用已证明完整的受影响 Fast；未知范围、数据/配置/依赖/工作流与 CI 准入基础设施仍保守 Full，显式 `ci:full` 仍有效。Release 合入后的 push 不再触发 Quality，PR 的双平台回归、治理、presentation 和 inventory 必须通过才可 Auto-merge；Release 不使用 Merge Queue。develop/master push、develop 队列组合及手动 Quality 仍 Full，现有矩阵、断言和失败阻断保留。
 
-Release 完成集成后才冻结准确 HEAD，由人显式执行 `node scripts/release-ci.mjs freeze release/v2.0.0 <40位HEAD>` 请求一次现有 hosted Full；该命令不等待、不发布。完成后执行同入口 `verify release/v2.0.0 <同一HEAD>`，核对最新手动运行、实际完整分片和最新执行结果，并再次读取分支与 attempt；Fast、local-special、失败、取消、漏片或 SHA 变化均不能放行。Release→master PR 的现有 impact 作业强制执行此校验，缺证据直接失败。代码变化须重新冻结验收，不自动批量重跑 Full。
+Release 完成集成后才冻结准确 HEAD，由人显式执行 `node scripts/release-ci.mjs freeze <本轮批准的发布分支> <40位HEAD>` 请求一次现有 hosted Full；该命令不等待、不发布。完成后执行同入口 `verify <本轮批准的发布分支> <同一HEAD>`，核对最新手动运行、实际完整分片和最新执行结果，并再次读取分支与 attempt；Fast、local-special、失败、取消、漏片或 SHA 变化均不能放行。Release→master PR 的现有 impact 作业强制执行此校验，缺证据直接失败。代码变化须重新冻结验收，不自动批量重跑 Full。
 
 草稿 PR 的正式 Quality 延后到 Ready；Fork 预检沿现有 Quick feedback 手动运行，不再为 Draft 或 Ready PR 重复触发 Quick。转回 Draft 会通过原 concurrency 取消过时 Quality，不额外建立调度器。草稿跳过不构成准入证据：Ready、精确 HEAD/BASE/attempt、双平台成功及独审仍须满足。Merge Queue、push、发布和手动验证不受草稿条件影响。
 
