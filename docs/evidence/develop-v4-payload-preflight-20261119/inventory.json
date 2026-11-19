@@ -1,0 +1,37 @@
+{
+  "status": "PASS_GENERIC_NO_ART_ONLY",
+  "measurement": "offline-production-inputs-not-official-storage",
+  "sourceCommit": "b1669c6db9d268f897f5380523bb82595279cdcf",
+  "artFeatures": {
+    "cards": false,
+    "menuBackground": false,
+    "selectionAvatar": false,
+    "battlePortrait": false,
+    "monsters": false
+  },
+  "moduleCount": 366,
+  "luaBytes": 3932365,
+  "controls": 14420,
+  "templates": 4,
+  "artPools": 0,
+  "v4": {
+    "name": "abyss_original_v4_data",
+    "bytes": 577904,
+    "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb"
+  },
+  "defaultNativeCli": {
+    "status": "BLOCKED_MISSING_LFS_INPUT",
+    "failure": "Background budget data changed",
+    "input": "art/characters/key-visual/traveler-geo/official-landscape-v1/preview-native.png",
+    "sha256": "e23d1daac5e7046f9119edbd6179fd16fa31abd245c24d395adfd1af31a91a43",
+    "bytes": 81155,
+    "checkedArtifact": {
+      "run": 44460426743,
+      "head": "b1669c6db9d268f897f5380523bb82595279cdcf",
+      "id": 14499628412,
+      "sha256": "0bec7f7642a441fcdc5e8a026814bb9fd8a753a609650892bb35d0e0af56e6d4",
+      "bytes": 167053425,
+      "containsRequiredOid": false
+    }
+  }
+}
