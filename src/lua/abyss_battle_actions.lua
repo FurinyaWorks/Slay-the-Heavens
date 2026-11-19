@@ -92,7 +92,8 @@ function M.install(owner, _ownership, host, dependencies)
     end
     local function helpPointerChanged(help)
         return owner.gesture and owner.gesture.moving
-            or help.card and (help.card.input.held ~= help.card or not dependencies.cardReady(help.card))
+            -- Browsing is an intentional horizontal movement, not a stationary hold.
+            or help.card and (help.card.browsed or help.card.input.held ~= help.card or not dependencies.cardReady(help.card))
     end
     local function fireHelp(help, dt)
         help.t = help.t + dt

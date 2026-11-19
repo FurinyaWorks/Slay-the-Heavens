@@ -120,6 +120,9 @@ files['tests/helpers/release-fatal-bgm-source.json.gz'] = 'c2c29f4689fac772c883e
 assert.equal(files[closeoutPath], 'a8112ea04d2a0937a0a68d731fa4a1bff27e17002bb09c100da87b47f90d8bda');
 files[closeoutPath]='4362369752c698094bef2de60f2100cca873a1b84bfbd4e4e9e1cc6fc1bacb8f';
 files['tests/helpers/release-full-repair-source.json.gz']='14cb921f7672a9356efb35b3eabcb5f9f5b33a6b710e9a45580579ef8dfbd819';
+assert.equal(files[closeoutPath], '4362369752c698094bef2de60f2100cca873a1b84bfbd4e4e9e1cc6fc1bacb8f');
+files[closeoutPath]='7b218abfeb4161b21d8ddf704c1e65e35f454ab32b237b5f383e2ab2892c5d56';
+files['tests/helpers/release-full-followup-source.json.gz']='dd47073e00cfb054d33280eb73d17f41f78b395012b7b1bbb9025e3e2e21fb92';
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);

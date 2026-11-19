@@ -143,6 +143,7 @@ test("cancelled drags back in the hand never click through and accept the next t
         assert(#battle.hand==2 and battle.energy==3 and battle.turn==1)
         event("card1","down",x,y) event("card1","drag",point[1],point[2])
         ui:update(0.45) -- source: a short (<.4s) out-of-zone release retains click-drag
+        assert(not ui.info,"horizontal browsing or a held drag must not open the stationary card reader")
         event("dragLayer","up",point[1],point[2])
         event("card1","endDrag",point[1],point[2]) event("endTurn","click",0,0)
         event("card1","click",x,y)
@@ -150,6 +151,10 @@ test("cancelled drags back in the hand never click through and accept the next t
         assert(ui.selected == nil and not panel:GetChild("dragLayer").visible)
         tap("card1") tap("playArea")
         assert(#battle.hand == 1 and battle.player.block == 5)
+        -- Neither the retired drag nor the consumed new tap can play again.
+        event("card1","endDrag",point[1],point[2]) event("card1","click",x,y)
+        event("playArea","click",0,0)
+        assert(#battle.hand == 1 and battle.energy == 2 and battle.player.block == 5 and battle.turn == 1)
     end
 end)
 

@@ -326,13 +326,40 @@ for(const [path,row]of Object.entries(repairCi.files)){
  assert.equal(hash(row.before),row.beforeSha256,'complete published failed CI predecessor: '+path);
  assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
 }
-function beforeRepairCiSource(path,source){return priorCiSource(repairCi.files,path,source);}
+// Preserve 4dd97d67 exactly while binding this focused follow-up.
+const followupArchive='tests/helpers/release-full-followup-ci.json.gz';
+const followupDigest='145cc67971ea3a86fde2e4b85e67ed03120c3124f0074543718e5853748b5089';
+const followupBytes=readFileSync(new URL('./release-full-followup-ci.json.gz',import.meta.url));
+assert.equal(hash(followupBytes),followupDigest,'complete Full follow-up CI continuation');
+const followupCi=JSON.parse(gunzipSync(followupBytes));
+assert.equal(followupCi.schemaVersion,1);
+assert.equal(followupCi.base,'4dd97d67883202496f7cb587002ed00f429ef699');
+assert.deepEqual(Object.keys(followupCi.files),["tests/helpers/closeout-source-epoch.mjs", "tests/helpers/copy-integration-source-closure.mjs", "tests/integrated-ci-source.cases.mjs", "tests/release-card-contact-integration.test.mjs", "tests/sts-style-source-epoch.test.mjs", "tests/lua/drag_input_boundaries.lua"]);
+for(const [path,row]of Object.entries(followupCi.files)){
+ assert(!/^(?:src|data|config)\//.test(path),'CI follow-up cannot replace production');
+ assert.equal(normalized(row.before),row.before);
+ assert.equal(hash(row.before),row.beforeSha256,'complete preserved repair CI predecessor: '+path);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.beforeGitBlob);
+ if(repairCi.files[path])assert.equal(row.beforeSha256,repairCi.files[path].afterSha256,'exact first repair CI predecessor: '+path);
+ assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
+}
+function beforeFollowupCiSource(path,source){return priorCiSource(followupCi.files,path,source);}
+function assertFollowupCiCurrent(read){
+ assert.equal(hash(read(followupArchive)),followupDigest,'fresh Full follow-up CI archive');
+ assert.equal(hash(read('tests/helpers/release-full-followup-source.json.gz')),followupCi.productionArchive,
+  'fresh Full follow-up production archive');
+ for(const [path,row]of Object.entries(followupCi.files)){
+  const source=normalized(read(path,'utf8'));
+  assert(source!==null&&hash(source)===row.afterSha256,'fresh Full follow-up source: '+path);
+ }
+}
+function beforeRepairCiSource(path,source){return priorCiSource(repairCi.files,path,beforeFollowupCiSource(path,source));}
 function assertRepairCiCurrent(read){
  assert.equal(hash(read(repairArchive)),repairDigest,'fresh first Full repair CI archive');
  assert.equal(hash(read('tests/helpers/release-full-repair-source.json.gz')),repairCi.productionArchive,
   'fresh first Full repair production archive');
  for(const [path,row]of Object.entries(repairCi.files)){
-  const source=normalized(read(path,'utf8'));
+  const source=normalized(beforeFollowupCiSource(path,read(path,'utf8')));
   assert(source!==null&&hash(source)===row.afterSha256,'fresh first Full repair source: '+path);
  }
 }
@@ -536,9 +563,10 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
       const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+      const followupRow = Object.hasOwn(followupCi.files, path) ? followupCi.files[path] : null;
       const repairRow = Object.hasOwn(repairCi.files, path) ? repairCi.files[path] : null;
       const fatalBgmRow = Object.hasOwn(fatalBgmCi.files, path) ? fatalBgmCi.files[path] : null;
-      if (!repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
+      if (!followupRow?.before && !repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -550,6 +578,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertFollowupCiCurrent(read);
   assertRepairCiCurrent(read);
   assertComposedCiCurrent(read);
   assertFatalBgmCiCurrent(read);

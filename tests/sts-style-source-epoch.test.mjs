@@ -15,16 +15,23 @@ import {mobilePotionPriorInventory,assertMobilePotionRawInventory} from './helpe
 import {potionPost697PriorInventory,potionPost697CiPacket,assertPotionPost697RawInventory} from './helpers/potion-post697-ci-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const bind=source=>({source,sha256:hash(source)}),commit='c'.repeat(40);
-const exactSourceError=(layer,path)=>error=>{
+const exactSourceError=(message,path)=>error=>{
  assert(error instanceof assert.AssertionError);
- assert.equal(error.message.split('\n')[0],`${layer}: ${path}`);return true;
+ assert.equal(error.message.split('\n')[0],path===undefined?message:message+': '+path);return true;
 };
-const styleSourceError=path=>exactSourceError([
+// The raw Release read authenticates these exact newer owners before exposing
+// their StS-era sources. A drift must be rejected by its first owning layer.
+const outerStyleSourceErrors=Object.freeze({
+ 'tests/helpers/run-hud-ci-source.mjs':'fresh complete integration source: potion Release tests/helpers/run-hud-ci-source.mjs',
+ 'tests/enemy-status-hand-clearance.test.mjs':'fresh complete integration source: composite intent tests/enemy-status-hand-clearance.test.mjs',
+ 'tests/official-run-chrome.test.mjs':'fresh complete integration source: settings icon tests/official-run-chrome.test.mjs',
+});
+const styleSourceError=path=>exactSourceError(outerStyleSourceErrors[path]??([
  'scripts/official-run-layout.mjs','tests/defect-final-source-epoch.test.mjs',
  'tests/encounter-formation-source-epoch.test.mjs','tests/helpers/closeout-source-epoch.mjs',
  'tests/helpers/copy-integration-source-closure.mjs','tests/official-assets-runtime.test.mjs',
  'tests/sts-style-source-epoch.test.mjs',
-].includes(path)?'fresh complete post697 source':'fresh complete StS CI source',path);
+].includes(path)?'fresh complete post697 source: ':'fresh complete StS CI source: ')+path);
 function fixture(){
  const config='config/architecture.json',one='src/lua/one.lua',two='src/lua/two.lua',added='src/lua/abyss_page_reveal.lua';
  const current={[config]:bind('{}\n'),[one]:bind('return 1\n'),[two]:bind('return 2\n')};

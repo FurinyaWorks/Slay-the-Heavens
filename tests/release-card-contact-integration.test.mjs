@@ -24,7 +24,7 @@ test('joint Release authenticates the full live production corpus and retains bo
  assert.equal(files.length,352);assert.deepEqual(files,Object.keys(p.current).filter(path=>p.current[path]!==null).sort());
  for(const path of files)assert.equal(norm(readFileSync(path,'utf8')),p.current[path].source,path+' fresh joint source');
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(p.targets[name],target,name+' complete immutable original target');
- assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,87);
+ assert.equal(Object.keys(prior.targets).length,64);assert.equal(Object.keys(p.targets).length,88);
  const handPrior=p.targets.releaseHandLayoutPrior.files;
  const enemyPrior=p.targets.releaseEnemyMetricsPrior.files;
  assert.deepEqual(Object.keys(handPrior).filter(path=>handPrior[path].sha256!==enemyPrior[path].sha256),['src/lua/abyss_battle_card_view.lua']);
@@ -49,9 +49,12 @@ test('joint Release authenticates the full live production corpus and retains bo
   'src/lua/abyss_battle_action_bindings.lua','src/lua/abyss_battle_actions.lua','src/lua/abyss_battle_card_gestures.lua',
   'src/lua/abyss_battle_input_state.lua','src/lua/abyss_ui.lua',
  ]);
+ const followupPrior=p.targets.releaseFullFollowupPrior;
+ assert.equal(followupPrior.commit,'4dd97d67883202496f7cb587002ed00f429ef699');
+ assert.deepEqual(files.filter(path=>followupPrior.files[path].sha256!==p.current[path].sha256),["src/lua/abyss_battle_actions.lua"]);
  const repairPrior=p.targets.releaseFullRepairPrior;
  assert.equal(repairPrior.commit,'36b96baa93d07cb8a357cb793ea4e8806a5aca87');
- assert.deepEqual(files.filter(path=>repairPrior.files[path].sha256!==p.current[path].sha256),[
+ assert.deepEqual(files.filter(path=>repairPrior.files[path].sha256!==followupPrior.files[path].sha256),[
   'src/lua/abyss_battle_action_bindings.lua','src/lua/abyss_battle_input_state.lua',
  ]);
  assert.deepEqual(p.targets.releaseFatalBgmPrior.files,pointerPrior,'BGM and pointer retain the same complete Release predecessor');

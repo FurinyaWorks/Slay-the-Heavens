@@ -342,10 +342,32 @@ const fullRepairTargets={...fullRepairPrior.targets,
  releaseFullRepairPrior:{commit:fullRepair.base,files:fullRepairPrior.current}};
 const fullRepairOwners=Object.keys(fullRepairCurrent).sort().filter(path=>
  Object.values(fullRepairTargets).some(target=>target.files[path]?.sha256!==fullRepairCurrent[path]?.sha256));
-export const sourceEpoch=createSourceEpochProjector(freeze({
+export const preReleaseFullFollowupSourceEpoch=createSourceEpochProjector(freeze({
  ...fullRepairPrior,current:fullRepairCurrent,targets:fullRepairTargets,owners:fullRepairOwners,
  currentTreeCommitted:false,currentCommit:fullRepair.base,
  currentCommitRole:'committed first Full predecessor; corrections are authenticated by exact current bytes',
+}),{allowConfigLayout:true,reuseFrozenInput:true});
+// Exact follow-up of the preserved first-Full repair; old witnesses remain immutable.
+const followupBytes=readFileSync(new URL('./release-full-followup-source.json.gz',import.meta.url));
+assert.equal(hash(followupBytes),'dd47073e00cfb054d33280eb73d17f41f78b395012b7b1bbb9025e3e2e21fb92','complete Full follow-up production');
+const followup=JSON.parse(gunzipSync(followupBytes));
+assert.equal(followup.schemaVersion,1);
+assert.equal(followup.base,'4dd97d67883202496f7cb587002ed00f429ef699');
+assert.deepEqual(Object.keys(followup.files),["src/lua/abyss_battle_actions.lua"]);
+const followupPrior=preReleaseFullFollowupSourceEpoch.proof;
+const followupCurrent={...followupPrior.current};
+for(const [path,row]of Object.entries(followup.files)){
+ assert.deepEqual(row.before,followupPrior.current[path],'exact preserved Full repair predecessor: '+path);
+ followupCurrent[path]=row.current;
+}
+const followupTargets={...followupPrior.targets,
+ releaseFullFollowupPrior:{commit:followup.base,files:followupPrior.current}};
+const followupOwners=Object.keys(followupCurrent).sort().filter(path=>
+ Object.values(followupTargets).some(target=>target.files[path]?.sha256!==followupCurrent[path]?.sha256));
+export const sourceEpoch=createSourceEpochProjector(freeze({
+ ...followupPrior,current:followupCurrent,targets:followupTargets,owners:followupOwners,
+ currentTreeCommitted:false,currentCommit:followup.base,
+ currentCommitRole:'preserved first Full repair predecessor; focused follow-up authenticated by exact current bytes',
 }),{allowConfigLayout:true,reuseFrozenInput:true});
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is

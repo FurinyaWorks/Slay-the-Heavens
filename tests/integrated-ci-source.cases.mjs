@@ -787,3 +787,41 @@ test('first Full repair binds fresh production and CI leaves without accepting t
  }
  assertIntegratedCurrent(read);
 });
+
+test('Full follow-up binds cancellation recovery and exact outer rejection checks to fresh live sources',()=>{
+ const packet=JSON.parse(gunzipSync(mergedReadFileSync('tests/helpers/release-full-followup-ci.json.gz')));
+ assert.equal(packet.base,'4dd97d67883202496f7cb587002ed00f429ef699');
+ const anchor='tests/native-startup-contract.test.mjs';
+ let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const before=packet.files[path]?.before;
+   if(fault.kind==='prior')return encoding?before:Buffer.from(before);
+   const bytes=mergedReadFileSync(path,encoding);
+   return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+  }
+  return mergedReadFileSync(path,encoding);
+ };
+ const reader=integratedRead('native',{read}),current=mergedReadFileSync(anchor,'utf8');
+ const original=reader(anchor,'utf8');assert.notEqual(original,current);
+ const project=()=>integratedSource(anchor,current,'native',read);
+ const linked=[...Object.keys(packet.files),'tests/helpers/release-full-followup-ci.json.gz',
+  'tests/helpers/release-full-followup-source.json.gz','src/lua/abyss_battle_actions.lua'];
+ for(const path of linked)for(const kind of ['missing','null','drift',...(packet.files[path]?.before?['prior']:[])]){
+  fault={path,kind};assert.throws(project,undefined,path+' '+kind);
+  fault=undefined;assert.equal(project(),original);assert.equal(reader(anchor,'utf8'),original);
+ }
+ // Every follow-up leaf must authorize through the same live archive too,
+ // not just an anchor already recognized by the older pointer/BGM layers.
+ for(const leaf of Object.keys(packet.files)){
+  const bytes=mergedReadFileSync(leaf,'utf8'),prior=integratedSource(leaf,bytes,'native',read);
+  if(prior===bytes)continue; // Newly introduced fixtures stay current, never replayed.
+  fault={path:'tests/helpers/release-full-followup-ci.json.gz',kind:'drift'};
+  assert.throws(()=>integratedSource(leaf,bytes,'native',read),undefined,leaf+' fresh follow-up archive');
+  assert.throws(()=>reader(leaf),undefined,leaf+' binary follow-up archive');
+  fault=undefined;assert.equal(integratedSource(leaf,bytes,'native',read),prior);
+ }
+ assertIntegratedCurrent(read);
+});
