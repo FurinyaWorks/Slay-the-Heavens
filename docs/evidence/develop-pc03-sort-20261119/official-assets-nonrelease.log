@@ -1,0 +1,85 @@
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=10
+PC03_BASELINE profile=official-assets-first cards=12 mode=original sorts=5 clickMs=266.676 settleMs=581.746 comparatorMs=0.584 comparisons=183 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=15
+PC03_BASELINE profile=official-assets-first cards=12 mode=type sorts=5 clickMs=333.280 settleMs=615.706 comparatorMs=2.864 comparisons=207 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=20
+PC03_BASELINE profile=official-assets-first cards=12 mode=cost sorts=5 clickMs=303.860 settleMs=642.453 comparatorMs=2.678 comparisons=172 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=10
+PC03_BASELINE profile=official-assets-first cards=60 mode=original sorts=5 clickMs=293.433 settleMs=612.780 comparatorMs=3.795 comparisons=1623 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=15
+PC03_BASELINE profile=official-assets-first cards=60 mode=type sorts=5 clickMs=464.326 settleMs=622.118 comparatorMs=17.267 comparisons=1582 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=20
+PC03_BASELINE profile=official-assets-first cards=60 mode=cost sorts=5 clickMs=446.781 settleMs=596.975 comparatorMs=21.968 comparisons=1614 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=10
+PC03_BASELINE profile=official-assets-first cards=200 mode=original sorts=5 clickMs=350.028 settleMs=588.283 comparatorMs=15.894 comparisons=7537 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=15
+PC03_BASELINE profile=official-assets-first cards=200 mode=type sorts=5 clickMs=648.264 settleMs=677.590 comparatorMs=75.309 comparisons=7330 refreshCalls=5 coverTrueCalls=0
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL updated page=deckPanel epoch=20
+PC03_BASELINE profile=official-assets-first cards=200 mode=cost sorts=5 clickMs=603.459 settleMs=627.269 comparatorMs=98.131 comparisons=7435 refreshCalls=5 coverTrueCalls=0
+PC03_BASELINE_COMPLETED

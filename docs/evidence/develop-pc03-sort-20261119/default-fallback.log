@@ -1,0 +1,127 @@
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=10
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=10
+PC03_BASELINE profile=default cards=12 mode=original sorts=5 clickMs=22.113 settleMs=623.272 comparatorMs=0.803 comparisons=183 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=15
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=15
+PC03_BASELINE profile=default cards=12 mode=type sorts=5 clickMs=24.700 settleMs=675.360 comparatorMs=2.869 comparisons=207 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=20
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=20
+PC03_BASELINE profile=default cards=12 mode=cost sorts=5 clickMs=54.332 settleMs=756.591 comparatorMs=6.212 comparisons=172 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=10
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=10
+PC03_BASELINE profile=default cards=60 mode=original sorts=5 clickMs=69.664 settleMs=621.795 comparatorMs=4.110 comparisons=1623 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=15
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=15
+PC03_BASELINE profile=default cards=60 mode=type sorts=5 clickMs=74.951 settleMs=617.405 comparatorMs=21.134 comparisons=1582 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=20
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=20
+PC03_BASELINE profile=default cards=60 mode=cost sorts=5 clickMs=59.560 settleMs=591.415 comparatorMs=19.391 comparisons=1614 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=8
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=9
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=10
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=10
+PC03_BASELINE profile=default cards=200 mode=original sorts=5 clickMs=125.371 settleMs=622.753 comparatorMs=15.173 comparisons=7537 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=11
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=12
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=13
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=14
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=15
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=15
+PC03_BASELINE profile=default cards=200 mode=type sorts=5 clickMs=192.695 settleMs=642.363 comparatorMs=77.913 comparisons=7330 refreshCalls=10 coverTrueCalls=15
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=16
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=17
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=18
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=19
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=20
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=20
+PC03_BASELINE profile=default cards=200 mode=cost sorts=5 clickMs=217.234 settleMs=606.138 comparatorMs=104.673 comparisons=7435 refreshCalls=10 coverTrueCalls=15
+PC03_BASELINE_COMPLETED

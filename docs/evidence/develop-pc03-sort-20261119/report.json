@@ -1,0 +1,301 @@
+{
+  "baseCommit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "baseTree": "420171af6a98385c3641cf7d59fbb8f0e53a50d0",
+  "node": "v24.22.1",
+  "platform": "linux",
+  "lfsInputs": {
+    "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png": {
+      "sha256": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+      "bytes": 17710
+    },
+    "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png": {
+      "sha256": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+      "bytes": 18329
+    }
+  },
+  "boundary": "Instrumented current-source offline Host only. Synthetic 60/200 card stress is not a supported-deck claim. No device, official import, ready, capacity or FPS proof.",
+  "timing": "Fengari Node os.clock calls process.uptime. Milliseconds are elapsed process measurements, not CPU or real PC latency. Comparator column includes table.sort and its instrumented callbacks; settle always runs five synthetic update/refresh steps.",
+  "profiles": {
+    "default-fallback": {
+      "sortOperations": 45,
+      "observedSamePageCover": true,
+      "rows": [
+        {
+          "profile": "default",
+          "cards": 12,
+          "mode": "original",
+          "sorts": 5,
+          "clickMs": 22.113,
+          "settleMs": 623.272,
+          "comparatorMs": 0.803,
+          "comparisons": 183,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 12,
+          "mode": "type",
+          "sorts": 5,
+          "clickMs": 24.7,
+          "settleMs": 675.36,
+          "comparatorMs": 2.869,
+          "comparisons": 207,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 12,
+          "mode": "cost",
+          "sorts": 5,
+          "clickMs": 54.332,
+          "settleMs": 756.591,
+          "comparatorMs": 6.212,
+          "comparisons": 172,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 60,
+          "mode": "original",
+          "sorts": 5,
+          "clickMs": 69.664,
+          "settleMs": 621.795,
+          "comparatorMs": 4.11,
+          "comparisons": 1623,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 60,
+          "mode": "type",
+          "sorts": 5,
+          "clickMs": 74.951,
+          "settleMs": 617.405,
+          "comparatorMs": 21.134,
+          "comparisons": 1582,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 60,
+          "mode": "cost",
+          "sorts": 5,
+          "clickMs": 59.56,
+          "settleMs": 591.415,
+          "comparatorMs": 19.391,
+          "comparisons": 1614,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 200,
+          "mode": "original",
+          "sorts": 5,
+          "clickMs": 125.371,
+          "settleMs": 622.753,
+          "comparatorMs": 15.173,
+          "comparisons": 7537,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 200,
+          "mode": "type",
+          "sorts": 5,
+          "clickMs": 192.695,
+          "settleMs": 642.363,
+          "comparatorMs": 77.913,
+          "comparisons": 7330,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        },
+        {
+          "profile": "default",
+          "cards": 200,
+          "mode": "cost",
+          "sorts": 5,
+          "clickMs": 217.234,
+          "settleMs": 606.138,
+          "comparatorMs": 104.673,
+          "comparisons": 7435,
+          "refreshCalls": 10,
+          "coverTrueCalls": 15
+        }
+      ],
+      "generated": {
+        "abyss_art_features.lua": "1323fbeb388563db4ae50198d4d231edeec8d337ce95ea7288bde014a6bce91e",
+        "abyss_component_binding.lua": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+        "abyss_data.lua": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+        "abyss_map_controls.lua": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+        "abyss_map_layout.lua": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+        "abyss_menu_background_asset.lua": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+        "abyss_monster_actor_binding.lua": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+        "abyss_monster_art_data.lua": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+        "abyss_narrative.lua": "8e7b8abe0d8390fbd535434818fad709ed7cb7b10b0eb62d8d9699fba4f5cd48",
+        "abyss_original_v4_data.lua": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+        "abyss_presentation.lua": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+        "abyss_ready_card_assets.lua": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+        "abyss_ready_card_binding.lua": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+        "abyss_theme.lua": "bb81179d37b73c3fe7a707d929c645c68ec8fdf2993e493ea7891cb9e2a21ca1",
+        "abyss_traveler_portrait_assets.lua": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c",
+        "abyss_ui_layout.lua": "932b94763870fdff25485f90a4ef98078a74b2567762c610203e59564967bad5",
+        "abyss_ui_profile.lua": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69",
+        "abyss_ui_templates.lua": "4b35600d348dfff390b3b77d01f6fb960adf29d537e63212e6de9efbf335e6c0",
+        "abyss_v25_card_assets.lua": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+        "game-ui.json": "467566fe5f7433175c3f4258c0af4fc20bc708c66592cff1399a91bac1b9bbec"
+      }
+    },
+    "official-assets-nonrelease": {
+      "sortOperations": 45,
+      "observedSamePageCover": false,
+      "rows": [
+        {
+          "profile": "official-assets-first",
+          "cards": 12,
+          "mode": "original",
+          "sorts": 5,
+          "clickMs": 266.676,
+          "settleMs": 581.746,
+          "comparatorMs": 0.584,
+          "comparisons": 183,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 12,
+          "mode": "type",
+          "sorts": 5,
+          "clickMs": 333.28,
+          "settleMs": 615.706,
+          "comparatorMs": 2.864,
+          "comparisons": 207,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 12,
+          "mode": "cost",
+          "sorts": 5,
+          "clickMs": 303.86,
+          "settleMs": 642.453,
+          "comparatorMs": 2.678,
+          "comparisons": 172,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 60,
+          "mode": "original",
+          "sorts": 5,
+          "clickMs": 293.433,
+          "settleMs": 612.78,
+          "comparatorMs": 3.795,
+          "comparisons": 1623,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 60,
+          "mode": "type",
+          "sorts": 5,
+          "clickMs": 464.326,
+          "settleMs": 622.118,
+          "comparatorMs": 17.267,
+          "comparisons": 1582,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 60,
+          "mode": "cost",
+          "sorts": 5,
+          "clickMs": 446.781,
+          "settleMs": 596.975,
+          "comparatorMs": 21.968,
+          "comparisons": 1614,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 200,
+          "mode": "original",
+          "sorts": 5,
+          "clickMs": 350.028,
+          "settleMs": 588.283,
+          "comparatorMs": 15.894,
+          "comparisons": 7537,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 200,
+          "mode": "type",
+          "sorts": 5,
+          "clickMs": 648.264,
+          "settleMs": 677.59,
+          "comparatorMs": 75.309,
+          "comparisons": 7330,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        },
+        {
+          "profile": "official-assets-first",
+          "cards": 200,
+          "mode": "cost",
+          "sorts": 5,
+          "clickMs": 603.459,
+          "settleMs": 627.269,
+          "comparatorMs": 98.131,
+          "comparisons": 7435,
+          "refreshCalls": 5,
+          "coverTrueCalls": 0
+        }
+      ],
+      "generated": {
+        "abyss_art_features.lua": "30c57fdb2a8d739ae6d523973f10ebbc1d7e2c55915fef669af56cb86cf74d9b",
+        "abyss_component_binding.lua": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+        "abyss_data.lua": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+        "abyss_map_controls.lua": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+        "abyss_map_layout.lua": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+        "abyss_menu_background_asset.lua": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+        "abyss_monster_actor_binding.lua": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+        "abyss_monster_art_data.lua": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+        "abyss_narrative.lua": "8e7b8abe0d8390fbd535434818fad709ed7cb7b10b0eb62d8d9699fba4f5cd48",
+        "abyss_original_v4_data.lua": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+        "abyss_presentation.lua": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+        "abyss_ready_card_assets.lua": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+        "abyss_ready_card_binding.lua": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+        "abyss_theme.lua": "0b4dccd04f0ab2667f052ab4c267a8a48a6cc8d800c0aaaa5ca60d6182991b83",
+        "abyss_traveler_portrait_assets.lua": "4c2f7f2e5883c7d2b291736fa08e311ea67fff45999129bb7e5caa07f84110cb",
+        "abyss_ui_layout.lua": "e171dd02d368614c322c2abdcb9078ea4611be7a6137f70434c0c90670340e66",
+        "abyss_ui_profile.lua": "18dca490638f500f0e97c6e1463310b4f2e88f59c1754de8faad49ac140d3e8a",
+        "abyss_ui_templates.lua": "3baf7555847ae548d7fe9ca78fd28c6093ad5d2e29da2d4a14aadbf192260974",
+        "abyss_v25_card_assets.lua": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+        "game-ui.json": "72725f195d15431b1edfc557c8208cceda93a68d350ca59c83e7b1cdb61d4a31"
+      }
+    }
+  },
+  "inputs": {
+    "src/lua/abyss_deck_ui.lua": "081875a171ffb00d25036fc98713540880d237f6b67933713453bf3fe75e7673",
+    "src/lua/abyss_game_ui.lua": "04456f26110addedb28d3109910091e18011902c3ef6a028e0b61a16aca56ed0",
+    "src/lua/abyss_page_reveal.lua": "5b93f48110bdf0d520191deb037e2abdde67f50c1218c788229618c815165230",
+    "src/lua/abyss_card_art_runtime.lua": "843e37d8c7ac783573129a0b782c63825e3b764ec4787b63d350bb8d6ff60ff8",
+    "tests/lua/support/game_ui_fixture.lua": "a6ee3fa20ff4211d5ae5a4236f0e65bfb68dd7e8880ed3ba3eeb5314daa387f3",
+    "docs/evidence/develop-pc03-sort-20261119/probe.lua": "e1b4ff651deed8c1dd5c421360b45771ce3b0860843f7706d974597713e70877",
+    "docs/evidence/develop-pc03-sort-20261119/run.mjs": "05578ef6eac0f89153cc9a103e1d2a6e2e21f9b40104f4b4dd74f1d799b1b32b"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "gzipSHA256": "4735a7e6e333b90ed326f7773aa7ae6cc70d657d8c02482df5c81ae46d948a48",
+  "rawSHA256": "facea0d6f2948130e1ed206e626bc094f8b2ba48f1047c19dc93447377429864",
+  "rawBytes": 7992,
+  "redaction": "Only current repository absolute prefix replaced with <repo>/; initial errors preserved."
+}

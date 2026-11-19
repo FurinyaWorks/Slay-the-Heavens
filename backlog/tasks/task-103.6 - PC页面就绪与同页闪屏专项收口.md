@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: 2026-11-15 20:14
-updated_date: '2026-11-18T14:00:00Z'
+updated_date: '2026-11-19T06:37:00Z'
 labels: []
 milestone: m-8
 dependencies: []
@@ -40,4 +40,6 @@ type: bug
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-11-15 对账：PR #672（未合入）声明已实现“同页ready立即展示、异步仅局部遮罩、旧callback保护”，且含 modal-loading-frames 等测试。属于代码候选而非现行正式玩家实机验收；全部AC保持未勾。PR #672 原Depends-on #663，现#663已于11月15日合入develop（c2409ad），仍必须按最新基线及最终完整GIL复核。产品观察严重度 P0/P1，Backlog priority medium 是当前高优先级配额约束，两者不可混读。
+
+2026-11-19 PC03只读测量交接：develop@62328bdac7703c3ab241e0ddb19e0fa05474f76a，证据 docs/evidence/develop-pc03-sort-20261119。默认回退每组5次排序共10次Grid刷新、15次准备层SetVisible(true)，日志有5次preparing→visible；显式official-assets非发布配置每组5次排序共5次刷新、0次准备层SetVisible(true)。这是组总数，不是逐次精确计数断言。12/60/200张合成输入、三模式各5次，共90次；200张仅压力输入，不代表正式支持容量。Fengari os.clock为process.uptime，非CPU/实机延迟，不能据此认定2–3秒根因或启动比较器优化。未改变生产源码、原测试、任务状态或AC。原#672(1f7ce04c53189db8c39b59c797a45d57a2c7bac1)已交接#684；#684最终冻结10d7ef9658872ec7d118b585fbc81e3da585c552，Ready/弹窗生命周期仍由原维护协调方按最新develop接续，不重做整包或改旧Release。验证分支 verify/develop-pc03-sort-20261119 为FROZEN证据保全，收口负责人为本轮PC离线验证协调者；仅在原协调方明确接续或新的准确候选需要复验时恢复。尚无官方导入、ready、容量或设备验收，不能勾AC。
 <!-- SECTION:NOTES:END -->
