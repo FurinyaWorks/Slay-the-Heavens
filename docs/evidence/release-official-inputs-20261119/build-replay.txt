@@ -1,0 +1,2 @@
+Validated Lua data module built.
+Native battle UI and Traveler display module built.

@@ -1,0 +1,23 @@
+{
+  "status": "OFFLINE_INPUTS_VERIFIED",
+  "sourceCommit": "1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2",
+  "paths": 38,
+  "negativeControls": 6,
+  "controls": 24698,
+  "references": 0,
+  "sharedHosts": 0,
+  "maxDirectChildren": 60,
+  "compactJsonBytes": {
+    "layout": 3931884,
+    "templates": 137234
+  },
+  "preBindingLuaInputs": {
+    "count": 366,
+    "bytes": 5374692
+  },
+  "sourceInputs": {
+    "count": 641,
+    "bytes": 17333173,
+    "lfsObjects": 4
+  }
+}

@@ -1,0 +1,93 @@
+[
+  {
+    "path": "art/characters/traveler-geo/portraits/avatar96/runtime-no-snapshot.lua",
+    "gitBlob": "f1e1dc79280e36252efed74643606ce23abc67e2",
+    "sha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+    "bytes": 395396,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/avatar96/native-art.json",
+    "gitBlob": "83cc75403b830c4a08cb71b23c617002867bf291",
+    "sha256": "93bcf4303d370f7faac2b8289146acfe655bae6dced0abf5257e407d69f748ef",
+    "bytes": 2658277,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/battle133/runtime-no-snapshot.lua",
+    "gitBlob": "f20d98cf8fc34317e0e3c72709add683c739e64e",
+    "sha256": "ae2161957033d688b1bed1c7ab2ad2891d5f7bf5e34b291f9ecaef7cfa11f880",
+    "bytes": 356825,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/battle133/native-art.json",
+    "gitBlob": "bbc82b67acd01cee163697714ec47ff7337c6a63",
+    "sha256": "f8a7af7b079aa5bbb7e16b502b222f1fd7dbfaa2c30f6eef1bf0d76af0a0a248",
+    "bytes": 2377377,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/avatar96/LICENSE-runtime-MIT.txt",
+    "gitBlob": "e5aeef55373ae80203962fa57862db5342eb9f35",
+    "sha256": "b5f34362abd2e8c31b7a7bc62c2977f158faa4cd78b17ef7c197fb464e56a6ef",
+    "bytes": 1061,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/idle-approved-v1/native-idle-210.json",
+    "gitBlob": "538793d941afa377a41919be785bc0902fc3e38c",
+    "sha256": "caa7505c9485ae46555c130088c7d486542865c4ae694090935843d5e0b41af5",
+    "bytes": 545721,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/idle-approved-v1/lumine_static_approved.png",
+    "gitBlob": "bfefff2d90289ef3c24363107ff3a294cba4b2a5",
+    "sha256": "32830a9ab3f0b181202205bba59447efe660ce3225ab26f32943c54753a105de",
+    "bytes": 1092164,
+    "lfs": true
+  },
+  {
+    "path": "art/characters/traveler-geo/idle-approved-v1/lumine_idle_approved.gif",
+    "gitBlob": "70057f4a6542c52c2405c21a29d68398bb0cdc89",
+    "sha256": "0449a8b3094f0a628f493b27157ae2d8b27d646ceb9541f6f5e9ce98a9ebeff1",
+    "bytes": 1852035,
+    "lfs": true
+  },
+  {
+    "path": "art/performance/selection-budget-v1.json",
+    "gitBlob": "73ebe015e69b4909af01013c1fc13858376c6e8a",
+    "sha256": "df3b34983dafd051842c820e6c7bf0931926fccba00fce0cc8873cab0f803b82",
+    "bytes": 189593,
+    "lfs": false
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png",
+    "gitBlob": "246f556359184e5494dd7881971e39e37b5a26a7",
+    "sha256": "d96f7f81c436971a5d7aa78740b580a7bb237d5ac2962e51f5532dbb51f9eb80",
+    "bytes": 17710,
+    "lfs": true
+  },
+  {
+    "path": "art/characters/traveler-geo/portraits/battle133/preview-native-1x.png",
+    "gitBlob": "35c3492634e763473c9a4101b5abb0078525858e",
+    "sha256": "93b4d73290c3a20da7b02f02b05786b57fd5d381da71b02b5839a8c6a344f80b",
+    "bytes": 18329,
+    "lfs": true
+  },
+  {
+    "path": "experiments/lumine-native-fit/fit-hybrid-final/budget-1600.json",
+    "gitBlob": "9299a691ea3002d7949bb7c4f3d1cf186f4abb1f",
+    "sha256": "6cfbdd774300b85addd63beb9a0ec208ac779afc9b9a033014f8633c86243a62",
+    "bytes": 465470,
+    "lfs": false
+  },
+  {
+    "path": "art/lowpoly-select/select-lowpoly.json",
+    "gitBlob": "b6f9022b360abe62e047d0effbe262807e453dff",
+    "sha256": "aca5ac9e2f6e1224f7aba3faa692abc2e4a5b81045756b86d7ff8c3384f36284",
+    "bytes": 255786,
+    "lfs": false
+  }
+]
