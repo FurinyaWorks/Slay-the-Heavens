@@ -10,7 +10,7 @@ local function setup()
  local root=F.Viewport.apply(canvas,1280,720)
  local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{
   seed=1,campaign=true,campaignProfile='competition-two-act',cursorEvents=cursor,
-  imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
+  keyEvents={KeyboardCraftspersonKey42Down='backspace'},imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
   settle=function()signals=signals+1;return true end,
  })
  root.ui=host
@@ -40,6 +40,10 @@ for _,action in ipairs({'abandon','new'})do
   assert(not tap(hit(root,'runMenu','abandon'),10) and host.run==oldRun and host.menuOpen)
   assert(runMenu:GetChild('blocker').listeners.click({touchId=11}))
   assert(not host.exitOpen and host.run==oldRun and host:openMenu())
+  local back=assert(runMenu.keyListeners and runMenu.keyListeners.backspace,'missing native Backspace receiver')
+  assert(runMenu.disableKeyEventPassthrough and back())
+  assert(not host.exitOpen and not back() and host.run==oldRun and signals()==0)
+  assert(host:openMenu())
  end
  if action=='new'then
   assert(tap(hit(root,'runMenu','mainMenu'),12));assert(host.sessionPaused and host.run==oldRun)

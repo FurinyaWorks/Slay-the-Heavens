@@ -43,7 +43,7 @@ info.deck[1]=false;assert(not Deck.previewContext(info))
 assert(not Deck.previewContext({}));print('CHARACTER_BROWSER_PASS')`);
 });
 
-test('real official selection opens shared five-column browser with deck owner, controller/back, stale closure and restored presentation',t=>{
+test('shared five-column browser retains deck owner, controller/back, stale closure and restored presentation',t=>{
  const out=temporary(t);buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out,undefined,{officialAssets:true});
  const preloads=readdirSync(out).filter(n=>n.endsWith('.lua')).map(n=>
   `package.preload[${luaString(n.slice(0,-4))}]=assert(loadfile(${luaString(join(out,n).replaceAll('\\','/'))}))`).join('\n');
@@ -66,13 +66,14 @@ end
 settle();assert(host:start());settle();assert(host:selectCharacter('traveler'));assert(host:selectElement('ironclad'));settle()
 local info=host.characterSelection.info;local original=F.Combat.copy(info)
 local previewId=info.deck[1].id;info.deck[1].display.name='只读投影专用名'
-local panel=root:GetChild('characterPanel');local opener=panel:GetChild('details'):GetChild('deckOpen'):GetChild('hit')
+local panel=root:GetChild('characterPanel')
+assert(not panel:GetChild('details'):GetChild('deckOpen'),'official selection must have no starter deck hit area')
 assert(panel.visible and not host.run and created==0)
 local Display=require('abyss_card_display');local write=Display.writeNativeArt;local painted=0
 Display.writeNativeArt=function(...)
  assert(sourcePage=='deckPanel','starter card wrote before its deck presentation owner');painted=painted+1;return write(...)
 end
-prepared=false;assert(opener.click());assert(host.pageReveal:covered() and Gate.intent(host).page=='deckPanel')
+prepared=false;assert(host:openStarterDeck());assert(host.pageReveal:covered() and Gate.intent(host).page=='deckPanel')
 assert(not host.run and created==0 and host.characterSelection.deckOpen and host.deckUI.previewInfo==info)
 local deck=host.deckUI;local deckPanel=root:GetChild('deckPanel')
 assert(deck.browserShell and not deck.pileView and not deck.pileKind and not deck.choiceToken and not deck.battle)

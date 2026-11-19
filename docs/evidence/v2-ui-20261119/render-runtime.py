@@ -41,17 +41,21 @@ def project(pose, x=0, y=0):
     return (SCALE * (WIDTH / 2 + a * x + b * y + ox),
             SCALE * (HEIGHT / 2 - c * x - d * y - oy))
 
-def draw_text(draw, node, pose):
+def draw_text(draw, node, pose, style):
     spec = node['text']
     if not spec.get('content'):
         return
     w, h = node['size']
     left = spec.get('align') == 'left'
+    right = spec.get('align') == 'right'
     top = spec.get('valign') == 'top'
     baseline = font(round(SCALE * spec['fontSize']))
     content = re.sub(r'</?color(?:=#[0-9a-fA-F]{6})?>', '', spec['content'])
     lines = []
     for paragraph in content.splitlines():
+        if w <= 0:
+            lines.append(paragraph)
+            continue
         line = ''
         for char in paragraph:
             if line and baseline.getlength(line + char) > SCALE * w:
@@ -59,10 +63,13 @@ def draw_text(draw, node, pose):
                 line = ''
             line += char
         lines.append(line)
-    draw.multiline_text(project(pose, -w / 2 if left else 0, h / 2 if top else 0),
+    outline = {}
+    if style.get('outline') and style.get('outlineColour'):
+        outline = {'stroke_width': SCALE, 'stroke_fill': tint(style['outlineColour'], style.get('outlineOpacity'))}
+    draw.multiline_text(project(pose, -w / 2 if left else w / 2 if right else 0, h / 2 if top else 0),
                         '\n'.join(lines), tint(spec.get('colour'), 1), font=baseline,
-                        anchor=('l' if left else 'm') + ('a' if top else 'm'),
-                        align='left' if left else 'center', spacing=2)
+                        anchor=('l' if left else 'r' if right else 'm') + ('a' if top else 'm'),
+                        align='left' if left else 'right' if right else 'center', spacing=2, **outline)
 
 def render(scene, output, layout):
     image = Image.new('RGB', (WIDTH * SCALE, HEIGHT * SCALE), '#151820')
@@ -70,6 +77,7 @@ def render(scene, output, layout):
     def walk(node, parent, parent_size, spec):
         if node.get('visible') is False:
             return
+        spec = {**spec, **node.get('native', {})}
         position = node.get('position', (0, 0))
         size = node.get('size', parent_size)
         anchor = spec.get('anchor', {})
@@ -92,7 +100,7 @@ def render(scene, output, layout):
                 draw.polygon([project(pose, x * w, y * h) for x, y in shape],
                              tint(node.get('colour'), node.get('opacity')))
         if node.get('kind') in ('text', 'textWindow') and node.get('text'):
-            draw_text(draw, {**node, 'size': size}, pose)
+            draw_text(draw, {**node, 'size': size}, pose, spec.get('text', {}))
         children = {child['name']: child for child in spec.get('children', [])}
         for child in node.get('children') or ():
             walk(child, pose, size, children.get(child['name'], {}))

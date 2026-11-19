@@ -6,6 +6,7 @@ local settlements = 0
 local host = F.GameUI.new(root, F.Data, F.Presentation, 'click', {
     seed = 42, campaign = true, campaignProfile = 'competition-two-act',
     characterProfile = 'production', prologue = true, imageSource = 'static',
+    keyEvents = {KeyboardCraftspersonKey42Down = 'backspace'},
     color = function(r, g, b, a) return {r = r, g = g, b = b, a = a} end,
     settle = function(victory) assert(not victory); settlements = settlements + 1; return true end,
 })
@@ -35,6 +36,10 @@ end
 click('menuPanel', 'start')
 assert(host:selectCharacter('traveler') and host:selectElement('ironclad'))
 assert(host:confirmCharacter())
+untilReady(function() return host.prologue.phase == 'close' end)
+local transition = root:GetChild('prologuePanel'):GetChild('scene')
+assert(transition.visible and transition:GetChild('element7').visible)
+capture('transition-opening', 'Chapter opening at the completed seventh light')
 untilReady(function() return host.nodeUI.visible and not host.prologue:covering() end)
 click('nodePanel', 'eventView/option1')
 assert(host.run.nodeFlow.event.stage == 'neow_blessing')
@@ -74,6 +79,11 @@ assert(menu.visible and menu:GetChild('mainMenu').visible)
 capture('run-menu', 'Actual upper-right menu input with its sole visible action')
 click('runMenu', 'blocker')
 assert(host.mode == 'map' and not menu.visible and host.run == run)
+local backspace = assert(menu.keyListeners and menu.keyListeners.backspace, 'missing native Backspace receiver')
+assert(not backspace(), 'closed menu accepted Backspace')
+click('exitEntry', 'open')
+assert(menu.disableKeyEventPassthrough and backspace())
+assert(host.mode == 'map' and not menu.visible and host.run == run and map.floor == floor)
 click('exitEntry', 'open')
 click('runMenu', 'mainMenu')
 assert(host.sessionPaused and host.mode == 'menu' and host.run == run and host.map == map)
@@ -87,6 +97,7 @@ click('exitEntry', 'open')
 click('runMenu', 'mainMenu')
 click('menuPanel', 'titleQuit')
 assert(host.exitOpen and not host.settlementRequested)
+capture('exit-confirm', 'Main menu confirmation before its real settlement request')
 click('exitPanel', 'confirm')
 assert(settlements == 1 and host.settlementRequested)
 print('V2_RUNTIME_EVIDENCE_PASS')

@@ -13,7 +13,7 @@ local CharacterSelect = require("abyss_character_select")
 require("abyss_character_select_view")
 local Controller = require("abyss_controller")
 local MenuView=require("abyss_game_ui_menu_view")
-require("abyss_theme")
+local Theme = require("abyss_theme")
 local M = {}
 require("abyss_numbers")
 require("abyss_run_seed")
@@ -190,6 +190,13 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.update = Lifecycle.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     self.disable = Lifecycle.disable(self,platform,controller,characterPanel,owner)
     local dismissFromOutside = Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
+    local backKey = platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
+    if Theme.presentationProfile=='official-assets-first' and backKey and runMenu.AddKeyEventListener then
+        runMenu.disableKeyEventPassthrough = true
+        runMenu:AddKeyEventListener(backKey,function()
+            return runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
+        end)
+    end
     local bindCommand = Input.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
     Input.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
     Input.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside,runMenu,canViewRoute,child,owner)

@@ -1,3 +1,4 @@
+import {beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
 import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
@@ -46,7 +47,7 @@ export function closeoutInventory(paths,view,readSource=readFileSync){
  if(JSON.stringify(sorted)===JSON.stringify(before.inventory))return [...paths];
  assert.deepEqual(sorted,packed.inventory,'complete raw closeout inventory');
  for(const path of packed.inventory.filter(p=>!before.inventory.includes(p))){
-  const source=readSource(path,'utf8');
+  const source=beforeV2UiEvidence(path,readSource(path,'utf8'));
   assert.equal(hash(source.replaceAll('\r\n','\n')),packed.current[path],'closeout added inventory source: '+path);
  }
  return [...before.inventory];

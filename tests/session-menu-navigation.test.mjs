@@ -1,3 +1,4 @@
+import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +12,9 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
-const readHistoricalMenu = liveEpoch.combinedReader(undefined,'v2RunMenuPrior');
+const readLive = path => readFileSync(path,'utf8');
+const readBeforeUiCloseout = path => beforeV2UiHudSource(path,readLive(path),readLive);
+const readHistoricalMenu = liveEpoch.combinedReader(readBeforeUiCloseout,'v2RunMenuPrior');
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
@@ -131,7 +134,7 @@ test('menu source continuation retains the complete release corpus and rejects n
 });
 
 test('v2 run menu continuation preserves the prior owner and rejects changed siblings',()=>{
- const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ const read=p=>readBeforeUiCloseout(p).replaceAll('\r\n','\n');
  const changed=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'];
  for(const path of changed) {
   assert.equal(read(path),liveEpoch.proof.current[path].source);

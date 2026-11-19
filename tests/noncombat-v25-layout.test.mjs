@@ -25,7 +25,9 @@ test('official menu and selection reuse live inputs with bounded native decorati
  assert.equal(JSON.stringify(child(stage,'battlePanel')),oldBattle);
  assert.equal(child(menu,'vista').visible,false);
  assert.equal(child(menu,'emblem').visible,false);
- assert.deepEqual(child(menu,'start').position,[-450,-170]);
+ const [startX,startY]=child(menu,'start').position;
+ assert(startX<0&&startY<0,'approved start stays at the bottom left');
+ assert.deepEqual(start.size,child(menu,'start').size,'paint and hit areas share the approved bounds');
  assert.deepEqual(child(child(menu,'start'),'officialResultLabel'),{...resultLabel,name:'officialResultLabel',visible:false});
  for(const key of ['confirm','cancel'])for(const state of parts(child(child(panel,key),'hit'))){
   const flag=child(state,'v25Flag'),cloth=child(flag,'cloth'),rim=child(flag,'rim');
@@ -52,20 +54,16 @@ test('official menu and selection reuse live inputs with bounded native decorati
 });
 function selectedSlot(panel){return child(child(panel,'v25Roster'),'selected');}
 
-test('integrated selection retains the shared deck input below its summary without overlapping the selected card',()=>{
+test('integrated selection has a native starter relic and no pre-run deck hit area',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=withViewport(gameLayout(),theme);
  const panel=child(child(layout,'stage')??layout,'characterPanel'),details=child(panel,'details');
- const deck=child(details,'deckOpen'),hit=child(deck,'hit');
  applyOfficialNoncombatLayout(layout,theme);
- assert.equal(child(child(details,'deckOpen'),'hit'),hit,'reuse the live shared-browser input');
- assert.deepEqual(deck.size,[160,36]);assert.deepEqual(hit.size,[160,36]);
- const overlaps=(a,b)=>Math.abs(a.position[0]-b.position[0])*2<a.size[0]+b.size[0]
-  &&Math.abs(a.position[1]-b.position[1])*2<a.size[1]+b.size[1];
- for(const other of [child(details,'deckSummary'),selectedSlot(panel),child(panel,'cancel')])
-  assert.equal(overlaps(deck,other),false,'deck entry overlaps '+other.name);
- for(const state of parts(hit))for(const face of [child(state,'border'),child(state,'plate')]){
-  assert(face.size[0]<=deck.size[0]&&face.size[1]<=deck.size[1],'painted button surface escapes its hit box');
- }
+ assert.equal(child(details,'deckOpen'),undefined);
+ const relic=child(details,'v25RelicIcon');
+ assert.equal(relic.visible,true);
+ assert.deepEqual(relic.size,[36,44]);
+ assert(parts(relic).length>=3 && parts(relic).every(n=>n.kind==='image'&&n.image===100003));
+ assert(parts(relic).every(n=>n.raycastTarget===false),'the relic ornament must not claim input');
 });
 
 test('production background preserves the exact approved experiment rows, including colour and half masks',()=>{

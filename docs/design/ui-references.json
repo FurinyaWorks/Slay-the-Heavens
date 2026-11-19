@@ -78,8 +78,31 @@
       "codePath": "scripts/character-selection-composition.mjs",
       "targetVersion": "v2.0.0",
       "state": "details",
-      "revision": "2026-11-19",
+      "revision": "sts1-open-copy-20261119",
       "status": "APPROVED",
+      "backlogTask": "TASK-103.3",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/character-selection-open-copy.md",
+        "sha256": "ef1f2fd2d655c54356aae6d67b6ba3c6584690f976145047f6edb0b83ca1ce6e"
+      },
+      "supersedes": [
+        "2026-11-19",
+        "reference-ui-lab"
+      ],
+      "note": "Owner 更正选角参考为初代实物。左侧信息直接排在原生背景上，使用文字描边。",
+      "codePaths": [
+        "scripts/character-ui-layout.mjs",
+        "scripts/v25-character-layout.mjs",
+        "scripts/noncombat-v25-layout.mjs"
+      ],
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-choose-your-character/"
+    },
+    {
+      "codePath": "scripts/character-selection-composition.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "details",
+      "revision": "2026-11-19",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/evidence/sts-character-reference-20261113/REFERENCE.md",
@@ -88,7 +111,7 @@
       "supersedes": [
         "reference-ui-lab"
       ],
-      "note": "批准的是原作左侧信息构成及局部半透明板。外部链接保存原图，生产资产沿用原生 UI。",
+      "note": "历史局部半透明信息底板方案，Owner 更正后失效。",
       "codePaths": [
         "scripts/character-ui-layout.mjs",
         "scripts/v25-character-layout.mjs",
@@ -117,9 +140,28 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.3",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-selection.png",
+        "sha256": "accb6e67e7e465125a319a30e48fabe195c43aa2c60c7b9a90f484218b4bf61d"
+      },
+      "supersedes": [
+        "local-board-20261119"
+      ],
+      "note": "正式背景创建器的 1600 个原生图元，原有返回与出发按钮、直接排列的左侧信息和原生岩脉残晶图标。已移除预览牌组入口。 1280×720 离线投影，官方候选待验。"
+    },
+    {
+      "codePath": "scripts/character-selection-composition.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "characterPanel",
+      "revision": "local-board-20261119",
+      "status": "SUPERSEDED",
+      "backlogTask": "TASK-103.3",
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-selection-before.png",
+        "sha256": "61da98c4bd692eceaa5c21fa7d2db26d88c1f80256622a72c833b90e8bf9f6d7"
+      },
       "supersedes": [],
-      "note": "保留当前正式背景与已调好的返回／启程按钮。当前版本的官方整屏画面待取证。"
+      "note": "移除信息板之前的同视口历史对照。"
     },
     {
       "codePath": "scripts/lumine-selection-background.mjs",
@@ -209,9 +251,12 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-107",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-exit-confirm.png",
+        "sha256": "d3f7411bda8185e2fb09700475861899d607f5d7711e49b12514970e25028a1a"
+      },
       "supersedes": [],
-      "note": "沿用平台结算及独立丢弃本局确认。"
+      "note": "主菜单平台结算确认。局内 Exit Game 回主菜单后可继续原局。 1280×720 离线投影，官方候选待验。"
     },
     {
       "codePath": "src/lua/abyss_prologue.lua",
@@ -257,9 +302,12 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.6",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-transition-room.png",
+        "sha256": "fececac5b0bbabdfe191f23ae11b0d21cae888992d88d538442a6c7b4c942101"
+      },
       "supersedes": [],
-      "note": "复用就绪驱动。待补普通页面同候选转场取证。"
+      "note": "首战准备时的普通遮罩。复用璃月印记、七元素、就绪边界及输入隔离。 1280×720 离线投影，官方候选待验。"
     },
     {
       "codePath": "scripts/noncombat-neow-layout.mjs",
@@ -268,11 +316,14 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.3",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/runtime-neow.png",
+        "sha256": "ad6d1e3d0b19885a71d016e53431ea14a63f24869c266e90e96a21555ade0c31"
+      },
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "[当前祝福布局投影](../evidence/v2-ui-20261119/runtime-neow.png)。官方画面待取证。",
+      "note": "当前开局祝福几何、选项与共享顶栏。 1280×720 离线投影，官方候选待验。",
       "codePaths": [
         "scripts/sts-neow-guide-layout.mjs",
         "scripts/sts-neow-choice-layout.mjs"
@@ -299,11 +350,14 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-4.13",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/runtime-map.png",
+        "sha256": "a4ea91108c79d00346f0cb85f7fa00145fc5fe4c4dbb72c725c96725660ad855"
+      },
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "[当前地图布局投影](../evidence/v2-ui-20261119/runtime-map.png)展示共用栏和路线，官方图标待取证。",
+      "note": "当前路线图与共享顶栏。 1280×720 离线投影，官方候选待验。",
       "codePaths": [
         "scripts/map-ui-layout.mjs"
       ]
@@ -329,11 +383,14 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-4.13",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/runtime-map-boss.png",
+        "sha256": "c12258525a28f8627347e91e6023a13099609a651ce734863185a8cc9bad2f44"
+      },
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "[当前首领区布局投影](../evidence/v2-ui-20261119/runtime-map-boss.png)使用同一局地图滚动取证，官方首领图标待取证。"
+      "note": "滚动至首领节点。专用图标的资源绑定通过 Lua 检查。 1280×720 离线投影，官方候选待验。"
     },
     {
       "codePath": "scripts/v25-map-layout.mjs",
@@ -391,9 +448,13 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-4.23",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-battle.png",
+        "sha256": "19871583eb2b8e4be76c70acbf06ab152ad9ce4c2c5be1b583e8368d5c394c8e"
+      },
       "supersedes": [],
-      "note": "保留共用栏和现行 HUD，待同候选核对。"
+      "note": "首战手牌、战斗操作和共享顶栏。静态投影省略专用贴图。 1280×720 离线投影，官方候选待验。",
+      "source": "https://playcraft.space/gallery/slay-the-spire/combat-ten-card-hand/"
     },
     {
       "codePath": "scripts/deck-ui-layout.mjs",
@@ -402,9 +463,12 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-25.4",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-deck.png",
+        "sha256": "0bc1c0cf7041dba7a030f47f18da06af80b7f1a0a441cf7437c360fe9ce92fab"
+      },
       "supersedes": [],
-      "note": "美术冻结。需覆盖永久卡组、抽/弃/消耗牌堆及详情。"
+      "note": "卡组及抽、弃、消耗三堆的当前布局。并查验实例详情和返回。 1280×720 离线投影，官方候选待验。"
     },
     {
       "codePath": "scripts/relic-view-layout.mjs",
@@ -413,9 +477,12 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-relic.png",
+        "sha256": "9922a964e9f0d1b39680330079888a961e8785926f110c4e48931ed7a77a4220"
+      },
       "supersedes": [],
-      "note": "保留现行美术，待补悬停及详情。"
+      "note": "当前起始遗物说明。 1280×720 离线投影，官方候选待验。"
     },
     {
       "codePath": "scripts/potion-discard-layout.mjs",
@@ -424,53 +491,72 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-4.15",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-potion.png",
+        "sha256": "c8c41fee0441b26f3016d25c12fea934e3437a44262408a880cd318c512657cd"
+      },
       "supersedes": [],
-      "note": "核对说明、目标、取消未消耗和丢弃。"
+      "note": "当前药水选中态。取消和丢弃验证实体槽位。 1280×720 离线投影，官方候选待验。"
     },
     {
       "codePath": "scripts/sts-reward-row-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "rewardList",
       "revision": "develop",
-      "status": "NEEDS_REF",
+      "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.2",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-reward.png",
+        "sha256": "69466a1201a34f57f708b8d8ef04e75e0e3d1523a6ecad3bc31f09b4e12a4410"
+      },
       "supersedes": [],
-      "note": "待对照参考并在当前候选取证。"
+      "note": "首战真实获胜后显示的紧凑奖励行。 1280×720 离线投影，官方候选待验。",
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-rewards/"
     },
     {
       "codePath": "scripts/v25-node-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "shopView",
       "revision": "develop",
-      "status": "NEEDS_REF",
+      "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.7",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-shop.png",
+        "sha256": "c5f8f881e03248e0c35c816a02570651e670e663c9b81bf873662493f5e50ab4"
+      },
       "supersedes": [],
-      "note": "优先核对货架、地图返回和删牌浏览。"
+      "note": "当前购买区域、商品栏和返回入口。 1280×720 离线投影，官方候选待验。",
+      "source": "https://playcraft.space/gallery/slay-the-spire/merchant-shop-cards-relics/"
     },
     {
       "codePath": "scripts/v25-node-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "campView",
       "revision": "develop",
-      "status": "NEEDS_REF",
+      "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.2",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-camp.png",
+        "sha256": "758067a96ac09cbe314011718f9a8731578691ac3cb26499c0c44372be40fb7c"
+      },
       "supersedes": [],
-      "note": "核对休息和锻造。"
+      "note": "当前休息与锻造入口。 1280×720 离线投影，官方候选待验。",
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-rest-or-smith/"
     },
     {
       "codePath": "scripts/v25-node-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "eventView",
       "revision": "develop",
-      "status": "NEEDS_REF",
+      "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.2",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-event.png",
+        "sha256": "fbe6c7dcffec58d0c495b91575e6c5f3136abddde0e5602fef7a669ba7b67413"
+      },
       "supersedes": [],
-      "note": "核对选项、结果及说明。"
+      "note": "当前叙事、选项与提示层级。 1280×720 离线投影，官方候选待验。",
+      "source": "https://playcraft.space/gallery/slay-the-spire/event-mind-bloom-choice/"
     },
     {
       "codePath": "src/lua/abyss_game_ui_menu_view.lua",
@@ -479,9 +565,12 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103",
-      "reference": null,
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-victory.png",
+        "sha256": "2eff3504843608c9d2707d7f2d4dc61efefc904b887566435535daba45be0e38"
+      },
       "supersedes": [],
-      "note": "以现行结算视觉为准，待按胜负分支取证。"
+      "note": "当前胜利结算，失败态及结算信号另见同批核对。 1280×720 离线投影，官方候选待验。"
     }
   ]
 }

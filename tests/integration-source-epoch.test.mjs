@@ -1,3 +1,4 @@
+import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -66,7 +67,8 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  assert.equal(proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
  for(const path of shopDeckPaths){
-  assert.equal(readFileSync(path,'utf8').replaceAll('\r\n','\n'),raw(path),path);
+  const readLive = file=>readFileSync(file,'utf8');
+  assert.equal(beforeV2UiHudSource(path,readLive(path),readLive).replaceAll('\r\n','\n'),raw(path),path);
   for(const input of [raw(path),raw(path).replaceAll('\n','\r\n')])for(const target of Object.keys(proof.targets)){
    const before=proof.targets[target].files[path];
    const expected=before&&before.sha256!==proof.current[path].sha256?before.source:input;

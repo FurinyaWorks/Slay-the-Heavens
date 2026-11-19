@@ -326,10 +326,12 @@ function M.installCharacters(self,characterPanel,clickEvent,bindCommand,controll
     bindCommand(characterPanel:GetChild("cancel"),"character_cancel",function() return self:closeCharacters() end,nil,90)
     bindCommand(characterPanel:GetChild('confirm'),'character_confirm',function()return self:confirmCharacter()end,
         function()return self.characterSelection:canConfirm() and not self.characterSelection.deckOpen end,100)
-    -- 查看初始牌组（STS 式卡面网格）；返回/取消先关牌组再退选角。
-    bindCommand(characterPanel:GetChild('details'):GetChild('deckOpen'),'character_deck',function()
-        return self:openStarterDeck()
-    end,function()return self.characterSelection.info~=nil and not self.characterSelection.deckOpen end,95)
+    local starterDeck=characterPanel:GetChild('details'):GetChild('deckOpen')
+    if starterDeck then
+        bindCommand(starterDeck,'character_deck',function()
+            return self:openStarterDeck()
+        end,function()return self.characterSelection.info~=nil and not self.characterSelection.deckOpen end,95)
+    end
     for i,id in ipairs(CharacterSelect.characters)do
         local box=characterPanel:GetChild(i==5 and 'traveler' or 'character'..i)
         bindCommand(box,'character_'..i,function()return self:selectCharacter(id)end,
