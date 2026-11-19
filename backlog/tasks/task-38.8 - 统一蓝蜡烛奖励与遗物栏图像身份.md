@@ -1,15 +1,16 @@
 ---
 id: TASK-38.8
-title: 统一蓝蜡烛奖励与遗物栏图像身份
+title: 统一蓝蜡烛图标，让奖励与遗物栏都能辨认
 status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-15 19:11'
+updated_date: '2026-11-19 03:49'
 labels:
   - mobile
   - playtest-20261115
   - p1
+  - v2.0.0
 milestone: m-8
 dependencies: []
 references:
@@ -25,7 +26,21 @@ ordinal: 179000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-蓝蜡烛战斗遗物奖励图显示通用盒子，领取后遗物栏显示蜡烛；用户的实体管理怀疑是待查假设，优先排查稳定relicId、图像注册/投影，复用TASK-25.6。
+### 情况
+
+蓝蜡烛在战斗奖励显示通用盒子，领取后遗物栏显示蜡烛。实体管理是待验证的可能原因。
+
+### 任务
+
+沿同一遗物标识核对图像注册和显示，复用 TASK-25.6 的已有资产。
+
+### 边界
+
+保留遗物效果、抽取与持有状态及随机流。
+
+### 验收
+
+核对奖励、领取、顶栏、遗物库、详情的同一图标，并复验切页、重入、资源缺失和相近遗物。 使用同一候选完成原任务列出的回归、独立评审和手机验收。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

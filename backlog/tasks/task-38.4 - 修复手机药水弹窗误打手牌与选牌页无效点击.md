@@ -1,15 +1,16 @@
 ---
 id: TASK-38.4
-title: 修复手机药水弹窗误打手牌与选牌页无效点击
+title: 修复手机药水触控，避免误出牌和无效闪屏
 status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-15 19:11'
+updated_date: '2026-11-19 03:49'
 labels:
   - mobile
   - playtest-20261115
   - p0
+  - v2.0.0
 milestone: m-8
 dependencies: []
 references:
@@ -25,7 +26,21 @@ ordinal: 175000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-药水点击“使用”触发下层牌、换瓶仍难用；选牌页点顶栏药水黑闪而无反馈，三槽触控偏小。检查模态焦点、指针owner与热区，不猜成纯布局问题。
+### 情况
+
+点药水「使用」时可能打出下方手牌。换瓶仍难用。选牌页点顶栏药水会闪屏，三个药水槽也偏难点。
+
+### 任务
+
+核实弹窗的触点归属、拦截和按钮热区，让药水操作只作用于当前药水。
+
+### 边界
+
+保留二次确认和现有药水效果，按实际触控轨迹定位；继续使用原任务的验收条件。
+
+### 验收
+
+用不同药水和 2、5、10 张手牌复验使用、丢弃和取消，同时检查选牌叠层、热区和快速交叉点按。 使用同一候选完成原任务列出的回归、独立评审和手机验收。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
