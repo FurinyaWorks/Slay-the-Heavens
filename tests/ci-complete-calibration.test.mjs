@@ -45,6 +45,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as rawBootstrapReadFileSync,readdirSync} from 'node:fs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
+import {assertCurrentJsInventory} from './helpers/fork-preflight-source.mjs';
 const liveDiskReadFileSync=releaseBootstrapCiRead((path,encoding)=>{
  const raw=rawBootstrapReadFileSync(path,encoding);
  if(!['src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua','src/lua/abyss_potion_text.lua'].includes(path))return raw;
@@ -1972,7 +1973,7 @@ test('run HUD continuation authenticates complete current sources and raw Full i
 
 test('menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
- assert.deepEqual(js,integratedCiProof.inventory,'all combined current cases execute through complete raw Full discovery');
+ assertCurrentJsInventory(js,integratedCiProof.inventory);
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);
  for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){
   assert.equal(liveDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source);

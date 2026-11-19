@@ -43,6 +43,30 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+const coopLabCiBytes=readFileSync(new URL('./coop-lab-ci-predecessors.json.gz',import.meta.url));
+assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc469830fe0ae9255285dc','complete co-op lab CI predecessors');
+const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
+assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
+for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
+function beforeCoopCiSource(path,source){
+ const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
+ if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
+ return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+}
+const coopLabTest='tests/coop-primitive-lab.test.mjs';
+const coopLabTestSha='93a22f446fec66df1339fc135071c929a3cc07d0c2473424510842af689d18dc';
+export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
+ const current=[...preceding,coopLabTest].sort();
+ assert.deepEqual([...paths].sort(),current,'complete current raw discovery inventory');
+ const testSource=read(coopLabTest,'utf8');
+ assert(typeof testSource==='string'&&!testSource.includes('\r\r\n')&&
+  hash(normalize(testSource))===coopLabTestSha,'fresh added inventory source: '+coopLabTest);
+}
+export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
+ if(!paths.includes(coopLabTest))return paths;
+ assertCurrentJsInventory(paths,preceding,read);
+ return paths.filter(path=>path!==coopLabTest);
+}
 const closeoutSuccessors=Object.freeze({
  'tests/defect-integration-source.test.mjs':'e20ed02229b4e316bce92decaec45037eeceb8116f31216b8970c7964674f1c0',
  'tests/defect-utility-planning.test.mjs':'b93215b0cece7151a1929d0535c40595f7a3d9586f237ba0a3966f52687142c1',
@@ -52,10 +76,10 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
- 'docs/legal/assets.json':'10d4dc70d14c169f2ae305a3b4c69bd5c8aa7d33e5037d0fafc3dacd8118b2ee',
+ 'docs/legal/assets.json':'1092785bd84163abd9ba779f6447807513c3ddf1bb8c0787584a93b1fb468b70',
  'scripts/official-portraits.mjs':'03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186',
  'tests/lumine-idle.test.mjs':'183cc0be21ca7a757e3cde25529064a62d5315915e88c3427412786e9ad69e09',
- 'tests/official-assets.test.mjs':'893bf452eb606938d5abd1f516d3372fe04a5cbfb36e3be3bd0233df66baf62e',
+ 'tests/official-assets.test.mjs':'455ab9407e88aa5be83ec0900ee6f60321acbbad859fc2bdf59b11183b868f8c',
  'tests/official-portraits-build.test.mjs':'06280b8717f0c0194479cab956e3fea53d00b7d26c06f3fbb37b1152224e4a63',
  'tests/v25-portrait-profile.test.mjs':'def7e70b4e64fbb5a901407ade2a379af647220afc900de2b4f550ee7c214403',
  'data/presentation/narrative.zh-CN.json':'5db5e77f3789a98e49335bb2443e44f8703ebe349e9e1cd524cfb64a0a3006aa',
@@ -103,13 +127,17 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- for(const [path,sha] of Object.entries(sourceSuccessors)){
+ for(const [path,row] of Object.entries(coopLabCi.files)){
   const source=read(path,'utf8');
+  assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
+ }
+ for(const [path,sha] of Object.entries(sourceSuccessors)){
+  const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
- source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,source));
+ source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
  if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')
