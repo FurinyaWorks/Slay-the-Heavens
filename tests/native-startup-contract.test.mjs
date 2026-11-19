@@ -47,5 +47,6 @@ test('fatal BGM Release continuation authenticates current owners and preserves 
   const noRead=()=>{throw Error('foreign bytes must not authorize replay');};
   for(const source of [before,current+'\n'])
     assert.equal(sourceEpoch.preCombinedSource(path,source,{target,readSource:noRead}),source);
-  assert.equal(sourceEpoch.preCombinedSource(path,current.replaceAll('\n','\r\n'),{target,readSource:raw}),before);
+  const crlf=current.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+  assert.equal(sourceEpoch.preCombinedSource(path,crlf,{target,readSource:raw}),before);
 });

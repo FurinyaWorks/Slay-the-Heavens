@@ -28,6 +28,24 @@ test('stale inventory slot actor and turn reject before recovery without replayi
         assert(host.run.potions[1]==nil and battle.enemies[1].hp==hp-20,kind..' fresh target did not commit once')
         H.unchangedHand(battle,hand)
     end
+    for _,kind in ipairs({'busy','turn','controller'})do
+        local host,ui,_,event,tap,arm,anonymous=H.setup();local battle=host.run.combat
+        local hp,turn=battle.enemies[1].hp,battle.turn
+        local controller=require('abyss_controller')
+        local pointerBlocked=controller.pointerBlocked
+        arm(1,1);event('enemy1','down',2);event('enemy1','up',2);event('enemy1','click',9)
+        if kind=='busy'then ui.busy=true
+        elseif kind=='turn'then battle.turn=turn+1
+        else controller.pointerBlocked=function()return true end end
+        anonymous(1,{})
+        if kind=='busy'then ui.busy=false
+        elseif kind=='turn'then battle.turn=turn
+        else controller.pointerBlocked=pointerBlocked end
+        event('enemy1','click',2)
+        assert(host.run.potions[1]=='fire_potion' and battle.enemies[1].hp==hp,kind..' revived a named-only release')
+        tap('enemy1',3)
+        assert(host.run.potions[1]==nil and battle.enemies[1].hp==hp-20,kind..' fresh named press did not recover')
+    end
 end)
 test('a captured tap that becomes moving loses its release and real potion drag gets no tap fallback',function()
     local host,ui,panel,event,tap,arm,anonymous=H.setup();local battle=host.run.combat

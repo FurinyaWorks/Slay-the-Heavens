@@ -160,7 +160,7 @@ function beforePointerIdentityCiSource(path, source) {
   source = composedCiSource('pointer', path, source);
   const row = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
   if (!row?.before) return source; // Do not hide newly introduced fixtures.
-  return priorCiSource(pointerCi.files, path, priorCiSource(overlayCi.files, path, source));
+  return priorCiSource(pointerCi.files, path, priorCiSource(overlayCi.files, path, beforeRepairCiSource(path,source)));
 }
 
 function assertPointerOverlayCiCurrent(read) {
@@ -171,7 +171,7 @@ function assertPointerOverlayCiCurrent(read) {
     assert(source !== null && hash(source) === sourceEpoch.proof.current[path].sha256, 'fresh pointer overlay production owner: ' + path);
   }
   for (const [path, row] of Object.entries(overlayCi.files)) {
-    const source = normalized(composedCiSource('pointer', path, read(path, 'utf8')));
+    const source = normalized(composedCiSource('pointer', path, beforeRepairCiSource(path,read(path, 'utf8'))));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer overlay ' + path);
   }
 }
@@ -181,7 +181,7 @@ function assertPointerIdentityCiCurrent(read) {
   assert.equal(hash(read('tests/helpers/release-pointer-identity-source.json.gz')), pointerCi.productionArchive,
     'fresh immutable pointer identity production archive');
   for (const [path, row] of Object.entries(pointerCi.files)) {
-    const source = normalized(priorCiSource(overlayCi.files, path, composedCiSource('pointer', path, read(path, 'utf8'))));
+    const source = normalized(priorCiSource(overlayCi.files, path, composedCiSource('pointer', path, beforeRepairCiSource(path,read(path, 'utf8')))));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: pointer identity ' + path);
   }
   for (const [path, sha] of Object.entries(pointerCi.replayInputs)) {
@@ -310,7 +310,34 @@ for (const [path, row] of Object.entries(composedCi.files)) {
       'unmodified BGM branch retains Release CI predecessor: ' + path);
   }
 }
+// First-Full continuation. Both published branch packets and the composition
+// witness above remain immutable; no failed parent bytes can authorize live replay.
+const repairArchive='tests/helpers/release-full-repair-ci.json.gz';
+const repairDigest='cf434a2292bff848e49157dda1305656e507e260b0f5be785a9862ca06d51bbc';
+const repairBytes=readFileSync(new URL('./release-full-repair-ci.json.gz',import.meta.url));
+assert.equal(hash(repairBytes),repairDigest,'complete first Full repair CI continuation');
+const repairCi=JSON.parse(gunzipSync(repairBytes));
+assert.equal(repairCi.schemaVersion,1);
+assert.equal(repairCi.base,'36b96baa93d07cb8a357cb793ea4e8806a5aca87');
+assert.deepEqual(Object.keys(repairCi.files),["tests/helpers/closeout-source-epoch.mjs", "tests/helpers/copy-integration-source-closure.mjs", "tests/integrated-ci-source.cases.mjs", "tests/release-card-contact-integration.test.mjs", "tests/native-startup-contract.test.mjs", "tests/lua/dynamic_monster_input_bindings.lua", "tests/encounter-formation-source-epoch.test.mjs", "tests/lua/support/potion_tap_anonymous_safety.lua"]);
+for(const [path,row]of Object.entries(repairCi.files)){
+ assert(!/^(?:src|data|config)\//.test(path),'CI repair cannot replace production');
+ assert.equal(normalized(row.before),row.before);
+ assert.equal(hash(row.before),row.beforeSha256,'complete published failed CI predecessor: '+path);
+ assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
+}
+function beforeRepairCiSource(path,source){return priorCiSource(repairCi.files,path,source);}
+function assertRepairCiCurrent(read){
+ assert.equal(hash(read(repairArchive)),repairDigest,'fresh first Full repair CI archive');
+ assert.equal(hash(read('tests/helpers/release-full-repair-source.json.gz')),repairCi.productionArchive,
+  'fresh first Full repair production archive');
+ for(const [path,row]of Object.entries(repairCi.files)){
+  const source=normalized(read(path,'utf8'));
+  assert(source!==null&&hash(source)===row.afterSha256,'fresh first Full repair source: '+path);
+ }
+}
 function composedCiSource(side, path, source) {
+  if (Object.hasOwn(composedCi.files,path)) source = beforeRepairCiSource(path, source);
   const row = Object.hasOwn(composedCi.files, path) ? composedCi.files[path] : null;
   const text = normalized(source);
   if (!row || text === null || hash(text) !== row.currentSha256) return source;
@@ -320,12 +347,13 @@ function composedCiSource(side, path, source) {
 function assertComposedCiCurrent(read) {
   assert.equal(hash(read(composedArchive)), composedDigest, 'fresh pointer BGM composition archive');
   for (const [path, row] of Object.entries(composedCi.files)) {
-    const source = normalized(read(path, 'utf8'));
+    const source = normalized(beforeRepairCiSource(path, read(path, 'utf8')));
     assert(source !== null && hash(source) === row.currentSha256,
       'fresh composed integration source: ' + path);
   }
 }
 function beforeFatalBgmCiSource(path, source) {
+  if(fatalBgmCi.files[path]?.before)source=beforeRepairCiSource(path,source);
   return priorCiSource(fatalBgmCi.files, path, composedCiSource('bgm', path, source));
 }
 function assertFatalBgmCiCurrent(read) {
@@ -333,7 +361,7 @@ function assertFatalBgmCiCurrent(read) {
   assert.equal(hash(read('tests/helpers/release-fatal-bgm-source.json.gz')), fatalBgmCi.productionArchive,
     'fresh immutable fatal BGM production archive');
   for (const [path, row] of Object.entries(fatalBgmCi.files)) {
-    const source = normalized(composedCiSource('bgm', path, read(path, 'utf8')));
+    const source = normalized(composedCiSource('bgm', path, beforeRepairCiSource(path,read(path, 'utf8'))));
     assert(source !== null && hash(source) === row.afterSha256, 'fresh complete integration source: fatal BGM ' + path);
   }
 }
@@ -383,6 +411,7 @@ function beforeIntentCiSource(path, source) {
 export function isCurrentReleaseCiReplay(path, source) {
   const text = normalized(source);
   if (text === null) return false;
+  if(beforeRepairCiSource(path,source)!==source)return true;
   const beforePointer = beforePointerIdentityCiSource(path, source);
   if (beforePointer !== source || beforeIntentCiSource(path, beforePointer) !== beforePointer) return true;
   return Object.hasOwn(pointerCi.replayInputs, path) && hash(text) === pointerCi.replayInputs[path];
@@ -458,7 +487,8 @@ export function assertEnemyMetricsCiCurrent(read = readFileSync) {
 
 export function releasePotionEnemySource(path, source, side) {
   if (!Object.hasOwn(packet.parents, side)) return source;
-  source = beforeHandLayoutCiSource(path, beforeShopShelfCiSource(path, source));
+  const preservedNewFixture=pointerCi.files[path]?.before===null||fatalBgmCi.files[path]?.before===null;
+  source = beforeHandLayoutCiSource(path, beforeShopShelfCiSource(path, preservedNewFixture?source:beforeRepairCiSource(path, source)));
   const row = Object.hasOwn(packet.files, path) ? packet.files[path] : null;
   if (!row || !Object.hasOwn(row.parents, side)) return source;
   const text = normalized(source);
@@ -506,8 +536,9 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
       const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+      const repairRow = Object.hasOwn(repairCi.files, path) ? repairCi.files[path] : null;
       const fatalBgmRow = Object.hasOwn(fatalBgmCi.files, path) ? fatalBgmCi.files[path] : null;
-      if (!fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
+      if (!repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -519,6 +550,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertRepairCiCurrent(read);
   assertComposedCiCurrent(read);
   assertFatalBgmCiCurrent(read);
   assertPointerOverlayCiCurrent(read);
@@ -536,7 +568,7 @@ export function assertReleasePotionEnemyCurrent(read = readFileSync) {
   assertShopShelfCiCurrent(read);
   assert.equal(hash(read(archive)), digest, 'fresh complete potion Release CI archive');
   for (const [path, row] of Object.entries(packet.files)) {
-    const text = normalized(beforeHandLayoutCiSource(path, beforeShopShelfCiSource(path, read(path, 'utf8'))));
+    const text = normalized(beforeHandLayoutCiSource(path, beforeShopShelfCiSource(path, beforeRepairCiSource(path,read(path, 'utf8')))));
     assert(text !== null && hash(text) === row.currentSha256,
       'fresh complete integration source: potion Release ' + path);
   }
@@ -551,7 +583,7 @@ export function releasePotionEnemyInventory(paths, inventory, kind, read = readF
   if (!extra.some(path => supplied.includes(path))) return [...paths];
   assert.deepEqual(supplied, current, 'complete potion Release raw ' + kind + ' inventory');
   for (const path of extra) {
-    const text = normalized(beforeHandLayoutCiSource(path, beforeShopShelfCiSource(path, read(path, 'utf8'))));
+    const text = normalized(beforeHandLayoutCiSource(path, beforeShopShelfCiSource(path, beforeRepairCiSource(path,read(path, 'utf8')))));
     assert(text !== null && hash(text) === packet.files[path].currentSha256,
       'fresh potion Release added inventory source: ' + path);
   }

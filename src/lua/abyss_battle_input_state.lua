@@ -117,12 +117,20 @@ local function anonymousPointerReady(owner,input,token)
         and not token.originState.ambiguous and not owner.gesture and not owner.potionMenu
         and not(token.aim and token.aim.moving)
 end
-local function takePointer(owner,ownership,input,event,allowHeld,canAnonymous)
+local function takePointer(owner,ownership,input,event,allowHeld,canAnonymous,namedFallbackReady)
     local touch=event and event.touchId
     local token=input.released or touch~=nil and allowHeld and input.held
     if touch~=nil then
-        if not token or token.touch~=touch then return end
+        if not token then return end
+        if token.touch~=touch then
+            -- A foreign Click makes later anonymous ownership ambiguous;
+            -- the exact released touch can still confirm its own press.
+            token.namedOnly=true
+            return
+        end
     else
+        -- Keep only an otherwise valid release for its exact named Click.
+        -- Terminal, competing, busy and stale releases still cannot replay.
         input.released=nil -- blocked Clicks cannot replay after busy/turn recovery
         if canAnonymous and not canAnonymous(token)then return end
         if not anonymousPointerReady(owner,input,token)then return end
@@ -130,6 +138,10 @@ local function takePointer(owner,ownership,input,event,allowHeld,canAnonymous)
             return other.active and next(other.active) or other~=input and (other.held or other.released)
         end)
         if ambiguous then return end
+        if token.namedOnly then
+            if namedFallbackReady(token)then input.released=token end
+            return
+        end
     end
     input.held,input.released=nil,nil
     if input.active then input.active[touchKey(event)]=nil end
@@ -285,6 +297,13 @@ function M.install(owner, ownership, host, _dependencies)
             and owner.selected == g.uid and owner.selectionEpoch == g.selectionEpoch
             and owner.potionAim == g.aim and (not g.aim or aimReady(g.aim))
     end
+    local function namedFallbackReady(token)
+        if owner.info or Controller.pointerBlocked(host.controller)then return false end
+        if token.screenSlot then return enemyReady(token) end
+        if token.name then return actionReady(token) end
+        if token.inventory then return potionReady(token) end
+        return cardReady(token)
+    end
     local function discardEnemyPointer(input,event)
         local touch = event and event.touchId
         if input.held and input.held.touch == touch then input.held = nil end
@@ -308,7 +327,7 @@ function M.install(owner, ownership, host, _dependencies)
             armPointer(input,token,event,state)
             if Controller.pointerBlocked(host.controller)then token.anonymousSafe=false end
         end,pointerEnd=function(input,event,ended)return endPointer(owner,input,event,ended)end,
-        pointerTake=function(input,event,allowHeld,canAnonymous)return takePointer(owner,ownership,input,event,allowHeld,canAnonymous)end,
+        pointerTake=function(input,event,allowHeld,canAnonymous)return takePointer(owner,ownership,input,event,allowHeld,canAnonymous,namedFallbackReady)end,
         pointerClear=clearPointer,pointerEvent=pointerEvent,
         child=child, show=show, label=label, colour=colour, tint=tint,
         ink=ink, picture=picture, notice=notice, rewardScreen=rewardScreen, dragReady=dragReady,

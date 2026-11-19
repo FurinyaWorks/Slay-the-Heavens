@@ -319,12 +319,34 @@ const fatalBgmTargets = {
 };
 const fatalBgmOwners = Object.keys(fatalBgmCurrent).sort().filter(path =>
   Object.values(fatalBgmTargets).some(target => target.files[path]?.sha256 !== fatalBgmCurrent[path]?.sha256));
-export const sourceEpoch = createSourceEpochProjector(freeze({
+export const preReleaseFullRepairSourceEpoch = createSourceEpochProjector(freeze({
   ...pointerPriorRelease, current: fatalBgmCurrent, targets: fatalBgmTargets, owners: fatalBgmOwners,
   currentTreeCommitted: false,
   currentCommit: pointer.base,
   currentCommitRole: 'common committed Release predecessor only; independently published pointer and fatal BGM sources are composed by exact live bytes',
 }), { allowConfigLayout: true, reuseFrozenInput: true });
+// Exact first-Full corrections; the published 36b96 tree and all earlier targets remain intact.
+const fullRepairBytes=readFileSync(new URL('./release-full-repair-source.json.gz',import.meta.url));
+assert.equal(hash(fullRepairBytes),'14cb921f7672a9356efb35b3eabcb5f9f5b33a6b710e9a45580579ef8dfbd819','complete first Full repair production');
+const fullRepair=JSON.parse(gunzipSync(fullRepairBytes));
+assert.equal(fullRepair.schemaVersion,1);
+assert.equal(fullRepair.base,'36b96baa93d07cb8a357cb793ea4e8806a5aca87');
+assert.deepEqual(Object.keys(fullRepair.files),["src/lua/abyss_battle_action_bindings.lua", "src/lua/abyss_battle_input_state.lua"]);
+const fullRepairPrior=preReleaseFullRepairSourceEpoch.proof;
+const fullRepairCurrent={...fullRepairPrior.current};
+for(const [path,row]of Object.entries(fullRepair.files)){
+ assert.deepEqual(row.before,fullRepairPrior.current[path],'exact published Full predecessor: '+path);
+ fullRepairCurrent[path]=row.current;
+}
+const fullRepairTargets={...fullRepairPrior.targets,
+ releaseFullRepairPrior:{commit:fullRepair.base,files:fullRepairPrior.current}};
+const fullRepairOwners=Object.keys(fullRepairCurrent).sort().filter(path=>
+ Object.values(fullRepairTargets).some(target=>target.files[path]?.sha256!==fullRepairCurrent[path]?.sha256));
+export const sourceEpoch=createSourceEpochProjector(freeze({
+ ...fullRepairPrior,current:fullRepairCurrent,targets:fullRepairTargets,owners:fullRepairOwners,
+ currentTreeCommitted:false,currentCommit:fullRepair.base,
+ currentCommitRole:'committed first Full predecessor; corrections are authenticated by exact current bytes',
+}),{allowConfigLayout:true,reuseFrozenInput:true});
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.

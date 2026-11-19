@@ -53,6 +53,12 @@ local static={hero=unit('hero'),statusInfo=control('statusInfo')};control('hit',
 for i=1,10 do static['card'..i]=unit('card'..i)end
 for i=1,Theme.layout.battlePotions.count do static['potion'..i]=control('potion'..i);static['potionHelp'..i]=control('potionHelp'..i)end
 local deps={}
+-- Use the real finite-origin protocol; this ownership fixture intentionally
+-- stubs only business readiness, not the pointer ports used by live bindings.
+local pointers=require('abyss_battle_input_state').install(owner,ownership,host,{})
+for _,name in ipairs({'pointerBegin','pointerArm','pointerEnd','pointerTake','pointerClear','pointerEvent'})do
+ deps[name]=assert(pointers[name])
+end
 function deps.child(name)return assert(static[name],'dynamic init must not request '..name)end
 function deps.enemyAt(slot)return surfaces:entry(slot)end
 function deps.sameEnemySlot(slot,actor)local e=surfaces:entry(slot);return e and e.actor==actor and e.id==actor.id end

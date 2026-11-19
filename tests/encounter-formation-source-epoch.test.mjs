@@ -3,6 +3,7 @@ import test from 'node:test';
 import {officialUiRepairProof,preOfficialUiRepairSource} from './helpers/official-ui-repair-source-epoch.mjs';
 import {preOfficialUiRepairEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {closeoutRead} from './helpers/closeout-ci-source.mjs';
+import {releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync as diskReadFileSync,mkdtempSync,rmSync,writeFileSync,unlinkSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
@@ -157,15 +158,39 @@ test('source and configuration reject unknown targets and malformed live readers
 });
 
 test('official repair adds exact complete-file identities without rewriting the battle predecessor',()=>{
- const files=officialUiRepairProof.files;
+ const files=officialUiRepairProof.files, hud='scripts/official-battle-hud.mjs';
+ // This historical scope precedes the Release settings icon. Only the HUD
+ // leaf needs the exact newer source continuation; leave raw Lua owners intact.
+ const repairReadFor=read=>{
+  const settingsPrior=releasePotionEnemyRead('potion',read);
+  return closeoutRead('pr629',(file,encoding)=>file===hud?settingsPrior(file,encoding):read(file,encoding));
+ };
+ const repairRead=repairReadFor(diskReadFileSync);
  for(const [file,row]of Object.entries(files)){
-  const actual=closeoutRead('pr629')(file,'utf8').replaceAll('\r\n','\n');
+  const actual=repairRead(file,'utf8').replaceAll('\r\n','\n');
   assert.equal(actual,row.current.source,'raw repair source: '+file);
   for(const source of [actual,actual.replaceAll('\n','\r\n')])assert.equal(preOfficialUiRepairSource(file,source),row.before.source,file);
   for(const source of [actual+'\n',actual.slice(1),null,{},17])assert.equal(preOfficialUiRepairSource(file,source),source,file);
   if(Object.hasOwn(preOfficialUiRepairEpoch.proof.current,file))assert.deepEqual(row.before,preOfficialUiRepairEpoch.proof.current[file]);
  }
- const repairRead=closeoutRead('pr629'),config=repairRead('config/architecture.json','utf8');
+ const hudRaw=diskReadFileSync(hud,'utf8').replaceAll('\r\n','\n');
+ const withHud=text=>repairReadFor((file,encoding)=>file===hud?text:diskReadFileSync(file,encoding));
+ const closeoutHud=closeoutRead('pr629')(hud,'utf8').replaceAll('\r\n','\n');
+ if(closeoutHud!==files[hud].current.source){
+  assert.equal(withHud(hudRaw.replaceAll('\n','\r\n'))(hud,'utf8'),files[hud].current.source);
+  for(const foreign of [hudRaw+'\n',hudRaw.replaceAll('\n','\r\r\n')])
+   assert.equal(withHud(foreign)(hud,'utf8'),foreign,'unrecognized HUD source is never projected');
+  const linked='tests/official-run-chrome.test.mjs';
+  for(const kind of ['missing','drift']){
+   const corrupt=repairReadFor((file,encoding)=>{
+    if(file!==linked)return diskReadFileSync(file,encoding);
+    if(kind==='missing')throw Error('missing '+file);
+    return diskReadFileSync(file,'utf8')+'\n';
+   });
+   assert.throws(()=>corrupt(hud,'utf8'),/missing tests\/official-run-chrome|fresh complete integration source: settings icon/);
+  }
+ }
+ const config=repairRead('config/architecture.json','utf8');
  assert.throws(()=>preOfficialUiRepairEpoch.preCombinedSource('config/architecture.json',config,{target:'develop',readSource:p=>repairRead(p,'utf8')}),/linked owner identity/,'removing the new layer must reject the actual repair');
  assert.equal(preOfficialUiRepairSource('unknown','foreign'),'foreign');
 });

@@ -22,7 +22,13 @@ function M.install(owner, ownership, host, dependencies)
             local released
             if input and ownership.pointerObserved then
                 released=dependencies.pointerTake(input,event)
-                if not released then return end
+                if not released then
+                    -- A Down which dismissed modal help did not arm a card.
+                    -- Consume only that closing touch, without dismissing new help.
+                    if owner.swallow and owner.swallow.touch==(event and event.touchId)
+                        and not Controller.pointerBlocked(host.controller) then dependencies.swallowed(event) end
+                    return
+                end
             end
             if Controller.pointerBlocked(host.controller)then return false end
             local originEvent=dependencies.pointerEvent(released,event)

@@ -3,6 +3,7 @@ import {enemyFastRead} from './helpers/release-enemy-fast-source.mjs';
 import {sourceEpoch as jointProductionEpoch} from './helpers/closeout-source-epoch.mjs';
 import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
+import {gunzipSync} from 'node:zlib';
 import assert from 'node:assert/strict';
 import {readFileSync as mergedReadFileSync,readdirSync} from 'node:fs';
 import {potionPost697HistoricalRead,potionPost697PriorInventory} from './helpers/potion-post697-ci-source.mjs';
@@ -740,10 +741,49 @@ test('composed live CI leaves reject drift and new branch fixtures remain visibl
  }
  assertIntegratedCurrent(mergedReadFileSync);
  const reader=integratedRead('native',{read:mergedReadFileSync});
- for(const fixture of ['tests/lua/support/fatal_bgm_stop.lua','tests/lua/support/target_anonymous_context.lua']){
+ for(const fixture of ['tests/lua/support/fatal_bgm_stop.lua','tests/lua/support/target_anonymous_context.lua',
+  'tests/lua/support/potion_tap_anonymous_safety.lua']){
   const current=mergedReadFileSync(fixture,'utf8');
   assert.equal(integratedSource(fixture,current,'native',mergedReadFileSync),current);
   assert.equal(reader(fixture,'utf8'),current);
   assert.deepEqual(reader(fixture),mergedReadFileSync(fixture));
  }
+});
+
+test('first Full repair binds fresh production and CI leaves without accepting the published failed tree',()=>{
+ const packet=JSON.parse(gunzipSync(mergedReadFileSync('tests/helpers/release-full-repair-ci.json.gz')));
+ assert.equal(packet.base,'36b96baa93d07cb8a357cb793ea4e8806a5aca87');
+ const anchor='tests/native-startup-contract.test.mjs';
+ let fault;
+ const read=(path,encoding)=>{
+  if(path===fault?.path){
+   if(fault.kind==='missing')throw Error('missing '+path);
+   if(fault.kind==='null')return null;
+   const before=packet.files[path]?.before;
+   if(fault.kind==='prior')return encoding?before:Buffer.from(before);
+   const bytes=mergedReadFileSync(path,encoding);
+   return typeof bytes==='string'?bytes+'\n':Buffer.concat([bytes,Buffer.from('\n')]);
+  }
+  return mergedReadFileSync(path,encoding);
+ };
+ const reader=integratedRead('native',{read}),current=mergedReadFileSync(anchor,'utf8');
+ const original=reader(anchor,'utf8');assert.notEqual(original,current);
+ const project=()=>integratedSource(anchor,current,'native',read);
+ const linked=[...Object.keys(packet.files),'tests/helpers/release-full-repair-ci.json.gz',
+  'tests/helpers/release-full-repair-source.json.gz','src/lua/abyss_battle_action_bindings.lua','src/lua/abyss_battle_input_state.lua'];
+ for(const path of linked)for(const kind of ['missing','null','drift',...(packet.files[path]?.before?['prior']:[])]){
+  fault={path,kind};assert.throws(project,undefined,path+' '+kind);
+  fault=undefined;assert.equal(project(),original);assert.equal(reader(anchor,'utf8'),original);
+ }
+ // Every repair-only leaf must authorize through the same live archive too,
+ // not just an anchor already recognized by the older pointer/BGM layers.
+ for(const leaf of Object.keys(packet.files)){
+  const bytes=mergedReadFileSync(leaf,'utf8'),prior=integratedSource(leaf,bytes,'native',read);
+  if(prior===bytes)continue; // Newly introduced fixtures stay current, never replayed.
+  fault={path:'tests/helpers/release-full-repair-ci.json.gz',kind:'drift'};
+  assert.throws(()=>integratedSource(leaf,bytes,'native',read),undefined,leaf+' fresh repair-only archive');
+  assert.throws(()=>reader(leaf),undefined,leaf+' binary repair-only archive');
+  fault=undefined;assert.equal(integratedSource(leaf,bytes,'native',read),prior);
+ }
+ assertIntegratedCurrent(read);
 });
