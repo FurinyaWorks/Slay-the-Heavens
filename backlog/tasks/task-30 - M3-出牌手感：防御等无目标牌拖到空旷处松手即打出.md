@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: 2026-10-23 00:59
-updated_date: '2026-11-19T03:02:00Z'
+updated_date: '2026-11-19T03:20:00Z'
 labels:
   - ui
   - combat
@@ -92,6 +92,8 @@ ordinal: 36000
 2026-11-19 PR738 exact36b96首次Full失败接续：保留7个失败job；修动态绑定fixture缺失的真实指针依赖与Windows换行构造，独立诊断历史配对和当前悬停/药水负控。仅按真实失败最小修，保留原档、断言、时限、设备AC；定向复现与独审后再推同一任务分支，不重复Full。
 
 2026-11-19 PR738实际新失败接续：固定独立保全4dd97d67，在原断言下复测Win1动作归属、Win7取消长拖后合法新出牌、POSIX11旧HUD和关闭详情、POSIX5/Win10来源拒绝层。按准确合同最小修补，保留全部红绿与来源缺失/漂移负控，独审后仅保全独立分支；不更新PR738、不重复Full，原历史卡牌三片与官方设备AC保持未验。
+
+2026-11-19后续历史回放隔离证明：先核当前Release/Develop/PR占用，复核#728给出的精确旧bindings摘要与12条原断言实验。仅在独立临时树追踪完整已认证来源、当前runner附加前缀与原30秒预算，保留全部失败和来源清单，独审后保全证据分支；不改PR738、既有实验、正式历史helper或冻结档，不重复Full。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -180,4 +182,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-19 PR738首轮Full失败接续：动态绑定fixture接真实指针端口；帮助关闭尾事件与药水foreign→anonymous归属修复，并经独审补住busy/turn/controller解阻后迟到原ID漏洞。修复及新增负控均保留原断言/时限。BGM测试修正Windows换行构造，HUD旧来源仅精确单叶投影。历史card-input三片基线配对仍失败，未放宽或伪造同代闭包，独立分支fix/release-full-repair-20261119保全，未更新PR738/未启动重复Full/未合并发版。来源新外层保存36b96精确before并保留原86目标与旧档；正式/设备AC不变，详见docs/evidence/pr738-first-full-repair-20261119。
 
 2026-11-19 PR738新增失败接续：4dd隔离保全已覆盖Win1原8项及官方关闭详情2项、HUD1项。Win7是真缺陷：横向browsed误被长按当静止，补一项失效判定；原拖动8项和静止长按4项通过，新增取消后fresh恰一次及旧尾无动作，单换旧模块负控失败。StS仅精确校准三叶首个拒绝层，原缺失/漂移合同保留，整文件11项通过。新不可变来源层保留4dd完整before、352文件129owner/88目标；源定向5项、联合7项、独审36漂移与6旧前像负控通过。Quality和精确Release/前保全双ratchet零新增违规。只保全独立分支，不更新PR738或重复Full；三份历史卡牌回放仍阻塞，官方/设备AC未改变。详见docs/evidence/pr738-full-followup-20261119。
+
+2026-11-19历史输入隔离证明：在远端6d267ca8同树，用原认证逆向取bindings base0c370951配gesture3750e191，完整保留正式四前缀、三片原12名单/断言和各30s，6/4/2全部通过。前次不等价probe遗漏已有80帧settle；单删该前缀复现dock红，archive add73配settle也绿但身份不正确，不能以通过倒推来源。独审8个host/linked缺失漂移及恢复/CRLF/非目标控制通过。仅先保全proof，正式helper/runner仍未改，三片尚未据此解除正式门禁；PC22和703独立。证据docs/evidence/pr738-historical-input-proof-20261119。
 <!-- SECTION:NOTES:END -->

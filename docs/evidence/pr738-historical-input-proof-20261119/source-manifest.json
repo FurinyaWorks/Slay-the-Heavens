@@ -1,0 +1,171 @@
+{
+  "head": "c3d7cf072b1942291a4ab7a14cc7231274a545bc",
+  "tree": "e57acd44f70a608975d207908236729a8d5b4446",
+  "inputs": {
+    "tests/fixtures/pr323-historical-fixtures.json.gz": {
+      "sha256": "0016ea0a00171a413c2697329ea87487c19c575b6148a325285e35a24b4e8759",
+      "size": 5112323,
+      "blob": "16ce40fae511b39072f695159a60f8bc6a818bb7"
+    },
+    "tests/fixtures/pr372-integration-sources.json": {
+      "sha256": "ea2f161779f99bc4f81c25c9087eeeb911951d52b5ff85bafec112b4c9e00995",
+      "size": 501461,
+      "blob": "1d85f1c7eebf33a17f22b5572b13cd7ffc1f5f04"
+    },
+    "tests/helpers/historical-card-input.mjs": {
+      "sha256": "4e5eb125a764ca52ac1edf3916f6807c1ae05cd6108e91e1913e86990ecfe577",
+      "size": 2161,
+      "blob": "4a8d093d278d15f3518a2dd3aea7f93abbd57a4c"
+    },
+    "tests/helpers/battle-life-frozen-hand.mjs": {
+      "sha256": "1b75478b3ddb7f6d1b7d3da5b756d9ff51636927a3177c8437f8040b7e594d82",
+      "size": 1642,
+      "blob": "9f0c01e0ef1ed40d64c5a3a23c899258a575618e"
+    },
+    "tests/helpers/event-combat-route-input.mjs": {
+      "sha256": "8881664edd92141487c3f7f44306a4fc44068242afc0de351b53eef7cb4aacc5",
+      "size": 771,
+      "blob": "39e3e0212321d76ba6f76cad71f8d45089d4c13a"
+    },
+    "tests/helpers/v25-texture-binding-fixture.mjs": {
+      "sha256": "fa79ec4af3fefb9980c9d9632eb878d63c120f8c6532b9320f50839ec5a2f3cb",
+      "size": 1236,
+      "blob": "3759c04fdf356fdeeff1f91ee78f62b88bb39b44"
+    },
+    "scripts/test-lua.mjs": {
+      "sha256": "8eb7c04f2fe81ac3d023b8fcc41c5c4a76d3792421460114f47495be39c1646d",
+      "size": 10853,
+      "blob": "81de802d6809d4d87b259fe7a080dc46b3b3a90f"
+    },
+    "tests/lua/support/card_input_port_cases.lua": {
+      "sha256": "bcfdea2be826104160de7f80e8d9f4f83562d5757aca0efd98fc059e7415b471",
+      "size": 8986,
+      "blob": "2b21f29413aa83efb445e8bdfdcffb8a9071fb23"
+    },
+    "tests/lua/card_input_port.lua": {
+      "sha256": "aca890617439aba40534d4aa56279d70fb6394e04d945d2e96ba171fae470d3b",
+      "size": 59,
+      "blob": "b70766f9bd80207dc27d8891e6f533bbd38bd089"
+    },
+    "tests/lua/card_input_port_slice_2.lua": {
+      "sha256": "2440ce1f091364b2531d7a7e267e3f5d95ffcbf50850dea4eff64d0459049545",
+      "size": 60,
+      "blob": "8f7f8cc449c5658ba5534241c70e24582eb70b77"
+    },
+    "tests/lua/card_input_port_slice_3.lua": {
+      "sha256": "6f29c64349e204d8bed3cc3446a8a52c06b7245a5217d85000fafbf9bab19d12",
+      "size": 61,
+      "blob": "b0f1ff4e6888adbf0617753b504b4adef56b547e"
+    },
+    "src/lua/abyss_battle_card_bindings.lua": {
+      "sha256": "f560c924ae583e107fa78c2cb5c8e8a3e900b8f2aa4b22d17bf55907d75d7873",
+      "size": 5227,
+      "blob": "21c7a8ea40bd715ce69718668716705822375feb"
+    },
+    "src/lua/abyss_battle_card_gestures.lua": {
+      "sha256": "dfdf7706e9d1ffa09d788ff631abb7dd199a9fbe8c29bcb9c1f226633d7b8162",
+      "size": 18160,
+      "blob": "fb1519eb4416de836764d8d4f59076da6480a33d"
+    },
+    "src/lua/abyss_battle_card_view.lua": {
+      "sha256": "7f309c4ddbcf1844d1537f4e60feebb7869fb96f647029983afe8580c9d066bc",
+      "size": 31353,
+      "blob": "caabf5f148d881d5c3a9e622b52b68db9e9e74aa"
+    },
+    "src/lua/abyss_battle_action_bindings.lua": {
+      "sha256": "48b7cc808cfcc0a3191b17914db16e4e5388f7d9ccc9ec7cbcfc80a32f204039",
+      "size": 7133,
+      "blob": "31e017dc04fe7db179fd4aed4d79f56de451e560"
+    },
+    "src/lua/abyss_battle_actions.lua": {
+      "sha256": "e15a74e54fbc976e5c33c2ab2574fb15a7449ea7244a73ea846a7559550d15a4",
+      "size": 17741,
+      "blob": "072c67277cc2a04ce18f8907220a43c21d2053c2"
+    },
+    "src/lua/abyss_battle_input_state.lua": {
+      "sha256": "717317b3101189499e4bbf192a922ff9b0956d4188235eb20bbf3eb217cf845a",
+      "size": 17363,
+      "blob": "88efac986b67f0e4846a49316640eecf4a8fad40"
+    }
+  },
+  "generatedLua": {
+    "build/lua/abyss_art_features.lua": {
+      "sha256": "1323fbeb388563db4ae50198d4d231edeec8d337ce95ea7288bde014a6bce91e",
+      "size": 202
+    },
+    "build/lua/abyss_component_binding.lua": {
+      "sha256": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+      "size": 83
+    },
+    "build/lua/abyss_data.lua": {
+      "sha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+      "size": 212819
+    },
+    "build/lua/abyss_map_controls.lua": {
+      "sha256": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+      "size": 102846
+    },
+    "build/lua/abyss_map_layout.lua": {
+      "sha256": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+      "size": 612
+    },
+    "build/lua/abyss_menu_background_asset.lua": {
+      "sha256": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+      "size": 69
+    },
+    "build/lua/abyss_monster_actor_binding.lua": {
+      "sha256": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+      "size": 176
+    },
+    "build/lua/abyss_monster_art_data.lua": {
+      "sha256": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+      "size": 65
+    },
+    "build/lua/abyss_narrative.lua": {
+      "sha256": "f34b7f3fb2977492be3d967db8c77ffa57a08313635aec5d8ad3d3aae93bb48a",
+      "size": 7823
+    },
+    "build/lua/abyss_original_v4_data.lua": {
+      "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+      "size": 577904
+    },
+    "build/lua/abyss_presentation.lua": {
+      "sha256": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+      "size": 74514
+    },
+    "build/lua/abyss_ready_card_assets.lua": {
+      "sha256": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+      "size": 81
+    },
+    "build/lua/abyss_ready_card_binding.lua": {
+      "sha256": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+      "size": 149
+    },
+    "build/lua/abyss_theme.lua": {
+      "sha256": "8def1c7d68b56ec1e1bb5915752113eba9c129900f77a5ef45d8765423ad8fc4",
+      "size": 140198
+    },
+    "build/lua/abyss_traveler_portrait_assets.lua": {
+      "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c",
+      "size": 76
+    },
+    "build/lua/abyss_ui_layout.lua": {
+      "sha256": "6bfb2fbe95396a3131f3128dafef0275e235d449ccf447f2c762905d3508a90d",
+      "size": 1878405
+    },
+    "build/lua/abyss_ui_profile.lua": {
+      "sha256": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69",
+      "size": 110
+    },
+    "build/lua/abyss_ui_templates.lua": {
+      "sha256": "4b35600d348dfff390b3b77d01f6fb960adf29d537e63212e6de9efbf335e6c0",
+      "size": 25060
+    },
+    "build/lua/abyss_v25_card_assets.lua": {
+      "sha256": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+      "size": 72
+    }
+  },
+  "productionInputCount": 351,
+  "generatedShadowing": 0
+}
