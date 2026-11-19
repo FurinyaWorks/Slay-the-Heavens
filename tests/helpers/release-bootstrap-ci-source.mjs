@@ -69,9 +69,12 @@ export function releaseBootstrapCiSource(path,source,before){
 }
 function guidanceBefore(path,source){
  if(path==='scripts/check-agent-guidance.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
-  const lf=norm(source);
-  if(hash(lf)==='11be776ae6439e6da881571324707944475c5ef7e34ec482f8994dd47bd86af0'){
-   const prior=lf.replace("import { checkHostedSlice } from './check-pr-slice.mjs';\n",'')
+  const lf=norm(source),sha=hash(lf),sliceGuardSha='11be776ae6439e6da881571324707944475c5ef7e34ec482f8994dd47bd86af0';
+  const anchorValidationSha='b2078e07e261450972581c6ecbd23314ce19ca34f810eac99d30820120aa6d20';
+  if(sha===sliceGuardSha||sha===anchorValidationSha){
+   const checker=sha===sliceGuardSha?lf:norm(readFileSync(new URL('../fixtures/guidance-checker-7a3d1bba.txt',import.meta.url),'utf8'));
+   assert.equal(hash(checker),sliceGuardSha,'complete guidance checker before anchor validation');
+   const prior=checker.replace("import { checkHostedSlice } from './check-pr-slice.mjs';\n",'')
     .replace('  else {\n    try { checkHostedSlice(); }\n    catch (error) { console.error(error.message); process.exitCode = 1; }\n  }\n','');
    if(hash(prior)!=='7e668ec2609dff8de73f0e39a048cd93780f4ad42d2ef2fb2f3a5be346532b18')throw Error('Invalid guidance receipt predecessor');
    return prior;

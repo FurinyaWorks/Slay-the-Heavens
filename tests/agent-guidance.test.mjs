@@ -171,7 +171,12 @@ test('historical guidance receipts verify their exact predecessor and preserve f
   const project = (value, file = path) => releaseBootstrapCiRead(() => value)(file, 'utf8');
   const predecessor = project(source);
   assert.equal(createHash('sha256').update(predecessor).digest('hex'), '7e668ec2609dff8de73f0e39a048cd93780f4ad42d2ef2fb2f3a5be346532b18');
-  assert.equal(project(source.replaceAll('\n', '\r\n')), predecessor);
-  for (const unknown of [source+'\n', source.slice(1), source.replaceAll('\n', '\r\r\n')]) assert.equal(project(unknown), unknown);
-  assert.equal(project(source, 'scripts/foreign.mjs'), source);
+  const current = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  assert.notEqual(current, source);
+  for (const checker of [source, current]) {
+    assert.equal(project(checker), predecessor);
+    assert.equal(project(checker.replaceAll('\n', '\r\n')), predecessor);
+    for (const unknown of [checker+'\n', checker.slice(1), checker.replaceAll('\n', '\r\r\n')]) assert.equal(project(unknown), unknown);
+    assert.equal(project(checker, 'scripts/foreign.mjs'), checker);
+  }
 });
