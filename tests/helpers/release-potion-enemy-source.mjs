@@ -343,13 +343,40 @@ for(const [path,row]of Object.entries(followupCi.files)){
  if(repairCi.files[path])assert.equal(row.beforeSha256,repairCi.files[path].afterSha256,'exact first repair CI predecessor: '+path);
  assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
 }
-function beforeFollowupCiSource(path,source){return priorCiSource(followupCi.files,path,source);}
+// Pair the existing three historical input entries without changing live production.
+const historicalInputArchive='tests/helpers/release-historical-input-ci.json.gz';
+const historicalInputDigest='7a3dbcce1c581f810c837faca4a6a1ce74db40bf1f62de79105527eb812bfc2e';
+const historicalInputBytes=readFileSync(new URL('./release-historical-input-ci.json.gz',import.meta.url));
+assert.equal(hash(historicalInputBytes),historicalInputDigest,'complete historical input CI continuation');
+const historicalInputCi=JSON.parse(gunzipSync(historicalInputBytes));
+assert.equal(historicalInputCi.schemaVersion,1);
+assert.equal(historicalInputCi.base,'676508d246b6033d543fd8515b881cba27ad41b6');
+assert.deepEqual(Object.keys(historicalInputCi.files),["tests/helpers/historical-card-input.mjs", "tests/card-input-slices.test.mjs", "tests/integrated-ci-source.cases.mjs"]);
+for(const [path,row]of Object.entries(historicalInputCi.files)){
+ assert(!/^(?:src|data|config)\//.test(path),'historical input CI cannot replace production');
+ assert.equal(normalized(row.before),row.before);
+ assert.equal(hash(row.before),row.beforeSha256,'complete preserved historical input predecessor: '+path);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.beforeGitBlob);
+ if(followupCi.files[path])assert.equal(row.beforeSha256,followupCi.files[path].afterSha256,'exact historical input CI predecessor: '+path);
+ assert.match(row.afterSha256,/^[a-f0-9]{64}$/);
+}
+function beforeHistoricalInputCiSource(path,source){return priorCiSource(historicalInputCi.files,path,source);}
+function assertHistoricalInputCiCurrent(read){
+ assert.equal(hash(read(historicalInputArchive)),historicalInputDigest,'fresh historical input CI archive');
+ assert.equal(hash(read('tests/helpers/release-full-followup-source.json.gz')),historicalInputCi.productionArchive,
+  'fresh unchanged historical input production archive');
+ for(const [path,row]of Object.entries(historicalInputCi.files)){
+  const source=normalized(read(path,'utf8'));
+  assert(source!==null&&hash(source)===row.afterSha256,'fresh historical input source: '+path);
+ }
+}
+function beforeFollowupCiSource(path,source){return priorCiSource(followupCi.files,path,beforeHistoricalInputCiSource(path,source));}
 function assertFollowupCiCurrent(read){
  assert.equal(hash(read(followupArchive)),followupDigest,'fresh Full follow-up CI archive');
  assert.equal(hash(read('tests/helpers/release-full-followup-source.json.gz')),followupCi.productionArchive,
   'fresh Full follow-up production archive');
  for(const [path,row]of Object.entries(followupCi.files)){
-  const source=normalized(read(path,'utf8'));
+  const source=normalized(beforeHistoricalInputCiSource(path,read(path,'utf8')));
   assert(source!==null&&hash(source)===row.afterSha256,'fresh Full follow-up source: '+path);
  }
 }
@@ -563,10 +590,11 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
       const cancelRow = Object.hasOwn(cancelCi.files, path) ? cancelCi.files[path] : null;
       const shopDismissalRow = Object.hasOwn(shopDismissalCi.files, path) ? shopDismissalCi.files[path] : null;
       const pointerRow = Object.hasOwn(pointerCi.files, path) ? pointerCi.files[path] : null;
+      const historicalInputRow = Object.hasOwn(historicalInputCi.files, path) ? historicalInputCi.files[path] : null;
       const followupRow = Object.hasOwn(followupCi.files, path) ? followupCi.files[path] : null;
       const repairRow = Object.hasOwn(repairCi.files, path) ? repairCi.files[path] : null;
       const fatalBgmRow = Object.hasOwn(fatalBgmCi.files, path) ? fatalBgmCi.files[path] : null;
-      if (!followupRow?.before && !repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
+      if (!historicalInputRow?.before && !followupRow?.before && !repairRow?.before && !fatalBgmRow?.before && !pointerRow?.before && !shopDismissalRow?.before && path !== settingsTest && !handRow?.before && !shelfRow?.before && !enemyRow?.before && !historyRow?.before && !sparseRow?.before && !intentRow?.before && !particlesRow?.before && !cornerRow?.before && !cancelRow?.before &&
         (!row || !Object.hasOwn(row.parents, side))) return source;
     } else if (typeof source !== 'string') {
       return source;
@@ -578,6 +606,7 @@ export function releasePotionEnemyRead(side, read = readFileSync) {
 }
 
 export function assertReleasePotionEnemyCurrent(read = readFileSync) {
+  assertHistoricalInputCiCurrent(read);
   assertFollowupCiCurrent(read);
   assertRepairCiCurrent(read);
   assertComposedCiCurrent(read);

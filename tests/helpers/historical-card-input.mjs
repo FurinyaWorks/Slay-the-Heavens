@@ -14,17 +14,26 @@ export function historicalCardInputPrelude(script,{cwd=process.cwd(),readSource}
  // Ordinary Lua invocations need only the routing metadata. Load the original
  // proof closure synchronously once a real historical entry has been selected.
  const {integrationSources,preIntegrationSource}=require('./pr372-integration-source.mjs');
- // These frozen gestures belong to the registered original source epoch.
- // One call-local reader owns both the host and every linked dependency; an
+ // Both frozen hosts belong to the same registered original source epoch.
+ // One call-local reader owns the hosts and every linked dependency; an
  // injected reader remains fresh and can never fall back to the archive.
  if(!readSource){
   const {loadHistoricalBaselineInputs}=require('./historical-baseline-inputs.mjs');
   const inputs=loadHistoricalBaselineInputs();
   readSource=path=>{assert.ok(Object.hasOwn(inputs,path),'registered original source-input dependency: '+path);return inputs[path].toString('utf8');};
  }
- const path='src/lua/abyss_battle_card_gestures.lua',binding=integrationSources[path];
- const source=readSource(path).replaceAll('\r\n','\n');
- assert.equal(createHash('sha256').update(source).digest('hex'),binding.sha256,'unreviewed source-input gesture host');
- const prior=preIntegrationSource(path,source,'base',{readSource});
- return `print('HISTORICAL_CARD_INPUT_PRE_BROWSE')\npackage.preload.abyss_battle_card_gestures=function()return assert(load(${luaString(prior)},'@pre-browse-gesture'))()end\n`;
+ // The current card binder expects Intent, which the pre-browsing gesture
+ // module did not export. Restore the exact same-epoch binder with it.
+ const previous=(module,host)=>{
+  const path='src/lua/'+module+'.lua',binding=integrationSources[path];
+  const source=readSource(path).replaceAll('\r\n','\n');
+  const hash=text=>createHash('sha256').update(text).digest('hex');
+  assert.equal(hash(source),binding.sha256,'unreviewed source-input '+host+' host');
+  const prior=preIntegrationSource(path,source,'base',{readSource});
+  assert.equal(hash(prior),binding.targets.base.sha256,'exact pre-browsing '+host+' source');
+  return `package.preload.${module}=function()return assert(load(${luaString(prior)},'@pre-browse-${host}'))()end\n`;
+ };
+ return "print('HISTORICAL_CARD_INPUT_PRE_BROWSE')\n"+
+  previous('abyss_battle_card_gestures','gesture')+
+  previous('abyss_battle_card_bindings','binding');
 }

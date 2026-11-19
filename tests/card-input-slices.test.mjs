@@ -35,24 +35,60 @@ test('all 12 original source-input groups retain their complete body and run onc
   assert.deepEqual(seen, names);
 });
 
-test('only the three frozen input archives load exact pre-browsing gesture semantics',()=>{
+test('only the three frozen input archives load the exact pre-browsing gesture and binding pair',()=>{
  assert.deepEqual(historicalCardInputFixtures,['tests/lua/card_input_port.lua','tests/lua/card_input_port_slice_2.lua','tests/lua/card_input_port_slice_3.lua']);
  const cwd=process.cwd(),inputs=loadHistoricalBaselineInputs();
- const host='src/lua/abyss_battle_card_gestures.lua',linked='src/lua/abyss_monster_intent_particle_view.lua';
+ const host='src/lua/abyss_battle_card_gestures.lua',binding='src/lua/abyss_battle_card_bindings.lua';
+ const linked='src/lua/abyss_monster_intent_particle_view.lua';
+ const exact=(message,assertion=true)=>error=>
+  (assertion?error instanceof assert.AssertionError&&error.code==='ERR_ASSERTION':
+   error.constructor===Error&&error.code===undefined)&&error.message.split('\n')[0]===message;
  const original=path=>{assert.ok(Object.hasOwn(inputs,path),'complete original input: '+path);return inputs[path].toString('utf8');};
  for(const path of historicalCardInputFixtures){
   // Call the ordinary current-cwd API, as runLua does. Only its explicit
   // historical fixture inputs are old; no test-wide historical cwd can mask a live-reader bug.
   const actual=historicalCardInputPrelude(path);assert.match(actual,/HISTORICAL_CARD_INPUT_PRE_BROWSE/);
+  assert.equal(createHash('sha256').update(actual).digest('hex'),
+   '5a0ace5ebc817da95d0de565ccd583753b56c8c683320f678bc69ecf76285b35','exact reviewed gesture and binding preload bytes');
   const reads=[];
   assert.equal(historicalCardInputPrelude(path,{cwd,readSource:p=>{reads.push(p);return original(p);}}),actual);
-  assert.ok(reads.includes(host)&&reads.includes(linked),'the real inverse validates both host and complete linked owner closure');
+  assert.match(actual,/package\.preload\.abyss_battle_card_gestures=function/);
+  assert.match(actual,/package\.preload\.abyss_battle_card_bindings=function/);
+  assert.ok([host,binding,linked].every(p=>reads.includes(p)),'the real inverses validate both hosts and their linked owner closure');
   assert.equal(historicalCardInputPrelude(path,{readSource:p=>original(p).replaceAll('\n','\r\n')}),actual,'legal original CRLF sources recover the same exact pre-browsing semantics');
   for(let attempt=0;attempt<2;attempt++){
    assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>original(p)+(p===host?'\n-- drift':'')}),/unreviewed source-input gesture host/);
    assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>original(p)+(p===linked?'\n-- drift':'')}),/delivery linked source identity/);
   }
   assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>{if(p===linked)throw Error('missing original linked owner');return original(p);}}),'missing linked original source cannot fall back to a current or cached owner');
+  // Fault the same call-local reader after a successful read. The binding's
+  // linked check must still reject drift after the gesture inverse passed.
+  const faults=[
+   [host,'unreviewed source-input gesture host','missing original source: '+host],
+   [binding,'unreviewed source-input binding host','missing original source: '+binding],
+   [linked,'delivery linked source identity: '+linked,'delivery linked source missing: '+linked],
+  ];
+  for(const [file,drift,missing]of faults){
+   let fault=null;
+   const readSource=p=>{
+    if(p===file&&fault==='missing')throw Error('missing original source: '+p);
+    return original(p)+(p===file&&fault==='drift'?'\n-- drift':'');
+   };
+   const call=()=>historicalCardInputPrelude(path,{readSource});
+   assert.equal(call(),actual);
+   fault='drift';assert.throws(call,exact(drift),file+' drift');
+   fault='missing';assert.throws(call,exact(missing,file===linked),file+' missing');
+   fault=null;assert.equal(call(),actual,file+' restores with fresh reads');
+  }
+  for(const [kind,message]of [['drift','delivery linked source identity: '+linked],['missing','delivery linked source missing: '+linked]]){
+   let bindingStarted=false;
+   assert.throws(()=>historicalCardInputPrelude(path,{readSource:p=>{
+    if(p===binding)bindingStarted=true;
+    if(bindingStarted&&p===linked&&kind==='missing')throw Error('missing original source: '+p);
+    return original(p)+(bindingStarted&&p===linked&&kind==='drift'?'\n-- drift':'');
+   }}),exact(message),'binding-only linked '+kind);
+   assert.equal(historicalCardInputPrelude(path),actual);
+  }
   assert.equal(historicalCardInputPrelude(path,{cwd:resolve(cwd,'unrelated-source-directory'),readSource:()=>{throw Error('foreign cwd must not read inputs');}}),'');
   assert.equal(process.cwd(),cwd,'the current runtime cwd remains unchanged');
  }

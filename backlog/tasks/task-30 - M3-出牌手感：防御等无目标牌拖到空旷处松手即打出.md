@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: 2026-10-23 00:59
-updated_date: '2026-11-19T03:20:00Z'
+updated_date: '2026-11-19T03:27:00Z'
 labels:
   - ui
   - combat
@@ -94,6 +94,8 @@ ordinal: 36000
 2026-11-19 PR738实际新失败接续：固定独立保全4dd97d67，在原断言下复测Win1动作归属、Win7取消长拖后合法新出牌、POSIX11旧HUD和关闭详情、POSIX5/Win10来源拒绝层。按准确合同最小修补，保留全部红绿与来源缺失/漂移负控，独审后仅保全独立分支；不更新PR738、不重复Full，原历史卡牌三片与官方设备AC保持未验。
 
 2026-11-19后续历史回放隔离证明：先核当前Release/Develop/PR占用，复核#728给出的精确旧bindings摘要与12条原断言实验。仅在独立临时树追踪完整已认证来源、当前runner附加前缀与原30秒预算，保留全部失败和来源清单，独审后保全证据分支；不改PR738、既有实验、正式历史helper或冻结档，不重复Full。
+
+2026-11-19隔离proof676508d2先保全后，按明确授权最小接续正式historical-card-input helper：只给既有三片增加同一已认证base bindings，与原gesture配对；runner/其他前缀/原Lua/30秒不改。补host及linked缺失漂移、恢复/CRLF/non-target控制，新增不可变CI见证保留676508前像，独审后仅推独立分支，不改PR738或Full。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -184,4 +186,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-19 PR738新增失败接续：4dd隔离保全已覆盖Win1原8项及官方关闭详情2项、HUD1项。Win7是真缺陷：横向browsed误被长按当静止，补一项失效判定；原拖动8项和静止长按4项通过，新增取消后fresh恰一次及旧尾无动作，单换旧模块负控失败。StS仅精确校准三叶首个拒绝层，原缺失/漂移合同保留，整文件11项通过。新不可变来源层保留4dd完整before、352文件129owner/88目标；源定向5项、联合7项、独审36漂移与6旧前像负控通过。Quality和精确Release/前保全双ratchet零新增违规。只保全独立分支，不更新PR738或重复Full；三份历史卡牌回放仍阻塞，官方/设备AC未改变。详见docs/evidence/pr738-full-followup-20261119。
 
 2026-11-19历史输入隔离证明：在远端6d267ca8同树，用原认证逆向取bindings base0c370951配gesture3750e191，完整保留正式四前缀、三片原12名单/断言和各30s，6/4/2全部通过。前次不等价probe遗漏已有80帧settle；单删该前缀复现dock红，archive add73配settle也绿但身份不正确，不能以通过倒推来源。独审8个host/linked缺失漂移及恢复/CRLF/非目标控制通过。仅先保全proof，正式helper/runner仍未改，三片尚未据此解除正式门禁；PC22和703独立。证据docs/evidence/pr738-historical-input-proof-20261119。
+
+2026-11-19隔离proof676508后正式历史入口最小接续完成：原3路由增加同reader认证的base bindings0c370951，runner/后三前缀/80帧/Lua用例及30秒测试全部不变。原Node2/2含12条通过，cold/warm来源2/2、source6/6、StS11/11、联合7/7，独审24host/linked+36CI读取+9旧叶替代负控通过；新增CI档保留676完整前像和旧档。原CLI观测28.892/22.437/21.809秒，其默认90秒不冒称30秒门禁；严格30秒由原Node测试证明。仅隔离分支保全，PR738/Full不动，PC22/703及官方设备仍独立。证据docs/evidence/pr738-historical-input-formal-20261119。
 <!-- SECTION:NOTES:END -->
