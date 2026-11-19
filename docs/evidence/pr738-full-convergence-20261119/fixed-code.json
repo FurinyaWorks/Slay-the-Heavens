@@ -1,0 +1,26 @@
+{
+  "commit": "7678a72c54c7ed2f79c47e70df878bc8eacd46fa",
+  "tree": "14653dff9b24ddce7f18f1b2916e642911583052",
+  "files": {
+    "tests/helpers/release-card-contact-integration.mjs": {
+      "gitBlob": "966fe019346d8e96cc7d6beb31b466e810abdc29",
+      "sha256": "51593278954ec7e4523cfcf2a997e55ef7213c575615bfaea4cf524b8c6ff810"
+    },
+    "tests/helpers/release-potion-enemy-source.mjs": {
+      "gitBlob": "0b1f58166cd64d5b6fed612344cf0d9243623060",
+      "sha256": "de825ec7df542dabf0b08b6bfb3c8b4ebc3b1cadebb50e239a836094190156bc"
+    },
+    "tests/helpers/release-pc22-noop-ci.json.gz": {
+      "gitBlob": "cbd118f0bc254a4b9fa63ed875b8ae45fad7e51c",
+      "sha256": "04d4c523ec702192eae1a2464c440ada8ed96bc44a7b762747b5d5fa54df7e4c"
+    },
+    "tests/helpers/release-full-converge-ci.json.gz": {
+      "gitBlob": "0b8b7b95a57cc5078e86cfe5173e1426c7e4fdc4",
+      "sha256": "5d592694c229fdfeba7e9106e39a3ca30ce584d904de4f93c9c4229a9bf5efe2"
+    },
+    "tests/integrated-ci-source.cases.mjs": {
+      "gitBlob": "28c27f0da173b62edc38427ec703ff00cdfd7f22",
+      "sha256": "456b42adf8c40201f08d1c35c6bc4354c98b09e85223b7a9c71a1f1ec6421d69"
+    }
+  }
+}

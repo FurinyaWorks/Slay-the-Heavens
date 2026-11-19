@@ -1,0 +1,97 @@
+[
+  {
+    "path": "build/lua/abyss_art_features.lua",
+    "sha256": "1323fbeb388563db4ae50198d4d231edeec8d337ce95ea7288bde014a6bce91e",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_component_binding.lua",
+    "sha256": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_data.lua",
+    "sha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_map_controls.lua",
+    "sha256": "f2f2e6618c8105f07da45a6d3ed7fe5a63df5f3e498e2af155b7103d81778507",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_map_layout.lua",
+    "sha256": "e08ebb48860ffee29db3313b56e1cb68ed6b649070148ddb3b6d16c95af4bff3",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_menu_background_asset.lua",
+    "sha256": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_monster_actor_binding.lua",
+    "sha256": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_monster_art_data.lua",
+    "sha256": "dd3c9956c7cc8c66d0e96f12e6c142b29923a0d3af4f679183519aed3333cbbb",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_narrative.lua",
+    "sha256": "f34b7f3fb2977492be3d967db8c77ffa57a08313635aec5d8ad3d3aae93bb48a",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_original_v4_data.lua",
+    "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_presentation.lua",
+    "sha256": "d787983564fc6d1e3435fd55d0b97fe593d12b7b53b393ce4fbf298318449e0c",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_ready_card_assets.lua",
+    "sha256": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_ready_card_binding.lua",
+    "sha256": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_theme.lua",
+    "sha256": "8def1c7d68b56ec1e1bb5915752113eba9c129900f77a5ef45d8765423ad8fc4",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_traveler_portrait_assets.lua",
+    "sha256": "2144d12bad1d4f9beb77182afae00549e2f2696ba8b870469df9e4f12033904c",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_ui_layout.lua",
+    "sha256": "6bfb2fbe95396a3131f3128dafef0275e235d449ccf447f2c762905d3508a90d",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_ui_profile.lua",
+    "sha256": "d3fa60eb7a40b0c40b1e1d2c2d869fee588b90cc7458118bfb66a66beda01f69",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_ui_templates.lua",
+    "sha256": "4b35600d348dfff390b3b77d01f6fb960adf29d537e63212e6de9efbf335e6c0",
+    "matchesPriorBuild": true
+  },
+  {
+    "path": "build/lua/abyss_v25_card_assets.lua",
+    "sha256": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503",
+    "matchesPriorBuild": true
+  }
+]

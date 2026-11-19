@@ -1,0 +1,121 @@
+{
+  "base": "6d267ca80abd80efb334f8f7581111166174de2d",
+  "reviewedImplementation": "79859e546ea50ab637938937dfda83bc62ba8120",
+  "reviewedTree": "5fffb2b3a0440dbec5265e760a877a1147f4d883",
+  "reviewer": "/root/advance_ci_one/diagnose738_sources",
+  "verdict": "PASS",
+  "unresolved": [],
+  "code": {
+    "tests/helpers/release-card-contact-integration.mjs": {
+      "sha256": "51593278954ec7e4523cfcf2a997e55ef7213c575615bfaea4cf524b8c6ff810",
+      "gitBlob": "966fe019346d8e96cc7d6beb31b466e810abdc29"
+    },
+    "tests/helpers/release-potion-enemy-source.mjs": {
+      "sha256": "2e1e18688cd682652604a25a3836c7a630eed9b55e449e6aeba2ea60969bf53d",
+      "gitBlob": "9521cb6065f3e3220473187da1d8476a08abf8cf"
+    },
+    "tests/helpers/release-pc22-noop-ci.json.gz": {
+      "sha256": "04d4c523ec702192eae1a2464c440ada8ed96bc44a7b762747b5d5fa54df7e4c",
+      "gitBlob": "cbd118f0bc254a4b9fa63ed875b8ae45fad7e51c"
+    },
+    "tests/integrated-ci-source.cases.mjs": {
+      "sha256": "fa340c94c802187678585f6f73aa79456e2c940bca11796c4803752a1d960ab8",
+      "gitBlob": "1480025525823cb6be8d01e078a59b7e35e73f52"
+    }
+  },
+  "logs": {
+    "baseline-original.log.gz": {
+      "sha256": "49c6afde4122af1e831dea70be01c97ce4002fc6ef6dc48a4175022d2583bda3",
+      "uncompressedSha256": "eb9fa17ef7cb5a1f4394e23cea97c49012fade5c90dc2a781d08640b0bbcf1e6",
+      "bytes": 1402,
+      "redaction": "Local workspace prefix replaced with <repo>/; failure text and order preserved."
+    },
+    "baseline-cases.log.gz": {
+      "sha256": "dde1d27c53bb1b3e57a6a1c1b3c5810808eb926edf2c6a826dbdab6510d42eae",
+      "uncompressedSha256": "23908d898e751942549f8cf54ff4a17ee64337d781eb4a7d3a98a726c235941d",
+      "bytes": 1253,
+      "redaction": "Local workspace prefix replaced with <repo>/; failure text and order preserved."
+    },
+    "baseline-original-hydrated.log.gz": {
+      "sha256": "17a14d6c36ec83211fc25a6b1cbd7de542c1c768ad59a2496f2259d4c39111e3",
+      "uncompressedSha256": "5b580816f4f50047d1e4055e9ee4c70d370b695ff464065f9dfe9654a17ab41f",
+      "bytes": 204
+    },
+    "baseline-crlf-red.json.gz": {
+      "sha256": "e6873bf2f58926c9b3b22ddc662ec0cf921dc378982b02360b2b3ce54e9dddf9",
+      "uncompressedSha256": "2f9b30c10edc36973ccb522fbada5af04d98be72a96f1c7f833b756a7f19194d",
+      "bytes": 5019
+    },
+    "regression-red.log.gz": {
+      "sha256": "32264d62cd4e928ce14a1f57541e4c6429f99d528e241f59b0990633ecb3f2c4",
+      "uncompressedSha256": "e8f278b97b4b7be8c7d02ae12c07977af145ed0c7cc70928de2090c1ff48f57e",
+      "bytes": 15005,
+      "redaction": "Local workspace prefix replaced with <repo>/; failure text and order preserved."
+    },
+    "targeted-first.log.gz": {
+      "sha256": "66092d5bf1dc4741f0b3bc6ded6b7acfeba26b61ad62f7b95652a1654c9878f0",
+      "uncompressedSha256": "a1def82509e06ea4ed49d11289d72b0b95571665b66d0608bfcf2a579c0b15a2",
+      "bytes": 1173,
+      "redaction": "Local workspace prefix replaced with <repo>/; failure text and order preserved."
+    },
+    "targeted-second.log.gz": {
+      "sha256": "417ffed77dd54726fc2d30a0fdad8cc55f7028c48661e610ce8fba103c2813d0",
+      "uncompressedSha256": "c84096723b9fb3fbce0b86d7b3b4cecc54010da4bd689545c6ceab1621ef84de",
+      "bytes": 1407,
+      "redaction": "Local workspace prefix replaced with <repo>/; failure text and order preserved."
+    },
+    "targeted-final.log.gz": {
+      "sha256": "0f897c9814519fb3e721414618c511bfd97341ad790eab88952df6e31d57e63a",
+      "uncompressedSha256": "753d04d54fb98e4464f714c61d629e60842c9c4dff01ab0d9b9a6533f5ff91e8",
+      "bytes": 480
+    },
+    "fixed-crlf-green.json.gz": {
+      "sha256": "00ca1b74378e02da570b165d4835fe1961735dad897230d9b9c9e0a50404dae5",
+      "uncompressedSha256": "de0c1ebd8e23e27e9c2885f0196f18b53a780151efd10dcc0bff69ae83a419c0",
+      "bytes": 5012
+    },
+    "integration-consumers.log.gz": {
+      "sha256": "c99c6b5b47503f8e3912e6de800e5add99491f3c4c972776215031113d99730f",
+      "uncompressedSha256": "e2ae953da55c39cfcb779876b03bd1688b4d63b371ed8f8c60f21fc0a903cef7",
+      "bytes": 2051,
+      "redaction": "Local workspace prefix replaced with <repo>/; failure text and order preserved."
+    },
+    "consumer-official-restored.log.gz": {
+      "sha256": "06065d5302bfe86d43bbfba616a57feb0c1ba1b582022fa53286cc507420767b",
+      "uncompressedSha256": "c1d725bcad25a3b15a1eb45a86529273305e0525d0c185b62d6318d5e18eec88",
+      "bytes": 217
+    },
+    "crlf-checkout.log.gz": {
+      "sha256": "79bcfc3d68a62074bb0b9c1b9528a86d61e5489e5034a0cc164be8411b8d4d49",
+      "uncompressedSha256": "da680affc13cc7589bb87e27eaf66ff631851e80157d5af906f8db7962b8b7e2",
+      "bytes": 479
+    },
+    "guidance.log.gz": {
+      "sha256": "b38897cf9decab6976e4f91b564b22608bcb5fda47c5eb96390c8f504f029907",
+      "uncompressedSha256": "0321adc361af109c6e2193f5323f0264f20bad27bc50606a715ae5a39dbebc39",
+      "bytes": 482
+    },
+    "backlog.log.gz": {
+      "sha256": "26feff5ee73a79e209f6086617161f5583a9567a9814e254b180863633d88719",
+      "uncompressedSha256": "a4713a2d2fedb45f490a85a35d164af8d315b96821d0f1a7348e42ef69544946",
+      "bytes": 382
+    },
+    "windows2-original.log.gz": {
+      "sha256": "b2d38e2ce4abfb27e508ac62382262efa3997c80bc1e4aa6bfdc4b791a264f74",
+      "uncompressedSha256": "7c4a2cb79a703438b6e339c83b64e6f5bca988d2aae74e417c11dc97537e5100",
+      "bytes": 114862
+    },
+    "independent-targeted.log.gz": {
+      "sha256": "f7cd8f3aa8da88eaec30968165adb7b9ee067f323b4a3e51f2dcef0826eba911",
+      "uncompressedSha256": "92ef3f8b42c4e19ab00af1584c86b9149d357664b8046589dd8505c85b3e2bc5",
+      "bytes": 392
+    }
+  },
+  "runtime": "v24.22.1",
+  "limits": [
+    "Linux targeted validation and actual Git CRLF checkout, not hosted Windows",
+    "No Full, workflow dispatch, merge, shared branch change or GUI",
+    "No production source, old archive bytes, budgets or discovery inventory changed"
+  ],
+  "localLogRedaction": "Local workspace prefixes are replaced with <repo>/. The decoded hosted Windows log is untouched; local unredacted originals are retained outside this artifact."
+}

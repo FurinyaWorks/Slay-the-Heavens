@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: 2026-10-23 00:59
-updated_date: '2026-11-19T03:27:00Z'
+updated_date: '2026-11-19T03:41:00Z'
 labels:
   - ui
   - combat
@@ -96,6 +96,8 @@ ordinal: 36000
 2026-11-19后续历史回放隔离证明：先核当前Release/Develop/PR占用，复核#728给出的精确旧bindings摘要与12条原断言实验。仅在独立临时树追踪完整已认证来源、当前runner附加前缀与原30秒预算，保留全部失败和来源清单，独审后保全证据分支；不改PR738、既有实验、正式历史helper或冻结档，不重复Full。
 
 2026-11-19隔离proof676508d2先保全后，按明确授权最小接续正式historical-card-input helper：只给既有三片增加同一已认证base bindings，与原gesture配对；runner/其他前缀/原Lua/30秒不改。补host及linked缺失漂移、恢复/CRLF/non-target控制，新增不可变CI见证保留676508前像，独审后仅推独立分支，不改PR738或Full。
+
+在独立 staging 将历史正式修复9a651ea1与PC22字节保留17e31bb1组合；保留双方不可变来源证据与原断言/30秒预算，同一固定树运行两组定向和来源拒绝控制后独审保全；不更新PR738、不重复Full、不动官方/设备未验AC。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -188,4 +190,6 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-19历史输入隔离证明：在远端6d267ca8同树，用原认证逆向取bindings base0c370951配gesture3750e191，完整保留正式四前缀、三片原12名单/断言和各30s，6/4/2全部通过。前次不等价probe遗漏已有80帧settle；单删该前缀复现dock红，archive add73配settle也绿但身份不正确，不能以通过倒推来源。独审8个host/linked缺失漂移及恢复/CRLF/非目标控制通过。仅先保全proof，正式helper/runner仍未改，三片尚未据此解除正式门禁；PC22和703独立。证据docs/evidence/pr738-historical-input-proof-20261119。
 
 2026-11-19隔离proof676508后正式历史入口最小接续完成：原3路由增加同reader认证的base bindings0c370951，runner/后三前缀/80帧/Lua用例及30秒测试全部不变。原Node2/2含12条通过，cold/warm来源2/2、source6/6、StS11/11、联合7/7，独审24host/linked+36CI读取+9旧叶替代负控通过；新增CI档保留676完整前像和旧档。原CLI观测28.892/22.437/21.809秒，其默认90秒不冒称30秒门禁；严格30秒由原Node测试证明。仅隔离分支保全，PR738/Full不动，PC22/703及官方设备仍独立。证据docs/evidence/pr738-historical-input-formal-20261119。
+
+2026-11-19独立staging组合历史正式9a651ea1与PC22 17e31bb1，两原包/原断言/runner/生产不改。独审发现并修正共享来源首次通过后单次旧父/旧层回读被误接纳的问题：所有后续共享UTF8读取均先严格验证当前合成字节；旧父2/3读及旧层4到末次拒绝，恢复可重验，中间RED全留。固定7678a72c上原12在原30秒进程预算内通过（11.414/7.036/7.899秒），PC22 LF与同提交真实Git CRLF各4项通过，独审PASS。来源定向记录见docs/evidence/pr738-full-convergence-20261119。仅保全新staging，PR738/Full不动，不将Linux CRLF/来源验证称为Windows或官方设备通过，原未验AC/status不变。
 <!-- SECTION:NOTES:END -->
