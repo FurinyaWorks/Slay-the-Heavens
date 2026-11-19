@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "62328bdac7703c3ab241e0ddb19e0fa05474f76a",
+  "originalProductCommit": "41334b11a2a5a37d5cc411f93a192406127b86d9",
+  "originalFinalPrHead": "b3d550f33b8479f4f93dda333720a1ba54063163",
+  "productionDelta": {
+    "files": 3,
+    "added": 81,
+    "deleted": 0
+  },
+  "files": [
+    {
+      "path": "scripts/node-ui-layout.mjs",
+      "sha256": "86c2790037a58ecfe3d5600b7873489750c4e5b276c25c27f4218cda524d61b2",
+      "gitBlob": "5684b41d31bac42b617cbcdc35a1cd972d96284d"
+    },
+    {
+      "path": "src/lua/abyss_node_ui_input.lua",
+      "sha256": "34b38a5648f0486bc78d83651ca5733cfdeb9c2d39ae0fa5b32eb4e61447d106",
+      "gitBlob": "3e1d6a6b03feb99e741cf8ea607f82cefaec591f"
+    },
+    {
+      "path": "src/lua/abyss_shop_selection.lua",
+      "sha256": "53d1bcaf70f000f43a951ae2baf280413296ef7982d89d31f77cb5bcd5e85714",
+      "gitBlob": "46ea222831f69730185acea8329427b9633cbe17"
+    },
+    {
+      "path": "tests/node-ui-layout.test.mjs",
+      "sha256": "4989cdf4d5ff2f538c8841ae75b6494c990b17e06085777e12b020259520229d",
+      "gitBlob": "b8893d2b08b218573f2437359b37564ecbc3c846"
+    },
+    {
+      "path": "tests/shop-dismiss.test.mjs",
+      "sha256": "207c98d6243b318cac7bfccb2fe0822107e9ae57b3aa013c7fa10f87e3e5d43f",
+      "gitBlob": "fdf1bd2c719c95a76831a380868d77bf2ac27f5f",
+      "byteIdenticalToOriginal680": true
+    },
+    {
+      "path": "tests/lua/shop_dismiss.lua",
+      "sha256": "7c46f70b14d7b9bde5d1f4022ff08a0798599249fa5ae97a490613cc6064992c",
+      "gitBlob": "614be5e4e81edc258c594608d920b4d126a1e077",
+      "byteIdenticalToOriginal680": true,
+      "originalCommit": "b3d550f33b8479f4f93dda333720a1ba54063163",
+      "originalPath": "tests/lua/support/shop_dismiss.lua"
+    }
+  ],
+  "validationArchive": {
+    "path": "validation-logs.tar.gz",
+    "bytes": 27431,
+    "sha256": "017482751a5a57cacfc5bbff206d22b2176642ac0b5205c5513aef0189801732"
+  },
+  "results": {
+    "baselineM05": "0/2 expected failure",
+    "migratedDefault": "14/14 (includes unchanged original 12 runtime groups)",
+    "migratedOfficialAssets": "2/2 (includes same 12 runtime groups)",
+    "defaultAdjacentLua": "3/3 entrypoints; shop_selection 13 groups, node_ui 5 groups, shop rules",
+    "nativeContracts": "7/7",
+    "baselineCalibration": "73/73",
+    "migratedCalibration": "42/73, 31 failures",
+    "officialOldMockLimitation": "shop_selection.lua and node_ui.lua both fail GetChildren on exact base and migrated tree",
+    "finalLuaArchiveBytes": "Original final #680 Lua fixture; final default M05 2/2 after EOF-only normalization"
+  },
+  "notRun": [
+    "Hosted CI",
+    "Full",
+    "GIL write/readback",
+    "official import/ready",
+    "physical phone/PC",
+    "release"
+  ],
+  "disposition": "BLOCKED_ON_REVIEWED_FORWARD_SOURCE_CONTINUATION; no PR"
+}
