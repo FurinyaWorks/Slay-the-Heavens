@@ -101,7 +101,8 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
             identity.text = layout.referenceIdentity[ctx.self.run.character or 'ironclad'] or ctx.self.run.character or '旅行者'
             identity:SetVisible(not node or node.type ~= 'ending_proceed')
         end
-        ctx.child("title").text = node and ("第 " .. node.floor .. " 层 · " ..
+        ctx.child("title").text = Theme.presentationProfile=='official-assets-first'
+        and tostring(node and node.floor or ctx.self.run.floor or 0) or node and ("第 " .. node.floor .. " 层 · " ..
         (node.roomKind == "neow" and "七天神像" or node.roomKind == "boss_treasure" and "首领宝箱" or kinds[node.type] or "节点")) or "路线"
         ctx.child("hp").text = number(ctx.self.run.hp) .. "/" .. number(ctx.self.run.maxHp)
         ctx.child("gold").text = number(ctx.self.run.gold)

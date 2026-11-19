@@ -42,9 +42,17 @@ export function finishOfficialRunBar(root,theme){
   {name:'topLight',kind:'container',size:[1280,hud.height],children:Array.from({length:8},(_,i)=>({name:'shade'+i,kind:'image',position:[0,hud.height/2-(i+.5)*hud.height/8],size:[1280,hud.height/8+.05],image:100001,colour:'#'+top.map((v,c)=>Math.round(v+(bottom[c]-v)*i/7).toString(16).padStart(2,'0')).join('')}))},
   {name:'barShadow',kind:'image',position:[0,-hud.height/2-1.5],size:[1280,3],image:100001,colour:'#000000',opacity:.25});
  const heading=child(bar,'officialHeroHeading');if(heading)heading.text.colour=hud.headingColour;
+ const floorX=hud.potionX+(theme.layout.battlePotions.count-1)*hud.potionStep+85;
+ bar.children.push({name:'officialStairs',kind:'container',position:[floorX,0],size:[24,20],
+  children:[[-7,0,7,18],[0,-3,7,12],[7,-6,7,6]].map(([x,y,width,height],index)=>({
+   name:'step'+(index+1),kind:'image',image:theme.image.rect,position:[x,y],size:[width,height],colour:'#D6CBA5',
+  })),
+ });
  const title=child(root,'title');
- title.visible=true;title.position=hud.location.slice(0,2);title.size=hud.location.slice(2);
- Object.assign(title.text,{fontSize:14,minFontSize:14,colour:'#B1ACA5'});
+ title.visible=true;title.position=[floorX+33,hud.y];title.size=[34,36];
+ Object.assign(title.text,{content:'',fontSize:hud.numberSize,minFontSize:14,align:'left',colour:'#D6CBA5'});
+ const status=child(root,'floor');
+ status.visible=true;status.position=hud.location.slice(0,2);status.size=hud.location.slice(2);
  mountOfficialResourceHints(root,theme);
 }
 

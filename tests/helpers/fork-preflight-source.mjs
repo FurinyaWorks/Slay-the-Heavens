@@ -1,4 +1,4 @@
-import {beforeV2UiAdmission,beforeV2UiFlagEvidence} from './v2-ui-admission-ci-source.mjs';
+import {beforeV2UiAdmission,beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -49,7 +49,7 @@ const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
 assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
 function beforeCoopCiSource(path,source){
- source=beforeV2UiFlagEvidence(path,source);
+ source=beforeV2UiEvidence(path,source);
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
@@ -129,7 +129,7 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiFlagEvidence(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,read(path,'utf8'));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){

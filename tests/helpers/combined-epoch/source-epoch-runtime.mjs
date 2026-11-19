@@ -1,6 +1,7 @@
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
 import {projectLumineSource,authorizeLumineSource} from '../lumine-portrait-source.mjs';
+import {projectV2UiHudSource,authorizeV2UiHudSource} from '../v2-ui-hud-source.mjs';
 import {projectFatalBgmSource,authorizeFatalBgmSource} from '../fatal-bgm-source-continuation.mjs';
 import {projectSelectorSource,authorizeSelectorSource} from '../character-selector-source.mjs';
 import {projectPotionTextSource,authorizePotionTextSource} from '../potion-text-source.mjs';
@@ -114,6 +115,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const inputSource=source;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  source=projectV2UiHudSource(path,source,current);
   source=projectLumineSource(path,projectPotionTextSource(path,projectSelectorSource(path,projectFatalBgmSource(path,source,current),current),current),current);
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
@@ -123,6 +125,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const binding=proof.current[owner];samples.push([owner,actual,binding]);
+   actual=projectV2UiHudSource(owner,actual,binding);
    actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
@@ -130,6 +133,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   authorizeSelectorSource(path,inputSource,current,samples,readSource);
   authorizePotionTextSource(path,inputSource,current,samples,readSource);
   authorizeLumineSource(path,inputSource,current,samples,readSource);
+  authorizeV2UiHudSource(path,inputSource,current,samples,readSource);
   return before.source;
  }
  function combinedReader(readSource=readLive,target){

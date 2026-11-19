@@ -24,19 +24,27 @@ end
 local function capture(name, provenance)
     V.capture(name, host, root, provenance)
 end
+local function floorIn(page, expected)
+    local panel = root:GetChild(page)
+    local title = page == 'mapPanel' and F.mapControl(panel, 'title') or panel:GetChild('title')
+    local bar = panel:GetChild(page == 'battlePanel' and 'topBar' or 'officialRunBar')
+    assert(bar:GetChild('officialStairs').visible and title.visible)
+    assert(title.text == tostring(expected), page .. ' floor text: ' .. title.text)
+end
 
 click('menuPanel', 'start')
 assert(host:selectCharacter('traveler') and host:selectElement('ironclad'))
-capture('character', 'Selected Traveler through the live character picker')
 assert(host:confirmCharacter())
 untilReady(function() return host.nodeUI.visible and not host.prologue:covering() end)
 click('nodePanel', 'eventView/option1')
 assert(host.run.nodeFlow.event.stage == 'neow_blessing')
+floorIn('nodePanel', 0)
 capture('neow', 'Fresh two-act run, real Neow blessing choices')
 click('nodePanel', 'eventView/option2')
 assert(host.run.nodeFlow.event.stage == 'neow_result')
 click('nodePanel', 'eventView/option1')
 untilReady(function() return host.mode == 'map' and host.mapUI.visible end)
+floorIn('mapPanel', 0)
 capture('map', 'Real map after taking a Neow blessing')
 local run, map = host.run, host.map
 local floor = map.floor
@@ -72,6 +80,9 @@ assert(host.sessionPaused and host.mode == 'menu' and host.run == run and host.m
 click('menuPanel', 'continueRun')
 assert(host.mode == 'map' and not host.sessionPaused and host.run == run and host.map == map)
 assert(map.floor == floor and settlements == 0, 'Pause and resume must not leave the game')
+assert(host.mapUI:choose(F.Nodes.available(run, map)[1].id))
+untilReady(function() return host.mode == 'battle' and host.battleUI.active end)
+floorIn('battlePanel', 1)
 click('exitEntry', 'open')
 click('runMenu', 'mainMenu')
 click('menuPanel', 'titleQuit')

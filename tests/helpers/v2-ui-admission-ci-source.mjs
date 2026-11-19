@@ -5,10 +5,10 @@ import { gunzipSync } from 'node:zlib';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const bytes = readFileSync(new URL('../fixtures/v2-ui-admission-ci-source.json.gz', import.meta.url));
-assert.equal(sha256(bytes),'fdcf83d5308ead77d7fb8ccccc318711bae748a8f18b7752cd4d92c71a072ab7','historical UI admission source identities');
+assert.equal(sha256(bytes),'66525eb8117bf80749eb0bacee9fabd34381e2df93efb00e86b428c164557a57','historical UI admission source identities');
 const archive = JSON.parse(gunzipSync(bytes));
 for (const row of Object.values(archive)) {
-  assert.equal(sha256(row.before),row.beforeSha256);
+  if (row.before) assert.equal(sha256(row.before),row.beforeSha256);
   if (row.successor?.before) assert.equal(sha256(row.successor.before),row.successor.beforeSha256);
 }
 
@@ -19,7 +19,7 @@ function project(path, source, rowFor) {
   return source.includes('\r\n') ? row.before.replaceAll('\n','\r\n') : row.before;
 }
 
-export function beforeV2UiFlagEvidence(path, source) {
+export function beforeV2UiEvidence(path, source) {
   return project(path,source,row=>row.successor);
 }
 

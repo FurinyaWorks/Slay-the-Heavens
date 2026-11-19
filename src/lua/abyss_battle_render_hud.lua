@@ -162,14 +162,16 @@ function M.install(owner, _ownership, host, dependencies)
     end
     local function renderSceneHeading(frame)
         local flow = frame.run and frame.run.nodeFlow
+        local suffix=stanceHeading(frame)..orbHeading(frame)..discardHeading(frame)..originalHeading(frame)
+        if Theme.presentationProfile=='official-assets-first' then
+            dependencies.label("title",number(flow and flow.floor or frame.run and frame.run.floor or 0))
+            dependencies.label("floor",(suffix:gsub("^ · ","")))
+            return
+        end
         local kind = flow and ({elite = "精英战斗", boss = "首领战斗"})[flow.type] or "战斗"
-        -- Keep the floor identifiable without a naked number over the first potion slot.
         dependencies.label("floor", "")
         local floor=flow and flow.floor and " · 第"..tostring(flow.floor).."层" or ""
-        local suffix=stanceHeading(frame)..orbHeading(frame)..discardHeading(frame)..originalHeading(frame)
-        local caption=kind..floor..suffix
-        if Theme.presentationProfile=='official-assets-first' and frame.run and (frame.run.act or 1)==1 then caption='塔底'..floor..suffix end
-        dependencies.label("title",caption)
+        dependencies.label("title",kind..floor..suffix)
     end
     local function renderEnergy(frame)
         local battle = frame.battle

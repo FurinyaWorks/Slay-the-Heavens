@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildUI } from '../../../scripts/build-ui.mjs';
+import { lumineSelectionBackground } from '../../../scripts/lumine-selection-background.mjs';
 import { buildLuaData, luaString } from '../../../scripts/build-lua-data.mjs';
 
 assert(process.argv[2], 'Pass an output directory for offline evidence');
@@ -13,6 +14,12 @@ const generated = join(output, 'generated');
 mkdirSync(generated, { recursive: true });
 buildLuaData('data', join(generated, 'abyss_data.lua'));
 buildUI(generated, undefined, { officialAssets: true, nativePageLifecycle: true });
+const selection = lumineSelectionBackground();
+assert.equal(selection.count, 1600);
+const assetModule = readFileSync(join(generated, 'abyss_traveler_portrait_assets.lua'), 'utf8');
+assert(assetModule.includes("selectionUses='lowpolyLumine'"));
+assert(assetModule.includes(selection.jsonSha256));
+
 
 const require = createRequire(import.meta.url);
 const driver = fileURLToPath(new URL('capture-runtime.lua', import.meta.url));

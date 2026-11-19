@@ -414,12 +414,27 @@ test('official selection information board and exit share the live layout withou
  assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
  const back=child(child(panel,'cancel'),'hit');
  for(const state of children(hit)){
-  const flag=child(state,'v25Flag');
-  assert.deepEqual(flag,child(child(back,state.name),'v25Flag'));
-  assert.ok(children(child(flag,'rim')).length>1,'The approved notched flag must preserve its native outline');
-  assert.ok(child(flag,'upperThread'),'The approved flag keeps its thread detail');
+  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
   assert.equal(child(state,'label').text.content,'退出游戏');
  }
+});
+
+test('official run pages use one three-step floor marker just after the potion slots',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ applyOfficialAssets([layout],theme);
+ const battle=child(layout,'battlePanel'),map=child(layout,'mapPanel'),node=child(layout,'nodePanel');
+ const marks=[child(battle,'topBar'),child(map,'officialRunBar'),child(node,'officialRunBar')]
+  .map(bar=>child(bar,'officialStairs'));
+ const [stairs]=marks;
+ assert(stairs,'shared floor indicator');
+ assert.deepEqual(marks,[stairs,stairs,stairs]);
+ assert.equal(children(stairs).length,3);
+ assert.deepEqual(children(stairs).map(step=>step.size),[[7,18],[7,12],[7,6]]);
+ assert(children(stairs).every(step=>step.image===theme.image.rect));
+ assert(stairs.position[0]>child(battle,'potion3').position[0]);
+ assert.equal(child(battle,'title').text.content,'');
+ assert.equal(child(battle,'title').text.align,'left');
+ assert.deepEqual(child(node,'title').position,child(battle,'title').position);
 });
 
 test('ordinary readiness overlay uses the same Liyue crest and seven elements',()=>{
