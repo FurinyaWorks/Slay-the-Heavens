@@ -5,6 +5,7 @@
       "targetVersion": "v2.0.0",
       "state": "menuPanel",
       "revision": "2026-11-19",
+      "acceptanceScreen": "menu",
       "status": "APPROVED",
       "backlogTask": "TASK-103.5",
       "reference": {
