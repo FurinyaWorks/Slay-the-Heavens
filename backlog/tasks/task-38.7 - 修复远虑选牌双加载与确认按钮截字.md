@@ -1,15 +1,16 @@
 ---
 id: TASK-38.7
-title: 修复远虑选牌双加载与确认按钮截字
+title: 修复「远虑」选牌，让一次点按生效并显示完整按钮
 status: To Do
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-15 19:11'
+updated_date: '2026-11-19 03:49'
 labels:
   - mobile
   - playtest-20261115
   - p1
+  - v2.0.0
 milestone: m-8
 dependencies: []
 references:
@@ -26,7 +27,21 @@ ordinal: 178000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-升级“远虑”选牌时确认按钮只显示“确认选”（IMG_1405），点击选择一次加载、再点一次又加载才显示已选择；原因待复现，不能先宣称计算不过来。
+### 情况
+
+点选后准备画面重复出现，第二次点按才显示选中。IMG_1405 还显示确认按钮被截字。
+
+### 任务
+
+核实一次点按所走的选牌与重绘流程，显示正确选中反馈和完整确认文案。
+
+### 边界
+
+保留放入牌底、下次免费打出及随机流。以实际事件和画面定位重复加载。
+
+### 验收
+
+在手机窄屏核对一次点选、重复点按、取消和回退，检查零、单、多张选择与完整按钮。 使用同一候选完成原任务列出的回归、独立评审和手机验收。
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

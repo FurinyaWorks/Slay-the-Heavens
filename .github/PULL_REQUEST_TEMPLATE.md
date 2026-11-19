@@ -11,7 +11,7 @@ Branch closeout owner (Agent / takeover coordinator): [name or session]
 Supersedes / inherits: none
 Expected exit: DELIVERED_VERIFIED / SUPERSEDED / FROZEN / DISCARDED (select one; pending is not Done)
 <!-- On actual closeout, post a single CLOSEOUT receipt in this PR or existing Backlog task (fixed HEAD SHA, evidence, successor, remote deletion/retention). Do not mark delivery complete just because auto-merge was enabled. -->
-- [ ] v2.0.0 defect or stabilization → `release/v2.0.0` (source based on release)
+- [ ] v2.0.0 recovery, defect or stabilization → `develop` (source based on latest develop)
 - [ ] future feature or non-release docs → `develop` (source based on develop)
 - [ ] release cut or production hotfix → `master` (then sync back to develop)
 - [ ] frozen experiment / HOLD (normally no merge PR)
@@ -40,15 +40,15 @@ Use none only when this PR has no task updates. -->
 
 ## Integration slice
 <!-- Describe the independently verified behavior, the next dependent slice if any, and the
-flag owner/removal condition if applicable. For over-budget production or evidence, use
+flag owner/removal condition if applicable. For over-budget production that cannot reasonably be split, use
 Slice-exception: atomic | why it must land together | verification command or evidence
-Other valid reasons: mechanical, generated, tests. The reviewer verifies the exception. -->
+Other valid reasons: mechanical, generated, tests. The independent reviewer verifies the reason and evidence. -->
 
 ## How to test
 1.
 
 ## Checklist
-- [ ] Production and evidence each fit 400 added/deleted lines and 10 files, or include a reviewed exception
+- [ ] Production fits 400 added/deleted lines and 10 files, or includes a reviewed exception
 - [ ] Tests added/updated and passing locally
 - [ ] No secrets/PII in diff
 - [ ] Breaking changes documented + migration notes

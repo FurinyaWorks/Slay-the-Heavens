@@ -20,12 +20,12 @@
 
 ## 开始与交付
 
-- 三仓库沿用同一本 Backlog：主仓库 release/v2.0.0 只收发版必需修复，develop 推进后续；Fork A 优先 Fast、Fork B 优先 Full，按需互援。先读 [三仓库分流](docs/CI.md#三仓库按需验证)，使用原生 dispatch；Fork 结果不替代主仓库集成和同候选实机验收，云端开发不依赖本机在线。
+- 三仓库沿用同一本 Backlog：主仓库在 develop 统一集成，旧 release/v2.0.0 冻结；Fork A 优先 Fast、Fork B 优先 Full，按需互援。先读 [三仓库分流](docs/CI.md#三仓库按需验证)，使用原生 dispatch；Fork 结果不替代主仓库集成和同候选实机验收，云端开发不依赖本机在线。
 - 每次会话先运行 `backlog instructions overview`；创建、执行、收口前分别读对应的 `backlog instructions task-creation`、`backlog instructions task-execution`、`backlog instructions task-finalization`。任务与里程碑只用 Backlog CLI 修改，先查重；负责人沿用 Furinya，任务正文用简洁中文，技术证据放对应附件。 内部单人多agent事项只进Backlog；GitHub Issues保留给外部协作和公开反馈，既有内部Issue迁入后关闭并保留来源链接。
 - 自主认领前按 [任务执行](docs/TASK_EXECUTION.md#开始任务) 检查范围、审批与依赖。
 - **产品优先、工程按需**：M7已归档，只在M8/M9实际功能、稳定性、容量或CI门禁受阻且有证据时实施最小架构修复；质量棘轮照常拦截新增债务，不为清零旧CC/SCC/Fan-out自主开工。按[工程移交](docs/backlog-details/M7-PRODUCT-FIRST-HANDOFF-20261113.md)追踪未验AC。
-- 先核对任务、PR、现有同范围分支及脏文件，独立工作树/短分支开发，尽量当天集成：**2.0.0 发版修复基于 `origin/release/v2.0.0`、PR 指向 Release；非本版任务仍基于 `origin/develop`、PR 指向 Develop**。先读 [2.0 发版交接](docs/versions/V2-RELEASE-HANDOFF.md)；未实际核实 Release 保护/CI 不得合入。按 [分支生命周期](docs/BRANCH_LIFECYCLE.md) 登记版本、收口责任与来源，保留他人的改动。Conventional Commits；独立云端 AI 复审须由现有可信协调账号核实真实不同会话，并随原生 COMMENTED Review 绑定精确 HEAD/BASE/合并树（可与PR作者同账号，不要求第二人审批）；门禁验证后可用 `npm run merge:auto -- <PR> <GitHub-Review-ID>` 挂起，GitHub 的严格基线、Full 与原门禁全部通过才 squash → develop；暂停用同入口 `--pause` 并读回，不以标签冒充撤销。master 只接发布；release 从 develop、hotfix 从 master，均合回 master 与 develop。保护及精确 SHA 合并流程见 [CI](docs/CI.md)。不恢复旧任务锁。
-- **先分支、后 PR**：实现与基本验证完成、明确审批已取得、依赖已落地并可评审合并后才提 PR。任务占位、HOLD 和长期探索留在 Backlog；不成熟的既有 PR 关闭并保留分支/来源。Draft 仅在 Owner 明确要求提前协作评审时使用，具体收口见[任务执行](docs/TASK_EXECUTION.md#pr-生命周期)。
+- 先核对任务、PR、现有同范围分支及脏文件，独立工作树/短分支开发，尽量当天集成：**从最新 `origin/develop` 开发，PR 指向 develop**。旧分支只取证，按 [2.0 重建交接](docs/versions/V2-RELEASE-HANDOFF.md) 拆分接回。按 [分支生命周期](docs/BRANCH_LIFECYCLE.md) 登记版本、收口责任与来源，保留他人的改动。Conventional Commits；独立云端 AI 复审须由现有可信协调账号核实真实不同会话，并随原生 COMMENTED Review 绑定精确 HEAD/BASE/合并树（可与PR作者同账号，不要求第二人审批）；门禁验证后可用 `npm run merge:auto -- <PR> <GitHub-Review-ID>` 挂起，GitHub 的严格基线、Full 与原门禁全部通过才 squash → develop；暂停用同入口 `--pause` 并读回，不以标签冒充撤销。master 只接发布；release 从 develop、hotfix 从 master，均合回 master 与 develop。保护及精确 SHA 合并流程见 [CI](docs/CI.md)。不恢复旧任务锁。
+- **先分支、后 PR**：实现与基本验证完成、明确审批已取得、依赖已落地并可评审合并后才提 PR。任务占位、HOLD 和长期探索留在 Backlog；不成熟的既有 PR 关闭并保留分支/来源。Draft 用于 Owner 明确要求的提前协作评审或冻结留痕，具体收口见[任务执行](docs/TASK_EXECUTION.md#pr-生命周期)。
 - 任务收尾按 [分支生命周期](docs/BRANCH_LIFECYCLE.md#分支出口agent-的最小收口协议definition-of-done) 选择 DELIVERED_VERIFIED / SUPERSEDED / FROZEN / DISCARDED，记录固定 SHA、继任者、责任人和证据；仅入队或已关闭 PR 不等于交付。合并后核对分支没有新工作，保留可恢复历史并清理自己的干净工作树和分支；脏树与独立提交保留。每日云端巡检只发现未收口异常，不代替执行 Agent。版本与不可移动的注释 Tag 按 [PUBLISHING](docs/PUBLISHING.md)，不自动发版或创建归档 Tag。
 
 ## 授权与验收边界
