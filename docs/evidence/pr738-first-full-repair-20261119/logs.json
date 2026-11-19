@@ -75,6 +75,14 @@
       "gzipSha256": "c872dc3cfffe41525d2a78fb4c60546ed5f80718a9e012e691c1f637532da021"
     },
     {
+      "file": "ci-integrated-fixed-tree.log.gz",
+      "retainedInputBytes": 3389,
+      "retainedInputSha256": "43988933dc7ef8096fbfd617d38890ed73b1250a8af7ff2a4ebfd58661ed484a",
+      "publicTextBytes": 3389,
+      "publicTextSha256": "43988933dc7ef8096fbfd617d38890ed73b1250a8af7ff2a4ebfd58661ed484a",
+      "gzipSha256": "1ff2e290d4ef5d663eaac64c3c84a41da431f3327f1bfeb2311a96a8dc840871"
+    },
+    {
       "file": "ci-job-135275911302.log.gz",
       "retainedInputBytes": 103499,
       "retainedInputSha256": "2781573573550f7bfb818a6a02ce313869d978c2a1cef2ba46c491db3abbb409",
@@ -129,6 +137,22 @@
       "publicTextBytes": 205012,
       "publicTextSha256": "bc704b5e1a9e18a8782d4e7cee794838f339f615940c00b13b33d9c5cc901b04",
       "gzipSha256": "38290b9a09af0edb888bae348f9e8c8c7b3f453971f5e95428fc207146da3348"
+    },
+    {
+      "file": "ci-joint-fixed-tree.log.gz",
+      "retainedInputBytes": 945,
+      "retainedInputSha256": "441e305bd69d4e3664a9a3ad6114038f41068a00b5320b6c63859eda9775bbc4",
+      "publicTextBytes": 945,
+      "publicTextSha256": "441e305bd69d4e3664a9a3ad6114038f41068a00b5320b6c63859eda9775bbc4",
+      "gzipSha256": "4c5fac2e183777e5f1528abadf191dcb7cce32331edd48c96c5d7dd22c033b7e"
+    },
+    {
+      "file": "ci-native-dynamic-fixed-tree.log.gz",
+      "retainedInputBytes": 873,
+      "retainedInputSha256": "5472a5e6ea26576fcf43f1c28e4e4180791de4338859291694b7c755466daa4f",
+      "publicTextBytes": 873,
+      "publicTextSha256": "5472a5e6ea26576fcf43f1c28e4e4180791de4338859291694b7c755466daa4f",
+      "gzipSha256": "a6debd5e93c3023a3b56c93880295aebb11f4a073545e0bcceb1f28f8c4b1f49"
     },
     {
       "file": "ci-source-repair-final.log.gz",
