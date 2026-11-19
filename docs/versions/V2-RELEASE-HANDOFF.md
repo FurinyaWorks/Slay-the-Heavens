@@ -5,7 +5,7 @@
 ## 开发与接续
 
 - 从最新 `origin/develop` 创建独立工作树及短分支。所有重建 PR 指向 `develop`。旧分支保留原引用，停止合并，保持保护规则。
-- 旧目标 PR 转为 Draft、加 `release:frozen` 标签并评论记录原 base、head、接续范围和继任 PR。若有自动合并授权，先按现有入口撤销并读回。已暂停 [#738](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/738#issuecomment-6999046770)，原 head 为 `36b96baa93d07cb8a357cb793ea4e8806a5aca87`。输入缺口按 #711、#728、#736 和 #738 的原始差异核实，停乐修复核对已合入 develop 的 #730。接续 PR 开出后回填来源线程。
+- 旧目标 PR 转为 Draft、加 `release:frozen` 标签并评论记录原 base、head、接续范围和继任 PR。若有自动合并授权，先按现有入口撤销并读回。已暂停 [#738](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/738#issuecomment-6999046770)，暂停时 head 为 `36b96baa93d07cb8a357cb793ea4e8806a5aca87`，复核时已推进到 `62e14cfe87fa71a1ae475ef2ef51a6ce6a2b7cbb`，仍为 Draft。输入缺口按 #711、#728、#736 和 #738 的原始差异核实，停乐修复核对已合入 develop 的 #730。接续 PR 开出后回填来源线程。
 - 审查旧分支、未合并 PR 和 Fork 时，按行为及验收逐项查重。只接回仍缺的实质变更，保留来源提交和验证记录。冲突不明或发生回归的切片保存证据后暂停，继续独立切片。
 - 沿用 [任务执行](../TASK_EXECUTION.md)、[三仓库分流](../CI.md#三仓库按需验证)、现有 PR 尺寸检查、正式例外及合并准入。#739 在原 PR 处理尺寸规则。本版仅岩系旅行者第一、二幕。PC、手机清单分别见 [38 项 PC 反馈](../backlog-details/PC-QA-20261115.md) 和 [20 项手机反馈](../backlog-details/MOBILE-QA-20261115.md)。
 
