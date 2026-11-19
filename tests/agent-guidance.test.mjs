@@ -68,6 +68,16 @@ test('historical package replay accepts only the exact guidance additions', () =
 test('small adapters resolve links relative to their own directory', t => {
   assert.deepEqual(fixture(t).errors, []);
 });
+test('navigation resolves Markdown headings and rejects stale fragments', t => {
+  const result = fixture(t, {
+    'AGENTS.md': '# Project\n[Self](#project)\n[Heading](docs/guide.md#工具索引)\n[Second](docs/guide.md#工具索引-1)\n[Missing](docs/guide.md#missing)\n[Sample](docs/guide.md#sample)\n',
+    'docs/guide.md': '## 工具索引\n## 工具索引\n```md\n## Sample\n```\n',
+  });
+  assert.deepEqual(result.errors, [
+    'AGENTS.md: invalid local link docs/guide.md#missing',
+    'AGENTS.md: invalid local link docs/guide.md#sample',
+  ]);
+});
 test('both line and Unicode character budgets fail closed', t => {
   assert.match(fixture(t, { 'AGENTS.md': '# Rules\n'.repeat(81) }).errors.join('\n'), /budget exceeded/);
   assert.match(fixture(t, { 'AGENTS.md': '规'.repeat(5001) }).errors.join('\n'), /budget exceeded/);
@@ -156,7 +166,8 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
 
 test('historical guidance receipts verify their exact predecessor and preserve foreign inputs', () => {
   const path = 'scripts/check-agent-guidance.mjs';
-  const source = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  const source = readFileSync(new URL('./fixtures/guidance-checker-7a3d1bba.txt', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
+  assert.equal(createHash('sha256').update(source).digest('hex'), '11be776ae6439e6da881571324707944475c5ef7e34ec482f8994dd47bd86af0');
   const project = (value, file = path) => releaseBootstrapCiRead(() => value)(file, 'utf8');
   const predecessor = project(source);
   assert.equal(createHash('sha256').update(predecessor).digest('hex'), '7e668ec2609dff8de73f0e39a048cd93780f4ad42d2ef2fb2f3a5be346532b18');
