@@ -11,6 +11,10 @@
       "status": "Project UI diagnostic screenshots rendered by Chromium using system font fallbacks and stand-in glyphs from the project prototype. No font binaries or official textures redistributed. Referenced game identities remain their owners IP; no asset/IP sublicense or commercial clearance. Offline Host projection only, not official import/ready, final artwork, interaction, device or performance acceptance.",
       "evidence": "docs/evidence/hud-r2-20261101/README.md; experiments/ui-polish-sim/hud-r2-capture.lua and hud-r2-render.mjs; production Lua on native-contract fixture with actual sibling-call order recorded for projection. Baseline b0f64d49; reviewed runtime/evidence revision 487a46ef92d25421fa941e5ee85f1152034a647b. 1280x720 Host trees projected at recorded owner widths; system fonts and original atlas appearance remain device-unverified."
     },
+    "coop-primitive-lab": {
+      "status": "Offline geometry and BeyondSimulator 0.5.2 rendering evidence derived from the Owner-reviewed battle133 source. The Traveler identity retains the underlying platform IP restrictions. No separate IP sublicense, production-art approval, official import or device acceptance.",
+      "evidence": "art/characters/traveler-geo/portraits/battle133/asset.json; experiments/coop-primitive-lab/README.md; docs/evidence/task-109-coop-lab/results.json"
+    },
     "native-art-probe": {
       "status": "Project-authored geometry and Lua exported with beyond-simulator-mcp 0.5.2 (GPL-3.0), referencing official platform picture IDs; screenshots contain official game IP. Platform-project experiment only; no IP sublicense, commercial clearance or official import acceptance",
       "evidence": "experiments/art-tech-lab/README.md; sample.save.json; interaction.lua; export-receipt.json; verification.json; simulator https://github.com/1475505/miliastra-beyond-simulator at 3dff619528b1ad3689e2f96b6bcbb0c0c0e735f2"
@@ -2430,6 +2434,10 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "bytes": 45285
+    },
+    "docs/evidence/task-109-coop-lab/comparison.png": {
+      "sha256": "ffe2c962f3f5ca4b140862ae0899162f5b4cec563c078022baac5b7006975748",
+      "category": "coop-primitive-lab"
     },
     "docs/evidence/result-menu-offline/comparison.png": {
       "sha256": "3dd8dd4da64b1cc4e76b2a8dbda16d949b0e9381caf1e02a02c1e5e54983c153",
