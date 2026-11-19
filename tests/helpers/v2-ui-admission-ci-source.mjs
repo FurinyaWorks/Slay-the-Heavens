@@ -5,7 +5,7 @@ import { gunzipSync } from 'node:zlib';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const bytes = readFileSync(new URL('../fixtures/v2-ui-admission-ci-source.json.gz', import.meta.url));
-assert.equal(sha256(bytes),'5973f99cac8981dff4bfc3ec95bbeb72d03a1ba3670d0caaa506d260168f86e1','historical UI admission source identities');
+assert.equal(sha256(bytes),'8596f283c9c3ba83a31e4a747b623ddf4823e99f4326f90ce9b65072aaa0b263','historical UI admission source identities');
 const archive = JSON.parse(gunzipSync(bytes));
 for (const row of Object.values(archive)) assert.equal(sha256(row.before),row.beforeSha256);
 

@@ -21,7 +21,10 @@
       "codePaths": [
         "scripts/menu-red-scene.mjs",
         "src/lua/abyss_game_ui_menu_view.lua",
-        "src/lua/abyss_v25_menu_view.lua"
+        "src/lua/abyss_v25_menu_view.lua",
+        "scripts/native-menu-approved-layout.mjs",
+        "scripts/noncombat-v25-layout.mjs",
+        "scripts/official-assets-layout.mjs"
       ],
       "themeKeys": [
         "menuPresentation"

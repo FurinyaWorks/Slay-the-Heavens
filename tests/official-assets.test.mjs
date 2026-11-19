@@ -87,7 +87,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  // geometry/input field to that projection while retaining unrelated pages.
  const expectedMenuLayout=structuredClone(layout);
  applyOfficialNoncombatLayout(expectedMenuLayout,theme);
- const menuProjection=new Map(paths(child(expectedMenuLayout,'menuPanel'),'/SlayTheAbyss'));
+ const menuProjection=new Map(['menuPanel','runMenu','pageReveal'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
  const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
   .map(([path,node])=>[path,node,structuredClone(node)]);
  const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
@@ -389,3 +389,73 @@ test('audio wrapper forwards the explicit official profile and lifecycle without
  }}),error=>error===stop);assert(called);
 });
 import {replayReviewedSelection} from './helpers/replay-reviewed-selection.mjs';
+
+test('official selection information board and exit share the live layout without changing hit owners',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const panel=child(layout,'characterPanel'),details=child(panel,'details');
+ const hit=child(child(child(layout,'runMenu'),'mainMenu'),'hit');
+ applyOfficialNoncombatLayout(layout,theme);
+ const board=child(details,'informationBoard');
+ assert.equal(children(details)[0],board);
+ assert.deepEqual(board.position,[-276,4]);
+ assert.deepEqual(board.size,[536,344]);
+ const fill=child(board,'fill');
+ assert.equal(fill.kind,'image');
+ assert.equal(fill.image,theme.image.rect);
+ assert.ok(fill.opacity>0&&fill.opacity<1);
+ for(const name of ['name','stats','gold','v25Story','relic','relicText','deckTitle','deckSummary']){
+  const control=child(details,name);
+  for(const axis of [0,1])assert.ok(Math.abs(control.position[axis]-board.position[axis])+control.size[axis]/2<=board.size[axis]/2,name);
+ }
+ assert.equal(child(panel,'scrim').visible,false);
+ assert.strictEqual(child(child(child(layout,'runMenu'),'mainMenu'),'hit'),hit);
+ assert.deepEqual(hit.size,[180,60]);
+ assert.equal(hit.kind,'presetButton');
+ assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
+ const back=child(child(panel,'cancel'),'hit');
+ for(const state of children(hit)){
+  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
+  assert.equal(child(state,'label').text.content,'退出游戏');
+ }
+});
+
+test('ordinary readiness overlay uses the same Liyue crest and seven elements',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const cover=child(layout,'pageReveal'),blocker=child(cover,'blocker'),cancel=child(cover,'cancel');
+ const scene=child(child(layout,'prologuePanel'),'scene');
+ applyOfficialNoncombatLayout(layout,theme);
+ assert.deepEqual(child(cover,'seal'),child(scene,'seal'));
+ for(let i=1;i<=7;i++){
+  const name='element'+i,lit=child(cover,name);
+  assert.deepEqual(lit,{...child(scene,name),colour:theme.layout.prologue.ink});
+ }
+ assert.strictEqual(child(cover,'blocker'),blocker);
+ assert.strictEqual(child(cover,'cancel'),cancel);
+ assert.equal(child(cover,'message').text.content,'正在准备画面…');
+});
+test('approved native title and button artwork preserve the official menu hit surfaces',()=>{
+  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme),menu=child(layout,'menuPanel');
+  const receiver=child(child(menu,'start'),'hit');
+  applyOfficialNoncombatLayout(layout,theme);
+  assert.strictEqual(child(child(menu,'start'),'hit'),receiver);
+  const logo=child(child(menu,'v25MainMenu'),'approvedTitleLogo');
+  assert(logo && child(logo,'subtitlePlate'));
+  assert(children(logo).filter(part=>part.name.startsWith('lettering')).every(part=>
+    children(part).length>0 && children(part).length<=48));
+  for(const [name,frame,text] of [
+    ['start',theme.menuPresentation.start,'开始游戏'],
+    ['titleQuit',theme.menuPresentation.quit,'退出游戏'],
+  ]) {
+    const button=child(menu,name), hit=child(button,'hit');
+    assert.deepEqual(button.position,frame.slice(0,2));
+    assert.deepEqual(hit.size,frame.slice(2));
+    assert.equal(hit.kind,'cursorArea');
+    assert.equal(child(button,'label').text.align,'centre');
+    if (name==='titleQuit') assert.equal(child(button,'label').text.content,text);
+    const faces=children(child(button,'v25MenuFace'));
+    assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
+    assert(faces.every(face=>children(child(face,'rim')).length===2 && children(child(face,'fill')).length===2));
+    assert.notDeepEqual(child(faces[0],'fill'),child(faces[1],'fill'));
+    assert.equal(child(button,'menuAccent'),undefined);
+  }
+});
