@@ -1,0 +1,327 @@
+{
+  "imageEditor": "103025f9095d8089e3f9bf097f4d0c5fe039d546",
+  "giaGroupName": "Furina_Battle_Fit_744",
+  "archiveSceneSHA256": "f3210c899e764cac5b3fb4d175e67874ee2eaf731d0aa019e934d189bacf703d",
+  "literalCanonicalSHA256": "c28a414057955086dfbb75f216bb9ec6e630c9dd5e7edd62b2d108345a0a535e",
+  "primitiveCount": 488,
+  "controls": 499,
+  "fit": {
+    "inputSHA256": "bc9118f85b57b2ca70ec027c43a520c3bb2d0f403e4f0f6e167d4297c63a1ff5",
+    "cropLTRB": [
+      414,
+      263,
+      636,
+      820
+    ],
+    "maxRgbThreshold": 32,
+    "componentSeedXY": [
+      540,
+      369
+    ],
+    "compBoundsXywhArea": [
+      417,
+      263,
+      216,
+      557,
+      59583
+    ],
+    "groups": 9,
+    "totalControls": 499,
+    "profile": "balanced",
+    "untrimmed": 545,
+    "trim": {
+      "requested": 315,
+      "removed": 167,
+      "ordering": "greedy visible loss vs pinned medium, rescore every six",
+      "visibleWorstScore": -9953.145833333334
+    },
+    "fit": {
+      "underpaint": 49,
+      "outfit": 103,
+      "face": 21,
+      "legs": 74,
+      "source segmentation": 85,
+      "local accents": 156
+    },
+    "nativeControls": 488,
+    "assets": {
+      "100003": 483,
+      "100002": 5
+    },
+    "canvas": [
+      133,
+      133
+    ],
+    "versions": {
+      "opencv": "4.12.0",
+      "shapely": "2.1.2",
+      "numpy": "2.3.5",
+      "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546"
+    },
+    "files": {
+      "editable.json": {
+        "bytes": 294927,
+        "sha256": "33510d05c1c78bb019b76e69753cf03c208101e4359b8cf44ef914cfc3e9c707"
+      },
+      "literal-drawing.json": {
+        "bytes": 83661,
+        "sha256": "7d503ba58323b168ea6c528354fb514bac31987e9efcf378b3962914461c57bf"
+      },
+      "native-4x.png": {
+        "bytes": 12586,
+        "sha256": "4be29f9fdb188f9a6eb87ac06e81a6d8226e320d778446951f2df77ec8aedfda"
+      },
+      "native.gia": {
+        "bytes": 364579,
+        "sha256": "e093205b1f6b14c50ff8e024f28b327681fbc2d0b4bed3d898b80e4dea440489"
+      },
+      "native.lua": {
+        "bytes": 364614,
+        "sha256": "b0d4e6fba5d5e9bc004456b7d41cae270fde5206496743c78f568f95e45c1a0d"
+      },
+      "native.png": {
+        "bytes": 3425,
+        "sha256": "2188528c1ab391991f9776f6c26a4da103ade42cb8990e60ca9e10e618b1fc7b"
+      },
+      "runtime.lua": {
+        "bytes": 88487,
+        "sha256": "92663a89c111d2968715b7cc384f93ae331d5ffd7fee670118144a13c54237e1"
+      },
+      "source-4x.png": {
+        "bytes": 110045,
+        "sha256": "10e5fa5f563757e52decb238d60d00846d68ee8f889c99214dbbb8703d6ffb95"
+      },
+      "source.png": {
+        "bytes": 12624,
+        "sha256": "c5e5dc8c99437631d6e7ace2f2e5b5996f7e8e4e195b90e06462c150898d534c"
+      }
+    }
+  },
+  "gil": {
+    "schemaVersion": 1,
+    "scope": "Existing official editor sample-derived offline GIL. Not a project save or release; no official import/device shot/startup/fps claims.",
+    "toolPin": "bcc75795ebf17271612332fc81645336686bd94c",
+    "baseSHA256": "b3b46b0412caf865ebc259c15ad8215b33a1797ab7940861eb562320541e13a2",
+    "baseBytes": 25793,
+    "literalSHA256": "7d503ba58323b168ea6c528354fb514bac31987e9efcf378b3962914461c57bf",
+    "editor": "103025f9095d8089e3f9bf097f4d0c5fe039d546",
+    "name": "LumineArtOnly",
+    "rootId": 1073741847,
+    "dedicatedHost": {
+      "id": 1073741848,
+      "name": "LumineFigureHost",
+      "canvas": [
+        133,
+        133
+      ]
+    },
+    "file": "Lumine-Art-Only-OFFLINE.gil",
+    "sha256": "0af3c0905d755399f114013793c7e1158be3f3d88354d604c05eb4d56a2f2b55",
+    "fileBytes": 143308,
+    "template": {
+      "id": 1073741845,
+      "name": "LumineShapeTemplate"
+    },
+    "count": {
+      "mountedBatches": 9,
+      "staticShapeControls": 0,
+      "predictedNativeImagesOnStart": 488,
+      "maxDirectChildrenPerBatch": 60,
+      "dedicatedHostContainers": 1,
+      "interfaceRootContainers": 1
+    },
+    "sourceBytes": 108416,
+    "tests": [
+      "ordered host and batch ID readback",
+      "native image template readback with mask disabled",
+      "each bound Lua source byte-for-byte readback",
+      "all client scripts syntax-checked by existing setClientScript"
+    ],
+    "validation": "offline only; actual native renderer and device import unverified",
+    "batches": [
+      {
+        "name": "LumineArtBatch01",
+        "start": 0,
+        "count": 60,
+        "sha256": "d7f023cb93b11ce95b80462fa00905dfc52cac577ed093d8e2a268fd9968a9fb",
+        "boundSHA256": "8fefed024e034984f9e85910c7813d193e6ac6e0834bdea76b85c1fb425437f8",
+        "boundBytes": 13195,
+        "scriptId": 1073741826,
+        "containerId": 1073741849
+      },
+      {
+        "name": "LumineArtBatch02",
+        "start": 60,
+        "count": 60,
+        "sha256": "2058afde1cb4e7fd8cfbda249c5e8f9a5e8135ed07079f547984f956704303e7",
+        "boundSHA256": "e27d1897908f12c408d97067150581f0445b449420b340222d2854daf31066f9",
+        "boundBytes": 13233,
+        "scriptId": 1073741827,
+        "containerId": 1073741850
+      },
+      {
+        "name": "LumineArtBatch03",
+        "start": 120,
+        "count": 60,
+        "sha256": "d89666258cb826e03ffc7d0abfcdfc28a0742cc3cbc0004c66a6b57402566f96",
+        "boundSHA256": "a70d038ebf2f6baab025d6217f5e37bcd7b81467958697b47d9432f232f8ef92",
+        "boundBytes": 13173,
+        "scriptId": 1073741828,
+        "containerId": 1073741851
+      },
+      {
+        "name": "LumineArtBatch04",
+        "start": 180,
+        "count": 60,
+        "sha256": "9c15b99439604305d93b07d3799815aa24381e64e7ecfa0f20239fb64198b4c2",
+        "boundSHA256": "fc40e8f05a9199afbdbe4abe4447b3561fd9f64798f1a2f3e095793fb572ab5e",
+        "boundBytes": 13185,
+        "scriptId": 1073741829,
+        "containerId": 1073741852
+      },
+      {
+        "name": "LumineArtBatch05",
+        "start": 240,
+        "count": 60,
+        "sha256": "06684920f8e496f0e6d5bdec37d604083d8ff92d3664075f037bea8f4062d9b2",
+        "boundSHA256": "2578d2e9efa096b0ef4f1f86d98e4a49ce044739f8c2554b49b68f44ba115cb0",
+        "boundBytes": 12904,
+        "scriptId": 1073741830,
+        "containerId": 1073741853
+      },
+      {
+        "name": "LumineArtBatch06",
+        "start": 300,
+        "count": 60,
+        "sha256": "c39e7e2d2999ebcea41fce467474edb998b21b4b3155fd9bebc282ace462d019",
+        "boundSHA256": "2556924dad013a16e8b17897029ea3dba683439321e9d65d0aec7b1809e0823a",
+        "boundBytes": 13090,
+        "scriptId": 1073741831,
+        "containerId": 1073741854
+      },
+      {
+        "name": "LumineArtBatch07",
+        "start": 360,
+        "count": 60,
+        "sha256": "a01a567422451f09fb4dc3ce66da8f261dd35685458182f156c2677377375ec7",
+        "boundSHA256": "de15d347180c2bcc207bb3c73ee7d410f737aa8ba48e1ea3651203619062674a",
+        "boundBytes": 12863,
+        "scriptId": 1073741832,
+        "containerId": 1073741855
+      },
+      {
+        "name": "LumineArtBatch08",
+        "start": 420,
+        "count": 60,
+        "sha256": "66c864fecdc4d02394bdf58431b28bf78d373485a0574cb6c200396be514e8d9",
+        "boundSHA256": "8069236a8e9b9f74c6ada12f086ff6aadbe7a565ea0bc977117de429a2e73f43",
+        "boundBytes": 12987,
+        "scriptId": 1073741833,
+        "containerId": 1073741856
+      },
+      {
+        "name": "LumineArtBatch09",
+        "start": 480,
+        "count": 8,
+        "sha256": "9f42bf1c8163fa025ce80218c53faba89e2ed3f2d9d01faaadca1a452dc85fac",
+        "boundSHA256": "c5d13f24257d52462130a1d66bc9efd6ed01b81446e7a9ee857367783c6dbcfc",
+        "boundBytes": 3786,
+        "scriptId": 1073741834,
+        "containerId": 1073741857
+      }
+    ]
+  },
+  "lifecycle": {
+    "scope": "Exact Lua bodies read from fixture-derived GIL, existing Fengari/native API mock verification, NOT official import or device runtime",
+    "gilSHA256": "0af3c0905d755399f114013793c7e1158be3f3d88354d604c05eb4d56a2f2b55",
+    "literalSHA256": "7d503ba58323b168ea6c528354fb514bac31987e9efcf378b3962914461c57bf",
+    "checkerGitBlob": "ced76db25cd9e386d9c2dd683ea8f0aeef1b35aa",
+    "templateIndex": 1073741845,
+    "verifiedImages": 488,
+    "extraMasks": 0,
+    "results": [
+      {
+        "group": "LumineArtBatch01",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch02",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch03",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch04",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch05",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch06",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch07",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch08",
+        "images": 60,
+        "verifiedOrderedControlRows": 60,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      },
+      {
+        "group": "LumineArtBatch09",
+        "images": 8,
+        "verifiedOrderedControlRows": 8,
+        "verification": "create/recreate; all transforms including rotation X/Y/Z; asset IDs/RGBA/order; destroy/idempotence; nil instantiation and setter rejection both clean/recover"
+      }
+    ]
+  },
+  "visualDiff": [
+    {
+      "file": "native.png",
+      "changedPixels": 423,
+      "xyMin": [
+        48,
+        15
+      ],
+      "xyMax": [
+        76,
+        38
+      ],
+      "alphaDelta": 18
+    },
+    {
+      "file": "native-4x.png",
+      "changedPixels": 6577,
+      "xyMin": [
+        195,
+        56
+      ],
+      "xyMax": [
+        304,
+        155
+      ],
+      "alphaDelta": 272
+    }
+  ]
+}
