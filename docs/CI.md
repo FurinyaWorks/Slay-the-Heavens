@@ -165,7 +165,7 @@ PR 日常受影响 Fast/高风险 Full 路由不变；Fast 不发布 Full succes
 
 ## Owner 授权的 PR-only 应急合并
 
-当前主仓库 develop Ruleset 25870651 与 release Ruleset 27313515 使用仓库管理员角色 `pull_request` 豁免。每次使用前读回 Ruleset 和实际账号权限。日常准入继续使用原生 Required Checks 和队列。Owner 明确授权的范围内，已经过独立审查及必要定向验证的低风险切片可直接 squash，保留 PR 及批准记录。核心行为、正式候选及高风险组合须取得各自必要的完整证据。
+当前主仓库 develop Ruleset 25870651 与 release Ruleset 27313515 使用仓库管理员角色 `pull_request` 豁免。每次使用前读回 Ruleset 和实际账号权限。日常准入继续使用原生 Required Checks 和队列。Owner 明确授权的范围内，已经过独立审查及必要定向验证的低风险切片可直接 squash，保留 PR 及批准记录。核心行为、正式候选及高风险组合须取得各自必要的完整证据。CI 尚未完成或自身故障时记录真实状态与已取得验证。已确认由本 PR 引入的回归必须修复，正式发布仍须完成全部必需验收。
 
 1. 复核所有依赖已落地、无冲突和未解决审查，记录完整 HEAD、实时目标分支 BASE、候选树、缺失的 CI 与验证证据。已在 develop 队列的 PR 先用 `npm run merge:auto -- <PR> --pause` 出队并读回。
 2. 立即重读 PR 和目标分支，确认身份与风险仍在已授权范围内。提交包含精确 HEAD 和 squash 方法的临时 JSON 文件。

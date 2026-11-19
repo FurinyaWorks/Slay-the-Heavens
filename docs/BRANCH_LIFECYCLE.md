@@ -77,4 +77,4 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 - .github/workflows/branch-hygiene.yml 改为 **手动触发的只读证据工具**，需要详细库存时由协调者运行并下载结果；不再和云端任务重复每日调度。
 - scripts/branch-hygiene.mjs 通过 GitHub API 分页核对全部分支及全部 PR，绝不调用 DELETE、合并或开 issue。它提供待复核线索，**不是自动删除清单**。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
-- 治理更新只走 develop 的正常 PR，绝不把治理功能/脚本混入当前 release，也不因治理绕过 Fast、Full、独立评审或规则集。
+- 治理更新走 develop 的正常 PR。当前 Release 的[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)通过独立 Release PR 同步。两类分支沿用各自 Fast、Full、独立评审及规则集。
