@@ -38,6 +38,7 @@ const files=Object.freeze({
  'tests/helpers/character-selector-source.mjs':'7b3e77e5a190772e6a7d063eb2134aeabd928a6db691705ffa220fa92b71b974',
  'tests/helpers/potion-pointer-source.mjs':'8e17e809c470ab6a97a48d4a11209c308c8dd42b88da6550ddf650b42959416e',
  'tests/fixtures/potion-pointer-source.json.gz':'6af6671cef5295036c1f38f17d51ee96f77ed5b2ecc5003cb851d7c55a40ac11',
+ 'tests/helpers/official-ui-repair-source-epoch.mjs':'edabe5fc268d443e837dea9bd5785856b1b92874b75d9c32193ba53eb98fd46e',
  'tests/helpers/v2-ui-hud-source.mjs':'dca36319e8eb77df3e6db39b13db949736bae1ab11681cf6eab8269f9f4be268',
  'tests/fixtures/v2-ui-hud-source.json.gz':'649a52b20d2b9b2ad338a77b24daf29998014522e0dc0d5888bccce1529faa58',
  'tests/helpers/v2-run-menu-source-epoch.mjs':'a7e11793af79e698ed2a6ae832bd94cc8c47e2d6149e60d58db8138f1a1c77b8',
