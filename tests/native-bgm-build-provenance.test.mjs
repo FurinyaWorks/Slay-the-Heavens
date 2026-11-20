@@ -49,7 +49,9 @@ function fixture(t, corrupt, existing=false, official=false) {
     put(`full/payload/${name}.lua`, source); return [name, sha256(source)];
   }));
   const base = put('full/candidate.gil', 'full pre-audio candidate');
-  const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId, ...(official?{officialAssetsProfile,uiProfile:uiProfileReceipt(true)}:{}),artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
+  const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId,
+    ...(official ? { officialAssetsProfile, uiProfile: uiProfileReceipt(true), release: { version: 'v1.0.0', workKey: 'alpha-test' } } : {}),
+    artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
   const tool = join(root, 'tool');
   put('tool/package.json', '{"type":"module","version":"fixture"}');
   put('tool/node_modules/@modelcontextprotocol/sdk/package.json', '{"type":"module"}');

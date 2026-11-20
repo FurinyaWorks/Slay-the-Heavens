@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -180,7 +181,7 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
  const {preRelicQuerySource,relicQueryReader}=await import('./helpers/relic-query-source-inverse.mjs');
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const source=read(file),owners=sourceEpoch.proof.owners;
- const admittedReads=[...owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...owners,...currentProductionRereads];
  // Forty-five belongs to the frozen #562 union, not the evolving live tree.
  const {sevenRefactorEpoch}=await import('./helpers/seven-refactor-source-epoch.mjs');
  const archived=readFileSync('tests/helpers/combined-epoch/source-epoch.json.gz');

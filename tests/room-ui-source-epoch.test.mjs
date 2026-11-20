@@ -5,13 +5,14 @@ import {readFileSync as nativeReadFileSync} from 'node:fs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
 // Original assertions retain their explicit frozen source view.
 const currentRaw=p=>nativeReadFileSync(p,'utf8');
-const readFileSync=(p,encoding)=>{const value=nativeReadFileSync(p,encoding);return typeof value==='string'?jointUiSourceAt(p,combinedCurrent.preCombinedSource(p,value,{target:'jointUiPrior',readSource:currentRaw}),'room'):value;};
+const roomPriorRead=combinedCurrent.combinedReader(currentRaw,'jointUiPrior');
 import {roomUiSourceEpoch as room} from './helpers/room-ui-source-epoch.mjs';
 import {componentUiSourceEpoch as component} from './helpers/component-ui-source-epoch.mjs';
 import {preJointUiEpoch as epoch,preRoomUiEpoch as prior} from './helpers/combined-epoch/source-epoch.mjs';
-const live=p=>readFileSync(p,'utf8'),raw=p=>epoch.proof.current[p]?.source??null;
+const live=p=>jointUiSourceAt(p,beforeV2UiHudSource(p,roomPriorRead(p),currentRaw),'room'),raw=p=>epoch.proof.current[p]?.source??null;
 const changed=['src/lua/abyss_game_ui_view.lua','src/lua/abyss_map_ui.lua','src/lua/abyss_node_ui_faces.lua'];
 import {preJoustEpoch as joint,joustIntegratedEpoch as current} from './helpers/combined-epoch/source-epoch.mjs';
 import {joustSourceProof} from './helpers/joust-source-epoch.mjs';

@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -175,7 +176,7 @@ test('current architecture admission rereads its complete raw owner closure and 
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),owners=sourceEpoch.proof.owners;
  // The #730 and #733 continuations re-read their authenticated live sources
  // after the main closure, in continuation order.
- const admittedReads=[...owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...owners,...currentProductionRereads];
  let changed,replacement,reads=[];
  const reader=file=>{reads.push(file);if(file===changed){if(replacement instanceof Error)throw replacement;return replacement;}return readFileSync(file,'utf8');};
  const layers=JSON.parse(raw).layers;

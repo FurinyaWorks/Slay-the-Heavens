@@ -70,7 +70,15 @@ test('registered flag is explicit and has an exit while legacy candidate identit
  assert.equal(nativeAudioBuildArgs(['base.gil','--feature=native-page-lifecycle=false']).options.nativePageLifecycle,undefined);
  assert.equal(p.uiProfileReceipt(false).configSha256,'f162e53dcf4da6e3e0e92c80f947844d85fb45ff5a4c77ecf189ebf594adfeb1');
  assert.equal(p.uiProfileReceipt(true).configSha256,'fcd16aa1d35aeab4102c7bc49c0889a3c46135466e9a3198f6dcac21e5c59c81');
- assert.throws(()=>p.uiProfileFromReceipt({uiProfile:p.uiProfileReceipt(true),experimentalProfile:'bounded-2d-v1',release:{}}),/non-release/);
+ const experimental={uiProfile:p.uiProfileReceipt(true),experimentalProfile:'bounded-2d-v1'};
+ const release={version:'v1.0.0',workKey:'alpha-test'};
+ assert.equal(p.uiProfileFromReceipt({...experimental,release}),true);
+ assert.equal(p.uiProfileFromReceipt({...experimental,release:{...release,version:`v${'9'.repeat(28)}.2.3`}}),true);
+ for(const version of ['v01.2.3',`v${'9'.repeat(29)}.2.3`])
+  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,version}}),/non-release/);
+ assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{}}),/non-release/);
+ assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,notesSha256:'b'.repeat(64)}}),/non-release/);
+ assert.throws(()=>nativeAudioBuildArgs(['base.gil','--official-assets','--release-candidate']),/separate non-release/);
 });
 test('receipt digest and native source audit reject a flipped runtime policy',async()=>{
  const p=await profile(),off=p.uiProfileReceipt(false),on=p.uiProfileReceipt(true);

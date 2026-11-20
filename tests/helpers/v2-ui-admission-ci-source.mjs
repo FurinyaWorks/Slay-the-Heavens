@@ -12,17 +12,25 @@ for (const row of Object.values(archive)) {
   if (row.successor?.before) assert.equal(sha256(row.successor.before),row.successor.beforeSha256);
 }
 
-function project(path, source, rowFor) {
-  if (!Object.hasOwn(archive,path) || typeof source!=='string' || source.includes('\r\r\n')) return source;
-  const row=rowFor(archive[path]);
-  if (!row || sha256(source.replaceAll('\r\n','\n'))!==row.sha256) return source;
+const recoveryBytes = readFileSync(new URL('../fixtures/v2-ui-source-recovery.json.gz', import.meta.url));
+assert.equal(sha256(recoveryBytes),'f2cf2fa19f205f66cfef861692b9d6574aab970682ba8ba9e2f501d70cf8b769','v2 UI recovery source identities');
+const recovery = JSON.parse(gunzipSync(recoveryBytes));
+assert.equal(recovery.base,'eaf4a4a50640697f4c497fe116db94c1ed69a10d');
+for (const row of Object.values(recovery.files)) assert.equal(sha256(row.before),row.beforeSha256);
+
+function project(source, row) {
+  if (!row || typeof source!=='string' || source.includes('\r\r\n') ||
+      sha256(source.replaceAll('\r\n','\n'))!==row.sha256) return source;
   return source.includes('\r\n') ? row.before.replaceAll('\n','\r\n') : row.before;
 }
 
 export function beforeV2UiEvidence(path, source) {
-  return project(path,source,row=>row.successor);
+  if (Object.hasOwn(recovery.files,path)) source = project(source,recovery.files[path]);
+  return Object.hasOwn(archive,path) ? project(source,archive[path].successor) : source;
 }
 
 export function beforeV2UiAdmission(path, source) {
-  return project(path,source,row=>({sha256:row.afterSha256,before:row.before}));
+  if (!Object.hasOwn(archive,path)) return source;
+  const row = archive[path];
+  return project(source,{sha256:row.afterSha256,before:row.before});
 }
