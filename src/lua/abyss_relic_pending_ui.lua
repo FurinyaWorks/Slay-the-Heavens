@@ -2,6 +2,7 @@
 local Pending=require('abyss_relic_pending')
 local Theme=require('abyss_theme')
 local Display=require('abyss_card_display')
+local EventUI=require('abyss_node_ui_events')
 local M={}
 local function text(ctx,row)
  if row.card then
@@ -30,8 +31,6 @@ function M.install(ctx)
   ctx.renderTopBar(nil);ctx.child('title').text='遗物效果'
   for _,name in ipairs({'shopView','campView','pickerView','eventView','treasureView'})do ctx.show(ctx.child(name),name=='eventView')end
   local event=ctx.child('eventView')
-  local figure=event:GetChild('neowFigure');if figure then ctx.show(figure,false)end
-  local art=event:GetChild('art');if art then ctx.show(art,false)end
   event:GetChild('name').text=view.title
   local count=math.min(3,#Theme.layout.nativeNode.event.options.rows)
   self.pageCount=math.max(1,math.ceil(#view.rows/count))
@@ -39,6 +38,17 @@ function M.install(ctx)
   event:GetChild('caption').text='遗物选择 · '..self.pendingPage..'/'..self.pageCount
   event:GetChild('body').text=view.body
   ctx.child('notice').text=self.notice~=''and self.notice or '请选择一项，完成后返回原界面。'
+  local rows={}
+  for i=1,count do
+   local row=view.rows[(self.pendingPage-1)*count+i]
+   if row then
+    local title,description=text(ctx,row)
+    assert(type(title)=='string'and title~=''and type(description)=='string'and description~='', 'missing relic choice description')
+    rows[i]={title=title,description=description,enabled=true}
+   end
+  end
+  EventUI.renderChoices(ctx,event,'relic_pending',rows)
+  ctx.show(event:GetChild('art'),false)
   local generation,run,owner=self.pendingGeneration,self.run,view.owner
   local function observe()
    return self.visible and not self.busy and not self.presentationBusy
@@ -52,12 +62,8 @@ function M.install(ctx)
    end,nil,nil,observe)
   end
   for i=1,#Theme.layout.nativeNode.event.options.rows do
-   local row=i<=count and view.rows[(self.pendingPage-1)*count+i];local box=event:GetChild('option'..i)
-   ctx.show(box,row~=nil);ctx.state(box,row~=nil)
+   local row=i<=count and view.rows[(self.pendingPage-1)*count+i]
    if row then
-    local title,description=text(ctx,row)
-    assert(type(title)=='string'and title~=''and type(description)=='string'and description~='', 'missing relic choice description')
-    box:GetChild('title').text=title;box:GetChild('description').text=description
     bind('eventView/option'..i,true,function()
      self.busy=true;local called,ok,why=pcall(Pending.resolve,run,row.token);self.busy=false
      if not called then error(ok)end
@@ -72,6 +78,10 @@ function M.install(ctx)
   end
   for _,entry in ipairs({{'back','上一页',self.pendingPage>1,-1},{'confirm','下一页',self.pendingPage<self.pageCount,1}})do
    local key,label,enabled,delta=entry[1],entry[2],entry[3],entry[4];local box=ctx.child(key)
+   local layout=Theme.layout.nativeNode
+   local x=key=='back'and layout.back[1]or layout.shop.confirm[1]
+   local height=key=='back'and layout.back[4]or layout.confirm[4]
+   box:SetAnchoredPosition(x,-Theme.canvas.base[2]/2+Theme.canvas.safe.y+height/2)
    ctx.show(box,self.pageCount>1);box:GetChild('label').text=label;ctx.state(box,enabled)
    bind(key,enabled,function()return page(delta)end)
   end
