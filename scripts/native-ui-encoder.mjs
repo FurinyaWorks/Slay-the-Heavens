@@ -53,7 +53,8 @@ export async function loadNativeUiEncoder(toolRoot){
  const helperPath=fileURLToPath(helperUrl),helper=readFileSync(helperPath);
  const isolatedHelper=new URL(helperUrl);isolatedHelper.searchParams.set('abyss-native-checker',randomUUID());
  const rotationAdapter=withNativeXyzRotations(source.replace(anchor,replacement));
- const transformed=`import {checkScripts as $abyssNativeCheckScripts} from ${JSON.stringify(isolatedHelper.href)};\n`+withNativeImageTypes(rotationAdapter.source);
+ const imageTypeSource=withNativeImageTypes(rotationAdapter.source),galleryImageTypes=imageTypeSource!==rotationAdapter.source;
+ const transformed=`import {checkScripts as $abyssNativeCheckScripts} from ${JSON.stringify(isolatedHelper.href)};\n`+imageTypeSource;
  const isolated=pathToFileURL(sourcePath);isolated.searchParams.set('abyss-native-ui-encoder',randomUUID());
  const sourceSha256=digest(original),helperSha256=digest(helper);let intercepted=false,helperIntercepted=false;
  const hooks=registerHooks({load(url,context,nextLoad){
@@ -73,7 +74,8 @@ export async function loadNativeUiEncoder(toolRoot){
  try{
   const native=await import(isolated.href);
   if(!intercepted||!helperIntercepted||typeof native.checkClientScripts!=='function')throw Error('Native UI encoder checker adaptation was not loaded');
+  if(typeof native.clientControlRecord==='function'&&!galleryImageTypes)throw Error('Native gallery image type adaptation was not loaded');
   return {native,identity:Object.freeze({adapter:'section50-script-projection-v1',sourcePath,sourceSha256,sourceBytes:original.length,
-   helperPath,helperSha256,helperBytes:helper.length,transformedSha256:digest(transformed),anchorCount:count,xyzRotations:rotationAdapter.enabled})};
+   helperPath,helperSha256,helperBytes:helper.length,transformedSha256:digest(transformed),anchorCount:count,xyzRotations:rotationAdapter.enabled,galleryImageTypes})};
  }finally{hooks.deregister();}
 }
