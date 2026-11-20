@@ -2,6 +2,7 @@ import {preDefectActorCiSource} from './defect-actor-ci-source-inverse.mjs';
 import {jointCiSourceAt} from './joint-ui-ci-source-inverse.mjs';
 import {preOfficialAssetsFlowCiSource} from './official-assets-flow-ci-source-inverse.mjs';
 import {preOfficialAssetsCiSource} from './official-assets-ci-source-inverse.mjs';
+import {beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
 // Pure CI receipt compatibility: complete current strings may enter the exact
 // pre-component source epoch. This does not authorize live owner projections or
 // claim that historical timings measured the current UI implementation.
@@ -32,8 +33,9 @@ Object.freeze(proof.files);
 export const componentUiCiSourceProof=Object.freeze(proof);
 export function preComponentUiCiFoundationSource(path,source){
  const binding=Object.hasOwn(proof.files,path)?proof.files[path]:null;
- if(!binding||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==binding.afterSha256)return source;
- return binding.beforeSource;
+ if(!binding||typeof source!=='string')return source;
+ const admitted=beforeV2UiEvidence(path,source);
+ return hash(admitted.replaceAll('\r\n','\n'))===binding.afterSha256?binding.beforeSource:source;
 }
 // Pure named views keep each published receipt in its own source epoch. New
 // outer receipts append here; frozen literal/foreign assertions keep their view.
