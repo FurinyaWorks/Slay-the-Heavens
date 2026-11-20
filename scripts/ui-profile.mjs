@@ -104,7 +104,8 @@ export function uiProfileReceipt(nativePageLifecycle = false) {
 function hasOnlyVersionMetadata(release) {
   return release === undefined || (
     release !== null && typeof release === 'object' && Reflect.ownKeys(release).length === 2 &&
-    Object.hasOwn(release, 'version') && typeof release.version === 'string' && /^v\d+\.\d+\.\d+$/.test(release.version) &&
+    Object.hasOwn(release, 'version') && typeof release.version === 'string' && release.version.length <= 33 &&
+    /^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/.test(release.version) &&
     Object.hasOwn(release, 'workKey') && typeof release.workKey === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(release.workKey)
   );
 }

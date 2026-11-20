@@ -73,6 +73,9 @@ test('registered flag is explicit and has an exit while legacy candidate identit
  const experimental={uiProfile:p.uiProfileReceipt(true),experimentalProfile:'bounded-2d-v1'};
  const release={version:'v1.0.0',workKey:'alpha-test'};
  assert.equal(p.uiProfileFromReceipt({...experimental,release}),true);
+ assert.equal(p.uiProfileFromReceipt({...experimental,release:{...release,version:`v${'9'.repeat(28)}.2.3`}}),true);
+ for(const version of ['v01.2.3',`v${'9'.repeat(29)}.2.3`])
+  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,version}}),/non-release/);
  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{}}),/non-release/);
  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,notesSha256:'b'.repeat(64)}}),/non-release/);
  assert.throws(()=>nativeAudioBuildArgs(['base.gil','--official-assets','--release-candidate']),/separate non-release/);
