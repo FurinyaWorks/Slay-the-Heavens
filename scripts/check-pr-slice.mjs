@@ -28,7 +28,7 @@ function isEvidence(path) {
   return evidence.test(path) || evidenceFiles.has(path);
 }
 
-function isProduction(path) {
+export function isProduction(path) {
   return production.test(path) && !colocatedTests.has(path) &&
     !path.startsWith('experiments/figma-map-native-spike/tests/') && !isEvidence(path);
 }

@@ -60,14 +60,14 @@ export function planBacklogCloseout({body,records,mergeSha,prNumber,changedTaskI
   return {errors,commands:errors.length?[]:commands};
 }
 
-function readRecords(root,ids) {
+export function readBacklogRecords(root,ids=null) {
   const records=[];
   // Archived legacy duplicate IDs must not shadow current/completed records.
   for(const [directory,location] of [['backlog/tasks','tasks'],['backlog/completed','completed'],['backlog/archive/tasks','archive']]) {
     if(!existsSync(join(root,directory)))continue;
     for(const name of readdirSync(join(root,directory)).filter(name=>name.endsWith('.md'))) {
       const source=readFileSync(join(root,directory,name),'utf8'),task=readTaskHeader(source);
-      if(location==='archive'&&(!ids.has(task.id)||records.some(record=>record.id===task.id)))continue;
+      if(location==='archive'&&(ids&&!ids.has(task.id)||records.some(record=>record.id===task.id)))continue;
       records.push({...task,source,location,filePath:join(directory,name)});
     }
   }
@@ -89,7 +89,7 @@ export function syncBacklogCloseout({pr,files,targetSha,root=process.cwd()},run=
   const declaration=(pr.body??'').split(/\r?\n/).filter(line=>/^Backlog:/.test(line)).join('\n');
   const ids=new Set(declaration.match(/TASK-\d+(?:\.\d+)*/g)??[]);
   const input={body:pr.body,mergeSha:pr.merge_commit_sha,prNumber:pr.number,changedTaskIds};
-  const records=readRecords(root,ids),plan=planBacklogCloseout({...input,records});
+  const records=readBacklogRecords(root,ids),plan=planBacklogCloseout({...input,records});
   if(plan.errors.length)throw Error('Backlog pending: '+plan.errors.join('; '));
   // Do not let an old PR/worktree overwrite a task that evolved on develop.
   const git=(...args)=>{
@@ -120,10 +120,10 @@ export function syncBacklogCloseout({pr,files,targetSha,root=process.cwd()},run=
   }
   mkdirSync(directory,{recursive:true});
   const save=()=>writeFileSync(receiptPath,JSON.stringify({schemaVersion:1,targetSha,prNumber:pr.number,
-    mergeSha:pr.merge_commit_sha,declaration,snapshot:digest(readRecords(root,ids))},null,2)+'\n');
+    mergeSha:pr.merge_commit_sha,declaration,snapshot:digest(readBacklogRecords(root,ids))},null,2)+'\n');
   save();
   for(const args of plan.commands){run(args,{root});save();}
-  const after=planBacklogCloseout({...input,records:readRecords(root,ids)});
+  const after=planBacklogCloseout({...input,records:readBacklogRecords(root,ids)});
   if(after.errors.length||after.commands.length)throw Error('Backlog CLI readback differs from declared disposition; preserve this checkout and reconcile');
   return {state:'backlog_synced',taskIds:[...ids],commands:plan.commands.length};
 }
