@@ -19,7 +19,7 @@ assert.equal(recovery.base,'eaf4a4a50640697f4c497fe116db94c1ed69a10d');
 for (const row of Object.values(recovery.files)) assert.equal(sha256(row.before),row.beforeSha256);
 
 const potionPointerBytes = readFileSync(new URL('../fixtures/potion-pointer-ci-source.json.gz', import.meta.url));
-assert.equal(sha256(potionPointerBytes),'9d11e4abed7623ef9215069bb99bd128c51ed84e845098bbab7a686e24ffbfe1','potion pointer CI predecessor identities');
+assert.equal(sha256(potionPointerBytes),'922c811b2441673341f87b813d5acd3f17ac669bf59190926e4b9bd2c96d7c04','potion pointer CI predecessor identities');
 const potionPointer = JSON.parse(gunzipSync(potionPointerBytes));
 for (const row of Object.values(potionPointer)) {
   assert.equal(sha256(row.before),row.beforeSha256);
