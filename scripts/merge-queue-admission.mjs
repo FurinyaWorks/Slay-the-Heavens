@@ -189,6 +189,7 @@ export function collectQueueAdmission(event,env,query,ruleset){
    quality={status:status.id,run:run.id,attempt:run.run_attempt};
   }
   snapshot.push({id:entry.id,position:entry.position,base:entry.baseCommit.oid,head:entry.headCommit.oid,
+   forceFull:labels.some(label=>label.name.toLowerCase()==='ci:full'),
    number:p.number,prHead:p.headRefOid,reviewBase,protectedDevelop:develop,groupBase,groupHead:env.GITHUB_SHA,groupTree:groupCommit.commit.tree.sha,
    protectedAncestry,reviewAncestry,livePrBase:pr.base.sha,authorizationKind:legacy?'legacy':'cloud',moduleEvidence,
    ...(legacy?legacyAuthorization:{githubReviewId:review.githubReviewId,
@@ -214,7 +215,9 @@ export function queueAdmissionCompatible(beforeJson,afterJson){
   const expectedDevelop=removed?before[removed-1].head:before[0].protectedDevelop;
   if(after.some(row=>row.protectedDevelop!==expectedDevelop))return false;
   const semantic=row=>{
-   const {position,protectedDevelop,protectedAncestry,livePrBase,moduleEvidence,reviewAncestry,...rest}=row;
+   // This comparison authorizes an already completed Full. A label change
+   // cannot invalidate that scope. A reduced plan must also bind its labels.
+   const {position,protectedDevelop,protectedAncestry,livePrBase,moduleEvidence,reviewAncestry,forceFull,...rest}=row;
    return {...rest,moduleHead:moduleEvidence?.head,reviewGroupAncestry:reviewAncestry?.group};
   };
   return before.slice(removed).every((row,index)=>isDeepStrictEqual(semantic(row),semantic(after[index])));

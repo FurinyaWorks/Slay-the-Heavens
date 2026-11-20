@@ -5,10 +5,103 @@ import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {qualityShardMatrices} from '../scripts/ci-quality-shape.mjs';
 import { spawnSync } from 'node:child_process';
-import { impact } from '../scripts/ci-impact.mjs';
+import { classifyQueueRisk, impact, queueChanges, replayQueue } from '../scripts/ci-impact.mjs';
 const timing = { js: { win32: {}, linux: {} }, lua: {}, unknownJsMs: 1000, unknownLuaMs: 1000 };
 const event = { eventName: 'pull_request', base: 'develop' };
 const sources = { 'scripts/value.mjs': 'export const value=1;', 'tests/value.test.mjs': 'import {value} from "../scripts/value.mjs";' };
+test('Full and prose routes do not read inputs for an unused test graph', () => {
+  const read = () => assert.fail('unused source graph');
+  for (const eventName of ['merge_group', 'push', 'workflow_dispatch'])
+    assert.equal(impact(['scripts/value.mjs'], read, {...event, eventName}, timing).mode, 'full');
+  assert.equal(impact(['scripts/ci-impact.mjs'], read, event, timing).mode, 'full');
+  assert.equal(impact(['scripts/value.mjs'], read, {...event, forceFull: true}, timing).mode, 'full');
+  assert.equal(impact(['docs/CI.md'], read, event, timing).mode, 'fast');
+  assert.deepEqual(impact(['scripts/value.mjs'], () => sources, event, timing).js, ['tests/value.test.mjs']);
+});
+
+test('Queue replay plans isolated and combined scopes without claiming proven coverage', () => {
+  const member = {forceFull: false}, changes = {paths: ['scripts/value.mjs'], unsupported: false};
+  const low = classifyQueueRisk(changes, sources, [member]);
+  assert.equal(low.risk, 'UNPROVEN');
+  assert.equal(low.candidateTier, 'low');
+  assert.deepEqual(low.js, ['tests/value.test.mjs']);
+  const cross = {paths: [...changes.paths, 'scripts/other.mjs'], unsupported: false};
+  const connected = {...sources, 'scripts/other.mjs': 'import "./value.mjs";',
+    'tests/cross.test.mjs': 'import "../scripts/other.mjs";'};
+  const medium = classifyQueueRisk(cross, connected, [member, member]);
+  assert.equal(medium.risk, 'UNPROVEN');
+  assert.equal(medium.candidateTier, 'medium');
+  assert.deepEqual(medium.js, ['tests/cross.test.mjs', 'tests/value.test.mjs']);
+  for (const path of ['src/lua/abyss_combat.lua', 'src/lua/abyss_session.lua', 'art/game.GIL',
+    '.github/workflows/quality.yml', 'scripts/verify-delivery.mjs']) {
+    assert.equal(classifyQueueRisk({...cross, paths: [...cross.paths, path]}, connected, [member, member]).risk, 'high', path);
+  }
+  assert.equal(classifyQueueRisk(cross, connected, [member, {forceFull: true}]).risk, 'high');
+  assert.match(classifyQueueRisk(cross, connected, [member, {}]).reason, /member labels/);
+  assert.equal(classifyQueueRisk({...changes, unsupported: true}, sources, [member]).candidateTier, undefined);
+  assert.equal(classifyQueueRisk({...changes, paths: ['unmodelled']}, sources, [member]).candidateTier, undefined);
+});
+
+test('a dynamically loaded Lua dependency defeats a Queue coverage candidate', () => {
+  const path = 'src/lua/abyss_page_reveal.lua';
+  const input = {[path]: 'return {}', 'tests/lua/known.lua': 'require("abyss_page_reveal")',
+    'tests/lua/dynamic.lua': 'local loader=require; return loader(select(1, ...))'};
+  const plan = classifyQueueRisk({paths: [path], unsupported: false}, input, [{forceFull: false}]);
+  assert.equal(plan.risk, 'UNPROVEN');
+  assert.match(plan.reason, /Unresolved runtime dependencies/);
+  assert.equal(plan.candidateTier, undefined);
+  assert.deepEqual(plan.lua, ['tests/lua/dynamic.lua', 'tests/lua/known.lua']);
+});
+
+test('Queue comparison verifies the exact parent chain and retains changes reverted by a later member', () => {
+  const root = mkdtempSync(join(tmpdir(), 'queue-impact-'));
+  const cwd = process.cwd();
+  try {
+    process.chdir(root);
+    const git = (...args) => {
+      const result = spawnSync('git', args, {encoding: 'utf8'});
+      assert.ifError(result.error);
+      assert.equal(result.status, 0, result.stderr);
+      return result.stdout.trim();
+    };
+    const commit = message => {
+      git('add', '.');
+      git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', message);
+      return git('rev-parse', 'HEAD');
+    };
+    git('init', '--quiet');
+    writeFileSync('native.gil', 'original\n');
+    const base = commit('protected');
+    writeFileSync('native.gil', 'first member\n');
+    const first = {base, head: commit('first'), forceFull: false};
+    writeFileSync('native.gil', 'original\n');
+    writeFileSync('notes.md', 'second member\n');
+    const second = {base: first.head, head: commit('second'), forceFull: false};
+    assert.deepEqual(queueChanges(base, second.head, [first, second]), {paths: ['native.gil', 'notes.md'], unsupported: false});
+    assert.equal(classifyQueueRisk(queueChanges(base, second.head, [first, second]), {}, [first, second]).risk, 'high');
+    assert.throws(() => queueChanges(base, second.head, [second]), /exact Git parent chain/);
+    rmSync('notes.md');
+    const next = {base: second.head, head: commit('delete'), forceFull: false};
+    assert.equal(queueChanges(second.head, next.head, [next]).unsupported, true);
+    mkdirSync('scripts'); mkdirSync('tests');
+    writeFileSync('scripts/value.mjs', sources['scripts/value.mjs']);
+    writeFileSync('tests/value.test.mjs', sources['tests/value.test.mjs']);
+    const mappedBase = commit('mapped baseline');
+    writeFileSync('scripts/value.mjs', 'export const value=2;');
+    const mappedHead = commit('mapped member');
+    rmSync('tests/value.test.mjs');
+    const replay = replayQueue({base: mappedBase, head: mappedHead,
+      members: [{base: mappedBase, head: mappedHead, forceFull: false}]});
+    assert.equal(replay.tree, git('rev-parse', mappedHead + '^{tree}'));
+    assert.equal(replay.mode, 'full');
+    assert.equal(replay.risk, 'UNPROVEN');
+    assert.equal(replay.candidateTier, 'low');
+    assert.deepEqual(replay.js, ['tests/value.test.mjs']);
+  } finally {
+    process.chdir(cwd);
+    rmSync(root, {recursive: true, force: true});
+  }
+});
 test('complete mapped set is eligible; unknown, deleted, core and release changes require full', () => {
   const plan = impact(['scripts/value.mjs'], sources, event, timing);
   assert.equal(plan.mode, 'fast');

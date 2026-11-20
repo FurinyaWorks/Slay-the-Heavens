@@ -72,6 +72,12 @@ test('queue snapshots use the real signed AI Review and leave enqueue authority 
  delete f.ruleset.bypass_actors;
  const collect=()=>JSON.parse(collectQueueAdmission(f.event,f.env,(...args)=>{calls.push(args);return query(...args);},f.ruleset));
  const [snapshot]=collect();
+ assert.equal(snapshot.forceFull,false);
+ f.pr.labels.push({name:'ci:full'});
+ const labelled=collect();
+ assert.equal(labelled[0].forceFull,true);
+ assert.equal(queueAdmissionCompatible(JSON.stringify([snapshot]),JSON.stringify(labelled)),true,
+  'a request for Full cannot invalidate an already Full execution');
  assert.equal(snapshot.githubReviewId,90);assert.equal(Object.hasOwn(snapshot,'nativeApprovalReviewId'),false);
  assert.equal(snapshot.coordinator.id,337201427);assert.equal(snapshot.reviewedHead,f.pr.head.sha);
  assert.equal(snapshot.reviewedBase,f.pr.base.sha);assert.equal(snapshot.reviewedTree,f.report.reviewedTreeSha);
