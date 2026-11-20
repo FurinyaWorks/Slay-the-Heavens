@@ -5,6 +5,15 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { selectTests, parseGitChanges } from './test-affected.mjs';
 const architectureLayers = JSON.parse(readFileSync(new URL('../config/architecture.json', import.meta.url), 'utf8')).layers;
+// Match the existing Fast job ceilings in quality.yml. Timing estimates do
+// not set fixture deadlines or the three-minute feedback target.
+const fastJobCeilingMs = { win32: 45 * 60_000, linux: 30 * 60_000 };
+
+function measuredSerialRemainder(js, lua, timings, platform) {
+  const observed = [...js.map(file => timings.js[platform][file]), ...lua.map(file => timings.lua[file])];
+  const measured = observed.filter(duration => Number.isFinite(duration) && duration > 0);
+  return measured.reduce((total, duration) => total + duration, 0) - Math.max(0, ...measured);
+}
 
 export function impact(changed, sources, event, timings) {
   const full = reason => ({ mode: 'full', reason, changed, js: [], lua: [] });
@@ -30,9 +39,17 @@ export function impact(changed, sources, event, timings) {
   const estimateByPlatformMs = Object.fromEntries(['win32', 'linux'].map(platform => [platform,
     js.reduce((n, p) => n + (timings.js[platform][p] ?? timings.unknownJsMs), 0) + luaMs]));
   const estimateMs = Math.max(...Object.values(estimateByPlatformMs));
-  // Cost is a feedback target, not evidence that unrelated tests are affected.
-  // Keep the complete proven selection; the executor retains a bounded guard.
   const estimates = { estimateMs, estimateByPlatformMs, exceedsFastTarget: estimateMs > 180000 };
+  if (!release) {
+    const measuredRemainderMs = Object.fromEntries(Object.keys(fastJobCeilingMs).map(platform =>
+      [platform, measuredSerialRemainder(js, lua, timings, platform)]));
+    // Even without unmeasured files and the largest known file, this serial
+    // workload exceeds a job ceiling. Use the existing complete matrix; moving
+    // a lone slow file to another runner would not solve a file-level timeout.
+    if (Object.keys(fastJobCeilingMs).some(platform => measuredRemainderMs[platform] > fastJobCeilingMs[platform]))
+      return { ...full('Measured affected work exceeds a serial Fast job; run the complete Full matrix'),
+        ...estimates, measuredRemainderMs, affectedCounts: { js: js.length, lua: lua.length } };
+  }
   return { mode: 'fast', reason: plan.reason, changed, js, lua, ...estimates };
 }
 
