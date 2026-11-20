@@ -188,9 +188,13 @@ test('current Run architecture admission uses its declared target and rereads ev
     assert.ok(error.message.startsWith('combined linked owner '+(replacement instanceof Error?'missing: ':'identity: ')+owner),error.message);return true;
    });
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'first bad raw owner stops validation: '+owner);
-   changed=undefined;reads=[];assert.equal(project(raw),accepted);assert.deepEqual(reads,admittedReads,'restoration validates afresh after every failure');changed=owner;
   }
  }
+ // The same reader has now seen every failure after successful calls. One
+ // full recovery checks that rejection cannot poison a later valid projection.
+ changed=undefined;reads=[];
+ assert.equal(project(raw),accepted);
+ assert.deepEqual(reads,admittedReads,'restoration validates the complete owner closure afresh');
  onlyOnReread=true;
  for(const [index,owner] of currentProductionRereads.entries()){
   changed=owner;
