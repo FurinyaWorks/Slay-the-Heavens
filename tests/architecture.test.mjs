@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analyzeSources } from '../scripts/check-architecture.mjs';
+import { analyzeSourcePair, analyzeSources } from '../scripts/check-architecture.mjs';
 
 test('AST boundaries distinguish imports, shadowing, dynamic access, syntax and cycles',async()=>{
   const mod=await import('../scripts/check-architecture.mjs');
@@ -51,6 +51,22 @@ test('only own source and generated entries register Lua imports',()=>{
   assert.deepEqual(analyzeSources({a:source,b:'return {}'},policy,{}).errors,[]);
   assert.deepEqual(analyzeSources({a:source},policy,{b:'builder'}).errors,[]);
   assert.deepEqual(analyzeSources({a:source},policy,Object.assign(Object.create(null),{b:'builder'})).errors,[]);
+});
+
+test('paired Lua inspection reapplies module policy, targets, and diagnostic paths to each tree', () => {
+  const source = 'return function() return require("target"), game end';
+  const policy = {
+    layers: {a:'ui', b:'core', target:'core'},
+    deferredImports: [{from:'a', to:'target'}],
+  };
+  const before = {byModule:{a:source}, sourcePaths:{a:'src/lua/old/a.lua'}};
+  const after = {byModule:{a:source, b:source, target:'return {}'}, sourcePaths:{b:'src/lua/new/b.lua'}};
+  const [oldReport, newReport] = analyzeSourcePair(before, after, policy);
+  assert.deepEqual(oldReport, analyzeSources(before.byModule, policy, undefined, before.sourcePaths));
+  assert.deepEqual(newReport, analyzeSources(after.byModule, policy, undefined, after.sourcePaths));
+  assert.deepEqual(oldReport.errors, [{file:'src/lua/old/a.lua', line:1, message:'unknown module target'}]);
+  assert.deepEqual(newReport.errors, [{file:'src/lua/new/b.lua', line:1, message:'core cannot access platform global game'}]);
+  assert.deepEqual(newReport.edges.map(e => e.reviewedDeferred), [true, false]);
 });
 
 test('initialization calls cannot borrow a deferred import exception',()=>{
