@@ -98,44 +98,59 @@ function initializationFunctions(ast) {
   return eager;
 }
 
-export function analyzeSources(sources,policy,generated=generatedRuntimeModules,sourcePaths={}) {
+function inspectModule(source) {
+  let ast;
+  try {
+    ast=luaparse.parse(Buffer.from(source).toString('latin1'),{luaVersion:'5.3',locations:true,ranges:true,scope:true,encodingMode:'pseudo-latin1'});
+  } catch(error) {
+    return [{line:1,message:`Lua parse failed: ${error.message}`}];
+  }
+  const eager=initializationFunctions(ast),findings=[];
+  const add=(node,finding)=>findings.push({line:node.loc.start.line,...finding});
+  function visit(node,parent,key,owner=null) {
+    if(!node||typeof node!=='object')return;
+    if(Array.isArray(node)){for(const child of node)visit(child,parent,key,owner);return;}
+    const call=['CallExpression','StringCallExpression','TableCallExpression'].includes(node.type);
+    if(call && node.base?.type==='Identifier' && node.base.name==='require' && !node.base.isLocal) {
+      const args=node.arguments??(node.argument?[node.argument]:[]),target=args[0];
+      if(args.length!==1||target?.type!=='StringLiteral')add(node,{message:'Unregistered dynamic require'});
+      else add(node,{to:target.value,deferred:owner!==null&&!eager.has(owner)});
+    }
+    if(node.type==='Identifier' && node.isLocal===false) {
+      if(['game','script','GI','Enum','Color'].includes(node.name))add(node,{coreGlobal:node.name});
+      if(['_G','_ENV','getfenv','setfenv'].includes(node.name))add(node,{message:`Unregistered indirect environment access ${node.name}`});
+      if(['load','loadfile','dofile','package'].includes(node.name))add(node,{message:`Unregistered dynamic loading ${node.name}`});
+      if(node.name==='require' && !(key==='base' && ['CallExpression','StringCallExpression','TableCallExpression'].includes(parent?.type)))
+        add(node,{message:'Unregistered dynamic require alias/assignment'});
+    }
+    for(const [childKey,child] of Object.entries(node))if(!['loc','range','comments','globals'].includes(childKey))
+      visit(child,node,childKey,node.type==='FunctionDeclaration'?node:owner);
+  }
+  visit(ast);
+  return findings;
+}
+
+function analyze(sources,policy,generated,sourcePaths,inspect) {
   const errors=[],edges=[],nodes=Object.keys(sources).sort(),layers=policy.layers;
   const sourceFile=name=>Object.hasOwn(sourcePaths,name)?sourcePaths[name]:`src/lua/${name}.lua`;
   const deferredImports=new Set((policy.deferredImports??[]).map(row=>`${row.from}:${row.to}`));
   for(const name of nodes) {
-    const source=sources[name],layer=layers[name];
-    const say=(node,message)=>errors.push({file:sourceFile(name),line:node?.loc?.start.line??1,message});
-    if(!['core','ui','platform'].includes(layer))say(null,'Module needs explicit classification');
-    let ast;
-    try{ast=luaparse.parse(Buffer.from(source).toString('latin1'),{luaVersion:'5.3',locations:true,ranges:true,scope:true,encodingMode:'pseudo-latin1'});}
-    catch(error){say(null,`Lua parse failed: ${error.message}`);continue;}
-    const eager=initializationFunctions(ast);
-    function visit(node,parent,key,owner=null) {
-      if(!node||typeof node!=='object')return;
-      if(Array.isArray(node)){for(const child of node)visit(child,parent,key,owner);return;}
-      const call=['CallExpression','StringCallExpression','TableCallExpression'].includes(node.type);
-      if(call && node.base?.type==='Identifier' && node.base.name==='require' && !node.base.isLocal) {
-        const args=node.arguments??(node.argument?[node.argument]:[]),target=args[0];
-        if(args.length!==1||target?.type!=='StringLiteral')say(node,'Unregistered dynamic require');
-        else {
-          const to=target.value;
-          const reviewedDeferred=owner!==null&&!eager.has(owner)&&deferredImports.has(`${name}:${to}`);
-          edges.push({from:name,to,line:node.loc.start.line,reviewedDeferred});
-          if(!Object.hasOwn(sources,to)&&!Object.hasOwn(generated,to))say(node,`unknown module ${to}`);
-          if(layer==='core'&&layers[to]!=='core')say(node,`core cannot depend on ${to}`);
-          if(layer==='ui'&&layers[to]==='platform')say(node,`UI cannot depend on platform ${to}`);
-        }
+    const layer=layers[name];
+    const say=(line,message)=>errors.push({file:sourceFile(name),line,message});
+    if(!['core','ui','platform'].includes(layer))say(1,'Module needs explicit classification');
+    for(const {line,message,coreGlobal,to,deferred} of inspect(sources[name])) {
+      if(message) {
+        say(line,message);
+      } else if(coreGlobal) {
+        if(layer==='core')say(line,`core cannot access platform global ${coreGlobal}`);
+      } else {
+        const reviewedDeferred=deferred&&deferredImports.has(`${name}:${to}`);
+        edges.push({from:name,to,line,reviewedDeferred});
+        if(!Object.hasOwn(sources,to)&&!Object.hasOwn(generated,to))say(line,`unknown module ${to}`);
+        if(layer==='core'&&layers[to]!=='core')say(line,`core cannot depend on ${to}`);
+        if(layer==='ui'&&layers[to]==='platform')say(line,`UI cannot depend on platform ${to}`);
       }
-      if(node.type==='Identifier' && node.isLocal===false) {
-        if(layer==='core' && ['game','script','GI','Enum','Color'].includes(node.name))say(node,`core cannot access platform global ${node.name}`);
-        if(['_G','_ENV','getfenv','setfenv'].includes(node.name))say(node,`Unregistered indirect environment access ${node.name}`);
-        if(['load','loadfile','dofile','package'].includes(node.name))say(node,`Unregistered dynamic loading ${node.name}`);
-        if(node.name==='require' && !(key==='base' && ['CallExpression','StringCallExpression','TableCallExpression'].includes(parent?.type)))say(node,'Unregistered dynamic require alias/assignment');
-      }
-      for(const [childKey,child] of Object.entries(node))if(!['loc','range','comments','globals'].includes(childKey))
-        visit(child,node,childKey,node.type==='FunctionDeclaration'?node:owner);
     }
-    visit(ast);
   }
   const seenDeferredImports=new Set();
   for(const {from,to} of policy.deferredImports??[]) {
@@ -176,6 +191,22 @@ export function analyzeSources(sources,policy,generated=generatedRuntimeModules,
   nodes.forEach(name=>cycle(name));
   return {schemaVersion:1,parser:'luaparse@0.3.1',sourceHashes:Object.fromEntries(nodes.map(name=>[name,sha256(sources[name])])),nodes,edges,errors};
 }
+export function analyzeSources(sources,policy,generated=generatedRuntimeModules,sourcePaths={}) {
+  return analyze(sources,policy,generated,sourcePaths,inspectModule);
+}
+
+export function analyzeSourcePair(before,after,policy) {
+  // Only Lua inspection depends on source text alone. Validate every edge
+  // against its own snapshot so targets and cycles cannot leak across trees.
+  const inspections=new Map();
+  function inspect(source) {
+    if(!inspections.has(source))inspections.set(source,inspectModule(source));
+    return inspections.get(source);
+  }
+  return [before,after].map(({byModule,sourcePaths})=>
+    analyze(byModule,policy,generatedRuntimeModules,sourcePaths,inspect));
+}
+
 export function checkArchitecture(root=process.cwd()) {
   const {byModule,sourcePaths}=architectureSources(discoverSources(root));
   return analyzeSources(byModule,JSON.parse(readFileSync(join(root,'config/architecture.json'),'utf8')),undefined,sourcePaths);
