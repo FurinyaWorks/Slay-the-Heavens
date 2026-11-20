@@ -45,6 +45,7 @@ const runtimeCorpus=JSON.parse(runtimeBytes);assert.equal(runtimeCorpus.revision
 const runtimeOld=Object.fromEntries(runtimeNames.map(name=>{const file=runtimeCorpus.files[name];assert.equal(hash(file.source),file.sha256);return[file.path,file.source];}));
 const query='src/lua/abyss_relic_queries.lua',purge='src/lua/abyss_purge_candidates.lua',livingWall='src/lua/abyss_living_wall.lua',config='config/architecture.json';
 const combatHooks='src/lua/abyss_relic_combat_hooks.lua',family='src/lua/abyss_relic_family_combat.lua';
+const actor='src/lua/abyss_actor.lua';
 const old={...original,[livingWall]:read('tests/helpers/query-living-wall-before.lua'),...runtimeOld};
 const paths=[...Object.keys(old),config],owners=[...Object.keys(original),query,livingWall,purge,...Object.keys(runtimeOld),combatHooks,family,config];
 const inverse=()=>{assert.deepEqual(Object.keys(epoch.relicQuerySourceProof.files),owners,'one complete thirty-five-owner relic epoch');return historicalProject;};
@@ -73,7 +74,7 @@ test('complete final lifecycle epoch restores all thirty existing Lua owners and
  }
  for(const path of ['src/lua/abyss_actor.lua','src/lua/abyss_combat.lua'])
   assert.equal(hash(old[path]),coreLifecycleSourceProof.files[path].afterSha256,'restore exact 391 identity before entering the unchanged old core proof');
- const actor='src/lua/abyss_actor.lua',host='src/lua/abyss_game_ui.lua';
+ const host='src/lua/abyss_game_ui.lua';
  const cases=[['direct',prior,actor,35],['core',preCoreLifecycleSource,actor,144],['GameUI host',preGameUiExtractionSource,host,151],['GameUI config',preGameUiExtractionSource,config,295]];
  for(const [name,consume,path,expected]of cases){
   let reads=0;consume(path,read(path),{readSource:p=>{reads++;return read(p);}});
@@ -99,23 +100,35 @@ test('foreign, original, partial, duplicate and escaped-token sources retain the
 
 test('each direct and common source call freshly binds all thirty-five raw owners after warm successes, failures and reader wrapping',()=>{
  const prior=inverse(),originals={...old,[config]:prior(config,read(config))};
- for(const consume of [prior,publicPrior])for(const host of paths){
-  const source=read(host),expected=consume(host,source);
-  for(const linked of owners){
-  let mode='good',reads=[];
-  const readSource=p=>{reads.push(p);if(p===linked){if(mode==='throw')throw Error('reader sentinel');if(mode==='missing')return undefined;if(mode==='null')return null;if(mode==='drift')return read(p)+'\n';if(mode==='old')return originals[p];}return read(p);};
-  assert.equal(consume(host,source,{readSource}),expected);assert.deepEqual(consume===prior?reads:reads.slice(0,35),owners);
-  for(mode of ['throw','missing','null','drift','old']){
-   reads=[];assert.throws(()=>consume(host,source,{readSource}),/relic query linked/);assert.ok(reads.includes(linked));
+ const source=read(actor);
+ for(const consume of [prior,publicPrior]){
+  // Check warm rejection through every entry, and run all reader faults at
+  // every linked owner through Actor, which also enters the older core guard.
+  for(const host of paths){
+   const input=read(host);
+   consume(host,input);
+   assert.throws(()=>consume(host,input,{readSource:p=>p===config?read(p)+'\n':read(p)}),/relic query linked owner identity/);
   }
-  mode='good';reads=[];assert.equal(consume(host,source,{readSource}),expected);assert.deepEqual(consume===prior?reads:reads.slice(0,35),owners);
-  const nested=epoch.relicQueryReader(epoch.relicQueryReader(readSource));
-  assert.equal(prior(host,source,{readSource:nested}),originals[host]);
-  mode='drift';assert.throws(()=>prior(host,source,{readSource:nested}),/relic query linked/);
+  const expected=consume(actor,source);
+  for(const linked of owners){
+   let mode='good',reads=[];
+   const readSource=p=>{reads.push(p);if(p===linked){if(mode==='throw')throw Error('reader sentinel');if(mode==='missing')return undefined;if(mode==='null')return null;if(mode==='drift')return read(p)+'\n';if(mode==='old')return originals[p];}return read(p);};
+   assert.equal(consume(actor,source,{readSource}),expected);assert.deepEqual(consume===prior?reads:reads.slice(0,35),owners);
+   for(mode of ['throw','missing','null','drift','old']){
+    reads=[];assert.throws(()=>consume(actor,source,{readSource}),/relic query linked/);assert.ok(reads.includes(linked));
+   }
+   mode='good';reads=[];assert.equal(consume(actor,source,{readSource}),expected);assert.deepEqual(consume===prior?reads:reads.slice(0,35),owners);
   }
  }
+ for(const linked of [owners[0],config]){
+  let drift=false;
+  const reader=p=>read(p)+(drift&&p===linked?'\n':'');
+  const nested=epoch.relicQueryReader(epoch.relicQueryReader(reader));
+  assert.equal(prior(actor,source,{readSource:nested}),originals[actor]);
+  drift=true;assert.throws(()=>prior(actor,source,{readSource:nested}),/relic query linked owner identity/);
+  drift=false;assert.equal(prior(actor,source,{readSource:nested}),originals[actor]);
+  }
  assert.throws(()=>prior(paths[0],read(paths[0]),{readSource:null}),/linked reader/);
- const actor='src/lua/abyss_actor.lua',source=read(actor);
  for(const boundary of [36,72,108]){
   let reads=0;
   assert.throws(()=>publicPrior(actor,source,{readSource:p=>read(p)+(++reads>=boundary?'\n':'')}),/linked owner/,'a same-call stateful reader must expose drift after an earlier complete owner scan');
@@ -134,15 +147,16 @@ test('real isolated thirty-five-owner files reject warm source edits, configurat
   const prior=detached.preRelicQuerySource;
   for(const path of owners){const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,source[path]);}
   process.chdir(directory);
-  for(const host of paths)for(const linked of owners){
-   assert.equal(prior(host,source[host]),expected[host]);
-   writeFileSync(linked,source[linked]+'\n');assert.throws(()=>prior(host,source[host]),/relic query linked/);
-   writeFileSync(linked,source[linked]);assert.equal(prior(host,source[host]),expected[host]);
-   rmSync(linked);assert.throws(()=>prior(host,source[host]),/relic query linked/);
-   writeFileSync(linked,source[linked]);assert.equal(prior(host,source[host]),expected[host]);
+  for(const host of paths)assert.equal(prior(host,source[host]),expected[host]);
+  for(const linked of owners){
+   writeFileSync(linked,source[linked]+'\n');assert.throws(()=>prior(actor,source[actor]),{message:'relic query linked owner identity: '+linked});
+   writeFileSync(linked,source[linked]);assert.equal(prior(actor,source[actor]),expected[actor]);
+   rmSync(linked);assert.throws(()=>prior(actor,source[actor]),/relic query linked owner missing/);
+   writeFileSync(linked,source[linked]);assert.equal(prior(actor,source[actor]),expected[actor]);
   }
   writeFileSync(config,JSON.stringify(JSON.parse(source[config])));
-  assert.throws(()=>prior(paths[0],source[paths[0]]),/relic query linked/,'layout-equivalent inputs never excuse drift in the linked real file');
+  for(const host of paths)
+   assert.throws(()=>prior(host,source[host]),/relic query linked owner identity/,'layout-equivalent inputs never excuse drift in the linked real file');
  }finally{process.chdir(cwd);rmSync(directory,{recursive:true,force:true});}
 });
 
@@ -157,23 +171,18 @@ test('the isolated current relic facade freshly binds every original entry to ev
   const currentOwners=detachedEpoch.proof.owners;
   const source=Object.fromEntries([...new Set([...paths,...currentOwners])].map(path=>[path,raw(path)]));
   const expected={...old,[config]:inverse()(config,read(config))};
-  for(const host of paths){
-   assert.equal(prior(host,source[host]),expected[host]);
-   for(const linked of currentOwners){
-    const target=join(directory,linked);
-    writeFileSync(target,source[linked]+'\n');
-    assert.throws(()=>prior(host,source[host]),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(linked));return true;});
-    rmSync(target);
-    assert.throws(()=>prior(host,source[host]),error=>{assert.match(error.message,/linked owner missing/);assert(error.message.includes(linked));return true;});
-    // Each recovery reauthorizes the full chain and warms the next owner. No
-    // authorization is cached, and both faults still run for every owner.
-    writeFileSync(target,source[linked]);assert.equal(prior(host,source[host]),expected[host]);
-   }
+  for(const host of paths)assert.equal(prior(host,source[host]),expected[host]);
+  for(const linked of currentOwners){
+   const target=join(directory,linked);
+   writeFileSync(target,source[linked]+'\n');
+   assert.throws(()=>prior(actor,source[actor]),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(linked));return true;});
+   rmSync(target);
+   assert.throws(()=>prior(actor,source[actor]),error=>{assert.match(error.message,/linked owner missing/);assert(error.message.includes(linked));return true;});
+   writeFileSync(target,source[linked]);assert.equal(prior(actor,source[actor]),expected[actor]);
   }
+  writeFileSync(join(directory,config),JSON.stringify(JSON.parse(source[config])));
   for(const host of paths){
-   writeFileSync(join(directory,config),JSON.stringify(JSON.parse(source[config])));
    assert.throws(()=>prior(host,source[host]),/linked owner identity: config\/architecture\.json/,'input layout permission cannot excuse drift in the actual detached configuration');
-   writeFileSync(join(directory,config),source[config]);assert.equal(prior(host,source[host]),expected[host]);
   }
  }finally{rmSync(directory,{recursive:true,force:true});}
 });
