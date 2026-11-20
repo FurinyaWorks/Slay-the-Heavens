@@ -5,13 +5,14 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 03:47'
-updated_date: '2026-11-20 07:19'
+updated_date: '2026-11-20 23:55'
 labels:
   - 待验
   - delivery-verify
 dependencies: []
 references:
   - docs/plans/2026-11-03-m9-engineering-foundation.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/769'
 priority: medium
 ordinal: 120000
 ---
@@ -119,4 +120,6 @@ PR269合后Windows日志确认两类合同错误：新快反馈工作流CRLF未�
 2026-11-15 用户明确接管的非release本地接续：独立树F:/New folder/.worktrees/source-proof-integration-1115，分支feat/source-proof-integration-1115；基线origin/develop c2409ad750c15124b7b843c6bbfa5b222537cb75，经cherry-pick -x ef42f018f34f34e12df06364e780ad0c8fe89251生成f4df9d124dfbd141bdcaeb13e33826775e9e9634，无冲突。原树只读保留，保持IP/Furinya，不新领、不改AC。已核原run43615128387整文件584077.3832ms成本与10份原始证据全部字节/hash；当前测试LF SHA603020d5d29e8c3d66886609f2dd7e3a142321ec63bb7465c23adf575db4a77e仍等同原独审版本。必要npm ci --ignore-scripts后，Node24.18.0现有来源身份/负例/当前facade专项7/7通过、0fail/0skip、27054.4309ms，Backlog/语法/diff检查通过。Fast仅规划因TASK75未建模输入要求Full，本轮按授权未执行Full、长期named、完整detached/current矩阵及其余历史向量；69条probe及原named测量只核原档不重跑，不声称新墙钟提速或稳定Full目标完成。技术证据与完整命令见docs/evidence/task75-source-proof-cost-20261115/README.md接续节。只保留原5文件，无helper摘要级联；新精确HEAD/base独审、Required CI与准入待主控，本轮仅本地提交，不推送/建PR/合并或改release。
 
 2026-11-20 附属切片仅离线回放 Queue 风险。开发基线 9e3b22dc，复用原队列连续前缀、判定器和选测器。以 #758 已红基线、#762 修复、#535 双平台纯文档及 44198319515 真实三成员组合核对；缺证据保留 Full。另消除 Full／明示纯文档路由的无用源码读取。Queue 实际分流和合后 Full 去重尚未启用，任务及未验 AC 保持。
+
+2026-11-21 发版对账：#764 已交付超大 Fast 选集转 Full 的分流。#769 接续队列净差与逐成员差异的离线回放，保持队列和 develop push 的 Full 门禁。没有稳定 Full 30 分钟以内的真实 Runner 证据，AC4 继续待验。
 <!-- SECTION:NOTES:END -->

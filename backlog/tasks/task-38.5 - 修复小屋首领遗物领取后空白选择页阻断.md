@@ -1,22 +1,25 @@
 ---
 id: TASK-38.5
 title: 修复首领遗物「小屋」选择，让玩家继续第二幕
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-19 03:49'
+updated_date: '2026-11-20 23:55'
 labels:
   - mobile
   - playtest-20261115
   - p0
   - v2.0.0
+  - 待验
+  - delivery-verify
 milestone: m-8
 dependencies: []
 references:
   - docs/backlog-details/MOBILE-QA-20261115.md
   - TASK-14.1
   - TASK-63
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/772'
 parent_task_id: TASK-38
 priority: medium
 type: bug
@@ -60,4 +63,6 @@ ordinal: 176000
 
 <!-- SECTION:NOTES:BEGIN -->
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
+
+2026-11-21 发版对账：#772 小屋修复已完成定向验证、精确 HEAD Full 和独立审查，使用原生合并队列交付。同一最新候选仍需在实体手机自然领取小屋、确认奖励仅结算一次、能进入第二幕，并覆盖空奖励、失败重试及重入。全部既有 AC 保持未勾。
 <!-- SECTION:NOTES:END -->
