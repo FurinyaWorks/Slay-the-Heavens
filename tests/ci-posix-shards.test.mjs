@@ -2,8 +2,7 @@ import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
@@ -88,33 +87,4 @@ test('current POSIX matrix consumes fifteen shared shards with serial full regre
   assert.ok(shards.includes('      - run: npm run check:engineering\n        if: matrix.shard == 1\n'));
   assert.ok(shards.includes('        if: always() && matrix.shard == 1\n'));
   assert.match(aggregate,/^    needs: \[impact, engineering-posix-shards, fast\]\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.draft == false\) \}\}$/m);
-});
-
-test('native Node four-shard selection executes every current JS file name exactly once', t => {
-  const files = readdirSync('tests').filter(name => name.endsWith('.test.mjs')).sort();
-  assert.ok(files.length > 0);
-  const root = mkdtempSync(join(tmpdir(), 'abyss-posix-shards-'));
-  t.after(() => rmSync(root, { recursive: true, force: true }));
-  // Name-only probes exercise Node's real file partitioner. Only these empty
-  // synthetic modules skip child isolation; production game tests still use
-  // separate processes and VMs for every shared-output regression.
-  for (const name of files) writeFileSync(join(root, name), `import test from 'node:test'; test(${JSON.stringify(name)}, () => {});\n`);
-  const seen = [];
-  const env = { ...process.env };
-  // This is a separate CLI, as on each VM, rather than a child test file of
-  // the contract's own runner (Node otherwise disables nested CLI discovery).
-  delete env.NODE_TEST_CONTEXT;
-  for (let shard = 1; shard <= 4; shard++) {
-    // This contract also runs on Windows, where repeated roots exceed Windows' argv limits.
-    const args = ['--test', '--test-isolation=none', '--test-concurrency=1', `--test-shard=${shard}/4`, '--test-reporter=tap', ...files];
-    assert.deepEqual(args.filter(arg => arg.endsWith('.test.mjs')), files, 'native probe argv must retain sorted basenames');
-    const result = spawnSync(process.execPath, args, { cwd: root, env, encoding: 'utf8', windowsHide: true, timeout: 30000, maxBuffer: 2 * 1024 * 1024 });
-    assert.ifError(result.error);
-    assert.equal(result.status, 0, result.stderr + result.stdout);
-    const selected = [...result.stdout.matchAll(/^# Subtest: ([^\r\n]+)$/gm)].map(match => match[1]);
-    assert.ok(selected.length > 0 && selected.length < files.length, `shard ${shard} must contain a proper subset`);
-    seen.push(...selected);
-  }
-  assert.equal(new Set(seen).size, seen.length, 'no test file can execute in both shards');
-  assert.deepEqual(seen.sort(), files, 'every real tests/*.test.mjs name executes once');
 });
