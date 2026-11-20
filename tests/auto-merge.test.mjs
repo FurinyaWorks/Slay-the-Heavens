@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
-import {join} from 'node:path';
+import {readFileSync,mkdtempSync,writeFileSync,mkdirSync,existsSync,rmSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import {projectRepositoryId} from '../scripts/repository-identity.mjs';
 import {armAutoMerge,autoMergeErrors,collectEligibility,pauseAutoMerge,signCloudReview} from '../scripts/arm-auto-merge.mjs';
-import {independentReviewGate} from '../scripts/publish-pr-quality.mjs';
+import {independentReviewGate,independentReviewProofReady} from '../scripts/publish-pr-quality.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
 const sha=c=>c.repeat(40);
 import {INDEPENDENT_AI_REVIEW_MARKER as aiMarker,TRUSTED_REVIEW_COORDINATOR_IDS as aiCoordinators,
@@ -292,12 +293,29 @@ test('native enable dispatches the existing gate and records an intent rather th
  const shadow=nativeFixture();shadow.ruleset.rules[0].parameters.required_approving_review_count=0;assert.equal(armAutoMerge(aiRepo,712,100,shadow.query,{shadow:true}).state,'shadow-requested');assert(!shadow.calls.some(a=>a[1]==='graphql'));
  const broken=nativeFixture();broken.run.conclusion='failure';assert.throws(()=>armAutoMerge(aiRepo,712,100,broken.query),/formal Quality/);assert(!broken.calls.some(a=>a.includes('POST')));
 });
-function gateExecute(f,{mode='publish',release=false,mutateEnv=()=>{},saved,proofFile}={}){
+function gateExecute(f,{mode='publish',release=false,mutateEnv=()=>{},saved,proofFile,readProof=true}={}){
  const dir=mkdtempSync(join(tmpdir(),'native-gate-test-')),event=join(dir,'event.json');writeFileSync(event,'{}');
  const file=proofFile??join(dir,'proof.json');if(saved)writeFileSync(file,JSON.stringify(saved));
  const env={GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_EVENT_PATH:event,GITHUB_REPOSITORY:aiRepo,GITHUB_REPOSITORY_ID:String(projectRepositoryId),GITHUB_SHA:sha('b'),GITHUB_REF:'refs/heads/develop',GITHUB_ACTOR_ID:String(aiRoleId),GITHUB_RUN_ID:'9',GITHUB_RUN_ATTEMPT:'1',AI_REVIEW_PR:'712',AI_REVIEW_HEAD:sha('a'),AI_REVIEW_MODE:mode,AI_REVIEW_ARTIFACT_ID:'99'};mutateEnv(env);
- try{const result=independentReviewGate(env,f.query,{release,loadCheckout:f.loadCheckout,proofFile:file});return {result,proof:JSON.parse(readFileSync(file,'utf8'))};}finally{rmSync(dir,{recursive:true,force:true});}
+ try{const result=independentReviewGate(env,f.query,{release,loadCheckout:f.loadCheckout,proofFile:file});return {result,proof:readProof?JSON.parse(readFileSync(file,'utf8')):undefined};}finally{rmSync(dir,{recursive:true,force:true});}
 }
+test('proof handoff reflects real publish, shadow and superseded verifier outcomes',()=>{
+ for(const mode of ['publish','shadow'])assert.equal(independentReviewProofReady(gateExecute(nativeFixture(),{mode}).result),true);
+ const closed=nativeFixture();closed.pr.state='closed';
+ const result=gateExecute(closed,{readProof:false}).result;
+ assert.deepEqual(result,{state:'superseded'});assert.equal(independentReviewProofReady(result),false);
+ assert(!closed.calls.some(a=>a.includes('POST')));
+});
+test('a requested review cannot release status with missing proof or a failed proof write',()=>{
+ const missing=nativeFixture();assert.throws(()=>gateExecute(missing,{release:true}),/ENOENT/);
+ assert(!missing.calls.some(a=>a.includes('POST')));
+ const dir=mkdtempSync(join(tmpdir(),'blocked-proof-'));
+ try{
+  const file=join(dir,'not-a-directory');writeFileSync(file,'blocked');
+  const failed=nativeFixture();assert.throws(()=>gateExecute(failed,{proofFile:join(file,'proof.json')}),/EEXIST|ENOTDIR/);
+  assert(!failed.calls.some(a=>a.includes('POST')));
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
 test('CI native review gate uploads genuine preflight before releasing a truthful Required status',()=>{
  const f=nativeFixture(),prepared=gateExecute(f);assert.equal(prepared.result.state,'pr_passed');assert.equal(prepared.proof.preflight.schemaVersion,3);
  assert(!f.calls.some(a=>a.includes('POST')));
@@ -484,5 +502,62 @@ test('producer cannot bootstrap an already installed BASE or infer absence from 
    }return normal(...args);
   };
   assert.throws(()=>gateExecute(f,{mutateEnv:bootstrapEnv}),/already contains|403/);assert(!f.calls.some(a=>a.includes('POST')));
+ }
+});
+
+test('proof handoff accepts only explicit verifier preparation results',()=>{
+ for(const state of ['pr_passed','shadow_verified'])assert.equal(independentReviewProofReady({state}),true);
+ for(const state of ['not-requested','superseded'])assert.equal(independentReviewProofReady({state}),false);
+ for(const result of [undefined,null,{},true,{state:'success'},{state:'published'},{state:'failure'},{state:'shadow-no-status'}])
+  assert.throws(()=>independentReviewProofReady(result),/Unexpected independent review preparation result/);
+});
+
+test('real workflow-run CLI returns a false handoff for missing PR, regardless of stale proof existence',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'review-handoff-'));
+ try{
+  const event=join(dir,'event.json'),output=join(dir,'output'),proof=join(dir,'build/native-ai-review-proof.json');
+  writeFileSync(event,JSON.stringify({workflow_run:{event:'pull_request',conclusion:'success',pull_requests:[],head_sha:'0cc0668c747f6c8ac8f16943942a7ba62f0427cc'}}));
+  for(const stale of [false,true]){
+   if(stale){mkdirSync(join(dir,'build'));writeFileSync(proof,'not a verified proof');}
+   writeFileSync(output,'');
+   const run=spawnSync(process.execPath,[resolve('scripts/publish-pr-quality.mjs'),'--independent-review'],{
+    cwd:dir,encoding:'utf8',env:{...process.env,GITHUB_EVENT_NAME:'workflow_run',GITHUB_EVENT_PATH:event,
+     GITHUB_OUTPUT:output,AI_REVIEW_PR:'',AI_REVIEW_HEAD:'0cc0668c747f6c8ac8f16943942a7ba62f0427cc'}});
+   assert.equal(run.status,0,run.stderr);assert.deepEqual(JSON.parse(run.stdout),{state:'not-requested'});
+   assert.equal(readFileSync(output,'utf8'),'proof_ready=false\n');
+   assert.equal(existsSync(proof),stale);
+  }
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test('Licenses gates every proof consumer on verifier output and retains upload failure',()=>{
+ const workflow=readFileSync(new URL('../.github/workflows/licenses.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
+ const gate=workflow.split('  independent-ai-review:\n')[1].split('  cancel-obsolete-queue:\n')[0];
+ const steps=gate.split(/^      - /m).slice(1);
+ const verify=steps.find(step=>step.includes('run: node scripts/publish-pr-quality.mjs --independent-review'));
+ assert.match(verify,/^        id: review$/m);
+ const consumers=steps.filter(step=>/name: Name immutable proof|id: proof|--release-independent-review/.test(step));
+ assert.equal(consumers.length,3);
+ for(const step of consumers)assert.match(step,/^        if: steps\.review\.outputs\.proof_ready == 'true'$/m);
+ const upload=consumers.find(step=>step.includes('id: proof'));
+ assert.match(upload,/if-no-files-found: error/);assert.match(upload,/path: build\/native-ai-review-proof\.json/);
+ assert(!/continue-on-error|hashFiles\(/.test(gate));
+ assert.match(gate,/statuses: write/);assert.match(gate,/actions: read/);
+});
+
+test('proof handoff current-source pins retain complete immutable predecessors and reject drift',async()=>{
+ const {beforePreflightSource}=await import('./helpers/fork-preflight-source.mjs');
+ const {createHash}=await import('node:crypto'),{gunzipSync}=await import('node:zlib');
+ const hash=value=>createHash('sha256').update(value).digest('hex');
+ const proof=JSON.parse(gunzipSync(readFileSync(new URL('./helpers/fork-preflight-source.json.gz',import.meta.url))));
+ for(const path of ['.github/workflows/licenses.yml','scripts/publish-pr-quality.mjs','tests/auto-merge.test.mjs']){
+  const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  for(const raw of [source,source.replaceAll('\n','\r\n')]){
+   const prior=beforePreflightSource(path,raw);
+   assert.equal(hash(prior.replaceAll('\r\n','\n')),proof.files[path].beforeSha);
+   assert.equal(prior.includes('\r\n'),raw.includes('\r\n'));
+  }
+  for(const drift of [source+'\n',source.slice(1),source.replaceAll('\n','\r\r\n')])
+   assert.equal(beforePreflightSource(path,drift),drift,'unrecognized bytes never acquire historical authority');
  }
 });

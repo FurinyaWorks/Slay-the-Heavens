@@ -88,11 +88,14 @@ jobs:
         with:
           node-version: '24.18.0'
       - name: Verify signed cloud AI review and exact formal test evidence
+        id: review
         run: node scripts/publish-pr-quality.mjs --independent-review
       - name: Name immutable proof
+        if: steps.review.outputs.proof_ready == 'true'
         id: identity
         run: node -e 'const fs=require("node:fs");fs.appendFileSync(process.env.GITHUB_OUTPUT,"head="+process.env.AI_REVIEW_HEAD.slice(0,12)+"\n")'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: steps.review.outputs.proof_ready == 'true'
         id: proof
         with:
           name: independent-review-${{ env.AI_REVIEW_PR }}-${{ steps.identity.outputs.head }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -100,6 +103,7 @@ jobs:
           retention-days: 30
           if-no-files-found: error
       - name: Release required review status after immutable proof upload
+        if: steps.review.outputs.proof_ready == 'true'
         env:
           AI_REVIEW_ARTIFACT_ID: ${{ steps.proof.outputs.artifact-id }}
         run: node scripts/publish-pr-quality.mjs --release-independent-review
