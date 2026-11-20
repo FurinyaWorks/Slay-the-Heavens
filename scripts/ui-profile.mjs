@@ -101,6 +101,14 @@ export function uiProfileReceipt(nativePageLifecycle = false) {
   return {...config, configSha256: profileDigest(config)};
 }
 
+function hasOnlyVersionMetadata(release) {
+  return release === undefined || (
+    release !== null && typeof release === 'object' && Reflect.ownKeys(release).length === 2 &&
+    Object.hasOwn(release, 'version') && typeof release.version === 'string' && /^v\d+\.\d+\.\d+$/.test(release.version) &&
+    Object.hasOwn(release, 'workKey') && typeof release.workKey === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(release.workKey)
+  );
+}
+
 export function uiProfileFromReceipt(receipt) {
   const profile = receipt?.uiProfile;
   if (profile === undefined) return false; // Older frozen source epochs have no policy module.
@@ -113,7 +121,7 @@ export function uiProfileFromReceipt(receipt) {
   const config = configFor(profile);
   if (profile.configSha256 !== profileDigest(config)) throw new Error('UI profile config digest mismatch');
   for (const [key, flag] of flags) {
-    if (config[key] && (receipt.release !== undefined || !flag.allowedInReceipt(receipt))) {
+    if (config[key] && (!hasOnlyVersionMetadata(receipt.release) || !flag.allowedInReceipt(receipt))) {
       throw new Error(`${flag.name.replaceAll('-', ' ')} receipt requires bounded non-release experiment`);
     }
   }
