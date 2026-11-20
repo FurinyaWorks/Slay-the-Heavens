@@ -4,7 +4,7 @@ TASK-81。快速反馈、完整受影响回归、集成验收分层报告；性�
 
 当前 v2.0.0 在 develop 重建，旧 `release/v2.0.0` 冻结。下文 Release 门禁适用于后续批准的发布分支。见 [重建交接](versions/V2-RELEASE-HANDOFF.md)。
 
-普通 develop PR 使用完整受影响集合，不采用原 advisory 的90秒截断。Windows和POSIX均执行选中的完整JS文件和Lua夹具。所有原断言、子进程预算及失败语义保持。180秒仅为反馈目标，`exceedsFastTarget` 明确报告超目标；已证明的完整选集不会因耗时扩大为整仓，也不截断慢测试。Fast 作业采用与 Full 相同的平台硬守护（Windows 45分钟、POSIX 30分钟），这是终止失控执行的上限，不是速度承诺；原夹具期限不变。只有明确列出的纯文字文件可免业务回归，仍执行治理、许可和presentation门禁。
+普通 develop PR 使用完整受影响集合。Windows和POSIX均执行选中的完整JS文件和Lua夹具，保留原断言、子进程预算及失败语义。`exceedsFastTarget` 报告超过180秒反馈目标。对于任一平台，若仅已测文件的串行估算在扣除最长一项之后仍超过该平台 Fast 作业现有上限（Windows 45分钟、POSIX 30分钟），本轮直接使用既有 Full 分片。计划记录原选集数量、估算和分流原因。其余已证明选集继续完整执行 Fast，包括只有单项较慢或缺少计时的选集。只有明确列出的纯文字文件可免业务回归，仍执行治理、许可和presentation门禁。
 
 develop 按 `config/architecture.json` 分类，核心模块仍保守 Full。`release/*` 日常修复（含核心 Lua）默认使用已证明完整的受影响 Fast；未知范围、数据/配置/依赖/工作流与 CI 准入基础设施仍保守 Full，显式 `ci:full` 仍有效。Release 合入后的 push 不再触发 Quality，PR 的双平台回归、治理、presentation 和 inventory 必须通过才可 Auto-merge；Release 不使用 Merge Queue。develop/master push、develop 队列组合及手动 Quality 仍 Full，现有矩阵、断言和失败阻断保留。
 
