@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {requireLuaTool} from './setup-lua-static.mjs';
 import {parseDiagnostics} from './check-lua-static.mjs';
-import {analyzeSources} from './check-architecture.mjs';
+import {analyzeSourcePair} from './check-architecture.mjs';
 import {architectureSources,measureSources,dependencyCycles} from './lua-quality-metrics.mjs';
 import {evaluateQualityRatchet} from './quality-ratchet-policy.mjs';
 
@@ -92,9 +92,7 @@ function measure(changedSources,tool,luacheckConfig){
     return result.modules;
   }finally{rmSync(root,{recursive:true,force:true});}
 }
-function graph(sources,policy){
-  const {byModule,sourcePaths}=architectureSources(sources);
-  const report=analyzeSources(byModule,policy,undefined,sourcePaths);
+function graph(report){
   if(report.errors.some(e=>/parse failed/i.test(e.message)))throw Error('Incomplete dependency graph');
   return {cycles:dependencyCycles(report.nodes,report.edges),errors:report.errors};
 }
@@ -125,7 +123,7 @@ export function main(base=process.env.QUALITY_RATCHET_BASE){
     }
     const tool=pinnedTool(),policy=JSON.parse(git(['show',head+':config/architecture.json']));
     const luacheckConfig=git(['show',head+':.luacheckrc']);
-    const oldGraph=graph(previous,policy),newGraph=graph(current,policy);
+    const [oldGraph,newGraph]=analyzeSourcePair(architectureSources(previous),architectureSources(current),policy).map(graph);
     if(newGraph.errors.length)throw Error('Current architecture invalid: '+JSON.stringify(newGraph.errors.slice(0,5)));
     report.errors=evaluateQualityRatchet({
       beforeModules:measure(oldFiles,tool,luacheckConfig),afterModules:measure(newFiles,tool,luacheckConfig),
