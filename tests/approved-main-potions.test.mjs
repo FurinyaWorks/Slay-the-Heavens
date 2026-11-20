@@ -2,6 +2,9 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {battleLayout,theme} from '../scripts/ui-layout.mjs';
 import {assertNativeUiCapacity} from '../scripts/build-ui.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {beforePotionPointerSource,potionPointerSourcePaths} from './helpers/potion-pointer-source.mjs';
 const stage=()=>battleLayout().controls.find(x=>x.name==='stage');
 const potion=(s,i)=>i<4?s.children.find(c=>c.name==='potion'+i):s.children.find(c=>c.name==='potionHelp').children.find(c=>c.name==='potion'+i);
 test('Readable potion row preserves all five physical circular potion slots with official bottles and no old text row',()=>{
@@ -42,4 +45,30 @@ test('Main popup action labels retain a native text line inside the source small
  const p=stage().children.find(c=>c.name==='potionHelp').children.find(c=>c.name==='potionPopup');
  for(const name of ['use','discard'])for(const state of p.children.find(c=>c.name===name).children)
   assert(state.children.find(c=>c.name==='label').size[1]>=theme.layout.nativeText.lineHeight);
+});
+
+test('Recovered potion ownership rejects competing, stale, and anonymous pointer tails',()=>{
+ const result=runLua('tests/lua/support/recovered_potion_pointer_ownership.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/APPROVED_MAIN_POTIONS_PASS/);
+});
+
+test('Recovered potion pointer sources restore only the three exact predecessors with fresh authorization',()=>{
+ const priorWitnesses=[
+  ['src/lua/abyss_battle_card_gestures.lua','de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153'],
+  ['src/lua/abyss_battle_ui.lua','c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481'],
+  ['src/lua/abyss_battle_potion_popup.lua','705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd'],
+ ];
+ assert.deepEqual(potionPointerSourcePaths,priorWitnesses.map(([path])=>path));
+ for(const [path,sha256] of priorWitnesses){
+  const source=readFileSync(path,'utf8');
+  const prior=beforePotionPointerSource(path,source,()=>source);
+  assert.equal(createHash('sha256').update(prior).digest('hex'),sha256);
+  const crlf=source.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+  assert.equal(beforePotionPointerSource(path,crlf,()=>crlf),prior);
+  for(const replacement of [prior,source+'\n',null]){
+   assert.throws(()=>beforePotionPointerSource(path,source,()=>replacement),/combined linked owner identity/);
+  }
+  assert.equal(beforePotionPointerSource(path,source,()=>source),prior);
+ }
 });

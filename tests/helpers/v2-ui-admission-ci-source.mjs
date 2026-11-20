@@ -18,6 +18,14 @@ const recovery = JSON.parse(gunzipSync(recoveryBytes));
 assert.equal(recovery.base,'eaf4a4a50640697f4c497fe116db94c1ed69a10d');
 for (const row of Object.values(recovery.files)) assert.equal(sha256(row.before),row.beforeSha256);
 
+const potionPointerBytes = readFileSync(new URL('../fixtures/potion-pointer-ci-source.json.gz', import.meta.url));
+assert.equal(sha256(potionPointerBytes),'dff72758a64e7a985d30bd53d897e5a6a7a6978b8676cd83214e25a72234704e','potion pointer CI predecessor identities');
+const potionPointer = JSON.parse(gunzipSync(potionPointerBytes));
+for (const row of Object.values(potionPointer)) {
+  assert.equal(sha256(row.before),row.beforeSha256);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.beforeGitBlob);
+}
+
 function project(source, row) {
   if (!row || typeof source!=='string' || source.includes('\r\r\n') ||
       sha256(source.replaceAll('\r\n','\n'))!==row.sha256) return source;
@@ -25,6 +33,7 @@ function project(source, row) {
 }
 
 export function beforeV2UiEvidence(path, source) {
+  if (Object.hasOwn(potionPointer,path)) source = project(source,{sha256:potionPointer[path].afterSha256,before:potionPointer[path].before});
   if (Object.hasOwn(recovery.files,path)) source = project(source,recovery.files[path]);
   return Object.hasOwn(archive,path) ? project(source,archive[path].successor) : source;
 }
