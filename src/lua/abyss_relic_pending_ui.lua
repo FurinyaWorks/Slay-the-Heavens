@@ -18,6 +18,18 @@ local function text(ctx,row)
  end
  return row.title,row.description
 end
+local function displayRows(ctx,view,page,count)
+ local rows={}
+ for i=1,count do
+  local row=view.rows[(page-1)*count+i]
+  if row then
+   local title,description=text(ctx,row)
+   assert(type(title)=='string'and title~=''and type(description)=='string'and description~='', 'missing relic choice description')
+   rows[i]={title=title,description=description,enabled=true}
+  end
+ end
+ return rows
+end
 function M.install(ctx)
  function ctx.renderRelicPending()
   local self=ctx.self;local view=Pending.view(self.run)
@@ -38,16 +50,7 @@ function M.install(ctx)
   event:GetChild('caption').text='遗物选择 · '..self.pendingPage..'/'..self.pageCount
   event:GetChild('body').text=view.body
   ctx.child('notice').text=self.notice~=''and self.notice or '请选择一项，完成后返回原界面。'
-  local rows={}
-  for i=1,count do
-   local row=view.rows[(self.pendingPage-1)*count+i]
-   if row then
-    local title,description=text(ctx,row)
-    assert(type(title)=='string'and title~=''and type(description)=='string'and description~='', 'missing relic choice description')
-    rows[i]={title=title,description=description,enabled=true}
-   end
-  end
-  EventUI.renderChoices(ctx,event,'relic_pending',rows)
+  EventUI.renderChoices(ctx,event,'relic_pending',displayRows(ctx,view,self.pendingPage,count))
   ctx.show(event:GetChild('art'),false)
   local generation,run,owner=self.pendingGeneration,self.run,view.owner
   local function observe()

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-source.mjs';
+import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-source.mjs';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
@@ -19,6 +19,8 @@ assert.equal(sha256(potionMerge.before),potionMerge.beforeSha256);
 assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.before)}\0`).update(potionMerge.before).digest('hex'),potionMerge.beforeGitBlob);
 
 export function beforeV2UiEvidence(path, source) {
+  // The P1 merge recognizes the immediate pre-Tiny-House bytes only.
+  source = beforeTinyHouseCiSource(path,source);
   if (path === potionMerge.path && typeof source === 'string' && !source.includes('\r\r\n')
       && [potionMerge.afterSha256,...potionMerge.successorSha256s].includes(sha256(source.replaceAll('\r\n','\n')))) {
     return beforePriorEvidence(path,source.includes('\r\n') ? potionMerge.before.replaceAll('\n','\r\n') : potionMerge.before);

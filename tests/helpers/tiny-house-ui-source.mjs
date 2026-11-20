@@ -6,7 +6,7 @@ import {exactSourceContinuation} from './exact-source-continuation.mjs';
 
 const bytes=readFileSync(new URL('../fixtures/tiny-house-ui-source.json.gz',import.meta.url));
 const digest=source=>createHash('sha256').update(source).digest('hex');
-assert.equal(digest(bytes),'fb06dedbab61427679f2e8f72c0479ddc7a01161f72e3d65cacce8699c1e7c65','exact Tiny House UI source continuation');
+assert.equal(digest(bytes),'66bfcad375c58f5c96a6e0b06afd1cdf5df490002628d5e837eb9ab6cc3a3c02','exact Tiny House UI source continuation');
 const rows=Object.entries(JSON.parse(gunzipSync(bytes)));
 const continuations=new Map(rows.map(([path,row])=>{
  assert.equal(row.path,path);
