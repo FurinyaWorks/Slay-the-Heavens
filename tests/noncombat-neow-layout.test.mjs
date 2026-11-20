@@ -4,21 +4,18 @@ import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {applyOfficialAssets,officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {assertNativeUiCapacity} from '../scripts/build-ui.mjs';
-import {approvedNeowGuide,neowGuidePaths} from '../scripts/sts-neow-guide-layout.mjs';
-import {readFileSync} from 'node:fs';
+import {geoStatue} from '../scripts/sts-neow-guide-layout.mjs';
 const parts=n=>n?.controls??n?.children??[],child=(n,name)=>parts(n).find(c=>c.name===name);
 const all=n=>[n,...parts(n).flatMap(all)];
-test('blessing uses the approved SVG guide and seamless shared HUD while keeping all choices',()=>{
+test('blessing uses the rock statue and seamless shared HUD while keeping all choices',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=gameLayout(),event=child(child(layout,'nodePanel'),'eventView');
  const inputs=all(event).filter(n=>n.kind==='cursorArea'),body=child(event,'body');
  applyOfficialAssets([layout],theme);
  assertNativeUiCapacity(layout);
  assert.equal(child(event,'body'),body);
  assert.deepEqual(all(event).filter(n=>n.kind==='cursorArea'),inputs);
- const figure=child(event,'neowFigure'),guide=child(figure,'approvedGuide');
- assert(guide);assert.deepEqual(guide,approvedNeowGuide(theme));
- const approved=readFileSync('docs/design/reference-ui-lab/blessing.js','utf8');
- for(const path of Object.values(neowGuidePaths))assert(approved.includes('d="'+path+'"'),'unapproved guide contour');
+ const figure=child(event,'neowFigure'),statue=child(figure,'geoStatue');
+ assert(statue);assert.deepEqual(statue,geoStatue(theme));
  for(const node of all(figure))assert(parts(node).length<=60,node.name+' native child ceiling');
  assert.equal(child(figure,'scene').image,theme.image.rect);
  for(const stone of parts(child(figure,'masonry'))){
@@ -39,7 +36,7 @@ test('blessing uses the approved SVG guide and seamless shared HUD while keeping
   for(const part of parts(node))assertBelowHud(part,y,scale);
  }
  assertBelowHud(figure);
- assert.equal(child(figure,'hoodRim'),undefined,'old ellipse cannot replace the approved hood');
+ assert.equal(child(figure,'approvedGuide'),undefined);
  const [x,y,w,h]=theme.layout.nativeNode.event.neow.bubbleText,bubble=child(event,'bubble');
  assert.equal(x,bubble.position[0]);assert.equal(y,bubble.position[1]);
  assert(w<bubble.size[0]&&h<bubble.size[1]);

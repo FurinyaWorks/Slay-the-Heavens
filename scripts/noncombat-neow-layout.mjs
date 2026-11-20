@@ -1,7 +1,7 @@
-// Frozen blessing.png composition: guide on the right, speech above left-hand
+// Frozen blessing.png composition: statue on the right, speech above left-hand
 // choices. Uses the battle scene's existing bounded polygon/native adapter.
 import {applyStsNeowChoices} from './sts-neow-choice-layout.mjs';
-import {approvedNeowGuide} from './sts-neow-guide-layout.mjs';
+import {geoStatue} from './sts-neow-guide-layout.mjs';
 const parts=n=>n?.controls??n?.children??[];
 const child=(n,name)=>parts(n).find(c=>c.name===name);
 export function applyOfficialNeowLayout(layout,theme){
@@ -27,7 +27,7 @@ export function applyOfficialNeowLayout(layout,theme){
    image('torchStem'+i,[-235+i*250,178+i*45],[12,48],theme.image.rect,'#111C1C'),
    image('torchFlame'+i,[-235+i*250,220+i*45],[16,30],theme.image.discSoft,'#FFE39A'),
   ]),
-  approvedNeowGuide(theme),
+  geoStatue(theme),
  ];
  // Keep the existing bubble, title/body fields, four option transactions and
  // delayed/reward paths. The native autosizer handles variable blessing copy.
