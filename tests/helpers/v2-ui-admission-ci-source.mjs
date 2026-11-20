@@ -66,7 +66,39 @@ function beforeRunHudReadabilityAdapter(path,source) {
   return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
 }
 
+const extractionWitnessPath = 'tests/game-ui-extraction-source-inverse.test.mjs';
+const extractionWitnessHunks = [
+  [
+    "};\n// The new potion source witness reads these owners again after the frozen layer's owner scan.\nconst potionRereads=['src/lua/abyss_battle_card_gestures.lua','src/lua/abyss_battle_ui.lua'];\ntest('portrait demand layer authenticates fresh complete owners and rejects warm drift before entering the prior epoch',()=>{\n",
+    "};\ntest('portrait demand layer authenticates fresh complete owners and rejects warm drift before entering the prior epoch',()=>{\n"
+  ],
+  [
+    " assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);\n let reads=[];const reader=p=>{reads.push(p);return raw(p);};\n for(const input of [source,source.replaceAll('\\n','\\r\\n')]){\n  reads=[];assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:reader}),target.files[path].source);\n  assert.deepEqual(reads,[...sourceEpoch.proof.owners,...potionRereads]);\n }\n for(const input of [source+'\\n',source.slice(1),target.files[path].source,null,{}]){\n  reads=[];assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:p=>{reads.push(p);throw Error('foreign linked read');}}),input);assert.deepEqual(reads,[]);\n }\n",
+    " assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);\n let reads=0;const reader=p=>{reads++;return raw(p);};\n for(const input of [source,source.replaceAll('\\n','\\r\\n')]){\n  reads=0;assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:reader}),target.files[path].source);\n  assert.equal(reads,sourceEpoch.proof.owners.length);\n }\n for(const input of [source+'\\n',source.slice(1),target.files[path].source,null,{}]){\n  reads=0;assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:()=>{reads++;throw Error('foreign linked read');}}),input);assert.equal(reads,0);\n }\n"
+  ],
+  [
+    " for(const drift of [source+'\\n',null]){live=drift;assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:mutable}),/combined linked owner identity/);}\n for(const owner of potionRereads){\n  let seen=0;\n  const late=p=>p===owner&&++seen===2?null:raw(p);\n  assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:late}),\n   error=>error.message.includes('combined linked owner identity: '+owner+' changed during owner validation'));\n  assert.equal(seen,2);\n }\n});\n",
+    " for(const drift of [source+'\\n',null]){live=drift;assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:mutable}),/combined linked owner identity/);}\n});\n"
+  ],
+  [
+    " for(const path of changed){\n  const source=live(path),fresh=[];let reads=0;\n  assert.equal(epoch.preCombinedSource(path,source,{target:'noncombatPrior',readSource:p=>{fresh.push(p);return live(p);}}),target.files[path].source);\n  assert.deepEqual(fresh,[...epoch.proof.owners,...potionRereads],'every owner, including both potion rereads, is read freshly');\n  for(const input of [source+'\\n',source.slice(1),target.files[path].source,null,{}]){\n",
+    " for(const path of changed){\n  const source=live(path);let reads=0;\n  assert.equal(epoch.preCombinedSource(path,source,{target:'noncombatPrior',readSource:p=>{reads++;return live(p);}}),target.files[path].source);\n  assert.equal(reads,epoch.proof.owners.length,'every owner read freshly');\n  for(const input of [source+'\\n',source.slice(1),target.files[path].source,null,{}]){\n"
+  ]
+];
+function beforeExtractionWitness(path,source) {
+  if (path!==extractionWitnessPath || typeof source!=='string' || source.includes('\r\r\n')) return source;
+  let prior=source.replaceAll('\r\n','\n');
+  if (sha256(prior)!=='34716b7b36b85bc2838f6a4fdbf941f53b974d2f3ccffe4cc8c8a10bcda0b367') return source;
+  for (const [after,before] of extractionWitnessHunks) {
+    assert.equal(prior.split(after).length,2,'unique exact extraction witness predecessor hunk');
+    prior=prior.replace(after,()=>before);
+  }
+  assert.equal(sha256(prior),recovery.files[path].sha256,'exact extraction witness predecessor');
+  return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
+}
+
 export function beforeV2UiEvidence(path, source) {
+  source = beforeExtractionWitness(path,source);
   source = beforeRunHudReadabilityAdapter(path,source);
   source = beforeOfficialBattleWitness(path,source);
   if (Object.hasOwn(potionNeutral,path)) source = project(source,{sha256:potionNeutral[path].afterSha256,before:potionNeutral[path].before});
