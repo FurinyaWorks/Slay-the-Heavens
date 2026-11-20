@@ -44,8 +44,8 @@ const priorFiles=Object.freeze({
 });
 const files=Object.freeze({
  ...priorFiles,
- 'tests/helpers/v2-ui-hud-source.mjs':'5403d960b34c99c8889ee8f431ccc3f034d0a816a5877b46f953a4cf4e9e64ba',
- 'tests/fixtures/v2-ui-hud-source.json.gz':'07fad808963c81ef4bbc0b02748c35ba14308701a5d6869df57df294ad3eaf46',
+ 'tests/helpers/v2-ui-hud-source.mjs':'bf32590ea3e8c172ced44a9a9399ba022c0926dd83475dcb6ae62741ab1a09f0',
+ 'tests/fixtures/v2-ui-hud-source.json.gz':'9a1881227d100bf4a3a39908dd44d64d6b16f87bdb2220d55a2f3ce61f2882fe',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
