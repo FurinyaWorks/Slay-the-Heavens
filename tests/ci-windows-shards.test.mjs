@@ -2,7 +2,8 @@ import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { shardLuaScripts } from '../scripts/test-lua.mjs';
@@ -136,4 +137,33 @@ test('current check releases cancelled runs and fails closed on every non-succes
   for(const result of statuses)for(const mode of ['full','fast'])
     assert.equal(execute({PLAN:result,MODE:mode,FAST:'success',RULES_RESULT:'success'}),result==='success','impact '+String(result));
   for(const mode of [undefined,'','unknown'])assert.equal(execute({PLAN:'success',MODE:mode,FAST:'success',RULES_RESULT:'success'}),false,'unknown routing cannot pass');
+});
+
+test('native Node eight-shard selection executes every current JS file name exactly once', t => {
+  const files = readdirSync('tests').filter(name => name.endsWith('.test.mjs')).sort();
+  assert.ok(files.length > 0);
+  const root = mkdtempSync(join(tmpdir(), 'abyss-windows-shards-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  // Run name-only probes through Node's actual CLI selector. These empty
+  // synthetic modules share no state, so avoid hundreds of empty child starts;
+  // production game tests retain the unchanged per-file process isolation.
+  for (const name of files) writeFileSync(join(root, name), `import test from 'node:test'; test(${JSON.stringify(name)}, () => {});\n`);
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT; // An independent CLI, as in each hosted VM.
+  const seen = [];
+  for (let shard = 1; shard <= 8; shard++) {
+    // Repeating the temporary root for every file exceeds Windows' argv limit.
+    const args = ['--test', '--test-isolation=none', '--test-concurrency=1', `--test-shard=${shard}/8`, '--test-reporter=tap', ...files];
+    assert.deepEqual(args.filter(arg => arg.endsWith('.test.mjs')), files, 'native probe argv must retain sorted basenames');
+    const result = spawnSync(process.execPath, args, {
+      cwd: root, env, encoding: 'utf8', windowsHide: true, timeout: 30000, maxBuffer: 2 * 1024 * 1024,
+    });
+    assert.ifError(result.error);
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+    const selected = [...result.stdout.matchAll(/^# Subtest: ([^\r\n]+)$/gm)].map(match => match[1]);
+    assert.ok(selected.length > 0 && selected.length < files.length, `shard ${shard} must contain a proper subset`);
+    seen.push(...selected);
+  }
+  assert.equal(new Set(seen).size, seen.length, 'no JS file is duplicated');
+  assert.deepEqual(seen.sort(), files, 'all current tests/*.test.mjs names execute once');
 });
