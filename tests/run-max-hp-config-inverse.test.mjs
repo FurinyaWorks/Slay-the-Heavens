@@ -192,20 +192,22 @@ test('current Run architecture admission uses its declared target and rereads ev
  for(const source of [raw,raw.replaceAll('\n','\r\n')]){
   reads=[];assert.equal(project(source),accepted);assert.deepEqual(reads,admittedReads,'warm calls still read the complete raw owner closure');
  }
- for(const owner of owners){
-  changed=owner;
-  for(replacement of [readFileSync(owner,'utf8')+'\n',null,new Error('missing current Run owner')]){
+ for(const [fault,observe] of [
+  ['changed bytes',owner=>readFileSync(owner,'utf8')+'\n'],
+  ['absent source',()=>null],
+  ['read error',()=>new Error('missing current Run owner')],
+ ]){
+  for(const owner of owners){
+   changed=owner;replacement=observe(owner);
    reads=[];assert.throws(()=>project(raw),error=>{
     assert.ok(error.message.startsWith('combined linked owner '+(replacement instanceof Error?'missing: ':'identity: ')+owner),error.message);return true;
    });
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'first bad raw owner stops validation: '+owner);
   }
+  changed=undefined;reads=[];
+  assert.equal(project(raw),accepted,`valid projection recovers after ${fault}`);
+  assert.deepEqual(reads,admittedReads,`recovery reads the complete owner closure after ${fault}`);
  }
- // The same reader has now seen every failure after successful calls. One
- // full recovery checks that rejection cannot poison a later valid projection.
- changed=undefined;reads=[];
- assert.equal(project(raw),accepted);
- assert.deepEqual(reads,admittedReads,'restoration validates the complete owner closure afresh');
  onlyOnReread=true;
  for(const [index,owner] of currentProductionRereads.entries()){
   changed=owner;
