@@ -138,7 +138,7 @@ test('registered UI responsibilities share eligibility with their parent; unknow
   for (const path of ['src/lua/abyss_new_unclassified.lua', 'src/lua/abyss_combat.lua', 'config/architecture.json'])
     assert.equal(impact([path], { ...input, [path]: 'return {}' }, event, timing).mode, 'full');
 });
-test('parallel platform costs are advisory and never expand the complete affected set', () => {
+test('the feedback target and a lone slow file retain the complete affected set', () => {
   const input = {
     'scripts/value.mjs': 'export const value=1;',
     'tests/a.test.mjs': 'import "../scripts/value.mjs";',
@@ -180,6 +180,49 @@ test('parallel platform costs are advisory and never expand the complete affecte
   assert.equal(impact([...changed, 'unknown'], input, event, weights).mode, 'full');
   assert.equal(impact([...changed, 'src/lua/abyss_combat.lua'], input, event, weights).mode, 'full');
 });
+
+test('distributed measured work beyond a develop Fast job uses the existing Full matrix', () => {
+  const input = {
+    'scripts/value.mjs': 'export const value=1;',
+    'tests/a.test.mjs': 'import "../scripts/value.mjs";',
+    'tests/b.test.mjs': 'import "../scripts/value.mjs";',
+    'tests/lua/check.lua': 'return true',
+  };
+  const changed = ['scripts/value.mjs', 'tests/lua/check.lua'];
+  const weights = {
+    js: {
+      win32: { 'tests/a.test.mjs': 1_200_000, 'tests/b.test.mjs': 1_200_000 },
+      linux: { 'tests/a.test.mjs': 900_001, 'tests/b.test.mjs': 900_000 },
+    },
+    lua: { 'tests/lua/check.lua': 900_001 },
+    unknownJsMs: 1000,
+    unknownLuaMs: 1000,
+  };
+  const plan = impact(changed, input, event, weights);
+  assert.equal(plan.mode, 'full');
+  assert.match(plan.reason, /serial Fast job/);
+  assert.deepEqual(plan.affectedCounts, { js: 2, lua: 1 });
+  assert.deepEqual(plan.measuredRemainderMs, { win32: 2_100_001, linux: 1_800_001 });
+  assert.deepEqual(plan.js, []);
+  assert.deepEqual(plan.lua, []);
+
+  for (const file of Object.keys(weights.js.linux)) weights.js.linux[file] = 900_000;
+  assert.equal(impact(changed, input, event, weights).mode, 'fast', 'equality does not trigger overflow');
+
+  delete weights.js.linux['tests/a.test.mjs'];
+  weights.unknownJsMs = 5_400_000;
+  assert.equal(impact(changed, input, event, weights).mode, 'fast', 'unmeasured files cannot force Full');
+
+  weights.js.win32['tests/b.test.mjs'] = 1_800_000;
+  weights.js.win32['tests/a.test.mjs'] = 1_800_000;
+  assert.equal(impact(changed, input, event, weights).mode, 'full', 'Windows alone can exceed its job ceiling');
+  assert.equal(impact(changed, input, { ...event, base: 'release/v2.0.0' }, weights).mode, 'fast');
+
+  const workflow = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
+  const fastJob = workflow.split('\n  fast:\n')[1].split('\n  rules:\n')[0];
+  assert.match(fastJob, /timeout-minutes: \$\{\{ matrix\.os == 'windows-2025' && 45 \|\| 30 \}\}/);
+});
+
 test('actual required gate commands reject every missing, failed, cancelled or skipped selected execution', () => {
   const workflow = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
   const shell = process.platform === 'win32' ? `${process.env.ProgramFiles}/Git/bin/bash.exe` : '/bin/bash';
