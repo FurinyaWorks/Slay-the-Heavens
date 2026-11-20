@@ -25,7 +25,8 @@ test('official menu and selection reuse live inputs with bounded native decorati
  assert.equal(JSON.stringify(child(stage,'battlePanel')),oldBattle);
  assert.equal(child(menu,'vista').visible,false);
  assert.equal(child(menu,'emblem').visible,false);
- assert.deepEqual(child(menu,'start').position,[-450,-170]);
+ assert.deepEqual(child(menu,'start').position,theme.menuPresentation.start.slice(0,2));
+ assert.deepEqual(child(menu,'start').size,theme.menuPresentation.start.slice(2));
  assert.deepEqual(child(child(menu,'start'),'officialResultLabel'),{...resultLabel,name:'officialResultLabel',visible:false});
  for(const key of ['confirm','cancel'])for(const state of parts(child(child(panel,key),'hit'))){
   const flag=child(state,'v25Flag'),cloth=child(flag,'cloth'),rim=child(flag,'rim');
