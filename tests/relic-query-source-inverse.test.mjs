@@ -105,8 +105,9 @@ test('each direct and common source call freshly binds all thirty-five raw owner
   // Check warm rejection through every entry, and run all reader faults at
   // every linked owner through Actor, which also enters the older core guard.
   for(const host of paths){
-   const input=read(host);
-   consume(host,input);
+   const input=read(host),reads=[];
+   consume(host,input,{readSource:path=>{reads.push(path);return read(path);}});
+   assert.deepEqual(consume===prior?reads:reads.slice(0,owners.length),owners,'fresh owner inventory: '+host);
    assert.throws(()=>consume(host,input,{readSource:p=>p===config?read(p)+'\n':read(p)}),/relic query linked owner identity/);
   }
   const expected=consume(actor,source);
@@ -161,7 +162,7 @@ test('real isolated thirty-five-owner files reject warm source edits, configurat
 });
 
 
-test('the isolated current relic facade freshly binds every original entry to every dynamic raw owner',async()=>{
+test('the isolated current relic facade reads all owners per entry and rejects real filesystem drift',async()=>{
  const directory=mkdtempSync(join(tmpdir(),'relic-query-current-source-'));
  try{
   const raw=copyCurrentSourceFixture(directory);
@@ -171,7 +172,11 @@ test('the isolated current relic facade freshly binds every original entry to ev
   const currentOwners=detachedEpoch.proof.owners;
   const source=Object.fromEntries([...new Set([...paths,...currentOwners])].map(path=>[path,raw(path)]));
   const expected={...old,[config]:inverse()(config,read(config))};
-  for(const host of paths)assert.equal(prior(host,source[host]),expected[host]);
+  for(const host of paths){
+   const reads=new Set();
+   assert.equal(prior(host,source[host],{readSource:path=>{reads.add(path);return raw(path);}}),expected[host]);
+   assert.deepEqual(currentOwners.filter(path=>!reads.has(path)),[],'fresh current owner inventory: '+host);
+  }
   for(const linked of currentOwners){
    const target=join(directory,linked);
    writeFileSync(target,source[linked]+'\n');
