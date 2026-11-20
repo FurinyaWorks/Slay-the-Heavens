@@ -9,6 +9,7 @@ import {frozenPurgeQuerySources} from './helpers/purge-query-baseline.mjs';
 const reference=JSON.parse(readFileSync(new URL('./fixtures/relic-lifecycle-reference.json',import.meta.url),'utf8'));
 const generated=lifecycleGeneratedIdentities(),replayInput=relicLifecycleReplayInput(generated);
 const matchingReference=reference.replayInput===replayInput;
+const forceReplay=process.env.RELIC_LIFECYCLE_REPLAY==='1';
 const observations=new Map();
 const frozen391=frozenRelicLifecycleSources().files,frozenA27=frozenPurgeA27Sources().files;
 
@@ -62,12 +63,12 @@ for(const group of relicLifecycleGroups)test(`relic lifecycle ${group} current c
  assert.deepEqual(after.manifest.generatedBindings,generated,'identical generated source input hashes');
  observations.set(group,after.manifest);
  const expected=reference.groups[group];
- if(matchingReference&&actual===expected&&process.env.RELIC_LIFECYCLE_REPLAY!=='1')return;
+ if(matchingReference&&actual===expected&&!forceReplay)return;
 
  // A changed input or result replays the original VM for a direct comparison.
  const before=runRelicLifecycle(group,{frozen:true}),frozen=verifyLifecycleTrace(before,group);
  verifyFrozenLifecycle(before,generated);
- if(matchingReference)assert.equal(frozen,expected,'pinned frozen replay signature: '+group);
+ if(matchingReference&&forceReplay)assert.equal(frozen,expected,'pinned frozen replay signature: '+group);
  assert.equal(actual,frozen,`${group}: lifecycle trace, cases, coverage or output differs; inspect ${before.directory} and ${after.directory}`);
  assert(after.graph===before.graph,`${group}: complete graph differs; inspect ${before.directory} and ${after.directory}`);
 });

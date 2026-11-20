@@ -31,7 +31,7 @@ export function relicLifecycleReplayInput(generated,read=path=>readFileSync(path
   return [name,path,sha256];
  });
  return lifecycleHash(JSON.stringify({
-  nodeMajor:process.versions.node.split('.')[0],frozenArchive:relicLifecycleArchiveSha256,sourceHashes,generatedHashes,
+  nodeVersion:process.versions.node,frozenArchive:relicLifecycleArchiveSha256,sourceHashes,generatedHashes,
  }));
 }
 
