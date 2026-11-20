@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Read-only branch lifecycle audit. Never deletes branches or changes PRs.
 import { mkdir, writeFile, appendFile } from 'node:fs/promises';
+import { readBacklogRecords } from './backlog-closeout.mjs';
+import { auditHistory } from './branch-hygiene-history.mjs';
 const token = process.env.GITHUB_TOKEN;
 const repo = process.env.GITHUB_REPOSITORY || 'FurinyaWorks/Slay-the-Heavens';
 if (!token) throw new Error('GITHUB_TOKEN is required');
@@ -25,11 +27,32 @@ async function paged(path) {
     all.push(...data);
     if (data.length < 100) return all;
   }
-  throw new Error('GitHub API pagination exceeded 30 pages');
+  throw new Error('GitHub API pagination exceeded 30 pages: ' + path);
 }
-const [branches, prs] = await Promise.all([
-  paged('/branches'), paged('/pulls?state=all&sort=updated&direction=desc')
+const [branches, prs, comments] = await Promise.all([
+  paged('/branches'), paged('/pulls?state=all&sort=updated&direction=desc'), paged('/issues/comments')
 ]);
+const developSha = branches.find(branch => branch.name === 'develop')?.commit.sha;
+if (!developSha) throw new Error('Missing develop inventory snapshot');
+const { tree, truncated } = await api('/git/trees/' + developSha + '?recursive=1');
+const developTree = truncated ? null : new Map(tree.filter(row => row.type !== 'tree').map(row => [row.path, row.sha]));
+
+// Keep file-page requests bounded and share each result across source PRs.
+let inFlight = 0;
+const waiting = [];
+async function loadFiles(number) {
+  if (inFlight < 6) inFlight++;
+  else await new Promise(resolve => waiting.push(resolve));
+  try {
+    return await paged('/pulls/' + number + '/files');
+  } finally {
+    const next = waiting.shift();
+    if (next) next();
+    else inFlight--;
+  }
+}
+
+const history = auditHistory({ repo, branches, prs, comments, tasks: readBacklogRecords(process.cwd()), developTree, loadFiles });
 const byHead = new Map();
 for (const pr of prs) {
   if (pr.head?.repo?.full_name !== repo || !pr.head?.ref) continue;
@@ -82,14 +105,20 @@ rows.sort((a, b) => a.category.localeCompare(b.category) ||
   (b.age_days ?? -1) - (a.age_days ?? -1) || a.branch.localeCompare(b.branch));
 const counts = {};
 for (const row of rows) counts[row.category] = (counts[row.category] || 0) + 1;
+const handoffs = await history;
+const attention = {};
+for (const row of handoffs) for (const reason of row.review) attention[reason] = (attention[reason] ?? 0) + 1;
 const summary = {
   generated_at: new Date().toISOString(), repository: repo, total: rows.length,
   prs_open: prs.filter(pr => pr.state === 'open').length, counts,
+  develop_sha: developSha, develop_tree_truncated: Boolean(truncated),
+  closed_unmerged_prs: handoffs.filter(row => !row.release_merge).length,
+  merged_release_prs: handoffs.filter(row => row.release_merge).length, attention,
   warning: 'AUDIT ONLY: no-PR, age, and different SHA do not prove safe deletion'
 };
 await mkdir('build', { recursive: true });
 await writeFile('build/branch-hygiene.json',
-  JSON.stringify({ summary, branches: rows }, null, 2) + '\n');
+  JSON.stringify({ summary, branches: rows, handoffs }, null, 2) + '\n');
 const esc = value => String(value ?? '-').replaceAll('|', '\\|').replaceAll('\n', ' ');
 const review = rows.filter(row => ['no-pr', 'closed-unmerged-pr',
   'merged-pr-head-remains'].includes(row.category));
@@ -108,8 +137,17 @@ const lines = [
   ...review.map(row => '| ' + esc(row.branch) + ' | ' + row.sha.slice(0, 12) +
     ' | ' + (row.pr ? '#' + row.pr : '-') + ' | ' + esc(row.last_commit?.slice(0, 10)) +
     ' | ' + esc(row.age_days) + ' | ' + row.category + ' |'),
-  '', 'Squash merges invalidate SHA-only ancestry as delivery proof.',
-  'Reconcile Backlog, successor PRs, integration SHA manifests and actual diff.'
+  '', '## PR handoff review', '',
+  'Develop SHA: `' + developSha + '`. Closed without merge: **' + summary.closed_unmerged_prs +
+    '**. Merged into Release: **' + summary.merged_release_prs + '**.', '',
+  'Related PRs and file snapshots are review leads. Verify remaining behavior and record the actual disposition in the existing PR or Backlog task.', '',
+  '| Source PR | Base | Head branch | Backlog | Related develop PRs | Findings |',
+  '| --- | --- | --- | --- | --- | --- |',
+  ...handoffs.filter(row => row.review.length).map(row => '| [#' + row.pr + '](https://github.com/' + repo + '/pull/' + row.pr + ') | ' +
+    esc(row.base) + ' | ' + esc(row.head_state) + ' | ' + esc(row.backlog.map(task => task.id).join(', ') || '-') +
+    ' | ' + esc(row.linked_develop_prs.map(pr => '#' + pr.pr).join(', ') || '-') + ' | ' + esc(row.review.join(', ')) + ' |'),
+  '', 'The JSON inventory includes fixed source SHAs, closeout receipts and compared paths.',
+  'Reconcile Backlog, successor scope, integration SHA manifests and actual diff before closing or deleting a source.'
 ];
 const markdown = lines.join('\n') + '\n';
 await writeFile('build/branch-hygiene.md', markdown);

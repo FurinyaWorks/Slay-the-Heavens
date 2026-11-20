@@ -53,13 +53,13 @@
 **最小留痕（写在既有 PR / Backlog 交接备注，不为每个分支另建文件/Issue）**：
 
 ```text
-CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VERIFIED/SUPERSEDED/FROZEN/DISCARDED/BLOCKED> | PR=<#或none> | successor=<#或none> | owner=<agent/协调者> | evidence=<可复核链接> | remote=<deleted/retained+原因>
+CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VERIFIED/SUPERSEDED/FROZEN/DISCARDED/BLOCKED> | PR=<#或none> | successor=<#或none> | owner=<agent/协调者> | evidence=<可复核链接> | remote=<deleted/retained+原因> | remaining=<未纳入范围和接续任务或none>
 ```
 
 四种特殊情形：
 
 - **正常 PR 合并**：只有实际合并和合后核验完成才结束；若 GitHub 已删 head，读回确认，无需重复操作。
-- **PR 被关闭/被整合替代**：先写清继任者 PR、被接管的源 SHA、接受的内容和剩余工作；没有可靠内容对应关系不得删除。
+- **PR 被关闭/被整合替代**：先在原 PR 或既有 Backlog 任务写明继任 PR、接管的源 SHA、接受的内容与 `remaining` 剩余工作。`remaining=none` 只用于已逐项核对承接范围的收据。Backlog 备注引用来源 PR 完整链接，方便巡检关联状态和未验 AC。没有可靠内容对应关系时保留来源。
 - **长期研究/胡桃冻结候选**：保留分支，显式 `FROZEN` + owner + 复核条件，巡检不将其当作普通逾期分支；需要时把重要历史证据保存在可恢复的位置。
 - **没有 PR 的临时分支**：补齐唯一 Owner、任务来源、后续目标及出口；没有证据时一律 `NEEDS_REVIEW`，不能因为过了 N 天而自动删。
 
@@ -87,6 +87,7 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 
 - **每日巡检 Owner：云端 ChatGPT 定时任务（可由 dot 接管）**，逐日只读核对分支、PR、继任者和责任人，只对新异常/升级事件简报；禁止直接合并或删分支。定时任务在 GitHub 之外维护，避免为每日巡检占用本地电脑。
 - .github/workflows/branch-hygiene.yml 改为 **手动触发的只读证据工具**，需要详细库存时由协调者运行并下载结果；不再和云端任务重复每日调度。
-- scripts/branch-hygiene.mjs 通过 GitHub API 分页核对全部分支及全部 PR，绝不调用 DELETE、合并或开 issue。它提供待复核线索，**不是自动删除清单**。
+- scripts/branch-hygiene.mjs 通过 GitHub API 分页核对全部分支及 PR。JSON 保留关闭未合并的来源（包括已删、重用和 Fork 的 head）、精确 SHA、已有交接收据及关联 Backlog 的未验 AC。Markdown 汇总待复核的收据缺口、尚未合入的继任者和遗漏路径线索。巡检只读。
+- 对合入 Release 的 PR，用报告所列 develop SHA 比较生产文件内容，输出仍需核对的回流路径。同路径的后续修改也会触发复核。继任者合并、文件路径相交和文件内容相同都只是导航证据，行为与验收照旧按原任务验证。对应范围与结果写回原 PR 或 Backlog。旧 `release/v2.0.0` 保持冻结。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
 - 治理更新走 develop 的正常 PR。Develop 与后续批准的 Release PR 使用同一[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)。两类分支沿用各自 Fast、Full、独立评审及规则集。

@@ -23,6 +23,8 @@ const cursesPriorRead=p=>{
  const source=sourceSlice(p,currentRaw(p),'cursesPrior',currentRaw);
  return beforeLumineSource(p,beforeV2UiHudSource(p,source,currentRaw),currentRaw);
 };
+// The new potion source witness reads these owners again after the frozen layer's owner scan.
+const potionRereads=['src/lua/abyss_battle_card_gestures.lua','src/lua/abyss_battle_ui.lua'];
 test('portrait demand layer authenticates fresh complete owners and rejects warm drift before entering the prior epoch',()=>{
  const sourceEpoch=portraitDemandEpoch;
  const path='src/lua/abyss_traveler_portraits.lua',raw=cursesPriorRead;
@@ -30,17 +32,24 @@ test('portrait demand layer authenticates fresh complete owners and rejects warm
  assert.equal(sourceEpoch.proof.currentCommit,'6702ed26d779eec4d237aa991471b0344c3c3f92');
  assert.equal(target.commit,'bd9fc7ee15bca14a9ad7fe43f6fc9d1c35aa4bf9');
  assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);
- let reads=0;const reader=p=>{reads++;return raw(p);};
+ let reads=[];const reader=p=>{reads.push(p);return raw(p);};
  for(const input of [source,source.replaceAll('\n','\r\n')]){
-  reads=0;assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:reader}),target.files[path].source);
-  assert.equal(reads,sourceEpoch.proof.owners.length);
+  reads=[];assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:reader}),target.files[path].source);
+  assert.deepEqual(reads,[...sourceEpoch.proof.owners,...potionRereads]);
  }
  for(const input of [source+'\n',source.slice(1),target.files[path].source,null,{}]){
-  reads=0;assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:()=>{reads++;throw Error('foreign linked read');}}),input);assert.equal(reads,0);
+  reads=[];assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:p=>{reads.push(p);throw Error('foreign linked read');}}),input);assert.deepEqual(reads,[]);
  }
  let live=source;const mutable=p=>p===path?live:raw(p);
  assert.equal(sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:mutable}),target.files[path].source);
  for(const drift of [source+'\n',null]){live=drift;assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:mutable}),/combined linked owner identity/);}
+ for(const owner of potionRereads){
+  let seen=0;
+  const late=p=>p===owner&&++seen===2?null:raw(p);
+  assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:late}),
+   error=>error.message.includes('combined linked owner identity: '+owner+' changed during owner validation'));
+  assert.equal(seen,2);
+ }
 });
 test('noncombat committed source layer authenticates all linked owners and rejects each new owner drift',()=>{
  const sourceEpoch=portraitDemandEpoch;
@@ -52,9 +61,9 @@ test('noncombat committed source layer authenticates all linked owners and rejec
  const raw=cursesPriorRead;
  const live=p=>sourceEpoch.preCombinedSource(p,raw(p),{target:'noncombatDemandPrior',readSource:raw});
  for(const path of changed){
-  const source=live(path);let reads=0;
-  assert.equal(epoch.preCombinedSource(path,source,{target:'noncombatPrior',readSource:p=>{reads++;return live(p);}}),target.files[path].source);
-  assert.equal(reads,epoch.proof.owners.length,'every owner read freshly');
+  const source=live(path),fresh=[];let reads=0;
+  assert.equal(epoch.preCombinedSource(path,source,{target:'noncombatPrior',readSource:p=>{fresh.push(p);return live(p);}}),target.files[path].source);
+  assert.deepEqual(fresh,[...epoch.proof.owners,...potionRereads],'every owner, including both potion rereads, is read freshly');
   for(const input of [source+'\n',source.slice(1),target.files[path].source,null,{}]){
    reads=0;assert.equal(epoch.preCombinedSource(path,input,{target:'noncombatPrior',readSource:()=>{reads++;throw Error('foreign read');}}),input);
    assert.equal(reads,0,'old and foreign input cannot authorize linked reads');

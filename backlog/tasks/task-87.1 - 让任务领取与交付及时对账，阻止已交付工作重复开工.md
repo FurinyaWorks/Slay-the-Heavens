@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-14 06:09'
-updated_date: '2026-11-14 10:55'
+updated_date: '2026-11-20 06:58'
 labels: []
 dependencies: []
 references:
@@ -55,4 +55,6 @@ ordinal: 174000
 2026-11-14用户明确要求独审后先挂原生自动合并，不应守到Impact运行。原托管43571256496/job132375965323已读取实际失败：本轮delivery静态导入roadmap继而引入安装前luaparse，现机械抽出无依赖metadata解析并保留兼容导出；三个真实发布器在拒绝所有npm包的冷进程反例先红后绿。协调器仅在显式ci:full、严格原生Full队列及精确当前pending Impact身份可验证时先登记schema4；已知失败仍拒绝，握手中失败/Fast切换撤销，全部CI与队列Full门禁不变。8文件224/224及Backlog/doctor/guidance/syntax通过。继续按当前HEAD独审后授权，不把旧失败或入队当合后成功。
 
 本轮统一接续659/660/662至661：保留状态对账与M7迁移、105容量依赖，转场采用108；100.1/88.1仍有待验项保持进行中。独审发现并修复ready缺口、隐藏头像等待及牌组入口重叠，旧共享idle选角整套合同保留隔离重放，当前新构图另验。证据docs/evidence/pr-integration-cleanup-20261114.md；未宣称Hosted或产品设备通过。
+
+2026-11-20 develop 9e3b22dc 接续现有交付对账：补齐只读分支巡检对已关闭来源、部分继任和 Release 修复回流的线索，关联既有 Backlog 任务，保留验收状态及原合并门禁。验收用交付回归与主仓只读库存核对。
 <!-- SECTION:NOTES:END -->

@@ -6,7 +6,7 @@ import { exactSourceContinuation } from './exact-source-continuation.mjs';
 
 const bytes = readFileSync(new URL('../fixtures/v2-ui-hud-source.json.gz', import.meta.url));
 const digest = source => createHash('sha256').update(source).digest('hex');
-assert.equal(digest(bytes), '07fad808963c81ef4bbc0b02748c35ba14308701a5d6869df57df294ad3eaf46', 'historical v2 UI owner identities');
+assert.equal(digest(bytes), '9a1881227d100bf4a3a39908dd44d64d6b16f87bdb2220d55a2f3ce61f2882fe', 'historical v2 UI owner identities');
 const continuations = new Map(Object.entries(JSON.parse(gunzipSync(bytes))).map(([path, row]) => {
   assert.equal(row.path,path);
   assert.equal(digest(row.before.source),row.before.sha256);

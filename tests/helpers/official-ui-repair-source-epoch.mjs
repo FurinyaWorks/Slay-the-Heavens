@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';
+import {beforePotionPointerSource} from './potion-pointer-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('./official-ui-repair-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'7acca01bc985f6bb6bea90361374f360d7ef3e746583bd8a8da7c459951f0765');
@@ -12,6 +13,9 @@ const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x
 for(const row of Object.values(officialUiRepairProof.files))for(const b of [row.current,row.before])assert.equal(hash(b.source),b.sha256);
 freeze(officialUiRepairProof);
 export function preOfficialUiRepairSource(path,source){
+ // These historical inputs also predate the later potion pointer repair.
+ if(path==='src/lua/abyss_battle_card_gestures.lua'||path==='src/lua/abyss_battle_ui.lua')
+  source=beforePotionPointerSource(path,source,file=>readFileSync(file,'utf8'));
  const row=Object.hasOwn(officialUiRepairProof.files,path)?officialUiRepairProof.files[path]:null;
  return row&&typeof source==='string'&&hash(source.replaceAll('\r\n','\n'))===row.current.sha256?row.before.source:source;
 }

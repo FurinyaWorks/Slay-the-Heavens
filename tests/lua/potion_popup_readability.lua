@@ -22,8 +22,17 @@ end
 assert(H.Run.obtainRelic(host.run,'Potion Belt'))
 for slot=1,5 do
  host.run.potions[slot]='flex_potion';host:refresh()
- assert(ui:openPotionMenu(slot));assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)
+ -- A fresh bottle press retires the preceding dismissal's pointer barrier.
+ local touch=1100+slot
+ if slot<=3 then tap('potion'..slot,touch)
+ else
+  local control=assert(panel:GetChild('potionHelp'):GetChild('potion'..slot))
+  for _,kind in ipairs({'down','up','click'})do control.listeners[kind]({touchId=touch})end
+ end
+ assert(ui.potionMenu and ui.potionMenu.slot==slot and popup.visible,'physical slot opens '..slot)
+ assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)
  popup:GetChild('dismiss').listeners.click({touchId=1000+slot})
+ assert(not ui.potionMenu and not popup.visible,'click-only dismissal closes physical slot '..slot)
 end
 host.run.potions={'strength_potion','fire_potion','speed_potion'};host:refresh()
 local function bottle(slot)return panel:GetChild('potion'..slot):GetChild('normal'):GetChild('bottle')end

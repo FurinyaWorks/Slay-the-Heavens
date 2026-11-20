@@ -7,6 +7,90 @@ import { join } from 'node:path';
 import { verifyDelivery, verifyMergedDelivery, collectPrDelivery, collectMergedDelivery, checkoutReceipt, isLowRiskDocumentationChange, fullQualityJobs, currentFullQualityJobs, deliverySchemaVersion, qualityWorkflowPath } from '../scripts/verify-delivery.mjs';
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import * as delivery from '../scripts/verify-delivery.mjs';
+import { auditHistory } from '../scripts/branch-hygiene-history.mjs';
+
+const handoffRepo = 'FurinyaWorks/Slay-the-Heavens';
+const handoffSha = '1'.repeat(40);
+const releaseBranch = 'release/v2.0.0';
+const historyPr = (number, options = {}) => ({ number, state: 'closed', base: { ref: 'develop' },
+  head: { ref: `fix/${number}`, repo: { full_name: handoffRepo }, sha: handoffSha }, ...options });
+const mergedHistory = { merged_at: '2026-11-20T00:00:00Z', merge_commit_sha: '2'.repeat(40) };
+const historyFile = (filename, sha, options = {}) => ({ filename, sha, status: 'modified', ...options });
+const historyInput = { repo: handoffRepo, branches: [], comments: [], tasks: [], developTree: new Map() };
+
+test('history inventory preserves abandoned, reused and fork heads independently of branch rows', async () => {
+  const prs = [historyPr(22), historyPr(23), historyPr(24, {
+    head: { ref: 'fix/23', repo: { full_name: 'a-fork/Slay-the-Heavens' }, sha: handoffSha }
+  }), historyPr(25, { head: { ref: 'fix/25', repo: null, sha: handoffSha } })];
+  const branches = [{ name: 'fix/23', commit: { sha: '2'.repeat(40) } }];
+  const rows = await auditHistory({ ...historyInput, prs, branches, loadFiles: () => assert.fail('Unlinked closeout needs no file lookup') });
+  assert.deepEqual(rows.map(row => [row.pr, row.head_state]), [[25, 'repository-unavailable'],
+    [24, 'fork'], [23, 'branch-moved'], [22, 'branch-absent']]);
+  assert.ok(rows.every(row => row.head === handoffSha && row.review.includes('closeout-receipt-missing')));
+});
+
+test('a merged successor leaves explicit and same-file residual work in the existing Backlog handoff', async () => {
+  const main = 'src/lua/card.lua', remaining = 'src/lua/drag.lua';
+  const receipt = (number, sha, rest, outcome = 'SUPERSEDED', successor = '#31') =>
+    `CLOSEOUT: fix/${number}@${sha} | version/base=v2/develop | outcome=${outcome} | PR=#${number} | successor=${successor} | owner=Furinya | evidence=https://example.org/run | remote=retained:review | remaining=${rest}`;
+  const task = { id: 'TASK-42.2', status: 'In Progress', acCount: 4, acCompleted: 1,
+    source: receipt(28, handoffSha, 'Still need right-click and drag') };
+  const prs = [historyPr(28), historyPr(29, { body: receipt(29, handoffSha, 'none') }),
+    historyPr(30, { body: receipt(30, '5'.repeat(40), 'none') }), historyPr(31, mergedHistory),
+    historyPr(32, { state: 'open' }), historyPr(33, { body: '<!-- Supersedes #28 --> Inherits https://github.com/other/repo/pull/28' }),
+    historyPr(34, { body: receipt(34, handoffSha, 'none') }),
+    historyPr(37, { body: receipt(37, handoffSha, 'none', 'DELIVERED_VERIFIED', '#32') }),
+    historyPr(38, { body: receipt(38, handoffSha, 'none', 'BLOCKED', 'none') })];
+  const comments = [
+    { issue_url: `https://api.github.com/repos/${handoffRepo}/issues/28`, author_association: 'MEMBER', body: 'Remaining candidate #32' },
+    { issue_url: `https://api.github.com/repos/${handoffRepo}/issues/28`, author_association: 'NONE', body: 'Unverified successor #33' }
+  ];
+  const inventory = {
+    28: [historyFile(main, 'card-v1'), historyFile(remaining, 'drag-v1')],
+    29: [historyFile(main, 'card-v1')],
+    31: [historyFile(main, 'card-v2'), historyFile('tests/input.test.mjs', 'target-test')],
+    34: [historyFile(remaining, 'drag-v1')]
+  };
+  const requests = [];
+  const rows = await auditHistory({ ...historyInput, prs, comments, tasks: [task], developTree: new Map([[main, 'card-v2']]),
+    loadFiles: async number => { requests.push(number); return inventory[number]; } });
+  const byNumber = new Map(rows.map(row => [row.pr, row]));
+  assert.deepEqual(byNumber.get(28).backlog, [{ id: 'TASK-42.2', status: 'In Progress', remaining_ac: 3 }]);
+  assert.deepEqual(byNumber.get(28).linked_develop_prs.map(row => row.pr), [31, 32]);
+  assert.deepEqual(byNumber.get(28).linked_develop_paths, [main]);
+  assert.deepEqual(byNumber.get(28).uncovered_paths, [remaining]);
+  assert.deepEqual(byNumber.get(28).review, ['remaining-scope-recorded', 'linked-develop-pr-unmerged', 'partial-successor-paths']);
+  assert.deepEqual(byNumber.get(29).review, ['successor-content-unverified']);
+  assert.deepEqual(byNumber.get(30).review, ['closeout-receipt-missing']);
+  assert.deepEqual(byNumber.get(34).linked_develop_paths, []);
+  assert.deepEqual(byNumber.get(34).uncovered_paths, [remaining]);
+  assert.deepEqual(byNumber.get(34).review, ['successor-content-unverified']);
+  assert.deepEqual(byNumber.get(37).review, ['delivered-successor-unverified', 'linked-develop-pr-unmerged']);
+  assert.deepEqual(byNumber.get(38).review, ['closeout-blocked']);
+  assert.equal(requests.filter(number => number === 31).length, 1);
+});
+
+test('merged Release paths are compared against the develop snapshot with unavailable and moved content explicit', async () => {
+  const base = { ref: releaseBranch };
+  const prs = [34, 35, 36].map(number => historyPr(number, { base, ...mergedHistory }));
+  const old = 'src/lua/old.lua', moved = 'src/lua/new.lua', deleted = 'src/lua/deleted.lua',
+    restored = 'src/lua/restored.lua', missing = 'src/lua/missing.lua';
+  const inventory = {
+    34: [historyFile(missing, 'unported'), historyFile(moved, 'v2', { status: 'renamed', previous_filename: old })],
+    35: [historyFile(restored, 'same-content'), historyFile(deleted, 'deleted', { status: 'removed' })]
+  };
+  const rows = await auditHistory({ ...historyInput, prs,
+    developTree: new Map([[moved, 'v2'], [old, 'still-there'], [restored, 'same-content']]),
+    loadFiles: async number => { if (!inventory[number]) throw Error('incomplete file page'); return inventory[number]; } });
+  const [unavailable, exact, residual] = rows;
+  assert.deepEqual(unavailable.review, ['file-comparison-unavailable']);
+  assert.equal(unavailable.production_paths, null);
+  assert.deepEqual(exact.different_develop_paths, []);
+  assert.deepEqual(exact.review, []);
+  assert.deepEqual(residual.different_develop_paths, [missing, moved]);
+  assert.deepEqual(residual.review, ['release-backflow-review']);
+  assert.equal(residual.release_merge, mergedHistory.merge_commit_sha);
+});
 
 test('checkout writer binds BASE to the event and ignores an empty preflight environment',t=>{
   const root=mkdtempSync(join(tmpdir(),'checkout-event-base-'));

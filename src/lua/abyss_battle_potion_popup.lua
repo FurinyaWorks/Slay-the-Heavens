@@ -18,6 +18,13 @@ local function wrap(text,width)
 end
 function M.new(root,owner,platform,clickEvent,actions)
     local popup={generation=0}
+    local pointers,pointerSeen={},false
+    local anonymous={}
+    local function pointerKey(touch)return touch==nil and anonymous or touch end
+    local function resetPointers(newMenu)
+        pointers={}
+        if newMenu then pointerSeen=false end
+    end
     local function child(name)return assert(root:GetChild(name),'missing potion popup '..name)end
     local function valid(token)
         local run=owner.run
@@ -29,6 +36,7 @@ function M.new(root,owner,platform,clickEvent,actions)
     function popup.close(_)
         if not owner.potionMenu then return false end
         owner.potionMenu=nil;popup.generation=popup.generation+1
+        resetPointers(true)
         root:SetVisible(false);return true
     end
     local function size(name,x,y,w,h)
@@ -76,7 +84,7 @@ function M.new(root,owner,platform,clickEvent,actions)
             inventory=run.potions,slot=slot,id=run.potions[slot]}
         if not token or not token.id or not valid(token)then return false end
         if owner.potionMenu and owner.potionMenu.slot==slot then return popup:close() end
-        popup.generation=popup.generation+1;owner.potionMenu=token;popup:render();return true
+        popup.generation=popup.generation+1;owner.potionMenu=token;resetPointers(true);popup:render();return true
     end
     local function act(name)
         local token=owner.potionMenu
@@ -87,51 +95,142 @@ function M.new(root,owner,platform,clickEvent,actions)
         if name=='dismiss'then actions.changed();return true end
         return actions[name](token.slot)
     end
+    local function forget(pointer)
+        if pointer and pointers[pointerKey(pointer.touch)]==pointer then pointers[pointerKey(pointer.touch)]=nil end
+    end
+    local function uniquePointer(control)
+        local only
+        for _,pointer in pairs(pointers)do if only then return end;only=pointer end
+        return only and only.control==control and only or nil
+    end
+    local function currentPointer(control,event)
+        local touch=event and event.touchId
+        local pointer
+        if touch~=nil then pointer=pointers[pointerKey(touch)]else pointer=uniquePointer(control)end
+        return pointer and pointer.control==control and pointer or nil
+    end
+    local function beginPointer(control,event)
+        if not valid(owner.potionMenu) or root.activeInHierarchy==false then return end
+        pointerSeen=true
+        if actions.pointerDown then actions.pointerDown(event)end
+        local touch=event and event.touchId
+        pointers[pointerKey(touch)]=nil
+        -- A fresh same-ID Down reclaims itself. Competition permanently revokes
+        -- each overlapping press's anonymous capability, even after cleanup.
+        local competing=false
+        for _,other in pairs(pointers)do other.anonymousBlocked=true;competing=true end
+        local pointer={selection=owner.potionMenu,generation=popup.generation,control=control,
+            touch=touch,active=true,anonymousBlocked=competing}
+        pointers[pointerKey(pointer.touch)]=pointer
+        return pointer
+    end
+    local function releasePointer(control,event)
+        local pointer=currentPointer(control,event)
+        if not pointer then return end
+        -- Missing Up identity can cancel a unique named origin, never complete it.
+        if pointer.touch~=(event and event.touchId) or not valid(owner.potionMenu)then forget(pointer);return end
+        pointer.active,pointer.released=false,true
+        -- A rejected foreign press is still a physical competitor. Keep only
+        -- its latest unconsumed release per control, not a touch history.
+        if not pointer.action then for _,old in pairs(pointers)do
+            if old~=pointer and old.control==control and not old.active and not old.action then forget(old)end
+        end end
+        return pointer
+    end
+    local function cancelPointer(control,event)
+        local pointer=currentPointer(control,event);forget(pointer);return pointer
+    end
+    local function clickMatches(control,token,event)
+        if not token or not token.released then return false end
+        local touch=event and event.touchId
+        if touch~=nil then return token.touch==touch end
+        return not token.anonymousBlocked and uniquePointer(control)==token
+    end
+    local function forgetReleased(control,event)
+        local touch=event and event.touchId
+        if touch==nil then return end
+        local pointer=currentPointer(control,event)
+        if pointer and pointer.released then forget(pointer)end
+    end
     local function bind(name)
         local control=child(name)
         local held,released,observed
         local function ready(token)
-            return valid(owner.potionMenu) and (name=='dismiss' or control.interactable)
-                and (not token or token.selection==owner.potionMenu and token.generation==popup.generation)
+            return root.activeInHierarchy~=false and valid(owner.potionMenu) and (name=='dismiss' or control.interactable)
+                and (not token or token.selection==owner.potionMenu and token.generation==popup.generation
+                    and pointers[pointerKey(token.touch)]==token)
         end
         Controller.bind(platform.controller,control,'battlePotion',function()return act(name)end,function()return ready()end)
         local cursor=platform.cursorEvents or {}
         if cursor.CursorDown and cursor.CursorUp then
             control:AddCursorEventListener(cursor.CursorDown,function(event)
                 observed=true
+                local pointer=beginPointer(control,event)
                 local touch=event and event.touchId
                 if held and held.touch~=touch and ready(held) or released and released.touch~=touch and ready(released) then return end
                 held,released=nil,nil
-                if ready()then
-                    if actions.pointerDown then actions.pointerDown(event)end
-                    held={selection=owner.potionMenu,generation=popup.generation,touch=event and event.touchId}
-                end
+                if pointer and ready()then held=pointer;pointer.action=true end
             end)
             control:AddCursorEventListener(cursor.CursorUp,function(event)
-                if held and held.touch==(event and event.touchId)then
-                    released=ready(held) and held or nil;held=nil
+                local pointer=releasePointer(control,event)
+                if held and (held==pointer or pointers[pointerKey(held.touch)]~=held)then
+                    released=held==pointer and ready(held) and held or nil
+                    if not released then forget(held)end
+                    held=nil
                 end
             end)
-            if cursor.CursorEndDrag then control:AddCursorEventListener(cursor.CursorEndDrag,function(event)
-                local touch=event and event.touchId
-                if held and held.touch==touch then held=nil end
-                if released and released.touch==touch then released=nil end
+            if cursor.CursorDrag then control:AddCursorEventListener(cursor.CursorDrag,function(event)
+                local pointer=currentPointer(control,event)
+                if not pointer then return end
+                -- Drag revokes the action but remains a physical competitor
+                -- until its own terminal event; anonymous Click cannot guess it.
+                pointer.action=false
+                if held==pointer then held=nil end
+                if released==pointer then released=nil end
             end)end
+            for _,kind in pairs({cursor.CursorEndDrag,cursor.CursorExit})do
+                control:AddCursorEventListener(kind,function(event)
+                    local retired=cancelPointer(control,event)
+                    if held==retired then held=nil end
+                    if released==retired then released=nil end
+                end)
+            end
         end
         control:AddCursorEventListener(clickEvent,function(event)
-            if Controller.pointerBlocked(platform.controller)then return false end
-            if observed then
-                local token=released
-                if not token or token.touch~=(event and event.touchId)then return false end
+            if Controller.pointerBlocked(platform.controller)then resetPointers(false);held,released=nil,nil;return false end
+            local token
+            if observed or pointerSeen then
+                token=released
+                if not clickMatches(control,token,event)then forgetReleased(control,event);return false end
                 released=nil
-                if not ready(token)then return false end
+                if not ready(token)then forget(token);return false end
             elseif not ready()then return false end
-            if actions.pointerClick and not actions.pointerClick(event)then return false end
-            return act(name)
+            if actions.pointerClick and not actions.pointerClick(event,token)then forget(token);return false end
+            local menu=owner.potionMenu
+            local accepted,reason=act(name)
+            if owner.potionMenu==menu then
+                -- Eligibility may have changed since Down. Retire this press;
+                -- the open popup still protects the controls underneath it.
+                forget(token)
+            elseif actions.pointerConsumed then actions.pointerConsumed(event,token)end
+            return accepted,reason
         end)
     end
     for _,name in ipairs({'use','discard','dismiss'})do bind(name)end
-    child('hit'):AddCursorEventListener(clickEvent,function()return true end)
+    local plate=child('hit')
+    local cursor=platform.cursorEvents or {}
+    if cursor.CursorDown and cursor.CursorUp then
+        plate:AddCursorEventListener(cursor.CursorDown,function(event)beginPointer(plate,event)end)
+        plate:AddCursorEventListener(cursor.CursorUp,function(event)releasePointer(plate,event)end)
+        for _,kind in pairs({cursor.CursorEndDrag,cursor.CursorExit})do plate:AddCursorEventListener(kind,function(event)cancelPointer(plate,event)end)end
+    end
+    plate:AddCursorEventListener(clickEvent,function(event)
+        -- Neutral Click consumes no action. Retire only its matched release;
+        -- a missing ID must not choose among competing pointers.
+        local pointer=currentPointer(plate,event)
+        if pointer and pointer.released then forget(pointer)end
+        return true
+    end)
     root.disableCursorEventPassthrough=true
     root:SetVisible(false)
     return popup
