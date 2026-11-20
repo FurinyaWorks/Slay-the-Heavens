@@ -31,12 +31,16 @@ test('history inventory preserves abandoned, reused and fork heads independently
 
 test('a merged successor leaves explicit and same-file residual work in the existing Backlog handoff', async () => {
   const main = 'src/lua/card.lua', remaining = 'src/lua/drag.lua';
-  const receipt = (number, sha, rest) => `CLOSEOUT: fix/${number}@${sha} | version/base=v2/develop | outcome=SUPERSEDED | PR=#${number} | successor=#31 | owner=Furinya | evidence=https://example.org/run | remote=retained:review | remaining=${rest}`;
+  const receipt = (number, sha, rest, outcome = 'SUPERSEDED', successor = '#31') =>
+    `CLOSEOUT: fix/${number}@${sha} | version/base=v2/develop | outcome=${outcome} | PR=#${number} | successor=${successor} | owner=Furinya | evidence=https://example.org/run | remote=retained:review | remaining=${rest}`;
   const task = { id: 'TASK-42.2', status: 'In Progress', acCount: 4, acCompleted: 1,
     source: receipt(28, handoffSha, 'Still need right-click and drag') };
   const prs = [historyPr(28), historyPr(29, { body: receipt(29, handoffSha, 'none') }),
     historyPr(30, { body: receipt(30, '5'.repeat(40), 'none') }), historyPr(31, mergedHistory),
-    historyPr(32, { state: 'open' }), historyPr(33, { body: '<!-- Supersedes #28 --> Inherits https://github.com/other/repo/pull/28' })];
+    historyPr(32, { state: 'open' }), historyPr(33, { body: '<!-- Supersedes #28 --> Inherits https://github.com/other/repo/pull/28' }),
+    historyPr(34, { body: receipt(34, handoffSha, 'none') }),
+    historyPr(37, { body: receipt(37, handoffSha, 'none', 'DELIVERED_VERIFIED', '#32') }),
+    historyPr(38, { body: receipt(38, handoffSha, 'none', 'BLOCKED', 'none') })];
   const comments = [
     { issue_url: `https://api.github.com/repos/${handoffRepo}/issues/28`, author_association: 'MEMBER', body: 'Remaining candidate #32' },
     { issue_url: `https://api.github.com/repos/${handoffRepo}/issues/28`, author_association: 'NONE', body: 'Unverified successor #33' }
@@ -44,7 +48,8 @@ test('a merged successor leaves explicit and same-file residual work in the exis
   const inventory = {
     28: [historyFile(main, 'card-v1'), historyFile(remaining, 'drag-v1')],
     29: [historyFile(main, 'card-v1')],
-    31: [historyFile(main, 'card-v2'), historyFile('tests/input.test.mjs', 'target-test')]
+    31: [historyFile(main, 'card-v2'), historyFile('tests/input.test.mjs', 'target-test')],
+    34: [historyFile(remaining, 'drag-v1')]
   };
   const requests = [];
   const rows = await auditHistory({ ...historyInput, prs, comments, tasks: [task], developTree: new Map([[main, 'card-v2']]),
@@ -57,6 +62,11 @@ test('a merged successor leaves explicit and same-file residual work in the exis
   assert.deepEqual(byNumber.get(28).review, ['remaining-scope-recorded', 'linked-develop-pr-unmerged', 'partial-successor-paths']);
   assert.deepEqual(byNumber.get(29).review, ['successor-content-unverified']);
   assert.deepEqual(byNumber.get(30).review, ['closeout-receipt-missing']);
+  assert.deepEqual(byNumber.get(34).linked_develop_paths, []);
+  assert.deepEqual(byNumber.get(34).uncovered_paths, [remaining]);
+  assert.deepEqual(byNumber.get(34).review, ['successor-content-unverified']);
+  assert.deepEqual(byNumber.get(37).review, ['delivered-successor-unverified', 'linked-develop-pr-unmerged']);
+  assert.deepEqual(byNumber.get(38).review, ['closeout-blocked']);
   assert.equal(requests.filter(number => number === 31).length, 1);
 });
 

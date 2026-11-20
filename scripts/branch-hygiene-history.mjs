@@ -104,6 +104,11 @@ export async function auditHistory({ repo, branches, prs, comments, tasks, devel
     const errors = [source.error, ...linked.map(result => result.error)].filter(Boolean);
     const review = [];
     if (!releaseMerged && !receipts.length) review.push('closeout-receipt-missing');
+    if (receipts.some(receipt => receipt.outcome === 'BLOCKED')) review.push('closeout-blocked');
+    if (!releaseMerged && receipts.some(receipt => receipt.outcome === 'DELIVERED_VERIFIED' &&
+        !references(receipt.successor, repo).some(number => merged.some(candidate => candidate.number === number)))) {
+      review.push('delivered-successor-unverified');
+    }
     if (receipts.some(receipt => receipt.outcome === 'SUPERSEDED' && !receipt.remaining)) review.push('remaining-scope-missing');
     if (receipts.some(receipt => receipt.outcome === 'SUPERSEDED' &&
         !references(receipt.successor, repo).some(number => number !== pr.number && developByNumber.has(number)))) {
@@ -111,8 +116,8 @@ export async function auditHistory({ repo, branches, prs, comments, tasks, devel
     }
     if (receipts.some(receipt => receipt.remaining && receipt.remaining !== 'none')) review.push('remaining-scope-recorded');
     if (successors.some(candidate => !candidate.merged_at)) review.push('linked-develop-pr-unmerged');
-    if (overlap?.length && unverified?.length) {
-      review.push(uncovered.length ? 'partial-successor-paths' : 'successor-content-unverified');
+    if (merged.length && unverified?.length) {
+      review.push(overlap.length && uncovered.length ? 'partial-successor-paths' : 'successor-content-unverified');
     }
     if (releaseMerged && unverified?.length) review.push('release-backflow-review');
     if (errors.length || source.rows?.length && !developTree) review.push('file-comparison-unavailable');
