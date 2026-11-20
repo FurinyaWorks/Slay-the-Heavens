@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -158,10 +159,7 @@ test('original Run and Nodes config closure rejects relabeled, missing and chang
 test('current Run architecture admission uses its declared target and rereads every raw owner on each call',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),owners=sourceEpoch.proof.owners;
- // The #730 and #733 continuations revalidate their changed sources after
- // the main closure. The potion text continuation needs no extra read here.
- const recheckedOwners=['src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
- const admittedReads=[...owners,...recheckedOwners];
+ const admittedReads=[...owners,...currentProductionRereads];
  // Independent complete Git config at the declared develop target d8a57cae,
  // not a hash obtained from the projector's own return value or current proof.
  const targetHash='0e75d9e1f08cfb7738215b9a31cce141f03cc2469077bce0db3376fe1f446a9c';
@@ -194,7 +192,7 @@ test('current Run architecture admission uses its declared target and rereads ev
   }
  }
  onlyOnReread=true;
- for(const [index,owner] of recheckedOwners.entries()){
+ for(const [index,owner] of currentProductionRereads.entries()){
   changed=owner;
   replacement=readFileSync(owner,'utf8')+'\n';
   reads=[];

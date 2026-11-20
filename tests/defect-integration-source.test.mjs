@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import {originalPlanningSource} from './helpers/ci-complete-calibration-source-inverse.mjs';
 import test from 'node:test';
@@ -134,7 +135,7 @@ test('foreign capability source bytes cannot trigger reader calls or hide unknow
 });
 test('the full current facade freshly checks every original owner including after warm success',()=>{
  const epoch=actorCurrentEpoch,proof=epoch.proof,p=actorPaths[0],source=read(p);
- const admittedReads=[...proof.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...proof.owners,...currentProductionRereads];
  const actual=Object.fromEntries(proof.owners.map(q=>[q,read(q)]));let bad,value,reads=[];
  const reader=q=>{reads.push(q);if(q===bad){if(value instanceof Error)throw value;return value;}return actual[q];};
  const project=()=>epoch.preCombinedSource(p,source,{target:'develop',readSource:reader});

@@ -1,5 +1,5 @@
-import {beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
+import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
 import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
 import assert from 'node:assert/strict';
@@ -42,12 +42,14 @@ export function preCloseoutCiSource(path,source,view){
 export function closeoutInventory(paths,view,readSource=readFileSync){
  const before=target(view);
  assert.notEqual(before.scope,'workflow-only','workflow-only views cannot project test inventories');
- paths=runHudPriorInventory(paths,readSource);readSource=runHudPriorRead(readSource);
+ const readEvidence=(path,encoding)=>beforeV2UiEvidence(path,readSource(path,encoding));
+ paths=runHudPriorInventory(paths,readEvidence);
+ const readPrior=runHudPriorRead(readEvidence);
  const sorted=[...paths].sort();
  if(JSON.stringify(sorted)===JSON.stringify(before.inventory))return [...paths];
  assert.deepEqual(sorted,packed.inventory,'complete raw closeout inventory');
  for(const path of packed.inventory.filter(p=>!before.inventory.includes(p))){
-  const source=beforeV2UiEvidence(path,readSource(path,'utf8'));
+  const source=readPrior(path,'utf8');
   assert.equal(hash(source.replaceAll('\r\n','\n')),packed.current[path],'closeout added inventory source: '+path);
  }
  return [...before.inventory];

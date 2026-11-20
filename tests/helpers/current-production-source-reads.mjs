@@ -1,0 +1,15 @@
+// Independently specified repeat reads after the full current owner closure.
+// Each owner has a continuation that must still match a fresh live sample.
+const priorProductionRereads = Object.freeze([
+  'src/lua/abyss_ui.lua',
+  'src/lua/abyss_character_select_view.lua',
+  'src/lua/abyss_traveler_portraits.lua',
+  'src/lua/abyss_battle_render_hud.lua',
+  'src/lua/abyss_map_ui.lua',
+  'src/lua/abyss_node_ui.lua',
+]);
+const nodeHud = priorProductionRereads.indexOf('src/lua/abyss_node_ui.lua');
+export const currentProductionRereads = Object.freeze(priorProductionRereads.toSpliced(nodeHud + 1, 0,
+  'src/lua/abyss_game_ui.lua',
+  'src/lua/abyss_game_ui_input.lua',
+));

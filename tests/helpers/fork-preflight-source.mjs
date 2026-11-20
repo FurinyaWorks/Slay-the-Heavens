@@ -1,4 +1,5 @@
-import {beforeV2UiAdmission,beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
+import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
+import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';

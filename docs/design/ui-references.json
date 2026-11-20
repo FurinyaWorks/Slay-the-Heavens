@@ -302,12 +302,9 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.6",
-      "reference": {
-        "path": "docs/evidence/v2-ui-20261119/p1/runtime-transition-room.png",
-        "sha256": "fececac5b0bbabdfe191f23ae11b0d21cae888992d88d538442a6c7b4c942101"
-      },
+      "reference": null,
       "supersedes": [],
-      "note": "首战准备时的普通遮罩。复用璃月印记、七元素、就绪边界及输入隔离。 1280×720 离线投影，官方候选待验。"
+      "note": "复用就绪驱动。待补普通页面同候选转场取证。"
     },
     {
       "codePath": "scripts/noncombat-neow-layout.mjs",
@@ -316,14 +313,11 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-103.3",
-      "reference": {
-        "path": "docs/evidence/v2-ui-20261119/runtime-neow.png",
-        "sha256": "ad6d1e3d0b19885a71d016e53431ea14a63f24869c266e90e96a21555ade0c31"
-      },
+      "reference": null,
       "supersedes": [
         "2026-11-10"
       ],
-      "note": "当前开局祝福几何、选项与共享顶栏。 1280×720 离线投影，官方候选待验。",
+      "note": "[当前祝福布局投影](../evidence/v2-ui-20261119/runtime-neow.png)。官方画面待取证。",
       "codePaths": [
         "scripts/sts-neow-guide-layout.mjs",
         "scripts/sts-neow-choice-layout.mjs"
@@ -571,6 +565,20 @@
       },
       "supersedes": [],
       "note": "当前胜利结算，失败态及结算信号另见同批核对。 1280×720 离线投影，官方候选待验。"
+    },
+    {
+      "codePath": "src/lua/abyss_page_reveal.lua",
+      "targetVersion": "v2.0.0",
+      "state": "pageReveal",
+      "revision": "p1-20261119-offline",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-103.6",
+      "reference": {
+        "path": "docs/evidence/v2-ui-20261119/p1/runtime-transition-room.png",
+        "sha256": "fececac5b0bbabdfe191f23ae11b0d21cae888992d88d538442a6c7b4c942101"
+      },
+      "supersedes": [],
+      "note": "首战准备时的普通遮罩。复用璃月印记、七元素、就绪边界及输入隔离。 1280×720 离线投影，官方候选待验。"
     }
   ]
 }

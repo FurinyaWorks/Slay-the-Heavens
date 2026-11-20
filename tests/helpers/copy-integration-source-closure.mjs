@@ -26,7 +26,7 @@ const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
 const closeout='tests/helpers/closeout-source-epoch.mjs';
 assert.equal(predecessor[runtime],'ee54191f327d412a5e37a76ff236af6f4aac692e51884a0e3afd33fe62e427e4','fatal BGM helper copy predecessor');
 assert.equal(predecessor[closeout],'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7','closeout source slice copy predecessor');
-const files=Object.freeze({
+const priorFiles=Object.freeze({
  ...predecessor,
  'tests/helpers/lumine-portrait-source.mjs':'f6b48bd50ffc703348648cfe6c75686531f319952806a4376b25841c9f7acee0',
  [runtime]:'208fafcc738d89baf672e1dbab128619e1605d86608d9829fe48782da396aeef',
@@ -36,11 +36,16 @@ const files=Object.freeze({
  'tests/helpers/exact-source-continuation.mjs':'9046457a50fa3c137985906423be546424287dc5a06ef940f6ffbeb553d63ccf',
  'tests/helpers/potion-text-source.mjs':'75dcd901e15f07831e1eeaf943e93ca5795068fa9d841e34cd0bb20e57f426b3',
  'tests/helpers/character-selector-source.mjs':'7b3e77e5a190772e6a7d063eb2134aeabd928a6db691705ffa220fa92b71b974',
- 'tests/helpers/v2-ui-hud-source.mjs':'5403d960b34c99c8889ee8f431ccc3f034d0a816a5877b46f953a4cf4e9e64ba',
- 'tests/fixtures/v2-ui-hud-source.json.gz':'07fad808963c81ef4bbc0b02748c35ba14308701a5d6869df57df294ad3eaf46',
+ 'tests/helpers/v2-ui-hud-source.mjs':'dca36319e8eb77df3e6db39b13db949736bae1ab11681cf6eab8269f9f4be268',
+ 'tests/fixtures/v2-ui-hud-source.json.gz':'649a52b20d2b9b2ad338a77b24daf29998014522e0dc0d5888bccce1529faa58',
  'tests/helpers/v2-run-menu-source-epoch.mjs':'a7e11793af79e698ed2a6ae832bd94cc8c47e2d6149e60d58db8138f1a1c77b8',
  'tests/fixtures/v2-run-menu-source.json':'b078f617134d3189f5a815e1c85b1edfd50c8e133950d5b81cbecb67a1358508',
  'tests/fixtures/develop-character-architecture-before.json.gz':'7a5ab46cd4e7d27fc414f05bebb1ffe06dcba742f990412205113f672b8db541',
+});
+const files=Object.freeze({
+ ...priorFiles,
+ 'tests/helpers/v2-ui-hud-source.mjs':'5403d960b34c99c8889ee8f431ccc3f034d0a816a5877b46f953a4cf4e9e64ba',
+ 'tests/fixtures/v2-ui-hud-source.json.gz':'07fad808963c81ef4bbc0b02748c35ba14308701a5d6869df57df294ad3eaf46',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
