@@ -41,7 +41,34 @@ function project(source, row) {
   return source.includes('\r\n') ? row.before.replaceAll('\n','\r\n') : row.before;
 }
 
+const officialBattleWitnessPath = 'tests/seven-refactor-source-epoch.test.mjs';
+function beforeOfficialBattleWitness(path,source) {
+  if (path!==officialBattleWitnessPath || typeof source!=='string' || source.includes('\r\r\n')) return source;
+  const current=source.replaceAll('\r\n','\n');
+  if (sha256(current)!=='a801de89a1d0b409c6879755d3f54e9e070a96594655f06d5a95750609ecbc65') return source;
+  const prior=current
+    .replace("import {beforePotionPointerSource} from './helpers/potion-pointer-source.mjs';\n",'')
+    .replace('// noncombatPrior may leave unchanged owners at their newer live identity.\nconst beforePointerRead=p=>beforePotionPointerSource(p,noncombatPriorRead(p),currentRaw);\n','')
+    .replace('beforeV2UiHudSource(p,beforePointerRead(p),currentRaw)','beforeV2UiHudSource(p,noncombatPriorRead(p),currentRaw)');
+  assert.equal(sha256(prior),recovery.files[path].sha256,'exact official battle witness predecessor');
+  return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
+}
+
+// Keep the exact #763 readability adapter visible to its frozen integration receipt.
+function beforeRunHudReadabilityAdapter(path,source) {
+  if (path!=='tests/helpers/run-hud-ci-source.mjs' || typeof source!=='string' || source.includes('\r\r\n')) return source;
+  const current=source.replaceAll('\r\n','\n');
+  if (sha256(current)!=='b3d6e5263fcdb25a102cfacdea2cc76a382f83056f34099968e68476ec3b59aa') return source;
+  const prior=current
+    .replace("import {beforePotionReadabilityEvidence} from './v2-ui-admission-ci-source.mjs';\n",'')
+    .replace('preMenuRedCiSource(path,beforePotionReadabilityEvidence(path,source))','preMenuRedCiSource(path,source)');
+  assert.equal(sha256(prior),'084db705f3390910da925c32970a18279b78063f4a03d2331a19a775229c5524','exact run HUD readability adapter predecessor');
+  return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
+}
+
 export function beforeV2UiEvidence(path, source) {
+  source = beforeRunHudReadabilityAdapter(path,source);
+  source = beforeOfficialBattleWitness(path,source);
   if (Object.hasOwn(potionNeutral,path)) source = project(source,{sha256:potionNeutral[path].afterSha256,before:potionNeutral[path].before});
   if (Object.hasOwn(potionPointer,path)) source = project(source,{sha256:potionPointer[path].afterSha256,before:potionPointer[path].before});
   if (Object.hasOwn(recovery.files,path)) source = project(source,recovery.files[path]);
@@ -54,4 +81,23 @@ export function beforeV2UiAdmission(path, source) {
   if (!Object.hasOwn(archive,path)) return source;
   const row = archive[path];
   return project(source,{sha256:row.afterSha256,before:row.before});
+}
+
+// This is a historical CI observation only; current Full still runs the new fixture.
+const potionReadabilityHunks = [
+  [
+    " host.run.potions[slot]='flex_potion';host:refresh()\n -- A fresh bottle press retires the preceding dismissal's pointer barrier.\n local touch=1100+slot\n if slot<=3 then tap('potion'..slot,touch)\n else\n  local control=assert(panel:GetChild('potionHelp'):GetChild('potion'..slot))\n  for _,kind in ipairs({'down','up','click'})do control.listeners[kind]({touchId=touch})end\n end\n assert(ui.potionMenu and ui.potionMenu.slot==slot and popup.visible,'physical slot opens '..slot)\n assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)\n popup:GetChild('dismiss').listeners.click({touchId=1000+slot})\n assert(not ui.potionMenu and not popup.visible,'click-only dismissal closes physical slot '..slot)\nend\n",
+    " host.run.potions[slot]='flex_potion';host:refresh()\n assert(ui:openPotionMenu(slot));assert(math.abs(popup.x)+popup.sizeDeltaX/2<=Theme.canvas.base[1]/2,'physical slot bounds '..slot)\n popup:GetChild('dismiss').listeners.click({touchId=1000+slot})\nend\n"
+  ]
+];
+export function beforePotionReadabilityEvidence(path,source) {
+  if (path!=='tests/lua/potion_popup_readability.lua' || typeof source!=='string' || source.includes('\r\r\n')) return source;
+  let prior=source.replaceAll('\r\n','\n');
+  if (sha256(prior)!=='ff78e2969f322ead7cb8f1c374a3b825ed8b7256edccd08554e49d3899d7a8bd') return source;
+  for (const [after,before] of potionReadabilityHunks) {
+    assert.equal(prior.split(after).length,2,'unique exact potion readability predecessor hunk');
+    prior=prior.replace(after,()=>before);
+  }
+  assert.equal(sha256(prior),'5d54fbec3347132dff535f90e5145e137c56990062a8f60f2bb75785b4762794','exact potion readability predecessor');
+  return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
 }
