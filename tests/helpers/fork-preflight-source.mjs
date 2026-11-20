@@ -70,6 +70,7 @@ export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
  return paths.filter(path=>path!==coopLabTest);
 }
 const closeoutSuccessors=Object.freeze({
+ 'scripts/ci-shards.mjs':'2933b6476cbf4245c61e6e7702020e03bde02478f5cfb25a0e4c062736149112',
  'tests/defect-integration-source.test.mjs':'e20ed02229b4e316bce92decaec45037eeceb8116f31216b8970c7964674f1c0',
  'tests/defect-utility-planning.test.mjs':'b93215b0cece7151a1929d0535c40595f7a3d9586f237ba0a3966f52687142c1',
  'tests/art-feature-source-inverse.test.mjs':'6627174ae56ab48b831a69e947fa30fb355879095d35f5cdd92b4ae641d1d1dd',
