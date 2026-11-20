@@ -13,7 +13,7 @@ for (const row of Object.values(archive)) {
 }
 
 const recoveryBytes = readFileSync(new URL('../fixtures/v2-ui-source-recovery.json.gz', import.meta.url));
-assert.equal(sha256(recoveryBytes),'20f6ae202d8187c16d50e7b2bf243ada77aa64d9e290d87e6185072732c6756e','v2 UI recovery source identities');
+assert.equal(sha256(recoveryBytes),'38b9bf2b55f3b0cb2b02b480fccee105983cd20cecd4e63c517f21757f411a91','v2 UI recovery source identities');
 const recovery = JSON.parse(gunzipSync(recoveryBytes));
 assert.equal(recovery.base,'eaf4a4a50640697f4c497fe116db94c1ed69a10d');
 for (const row of Object.values(recovery.files)) assert.equal(sha256(row.before),row.beforeSha256);
