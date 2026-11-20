@@ -11,14 +11,21 @@ import {preCoreLifecycleSource} from './helpers/core-lifecycle-source-inverse.mj
 import {preRelicQuerySource} from './helpers/relic-query-source-inverse.mjs';
 import {sourceEpoch,preNoncombatDemandEpoch,preCursesEpoch as portraitDemandEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
+import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
+import {beforeLumineSource} from './helpers/lumine-portrait-source.mjs';
 // Keep the existing two/four-owner contracts in their original source epochs.
 const nativeRead=p=>preNativePageSource(p,readFileSync(p,'utf8').replaceAll('\r\n','\n'));
 const read=p=>preRelicQuerySource(p,nativeRead(p),{readSource:nativeRead});
 const host='src/lua/abyss_game_ui.lua',architecture='config/architecture.json';
 const paths=Object.keys(proof.files);
+const currentRaw=p=>readFileSync(p,'utf8');
+const cursesPriorRead=p=>{
+ const source=sourceSlice(p,currentRaw(p),'cursesPrior',currentRaw);
+ return beforeLumineSource(p,beforeV2UiHudSource(p,source,currentRaw),currentRaw);
+};
 test('portrait demand layer authenticates fresh complete owners and rejects warm drift before entering the prior epoch',()=>{
  const sourceEpoch=portraitDemandEpoch;
- const path='src/lua/abyss_traveler_portraits.lua',raw=p=>sourceSlice(p,readFileSync(p,'utf8'),'cursesPrior');
+ const path='src/lua/abyss_traveler_portraits.lua',raw=cursesPriorRead;
  const source=raw(path).replaceAll('\r\n','\n'),target=sourceEpoch.proof.targets.noncombatDemandPrior;
  assert.equal(sourceEpoch.proof.currentCommit,'6702ed26d779eec4d237aa991471b0344c3c3f92');
  assert.equal(target.commit,'bd9fc7ee15bca14a9ad7fe43f6fc9d1c35aa4bf9');
@@ -42,7 +49,7 @@ test('noncombat committed source layer authenticates all linked owners and rejec
  const current=epoch.proof.current,target=epoch.proof.targets.noncombatPrior;
  assert.equal(epoch.proof.currentCommit,'31886413b6140f7f666aa89e2ac3d9673c9524dd');
  assert.equal(target.commit,'3a061a76b5eb917ac0f4213c01a9cbafd28d1824');
- const raw=p=>sourceSlice(p,readFileSync(p,'utf8'),'cursesPrior');
+ const raw=cursesPriorRead;
  const live=p=>sourceEpoch.preCombinedSource(p,raw(p),{target:'noncombatDemandPrior',readSource:raw});
  for(const path of changed){
   const source=live(path);let reads=0;

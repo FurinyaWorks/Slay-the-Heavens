@@ -1,3 +1,5 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import test from 'node:test';
 import {officialUiRepairProof,preOfficialUiRepairSource} from './helpers/official-ui-repair-source-epoch.mjs';
@@ -24,18 +26,15 @@ const raw=p=>proof.current[p]?.source??null;
 // Actual composed raw owners are independently checked by currentSourceEpoch below.
 const rawCurrent=file=>diskReadFileSync(file,'utf8');
 const noncombatPriorRead=currentSourceEpoch.combinedReader(rawCurrent,'noncombatPrior');
-const componentRead=file=>jointUiSourceAt(file,noncombatPriorRead(file),'component');
-const readFileSync=(file,...args)=>{
- const source=currentSourceEpoch.preCombinedSource(file,diskReadFileSync(file,...args).replaceAll('\r\n','\n'),{target:'noncombatPrior',readSource:rawCurrent});
- const component=jointUiSourceAt(file,source,'component');
- return preComponentUiCiSource(file,componentUiSourceEpoch.preCombinedSource(file,component,{target:'componentPrior',readSource:componentRead}));
-};
+const componentRead=file=>jointUiSourceAt(file,beforeV2UiHudSource(file,noncombatPriorRead(file),rawCurrent),'component');
+const formationRead=file=>preComponentUiCiSource(file,
+ componentUiSourceEpoch.preCombinedSource(file,componentRead(file),{target:'componentPrior',readSource:componentRead}));
 test('Encounter formation outer epoch preserves every prior binding and exact frozen production byte',()=>{
  assert.equal(encounterFormationEpoch.proof.currentCommit,'fb04fd36ab4fbdba71c0da08bf71d2899143f69b');
  assert.equal(proof.currentCommit,prior.currentCommit);
  assert.equal(proof.currentTreeCommitted,false);
  assert.match(proof.encounterFormationCurrentCommitRole,/base only/);
- assert.equal(raw(path),readFileSync(path,'utf8').replaceAll('\r\n','\n'));
+ assert.equal(raw(path),formationRead(path).replaceAll('\r\n','\n'));
  assert.deepEqual(encounterFormationEpoch.proof.targets.prior.files[path],prior.current[path]);
  assert.deepEqual(proof.targets.encounterFormationPrior.files,prior.current);
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(proof.targets[name],target,name);
@@ -116,14 +115,14 @@ test('outer foreign-source fallback preserves invalid raw-reader semantics',()=>
 });
 
 test('live LF and CRLF raw owner reads authenticate 51 current owners on every call',()=>{
- const config='config/architecture.json',input=readFileSync(config,'utf8'),expected=proof.targets.actor.files[config].source;
+ const config='config/architecture.json',input=formationRead(config),expected=proof.targets.actor.files[config].source;
  for(const crlf of [false,true]){
   const seen=[];let corrupt=null,missing=null;
-  const live=file=>{seen.push(file);if(file===missing)return null;const bytes=readFileSync(file,'utf8').replaceAll('\r\n','\n');return file===corrupt?bytes+'\n':crlf?bytes.replaceAll('\n','\r\n'):bytes;};
+  const live=file=>{seen.push(file);if(file===missing)return null;const bytes=formationRead(file).replaceAll('\r\n','\n');return file===corrupt?bytes+'\n':crlf?bytes.replaceAll('\n','\r\n'):bytes;};
   for(let repeat=0;repeat<2;repeat++){seen.length=0;assert.equal(sourceEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),expected);assert.deepEqual(seen,proof.owners);}
   for(const owner of proof.owners){
    corrupt=owner;assert.throws(()=>sourceEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),/linked owner identity/,owner);corrupt=null;
-   missing=owner;assert.throws(()=>sourceEpoch.preCombinedSource(path,readFileSync(path,'utf8'),{target:'encounterFormationPrior',readSource:live}),/linked owner identity/,owner);missing=null;
+   missing=owner;assert.throws(()=>sourceEpoch.preCombinedSource(path,formationRead(path),{target:'encounterFormationPrior',readSource:live}),/linked owner identity/,owner);missing=null;
   }
  }
 });
@@ -220,7 +219,7 @@ test('current UI facade authenticates all 116 disk owners and their continuation
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
  assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());
  assert.equal(current.owners.length,116);
- const admittedReads=[...current.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...current.owners,...currentProductionRereads];
  const expected=current.targets[target].files[file].source;
  for(const crlf of [false,true]){
   const reads=[];let bad=null,missing=false;

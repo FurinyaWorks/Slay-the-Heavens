@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -177,7 +178,7 @@ test('current raw production retains the exact power-view owner and complete rel
  assert.deepEqual(menuRedEpoch.proof.owners,[...stsStyleEpoch.proof.owners,owner].sort());assert.equal(menuRedEpoch.proof.owners.length,105);
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
  assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(current.owners.length,116);
- const admittedReads=[...current.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...current.owners,...currentProductionRereads];
  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
  const expected=current.targets.develop.files[file].source;
  assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,admittedReads);
