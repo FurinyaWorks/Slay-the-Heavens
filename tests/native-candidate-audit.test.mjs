@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compareNativeCandidate, requireSourceSha, candidateEntrySource,nativeControlsEqual } from '../scripts/native-candidate-audit.mjs';
+import { withNativeImageTypes } from '../scripts/native-ui-encoder.mjs';
 import {auditPortraitTemplateBindings} from '../scripts/audit-native-candidate.mjs';
 import {selectionHalfImage,selectionHalfTemplate} from '../scripts/lumine-selection-background.mjs';
 
@@ -61,6 +62,40 @@ test('unencoded gallery imageType remains a real difference, including stretch',
   const source={name:'gallery',kind:'image',image:106056,imageType};
   assert(!nativeControlsEqual([source],[{name:'gallery',kind:'image',image:106056}]));
  }
+});
+
+test('native gallery modes preserve explicit Basic and Stretch while absent stays absent',async()=>{
+ const source=`
+const field=(id,wire,value)=>Buffer.from(JSON.stringify({id,wire,value})+'\\n');
+const clientBlock=(_kind,bytes)=>bytes;
+export function clientControlRecord({rootForm,image,colour,mask}){
+ return {image:[clientBlock(96,Buffer.concat([field(502,0,colour),field(503,0,image)]))]}.image[0];
+}
+export function write(c){
+ const only=(keys,kinds)=>{if(keys.some(key=>c[key]!==undefined)&&!kinds.includes(c.kind))throw Error('Unexpected field');};
+ only(['image','colour','opacity','mask'],['image']);
+ return clientControlRecord({image:c.image,colour:c.colour});
+}
+export function read(picture){
+ const out={},has=(b,id)=>Object.hasOwn(b,id),number=(b,id)=>b[id];
+ if(has(picture,503))out.image=number(picture,503);
+ return out;
+}`;
+ const load=code=>import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+ const before=await load(source),after=await load(withNativeImageTypes(source));
+ const gallery={kind:'image',image:106056,colour:0xffffffff};
+ assert.deepEqual(after.write(gallery),before.write(gallery));
+ assert.deepEqual(after.read({503:gallery.image}),{image:gallery.image});
+ for(const [imageType,value] of [['basic',0],['stretch',1]]){
+  const data=after.write({...gallery,imageType}).toString().trim().split('\n').map(JSON.parse);
+  assert.deepEqual(data[0],{id:501,wire:0,value});
+  assert.deepEqual(after.read(Object.fromEntries(data.map(row=>[row.id,row.value]))),{image:gallery.image,imageType});
+ }
+ assert.throws(()=>after.write({...gallery,imageType:'unknown'}),/requires a gallery image/);
+ assert.throws(()=>after.write({...gallery,image:100002,imageType:'basic'}),/requires a gallery image/);
+ assert.throws(()=>after.write({kind:'text',imageType:'basic'}),/Unexpected field/);
+ assert.throws(()=>after.read({501:2,503:gallery.image}),/Unsupported native image type/);
+ assert.throws(()=>withNativeImageTypes(source.replace('if(has(picture,503))','if(true)')),/schema changed/);
 });
 
 test('official selection audit binds the read-back half triangle to the same candidate and distinct native IDs',()=>{

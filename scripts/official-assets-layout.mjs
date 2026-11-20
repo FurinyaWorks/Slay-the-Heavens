@@ -140,7 +140,7 @@ function battleSurfaces(root,theme){
  walk(root,node=>{
   // A solid native disc is sufficient for these monochrome materials. Avoid
   // depending on an atlas sprite's default nine-slice centre for solid fills.
-  if(node.kind==='image'&&node.image===106025)node.image=100002;
+  if(node.kind==='image'&&node.image===106025){node.image=100002;delete node.imageType;}
   if(node.name==='dashes'&&children(node).length>1&&children(node).every(c=>/^dash\d+$/.test(c.name)&&c.kind==='image')){
    node.children=[{name:'nativeRing',kind:'image',size:[...node.size],image:theme.image.ring,colour:theme.color.goldDim,opacity:.55}];
   }
