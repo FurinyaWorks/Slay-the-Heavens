@@ -22,12 +22,15 @@ assert(assetModule.includes(selection.jsonSha256));
 
 
 const require = createRequire(import.meta.url);
-const driver = fileURLToPath(new URL('capture-runtime.lua', import.meta.url));
+const drivers = { '--p1': 'capture-p1.lua', '--selection': 'capture-selection.lua' };
+const driverName = process.argv[3] ? drivers[process.argv[3]] : 'capture-runtime.lua';
+assert(driverName, 'Unknown offline evidence scenario');
+const driver = fileURLToPath(new URL(driverName, import.meta.url));
 const command = `package.path=${luaString(generated + '/?.lua;src/lua/?.lua')};dofile(${luaString(driver)})`;
 const result = spawnSync(process.execPath, [require.resolve('fengari-node-cli/src/lua-cli.js'), '-e', command], {
   encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, timeout: 120000, env: { ...process.env, LUA_INIT: '', LUA_INIT_5_3: '' }
 });
-assert.equal(result.status, 0, result.error?.message ?? result.stderr);
+assert.equal(result.status, 0, result.error?.message ?? result.stdout + result.stderr);
 const prefix = 'OFFICIAL_VISUAL_SCENES ';
 const lines = result.stdout.trimEnd().split('\n');
 const scenes = lines.find(line => line.startsWith(prefix));

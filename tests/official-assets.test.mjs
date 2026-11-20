@@ -104,6 +104,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  const result=applyOfficialAssets([layout,template],theme);
  const current=new Map([...paths(layout),...paths(template)]);
  const retiredDeckPrefix='/SlayTheAbyss/characterPanel/deckView/';
+ const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deckOpen(?:\/|$)/.test(path);
  const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
  const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[3-9]|10)(?:\/|$)/.test(path);
  const retiredDeck=child(child(layout,'characterPanel'),'deckView');
@@ -114,8 +115,8 @@ test('approved pages keep live input identities while unrelated pages retain the
    if(retiredPickerChild(path)||retiredChoice(path)){
     assert.equal(current.has(path),false,path+' exact unused capacity face is retired');continue;
    }
-   if(path.startsWith(retiredDeckPrefix)){
-    assert.equal(current.has(path),false,path+' duplicate selection browser must be removed');continue;
+   if(path.startsWith(retiredDeckPrefix)||retiredStarterEntry(path)){
+    assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
     // The approved pile return uses permanent artwork plus one native receiver.
@@ -184,8 +185,8 @@ test('approved pages keep live input identities while unrelated pages retain the
     for(const key of Object.keys(before))assert.deepEqual(node[key],key==='visible'?false:key==='size'?theme.layout.card.size:before[key],path+' semantic parent '+key);
     continue;
    }
-   if(path.startsWith(retiredDeckPrefix)){
-    assert.equal(current.has(path),false,path+' duplicate selection browser must be removed');continue;
+   if(path.startsWith(retiredDeckPrefix)||retiredStarterEntry(path)){
+    assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(menuProjection.has(path)){
     assert.equal(current.get(path),node,path+' menu input owner identity');
@@ -390,22 +391,16 @@ test('audio wrapper forwards the explicit official profile and lifecycle without
 });
 import {replayReviewedSelection} from './helpers/replay-reviewed-selection.mjs';
 
-test('official selection information board and exit share the live layout without changing hit owners',()=>{
+test('official selection leaves the portrait unobscured and exit retains the live button owner',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
  const panel=child(layout,'characterPanel'),details=child(panel,'details');
  const hit=child(child(child(layout,'runMenu'),'mainMenu'),'hit');
  applyOfficialNoncombatLayout(layout,theme);
- const board=child(details,'informationBoard');
- assert.equal(children(details)[0],board);
- assert.deepEqual(board.position,[-276,4]);
- assert.deepEqual(board.size,[536,344]);
- const fill=child(board,'fill');
- assert.equal(fill.kind,'image');
- assert.equal(fill.image,theme.image.rect);
- assert.ok(fill.opacity>0&&fill.opacity<1);
+ assert.equal(child(details,'informationBoard'),undefined,'the left copy must not shade the portrait');
  for(const name of ['name','stats','gold','v25Story','relic','relicText','deckTitle','deckSummary']){
   const control=child(details,name);
-  for(const axis of [0,1])assert.ok(Math.abs(control.position[axis]-board.position[axis])+control.size[axis]/2<=board.size[axis]/2,name);
+  assert.equal(control.text.align,'left',name);
+  assert.equal(control.text.outline,true,name);
  }
  assert.equal(child(panel,'scrim').visible,false);
  assert.strictEqual(child(child(child(layout,'runMenu'),'mainMenu'),'hit'),hit);

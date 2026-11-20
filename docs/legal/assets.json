@@ -3,6 +3,10 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "opening-statue-simulator-evidence": {
+      "status": "Project rendering of the owner-supplied opening statue design using native shape IDs. Simulator comparison evidence. Game and platform rights remain with their respective owners.",
+      "evidence": "scripts/sts-neow-guide-layout.mjs and docs/evidence/neow-geo-statue-preview.png; BeyondSimulator 0.5.2 rendering of the native Lua opening UI fixture."
+    },
     "battle-character-visual-reference": {
       "status": "Owner-selected, session-generated Genshin character derivative visual references for the project fitting experiment. Asset and platform rights remain separate. Project comparison only, with no official distribution authorization, asset sublicense, or native runtime approval.",
       "evidence": "art/characters/battle-figure-reference/2026-11-19/README.md and manifest.json; two original references from PR #744"
@@ -225,6 +229,10 @@
     }
   },
   "files": {
+    "docs/evidence/neow-geo-statue-preview.png": {
+      "sha256": "18cf82689b2a3185d51aaa90979acd0fc40e7150fd744bde5716db95d33aa92d",
+      "category": "opening-statue-simulator-evidence"
+    },
     "art/characters/battle-figure-reference/2026-11-19/lowpoly-style-probe.png": {
       "sha256": "990018355b9b17f0f4b1c34c848b5122e8e00333061f22a77e24c819e25fd13f",
       "category": "battle-character-visual-reference"
@@ -280,6 +288,101 @@
     "docs/evidence/v2-ui-20261119/runtime-run-menu.png": {
       "sha256": "9ba8c893fed3365bbe1e396f488a32fefd6ba0ebc4ffbb844a7670e57a6ebf01",
       "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-battle.png": {
+      "sha256": "19871583eb2b8e4be76c70acbf06ab152ad9ce4c2c5be1b583e8368d5c394c8e",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 173048
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-camp.png": {
+      "sha256": "758067a96ac09cbe314011718f9a8731578691ac3cb26499c0c44372be40fb7c",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 63718
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-deck.png": {
+      "sha256": "0bc1c0cf7041dba7a030f47f18da06af80b7f1a0a441cf7437c360fe9ce92fab",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 100719
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-defeat.png": {
+      "sha256": "3f6013e0b20118806d53db32b6bb328ccfd2a4ec1a84d60a39121ba3873ca6c3",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 100787
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-event.png": {
+      "sha256": "fbe6c7dcffec58d0c495b91575e6c5f3136abddde0e5602fef7a669ba7b67413",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 88094
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-exit-confirm.png": {
+      "sha256": "d3f7411bda8185e2fb09700475861899d607f5d7711e49b12514970e25028a1a",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 205856
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-pile-detail.png": {
+      "sha256": "eb3732a31c17ec3006ac9ab1a0c456deea035ed734e157a7c3e3462ad9e2b134",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 77979
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-pile-discard.png": {
+      "sha256": "2d9a72404848fe4ea8bcebb96f782e4ef0bac9b60a51355cb1be7288b037ced4",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 47524
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-pile-draw.png": {
+      "sha256": "84bd1dcded34adf82353217f2a3476161cda7b4d9d8b3a66e8eb2f39719a895a",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 67463
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-pile-exhaust.png": {
+      "sha256": "10b46cbf31ee529bbf96a2381ab9c7bda69ffd82de17792c0102badddbc52baa",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 50591
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-potion.png": {
+      "sha256": "c8c41fee0441b26f3016d25c12fea934e3437a44262408a880cd318c512657cd",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 84699
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-relic.png": {
+      "sha256": "9922a964e9f0d1b39680330079888a961e8785926f110c4e48931ed7a77a4220",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 66899
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-reward.png": {
+      "sha256": "69466a1201a34f57f708b8d8ef04e75e0e3d1523a6ecad3bc31f09b4e12a4410",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 48456
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-selection-before.png": {
+      "sha256": "61da98c4bd692eceaa5c21fa7d2db26d88c1f80256622a72c833b90e8bf9f6d7",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 319062
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-selection.png": {
+      "sha256": "accb6e67e7e465125a319a30e48fabe195c43aa2c60c7b9a90f484218b4bf61d",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 344968
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-shop.png": {
+      "sha256": "c5f8f881e03248e0c35c816a02570651e670e663c9b81bf873662493f5e50ab4",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 201316
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-transition-opening.png": {
+      "sha256": "c63efccbfa717e0c3a2cfcd8381c5e3318aa8255482a4ccbd92f5726d26f4d57",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 44260
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-transition-room.png": {
+      "sha256": "fececac5b0bbabdfe191f23ae11b0d21cae888992d88d538442a6c7b4c942101",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 38226
+    },
+    "docs/evidence/v2-ui-20261119/p1/runtime-victory.png": {
+      "sha256": "2eff3504843608c9d2707d7f2d4dc61efefc904b887566435535daba45be0e38",
+      "category": "v2-native-menu-layout-evidence",
+      "lfsBytes": 134684
     },
     "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png": {
       "sha256": "655f4926a86d1135d468b31bf0c225352c65de03ba09a0d684ffa875265741dd",

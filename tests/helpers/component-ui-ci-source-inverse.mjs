@@ -2,7 +2,7 @@ import {preDefectActorCiSource} from './defect-actor-ci-source-inverse.mjs';
 import {jointCiSourceAt} from './joint-ui-ci-source-inverse.mjs';
 import {preOfficialAssetsFlowCiSource} from './official-assets-flow-ci-source-inverse.mjs';
 import {preOfficialAssetsCiSource} from './official-assets-ci-source-inverse.mjs';
-import {beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
+import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
 // Pure CI receipt compatibility: complete current strings may enter the exact
 // pre-component source epoch. This does not authorize live owner projections or
 // claim that historical timings measured the current UI implementation.

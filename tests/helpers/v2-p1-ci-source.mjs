@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-source.mjs';
+
+const sha256 = value => createHash('sha256').update(value).digest('hex');
+const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
+assert.equal(sha256(bytes),'4fdf5c57375131d8da010c76696ae08f077054fd233ea413cda2e3f1364ef480','historical P1 evidence source identities');
+const archive = JSON.parse(gunzipSync(bytes));
+for (const row of Object.values(archive)) assert.equal(sha256(row.before),row.beforeSha256);
+
+// The exact P1/potion merge changes the closure in both directions. Restore
+// its potion side first; the prior evidence reader then validates each older hop.
+const potionMergeBytes = readFileSync(new URL('../fixtures/v2-p1-potion-merge-source.json.gz', import.meta.url));
+assert.equal(sha256(potionMergeBytes),'3bd16a5fc311e29dc3c004dceb0e6a6056d1dd34f61fe62cbca5ee2db5026a01','exact P1/potion merge evidence source identity');
+const potionMerge = JSON.parse(gunzipSync(potionMergeBytes));
+assert.equal(sha256(potionMerge.before),potionMerge.beforeSha256);
+assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.before)}\0`).update(potionMerge.before).digest('hex'),potionMerge.beforeGitBlob);
+
+export function beforeV2UiEvidence(path, source) {
+  if (path === potionMerge.path && typeof source === 'string' && !source.includes('\r\r\n')
+      && sha256(source.replaceAll('\r\n','\n')) === potionMerge.afterSha256) {
+    return beforePriorEvidence(path,source.includes('\r\n') ? potionMerge.before.replaceAll('\n','\r\n') : potionMerge.before);
+  }
+  if (Object.hasOwn(archive,path) && typeof source === 'string' && !source.includes('\r\r\n')) {
+    const row = archive[path];
+    const digest = sha256(source.replaceAll('\r\n','\n'));
+    if (digest === row.sha256 || row.mergedSha256?.includes(digest)) {
+      source = source.includes('\r\n') ? row.before.replaceAll('\n','\r\n') : row.before;
+    }
+  }
+  return beforePriorEvidence(path,source);
+}

@@ -1,5 +1,5 @@
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
-import {beforeV2UiEvidence} from './v2-ui-admission-ci-source.mjs';
+import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
 import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
 import assert from 'node:assert/strict';

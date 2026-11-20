@@ -89,7 +89,7 @@ try{
  }
  session.runtime.runChunk(L,`local v=__SELECTION_VIEW;local ok,why=v:selectCharacter('hutao');assert(not ok and why=='competition_character_unavailable');assert(v.characterSelection.info.id=='ironclad');__SELECTION_PORTRAITS:sync('menu',true,false,'hutao');assert(not __SELECTION_VIEW.root:GetChild('characterPanel'):GetChild('lumineSelectionBackground').visible);__SELECTION_PORTRAITS:sync('menu',true,false,'ironclad');assert(__SELECTION_PORTRAITS:status().selection.phase=='ready')`,'SELECTION_ROLE_BOUNDARY');
  assert.equal(session.runtime.controlsById.size,count);
- tap('stage/characterPanel/details/deckOpen/hit');await render('starter-deck');
+ assert(!all(find('stage/characterPanel/details')).some(n=>n.name==='deckOpen'),'Unexpected starter deck entry');
  report.faults=session.runtime.logs.filter(l=>l.level==='lua-error'||/ABYSS_UI failed|command_failed|prepare_failed/.test(l.text));assert.deepEqual(report.faults,[]);
  report.warmModelMs=stats(report.roundtrips.map(r=>r.modelMs));report.sdkStepMs=stats(report.steps);report.status='pass';
 }catch(error){report.error=String(error.stack);report.status='failed';process.exitCode=1;console.error(error);}

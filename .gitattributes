@@ -1433,3 +1433,24 @@ docs/evidence/m9-ci-20261103/raw-ci.json.gz filter=lfs diff=lfs merge=lfs -text 
 docs/evidence/pr621-deck-sort-20261111/validation.tar.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 tests/helpers/closeout-ci-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 tests/helpers/release-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+
+# Original bytes of the v2 P1 screenshots used by the UI reference index.
+docs/evidence/v2-ui-20261119/p1/runtime-battle.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-camp.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-deck.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-defeat.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-event.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-exit-confirm.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-pile-detail.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-pile-discard.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-pile-draw.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-pile-exhaust.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-potion.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-relic.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-reward.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-selection-before.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-selection.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-shop.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-transition-opening.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-transition-room.png filter=lfs diff=lfs merge=lfs -text
+docs/evidence/v2-ui-20261119/p1/runtime-victory.png filter=lfs diff=lfs merge=lfs -text
