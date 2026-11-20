@@ -13,14 +13,14 @@ for (const row of Object.values(archive)) assert.equal(sha256(row.before),row.be
 // The exact P1/potion merge changes the closure in both directions. Restore
 // its potion side first; the prior evidence reader then validates each older hop.
 const potionMergeBytes = readFileSync(new URL('../fixtures/v2-p1-potion-merge-source.json.gz', import.meta.url));
-assert.equal(sha256(potionMergeBytes),'f255a3292d1dffb1c6b486515f87ce7f7b47519b6681194287a7f9d7985d6525','exact P1/potion merge evidence source identity');
+assert.equal(sha256(potionMergeBytes),'f4b155c3720a1ca771e6af31bd31c2e1aa503de1dd9f12dab3aeb453e3af4a79','exact P1/potion merge evidence source identity');
 const potionMerge = JSON.parse(gunzipSync(potionMergeBytes));
 assert.equal(sha256(potionMerge.before),potionMerge.beforeSha256);
 assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.before)}\0`).update(potionMerge.before).digest('hex'),potionMerge.beforeGitBlob);
 
 export function beforeV2UiEvidence(path, source) {
   if (path === potionMerge.path && typeof source === 'string' && !source.includes('\r\r\n')
-      && [potionMerge.afterSha256,potionMerge.successorSha256].includes(sha256(source.replaceAll('\r\n','\n')))) {
+      && [potionMerge.afterSha256,...potionMerge.successorSha256s].includes(sha256(source.replaceAll('\r\n','\n')))) {
     return beforePriorEvidence(path,source.includes('\r\n') ? potionMerge.before.replaceAll('\n','\r\n') : potionMerge.before);
   }
   if (Object.hasOwn(archive,path) && typeof source === 'string' && !source.includes('\r\r\n')) {
