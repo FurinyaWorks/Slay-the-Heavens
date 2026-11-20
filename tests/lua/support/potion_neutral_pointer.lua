@@ -1,5 +1,5 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local h,u,p,_,tap,drain=H.setup({'defend','defend'},{'cultist'})
+local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'cultist'})
 local popup=p:GetChild('potionHelp'):GetChild('potionPopup')
 local plate,use=popup:GetChild('hit'),popup:GetChild('use')
 local function fire(c,kind,id)
@@ -46,6 +46,22 @@ for _,mode in ipairs({'anonymous_then_named_action_nil_click','named_then_other_
  end
  close()
 end
+
+-- A fresh anonymous Click must not compete with an already rejected release.
+h.run.potions[1]='block_potion';h:refresh();tap('potion1',103)
+local battle=h.run.combat
+fire(use,'down',104);fire(use,'up',104)
+battle.player.block=2147483647
+assert(fire(use,'click',104)==false and u.potionMenu and h.run.potions[1]=='block_potion',
+ 'stale Use must preserve the visible menu and its bottle')
+event('card1','click',104);event('card1','click',nil)
+assert(u.potionMenu and not u.selected,'the open popup still protects lower controls after rejected Use')
+battle.player.block=0
+fire(use,'down',105);fire(use,'up',105)
+assert(fire(use,'click',nil),'rejected Use must retire before a new anonymous Click')
+event('card1','click',105);event('card1','click',nil);drain()
+assert(not u.potionMenu and not u.selected and not h.run.potions[1] and battle.player.block==12,
+ 'successful retry is protected against named and anonymous lower-control tails')
 
 assert(failures==0,'neutral popup Host failures: '..failures)
 print('POTION_NEUTRAL_POINTER_PASS')

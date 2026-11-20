@@ -6,7 +6,7 @@ import {exactSourceContinuation} from './exact-source-continuation.mjs';
 
 const bytes=readFileSync(new URL('../fixtures/potion-pointer-source.json.gz',import.meta.url));
 const sha256=value=>createHash('sha256').update(value).digest('hex');
-assert.equal(sha256(bytes),'7cab06502a5c3c5e6be6704d8ce58cfb115b55ca3ed146a49114d6649f6d31a7','potion pointer owner witness');
+assert.equal(sha256(bytes),'9fce9e414190da11df3d1451bd4f373a1b6ec0d227d33a2e4e8d8cc1c34ecb41','potion pointer owner witness');
 const rows=Object.entries(JSON.parse(gunzipSync(bytes)));
 const continuations=new Map(rows.map(([path,row])=>{
  assert.equal(row.path,path);

@@ -206,8 +206,13 @@ function M.new(root,owner,platform,clickEvent,actions)
                 if not ready(token)then forget(token);return false end
             elseif not ready()then return false end
             if actions.pointerClick and not actions.pointerClick(event,token)then forget(token);return false end
+            local menu=owner.potionMenu
             local accepted,reason=act(name)
-            if actions.pointerConsumed then actions.pointerConsumed(event,token)end
+            if owner.potionMenu==menu then
+                -- Eligibility may have changed since Down. Retire this press;
+                -- the open popup still protects the controls underneath it.
+                forget(token)
+            elseif actions.pointerConsumed then actions.pointerConsumed(event,token)end
             return accepted,reason
         end)
     end
