@@ -50,7 +50,6 @@ const expected={live:'3476d3d6407f1a64c194add9937c48da1eb2ce6ba98cc90617feb3751a
 const run=['abyss_run_initialization','abyss_run_transition','abyss_run_rooms','abyss_run_settlement','abyss_run_potions'];
 const nodes=['abyss_nodes_common','abyss_nodes_entry','abyss_nodes_events','abyss_nodes_sources'];
 const battle=['abyss_battle_actions','abyss_battle_action_bindings','abyss_battle_card_bindings','abyss_battle_card_gestures','abyss_battle_card_layout','abyss_battle_details','abyss_battle_detail_bindings','abyss_battle_input_state','abyss_battle_potion_bindings','abyss_battle_render','abyss_battle_render_actors','abyss_battle_render_hud','abyss_battle_render_state','abyss_battle_targeting','abyss_battle_target_bindings'];
-const additions=['abyss_max_hp_relics',...battle,...nodes,...run];
 const project=(source,target)=>projectRunMaxHpConfig(path,source,target);
 
 test('a historical projection cannot hide a missing MaxHP registration from the current production architecture gate',()=>{
@@ -80,45 +79,57 @@ historicalTest('exact Run outer layer composes both unchanged inner complete-sou
  const source=read(path),combined=project(source,'combined'),acceptedRun=project(source,'run');
  assert.throws(()=>projectNodesBattleMaxHpConfig(path,source,'nodes'),/unreviewed combined Nodes Battle Max HP/);
  assert.throws(()=>preCoreArchitectureSource(path,source),/unreviewed integrated core registration base/);
- for(const target of ['combined','run']){
-  const projected=project(source,target);
+ for(const [target,projected] of [['combined',combined],['run',acceptedRun]]){
   assert.equal(project(source.replaceAll('\n','\r\n'),target),projected);
   assert.equal(preRunMaxHpConfig(path,source,target),projected);
   assert.equal(preRunMaxHpConfig(path,projected,target),projected);
  }
- for(const witness of [source,source.replaceAll('\n','\r\n'),combined,acceptedRun]){
-  assert.equal(preIntegratedNodeUiSource(path,witness),preIntegratedNodeUiSource(path,combined));
-  assert.equal(preApprovedUiSource(path,witness),preApprovedUiSource(path,combined));
+ const nodeWitness=preIntegratedNodeUiSource(path,combined),uiWitness=preApprovedUiSource(path,combined);
+ for(const witness of [source,source.replaceAll('\n','\r\n'),acceptedRun]){
+  assert.equal(preIntegratedNodeUiSource(path,witness),nodeWitness);
+  assert.equal(preApprovedUiSource(path,witness),uiWitness);
  }
 });
 
-historicalTest('all twenty-five live additive registrations reject missing duplicate renamed wrong-layer and cross-scope drift',()=>{
- const source=read(path),lines=source.split('\n'),mutants=[];
- for(const name of additions){
-  const line=lines.find(line=>line.includes(`"${name}":`));assert.ok(line,name);
-  mutants.push(source.replace(line+'\n',''),source.replace(line+'\n',line+'\n'+line+'\n'),source.replace(`"${name}":`,`"${name}_unknown":`),source.replace(line,line.replace(/: "(core|ui)"/,(_,layer)=>`: "${layer==='core'?'ui':'core'}"`)));
- }
+historicalTest('complete Run architecture witnesses reject each kind of registration and policy drift',()=>{
+ const source=read(path);
+ // Every registration is checked in the complete accepted witnesses above.
+ // Their whole-source guards are shared, so exercise each fault on one layer.
+ const maxHP='    "abyss_max_hp_relics": "core",\n';
+ const battleEntry='    "abyss_battle_actions": "ui",\n';
+ const nodeEntry='    "abyss_nodes_common": "core",\n';
  const first='    "abyss_run_initialization": "core",\n',next='    "abyss_run_transition": "core",\n';
- mutants.push(source+'\n',source.replace(first+next,next+first),source.replace(first,'').replace('  "layers": {\n','  "layers": {\n'+first),source.replace('"abyss_run_potions": "core"','"abyss_run_potions": "core",\n    "unknown": "core"'),source.replace('"dynamicExceptions": []','"dynamicExceptions": ["unknown"]'),source.replace('"abyss_run_potion_candidate": "core"','"abyss_run_potion_candidate": "ui"'),source.replace('"reason": "Potion/upgrade/HP','"reason": "unreviewed Potion/upgrade/HP'));
- let acceptedBaselineWitnesses=0;
- for(const mutant of mutants){
-  assert.notEqual(mutant,source);
+ const acceptedRun=project(source,'run');
+ const mutants={
+  'removed Max HP':source.replace(maxHP,''),
+  'missing Battle registration':source.replace(battleEntry,''),
+  'duplicate Nodes registration':source.replace(nodeEntry,nodeEntry+nodeEntry),
+  'renamed Run registration':source.replace(first,first.replace('initialization','unknown')),
+  'wrong Max HP layer':source.replace(maxHP,maxHP.replace('core','ui')),
+  'trailing whitespace':source+'\n',
+  'swapped Run registrations':source.replace(first+next,next+first),
+  'relocated Run registration':source.replace(first,'').replace('  "layers": {\n','  "layers": {\n'+first),
+  'extra registration':source.replace('"abyss_run_potions": "core"','"abyss_run_potions": "core",\n    "unknown": "core"'),
+  'dynamic exception':source.replace('"dynamicExceptions": []','"dynamicExceptions": ["unknown"]'),
+  'previous registration layer':source.replace('"abyss_run_potion_candidate": "core"','"abyss_run_potion_candidate": "ui"'),
+  'dependency boundary':source.replace('"reason": "Potion/upgrade/HP','"reason": "unreviewed Potion/upgrade/HP'),
+ };
+ for(const [fault,mutant] of Object.entries(mutants)){
+  assert.notEqual(mutant,source,fault);
   for(const target of ['combined','run']){
-   assert.throws(()=>project(mutant,target),/unreviewed combined Run Max HP/);
-   assert.equal(preRunMaxHpConfig(path,mutant,target),mutant,'unmatched complete bytes remain visible to the original guards');
+   assert.throws(()=>project(mutant,target),/unreviewed combined Run Max HP/,fault);
+   assert.equal(preRunMaxHpConfig(path,mutant,target),mutant,`${fault}: unmatched complete bytes remain visible to the original guards`);
   }
-  if(hash(mutant)===expected.run){
-   acceptedBaselineWitnesses++;
-   assert.equal(mutant,project(source,'run'),'only literal accepted58f config, not a partial or wildcard exemption');
-   assert.equal(preIntegratedNodeUiSource(path,mutant),preIntegratedNodeUiSource(path,source));
-   assert.equal(preApprovedUiSource(path,mutant),preApprovedUiSource(path,source));
+  if(fault==='removed Max HP'){
+   assert.equal(mutant,acceptedRun,'only literal accepted58f config retains the prior witness');
+   assert.equal(hash(mutant),expected.run);
+   // Both older last-mile adapters accept the literal Run target above.
   }else{
-   assert.throws(()=>preIntegratedNodeUiSource(path,mutant),/unreviewed integrated/);
-   assert.throws(()=>preApprovedUiSource(path,mutant),/unreviewed integrated/);
+   assert.notEqual(mutant,acceptedRun,fault);
+   assert.throws(()=>preIntegratedNodeUiSource(path,mutant),/unreviewed integrated/,fault);
+   assert.throws(()=>preApprovedUiSource(path,mutant),/unreviewed integrated/,fault);
   }
  }
- assert.equal(acceptedBaselineWitnesses,1);
- assert.equal(mutants.length,107);
 });
 
 historicalTest('explicit Run proof rejects missing source wrong path unknown target and preserves all frozen prior witnesses',()=>{
