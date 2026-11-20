@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import nativeTest,{after} from 'node:test';
 import {historicalTest as test,withHistoricalBaseline,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -191,7 +192,7 @@ nativeTest('original Roster closure rejects relabeled missing changed or redirec
 nativeTest('current Roster registration admission validates every raw owner freshly at the supported develop target',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),layers=JSON.parse(raw).layers,owners=sourceEpoch.proof.owners;
- const admittedReads=[...owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...owners,...currentProductionRereads];
  for(const file of readdirSync('src/lua',{recursive:true}).filter(file=>file.endsWith('.lua')))
   assert.ok(Object.hasOwn(layers,file.slice(0,-4).replaceAll('/','.')),'current source remains classified: '+file);
  assert.equal(layers.abyss_run_admission,'core');

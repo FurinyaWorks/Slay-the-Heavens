@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import {preDefectActorSource,defectActorEpoch} from './helpers/defect-actor-source-epoch.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {sourceEpoch as currentEpoch} from './helpers/closeout-source-epoch.mjs';
@@ -32,7 +33,7 @@ test('utility planner frozen complete source remains authenticated to develop d8
 
 test('the explicit historical reader requires current owners and rejects a stale configuration after warm success',()=>{
  const proof=currentEpoch.proof,config='config/architecture.json';
- const admittedReads=[...proof.owners,'src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua'];
+ const admittedReads=[...proof.owners,...currentProductionRereads];
  const actual=Object.fromEntries(proof.owners.map(p=>[p,read(p)]));let reads=[],changed,value;
  const reader=currentDefectActorReader(p=>{reads.push(p);if(p===changed){if(value instanceof Error)throw value;return value;}return actual[p];});
  for(let warm=0;warm<2;warm++){
