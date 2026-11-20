@@ -219,7 +219,13 @@ function M.new(root,owner,platform,clickEvent,actions)
         plate:AddCursorEventListener(cursor.CursorUp,function(event)releasePointer(plate,event)end)
         for _,kind in pairs({cursor.CursorEndDrag,cursor.CursorExit})do plate:AddCursorEventListener(kind,function(event)cancelPointer(plate,event)end)end
     end
-    plate:AddCursorEventListener(clickEvent,function(event)forgetReleased(plate,event);return true end)
+    plate:AddCursorEventListener(clickEvent,function(event)
+        -- Neutral Click consumes no action. Retire only its matched release;
+        -- a missing ID must not choose among competing pointers.
+        local pointer=currentPointer(plate,event)
+        if pointer and pointer.released then forget(pointer)end
+        return true
+    end)
     root.disableCursorEventPassthrough=true
     root:SetVisible(false)
     return popup

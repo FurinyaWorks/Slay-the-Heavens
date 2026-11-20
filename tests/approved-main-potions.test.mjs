@@ -53,6 +53,12 @@ test('Recovered potion ownership rejects competing, stale, and anonymous pointer
  assert.match(result.stdout,/APPROVED_MAIN_POTIONS_PASS/);
 });
 
+test('A completed neutral potion panel touch releases its pointer without dismissing or suppressing later Use',()=>{
+ const result=runLua('tests/lua/support/potion_neutral_pointer.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/POTION_NEUTRAL_POINTER_PASS/);
+});
+
 test('Recovered potion pointer sources restore only the three exact predecessors with fresh authorization',()=>{
  const priorWitnesses=[
   ['src/lua/abyss_battle_card_gestures.lua','de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153'],

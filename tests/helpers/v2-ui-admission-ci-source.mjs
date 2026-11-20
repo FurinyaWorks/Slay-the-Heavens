@@ -18,6 +18,14 @@ const recovery = JSON.parse(gunzipSync(recoveryBytes));
 assert.equal(recovery.base,'eaf4a4a50640697f4c497fe116db94c1ed69a10d');
 for (const row of Object.values(recovery.files)) assert.equal(sha256(row.before),row.beforeSha256);
 
+const potionNeutralBytes = readFileSync(new URL('../fixtures/potion-neutral-ci-source.json.gz', import.meta.url));
+assert.equal(sha256(potionNeutralBytes),'5d426a0f966cb3bcff547e78d498cf41608e56cea0aa99530f28924cb72c0b66','potion neutral CI predecessor identity');
+const potionNeutral = JSON.parse(gunzipSync(potionNeutralBytes));
+for (const row of Object.values(potionNeutral)) {
+  assert.equal(sha256(row.before),row.beforeSha256);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.beforeGitBlob);
+}
+
 const potionPointerBytes = readFileSync(new URL('../fixtures/potion-pointer-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(potionPointerBytes),'922c811b2441673341f87b813d5acd3f17ac669bf59190926e4b9bd2c96d7c04','potion pointer CI predecessor identities');
 const potionPointer = JSON.parse(gunzipSync(potionPointerBytes));
@@ -33,6 +41,7 @@ function project(source, row) {
 }
 
 export function beforeV2UiEvidence(path, source) {
+  if (Object.hasOwn(potionNeutral,path)) source = project(source,{sha256:potionNeutral[path].afterSha256,before:potionNeutral[path].before});
   if (Object.hasOwn(potionPointer,path)) source = project(source,{sha256:potionPointer[path].afterSha256,before:potionPointer[path].before});
   if (Object.hasOwn(recovery.files,path)) source = project(source,recovery.files[path]);
   return Object.hasOwn(archive,path) ? project(source,archive[path].successor) : source;
