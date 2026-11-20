@@ -7,15 +7,10 @@ import {prepareMediaAssets} from './ci-media-lfs.mjs';
 
 export const timings = JSON.parse(readFileSync(new URL('./ci-test-timings.json', import.meta.url), 'utf8'));
 
-// Windows Full placement floors from successful PR and queue runs 44649295695
-// and 44657075191. Each uses the larger complete per-file CI_FILE_TIMING.
-const windowsJsPlacementFloors = {
-  'tests/relic-query-source-inverse.test.mjs': 770359,
-  'tests/art-feature-source-inverse.test.mjs': 431203,
-};
-for (const [file, durationMs] of Object.entries(windowsJsPlacementFloors)) {
-  timings.js.win32[file] = Math.max(timings.js.win32[file] ?? timings.unknownJsMs, durationMs);
-}
+// The larger complete per-file observation from Windows Full jobs
+// 136000234494 and 136026191485 keeps the current shard forecast within budget.
+const artFeatureInverseTest = 'tests/art-feature-source-inverse.test.mjs';
+timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);
 
 export function partition(files, value, weights, fallback, initial) {
   const match = /^([1-9]\d*)\/([1-9]\d*)$/.exec(String(value));
