@@ -6,7 +6,7 @@ import {beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-so
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
-assert.equal(sha256(bytes),'0511e9dce5230ba45848e766c0b335f545694e48c00d4dba9a056e35498eaf78','historical P1 evidence source identities');
+assert.equal(sha256(bytes),'4fdf5c57375131d8da010c76696ae08f077054fd233ea413cda2e3f1364ef480','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
 for (const row of Object.values(archive)) assert.equal(sha256(row.before),row.beforeSha256);
 
