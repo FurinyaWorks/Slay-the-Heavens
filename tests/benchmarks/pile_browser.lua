@@ -55,6 +55,32 @@ local function setup(amount,kind)
     settle()
     return root
 end
+local function findLayout(nodes,name)
+    for _,node in ipairs(nodes) do
+        if node.name==name then return node end
+        local found=findLayout(node.children or {},name)
+        if found then return found end
+    end
+end
+local panelSpec=assert(findLayout(Fixture.Layout,'deckPanel'))
+local chromeSpec=assert(findLayout(panelSpec.children,'pileChrome'))
+local headingSpec=assert(findLayout(chromeSpec.children,'heading'))
+local function overlaps(cover,box,offset)
+    local x,y=offset and offset[1] or 0,offset and offset[2] or 0
+    return math.abs(cover[1]-box.position[1]-x)*2<cover[3]+box.size[1]
+        and math.abs(cover[2]-box.position[2]-y)*2<cover[4]+box.size[2]
+end
+local function timedSort(sample,original,...)
+    local oldSort=table.sort
+    table.sort=function(...)
+        local start=LuaClock()
+        oldSort(...)
+        sample.sort=sample.sort+LuaClock()-start
+    end
+    local first,second=original(...)
+    table.sort=oldSort
+    return first,second
+end
 local function timeProjection(owner,name,sample,field)
     for index=1,100 do
         local key,original=debug.getupvalue(owner,index)
@@ -62,7 +88,7 @@ local function timeProjection(owner,name,sample,field)
         if key==name then
             debug.setupvalue(owner,index,function(...)
                 local start=LuaClock()
-                local first,second=original(...)
+                local first,second=timedSort(sample,original,...)
                 sample[field]=sample[field]+LuaClock()-start
                 return first,second
             end)
@@ -78,7 +104,7 @@ local function measure(samples,root,kind,action)
     local chrome=panel:GetChild('pileChrome')
     local deck=host.deckUI
     local rawRefresh,rawGrid=host.refresh,grid.RefreshItems
-    local sample={refresh=0,grid=0,fill=0,refreshes=0,grids=0,fills=0,snapshot=0,projection=0}
+    local sample={refresh=0,grid=0,fill=0,refreshes=0,grids=0,fills=0,snapshot=0,projection=0,sort=0}
     local endSnapshot=timeProjection(deck.open,'pileCards',sample,'snapshot')
     local endProjection=timeProjection(deck.open,'projectCards',sample,'projection')
     grid.flush=function(self)
@@ -101,11 +127,17 @@ local function measure(samples,root,kind,action)
         end)
         sample.grid=sample.grid+LuaClock()-start
     end
+    local function headingVisible()
+        if not panel.visible or not chrome.visible then return false end
+        if not cover.visible then return true end
+        local frame=host.pageReveal.localFrame
+        return frame and not overlaps(frame,headingSpec,chromeSpec.position)
+    end
     local start=LuaClock()
     local heap=collectgarbage('count')
     assert(action())
     sample.callback=LuaClock()-start
-    sample.shell=panel.visible and chrome.visible and (not cover.visible or host.pageReveal.localFrame) and 0 or nil
+    sample.shell=headingVisible() and 0 or nil
     local function visible()
         return not host.pageReveal:covered() and not (deck.pending or deck.calibrating or deck.pendingGrid)
     end
@@ -113,7 +145,7 @@ local function measure(samples,root,kind,action)
     while not visible() and turn<8 do
         tick()
         turn=turn+1
-        if not sample.shell and panel.visible and chrome.visible and (not cover.visible or host.pageReveal.localFrame) then sample.shell=turn end
+        if not sample.shell and headingVisible() then sample.shell=turn end
     end
     assert(visible(),'first viewport did not publish for '..kind)
     sample.total=LuaClock()-start
@@ -128,20 +160,20 @@ local function measure(samples,root,kind,action)
     samples[#samples+1]=sample
 end
 local function report(kind,amount,mode,samples)
-    local fields={'callback','total','refresh','grid','fill','layout','snapshot','projection','turn','shell','refreshes','grids','fills','heap','cells'}
+    local fields={'callback','total','refresh','grid','fill','layout','snapshot','projection','sort','turn','shell','refreshes','grids','fills','heap','cells'}
     local row={kind,amount,mode,#samples}
     for index,field in ipairs(fields) do
         local values={}
         for _,sample in ipairs(samples) do values[#values+1]=sample[field] or -1 end
         table.sort(values)
-        local scale=index<=8 and 1000 or 1
+        local scale=index<=9 and 1000 or 1
         for _,quantile in ipairs({.5,.95}) do
             row[#row+1]=string.format('%.3f',values[math.ceil(#values*quantile)]*scale)
         end
     end
     print('PILE_METRIC\t'..table.concat(row,'\t'))
 end
-print('PILE_FIELDS\tkind\tamount\tmode\tn\tcallback_ms\ttotal_ms\trefresh_ms\tgrid_ms\tfill_ms\tgrid_exclusive_ms\tpile_snapshot_ms\tprojection_ms\tvisible_turn\tshell_turn\thost_refreshes\tgrid_refreshes\tfill_callbacks\theap_KiB\tretained_cells (each P50,P95)')
+print('PILE_FIELDS\tkind\tamount\tmode\tn\tcallback_ms\ttotal_ms\trefresh_ms\tgrid_ms\tfill_ms\tgrid_exclusive_ms\tpile_snapshot_ms\tprojection_ms\tsort_ms\tvisible_turn\theading_clear_turn\thost_refreshes\tgrid_refreshes\tfill_callbacks\theap_KiB\tretained_cells (each P50,P95)')
 local samples=tonumber(os.getenv('PILE_SAMPLES')) or 30
 for _,kind in ipairs({'draw','discard','exhaust','master'}) do
     if not os.getenv('PILE_KIND') or os.getenv('PILE_KIND')==kind then
