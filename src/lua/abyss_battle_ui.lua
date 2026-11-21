@@ -129,7 +129,8 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         bindEnemyPowerControl=services.bindEnemyPowerControl, unbindEnemyPowerControl=services.unbindEnemyPowerControl,
         bindEnemyDetailControls=services.bindEnemyDetailControls, unbindEnemyDetailControls=services.unbindEnemyDetailControls, bindDetailControls=services.bindDetailControls,
         potionDragTarget=services.potionDragTarget,
-        cancelCardInputs=services.cancelCardInputs, consumeReleasedDragClick=services.consumeReleasedDragClick
+        cancelCardInputs=services.cancelCardInputs, cancelActionInputs=services.cancelActionInputs,
+        cancelPotionInputs=services.cancelPotionInputs, consumeReleasedDragClick=services.consumeReleasedDragClick
     }
     host.stage = host.options.embedded and host.root or assert(host.root:GetChild("stage"), "missing stage")
     host.cursor = host.platform.cursorEvents
@@ -359,13 +360,22 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         Controller.bind(host.controller,hit,'battle',openPile,available,80)
     end
     local keys = host.platform.keyEvents
-    if keys and keys.KeyboardSprintKeyDown and host.root.AddKeyEventListener then
-        -- The official UI maps SprintKey to the user's right-mouse binding.
-        host.root:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
-            if not self.active or not (self.gesture or self.carry or self.selected) then return false end
+    local keyRoot = host.platform.keyRoot or host.root
+    if keys and keys.KeyboardSprintKeyDown and keyRoot.AddKeyEventListener then
+        -- The official sprint binding defaults to RMB. Listen on the persistent UI root.
+        keyRoot:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
+            local run, gesture = self.run, self.gesture or self.carry
+            if not self.active or self.busy or not run or run.phase ~= 'combat' or run.combat.phase ~= 'player'
+                or not (gesture or self.selected) or host.root.visible == false then return false end
             services.cancelCardInputs()
-            self.gesture,self.carry,self.selected,self.hover = nil,nil,nil,nil
-            self.suppressClick = true
+            services.cancelActionInputs()
+            services.cancelPotionInputs()
+            self.gesture, self.carry, self.selected, self.cardAim = nil, nil, nil, nil
+            self.hover, self.handHover, self.help = nil, nil, nil
+            self.selectionEpoch = (self.selectionEpoch or 0) + 1
+            if gesture then ownership.releasedDragTouch = gesture.touch end
+            self.suppressClick = gesture ~= nil
+            services.notice('')
             self:render()
             return true
         end)
