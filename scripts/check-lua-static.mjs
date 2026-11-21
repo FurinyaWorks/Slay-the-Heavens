@@ -94,6 +94,9 @@ export function reviewRenderComplexity(diagnostics, sources) {
 // Budget only this governance slice and every extracted responsibility module.
 // Unrelated pre-existing Combat/UI hotspots keep their diagnostic reports.
 const responsibilityRoots = {
+  'src/lua/abyss_original_v4_display.lua': [],
+  'src/lua/abyss_warrior_status_cards.lua': ['installCards','installStatuses','installPowers',
+    'M.withCards'].map(name=>`function '${name}'`),
   'src/lua/abyss_curses.lua': ["function 'M.isImplemented'"],
   'src/lua/abyss_skill_feedback.lua': [],
   'src/lua/abyss_joust_event.lua': [],
@@ -106,7 +109,8 @@ const responsibilityRoots = {
     ...['gainSilentFinalPower','potionShivs','trigger','choke','setup','bulletTime','copyHand','distraction','doppelganger','phantasmalGain','remove','tools','startPower','corpseDamage','alchemize']
       .map(name=>`actionHandlers.${name}`)].map(name=>`function '${name}'`),
   'src/lua/abyss_silent_tactics_cards.lua': [],
-  'src/lua/abyss_watcher_flow_cards.lua': ['M.planEffect','planDamage','planStance','planCollect','planPower','planRecall']
+  'src/lua/abyss_watcher_flow_cards.lua': ['M.planEffect','planDamage','planStance','planCollect','planPower','planRecall',
+    'installFlowCards','installSpecialCards','installFlowPowers','M.withCards','startTurnHook','laterTurnHook','M.planHook']
     .map(name=>`function '${name}'`),
   'src/lua/abyss_scry.lua': ['M.choose','allowedCandidates','selectedCards','hasWeaveQueue','discardSelected']
     .map(name=>`function '${name}'`),
@@ -265,6 +269,7 @@ const responsibilityRoots = {
 // All Run orchestration and newly extracted Run helpers receive the full budget.
 const responsibilityHelper = file => /^src\/lua\/abyss_(?:effects_.+|combat_effect.*|combat_catalog|combat_reactions|combat_native_play|combat_queued_play|act2_ai_.+|character_presentation_.+|feedback_.+|node_ui(?:_.+)?|game_ui_.+|run(?:_(?!(?:card_catalog|red_card_contract|seed)\.lua$).+)?|nodes(?:_.+)?)\.lua$/.test(file);
 const completeResponsibility = file => responsibilityHelper(file)
+  || file==='src/lua/abyss_original_v4_display.lua'
   || file==='src/lua/abyss_curses.lua'
   || file==='src/lua/abyss_skill_feedback.lua'
   || file==='src/lua/abyss_joust_event.lua'
