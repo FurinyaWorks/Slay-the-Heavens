@@ -14,7 +14,7 @@
 | 独立评审、CI 或合并 | [PR 自动合并准入](docs/CI.md#pr-自动合并准入) |
 | 修改美术、角色方案或数值 | [角色生产规范](docs/design/characters/PRODUCTION.md)；[当前 UI 参考](docs/design/UI_REFERENCES.md)；[UI 规范](docs/design/UI_DESIGN.md) |
 | 核对 v2 来源、实机验收或发布 | [v2 候选交接](docs/versions/V2-RELEASE-HANDOFF.md)；[发布](docs/PUBLISHING.md)；[平台负载](docs/PLATFORM_LOAD.md) |
-| 维护指引 | [指引与执行机制](docs/AGENT_GUIDANCE.md) |
+| 查工程护栏或维护指引 | [规则与验证入口](docs/AGENT_GUIDANCE.md) |
 
 按当前任务选择入口。阈值、测试集合和线上保护分别以仓库可执行配置、测试及实时 GitHub Rulesets 为准。保持现有质量门槛与断言，合并按实际 HEAD、BASE 和独立评审证据交付。
 
