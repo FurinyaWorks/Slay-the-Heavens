@@ -1,4 +1,4 @@
-import {beforeCoopJsInventory,beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
+import {beforeCoopJsInventory,beforeShopEntryInventory,beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -53,6 +53,7 @@ export function integratedPriorInventory(paths,target,kind='js',read=readFileSyn
  const prior=integratedCiProof.inventories[target]?.[kind];
  assert(prior,'known integration inventory');
  if(kind==='js')paths=beforeCoopJsInventory(paths,current,read);
+ else paths=beforeShopEntryInventory(paths,kind,read);
  // New standalone reviewed views consume raw discovery. Older chained views
  // retain their existing idempotent prior-inventory contract.
  if(target==='selection'||target==='release')assert.deepEqual([...paths].sort(),current,'complete reviewed raw '+kind+' inventory');

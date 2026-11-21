@@ -14,24 +14,33 @@ function M.install(ctx)
             and token.map==ctx.self.map and token.actions==ctx.self.actions and not ctx.self.shopBusy
     end
     function ctx.bindShopEntry(cursor)
-    if cursor and cursor.CursorDown and cursor.CursorUp then
-        hit:AddCursorEventListener(cursor.CursorDown,function(event)
-            observed=true;released=nil
-            held={touch=event and event.touchId,epoch=ctx.shopEpoch,run=ctx.self.run,map=ctx.self.map,actions=ctx.self.actions}
-            if not ctx.self.visible or ctx.self.shopBusy or ctx.self.shopOpen then held=nil end
-        end)
-        hit:AddCursorEventListener(cursor.CursorUp,function(event)
-            released=held and held.touch==(event and event.touchId) and held or nil;held=nil
-        end)
-        for _,name in ipairs({'CursorExit','CursorEndDrag','CursorDrag'})do
-            if cursor[name] then hit:AddCursorEventListener(cursor[name],function()held=nil;released=nil end) end
+        if cursor and cursor.CursorDown and cursor.CursorUp then
+            hit:AddCursorEventListener(cursor.CursorDown,function(event)
+                observed=true;released=nil
+                held={touch=event and event.touchId,epoch=ctx.shopEpoch,run=ctx.self.run,map=ctx.self.map,actions=ctx.self.actions}
+                if not ctx.self.visible or ctx.self.shopBusy or ctx.self.shopOpen then held=nil end
+            end)
+            hit:AddCursorEventListener(cursor.CursorUp,function(event)
+                if held and held.touch==(event and event.touchId) then released,held=held,nil end
+            end)
+            local function cancel(event)
+                local touch=event and event.touchId
+                if held and held.touch==touch then held=nil end
+                if released and released.touch==touch then released=nil end
+            end
+            for _,name in ipairs({'CursorExit','CursorEndDrag','CursorDrag'})do
+                if cursor[name] then hit:AddCursorEventListener(cursor[name],cancel) end
+            end
         end
-    end
-    hit:AddCursorEventListener(ctx.clickEvent,function(event)
-        local token=released;released=nil
-        if observed and (not valid(token) or event and event.touchId~=nil and event.touchId~=token.touch)then return false end
-        return ctx.openShop()
-    end)
+        hit:AddCursorEventListener(ctx.clickEvent,function(event)
+            if observed then
+                if not valid(released) then return false end
+                local touch=event and event.touchId
+                if touch~=nil and touch~=released.touch then return false end
+                released=nil
+            end
+            return ctx.openShop()
+        end)
     end
 
     local panel, back = ctx.child('shopView'), ctx.child('back')
@@ -123,6 +132,7 @@ function M.install(ctx)
         commit = function(...) return ctx.commit(...) end,
     })
     function ctx.shopFooter()
+        ctx.action('merchant/talk', not ctx.self.shopOpen and not ctx.self.shopBusy, ctx.openShop)
         if ctx.shopSelection.selected then return ctx.shopSelection:footer() end
         return '离开',nil,false,nil,nil,nil
     end

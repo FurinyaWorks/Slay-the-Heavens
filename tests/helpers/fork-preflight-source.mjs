@@ -1,3 +1,4 @@
+import {beforeReleaseShopEntry,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
 import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
@@ -74,8 +75,22 @@ function beforeRefinedReleaseCopier(path,source){
  assert.equal(hash(prior),"810c7ddebb21d62e26730d225ba218c33aa009656fee38929ee2881821ea813b",'exact refined Release helper copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// Restore the previous exact copy contract before its own historical projection.
+function beforeShopEntryCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87')return source;
+ const prior=lf.replace(" 'tests/helpers/release-shop-entry-source.json.gz':'d3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7',\n",'').replace(" 'tests/helpers/release-ui-restore-source.mjs':'37410ec175d07b09c8dd8062ac2e19d212dc8eeaebc32f38dbf99e7b32d8b7dd',"," 'tests/helpers/release-ui-restore-source.mjs':'26d8b8099e6b8f6fb30869479dcbcac90ff8c77ea04bc80ab4f8ad25c8bc8be3',");
+ assert.equal(hash(prior),'6da6f0f4defe5d10ec161a626d020ecd22d6f651d0e35c2ba941907f579337a6','exact shop entry helper copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+function shopEntryPreflightRead(read){
+ const prior=shopEntryPriorRead(read);
+ return (path,...args)=>beforeShopEntryCopier(path,prior(path,...args));
+}
 function beforeReleaseUiBuildSource(path,source){
- source=beforeCombatVisualSource(path,source);
+ source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
+ source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);
  source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,source));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -109,12 +124,25 @@ function assertCoopJsInventory(paths,preceding,read){
  assert(typeof testSource==='string'&&!testSource.includes('\r\r\n')&&
   hash(normalize(testSource))===coopLabTestSha,'fresh added inventory source: '+coopLabTest);
 }
+const shopEntryTests={
+ js:['tests/shop-entry.test.mjs','3b687d1afb6ee83dc7103bc4c074e990a748a96ef55c4cba326498a5ed2d1919'],
+ lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259'],
+};
+export function beforeShopEntryInventory(paths,kind,read=readFileSync){
+ const [path,sha]=shopEntryTests[kind];
+ const position=paths.indexOf(path);
+ if(position===-1)return paths;
+ assert.equal(paths.lastIndexOf(path),position,'duplicate inventory source: '+path);
+ const source=read(path,'utf8');
+ assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
+ return paths.filter(test=>test!==path);
+}
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
- paths=beforeRefinedReleaseJsInventory(paths,[...preceding,coopLabTest],read,true);
+ paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
 }
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
- paths=beforeRefinedReleaseJsInventory(paths,[...preceding,coopLabTest],read);
+ paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read);
  if(!paths.includes(coopLabTest))return paths;
  assertCoopJsInventory(paths,preceding,read);
  return paths.filter(path=>path!==coopLabTest);
@@ -191,6 +219,7 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ read=shopEntryPreflightRead(read);
  assertRefinedReleaseSourcesCurrent(read);
  read=combatVisualPriorRead(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){

@@ -110,6 +110,7 @@ local function scene(kind, source, prepare, mobile, enhanced)
           enhancedRooms=enhanced==true,
           cursorEvents={CursorEnter='enter',CursorExit='exit',CursorDown='down',CursorUp='up',CursorEndDrag='endDrag'} })
     ui:setVisible(true)
+    if kind=='shop' then assert(ui:press('merchant/talk'));ui:update(.31) end
     return ui, root
 end
 local function midRun(run) run.hp, run.gold = 62, 99 end

@@ -1,4 +1,5 @@
 import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
+import {authorizeReleaseUiRestore,beforeReleaseShopEntry,shopEntryPriorRead,shopEntrySourcePaths} from './release-ui-restore-source.mjs';
 import {beforeRefinedReleaseProduction,refinedReleaseProductionPaths} from './refined-release-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseForgeSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
@@ -66,6 +67,13 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+ if(shopEntrySourcePaths.includes(path)){
+  const prior=beforeReleaseShopEntry(path,source);
+  assert.notEqual(prior,source,'fresh current production owner: '+path);
+  authorizeReleaseUiRestore([[path,source]],read);
+  source=prior;
+ }
+ read=shopEntryPriorRead(read);
  assertCombatVisualCurrent(path,source,read);
  source=beforeCombatVisualSource(path,source,read);
  read=combatVisualPriorRead(read);

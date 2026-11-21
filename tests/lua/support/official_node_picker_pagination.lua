@@ -28,6 +28,7 @@ local function setup(kind)
 end
 
 local ui,get,run=setup('shop')
+assert(ui:press('merchant/talk'));ui:update(.31)
 local original={};for i,card in ipairs(run.deck)do original[i]=card.uid end
 assert(#original==10 and ui:press('shopView/removal'))
 local rows=ui.removeRows;assert(#rows==10 and ui.pageCount==4)

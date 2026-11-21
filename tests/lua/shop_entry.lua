@@ -4,7 +4,7 @@ package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
 local UI, Nodes = require("abyss_node_ui"), require("abyss_nodes")
 local Run, Map, Combat = require("abyss_run"), require("abyss_map"), require("abyss_combat")
 local Data, Layout, Presentation = require("abyss_data"), require("abyss_ui_layout"), require("abyss_presentation")
-local cursor = {CursorEnter="enter", CursorExit="exit", CursorDown="down", CursorUp="up", CursorEndDrag="endDrag"}
+local cursor = {CursorEnter="enter", CursorExit="exit", CursorDown="down", CursorUp="up", CursorEndDrag="endDrag", CursorDrag="drag"}
 local function control(spec, parent)
     local box = {parent=parent, visible=spec.visible~=false, children={}, listeners={},
         x=(spec.position or {})[1] or 0,y=(spec.position or {})[2] or 0,
@@ -75,7 +75,12 @@ for _,mobile in ipairs({false,true}) do
  emit('merchant/talk','down',99);ui:setVisible(false);ui:setVisible(true)
  emit('merchant/talk','up',99)
  assert(not emit('merchant/talk','click',99),'stale merchant tap survived hide/show')
- assert(tap('merchant/talk'))
+ emit('merchant/talk','down',11)
+ for _,event in ipairs({'up','drag','endDrag','exit'})do emit('merchant/talk',event,12) end
+ emit('merchant/talk','up',11)
+ for _,event in ipairs({'drag','endDrag','exit'})do emit('merchant/talk',event,12) end
+ assert(not emit('merchant/talk','click',12),'foreign click accepted')
+ assert(emit('merchant/talk','click',11),'foreign event swallowed the valid merchant click')
  assert(get('shopView').visible and get('shopView').y>300)
  assert(not ui:press('shopView/card1'),'transition accepted purchase')
  assert(not emit('merchant/talk','click'),'repeat open accepted')

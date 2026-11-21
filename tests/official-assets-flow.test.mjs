@@ -137,7 +137,8 @@ F.click(root,'nodePanel','back');assert(run.gold==gold and #run.deck==deck,'canc
 F.click(root,'nodePanel',name);F.click(root,'nodePanel','confirm')
 assert(run.gold<gold and #run.deck==deck+1,'confirmed shop purchase did not reach Core')
 local spent=run.gold
-F.click(root,'nodePanel','confirm');assert(run.phase=='map' and h.mode=='node')
+F.click(root,'nodePanel','back');assert(run.phase=='node')
+h.nodeUI:update(.31);assert(run.phase=='map' and h.mode=='node')
 F.click(root,'nodePanel','confirm');assert(h.mode=='map' and run.nodeFlow.complete)
 assert(run.gold==spent and #run.deck==deck+1,'shop exit replayed transaction')
 assert(not root:GetChild('nodePanel').active)

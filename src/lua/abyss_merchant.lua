@@ -135,17 +135,16 @@ function M.new(box, options)
             end
         end
     end
-    function merchant:update(dt)
-        if not self.visible or not self.current then return end
-        if self.compact then
-            if self.current.dismissed then return end
-            self.current.hold=self.current.hold+math.max(0,dt)
-            if self.current.hold>=1.5 then
-                self.current.dismissed=true
-                if bubble then bubble:SetVisible(false) end;line:SetVisible(false)
-            end
-            return
+    local function advanceCompact(current,dt)
+        if current.dismissed then return end
+        current.hold=current.hold+math.max(0,dt)
+        if current.hold>=1.5 then
+            current.dismissed=true
+            if bubble then bubble:SetVisible(false) end
+            line:SetVisible(false)
         end
+    end
+    local function advanceLegacy(self,dt)
         self.clock = (self.clock or 0) + dt
         local current = self.current
         advanceSpeech(current,dt)
@@ -159,6 +158,10 @@ function M.new(box, options)
         if self.nod then self.nod = self.nod + dt; if self.nod >= L.nod then self.nod = nil end end
         if self.shake then self.shake = self.shake + dt; if self.shake >= L.shake then self.shake = nil end end
         self:pose()
+    end
+    function merchant:update(dt)
+        if not self.visible or not self.current then return end
+        if self.compact then advanceCompact(self.current,dt) else advanceLegacy(self,dt) end
     end
     box:SetVisible(false)
     return merchant

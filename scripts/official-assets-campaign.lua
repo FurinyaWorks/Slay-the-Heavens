@@ -158,6 +158,7 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
     assert(item,'no claimable treasure');press('treasureView/rewardItem'..item)
    end
   else
+   if flow.type=='shop' and not h.nodeUI.shopOpen then press('merchant/talk') end
    local plan=assert(Policy.suggestNodeAction(run,map,coverage,done),'no node plan')
    if plan.method=='rest'and not h.nodeUI.actions['campView/rest'].enabled then
     local card=h.nodeUI.view.node.upgradeCards[1];assert(card);plan={method='upgrade',uid=card.uid}
@@ -165,7 +166,7 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
    if plan.method=='rest'then press('campView/rest')
    elseif plan.method=='upgrade'then press('campView/forge');selectUID(plan.uid)
    elseif plan.method=='removeCard'then press('shopView/removal');selectUID(plan.uid)
-   elseif plan.method=='leaveShop'then press('confirm')
+   elseif plan.method=='leaveShop'then press('back')
    elseif plan.method=='buyPotion'then press('shopView/potion'..plan.slot);press('confirm')
    elseif plan.method=='buyCardSlot'then press('shopView/card'..plan.slot);press('confirm')
    else error('unsupported plan '..plan.method)end
