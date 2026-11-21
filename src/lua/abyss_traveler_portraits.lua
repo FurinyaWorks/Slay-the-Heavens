@@ -599,7 +599,7 @@ function M.new(stage,report,flags,cardTemplates)
     local function presentationTargets(mode,characterOpen,stopped,character,preloadSelection)
         local wanted=activeTargets(mode,characterOpen,stopped,character,preloadSelection)
         for _,row in ipairs(rows)do
-            if official and row.name=='avatar' and row.visibleOwner.visible~=true then wanted.avatar=false end
+            if official and row.name=='avatar' then wanted.avatar=false end
         end
         return wanted
     end

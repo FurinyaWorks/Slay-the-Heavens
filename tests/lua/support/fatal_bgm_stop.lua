@@ -44,7 +44,10 @@ local function setup(enabled,stopThrows)
  GameUI.new=actualNew
  assert(h.ui and script.updating,'native bootstrap must be live')
  h.root=canvas:GetChild('stage');h.root.ui=h.ui
- assert(F.start(h.ui));published(h);h.ui:refresh()
+ for _=1,80 do if not h.ui.pageReveal:covered()then break end;OnUpdate(.05)end
+ assert(h.ui:start())
+ for _=1,80 do if not h.ui.pageReveal:covered()then break end;OnUpdate(.05)end
+ assert(F.confirmStart(h.ui));published(h);h.ui:refresh()
  if enabled==true then assert(h.signals[#h.signals]=='ABYSS_BGM_MAP')else assert(#h.signals==0)end
  h.failStop=stopThrows
  function h.restore()print=actualPrint end

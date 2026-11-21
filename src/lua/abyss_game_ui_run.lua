@@ -76,8 +76,6 @@ function M.start(self,selectionChanged)
             if self.characterOpen then return false,'character_choice_open' end
             if require('abyss_game_ui_navigation').hasRun(self) then return self:requestNavigation('new') end
             self.characterOpen=true;self.characterSelection:clear();self.characterSelection.deckOpen=false
-            -- Production keeps the select page, but the only open role is already showing.
-            if self.characterSelection.profile~='full-source' then self.characterSelection:select('traveler') end
             selectionChanged()
             if character then
                 for _,id in ipairs(CharacterSelect.elements)do if id==character then
@@ -143,10 +141,13 @@ function M.beginRun(platform,data,self,newSeed,presentation,endingHistory,neowHi
         end
 end
 
+local function openingBlocked(self)
+    return self.prologue and self.prologue:covering() or self.pageReveal and self.pageReveal:covered()
+end
 function M.confirmCharacter(self,beginRun)
     return function(_)
             if not self.characterOpen or self.starting or self.disabled or self.exitOpen or self.characterSelection.deckOpen
-                or self.prologue and self.prologue:covering()
+                or openingBlocked(self)
                 or self.settlementRequested or self.settlementBusy then return false,'character_choice_unavailable' end
             local info=self.characterSelection.info
             if not info then return false,'character_required' end
@@ -158,6 +159,11 @@ function M.confirmCharacter(self,beginRun)
                 self.starting=false
                 if not ok then error(accepted)end
                 return accepted,reason
+            end
+            if self.pageReveal and self.pageReveal:usesFade()then
+                local accepted=self.pageReveal:depart(commit,function()self.starting=false end)
+                if not accepted then self.starting=false end
+                return accepted
             end
             if self.prologue then
                 self.openingPrepared=0

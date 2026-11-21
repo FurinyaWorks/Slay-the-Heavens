@@ -60,14 +60,10 @@ function liyueElements(picture, p, colour) {
 }
 
 export function styleLiyuePageReveal(cover, theme) {
-  const { picture } = helpers(theme), p = theme.layout.prologue;
   const part = name => cover.children.find(node => node.name === name);
-  const veil = part('veil'), message = part('message'), cancel = part('cancel');
-  veil.colour = p.shade;
-  message.text.colour = p.ink;
-  message.position = p.title.slice(0, 2);
-  cancel.position = [0, -318];
-  cover.children.splice(cover.children.indexOf(veil) + 1, 0, liyueSeal(picture, p), ...liyueElements(picture, p, p.ink));
+  part('veil').colour = '#000000';
+  part('message').visible = false;
+  part('cancel').position = [0, -318];
 }
 
 export function prologueControl(theme = nativeTheme) {
