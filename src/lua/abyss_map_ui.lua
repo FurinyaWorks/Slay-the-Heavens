@@ -60,6 +60,13 @@ function M.pathWidth(taken, reachable)
     local v = Theme.layout.map.presentation
     return taken and v.takenPathWidth or reachable and Layout.lineWidth or v.lockedPathWidth
 end
+-- Presentation-only curve: monotone Y preserves viewport clipping; endpoints
+-- and the route's narrow corridor stay fixed. Never touch the Run RNG.
+function M.routePoint(x1,y1,x2,y2,t,seed)
+    local bend=(seed%2==0 and 1 or -1)*(5+seed%6)
+    local sway=math.sin(2*math.pi*t)*math.sin(math.pi*t)*(seed%3-1)
+    return x1+(x2-x1)*t+bend*4*t*(1-t)+sway,y1+(y2-y1)*t
+end
 function M.roomInk(node, state, currentFloor)
     local palette = Theme.color.mapCanvas
     if node.hasEmeraldKey then return Theme.color.positive end
@@ -336,7 +343,25 @@ function M.new(root, map, onChoose, clickEvent, options)
         control.localRotationZ = math.atan(dy, dx) * 180 / math.pi
         local ink=taken and pathColours.taken or reachable and pathColours.next or far and pathColours.far or pathColours.future
         if control:GetChild('routeInk1') then
-            for i=1,8 do child(control,'routeInk'..i).imageColor=ink end
+            local seed=0
+            local identity=tostring(source.id)..':'..tostring(target.id)
+            for i=1,#identity do seed=(seed*31+identity:byte(i))%997 end
+            local length=math.sqrt(dx*dx+dy*dy)
+            local ux,uy=dx/length,dy/length
+            for i=1,8 do
+                local dash=child(control,'routeInk'..i)
+                local first,last=math.max(a,(i-1)/8),math.min(b,(i-1+.48)/8)
+                dash:SetVisible(last>first)
+                if last>first then
+                    local sx,sy=M.routePoint(x1,y1,x2,y2,first,seed)
+                    local ex,ey=M.routePoint(x1,y1,x2,y2,last,seed)
+                    local cx,cy=(sx+ex-ax-bx)/2,(sy+ey-ay-by)/2
+                    dash:SetAnchoredPosition(cx*ux+cy*uy,-cx*uy+cy*ux)
+                    dash:SetSizeDelta(math.sqrt((ex-sx)^2+(ey-sy)^2),width)
+                    dash.localRotationZ=math.atan(ey-sy,ex-sx)*180/math.pi-control.localRotationZ
+                    dash.imageColor=ink
+                end
+            end
         else control.imageColor=ink end
     end
     function self.render(_)
