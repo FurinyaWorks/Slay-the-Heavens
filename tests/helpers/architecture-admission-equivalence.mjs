@@ -6,6 +6,8 @@ import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {luaString,toLua} from '../../scripts/build-lua-data.mjs';
 import {installLuaGraphObserver} from './lua-graph-observer.mjs';
+import {runStatic} from '../../scripts/check-lua-static.mjs';
+import {measureSources} from '../../scripts/lua-quality-metrics.mjs';
 const {lua,lauxlib,lualib,to_luastring,to_jsstring}=createRequire(import.meta.url)('fengari');
 const archive=readFileSync('tests/fixtures/architecture-admission-before.json.gz');
 assert.equal(createHash('sha256').update(archive).digest('hex'),'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42','immutable complete c2409ad7 source archive');
@@ -37,4 +39,27 @@ for(const [name,module,from,to,label]of [
  assert.equal(old.status,0,old.error);assert.equal(mutant.status,0,mutant.error);
  const expected=old.graphs.find(row=>row.label===label),actual=mutant.graphs.find(row=>row.label===label);
  assert(expected&&actual,'named rejection remains in matrix');assert.notDeepEqual(actual,expected,'the old behavior oracle must reject the production mutation');
+});
+
+test('complete admission responsibility measurements retain the CC15 limits',()=>{
+ const governed={
+  abyss_map:['emeraldMapShape','emeraldCoordinates','emeraldIdentity','emeraldMember','emeraldNode'],
+  abyss_treasure_source:['pairItems','pairMirror','pairExtras','M.pair'],
+  abyss_wheel_event:null,
+  abyss_winding_event:null,
+ };
+ const files=Object.fromEntries(Object.keys(governed).map(name=>[`src/lua/${name}.lua`,current[name]]));
+ const diagnostics=runStatic(['--max-cyclomatic-complexity','0','--only','561']).diagnostics.filter(row=>Object.hasOwn(files,row.file));
+ const report=measureSources(files,diagnostics);
+ assert.deepEqual(report.errors,[]);
+ assert.equal(report.modules.length,Object.keys(governed).length);
+ for(const module of report.modules){
+  const names=governed[module.file.slice(8,-4)];
+  const items=names?names.map(name=>module.functions.find(fn=>fn.name===name)):module.functions;
+  assert(items.length>0);
+  for(const fn of items){
+   assert(fn,`missing governed function in ${module.file}`);
+   assert(fn.complexity<=15,`${module.file} ${fn.name}: CC${fn.complexity} exceeds 15`);
+  }
+ }
 });
