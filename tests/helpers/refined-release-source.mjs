@@ -8,7 +8,7 @@ const hash=(source,algorithm='sha256')=>createHash(algorithm).update(source).dig
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const normalize=source=>source.replaceAll('\r\n','\n');
 const gzip=readFileSync(new URL('./refined-release-source.json.gz',import.meta.url));
-assert.equal(hash(gzip),'b3f1869b143594d0578b84687cea53d269d18ed04b08d120cf03d2ed72e3fa79','exact refined Release source archive');
+assert.equal(hash(gzip),'6b9e66890ecfeac7f0b581ece462edaf41095f6d2937896cf6032e9e8ee9a9a3','exact refined Release source archive');
 const {schemaVersion,base,normalization,files,addedJs}=JSON.parse(gunzipSync(gzip));
 assert.equal(schemaVersion,1);assert.equal(normalization,'LF');
 assert.equal(base,'7381cf7152ba7a726506f9a5b525e13cfbd2c87a');

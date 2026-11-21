@@ -30,6 +30,11 @@ function M.pose(box,x,y,sx,sy,colour,alpha)
  state.root:SetVisible(alpha>0)
  tint(state,colour,alpha)
 end
+local function assetFor(data,definitionId)
+ local identity=data.bindings and data.bindings[definitionId]
+ local legacy=data.asset
+ return data.assets and data.assets[identity] or (legacy and definitionId==legacy.enemyId and legacy)
+end
 local function newPool(stage,platform,data,poolIndex,actorBox)
  local overlay=not actorBox and optionalChild(stage,'topBar')
  local view={root=actorBox and optionalChild(actorBox,'monsterArt') or overlay and optionalChild(overlay,poolIndex and poolIndex>1 and 'monsterArt'..poolIndex or 'monsterArt'),platform=platform,data=data,origin=actorBox and {0,0} or data.hostOrigin or {0,0}}
@@ -56,9 +61,7 @@ local function newPool(stage,platform,data,poolIndex,actorBox)
   local wanted,wantedId,wantedAsset
   if self.root and self.data.enabled and self.platform.nativeMonsterArtEnabled~=false then
    for slot,entry in ipairs(rows)do
-    local identity=self.data.bindings and self.data.bindings[entry.actor.definitionId]
-    local legacy=self.data.asset
-    local asset=self.data.assets and self.data.assets[identity] or (legacy and entry.actor.definitionId==legacy.enemyId and legacy)
+    local asset=assetFor(self.data,entry.actor.definitionId)
     if asset and (not poolIndex or slot==poolIndex)then wanted,wantedId,wantedAsset=actorBox or stage:GetChild('enemy'..slot),entry.id,asset;break end
    end
   end

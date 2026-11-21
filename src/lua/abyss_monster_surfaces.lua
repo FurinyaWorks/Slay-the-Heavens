@@ -106,6 +106,10 @@ function M.new(stage,platform,onCreate,onRetire)
   end
   return parent,path
  end
+ local function needsReplacement(record,index,depth,entry)
+  return record and record.box
+   and (record.path~=pagePath(index,depth) or record.templateIndex~=actorTemplate(entry))
+ end
  local function selectRows(rows,battle)
   if self.battle~=battle then self:clear();self.battle=battle end
   local depth=1;while #rows>60^depth do depth=depth+1 end
@@ -120,7 +124,7 @@ function M.new(stage,platform,onCreate,onRetire)
   -- a source reorder can transiently create child61 in a currently full page.
   for index,entry in ipairs(rows)do
    local record=self.records[entry.id]
-   if record and record.box and (record.path~=pagePath(index,depth) or record.templateIndex~=actorTemplate(entry))then retire(record)end
+   if needsReplacement(record,index,depth,entry)then retire(record)end
   end
   for index,entry in ipairs(rows)do
    local parent,path=page(index,depth,generation)
