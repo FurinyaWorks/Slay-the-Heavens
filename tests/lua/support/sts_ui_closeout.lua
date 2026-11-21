@@ -83,10 +83,35 @@ assert(confirm.click() and not ui.run)
 assert(not confirm.click())
 if not STS_UI_BASELINE then assert(ui:start()) end
 assert(F.confirmStart(ui) and ui.run~=run and #ui.run.relics==1)
+if not STS_UI_BASELINE then
+    local events={CursorDown='down',CursorUp='up'}
+    local touch,touchRoot=F.fixture(nil,nil,nil,events)
+    start(touch)
+    touch:resize(854,480)
+    assert(Run.obtainPotion(touch.run,'fire_potion'))
+    touch:refresh()
+    local slot=hit(touchRoot:GetChild('potionEntry'):GetChild('slot1'))
+    local finger={touchId=77}
+    slot.listeners.down(finger)
+    assert(Run.discardPotion(touch.run,1) and Run.obtainPotion(touch.run,'fruit_juice'))
+    touch:refresh()
+    slot.listeners.up(finger)
+    assert(not slot.click(finger) and not touch.potionUI.visible,'old press opened a replacement bottle')
+    slot.listeners.down(finger);slot.listeners.up(finger)
+    assert(slot.click(finger) and touch.potionUI.visible)
+    assert(Run.discardPotion(touch.run,1))
+    touch:refresh()
+    assert(not touch.potionUI.visible and touchRoot:GetChild('deckEntry').visible)
+    assert(touch.mapUI:choose(F.Nodes.available(touch.run,touch.map)[1].id),'expired popup left map input disabled')
+end
+
 local fadeRoot=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
-local recovering,waiting
+local recovering,waiting,focus
+local navigation={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
+    modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(value)focus=value end,
+    isController=function()return true end}
 local fade=F.GameUI.new(fadeRoot,F.Data,F.Presentation,'click',{
-    seed=1,imageSource='static',prologue=not STS_UI_BASELINE,
+    seed=1,imageSource='static',prologue=not STS_UI_BASELINE,controllerApi=navigation,
     color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,
     presentationReady=function(intent)
         if recovering==intent.page then return false,'fixture readiness failure'end
@@ -130,16 +155,21 @@ settle()
 if not STS_UI_BASELINE then
     fade:resize(1600,720)
     assert(veil.sizeDeltaX==1600 and cover:GetChild('blocker').sizeDeltaX==1600)
-    recovering='mapPanel'
-    assert(fade:openMenu())
-    fade.routeOpen=true
-    fade:refresh()
-    for _=1,16 do tick(.05)end
-    assert(fade.pageReveal.state=='failed' and cover:GetChild('message').visible)
-    assert(hit(cover:GetChild('cancel')).click(),'failed route preview could not return to combat')
-    recovering=nil
-    settle()
-    assert(not fade.routeOpen and fade.mode=='battle' and fade.battleUI.active)
+    for _,input in ipairs({'click','cancel'})do
+        recovering='mapPanel'
+        assert(fade:openMenu())
+        fade.routeOpen=true
+        fade:refresh()
+        for _=1,16 do tick(.05)end
+        assert(fade.pageReveal.state=='failed' and cover:GetChild('message').visible)
+        local back=hit(cover:GetChild('cancel'))
+        focus=back
+        local recover=input=='click' and back.click or back.navigationListeners.cancel
+        assert(recover(),'failed route preview could not return to combat by '..input)
+        recovering=nil
+        settle()
+        assert(not fade.routeOpen and fade.mode=='battle' and fade.battleUI.active)
+    end
     assert(fade:openMenu() and fade:returnToMainMenu())
     settle()
     assert(hit(fadeRoot:GetChild('menuPanel'):GetChild('start')).click())

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-21T12:50:00Z'
-updated_date: '2026-11-21T16:09:07Z'
+updated_date: '2026-11-21T16:16:58Z'
 labels:
   - P2
   - non-blocking
@@ -67,4 +67,6 @@ PR803已创建并仅指向develop，ci:full申请正式Full。最终独审发现
 最终补齐真实原生旧bust备用控件覆盖命座问题（先复现后通过，开发头像可恢复）；捕获也断言0旧头像/四态bust隐藏。补同面板新场景淡出、局部面板关闭后启程恢复全屏转场覆盖两项反例，最终gate/ready/deck17/17通过，静态通过。当前两套fixture before/after逐项匹配base/当前文件，真实autocrlf索引检出导入通过。冻结最终提交重新独审，PR803仅develop，仍未宣称Full/已合入/设备通过。
 
 在 develop 73fd14aa 接续 #803 b5e7c915，原 PR 原生自动合并已暂停。前后正式 UI 布局及 Lua Host 投影见 docs/evidence/sts1-ui-closeout。新增主菜单／药水／遗物／淡出／恢复定向回归，正式 GIL 写入读回及 PC／手机／手柄实机仍未取得。
+
+集成 PR #812 指向 develop，针对独立评审补了换瓶前的触点撤销、过期弹窗的同帧恢复，以及失败路线预览的手柄返回。正式验证和官方实机证据仍待取得。
 <!-- SECTION:NOTES:END -->

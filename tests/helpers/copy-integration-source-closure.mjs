@@ -82,8 +82,8 @@ assert.equal(stsFadeFiles['tests/helpers/sts-selection-fade-source.mjs'],'73b46c
 const stsCloseoutFiles=Object.freeze({
  ...stsFadeFiles,
  'tests/helpers/sts-selection-fade-source.mjs':'d3be357f4c639c9f6d305eaa45b08674168f9f7166ecd50f8f4d6f41b3e560e7',
- 'tests/helpers/sts-ui-closeout-source.mjs':'e497af412c33b11bedb039069976afcda9403fb57bf73053092072e8d24f4007',
- 'tests/fixtures/sts-ui-closeout-source.json':'1dc65f74fed1074e130b88549001f70aeefcc329613266d9b4938225e7b84f5a',
+ 'tests/helpers/sts-ui-closeout-source.mjs':'be1c66d54731677a1ce485168a60c5a14d8494915bd678bf18ebe613f477f1c3',
+ 'tests/fixtures/sts-ui-closeout-source.json':'c3415006f33840d3154a460684867f75810cb00eabcd0afa12f73fd423aca6d5',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

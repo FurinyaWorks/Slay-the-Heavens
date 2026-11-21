@@ -63,7 +63,9 @@ export function stylePageReveal(cover) {
   const part = name => cover.children.find(node => node.name === name);
   part('veil').colour = '#000000';
   part('message').visible = false;
-  part('cancel').position = [0, -318];
+  const cancel=part('cancel');
+  cancel.position = [0, -318];
+  cancel.children.find(node=>node.name==='label').text.content='返回';
 }
 
 export function prologueControl(theme = nativeTheme) {

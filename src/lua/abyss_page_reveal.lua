@@ -89,6 +89,9 @@ end
 local function needsSchedulerConfirmation(intent)
     return intent.page=='choicePanel' and intent.phase=='combat'
 end
+local function logVisible(intent,epoch)
+    print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..epoch)
+end
 function M.new(cover,ready,onIntent,frames,motion)
     assert(cover and type(ready)=='function','page reveal requires cover and readiness source')
     local gate={epoch=0,state='preparing',tick=0,alpha=1}
@@ -145,7 +148,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         assert(sized~=false,'page cover size rejected')
         paintedFrame=frame;return true
     end
-    function gate:resize(width,height)
+    function gate.resize(_,width,height)
         if not frames then return end
         local scale=math.min(width/frames.full[3],height/frames.full[4])
         -- Extend the veil and input hit over the letterboxing of the scaled stage.
@@ -221,7 +224,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if covered and raise then cover:SetAsLastSibling()end
         local message=cover:GetChild('message')
         if message then
-            local text=failed and '画面暂未准备完成，可返回菜单。' or '正在准备画面…'
+            local text=failed and '画面暂未准备完成，可返回。' or '正在准备画面…'
             if message.visible~=failed then message:SetVisible(failed)end
             if message.text~=text then message.text=text end
         end
@@ -252,7 +255,9 @@ function M.new(cover,ready,onIntent,frames,motion)
             end
             if not alpha(math.max(0,self.alpha-(dt or 0)/motion.duration))then return false end
             if self.alpha>0 then return false end
-            self.state='visible';cover:SetVisible(false);return true
+            self.state='visible';cover:SetVisible(false)
+            if ticket~=self.epoch then return false end
+            logVisible(intent,ticket);return true
         end
         self.tick=self.tick+1
         local unchanged=same(intent,self.intent)
@@ -269,7 +274,9 @@ function M.new(cover,ready,onIntent,frames,motion)
         -- local work publishes as soon as this turn's real owners report ready.
         if (self.localFrame or self.localOnly) and not needsSchedulerConfirmation(intent) or self.armed and self.armed.epoch==ticket and self.armed.tick<self.tick then
             self.state=motion and not self.localFrame and not self.localOnly and 'fadingIn' or 'visible';self.published=intent;self.armed=nil;self.error=nil;cover:SetVisible(self:covered())
-            print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..ticket);return true
+            if ticket~=self.epoch then return false end
+            if self.state=='visible' then logVisible(intent,ticket)end
+            return true
         end
         self.state='ready';self.armed={epoch=ticket,tick=self.tick};return false
     end

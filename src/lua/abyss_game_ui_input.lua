@@ -67,8 +67,17 @@ local function battleRouteAvailable(self,enabled,mode)
     return enabled()
 end
 
+local function potionPointer(run,slot)
+    if not (run and slot) then return nil end
+    return {inventory=run.potions,id=run.potions[slot],phase=run.phase}
+end
+local function samePotionPointer(run,slot,held)
+    if not slot then return true end
+    return held and held.inventory==run.potions and held.id==run.potions[slot] and held.phase==run.phase
+end
+
 function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
-    return function(box, kind, action, enabled, order, group, onFocus)
+    return function(box, kind, action, enabled, order, group, onFocus, potionSlot)
             local hit = box:GetChild("hit")
             local held, released, observed
             local menuAction = menuKinds[kind]
@@ -146,6 +155,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 return token and token.generation == owner.exitGeneration and token.run == self.run
                     and (not resourceAction or token.deckGeneration==self.deckUI.generation and token.mode==self.mode
                         and token.potionGeneration==self.potionUI.generation)
+                    and samePotionPointer(self.run,potionSlot,token.potion)
                     and (not menuAction and not characterAction or token.menuGeneration == owner.menuGeneration) and available()
                     and currentReward(token)
                     and (not mapContext or currentMapReturn(token))
@@ -161,6 +171,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                     if available() then held = {generation=owner.exitGeneration,menuGeneration=owner.menuGeneration,run=self.run,touch=touch(event),
                         deckGeneration=self.deckUI.generation,potionGeneration=self.potionUI.generation,mode=self.mode,
                         pending=self.run and self.run.pendingCombatRewards,rewardGeneration=self.rewardReturnGeneration,
+                        potion=potionPointer(self.run,potionSlot),
                         mapReturn=mapContext and mapReturnIdentity(self) or nil} end
                     V25View.pointer(box,'down',held~=nil)
                 end)
@@ -256,7 +267,7 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
         for i=1,Theme.layout.battlePotions.count do
             local box=entry:GetChild('slot'..i)
             bindCommand(box,'resource_potion',function()return self:openPotions(i)end,
-                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,30+i)
+                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,30+i,nil,nil,i)
         end
     end
     bindCommand(settlement, "settle", function() return self:settle() end)

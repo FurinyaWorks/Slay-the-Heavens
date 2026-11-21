@@ -77,7 +77,8 @@ function M.syncController(self,controller,openingCovered)
             elseif self.characterOpen and not self.deckUI.visible then scope='characters'
             else scope=pageScope() end
             local function pageBack(backScope)
-                if backScope=='potions' then return self:closePotions()
+                if backScope=='pageReveal' then return self:recoverPage()
+                elseif backScope=='potions' then return self:closePotions()
                 elseif backScope=='battlePotion' or backScope=='battleInfo' or backScope=='aim' then return self.battleUI:controllerBack()
                 elseif backScope=='node' and self.nodeUI.mode=='picker' then return self.nodeUI:press('back')
                 elseif backScope=='battle' and self.run and self.run.phase=='reward' and self.battleUI.rewardScreen=='cards' then
@@ -271,7 +272,6 @@ function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEn
             child("potionEntry"):SetVisible(not inCombat() and potionEntryVisible(self,utilitiesVisible,potionOpen))
             refreshPotionEntry(run,mapPotionVisible(self))
             child("nodePanel"):GetChild("potions"):SetVisible(false)
-            if potionOpen then self.potionUI:render()end
             refreshDeckEntry(run)
         end
 end
@@ -402,6 +402,7 @@ function M.exitEntryVisible(self)
                 and Theme.menuPresentation and Theme.menuPresentation.minimal
             if minimal and self.mode=='menu' and not self.characterOpen then return false end
             return not (self.prologue and self.prologue:covering())
+                and not (self.potionUI.localPanel and self.potionUI.visible)
                 and not self.easterEggOpen and not self.exitOpen and not self.settlementRequested and not self.settlementBusy
         end
 end
@@ -601,7 +602,9 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             closeStaleDeck(run,inMenu)
             openCardChoice(run)
             local deckOpen = self.deckUI.visible
-            if self.potionUI.visible and not canManagePotions(self.potionUI.run)then self.potionUI:close()end
+            if self.potionUI.visible then
+                if canManagePotions(self.potionUI.run) then self.potionUI:render() else self.potionUI:close() end
+            end
             local potionOpen=self.potionUI.visible
             local blocked=overlaysBlocked() or covering
             local returnAvailable=syncRewardReturn(run,deckOpen,potionOpen,blocked,covering)
