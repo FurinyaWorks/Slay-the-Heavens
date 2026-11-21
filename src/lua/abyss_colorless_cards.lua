@@ -43,42 +43,65 @@ function M.canUse(state,d)
     end
     return true
 end
+local descriptionLabels={weak='虚弱',vulnerable='易伤',strength='力量',artifact='人工制品',intangible='无实体',no_block='无法从卡牌获得格挡',magnetism='每回合开始生成无色牌',mayhem='每回合开始自动打出抽牌堆顶牌',sadistic_nature='施加减益时造成伤害'}
+local function describeBasicEffect(d,f,n,dynamic)
+    if f.op=='damage'or f.op=='damageAll'then
+        if d.id=='mind_blast' and not dynamic then return '造成等同于抽牌堆张数的伤害'
+        else return '造成'..n..'点伤害'..(f.op=='damageAll'and '（全体敌人）'or '') end
+    elseif f.op=='block'then return '获得'..n..'点格挡'
+    elseif f.op=='draw'then return '抽'..n..'张牌'
+    elseif f.op=='heal'then return '回复'..n..'点生命'
+    elseif f.op=='loseHp'then return '失去'..n..'点生命'
+
+    end
+end
+local function describeStatusEffect(f,n)
+    if f.op=='gainStatus'then return '获得'..n..'层'..assert(descriptionLabels[f.status])
+    elseif f.op=='applyStatus'or f.op=='applyStatusAll'then return '施加'..n..'层'..assert(descriptionLabels[f.status])..(f.op=='applyStatusAll'and '（全体敌人）'or '')
+    elseif f.op=='handToDraw'then return '将一张手牌放到抽牌堆顶'
+
+    end
+end
+local function describePreparation(k,f,n)
+    if k=='apotheosis'then return '升级本场战斗所有牌'
+    elseif k=='shackles'then return '目标本回合失去'..n..'点力量'
+    elseif k=='deepBreath'then return '将弃牌洗入抽牌堆'
+    elseif k=='discovery'then return '从三张随机牌中选一张入手，本回合费用为0'
+    elseif k=='enlightenment'then return '手牌费用高于1的降至1，持续'..(f.value==1 and '本场战斗'or '本回合')
+    elseif k=='forethought'then return '将'..(f.value==1 and '任意张手牌'or '一张手牌')..'置于牌底，下次打出免费'
+
+    end
+end
+local function describeGeneration(k,f,n,i,dynamic)
+    if k=='impatience'then return '手牌没有攻击牌时抽'..n..'张牌'
+    elseif k=='generateColorless'then return '生成'..n..'张随机无色牌入手'
+    elseif k=='generateDraw'then return '生成'..n..'张随机'..(f.cardType=='skill'and '技能'or '攻击')..'牌洗入抽牌堆，本场费用为0'
+    elseif k=='madness'then return '随机一张手牌的费用在本场战斗降为0'
+    elseif k=='purity'then return '选择至多'..n..'张手牌消耗'
+    elseif k=='greed'then return '造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.value))..'点伤害；击杀非召唤敌人获得'..tostring(f.value)..'金币'
+    elseif k=='ritual'then return '造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.damage))..'点伤害；击杀非召唤敌人永久增加'..tostring(f.value)..'点伤害'
+
+    end
+end
+local function describeDelayedEffect(k,f,n)
+    if k=='panache'then return '每回合每打出五张牌，对全体敌人造成'..n..'点伤害'
+    elseif k=='secret'then return '从抽牌堆选择一张'..(f.cardType=='skill'and '技能'or '攻击')..'牌入手'
+    elseif k=='bomb'then return '第三次己方回合结束时，对全体敌人造成'..n..'点伤害'
+    elseif k=='transmutation'then return '生成X张随机无色牌'..(f.value==1 and '并升级'or '')..'入手，本回合费用为0'
+    elseif k=='violence'then return '随机将抽牌堆'..n..'张攻击牌加入手牌'
+    end
+end
+local function describeColorlessEffect(f,n,i,dynamic)
+    local k=f.kind
+    return describePreparation(k,f,n) or describeGeneration(k,f,n,i,dynamic)
+        or describeDelayedEffect(k,f,n)
+end
 function M.describe(d,dynamic)
-    local parts={};local labels={weak='虚弱',vulnerable='易伤',strength='力量',artifact='人工制品',intangible='无实体',no_block='无法从卡牌获得格挡',magnetism='每回合开始生成无色牌',mayhem='每回合开始自动打出抽牌堆顶牌',sadistic_nature='施加减益时造成伤害'}
+    local parts={}
     for i,f in ipairs(d.effects)do
         local n=dynamic and ('{effects.'..(i-1)..'.value}')or tostring(f.value)
-        local text
-        if f.op=='damage'or f.op=='damageAll'then
-            if d.id=='mind_blast' and not dynamic then text='造成等同于抽牌堆张数的伤害'
-            else text='造成'..n..'点伤害'..(f.op=='damageAll'and '（全体敌人）'or '') end
-        elseif f.op=='block'then text='获得'..n..'点格挡'
-        elseif f.op=='draw'then text='抽'..n..'张牌'
-        elseif f.op=='heal'then text='回复'..n..'点生命'
-        elseif f.op=='loseHp'then text='失去'..n..'点生命'
-        elseif f.op=='gainStatus'then text='获得'..n..'层'..assert(labels[f.status])
-        elseif f.op=='applyStatus'or f.op=='applyStatusAll'then text='施加'..n..'层'..assert(labels[f.status])..(f.op=='applyStatusAll'and '（全体敌人）'or '')
-        elseif f.op=='handToDraw'then text='将一张手牌放到抽牌堆顶'
-        elseif f.op=='colorless'then
-            local k=f.kind
-            if k=='apotheosis'then text='升级本场战斗所有牌'
-            elseif k=='shackles'then text='目标本回合失去'..n..'点力量'
-            elseif k=='deepBreath'then text='将弃牌洗入抽牌堆'
-            elseif k=='discovery'then text='从三张随机牌中选一张入手，本回合费用为0'
-            elseif k=='enlightenment'then text='手牌费用高于1的降至1，持续'..(f.value==1 and '本场战斗'or '本回合')
-            elseif k=='forethought'then text='将'..(f.value==1 and '任意张手牌'or '一张手牌')..'置于牌底，下次打出免费'
-            elseif k=='impatience'then text='手牌没有攻击牌时抽'..n..'张牌'
-            elseif k=='generateColorless'then text='生成'..n..'张随机无色牌入手'
-            elseif k=='generateDraw'then text='生成'..n..'张随机'..(f.cardType=='skill'and '技能'or '攻击')..'牌洗入抽牌堆，本场费用为0'
-            elseif k=='madness'then text='随机一张手牌的费用在本场战斗降为0'
-            elseif k=='purity'then text='选择至多'..n..'张手牌消耗'
-            elseif k=='greed'then text='造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.value))..'点伤害；击杀非召唤敌人获得'..tostring(f.value)..'金币'
-            elseif k=='ritual'then text='造成'..(dynamic and ('{effects.'..(i-1)..'.damage}')or tostring(f.damage))..'点伤害；击杀非召唤敌人永久增加'..tostring(f.value)..'点伤害'
-            elseif k=='panache'then text='每回合每打出五张牌，对全体敌人造成'..n..'点伤害'
-            elseif k=='secret'then text='从抽牌堆选择一张'..(f.cardType=='skill'and '技能'or '攻击')..'牌入手'
-            elseif k=='bomb'then text='第三次己方回合结束时，对全体敌人造成'..n..'点伤害'
-            elseif k=='transmutation'then text='生成X张随机无色牌'..(f.value==1 and '并升级'or '')..'入手，本回合费用为0'
-            elseif k=='violence'then text='随机将抽牌堆'..n..'张攻击牌加入手牌'end
-        end
+        local text=describeBasicEffect(d,f,n,dynamic) or describeStatusEffect(f,n)
+        if not text and f.op=='colorless'then text=describeColorlessEffect(f,n,i,dynamic)end
         parts[#parts+1]=assert(text,'missing colorless description: '..d.id)
     end
     if d.innate then parts[#parts+1]='固有'end
