@@ -213,7 +213,7 @@ test('run pages share the final battle bar without copied inputs or a covering l
  const theme=officialAssetsTheme(nativeTheme),layout=gameLayout(theme);applyOfficialAssets([layout],theme);
  const battle=child(layout,'battlePanel'),hud=theme.officialAssets.battleHud;
  const original=structuredClone(child(battle,'topBar'));original.name='officialRunBar';
- original.children=children(original).filter(part=>part.name!=='battleRoute');
+ original.children=children(original).filter(part=>!['battleRoute','floorIcon'].includes(part.name));
  for(const name of ['mapPanel','nodePanel']){
   const page=child(layout,name),bar=child(page,'officialRunBar'),resources=child(page,'resources')??page;
   assert.deepEqual(bar,original,name+' shares the canonical bar');

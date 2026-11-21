@@ -64,16 +64,40 @@ test('Tiny House exact source admission preserves the ordered full owner read an
 
 test('Tiny House projects the exact copy helper before P1 and still rejects foreign source',async()=>{
  const {readFileSync}=await import('node:fs');
- const {assertIntegrationSuccessorsCurrent}=await import('./helpers/fork-preflight-source.mjs');
+ const {assertIntegrationSuccessorsCurrent,beforeLoadingRecoveryCopier}=await import('./helpers/fork-preflight-source.mjs');
  const {beforeTinyHouseCiSource}=await import('./helpers/v2-ui-admission-ci-source.mjs');
+ const {beforeTinyHouseIntegratedSource}=await import('./helpers/tiny-house-integrated-source.mjs');
  const path='tests/helpers/copy-integration-source-closure.mjs',raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  const reader=input=>(file,encoding)=>file===path?input:readFileSync(file,encoding);
  const crlf=raw.replaceAll('\n','\r\n');
- assert.notEqual(beforeTinyHouseCiSource(path,raw),raw);
+ const beforeTinyHouse=source=>beforeTinyHouseCiSource(path,beforeLoadingRecoveryCopier(path,beforeTinyHouseIntegratedSource(path,source)));
+ const prior=beforeTinyHouse(raw);
+ assert.notEqual(prior,raw);
+ assert.notEqual(prior,beforeLoadingRecoveryCopier(path,beforeTinyHouseIntegratedSource(path,raw)));
+ assert.equal(beforeTinyHouse(crlf),prior.replaceAll('\n','\r\n'));
  for(const input of [raw,crlf])assert.doesNotThrow(()=>assertIntegrationSuccessorsCurrent(reader(input)));
  for(const foreign of [raw+'\n',crlf+'\r\n',raw.replaceAll('\n','\r\r\n')]){
-  assert.equal(beforeTinyHouseCiSource(path,foreign),foreign);
+  assert.equal(beforeTinyHouse(foreign),foreign);
   assert.throws(()=>assertIntegrationSuccessorsCurrent(reader(foreign)),error=>
    error.message==='fresh complete integration source: '+path);
+ }
+});
+
+test('capacity build exact projection preserves older receipts and rejects mixed current source',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const {assertIntegrationSuccessorsCurrent,beforeDevelopCapacityBuildSource}=await import('./helpers/fork-preflight-source.mjs');
+ const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/official-portraits.mjs','tests/official-portraits-build.test.mjs'];
+ const crlf=s=>s.replaceAll('\n','\r\n');
+ const current=new Map(paths.map(path=>[path,readFileSync(path,'utf8').replaceAll('\r\n','\n')]));
+ assert.doesNotThrow(()=>assertIntegrationSuccessorsCurrent((path,encoding)=>current.has(path)?crlf(current.get(path)):readFileSync(path,encoding)));
+ for(const [path,raw]of current){
+  const prior=beforeDevelopCapacityBuildSource(path,raw);
+  assert.notEqual(prior,raw);
+  assert.equal(beforeDevelopCapacityBuildSource(path,crlf(raw)),crlf(prior));
+  for(const foreign of [prior,raw+'\n',raw.replaceAll('\n','\r\r\n'),null]){
+   assert.equal(beforeDevelopCapacityBuildSource(path,foreign),foreign);
+   assert.throws(()=>assertIntegrationSuccessorsCurrent((owner,encoding)=>owner===path?foreign:readFileSync(owner,encoding)),
+    error=>error.message==='fresh complete integration source: '+path);
+  }
  }
 });
