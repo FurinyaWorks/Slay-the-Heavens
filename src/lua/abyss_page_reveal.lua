@@ -100,9 +100,11 @@ function M.new(cover,ready,onIntent,frames,motion)
     function gate.usesFade(_)return motion~=nil end
     function gate:depart(commit,onCancel)
         if not motion or self:covered()then return false end
+        local ticket=self.epoch
         self.departure=commit;self.cancelDeparture=onCancel;self.state='fadingOut'
+        self.localFrame,self.localOnly=nil,nil
         if not alpha(0)then return false end
-        cover:SetVisible(true);cover:SetAsLastSibling()
+        if self:paint(true)==false or self.epoch~=ticket then return false end
         return true
     end
     local function supported(intent)
@@ -145,8 +147,8 @@ function M.new(cover,ready,onIntent,frames,motion)
         self.localFrame=localFrame(intent,self.intent)
         self.painting=nil
         self.localOnly=motion and self.published and self.published.page=='characterPanel' and intent.page=='characterPanel'
-        local exiting=motion and self.published and not self.localFrame
-            and self.published.page~=intent.page and self.state=='visible'
+        local exiting=motion and self.published and not self.localFrame and not self.localOnly
+            and (self.published.page~=intent.page or not sameBase(intent,self.published)) and self.state=='visible'
         self.epoch=self.epoch+1;self.intent=intent;self.state=exiting and 'fadingOut' or 'preparing';self.armed=nil;self.error=nil
         local ticket=self.epoch
         if motion and not alpha((exiting or self.localOnly) and 0 or 1)then return false end

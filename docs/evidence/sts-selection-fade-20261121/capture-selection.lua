@@ -67,6 +67,10 @@ for _ = 1, 500 do
     if portraits:status().selection.phase == 'ready' then break end
 end
 settle()
+assert(portraits:status().avatar.owned==0,'constellation allocated legacy avatar')
+for _,name in ipairs({'normal','hover','pressed','disabled'})do
+    assert(not panel:GetChild('traveler'):GetChild('hit'):GetChild(name):GetChild('bust').visible,'legacy avatar fallback overlays constellation')
+end
 local status = portraits:status().selection
 assert(status.phase == 'ready' and status.total == 1600 and selection.visible, status.reason)
 local details = panel:GetChild('details')

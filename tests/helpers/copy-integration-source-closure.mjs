@@ -75,8 +75,8 @@ const loadingRecoveryFiles=Object.freeze({
 assert.equal(loadingRecoveryFiles['tests/helpers/loading-recovery-source.mjs'],'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f','STS fade exact loading helper predecessor');
 const stsFadeFiles=Object.freeze({...loadingRecoveryFiles,...{
   "tests/helpers/loading-recovery-source.mjs": "47104b0a4724a4d8315931ed2f60c33457834bd306eb2f3a6d28cac11faec036",
-  "tests/helpers/sts-selection-fade-source.mjs": "3b5930db548544c7094a856ff46740bee9c42e9717b6ad458295959f37137420",
-  "tests/fixtures/sts-selection-fade-source.json": "3f137797bfd7762b3604e7c6747043632c64384d3a3db91791b21db5ab6a2102"
+  "tests/helpers/sts-selection-fade-source.mjs": "73b46c3cebe908ea332c56264b1300937d9e67de678225b5ac213b16ef245adf",
+  "tests/fixtures/sts-selection-fade-source.json": "aa738acfea89d0c38209c903dca0b0a573e217ce11c0542a022cf18e0b784717"
 }});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

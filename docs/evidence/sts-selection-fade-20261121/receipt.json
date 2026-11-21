@@ -1,7 +1,7 @@
 {
   "base": "345ba08398b6ca8e1361a126f2ce1de85210e634",
   "inheritedApprovedFix": "https://github.com/FurinyaWorks/Slay-the-Heavens/pull/785",
-  "sourceFixtureSha256": "3f137797bfd7762b3604e7c6747043632c64384d3a3db91791b21db5ab6a2102",
+  "sourceFixtureSha256": "aa738acfea89d0c38209c903dca0b0a573e217ce11c0542a022cf18e0b784717",
   "scope": "Lua Host software projection; not SDK/GPU/official-device acceptance",
   "sourceFiles": {
     "data/presentation/ui_theme.json": "2afa2878402bd87fd9446628ee5484264fa43d7d860961d7cf163d681b48dcaa",
@@ -12,8 +12,8 @@
     "src/lua/abyss_game_ui.lua": "0270dcd5f358819fc4d10b1396044525adcbb4ad6ee11709a476e28ad182069b",
     "src/lua/abyss_game_ui_run.lua": "29aa9c5455e55dfe1a69ff5afed7550ecd4ec6f9adc3f14521b5d81ebd79f142",
     "src/lua/abyss_game_ui_view.lua": "a8254810044ad6a48d07885ace9d3f83f2e3053098972fffdc6c12de283e8e5a",
-    "src/lua/abyss_page_reveal.lua": "ce45e2c29f7624cef1607ef0da412ada4bdea7cd1d71a12617cd1c59b1fccdfe",
-    "src/lua/abyss_traveler_portraits.lua": "bac45740fa8035605a3cdc7727c8916b96541d15c611e14a24a9ee3bdc341c3e",
+    "src/lua/abyss_page_reveal.lua": "a90cfa7c4ac7a50aa90a9814dcf626567b70476221fb9651240463da6de0f758",
+    "src/lua/abyss_traveler_portraits.lua": "e9ea68b81559b1ae78258fce9753a0eea5fcaa74aff55d1d2e9474a38d7a3521",
     "src/lua/abyss_ui.lua": "af925b574155469dcd58207982b65f20f75c243c964a601720a15f92038b434f",
     "tests/deck-browser-reveal-reuse.test.mjs": "287f0393d541ada70624074cdc8585dbc8e7184e34eb191d063e8384423335b0",
     "tests/lua/competition_character_admission.lua": "307d9967e181c6607f218687bf014f5a270c556e32d970029e64ed573f6a4135",
@@ -25,25 +25,30 @@
     "tests/lua/support/game_ui_fixture.lua": "e49cdea9d1c68ba505b961f924394fdcae93bb81d2cde0b322c0a5cf183ba512",
     "tests/official-assets-runtime.test.mjs": "baf53a49651f5369d590584e3522459ccacfc145489b2304bc66a8600c495046",
     "tests/helpers/loading-recovery-source.mjs": "47104b0a4724a4d8315931ed2f60c33457834bd306eb2f3a6d28cac11faec036",
-    "tests/helpers/character-preparation-source.mjs": "83af963f9bf01827fad55d2fdb631eeaf3fc755137741fb0f55c89ca283d31df"
+    "tests/helpers/character-preparation-source.mjs": "83af963f9bf01827fad55d2fdb631eeaf3fc755137741fb0f55c89ca283d31df",
+    "tests/v25-portrait-profile.test.mjs": "e7580b578eb1ca7f65b120e3e3aa416529101f6b76d2f6ef1d5c158df9048d5c"
   },
   "files": {
     "docs/evidence/sts-selection-fade-20261121/windows-checkout.log.gz": "fa4c7da9781f51c42721324d71f63208a17887bb7e71e9c8a479c60422beae0f",
     "docs/evidence/sts-selection-fade-20261121/after-selection.png": "3f47445dbdf43362bb36e4b27467af3b0d0dc903a853912f538ed2c217d8a961",
-    "docs/evidence/sts-selection-fade-20261121/README.md": "802652df85c1e2e2d3129b1dccd26561837b3215ff047d180e4d23fa8be07b18",
+    "docs/evidence/sts-selection-fade-20261121/README.md": "ade361a31cbfa48e351205e728ff016732a6894a4c832678e314a6587a855733",
     "docs/evidence/sts-selection-fade-20261121/before-selection.png": "accb6e67e7e465125a319a30e48fabe195c43aa2c60c7b9a90f484218b4bf61d",
     "docs/evidence/sts-selection-fade-20261121/capture.mjs": "ec23cf8cd8488d60d4627fa2beb1acdd404d104eaf186a4713aa87fcc7c499d6",
     "docs/evidence/sts-selection-fade-20261121/official-runtime.log.gz": "e586785d4ddfb05bf65307fd657c9af58a36c77846ded582b7ca5863c49676ab",
     "docs/evidence/sts-selection-fade-20261121/regressions.log.gz": "4b2347ce7b6d5f9b3e006c2f2ee9b4b41dc9c421f7d2d6ccde3676faa7ee282a",
     "docs/evidence/sts-selection-fade-20261121/ci-custody.log.gz": "068fb7e3dc88ce8de71ec0e23d8f67c3b40de8e3e8d30c49b8dc641843e2efed",
     "docs/evidence/sts-selection-fade-20261121/fade-half.png": "00e8532722618c57814222a50d33a7419b9f157816af116231a6031c713633e5",
-    "docs/evidence/sts-selection-fade-20261121/scenes.json.gz": "adfe771ad1697b6237e23ad58e6a9a90af0a3590d1fba2fecafb2c8d8241c325",
-    "docs/evidence/sts-selection-fade-20261121/capture-selection.lua": "66ea20058acf294c9ea1747584810f041efa114c4e7a7909aeb48885cc9e2c57",
+    "docs/evidence/sts-selection-fade-20261121/scenes.json.gz": "01ee57de1080a5525265bc10b53938f877a62cfc120df10ddba871e5c38cfa80",
+    "docs/evidence/sts-selection-fade-20261121/capture-selection.lua": "c5f6104b5a334e20dcfad0e489e2367579ddf1f55bd8cad09368793bb2aa1b30",
     "docs/evidence/sts-selection-fade-20261121/empty.png": "2400ce67eb745bf76cb4e557eae1b6b0995be7c829e72f0868d083b4ac117a42",
     "docs/evidence/sts-selection-fade-20261121/detached-recheck.log.gz": "6670213283f70f9f98cab2514dc07e6c2b5f091e14c32bc944cce03db9a1db48",
     "docs/evidence/sts-selection-fade-20261121/engineering.log.gz": "53ba71da4f83fb7b2a26c93e9b50be54368b2983707eaef96b975bf000ac376c",
     "docs/evidence/sts-selection-fade-20261121/act1-recheck.log.gz": "d23e030c8e5e3dea0077cfbfff96811aff89a732188b99c7189df806cc166c97",
     "docs/evidence/sts-selection-fade-20261121/crlf-recheck.log.gz": "d09e9211de1661c4278d570628c341c2fa65c40d18714eb04ea805842fab1b6d",
+    "docs/evidence/sts-selection-fade-20261121/index-crlf-final.log.gz": "d063b3c993a65194d65ea3bcd0a020efcd7bc7ef0aeff761a4f7334edb129a4d",
+    "docs/evidence/sts-selection-fade-20261121/gate-final.log.gz": "f5c978b724842546ad2b267dac1a64bf56d02beb462d2aab732ab61d71861809",
+    "docs/evidence/sts-selection-fade-20261121/static-final.log.gz": "be3e77f7f0e6cccf5eaa13089d58d0bfb95ff0e7ded8725d17183aef666dd980",
+    "docs/evidence/sts-selection-fade-20261121/portrait-fallback.log.gz": "f38d6e1c633ff58336da09d524283dd3f27c77b4141dfb57c91ba4deffdc747e",
     "docs/evidence/sts-selection-fade-20261121/portrait.log.gz": "6f74ebe3772549e033f0298b150098b9652cca8fb70d24fa8799c95a1cb0ac39"
   }
 }

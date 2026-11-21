@@ -119,3 +119,35 @@ test('STS discovery custody removes only the complete authenticated added test',
  assert.throws(()=>stsCurrentJsDiscovery(raw,()=>null),/fresh STS added/);
  assert.throws(()=>stsCurrentJsDiscovery(raw,p=>readFileSync(p,'utf8')+'\n'),/fresh STS added/);
 });
+
+test('a new base owner on the same panel fades out before destination paint',()=>{
+ const body=`package.path='src/lua/?.lua;'..package.path
+local G=require('abyss_page_reveal');local veil={}
+local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local gate=G.new(cover,function()return true end,nil,nil,{duration=.2,color=function(r,g,b,a)return {a=a}end})
+local a={page='battlePanel',mode='battle',run={},battle={}};local b={page='battlePanel',mode='battle',run={},battle={}}
+gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
+assert(not gate:begin(b),'new battle owner on the same panel skipped fade-out')
+assert(veil.imageColor.a==0 and gate:covered());assert(not gate:step(b,.1));assert(veil.imageColor.a>0 and veil.imageColor.a<255)
+assert(gate:step(b,.1)and veil.imageColor.a==255);assert(gate:begin(b),'opaque new base cannot paint')
+print('SAME_PANEL_NEW_BASE_PASS')`;
+ const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/SAME_PANEL_NEW_BASE_PASS/);
+});
+
+test('departure restores the full cover after a retained local panel',()=>{
+ const body=`package.path='src/lua/?.lua;'..package.path
+local G=require('abyss_page_reveal');local ready=true;local veil={SetAnchoredPosition=function()end,SetSizeDelta=function(self,w,h)self.size={w,h}end}
+local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local frames={full={0,0,1280,720},deckPanel={0,0,600,400}}
+local gate=G.new(cover,function()return ready end,nil,frames,{duration=.2,color=function(r,g,b,a)return {a=a}end})
+local run,combat={},{};local a={page='battlePanel',mode='battle',phase='combat',run=run,battle=combat};local b={page='deckPanel',mode='battle',phase='combat',run=run,battle=combat}
+gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
+ready=false;gate:begin(b);gate:finish(b);ready=true;gate:step(b,0)
+gate:begin(a);gate:finish(a);assert(not gate:covered()and veil.size[1]==600)
+assert(gate:depart(function()return true end))
+assert(veil.size[1]==1280 and veil.size[2]==720 and veil.imageColor.a==0,'departure retained local cover geometry')
+print('FULL_DEPARTURE_COVER_PASS')`;
+ const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FULL_DEPARTURE_COVER_PASS/);
+});

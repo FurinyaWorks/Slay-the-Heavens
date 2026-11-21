@@ -599,8 +599,11 @@ function M.new(stage,report,flags,cardTemplates)
     local function presentationTargets(mode,characterOpen,stopped,character,preloadSelection)
         local wanted=activeTargets(mode,characterOpen,stopped,character,preloadSelection)
         for _,row in ipairs(rows)do
-            if official and row.name=='avatar' and (row.visibleOwner.visible~=true
-                or row.symbolOwner and row.symbolOwner.visible~=false)then wanted.avatar=false end
+            if official and row.name=='avatar' then
+                local symbol=row.symbolOwner and row.symbolOwner.visible~=false
+                row.fallbackVisible=not symbol
+                if row.visibleOwner.visible~=true or symbol then wanted.avatar=false end
+            end
         end
         return wanted
     end

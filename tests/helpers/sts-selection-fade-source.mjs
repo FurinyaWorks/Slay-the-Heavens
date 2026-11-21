@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/sts-selection-fade-source.json',import.meta.url));
-assert.equal(hash(bytes),'3f137797bfd7762b3604e7c6747043632c64384d3a3db91791b21db5ab6a2102');
+assert.equal(hash(bytes),'aa738acfea89d0c38209c903dca0b0a573e217ce11c0542a022cf18e0b784717');
 const {base,files,inventory}=JSON.parse(bytes);
 assert.equal(base,'345ba08398b6ca8e1361a126f2ce1de85210e634');
 export function beforeStsSelectionFade(path,source){

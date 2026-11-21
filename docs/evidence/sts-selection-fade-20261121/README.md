@@ -49,3 +49,7 @@ python docs/evidence/v2-ui-20261119/render-runtime.py build/sts-evidence-states
 历史CI与完整选角回放收口：74/74通过（ci-custody.log.gz），包含本轮精确复制闭包后继与清单接续后的旧合同；没有改写旧归档。正式配置runtime的35项包含末击/奖励不闪屏及移动商店返回触摸归属。当前只承诺这些已执行结果，Full托管组合与官方设备验收分别追踪。
 
 最终独审追加的Windows检出问题已修正：仅为两份新黄金JSON追加 `text eol=lf`，保留原字节哈希断言；真实 `core.autocrlf=true checkout-index` 后两模块导入通过（windows-checkout.log.gz）。PR [#803](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/803) 仅指向develop，申请正式Full；最终签署与原生队列状态以GitHub记录为准。
+
+最终原生备用控件检查：命座宿主不仅不创建旧头像，也不恢复四态旧bust备用控件；开发宿主仍可恢复头像。新增回归已先复现遮挡，再通过（portrait-fallback.log.gz，含31项头像与6项当时转场回归）。最新捕获脚本也直接断言0旧头像和四态bust不可见。
+
+最后补充同面板新base owner的淡出与局部面板后恢复全屏转场覆盖两项反例；转场/ready/牌组复用17/17通过（gate-final.log.gz），静态门禁通过。当前全部fixture的before逐项等于固定base原件、after等于当前文件，并完成真实CRLF索引检出后两个helper导入（index-crlf-final.log.gz）。这些证据仍不替代Hosted Full或官方设备验收。
