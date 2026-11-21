@@ -1,5 +1,7 @@
 // Positions measured in the 1280x720 Slay the Spire character-screen reference.
 // Data and input controls remain owned by the existing selection controller.
+import {rounded} from './v25-character-layout.mjs';
+
 const children=n=>n.children??n.controls??[];
 const child=(n,name)=>children(n).find(c=>c.name===name);
 const frame=(x,y,w,h)=>({position:[x+w/2-640,360-y-h/2],size:[w,h]});
@@ -9,12 +11,9 @@ function placeText(n,box,font,colour){
   outline:true,outlineColour:'#171311',outlineOpacity:.9});
  n.size[1]=Math.max(n.size[1],font*2);
 }
-function surface(name,w,h,colour,theme){
- return {name,kind:'container',size:[w,h],children:[{name:'fill',kind:'image',position:[0,0],size:[w,h],image:theme.image.rect,colour}]};
-}
 export function styleCharacterFlag(button,key,theme){
  const hit=child(button,'hit');
- const [rim,cloth]=key==='cancel'?['#BCA348','#8C3739']:['#A2B4B5','#477B89'];
+ const [rim,cloth]=theme.officialAssets.flagButton[key];
  for(const state of children(hit)){
   for(const name of ['officialButtonBacking','border','plate']){
    const part=child(state,name);if(part)part.visible=false;
@@ -23,7 +22,7 @@ export function styleCharacterFlag(button,key,theme){
   const factor=state.name==='hover'?1.17:state.name==='pressed'?.9:state.name==='disabled'?.6:1;
   const tint=hex=>'#'+hex.slice(1).match(/../g).map(v=>Math.min(255,Math.round(parseInt(v,16)*factor)).toString(16).padStart(2,'0')).join('');
   const face={name:'v25Flag',kind:'container',size:[180,60],children:[
-   surface('rim',180,60,tint(rim),theme),surface('cloth',176,56,tint(cloth),theme)]};
+   rounded('rim',180,60,10,tint(rim),theme),rounded('cloth',176,56,8,tint(cloth),theme)]};
   if(previous)state.children.splice(state.children.indexOf(previous),1,face);
   else state.children.splice(state.children.indexOf(label),0,face);
   label.position=[0,0];label.text.fontSize=24;label.text.minFontSize=24;
