@@ -190,7 +190,15 @@ test('scroll reaches the last card without allowing a recycled or dragged touch 
  assert(not old.listeners.click(event) and not ui.selected)
  old.listeners.down(event);old.listeners.endDrag(event)
  assert(not old.listeners.click(event) and not ui.selected)
- assert(tapCard(box,3) and ui.selected==ui.run.deck[13].uid)
+ local other={touchId=3}
+ local second=scroll.items[1]:GetChild('hit')
+ assert(not second.listeners.click({touchId=3, GetPressUIPos=function() return 20,-100 end,
+  GetUIPos=function() return 20,-220 end}) and not ui.selected)
+ old.listeners.down(event);old.listeners.down(other)
+ old.listeners.endDrag(event)
+ assert(not old.listeners.click(event) and not ui.selected)
+ old.listeners.up(other)
+ assert(old.listeners.click({}) and ui.selected==ui.run.deck[13].uid)
 end)
 test('a remaining mandatory upgrade returns to the grid and removes the ineligible card',function()
  local source=Combat.copy(Data);source.rules.camp.upgradeCount=2

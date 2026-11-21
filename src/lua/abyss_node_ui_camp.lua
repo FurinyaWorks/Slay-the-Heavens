@@ -2,6 +2,7 @@
 local Theme = require('abyss_theme')
 local Controller = require('abyss_controller')
 local CardDisplay = require('abyss_card_display')
+local GridInput = require('abyss_grid_input')
 local copy = require('abyss_copy').copy
 local L = Theme.layout.nativeNode.forge
 local M = {}
@@ -86,13 +87,18 @@ function M.new(ctx)
         local cursor = ctx.cursor
         if cursor and cursor.CursorDown then
             hit:AddCursorEventListener(cursor.CursorDown, function(event)
-                b.observed, b.press, b.touch = true, b.entry, touch(event)
+                b.observed, b.press, b.touch, b.released = true, b.entry, touch(event), false
                 b.x, b.y = ctx.point(event)
             end)
         end
+        if cursor and cursor.CursorUp then
+            hit:AddCursorEventListener(cursor.CursorUp, function(event)
+                if b.touch == touch(event) then b.released = true end
+            end)
+        end
         if cursor and cursor.CursorEndDrag then
-            hit:AddCursorEventListener(cursor.CursorEndDrag, function()
-                b.observed, b.press = true, nil
+            hit:AddCursorEventListener(cursor.CursorEndDrag, function(event)
+                if not b.press or b.touch == touch(event) then b.observed, b.press = true, nil end
             end)
         end
         if cursor and cursor.CursorEnter and cursor.CursorExit then
@@ -103,12 +109,15 @@ function M.new(ctx)
             end)
         end
         hit:AddCursorEventListener(ctx.clickEvent, function(event)
-            local samePress = b.press and b.press == b.entry and b.touch == touch(event)
+            local id = touch(event)
+            if b.press and id ~= b.touch and (id or not b.released) then return false end
+            local samePress = b.press and b.press == b.entry
             local x, y = ctx.point(event)
-            local moved = b.x and x and (x - b.x)^2 + (y - b.y)^2 >= Theme.layout.cardDrag.threshold^2
-            local blocked = b.observed and (not samePress or moved)
+            local limit = Theme.layout.cardDrag.threshold
+            local moved = b.x and x and (x - b.x)^2 + (y - b.y)^2 >= limit^2
             b.press, b.x, b.y = nil, nil, nil
-            if blocked or event and event.dragging or Controller.pointerBlocked(ctx.options.controller) then return false end
+            if b.observed and not samePress or moved or GridInput.dragged(event, limit)
+                or Controller.pointerBlocked(ctx.options.controller) then return false end
             return pick()
         end)
         Controller.bind(ctx.options.controller, hit, 'node', pick, enabled, 10)
