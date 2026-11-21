@@ -19,6 +19,7 @@ end
 local M=setmetatable({}, {__index=queryIndex,__newindex=queryNewIndex})
 function M.onEquip(run,id,api)
  id=M.aliases[id]or id
+ api=api and api.openRewards and api or require('abyss_relic_choices').adapter()
  if id=='prismatic_shard' then
   if run.character~='defect'and (run.masterMaxOrbs or 0)==0 then run.masterMaxOrbs=1 end
  elseif id=='dollys_mirror' then

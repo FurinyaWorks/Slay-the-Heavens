@@ -41,7 +41,10 @@ if REWARD_GROUP=='cards'or REWARD_GROUP=='shop'then
    -- The final explicit capability is control-plane composition. Preserve all
    -- original command arguments, state, aliases and returns in the old oracle.
    -- Only this declared slot may be removed, and only for the real Run owner.
-   if semanticArity and args.n==semanticArity+1 then
+   if owner==Choices and key=='chooseMirror' and args.n==4 then
+    assert(args[3]==Run and args[4]==require('abyss_shop_relics').chooseMirror,'[REWARD_BOUNDARY] invalid explicit Mirror owner')
+    observed[3],observed[4],observed.n=nil,nil,2
+   elseif semanticArity and args.n==semanticArity+1 then
     assert(args[args.n]==Run,'[REWARD_BOUNDARY] foreign explicit Run host')
     observed[args.n]=nil;observed.n=semanticArity
    elseif semanticArity then

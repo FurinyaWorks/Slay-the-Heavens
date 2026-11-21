@@ -61,8 +61,8 @@ function M.finish(run,token)
  for _,item in ipairs(p.items)do if not item.claimed then return false,'shop_relic_rewards_pending'end end
  run.shopRelicRewards=nil;return true
 end
-function M.chooseMirror(run,uid,Run)
- return require('abyss_shop_relics').chooseMirror(run,uid,M.adapter(Run))
+function M.chooseMirror(run,uid,Run,choose)
+ return choose(run,uid,M.adapter(Run))
 end
 function M.pending(run)return run.shopRelicRewards~=nil or run.shopRelicChoice~=nil end
 return M

@@ -64,7 +64,7 @@ local function admitEquipment(run,id,Run)
  require('abyss_rare_relics').onEquip(run,id)
  local ok,why=require('abyss_boss_relics').onEquip(run,id,Run)
  if not ok then return false,why end
- ok,why=require('abyss_shop_relics').onEquip(run,id,require('abyss_relic_choices').adapter(Run))
+ ok,why=require('abyss_shop_relics').onEquip(run,id)
  if ok==false then return false,why end
  return true
 end

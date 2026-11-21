@@ -91,7 +91,8 @@ function M.resolve(run,token,Run)
    if not allowed then return false,'invalid_bottle_card'end
    local ok,why=require('abyss_uncommon_relics').equipBottle(staged,p.id,token.uid)
    if ok then staged.pendingBottledRelic=nil end;return ok,why
-  elseif token.key=='shopRelicChoice'then return require('abyss_relic_choices').chooseMirror(staged,token.uid,Run)
+  elseif token.key=='shopRelicChoice'then
+   return require('abyss_relic_choices').chooseMirror(staged,token.uid,Run,require('abyss_shop_relics').chooseMirror)
   elseif token.key=='pendingBossRelic'then
    if p.kind=='cards'then return require('abyss_boss_relics').select(staged,token.uid,Run)end
    return require('abyss_boss_relics').claim(staged,token.kind,token.choice,Run)

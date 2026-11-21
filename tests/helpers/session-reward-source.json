@@ -8,13 +8,13 @@
     },
     "src/lua/abyss_relic_choices.lua": {
       "beforeSha256": "2d9e764deb17171cacdcd7821f60c28cc34c141e03acd9c5d2ca5de3b941692d",
-      "afterSha256": "f61d1b0106c44469e3ca723c89f1158f4b38fba59a5b7502f7992ae3dc039139",
-      "afterGitBlob": "0d34fc5558f0e05613ff80c07b1725dc1a0c86e8"
+      "afterSha256": "0a56dd716ccd996d14e70b9e0239db7f749e753349248d41e92cbd166e324e4e",
+      "afterGitBlob": "ce47be3293cd3ee262971e51518bb827f2c9b3e3"
     },
     "src/lua/abyss_relic_pending.lua": {
       "beforeSha256": "0d81d862c3afebb7a857440d0366e4feabeb6f8ee49f53239c4486a533941c7f",
-      "afterSha256": "bbab83616cdf5464990a9b0d9cbd0a0e5f7b05749c711c690218b5a2c095d9ae",
-      "afterGitBlob": "edc1b38e025156ce7d8bd16dcb54a7071c921ca9"
+      "afterSha256": "471aafeb33a1868158723ce9e5ec231b12e186ae2f94e8de045cd1dc9c4a08d6",
+      "afterGitBlob": "5dfa1dd5f4aa68663770f565c3df1b50a87f08be"
     }
   }
 }
