@@ -342,6 +342,18 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.bindings[control].instance=instance
         self.bindings[control].bodyText=bodyText
     end
+    local function paintBody(face,binding,display,definition,instance,battle)
+        -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
+        local text=battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
+            or CardDisplay.permanentText(display,definition,instance)
+        -- The official item template owns this face. Recycled slots with a
+        -- different UID can still display exactly the same fitted body.
+        if not self.browserShell or not binding or binding.bodyText~=text then
+            CardDisplay.writeBody(face:GetChild("label"),text,face)
+        end
+        if Theme.cardSkin.text.body then face:GetChild('label').fontColor=colour(Theme.cardSkin.text.body)end
+        return text
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -352,15 +364,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         CardDisplay.writeTitle(face:GetChild("name"),display.name,instance.upgraded,
             definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
         face:GetChild("name").fontColor = colour(Theme.cardSkin.text.title)
-        -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
-        local text=battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
-            or CardDisplay.permanentText(display,definition,instance)
-        -- The official item template owns this face. Recycled slots with a
-        -- different UID can still display exactly the same fitted body.
-        if not self.browserShell or not binding or binding.bodyText~=text then
-            CardDisplay.writeBody(face:GetChild("label"),text,face)
-        end
-        if Theme.cardSkin.text.body then face:GetChild('label').fontColor=colour(Theme.cardSkin.text.body)end
+        local text=paintBody(face,binding,display,definition,instance,battle)
         face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
         tint(face:GetChild("border"), Theme.color.rarity[definition.rarity] or Theme.color.line)
         tint(face:GetChild("nameBand"), Theme.color.rarityBand[definition.rarity] or Theme.color.rarityBand.basic)
