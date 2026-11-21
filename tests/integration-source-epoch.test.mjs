@@ -279,11 +279,12 @@ test('map and card replay require every same-path sample and live reread to matc
   ['src/lua/abyss_battle_card_glow.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
   ['src/lua/abyss_feedback.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
  ]){
-  const current=read(path),old=prior(path,current);
-  assert.notEqual(current,old,path);
-  for(const samples of [[[path,old],[path,current]],[[path,current],[path,old]]])
-   assert.throws(()=>authorize(samples,read),/mixed live and stale sources/);
-  assert.throws(()=>authorize([[path,current]],()=>old),/changed during owner validation/);
+  const current=read(path),signedView=beforeRebasedCi(path,current),old=prior(path,signedView);
+  const readSigned=owner=>beforeRebasedCi(owner,read(owner));
+  assert.notEqual(signedView,old,path);
+  for(const samples of [[[path,old],[path,signedView]],[[path,signedView],[path,old]]])
+   assert.throws(()=>authorize(samples,readSigned),/mixed live and stale sources/);
+  assert.throws(()=>authorize([[path,signedView]],()=>old),/changed during owner validation/);
   assert.throws(()=>beforeCurrentProductionSource(path,old,read),/fresh current production owner/);
   assert.throws(()=>beforeCurrentProductionSource(path,current,owner=>owner===path?old:read(owner)),/combined linked owner identity/);
  }

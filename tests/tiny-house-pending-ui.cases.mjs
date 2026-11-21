@@ -87,17 +87,19 @@ test('capacity build exact projection preserves older receipts and rejects mixed
  const {readFileSync}=await import('node:fs');
  const {assertIntegrationSuccessorsCurrent}=await import('./helpers/fork-preflight-source.mjs');
  const {beforeReleaseCapacitySource}=await import('./helpers/release-integration-source.mjs');
+ const {beforeRebasedRelease}=await import('./helpers/rebased-release-source.mjs');
+ const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,source));
  const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',
   'scripts/official-portraits.mjs','tests/official-portraits-build.test.mjs'];
  const crlf=s=>s.replaceAll('\n','\r\n');
  const current=new Map(paths.map(path=>[path,readFileSync(path,'utf8').replaceAll('\r\n','\n')]));
  assert.doesNotThrow(()=>assertIntegrationSuccessorsCurrent((path,encoding)=>current.has(path)?crlf(current.get(path)):readFileSync(path,encoding)));
  for(const [path,raw] of current){
-  const prior=beforeReleaseCapacitySource(path,raw);
+  const prior=project(path,raw);
   assert.notEqual(prior,raw);
-  assert.equal(beforeReleaseCapacitySource(path,crlf(raw)),crlf(prior));
+  assert.equal(project(path,crlf(raw)),crlf(prior));
   for(const foreign of [prior,raw+'\n',raw.replaceAll('\n','\r\r\n'),null]){
-   assert.equal(beforeReleaseCapacitySource(path,foreign),foreign);
+   assert.equal(project(path,foreign),foreign);
    assert.throws(()=>assertIntegrationSuccessorsCurrent((owner,encoding)=>owner===path?foreign:readFileSync(owner,encoding)),
     error=>error.message==='fresh complete integration source: '+path);
   }
