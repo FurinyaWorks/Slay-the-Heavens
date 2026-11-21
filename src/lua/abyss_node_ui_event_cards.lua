@@ -64,7 +64,7 @@ function M.install(ctx)
  end
  local function prepare(picker)
   ctx.show(picker:GetChild('forgeGrid'),false)
-  for _,name in ipairs({'forgePrevious','forgeNext','before','after','target','arrow','label','hint'})do
+  for _,name in ipairs({'before','after','target','arrow','label','hint'})do
    ctx.show(picker:GetChild(name),false)
   end
   for _,name in ipairs({'page','empty'})do ctx.show(picker:GetChild(name),true)end

@@ -19,10 +19,6 @@ function M.install(ctx)
 
         for _,path in ipairs(require('abyss_match_event_ui').inputPaths())do ctx.targets[#ctx.targets+1]=path end
 
-        ctx.targets[#ctx.targets+1]='pickerView/forgePrevious'
-
-        ctx.targets[#ctx.targets+1]='pickerView/forgeNext'
-
         for i = 1, SHOP_PAGE do ctx.targets[#ctx.targets + 1] = "shopView/card" .. i end
 
         for i = 1, RELIC_PAGE do ctx.targets[#ctx.targets + 1] = "shopView/relic" .. i end
@@ -246,10 +242,6 @@ function M.install(ctx)
                 if name:match('^shopView/card%d+$') or name:match('^shopView/relic%d+$') or name:match('^shopView/potion%d+$') then
                     if ctx.cursor and ctx.cursor.CursorEnter then ctx.listen(hit,ctx.cursor.CursorEnter,function()ctx.shopSelection:enter(name)end) end
                     if ctx.cursor and ctx.cursor.CursorExit then ctx.listen(hit,ctx.cursor.CursorExit,function()ctx.shopSelection:exit(name)end) end
-                end
-                if name:match('^pickerView/forgeGrid/card%d+$') and ctx.cursor then
-                    if ctx.cursor.CursorEnter then ctx.listen(hit,ctx.cursor.CursorEnter,function()ctx.campUI:hover(box,true)end)end
-                    if ctx.cursor.CursorExit then ctx.listen(hit,ctx.cursor.CursorExit,function()ctx.campUI:hover(box,false)end)end
                 end
                 local function bindRewardInspection()
                     if name:match('^treasureView/rewardItem%d+$') and ctx.cursor then

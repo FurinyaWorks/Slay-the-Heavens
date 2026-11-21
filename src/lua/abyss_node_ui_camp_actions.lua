@@ -19,7 +19,7 @@ local function showCampResult(ctx,camp,rest,forge,result)
         ('已回复 '..number(result.healed)..' 点生命\n生命 '..number(ctx.self.run.hp)..'/'..number(ctx.self.run.maxHp)
         ..(result.rewardText and '\n'..result.rewardText or ''))or '未选择'
     forge:GetChild('description').text=result.choice=='upgrade'and '已升级'or '未选择'
-    camp:GetChild('result'):GetChild('description').text=rest:GetChild('description').text
+    camp:GetChild('result'):GetChild('description').text=result.text or rest:GetChild('description').text
 end
 local function installRarePicker(ctx)
     if ctx.rarePickerInstalled then return end
@@ -83,7 +83,7 @@ end
 
 -- Installs the camp actions responsibility on one node UI instance.
 function M.install(ctx)
-    ctx.campUI=CampUI.new(ctx.self,{child=ctx.child,show=ctx.show,state=ctx.state,fillCard=ctx.fillCard,action=ctx.action})
+    ctx.campUI=CampUI.new(ctx)
 
     function ctx.enhancedForge(node)return ctx.options.enhancedRooms and node.type=='camp' and ctx.self.picker=='upgrade'end
 

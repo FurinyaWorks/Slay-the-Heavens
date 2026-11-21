@@ -31,7 +31,9 @@ local function setup(kind)
     ui:refresh()
     local function hit(path,panel)
         local c=root:GetChild(panel or 'nodePanel')
-        for name in path:gmatch('[^/]+')do c=assert(c:GetChild(name),path)end
+        for name in path:gmatch('[^/]+')do
+            c=assert(c.items and c.items[tonumber(name)] or c:GetChild(name),path)
+        end
         return c:GetChild('hit') or c
     end
     local function press(path,panel,event)
@@ -44,7 +46,7 @@ end
 local ui,root,press,hit=setup('camp')
 assert(ui.mode=='node')
 press('campView/forge');assert(ui.nodeUI.mode=='picker')
-press('pickerView/forgeGrid/card1');press('back');press('back');assert(ui.nodeUI.mode=='main')
+press('pickerView/forgeFit/0');press('back');press('back');assert(ui.nodeUI.mode=='main')
 press('campView/rest');assert(ui.run.hp>30)
 ui:update(require('abyss_theme').layout.nativeNode.roomMotion.restDuration+.01)
 press('confirm');assert(ui.mode=='map');ui:disable()

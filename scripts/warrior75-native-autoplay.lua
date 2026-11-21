@@ -117,6 +117,11 @@ local function selectPicker(ui,s)
     local wanted
     for i,c in ipairs(rows) do if c.uid==plan.uid then wanted=i break end end
     if not wanted then return stop(ui,s,"suggested_UID_not_in_picker") end
+    if node.picker=="upgrade" and node.view.node.type=="camp" then
+        if node.selected~=plan.uid then return press(ui,s,"pickerView/forgeScroll/card"..wanted,{uid=plan.uid}) end
+        if press(ui,s,"confirm",{uid=plan.uid,method=plan.method}) then mark(s,plan) end
+        return
+    end
     local size=#Theme.layout.nativeNode.picker.columns
     local page=math.floor((wanted-1)/size)+1
     if node.pickPage~=page then return press(ui,s,"pickerView/"..(page>node.pickPage and "next" or "previous")) end

@@ -2,6 +2,7 @@ import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 import { cardFaceChildren } from './card-face.mjs';
 import { merchantControl } from './cinematic-ui-layout.mjs';
 import { augmentMatchEventPicker } from './match-event-layout.mjs';
+import { fiveColumnCardGrid } from './deck-ui-layout.mjs';
 
 // Approved PR19 node screens (shop, camp/forge, event, treasure) as one native
 // tree. Every view is its own container so no control exceeds the MCP child limit.
@@ -122,7 +123,15 @@ export function nodeLayout(theme = nativeTheme) {
     text('label', picker.label, '', font.label, color.textDim), text('hint', picker.hint, '', font.small, color.textDim),
     text('empty', picker.empty, '', font.body, color.textMuted)];
   const forge = layout.forge;
-  pickerControls.push(hidden(arrow('forgePrevious',forge.previous,icon.back)),hidden(arrow('forgeNext',forge.next,icon.next)));
+  pickerControls.unshift(
+    hidden(plate('forgeShade', [0, -22, 1280, 676], '#000000E6')),
+    hidden(fiveColumnCardGrid('forgeFit', forge.viewport, 'AbyssForgeCard', false)),
+    hidden(fiveColumnCardGrid('forgeScroll', forge.viewport, 'AbyssForgeCard')),
+    hidden(group('forgePrompt', [
+      plate('plate', forge.prompt, '#000000B3'),
+      text('label', forge.prompt, '选择一张卡牌升级', font.heading, color.text),
+    ])),
+  );
   pickerControls.push(hidden(group('forgeGrid',forge.rows.flatMap((y,row)=>forge.columns.map((x,col)=>
     card(`card${row*forge.columns.length+col+1}`,[x,y]))))));
 
