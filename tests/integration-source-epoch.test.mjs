@@ -1,4 +1,5 @@
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
+import {beforeReleaseUiRestore} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -167,15 +168,18 @@ test('current PC13 facade rejects every exact immediate predecessor before older
  const read=path=>readFileSync(path,'utf8');
  assert.equal(pc13RewardCoverSourcePaths.length,5);
  for(const path of pc13RewardCoverSourcePaths){
-  const successor=read(path),predecessor=beforePc13RewardCover(path,successor);
+  const latest=read(path),successor=beforeReleaseUiRestore(path,latest);
+  const predecessor=beforePc13RewardCover(path,successor);
   assert.notEqual(predecessor,successor,path);
-  assert.equal(beforeCurrentProductionSource(path,successor,read).replaceAll('\r\n','\n'),raw(path),path);
+  assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),raw(path),path);
   assert.equal(beforeCharacterPreparationSource(path,predecessor,read).replaceAll('\r\n','\n'),raw(path),'historical predecessor remains supported: '+path);
   assert.throws(()=>beforeCurrentProductionSource(path,predecessor,read),{message:'fresh current production owner: '+path});
   const forbidden=()=>{throw Error('must not read for an unrecognized current owner');};
-  for(const invalid of [predecessor,successor+'\n',null])
+  const invalidInputs=[predecessor,latest+'\n',null];
+  if(successor!==latest)invalidInputs.push(successor);
+  for(const invalid of invalidInputs)
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,forbidden),{message:'fresh current production owner: '+path});
-  assert.throws(()=>beforeCurrentProductionSource(path,successor,owner=>owner===path?predecessor:read(owner)),
+  assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?predecessor:read(owner)),
    /combined linked owner identity/,path);
  }
  const unrelated='src/lua/abyss_battle_ui.lua';

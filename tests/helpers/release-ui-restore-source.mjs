@@ -31,7 +31,7 @@ export function releaseUiRestoreArchive(bytes,expectedSha){
 }
 
 const {files,project}=releaseUiRestoreArchive(readFileSync(new URL('./release-ui-restore-source.json.gz',import.meta.url)),
- '71c7c20e615dd0d5ec8324a2eec5f503ddcab7ca04db63b928a9dff6c21a36c9');
+ 'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b');
 export const releaseUiRestoreSourcePaths=Object.freeze(Object.keys(files));
 export const beforeReleaseUiRestore=project;
 
