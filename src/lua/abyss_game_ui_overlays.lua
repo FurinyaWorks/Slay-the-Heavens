@@ -177,11 +177,13 @@ function M.openStarterDeck(openingCovered,self,platform,owner)
             self.characterSelection.deckOpen=true;self:refresh();return true
         end
 end
-function M.openRelics(self)
+function M.openRelics(self,openingCovered,platform)
     return function(_,index)
-            if self.deckUI.visible or not self:openDeck() then return false end
-            self.deckUI:close()
+            if openingCovered() or deckBlocked(self) or self.deckUI.visible
+                or (self.mode~="map" and self.mode~="battle" and self.mode~="node") then return false end
+            PageReveal.registerSource(platform,'deckPanel')
             if not self.deckUI:inspectRelics(self.run,self.relicUI,index) then return false end
+            self.battleUI.selected=nil
             self:refresh();return true
         end
 end

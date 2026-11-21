@@ -43,7 +43,7 @@ function M.install(owner, _ownership, host, dependencies)
             closeAutomaticCard(control)
             if hoverSlot and owner.hover==hoverSlot then owner:setHover(nil) end
             if owner.help and owner.help.source==control then owner.help=nil end
-            if owner.info and owner.info.source==control and owner.info.transient then dependencies.closeInfo();if silent~=true then owner:render() end end
+            if owner.info and owner.info.source==control and owner.info.transient then dependencies.closeInfo();if silent~=true then owner:renderDetailsOnly() end end
         end
         if cleanups then cleanups[#cleanups+1]={control=control,cancel=cancel} end
         if hasCursorPair("CursorEnter","CursorExit") then
@@ -103,7 +103,7 @@ function M.install(owner, _ownership, host, dependencies)
                 local help=owner.help
                 if help and help.source==control and help.fired then
                     input.consumed={touch=token.touch}
-                    if owner.info and owner.info.source==control then owner.info.transient=false;owner:render() end
+                    if owner.info and owner.info.source==control then owner.info.transient=false;owner:renderDetailsOnly() end
                 else input.released=token end
                 if help and help.source==control then owner.help=nil end
             end)
@@ -155,15 +155,15 @@ function M.install(owner, _ownership, host, dependencies)
         end
         local info = dependencies.child("statusInfo")
         info.disableCursorEventPassthrough = true
-        dependencies.listen(info:GetChild("hit"), function() if dependencies.closeInfo() then owner:render() end end)
+        dependencies.listen(info:GetChild("hit"), function() if dependencies.closeInfo() then owner:renderDetailsOnly() end end)
         -- A tap on the card itself turns to the next page; a single page closes like any tap.
         -- Not routed through listen(): that dismisses the open card before any handler runs.
         local function infoPage()
             local open = owner.info
             if not open then return end
             owner.swallow = nil
-            if (open.pages or 1) > 1 then open.page = open.page % open.pages + 1 owner:render()
-            elseif dependencies.closeInfo() then owner:render() end
+            if (open.pages or 1) > 1 then open.page = open.page % open.pages + 1 owner:renderDetailsOnly()
+            elseif dependencies.closeInfo() then owner:renderDetailsOnly() end
         end
         info:GetChild("page"):AddCursorEventListener(host.clickEvent,function(event)
             if Controller.pointerBlocked(host.controller)then return false end
