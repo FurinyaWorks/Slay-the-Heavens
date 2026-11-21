@@ -617,6 +617,39 @@ assert(coverRuns==1 and not cover.visible and host.run.phase=='map' and map.visi
 `,'PC13_OFFICIAL_REWARD_FRAMES_PASS');
 });
 
+test('official card confirmation keeps the battlefield visible while selecting and playing Defend',t=>{
+ runOfficial(t,`
+local h,u,p,_,tap,drain=H.setup({'defend','strike'},{'spike_slime_s','acid_slime_m'})
+local b=h.run.combat
+local area=p:GetChild('playArea')
+local line,label,hit=area:GetChild('line'),area:GetChild('label'),area:GetChild('hit')
+assert(not area.visible,'confirmation area must start hidden')
+local slots={}
+for i,card in ipairs(b.hand)do slots[card.cardId]=i end
+local defend,strike='card'..slots.defend,'card'..slots.strike
+local uid=b.hand[slots.defend].uid
+local before=C.copy(b)
+tap(defend,71)
+assert(u.selected==uid and area.visible and line.visible,'Defend must show the confirmation line')
+assert(not area:GetChild('officialButtonBacking') and #area:GetChildren()==3,
+ 'visible confirmation area must contain only its line, caption and input surface')
+assert(label.text=='' and hit.kind=='cursorArea' and hit.raycastTarget,
+ 'Defend must retain the same transparent confirmation target')
+assert(hit.sizeDeltaX==area.sizeDeltaX and hit.sizeDeltaY==area.sizeDeltaY,'confirmation target must still cover the field')
+unchanged(b,before,'selection played the card')
+tap(defend,72)
+assert(not u.selected and not area.visible,'tapping the same card must cancel confirmation')
+tap(strike,73)
+assert(u.selected and not area.visible,'targeted attacks must keep their enemy-only confirmation')
+tap(strike,74)
+unchanged(b,before,'cancelling selection changed combat')
+tap(defend,75);tap('playArea',76);drain()
+assert(not area.visible and not u.selected,'played card left confirmation visible')
+assert(b.energy==before.energy-1 and b.player.block==before.player.block+5 and #b.hand==#before.hand-1,
+ 'the transparent field must still play Defend exactly once')
+`, 'OFFICIAL_TRANSPARENT_CARD_CONFIRM_PASS');
+});
+
 test('official candidate keeps C-mode, repeated pile modals, real victory and return-map controls live',t=>{
  runOfficial(t,`
 local F=H.F
