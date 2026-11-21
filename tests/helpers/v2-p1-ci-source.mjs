@@ -12,7 +12,7 @@ const {project:beforeReleaseControlsGuideRemovalCi}=releaseUiRestoreArchive(
   '9ecffa8b3eb6cf2bcc165f4d4fc89a0b5d48631ce878e1a27a9fa816e11dc13b','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
-  'b83a4efedc056ade8198ebc12735be74e77be086c69ef378a6f8d1521e8891f2');
+  '2efd379b5ff0f87497082f422b395a3bed55b6243ed8af1d03be6f48e3993a3b');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(bytes),'126bc5faaa880285c3e28b96fa3781ed6d188e9b5ee2889a5a41c0a7c2c30cd4','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
