@@ -1,7 +1,7 @@
 import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
-import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
+import {beforeV2UiEvidence,beforeFieldConfirmation} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -154,9 +154,20 @@ function beforePowerMembershipConfig(path,source){
  assert.equal(hash(prior),'7d0b25ebcbd323e633fad7bcf8e618966450c60dde9671185226f1e6cef8fbd1','exact Power membership architecture predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// The live animation assertions stay in Full. Older CI receipts read their exact predecessor.
+const cardFeedbackBytes=readFileSync(new URL('./card-feedback-ci-predecessors.json.gz',import.meta.url));
+assert.equal(hash(cardFeedbackBytes),'2319177212c8afd636a76db8d2e79f4ff1e6774b0609d1fbfd651a9505cbf54e','exact card feedback CI prerequisites');
+const cardFeedback=JSON.parse(gunzipSync(cardFeedbackBytes));
+assert.equal(cardFeedback.base,'b8eece34d93da2069c991c6f00bece49bce07aaf');
+for(const row of Object.values(cardFeedback.files))assert.equal(hash(row.before),row.beforeSha);
+function beforeCardFeedbackCiSource(path,source){
+ const row=Object.hasOwn(cardFeedback.files,path)?cardFeedback.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==row.afterSha)return source;
+ return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+}
 function beforeCoopCiSource(path,source){
  source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));
- source=beforeRewardScreenCiSource(path,source);
+ source=beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,source)));
  source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
  source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
@@ -247,7 +258,7 @@ function beforeIntegrationSuccessor(path,source){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertDevelopCapacityCohort(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeRewardScreenCiSource(path,read(path,'utf8'))));
+  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,read(path,'utf8'))))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){

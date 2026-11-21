@@ -1314,7 +1314,7 @@ unchanged(b2,before2,'click-only hover selection/cancel changed combat resources
 `, 'TRANSIENT_CARD_SIDE_HELP_PASS');
 });
 
-test('official approved static glow paints only on state changes without native animation or tick writes',t=>{
+test('official static glow settles after one selected flash without idle animation',t=>{
  runOfficial(t,`
 local Glow=require('abyss_battle_card_glow')
 local h,u,p=H.setup({'strike','defend','bludgeon'},{'cultist'})
@@ -1339,6 +1339,7 @@ assert(colours==painted,'idle bind/tick repainted static rim')
 Glow.bind(box,rim,true,platform,true,uid)
 assert(width(soft)==6 and width(outer)==10,'selected static rim must use approved 3+5 softness')
 tint(soft,136,247,231);tint(outer,60,226,208)
+for i=1,60 do Glow.tick(box,1/60)end
 painted=colours;for i=1,120 do Glow.tick(box,1/60)end;assert(colours==painted)
 Glow.bind(box,rim,true,platform,false,uid);tint(soft,115,229,215)
 box:SetVisible(false);Glow.tick(box,1/60);assert(not soft.visible and not outer.visible)
@@ -1839,4 +1840,51 @@ test('M05 exact source and discovery custody reject drift before older adapters'
   assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>source+'\n'),/linked owner identity/);
   assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>{throw Error('unavailable')}),/linked owner missing/);
  }
+});
+
+
+test('official selected flash expands once and cancels on rebind, deselect and hidden controls',t=>{
+ runOfficial(t,`
+local Glow=require('abyss_battle_card_glow')
+local h,u,p=H.setup({'strike'},{'cultist'})
+local box=p:GetChild('card1');local rim=box:GetChild('nativePlayableRim')
+local wave=rim:GetChild('pulseEdge2');local uid=h.run.combat.hand[1].uid
+local paints=0
+local platform={color=function(r,g,b,a)paints=paints+1;return {r=r,g=g,b=b,a=a}end}
+Glow.clear(box);Glow.bind(box,rim,true,platform,false,uid)
+assert(not wave.visible)
+Glow.bind(box,rim,true,platform,true,uid)
+assert(wave.visible,'selection must emit a short flash')
+local scale=wave.localScaleX;local alpha=wave:GetChild('vertical').imageColor.a
+Glow.tick(box,.06)
+assert(wave.localScaleX>scale and wave:GetChild('vertical').imageColor.a<alpha,'flash must expand and fade')
+Glow.bind(box,rim,true,platform,true,uid);Glow.tick(box,1)
+assert(not wave.visible,'same selection must not restart the flash')
+local settled=paints;for i=1,60 do Glow.tick(box,1/60);Glow.bind(box,rim,true,platform,true,uid)end
+assert(paints==settled,'settled selection repainted the rim')
+Glow.bind(box,rim,true,platform,false,uid);Glow.bind(box,rim,true,platform,true,uid)
+assert(wave.visible);Glow.bind(box,rim,true,platform,false,uid);assert(not wave.visible,'cancel retained flash')
+Glow.bind(box,rim,true,platform,true,uid);Glow.bind(box,rim,true,platform,false,uid+1)
+assert(not wave.visible,'recycled slot retained flash')
+Glow.bind(box,rim,true,platform,true,uid+1);box:SetVisible(false);Glow.tick(box,.01)
+assert(not wave.visible,'hidden card retained flash')
+`, 'OFFICIAL_SELECTION_FLASH_PASS');
+});
+
+test('official play flash and spin reset for consecutive cards without changing committed state',t=>{
+ runOfficial(t,`
+local h,u,p,event,tap,drain=H.setup({'strike','strike'},{'cultist'})
+local b=h.run.combat;local card=p:GetChild('feedback'):GetChild('playedCard')
+for i=1,2 do
+ u.selected=b.hand[1].uid;u:render();u:playSelected(1)
+ local committed=C.copy(b)
+ assert(card.localRotationZ==0,'new play inherited rotation')
+ local border=card:GetChild('border');local initial=border.imageColor
+ assert(initial.g>200 and initial.b>200,'play must begin with a cyan-white flash')
+ h:update(.05)
+ assert(math.abs(card.localRotationZ)>1,'played card must rotate in flight')
+ unchanged(b,committed,'visual play feedback changed committed combat state')
+ drain();assert(not card.visible,'completed flight retained played card')
+end
+`, 'OFFICIAL_PLAY_FLASH_PASS');
 });

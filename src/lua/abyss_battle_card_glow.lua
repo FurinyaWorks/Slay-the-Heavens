@@ -63,6 +63,15 @@ local function applyStaticFocus(box,state,rim,focused)
     soft:SetLocalScale(1,1,1);outer:SetLocalScale(1,1,1)
     paintStatic(soft,style.colours[1],state.color);paintStatic(outer,style.colours[2],state.color)
     soft:SetVisible(true);outer:SetVisible(true)
+    local flash=layer(box,state,2)
+    flash:SetVisible(focused)
+    state.flashAge=focused and 0 or nil
+    if focused then
+        local burst=Theme.officialAssets.cardPlayFeedback.selection
+        shapeOutline(flash,style.pulseSoftness)
+        flash:SetLocalScale(1,1,1)
+        paintStatic(flash,burst.colour,state.color)
+    end
     state.focused=focused
 end
 local function applyFocus(box,state,rim,focused)
@@ -185,13 +194,27 @@ local function paintWave(box,state,index,remaining,style)
     end
     return true
 end
+local function tickFlash(box,state,dt)
+    if not state.flashAge or dt<=0 then return end
+    local style=Theme.officialAssets.cardPlayFeedback.selection
+    state.flashAge=state.flashAge+dt
+    local p=math.min(1,state.flashAge/style.duration)
+    local flash=layer(box,state,2)
+    if p>=1 then flash:SetVisible(false);state.flashAge=nil;return end
+    local q=1-(1-p)*(1-p)
+    local scale=1+(style.expansion-1)*q
+    flash:SetLocalScale(scale,scale,1)
+    local c=style.colour
+    paintStatic(flash,{r=c.r,g=c.g,b=c.b,a=math.floor(c.a*(1-p)*(1-p))},state.color)
+end
 function M.tick(box,dt)
     local state=states[box]
     if not state then return end
     if state.closed or box.alive==false or box.visible==false or box.activeInHierarchy==false then M.clear(box);return end
     -- Native owns the fixed Tweens after bind: no per-frame allocations or
     -- colour writes. SDK loop-end/8-bit colour quantization differs from Lua.
-    if state.native or state.motion=='static' then return end
+    if state.motion=='static' then tickFlash(box,state,dt);return end
+    if state.native then return end
     local style=Theme.officialAssets.battleCardChrome.glow
     state.elapsed=state.elapsed+math.max(0,dt)
     local interval=style.duration/LAYERS
