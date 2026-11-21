@@ -85,9 +85,16 @@ const tinyHouseFiles=Object.freeze({
  'tests/helpers/tiny-house-integrated-source.mjs':'dbe8ab324dd2f0a4154e2b1c420a19b12c21a00cb5c5739049f1baa4ae8980e8',
  'tests/helpers/develop-tiny-house-predecessors.json.gz':'b699c3e7a0dfc70c24a47ba43b1fc68cc2cd340b67d2927c71af7b95d73887d5',
 });
-const powerMembershipFiles=Object.freeze({
+const rewardTransitionFiles=Object.freeze({
  ...tinyHouseFiles,
- [closeout]:'ff79733d085240170daa0aea1822c170a411bc08531fd36657a36b74d512b266',
+ [closeout]:'4d3e6c160de2c6b69e661d5c57229c7b6e0c3f76d1c8eff30df51b23ef305650',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'ce7b2396dca3f2769cb34c628ed39802b485a3a64d7693560d92f334309eb588',
+ 'tests/helpers/release-guide-backflow-source.mjs':'b3f38bf200d79d335a0048295b835d4d326ebfc7d52039171984998022b7facf',
+ 'tests/fixtures/combat-reward-transition-source.json.gz':'08c955924392a2a23a989e08b9bb4e061d06a66871b1cbacd9ad556c0b734476',
+});
+const powerMembershipFiles=Object.freeze({
+ ...rewardTransitionFiles,
+ [closeout]:'564a22d425038c24b65fed7d5b1a6c6cc847b71b6f32702d3ed257c3ee18d0d6',
  'tests/helpers/power-membership-source.mjs':'7df5bd25a505c50895ccdf8db84a0f424b9d02baf7659dc69a483ed8ef03ff1d',
  'tests/helpers/power-membership-source.json.gz':'9b4ee9cf761b49297c4a0abfea0df825104e6dcc2e73ca9b633d2c50bce8a039',
 });

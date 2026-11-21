@@ -188,6 +188,9 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     applyOfficialAssets([battle,layout,...templates],theme);
     templates.push(battlePileCardTemplate(layout,templates[0]));
     assertOfficialRunContracts([battle,layout,...templates]);
+  }else if(!v25BattleChrome){
+    applyV25RewardLayout(battle,theme);
+    applyV25RewardLayout(layout,theme);
   }
   for (const tree of [battle, layout, ...templates]) assertNativeUiCapacity(tree);
   const rendered = spawnSync(python, ['tools/render_traveler_cards.py', 'data/cards.json', 'data/presentation/traveler.zh-CN.json'],

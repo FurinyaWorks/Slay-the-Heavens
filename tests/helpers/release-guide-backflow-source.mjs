@@ -26,7 +26,7 @@ export function beforeReleaseGuideSource(path, source) {
 
 export function authorizeReleaseGuideSources(read) {
   for (const path of releaseGuideSourcePaths) {
-    assert(matches(read(path), files[path].after), 'combined linked owner identity: ' + path);
+    assert(matches(read(path), files[path].after), 'combined linked owner identity: ' + path + ' changed during owner validation');
   }
 }
 
