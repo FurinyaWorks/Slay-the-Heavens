@@ -4,8 +4,8 @@ title: 定位玩家反馈的手机卡顿与加载慢
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-10-31 23:38'
-updated_date: '2026-11-15 19:11'
+created_date: '2026-10-31T23:38:00Z'
+updated_date: '2026-11-21T16:09:09Z'
 labels:
   - 待验
   - delivery-verify
@@ -84,4 +84,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 
 2026-11-14第二轮状态纠正：已有3/4项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
 2026-11-15手机新证据与逐字时间在docs/backlog-details/MOBILE-QA-20261115.md，所有本轮新增验收项均保持未勾，历史成果不重复实施。
+
+后续版本牌堆性能切片基于 develop 73fd14aa。共享五列浏览跳过探针卡面与重复战斗绘制，排序键预计算。四类牌堆各 7/20/75/250 张、各 30 次前后样本见 docs/evidence/pile-buttons/。PC/手机原生输入到画面、内存及当前候选待验，保留未勾 AC。
 <!-- SECTION:NOTES:END -->
