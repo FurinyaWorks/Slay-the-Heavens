@@ -1,0 +1,80 @@
+{
+  "eventId": "golden_shrine",
+  "method": "manual cue silhouettes + existing TASK-94 single-axis placement; fallback to existing polygon encoder",
+  "sourceSha256": "006ba1096bc9ae360e60553e0d5bfa353ae627aa14fa8cdd27afe51684957841",
+  "sourceBytes": 1897874,
+  "simulator": "beyond-simulator-mcp@0.5.2",
+  "sample": {
+    "time": 0,
+    "frame": 0,
+    "created": 61,
+    "visible": 61,
+    "containers": 1,
+    "images": 60,
+    "paintEntries": 60
+  },
+  "saveSha256": "3f8df1631b80f1eeb466a916bdc476dacaedafee6620db7b338dd5e77967cc43",
+  "giaBytes": 54547,
+  "giaSha256": "7631d3fb90da12eb0210cb971e178fb4807611658f98a0d40f4253e42ce8872f",
+  "previousSelectedBaseline": {
+    "controls": 49,
+    "giaBytes": 41771
+  },
+  "previousAutoContour": {
+    "controls": 61,
+    "giaBytes": 53519
+  },
+  "staticHost": {
+    "stage": "offline static layout validation only",
+    "profiles": {
+      "default": {
+        "baselineEventViewDirectChildren": 13,
+        "slotSize": [
+          180,
+          180
+        ],
+        "events": {
+          "golden_shrine": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          }
+        }
+      },
+      "officialEventStyle": {
+        "baselineEventViewDirectChildren": 13,
+        "slotSize": [
+          330,
+          330
+        ],
+        "events": {
+          "golden_shrine": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          }
+        }
+      }
+    }
+  },
+  "independentVisualReview": {
+    "verdict": "candidate",
+    "strengths": [
+      "floating mask reads as a face",
+      "stone basin and upright rocks read as an altar"
+    ],
+    "remaining": [
+      "dark front facet",
+      "angular right edge"
+    ]
+  },
+  "officialCapacity": "NOT_RUN",
+  "physicalDevices": "NOT_RUN",
+  "integratedWithGame": false
+}
