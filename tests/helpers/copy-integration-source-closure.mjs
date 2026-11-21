@@ -79,8 +79,14 @@ const releaseGuideFiles=Object.freeze({
  'tests/helpers/release-guide-backflow-source.mjs':'9a18f8a3c11130899e51b17cba7ca9b5de25c7daf30cf3badf24db9808210062',
  'tests/fixtures/release-guide-backflow-source.json.gz':'7fe4f04ac99a35a19b6faee1b1678204b38476776729cb679886973eeff53d56',
 });
-const rewardTransitionFiles=Object.freeze({
+const tinyHouseFiles=Object.freeze({
  ...releaseGuideFiles,
+ [runtime]:'c69727aeeeacd96469492cdce40b3d100eab1b1d6bd78ff03d67565615fc02d7',
+ 'tests/helpers/tiny-house-integrated-source.mjs':'dbe8ab324dd2f0a4154e2b1c420a19b12c21a00cb5c5739049f1baa4ae8980e8',
+ 'tests/helpers/develop-tiny-house-predecessors.json.gz':'b699c3e7a0dfc70c24a47ba43b1fc68cc2cd340b67d2927c71af7b95d73887d5',
+});
+const rewardTransitionFiles=Object.freeze({
+ ...tinyHouseFiles,
  [closeout]:'4d3e6c160de2c6b69e661d5c57229c7b6e0c3f76d1c8eff30df51b23ef305650',
  'tests/helpers/pc13-reward-cover-source.mjs':'ce7b2396dca3f2769cb34c628ed39802b485a3a64d7693560d92f334309eb588',
  'tests/helpers/release-guide-backflow-source.mjs':'b3f38bf200d79d335a0048295b835d4d326ebfc7d52039171984998022b7facf',
