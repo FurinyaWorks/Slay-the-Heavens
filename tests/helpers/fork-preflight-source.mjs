@@ -93,7 +93,7 @@ function shopEntryPreflightRead(read){
 function beforeIntegratedReleaseCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='9990fcb1e83d9a2cff45c6f6442a350b5d6fe52c72be9ff4d740bdc4903265d1')return source;
+ if(hash(lf)!=='ced78644867c63e49ccab7984e01c3f8d9fd310deade62f25727cf1e1675b1ba')return source;
  const prior=lf.replace(/^const integratedReleaseFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(integratedReleaseFiles))','Object.entries(refinedReleaseFiles))');
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');

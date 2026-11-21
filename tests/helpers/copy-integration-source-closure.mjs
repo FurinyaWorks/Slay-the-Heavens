@@ -65,7 +65,7 @@ const releaseUiFiles=Object.freeze({
  ...pc13Files,
  [runtime]:'8536d9f54bc814e92db509a248b199be0bbd8c84c5a8fac7369637f94e21c513',
  'tests/helpers/potion-pointer-source.mjs':'ba6547de02ef3188b9658764452283cd671e3324f19cf0775bce3221db53cdab',
- 'tests/helpers/release-ui-restore-source.mjs':'d96708ceeb283a4e8dab1fb622c966f1fc1dce67d3ae01a22ac08e6209beeaa0',
+ 'tests/helpers/release-ui-restore-source.mjs':'dc2b0718c2cdaf170abc16894562d02b85bb14ae81d281d6a1c6bdba4ca424d5',
  'tests/helpers/release-shared-relic-source.json.gz':'4e72ca430cf8740dd6cb828547d8b8f29ba169c0c90cf49c2c662aa5964df5cc',
  'tests/helpers/release-ui-restore-source.json.gz':'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b',
  'tests/helpers/release-card-field-cancel-source.json.gz':'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca',
@@ -75,7 +75,7 @@ const releaseUiFiles=Object.freeze({
 // Refined enemy art extends only the existing historical helper closure.
 const refinedReleaseFiles=Object.freeze({
  ...releaseUiFiles,
- 'tests/helpers/release-ui-restore-source.mjs':'d96708ceeb283a4e8dab1fb622c966f1fc1dce67d3ae01a22ac08e6209beeaa0',
+ 'tests/helpers/release-ui-restore-source.mjs':'37410ec175d07b09c8dd8062ac2e19d212dc8eeaebc32f38dbf99e7b32d8b7dd',
  'tests/helpers/release-shop-entry-source.json.gz':'d3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7',
  'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',
  'tests/helpers/refined-release-source.mjs':'154f5464849177b48426db7d816f4ddf87d9d26abd6bfcfb543162b4f26450d9',
@@ -90,9 +90,9 @@ const integratedReleaseFiles=Object.freeze({
  'tests/helpers/release-map-deck-source.mjs':'e31f57cd3eb1fd7911d55984160eaeebcec50eecfb76718fcba49c59d2616edb',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
- 'tests/helpers/release-integration-source.mjs':'47c9d6a748a942b837e36ef1ad5b76c5a5c676546cce458a69f5c3c617ddcecf',
- 'tests/fixtures/release-integration-source.json.gz':'0bc178f6d91c587444aece1532ae47c1afd484b4ac22e2da788caeb6dc678bca',
- 'tests/helpers/release-ui-restore-source.mjs':'d96708ceeb283a4e8dab1fb622c966f1fc1dce67d3ae01a22ac08e6209beeaa0',
+ 'tests/helpers/release-integration-source.mjs':'f21c648a03e42f48bbe78415ef8293518863cd7f52c6931985f5a4b6df800557',
+ 'tests/fixtures/release-integration-source.json.gz':'7364c36d9aabf58685eafc227ead6c680222122545024f3412d73b0735054796',
+ 'tests/helpers/release-ui-restore-source.mjs':'cfb23687583237973429f8d150b59aae2726db93180302099504db2781225d46',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

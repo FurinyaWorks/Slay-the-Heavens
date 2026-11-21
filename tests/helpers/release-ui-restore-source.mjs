@@ -60,7 +60,7 @@ export const beforeReleaseForgeGridUi=forgeGrid.project;
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
 export const releaseSharedRelicSourcePaths=Object.freeze(Object.keys(sharedRelics.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseSharedRelicUi=sharedRelics.project;
-export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
+export const beforeReleaseControlsGuideRemoval=(path,source)=>controlsGuideRemoval.project(path,beforeRecordingUi(path,source));
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
