@@ -69,7 +69,7 @@
     "battleAim": {"segments":20,"idle":"#FFFFFF","locked":"#FF334D","headSize":32,"lockScale":1.2,"bend":[0.25,0.5]},
     "battleRelicBar": {"origin":[-597.3333333333,292],"step":48,"icon":42.6666666667,"hit":48,"count":25},
     "battleRelicIcons": {
-      "burning_blood":{"id":105045,"placeholder":true,"note":"官方火焰徽章代用；非原版遗物专图，名称与效果保持真实数据。"},
+      "burning_blood":{"id":105071,"placeholder":true,"note":"官方石块图标仅在岩脉残晶原生图形不可用时代用。"},
       "kunai":{"id":105217,"placeholder":true,"note":"官方交叉利刃徽章代用苦无；非原版遗物专图。"},
       "ink_bottle":{"id":105243,"placeholder":true,"note":"官方紫色液体瓶代用墨水瓶；非原版遗物专图。"},
       "smiling_mask":{"id":105023,"placeholder":true,"note":"官方笑脸徽章代用面具。"},
