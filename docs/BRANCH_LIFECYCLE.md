@@ -86,8 +86,10 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 ## 自动化范围与执行
 
 - **每日巡检 Owner：云端 ChatGPT 定时任务（可由 dot 接管）**，逐日只读核对分支、PR、继任者和责任人，只对新异常/升级事件简报；禁止直接合并或删分支。定时任务在 GitHub 之外维护，避免为每日巡检占用本地电脑。
-- .github/workflows/branch-hygiene.yml 改为 **手动触发的只读证据工具**，需要详细库存时由协调者运行并下载结果；不再和云端任务重复每日调度。
+- .github/workflows/branch-hygiene.yml 提供手动全量库存。Release PR 实际合入时同一工作流立即核对该 PR，对比当时的 develop 并在 Actions 汇总记录差异与已打开的接续 PR。关闭未合入的 Release PR 跳过事件核对。
 - scripts/branch-hygiene.mjs 通过 GitHub API 分页核对全部分支及 PR。JSON 保留关闭未合并的来源（包括已删、重用和 Fork 的 head）、精确 SHA、已有交接收据及关联 Backlog 的未验 AC。Markdown 汇总待复核的收据缺口、尚未合入的继任者和遗漏路径线索。巡检只读。
+- Release 合入责任人在同一轮对账中，从最新 develop 为可单独验收的小修复开回流 PR，正文记录「回流 #来源PR」和固定合入 SHA。已有接续就核对其实际范围，仍待回流的部分留在原 PR 或 Backlog。沿用独审、Required Checks 和正常队列。
+- Branch hygiene 在 Release 合入时检查，并从默认分支每四小时补查过去 48 小时的合入记录，覆盖使用旧工作流的冻结 Release 分支。Actions 摘要与工件列出差异和已经关联的 PR。
 - 对合入 Release 的 PR，用报告所列 develop SHA 比较生产文件内容，输出仍需核对的回流路径。同路径的后续修改也会触发复核。继任者合并、文件路径相交和文件内容相同都只是导航证据，行为与验收照旧按原任务验证。对应范围与结果写回原 PR 或 Backlog。旧 `release/v2.0.0` 保持冻结。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
 - 治理更新走 develop 的正常 PR。Develop 与后续批准的 Release PR 使用同一[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)。两类分支沿用各自 Fast、Full、独立评审及规则集。

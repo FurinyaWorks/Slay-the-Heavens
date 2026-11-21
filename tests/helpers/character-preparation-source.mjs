@@ -8,6 +8,7 @@ import {beforeSelectorSource,selectorSourcePair} from './character-selector-sour
 import {beforePotionTextSource,potionTextSourcePair} from './potion-text-source.mjs';
 import {beforeFatalBgmSource,fatalBgmPair} from './fatal-bgm-source-continuation.mjs';
 import {beforeEndingTerminalSource,endingTerminalSourcePath} from './ending-terminal-source.mjs';
+import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -37,6 +38,9 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeAuthenticatedReleaseGuideSource(path,source,read);
+  const readGuideCurrent=read;
+  read=owner=>beforeReleaseGuideSource(owner,readGuideCurrent(owner));
   source = beforeAuthenticatedM05ShopSource(path,source,read);
   const readM05Current=read;
   read=owner=>beforeM05ShopSource(owner,readM05Current(owner));
@@ -64,6 +68,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if (releaseGuideSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseGuideSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (pc13RewardCoverSourcePaths.includes(path)) {

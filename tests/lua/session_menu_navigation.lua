@@ -53,7 +53,10 @@ test('new game and abandon confirmations cancel safely and discard only on confi
  local run=h.run
  assert(h:openMenu() and h:returnToMainMenu())
  assert(tap(hit(r,'menuPanel','start'),1) and h.navigationAction=='new' and not h.characterOpen)
- assert(r:GetChild('exitPanel'):GetChild('message').text:find('无法恢复',1,true))
+ local exit=r:GetChild('exitPanel')
+ assert(exit.visible and exit:GetChild('title').text=='开始新游戏？')
+ assert(not exit:GetChild('help') and not exit:GetChild('guide'))
+ assert(exit:GetChild('message').text:find('无法恢复',1,true))
  assert(tap(hit(r,'exitPanel','cancel'),2) and h.run==run and h.sessionPaused)
  assert(h:continueRun() and h:openMenu())
  assert(tap(hit(r,'runMenu','abandon'),3) and h.navigationAction=='abandon')
