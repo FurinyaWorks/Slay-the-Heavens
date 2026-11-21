@@ -8,11 +8,12 @@ const hash=(source,algorithm='sha256')=>createHash(algorithm).update(source).dig
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const normalize=source=>source.replaceAll('\r\n','\n');
 const gzip=readFileSync(new URL('./refined-release-source.json.gz',import.meta.url));
-assert.equal(hash(gzip),'07a1ff6c727d11c194d0b3624a6694be668405a7b0a24888116263d174f9f073','exact refined Release source archive');
+assert.equal(hash(gzip),'7362133512c07d6107d65bd62a021919e527a53589207841b84221dff481ad41','exact refined Release source archive');
 const {schemaVersion,base,normalization,files,addedJs}=JSON.parse(gunzipSync(gzip));
 assert.equal(schemaVersion,1);assert.equal(normalization,'LF');
 assert.equal(base,'7381cf7152ba7a726506f9a5b525e13cfbd2c87a');
 const paths=Object.keys(files),owners=paths.filter(path=>path.startsWith('src/lua/'));
+export const refinedReleaseProductionPaths=Object.freeze(owners);
 assert.deepEqual(owners,['src/lua/abyss_monster_art.lua','src/lua/abyss_monster_surfaces.lua']);
 for(const [path,{before,after}]of Object.entries(files)){
  assert.equal(normalize(before.source),before.source,path);

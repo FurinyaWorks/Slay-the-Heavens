@@ -67,8 +67,8 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
 function beforeRefinedReleaseCopier(path,source){
  if(path!=="tests/helpers/copy-integration-source-closure.mjs"||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=="1c9a2968fbbd329652481ac6e0a85d933814985c31be83b0221da78211f137aa")return source;
- const prior=lf.replace("// Refined enemy art extends only the existing historical helper closure.\nconst refinedReleaseFiles=Object.freeze({\n ...releaseUiFiles,\n 'tests/helpers/release-ui-restore-source.mjs':'26d8b8099e6b8f6fb30869479dcbcac90ff8c77ea04bc80ab4f8ad25c8bc8be3',\n 'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',\n 'tests/helpers/refined-release-source.mjs':'f867fd8bc929acac8c9402b6ddaeb6333cf91e1ffb685b080afa6216e8e23421',\n 'tests/helpers/refined-release-source.json.gz':'07a1ff6c727d11c194d0b3624a6694be668405a7b0a24888116263d174f9f073',\n});\n",'').replace("Object.entries(refinedReleaseFiles))","Object.entries(releaseUiFiles))");
+ if(hash(lf)!=="2ff34fc77ad6d809a9138db0983c1e6366609b31bc33f0ea77f73114fda24075")return source;
+ const prior=lf.replace("// Refined enemy art extends only the existing historical helper closure.\nconst refinedReleaseFiles=Object.freeze({\n ...releaseUiFiles,\n 'tests/helpers/release-ui-restore-source.mjs':'26d8b8099e6b8f6fb30869479dcbcac90ff8c77ea04bc80ab4f8ad25c8bc8be3',\n 'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',\n 'tests/helpers/refined-release-source.mjs':'a43500ea4a19305c89bad3ca20cfd3eb3ff28bc390785aaa5f6fbe4f8a2c6fa7',\n 'tests/helpers/refined-release-source.json.gz':'7362133512c07d6107d65bd62a021919e527a53589207841b84221dff481ad41',\n});\n",'').replace("Object.entries(refinedReleaseFiles))","Object.entries(releaseUiFiles))");
  assert.equal(hash(prior),"810c7ddebb21d62e26730d225ba218c33aa009656fee38929ee2881821ea813b",'exact refined Release helper copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }

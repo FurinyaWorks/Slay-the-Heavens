@@ -1,3 +1,4 @@
+import {beforeRefinedReleaseProduction,refinedReleaseProductionPaths} from './refined-release-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseForgeSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
@@ -66,7 +67,9 @@ const currentContinuationOwners = new Set([
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
-  if (releaseForgeSourcePaths.includes(path)) {
+  if (refinedReleaseProductionPaths.includes(path)) {
+    assert.notEqual(beforeRefinedReleaseProduction(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseForgeSourcePaths.includes(path)) {
     assert.notEqual(beforeReleaseForgeGridUi(path,source),source,'fresh current production owner: '+path);
   } else if (releaseSharedRelicSourcePaths.includes(path)) {
     assert.notEqual(beforeReleaseSharedRelicUi(path,source),source,'fresh current production owner: '+path);
