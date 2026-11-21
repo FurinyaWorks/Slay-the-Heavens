@@ -1,3 +1,4 @@
+import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
 import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
@@ -73,6 +74,7 @@ function beforeRefinedReleaseCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeSts1MenuCiSource(path,source);
  source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,source));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];

@@ -30,7 +30,7 @@ export function officialAssetsTheme(source){
   theme.color.mapCanvas=structuredClone(approved.color.mapCanvas);
   theme.color.node=structuredClone(approved.color.node);
   theme.layout.v25Menu={...structuredClone(approved.layout.v25Menu),...structuredClone(nativeMenuFrames)};
-  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:32,labelX:0};
+  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:24,labelX:0};
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
   theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
   theme.layout.nativeNode.event.neow.bubbleText=[-45,96,270,130];

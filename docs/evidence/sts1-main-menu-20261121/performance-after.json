@@ -1,0 +1,18 @@
+{
+  "scope": "Node source layout allocation only; no GPU, client startup or device memory claim",
+  "node": "v24.19.0",
+  "importMs": 28.196972000000002,
+  "firstBuildMs": 63.366159999999994,
+  "buildMedianMs": 25.75782799999999,
+  "heapRetainedBytes": 6964720,
+  "background": {
+    "controls": 1106,
+    "images": 1039,
+    "serializedBytes": 233257
+  },
+  "menu": {
+    "controls": 2162,
+    "images": 1971,
+    "serializedBytes": 423591
+  }
+}
