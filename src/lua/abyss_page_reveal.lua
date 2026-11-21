@@ -79,6 +79,9 @@ local function sameBase(a,b)
     local battlePhases={combat=true,reward=true}
     return a.mode=='battle' and a.battle~=nil and battlePhases[a.phase] and battlePhases[b.phase] or false
 end
+local function needsSchedulerConfirmation(intent)
+    return intent.page=='choicePanel' and intent.phase=='combat'
+end
 function M.new(cover,ready,onIntent,frames)
     assert(cover and type(ready)=='function','page reveal requires cover and readiness source')
     local gate={epoch=0,state='preparing',tick=0}
@@ -131,8 +134,9 @@ function M.new(cover,ready,onIntent,frames)
     end
     function gate:begin(intent)
         local localChange=localFrame(intent,self.intent)~=nil
-        local fast=self.state=='visible' and (canUpdate(intent,self.intent) or localChange)
-            or localChange and same(intent,self.published)
+        local fast=not needsSchedulerConfirmation(intent) and
+            (self.state=='visible' and (canUpdate(intent,self.intent) or localChange)
+            or localChange and same(intent,self.published))
         if not fast then
             local unchanged=same(intent,self.intent)
             if not self:request(intent) and not unchanged then return false end
@@ -182,7 +186,7 @@ function M.new(cover,ready,onIntent,frames)
         if value~=true then self.state='preparing';self.armed=nil;return false end
         -- New base pages confirm on another scheduler turn. A retained base's
         -- local work publishes as soon as this turn's real owners report ready.
-        if self.localFrame or self.armed and self.armed.epoch==ticket and self.armed.tick<self.tick then
+        if self.localFrame and not needsSchedulerConfirmation(intent) or self.armed and self.armed.epoch==ticket and self.armed.tick<self.tick then
             self.state='visible';self.published=intent;self.armed=nil;self.error=nil;cover:SetVisible(false)
             print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..ticket);return true
         end

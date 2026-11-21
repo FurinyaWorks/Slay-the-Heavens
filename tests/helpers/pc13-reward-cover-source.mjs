@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {beforeV2UiHudSource} from './v2-ui-hud-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/pc13-reward-cover-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'8955ace9a39d59c5635e393b8fe2a988d87f236c3cfe2909dde3d3e3506edefc','PC13 exact predecessor archive');
+assert.equal(hash(bytes),'9779296bb7bedc99990fa6ccad9c7ba0a0e581982a020c9dcc4a71210b3299cd','PC13 exact predecessor archive');
 const {base,files}=JSON.parse(gunzipSync(bytes));
 assert.equal(base,'901f87c9e7922c78f31154d9c88d2a5f5ef2720c');
 for(const {before,after} of Object.values(files)){
@@ -37,4 +38,12 @@ export function beforeAuthenticatedPc13RewardCover(path,source,read){
  const prior=beforePc13RewardCover(path,source);
  if(prior!==source)authorizePc13RewardCover([[path,source]],read);
  return prior;
+}
+
+// Explicit older HUD view: validate the newest owner before offering its exact
+// predecessor to the independent HUD continuation. Keep the original reader
+// for all non-PC13 source; it still verifies the exact HUD owner invocation.
+export function beforePc13ThenV2UiHudSource(path,source,read){
+ const prior=beforeAuthenticatedPc13RewardCover(path,source,read);
+ return beforeV2UiHudSource(path,prior,owner=>beforePc13RewardCover(owner,read(owner)));
 }

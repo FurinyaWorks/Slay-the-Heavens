@@ -99,7 +99,7 @@ test('production changes remain the two narrow capability edits and one policy r
  assert.deepEqual(rule.from,['abyss_defect_utility_cards']);
  assert.deepEqual(rule.forbiddenTargets,['abyss_actor','abyss_combat','abyss_combat_queued_play','abyss_card_actions']);
  const foreign=discoverSources();foreign['src/lua/abyss_page_reveal.lua']+='\n-- unrelated drift';
- assert.throws(()=>capabilityPreStyle(foreign),/live preStyle input identity/,'historical policy cannot conceal current owner drift');
+ assert.throws(()=>capabilityPreStyle(foreign),{message:'fresh current production owner: src/lua/abyss_page_reveal.lua'},'historical policy cannot conceal current owner drift');
  const updated='src/lua/abyss_character_presentation.lua';
  const reverted={...discoverSources(),[updated]:sourceEpoch.proof.current[updated].source};
  assert.throws(()=>capabilityPreStyle(reverted),{message:'fresh current production owner: '+updated},'frozen predecessor bytes cannot pass as current input');

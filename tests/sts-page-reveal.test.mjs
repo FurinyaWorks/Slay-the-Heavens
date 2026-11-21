@@ -40,6 +40,24 @@ owner.run.combat.hand={2,3};owner.run.combat.turn=2
 assert(not g:request(Gate.intent(owner))and g.epoch==ticket,'ordinary combat changes unnecessarily re-covered the page')
 print('PAGE_REVEAL_PASS')`);
 });
+test('ready combat choice cannot publish through a synchronous paint or on its first ready turn',()=>{
+ lua(`package.path='src/lua/?.lua;'..package.path
+local Gate=require('abyss_page_reveal');local shown=false
+local veil={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
+local cover={SetVisible=function(_,v)shown=v end,SetAsLastSibling=function()end,
+ GetChild=function(_,name)if name=='veil'then return veil end end}
+local gate=Gate.new(cover,function()return true end,nil,{full={0,0,1280,720},choicePanel={5,10,1100,600},battlePanel={0,0,1100,600}})
+local run,battle={},{}
+local fight={page='battlePanel',mode='battle',phase='combat',run=run,battle=battle}
+assert(not gate:step(fight) and gate:step(fight) and not shown)
+local choice={page='choicePanel',mode='battle',phase='combat',run=run,battle=battle,overlayRevision={}}
+assert(gate:begin(choice));assert(not gate:finish(choice) and shown and gate:covered(),'synchronous paint published unconfirmed combat choice')
+assert(not gate:step(choice) and shown and gate:covered(),'first ready combat choice step skipped confirmation')
+assert(gate:step(choice) and not shown and not gate:covered(),'second ready combat choice step did not publish')
+local rewards={page='battlePanel',mode='battle',phase='reward',run=run,battle=battle,rewards='list'}
+assert(gate:begin(rewards));assert(gate:finish(rewards) and not shown,'same-battle reward lost synchronous publication')
+print('PAGE_REVEAL_PASS')`);
+});
 test('real generated Host keeps preparation running behind cover, blocks old pointer and navigation actions, and exposes exit recovery',t=>{
  const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});const out=mkdtempSync(join(base,'page-reveal-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
  buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out,undefined,{officialAssets:true});

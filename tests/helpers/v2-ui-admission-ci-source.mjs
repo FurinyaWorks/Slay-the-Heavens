@@ -107,7 +107,7 @@ function beforeExtractionWitness(path,source) {
 }
 
 const pc13CiBytes = readFileSync(new URL('../fixtures/pc13-reward-cover-ci-source.json.gz', import.meta.url));
-assert.equal(sha256(pc13CiBytes),'b2c7fabab863f5967831723d3671af1210c77668d1151de895ba8e884fd1db95','PC13 CI source predecessor identities');
+assert.equal(sha256(pc13CiBytes),'f44ca480fed2505a3e4076c03a31a531e094ff7a17c6289f1e084dbd301af080','PC13 CI source predecessor identities');
 const pc13Ci = JSON.parse(gunzipSync(pc13CiBytes));
 for(const row of Object.values(pc13Ci)){
   assert.equal(sha256(row.before),row.beforeSha256);

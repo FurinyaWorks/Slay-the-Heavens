@@ -1,5 +1,4 @@
-import {beforePc13RewardCover,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
-import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
+import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -69,7 +68,7 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
  for(const path of shopDeckPaths){
   const readLive = file=>readFileSync(file,'utf8');
-  assert.equal(beforeV2UiHudSource(path,readLive(path),readLive).replaceAll('\r\n','\n'),raw(path),path);
+  assert.equal(beforePc13ThenV2UiHudSource(path,readLive(path),readLive).replaceAll('\r\n','\n'),raw(path),path);
   for(const input of [raw(path),raw(path).replaceAll('\n','\r\n')])for(const target of Object.keys(proof.targets)){
    const before=proof.targets[target].files[path];
    const expected=before&&before.sha256!==proof.current[path].sha256?before.source:input;
@@ -170,8 +169,8 @@ test('current PC13 facade rejects every exact immediate predecessor before older
  for(const path of pc13RewardCoverSourcePaths){
   const successor=read(path),predecessor=beforePc13RewardCover(path,successor);
   assert.notEqual(predecessor,successor,path);
-  assert.equal(beforeCurrentProductionSource(path,successor,read),raw(path),path);
-  assert.equal(beforeCharacterPreparationSource(path,predecessor,read),raw(path),'historical predecessor remains supported: '+path);
+  assert.equal(beforeCurrentProductionSource(path,successor,read).replaceAll('\r\n','\n'),raw(path),path);
+  assert.equal(beforeCharacterPreparationSource(path,predecessor,read).replaceAll('\r\n','\n'),raw(path),'historical predecessor remains supported: '+path);
   assert.throws(()=>beforeCurrentProductionSource(path,predecessor,read),{message:'fresh current production owner: '+path});
   const forbidden=()=>{throw Error('must not read for an unrecognized current owner');};
   for(const invalid of [predecessor,successor+'\n',null])
@@ -180,7 +179,7 @@ test('current PC13 facade rejects every exact immediate predecessor before older
    /combined linked owner identity/,path);
  }
  const unrelated='src/lua/abyss_battle_ui.lua';
- assert.equal(beforeCurrentProductionSource(unrelated,read(unrelated),read),raw(unrelated));
+ assert.equal(beforeCurrentProductionSource(unrelated,read(unrelated),read).replaceAll('\r\n','\n'),raw(unrelated));
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

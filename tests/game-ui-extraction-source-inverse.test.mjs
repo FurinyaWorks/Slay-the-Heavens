@@ -11,7 +11,7 @@ import {preCoreLifecycleSource} from './helpers/core-lifecycle-source-inverse.mj
 import {preRelicQuerySource} from './helpers/relic-query-source-inverse.mjs';
 import {sourceEpoch,preNoncombatDemandEpoch,preCursesEpoch as portraitDemandEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
-import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
+import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeLumineSource} from './helpers/lumine-portrait-source.mjs';
 // Keep the existing two/four-owner contracts in their original source epochs.
 const nativeRead=p=>preNativePageSource(p,readFileSync(p,'utf8').replaceAll('\r\n','\n'));
@@ -21,7 +21,7 @@ const paths=Object.keys(proof.files);
 const currentRaw=p=>readFileSync(p,'utf8');
 const cursesPriorRead=p=>{
  const source=sourceSlice(p,currentRaw(p),'cursesPrior',currentRaw);
- return beforeLumineSource(p,beforeV2UiHudSource(p,source,currentRaw),currentRaw);
+ return beforeLumineSource(p,beforePc13ThenV2UiHudSource(p,source,currentRaw),currentRaw);
 };
 // The new potion source witness reads these owners again after the frozen layer's owner scan.
 const potionRereads=['src/lua/abyss_battle_card_gestures.lua','src/lua/abyss_battle_ui.lua'];

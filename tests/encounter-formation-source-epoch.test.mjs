@@ -1,5 +1,5 @@
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
-import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
+import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import test from 'node:test';
 import {officialUiRepairProof,preOfficialUiRepairSource} from './helpers/official-ui-repair-source-epoch.mjs';
@@ -26,7 +26,7 @@ const raw=p=>proof.current[p]?.source??null;
 // Actual composed raw owners are independently checked by currentSourceEpoch below.
 const rawCurrent=file=>diskReadFileSync(file,'utf8');
 const noncombatPriorRead=currentSourceEpoch.combinedReader(rawCurrent,'noncombatPrior');
-const componentRead=file=>jointUiSourceAt(file,beforeV2UiHudSource(file,noncombatPriorRead(file),rawCurrent),'component');
+const componentRead=file=>jointUiSourceAt(file,beforePc13ThenV2UiHudSource(file,noncombatPriorRead(file),rawCurrent),'component');
 const formationRead=file=>preComponentUiCiSource(file,
  componentUiSourceEpoch.preCombinedSource(file,componentRead(file),{target:'componentPrior',readSource:componentRead}));
 test('Encounter formation outer epoch preserves every prior binding and exact frozen production byte',()=>{

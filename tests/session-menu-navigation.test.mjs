@@ -1,4 +1,4 @@
-import {beforeV2UiHudSource} from './helpers/v2-ui-hud-source.mjs';
+import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -13,7 +13,7 @@ import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
 const readLive = path => readFileSync(path,'utf8');
-const readBeforeUiCloseout = path => beforeV2UiHudSource(path,readLive(path),readLive);
+const readBeforeUiCloseout = path => beforePc13ThenV2UiHudSource(path,readLive(path),readLive);
 const readHistoricalMenu = liveEpoch.combinedReader(readBeforeUiCloseout,'v2RunMenuPrior');
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
