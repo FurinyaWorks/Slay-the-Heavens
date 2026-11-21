@@ -1,3 +1,4 @@
+import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
@@ -37,6 +38,8 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source=beforeAuthenticatedStsSelectionFade(path,source,read);
+  const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
   source = beforeAuthenticatedM05ShopSource(path,source,read);
   const readM05Current=read;
   read=owner=>beforeM05ShopSource(owner,readM05Current(owner));
@@ -64,6 +67,8 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  source=beforeAuthenticatedStsSelectionFade(path,source,read);
+  const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (pc13RewardCoverSourcePaths.includes(path)) {
@@ -77,6 +82,7 @@ export function beforeCurrentProductionSource(path, source, read = readRaw) {
 }
 
 export function beforeCharacterPreparationCiSource(path, source) {
+  source=beforeStsSelectionFade(path,source);
   if (!Object.hasOwn(packet.suite, path) || typeof source !== 'string' || source.includes('\r\r\n')) return source;
   const row = packet.suite[path];
   const sha = digest(normalize(source));

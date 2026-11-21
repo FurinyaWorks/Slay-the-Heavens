@@ -37,7 +37,7 @@ function placeText(control,rectangle,font,colour){
 // text, input, writer, position or autoSize change. Official device parity is
 // still unverified; this is not a change to the approved visual rectangles.
 function nativeSingleLine(control){control.size[1]=Math.max(control.size[1],control.text.fontSize*2);return control;}
-function rounded(name,w,h,radius,colour,theme){
+export function rounded(name,w,h,radius,colour,theme){
  return group(name,[w,h],[image('vertical',[0,0],[w-2*radius,h],theme.image.rect,colour),
   image('horizontal',[0,0],[w,h-2*radius],theme.image.rect,colour),
   ...[-1,1].flatMap(x=>[-1,1].map(y=>image(`corner${x}_${y}`,[x*(w/2-radius),y*(h/2-radius)],[radius*2,radius*2],theme.image.disc,colour)))]);

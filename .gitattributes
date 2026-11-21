@@ -1454,3 +1454,6 @@ docs/evidence/v2-ui-20261119/p1/runtime-shop.png filter=lfs diff=lfs merge=lfs -
 docs/evidence/v2-ui-20261119/p1/runtime-transition-opening.png filter=lfs diff=lfs merge=lfs -text
 docs/evidence/v2-ui-20261119/p1/runtime-transition-room.png filter=lfs diff=lfs merge=lfs -text
 docs/evidence/v2-ui-20261119/p1/runtime-victory.png filter=lfs diff=lfs merge=lfs -text
+# Preserve the raw byte identities of the STS Fade source witnesses on Windows.
+tests/fixtures/sts-selection-fade-source.json text eol=lf
+tests/fixtures/sts-fade-ci-source.json text eol=lf

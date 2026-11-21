@@ -366,7 +366,8 @@ function M.syncPortraits(platform,self)
     return function()
             if not platform.portraits then return end
             local character
-            if self.characterOpen and self.characterSelection.info then character=self.characterSelection.info.id
+            if self.characterOpen then
+                character=self.characterSelection.info and self.characterSelection.info.id
             elseif self.run then character=self.run.character or 'ironclad'end
             platform.portraits:sync(self.mode,self.characterOpen,self.settlementRequested or self.settlementBusy,character,
                 self.mode=='menu' and not self.characterOpen)
@@ -517,7 +518,8 @@ end
 local function requestReveal(self,platform)
     local intent=PageReveal.intent(self)
     PageReveal.registerSource(platform,intent.page)
-    if self.pageReveal then self.pageReveal:begin(intent)end
+    if self.pageReveal then return self.pageReveal:begin(intent)end
+    return true
 end
 local function paintReveal(self)
     if not self.pageReveal then return end
@@ -530,7 +532,12 @@ end
 local function finishReveal(self,platform)
     local intent=PageReveal.intent(self)
     PageReveal.registerSource(platform,intent.page)
-    if self.pageReveal then self.pageReveal:finish(intent)end
+    if self.pageReveal then
+        self.pageReveal:finish(intent)
+        if self.pageReveal.localOnly and self.pageReveal:covered()then
+            CharacterView.render(self.root:GetChild('characterPanel'),self.characterSelection,platform,false)
+        end
+    end
 end
 -- Sorting has already painted the deck projection. Keep its publication and
 -- resource cleanup boundary without repainting the covered battle/map/room.
@@ -555,12 +562,14 @@ end
 function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManagePotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
     return function(_)
             if self.disabled then return false,"ui_disabled" end
-            local surfaceFrame=CardSkin.beginFrame()
             local run = self.run
             finishRunFlow(run)
             local covering = syncOpening(run)
             selectMode(run)
-            requestReveal(self,platform)
+            if not requestReveal(self,platform)then
+                paintReveal(self);self:syncController();return
+            end
+            local surfaceFrame=CardSkin.beginFrame()
             syncOfficialBattleScene(run)
             local inMenu = self.mode == "menu" or self.mode == "defeat" or self.mode == "victory"
             syncMenuContext(run,inMenu)

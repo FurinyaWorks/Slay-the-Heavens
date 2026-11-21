@@ -3,7 +3,7 @@ const geometry=JSON.parse(readFileSync(new URL('../data/presentation/constellati
 export function constellationGeometry(theme){
  const k=118/512;
  const images=geometry.segments.map(([x1,y1,x2,y2,width],i)=>({
-  name:'stroke'+i,kind:'image',image:theme.image.rect,colour:'#FFE0A2',opacity:geometry.opacity,
+  name:'stroke'+i,kind:'image',image:theme.image.rect,colour:theme.v25Character.constellation.colour,opacity:geometry.opacity,
   position:[((x1+x2)/2-256)*k,(256-(y1+y2)/2)*k],
   size:[Math.hypot(x2-x1,y2-y1)*k+.12,width*k],rotation:-Math.atan2(y2-y1,x2-x1)*180/Math.PI,
   focusable:false,raycastTarget:false,
@@ -13,7 +13,7 @@ export function constellationGeometry(theme){
   // keep the unscaled image within the existing 900-unit image height budget.
   const idealScale=width*k/7,diameter=Math.min(900,2*(radius*k/idealScale+3.5));
   const scale=radius*k/(diameter/2-3.5);
-  images.push({name:'arc'+i,kind:'image',image:100006,colour:'#FFE0A2',opacity:geometry.opacity*Math.min(1,idealScale/scale),
+  images.push({name:'arc'+i,kind:'image',image:100006,colour:theme.v25Character.constellation.colour,opacity:geometry.opacity*Math.min(1,idealScale/scale),
    position:[(cx-256)*k,(256-cy)*k],size:[diameter,diameter],scale:[scale,scale],rotation:-(start+sweep/2)*180/Math.PI,
    // A circular stroke cropped by a chord is the same symmetric arc. This
    // uses the existing horizontal mask supported by both native and Simulator,

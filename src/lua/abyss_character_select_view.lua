@@ -65,7 +65,7 @@ end
 local function paintCharacterButtons(panel,state,platform,originalSts,open)
     for i,id in ipairs(Select.characters)do
         local box=panel:GetChild(i==5 and 'traveler' or 'character'..i)
-        local allowed=(originalSts or open>1) and state:allowsCharacter(id)
+        local allowed=(originalSts or open>1 or id=='traveler') and state:allowsCharacter(id)
         if box.visible~=allowed then box:SetVisible(allowed)end
         selected(box,state.character==id)
         local _,bust=largeSlot(id,id=='traveler' and (state.element or 'ironclad') or nil)
@@ -103,8 +103,9 @@ local function paintDetails(details,state,platform,originalSts,nativeV25,info)
     if originalSts then portraits:SetVisible(false)end
     paintPortraitNote(details,info,platform,large,key,portraits)
 end
-function M.render(panel,state,platform)
+function M.render(panel,state,platform,published)
     local info=state.info
+    if published==false then info=nil end
     local originalSts=Theme.presentationProfile=='official-assets-first' and panel:GetChild('stsCharacter')~=nil
     local nativeV25=Theme.presentationProfile=='official-assets-first' and (originalSts or panel:GetChild('v25Roster')~=nil)
     panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))
@@ -116,6 +117,14 @@ function M.render(panel,state,platform)
     paintThemesAndElements(panel,state,platform,elementsOpen)
     local details=panel:GetChild('details');details:SetVisible(info~=nil)
     panel:GetChild('deckView'):SetVisible(false)
+    local roster=panel:GetChild('v25Roster')
+    if nativeV25 and roster then
+        roster:SetVisible(open==1)
+        panel:GetChild('title'):SetVisible(info==nil)
+        roster:GetChild('selected'):GetChild('selection'):SetVisible(info~=nil)
+        panel:GetChild('traveler'):GetChild('selected'):SetVisible(false)
+    end
+    panel:GetChild('confirm'):SetVisible(info~=nil)
     local confirm=panel:GetChild('confirm'):GetChild('hit')
     confirm.interactable,confirm.raycastTarget=state:canConfirm(),state:canConfirm()
     if not info then return end

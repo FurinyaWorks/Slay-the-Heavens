@@ -478,7 +478,7 @@ function M.new(stage,report,flags,cardTemplates)
             local fallback=selectionFallback(panel,details,official)
             rows[#rows+1]={name='selection',adapter=selection,fallback=fallback,active=false,restoreOnPause=official}
         end
-        local row={name='avatar',adapter=avatar,fallback={},active=false,visibleOwner=traveler}
+        local row={name='avatar',adapter=avatar,fallback={},active=false,visibleOwner=traveler,symbolOwner=panel:GetChild('v25Roster')}
         for _,name in ipairs({'normal','hover','pressed','disabled'})do row.fallback[#row.fallback+1]=traveler:GetChild('hit'):GetChild(name):GetChild('bust')end
         rows[#rows+1]=row
     end
@@ -599,7 +599,11 @@ function M.new(stage,report,flags,cardTemplates)
     local function presentationTargets(mode,characterOpen,stopped,character,preloadSelection)
         local wanted=activeTargets(mode,characterOpen,stopped,character,preloadSelection)
         for _,row in ipairs(rows)do
-            if official and row.name=='avatar' and row.visibleOwner.visible~=true then wanted.avatar=false end
+            if official and row.name=='avatar' then
+                local symbol=row.symbolOwner and row.symbolOwner.visible~=false
+                row.fallbackVisible=not symbol
+                if row.visibleOwner.visible~=true or symbol then wanted.avatar=false end
+            end
         end
         return wanted
     end
