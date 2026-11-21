@@ -100,7 +100,7 @@ export function assertOfficialRunContracts(trees){
   for(const role of runRoles)required(host,role);
   const battle=child(host,'battlePanel'),bar=required(battle,'topBar');
   const source=structuredClone(bar);source.name='officialRunBar';
-  source.children=parts(source).filter(part=>part.name!=='battleRoute');
+  source.children=parts(source).filter(part=>!['battleRoute','floorIcon'].includes(part.name));
   walk(source,node=>{
    if(['cursorArea','presetButton'].includes(node.kind))throw Error('Shared run bar duplicates input ownership');
   });

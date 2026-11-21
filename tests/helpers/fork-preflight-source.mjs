@@ -56,8 +56,19 @@ assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc4
 const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
 assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
+function beforeTinyHouseCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='2b3480675419cb8de63ca2d913e88a7b5a030cd8e4aa472cf0ff2f9a715c5224')return source;
+ const start=lf.indexOf('const tinyHouseFiles='),end=lf.indexOf('const inside=',start);
+ assert(start>=0&&end>start,'exact Tiny House copy block');
+ const prior=(lf.slice(0,start)+lf.slice(end)).replace('Object.entries(tinyHouseFiles)','Object.entries(releaseGuideFiles)');
+ assert.equal(hash(prior),'a6bab3346445c43728ecbc21a3519090028eada17303a513363687c773833b0c','exact Tiny House copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 // Preserve the reviewed copier bytes when replaying older CI observations.
 export function beforeLoadingRecoveryCopier(path,source){
+ source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,source));
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
  if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;

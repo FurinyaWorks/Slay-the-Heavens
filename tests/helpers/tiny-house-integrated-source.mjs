@@ -7,7 +7,7 @@ const hash=source=>createHash('sha256').update(source).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
 // Exact mainline predecessors of the existing Tiny House CI replay.
 const tinyHousePreviousBytes=readFileSync(new URL('./develop-tiny-house-predecessors.json.gz',import.meta.url));
-assert.equal(hash(tinyHousePreviousBytes),'5ad6aa9b3a04bc6862ff154508ae7d3ace08589516001b36f7f65ec9173540dd','exact Tiny House integration predecessor archive');
+assert.equal(hash(tinyHousePreviousBytes),'07c41cb6acb35fa7b7992f3289c88330c7f031f016f0950eaf1dbd2f4402fca6','exact Tiny House integration predecessor archive');
 const tinyHousePrevious=JSON.parse(gunzipSync(tinyHousePreviousBytes));
 assert.equal(tinyHousePrevious.before,'73fd14aab04c590037c39197364f725a767fed19');
 assert.equal(tinyHousePrevious.after,'7e3f38fda4c17eb7b17eb9d0dc4eba8d79e9d02f');
