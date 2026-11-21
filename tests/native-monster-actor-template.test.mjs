@@ -17,7 +17,8 @@ const descendants=n=>[n,...(n.children??n.controls??[]).flatMap(descendants)];
 const battleStageControls = Object.entries({
  container: 'playArea topBar rewardStage rewardList exhaustIcon hero energyIcon drawIcon discardIcon potionHelp actorLayer card1 card2 card3 card4 card5 card6 card7 card8 card9 card10 dragLayer statusInfo feedback',
  text: 'title player piles floor exhaust notice statuses energy draw drawLabel discard discardLabel result',
- image: 'hpIcon goldIcon floorIcon energyRing energyDisc drawBadgeRing drawBadge discardBadgeRing discardBadge resultPlate',
+ cursorArea: 'statusDismiss',
+ image: 'hpIcon goldIcon energyRing energyDisc drawBadgeRing drawBadge discardBadgeRing discardBadge resultPlate',
  presetButton: 'potion1 potion2 potion3 endTurn start continue skip goldReward cardReward claimPotion stolenGold',
 }).flatMap(([kind,names])=>names.split(' ').map(name=>`${name}:${kind}`)).sort();
 function expectedResourceHints() {
@@ -36,6 +37,7 @@ function assertBattleStageContract(stage,{host=false}={}) {
  const names=stage.children.map(n=>n.name);
  assert.equal(new Set(names).size,names.length,'unique battle stage child names');
  assert.deepEqual(stage.children.map(n=>`${n.name}:${n.kind}`).sort(),[...battleStageControls,...(host?['resourceHints:container']:[])].sort(),'complete battle stage control identities');
+ assert.equal(descendants(stage.children.find(n=>n.name==='topBar')).find(n=>n.name==='floorIcon').visible,false);
  if(host){
   const hints=stage.children.at(-1);
   assert.deepEqual(hints,expectedResourceHints(),'only the exact read-only HP/gold hotspots occupy the host tail layer');
@@ -54,7 +56,7 @@ function assertBattleStageContract(stage,{host=false}={}) {
 test('battle stage identity contract rejects missing, duplicate, static-enemy and overflowing controls',()=>{
  const stage=()=>structuredClone(battleLayout().controls.find(n=>n.name==='stage'));
  assert.doesNotThrow(()=>assertBattleStageContract(stage()));
- for(const name of ['floorIcon','floor','actorLayer','endTurn','card10']) {
+ for(const name of ['floor','actorLayer','endTurn','card10']) {
   const missing=stage();missing.children=missing.children.filter(n=>n.name!==name);
   assert.throws(()=>assertBattleStageContract(missing),/complete battle stage control identities/,name);
  }

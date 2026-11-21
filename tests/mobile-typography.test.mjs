@@ -27,7 +27,7 @@ test('normal menu reading and warnings use larger text without fallback shrink',
  for(const name of ['title','message','status']){const c=child(exit,name);assert.ok(c.text.fontSize>=20,name);assert.equal(c.text.fontSize,c.text.minFontSize);}
  const message=child(exit,'message');assert.ok(message.text.fontSize>=24);assert.ok(message.size[1]>=80,'two full native lines');
  assert.ok(child(exit,'status').size[1]>=40);
- for(const panel of ['exitPanel','runMenu'])for(const button of (panel==='exitPanel'?['cancel','confirm','help']:['resume','help','map','abandon']))for(const state of states){const c=child(child(child(child(t,panel),button),'hit'),state);const label=child(c,'label');assert.ok(label.text.fontSize>=22);budget(label,label.text.content);}
+ for(const panel of ['exitPanel','runMenu'])for(const button of (panel==='exitPanel'?['cancel','confirm']:['resume','map','abandon']))for(const state of states){const c=child(child(child(child(t,panel),button),'hit'),state);const label=child(c,'label');assert.ok(label.text.fontSize>=22);budget(label,label.text.content);}
 });
 function luminance(hex){const c=hex.match(/[a-f\d]{2}/gi).slice(0,3).map(h=>{const n=parseInt(h,16)/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4});return c[0]*.2126+c[1]*.7152+c[2]*.0722;}
 function contrast(a,b){const x=luminance(a),y=luminance(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
@@ -37,7 +37,7 @@ test('muted ordinary reading reaches 4.5 on the opaque menu surfaces',()=>{
 test('readable resource targets and utility controls do not overlap',()=>{
  const t=tree(), b=child(t,'battlePanel');
  const bounds=c=>{const[x,y]=c.position??[0,0],[w,h]=c.size;return[x-w/2,y-h/2,x+w/2,y+h/2];};
- const controls=['player','piles','floorIcon','floor','title','exhaust'].map(n=>child(b,n));
+ const controls=['player','piles','floor','title','exhaust'].map(n=>child(b,n));
  controls.push(...['deckEntry','exitEntry'].map(n=>child(child(t,n),'open')));
  controls.push(...[1,2,3].map(n=>child(b,'potion'+n)),...[4,5].map(n=>child(child(b,'potionHelp'),'potion'+n)));
  for(let i=0;i<controls.length;i++)for(let j=i+1;j<controls.length;j++){let a=bounds(controls[i]),c=bounds(controls[j]);assert.ok(a[2]<=c[0]||c[2]<=a[0]||a[3]<=c[1]||c[3]<=a[1],`${controls[i].name} overlaps ${controls[j].name}`);}

@@ -101,7 +101,7 @@ function M.install(owner, ownership, host, dependencies)
         end
         if not owner.gesture then owner.suppressClick = false end
     end
-    local function down(event)
+    local function prepareDown(event)
         -- The popup owns dismissal as well as Use/Discard. A lower native
         -- callback must not close it before its own action receives this Down.
         if owner.potionMenu then return true end
@@ -126,7 +126,12 @@ function M.install(owner, ownership, host, dependencies)
         owner:render()
         return true
     end
+    local function down(event, keepPowerTip)
+        if not keepPowerTip then owner:closePowerTip() end
+        return prepareDown(event)
+    end
     local function swallowed(event)
+        owner:closePowerTip()
         if owner.potionMenu then return true end
         local swallow = owner.swallow
         if swallow and swallow.touch == (event and event.touchId) then owner.swallow = nil return true end

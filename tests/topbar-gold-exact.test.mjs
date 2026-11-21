@@ -6,7 +6,8 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 test('battle topbar retains separate floor chip and approved HP/gold colours',()=>{
  const panel=gameLayout().controls.find(c=>c.name==='battlePanel');
  const child=name=>panel.children.find(c=>c.name===name);
- assert.ok(child('floorIcon')&&child('floor'));
+ assert.equal(child('topBar').children.find(c=>c.name==='floorIcon').visible,false);
+ assert.ok(child('floor'));
  assert.deepEqual(child('player').text.colour,nativeTheme.color.topPanelHp);
  assert.deepEqual(child('piles').text.colour,nativeTheme.color.topPanelGold);
 });

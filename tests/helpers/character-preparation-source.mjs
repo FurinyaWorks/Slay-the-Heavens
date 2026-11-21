@@ -1,3 +1,4 @@
+import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
@@ -76,6 +77,9 @@ function beforeAdmissionReceipt(path,source,read){
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeAuthenticatedReleaseGuideSource(path,source,read);
+  const readGuideCurrent=read;
+  read=owner=>beforeReleaseGuideSource(owner,readGuideCurrent(owner));
   source = beforeAdmissionReceipt(path,source,read);
   source = beforeAuthenticatedM05ShopSource(path,source,read);
   const readM05Current=read;
@@ -105,6 +109,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if (releaseGuideSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseGuideSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (pc13RewardCoverSourcePaths.includes(path)) {
