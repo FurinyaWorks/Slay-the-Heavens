@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'de53654b686fb335008a72519f8c5758c79c33c589efe79e4c94c33699c5bb57','exact reconciled source archive');
+assert.equal(hash(archive),'16d70fbab9c02cd255844f7e9c0628e2e284728de3d6b22fb01ff995cbc32774','exact reconciled source archive');
 const {develop,release,ci,production,releaseCopier}=JSON.parse(gunzipSync(archive));
 assert.equal(develop,'aae948788d93012d11fe5b6da3281150bb9957c6');
 assert.equal(release,'930097995be43e5612e949a3b5fa0c1d5d305f49');

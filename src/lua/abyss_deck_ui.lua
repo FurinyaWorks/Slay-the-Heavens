@@ -344,6 +344,14 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if Theme.cardSkin.text.body then face:GetChild('label').fontColor=colour(Theme.cardSkin.text.body)end
         return text
     end
+    local function paintCardText(face,binding,instance,display,definition,battle)
+        CardDisplay.writeTitle(face:GetChild("name"),display.name,instance.upgraded,
+            definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
+        face:GetChild("name").fontColor = colour(Theme.cardSkin.text.title)
+        local text=paintBody(face,binding,display,definition,instance,battle)
+        face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
+        return text
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -351,11 +359,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local display = assert(presentation[instance.cardId], "missing deck presentation " .. instance.cardId)
         local face = control:GetChild("face")
         local binding = self.bindings[control]
-        CardDisplay.writeTitle(face:GetChild("name"),display.name,instance.upgraded,
-            definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
-        face:GetChild("name").fontColor = colour(Theme.cardSkin.text.title)
-        local text=paintBody(face,binding,display,definition,instance,battle)
-        face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
+        local text=paintCardText(face,binding,instance,display,definition,battle)
         tint(face:GetChild("border"), Theme.color.rarity[definition.rarity] or Theme.color.line)
         tint(face:GetChild("nameBand"), Theme.color.rarityBand[definition.rarity] or Theme.color.rarityBand.basic)
         tint(face:GetChild("nameRule"), Theme.color.rarity[definition.rarity] or Theme.color.line)

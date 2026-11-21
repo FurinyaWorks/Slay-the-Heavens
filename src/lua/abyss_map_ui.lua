@@ -322,19 +322,20 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.scroll = clamp(floorY(self.chapter, current.floor) - Layout.focusY, 0, maxScroll(self.chapter))
         return true
     end
+    local function routeEndpoints(source,target)
+        local x1,y1=position(source)
+        local x2,y2=position(target)
+        -- MapEdge starts short of each room, with a larger radius for the boss.
+        local len=math.sqrt((x2-x1)^2+(y2-y1)^2)
+        local r1=source.type=='boss' and Theme.layout.map.bossNode*Sts.bossRadius or Theme.layout.map.node*Sts.srcRadius
+        local r2=target.type=='boss' and Theme.layout.map.bossNode*Sts.bossRadius or Theme.layout.map.node*Sts.dstRadius
+        if len<=r1+r2 then return end
+        local ux,uy=(x2-x1)/len,(y2-y1)/len
+        return x1+ux*r1,y1+uy*r1,x2-ux*r2,y2-uy*r2
+    end
     local function line(control, source, target, taken, reachable, far)
-        local x1, y1 = position(source)
-        local x2, y2 = position(target)
-        -- MapEdge constructor: dots start ICON_DST_RADIUS (164 for the boss) from the
-        -- destination room and stop ICON_SRC_RADIUS short of the source room.
-        do
-            local len = math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
-            local r1 = source.type == 'boss' and Theme.layout.map.bossNode * Sts.bossRadius or Theme.layout.map.node * Sts.srcRadius
-            local r2 = target.type == "boss" and Theme.layout.map.bossNode * Sts.bossRadius or Theme.layout.map.node * Sts.dstRadius
-            if len <= r1 + r2 then control:SetVisible(false) return end
-            local ux, uy = (x2 - x1) / len, (y2 - y1) / len
-            x1, y1, x2, y2 = x1 + ux * r1, y1 + uy * r1, x2 - ux * r2, y2 - uy * r2
-        end
+        local x1,y1,x2,y2=routeEndpoints(source,target)
+        if not x1 then control:SetVisible(false);return end
         -- Clip real graph segments to viewport, with half-stroke padding.
         -- TASK-4.13: walked > reachable > unreachable stroke weights (STS taken/available/disabled).
         local width = M.pathWidth(taken, reachable)
