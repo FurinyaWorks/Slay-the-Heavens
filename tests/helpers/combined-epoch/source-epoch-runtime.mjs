@@ -1,3 +1,4 @@
+import {beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
 import {authorizeSts1MapSource,beforeSts1MapSource} from '../sts1-map-source.mjs';
 import {beforeTinyHouseIntegratedSource} from '../tiny-house-integrated-source.mjs';
 import {beforeM05ShopSource,authorizeM05ShopSource} from '../m05-shop-source.mjs';
@@ -120,7 +121,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
-  const rawInput=source,mapPrior=beforeSts1MapSource(path,source),guidePrior=beforeReleaseGuideSource(path,mapPrior);
+  const rawInput=source,mapPrior=beforeCardFeedbackOwner(path,beforeSts1MapSource(path,source)),guidePrior=beforeReleaseGuideSource(path,mapPrior);
   const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,beforeTinyHouseIntegratedSource(path,guidePrior)));
   source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
@@ -135,7 +136,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    mapSamples.push([owner,actual]);
-   const mapOwner=beforeSts1MapSource(owner,actual),prior=beforeReleaseGuideSource(owner,mapOwner);
+   const mapOwner=beforeCardFeedbackOwner(owner,beforeSts1MapSource(owner,actual)),prior=beforeReleaseGuideSource(owner,mapOwner);
    guideProjected ||= prior!==mapOwner;
    actual=beforeTinyHouseIntegratedSource(owner,prior);
    const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,beforeM05ShopSource(owner,actual));samples.push([owner,actual,binding]);
@@ -144,7 +145,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   authorizeSts1MapSource([...mapSamples,[path,rawInput]],readSource);
-  const readMapPrior=owner=>beforeSts1MapSource(owner,readSource(owner));
+  const readMapPrior=owner=>beforeCardFeedbackOwner(owner,beforeSts1MapSource(owner,readSource(owner)));
   if(guideProjected)authorizeReleaseGuideSources(readMapPrior);
   const readGuidePrior=owner=>beforeTinyHouseIntegratedSource(owner,beforeReleaseGuideSource(owner,readMapPrior(owner)));
   const readM05Prior=owner=>beforeM05ShopSource(owner,readGuidePrior(owner));

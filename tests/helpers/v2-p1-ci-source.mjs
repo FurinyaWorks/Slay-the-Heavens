@@ -33,7 +33,7 @@ const fieldConfirmation = {
     added: /^test\('official card confirmation keeps the battlefield visible[\s\S]+?^\}\);\n\n/m,
   },
 };
-function beforeFieldConfirmation(path, source) {
+export function beforeFieldConfirmation(path, source) {
   if (!Object.hasOwn(fieldConfirmation,path) || typeof source!=='string' || source.includes('\r\r\n')) return source;
   const row=fieldConfirmation[path], text=source.replaceAll('\r\n','\n');
   if (sha256(text)!==row.current) return source;

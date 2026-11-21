@@ -327,6 +327,10 @@ function M.new(stage, platform, present, complete)
         self.flight.duration=sourceSingleDamage(style) and DAMAGE_DURATION or T.base
         self.cardFlow:playing(d,self.flight)
         card:SetAnchoredPosition(self.flight.x, self.flight.y) card:SetLocalScale(1, 1, 1)
+        card.localRotationZ=0
+        if Theme.presentationProfile=='official-assets-first' then
+            tint(card:GetChild('border'),Theme.officialAssets.cardPlayFeedback.flight.colour)
+        end
         card:SetVisible(true) overlay:SetAsLastSibling() sound("player_action")
         -- The traveler draws back while the card lifts, then leans in as it lands.
         local lift = T.base * T.anticipation
@@ -663,6 +667,13 @@ function M.new(stage, platform, present, complete)
                 -- Lift and gather, then accelerate into the target: arrival is the contact frame.
                 local card, f = overlay:GetChild("playedCard"), self.flight
                 local p, lift = clamp(self.elapsed / (f.duration or T.base)), T.anticipation
+                if Theme.presentationProfile=='official-assets-first' then
+                    local style=Theme.officialAssets.cardPlayFeedback.flight
+                    card.localRotationZ=style.rotation*easeIn(p)
+                    local q=clamp(p/style.flashFraction)
+                    local c=style.colour
+                    tint(card:GetChild('border'),{r=c.r+(C.gold.r-c.r)*q,g=c.g+(C.gold.g-c.g)*q,b=c.b+(C.gold.b-c.b)*q,a=255})
+                end
                 if p < lift then
                     local q = easeOut(p / lift)
                     card:SetAnchoredPosition(f.x, f.y + S.l * q)

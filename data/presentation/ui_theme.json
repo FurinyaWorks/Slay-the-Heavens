@@ -126,6 +126,7 @@
     },
     "battleCostMaterial": {"hardSize":34,"offset":[-0.4,0.3],"rim":107270,"soft":106056,"highlight":106057,"rimTint":"#682F33","warm":"#F7B62A","light":"#FFEA70"},
     "battleGlowSource": {"rgba":[0.2,0.9,1,0.25],"blend":[770,1],"note":"STS AbstractCard BLUE_BORDER_GLOW_COLOR; native RGB uses nearest 8-bit values. Current native Image compositing is not additive."},
+    "cardPlayFeedback": {"selection":{"duration":0.24,"expansion":1.1,"colour":"#B6FFF4"},"flight":{"rotation":-32,"flashFraction":0.32,"colour":"#C6FFF7"}},
     "battleGlowFocus": {"normal":{"coreSoftness":2,"pulseSoftness":3,"spread":3,"opacity":1},"selected":{"coreSoftness":2,"pulseSoftness":3,"spread":3,"opacity":1}},
     "battleCardChrome": {"shell":["#713635","#AD4E49"],"ready":"#33E6FF","ribbonHeight":24,"ribbonEdge":"#75644B","ribbonFold":"#71604B","costSize":41,"glow":{"motion":"static","staticFocus":{"normal":{"coreSoftness":2,"pulseSoftness":3,"colours":["#73E5D7","#43C6BD"]},"selected":{"coreSoftness":3,"pulseSoftness":5,"colours":["#88F7E7","#3CE2D0"]}},"duration":1.2,"expansion":[1.03,1.11],"alpha":0.6,"colour":"#33E6FF"},"orb":["#BBAA85","#482E2B","#9A2023","#D96C21","#F4AD2D","#FFF7B4"]},
     "battleCardBodyTint": "#473936",
