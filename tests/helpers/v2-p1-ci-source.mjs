@@ -9,7 +9,7 @@ import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const {project:beforeReleaseControlsGuideRemovalCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-controls-guide-removal-ci-source.json.gz',import.meta.url)),
-  '15e0087325210bfe12f6477a8ff3d932cd5cc733ab1e89bb609acc73cd11df43','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
+  '9ecffa8b3eb6cf2bcc165f4d4fc89a0b5d48631ce878e1a27a9fa816e11dc13b','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
   'b83a4efedc056ade8198ebc12735be74e77be086c69ef378a6f8d1521e8891f2');

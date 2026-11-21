@@ -64,7 +64,7 @@ const releaseUiFiles=Object.freeze({
  ...pc13Files,
  [runtime]:'8536d9f54bc814e92db509a248b199be0bbd8c84c5a8fac7369637f94e21c513',
  'tests/helpers/potion-pointer-source.mjs':'ba6547de02ef3188b9658764452283cd671e3324f19cf0775bce3221db53cdab',
- 'tests/helpers/release-ui-restore-source.mjs':'3f5129136e203c05aa803beb32e3c4b93d428aa4fc4dd245f375da78ebdb6f27',
+ 'tests/helpers/release-ui-restore-source.mjs':'8c4c33d4aa28e7295a34314752ca957038fc5772fbcc74620eb042b0e8552b96',
  'tests/helpers/release-ui-restore-source.json.gz':'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b',
  'tests/helpers/release-card-field-cancel-source.json.gz':'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca',
  'tests/helpers/release-card-right-click-source.json.gz':'a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a',

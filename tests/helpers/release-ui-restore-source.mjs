@@ -47,11 +47,18 @@ export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRig
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ // A combined replay that contains current menu code must use the same release
+ // version for every sampled menu owner. Older all-historical views still replay.
+ const currentMenu=samples.some(([path,input])=>releaseControlsGuideRemovalSourcePaths.includes(path)
+  &&matches(input,controlsGuideRemoval.files[path].after));
  for(const path of authorizationPaths){
   const inputs=samples.filter(sample=>sample[0]===path).map(sample=>sample[1]);
-  const expected=[controlsGuideRemoval.files[path]?.after,fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
-   .find(binding=>inputs.some(input=>matches(input,binding)));
-  if(!inputs.some(input=>matches(input,expected)))continue;
+  if(!inputs.length)continue;
+  const menuBinding=controlsGuideRemoval.files[path]?.after;
+  const expected=currentMenu&&menuBinding?menuBinding
+   :[menuBinding,fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
+    .find(binding=>inputs.some(input=>matches(input,binding)));
+  if(!expected)continue;
   const message='combined linked owner identity: '+path+' changed during owner validation';
   assert(inputs.every(input=>matches(input,expected)),message);
   let live;
