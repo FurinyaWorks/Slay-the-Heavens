@@ -10077,6 +10077,26 @@
       "sha256": "de9d8afa9df385c32e9e3211894e6de09865c4a88e9e43714fa2ab0639fe9602",
       "category": "v2-native-menu-layout-evidence"
     },
+    "docs/evidence/pile-buttons/draw.png": {
+      "category": "platform-evidence",
+      "sha256": "d5673609eb40b89fc8ef3f7d72b7b8c2b861176df7185756f60f2cd8352db89e"
+    },
+    "docs/evidence/pile-buttons/event.png": {
+      "category": "platform-evidence",
+      "sha256": "9591687e29c4c8226cfb2002f74125ac4ce4e774d869ba0d37e71f5e9d82da4f"
+    },
+    "docs/evidence/pile-buttons/menu.png": {
+      "category": "platform-evidence",
+      "sha256": "2f35c3154b6035d4a426bb4c487950912c7042f1768d9de82370fa2efa9c322a"
+    },
+    "docs/evidence/pile-buttons/potion.png": {
+      "category": "platform-evidence",
+      "sha256": "8366044ed39de8539d1ed50c1f3f6fa83bf4b664cf06f33df98913b129a229b4"
+    },
+    "docs/evidence/pile-buttons/states.png": {
+      "category": "platform-evidence",
+      "sha256": "b31ecc409f7981f3261c28dfc4ea5506b366a41ca2f510f4f01e15e97a62700d"
+    },
     "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/design-hd.png": {
       "sha256": "0228b36c13b805c1a31eb0cb13d960be2b3b1168d6707412fedee2c7a51c06aa",
       "category": "sts1-menu-session-reference"
@@ -10128,6 +10148,26 @@
     "docs/evidence/sts1-main-menu-20261121/original-sts1-reference.jpg": {
       "sha256": "07ba0a65572376c22c687436afba469993376184a58126578aca52ab00fcd39e",
       "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/energy-comparison.png": {
+      "sha256": "52f577179f30a51b439ff8a997bb22e18645e65848293292ab7104619d0b027e",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/exhaust-spike-still.png": {
+      "sha256": "041a7b20f91a8142a43a642510c31e36e747a35fdcbb7758db497c29e2516569",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/flow-spike.gif": {
+      "sha256": "e948f55ae01adfad50e59cc71024b5dbe195966f34e0d782bd56ebf619b96dd4",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/status-contact-sheet.png": {
+      "sha256": "d383f928822b551bdd1aebb425b3b4940f6292b083df7d459d80193589c61914",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/strength-ritual.png": {
+      "sha256": "ca2edd2f41623bf6e4ccbad25102de6e23d0c2fc7ff3144422c747d51743ae53",
+      "category": "platform-evidence"
     }
   }
 }

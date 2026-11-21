@@ -128,9 +128,9 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
-    // The approved pile return uses permanent artwork plus one native receiver.
+    // The pile return keeps its native receiver while replacing the artwork.
     if(path.endsWith('/hit')){
-     const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
+     const hit=current.get(path);assert.equal(hit.kind,'presetButton');
      assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
     }
     continue;
@@ -164,8 +164,7 @@ test('approved pages keep live input identities while unrelated pages retain the
     continue;
    }
    if(restoredPagePath(path)){
-    // Battle geometry is intentionally restored to the approved V25 tokens.
-    // The existing event-bearing objects and input/state contracts still survive.
+    // Retain the input/state contracts on pages with adopted geometry.
     for(const key of ['kind','states','focusable','interactable','raycastTarget'])assert.deepEqual(node[key],before[key],path+' '+key);
     continue;
    }
@@ -313,7 +312,8 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(field.text.fontSize,Math.max(14,theme.font.minimum,tokens.typography[key]));
    }
    assert.deepEqual(child(card,'stsReferenceBack').children,material.children.filter(n=>['body','portraits'].includes(n.name)));
-   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits','costMaterial'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceCost').children,material.children.filter(n=>n.name==='costMaterial'));
    assert.deepEqual(child(card,'roundBody').children,[],'retired square paper must not leak through reference corners');
    assert.equal(child(card,'nameBand').visible,false);
    for(const role of ['nativeRibbon','nativeCostOrb','skin']){

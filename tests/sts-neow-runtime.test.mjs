@@ -49,9 +49,7 @@ local function visibleBody(i)
  assert(math.abs(b.sizeDeltaY-59*2/3)<.00001,'old tall panel returned at runtime')
  assert(b:GetChild('hit').sizeDeltaY>=44,'visible body cannot shrink native hit')
  assert(not b:GetChild('title').visible and not b:GetChild('description').visible,'old separate title/description returned')
- for _,name in ipairs({'v25BaseMaterial','v25StateChrome','v25Corner0_0','v25Corner0_1','v25Corner1_0','v25Corner1_1'})do
-  assert(not b:GetChild(name).visible,'ordinary event material leaked over Neow: '..name)
- end
+ assert(not b:GetChild('roundedButton').visible,'ordinary event material leaked over Neow')
  for _,s in ipairs({'border','normal','hover','pressed','disabled','selected'})do assert(not b:GetChild(s).visible,'legacy material revived '..s)end
  assert(b:GetChild('stsNeowText').visible)
  return b:GetChild('stsNeowText').text
@@ -101,7 +99,7 @@ local ordinary,ordinaryMap=Rooms.fixture('big_fish');ui.run,ui.map=ordinary,ordi
 ui:render();assert(not row(1):GetChild('stsNeowChrome').visible);assert(not row(1):GetChild('stsNeowText').visible)
 assert(event:GetChild('body').horizontalAlignment=='Left' and event:GetChild('body').verticalAlignment=='Top','ordinary paragraph must restore left/top alignment')
 assert(row(1):GetChild('title').visible and not row(1):GetChild('description').visible)
-assert(row(1):GetChild('v25BaseMaterial').visible and row(1):GetChild('v25StateChrome').visible)
+assert(row(1):GetChild('roundedButton').visible)
 assert(event:GetChild('plateBorder'):GetChild('v25EventParchment').visible)
 assert(not event:GetChild('caption').visible)
 assert(event:GetChild('art').imageId==F.Theme.icon.eventArt.big_fish,'big fish must use its actual food illustration')

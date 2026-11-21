@@ -125,6 +125,12 @@ local function presentationPage(page)
     require('abyss_card_art_runtime').setPresentationPage(page)
     if v25Textures then v25Textures:setPresentationPage(page)end
 end
+local function readNativePageLifecycle()
+    local uiProfile=require('abyss_ui_profile')
+    assert(type(uiProfile)=='table' and uiProfile.schemaVersion==1 and type(uiProfile.nativePageLifecycle)=='boolean','invalid UI profile')
+    for key in pairs(uiProfile)do assert(key=='schemaVersion' or key=='nativePageLifecycle','unknown UI profile field '..tostring(key))end
+    return uiProfile.nativePageLifecycle
+end
 function OnStart()
     if attempted then return end
     attempted = true
@@ -211,10 +217,7 @@ function OnStart()
             fatalMusic=music
         end
         local isTest, testPlay = pcall(function()return game.IsTestPlay()end)
-        local uiProfile=require('abyss_ui_profile')
-        assert(type(uiProfile)=='table' and uiProfile.schemaVersion==1 and type(uiProfile.nativePageLifecycle)=='boolean','invalid UI profile')
-        for key in pairs(uiProfile)do assert(key=='schemaVersion' or key=='nativePageLifecycle','unknown UI profile field '..tostring(key))end
-        local nativePageLifecycle=uiProfile.nativePageLifecycle
+        local nativePageLifecycle=readNativePageLifecycle()
         local build = require('abyss_narrative').build
         local alpha = type(build)=='table' and build.workKey=='alpha-test'
         local actorBinding=require('abyss_monster_actor_binding')

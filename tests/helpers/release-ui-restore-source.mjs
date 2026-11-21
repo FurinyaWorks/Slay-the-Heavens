@@ -1,3 +1,4 @@
+import {authorizeRebasedRelease,beforeRebasedRelease} from './rebased-release-source.mjs';
 import {beforeLateReleaseUiSource,beforeReleaseDetailSource} from './release-integration-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {authorizeRefinedReleaseProduction,beforeRefinedReleaseProduction} from './refined-release-source.mjs';
@@ -55,6 +56,18 @@ export function shopEntryPriorRead(read){
  return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));
 }
 export const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));
+export function beforeAuthenticatedRecordingStage(path,source,read){
+ const released=beforeRebasedRelease(path,source);
+ if(released!==source)authorizeRebasedRelease([[path,source]],owner=>read(owner,'utf8'));
+ const readReleased=owner=>beforeRebasedRelease(owner,read(owner,'utf8'));
+ const current=beforeCombatVisualSource(path,released,readReleased);
+ const prior=recording.project(path,current);
+ if(prior!==current){
+  const live=combatVisualPriorRead(readReleased)(path,'utf8');
+  assert(matches(live,recording.files[path].after),'recording UI linked owner changed: '+path);
+ }
+ return prior===current?source:prior;
+}
 export const releaseForgeSourcePaths=Object.freeze(Object.keys(forgeGrid.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseForgeGridUi=forgeGrid.project;
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));

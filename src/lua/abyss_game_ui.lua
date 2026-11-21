@@ -52,7 +52,7 @@ function M.new(root, data, presentation, clickEvent, platform)
         self.pageReveal=PageReveal.new(cover,platform.presentationReady,function()
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
         end,{full={0,0,Theme.canvas.base[1],Theme.canvas.base[2]},
-            deckPanel=Theme.layout.deckView.viewport,
+            deckPanel=Theme.layout.deckView.viewport,deckBrowser=Theme.layout.deckView.pileViewport,
             nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
             potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
             choicePanel=Theme.layout.combatChoice.panel},revealMotion(platform))

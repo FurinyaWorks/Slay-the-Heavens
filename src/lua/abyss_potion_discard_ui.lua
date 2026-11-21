@@ -21,6 +21,13 @@ local function refreshBottle(bottle,id,platform)
     local colour=(Theme.icon.potionTint or {})[id] or (id=='fire_potion' and Theme.color.potionShell.fire or Theme.color.potionShell.normal).ink
     bottle.imageColor=platform.color(colour.r,colour.g,colour.b,colour.a)
 end
+local function paintSlot(slot,id,selected,platform)
+    slot:GetChild('emptyShell'):SetVisible(id==nil)
+    slot:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
+    slot:GetChild('fireShell'):SetVisible(id=='fire_potion')
+    slot:GetChild('selectedShell'):SetVisible(selected)
+    refreshBottle(slot:GetChild('bottle'),id,platform)
+end
 function M.refreshEntry(hit,run,platform,mapSlots)
     local capacity=run and Run.potionCapacity(run) or 0
     for _,state in ipairs({'normal','hover','pressed','disabled'})do
@@ -36,11 +43,7 @@ function M.refreshEntry(hit,run,platform,mapSlots)
                 local step=official and Theme.officialAssets.battleHud.potionStep or 42
                 slot:SetAnchoredPosition((i-(capacity+1)/2)*step,0)
             end
-            slot:GetChild('emptyShell'):SetVisible(id==nil)
-            slot:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
-            slot:GetChild('fireShell'):SetVisible(id=='fire_potion')
-            slot:GetChild('selectedShell'):SetVisible(false)
-            refreshBottle(slot:GetChild('bottle'),id,platform)
+            paintSlot(slot,id,false,platform)
         end
     end
 end
@@ -108,6 +111,16 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
         end
         return table.concat(result,'；')
     end
+    local function renderActions()
+        local selected=self.selected
+        child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
+        local view=selected and Run.potionView(self.run)[selected.slot]
+        local discard=child('discard'):GetChild('hit');discard.interactable=view and view.canDiscard~=false or false;discard.raycastTarget=discard.interactable
+        local use=child('use'):GetChild('hit');use.interactable=self.run.phase~='combat' and view and view.canUse or false;use.raycastTarget=use.interactable
+        if view and view.reason=='potion_event_restricted' then
+            child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
+        end
+    end
     function self.render(_)
         if not self.visible then return end
         self.generation=self.generation+1
@@ -120,24 +133,14 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
             caption('slot'..slot,'槽 '..slot..'\n'..(definition and definition.name or '空槽'))
             local control=child('slot'..slot)
             control:SetAnchoredPosition((slot-(capacity+1)/2)*92,120)
+            local hit=control:GetChild('hit')
+            local selected=self.selected~=nil and self.selected.slot==slot
             for _,state in ipairs({'normal','hover','pressed','disabled'})do
-                local face=control:GetChild('hit'):GetChild(state)
-                face:GetChild('emptyShell'):SetVisible(id==nil)
-                face:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
-                face:GetChild('fireShell'):SetVisible(id=='fire_potion')
-                face:GetChild('selectedShell'):SetVisible(self.selected~=nil and self.selected.slot==slot)
-                refreshBottle(face:GetChild('bottle'),id,platform)
+                paintSlot(hit:GetChild(state),id,selected,platform)
             end
-            local hit=child('slot'..slot):GetChild('hit');hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
+            hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
         end
-        local selected=self.selected
-        child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
-        local view=selected and Run.potionView(self.run)[selected.slot]
-        local discard=child('discard'):GetChild('hit');discard.interactable=view and view.canDiscard~=false or false;discard.raycastTarget=discard.interactable
-        local use=child('use'):GetChild('hit');use.interactable=self.run.phase~='combat' and view and view.canUse or false;use.raycastTarget=use.interactable
-        if view and view.reason=='potion_event_restricted' then
-            child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
-        end
+        renderActions()
     end
     function self.open(_,run)
         if self.visible or not allowed(run)then return false end

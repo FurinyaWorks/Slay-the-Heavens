@@ -5,8 +5,8 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'33ab0223afc0c454213fe0b6e8d0c21d01d85379d4a2d079a961e92a1673de3b','exact reconciled source archive');
-const {develop,release,ci,production,releaseCopier}=JSON.parse(gunzipSync(archive));
+assert.equal(hash(archive),'67259b10bafb786f5d682a2100123b71cb1a3c812a73c2063b8db93dfbfd964b','exact reconciled source archive');
+const {develop,release,ci,production,releaseCopier,reviewedBuild}=JSON.parse(gunzipSync(archive));
 assert.equal(develop,'aae948788d93012d11fe5b6da3281150bb9957c6');
 assert.equal(release,'930097995be43e5612e949a3b5fa0c1d5d305f49');
 function matches(source,binding){
@@ -14,13 +14,21 @@ function matches(source,binding){
  const lf=source.replaceAll('\r\n','\n');
  return hash(lf)===binding.sha256&&hash(`blob ${Buffer.byteLength(lf)}\0${lf}`,'sha1')===binding.gitBlob;
 }
-for(const rows of [ci,production])for(const {before} of Object.values(rows))assert(matches(before.source,before));
+for(const rows of [ci,production,reviewedBuild.files])for(const {before} of Object.values(rows))assert(matches(before.source,before));
+assert.equal(reviewedBuild.source,'900527d931df941eed642a9667ccde92f76b73db');
 assert(matches(releaseCopier.source,releaseCopier),'immutable Release copy closure');
 export const historicalReleaseCopier=source=>source.includes('\r\n')?releaseCopier.source.replaceAll('\n','\r\n'):releaseCopier.source;
 function historical(rows,path,source){
  const row=Object.hasOwn(rows,path)?rows[path]:null;
  if(!row||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+export function exactReviewedBuildInput(path,read){
+ if(!Object.hasOwn(reviewedBuild.files,path))return undefined;
+ const source=read(path,'utf8');
+ const {after,before}=reviewedBuild.files[path];
+ assert(matches(source,after),'fresh reviewed build input: '+path);
+ return before.source;
 }
 export const beforeRebasedCi=(path,source)=>historical(ci,path,source);
 export const beforeRebasedRelease=(path,source)=>historical(production,path,source);

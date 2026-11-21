@@ -1,3 +1,4 @@
+import {roundedFramedButton} from './native-rounded-button.mjs';
 import {merchantControl} from './cinematic-ui-layout.mjs';
 import {proceedFlag} from './sts-reward-row-layout.mjs';
 // Independently authored native geometry from the frozen V25 room composition.
@@ -171,6 +172,20 @@ function styleCamp(panel,theme){
  setRect(must(result,'description'),[0,90,600,120]);type(must(result,'description'),26,'#F0ECDB');
 }
 
+function styleLegacyEventOption(n){
+ framedSkin(n);
+  // Anchored corner covers follow the original Neow/ordinary option resizing.
+  // Clip the complete decorative chrome before live text and input are drawn.
+  // All colours/states still come from the original Image feedback targets.
+  let cornerAt=n.children.indexOf(must(n,'v25StateChrome'))+1;
+  for(const side of [0,1])for(const top of [0,1])n.children.splice(cornerAt++,0,image('v25Corner'+side+'_'+top,0,0,42,22,100003,'#020504',{
+   pivot:[.5,0],anchor:{min:[side,top],max:[side,top]},scale:[side?-1:1,top?-1:1],fill:{shape:'horizontal',from:'right',amount:.5}}));
+  must(n,'border').opacity=1;must(n,'border').colour='#406166';
+  for(const state of ['normal','hover','pressed','disabled','selected']){must(n,state).image=100001;must(n,state).size=[696,40];}
+  must(n,'v25StateChrome').children.find(c=>c.name==='lowerRim').opacity=0;
+  must(n,'v25StateChrome').children.find(c=>c.name==='faceDepth').opacity=0;
+}
+
 export function styleEvent(panel,theme){
  // plateBorder is visibility-only in the real event writer, including Neow.
  // Keep its identity and path, adding children only after making it a container.
@@ -194,18 +209,13 @@ export function styleEvent(panel,theme){
  const name=must(panel,'name');setRect(name,theme.layout.nativeNode.event.name);type(name,27,'#F0CF60');
  setRect(must(panel,'body'),theme.layout.nativeNode.event.body);type(must(panel,'body'),21,'#EDEEDF',{align:'left',valign:'top'});
  const o=theme.layout.nativeNode.event.options;
- for(let i=1;i<=4;i++){const n=must(panel,'option'+i);setRect(n,[o.x,o.rows[i-1],...o.size]);must(n,'hit').size=[...o.size];framedSkin(n);
-  // Anchored corner covers follow the original Neow/ordinary option resizing.
-  // Clip the complete decorative chrome before live text and input are drawn.
-  // All colours/states still come from the original Image feedback targets.
-  let cornerAt=n.children.indexOf(must(n,'v25StateChrome'))+1;
-  for(const side of [0,1])for(const top of [0,1])n.children.splice(cornerAt++,0,image('v25Corner'+side+'_'+top,0,0,42,22,100003,'#020504',{
-   pivot:[.5,0],anchor:{min:[side,top],max:[side,top]},scale:[side?-1:1,top?-1:1],fill:{shape:'horizontal',from:'right',amount:.5}}));
-  must(n,'border').opacity=1;must(n,'border').colour='#406166';
-  for(const state of ['normal','hover','pressed','disabled','selected']){must(n,state).image=100001;must(n,state).size=[696,40];}
-  must(n,'v25StateChrome').children.find(c=>c.name==='lowerRim').opacity=0;
-  must(n,'v25StateChrome').children.find(c=>c.name==='faceDepth').opacity=0;
-  setRect(must(n,'title'),o.title);type(must(n,'title'),18,'#EDEEDF',{align:'left'});setRect(must(n,'description'),o.description);type(must(n,'description'),18,'#EDEEDF',{align:'left'});}
+ for(let i=1;i<=4;i++){
+  const n=must(panel,'option'+i);setRect(n,[o.x,o.rows[i-1],...o.size]);must(n,'hit').size=[...o.size];
+  if(theme.presentationProfile==='official-assets-first')roundedFramedButton(n,theme,{stretch:true});
+  else styleLegacyEventOption(n);
+  setRect(must(n,'title'),o.title);type(must(n,'title'),18,'#EDEEDF',{align:'left'});
+  setRect(must(n,'description'),o.description);type(must(n,'description'),18,'#EDEEDF',{align:'left'});
+ }
 }
 
 export function styleTreasure(panel,theme,{skinButtons=true}={}){

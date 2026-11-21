@@ -246,7 +246,9 @@
       "codePaths": [
         "scripts/character-selection-composition.mjs",
         "scripts/noncombat-v25-layout.mjs",
-        "src/lua/abyss_game_ui_navigation_view.lua"
+        "src/lua/abyss_game_ui_navigation_view.lua",
+        "scripts/native-rounded-button.mjs",
+        "scripts/official-run-layout.mjs"
       ],
       "themeKeys": [
         "layout.runMenu"
@@ -535,7 +537,10 @@
         "sha256": "0bc1c0cf7041dba7a030f47f18da06af80b7f1a0a441cf7437c360fe9ce92fab"
       },
       "supersedes": [],
-      "note": "卡组及抽、弃、消耗三堆的当前布局。并查验实例详情和返回。 1280×720 离线投影，官方候选待验。"
+      "note": "卡组及抽、弃、消耗三堆的当前布局。并查验实例详情和返回。 1280×720 离线投影，官方候选待验。",
+      "codePaths": [
+        "scripts/official-battle-pile-chrome.mjs"
+      ]
     },
     {
       "codePath": "scripts/relic-view-layout.mjs",

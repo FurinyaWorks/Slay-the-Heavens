@@ -121,10 +121,10 @@ function beforeIntegratedReleaseCopier(path,source){
 function beforeRebasedCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='312a5c189fd738affb367e23c575279a1e03e2798198394e9cd0349e6e4e4f35')return source;
+ if(hash(lf)!=='624f1f94d708a3a2e2e1b7fab167724bc11445bb6314211d53d50f1bc3e0be49')return source;
  const limit=lf.indexOf('const releaseUiFiles='),end=lf.indexOf('const inside=',limit);
  assert(limit>=0&&end>limit,'exact reconciled copy closure');
- const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(reconciledReleaseFiles))','Object.entries(powerMembershipFiles))');
+ const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(stsCloseoutFiles))','Object.entries(powerMembershipFiles))');
  assert.equal(hash(prior),'fbc236306831104020bf6d83133ab8b978ad9ffd5d6dae1bde13ee12176651e2','exact final develop copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
@@ -147,8 +147,9 @@ export function beforeReleaseTinyHouseSource(path,source,read=readFileSync){
  return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,releaseHistoricalInput(path,source),releaseRead));
 }
 export function historicalReleaseBuildInput(path,read){
- if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,(owner,encoding)=>beforeReleaseCapacitySource(owner,read(owner,encoding)));
- const source=read(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source);
+ const releaseRead=(owner,encoding)=>releaseHistoricalInput(owner,read(owner,encoding));
+ if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,(owner,encoding)=>beforeReleaseCapacitySource(owner,releaseRead(owner,encoding)));
+ const source=releaseRead(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source,releaseRead);
  assert.notEqual(prior,source,'fresh approved build source: '+path);
  return prior;
 }

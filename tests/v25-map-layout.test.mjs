@@ -122,14 +122,14 @@ print('ROUTE_CURVE_PASS')
 
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {beforeRecordingUi,authorizeReleaseUiRestore} from './helpers/release-ui-restore-source.mjs';
+import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';
 test('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{
  const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));
  for(const [path,row] of Object.entries(files)){
   const live=readFileSync(path,'utf8');
-  assert.equal(beforeRecordingUi(path,live),row.before.source,path);
+  assert.equal(beforeAuthenticatedRecordingStage(path,live,readFileSync),row.before.source,path);
   const drift=live+'\n-- unreviewed drift\n';
-  assert.equal(beforeRecordingUi(path,drift),drift,'unknown bytes must remain unprojected');
-  assert.throws(()=>authorizeReleaseUiRestore([[path,live]],()=>drift),/recording UI linked owner changed/);
+  assert.equal(beforeAuthenticatedRecordingStage(path,drift,readFileSync),drift,'unknown bytes must remain unprojected');
+  assert.throws(()=>beforeAuthenticatedRecordingStage(path,live,owner=>owner===path?drift:readFileSync(owner,'utf8')),/linked owner (?:changed|identity)/);
  }
 });

@@ -148,7 +148,7 @@ local function placeOptions(event, neow, rows)
             for _, part in ipairs({ 'normal', 'disabled', 'hover', 'pressed', 'selected' }) do
                 local c = box:GetChild(part); if c then c:SetSizeDelta(w - 4, h - 4) end
             end
-            if layout.event.reference then
+            if layout.event.reference and not box:GetChild('roundedButton') then
                 place(box:GetChild('v25BaseMaterial'), {0, 0, w - 4, h - 4})
                 local chrome = box:GetChild('v25StateChrome')
                 chrome:SetSizeDelta(w, h)

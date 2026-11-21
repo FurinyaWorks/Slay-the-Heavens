@@ -6,6 +6,7 @@ import {applyV25MapLayout} from './v25-map-layout.mjs';
 import {applyOfficialMapReturnControls} from './official-map-return-controls.mjs';
 import {applyV25RewardLayout,styleMerchant,styleEvent} from './v25-node-layout.mjs';
 import {officialRunChrome} from './official-battle-hud.mjs';
+import {roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
 import {monsterActorTierNames,monsterActorTemplateName} from './monster-art.mjs';
 import {applyStsRewardRows} from './sts-reward-row-layout.mjs';
 
@@ -61,6 +62,36 @@ export function finishOfficialComposition(trees){
  assertOfficialRunContracts(trees);
  for(const tree of trees)composed.add(tree);
 }
+function roundRunActions(host,theme){
+ const c=theme.color,secondary=[c.goldDim,c.panelRaised],primary=[c.gold,c.panel];
+ const danger=theme.officialAssets.flagButton.cancel;
+ const panels={
+  deckPanel:{close:secondary,upgradePreview:secondary,previous:secondary,next:secondary},
+  potionPanel:{cancel:secondary,use:primary,discard:secondary},
+  choicePanel:{confirm:primary},
+  relicPanel:{close:secondary,previous:secondary,next:secondary},
+  runMenu:{resume:primary,map:secondary,abandon:danger},
+  exitPanel:{cancel:secondary,confirm:danger},
+ };
+ for(const [panel,actions] of Object.entries(panels))for(const [name,palette] of Object.entries(actions)){
+  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,palette);
+ }
+ const grid=required(required(host,'deckPanel'),'pileGrid'),viewport=theme.layout.deckView.pileViewport;
+ grid.position=viewport.slice(0,2);grid.size=viewport.slice(2);
+ const node=required(host,'nodePanel');
+ for(const button of [required(node,'back'),required(node,'confirm'),required(required(node,'treasureView'),'take')]){
+  roundedFramedButton(button,theme);
+ }
+}
+function roundPotionActions(battle,theme){
+ const popup=required(required(battle,'potionHelp'),'potionPopup'),layout=theme.layout.potionPopup;
+ const height=Math.max(layout.actionHeight,theme.layout.nativeText.lineHeight),c=theme.color;
+ const use=required(popup,'use'),discard=required(popup,'discard');
+ use.size=[layout.width/2,height];discard.size=[layout.width/3-layout.padding,height];
+ roundedPresetButton(use,theme,[c.gold,'#3B5A54']);
+ roundedPresetButton(discard,theme,[c.goldDim,c.panelSunken]);
+}
+
 export function composeOfficialRun(tree,theme){
  const kind=rootKind(tree);
  if(kind==='run'){
@@ -76,10 +107,12 @@ export function composeOfficialRun(tree,theme){
   });
   applyV25MapLayout(tree,theme);
   applyOfficialMapReturnControls(child(stage(tree),'mapPanel'),child(stage(tree),'characterPanel'),theme);
+  roundRunActions(stage(tree),theme);
  }
  if(kind!=='template'){
   applyV25RewardLayout(tree,theme);
   applyStsRewardRows(tree,theme);
+  roundPotionActions(kind==='run'?required(stage(tree),'battlePanel'):stage(tree),theme);
  }
  if(kind==='run')officialRunChrome(tree,theme);
 }
