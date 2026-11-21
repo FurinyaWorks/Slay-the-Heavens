@@ -8361,6 +8361,14 @@
       "storage": "ci-media-lfs-v1",
       "bytes": 113206
     },
+    "docs/evidence/sts1-map-details/after.png": {
+      "sha256": "a74ecac88c1b9fc0cd714827e4b99ab453a7f751ddd1d93fdce8d7d00d3faec5",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-map-details/before.png": {
+      "sha256": "f5cc6ee3de6d3311408491bc4b9f3b8cef812c4195c675ec59c4c1d2f07cf64f",
+      "category": "platform-evidence"
+    },
     "docs/evidence/map-v25-20261110/map-boss.png": {
       "sha256": "a9e013e8e6fd3b1a7637ef3ef59b0df04603cadd8fdd3d23c6a98164062c13cd",
       "category": "v25-native-simulator-evidence",

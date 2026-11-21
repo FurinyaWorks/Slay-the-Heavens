@@ -5,6 +5,7 @@ local Theme = require("abyss_theme")
 local EnemyView = require('abyss_battle_enemy_view')
 local DamageView = require('abyss_battle_damage_view')
 local PotionView = require("abyss_battle_potion_view")
+local Acts = require("abyss_acts")
 local IntentView = require("abyss_battle_intent_view")
 local RewardOwner = require("abyss_battle_reward_owner")
 local LowCostArt=require('abyss_lowcost_art')
@@ -13,6 +14,14 @@ local C, L, S = Theme.color, Theme.layout, Theme.space
 local number = require("abyss_numbers").integer
 local potionText = PotionView.potionText
 local intentView = IntentView.intentView
+local function continueCaption(frame, embedded)
+    if not frame.manual then return "再战一场" end
+    local run = frame.run
+    if embedded and run.nodeFlow and run.nodeFlow.type == 'boss' and Acts.get(run.act or 1).terminal == 'boss_treasure' then
+        return "前往首领宝箱"
+    end
+    return "前往地图"
+end
 -- Last successful geometry writer per native handle; tokens hold no view references.
 local intentSizes=setmetatable({},{__mode='k'})
 local intentPositions=setmetatable({},{__mode='k'})
@@ -343,7 +352,7 @@ function M.install(owner, ownership, host, dependencies)
     local function renderContinue(frame)
         local run = frame.run
         dependencies.button("continue", owner.active and run and (frame.manual or run.phase == "map") and not owner.busy, true,
-            frame.manual and "前往地图" or "再战一场")
+            continueCaption(frame, host.options.embedded))
     end
     local function bindPotionSlots(frame)
         if frame.fighting and not owner.busy then

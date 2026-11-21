@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeV2UiHudSource} from './v2-ui-hud-source.mjs';
 import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
+import {authorizeSts1MapSource,beforeSts1MapSource} from './sts1-map-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/pc13-reward-cover-source.json.gz',import.meta.url));
@@ -23,16 +24,17 @@ const matches=(source,binding)=>{
 };
 export const pc13RewardCoverSourcePaths=Object.freeze(Object.keys(files));
 export function beforePc13RewardCover(path,source){
-  source=beforeLoadingRecoverySource(path,source);
+  source=beforeLoadingRecoverySource(path,beforeSts1MapSource(path,source));
   const row=files[path];if(!Object.hasOwn(files,path)||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 export function authorizePc13RewardCover(samples,read){
+ authorizeSts1MapSource(samples,read);
  for(const [path,{after}] of Object.entries(files)){
-    const input=beforeLoadingRecoverySource(path,samples.find(sample=>sample[0]===path)?.[1]);
+    const input=beforeLoadingRecoverySource(path,beforeSts1MapSource(path,samples.find(sample=>sample[0]===path)?.[1]));
   if(!matches(input,after))continue;
   let live;try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
-    assert(matches(beforeLoadingRecoverySource(path,live),after),'combined linked owner identity: '+path+' changed during owner validation');
+    assert(matches(beforeLoadingRecoverySource(path,beforeSts1MapSource(path,live)),after),'combined linked owner identity: '+path+' changed during owner validation');
  }
 }
 

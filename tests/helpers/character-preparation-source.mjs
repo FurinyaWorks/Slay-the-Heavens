@@ -1,3 +1,4 @@
+import {beforeSts1MapSource,sts1MapSourcePaths} from './sts1-map-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
@@ -60,10 +61,13 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 
 const currentContinuationOwners = new Set([
   ...characterPreparationOwners, ...v2UiHudSourcePaths, selectorSourcePair.path, potionTextSourcePair.path,
-  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths, ...m05ShopSourcePaths,
+  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths, ...m05ShopSourcePaths, ...sts1MapSourcePaths,
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if (sts1MapSourcePaths.includes(path)) {
+    assert.notEqual(beforeSts1MapSource(path,source),source, 'fresh current production owner: '+path);
+  }
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (pc13RewardCoverSourcePaths.includes(path)) {

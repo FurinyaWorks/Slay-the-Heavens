@@ -1,3 +1,5 @@
+import { mapLegendRows } from './map-ui-layout.mjs';
+
 // Independent native presentation from the authorized V25 map. Route generation,
 // graph pools, clipping, scrolling, RNG and command ownership remain untouched.
 export const v25MapSource=Object.freeze({
@@ -53,36 +55,34 @@ function paper(theme){
 }
 
 function legendPaper(theme){
- const top=rounded('topRoll',246,31,10,'#AEC8CE');top.position=[0,150];
+ const top=rounded('topRoll',246,31,10,'#AEC8CE');top.position=[0,132.5];
  top.children.push(image('rollLight',0,0,230,29,106095,'#C1D4D5',{rotation:180,opacity:.5}),
   image('fold',119,-2,20,36,100003,'#A1BDC5',{rotation:-15}));
- const bottom=rounded('bottomRoll',245,22,8,'#8FAEB8');bottom.position=[-2,-153];
+ const bottom=rounded('bottomRoll',245,22,8,'#8FAEB8');bottom.position=[-2,-135.5];
  bottom.children.push(image('rollLight',0,0,242,20,106095,'#BAD1D5',{rotation:180}),
   plate('crease',0,-4,232,2,'#6E909C',{opacity:.7}),plate('glint',0,4,232,1,'#CADCDB',{opacity:.65}));
- return group('v25LegendPaper',[266,333],[
-  image('shadow',3,-6,268,345,theme.image.glowWide,'#000000',{opacity:.5}),
-  plate('paper',2,-9,232,300,'#A1BBC4'),
-  image('paperLight',2,-9,300,232,106095,'#AEC8CE',{rotation:90,opacity:.65}),
-  image('edgeDepth',2,-9,300,232,106095,'#7C9BA6',{rotation:-90,opacity:.25}),
-  plate('leftFold',-113,-8,2,281,'#C1D4D5',{opacity:.45}),
-  plate('rightFold',117,-8,2,281,'#7C9BA6',{opacity:.3}),top,bottom,
+ return group('v25LegendPaper',[266,298],[
+  image('shadow',3,-6,268,310,theme.image.glowWide,'#000000',{opacity:.5}),
+  plate('paper',2,-9,232,265,'#A1BBC4'),
+  image('paperLight',2,-9,265,232,106095,'#AEC8CE',{rotation:90,opacity:.65}),
+  image('edgeDepth',2,-9,265,232,106095,'#7C9BA6',{rotation:-90,opacity:.25}),
+  plate('leftFold',-113,-8,2,246,'#C1D4D5',{opacity:.45}),
+  plate('rightFold',117,-8,2,246,'#7C9BA6',{opacity:.3}),top,bottom,
  ]);
 }
 
 function styleLegend(legend,theme){
- legend.position=[486,22.5];legend.size=[266,333];
+ legend.position=[486,40];legend.size=[266,298];
  // Transparent bounds only: SDK font26 needs 41.7px for one line; preserve the source centre/font.
- const title=must(legend,'title');title.position=[0,129];title.size=[230,52];
+ const title=must(legend,'title');title.position=[0,111.5];title.size=[230,52];
  Object.assign(title.text,{content:'图例',fontSize:26,minFontSize:26,colour:'#1D2C32',outline:false});
- const rows=[['event','未知'],['shop','商人'],['treasure','宝箱'],['camp','休息'],['combat','敌人'],['elite','精英'],['boss','首领']];
- rows.forEach(([kind,label],i)=>{
-  const icon=must(legend,kind+'Icon'),text=must(legend,kind+'Label'),y=86.5-i*35;
+ mapLegendRows.forEach(([kind,label],i)=>{
+  const icon=must(legend,kind+'Icon'),text=must(legend,kind+'Label'),y=69-i*35;
   icon.visible=true;text.visible=true;
   icon.position=[-81.5,y];icon.size=[31,32];icon.colour='#20323A';
   icon.image=theme.icon.node[kind];
   text.position=[19,y];text.size=[140,40];Object.assign(text.text,{content:label,fontSize:22,minFontSize:22,colour:'#20323A',align:'left',outline:false});
  });
- // Keep all seven playable node kinds discoverable, including the terminal boss.
  legend.children.unshift(legendPaper(theme));
 }
 
@@ -128,7 +128,7 @@ export function applyV25MapLayout(layout,theme){
  const groups=children(panel).filter(c=>/^mapGroup\d+$/.test(c.name));
  const at=name=>{const found=groups.flatMap(children).filter(c=>c.name===name);if(found.length!==1)throw Error('V25 map requires '+name);return found[0];};
  const legend=at('typeLegend'),title=at('title');
- for(const name of ['title',...['event','shop','treasure','camp','combat','elite','boss'].flatMap(kind=>[kind+'Icon',kind+'Label'])])must(legend,name);
+ for(const name of ['title',...mapLegendRows.flatMap(([kind])=>[kind+'Icon',kind+'Label'])])must(legend,name);
  const back=children(panel).find(c=>c.name==='previewBack'),resources=children(panel).find(c=>c.name==='resources'),hints=children(panel).find(c=>c.name==='resourceHints');
  if(back){must(back,'label');must(back,'hit');}
  if(resources)for(const name of ['hpIcon','hp','goldIcon','gold'])must(resources,name);

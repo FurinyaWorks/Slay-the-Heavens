@@ -1,4 +1,5 @@
 local Nodes = require("abyss_nodes")
+local Run = require("abyss_run")
 local PotionDiscardUI = require("abyss_potion_discard_ui")
 local Narrative = require("abyss_narrative")
 local Bgm = require("abyss_bgm")
@@ -92,12 +93,25 @@ function M.syncController(self,controller,openingCovered)
         end
 end
 
+local function enterBossTreasure(run,map)
+    local flow = run.nodeFlow
+    if not flow or not flow.complete or flow.result ~= 'boss_victory' then return end
+    local chapter = Acts.get(run.act or 1)
+    if chapter.terminal ~= 'boss_treasure' or run.floor ~= chapter.boss then return end
+    local rooms = Nodes.available(run, map)
+    local chest = rooms[1]
+    if #rooms == 1 and chest.roomKind == 'boss_treasure' and Nodes.enter(run, map, chest.id) then return end
+    -- A refused entry leaves the reward owner recoverable, including unclaimed items.
+    Run.reopenCombatRewards(run)
+end
+
 function M.finishRunFlow(neowHistory,endingHistory,self)
     return function(run)
             if run and (run.phase=='victory' or run.phase=='defeat')then NeowHistory.finish(neowHistory,run,run.phase)end
             if run and EndingHistory.finish(endingHistory,run,self.map)then run.endingHistoryResult=EndingHistory.read(endingHistory)end
-            if not self.sessionPaused and not self.exitOpen and not self.settlementRequested and run and run.phase == "map" and run.nodeFlow and not run.nodeFlow.complete then
-                Nodes.completeCombat(run, self.map)
+            if not self.sessionPaused and not self.exitOpen and not self.settlementRequested and run and run.phase == "map" then
+                if run.nodeFlow and not run.nodeFlow.complete then Nodes.completeCombat(run, self.map) end
+                enterBossTreasure(run, self.map)
             end
         end
 end

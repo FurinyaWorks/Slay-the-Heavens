@@ -6,10 +6,10 @@ import {createHash} from 'node:crypto';
 import {buildLuaData} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 import {historicalPresentationFixtures} from './helpers/historical-presentation-runner.mjs';
-import {bossUiFaultFixture as fixture,preBossUiFaultFixtureSource as project} from './helpers/boss-ui-fault-fixture-inverse.mjs';
+import {bossUiFaultFixture as fixture,preBossUiFaultFixtureSource as project,preBossUiAutoEnterFixtureSource as preAutoEnter} from './helpers/boss-ui-fault-fixture-inverse.mjs';
 import {pr323AcceptedSourceInverse as proof,requirePr323Source,preAcceptedPr323Source,preOriginalPr323Source} from './helpers/pr323-accepted-source-inverse.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
-const current=readHistoricalBaselineSource(fixture.path);
+const current=preAutoEnter(fixture.path,readHistoricalBaselineSource(fixture.path));
 
 historicalTest('one exact Boss fault-input hunk restores its immutable whole source and every PR323 binding still resolves',()=>{
  assert.equal(fixture.hunks.length,1);assert.equal(hash(current),fixture.afterSha256);
