@@ -1,6 +1,6 @@
 import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
-import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
+import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths,beforeRewardTransitionSource,rewardTransitionSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
@@ -109,6 +109,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if (rewardTransitionSourcePaths.includes(path)) {
+    assert.notEqual(beforeRewardTransitionSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   if (releaseGuideSourcePaths.includes(path)) {
     assert.notEqual(beforeReleaseGuideSource(path,source),source, 'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);

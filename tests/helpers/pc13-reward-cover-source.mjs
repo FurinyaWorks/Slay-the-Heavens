@@ -12,7 +12,13 @@ const bytes=readFileSync(new URL('../fixtures/pc13-reward-cover-source.json.gz',
 assert.equal(hash(bytes),'9779296bb7bedc99990fa6ccad9c7ba0a0e581982a020c9dcc4a71210b3299cd','PC13 exact predecessor archive');
 const {base,files}=JSON.parse(gunzipSync(bytes));
 assert.equal(base,'901f87c9e7922c78f31154d9c88d2a5f5ef2720c');
-for(const {before,after} of Object.values(files)){
+const transitionArchive=readFileSync(new URL('../fixtures/combat-reward-transition-source.json.gz',import.meta.url));
+assert.equal(hash(transitionArchive),'08c955924392a2a23a989e08b9bb4e061d06a66871b1cbacd9ad556c0b734476');
+const {base:transitionBase,files:reward,tooltip}=JSON.parse(gunzipSync(transitionArchive));
+assert.equal(transitionBase,'d7d77fe88d3b6fef6da233cfad0ec9361094db0d');
+assert.equal(tooltip.commit,'7e3f38fda4c17eb7b17eb9d0dc4eba8d79e9d02f');
+const transition={...reward,...tooltip.files};
+for(const {before,after} of [...Object.values(files),...Object.values(transition)]){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(hash(`blob ${Buffer.byteLength(before.source)}\0${before.source}`,'sha1'),before.gitBlob);
  for(const [id,length] of [[after.sha256,64],[after.gitBlob,40]])assert.match(id,new RegExp('^[a-f0-9]{'+length+'}$'));
@@ -23,17 +29,28 @@ const matches=(source,binding)=>{
  return hash(text)===binding.sha256&&hash(`blob ${Buffer.byteLength(text)}\0${text}`,'sha1')===binding.gitBlob;
 };
 export const pc13RewardCoverSourcePaths=Object.freeze(Object.keys(files));
+export const rewardTransitionSourcePaths=Object.freeze(Object.keys(transition));
+export function beforeRewardTransitionSource(path,source){
+ const row=transition[path];
+ if(!Object.hasOwn(transition,path)||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
 export function beforePc13RewardCover(path,source){
-  source=beforeLoadingRecoverySource(path,source);
+  source=beforeLoadingRecoverySource(path,beforeRewardTransitionSource(path,source));
   const row=files[path];if(!Object.hasOwn(files,path)||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 export function authorizePc13RewardCover(samples,read){
+ for(const [path,{after}] of Object.entries(transition)){
+  if(!matches(samples.find(sample=>sample[0]===path)?.[1],after))continue;
+  let live;try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,after),'combined linked owner identity: '+path+' changed during owner validation');
+ }
  for(const [path,{after}] of Object.entries(files)){
-    const input=beforeLoadingRecoverySource(path,samples.find(sample=>sample[0]===path)?.[1]);
+    const input=beforeLoadingRecoverySource(path,beforeRewardTransitionSource(path,samples.find(sample=>sample[0]===path)?.[1]));
   if(!matches(input,after))continue;
   let live;try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
-    assert(matches(beforeLoadingRecoverySource(path,live),after),'combined linked owner identity: '+path+' changed during owner validation');
+    assert(matches(beforeLoadingRecoverySource(path,beforeRewardTransitionSource(path,live)),after),'combined linked owner identity: '+path+' changed during owner validation');
  }
 }
 

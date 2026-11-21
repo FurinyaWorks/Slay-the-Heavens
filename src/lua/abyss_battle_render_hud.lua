@@ -28,6 +28,8 @@ end
 function M.install(owner, _ownership, host, dependencies)
     local R = L.rewardPick
     local rewardSizeOwner = {}
+    local showBanner,updateBanner=RewardLayout.banner(dependencies)
+    host.updateRewardBanner=updateBanner
     local function renderStartControls(frame)
         local run = frame.run
         dependencies.show("start", not owner.busy and not host.options.embedded and (not run or run.phase == "defeat"))
@@ -88,12 +90,15 @@ function M.install(owner, _ownership, host, dependencies)
                 and "药水槽已满；点顶部药水入口丢弃旧药水后，再点击奖励领取。" or "")
     end
     local function renderRewardStage(frame)
+        showBanner(frame,owner.active)
         dependencies.show("rewardStage", frame.picking)
         dependencies.show("rewardList", frame.listing)
         dependencies.show("notice", not frame.reward)
         if frame.listing then
-            dependencies.child("rewardList"):GetChild("subtitle").text = owner.rewardNotice ~= "" and owner.rewardNotice
-                or (frame.rewardRows == 0 and "奖励已领取" or "点击条目领取奖励")
+            local list=dependencies.child("rewardList")
+            local result=frame.run.lastResult
+            list:GetChild("title").text=result and result.allEnemiesEscaped and "敌人已逃跑" or "战斗胜利"
+            list:GetChild("subtitle").text = owner.rewardNotice or ""
         end
     end
     local function fieldCardSelected(frame)
@@ -114,7 +119,7 @@ function M.install(owner, _ownership, host, dependencies)
         end
         dependencies.show("result", not frame.fighting and not frame.reward)
         dependencies.show("resultPlate", not frame.fighting and not frame.reward)
-        dependencies.show("hero", frame.fighting and not owner.feedback.deaths.player)
+        dependencies.show("hero", (frame.fighting or frame.reward) and not owner.feedback.deaths.player)
     end
     local function playerHealthText(frame)
         local player, run = frame.player, frame.run
