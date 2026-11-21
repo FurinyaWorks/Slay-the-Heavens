@@ -46,9 +46,11 @@ export function beforeAuthenticatedPc13RewardCover(path,source,read){
 // Explicit older HUD view: validate the newest owner before offering its exact
 // predecessor to the independent HUD continuation. Keep the original reader
 // for all non-PC13 source; it still verifies the exact HUD owner invocation.
-export function beforePc13ThenV2UiHudSource(path,source,read){
+export function beforeReleaseGuideThenPc13Source(path,source,read){
  const guidePrior=beforeAuthenticatedReleaseGuideSource(path,source,read);
- const readGuidePrior=owner=>beforeReleaseGuideSource(owner,read(owner));
- const prior=beforeAuthenticatedPc13RewardCover(path,guidePrior,readGuidePrior);
- return beforeV2UiHudSource(path,prior,owner=>beforePc13RewardCover(owner,readGuidePrior(owner)));
+ return beforeAuthenticatedPc13RewardCover(path,guidePrior,owner=>beforeReleaseGuideSource(owner,read(owner)));
+}
+export function beforePc13ThenV2UiHudSource(path,source,read){
+ const prior=beforeReleaseGuideThenPc13Source(path,source,read);
+ return beforeV2UiHudSource(path,prior,owner=>beforePc13RewardCover(owner,beforeReleaseGuideSource(owner,read(owner))));
 }

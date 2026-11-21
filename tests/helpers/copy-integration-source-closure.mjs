@@ -75,7 +75,7 @@ const loadingRecoveryFiles=Object.freeze({
 const releaseGuideFiles=Object.freeze({
  ...loadingRecoveryFiles,
  [runtime]:'cb0a50200fbd9e249b897b0b71c2581b2290c3fd0de2edb46ff72f70dfd7c9cc',
- 'tests/helpers/pc13-reward-cover-source.mjs':'1be91de243e9e6523c258591567872ae4d3a40a1b2311324b426fafffedfc907',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'5c136f0cb4634526a6f133ed34d430717e020be2bc236f7e03a1c35c8e456737',
  'tests/helpers/release-guide-backflow-source.mjs':'9a18f8a3c11130899e51b17cba7ca9b5de25c7daf30cf3badf24db9808210062',
  'tests/fixtures/release-guide-backflow-source.json.gz':'7fe4f04ac99a35a19b6faee1b1678204b38476776729cb679886973eeff53d56',
 });
