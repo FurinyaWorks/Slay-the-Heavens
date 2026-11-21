@@ -55,6 +55,34 @@ assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc4
 const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
 assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
+// Preserve the exact helper sources required by older CI contracts.
+const powerMembershipHelpers=Object.freeze({
+ "tests/helpers/closeout-source-epoch.mjs": {
+  "after": "ff79733d085240170daa0aea1822c170a411bc08531fd36657a36b74d512b266",
+  "before": "873523684eb7561b705b558b6b38eba752e5d7a7d29c386841d4b61276268e88"
+ },
+ "tests/helpers/copy-integration-source-closure.mjs": {
+  "after": "5d0279c6daa5e921b8b5828a6ca2732c9dbff247ba64af1337552142160ff06f",
+  "before": "e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288"
+ }
+});
+function beforePowerMembershipHelper(path,source){
+ const row=Object.hasOwn(powerMembershipHelpers,path)?powerMembershipHelpers[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!==row.after)return source;
+ let prior;
+ if(path.endsWith('closeout-source-epoch.mjs')){
+  prior=lf.replace("import {extendPowerMembershipEpoch} from './power-membership-source.mjs';\n",'')
+   .replace('export const prePowerMembershipEpoch=extendV2RunMenuEpoch(sessionMenuSourceEpoch);\nexport const sourceEpoch=extendPowerMembershipEpoch(prePowerMembershipEpoch);',
+    'export const sourceEpoch=extendV2RunMenuEpoch(sessionMenuSourceEpoch);');
+ }else{
+  prior=lf.replace(/^const powerMembershipFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(powerMembershipFiles))','Object.entries(loadingRecoveryFiles))');
+ }
+ assert.equal(hash(prior),row.before,'exact Power membership helper predecessor: '+path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 // Preserve the reviewed copier bytes when replaying older CI observations.
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -65,7 +93,7 @@ function beforeLoadingRecoveryCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeCoopCiSource(path,source){
- source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
+ source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,beforePowerMembershipHelper(path,source)));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;

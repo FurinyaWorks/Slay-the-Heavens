@@ -136,6 +136,7 @@
     "abyss_orbs": "core",
     "abyss_pile_choice": "core",
     "abyss_poison": "core",
+    "abyss_power_membership": "core",
     "abyss_power_order": "core",
     "abyss_turn_power_phases": "core",
     "abyss_power_schedule": "core",
@@ -483,11 +484,6 @@
       "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
     },
     {
-      "from": "abyss_power_schedule",
-      "to": "abyss_power_order",
-      "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
-    },
-    {
       "from": "abyss_focus",
       "to": "abyss_power_order",
       "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
@@ -807,6 +803,7 @@
     {
       "id": "power-metadata-independence",
       "from": [
+        "abyss_power_membership",
         "abyss_power_order",
         "abyss_power_schedule",
         "abyss_turn_power_phases"
@@ -817,6 +814,18 @@
         "abyss_turn_powers"
       ],
       "reason": "Power metadata and acquisition ordering do not load combat or turn execution; their complete dependency closure is checked by contract."
+    },
+    {
+      "id": "power-membership-independence",
+      "from": ["abyss_power_membership"],
+      "forbiddenTargets": ["abyss_power_order", "abyss_power_schedule"],
+      "reason": "Display membership owns list edits. Its callers own application and hook dispatch."
+    },
+    {
+      "id": "power-schedule-independence",
+      "from": ["abyss_power_schedule"],
+      "forbiddenTargets": ["abyss_power_order"],
+      "reason": "Hook removal uses the shared display membership operations without loading their coordinator."
     },
     {
       "id": "session-reward-capabilities",

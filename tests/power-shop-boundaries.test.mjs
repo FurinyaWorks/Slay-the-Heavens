@@ -9,6 +9,7 @@ import {installLuaGraphObserver} from './helpers/lua-graph-observer.mjs';
 import {analyzeSources} from '../scripts/check-architecture.mjs';
 import {discoverSources,dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {reviewResponsibilityComplexity} from '../scripts/check-lua-static.mjs';
+import {runLua} from '../scripts/test-lua.mjs';
 import {prePowerShopSource,powerShopAfter} from './helpers/power-shop-source-inverse.mjs';
 import {prePowerShopSource as frozenPowerShopSource} from './helpers/epochs/powerShop/tests/helpers/power-shop-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
@@ -92,7 +93,7 @@ for(const fixture of ['power_schedule','turn_power_plans','shop_complete_source'
 test('Power ordering cannot reach an executor through immediate or deferred AST dependencies',()=>{
  const sources=Object.fromEntries(Object.entries(discoverSources()).map(([path,value])=>[path.slice(8,-4),value]));
  const policy=JSON.parse(readFileSync('config/architecture.json','utf8'));
- const roots=['abyss_power_order','abyss_power_schedule','abyss_turn_power_phases'];
+ const roots=['abyss_power_order','abyss_power_schedule','abyss_power_membership','abyss_turn_power_phases'];
  const forbidden=new Set(['abyss_actor','abyss_combat','abyss_turn_powers']);
  function check(graph){
   const seen=new Set(),pending=[...roots];
@@ -104,11 +105,22 @@ test('Power ordering cannot reach an executor through immediate or deferred AST 
  }
  const graph=analyzeSources(sources,policy);assert.deepEqual(graph.errors,[]);check(graph);
  const groups=dependencyCycles(graph.nodes,graph.edges);
- assert.deepEqual(groups.filter(g=>g.members.includes('abyss_power_order')).map(g=>g.members),[['abyss_power_order','abyss_power_schedule']]);
+ assert.deepEqual(groups.filter(g=>g.members.some(name=>roots.includes(name))),[]);
+ for(const source of ["require('abyss_power_order')","local function removed()return require('abyss_power_order')end"]){
+  const backEdge={...sources,abyss_power_schedule:source+'\n'+sources.abyss_power_schedule};
+  const mutant=analyzeSources(backEdge,policy);
+  assert(mutant.errors.some(e=>e.message.includes('Dependency boundary power-schedule-independence')));
+  assert(dependencyCycles(mutant.nodes,mutant.edges).some(g=>g.members.includes('abyss_power_order')));
+ }
  for(const text of ["local forbidden=require('abyss_turn_powers')\n","local function forbidden()return require('abyss_turn_powers')end\n"]){
   const changed={...sources,abyss_power_schedule:text+sources.abyss_power_schedule};
   assert.throws(()=>check(analyzeSources(changed,policy)),/ordering reaches executor/);
  }
+});
+test('schedule removal preserves shared public slots, aliases and errors in either cold load order',()=>{
+ const result=runLua('tests/lua/support/power_cycle_boundaries.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/POWER_CYCLE_BOUNDARIES 2 cold orders passed/);
 });
 test('the metadata leaf main chunk and nested helpers actually enforce CC15',()=>{
  const file='src/lua/abyss_turn_power_phases.lua',source='local function probe()return function()end end';
