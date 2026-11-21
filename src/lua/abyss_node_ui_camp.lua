@@ -2,7 +2,6 @@
 local Theme = require('abyss_theme')
 local Controller = require('abyss_controller')
 local CardDisplay = require('abyss_card_display')
-local GridInput = require('abyss_grid_input')
 local copy = require('abyss_copy').copy
 local L = Theme.layout.nativeNode.forge
 local M = {}
@@ -116,7 +115,7 @@ function M.new(ctx)
             local limit = Theme.layout.cardDrag.threshold
             local moved = b.x and x and (x - b.x)^2 + (y - b.y)^2 >= limit^2
             b.press, b.x, b.y = nil, nil, nil
-            if b.observed and not samePress or moved or GridInput.dragged(event, limit)
+            if b.observed and not samePress or moved or Controller.pointerDragged(event, limit)
                 or Controller.pointerBlocked(ctx.options.controller) then return false end
             return pick()
         end)

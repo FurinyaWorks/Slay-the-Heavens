@@ -6,7 +6,6 @@ local CardDisplay = require('abyss_card_display')
 local OriginalDisplay = require('abyss_original_v4_display')
 local M = {}
 local Controller = require('abyss_controller')
-local GridInput = require('abyss_grid_input')
 local typeNames = { attack = "攻击", skill = "技能", power = "能力", status = "状态", curse = "诅咒" }
 local pileNames = {draw="抽牌堆",discard="弃牌堆",exhaust="消耗堆"}
 local rarityOrder = {basic=1,special=2,common=3,uncommon=4,rare=5,curse=6}
@@ -327,7 +326,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 if callback then callback(token,uid) end
             end
             hit:AddCursorEventListener(clickEvent,function(event)
-                if Controller.pointerBlocked(platform.controller) or GridInput.dragged(event, Theme.layout.cardDrag.threshold) then return false end
+                if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
                 return pick()
             end)
             Controller.bind(platform.controller,hit,'deck',pick,function()
