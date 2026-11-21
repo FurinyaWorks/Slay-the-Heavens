@@ -34,9 +34,49 @@ export function assertCharacterPreparationSources(read = readRaw) {
   }
 }
 
+// Only authenticated current admission sources may replay earlier receipts.
+const admissionSources=Object.freeze({
+  "src/lua/abyss_map.lua": [
+    "71f7e26cfea9410137f4df1473bcd39ceee8950fd50a878159557889b78953ad",
+    "52d311bc4a863303906dfa3a29d65bc11606eda30759a560ed80266381900810"
+  ],
+  "src/lua/abyss_treasure_source.lua": [
+    "54d0acda4504e6af9edb284fbcaa3b1d9058e1e4268b27204d4a8bbe395f8c6a",
+    "44ae73c0d996c4f336d18f225a44466c73db6db85921f1eca28c00865f8601da"
+  ],
+  "src/lua/abyss_wheel_event.lua": [
+    "c35ece2bddd6a950fd68b5b615f328f8a126d039b22fa977f57a0bab9068d4b7",
+    "f775746a95c2f33eeb9a5d7c688c536b3dd0b6b3ddefeb3455fbd28468f6bc2c"
+  ],
+  "src/lua/abyss_winding_event.lua": [
+    "687e186a65de0153769a1515a46f35cb289e8a5b6b06be91179661d696d9453c",
+    "1f3a5d5f40847660638443ac9c553065b1e8cec03bb523882d235d4271daebaa"
+  ]
+});
+let admissionBefore;
+function beforeAdmissionReceipt(path,source,read){
+  if(!Object.hasOwn(admissionSources,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+  const [after,before]=admissionSources[path];
+  if(digest(normalize(source))!==after)return source;
+  const live=read(path);
+  assert(typeof live==='string'&&!live.includes('\r\r\n')&&digest(normalize(live))===after,
+    'fresh admission receipt source: '+path);
+  if(!admissionBefore){
+    const bytes=readFileSync(new URL('../fixtures/architecture-admission-before.json.gz',import.meta.url));
+    assert.equal(digest(bytes),'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42','complete historical admission receipt sources');
+    const evidence=JSON.parse(gunzipSync(bytes));
+    assert.equal(evidence.revision,'c2409ad750c15124b7b843c6bbfa5b222537cb75');
+    admissionBefore=Object.freeze(evidence.sources);
+  }
+  const prior=admissionBefore[path.slice(8,-4)];
+  assert.equal(digest(prior),before,'complete admission predecessor: '+path);
+  return prior;
+}
+
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeAdmissionReceipt(path,source,read);
   source = beforeAuthenticatedM05ShopSource(path,source,read);
   const readM05Current=read;
   read=owner=>beforeM05ShopSource(owner,readM05Current(owner));

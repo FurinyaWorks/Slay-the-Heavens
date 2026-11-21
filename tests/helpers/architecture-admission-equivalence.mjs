@@ -8,6 +8,7 @@ import {luaString,toLua} from '../../scripts/build-lua-data.mjs';
 import {installLuaGraphObserver} from './lua-graph-observer.mjs';
 import {runStatic} from '../../scripts/check-lua-static.mjs';
 import {measureSources} from '../../scripts/lua-quality-metrics.mjs';
+import {beforeCharacterPreparationSource} from './character-preparation-source.mjs';
 const {lua,lauxlib,lualib,to_luastring,to_jsstring}=createRequire(import.meta.url)('fengari');
 const archive=readFileSync('tests/fixtures/architecture-admission-before.json.gz');
 assert.equal(createHash('sha256').update(archive).digest('hex'),'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42','immutable complete c2409ad7 source archive');
@@ -61,5 +62,16 @@ test('complete admission responsibility measurements retain the CC15 limits',()=
    assert(fn,`missing governed function in ${module.file}`);
    assert(fn.complexity<=15,`${module.file} ${fn.name}: CC${fn.complexity} exceeds 15`);
   }
+ }
+});
+
+test('historical admission receipts use only the exact current successor source',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ for(const name of ['abyss_map','abyss_treasure_source','abyss_wheel_event','abyss_winding_event']){
+  const path=`src/lua/${name}.lua`,source=current[name];
+  assert.equal(beforeCharacterPreparationSource(path,source,read),before.sources[name]);
+  assert.equal(beforeCharacterPreparationSource(path,source.replaceAll('\n','\r\n'),read),before.sources[name]);
+  assert.equal(beforeCharacterPreparationSource(path,source+'-- drift',read),source+'-- drift');
+  assert.throws(()=>beforeCharacterPreparationSource(path,source,p=>read(p)+'-- drift'),/fresh admission receipt source/);
  }
 });
