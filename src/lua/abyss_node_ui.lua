@@ -285,7 +285,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         ctx.roomMotion:paint()
     end
 
-    require('abyss_relic_pending_ui').install(ctx)
+    require('abyss_relic_pending_ui').install(ctx,Run)
 
     require("abyss_node_ui_lifecycle").install(ctx)
 

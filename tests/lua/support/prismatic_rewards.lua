@@ -56,16 +56,16 @@ return function(v,pools)
   same(owner(),stage.after,phase..' complete owner')
   local prefix={};for i=1,stage.traceEnd do prefix[i]=v.trace[i]end
   same(trace,prefix,phase..' exact interleaving')
-  unchanged(function()return Cards.open(run,run.rewards)end)
+  unchanged(function()return Cards.open(run,run.rewards,Run)end)
   if stale then
    local before=C.copy(run);local rewards,deck,pending=run.rewards,run.deck,run.pendingCardRewardSelection;local count=#trace
-   local ok,why=Pending.resolve(run,stale);assert(not ok and why=='stale_relic_choice','old reward token rejected')
+   local ok,why=Pending.resolve(run,stale,Run);assert(not ok and why=='stale_relic_choice','old reward token rejected')
    same(run,before,'stale token full rollback');assert(run.rewards==rewards and run.deck==deck and run.pendingCardRewardSelection==pending);assert(#trace==count)
   end
   local token
   for _,row in ipairs(Pending.view(run).rows)do if row.token.kind=='card'and row.token.choice==1 then token=row.token;break end end
   assert(token);local count=#run.deck;local uid=run.nextDeckUid
-  unchanged(function()return Pending.resolve(run,token)end)
+  unchanged(function()return Pending.resolve(run,token,Run)end)
   assert(#run.deck==count+1 and run.nextDeckUid==uid+1,'public card instance committed')
   same(source(run.deck[#run.deck].cardId),stage.cards[1],'claimed source identity')
   same(run.deck[#run.deck].upgraded==true,stage.upgrades[1],'claimed upgrade')
