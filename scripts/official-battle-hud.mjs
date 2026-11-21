@@ -4,16 +4,16 @@ import {prepareOfficialRunHud,finishOfficialRunBar,mountOfficialResourceHints,
 const child=(n,name)=>(n?.children??n?.controls??[]).find(c=>c.name===name);
 const text=(name,position,size,content,fontSize,colour)=>({name,kind:'text',position,size,text:{content,fontSize,minFontSize:fontSize,autoSize:true,align:'centre',valign:'middle',colour}});
 function energyFinish(root,theme){
- const icon=child(root,'energyIcon'),chrome=child(icon,'v25Chrome'),size=icon.size[0];
+ const icon=child(root,'energyIcon'),chrome=child(icon,'v25Chrome'),size=icon.size[0],palette=theme.officialAssets.energyOrb.charged;
  const disc=(name,diameter,colour,position=[0,0],soft=0)=>({name,kind:'image',position,size:[diameter,diameter],image:100002,colour,
   ...(soft?{feather:{pixels:[soft,soft]}}:{})});
  // Replace the tinted ornament texture and dark stack with the approved
  // cream/gold/orange radial hierarchy. Six bounded native discs, no new hits,
  // imported bitmap, frame updates or controller handles.
- chrome.children=[disc('metal',size-4,'#C3B4A1'),disc('darkRim',size-7,'#852024'),
-  disc('amber',size-10,'#F39A24'),disc('gold',size-15,'#FFE35D',[-size*.025,size*.04],7),
-  disc('warmLight',size*.65,'#FFF7A6',[-size*.05,size*.08],12),
-  disc('centreLight',size*.35,'#FFFAD5',[-size*.05,size*.08],12)];
+ chrome.children=[disc('metal',size-4,palette.metal),disc('darkRim',size-7,palette.darkRim),
+  disc('amber',size-10,palette.amber),disc('gold',size-15,palette.gold,[-size*.025,size*.04],7),
+  disc('warmLight',size*.65,palette.warmLight,[-size*.05,size*.08],12),
+  disc('centreLight',size*.35,palette.centreLight,[-size*.05,size*.08],12)];
  // One continuous native outline, not two offset text copies. Keep the shadow
  // object for the existing value writer and preserve zero/overcharge semantics.
  child(icon,'valueShadow').visible=false;

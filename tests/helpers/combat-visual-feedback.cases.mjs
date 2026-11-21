@@ -26,7 +26,7 @@ test('official blocked card dims its face while cost material and numeral paint 
   assert.ok(names.indexOf('stsReferenceChrome')<veil,'face must be dimmed');
  }
 });
-test('live energy writer darkens decorative chrome at zero and restores it on recharge',()=>{
+test('STS1 reference keeps the complete orb material dimmed at zero and restores it on recharge',()=>{
  buildLuaData();mkdirSync('build/lua',{recursive:true});
  writeFileSync('build/visual-theme.json',JSON.stringify(officialAssetsTheme(nativeTheme)));
  mkdirSync('build/visual-test',{recursive:true});
@@ -48,12 +48,21 @@ writers.renderEnergy(frame)
 local chrome=get('energyIcon'):GetChild('v25Chrome')
 assert(chrome.visible)
 frame.battle.energy=0;writers.renderEnergy(frame)
-assert(not chrome.visible,'zero energy retains bright gold chrome')
+assert(chrome.visible,'STS1 empty orb keeps its complete material, rather than dropping its decoration')
+local Theme=require('abyss_theme')
+for name,active in pairs(Theme.officialAssets.energyOrb.charged)do
+ local part=chrome:GetChild(name);assert(part.visible)
+ local empty=part.tint;assert(empty and empty.r+empty.g+empty.b<active.r+active.g+active.b,'empty material must be visibly dimmer: '..name)
+end
 assert(not get('energyIcon'):GetChild('light').visible)
 assert(get('energy').text=='0/3')
 frame.battle.energy=5;writers.renderEnergy(frame)
 assert(chrome.visible and get('energyIcon'):GetChild('light').visible)
 assert(get('energy').text=='5/3' and frame.battle.energy==5)
+for name,active in pairs(Theme.officialAssets.energyOrb.charged)do
+ local tint=chrome:GetChild(name).tint
+ assert(tint.r==active.r and tint.g==active.g and tint.b==active.b,'charged material must restore: '..name)
+end
 print('ENERGY_VISUAL_READONLY_PASS')`);
  const r=runLua('build/visual-test/energy.lua');assert.equal(r.status,0,r.stdout+r.stderr);
 });
@@ -77,4 +86,16 @@ test('fresh guards reject mixed old/new sources and integrated readback drift',(
  assert.throws(()=>beforeCurrentProductionSource(path,before,p=>readFileSync(p,'utf8')),/fresh combat visual source/);
  const layout='scripts/official-run-layout.mjs',old=beforeCombatVisualSource(layout,readFileSync(layout,'utf8'));
  assert.throws(()=>assertRefinedReleaseSourcesCurrent(p=>p===layout?old:readFileSync(p,'utf8')),/fresh combat visual source/);
+});
+
+import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
+test('reference correction keeps exact history while rejecting stale source and changed readers',()=>{
+ const path='src/lua/abyss_battle_render_hud.lua',source=readFileSync(path,'utf8');
+ const previous=beforeEnergyReferenceSource(path,source);assert.notEqual(previous,source);
+ assert.equal(beforeEnergyReferenceSource(path,previous),previous);
+ assert.equal(beforeEnergyReferenceSource(path,source+'-- unknown'),source+'-- unknown');
+ assert.throws(()=>assertEnergyReferenceCurrent(path,previous,p=>readFileSync(p,'utf8')),/fresh energy reference source/);
+ let reads=0;
+ assert.throws(()=>energyReferencePriorRead(()=>++reads===1?source:source+'-- changed')(path,'utf8'),/linked owner identity/);
+ assertRefinedReleaseSourcesCurrent();
 });

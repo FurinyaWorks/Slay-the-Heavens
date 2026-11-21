@@ -14,6 +14,25 @@
     "quit": [-450,-234,280,56]
   },
   "officialAssets": {
+    "energyOrb": {
+      "reference": "Owner STS1 screenshots 2026-11-21: 3/3 bright, 0/4 muted; keep complete material and readable numeral",
+      "charged": {
+        "metal": "#C3B4A1",
+        "darkRim": "#852024",
+        "amber": "#F39A24",
+        "gold": "#FFE35D",
+        "warmLight": "#FFF7A6",
+        "centreLight": "#FFFAD5"
+      },
+      "empty": {
+        "metal": "#656462",
+        "darkRim": "#241C1C",
+        "amber": "#615A50",
+        "gold": "#7D7B70",
+        "warmLight": "#87867F",
+        "centreLight": "#898986"
+      }
+    },
     "choicePage": {"columns": 2, "rows": 1, "origin": [-108, 0]},
     "pickerPage": {"columns":[-246,0,246]},
     "neowGuide": {
