@@ -365,7 +365,14 @@ surfaceDecorations=function(box,ready)
     surfaceVisibility[box]=ready
 end
 local function placeReferencePart(part,shape)
-    if not shape then part:SetVisible(false);return end
+    if not shape then
+        part:SetVisible(false)
+        part:SetAnchoredPosition(0,0)
+        part:SetSizeDelta(1,1)
+        part:SetLocalScale(1,1,1)
+        part:SetLocalRotation(0,0,0)
+        return
+    end
     part:SetAnchoredPosition(shape.position[1],shape.position[2])
     part:SetSizeDelta(shape.size[1],shape.size[2])
     part:SetLocalScale(shape.scale[1],shape.scale[2],1)

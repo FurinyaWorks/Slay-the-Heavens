@@ -141,8 +141,8 @@ const integratedReleaseFiles=Object.freeze({
 });
 const reconciledReleaseFiles=Object.freeze({
  ...integratedReleaseFiles,
- 'tests/helpers/rebased-release-source.mjs':'f72112818ce4ceff96dab25f7955cb399037af031710b5b1a705407ec479121c',
- 'tests/helpers/rebased-release-source.json.gz':'157154980ccc86bd6c9951b46f0b0b761661ea10f29206124d6e28ed1a4903e8',
+ 'tests/helpers/rebased-release-source.mjs':'742e5cefbf42a2e8f7065b2ad81a2a586ffc5accd2ea07d740e60259ab124b80',
+ 'tests/helpers/rebased-release-source.json.gz':'fe8413ab7e9f5bd2e9df6c0a976ae4afbe7f2b683f6a4138f45735ed7b63d027',
  'tests/helpers/loading-recovery-source.mjs':'0c177f516b3bb09fb24bb39076b2bf649d15ded75b5d2f0ec4aba36db11e4d7b',
  'tests/helpers/pc13-reward-cover-source.mjs':'e8d58b2f3484855a9e986c945b6add861436ca754fb24ef8be71f0777ef46b9b',
  [runtime]:'d25494ab5a1d269568c321fe3e9c1a2494239f3916d46bd93331a5328fff549b',
@@ -159,9 +159,9 @@ const reconciledReleaseFiles=Object.freeze({
  'tests/helpers/refined-release-source.json.gz':'6b9e66890ecfeac7f0b581ece462edaf41095f6d2937896cf6032e9e8ee9a9a3',
  'tests/helpers/combat-visual-source.mjs':'115a50fc7286640e9a370d33ab42bd45e1337430d25bfe14c7f8edeeaf9d636a',
  'tests/fixtures/combat-visual-source.json.gz':'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d',
- 'tests/helpers/energy-reference-source.mjs':'c640c2cf869dc51bcb4b47f143f91e3cb799bec0a80212166592a8c8c29f59c1',
+ 'tests/helpers/energy-reference-source.mjs':'1dab90516f3945be27ef5da9fd3b11088d414d871bd59937373d6b4b773061d1',
  'tests/fixtures/energy-reference-source.json.gz':'2b0f8c497c73a8afca47b01a41c7c8800f92c2879202c827df663269329ef19e',
- 'tests/helpers/release-map-deck-source.mjs':'ef4aeb0aaeff6fdbe5d162beb7049db8d6562585b3dc39027ef2b443d529ab83',
+ 'tests/helpers/release-map-deck-source.mjs':'db1c1f75f23d5c93a804c906185092f1719e9be5bb74cde388f56fde2f428f37',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
  'tests/helpers/release-integration-source.mjs':'5efadc152e80395a3b60300468600ad21e054244277f199528589ffca0f298d0',

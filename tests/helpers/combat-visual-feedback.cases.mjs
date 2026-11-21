@@ -75,7 +75,7 @@ test('historical adapter only recognises exact current bytes and rejects changed
  assert.throws(()=>beforeCombatVisualSource(path,source,()=>source+'-- changed'),/linked owner identity/);
 });
 
-import {assertRefinedReleaseSourcesCurrent} from './refined-release-source.mjs';
+import {assertIntegrationSuccessorsCurrent} from './fork-preflight-source.mjs';
 import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
 test('fresh guards reject mixed old/new sources and integrated readback drift',()=>{
  const path='src/lua/abyss_card_skin.lua',source=readFileSync(path,'utf8');
@@ -83,9 +83,9 @@ test('fresh guards reject mixed old/new sources and integrated readback drift',(
  const reader=()=>++reads===1?source:source+'-- changed';
  assert.throws(()=>combatVisualPriorRead(reader)(path,'utf8'),/linked owner identity/);
  const before=beforeCombatVisualSource(path,source);
- assert.throws(()=>beforeCurrentProductionSource(path,before,p=>readFileSync(p,'utf8')),/fresh combat visual source/);
+ assert.throws(()=>beforeCurrentProductionSource(path,before,p=>readFileSync(p,'utf8')),/fresh (?:current production owner|combat visual source)/);
  const layout='scripts/official-run-layout.mjs',old=beforeCombatVisualSource(layout,readFileSync(layout,'utf8'));
- assert.throws(()=>assertRefinedReleaseSourcesCurrent(p=>p===layout?old:readFileSync(p,'utf8')),/fresh combat visual source/);
+ assert.throws(()=>assertIntegrationSuccessorsCurrent(p=>p===layout?old:readFileSync(p,'utf8')),/fresh combat visual source/);
 });
 
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
@@ -97,5 +97,5 @@ test('reference correction keeps exact history while rejecting stale source and 
  assert.throws(()=>assertEnergyReferenceCurrent(path,previous,p=>readFileSync(p,'utf8')),/fresh energy reference source/);
  let reads=0;
  assert.throws(()=>energyReferencePriorRead(()=>++reads===1?source:source+'-- changed')(path,'utf8'),/linked owner identity/);
- assertRefinedReleaseSourcesCurrent();
+ assertIntegrationSuccessorsCurrent();
 });

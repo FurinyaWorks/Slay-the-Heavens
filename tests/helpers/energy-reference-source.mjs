@@ -1,3 +1,4 @@
+import {authorizeRebasedRelease,beforeRebasedRelease} from './rebased-release-source.mjs';
 // Append-only exact continuation of the STS1 screenshot correction.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -16,7 +17,12 @@ for(const [path,row]of Object.entries(packet.files)){
  continuations.set(path,exactSourceContinuation(row));
 }
 export function beforeEnergyReferenceSource(path,source,read=p=>readFileSync(p,'utf8')){
- return continuations.get(path)?.predecessor(path,source,read)??source;
+ const continuation=continuations.get(path);
+ if(!continuation)return source;
+ const released=beforeRebasedRelease(path,source);
+ if(released!==source)authorizeRebasedRelease([[path,source]],read);
+ const prior=continuation.predecessor(path,released,owner=>beforeRebasedRelease(owner,read(owner)));
+ return prior===released?source:prior;
 }
 export function assertEnergyReferenceCurrent(path,source,read){
  if(continuations.has(path))assert.notEqual(beforeEnergyReferenceSource(path,source,read),source,'fresh energy reference source: '+path);

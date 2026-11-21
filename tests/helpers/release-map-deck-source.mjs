@@ -28,7 +28,7 @@ function current(source,binding){
 
 export function beforeMapDeckSource(path,source,read){
   const rebound=beforeRebasedRelease(path,source);
-  if(rebound!==source)authorizeRebasedRelease([[path,source]],read);
+  if(rebound!==source)authorizeRebasedRelease([[path,source]],owner=>read(owner,'utf8'));
   source=beforeReconciledReleaseSource(path,rebound);
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
