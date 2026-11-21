@@ -75,8 +75,8 @@ const loadingRecoveryFiles=Object.freeze({
 const mapFiles=Object.freeze({
  ...loadingRecoveryFiles,
  'tests/helpers/pc13-reward-cover-source.mjs':'5e80e09a5e50e763833f0d1c9546346933314fbdf2c19926653723b68934ed3f',
- 'tests/helpers/sts1-map-source.mjs':'fd21fa5b50f6b82b661bea2db658f3a18981456ab980beacfaea774b578ad712',
- 'tests/fixtures/sts1-map-source.json.gz':'63a2c73577ce536a6c7c27a5e613bc8f7f89f7713fbd747364f299ae1bd6c80a',
+ 'tests/helpers/sts1-map-source.mjs':'226af28f33973b2e7afaf023119fe49b21df9ac3b4541dafdd0e4fedb35b6d68',
+ 'tests/fixtures/sts1-map-source.json.gz':'dd8f2cfbfcacd9fb6cc6cb856cef83bc344e6d65bce490cc6724dfb1f22da0e3',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

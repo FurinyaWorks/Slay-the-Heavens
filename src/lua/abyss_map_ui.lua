@@ -204,11 +204,11 @@ function M.new(root, map, onChoose, clickEvent, options)
         panel = child(stage, "mapPanel")
     end
     -- The title host binds real owners only after Start succeeds.
-    local chapter = map ~= nil and assert(chapterFor(map), "invalid map chapter context") or nil
+    local initialChapter = map ~= nil and assert(chapterFor(map), "invalid map chapter context") or nil
     local view = map and mapView(map)
     local self = { root = root, map = map, visible = map ~= nil, navigationEnabled = view and atStart(view) or false,
         scroll = 0, slots = {}, time = 0, breathing = {}, roomFx = {}, stage = stage, panel = panel,
-        embedded = embedded, scale = 1, chapter = chapter, observedMap = map, observedContext = view,
+        embedded = embedded, scale = 1, chapter = initialChapter, observedMap = map, observedContext = view,
         observedNodeId = view and view.currentNodeId, observedFloor = view and view.floor }
     local drag, released, pointerObserved, scrollAnimation
     local buttonHover, buttonPress
