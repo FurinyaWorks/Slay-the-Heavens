@@ -36,6 +36,7 @@ function M.install(owner, ownership, host, dependencies)
         dependencies.cancelActionInputs()
         for _, input in ipairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
         if cancelled then self.gesture, self.carry, self.selected, self.suppressClick = nil, nil, nil, true end
+        self:closePowerTip()
         if closeInfo() then cancelled = true end
         self.canvasWidth, self.canvasHeight = width, height
         local k = math.min(width / Theme.canvas.base[1], height / Theme.canvas.base[2])
@@ -58,6 +59,23 @@ function M.install(owner, ownership, host, dependencies)
         owner.info = nil
         dependencies.child("statusInfo"):SetVisible(false)
         return true,automaticCard
+    end
+    function owner:closePowerTip(source)
+        if not self.powerTip or source and source ~= self.powerTip.source then return end
+        self.powerTip = nil
+        host.renderInfo(self.run and self.run.combat)
+        return true
+    end
+    function owner:showPowerTip(spec, source, touch)
+        local run = self.run
+        if not run or run.phase ~= "combat" or not self.active or self.info then return end
+        local tip = self.powerTip
+        if touch and tip and tip.source == source and tip.touch then
+            return self:closePowerTip(source)
+        end
+        self.powerTip = {kind = "powerTips", index = 0, statusId = spec.statusId, offset = spec.offset,
+            source = source, touch = touch, battle = run.combat, position = not touch and spec.position or nil}
+        host.renderInfo(run.combat)
     end
     function owner:showStatus(index)
         local run = self.run

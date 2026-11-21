@@ -89,11 +89,12 @@ test('TASK-4.11 exit warning hierarchy: header, consequence, note, status and ac
   const box = c => ({ l: c.position[0] - c.size[0] / 2, r: c.position[0] + c.size[0] / 2,
     b: c.position[1] - c.size[1] / 2, t: c.position[1] + c.size[1] / 2 });
   const hit = (a, b) => { const A = box(a), B = box(b); return A.l < B.r && B.l < A.r && A.b < B.t && B.b < A.t; };
-  const order = ['title', 'help', 'rule', 'message', 'whyText', 'status', 'cancel', 'confirm'];
+  const order = ['title', 'rule', 'message', 'whyText', 'status', 'cancel', 'confirm'];
   for (const a of order) for (const b of order) if (a !== b) assert.ok(!hit(frame(a), frame(b)), `${a} overlaps ${b}`);
   // Reading order top → bottom: header above rule above consequence above note above status above actions.
   const y = n => frame(n).position[1];
-  assert.ok(y('help') > y('rule') && y('rule') > y('message') && y('message') > y('whyText')
+  assert.equal(frame('title').position[0], theme.layout.exitMenu.panel[0]);
+  assert.ok(y('title') > y('rule') && y('rule') > y('message') && y('message') > y('whyText')
     && y('whyText') > y('status') && y('status') > y('cancel'));
   assert.equal(y('cancel'), y('confirm'));
   // Every element stays inside the dialog face, so nothing bleeds onto the veil.
@@ -101,26 +102,15 @@ test('TASK-4.11 exit warning hierarchy: header, consequence, note, status and ac
   for (const n of order) { const c = box(frame(n)); assert.ok(c.l >= p.l && c.r <= p.r && c.b >= p.b && c.t <= p.t, n); }
   // The modal blocker sits below every interactive child (no click-through to the battle).
   const blocker = panel.children.indexOf(frame('blocker'));
-  for (const n of ['help', 'cancel', 'confirm']) assert.ok(panel.children.indexOf(frame(n)) > blocker);
+  for (const n of ['cancel', 'confirm']) assert.ok(panel.children.indexOf(frame(n)) > blocker);
 });
 
-test('pause and guide panels keep outside blockers below their interior catch and actions', () => {
-  const controls = gameLayout().controls;
-  const menu = named(controls, 'runMenu');
-  const guide = child(named(controls, 'exitPanel'), 'guide');
-  for (const panel of [menu, guide]) {
-    assert.equal(child(panel, 'catch')?.kind, 'cursorArea');
-    assert.equal(child(panel, 'catch').focusable, false);
-    assert.ok(panel.children.indexOf(child(panel, 'catch')) > panel.children.indexOf(child(panel, 'blocker')));
-  }
-  assert.ok(child(menu, 'resume').position[1] > child(menu, 'help').position[1]);
-  assert.ok(child(menu, 'map').position[1] > child(menu, 'abandon').position[1]);
-  for (const name of ['battle', 'map', 'resources']) {
-    const section = child(guide, name);
-    assert.equal(section?.kind, 'container');
-    for (let row = 1; row <= 4; row++) {
-      assert.equal(child(section, `action${row}`).kind, 'text');
-      assert.equal(child(section, `how${row}`).kind, 'text');
-    }
-  }
+test('pause menu keeps the outside blocker below its interior catch and compacts the actions', () => {
+  const menu = named(gameLayout().controls, 'runMenu');
+  assert.equal(child(menu, 'catch').kind, 'cursorArea');
+  assert.equal(child(menu, 'catch').focusable, false);
+  assert.ok(menu.children.indexOf(child(menu, 'catch')) > menu.children.indexOf(child(menu, 'blocker')));
+  const y = name => child(menu, name).position[1];
+  assert.ok(y('resume') > y('map') && y('map') > y('mainMenu') && y('mainMenu') > y('abandon'));
+  assert.equal(y('resume') - y('map'), y('map') - y('mainMenu'));
 });

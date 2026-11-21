@@ -1,3 +1,4 @@
+import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
@@ -62,8 +63,8 @@ const powerMembershipHelpers=Object.freeze({
   "before": "873523684eb7561b705b558b6b38eba752e5d7a7d29c386841d4b61276268e88"
  },
  "tests/helpers/copy-integration-source-closure.mjs": {
-  "after": "5d0279c6daa5e921b8b5828a6ca2732c9dbff247ba64af1337552142160ff06f",
-  "before": "e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288"
+  "after": "18257501f5b23d1bcca3e3adcb54bcfeca1c69a457b0457cf18372eeb2a26d28",
+  "before": "d94b9d90c3801579637517844efb21c168c678c751f2cb37962f9f39cbee8c07"
  }
 });
 function beforePowerMembershipHelper(path,source){
@@ -78,22 +79,70 @@ function beforePowerMembershipHelper(path,source){
     'export const sourceEpoch=extendV2RunMenuEpoch(sessionMenuSourceEpoch);');
  }else{
   prior=lf.replace(/^const powerMembershipFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
-   .replace('Object.entries(powerMembershipFiles))','Object.entries(loadingRecoveryFiles))');
+   .replace('Object.entries(powerMembershipFiles))','Object.entries(tinyHouseFiles))');
  }
  assert.equal(hash(prior),row.before,'exact Power membership helper predecessor: '+path);
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-// Preserve the reviewed copier bytes when replaying older CI observations.
-function beforeLoadingRecoveryCopier(path,source){
+function beforeTinyHouseCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='d94b9d90c3801579637517844efb21c168c678c751f2cb37962f9f39cbee8c07')return source;
+ const start=lf.indexOf('const tinyHouseFiles='),end=lf.indexOf('const inside=',start);
+ assert(start>=0&&end>start,'exact Tiny House copy block');
+ const prior=(lf.slice(0,start)+lf.slice(end)).replace('Object.entries(tinyHouseFiles)','Object.entries(releaseGuideFiles)');
+ assert.equal(hash(prior),'a6bab3346445c43728ecbc21a3519090028eada17303a513363687c773833b0c','exact Tiny House copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+// Preserve the reviewed copier bytes when replaying older CI observations.
+export function beforeLoadingRecoveryCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,beforePowerMembershipHelper(path,source)));
  const lf=normalize(source);
  if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;
  const prior=lf.replace("const loadingRecoveryFiles=Object.freeze({\n ...m05Files,\n 'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',\n 'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',\n});\n",'').replace('Object.entries(loadingRecoveryFiles))','Object.entries(m05Files))');
  assert.equal(hash(prior),'1b708b758eb4f6af2f6ede84e9f38099a0aabc348d86d0873733eed28cf7ce51','exact loading recovery helper copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// Preserve the exact #807 source predecessor for existing CI receipts only.
+// Ordinary build/test entry points still consume the compacted live payload.
+const capacityBuildSource=Object.freeze({
+ "scripts/build-native-candidate.mjs":{"before":"f74f1c5b59c5529e25e7d28566d642bf8b5deef99943de647853cbd788a23d9a","after":"b109a73cbdd3f56c293c149af72296684ae554d1d9aae6ac936eef9232c456bf","hunks":[["import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory,monsterArtPayloadSource} from './monster-art.mjs';\n","import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';\n"],["      const expected=monsterArtPayloadSource(monster);\n","      const expected=`-- Generated from the bounded native monster registry.\\nreturn ${toLua(monster??{})}\\n`;\n"]]},
+ "scripts/build-ui.mjs":{"before":"76fbf00c577458f1211f5c78a08698de4dc6f51a019074a8c00e55887691f907","after":"3084d2610113682b46dfe768c61b416ee85b650a09fee258c1eba9269866bc5f","hunks":[["import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding,monsterArtPayloadSource} from './monster-art.mjs';\n","import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding} from './monster-art.mjs';\n"],["  writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),monsterArtPayloadSource(monsterArt));\n","  writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),`-- Generated from the bounded native monster registry.\\nreturn ${toLua(monsterArt??{})}\\n`);\n"]]},
+ "scripts/official-portraits.mjs":{"before":"03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186","after":"b7b84c7cb8a10b84fe2459329ff6b1f538301c62472de59289d6a5151f34a308","hunks":[[" const data=portraitSources(root,{selectionAvatar,battlePortrait:battlePortrait&&!officialAssets}).map(a=>{\n"," const data=portraitSources(root,{selectionAvatar,battlePortrait}).map(a=>{\n"],[" if(officialAssets&&battlePortrait)data.push('battlePortraitEnabled=true',`battleApprovedNative=${toLua(approvedBattleNative(root))}`);\n"," if(officialAssets&&battlePortrait)data.push(`battleApprovedNative=${toLua(approvedBattleNative(root))}`);\n"],[" const flags={selectionAvatar:/\\bavatar96=/.test(source),battlePortrait:/\\b(?:battle133|battleApprovedNative)=|^battlePortraitEnabled=true,?$/m.test(source)};\n"," const flags={selectionAvatar:/\\bavatar96=/.test(source),battlePortrait:/\\bbattle133=/.test(source)};\n"]]},
+ "tests/official-portraits-build.test.mjs":{"before":"06280b8717f0c0194479cab956e3fea53d00b7d26c06f3fbb37b1152224e4a63","after":"3516de013895e0d8eb050e82c402b6cba779d23a4ce659551a07e29ff643f893","hunks":[["import './capacity-payload.cases.mjs';\n",""]]},
+});
+const exactCapacityBuild=(source,sha)=>typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha;
+function assertDevelopCapacityCohort(read){
+ const inputs=Object.entries(capacityBuildSource).map(([path,row])=>[path,row.after,read(path,'utf8')]);
+ if(inputs.some(([,sha,source])=>exactCapacityBuild(source,sha))){
+  for(const [path,sha,source]of inputs)assert(exactCapacityBuild(source,sha),'fresh complete integration source: '+path);
+ }
+}
+export function beforeDevelopCapacityBuildSource(path,source){
+ const row=Object.hasOwn(capacityBuildSource,path)?capacityBuildSource[path]:null;
+ if(!row||!exactCapacityBuild(source,row.after))return source;
+ let lf=normalize(source);
+ for(const [current,prior]of row.hunks){
+  assert.equal(lf.split(current).length,2,'exact #807 source hunk: '+path);
+  lf=lf.replace(current,()=>prior);
+ }
+ assert.equal(hash(lf),row.before,'exact #807 source predecessor: '+path);
+ return source.includes('\r\n')?lf.replaceAll('\n','\r\n'):lf;
+}
+function beforePowerMembershipConfig(path,source){
+ if(path!=='config/architecture.json'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='a76b6562ebae6be09aa67356be7bf9c5a4c8e0a8f11f0458acf1025a069b6e0e')return source;
+ const prior=lf.replace("    \"abyss_power_membership\": \"core\",\n",'').replace("        \"abyss_power_membership\",\n",'').replace("    {\n      \"id\": \"power-membership-independence\",\n      \"from\": [\"abyss_power_membership\"],\n      \"forbiddenTargets\": [\"abyss_power_order\", \"abyss_power_schedule\"],\n      \"reason\": \"Display membership owns list edits. Its callers own application and hook dispatch.\"\n    },\n    {\n      \"id\": \"power-schedule-independence\",\n      \"from\": [\"abyss_power_schedule\"],\n      \"forbiddenTargets\": [\"abyss_power_order\"],\n      \"reason\": \"Hook removal uses the shared display membership operations without loading their coordinator.\"\n    },\n",'')
+  .replace("    {\n      \"from\": \"abyss_focus\"","    {\n      \"from\": \"abyss_power_schedule\",\n      \"to\": \"abyss_power_order\",\n      \"reason\": \"Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution.\"\n    },\n"+"    {\n      \"from\": \"abyss_focus\"");
+ assert.equal(hash(prior),'7d0b25ebcbd323e633fad7bcf8e618966450c60dde9671185226f1e6cef8fbd1','exact Power membership architecture predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeCoopCiSource(path,source){
- source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,beforePowerMembershipHelper(path,source)));
+ source=beforePowerMembershipConfig(path,source);
+ source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,beforePowerMembershipHelper(path,source)));
+ source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
@@ -180,8 +229,9 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ assertDevelopCapacityCohort(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){

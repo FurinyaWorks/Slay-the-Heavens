@@ -6,7 +6,7 @@ import {portraitRuntimeInputs,portraitSources,attachOfficialPortraits,attachLowp
 import {selectionHalfImage} from './lumine-selection-background.mjs';
 import {attachReadyCardHosts,readyArtTemplates,writeReadyCardAssets,prepareReadyCardAssets,readyArtGroupTemplate,readyArtImageTemplate,writeReadyArtBinding,readyArtSourceInputs} from './art/ready-card-runtime.mjs';
 import { backgroundInputs, backgroundSources, backgroundModule, attachOfficialBackground, writeBackgroundModule } from './official-background.mjs';
-import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding} from './monster-art.mjs';
+import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding,monsterArtPayloadSource} from './monster-art.mjs';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, existsSync, lstatSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -217,7 +217,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   else rmSync(officialTheme,{force:true});
   buildUiTheme(officialAssets?officialTheme:v25BattleChrome?variantTheme:undefined, undefined, join(outputDirectory, 'abyss_theme.lua'));
   buildMapUI(outputDirectory);
-  writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),`-- Generated from the bounded native monster registry.\nreturn ${toLua(monsterArt??{})}\n`);
+  writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),monsterArtPayloadSource(monsterArt));
   const narrative = JSON.parse(readFileSync('data/presentation/narrative.zh-CN.json', 'utf8'));
   narrative.codeVersion = releaseNotes.build.version;
   writeFileSync(join(outputDirectory, 'abyss_narrative.lua'), `-- Generated from the approved narrative copy source.\nreturn ${toLua(narrative)}\n`, 'utf8');

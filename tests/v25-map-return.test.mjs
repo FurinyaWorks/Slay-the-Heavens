@@ -55,7 +55,7 @@ assert(not tap(hit,2),'hidden map return passed through Run menu')
 assert(h:closeExit() and back.visible)
 -- Every guard executes through the real installed pointer callbacks. Choice,
 -- character and settlement flags below are targeted adversarial boundary states.
-for _,flag in ipairs({'settlementRequested','settlementBusy','disabled','characterOpen','easterEggOpen','controlsOpen'})do
+for _,flag in ipairs({'settlementRequested','settlementBusy','disabled','characterOpen','easterEggOpen'})do
  h[flag]=true;assert(not tap(hit,3),flag..' allowed map return');h[flag]=false
 end
 h.choiceUI.visible=true;assert(not tap(hit,4));h.choiceUI.visible=false

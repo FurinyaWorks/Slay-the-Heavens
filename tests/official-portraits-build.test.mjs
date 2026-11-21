@@ -4,6 +4,7 @@ import {mkdtempSync,readFileSync,writeFileSync,rmSync,existsSync} from 'node:fs'
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
+import './capacity-payload.cases.mjs';
 
 const modulePath=new URL('../scripts/official-portraits.mjs',import.meta.url);
 

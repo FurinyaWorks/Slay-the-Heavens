@@ -200,7 +200,7 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
  const budget=selectionAvatar&&(runtimeV2||!battlePortrait)&&!compact?selectionBudget(root):null;
  const budgetLiteral=(a,asset)=>toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,
   display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'selection-budget-v1',runtimeV2:true,cache:true,rectanglesOnly:true});
- const data=portraitSources(root,{selectionAvatar,battlePortrait}).map(a=>{
+ const data=portraitSources(root,{selectionAvatar,battlePortrait:battlePortrait&&!officialAssets}).map(a=>{
   if(budget&&a.kind==='avatar96')return `${a.kind}=${budgetLiteral(a,budget.assets.avatar96)}`;
   if(compact){const asset=compact.assets[a.kind];return `${a.kind}=${toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'compact-v1',sourcePreviewSha256:asset.sha256})}`;}
   return `${a.kind}=(function()\n${a.literals}\nreturn {root=ROOT,rows=ELEMENTS,width=${a.width},count=${a.count},display=${a.display},sourceSha256='${a.runtime}',jsonSha256='${a.json}'${runtimeV2?',runtimeV2=true,cache=true,rectanglesOnly=true':''}}\nend)()`;
@@ -213,7 +213,7 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
  if(officialAssets&&selectionAvatar)data.push("selectionUses='lowpolyLumine'",`selectionHalfImagePrefabId=${selectionHalfImageTemplateIndex}`,`lowpolyLumine=${toLua(lumineSelectionBackground(root))}`);
  // One approved combat figure. The temporary pixel remains selection-only;
  // missing or changed approved geometry is a build error, never a fallback.
- if(officialAssets&&battlePortrait)data.push(`battleApprovedNative=${toLua(approvedBattleNative(root))}`);
+ if(officialAssets&&battlePortrait)data.push('battlePortraitEnabled=true',`battleApprovedNative=${toLua(approvedBattleNative(root))}`);
  if(v25BattleChrome){
   const theme=v25Theme(JSON.parse(readFileSync(join(root,'data/presentation/ui_theme.json'),'utf8')));
   data.push(`v25PortraitProfile=${toLua(v25PortraitRuntimeProfile(theme))}`);
@@ -261,7 +261,7 @@ export function portraitRuntimeInventory(directory) {
  if(isLightweightProfile(directory))return lightweightInventory();
  if(!existsSync(join(directory,`${portraitModule}.lua`)))return undefined;
  const source=readFileSync(join(directory,`${portraitModule}.lua`),'utf8');
- const flags={selectionAvatar:/\bavatar96=/.test(source),battlePortrait:/\bbattle133=/.test(source)};
+ const flags={selectionAvatar:/\bavatar96=/.test(source),battlePortrait:/\b(?:battle133|battleApprovedNative)=|^battlePortraitEnabled=true,?$/m.test(source)};
  const officialAssets=source.includes('battlePixel=');
  if(officialAssets&&flags.battlePortrait){
   const expected=`battleApprovedNative=${toLua(approvedBattleNative())}`;

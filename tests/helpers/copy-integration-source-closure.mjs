@@ -72,8 +72,21 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',
  'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',
 });
-const powerMembershipFiles=Object.freeze({
+const releaseGuideFiles=Object.freeze({
  ...loadingRecoveryFiles,
+ [runtime]:'cb0a50200fbd9e249b897b0b71c2581b2290c3fd0de2edb46ff72f70dfd7c9cc',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'5c136f0cb4634526a6f133ed34d430717e020be2bc236f7e03a1c35c8e456737',
+ 'tests/helpers/release-guide-backflow-source.mjs':'9a18f8a3c11130899e51b17cba7ca9b5de25c7daf30cf3badf24db9808210062',
+ 'tests/fixtures/release-guide-backflow-source.json.gz':'7fe4f04ac99a35a19b6faee1b1678204b38476776729cb679886973eeff53d56',
+});
+const tinyHouseFiles=Object.freeze({
+ ...releaseGuideFiles,
+ [runtime]:'c69727aeeeacd96469492cdce40b3d100eab1b1d6bd78ff03d67565615fc02d7',
+ 'tests/helpers/tiny-house-integrated-source.mjs':'dbe8ab324dd2f0a4154e2b1c420a19b12c21a00cb5c5739049f1baa4ae8980e8',
+ 'tests/helpers/develop-tiny-house-predecessors.json.gz':'b699c3e7a0dfc70c24a47ba43b1fc68cc2cd340b67d2927c71af7b95d73887d5',
+});
+const powerMembershipFiles=Object.freeze({
+ ...tinyHouseFiles,
  [closeout]:'ff79733d085240170daa0aea1822c170a411bc08531fd36657a36b74d512b266',
  'tests/helpers/power-membership-source.mjs':'7df5bd25a505c50895ccdf8db84a0f424b9d02baf7659dc69a483ed8ef03ff1d',
  'tests/helpers/power-membership-source.json.gz':'9b4ee9cf761b49297c4a0abfea0df825104e6dcc2e73ca9b633d2c50bce8a039',
