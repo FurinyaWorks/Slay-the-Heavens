@@ -1,4 +1,4 @@
-import {beforeReleaseCapacitySource} from './release-integration-source.mjs';
+import {assertReleaseCapacityCohort,beforeReleaseCapacitySource} from './release-integration-source.mjs';
 import {beforeM05BackflowInventory} from './m05-shop-ci-source.mjs';
 import {beforeReleaseShopEntry,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
@@ -93,7 +93,7 @@ function shopEntryPreflightRead(read){
 function beforeIntegratedReleaseCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='bc5d2ed2198d7cf07c17b1c31a93867040ac123855d0aefc706fca4f712a7693')return source;
+ if(hash(lf)!=='a6b953bc1a4c2dd514b6c15237d467a3e288fa101a28818848d7fe5247872362')return source;
  const prior=lf.replace(/^const integratedReleaseFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(integratedReleaseFiles))','Object.entries(refinedReleaseFiles))');
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
@@ -257,6 +257,7 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ assertReleaseCapacityCohort(read);
  read=shopEntryPreflightRead(read);
  assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,read(path,encoding)));
  read=combatVisualPriorRead(read);
