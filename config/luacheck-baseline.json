@@ -188,14 +188,14 @@
     },
     {
       "file": "src/lua/abyss_potion_discard_ui.lua",
-      "line": 98,
+      "line": 108,
       "column": 18,
       "code": "W431",
       "message": "shadowing upvalue 'self' on line 48"
     },
     {
       "file": "src/lua/abyss_potion_discard_ui.lua",
-      "line": 103,
+      "line": 113,
       "column": 18,
       "code": "W431",
       "message": "shadowing upvalue 'self' on line 48"
