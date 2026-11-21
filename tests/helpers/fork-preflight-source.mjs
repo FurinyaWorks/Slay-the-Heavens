@@ -51,6 +51,19 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+const rewardScreenBytes=readFileSync(new URL('./reward-screen-ci-source.json.gz',import.meta.url));
+assert.equal(hash(rewardScreenBytes),'735b07f56e70fe324f1243212624bd7463c32c41e3cee079864c5807e3deadfc');
+const rewardScreenCi=JSON.parse(gunzipSync(rewardScreenBytes));
+assert.equal(rewardScreenCi.base,'cc33beaa12bd827c1de2f2f76b5238c5d203609f');
+for(const {before} of Object.values(rewardScreenCi.files)){
+ assert.equal(hash(before.source),before.sha256);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(before.source)}\0${before.source}`).digest('hex'),before.gitBlob);
+}
+function beforeRewardScreenCiSource(path,source){
+ const row=Object.hasOwn(rewardScreenCi.files,path)?rewardScreenCi.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==row.after)return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
 const coopLabCiBytes=readFileSync(new URL('./coop-lab-ci-predecessors.json.gz',import.meta.url));
 assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc469830fe0ae9255285dc','complete co-op lab CI predecessors');
 const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
@@ -69,6 +82,7 @@ function beforeTinyHouseCopier(path,source){
 // Preserve the reviewed copier bytes when replaying older CI observations.
 export function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ source=beforeRewardScreenCiSource(path,source);
  source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,source));
  const lf=normalize(source);
  if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;
@@ -86,13 +100,14 @@ const capacityBuildSource=Object.freeze({
 });
 const exactCapacityBuild=(source,sha)=>typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha;
 function assertDevelopCapacityCohort(read){
- const inputs=Object.entries(capacityBuildSource).map(([path,row])=>[path,row.after,read(path,'utf8')]);
+ const inputs=Object.entries(capacityBuildSource).map(([path,row])=>[path,row.after,beforeRewardScreenCiSource(path,read(path,'utf8'))]);
  if(inputs.some(([,sha,source])=>exactCapacityBuild(source,sha))){
   for(const [path,sha,source]of inputs)assert(exactCapacityBuild(source,sha),'fresh complete integration source: '+path);
  }
 }
 export function beforeDevelopCapacityBuildSource(path,source){
  const row=Object.hasOwn(capacityBuildSource,path)?capacityBuildSource[path]:null;
+ if(row)source=beforeRewardScreenCiSource(path,source);
  if(!row||!exactCapacityBuild(source,row.after))return source;
  let lf=normalize(source);
  for(const [current,prior]of row.hunks){
@@ -103,6 +118,7 @@ export function beforeDevelopCapacityBuildSource(path,source){
  return source.includes('\r\n')?lf.replaceAll('\n','\r\n'):lf;
 }
 function beforeCoopCiSource(path,source){
+ source=beforeRewardScreenCiSource(path,source);
  source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
  source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
@@ -193,7 +209,7 @@ function beforeIntegrationSuccessor(path,source){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertDevelopCapacityCohort(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,read(path,'utf8')));
+  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeRewardScreenCiSource(path,read(path,'utf8'))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){
