@@ -577,10 +577,15 @@ function M.new(root, map, onChoose, clickEvent, options)
         if animated then return animateScrollTo(target) end
         return self:setScroll(target)
     end
-    function self.setNavigationEnabled(_, enabled)
+    function self.setNavigationEnabled(_, enabled, retainBackdrop)
         if not self.map then return false, "map_unbound" end
         assert(type(enabled) == "boolean", "navigation enabled must be boolean")
-        if not enabled then cancelDrag() end
+        if not enabled then
+            cancelDrag()
+            -- A covering deck already gates all map input and retains the map's
+            -- drawing. Repaint the navigation state when the map is uncovered.
+            if retainBackdrop and not self.visible then self.navigationEnabled=false;return end
+        end
         -- An explicit coordinator grant acknowledges any external map advance.
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local current = mapView(self.map)
@@ -588,13 +593,17 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled = enabled self:render()
     end
-    function self.setVisible(_, visible, retainPage)
+    local function atPaintedPosition()
+        return self.map==self.observedMap and sameContext(self.map,self.observedContext)
+            and self.map.floor==self.observedFloor and self.map.currentNodeId==self.observedNodeId
+    end
+    function self.setVisible(_, visible, retainPage, retainPosition)
         assert(type(visible) == "boolean", "map visibility must be boolean")
         if visible and not self.map then return false, "map_unbound" end
         if not visible then cancelDrag() end
         -- A modal suspends navigation but retains its already mounted backdrop.
         self.visible = visible root:SetVisible(visible or retainPage==true)
-        if visible then self:focusCurrent() end
+        if visible and not (retainPosition and atPaintedPosition()) then self:focusCurrent() end
     end
     function self.choose(_, nodeId)
         if not self.map then return false, "map_unbound" end

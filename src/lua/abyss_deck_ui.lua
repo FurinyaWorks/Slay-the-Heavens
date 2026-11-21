@@ -308,7 +308,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         local selected=false
         for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
-        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,surfaceScope=self.pileView and 'battle' or 'deck'})
+        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,
+            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil})
         if self.browserShell then
             face:GetChild('nativePlayableRim'):SetVisible(false)
             face:GetChild('glow'):SetVisible(false)
@@ -360,7 +361,14 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if entry.definition.costMode=='all_energy' then cost=-1 end
         return tostring(cost)..name
     end
-    local function projectCards()
+    local function orderedCards()
+        -- Acquisition order needs no definitions or comparison sort. Resolve
+        -- card faces only when the native scroller asks for a cell.
+        if self.typeFilter=='all' and self.sortMode=='original' and self.sortAscending then
+            local cards={}
+            for i,card in ipairs(self.allCards) do cards[i]=card end
+            return cards
+        end
         local entries={}
         for i,card in ipairs(self.allCards or {})do
             local definition=Combat.cardDefinition(self.battle or {catalog=self.catalog},card)
@@ -377,8 +385,12 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 return x>y
             end)
         end
-        self.cards={}
-        for _,entry in ipairs(entries)do self.cards[#self.cards+1]=entry.card end
+        local cards={}
+        for _,entry in ipairs(entries)do cards[#cards+1]=entry.card end
+        return cards
+    end
+    local function projectCards()
+        self.cards=orderedCards()
         local total=#(self.allCards or {})
         local amount=self.typeFilter=='all' and tostring(total) or #self.cards..'/'..total
         self.listTitle=browserHeading(self.pileKind)..' · '..amount..' 张'
@@ -408,7 +420,10 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             if not self.visible or self.generation~=generation or not self.calibrating then return end
             self.indexBase,self.pending=index,true
             indexBases[grid]=index
-            fill(control,cards[1],catalog)
+            -- The official reveal waits for the real viewport. Painting the
+            -- calibration cell can allocate a card face that is never shown.
+            if self.browserShell then control:SetVisible(false)
+            else fill(control,cards[1],catalog) end
         end)
         liveFaces()
     end

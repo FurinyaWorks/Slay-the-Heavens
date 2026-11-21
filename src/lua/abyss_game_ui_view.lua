@@ -274,16 +274,23 @@ end
 
 function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResources,nativePageLifecycle)
     local syncNative=nativePageLifecycle==true and NativePages.new(child,self) or nil
+    local coveredMapRun
+    local function refreshMapVisibility(run,deckOpen,blocked)
+        local onMap=self.mode=="map"
+        local returningFromDeck=coveredMapRun~=nil and coveredMapRun==run
+        coveredMapRun=onMap and deckOpen and run or nil
+        self.mapUI:setVisible(onMap and not deckOpen and not blocked,onMap,returningFromDeck)
+        if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
+        child("mapPanel"):SetVisible(onMap)
+        refreshMapResources(run)
+    end
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
                 suspendBattle(run,deckOpen,potionOpen))
             child("battlePanel"):SetVisible(self.mode == "battle")
-            self.mapUI:setVisible(self.mode == "map" and not deckOpen and not potionOpen and not blocked,self.mode == "map")
-            if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
-            child("mapPanel"):SetVisible(self.mode == "map")
-            refreshMapResources(run)
+            refreshMapVisibility(run,deckOpen,potionOpen or blocked)
             self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node")
             child("nodePanel"):SetVisible(self.mode == "node")
         end
@@ -321,8 +328,9 @@ end
 
 function M.renderMapPage(self)
     return function(run,deckOpen,potionOpen,blocked,covering)
+            if deckOpen then return self.mapUI:setNavigationEnabled(false,true) end
             -- While the cinematic's last fade uncovers the map, the map is visible but inert.
-            self.mapUI:setNavigationEnabled(not deckOpen and not potionOpen and not blocked and not covering and #Nodes.available(run, self.map) > 0)
+            self.mapUI:setNavigationEnabled(not potionOpen and not blocked and not covering and #Nodes.available(run, self.map) > 0)
             if run.neowStatus=='unavailable' and self.map.floor==0 and not self.mapUI.entryError then
                 self.mapUI.entryError='开局恩赐暂不可用：未取得上一局历史；本次保持原开局资源。'
                 self.mapUI:render()
