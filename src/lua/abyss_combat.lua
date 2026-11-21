@@ -22,10 +22,19 @@ local ShopRelics=require('abyss_relic_family_combat').shop
 local ShopRelicsQueries=require('abyss_relic_queries').shop
 local Awakened=require('abyss_awakened_one')
 local Darklings=require('abyss_darklings')
+local Upgrade=require('abyss_card_upgrade')
+local upgradeFields={combatBaseCost=true,validSearingBlowCopy=true,canUpgrade=true,upgrade=true}
+local function upgradeIndex(_,key)
+    if upgradeFields[key]then return Upgrade[key]end
+end
+local function upgradeNewIndex(owner,key,value)
+    if upgradeFields[key]then Upgrade[key]=value else rawset(owner,key,value)end
+end
 local M = { addStatus = Actors.addStatus, addTemporaryStrength = Actors.addTemporaryStrength,
     statusView = Actors.statusView, block = Actors.block,
     attackAmount = Actors.attackAmount,intentAttackAmount=Actors.intentAttackAmount,intentAttackPreview=Actors.intentAttackPreview,
     faceTarget=Actors.faceTarget,blockAmount = Actors.blockAmount }
+setmetatable(M,{__index=upgradeIndex,__newindex=upgradeNewIndex})
 
 -- UseCardAction visits each source monster's sorted Power list, not module
 -- batches. Preserve group order and stable acquisition order for equal priority.
@@ -413,28 +422,6 @@ function M.shuffleDiscardIntoDraw(state)
     ShopRelics.onShuffle(state)
 end
 
-function M.combatBaseCost(state, instance)
-    local def=assert(state.catalog.cards[instance.cardId])
-    if def.costMode=='all_energy' then return -1 end
-    local cost=instance.upgraded and def.upgrade and def.upgrade.cost or def.cost
-    if instance.costOverride~=nil then cost=instance.costOverride end
-    if instance.cardId=='masterful_stab'then cost=instance.combatCost or (instance.costOverride~=nil and cost or cost+(instance.masterfulLosses or 0))end
-    if instance.cardId=='blood_for_blood' then cost=math.max(0,cost-(instance.costReduction or 0)) end
-    return cost
-end
-
--- SearingBlow(int n) keeps timesUpgraded but resets baseDamage/upgraded.
--- A source makeCopy constructor records this count-only baseline; ordinary
--- instances without it retain the original cumulative upgrade formula.
-function M.validSearingBlowCopy(instance)
-    local base=instance.searingBlowCopyUpgrades
-    if base==nil then return true end
-    local n=instance.upgrades
-    return instance.cardId=='searing_blow' and type(base)=='number' and base%1==0 and base>=0 and base<=2147483647
-        and type(n)=='number' and n%1==0 and n>=base and n<=2147483647
-        and type(instance.upgraded)=='boolean' and instance.upgraded==(n>base)
-end
-
 local function baseCardDefinition(state,instance)
     assert(M.validSearingBlowCopy(instance),"invalid Searing Blow constructor copy")
     local card = copy(assert(state.catalog.cards[instance.cardId], "unknown card"))
@@ -537,31 +524,6 @@ function M.cardDefinition(state, instance)
     card=costCardDefinition(state,instance,card,native)
     return finishCardDefinition(state,instance,card)
 end
-function M.canUpgrade(state,instance)
-    local d=state.catalog.cards[instance.cardId]
-    return M.validSearingBlowCopy(instance) and d and d.type~='status' and d.type~='curse' and d.upgrade~=nil and (not instance.upgraded or d.repeatable==true)
-end
-function M.upgrade(state,instance)
-    if not M.canUpgrade(state,instance) then return false end
-    local def=state.catalog.cards[instance.cardId]
-    if instance.cardId=='blood_for_blood' and not instance.upgraded then
-        if instance.combatCost==nil then instance.combatCost=M.combatBaseCost(state,instance) end
-        if instance.turnCost==nil and instance.costForTurn~=nil then instance.turnCost=instance.costForTurn end
-        require('abyss_warrior_status_cards').onUpgrade(state,instance)
-        instance.costOverride,instance.costReduction=nil,nil
-        if instance.costForTurn~=nil then instance.costForTurn=instance.turnCost end
-    elseif def.upgrade.cost~=nil and (instance.costOverride~=nil or instance.costForTurn~=nil) then
-        local before=M.combatBaseCost(state,instance)
-        local turn=instance.costForTurn or before
-        local diff=turn-before
-        local nextCost=def.upgrade.cost
-        instance.costOverride=nil
-        if turn>0 then instance.costForTurn=math.max(0,nextCost+diff) end
-    end
-    instance.upgrades=(instance.upgrades or (instance.upgraded and 1 or 0))+1
-    instance.upgraded=true;return true
-end
-
 -- Read-only display numbers for one hand card, from the same modifier arithmetic
 -- resolution uses. Without an aimed enemy, only player modifiers apply. Aimed
 -- cards add receiving modifiers; area calculations retain per-monster values

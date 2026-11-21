@@ -2,6 +2,7 @@
 local Events=require('abyss_events')
 local R=require('abyss_sts_random')
 local copy=require('abyss_copy').copy
+local Upgrade=require('abyss_card_upgrade')
 local M={}
 function M.apply(combat,s,orb)
  assert(orb.ai and orb.ai.policy=='orb','Bronze Orb Stasis only')
@@ -35,8 +36,7 @@ function M.death(s,orb)
  local discard=#s.hand==s.rules.player.maxHand
  if not discard and (s.player.statuses.master_reality or 0)>0 then
   -- MakeTempCardInHandAction performs Master Reality's upgrade in its constructor.
-  local combat=require('abyss_combat')
-  if combat.canUpgrade(s,c)then combat.upgrade(s,c)end
+  if Upgrade.canUpgrade(s,c)then Upgrade.upgrade(s,c)end
  end
  return {op='stasis_return',ownerId=orb.id,forceDiscard=discard}
 end
