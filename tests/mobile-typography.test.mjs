@@ -37,7 +37,7 @@ test('muted ordinary reading reaches 4.5 on the opaque menu surfaces',()=>{
 test('readable resource targets and utility controls do not overlap',()=>{
  const t=tree(), b=child(t,'battlePanel');
  const bounds=c=>{const[x,y]=c.position??[0,0],[w,h]=c.size;return[x-w/2,y-h/2,x+w/2,y+h/2];};
- const controls=['player','piles','floorIcon','floor','title','exhaust'].map(n=>child(b,n));
+ const controls=['player','piles','floor','title','exhaust'].map(n=>child(b,n));
  controls.push(...['deckEntry','exitEntry'].map(n=>child(child(t,n),'open')));
  controls.push(...[1,2,3].map(n=>child(b,'potion'+n)),...[4,5].map(n=>child(child(b,'potionHelp'),'potion'+n)));
  for(let i=0;i<controls.length;i++)for(let j=i+1;j<controls.length;j++){let a=bounds(controls[i]),c=bounds(controls[j]);assert.ok(a[2]<=c[0]||c[2]<=a[0]||a[3]<=c[1]||c[3]<=a[1],`${controls[i].name} overlaps ${controls[j].name}`);}

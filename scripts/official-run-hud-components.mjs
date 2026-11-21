@@ -10,7 +10,7 @@ export function prepareOfficialRunHud(root,theme){
   const node=child(root,name);node.position=hud[key].slice(0,2);node.size=hud[key].slice(2);
   if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:14,align:'left'});
  }
- for(const name of ['floorIcon','floor'])child(root,name).visible=false;
+ child(root,'floor').visible=false;
  const heading=clone(child(root,'player'));heading.name='officialHeroHeading';
  heading.position=hud.heading.slice(0,2);heading.position[1]-=hud.y;heading.size=hud.heading.slice(2);
  Object.assign(heading.text,{content:hud.headingText,fontSize:hud.headingSize,colour:hud.headingColour});
