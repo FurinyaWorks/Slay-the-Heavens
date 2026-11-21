@@ -1,3 +1,4 @@
+import {m05CurrentDiscovery} from './helpers/m05-shop-ci-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {assertCurrentJsInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
@@ -27,7 +28,7 @@ function fixture(){
 
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
- const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
+ const rawJs=m05CurrentDiscovery(discoverJs(),'js'),rawLua=m05CurrentDiscovery(readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort(),'lua');
  assertCurrentJsInventory(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
  const newTest=rawJs.find(path=>!integratedCiProof.inventory.includes(path));
  assert.throws(()=>assertCurrentJsInventory(integratedCiProof.inventory,integratedCiProof.inventory),/inventory/);

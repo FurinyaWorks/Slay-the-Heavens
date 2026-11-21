@@ -60,11 +60,18 @@ const pc13Files=Object.freeze({
  'tests/helpers/pc13-reward-cover-source.mjs':'e1cf572bc792c036aaf03f25e03b1c7ab384bf257be353c43be775441a7c67ee',
  'tests/fixtures/pc13-reward-cover-source.json.gz':'9779296bb7bedc99990fa6ccad9c7ba0a0e581982a020c9dcc4a71210b3299cd',
 });
+assert.equal(pc13Files[runtime],'fb10a5dc6bf09177fe77bf858b1ffb39ee93dbacb784995dfc1bb1771bf5e545','M05 exact PC13 runtime helper predecessor');
+const m05Files=Object.freeze({
+ ...pc13Files,
+ [runtime]:'7f3a94804f84b4f229b47adcd85adbc3b5387223c018f8e3fc32af145b469ac8',
+ 'tests/helpers/m05-shop-source.mjs':'5580a50d2c7636d4b3b5d708f39b89527d771af159964db6aab55ca7afb03b08',
+ 'tests/fixtures/m05-shop-source.json.gz':'0b394bc2fa5a642b3cf14fa257607703fc4bcbd5da766cffbb4e7733661dda59',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(pc13Files)){
+ for(const [path,sha]of Object.entries(m05Files)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

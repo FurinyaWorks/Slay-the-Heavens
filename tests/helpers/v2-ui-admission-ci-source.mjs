@@ -1,3 +1,4 @@
+import {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -121,6 +122,7 @@ function beforePc13Ci(path,source){
 }
 
 export function beforeTinyHouseCiSource(path, source) {
+  source = beforeM05ShopCiSource(path,source);
   source = beforePc13Ci(path,source);
   if (!Object.hasOwn(tinyHouseCi,path)) return source;
   const row = tinyHouseCi[path];

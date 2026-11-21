@@ -1,3 +1,4 @@
+import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
@@ -36,6 +37,9 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeAuthenticatedM05ShopSource(path,source,read);
+  const readM05Current=read;
+  read=owner=>beforeM05ShopSource(owner,readM05Current(owner));
   source = beforeAuthenticatedPc13RewardCover(path,source,read);
   const readCurrent=read;
   read=owner=>beforePc13RewardCover(owner,readCurrent(owner));
@@ -56,7 +60,7 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 
 const currentContinuationOwners = new Set([
   ...characterPreparationOwners, ...v2UiHudSourcePaths, selectorSourcePair.path, potionTextSourcePair.path,
-  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths,
+  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths, ...m05ShopSourcePaths,
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {

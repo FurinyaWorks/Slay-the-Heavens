@@ -1,3 +1,4 @@
+import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
@@ -70,6 +71,7 @@ export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
   hash(normalize(testSource))===coopLabTestSha,'fresh added inventory source: '+coopLabTest);
 }
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
+ paths=m05HistoricalDiscovery(paths,'js',read);
  if(!paths.includes(coopLabTest))return paths;
  assertCurrentJsInventory(paths,preceding,read);
  return paths.filter(path=>path!==coopLabTest);

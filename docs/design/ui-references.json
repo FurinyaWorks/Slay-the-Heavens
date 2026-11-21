@@ -532,6 +532,9 @@
     },
     {
       "codePath": "scripts/v25-node-layout.mjs",
+      "codePaths": [
+        "scripts/node-ui-layout.mjs"
+      ],
       "targetVersion": "v2.0.0",
       "state": "shopView",
       "revision": "develop",
@@ -542,7 +545,7 @@
         "sha256": "c5f8f881e03248e0c35c816a02570651e670e663c9b81bf873662493f5e50ab4"
       },
       "supersedes": [],
-      "note": "当前购买区域、商品栏和返回入口。 1280×720 离线投影，官方候选待验。",
+      "note": "当前购买区域、商品栏和返回入口。基础节点布局含商店空白处的透明非焦点触控层，不改变视觉。1280×720 离线投影，官方候选待验。",
       "source": "https://playcraft.space/gallery/slay-the-spire/merchant-shop-cards-relics/"
     },
     {

@@ -1668,3 +1668,94 @@ test('official aim regression rejects the escaped lifted-card origin and a centr
   abyss_battle_aim_arrow:arrow.replace('local apex=17*scale','local apex=0'),
  }),/first target tip x/);
 });
+
+test('official mobile shop map return retires the old outside touch without mutating the run',t=>{
+ runOfficial(t,`
+local F=H.F;local Map=require('abyss_map')
+local host,root=F.fixture(nil,nil,nil,{CursorEnter='enter',CursorExit='exit',CursorDown='down',CursorUp='up',CursorEndDrag='endDrag'},
+ nil,nil,{touchScreen=function()return true end})
+host.seed=42;assert(F.start(host));local shop
+while not shop do
+ local choices=Map.available(host.map);assert(#choices>0)
+ for _,node in ipairs(choices)do if node.type=='shop'then shop=node;break end end
+ if not shop then assert(Map.choose(host.map,choices[1].id))end
+end
+host.run.floor=host.map.floor;host:refresh();assert(F.Nodes.restoreMap(host.run,host.map))
+assert(host.mapUI:choose(shop.id)and host.mode=='node'and host.nodeUI.visible)
+local page=root:GetChild('nodePanel')
+local outside=assert(page:GetChild('shopDismiss'),'missing native shop-dismiss target')
+local shopView=assert(page:GetChild('shopView'))
+local detail=assert(shopView:GetChild('detail'))
+local detailName=assert(detail:GetChild('name'))
+local function emit(hit,kind,id)
+ return assert(hit.listeners[kind],'missing native '..kind)({touchId=id})
+end
+local function tap(hit,id)
+ emit(hit,'down',id);emit(hit,'up',id);return emit(hit,'click',id)
+end
+local a=assert(shopView:GetChild('relic1')):GetChild('hit')
+local b=assert(shopView:GetChild('relic2')):GetChild('hit')
+local route=assert(page:GetChild('runRoute')):GetChild('hit')
+local back=assert(root:GetChild('mapPanel'):GetChild('previewBack')):GetChild('hit')
+local run,map,flow=host.run,host.map,host.run.nodeFlow
+local beforeRun,beforeMap=C.copy(run),C.copy(map)
+local function invariant(label)
+ assert(host.run==run and host.map==map and host.run.nodeFlow==flow,label..' replaced the run, map or shop owner')
+ unchanged(host.run,beforeRun,label..' changed full Run, gold, shop stock, or RNG')
+ unchanged(host.map,beforeMap,label..' changed full Map or RNG')
+end
+assert(tap(a,810)and detail.visible,'first relic detail must open')
+local aName=detailName.text;assert(aName~='')
+emit(outside,'down',811)
+assert(tap(route,812)and host.routeOpen and not host.mapUI.navigationEnabled,'public shortcut must open a read-only preview')
+assert(not host.mapUI:choose(Map.available(map)[1].id),'preview must not select a map node')
+invariant('preview')
+assert(tap(back,813)and not host.routeOpen and not host.menuOpen and not host.exitOpen
+ and host.mode=='node'and host.nodeUI.visible,'public Back must restore same active shop')
+invariant('return')
+assert(tap(b,814)and detail.visible,'second relic detail must open')
+local bName=detailName.text;assert(bName~=''and bName~=aName,'fresh relic must not reuse old detail')
+emit(outside,'up',811);emit(outside,'click',811)
+assert(detail.visible and detailName.text==bName,'old shop touch dismissed fresh selection after map return')
+invariant('stale tail')
+assert(tap(outside,815)and not detail.visible,'fresh outside tap must dismiss only the detail')
+assert(host.mode=='node' and host.nodeUI.visible and not host.routeOpen)
+invariant('fresh dismissal')
+assert(tap(a,816)and detail.visible and detailName.text==aName,'fresh relic inspection must remain available')
+invariant('fresh inspection')
+`, 'OFFICIAL_SHOP_MAP_RETURN_DISMISS_PASS');
+});
+
+test('M05 exact source and discovery custody reject drift before older adapters',async()=>{
+ const {discoverJs}=await import('../scripts/ci-shards.mjs');
+ const {m05CurrentDiscovery,beforeM05ShopCiSource}=await import('./helpers/m05-shop-ci-source.mjs');
+ const {beforeV2UiEvidence}=await import('./helpers/v2-p1-ci-source.mjs');
+ const {beforeAuthenticatedM05ShopSource,m05ShopSourcePaths}=await import('./helpers/m05-shop-source.mjs');
+ const raw=path=>readFileSync(path,'utf8');
+ for(const [kind,list,added]of [
+  ['js',discoverJs(),'tests/shop-dismiss.test.mjs'],
+  ['lua',readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n),'tests/lua/shop_dismiss.lua'],
+ ]){
+  const left=m05CurrentDiscovery(list,kind);
+  assert.deepEqual(left,list.filter(path=>path!==added));
+  for(const invalid of [left,[...list,added],list.slice(1),[...list,'foreign']])
+   assert.throws(()=>m05CurrentDiscovery(invalid,kind),/complete M05 raw/);
+  for(const invalid of [null,raw(added)+'\n',raw(added).replaceAll('\n','\r\r\n')])
+   assert.throws(()=>m05CurrentDiscovery(list,kind,()=>invalid),/fresh M05 added/);
+ }
+ const path='tests/official-assets-runtime.test.mjs',source=raw(path),prior=beforeM05ShopCiSource(path,source);
+ assert.notEqual(source,prior);
+ assert.notEqual(beforeV2UiEvidence(path,prior),prior,'exact PC13 predecessor hop must still run');
+ assert.equal(beforeV2UiEvidence(path,source),beforeV2UiEvidence(path,prior));
+ assert.equal(beforeV2UiEvidence(path,source+'\n'),source+'\n');
+ for(const owner of m05ShopSourcePaths){
+  const source=raw(owner),calls=[];
+  const admit=input=>beforeAuthenticatedM05ShopSource(owner,input,p=>{calls.push(p);return raw(p);});
+  assert.notEqual(admit(source),source);
+  assert.notEqual(admit(source.replaceAll('\n','\r\n')),source.replaceAll('\n','\r\n'));
+  assert.deepEqual(calls,[owner,owner],'read the exact owner for each admission, including warm repeats');
+  assert.equal(admit(source+'\n'),source+'\n');assert.deepEqual(calls,[owner,owner]);
+  assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>source+'\n'),/linked owner identity/);
+  assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>{throw Error('unavailable')}),/linked owner missing/);
+ }
+});

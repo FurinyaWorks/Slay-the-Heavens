@@ -52,6 +52,8 @@ export function nodeLayout(theme = nativeTheme) {
   const bar = layout.topBar;
   const controls = [
     plate('backdrop', layout.backdrop, color.backdrop),
+    // Below every shelf/footer; unlike a button this background is not focusable.
+    {name:'shopDismiss',kind:'cursorArea',position:[0,0],size:[...theme.canvas.base],focusable:false},
     // TopPanel reuse: same dark band, copper hairline and title wings as the map header
     // (layout.map.presentation.header + color.mapHeader), so map → Neow/event keeps one chrome.
     { ...hidden(plate('topBar', bar.plate, color.panelSunken)) },

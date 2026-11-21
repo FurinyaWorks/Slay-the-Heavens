@@ -1,3 +1,4 @@
+import {m05CurrentDiscovery} from './helpers/m05-shop-ci-source.mjs';
 import {assertCurrentJsInventory,beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,7 +11,7 @@ const raw=p=>beforePreflightSource(p,readFileSync(p,'utf8')).replaceAll('\r\n','
 const readFileSync=releaseBootstrapCiRead(rawReadFileSync);
 
 test('integration validates complete raw sources and leaves every foreign byte and production owner visible',()=>{
- assertIntegratedCurrent();assertCurrentJsInventory(discoverJs(),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
+ assertIntegratedCurrent();assertCurrentJsInventory(m05CurrentDiscovery(discoverJs(),'js'),proof.inventory);assert.equal(new Set(proof.inventory).size,proof.inventory.length);
  for(const [path,row]of Object.entries(proof.files))for(const target of Object.keys(proof.sources)){
   const source=raw(path),production=path.startsWith('src/')||path==='config/architecture.json';
   const expected=production?source:row.views[target]?.source??source;
@@ -65,7 +66,8 @@ test('Release bootstrap exact sources retain every old byte and reject missing d
  const archive=Object.keys(releaseBootstrapCiPacket.immutableArchives)[0];
  assert.throws(()=>assertReleaseBootstrapCiCurrent((p,e)=>p===archive?rawReadFileSync(p).subarray(1):rawReadFileSync(p,e)),/immutable bootstrap predecessor/);
  const inventories={js:discoverJs(),lua:readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort()};
- for(const [kind,paths]of Object.entries(inventories)){
+ for(const [kind,raw]of Object.entries(inventories)){
+  const paths=m05CurrentDiscovery(raw,kind);
   assertReleaseBootstrapRawInventory(paths,kind);
   for(const bad of [[],paths.slice(1),[...paths,paths[0]],[...paths,`tests/${kind==='lua'?'lua/':''}foreign.${kind==='lua'?'lua':'test.mjs'}`]])
    assert.throws(()=>assertReleaseBootstrapRawInventory(bad,kind),/raw discovery inventory/);

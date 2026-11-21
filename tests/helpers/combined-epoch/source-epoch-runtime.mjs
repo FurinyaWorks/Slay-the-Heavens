@@ -1,3 +1,4 @@
+import {beforeM05ShopSource,authorizeM05ShopSource} from '../m05-shop-source.mjs';
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
 import {projectTinyHouseUiSource,authorizeTinyHouseUiSource} from '../tiny-house-ui-source.mjs';
@@ -116,7 +117,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
-  const rawInput=source,inputSource=beforePc13RewardCover(path,source);
+  const rawInput=source,inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,source));
   source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
   source=projectTinyHouseUiSource(path,projectV2UiHudSource(path,projectPotionPointerSource(path,source,current),current),current);
@@ -128,19 +129,21 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   const samples=[],rawSamples=[];
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-   const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,actual);samples.push([owner,actual,binding]);
+   const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,beforeM05ShopSource(owner,actual));samples.push([owner,actual,binding]);
    actual=projectTinyHouseUiSource(owner,projectV2UiHudSource(owner,projectPotionPointerSource(owner,actual,binding),binding),binding);
    actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
-  const readPrior=owner=>beforePc13RewardCover(owner,readSource(owner));
+  const readM05Prior=owner=>beforeM05ShopSource(owner,readSource(owner));
+  const readPrior=owner=>beforePc13RewardCover(owner,readM05Prior(owner));
   authorizeFatalBgmSource(path,inputSource,current,samples,readPrior);
   authorizeSelectorSource(path,inputSource,current,samples,readPrior);
   authorizePotionTextSource(path,inputSource,current,samples,readPrior);
   authorizeLumineSource(path,inputSource,current,samples,readPrior);
   authorizeV2UiHudSource(path,inputSource,current,samples,readPrior);
   authorizePotionPointerSource(path,inputSource,current,samples,readPrior);
-  authorizePc13RewardCover(rawSamples,readSource);
+  authorizeM05ShopSource(rawSamples,readSource);
+  authorizePc13RewardCover(rawSamples,readM05Prior);
   authorizeTinyHouseUiSource(path,inputSource,current,samples,readPrior);
   return before.source;
  }
