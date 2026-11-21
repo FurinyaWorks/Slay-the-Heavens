@@ -1,7 +1,8 @@
 import {applyApprovedNativeMenu} from './native-menu-approved-layout.mjs';
 // Reuse the frozen V25 page layout and existing input paths. Native textures
 // replace bounded decorative surfaces; no new page owner or image rasterizer.
-import {styleLiyuePageReveal} from './cinematic-ui-layout.mjs';
+import {relicTooltip} from './relic-view-layout.mjs';
+import {stylePageReveal} from './cinematic-ui-layout.mjs';
 import {applyV25MenuLayout} from './v25-menu-layout.mjs';
 import {applyV25CharacterLayout} from './v25-character-layout.mjs';
 import {constellationGeometry} from './constellation-geometry.mjs';
@@ -10,12 +11,13 @@ const parts=n=>n?.controls??n?.children??[];
 const child=(n,name)=>parts(n).find(c=>c.name===name);
 export function applyOfficialNoncombatLayout(layout,theme){
  const stage=child(layout,'stage')??layout;
- if(!child(stage,'menuPanel')||!child(stage,'characterPanel'))return layout;
+ const menu=child(stage,'menuPanel');
+ if(!menu||!child(stage,'characterPanel')||child(child(menu,'v25MainMenu'),'approvedTitleLogo'))return layout;
  const start=child(child(stage,'menuPanel'),'start');
  if(!child(start,'officialResultLabel'))start.children.push({...structuredClone(child(start,'label')),name:'officialResultLabel',visible:false});
  applyV25MenuLayout(layout,theme);
  applyApprovedNativeMenu(child(stage,'menuPanel'));
- const characterTheme={...theme,v25Character:{...theme.v25Character,story:theme.v25Character?.story?.replaceAll('\\n','\n')}};
+ const characterTheme={...theme,v25Character:{...theme.v25Character,story:'使用岩元素护盾与结晶应对敌人。'}};
  applyV25CharacterLayout(layout,characterTheme);
  const panel=child(stage,'characterPanel'),selected=child(child(panel,'v25Roster'),'selected');
  // Preserve the Owner-approved #785 removal of the stationary selection shade.
@@ -40,6 +42,10 @@ export function applyOfficialNoncombatLayout(layout,theme){
   label.text.colour=state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk;
  }
  styleCharacterFlag(exit,'cancel',theme);
- styleLiyuePageReveal(child(stage,'pageReveal'),theme);
+ const roots=parts(stage);
+ const legacy=child(stage,'prologuePanel');
+ if(legacy)roots.splice(roots.indexOf(legacy),1);
+ stylePageReveal(child(stage,'pageReveal'));
+ child(stage,'relicBar').children.push(relicTooltip(theme));
  return layout;
 }

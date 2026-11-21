@@ -300,7 +300,7 @@ function OnUpdate(dt)
         if view.pageReveal then
             local gate=view.pageReveal
             if gate:step(require('abyss_page_reveal').intent(view),dt) then view:refresh()end
-            gate:paint(not view.exitOpen)
+            gate:paint(not view.exitOpen or view.routeOpen)
         end
     end)
     if not ok then failed("update", reason) end

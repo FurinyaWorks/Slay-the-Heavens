@@ -4,8 +4,8 @@ title: 按STS1修正选角三态与普通页面淡入淡出
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-21 12:50'
-updated_date: '2026-11-21 13:54'
+created_date: '2026-11-21T12:50:00Z'
+updated_date: '2026-11-21T16:09:07Z'
 labels:
   - P2
   - non-blocking
@@ -43,6 +43,8 @@ ordinal: 186000
 
 <!-- SECTION:PLAN:BEGIN -->
 1. 复用现有page reveal增加可选Alpha阶段，遮盖前保留旧画面，遮盖后准备与ready确认；开局复用同一门禁。2. 正式选角去自动预选，显示标题与石质锁槽，命座深色、选中保留金边。3. 增加时序与三态回归，运行相关源码验证及离线截图；独立评审后走develop原有准入，官方设备待验。
+
+从 develop 73fd14aa 接续 #803 固定 b5e7c915。核对 STS1 证据后收口主菜单、选角、药水、遗物及页面生命周期；保留玩法与共享查看器。比对正式构建配置下的前后候选，执行定向、全量与独审，仅投向 develop。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -63,4 +65,6 @@ ordinal: 186000
 PR803已创建并仅指向develop，ci:full申请正式Full。最终独审发现两新JSON未固定LF；已仅补text eol=lf并保留原始字节hash断言，真实core.autocrlf=true checkout-index后两helper导入通过。重新冻结提交并复审后再签署原生独审/Auto-merge；未合入，不标Done，官方设备仍未验。
 
 最终补齐真实原生旧bust备用控件覆盖命座问题（先复现后通过，开发头像可恢复）；捕获也断言0旧头像/四态bust隐藏。补同面板新场景淡出、局部面板关闭后启程恢复全屏转场覆盖两项反例，最终gate/ready/deck17/17通过，静态通过。当前两套fixture before/after逐项匹配base/当前文件，真实autocrlf索引检出导入通过。冻结最终提交重新独审，PR803仅develop，仍未宣称Full/已合入/设备通过。
+
+在 develop 73fd14aa 接续 #803 b5e7c915，原 PR 原生自动合并已暂停。前后正式 UI 布局及 Lua Host 投影见 docs/evidence/sts1-ui-closeout。新增主菜单／药水／遗物／淡出／恢复定向回归，正式 GIL 写入读回及 PC／手机／手柄实机仍未取得。
 <!-- SECTION:NOTES:END -->

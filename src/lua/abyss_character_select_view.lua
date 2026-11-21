@@ -98,7 +98,7 @@ local function paintDetails(details,state,platform,originalSts,nativeV25,info)
     for _,r in ipairs(info.relics)do relics[#relics+1]=r.name;if r.text and r.text~='' then texts[#texts+1]=r.text end end
     details:GetChild('relic').text=#relics>0 and table.concat(relics,'、') or '无'
     details:GetChild('relicText').text=table.concat(texts,' ')
-    renderStarterDeck(details,info)
+    if details:GetChild('deckSummary') then renderStarterDeck(details,info) end
     local large,key,portraits=paintPortraits(details,state,platform)
     if originalSts then portraits:SetVisible(false)end
     paintPortraitNote(details,info,platform,large,key,portraits)

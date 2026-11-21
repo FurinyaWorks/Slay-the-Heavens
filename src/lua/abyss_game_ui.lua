@@ -56,12 +56,14 @@ function M.new(root, data, presentation, clickEvent, platform)
             nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
             potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
             choicePanel=Theme.layout.combatChoice.panel},revealMotion(platform))
-        if controller then controller.blocked=function()return self.pageReveal:covered() and not self.exitOpen end end
+        if controller then controller.blocked=function()return self.pageReveal:covered() and (not self.exitOpen or self.routeOpen) end end
+        cover.disableCursorEventPassthrough=true
         cover:GetChild('blocker'):AddCursorEventListener(clickEvent,function()return true end)
         local cancel=cover:GetChild('cancel'):GetChild('hit')
-        local function canRecover()return self.pageReveal.state=='failed' and not self.exitOpen end
+        local function canRecover()return self.pageReveal.state=='failed' and (not self.exitOpen or self.routeOpen) end
         local function leave()
             if not canRecover()then return false end
+            if self.routeOpen then return self:closeExit() end
             return self:openMenu()
         end
         cancel:AddCursorEventListener(clickEvent,leave)
@@ -140,7 +142,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)
     -- TASK-4.7 owned relics: icon-disc slots, not a text dump. Opening rides
     -- the deck gate so it stays read-only for battle, map, camp and chest.
-    self.openRelics = Overlays.openRelics(self)
+    self.openRelics = Overlays.openRelics(self,inputCovered)
     self.closeDeck = Overlays.closeDeck(self)
 
     local menuView = MenuView.new(self,menu,data,platform)

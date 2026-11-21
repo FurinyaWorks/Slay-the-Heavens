@@ -98,3 +98,23 @@ test('selection uses static exact-alpha geometry and reuses the selected frame w
  assert.equal(parts(selectedSlot(panel)).filter(n=>n.name==='v25Constellation').length,1);
  assert.equal(parts(panel).filter(n=>n.name==='lumineSelectionBackground').length,1);
 });
+
+test('official host uses direct inventory actions, read-only relic details and explicit run discard',async t=>{
+ const {mkdtempSync,mkdirSync,rmSync}=await import('node:fs');
+ const {join,resolve}=await import('node:path');
+ const {spawnSync}=await import('node:child_process');
+ const {createRequire}=await import('node:module');
+ const {buildUI}=await import('../scripts/build-ui.mjs');
+ const {buildLuaData,luaString}=await import('../scripts/build-lua-data.mjs');
+ mkdirSync('build/test-tmp',{recursive:true});
+ const directory=mkdtempSync(resolve('build/test-tmp/sts-ui-'));
+ t.after(()=>rmSync(directory,{recursive:true,force:true}));
+ buildLuaData('data',join(directory,'abyss_data.lua'));
+ buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
+ const script=`package.path=${luaString(directory.replaceAll('\\','/')+'/?.lua;src/lua/?.lua')}
+dofile('tests/lua/support/sts_ui_closeout.lua')`;
+ const require=createRequire(import.meta.url);
+ const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',script],{encoding:'utf8',timeout:60000});
+ assert.equal(result.status,0,result.error?.message??result.stderr+result.stdout);
+ assert.match(result.stdout,/STS_UI_CLOSEOUT_PASS/);
+});

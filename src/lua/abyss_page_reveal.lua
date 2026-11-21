@@ -18,7 +18,9 @@ local function reject(gate,message)
 end
 local function pageFor(owner)
     if owner.characterOpen and not (owner.deckUI and owner.deckUI.visible) then return 'characterPanel'end
-    for _,entry in ipairs({{owner.deckUI,'deckPanel'},{owner.potionUI,'potionPanel'},{owner.choiceUI,'choicePanel'}})do
+    local deck=owner.deckUI
+    local localRelic=deck and deck.relicView and deck.relicView.localPanel
+    for _,entry in ipairs({{not localRelic and deck,'deckPanel'},{owner.potionUI and not owner.potionUI.localPanel and owner.potionUI,'potionPanel'},{owner.choiceUI,'choicePanel'}})do
         if entry[1] and entry[1].visible then return entry[2]end
     end
     if owner.routeOpen then return 'mapPanel'end
@@ -57,11 +59,15 @@ local function sameNeowText(a,b)
         and a.picker==b.picker and a.nodeMode==b.nodeMode
 end
 local function canUpdate(a,b)
+    if a.page=='menuPanel' and b.page=='menuPanel' and a.mode=='menu' and b.mode=='menu' then return true end
     if a.page=='characterPanel' and b.page=='characterPanel' then return sameOwner(a,b,'character')end
     if a.page=='nodePanel'then return sameOwner(a,b,'node') and sameNeowText(a,b)end
     if not sameOwner(a,b)then return false end
     if a.page=='deckPanel'then return a.overlayContent~=b.overlayContent and same(a,b,'overlayContent')end
     return false
+end
+local function shade(progress)
+    return progress*progress*(3-2*progress)
 end
 local function readiness(ready,intent)
     local ok,value,reason=pcall(ready,intent)
@@ -91,7 +97,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if motion then
             local veil=cover:GetChild('veil')
             if gate.epoch~=epoch then return false end
-            local ink=motion.color(0,0,0,math.floor(value*255+.5))
+            local ink=motion.color(0,0,0,math.floor(shade(value)*255+.5))
             if gate.epoch~=epoch then return false end
             gate.alpha=value;veil.imageColor=ink
         else gate.alpha=value end
@@ -121,11 +127,11 @@ function M.new(cover,ready,onIntent,frames,motion)
     local function currentPaint(ticket,epoch,frame,veil)
         local alive=veil.alive~=false
         local sameVeil=cover:GetChild('veil')==veil
-        return alive and sameVeil and paintToken==ticket and gate.epoch==epoch and frame==(gate.localFrame or frames.full)
+        return alive and sameVeil and paintToken==ticket and gate.epoch==epoch and frame==(gate.localFrame or frames.size or frames.full)
     end
     local function paintFrame()
         if not frames then return true end
-        local frame=gate.localFrame or frames.full
+        local frame=gate.localFrame or frames.size or frames.full
         if frame==paintedFrame then return true end
         paintToken=paintToken+1;local ticket,epoch=paintToken,gate.epoch
         paintedFrame=nil -- a partial native write invalidates every old promise
@@ -138,6 +144,14 @@ function M.new(cover,ready,onIntent,frames,motion)
         if not currentPaint(ticket,epoch,frame,veil)then return false end
         assert(sized~=false,'page cover size rejected')
         paintedFrame=frame;return true
+    end
+    function gate:resize(width,height)
+        if not frames then return end
+        local scale=math.min(width/frames.full[3],height/frames.full[4])
+        -- Extend the veil and input hit over the letterboxing of the scaled stage.
+        frames.size={0,0,width/scale,height/scale}
+        cover:GetChild('blocker'):SetSizeDelta(frames.size[3],frames.size[4])
+        paintFrame()
     end
     function gate:covered()return self.state~='visible' end
     function gate:request(intent)
@@ -202,12 +216,17 @@ function M.new(cover,ready,onIntent,frames,motion)
     end
     function gate:paint(raise)
         if not paintFrame()then return false end
-        cover:SetVisible(self:covered())
-        if self:covered() and raise then cover:SetAsLastSibling()end
+        local covered,failed=self:covered(),self.state=='failed'
+        if cover.visible~=covered then cover:SetVisible(covered)end
+        if covered and raise then cover:SetAsLastSibling()end
         local message=cover:GetChild('message')
-        if message then message:SetVisible(self.state=='failed');message.text=self.error and '画面暂未准备完成，可返回菜单。' or '正在准备画面…'end
+        if message then
+            local text=failed and '画面暂未准备完成，可返回菜单。' or '正在准备画面…'
+            if message.visible~=failed then message:SetVisible(failed)end
+            if message.text~=text then message.text=text end
+        end
         local recovery=cover:GetChild('cancel')
-        if recovery then recovery:SetVisible(self.state=='failed')end
+        if recovery and recovery.visible~=failed then recovery:SetVisible(failed)end
     end
     function gate:step(intent,dt)
         if motion and self.state=='fadingOut' then

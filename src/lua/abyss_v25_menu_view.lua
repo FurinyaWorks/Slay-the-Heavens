@@ -80,7 +80,7 @@ local function presentStart(ctx,layout,isOutcome)
     label.fontSize=isOutcome and 21 or Theme.menuPresentation.fontSize
     label:SetAnchoredPosition(isOutcome and 28 or Theme.menuPresentation.labelX,0)
     label:SetSizeDelta(isOutcome and 140 or 218,52)
-    label.text=isOutcome and '重新启程' or '开始游戏'
+    label.text=isOutcome and '重新启程' or ctx.owner.sessionPaused and Theme.presentationProfile=='official-assets-first' and '放弃本局' or '开始游戏'
 end
 local function officialResult(ctx,isOutcome)
     local menu,start=ctx.menu,ctx.start

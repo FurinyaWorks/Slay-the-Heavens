@@ -59,7 +59,7 @@ function liyueElements(picture, p, colour) {
     [(i - 3) * p.elements.step, p.elements.y, p.elements.size, p.elements.size], image, colour));
 }
 
-export function styleLiyuePageReveal(cover, theme) {
+export function stylePageReveal(cover) {
   const part = name => cover.children.find(node => node.name === name);
   part('veil').colour = '#000000';
   part('message').visible = false;

@@ -31,6 +31,7 @@ end
 
 function M.paintArtLoading(platform,menu,self,menuLoading,characterPanel,characterLoading,originalCharacterHint)
     return function(_)
+            if Theme.presentationProfile=='official-assets-first' then return end
             local bg=platform.background and platform.background:status()
             local portraits=platform.portraits and platform.portraits:status()
             local avatar=currentAvatar(portraits)
@@ -47,6 +48,12 @@ function M.paintArtLoading(platform,menu,self,menuLoading,characterPanel,charact
         end
 end
 
+local function revealScope(self)
+    if self.exitOpen and not self.routeOpen then return 'exit' end
+    local reveal=self.pageReveal
+    if reveal and reveal:covered() then return reveal.state=='failed' and 'pageReveal' or 'blocked' end
+    if self.exitOpen then return 'exit' end
+end
 function M.syncController(self,controller,openingCovered)
     return function(_)
             if not controller then return end
@@ -60,11 +67,11 @@ function M.syncController(self,controller,openingCovered)
             elseif self.mode=='battle' and (self.battleUI.selected or self.battleUI.potionAim) then scope='aim' end
                 return scope
             end
+            local coverScope=revealScope(self)
             local scope
             if self.disabled or self.settlementRequested or self.settlementBusy then scope='blocked'
             elseif self.easterEggOpen then scope='easterEgg'
-            elseif self.exitOpen then scope='exit'
-            elseif self.pageReveal and self.pageReveal:covered() then scope=self.pageReveal.state=='failed' and 'pageReveal' or 'blocked'
+            elseif coverScope then scope=coverScope
             elseif self.motion.deathReveal then scope='blocked'
             elseif openingCovered() then scope='blocked'
             elseif self.characterOpen and not self.deckUI.visible then scope='characters'
@@ -203,7 +210,18 @@ function M.refreshPotionEntry(child,inCombat,canManagePotions,platform)
             -- shared official entry keeps its physical slots on every run page.
             local mapSlots=official and run~=nil or anchor and mapVisible==true
             if anchor or official then mapPotionFrame(open,potionHit,run,mapSlots)end
-            potionHit.interactable=not inCombat() and canManagePotions(run);potionHit.raycastTarget=potionHit.interactable
+            if official then
+                potionHit.interactable=true;potionHit.raycastTarget=false
+                for i=1,Theme.layout.battlePotions.count do
+                    local slot=child('potionEntry'):GetChild('slot'..i)
+                    if slot then
+                        local occupied=not inCombat() and run~=nil and run.potions[i]~=nil
+                        slot:SetVisible(occupied);slot:GetChild('hit').raycastTarget=occupied
+                    end
+                end
+            else
+                potionHit.interactable=not inCombat() and canManagePotions(run);potionHit.raycastTarget=potionHit.interactable
+            end
             PotionDiscardUI.refreshEntry(potionHit,run,platform,mapSlots)
         end
 end
@@ -229,6 +247,10 @@ function M.refreshDeckEntry(child,self)
         end
 end
 
+local function potionEntryVisible(self,utilitiesVisible,potionOpen)
+    return utilitiesVisible or potionOpen and self.potionUI.localPanel
+end
+
 function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEntry)
     return function(run,inMenu,deckOpen,potionOpen,blocked,covering,returnAvailable)
             local ending=run and run.phase=='ending_proceed'
@@ -246,7 +268,7 @@ function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEn
                 variant:GetChild('label').text=run and '遗物 '..#run.relics or '遗物'
                 variant:GetChild('count').text=run and number(#run.relics) or ''
             end
-            child("potionEntry"):SetVisible(not inCombat() and utilitiesVisible)
+            child("potionEntry"):SetVisible(not inCombat() and potionEntryVisible(self,utilitiesVisible,potionOpen))
             refreshPotionEntry(run,mapPotionVisible(self))
             child("nodePanel"):GetChild("potions"):SetVisible(false)
             if potionOpen then self.potionUI:render()end
@@ -523,8 +545,9 @@ local function requestReveal(self,platform)
 end
 local function paintReveal(self)
     if not self.pageReveal then return end
-    self.pageReveal:paint(not self.exitOpen)
-    if self.exitOpen then
+    local modalOwnsInput=self.exitOpen and not self.routeOpen
+    self.pageReveal:paint(not modalOwnsInput)
+    if modalOwnsInput then
         self.root:GetChild('runMenu'):SetAsLastSibling()
         self.root:GetChild('exitPanel'):SetAsLastSibling()
     end

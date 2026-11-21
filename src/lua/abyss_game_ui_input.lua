@@ -208,11 +208,14 @@ function M.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,
     child("relicEntry"):GetChild("open"):GetChild("hit"):AddCursorEventListener(clickEvent, function() return self:openRelics() end)
     Controller.bind(controller,child('relicEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
         function()return self:openRelics()end)
-    child("potionEntry"):GetChild("open"):GetChild("hit"):AddCursorEventListener(clickEvent,function()if inCombat() then return false end;return self:openPotions()end)
     Controller.bind(controller,child('deckEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
         function()return self:openDeck()end)
-    Controller.bind(controller,child('potionEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
-        function()if inCombat() then return false end;return self:openPotions()end)
+    if not self.potionUI.localPanel then
+        local potionHit=child('potionEntry'):GetChild('open'):GetChild('hit')
+        local function openPotion()if not inCombat() then return self:openPotions()end end
+        potionHit:AddCursorEventListener(clickEvent,openPotion)
+        Controller.bind(controller,potionHit,function()return self.mode end,openPotion)
+    end
     exitPanel.disableCursorEventPassthrough = true
     exitPanel:GetChild("blocker"):AddCursorEventListener(clickEvent, function() return true end)
     runMenu.disableCursorEventPassthrough = true
@@ -237,11 +240,24 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
     end
     -- Source menu actions use the same pointer ownership as exit actions, and also
     -- expire whenever their menu/run context is hidden or replaced.
-    bindCommand(start, "start", function() return self:start() end)
+    bindCommand(start, "start", function()
+        if Theme.presentationProfile=='official-assets-first' and self.sessionPaused then
+            return self:requestNavigation('abandon')
+        end
+        return self:start()
+    end)
     bindCommand(child('menuPanel'):GetChild('continueRun'),'continueRun',function()return self:continueRun()end,nil,90)
     local quit=child('menuPanel'):GetChild('titleQuit')
     if quit then
         bindCommand(quit,'titleQuit',function()return self:openExit()end,nil,190)
+    end
+    if self.potionUI.localPanel then
+        local entry=child('potionEntry')
+        for i=1,Theme.layout.battlePotions.count do
+            local box=entry:GetChild('slot'..i)
+            bindCommand(box,'resource_potion',function()return self:openPotions(i)end,
+                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,30+i)
+        end
     end
     bindCommand(settlement, "settle", function() return self:settle() end)
     if self.easterEgg then

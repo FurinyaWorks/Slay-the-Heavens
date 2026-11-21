@@ -1,3 +1,4 @@
+import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 // Exact full-source continuation for historical receipts. Product tests use live files.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -7,16 +8,20 @@ const bytes=readFileSync(new URL('../fixtures/sts-selection-fade-source.json',im
 assert.equal(hash(bytes),'aa738acfea89d0c38209c903dca0b0a573e217ce11c0542a022cf18e0b784717');
 const {base,files,inventory}=JSON.parse(bytes);
 assert.equal(base,'345ba08398b6ca8e1361a126f2ce1de85210e634');
-export function beforeStsSelectionFade(path,source){
+function beforeOriginalFade(path,source){
  const row=Object.hasOwn(files,path)?files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.after)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
 }
+export function beforeStsSelectionFade(path,source){
+ return beforeOriginalFade(path,beforeStsUiCloseoutSource(path,source));
+}
 export function beforeAuthenticatedStsSelectionFade(path,source,read){
- const prior=beforeStsSelectionFade(path,source);
- if(prior!==source)for(const [owner,row]of Object.entries(files)){
+ const predecessor=beforeStsUiCloseoutSource(path,source);
+ const prior=beforeOriginalFade(path,predecessor);
+ if(prior!==predecessor)for(const [owner,row]of Object.entries(files)){
   if(!owner.startsWith('src/'))continue; // Detached production fixtures intentionally copy only source owners.
-  let live;try{live=read(owner);}catch{assert.fail('fresh linked STS fade source missing: '+owner);}
+  let live;try{live=beforeStsUiCloseoutSource(owner,read(owner));}catch{assert.fail('fresh linked STS fade source missing: '+owner);}
   assert(typeof live==='string'&&!live.includes('\r\r\n')&&hash(live.replaceAll('\r\n','\n'))===row.after,'fresh linked STS fade source: '+owner);
  }
  return prior;

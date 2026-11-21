@@ -38,11 +38,10 @@ export function characterSelectionComposition(panel,theme){
  Object.assign(title.text,{fontSize:30,minFontSize:30,align:'centre'});title.visible=true;
  const details=child(panel,'details');
  const specs={name:[[115,216,505,60],48,'#E8C75C'],stats:[[145,280,145,30],18,'#F36C65'],gold:[[328,280,160,30],18,'#DFC552'],
-  v25Story:[[115,326,475,48],17,'#F3EFDA'],relic:[[162,379,430,30],20,'#E7CA5A'],relicText:[[162,403,440,35],17,'#F3EFDA'],
-  deckTitle:[[115,444,425,28],17,'#E7CA5A'],deckSummary:[[115,472,470,50],16,'#F3EFDA']};
+  v25Story:[[115,326,475,48],17,'#F3EFDA'],relic:[[162,379,430,30],20,'#E7CA5A'],relicText:[[162,403,440,35],17,'#F3EFDA']};
  for(const [name,[box,font,colour]]of Object.entries(specs))placeText(child(details,name),box,font,colour);
- details.children=details.children.filter(n=>n.name!=='deckOpen');
- for(const name of ['relicTag','deckRule','portraitFrame','floorShadow','officialSelectionFigure']){const n=child(details,name);if(n)n.visible=false;}
+ details.children=details.children.filter(n=>!['deckOpen','deckTitle','deckSummary','deckRule'].includes(n.name));
+ for(const name of ['relicTag','portraitFrame','floorShadow','officialSelectionFigure']){const n=child(details,name);if(n)n.visible=false;}
  Object.assign(child(details,'v25HealthIcon'),frame(115,286,23,21));
  const bag=child(details,'v25GoldIcon');Object.assign(bag,frame(295,284,25,28));
  const relic=child(details,'v25RelicIcon');

@@ -78,11 +78,18 @@ const stsFadeFiles=Object.freeze({...loadingRecoveryFiles,...{
   "tests/helpers/sts-selection-fade-source.mjs": "73b46c3cebe908ea332c56264b1300937d9e67de678225b5ac213b16ef245adf",
   "tests/fixtures/sts-selection-fade-source.json": "aa738acfea89d0c38209c903dca0b0a573e217ce11c0542a022cf18e0b784717"
 }});
+assert.equal(stsFadeFiles['tests/helpers/sts-selection-fade-source.mjs'],'73b46c3cebe908ea332c56264b1300937d9e67de678225b5ac213b16ef245adf','STS UI exact fade helper predecessor');
+const stsCloseoutFiles=Object.freeze({
+ ...stsFadeFiles,
+ 'tests/helpers/sts-selection-fade-source.mjs':'d3be357f4c639c9f6d305eaa45b08674168f9f7166ecd50f8f4d6f41b3e560e7',
+ 'tests/helpers/sts-ui-closeout-source.mjs':'e497af412c33b11bedb039069976afcda9403fb57bf73053092072e8d24f4007',
+ 'tests/fixtures/sts-ui-closeout-source.json':'1dc65f74fed1074e130b88549001f70aeefcc329613266d9b4938225e7b84f5a',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(stsFadeFiles)){
+ for(const [path,sha]of Object.entries(stsCloseoutFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
