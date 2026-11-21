@@ -125,11 +125,8 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             control:SetAnchoredPosition(frame[1],frame[2]);control:SetSizeDelta(frame[3],frame[4])
         end
     end
-    function self.render(_)
-        local run,n=self.run,perPage()
-        local single=self.selectedIndex~=nil
+    local function renderFrame(run,single,compact)
         child('single'):SetVisible(single)
-        local compact=single and official
         local width=compact and 560 or single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
         local height=compact and 342 or Theme.layout.relicView.panel[4]
         child('frame'):SetSizeDelta(width,height)
@@ -140,14 +137,17 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             compact and height/2-33 or Theme.layout.relicView.close[2])
         child('title'):SetVisible(not compact)
         child('title').text=single and '遗物详情' or '持有遗物 · '..#run.relics..' 件'
-        if single then
-            local e=self:entry(run,self.selectedIndex);self.selected=e
-            local view=child('single')
-            positionSingle(view,compact)
-            M.paint(view:GetChild('icon'),e.id,compact and 96 or Theme.layout.relicView.disc*2,platform,run,e.icon)
-            for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
-            view:GetChild('status').text=e.status or ''
-        end
+        return width,height
+    end
+    local function renderSingle(run,compact)
+        local e=self:entry(run,self.selectedIndex);self.selected=e
+        local view=child('single')
+        positionSingle(view,compact)
+        M.paint(view:GetChild('icon'),e.id,compact and 96 or Theme.layout.relicView.disc*2,platform,run,e.icon)
+        for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
+        view:GetChild('status').text=e.status or ''
+    end
+    local function renderRows(run,single,n)
         self.rows={}
         for slot=1,n do
             local row=child('row'..slot)
@@ -162,6 +162,8 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
                 row:SetVisible(true)
             else row:SetVisible(false) end
         end
+    end
+    local function renderPageControls(run,single,compact,width,height)
         local many=self:pages()>1
         child('previous'):SetVisible(single and self.selectedIndex>1 or not single and many)
         child('next'):SetVisible(single and self.selectedIndex<#run.relics or not single and many)
@@ -172,6 +174,15 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         child('pageHint'):SetVisible(not single and many)
         child('pageHint').text=not single and many and ('第 '..self.page..'/'..self:pages()..' 页') or ''
         child('placeholder'):SetVisible(#run.relics==0)
+    end
+    function self.render(_)
+        local run=self.run
+        local single=self.selectedIndex~=nil
+        local compact=single and official
+        local width,height=renderFrame(run,single,compact)
+        if single then renderSingle(run,compact)end
+        renderRows(run,single,perPage())
+        renderPageControls(run,single,compact,width,height)
     end
     function self.open(_,run,index)
         if self.visible or not run then return false end
@@ -202,6 +213,22 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     local function hideEmptyArt(icon,cell,more)
         if not cell or more then Art.hide(icon)end
     end
+    local function paintBarCell(i,cell,relics,run,style)
+        local slot=bar:GetChild('slot'..i)
+        slot:SetVisible(cell~=false)
+        slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
+        local icon,hit=slot:GetChild('icon'),slot:GetChild('hit')
+        icon:SetSizeDelta(style.icon,style.icon)
+        hit:SetSizeDelta(style.hit or style.step,style.hit or 44)
+        for _,name in ipairs({'rim','face'})do slot:GetChild(name):SetVisible(not official)end
+        local more=type(cell)=='string'
+        hideEmptyArt(icon,cell,more)
+        icon:SetVisible(not more)
+        slot:GetChild('more'):SetVisible(more)
+        slot:GetChild('more').text=more and cell or ''
+        if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
+        paintCounter(slot,run,cell and not more and relics[i] or nil,official)
+    end
     function self.refreshBar(_,run,visible)
         local relics=run and run.relics or {}
         local style=official and battleBar or baseBar
@@ -213,23 +240,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         bar:SetVisible(visible and run~=nil)
         bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
         local cells=M.barCells(#relics,style.count)
-        for i=1,boundCount do
-            local cell=cells[i] or false
-            local slot=bar:GetChild('slot'..i)
-            slot:SetVisible(cell~=false)
-            slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
-            local icon,hit=slot:GetChild('icon'),slot:GetChild('hit')
-            icon:SetSizeDelta(style.icon,style.icon)
-            hit:SetSizeDelta(style.hit or style.step,style.hit or 44)
-            for _,name in ipairs({'rim','face'})do slot:GetChild(name):SetVisible(not official)end
-            local more=type(cell)=='string'
-            hideEmptyArt(icon,cell,more)
-            icon:SetVisible(not more)
-            slot:GetChild('more'):SetVisible(more)
-            slot:GetChild('more').text=more and cell or ''
-            if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
-            paintCounter(slot,run,cell and not more and relics[i] or nil,official)
-        end
+        for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run,style)end
     end
     root.disableCursorEventPassthrough=true
     child('blocker'):AddCursorEventListener(clickEvent,function()

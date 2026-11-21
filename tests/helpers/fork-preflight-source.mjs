@@ -1,9 +1,8 @@
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
-import {stsHistoricalJsDiscovery} from './sts-selection-fade-source.mjs';
+import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
 import {beforeRebasedCi,beforeRebasedRelease,historicalReleaseCopier} from './rebased-release-source.mjs';
 import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
-import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {assertReleaseCapacityCohort,beforeReleaseCapacitySource} from './release-integration-source.mjs';
 import {beforeM05BackflowInventory} from './m05-shop-ci-source.mjs';
 import {beforeReleaseShopEntry,shopEntryPriorRead} from './release-ui-restore-source.mjs';
@@ -121,7 +120,7 @@ function beforeIntegratedReleaseCopier(path,source){
 function beforeRebasedCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='624f1f94d708a3a2e2e1b7fab167724bc11445bb6314211d53d50f1bc3e0be49')return source;
+ if(hash(lf)!=='70153f0f991e671f8d30a77aac622eaf73a1d959549633c3c43955f320856de2')return source;
  const limit=lf.indexOf('const releaseUiFiles='),end=lf.indexOf('const inside=',limit);
  assert(limit>=0&&end>limit,'exact reconciled copy closure');
  const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(stsCloseoutFiles))','Object.entries(powerMembershipFiles))');
@@ -312,6 +311,7 @@ export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
  return paths.filter(path=>!Object.hasOwn(newerTests[kind],path));
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
+ if(kind==='js')paths=beforeIntegratedStsInventory(paths,read);
  paths=beforeReleaseAdditionalInventory(paths,kind,read);
  const [path,sha]=shopEntryTests[kind];
  const position=paths.indexOf(path);

@@ -5,8 +5,8 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'67259b10bafb786f5d682a2100123b71cb1a3c812a73c2063b8db93dfbfd964b','exact reconciled source archive');
-const {develop,release,ci,production,releaseCopier,reviewedBuild}=JSON.parse(gunzipSync(archive));
+assert.equal(hash(archive),'7c9e31e265d3ef5a97ae306e2a982ee05f3ec0fdd7a060f60bc83f5512052fb3','exact reconciled source archive');
+const {develop,release,ci,production,releaseCopier,reviewedBuild,stsUi}=JSON.parse(gunzipSync(archive));
 assert.equal(develop,'aae948788d93012d11fe5b6da3281150bb9957c6');
 assert.equal(release,'930097995be43e5612e949a3b5fa0c1d5d305f49');
 function matches(source,binding){
@@ -14,7 +14,8 @@ function matches(source,binding){
  const lf=source.replaceAll('\r\n','\n');
  return hash(lf)===binding.sha256&&hash(`blob ${Buffer.byteLength(lf)}\0${lf}`,'sha1')===binding.gitBlob;
 }
-for(const rows of [ci,production,reviewedBuild.files])for(const {before} of Object.values(rows))assert(matches(before.source,before));
+for(const rows of [ci,production,reviewedBuild.files,stsUi.files])for(const {before} of Object.values(rows))assert(matches(before.source,before));
+assert.equal(stsUi.source,'d667ad4dd4b7dc4ad5419aee8eba8a1548ea5769');
 assert.equal(reviewedBuild.source,'900527d931df941eed642a9667ccde92f76b73db');
 assert(matches(releaseCopier.source,releaseCopier),'immutable Release copy closure');
 export const historicalReleaseCopier=source=>source.includes('\r\n')?releaseCopier.source.replaceAll('\n','\r\n'):releaseCopier.source;
@@ -48,3 +49,6 @@ export function authorizeRebasedRelease(samples,read,sources=production){
 }
 
 export function authorizeRebasedDevelop(samples,read){return authorizeRebasedRelease(samples,read,ci);}
+
+export const beforeRebasedStsUi=(path,source)=>historical(stsUi.files,path,source);
+export function authorizeRebasedStsUi(samples,read){return authorizeRebasedRelease(samples,read,stsUi.files);}

@@ -116,13 +116,13 @@ function beforeAdmissionReceipt(path,source,read){
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  source=beforeAuthenticatedStsSelectionFade(path,source,read);
-  const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
   const rebound=beforeRebasedCi(path,source);
   if(rebound!==source)authorizeRebasedDevelop([[path,source]],read);
   source=rebound;
   const readRebased=read;
   read=owner=>beforeRebasedCi(owner,readRebased(owner));
+  source=beforeAuthenticatedStsSelectionFade(path,source,read);
+  const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
   source = beforeSlimeSplitReceipt(path,source,read);
   const cardPrior = beforeCardFeedbackOwner(path,source);
   if (cardPrior !== source) authorizeCardFeedbackOwners([[path,source]],read);
@@ -166,8 +166,6 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
-  source=beforeAuthenticatedStsSelectionFade(path,source,read);
-  const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
   if(rebasedDevelopOwns(path)){
     assert.notEqual(beforeRebasedCi(path,source),source,'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);

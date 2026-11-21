@@ -160,24 +160,31 @@ function M.new(cover,ready,onIntent,frames,motion)
         paintFrame()
     end
     function gate:covered()return self.state~='visible' end
+    local function requestTransition(intent)
+        gate.localFrame=localFrame(intent,gate.intent)
+        gate.painting=nil
+        gate.localOnly=motion and gate.published and gate.published.page=='characterPanel' and intent.page=='characterPanel'
+        local exiting=motion and gate.published and not gate.localFrame and not gate.localOnly
+            and (gate.published.page~=intent.page or not sameBase(intent,gate.published)) and gate.state=='visible'
+        gate.epoch=gate.epoch+1;gate.intent=intent;gate.state=exiting and 'fadingOut' or 'preparing';gate.armed=nil;gate.error=nil
+        return exiting
+    end
+    local function beginCover(ticket)
+        local recovery=cover:GetChild('cancel')
+        if gate.epoch~=ticket then return false end
+        if recovery then recovery:SetVisible(false)end
+        if gate.epoch~=ticket then return false end
+        if onIntent then onIntent(ticket)end
+        return gate.epoch==ticket
+    end
     function gate:request(intent)
         if same(intent,self.intent)then return false end
         local cancel=self.cancelDeparture;self.departure=nil;self.cancelDeparture=nil
         if cancel then cancel()end
-        self.localFrame=localFrame(intent,self.intent)
-        self.painting=nil
-        self.localOnly=motion and self.published and self.published.page=='characterPanel' and intent.page=='characterPanel'
-        local exiting=motion and self.published and not self.localFrame and not self.localOnly
-            and (self.published.page~=intent.page or not sameBase(intent,self.published)) and self.state=='visible'
-        self.epoch=self.epoch+1;self.intent=intent;self.state=exiting and 'fadingOut' or 'preparing';self.armed=nil;self.error=nil
+        local exiting=requestTransition(intent)
         local ticket=self.epoch
         if motion and not alpha((exiting or self.localOnly) and 0 or 1)then return false end
-        local recovery=cover:GetChild('cancel')
-        if self.epoch~=ticket then return false end
-        if recovery then recovery:SetVisible(false)end
-        if self.epoch~=ticket then return false end
-        if onIntent then onIntent(ticket)end
-        if self.epoch~=ticket then return false end
+        if not beginCover(ticket)then return false end
         print('ABYSS_PAGE_REVEAL preparing page='..tostring(intent.page)..' epoch='..self.epoch)
         if not paintFrame() or self.epoch~=ticket then return false end
         cover:SetVisible(true)
@@ -234,34 +241,50 @@ function M.new(cover,ready,onIntent,frames,motion)
         local recovery=cover:GetChild('cancel')
         if recovery and recovery.visible~=failed then recovery:SetVisible(failed)end
     end
+    local function finishDeparture(dt)
+        if not alpha(math.min(1,gate.alpha+(dt or 0)/motion.duration))then return false end
+        if gate.alpha<1 then return false end
+        gate.state='preparing'
+        local commit=gate.departure;gate.departure=nil;gate.cancelDeparture=nil
+        if commit then
+            local ok,accepted=pcall(commit)
+            if not ok or accepted==false then return reject(gate,tostring(accepted))end
+        end
+        return true -- Destination refresh is permitted only behind opaque black.
+    end
+    local function revealPage(intent,dt)
+        local ticket=gate.epoch
+        local value,reason=readiness(ready,intent)
+        if ticket~=gate.epoch or not same(intent,gate.intent)then return false end
+        if reason or not value then
+            if not alpha(1)then return false end
+            gate.state='preparing';gate.armed=nil
+            if reason then return reject(gate,tostring(reason))end
+            return false
+        end
+        if not alpha(math.max(0,gate.alpha-(dt or 0)/motion.duration))then return false end
+        if gate.alpha>0 then return false end
+        gate.state='visible';cover:SetVisible(false)
+        if ticket~=gate.epoch then return false end
+        logVisible(intent,ticket);return true
+    end
+    local function publishReadyPage(intent,ticket)
+        -- New base pages confirm on another scheduler turn. A retained base's
+        -- local work publishes as soon as this turn's real owners report ready.
+        local localReady=(gate.localFrame or gate.localOnly) and not needsSchedulerConfirmation(intent)
+        local confirmed=gate.armed and gate.armed.epoch==ticket and gate.armed.tick<gate.tick
+        if not localReady and not confirmed then
+            gate.state='ready';gate.armed={epoch=ticket,tick=gate.tick};return false
+        end
+        gate.state=motion and not gate.localFrame and not gate.localOnly and 'fadingIn' or 'visible'
+        gate.published=intent;gate.armed=nil;gate.error=nil;cover:SetVisible(gate:covered())
+        if ticket~=gate.epoch then return false end
+        if gate.state=='visible' then logVisible(intent,ticket)end
+        return true
+    end
     function gate:step(intent,dt)
-        if motion and self.state=='fadingOut' then
-            if not alpha(math.min(1,self.alpha+(dt or 0)/motion.duration))then return false end
-            if self.alpha<1 then return false end
-            self.state='preparing'
-            local commit=self.departure;self.departure=nil;self.cancelDeparture=nil
-            if commit then
-                local ok,accepted=pcall(commit)
-                if not ok or accepted==false then return reject(self,tostring(accepted))end
-            end
-            return true -- Destination refresh is permitted only behind opaque black.
-        end
-        if motion and self.state=='fadingIn' then
-            local ticket=self.epoch
-            local value,reason=readiness(ready,intent)
-            if ticket~=self.epoch or not same(intent,self.intent)then return false end
-            if reason or not value then
-                if not alpha(1)then return false end
-                self.state='preparing';self.armed=nil
-                if reason then return reject(self,tostring(reason))end
-                return false
-            end
-            if not alpha(math.max(0,self.alpha-(dt or 0)/motion.duration))then return false end
-            if self.alpha>0 then return false end
-            self.state='visible';cover:SetVisible(false)
-            if ticket~=self.epoch then return false end
-            logVisible(intent,ticket);return true
-        end
+        if motion and self.state=='fadingOut' then return finishDeparture(dt)end
+        if motion and self.state=='fadingIn' then return revealPage(intent,dt)end
         self.tick=self.tick+1
         local unchanged=same(intent,self.intent)
         if not self:request(intent) and not unchanged then return false end
@@ -273,15 +296,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if reason then return reject(self,tostring(reason))end
         self.error=nil
         if value~=true then self.state='preparing';self.armed=nil;return false end
-        -- New base pages confirm on another scheduler turn. A retained base's
-        -- local work publishes as soon as this turn's real owners report ready.
-        if (self.localFrame or self.localOnly) and not needsSchedulerConfirmation(intent) or self.armed and self.armed.epoch==ticket and self.armed.tick<self.tick then
-            self.state=motion and not self.localFrame and not self.localOnly and 'fadingIn' or 'visible';self.published=intent;self.armed=nil;self.error=nil;cover:SetVisible(self:covered())
-            if ticket~=self.epoch then return false end
-            if self.state=='visible' then logVisible(intent,ticket)end
-            return true
-        end
-        self.state='ready';self.armed={epoch=ticket,tick=self.tick};return false
+        return publishReadyPage(intent,ticket)
     end
     return gate
 end

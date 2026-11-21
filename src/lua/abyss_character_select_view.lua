@@ -103,6 +103,11 @@ local function paintDetails(details,state,platform,originalSts,nativeV25,info)
     if originalSts then portraits:SetVisible(false)end
     paintPortraitNote(details,info,platform,large,key,portraits)
 end
+local function countAllowed(ids,allows)
+    local count=0
+    for _,id in ipairs(ids)do if allows(id)then count=count+1 end end
+    return count
+end
 function M.render(panel,state,platform,published)
     local info=state.info
     if published==false then info=nil end
@@ -110,9 +115,8 @@ function M.render(panel,state,platform,published)
     local nativeV25=Theme.presentationProfile=='official-assets-first' and (originalSts or panel:GetChild('v25Roster')~=nil)
     panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))
     -- 只剩一个可选角色/元素时不摆假选择钮（Pan 2026-10-31：单角色发版）。
-    local open,elementsOpen=0,0
-    for _,id in ipairs(Select.characters)do if state:allowsCharacter(id)then open=open+1 end end
-    for _,id in ipairs(Select.elements)do if state:allowsElement(id)then elementsOpen=elementsOpen+1 end end
+    local open=countAllowed(Select.characters,function(id)return state:allowsCharacter(id)end)
+    local elementsOpen=countAllowed(Select.elements,function(id)return state:allowsElement(id)end)
     paintCharacterButtons(panel,state,platform,originalSts,open)
     paintThemesAndElements(panel,state,platform,elementsOpen)
     local details=panel:GetChild('details');details:SetVisible(info~=nil)

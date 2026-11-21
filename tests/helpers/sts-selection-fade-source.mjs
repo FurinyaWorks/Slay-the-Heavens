@@ -1,3 +1,4 @@
+import {authorizeRebasedStsUi,beforeRebasedStsUi} from './rebased-release-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 // Exact full-source continuation for historical receipts. Product tests use live files.
 import assert from 'node:assert/strict';
@@ -14,14 +15,16 @@ function beforeOriginalFade(path,source){
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
 }
 export function beforeStsSelectionFade(path,source){
- return beforeOriginalFade(path,beforeStsUiCloseoutSource(path,source));
+ return beforeOriginalFade(path,beforeStsUiCloseoutSource(path,beforeRebasedStsUi(path,source)));
 }
 export function beforeAuthenticatedStsSelectionFade(path,source,read){
- const predecessor=beforeStsUiCloseoutSource(path,source);
+ const original=beforeRebasedStsUi(path,source);
+ if(original!==source)authorizeRebasedStsUi([[path,source]],read);
+ const predecessor=beforeStsUiCloseoutSource(path,original);
  const prior=beforeOriginalFade(path,predecessor);
  if(prior!==predecessor)for(const [owner,row]of Object.entries(files)){
   if(!owner.startsWith('src/'))continue; // Detached production fixtures intentionally copy only source owners.
-  let live;try{live=beforeStsUiCloseoutSource(owner,read(owner));}catch{assert.fail('fresh linked STS fade source missing: '+owner);}
+  let live;try{live=beforeStsUiCloseoutSource(owner,beforeRebasedStsUi(owner,read(owner)));}catch{assert.fail('fresh linked STS fade source missing: '+owner);}
   assert(typeof live==='string'&&!live.includes('\r\r\n')&&hash(live.replaceAll('\r\n','\n'))===row.after,'fresh linked STS fade source: '+owner);
  }
  return prior;
@@ -35,4 +38,14 @@ export function stsCurrentJsDiscovery(paths,read=readFileSync){
 }
 export function stsHistoricalJsDiscovery(paths,read=readFileSync){
  return paths.includes(inventory.addition)?stsCurrentJsDiscovery(paths,read):paths;
+}
+
+export function beforeIntegratedStsInventory(paths,read=readFileSync){
+ const addition=inventory.addition;
+ const first=paths.indexOf(addition);
+ if(first===-1)return paths;
+ assert.equal(paths.lastIndexOf(addition),first,'one STS added test');
+ const source=read(addition,'utf8');
+ assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===inventory.sha256,'fresh STS added test source');
+ return paths.filter(path=>path!==addition);
 }
