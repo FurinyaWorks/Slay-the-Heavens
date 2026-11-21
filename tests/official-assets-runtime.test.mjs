@@ -506,7 +506,7 @@ for _,case in ipairs({
 end
 local costless=C.copy(definition);costless.cost=-2
 Skin.apply(card,costless,paint,{surfaceScope='battle'})
-local costMaterial=sharedFace(card).front:GetChild('costMaterial')
+local costMaterial=card:GetChild('stsReferenceCost'):GetChild('costMaterial')
 assert(not costMaterial.visible and not number.visible,'costless card keeps a coin')
 u:render();assert(costMaterial.visible and number.visible,'live shared cost material not restored')
 colour(number.fontColor,battleInk,'battle neutral ink restored after semantic cost changes')
@@ -1261,7 +1261,7 @@ end
             local face=grid.items[0]:GetChild('face')
             assert(face.y==0 and not grid.items[0]:GetChild('uid').visible)
             local shared=sharedFace(face)
-            assert(shared.front.visible~=false and shared.back.visible~=false and shared.front:GetChild('costMaterial').visible)
+            assert(shared.front.visible~=false and shared.back.visible~=false and face:GetChild('stsReferenceCost'):GetChild('costMaterial').visible)
             for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
                 assert(not face:GetChild(name).visible,'read-only piles cannot flash ready/cost halos')
             end

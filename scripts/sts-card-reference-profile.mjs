@@ -205,6 +205,13 @@ export function installStsReferenceCardChrome(face,theme){
  face.children=face.children.filter(n=>!artNode(n)&&!textNames.has(n.name));
  const overlay=face.children.findIndex(n=>n.name==='blockedVeil');
  face.children.splice(overlay<0?face.children.length:overlay,0,back,...arts,root,...texts);
+ // The disabled veil covers the card face, while the cost retains its own
+ // material and semantic red/green numeral (STS1 insufficient-energy treatment).
+ const costMaterial=root.children.find(n=>n.name==='costMaterial');
+ root.children=root.children.filter(n=>n!==costMaterial);
+ const costLayer={name:'stsReferenceCost',kind:'container',position:[0,0],size:[150,210],children:[costMaterial]};
+ const costText=find('cost'),direction=find('costDirection');face.children=face.children.filter(n=>n!==costText&&n!==direction);
+ face.children.push(costLayer,costText,direction);
  const tokens=geoCardReferenceTokens(theme),font=Math.max(14,theme.font.minimum);
  for(const [name,spec,key]of [['name',geometry.title,'title'],['cost',geometry.cost,'cost'],['type',geometry.type,'type'],['label',geometry.body,'body'],['description',geometry.body,'body']]){
   const node=find(name);if(!node)continue;node.position=[...spec.position];node.size=[...spec.size];
@@ -222,7 +229,7 @@ export function installStsReferenceCardChrome(face,theme){
  }
  for(const name of ['costHalo','costDisc','costCore'])if(find(name))find(name).position=[...geometry.cost.position];
  if(find('costDirection'))find('costDirection').position=[geometry.cost.position[0]+12,geometry.cost.position[1]-12];
- return {profile:stsAngerReference.id,root,back,images:referencePrimitiveCount(root)+referencePrimitiveCount(back),geometry};
+ return {profile:stsAngerReference.id,root,back,images:referencePrimitiveCount(root)+referencePrimitiveCount(back)+referencePrimitiveCount(costLayer),geometry};
 }
 export function buildStsAngerReferencePrototype({tokens,title='破防斩',body='造成 8 点伤害。\n施加 2 层易伤。',cost='2',artImage=102012}={}){
  if(!tokens?.character||!tokens.rarity?.common)throw Error('Reference study requires explicit shared tokens');

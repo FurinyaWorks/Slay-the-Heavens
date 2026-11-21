@@ -62,7 +62,7 @@ function M.new(self, describe, lines)
     local function statusRow(entry, battle, actor)
         local text, tag, note = ownedStatusText(self, describe, entry, battle, actor)
         local kind = describe.statusKind(entry)
-        return { status = entry.id, icon = Theme.icon.status[entry.icon or entry.id],
+        return { status = entry.id, icon = (Theme.icon.status[entry.id] or Theme.icon.status[entry.id:match('^colorless_bomb_') and 'colorless_bomb' or entry.icon]),
             colour = kind == "buff" and C.buff or C.debuff, tag = tag, text = text, note = note,
             name = entry.name .. (entry.stack == "none" and "" or " " .. number(entry.amount)) }
     end

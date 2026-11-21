@@ -1,3 +1,4 @@
+import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 // Copies only immutable test helper dependencies; production owners remain explicit fixtures.
 import assert from 'node:assert/strict';
 import {officialUiRepairClosure} from './official-ui-repair-closure.mjs';
@@ -15,7 +16,7 @@ export function integrationClosureBytes(path,content){
  if(!/\.(?:mjs|js|json|lua|md|yml|yaml)$/.test(path))return content;
  const text=content.toString('utf8');
  assert(Buffer.from(text).equals(content),'helper source must be valid UTF-8: '+path);
- return Buffer.from(text.replaceAll('\r\n','\n'));
+ return Buffer.from(beforeCombatVisualSource(path,text).replaceAll('\r\n','\n'));
 }
 const bytes=readFileSync(new URL('./integration-source-closure.json',import.meta.url));
 assert.equal(hash(bytes),'800fcc9efd889f482259d0e1e9f1501f0e9597ac05552622ede00dd3dcdb4a94','complete integration helper closure identity');

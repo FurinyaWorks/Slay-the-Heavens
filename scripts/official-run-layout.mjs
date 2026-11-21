@@ -84,7 +84,7 @@ export function composeOfficialRun(tree,theme){
  if(kind==='run')officialRunChrome(tree,theme);
 }
 
-const cardRoles=['nativeCardBody','nativeRibbon','nativeCostOrb','tagEdge','tagBody','stsReferenceBack','stsReferenceChrome'];
+const cardRoles=['nativeCardBody','nativeRibbon','nativeCostOrb','tagEdge','tagBody','stsReferenceBack','stsReferenceChrome','stsReferenceCost'];
 function cardMaterial(face){
  return JSON.stringify(cardRoles.map(role=>required(face,role)));
 }
