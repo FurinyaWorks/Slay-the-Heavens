@@ -1,0 +1,2 @@
+Quality failed: 356 modules; 6380/6380 measurements; absolute CC30 checked. See build/engineering-quality.{json,md}
+src/lua/abyss_power_membership.lua: Absolute complexity CC31 exceeds 30: M.ccProbe

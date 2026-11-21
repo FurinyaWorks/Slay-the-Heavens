@@ -4,8 +4,8 @@ title: 按真实内容阻塞复核状态所有权与残余依赖
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:13'
+created_date: '2026-11-06T01:46:00Z'
+updated_date: '2026-11-21T14:23:31Z'
 labels:
   - 待验
   - delivery-verify
@@ -132,4 +132,6 @@ DefectUtility最终历史消费者补齐：Formation12、Room6、Seven19完整�
 2026-11-14逐项对账：重复元数据经用户批准修复，CLI现恢复可读；Defect/Protected等已有成果见634来源清单，不能据旧待合备注重做。全局残余风险未获接受，待真实内容扩展阻塞再核查；保留原AC。
 
 2026-11-14第二轮状态纠正：已有Protected/Defect能力边界等切片、全图与回滚证据；残余所有权/风险复核未完成，属于已开展工作的收口，不是待新开工。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+专项检查点 13f9d445。本地完整 SCC 为 64（Power/Run 两组已各自清除，Actor/Combat 仍待拆）。#806 待正式 CI/入队/合后验证。逐路径来源与继任者见 docs/backlog-details/CORE-ARCHITECTURE-20261121.md。Furinya 接续，AC 保持。
 <!-- SECTION:NOTES:END -->

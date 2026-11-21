@@ -4,8 +4,8 @@ title: 按真实内容阻塞复核剩余高风险复杂度
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:13'
+created_date: '2026-11-06T01:46:00Z'
+updated_date: '2026-11-21T14:23:32Z'
 labels:
   - 待验
   - delivery-verify
@@ -211,4 +211,6 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 2026-11-14逐项对账：重复元数据经用户批准修复；Joust/GoldenIdol及六核心已由634及历史交付承接，不重复拆分。原全库绝对出口与残余范围未被Owner正式接受，未来按实际内容阻塞接续。
 
 2026-11-14第二轮状态纠正：六核心、Joust、GoldenIdol等已实现并进入历史组合；剩全库出口与残余接受，保持进行中待复核，不重做既有重构。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+专项检查点 13f9d445 的 6379/6379 测量显示 CC>30=0、CC>15=164、最高30，绝对 CC31 负控真实退出1。#805 待正式 CI/入队/合后验证。各切片来源、现行阻塞和验收入口见 docs/backlog-details/CORE-ARCHITECTURE-20261121.md。Furinya 接续，AC 保持。
 <!-- SECTION:NOTES:END -->

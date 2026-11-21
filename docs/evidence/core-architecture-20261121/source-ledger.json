@@ -1,0 +1,1713 @@
+{
+  "base": "345ba08398b6ca8e1361a126f2ce1de85210e634",
+  "sourceBase": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "source": "d8b714bc25ec8777cb3d947bd07fa4abc55f8835",
+  "sourceStatus": "FROZEN",
+  "checkpoint": "13f9d445ca51ae0a8daaec7d115c4871d8bba768",
+  "branches": {
+    "refactor/core-architecture-debt": "680a44108bdbb1f1d2402fc224f5a602df7fab70",
+    "refactor/architecture-admission": "4c8161f3d44aff7e8414d23fb492d4076758e959",
+    "refactor/session-relic-owner": "39238fa52173bb45dea36a2329fa038f38921e26",
+    "refactor/actor-focus-stances": "926f29bf29db13580b470b64a571db87eced50ad",
+    "refactor/stasis-upgrade-boundary": "c6f85876205c90b0c6a4125f98a4188a8ebd287b",
+    "refactor/card-display-responsibilities": "934104edee39d4cdca4489fb72be9c0391c364ca",
+    "refactor/native-portrait-lifecycle": "7f922492cd0a236bed7a7fa03d12c8d8e8c2050c",
+    "refactor/event-and-card-projections": "0ccdf35fd01970c7388921fa08d61beddd468687",
+    "refactor/map-render-responsibilities": "aa2eee7b7918f56bdee605f09557baa613fd2bcd",
+    "refactor/reward-ui-responsibilities": "c6cee6a793e32628e8f747ce6515475be4cad0b0",
+    "refactor/battle-feedback-responsibilities": "254960fb39b085d72a75fccaa72fc9e393961fd3"
+  },
+  "thresholds": {
+    "baseline": {
+      "scc": [
+        67,
+        11,
+        2
+      ],
+      "ccOver30": 25,
+      "ccOver15": 198,
+      "maxCc": 64,
+      "coverage": {
+        "modules": 351,
+        "functions": 5885,
+        "measurements": 6236,
+        "expectedMeasurements": 6236
+      }
+    },
+    "checkpoint": {
+      "scc": [
+        64
+      ],
+      "ccOver30": 0,
+      "ccOver15": 164,
+      "maxCc": 30,
+      "coverage": {
+        "modules": 356,
+        "functions": 6023,
+        "measurements": 6379,
+        "expectedMeasurements": 6379
+      }
+    }
+  },
+  "records": [
+    {
+      "path": "backlog/tasks/task-74.19 - 收敛核心依赖环与领域状态所有权.md",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "backlog/tasks/task-74.20 - 治理阻碍角色扩展的高风险复杂度.md",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "config/architecture.json",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt",
+        "refactor/session-relic-owner",
+        "refactor/actor-focus-stances",
+        "refactor/stasis-upgrade-boundary"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "docs/ENGINEERING_QUALITY.md",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "docs/backlog-details/DEVELOP-ARCHITECTURE-20261118.md",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/after-architecture.json.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/after-quality.json.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/before-architecture.json.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/before-quality.json.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/card-strategy-final.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/ci-history-final.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/ci-planning.json",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/combat-owner-final.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/delivery-blocker.json",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/engineering.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/feedback-final.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/gate-contracts.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/independent-review-product-and-tests.json",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/product-combined.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/ratchet.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/source-contracts.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/test-planning-receipt.json",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/turn-command-final.log.gz",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/evidence/develop-architecture-20261118/validation.json",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "docs/plans/2026-11-18-develop-architecture.md",
+      "disposition": "preserved-historical-evidence",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Preserve original evidence and attribution"
+    },
+    {
+      "path": "scripts/check-architecture.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "scripts/check-lua-static.mjs",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "scripts/ci-quality-shape.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "scripts/ci-test-timings.json",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "scripts/m3-normal-campaign.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_act2_events.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/event-and-card-projections"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_act2_stasis.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/stasis-upgrade-boundary"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_act3_events.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/event-and-card-projections"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_actor.lua",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/actor-focus-stances"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "src/lua/abyss_actor_artifact.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/actor-focus-stances"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_actor_attack_math.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_battle_ui.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_boss_relics.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_build_actions.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_card_actions.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_card_triggers.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_card_upgrade.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/stasis-upgrade-boundary"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_character_presentation.lua",
+      "disposition": "merged-slice",
+      "mergedPr": 724,
+      "sourceBranches": [],
+      "reason": "Existing delivered slice"
+    },
+    {
+      "path": "src/lua/abyss_character_profiles.lua",
+      "disposition": "merged-slice",
+      "mergedPr": 724,
+      "sourceBranches": [],
+      "reason": "Existing delivered slice"
+    },
+    {
+      "path": "src/lua/abyss_character_select_view.lua",
+      "disposition": "merged-slice",
+      "mergedPr": 733,
+      "sourceBranches": [],
+      "reason": "Existing delivered slice"
+    },
+    {
+      "path": "src/lua/abyss_choice_ui.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/reward-ui-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_colorless_cards.lua",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/event-and-card-projections"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "src/lua/abyss_combat.lua",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/stasis-upgrade-boundary"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "src/lua/abyss_combat_card_hooks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_combat_commands.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_cards.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_choice.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_combat_effect_powers.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_combat_queued_play.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_deck_ui.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/reward-ui-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_defect_final_cards.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_discard.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_effects_cards.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_effects_damage.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_ending_history.lua",
+      "disposition": "merged-slice",
+      "mergedPr": 727,
+      "sourceBranches": [],
+      "reason": "Existing delivered slice"
+    },
+    {
+      "path": "src/lua/abyss_feedback.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/battle-feedback-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_focus.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/actor-focus-stances"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_hand_choice.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_hp_loss.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_inventory.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_map.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/architecture-admission"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_map_ui.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/map-render-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_match_event_ui.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/reward-ui-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_node_ui.lua",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "src/lua/abyss_original_v4.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_original_v4_actor_hooks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_original_v4_display.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/card-display-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_original_v4_health.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_player_revive.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_potion_fairy.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_potion_text.lua",
+      "disposition": "merged-slice",
+      "mergedPr": 735,
+      "sourceBranches": [],
+      "reason": "Existing delivered slice"
+    },
+    {
+      "path": "src/lua/abyss_power_membership.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_power_order.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_power_schedule.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_relic_actor_hooks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_relic_card_rewards.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_relic_choices.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_relic_combat_hooks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_relic_family_combat.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_relic_hooks.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_relic_pending.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_relic_pending_ui.lua",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "src/lua/abyss_run.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_run_potion_candidate.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_run_rooms.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_run_settlement.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_shivs.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_shop_relics.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_silent.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_silent_final_cards.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_silent_potions.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_stance_damage.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/actor-focus-stances"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_stances.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/actor-focus-stances"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_traveler_portraits.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/native-portrait-lifecycle"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_treasure_source.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/architecture-admission"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_treasure_ui.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/reward-ui-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_turn_powers.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_uncommon_relics.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_warrior_status_cards.lua",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/stasis-upgrade-boundary",
+        "refactor/card-display-responsibilities"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "src/lua/abyss_warrior_strength_cards.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_watcher_final_cards.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "src/lua/abyss_watcher_flow_cards.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/card-display-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_wheel_event.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/architecture-admission"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_winding_event.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/architecture-admission"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "src/lua/abyss_writhing_mass.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-admission-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-admission-complexity.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-admission-differential.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-admission-probes.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-character.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-ci-budget.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-complexity-gate.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-display-equivalence.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-display-responsibilities.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-feedback-equivalence.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-full-cycle-gate.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-run-ratchet-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-run-ratchet-probes.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-run-ratchet.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-scoped-gate.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/architecture-ui-complexity.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/card-strategy-owner-complexity.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/card-strategy-owner-state-equivalence.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/ci-complete-calibration.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/ci-runtime.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/combat-command-turn-stage.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/combat-owner-complexity.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/combat-owner-state-equivalence.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/core-actor-owner.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/core-other-boundaries.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/core67-leaf-boundaries.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/develop-architecture-source-epoch.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/discard-host-boundaries.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/engineering-shared-inputs.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/fixtures/architecture-display-before.json.gz",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/card-display-responsibilities",
+        "refactor/battle-feedback-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/fixtures/card-strategy-owner-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/fixtures/combat-owner-source-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/fixtures/core-actor-owner-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/fixtures/develop-character-architecture-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/fixtures/turn-start-stage-before.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/architecture-character.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/architecture-display-matrix.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/card-display-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/helpers/architecture-feedback-vm.mjs",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/battle-feedback-responsibilities"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/helpers/closeout-source-epoch.mjs",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "tests/helpers/copy-integration-source-closure.mjs",
+      "disposition": "partial-checkpoint",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Only the measured responsibility boundary is carried; compare the entire former diff"
+    },
+    {
+      "path": "tests/helpers/core-actor-owner.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/develop-architecture-helper-binding.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/develop-architecture-helper-closure.json",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/develop-architecture-input-source.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/develop-architecture-light-source.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/develop-architecture-source-epoch.json.gz",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/develop-architecture-source-epoch.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/integrated-ci-source.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/inventory-responsibilities.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/helpers/reward-query-boundary-vm.mjs",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/helpers/shiv-turn-responsibilities.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/act2_event_relic_opening.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/act3_writhing_parasite.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/astrolabe_upgrade_origin.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/awakened_one_presence.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/boss_relics_missing.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/camp_rest_upgrade_origins.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/card_strategy_owner_semantics.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/card_triggers.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/class_common_relic_constructor.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/class_common_relic_effects.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/combat_owner_semantics.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/common_relic_attacks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/common_relic_equipment.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/common_relic_final.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/common_relic_hooks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/common_relic_turns.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/core_actor_leaf_contract.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/core_other_host_boundaries.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/corruption_cost_integration.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/defect_final_generation.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/discard_host_boundaries.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/fatal_hp_loss_callbacks.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/m3_driver_event_stage.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/m3_driver_relic_choices.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/mark_of_bloom_healing.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/power_cycle_boundaries.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/purge_query_dynamic.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/relic_card_rewards.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/run_cycle_host.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/run_nested_snapshot_owner.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/shop_relics_acquisition.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/silent_discard.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/silent_foundation.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/silent_shivs.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/special_relics.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/support/card_consumers.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/support/deep_breath_vectors.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/support/m9_combat_protocol_baseline.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/support/official_choice_pagination.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/support/prismatic_rewards.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/support/reward_query_boundary.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/turn_power_plans.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/uncommon_relics_effects.lua",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/lua/warrior_choices.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/warrior_status_build.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/lua/watcher_master_reality_shivs.lua",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/power-cycle-boundaries.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/power-shop-boundaries.test.mjs",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/core-architecture-debt"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/reward-query-boundary.test.mjs",
+      "disposition": "checkpoint-or-source-branch",
+      "mergedPr": null,
+      "sourceBranches": [
+        "refactor/session-relic-owner"
+      ],
+      "reason": "Independent follow-up still needs exact hosted verification"
+    },
+    {
+      "path": "tests/run-cycle-boundaries.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/session-menu-navigation.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    },
+    {
+      "path": "tests/sts-style-source-epoch.test.mjs",
+      "disposition": "frozen-pending-adaptation",
+      "mergedPr": null,
+      "sourceBranches": [],
+      "reason": "Original bytes retained in the PR source; port with behavior or source-identity review"
+    }
+  ],
+  "ci": {
+    "main": {
+      "pr805": {
+        "head": "4c8161f3d44aff7e8414d23fb492d4076758e959",
+        "review": 6005890914,
+        "quality": 44913288990,
+        "licenses": 44913288972
+      },
+      "pr806": {
+        "head": "680a44108bdbb1f1d2402fc224f5a602df7fab70",
+        "review": 6005788360,
+        "quality": 44912036953,
+        "licenses": 44912036963
+      }
+    },
+    "forkA": {
+      "currentDispatches": 0,
+      "historicalQuick": 44025235537
+    },
+    "forkB": {
+      "currentDispatches": 0,
+      "otherCandidateFull": 44905359933,
+      "historicalCancelledFull": 44034686329
+    },
+    "cost": {
+      "candidateNewForkFulls": 0,
+      "currentQueuedJobsWithoutAssignedRunner": "Runner minutes unavailable",
+      "historicalCancelledForkBRunnerMinutes": 105.53
+    }
+  }
+}
