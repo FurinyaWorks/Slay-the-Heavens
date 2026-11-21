@@ -1,5 +1,5 @@
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
-import {beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -67,9 +67,11 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  assert.deepEqual(Object.keys(frozen.current),Object.keys(closeoutPriorEpoch.proof.current));
  assert.equal(proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
+ const readLive=file=>readFileSync(file,'utf8');
+ const readPredecessor=file=>beforeReleaseUiRestore(file,readLive(file));
  for(const path of shopDeckPaths){
-  const readLive = file=>readFileSync(file,'utf8');
-  assert.equal(beforePc13ThenV2UiHudSource(path,readLive(path),readLive).replaceAll('\r\n','\n'),raw(path),path);
+  const predecessor=beforeAuthenticatedReleaseUiRestore(path,readLive(path),readLive);
+  assert.equal(beforePc13ThenV2UiHudSource(path,predecessor,readPredecessor).replaceAll('\r\n','\n'),raw(path),path);
   for(const input of [raw(path),raw(path).replaceAll('\n','\r\n')])for(const target of Object.keys(proof.targets)){
    const before=proof.targets[target].files[path];
    const expected=before&&before.sha256!==proof.current[path].sha256?before.source:input;

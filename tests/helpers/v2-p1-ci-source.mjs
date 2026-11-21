@@ -12,7 +12,7 @@ const {project:beforeReleaseControlsGuideRemovalCi}=releaseUiRestoreArchive(
   'cb2f6afc7a5b4c78ac7248c84e1092801d6ca4a31a7562134e6739edefb9d2d9','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
-  '2efd379b5ff0f87497082f422b395a3bed55b6243ed8af1d03be6f48e3993a3b');
+  '0de95c7da1bf949d3d5b6a119a3c06e91830242bf309c51e5829ffaa03b3c1cb');
 const {project:beforeReleaseRelicCrystal}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-relic-crystal-ci-source.json.gz',import.meta.url)),
   '39527f12baa379591acfcf9446c100bd6c27cd467ec434eb100939c1a31d10a0', '068e1acbc6f98b591f84bf5cdb35a7620bb4cf17');
