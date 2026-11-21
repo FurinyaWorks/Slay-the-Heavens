@@ -30,3 +30,9 @@ npm run check:engineering
 源码/离线原生控件验证不等于官方导入、当前ready或PC/手机实测。本轮没有接管用户桌面，没有写正式存档，没有发版；官方设备验收保持待验。
 
 最终负向回归覆盖：wrapper使用相同reader二次读回时拒绝变更；fresh/current入口拒绝BASE旧样本或新旧混合。追加19/19通过（含原历史10项重放），基础/无色图标测试此前串行通过。语法、数据校验通过。工程检查遇基线既存 `abyss_battle_ui.lua` 的 `M.new` CC16>15，准确BASE原始源码独立测量同样16；本轮该文件零差异，未降低门槛。
+
+并发集成：将release推进至 `1a60a09704ec8e0699cb2a705721b623545a5f09` 的 #793/#794/#795 合入本分支，保留其药水、详情延迟、排序与地图修复；本轮证据包before更新为此精确集成BASE。
+
+最新组合回归：32项中31通过，唯一失败为原历史卡面重放的 `fresh current production owner: abyss_battle_detail_bindings.lua`。从精确最新BASE独立提取源码并复跑同一项，获得完全相同的actual/expected hash，确认由并行详情延迟修复引入的既存基线续接缺口；未跳过或弱化该断言。药水、详情延迟、排序/地图、状态/费用/能量及守卫负控均通过。`integrated.log.gz` 与 `latest-baseline.log.gz` 保留两份完整结果。
+
+energy定向用例使用独立生成主题目录，避免覆盖后续测试的共享主题；官方界面完整runtime文件曾中止，不能记为完整通过。管理员应急合并与上述非全绿基线状态一并在PR记录。

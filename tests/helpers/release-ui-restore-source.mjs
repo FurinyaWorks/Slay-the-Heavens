@@ -1,3 +1,4 @@
+import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {authorizeRefinedReleaseProduction,beforeRefinedReleaseProduction} from './refined-release-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -45,7 +46,7 @@ const forgeGrid=releaseUiRestoreArchive(readFileSync(new URL('./release-forge-so
  '8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564','7381cf7152ba7a726506f9a5b525e13cfbd2c87a');
 const recording=releaseUiRestoreArchive(readFileSync(new URL('./recording-0401-source.json.gz',import.meta.url)),
  '9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24','d26c4dc59e639741471580a242718a284a67f758');
-export const beforeRecordingUi=recording.project;
+export const beforeRecordingUi=(path,source)=>recording.project(path,beforeCombatVisualSource(path,source));
 export const releaseForgeSourcePaths=Object.freeze(Object.keys(forgeGrid.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseForgeGridUi=forgeGrid.project;
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
@@ -59,6 +60,11 @@ export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRig
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ for(const [path,input]of samples){
+  try{beforeCombatVisualSource(path,input,read);}catch{assert.fail('recording UI linked owner changed: '+path);}
+ }
+ samples=samples.map(([path,input])=>[path,beforeCombatVisualSource(path,input,read)]);
+ read=combatVisualPriorRead(read);
  for(const [path,input] of samples){
   const expected=recording.files[path]?.after;
   if(!matches(input,expected))continue;

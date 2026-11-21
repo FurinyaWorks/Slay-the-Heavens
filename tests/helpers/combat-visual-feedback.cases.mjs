@@ -29,9 +29,10 @@ test('official blocked card dims its face while cost material and numeral paint 
 test('live energy writer darkens decorative chrome at zero and restores it on recharge',()=>{
  buildLuaData();mkdirSync('build/lua',{recursive:true});
  writeFileSync('build/visual-theme.json',JSON.stringify(officialAssetsTheme(nativeTheme)));
- buildUiTheme('build/visual-theme.json','data','build/lua/abyss_theme.lua');
  mkdirSync('build/visual-test',{recursive:true});
- writeFileSync('build/visual-test/energy.lua',`package.path='build/lua/?.lua;src/lua/?.lua;'..package.path
+ buildUiTheme('build/visual-theme.json','data','build/visual-test/abyss_theme.lua');
+ mkdirSync('build/visual-test',{recursive:true});
+ writeFileSync('build/visual-test/energy.lua',`package.path='build/visual-test/?.lua;build/lua/?.lua;src/lua/?.lua;'..package.path
 local nodes={}
 local function node(name)
  local c={name=name,visible=true,children={}}
