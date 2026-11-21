@@ -78,7 +78,11 @@ function beforeRefinedReleaseCopier(path,source){
 // Restore the previous exact copy contract before its own historical projection.
 function beforeShopEntryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
+ let lf=normalize(source);
+ if(hash(lf)==='8aabed8386912ac999c934952af60c84d135f02b0c571368762f82ab0b9f4350'){
+  lf=lf.replace(" 'tests/helpers/release-ui-restore-source.mjs':'d4f88d7d0df3c5d1afcb7ed3c104f7a938663f435fe1e468208679655dcd58ac',\n 'tests/helpers/release-sprint-cancellation-source.json.gz':'2b660aee8b748b51ab63a12f6348c7682ece30e1238a2da62cc6121aa16f68fd',\n"," 'tests/helpers/release-ui-restore-source.mjs':'37410ec175d07b09c8dd8062ac2e19d212dc8eeaebc32f38dbf99e7b32d8b7dd',\n");
+  assert.equal(hash(lf),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact sprint cancellation helper copy predecessor');
+ }
  if(hash(lf)!=='42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87')return source;
  const prior=lf.replace(" 'tests/helpers/release-shop-entry-source.json.gz':'d3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7',\n",'').replace(" 'tests/helpers/release-ui-restore-source.mjs':'37410ec175d07b09c8dd8062ac2e19d212dc8eeaebc32f38dbf99e7b32d8b7dd',"," 'tests/helpers/release-ui-restore-source.mjs':'26d8b8099e6b8f6fb30869479dcbcac90ff8c77ea04bc80ab4f8ad25c8bc8be3',");
  assert.equal(hash(prior),'6da6f0f4defe5d10ec161a626d020ecd22d6f651d0e35c2ba941907f579337a6','exact shop entry helper copy predecessor');

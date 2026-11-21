@@ -69,3 +69,5 @@ assert(not recovered,'mixed row feedback must not recover')
 
 print=originalPrint
 print('ACID_SPLIT_UI_PASS actual-child-name/three-and-five-slots/identity/stale-pointer/child-target')
+
+dofile('tests/lua/support/slime_split_positions.lua')
