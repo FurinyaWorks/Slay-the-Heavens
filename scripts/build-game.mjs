@@ -4,7 +4,7 @@ import {resolve} from 'node:path';
 
 // Build-time aliases only. The existing candidate builder owns flags and receipts.
 export function gameBuildArgs(argv) {
- const paths=[];let combat='2d',art='enhanced';const seen=new Set();
+ const paths=[];let combat='2d',art='official';const seen=new Set();
  for(const arg of argv){
   const match=/^--(combat|art-version)=(.+)$/.exec(arg);
   if(match){if(seen.has(match[1]))throw Error('Duplicate option: '+match[1]);seen.add(match[1]);

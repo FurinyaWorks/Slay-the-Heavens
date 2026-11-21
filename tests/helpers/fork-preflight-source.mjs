@@ -49,13 +49,32 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+// Keep earlier CI observations bound to the Release baseline while current
+// tests execute the approved default and frozen candidate paths.
+const releaseUiBuildBytes=readFileSync(new URL('./release-ui-build-ci-source.json.gz',import.meta.url));
+assert.equal(hash(releaseUiBuildBytes),'cf79441a350083ad0aa3a9ab2269b92f670fe58c81613fb4ef686761eb406322');
+const releaseUiBuild=JSON.parse(gunzipSync(releaseUiBuildBytes));
+assert.equal(releaseUiBuild.base,'ff6af63d9bf93056dd772347d10dc749e7fa8d34');
+const blob=source=>createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0${source}`).digest('hex');
+for(const {before,after} of Object.values(releaseUiBuild.files)){
+ assert.equal(hash(before.source),before.sha256);
+ assert.equal(blob(before.source),before.gitBlob);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+function beforeReleaseUiBuildSource(path,source){
+ if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const text=normalize(source),{before,after}=releaseUiBuild.files[path];
+ if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
+ return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
 const coopLabCiBytes=readFileSync(new URL('./coop-lab-ci-predecessors.json.gz',import.meta.url));
 assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc469830fe0ae9255285dc','complete co-op lab CI predecessors');
 const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
 assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
 function beforeCoopCiSource(path,source){
- source=beforeV2UiEvidence(path,source);
+ source=beforeV2UiEvidence(path,beforeReleaseUiBuildSource(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
@@ -142,7 +161,7 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,beforeReleaseUiBuildSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){

@@ -43,9 +43,8 @@ export function artFeatureArgs(argv) {
  }
  return {args,artFeatures};
 }
-// 2026-10-31 Owner candidate preference: the developer CLIs (build:native / build-native-candidate)
-// default the custom select look and low-poly scene backgrounds ON. Deferred cards stay OFF. API/build-ui defaults
-// stay false. Explicit --art-<category>=false always wins; legacy card-art switches keep deciding cards.
+// Defaults for explicit developer profiles. API/build-ui defaults stay off.
+// Explicit artwork flags win, and legacy card-art switches keep deciding cards.
 export const candidateArtDefaults=Object.freeze({cards:false,menuBackground:true,selectionAvatar:true,battlePortrait:true});
 export function withCandidateArtDefaults(explicit={},{cardsDecided=false}={}) {
  const out={...explicit};
