@@ -4,8 +4,8 @@ title: 按真实内容阻塞复核状态所有权与残余依赖
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:13'
+created_date: '2026-11-06T01:46:00Z'
+updated_date: '2026-11-21T13:56:05Z'
 labels:
   - 待验
   - delivery-verify
@@ -69,6 +69,8 @@ ordinal: 161000
 
 2026-11-11 本轮合流#619与#622：已核当前develop及两PR无新占用，保留两父提交及全部独立证据；仅合并同文件互不覆盖的门禁与回归，Backlog通过CLI追加两侧记录，.gitattributes保留两侧。完整定向验证、原全图对照与独立组合复审后更新原#622，不新增PR，不重复Full，不改生产Lua/共享来源或owner/status/AC。
 2026-11-11接续未占用DefectUtility准备能力切片：基线6a614fc8，核对8个开放PR及保全工作树，不重复认领。在现有queued-play宿主提供延迟Actor算术能力，Utility只保留纯数据规划；内部prepareEffect增加显式host参数，原校验、复制、动态方法、错误与回滚时机保持。先独立审查全部当前及冻结调用、源码桥和测试成本；保留旧完整源与冻结协议，补冷加载/完整图/负控、精确鲜读历史接线及全图SCC证据。只做必要定向测试，不重复Full、改预算或用户GUI；独立深审后按现有队列交付，owner/status/AC不变。
+
+本轮专项以 345ba083 为基线，承接 #714 剩余 SCC。规约 docs/plans/2026-11-21-core-architecture.md；先保留真实状态与返回契约，逐片落地方向门禁，再验完整图及合后回归。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -132,4 +134,6 @@ DefectUtility最终历史消费者补齐：Formation12、Room6、Seven19完整�
 2026-11-14逐项对账：重复元数据经用户批准修复，CLI现恢复可读；Defect/Protected等已有成果见634来源清单，不能据旧待合备注重做。全局残余风险未获接受，待真实内容扩展阻塞再核查；保留原AC。
 
 2026-11-14第二轮状态纠正：已有Protected/Defect能力边界等切片、全图与回滚证据；残余所有权/风险复核未完成，属于已开展工作的收口，不是待新开工。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+本轮 Power 显示和调度分离已在本地完整图验证，SCC 67/11/2→67/11。既有冷载、公开方法替换、脱离帧和旧新 VM 已复测；独立复审、托管和合后证据待补，AC 未变。
 <!-- SECTION:NOTES:END -->

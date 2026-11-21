@@ -18,7 +18,7 @@ Fork 是可选诊断，主仓 PR 和正式 CI 无需 Fork 记录。调用和结�
 git push fork-a <task-branch>:refs/heads/<task-branch>
 gh workflow run quick-feedback.yml -R FurinyaDev/Slay-the-Heavens-Fork-A --ref <task-branch> -f base_sha=<exact-base-sha>
 git push fork-b <task-branch>:refs/heads/<task-branch>
-gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <task-branch> -f runner_pool=hosted
+gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <task-branch> -f runner_pool=hosted -f base_sha=<exact-base-sha>
 ```
 
 Fork Quick 手动预检执行完整受影响 JS/Lua 和便宜治理检查，未知或空覆盖明确要求一次必要 Full；本地 fast/advisory 仍保留有界选测和延期报告。两者都不能称为双平台正式准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
