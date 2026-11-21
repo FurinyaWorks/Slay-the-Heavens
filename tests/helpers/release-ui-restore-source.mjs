@@ -36,6 +36,8 @@ const {files,project}=releaseUiRestoreArchive(readFileSync(new URL('./release-ui
  'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b');
 const rightClick=releaseUiRestoreArchive(readFileSync(new URL('./release-card-right-click-source.json.gz',import.meta.url)),
  'a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a','ae15cf5f597728f0fe876f7136230955c3ec6179');
+const sprintCancellation=releaseUiRestoreArchive(readFileSync(new URL('./release-sprint-cancellation-source.json.gz',import.meta.url)),
+ '2b660aee8b748b51ab63a12f6348c7682ece30e1238a2da62cc6121aa16f68fd','82cd198314581accdd6729316a7ae24e795ebb07');
 const fieldCancel=releaseUiRestoreArchive(readFileSync(new URL('./release-card-field-cancel-source.json.gz',import.meta.url)),
  'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca','aa8fde88c2a077f3e7266984cdf3a4e6be8fc45a');
 const controlsGuideRemoval=releaseUiRestoreArchive(readFileSync(new URL('./release-controls-guide-removal-source.json.gz',import.meta.url)),
@@ -62,11 +64,18 @@ export const beforeReleaseSharedRelicUi=sharedRelics.project;
 export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
-export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
+export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,sprintCancellation.project(path,source)));
 export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,beforeReleaseSharedRelicUi(path,beforeReleaseForgeGridUi(path,beforeRefinedReleaseProduction(path,beforeRecordingUi(path,beforeReleaseShopEntry(path,source))))))));
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ for(const [path,input] of samples){
+  const expected=sprintCancellation.files[path]?.after;
+  if(matches(input,expected))assert(matches(read(path),expected),'combined linked owner identity: '+path+' changed during sprint cancellation validation');
+ }
+ const currentRead=read;
+ samples=samples.map(([path,input])=>[path,sprintCancellation.project(path,input)]);
+ read=path=>sprintCancellation.project(path,currentRead(path));
  for(const [path,input] of samples){
   const expected=shopEntry.files[path]?.after;
   if(matches(input,expected))assert(matches(read(path),expected),'shop entry linked owner changed: '+path);
