@@ -9,7 +9,7 @@ import { sha256 } from '../../scripts/evidence-files.mjs';
 import { indexPath, tablePath, renderTable } from '../../scripts/render-ui-reference-table.mjs';
 
 const guidance = fileURLToPath(new URL('../../scripts/check-ui-references.mjs', import.meta.url));
-const menu = 'scripts/menu-layout.mjs', map = 'scripts/map-layout.mjs';
+const menu = 'scripts/menu-layout.mjs', map = 'scripts/map-layout.mjs', retired = 'scripts/guide-layout.mjs';
 const target = 'docs/design/targets/menu.png', old = 'docs/evidence/old-menu.png';
 const candidate = 'docs/design/targets/new-menu.png';
 const ref = (path, text) => ({path, sha256:sha256(text)});
@@ -49,6 +49,7 @@ test('required guidance rejects UI design regressions and passes restored or unr
   put('package.json','{"scripts":{}}');
   put(menu,'export const layout = { size: [10,10] };\n');
   put(map,'export const layout = { size: [10,10] };\n');
+  put(retired,'export const guide = { size: [10,10] };\n');
   put(target,'menu pixels');
   put(old,'old pixels');
   index(baseline);
@@ -83,6 +84,14 @@ test('required guidance rejects UI design regressions and passes restored or unr
     index([{...normal,reference:ref(candidate,'old pixels')},inactive,pending]);
   },/Retired UI reference reused/);
   check('map visual without a baseline',() => put(map,'export const layout = { size: [20,10] };\n'),/no effective UI reference/);
+  check('unassigned removal of a standalone UI component',() => rmSync(join(root,retired)),/no effective UI reference/);
+  check('explicitly retired UI component',() => {
+    rmSync(join(root,retired));
+    index([{...normal,retiredCodePaths:[retired]},inactive,pending]);
+  });
+  check('retired UI component still exists',() => {
+    index([{...normal,retiredCodePaths:[retired]},inactive,pending]);
+  },/Retired UI component still exists/);
   check('restored target',() => put(target,'menu pixels'));
   check('ordinary controller fix',() => put(map,'export const layout = { size: [10,10] };\nexport const controllerFix = true;\n'));
   check('historical comparison evidence',() => put('docs/evidence/compare.md','[previous](old-menu.png)'));

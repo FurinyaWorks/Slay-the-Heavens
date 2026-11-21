@@ -1,5 +1,7 @@
+import {beforeSts1MapSource} from './helpers/sts1-map-source.mjs';
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
+import {beforeAuthenticatedReleaseGuideSource} from './helpers/release-guide-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
@@ -167,13 +169,19 @@ test('current PC13 facade rejects every exact immediate predecessor before older
  const read=path=>readFileSync(path,'utf8');
  assert.equal(pc13RewardCoverSourcePaths.length,5);
  for(const path of pc13RewardCoverSourcePaths){
-  const successor=read(path),predecessor=beforePc13RewardCover(path,successor);
-  assert.notEqual(predecessor,successor,path);
+  const successor=read(path),mapPrior=beforeSts1MapSource(path,successor);
+  const readMapPrior=owner=>beforeSts1MapSource(owner,read(owner));
+  const pc13=beforeAuthenticatedReleaseGuideSource(path,mapPrior,readMapPrior);
+  const predecessor=beforePc13RewardCover(path,pc13);
+  assert.notEqual(predecessor,pc13,path);
   assert.equal(beforeCurrentProductionSource(path,successor,read).replaceAll('\r\n','\n'),raw(path),path);
   assert.equal(beforeCharacterPreparationSource(path,predecessor,read).replaceAll('\r\n','\n'),raw(path),'historical predecessor remains supported: '+path);
   assert.throws(()=>beforeCurrentProductionSource(path,predecessor,read),{message:'fresh current production owner: '+path});
   const forbidden=()=>{throw Error('must not read for an unrecognized current owner');};
-  for(const invalid of [predecessor,successor+'\n',null])
+  const invalidSources=[predecessor,successor+'\n',null];
+  if(mapPrior!==successor)invalidSources.push(mapPrior);
+  if(pc13!==mapPrior)invalidSources.push(pc13);
+  for(const invalid of invalidSources)
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,forbidden),{message:'fresh current production owner: '+path});
   assert.throws(()=>beforeCurrentProductionSource(path,successor,owner=>owner===path?predecessor:read(owner)),
    /combined linked owner identity/,path);

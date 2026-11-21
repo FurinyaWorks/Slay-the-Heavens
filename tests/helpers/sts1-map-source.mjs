@@ -7,9 +7,9 @@ import {gunzipSync} from 'node:zlib';
 const hash=(source,algorithm='sha256')=>createHash(algorithm).update(source).digest('hex');
 const blob=source=>hash('blob '+Buffer.byteLength(source)+'\0'+source,'sha1');
 const archive=readFileSync(new URL('../fixtures/sts1-map-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'dd8f2cfbfcacd9fb6cc6cb856cef83bc344e6d65bce490cc6724dfb1f22da0e3','exact STS1 map source archive');
+assert.equal(hash(archive),'a356e09f7fb3a7c2f16c09adbbafaae6290bc615fe3be530a9f02d2c3a6e8d39','exact STS1 map source archive');
 const {base,files}=JSON.parse(gunzipSync(archive));
-assert.equal(base,'1fe37f4b08cbc21bc51b5b0d16fae94cec594976');
+assert.equal(base,'d7d77fe88d3b6fef6da233cfad0ec9361094db0d');
 export const sts1MapSourcePaths=Object.freeze(Object.keys(files));
 
 const matches=(source,binding)=>{

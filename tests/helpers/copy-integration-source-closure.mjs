@@ -72,11 +72,18 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',
  'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',
 });
-const mapFiles=Object.freeze({
+const releaseGuideFiles=Object.freeze({
  ...loadingRecoveryFiles,
- 'tests/helpers/pc13-reward-cover-source.mjs':'5e80e09a5e50e763833f0d1c9546346933314fbdf2c19926653723b68934ed3f',
- 'tests/helpers/sts1-map-source.mjs':'226af28f33973b2e7afaf023119fe49b21df9ac3b4541dafdd0e4fedb35b6d68',
- 'tests/fixtures/sts1-map-source.json.gz':'dd8f2cfbfcacd9fb6cc6cb856cef83bc344e6d65bce490cc6724dfb1f22da0e3',
+ [runtime]:'cb0a50200fbd9e249b897b0b71c2581b2290c3fd0de2edb46ff72f70dfd7c9cc',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'5c136f0cb4634526a6f133ed34d430717e020be2bc236f7e03a1c35c8e456737',
+ 'tests/helpers/release-guide-backflow-source.mjs':'9a18f8a3c11130899e51b17cba7ca9b5de25c7daf30cf3badf24db9808210062',
+ 'tests/fixtures/release-guide-backflow-source.json.gz':'7fe4f04ac99a35a19b6faee1b1678204b38476776729cb679886973eeff53d56',
+});
+const mapFiles=Object.freeze({
+ ...releaseGuideFiles,
+ [runtime]:'985fc70e2f49e04b18528cbf08b97e1fbb9abd0349fec80b1af1b634265da8ad',
+ 'tests/helpers/sts1-map-source.mjs':'72fda46722191a66d379b63def58d7c6ea47084ffe1cee14d97357a5f746d180',
+ 'tests/fixtures/sts1-map-source.json.gz':'a356e09f7fb3a7c2f16c09adbbafaae6290bc615fe3be530a9f02d2c3a6e8d39',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

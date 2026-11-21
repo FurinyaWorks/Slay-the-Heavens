@@ -6,8 +6,9 @@ import {createHash} from 'node:crypto';
 import {buildLuaData} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 import {historicalPresentationFixtures} from './helpers/historical-presentation-runner.mjs';
-import {bossUiFaultFixture as fixture,preBossUiFaultFixtureSource as project,preBossUiAutoEnterFixtureSource as preAutoEnter} from './helpers/boss-ui-fault-fixture-inverse.mjs';
+import {bossUiFaultFixture as fixture,preBossUiFaultFixtureSource as project} from './helpers/boss-ui-fault-fixture-inverse.mjs';
 import {pr323AcceptedSourceInverse as proof,requirePr323Source,preAcceptedPr323Source,preOriginalPr323Source} from './helpers/pr323-accepted-source-inverse.mjs';
+import {preBossUiAutoEnterFixtureSource as preAutoEnter} from './helpers/boss-ui-auto-enter-fixture-inverse.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const current=preAutoEnter(fixture.path,readHistoricalBaselineSource(fixture.path));
 
@@ -19,7 +20,7 @@ historicalTest('one exact Boss fault-input hunk restores its immutable whole sou
  requirePr323Source(fixture.path,previous);
  assert.equal(proof.files[fixture.path].afterSha256,fixture.beforeSha256);
  for(const [path,binding]of Object.entries(proof.files)){
-  const live=readFileSync(path,'utf8');requirePr323Source(path,live);
+  const live=preAutoEnter(path,readFileSync(path,'utf8'));requirePr323Source(path,live);
   for(const [restore,target]of [[preAcceptedPr323Source,'accepted'],[preOriginalPr323Source,'original']])
    assert.equal(restore(path,live),binding[target+'Source'],path+' complete '+target+' witness');
  }
