@@ -197,4 +197,28 @@ for _, mobile in ipairs({false, true}) do
     end
 end
 
+for _, from in ipairs({"silent", "ironclad"}) do
+    local actor, ui, panel, _, icon, descriptions, _, _, _, host = scene(true)
+    host.run.character = from
+    Combat.addStatus(actor, "strength", 3)
+    ui:render()
+    local e = {touchId = 43}
+    icon(1).down(e)
+    local run = G.Run.new(G.F.Data, 43)
+    assert(G.Run.startCombat(run, "cultist_solo"))
+    run.character = from == "silent" and "ironclad" or "silent"
+    Combat.addStatus(run.combat.player, "weak", 2)
+    host.run, ui.run = run, run
+    host:refresh()
+    icon(1).up(e)
+    icon(1).click(e)
+    assert(not panel:GetChild("statusInfo").visible, "a late cross-route tap cannot open a new battle's status")
+    icon(1).down(e)
+    icon(1).up(e)
+    icon(1).click(e)
+    local info = panel:GetChild("statusInfo")
+    assert(info.visible, "a fresh tap still opens the current status")
+    contains(ui.info and info:GetChild("name1").text or descriptions()[1], "虚弱 2")
+end
+
 print("TRAVELER_POWER_TOOLTIP_PASS")

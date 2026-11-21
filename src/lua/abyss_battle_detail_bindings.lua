@@ -22,9 +22,9 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
     end
     local function touchScreen() return host.platform.touchScreen() == true end
     local function clear() held, released = nil, nil end
-    local function legacy(spec)
-        if spec.statusId or spec.offset then return owner:openHelp(spec, control, false) end
-        return owner:showStatus(0)
+    function handlers.observe()
+        observed = true
+        clear()
     end
     local function ready()
         return owner.active and not owner.busy and not owner.gesture and not owner.carry
@@ -33,7 +33,7 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
     local function activate(spec, touch)
         if not spec then return end
         if travelerMode(owner) then owner:showPowerTip(spec, control, touch)
-        else legacy(spec) end
+        else owner:showStatus(0) end
     end
     if host.cursor and host.cursor.CursorEnter and host.cursor.CursorExit then
         on(host.cursor.CursorEnter, function()
@@ -66,8 +66,7 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
     end)
     if host.cursor and host.cursor.CursorDown and host.cursor.CursorUp then
         on(host.cursor.CursorDown, function(event)
-            observed = true
-            clear()
+            handlers.observe()
             if not ready() or travelerMode(owner) and not touchScreen() then return end
             if dependencies.down(event, true) then return end
             local run, spec = owner.run, describe()
@@ -115,14 +114,18 @@ function M.install(owner, _ownership, host, dependencies)
     local function bindHelp(control,describe,clickable,hoverSlot,guard,cleanups,travel)
         local function current()return not guard or guard()end
         if not current() then return end
+        local input={}
         local function on(kind, callback)
             if not travel then return control:AddCursorEventListener(kind, callback) end
             control:AddCursorEventListener(kind, function(event)
+                if host.cursor and kind == host.cursor.CursorDown then
+                    travel.observe()
+                    input.pointerObserved, input.held, input.released, input.consumed = true, nil, nil, nil
+                end
                 if travelerMode(owner) then return travel[kind](event) end
                 return callback(event)
             end)
         end
-        local input={}
         local function cancel(silent,engineDestroyed)
             if engineDestroyed then input.engineDestroyed=true end
             if input.engineDestroyed then forgetHelp(control,hoverSlot,input);return end
@@ -204,12 +207,11 @@ function M.install(owner, _ownership, host, dependencies)
         local _, index, actor = statusActorAt(screenSlot)
         if not Actors.isPresent(actor) then return end
         local entries = Combat.statusView(actor)
-        local entry = entries[position]
-        if not entry then return end
+        if not entries[position] then return end
         local slots = L.statusIcon.perRow * L.statusIcon.rows
         local overflow = position == slots and #entries >= slots
         return {index = index, screenSlot = screenSlot > 0 and screenSlot or nil, position = position,
-            statusId = not overflow and entry.id or nil, offset = overflow and position or nil}
+            statusId = not overflow and entries[position].id or nil, offset = overflow and position or nil}
     end
 
     local function bindActorHelp(screenSlot, box, entryAt, guard, cleanups)
