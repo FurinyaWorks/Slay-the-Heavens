@@ -17,9 +17,9 @@ const descendants=n=>[n,...(n.children??n.controls??[]).flatMap(descendants)];
 const battleStageControls = Object.entries({
  container: 'playArea topBar rewardStage rewardList exhaustIcon hero energyIcon drawIcon discardIcon potionHelp actorLayer card1 card2 card3 card4 card5 card6 card7 card8 card9 card10 dragLayer statusInfo feedback',
  text: 'title player piles floor exhaust notice statuses energy draw drawLabel discard discardLabel result',
- image: 'hpIcon goldIcon floorIcon energyRing energyDisc drawBadgeRing drawBadge discardBadgeRing discardBadge resultPlate',
- presetButton: 'potion1 potion2 potion3 endTurn start continue skip goldReward cardReward claimPotion stolenGold',
  cursorArea: 'statusDismiss',
+ image: 'hpIcon goldIcon energyRing energyDisc drawBadgeRing drawBadge discardBadgeRing discardBadge resultPlate',
+ presetButton: 'potion1 potion2 potion3 endTurn start continue skip goldReward cardReward claimPotion stolenGold',
 }).flatMap(([kind,names])=>names.split(' ').map(name=>`${name}:${kind}`)).sort();
 function expectedResourceHints() {
  const bar=nativeTheme.layout.topBar;
@@ -36,12 +36,9 @@ function assertBattleStageContract(stage,{host=false}={}) {
  assert(!descendants(stage).some(n=>/^enemy\d+$/.test(n.name)||/^monsterArt\d*$/.test(n.name)),'no static enemy pool in battle stage');
  const names=stage.children.map(n=>n.name);
  assert.equal(new Set(names).size,names.length,'unique battle stage child names');
- const expected=host?[...battleStageControls.filter(role=>role!=='floorIcon:image'),'resourceHints:container'].sort():battleStageControls;
- assert.deepEqual(stage.children.map(n=>`${n.name}:${n.kind}`).sort(),expected,'complete battle stage control identities');
+ assert.deepEqual(stage.children.map(n=>`${n.name}:${n.kind}`).sort(),[...battleStageControls,...(host?['resourceHints:container']:[])].sort(),'complete battle stage control identities');
+ assert.equal(descendants(stage.children.find(n=>n.name==='topBar')).find(n=>n.name==='floorIcon').visible,false);
  if(host){
-  const floor=stage.children.find(n=>n.name==='potionHelp').children.find(n=>n.name==='floorIcon');
-  const authored=battleLayout().controls.find(n=>n.name==='stage').children.find(n=>n.name==='floorIcon');
-  assert.deepEqual(floor,authored,'the hidden floor glyph retains its exact authored geometry');
   const hints=stage.children.at(-1);
   assert.deepEqual(hints,expectedResourceHints(),'only the exact read-only HP/gold hotspots occupy the host tail layer');
   // Exact themed hotspots must also cover the actual rendered visual controls.
@@ -59,16 +56,11 @@ function assertBattleStageContract(stage,{host=false}={}) {
 test('battle stage identity contract rejects missing, duplicate, static-enemy and overflowing controls',()=>{
  const stage=()=>structuredClone(battleLayout().controls.find(n=>n.name==='stage'));
  assert.doesNotThrow(()=>assertBattleStageContract(stage()));
- for(const name of ['floorIcon','floor','actorLayer','endTurn','card10']) {
+ for(const name of ['floor','actorLayer','endTurn','card10']) {
   const missing=stage();missing.children=missing.children.filter(n=>n.name!==name);
   assert.throws(()=>assertBattleStageContract(missing),/complete battle stage control identities/,name);
  }
- const hostStage=()=>{
-  const value=stage(),index=value.children.findIndex(n=>n.name==='floorIcon');
-  const [floor]=value.children.splice(index,1);
-  value.children.find(n=>n.name==='potionHelp').children.push(floor);
-  value.children.push(expectedResourceHints());return value;
- };
+ const hostStage=()=>{const value=stage();value.children.push(expectedResourceHints());return value;};
  assert.doesNotThrow(()=>assertBattleStageContract(hostStage(),{host:true}));
  assert.throws(()=>assertBattleStageContract(hostStage()),/complete battle stage control identities/,'standalone battle must not acquire host hotspots');
  for(const mutate of [
