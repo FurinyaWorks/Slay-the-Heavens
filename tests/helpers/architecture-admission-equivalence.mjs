@@ -8,7 +8,7 @@ import {luaString,toLua} from '../../scripts/build-lua-data.mjs';
 import {installLuaGraphObserver} from './lua-graph-observer.mjs';
 import {runStatic} from '../../scripts/check-lua-static.mjs';
 import {measureSources} from '../../scripts/lua-quality-metrics.mjs';
-import {beforeCharacterPreparationSource} from './character-preparation-source.mjs';
+import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './character-preparation-source.mjs';
 const {lua,lauxlib,lualib,to_luastring,to_jsstring}=createRequire(import.meta.url)('fengari');
 const archive=readFileSync('tests/fixtures/architecture-admission-before.json.gz');
 assert.equal(createHash('sha256').update(archive).digest('hex'),'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42','immutable complete c2409ad7 source archive');
@@ -56,10 +56,14 @@ test('complete admission responsibility measurements retain the CC15 limits',()=
  assert.equal(report.modules.length,Object.keys(governed).length);
  for(const module of report.modules){
   const names=governed[module.file.slice(8,-4)];
-  const items=names?names.map(name=>module.functions.find(fn=>fn.name===name)):module.functions;
+  const roots=names?.map(name=>{
+   const matches=module.functions.filter(fn=>fn.name===name);
+   assert.equal(matches.length,1,`${module.file} must contain exactly one ${name} entry`);
+   return matches[0].id;
+  });
+  const items=roots?module.functions.filter(fn=>roots.some(root=>fn.id===root||fn.id.startsWith(root+'/'))):module.functions;
   assert(items.length>0);
   for(const fn of items){
-   assert(fn,`missing governed function in ${module.file}`);
    assert(fn.complexity<=15,`${module.file} ${fn.name}: CC${fn.complexity} exceeds 15`);
   }
  }
@@ -73,5 +77,9 @@ test('historical admission receipts use only the exact current successor source'
   assert.equal(beforeCharacterPreparationSource(path,source.replaceAll('\n','\r\n'),read),before.sources[name]);
   assert.equal(beforeCharacterPreparationSource(path,source+'-- drift',read),source+'-- drift');
   assert.throws(()=>beforeCharacterPreparationSource(path,source,p=>read(p)+'-- drift'),/fresh admission receipt source/);
+  assert.equal(beforeCurrentProductionSource(path,source,read),before.sources[name]);
+  for(const invalid of [null,before.sources[name],source+'-- drift']){
+   assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh current production owner/);
+  }
  }
 });

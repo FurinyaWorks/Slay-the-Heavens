@@ -99,6 +99,7 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 }
 
 const currentContinuationOwners = new Set([
+  ...Object.keys(admissionSources),
   ...characterPreparationOwners, ...v2UiHudSourcePaths, selectorSourcePair.path, potionTextSourcePair.path,
   fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths, ...m05ShopSourcePaths,
 ]);
