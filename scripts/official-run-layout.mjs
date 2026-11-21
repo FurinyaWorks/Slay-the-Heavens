@@ -67,14 +67,13 @@ function roundRunActions(host,theme){
   potionPanel:{cancel:secondary,use:primary,discard:secondary},
   choicePanel:{confirm:primary},
   relicPanel:{close:secondary,previous:secondary,next:secondary},
-  runMenu:{resume:primary,help:secondary,map:secondary,abandon:danger},
-  exitPanel:{cancel:secondary,confirm:danger,help:secondary},
+  runMenu:{resume:primary,map:secondary,abandon:danger},
+  exitPanel:{cancel:secondary,confirm:danger},
  };
  for(const [panel,actions] of Object.entries(panels))for(const [name,palette] of Object.entries(actions)){
   roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,palette);
  }
  roundedCaptionButton(required(required(host,'mapPanel'),'previewBack'),theme,danger);
- roundedCaptionButton(required(required(required(host,'exitPanel'),'guide'),'close'),theme,secondary);
  const grid=required(required(host,'deckPanel'),'pileGrid'),viewport=theme.layout.deckView.pileViewport;
  grid.position=viewport.slice(0,2);grid.size=viewport.slice(2);
  const node=required(host,'nodePanel');

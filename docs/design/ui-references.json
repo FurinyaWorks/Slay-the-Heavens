@@ -253,6 +253,7 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-107",
+      "retiredCodePaths": ["scripts/controls-guide-layout.mjs"],
       "reference": {
         "path": "docs/evidence/v2-ui-20261119/p1/runtime-exit-confirm.png",
         "sha256": "d3f7411bda8185e2fb09700475861899d607f5d7711e49b12514970e25028a1a"

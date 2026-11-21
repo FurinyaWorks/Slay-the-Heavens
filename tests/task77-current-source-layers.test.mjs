@@ -8,7 +8,6 @@ import {createHash} from 'node:crypto';
 import {currentSourceLayers as layers,preCurrentSource,preTask77OuterSource} from './helpers/task77-current-source-layers.mjs';
 import {formalEntryInverses,preFormalEntrySource} from './support/formal-entry-source-inverse.mjs';
 import {preRetirementSource} from './helpers/presentation-announcement-retirement.mjs';
-import {controlsGuide} from '../scripts/controls-guide-layout.mjs';
 import {preRosterSource} from './helpers/competition-roster-source-inverse.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const read=path=>preRosterSource(path,preAcceptedPr323Source(path,preTask77OuterSource(path,readFileSync(path,'utf8'))));
@@ -48,10 +47,6 @@ historicalTest('accepted UI source layers recover the original immutable formal 
   }
   assert.throws(()=>preFormalEntrySource(path,accepted+'\n-- unrelated drift\n'),/unreviewed integrated retirement source drift/);
  }
-});
-
-test('new controls guide offers same-run controls only, not later acts, keys or persistent continuation',()=>{
- assert.doesNotMatch(JSON.stringify(controlsGuide()),/第三幕|第四幕|真结局|钥匙|存档|续玩|保留进度/);
 });
 
 historicalTest('Task77 owns complete current sources before its unchanged formal guards and rejects current drift',()=>{

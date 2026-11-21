@@ -10053,10 +10053,6 @@
       "category": "platform-evidence",
       "sha256": "2f35c3154b6035d4a426bb4c487950912c7042f1768d9de82370fa2efa9c322a"
     },
-    "docs/evidence/pile-buttons/pause.png": {
-      "category": "platform-evidence",
-      "sha256": "a7752c05218bc4da39bccd47bbe143d7dfd36fd85fcbb9157ae2ccf05a0b493b"
-    },
     "docs/evidence/pile-buttons/potion.png": {
       "category": "platform-evidence",
       "sha256": "8366044ed39de8539d1ed50c1f3f6fa83bf4b664cf06f33df98913b129a229b4"

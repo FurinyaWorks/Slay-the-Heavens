@@ -109,7 +109,54 @@ print('${marker}')
  });
  assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));
  assert.match(result.stdout,new RegExp(marker));
+ return stage;
 }
+
+test('official run HUD keeps complete health through the blessing, map and battle',t=>{
+ const stage=runOfficial(t,`
+local F=H.F
+local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
+local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{
+ seed=42,imageSource='static',campaign=true,campaignProfile='competition-two-act',
+ color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
+})
+root.ui=host
+assert(F.start(host,'traveler'))
+local node=root:GetChild('nodePanel')
+local map=root:GetChild('mapPanel'):GetChild('resources')
+local battle=root:GetChild('battlePanel')
+assert(host.mode=='node' and node:GetChild('hp').text=='80/80')
+assert(F.click(root,'nodePanel','eventView/option1'))
+assert(F.click(root,'nodePanel','eventView/option2'))
+assert(host.run.hp==88 and host.run.maxHp==88 and node:GetChild('hp').text=='88/88')
+assert(F.click(root,'nodePanel','eventView/option1'))
+assert(host.mode=='map' and map:GetChild('hp').text=='88/88')
+assert(H.Run.increaseMaxHp(host.run,23))
+host:refresh()
+assert(map:GetChild('hp').text=='111/111')
+local first=assert(F.Nodes.available(host.run,host.map)[1])
+assert(host.mapUI:choose(first.id))
+assert(host.mode=='battle' and battle:GetChild('player').text=='111/111')
+local combat=host.run.combat
+C.damage(combat,combat.enemies[1],combat.player,12,true)
+host:refresh()
+assert(battle:GetChild('player').text=='99/111')
+`, 'OFFICIAL_RUN_HP_PASS');
+ const child=(node,name)=>node.children.find(control=>control.name===name);
+ const left=control=>control.position[0]-control.size[0]/2;
+ const right=control=>control.position[0]+control.size[0]/2;
+ for(const [pageName,healthName] of [['nodePanel','hp'],['mapPanel','hp'],['battlePanel','player']]){
+  const page=child(stage,pageName),resources=child(page,'resources')??page;
+  const health=child(resources,healthName),heart=child(resources,'hpIcon'),gold=child(resources,'goldIcon');
+  assert.equal(health.text.align,'left',pageName);
+  assert.equal(health.text.fontSize,18,pageName+' retains the HUD number size');
+  assert(health.size[0]>='999/999'.length*.6*health.text.fontSize+4,pageName+' needs a full health line with native text padding');
+  assert(left(health)-right(heart)>=3,pageName+' health clears the heart');
+  assert(left(gold)-right(health)>=4,pageName+' health clears the gold icon');
+  const hints=child(page,'resourceHints');
+  if(hints)assert(left(child(hints,'gold'))-right(child(hints,'hp'))>=4,pageName+' resource hints stay separate');
+ }
+});
 
 test('official long reward descriptions keep the same full illustration and type slots on recycled shared faces',t=>{
  runOfficial(t,`

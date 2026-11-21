@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { posix, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -37,10 +37,11 @@ export function parseIndex({ references }) {
   requireValue(Array.isArray(references) && references.length, 'UI reference index is empty');
   const approved = new Set(), screens = new Set(), entries = new Map();
   for (const row of references) {
-    const {codePath, codePaths = [], themeKeys = [], targetVersion, state, revision, status,
+    const {codePath, codePaths = [], retiredCodePaths = [], themeKeys = [], targetVersion, state, revision, status,
       backlogTask, reference, supersedes, source, acceptanceScreen} = row;
     const key = identity(row), group = scope(row);
     requireValue(repoPath(codePath) && Array.isArray(codePaths) && codePaths.every(repoPath) &&
+      Array.isArray(retiredCodePaths) && retiredCodePaths.every(path => repoPath(path) && ![codePath, ...codePaths].includes(path)) &&
       Array.isArray(themeKeys) && themeKeys.every(key => id.test(key)) &&
       /^v\d+\.\d+\.\d+$/.test(targetVersion) && id.test(state) && id.test(revision) &&
       statuses.has(status) && /^TASK-\d+(?:\.\d+)*$/.test(backlogTask) &&
@@ -84,6 +85,9 @@ export function loadUiReferences(root = '.') {
     if (eligible(row)) {
       requireValue(!inactive.some(({reference}) => reference.path === row.reference.path || reference.sha256 === row.reference.sha256),
         'Retired UI reference reused as an effective baseline: ' + identity(row));
+      for (const path of row.retiredCodePaths ?? []) {
+        requireValue(!existsSync(resolve(root, path)), 'Retired UI component still exists: ' + path);
+      }
       for (const path of [row.codePath, ...(row.codePaths ?? [])]) {
         requireValue(statSync(inside(root, resolve(root, path))).isFile(), 'Invalid UI component: ' + path);
       }
@@ -120,7 +124,7 @@ export function reusedReference(line, path, inactive) {
 
 const layoutFile = /^scripts\/(?:.*(?:layout|scene|hud|card-face|chrome)|potion-slot-visual)\.mjs$/;
 const visualCode = /\b(?:kind\s*:|size\s*:|position\s*:|colou?r\s*:|opacity\s*:|scale\s*:|rotation\s*:|font(?:Size)?\s*:|image\s*:|plate\(|text\(|flagButton\(|SetSizeDelta\(|SetAnchoredPosition\(|imageColor\s*=|font(?:Color|Size)\s*=|menuPresentation\.|\.rectangles\.)/;
-const tracksPath = (row, path) => [row.codePath, ...(row.codePaths ?? [])].includes(path);
+const tracksPath = (row, path) => [row.codePath, ...(row.codePaths ?? []), ...(row.retiredCodePaths ?? [])].includes(path);
 const themePath = 'data/presentation/ui_theme.json';
 const themeValue = (json, key) => key.split('.').reduce((object, part) => object?.[part], json);
 

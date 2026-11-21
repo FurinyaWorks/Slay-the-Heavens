@@ -154,7 +154,7 @@ test('approved pages keep live input identities while unrelated pages retain the
     for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget','text'])assert.deepEqual(node[key],canonical[key],path+' shared '+key);
     continue;
    }
-   const roundedCaptionHit=path==='/SlayTheAbyss/mapPanel/previewBack/hit'||path==='/SlayTheAbyss/exitPanel/guide/close/hit';
+   const roundedCaptionHit=path==='/SlayTheAbyss/mapPanel/previewBack/hit';
    if(restoredPagePath(path)||roundedCaptionHit){
     // Battle geometry is intentionally restored to the approved V25 tokens.
     // The existing event-bearing objects and input/state contracts still survive.
