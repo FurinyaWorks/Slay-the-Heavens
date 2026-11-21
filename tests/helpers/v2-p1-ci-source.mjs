@@ -58,7 +58,7 @@ function beforeFieldConfirmation(path, source) {
   return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
 }
 
-export function beforeV2UiEvidence(path, source) {
+export function beforeV2UiPreTinyHouseSource(path, source) {
   source = beforeRecordingUi(path,source);
   source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source));
   source = beforeReleaseSharedRelicCi(path,source);
@@ -68,9 +68,12 @@ export function beforeV2UiEvidence(path, source) {
   source = beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source));
   source = beforeFieldConfirmation(path,source);
   source = beforeReleaseUiRestoreCi(path,source);
-  source = beforePc13RewardCover(path,source);
+  return beforePc13RewardCover(path,source);
+}
+
+export function beforeV2UiEvidence(path, source) {
   // The P1 merge recognizes the immediate pre-Tiny-House bytes only.
-  source = beforeTinyHouseCiSource(path,source);
+  source = beforeTinyHouseCiSource(path,beforeV2UiPreTinyHouseSource(path,source));
   if (path === potionMerge.path && typeof source === 'string' && !source.includes('\r\r\n')
       && [potionMerge.afterSha256,...potionMerge.successorSha256s].includes(sha256(source.replaceAll('\r\n','\n')))) {
     return beforePriorEvidence(path,source.includes('\r\n') ? potionMerge.before.replaceAll('\n','\r\n') : potionMerge.before);

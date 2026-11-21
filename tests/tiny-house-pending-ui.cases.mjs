@@ -65,15 +65,18 @@ test('Tiny House exact source admission preserves the ordered full owner read an
 
 test('Tiny House projects the exact copy helper before P1 and still rejects foreign source',async()=>{
  const {readFileSync}=await import('node:fs');
- const {assertIntegrationSuccessorsCurrent}=await import('./helpers/fork-preflight-source.mjs');
+ const {assertIntegrationSuccessorsCurrent,beforeReleaseTinyHouseSource}=await import('./helpers/fork-preflight-source.mjs');
  const {beforeTinyHouseCiSource}=await import('./helpers/v2-ui-admission-ci-source.mjs');
  const path='tests/helpers/copy-integration-source-closure.mjs',raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  const reader=input=>(file,encoding)=>file===path?input:readFileSync(file,encoding);
  const crlf=raw.replaceAll('\n','\r\n');
- assert.notEqual(beforeTinyHouseCiSource(path,raw),raw);
+ const beforeTinyHouse=source=>beforeTinyHouseCiSource(path,beforeReleaseTinyHouseSource(path,source));
+ const prior=beforeTinyHouse(raw);
+ assert.notEqual(prior,beforeReleaseTinyHouseSource(path,raw));
+ assert.equal(beforeTinyHouse(crlf).replaceAll('\r\n','\n'),prior);
  for(const input of [raw,crlf])assert.doesNotThrow(()=>assertIntegrationSuccessorsCurrent(reader(input)));
  for(const foreign of [raw+'\n',crlf+'\r\n',raw.replaceAll('\n','\r\r\n')]){
-  assert.equal(beforeTinyHouseCiSource(path,foreign),foreign);
+  assert.equal(beforeTinyHouse(foreign),foreign);
   assert.throws(()=>assertIntegrationSuccessorsCurrent(reader(foreign)),error=>
    error.message==='fresh complete integration source: '+path);
  }

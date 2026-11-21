@@ -3,7 +3,7 @@ import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-so
 import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
 import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
-import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
+import {beforeV2UiEvidence,beforeV2UiPreTinyHouseSource} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -97,6 +97,9 @@ function beforeReleaseUiBuildSource(path,source){
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
+export function beforeReleaseTinyHouseSource(path,source){
+ return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,source));
 }
 export function historicalReleaseBuildInput(path,read){
  if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,read);
