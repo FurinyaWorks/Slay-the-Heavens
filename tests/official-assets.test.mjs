@@ -119,9 +119,9 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
-    // The approved pile return uses permanent artwork plus one native receiver.
+    // The pile return keeps its native receiver while replacing the artwork.
     if(path.endsWith('/hit')){
-     const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
+     const hit=current.get(path);assert.equal(hit.kind,'presetButton');
      assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
     }
     continue;

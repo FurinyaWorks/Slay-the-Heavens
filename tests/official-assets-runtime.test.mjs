@@ -892,7 +892,7 @@ local function find(entries)for _,entry in ipairs(entries)do
 end end
 find(F.Layout)
 assert(spec.grid.columns==5 and same(spec.grid.itemSize,{150,210}) and same(spec.grid.spacing,{27,27}))
-assert(grid.size[1]==918 and grid.size[2]==557 and grid.x==0 and grid.y==-75.5)
+assert(grid.sizeDeltaX==918 and grid.sizeDeltaY==557 and same(spec.position,{0,-75.5}))
 assert(panel:GetChild('pileVeil').visible and panel:GetChild('pileChrome').visible and not panel:GetChild('veil').visible)
 assert(not panel:GetChild('header').visible and not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
 assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · 17 张')
@@ -930,6 +930,10 @@ local function resetBrowser()
  deck=ownedDeck
 end
 resetBrowser()
+local template=require('abyss_ui_templates').AbyssBattlePileCard
+for _,child in ipairs(template.children)do
+ if child.name=='face' or child.name=='hit'then assert(same(child.position,{0,0}),'official template must centre the face and its hit')end
+end
 local function instance(uid,id,upgraded)return {uid=uid,cardId=id,upgraded=upgraded==true}end
 local function tool(mode)return panel:GetChild('pileTools'):GetChild(mode):GetChild('hit').click()end
 `;
@@ -958,7 +962,7 @@ for _,origin in ipairs({0,1})do
  assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · '..amount..' 张')
  if amount>0 then
   local first=grid.items[0];local uid=deck.bindings[first].uid
-  assert(uid==201 and first:GetChild('face').y==0 and not first:GetChild('uid').visible)
+  assert(uid==201 and not first:GetChild('uid').visible)
   calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)
   local late=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
@@ -1125,8 +1129,8 @@ end
             local columns=math.min(5,amount)
             local width=columns*spec.grid.itemSize[1]+(columns-1)*spec.grid.spacing[1]
                 +spec.grid.padding[3]+spec.grid.padding[4]
-            assert(grid.size[1]==918 and grid.x==0 and grid.y==-75.5,'V25 keeps a fixed five-column list origin')
-            assert(grid.size[2]==557,'V25 scroll viewport remains fixed for every pile size')
+            assert(grid.sizeDeltaX==918 and same(spec.position,{0,-75.5}),'V25 keeps a fixed five-column list origin')
+            assert(grid.sizeDeltaY==557,'V25 scroll viewport remains fixed for every pile size')
             local original={};for i,c in ipairs(host.deckUI.cards)do original[i]=c.uid end
             assert(not host.deckUI:setSort('name'),'pile-only sort cannot enter permanent preference')
             assert(host.deckUI:setPileSort('name'));assert(host.deckUI:setPileSort('cost'))
@@ -1135,7 +1139,7 @@ end
             for i,c in ipairs(host.deckUI.cards)do assert(c.uid==original[i],'default sort did not restore the displayed snapshot')end
             host.deckUI:update()
             local face=grid.items[0]:GetChild('face')
-            assert(face.y==0 and not grid.items[0]:GetChild('uid').visible)
+            assert(not grid.items[0]:GetChild('uid').visible)
             local shared=sharedFace(face)
             assert(shared.front.visible~=false and shared.back.visible~=false and shared.front:GetChild('costMaterial').visible)
             for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
