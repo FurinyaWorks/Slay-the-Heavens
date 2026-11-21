@@ -15,6 +15,13 @@
       "frame": 0,
       "time": 0
     },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 468
+    },
     "changedPixels": 109070,
     "offSlotPx": 170,
     "offCenteredWellEnvelopePx": 0,
@@ -41,6 +48,13 @@
       "repeatIdentical": true,
       "frame": 0,
       "time": 0
+    },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 468
     },
     "changedPixels": 108941,
     "offSlotPx": 41,
@@ -69,6 +83,13 @@
       "frame": 0,
       "time": 0
     },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 468
+    },
     "changedPixels": 109347,
     "offSlotPx": 447,
     "offCenteredWellEnvelopePx": 0,
@@ -95,6 +116,13 @@
       "repeatIdentical": true,
       "frame": 0,
       "time": 0
+    },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 481
     },
     "changedPixels": 109240,
     "offSlotPx": 340,
@@ -123,6 +151,13 @@
       "frame": 0,
       "time": 0
     },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 468
+    },
     "changedPixels": 109276,
     "offSlotPx": 376,
     "offCenteredWellEnvelopePx": 0,
@@ -150,6 +185,13 @@
       "frame": 0,
       "time": 0
     },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 482
+    },
     "changedPixels": 109144,
     "offSlotPx": 244,
     "offCenteredWellEnvelopePx": 0,
@@ -176,6 +218,13 @@
       "repeatIdentical": true,
       "frame": 0,
       "time": 0
+    },
+    "changedPixelsInProxyRects": {
+      "eventName": 0,
+      "bodyAndOptionExtent": 0,
+      "officialBackEnvelope": 0,
+      "officialConfirmEnvelope": 0,
+      "v25ConditionalBackProbe": 468
     },
     "changedPixels": 109367,
     "offSlotPx": 467,

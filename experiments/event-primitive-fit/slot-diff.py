@@ -18,7 +18,7 @@ for id,r in data.items():
     bbox=[int(min(xs)),int(min(ys)),int(max(xs)+1),int(max(ys)+1)]
     margin=max(0,cx-165-bbox[0],cy-165-bbox[1],bbox[2]-cx-165,bbox[3]-cy-165)
     if (cx,cy)==(268,410):
-        regions={'eventName':(50,127,670,187),'bodyAndOptionExtent':(515,212,1215,635),'conditionalBack':(0,569,181,621)}
+        regions={'eventName':(50,127,670,187),'bodyAndOptionExtent':(515,212,1215,635),'officialBackEnvelope':(60,624,240,676),'officialConfirmEnvelope':(1030,622,1230,678),'v25ConditionalBackProbe':(0,569,181,621)}
         r['changedPixelsInProxyRects']={name:int(np.count_nonzero(mask[top:bottom,left:right]))
             for name,(left,top,right,bottom) in regions.items()}
     r.update(changedPixels=len(xs),offSlotPx=counts['slot'],offCenteredWellEnvelopePx=counts['centeredWellEnvelope'],bboxHalfOpen=bbox,maxDirectionalOvershoot=margin)
