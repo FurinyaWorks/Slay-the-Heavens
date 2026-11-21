@@ -6,10 +6,11 @@ import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 const args=process.argv.slice(2);
 const portable=args.includes('--mirror-left-masks');
+const budgetSweep=args.includes('--budget-sweep');
 const countArg=args.find(x=>x.startsWith('--expected-count='));
 const expected=countArg ? Number(countArg.split('=')[1]) : 49;
 assert(Number.isSafeInteger(expected) && expected>=1 && expected<=49,'invalid event count');
-const positional=args.filter(x=>x!=='--mirror-left-masks' && x!==countArg);
+const positional=args.filter(x=>x!=='--mirror-left-masks' && x!=='--budget-sweep' && x!==countArg);
 assert.equal(positional.length,3,'expected repo, input, output');
 const [repo,inDir,outDir]=positional.map(x=>resolve(x));
 const imp=path=>import(pathToFileURL(join(repo,path)));
@@ -51,7 +52,7 @@ for(const id of readdirSync(inDir).sort()){
   const t=pack.tiers[budget],images=makeImages(pack,t);
   assert(images.length<=budget);
   const direct=images.length<=60,children=direct?images:Array.from({length:Math.ceil(images.length/60)},(_,j)=>group('part'+j,images.slice(j*60,(j+1)*60)));
-  const root=group(id,children),stats=inventory([root]);
+  const root=group(budgetSweep?id.replace(/_(full|48|52|56)$/,''):id,children),stats=inventory([root]);
   const key=id+'-'+budget,counts={images:stats.images,containers:stats.containers,total:stats.created};
   const info={geometry:t.geometry,...counts,maskHalfImages:images.filter(n=>n.fill).length,fitScore:t.maeAt144,method:t.method,floatBytes:Buffer.byteLength(JSON.stringify(root))};
   record.tiers[budget]=info;
@@ -75,4 +76,5 @@ const byTier=Object.fromEntries(tierIds.map(t=>{
 save(join(outDir,'summary.json'),{byTier,nativeControlCatalogBytes:statSync(join(outDir,'native-controls.json')).size,cases:cases.length});
 save(join(outDir,'scenes','inventory.json'),{room:{min:1,max:2},cases});
 console.log(JSON.stringify(byTier));
+
 

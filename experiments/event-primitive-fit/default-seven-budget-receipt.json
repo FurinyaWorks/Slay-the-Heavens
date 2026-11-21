@@ -1,0 +1,507 @@
+{
+  "schemaVersion": 1,
+  "tool": "beyond-simulator-mcp@0.5.2",
+  "renderedArtCrop": [
+    330,
+    330
+  ],
+  "screenSize": [
+    1280,
+    720
+  ],
+  "secondReviewSize": [
+    180,
+    180
+  ],
+  "secondReviewMethod": "downsample of authentic 330px capture, not a device or real event page",
+  "candidateCount": 24,
+  "mixedEventsReopenedAndExported": 7,
+  "mixedStandaloneGiaBytes": 306115,
+  "previousShrineCorrectedMixedComparisonBytes": 369567,
+  "previousCompareMethod": "sum of prior measured standalone components, not a separate combined run",
+  "savedBytes": 63452,
+  "eventThreeWayStatus": {
+    "offline49Preview": [
+      "cleric",
+      "goop",
+      "upgrade_shrine",
+      "shining_light",
+      "golden_shrine"
+    ],
+    "manualRefinementRequired": {
+      "purifier": "basin/stone base",
+      "golden_wing": "gold coin reward detail"
+    },
+    "approvedForProduction": []
+  },
+  "integratedWithGame": false,
+  "officialCapacity": "NOT_RUN",
+  "physicalDevices": "NOT_RUN",
+  "pixelSpillMethod": "Outside 330 capture crop, compare with component median of 24 full simulator frames at pixels where >=16/24 agreed exactly. Detects visible offslot paint, not proof of a runtime clip or exact outside coverage.",
+  "mixed": {
+    "cleric": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43925,
+      "giaSha256": "48ee1475b020f1eace49e8d855e8ca3d4635fb2418a2960221b8438675f0ab85",
+      "screenshotSha256": "5cb17de390ed0f77a405d0298a43892ec0b695e0b5726e8cd18ffa50c3185015",
+      "paintOutsideCrop": {
+        "observedPixelCount": 68,
+        "observedBounds": [
+          473,
+          194,
+          720,
+          415
+        ]
+      }
+    },
+    "purifier": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 42777,
+      "giaSha256": "cb1557045fb71aa4f3c856eb7666098fef53ed7c09d209fc0ea2c06f04edfa07",
+      "screenshotSha256": "1c0b0871fdd0afa397fadea05231f355a31e3f078a3bd9ad62331a9c56cefacb",
+      "paintOutsideCrop": {
+        "observedPixelCount": 4,
+        "observedBounds": [
+          633,
+          193,
+          636,
+          193
+        ]
+      }
+    },
+    "goop": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43799,
+      "giaSha256": "1c82aa53e211ad2041b24aa2fc9aaab3e0d9096c8c5c0e7b8f6fd7bb0a513bab",
+      "screenshotSha256": "98d50c85e4c7f8e74262e03af8f31162d6bc17acf1bd9affcab99e08253ecfb6",
+      "paintOutsideCrop": {
+        "observedPixelCount": 343,
+        "observedBounds": [
+          459,
+          193,
+          810,
+          383
+        ]
+      }
+    },
+    "upgrade_shrine": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43921,
+      "giaSha256": "085cc77fba67469a98ffe4e0151597e5501a3c0b01e427b5a5c38453287958d3",
+      "screenshotSha256": "dba846accf46eed1c7b28c7893c56b1ba6407f578c3e155b05d0a5ad15734b1a",
+      "paintOutsideCrop": {
+        "observedPixelCount": 218,
+        "observedBounds": [
+          472,
+          355,
+          474,
+          524
+        ]
+      }
+    },
+    "golden_wing": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43815,
+      "giaSha256": "00f292bdbd007978c886c89ea733d745ee2a2502f12f94a03fd9fce1f8c29f46",
+      "screenshotSha256": "6fb13342317b7149bf05134e38b65142622456d563802494f65a439e7454bf6e",
+      "paintOutsideCrop": {
+        "observedPixelCount": 324,
+        "observedBounds": [
+          472,
+          193,
+          805,
+          455
+        ]
+      }
+    },
+    "shining_light": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43939,
+      "giaSha256": "e7de51e0c918bb866fda359fe4dbe013a77877a4f647557aabef331bd2722720",
+      "screenshotSha256": "a0306a410698c3361531d29b42ee623a34d39e788299508ecc636fed901b2b7d",
+      "paintOutsideCrop": {
+        "observedPixelCount": 65,
+        "observedBounds": [
+          471,
+          193,
+          656,
+          525
+        ]
+      }
+    },
+    "golden_shrine": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43939,
+      "giaSha256": "05aeb262f8dbd18e587d525a0360c64b12eecde2e26ce822207b678ca8b46aef",
+      "screenshotSha256": "2f4a73d236c052f074f4c3c2ae2a3650600af10596c3d6409a2b63b16fa1cc0a",
+      "paintOutsideCrop": {
+        "observedPixelCount": 368,
+        "observedBounds": [
+          474,
+          194,
+          805,
+          522
+        ]
+      }
+    }
+  },
+  "sweep": {
+    "cleric_48": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43925,
+      "giaSha256": "9f7d88868293436ef7f2b524df2ce1edfcef3ca894dace7e6cd03cdf7601efb6",
+      "screenshotSha256": "5cb17de390ed0f77a405d0298a43892ec0b695e0b5726e8cd18ffa50c3185015",
+      "measuredScreenVsDraft": {
+        "mae": 26.815,
+        "edgeMae": 31.607,
+        "cueMae": 39.703
+      }
+    },
+    "cleric_52": {
+      "controls": 53,
+      "images": 52,
+      "visible": 53,
+      "containers": 1,
+      "giaBytes": 47481,
+      "giaSha256": "e3e0177da19ff810a90b8ad8f5087a71bc0de8bef37b23d971143178dc6cf508",
+      "screenshotSha256": "76e373bac346c6f75d7d0788169f627553c7b9e1d11b71fe0930b77b2d343a60",
+      "measuredScreenVsDraft": {
+        "mae": 26.689,
+        "edgeMae": 31.51,
+        "cueMae": 39.69
+      }
+    },
+    "cleric_56": {
+      "controls": 57,
+      "images": 56,
+      "visible": 57,
+      "containers": 1,
+      "giaBytes": 50977,
+      "giaSha256": "7e00814bbfb0581dc1c21cc7c69c0946e3792860cd82006bb94529b17b4ad528",
+      "screenshotSha256": "4a00a648280a7593501c1929ea8bfbdc5bb0d47ee103f24738d70547e78930c3",
+      "measuredScreenVsDraft": {
+        "mae": 26.648,
+        "edgeMae": 31.486,
+        "cueMae": 39.68
+      }
+    },
+    "cleric_full": {
+      "controls": 61,
+      "images": 60,
+      "visible": 61,
+      "containers": 1,
+      "giaBytes": 54533,
+      "giaSha256": "9e2326d6a405e70b183a5a2194e754a172a804039a95f30686c4e9b8dadc5a1c",
+      "screenshotSha256": "db90aab76805e13eed6ce825dbac78f580f341c10d53ce41fc46b9a3a241de3c",
+      "measuredScreenVsDraft": {
+        "mae": 26.61,
+        "edgeMae": 31.456,
+        "cueMae": 39.679
+      }
+    },
+    "golden_wing_48": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43815,
+      "giaSha256": "92d0d479040550ca97c9122c8826d81084f0a71ee6f246da5e349eceb46b8f2b",
+      "screenshotSha256": "6fb13342317b7149bf05134e38b65142622456d563802494f65a439e7454bf6e",
+      "measuredScreenVsDraft": {
+        "mae": 21.839,
+        "edgeMae": 25.519,
+        "cueMae": 34.882
+      }
+    },
+    "golden_wing_52": {
+      "controls": 53,
+      "images": 52,
+      "visible": 53,
+      "containers": 1,
+      "giaBytes": 47371,
+      "giaSha256": "2c772f9adc32ac274d46de5946700e84a387b7860571c6abde53e0f6f5a467b5",
+      "screenshotSha256": "25769dc5f12a9d8c2d29652887aae0bb3506327220191472038e7ea85c5127c9",
+      "measuredScreenVsDraft": {
+        "mae": 21.779,
+        "edgeMae": 25.468,
+        "cueMae": 34.869
+      }
+    },
+    "golden_wing_56": {
+      "controls": 57,
+      "images": 56,
+      "visible": 57,
+      "containers": 1,
+      "giaBytes": 50805,
+      "giaSha256": "35ed21821bfee793d9d2d5976a580c14903a180912b7f7b08405b9294d1f4c30",
+      "screenshotSha256": "0982216ab591366b2d9c45dde9c0bedaa4072f6c54aedae6b3aadb1bb651be69",
+      "measuredScreenVsDraft": {
+        "mae": 21.755,
+        "edgeMae": 25.446,
+        "cueMae": 34.822
+      }
+    },
+    "golden_wing_full": {
+      "controls": 61,
+      "images": 60,
+      "visible": 61,
+      "containers": 1,
+      "giaBytes": 54361,
+      "giaSha256": "96f973d553f5ba3e39406c74871ddba78c857fcf4026afe9e7b0929ffebdb168",
+      "screenshotSha256": "bc44b3e1af57843ad5c3b4b4a9ab3ff33f3d47799ee306ff797d9eaa1cb0e0ea",
+      "measuredScreenVsDraft": {
+        "mae": 21.741,
+        "edgeMae": 25.434,
+        "cueMae": 34.819
+      }
+    },
+    "goop_48": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43799,
+      "giaSha256": "866ccce282d782d829597c5cb12dad5dfe9e400680c400d93af49755fcfcbe02",
+      "screenshotSha256": "98d50c85e4c7f8e74262e03af8f31162d6bc17acf1bd9affcab99e08253ecfb6",
+      "measuredScreenVsDraft": {
+        "mae": 20.381,
+        "edgeMae": 24.38,
+        "cueMae": 22.235
+      }
+    },
+    "goop_52": {
+      "controls": 53,
+      "images": 52,
+      "visible": 53,
+      "containers": 1,
+      "giaBytes": 47295,
+      "giaSha256": "24f1638f0bcea2e73bffb9e4d5b42aef2973625635c41dc0a09991827f9598cc",
+      "screenshotSha256": "e13d5d726ec4899eaf0cb4a340fad9c5638fbc07db4d865f972fd8d9d445b625",
+      "measuredScreenVsDraft": {
+        "mae": 20.404,
+        "edgeMae": 24.382,
+        "cueMae": 22.231
+      }
+    },
+    "goop_56": {
+      "controls": 57,
+      "images": 56,
+      "visible": 57,
+      "containers": 1,
+      "giaBytes": 50731,
+      "giaSha256": "08d63175a0827b437ce951725b5e495d38d2033cabd7bf0fe9e48b0e629aab53",
+      "screenshotSha256": "d68cf4851f4d119d91eca08b2f3ad5958633d8cb45f6ba8397deeaea4e180aee",
+      "measuredScreenVsDraft": {
+        "mae": 20.397,
+        "edgeMae": 24.369,
+        "cueMae": 22.226
+      }
+    },
+    "goop_full": {
+      "controls": 61,
+      "images": 60,
+      "visible": 61,
+      "containers": 1,
+      "giaBytes": 54227,
+      "giaSha256": "8990c950efa23474c6e3d34956c084e348ea2215cf3feba10b307b4493f58841",
+      "screenshotSha256": "8e630aca8c4d480215cc994a8c3142be69e8f8a0c9a3614bdf865446c641a743",
+      "measuredScreenVsDraft": {
+        "mae": 20.404,
+        "edgeMae": 24.377,
+        "cueMae": 22.25
+      }
+    },
+    "purifier_48": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 42777,
+      "giaSha256": "116d6a6ef6091527d7e9abd81805b68896e059659c1dd2a1d081206fe15420e0",
+      "screenshotSha256": "1c0b0871fdd0afa397fadea05231f355a31e3f078a3bd9ad62331a9c56cefacb",
+      "measuredScreenVsDraft": {
+        "mae": 16.354,
+        "edgeMae": 17.951,
+        "cueMae": 27.642
+      }
+    },
+    "purifier_52": {
+      "controls": 53,
+      "images": 52,
+      "visible": 53,
+      "containers": 1,
+      "giaBytes": 46313,
+      "giaSha256": "d3d03c071e72b48161e99685db2f2073f6604bfa0cb8e28c12df040bfbfc13ac",
+      "screenshotSha256": "73b0d128aff2a2175867cd544e22a69a39c3f0f7b829871e6c907ba29660f803",
+      "measuredScreenVsDraft": {
+        "mae": 16.245,
+        "edgeMae": 17.813,
+        "cueMae": 27.163
+      }
+    },
+    "purifier_56": {
+      "controls": 57,
+      "images": 56,
+      "visible": 57,
+      "containers": 1,
+      "giaBytes": 49869,
+      "giaSha256": "6f916549886d895ec73f95c255c5ee4987d71d72d865eac17a878dd65ec8b0ab",
+      "screenshotSha256": "7149c5989078fe746ea988e1cd9a3b7d09e0eac6737df1b8eb4a180d9317e714",
+      "measuredScreenVsDraft": {
+        "mae": 16.069,
+        "edgeMae": 17.63,
+        "cueMae": 26.832
+      }
+    },
+    "purifier_full": {
+      "controls": 61,
+      "images": 60,
+      "visible": 61,
+      "containers": 1,
+      "giaBytes": 53425,
+      "giaSha256": "3720de160e15e23eeb6e14138a73e626a792baac4bba844bd5bc9e836a7e844e",
+      "screenshotSha256": "2e7ba1c23ecd696cd4be053156de1db52927c8573831a2195aa3c5c5072ea739",
+      "measuredScreenVsDraft": {
+        "mae": 15.979,
+        "edgeMae": 17.51,
+        "cueMae": 26.4
+      }
+    },
+    "shining_light_48": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43939,
+      "giaSha256": "35c5c352de0b92cca8f7fe8fa4df4b444804bdb19521b80ddcf6dbbd373fa0ed",
+      "screenshotSha256": "a0306a410698c3361531d29b42ee623a34d39e788299508ecc636fed901b2b7d",
+      "measuredScreenVsDraft": {
+        "mae": 24.0,
+        "edgeMae": 25.413,
+        "cueMae": 22.607
+      }
+    },
+    "shining_light_52": {
+      "controls": 52,
+      "images": 51,
+      "visible": 52,
+      "containers": 1,
+      "giaBytes": 46606,
+      "giaSha256": "48c38d7baff1e9dd14ba43bec4796c169a96686405e9ba93ddca1ffa79d1f25c",
+      "screenshotSha256": "8b26d37bf8dafbfe74d0d8bb8d24a5cd60691e2f86de5950924b2878df12da7d",
+      "measuredScreenVsDraft": {
+        "mae": 23.851,
+        "edgeMae": 25.287,
+        "cueMae": 22.586
+      }
+    },
+    "shining_light_56": {
+      "controls": 57,
+      "images": 56,
+      "visible": 57,
+      "containers": 1,
+      "giaBytes": 50991,
+      "giaSha256": "160c9973b878b4669853f6f7ea513e7c930e49ed1c21e6fb3e358daafe7e15f5",
+      "screenshotSha256": "bb3989e7cfd59df38cbf8bd7bedaff350b61058d7dd5eb07735e8a6f4dd3b02a",
+      "measuredScreenVsDraft": {
+        "mae": 23.557,
+        "edgeMae": 25.02,
+        "cueMae": 22.338
+      }
+    },
+    "shining_light_full": {
+      "controls": 61,
+      "images": 60,
+      "visible": 61,
+      "containers": 1,
+      "giaBytes": 54487,
+      "giaSha256": "52934d1e76a9fa5d1c7435cda6bded827a774fde85cb4048d97256379bacbdbc",
+      "screenshotSha256": "3cd3c804c2aa72c11daedbeed23c747cab0a13c448e582f8af4d140db5978d0b",
+      "measuredScreenVsDraft": {
+        "mae": 23.534,
+        "edgeMae": 25.001,
+        "cueMae": 22.324
+      }
+    },
+    "upgrade_shrine_48": {
+      "controls": 49,
+      "images": 48,
+      "visible": 49,
+      "containers": 1,
+      "giaBytes": 43921,
+      "giaSha256": "b56a24fc023791f842d95a790008c1f56cb824a822496d7366103df3dfdf6fac",
+      "screenshotSha256": "dba846accf46eed1c7b28c7893c56b1ba6407f578c3e155b05d0a5ad15734b1a",
+      "measuredScreenVsDraft": {
+        "mae": 12.159,
+        "edgeMae": 14.208,
+        "cueMae": 20.113
+      }
+    },
+    "upgrade_shrine_52": {
+      "controls": 53,
+      "images": 52,
+      "visible": 53,
+      "containers": 1,
+      "giaBytes": 47477,
+      "giaSha256": "0e082d96d52d2651ece86d4682d85f6f95b27c73e4dbbe86125c85caf29bef27",
+      "screenshotSha256": "ddd9701cbd4211aa43411181898e7e66342bbfa84dacf2d57d41420437acac77",
+      "measuredScreenVsDraft": {
+        "mae": 12.079,
+        "edgeMae": 14.11,
+        "cueMae": 19.861
+      }
+    },
+    "upgrade_shrine_56": {
+      "controls": 57,
+      "images": 56,
+      "visible": 57,
+      "containers": 1,
+      "giaBytes": 51033,
+      "giaSha256": "0037ca5e7c08c17e77858352254321afa163e1a67dad20f97d79afe834fec181",
+      "screenshotSha256": "c6040745cd5e5981f498f26d3c599c250e8caefe242df473d73be2ee26742a66",
+      "measuredScreenVsDraft": {
+        "mae": 12.106,
+        "edgeMae": 14.103,
+        "cueMae": 19.716
+      }
+    },
+    "upgrade_shrine_full": {
+      "controls": 61,
+      "images": 60,
+      "visible": 61,
+      "containers": 1,
+      "giaBytes": 54589,
+      "giaSha256": "bd2f3c682f3e74321d009082be90aa76f4de4702996efb88da5e06e59ddf5b5e",
+      "screenshotSha256": "2ecc778132abb06ef43d2ead390f6c674c2c8252533e2545645faac51a287b0f",
+      "measuredScreenVsDraft": {
+        "mae": 12.045,
+        "edgeMae": 14.039,
+        "cueMae": 19.696
+      }
+    }
+  }
+}
