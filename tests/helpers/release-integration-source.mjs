@@ -7,7 +7,7 @@ import { gunzipSync } from 'node:zlib';
 const hash = (value, algorithm='sha256') => createHash(algorithm).update(value).digest('hex');
 const blob = value => hash('blob ' + Buffer.byteLength(value) + '\0' + value, 'sha1');
 const archive = readFileSync(new URL('../fixtures/release-integration-source.json.gz', import.meta.url));
-assert.equal(hash(archive), '7364c36d9aabf58685eafc227ead6c680222122545024f3412d73b0735054796', 'exact Release integration source archive');
+assert.equal(hash(archive), '697436a6a20dc1208e9988eb621a2fb20ca7116cec63eb3f841b267fc973e066', 'exact Release integration source archive');
 const layers = JSON.parse(gunzipSync(archive));
 
 for (const layer of Object.values(layers)) {
@@ -41,4 +41,17 @@ export function beforeReleaseDetailSource(path,source) {
 
 export function beforeReleaseCapacitySource(path,source) {
   return project(layers.capacity,path,source);
+}
+
+export function assertCurrentReleaseOwner(path,source,read) {
+  if (!Object.hasOwn(layers.currentOwners,path)) return false;
+  const {after}=layers.currentOwners[path];
+  const exact=value=>{
+    if(typeof value!=='string'||value.includes('\r\r\n'))return false;
+    const text=value.replaceAll('\r\n','\n');
+    return hash(text)===after.sha256&&blob(text)===after.gitBlob;
+  };
+  assert(exact(source),'fresh current production owner: '+path);
+  assert(exact(read(path)),'combined linked owner identity: '+path);
+  return true;
 }

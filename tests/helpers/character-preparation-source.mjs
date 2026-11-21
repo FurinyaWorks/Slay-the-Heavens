@@ -1,3 +1,4 @@
+import {assertCurrentReleaseOwner} from './release-integration-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
 import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
 import {authorizeReleaseUiRestore,beforeReleaseShopEntry,shopEntryPriorRead,shopEntrySourcePaths} from './release-ui-restore-source.mjs';
@@ -70,6 +71,7 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+ if(assertCurrentReleaseOwner(path,source,read))return beforeCharacterPreparationSource(path,source,read);
  source=beforeMapDeckSource(path,source,read);
  read=mapDeckPriorRead(read);
  if(shopEntrySourcePaths.includes(path)){

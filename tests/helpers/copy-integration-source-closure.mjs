@@ -90,9 +90,9 @@ const integratedReleaseFiles=Object.freeze({
  'tests/helpers/release-map-deck-source.mjs':'e31f57cd3eb1fd7911d55984160eaeebcec50eecfb76718fcba49c59d2616edb',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
- 'tests/helpers/release-integration-source.mjs':'f21c648a03e42f48bbe78415ef8293518863cd7f52c6931985f5a4b6df800557',
- 'tests/fixtures/release-integration-source.json.gz':'7364c36d9aabf58685eafc227ead6c680222122545024f3412d73b0735054796',
- 'tests/helpers/release-ui-restore-source.mjs':'cfb23687583237973429f8d150b59aae2726db93180302099504db2781225d46',
+ 'tests/helpers/release-integration-source.mjs':'6f7fea692ea62bfe4f536c91ec14d1fde778d7592c99bf0b450c136d3a636c4d',
+ 'tests/fixtures/release-integration-source.json.gz':'697436a6a20dc1208e9988eb621a2fb20ca7116cec63eb3f841b267fc973e066',
+ 'tests/helpers/release-ui-restore-source.mjs':'2a17a830eb9f09d53302986c8e4cffc44791b78c2ac2d02c33ecdc6ea330edcd',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

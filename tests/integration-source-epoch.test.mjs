@@ -162,7 +162,7 @@ test('combined epoch authenticates the complete current production tree',()=>{
   if(latest.replaceAll('\r\n','\n')===previous)continue;
   for(const invalid of [previous,latest+'\n',null]){
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh current production owner/);
-   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|combined linked owner identity/);
+   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|(?:combined|map deck) linked owner identity/);
   }
  }
 });
@@ -174,7 +174,7 @@ test('combined replay rejects a menu owner from before the controls guide remova
   const prior=beforeReleaseControlsGuideRemoval(owner,read(owner));
   assert.notEqual(prior,read(owner),owner);
   assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target,readSource:path=>path===owner?prior:read(path)}),
-   new RegExp('combined linked owner identity: '+owner.replaceAll('.','\\.')));
+   new RegExp('(?:combined|map deck) linked owner identity: '+owner.replaceAll('.','\\.')));
  }
 });
 test('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{
@@ -193,7 +193,7 @@ test('current PC13 facade rejects every exact immediate predecessor before older
   for(const invalid of invalidInputs)
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,forbidden),{message:'fresh current production owner: '+path});
   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?predecessor:read(owner)),
-   /combined linked owner identity/,path);
+   /(?:combined|map deck) linked owner identity/,path);
  }
  const unrelated='src/lua/abyss_battle_ui.lua';
  assert.equal(beforeCurrentProductionSource(unrelated,read(unrelated),read).replaceAll('\r\n','\n'),raw(unrelated));

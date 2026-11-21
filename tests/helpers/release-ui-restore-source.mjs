@@ -78,7 +78,7 @@ export function authorizeReleaseUiRestore(samples,read){
  samples=samples.map(([path,input])=>[path,beforeReleaseShopEntry(path,input)]);
  read=shopEntryPriorRead(read);
  for(const [path,input]of samples){
-  try{beforeCombatVisualSource(path,input,read);}catch{assert.fail('recording UI linked owner changed: '+path);}
+  beforeCombatVisualSource(path,input,read);
  }
  samples=samples.map(([path,input])=>[path,beforeCombatVisualSource(path,input,read)]);
  read=combatVisualPriorRead(read);
