@@ -41,7 +41,8 @@ function M.intent(owner)
         nodeMode=node.mode,picker=node.picker,eventStage=event.stage,event=flow.event,neow=flow.roomKind=='neow',opened=node.opened,
         nodePage=node.page,pickPage=node.pickPage,relicPage=node.relicPage,complete=flow.complete,
         rewards=run.phase=='reward' and battle.rewardScreen or nil,
-        overlayRevision=revision,details=details,detailPage=detailPage,overlayContent=content}
+        overlayRevision=revision,details=details,detailPage=detailPage,overlayContent=content,
+        deckBrowser=page=='deckPanel' and owner.deckUI.browserShell==true and not details}
 end
 local function sameOwner(a,b,except)
     if not a or not b then return false end
@@ -93,7 +94,9 @@ function M.new(cover,ready,onIntent,frames)
     local function localFrame(intent,previous)
         if not frames or not sameBase(intent,gate.published)then return end
         if not supported(intent) or not supported(previous)then return end
-        return frames[intent.page] or previous and frames[previous.page]
+        -- Browser chrome sits outside this viewport. Publish it immediately
+        -- while the existing cover still guards unfinished card cells.
+        return intent.deckBrowser and frames.deckBrowser or frames[intent.page] or previous and frames[previous.page]
     end
     local paintedFrame;local paintToken=0
     local function currentPaint(ticket,epoch,frame,veil)

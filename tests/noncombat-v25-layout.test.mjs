@@ -33,8 +33,8 @@ test('official menu and selection reuse live inputs with bounded native decorati
  for(const key of ['confirm','cancel'])for(const state of parts(child(child(panel,key),'hit'))){
   const flag=child(state,'v25Flag'),cloth=child(flag,'cloth'),rim=child(flag,'rim');
   assert(rim&&cloth,'smooth buttons retain separate rim and cloth');
-  assert.equal(parts(cloth).length,1);assert.equal(parts(rim).length,1);
-  assert(all(cloth).filter(n=>n.kind==='image').every(n=>[theme.image.rect,theme.image.disc].includes(n.image)));
+  assert.equal(parts(cloth).length,6);assert.equal(parts(rim).length,6);
+  assert(all(cloth).filter(n=>n.kind==='image').every(n=>[theme.image.rect,100002].includes(n.image)));
   assert.equal(child(state,'label').text.colour,state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk,'shared official button ink preserves disabled distinction');
   assert.equal(child(state,'plate').visible,false);assert.equal(child(state,'border').visible,false);
   assert.equal(all(flag).some(n=>n.image===theme.officialAssets.images.button),false,'official rectangle must not replace original flag');

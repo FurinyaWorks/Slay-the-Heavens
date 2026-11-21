@@ -10040,6 +10040,26 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "sourceCommit": "dfd45d6ce3f466592700aea94d224b4c660be960"
+    },
+    "docs/evidence/pile-buttons/draw.png": {
+      "category": "platform-evidence",
+      "sha256": "d5673609eb40b89fc8ef3f7d72b7b8c2b861176df7185756f60f2cd8352db89e"
+    },
+    "docs/evidence/pile-buttons/event.png": {
+      "category": "platform-evidence",
+      "sha256": "9591687e29c4c8226cfb2002f74125ac4ce4e774d869ba0d37e71f5e9d82da4f"
+    },
+    "docs/evidence/pile-buttons/menu.png": {
+      "category": "platform-evidence",
+      "sha256": "2f35c3154b6035d4a426bb4c487950912c7042f1768d9de82370fa2efa9c322a"
+    },
+    "docs/evidence/pile-buttons/potion.png": {
+      "category": "platform-evidence",
+      "sha256": "8366044ed39de8539d1ed50c1f3f6fa83bf4b664cf06f33df98913b129a229b4"
+    },
+    "docs/evidence/pile-buttons/states.png": {
+      "category": "platform-evidence",
+      "sha256": "b31ecc409f7981f3261c28dfc4ea5506b366a41ca2f510f4f01e15e97a62700d"
     }
   }
 }

@@ -277,8 +277,10 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
+            -- A deck open still commits one battle render below (input retirement,
+            -- art ownership and suspension), after the host's visibility writes.
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen))
+                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)
             child("battlePanel"):SetVisible(self.mode == "battle")
             self.mapUI:setVisible(self.mode == "map" and not deckOpen and not potionOpen and not blocked,self.mode == "map")
             if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
@@ -343,7 +345,7 @@ end
 
 function M.exitDialogOwnsForeground(self)
     return function()
-            return self.exitOpen == true and not self.routeOpen and (not self.menuOpen or self.controlsOpen == true)
+            return self.exitOpen == true and not self.routeOpen and not self.menuOpen
         end
 end
 
@@ -431,7 +433,7 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             exitEntry:SetVisible(exitEntryVisible())
             exitEntry:SetAsLastSibling()
             exitPanel:SetVisible(exitDialogOwnsForeground())
-            runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.controlsOpen and not self.routeOpen)
+            runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.routeOpen)
             require('abyss_game_ui_navigation_view').runMenu(self,runMenu,canViewRoute())
             if runMenu.visible then runMenu:SetAsLastSibling() end
             local back = child('mapPanel'):GetChild('previewBack')

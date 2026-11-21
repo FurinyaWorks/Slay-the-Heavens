@@ -119,9 +119,9 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
-    // The approved pile return uses permanent artwork plus one native receiver.
+    // The pile return keeps its native receiver while replacing the artwork.
     if(path.endsWith('/hit')){
-     const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
+     const hit=current.get(path);assert.equal(hit.kind,'presetButton');
      assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
     }
     continue;
@@ -154,10 +154,15 @@ test('approved pages keep live input identities while unrelated pages retain the
     for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget','text'])assert.deepEqual(node[key],canonical[key],path+' shared '+key);
     continue;
    }
-   if(restoredPagePath(path)){
+   const roundedCaptionHit=path==='/SlayTheAbyss/mapPanel/previewBack/hit';
+   if(restoredPagePath(path)||roundedCaptionHit){
     // Battle geometry is intentionally restored to the approved V25 tokens.
     // The existing event-bearing objects and input/state contracts still survive.
-    for(const key of ['kind','states','focusable','interactable','raycastTarget'])assert.deepEqual(node[key],before[key],path+' '+key);
+    for(const key of ['kind','states','focusable','interactable','raycastTarget']){
+     const expected=roundedCaptionHit&&key==='kind'?'presetButton':roundedCaptionHit&&key==='states'?
+      {normal:'normal',hover:'hover',pressed:'pressed',disabled:'disabled'}:before[key];
+     assert.deepEqual(node[key],expected,path+' '+key);
+    }
     continue;
    }
   for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget']){
@@ -467,8 +472,9 @@ test('approved native title and button artwork preserve the official menu hit su
     assert.equal(child(button,'label').text.content,text);
     const faces=children(child(button,'v25MenuFace'));
     assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
-    assert(faces.every(face=>children(child(face,'rim')).length===2 && children(child(face,'fill')).length===2));
-    assert.notDeepEqual(child(faces[0],'fill'),child(faces[1],'fill'));
+    const materials=faces.map(face=>child(face,'roundedButton'));
+    assert(materials.every(face=>children(child(face,'rim')).length===6 && children(child(face,'cloth')).length===6));
+    assert.notDeepEqual(child(materials[0],'cloth'),child(materials[1],'cloth'));
     assert.equal(child(button,'menuAccent'),undefined);
   }
 });

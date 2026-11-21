@@ -109,7 +109,54 @@ print('${marker}')
  });
  assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));
  assert.match(result.stdout,new RegExp(marker));
+ return stage;
 }
+
+test('official run HUD keeps complete health through the blessing, map and battle',t=>{
+ const stage=runOfficial(t,`
+local F=H.F
+local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
+local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{
+ seed=42,imageSource='static',campaign=true,campaignProfile='competition-two-act',
+ color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
+})
+root.ui=host
+assert(F.start(host,'traveler'))
+local node=root:GetChild('nodePanel')
+local map=root:GetChild('mapPanel'):GetChild('resources')
+local battle=root:GetChild('battlePanel')
+assert(host.mode=='node' and node:GetChild('hp').text=='80/80')
+assert(F.click(root,'nodePanel','eventView/option1'))
+assert(F.click(root,'nodePanel','eventView/option2'))
+assert(host.run.hp==88 and host.run.maxHp==88 and node:GetChild('hp').text=='88/88')
+assert(F.click(root,'nodePanel','eventView/option1'))
+assert(host.mode=='map' and map:GetChild('hp').text=='88/88')
+assert(H.Run.increaseMaxHp(host.run,23))
+host:refresh()
+assert(map:GetChild('hp').text=='111/111')
+local first=assert(F.Nodes.available(host.run,host.map)[1])
+assert(host.mapUI:choose(first.id))
+assert(host.mode=='battle' and battle:GetChild('player').text=='111/111')
+local combat=host.run.combat
+C.damage(combat,combat.enemies[1],combat.player,12,true)
+host:refresh()
+assert(battle:GetChild('player').text=='99/111')
+`, 'OFFICIAL_RUN_HP_PASS');
+ const child=(node,name)=>node.children.find(control=>control.name===name);
+ const left=control=>control.position[0]-control.size[0]/2;
+ const right=control=>control.position[0]+control.size[0]/2;
+ for(const [pageName,healthName] of [['nodePanel','hp'],['mapPanel','hp'],['battlePanel','player']]){
+  const page=child(stage,pageName),resources=child(page,'resources')??page;
+  const health=child(resources,healthName),heart=child(resources,'hpIcon'),gold=child(resources,'goldIcon');
+  assert.equal(health.text.align,'left',pageName);
+  assert.equal(health.text.fontSize,18,pageName+' retains the HUD number size');
+  assert(health.size[0]>='999/999'.length*.6*health.text.fontSize+4,pageName+' needs a full health line with native text padding');
+  assert(left(health)-right(heart)>=3,pageName+' health clears the heart');
+  assert(left(gold)-right(health)>=4,pageName+' health clears the gold icon');
+  const hints=child(page,'resourceHints');
+  if(hints)assert(left(child(hints,'gold'))-right(child(hints,'hp'))>=4,pageName+' resource hints stay separate');
+ }
+});
 
 test('official long reward descriptions keep the same full illustration and type slots on recycled shared faces',t=>{
  runOfficial(t,`
@@ -892,7 +939,7 @@ local function find(entries)for _,entry in ipairs(entries)do
 end end
 find(F.Layout)
 assert(spec.grid.columns==5 and same(spec.grid.itemSize,{150,210}) and same(spec.grid.spacing,{27,27}))
-assert(grid.size[1]==918 and grid.size[2]==557 and grid.x==0 and grid.y==-75.5)
+assert(grid.sizeDeltaX==918 and grid.sizeDeltaY==557 and same(spec.position,{0,-75.5}))
 assert(panel:GetChild('pileVeil').visible and panel:GetChild('pileChrome').visible and not panel:GetChild('veil').visible)
 assert(not panel:GetChild('header').visible and not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
 assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · 17 张')
@@ -930,6 +977,10 @@ local function resetBrowser()
  deck=ownedDeck
 end
 resetBrowser()
+local template=require('abyss_ui_templates').AbyssBattlePileCard
+for _,child in ipairs(template.children)do
+ if child.name=='face' or child.name=='hit'then assert(same(child.position,{0,0}),'official template must centre the face and its hit')end
+end
 local function instance(uid,id,upgraded)return {uid=uid,cardId=id,upgraded=upgraded==true}end
 local function tool(mode)return panel:GetChild('pileTools'):GetChild(mode):GetChild('hit').click()end
 `;
@@ -958,7 +1009,7 @@ for _,origin in ipairs({0,1})do
  assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · '..amount..' 张')
  if amount>0 then
   local first=grid.items[0];local uid=deck.bindings[first].uid
-  assert(uid==201 and first:GetChild('face').y==0 and not first:GetChild('uid').visible)
+  assert(uid==201 and not first:GetChild('uid').visible)
   calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)
   local late=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
@@ -1125,8 +1176,8 @@ end
             local columns=math.min(5,amount)
             local width=columns*spec.grid.itemSize[1]+(columns-1)*spec.grid.spacing[1]
                 +spec.grid.padding[3]+spec.grid.padding[4]
-            assert(grid.size[1]==918 and grid.x==0 and grid.y==-75.5,'V25 keeps a fixed five-column list origin')
-            assert(grid.size[2]==557,'V25 scroll viewport remains fixed for every pile size')
+            assert(grid.sizeDeltaX==918 and same(spec.position,{0,-75.5}),'V25 keeps a fixed five-column list origin')
+            assert(grid.sizeDeltaY==557,'V25 scroll viewport remains fixed for every pile size')
             local original={};for i,c in ipairs(host.deckUI.cards)do original[i]=c.uid end
             assert(not host.deckUI:setSort('name'),'pile-only sort cannot enter permanent preference')
             assert(host.deckUI:setPileSort('name'));assert(host.deckUI:setPileSort('cost'))
@@ -1135,7 +1186,7 @@ end
             for i,c in ipairs(host.deckUI.cards)do assert(c.uid==original[i],'default sort did not restore the displayed snapshot')end
             host.deckUI:update()
             local face=grid.items[0]:GetChild('face')
-            assert(face.y==0 and not grid.items[0]:GetChild('uid').visible)
+            assert(not grid.items[0]:GetChild('uid').visible)
             local shared=sharedFace(face)
             assert(shared.front.visible~=false and shared.back.visible~=false and shared.front:GetChild('costMaterial').visible)
             for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
