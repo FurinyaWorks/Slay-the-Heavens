@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "tool": "beyond-simulator-mcp@0.5.2",
+  "run": "standalone 330x330 art root on 1280x720 simulator canvas",
+  "exportHalfMaskMode": "left-mirror-x",
+  "selectedEvents": 7,
+  "verifiedEvents": 7,
+  "standaloneGiaBytes": 367393,
+  "previousBaselineGiaBytes": 364285,
+  "allContourGiaBytes": 378375,
+  "officialCapacity": "NOT_RUN",
+  "physicalDevices": "NOT_RUN",
+  "integratedWithGame": false,
+  "events": {
+    "cleric": {
+      "variant": "cue-contour",
+      "simulator": "PASS",
+      "images": 60,
+      "containers": 1,
+      "created": 61,
+      "visible": 61,
+      "giaBytes": 54533,
+      "giaSha256": "d6ba2048b925e2c6130a36ef27a9a2e6b246304854e25c236c3fe9adc630ba1a",
+      "saveSha256": "52916466c6dbb1298e323784dfdbc89fd0367570e7a49cb24f8406d7f7b3c661"
+    },
+    "golden_shrine": {
+      "variant": "baseline",
+      "simulator": "PASS",
+      "images": 48,
+      "containers": 1,
+      "created": 49,
+      "visible": 49,
+      "giaBytes": 41771,
+      "giaSha256": "a7147a61ea37da75c5265a705c6d92cc7221e7ece55fe426902260a12fb443c3",
+      "saveSha256": "3710c256a16f99faacb5e4708e9486335c82e8f34f7e3ecdb36d4a11a34f644f"
+    },
+    "golden_wing": {
+      "variant": "baseline",
+      "simulator": "PASS",
+      "images": 60,
+      "containers": 1,
+      "created": 61,
+      "visible": 61,
+      "giaBytes": 54361,
+      "giaSha256": "ea2091d60bd3539eaff6332d8f952cd9cba82658563123370565c4e47e4d56cf",
+      "saveSha256": "2caf785bbeab336fd76b8d71016569c1d75f7610ecce8170f61f02a1881f75ae"
+    },
+    "goop": {
+      "variant": "cue-contour",
+      "simulator": "PASS",
+      "images": 60,
+      "containers": 1,
+      "created": 61,
+      "visible": 61,
+      "giaBytes": 54227,
+      "giaSha256": "7b1a90d566e8922c2731760c57e0385160e44510430e9b1dc17180194c80b3f5",
+      "saveSha256": "d3e5934688a36b9f3cba26762076826a7dd7949b9e30bb7a97acb5d4beed5646"
+    },
+    "purifier": {
+      "variant": "cue-contour",
+      "simulator": "PASS",
+      "images": 60,
+      "containers": 1,
+      "created": 61,
+      "visible": 61,
+      "giaBytes": 53425,
+      "giaSha256": "9605763923016a6a9cd8330007c420b21ef92e1dc88f21b1619bae04a1a47bcc",
+      "saveSha256": "b2bff5274cbf21fc6ec5e3e5a45ce0c81720622d0f30e0b04afbb9b62aee61ec"
+    },
+    "shining_light": {
+      "variant": "baseline",
+      "simulator": "PASS",
+      "images": 60,
+      "containers": 1,
+      "created": 61,
+      "visible": 61,
+      "giaBytes": 54487,
+      "giaSha256": "32912a1ccd584d6a9cfbd4d91b9b1567fa46d407fde78f3ba0da6010ac95d103",
+      "saveSha256": "79857fab5d757f9b540ea2f234f3b22097fc70deeb592923f3b4f9e7f21b60b6"
+    },
+    "upgrade_shrine": {
+      "variant": "cue-contour",
+      "simulator": "PASS",
+      "images": 60,
+      "containers": 1,
+      "created": 61,
+      "visible": 61,
+      "giaBytes": 54589,
+      "giaSha256": "7772c48551dd222f8b9d776ba0d2767162cf364a3edd53846e1dd7c7cc985561",
+      "saveSha256": "18daa2936237bfdc9d7a24aa1f2a43148bd4c61076e5770b4cf930ea39613edb"
+    }
+  },
+  "staticHostCheck": {
+    "stage": "offline static layout validation only",
+    "profiles": {
+      "default": {
+        "baselineEventViewDirectChildren": 13,
+        "slotSize": [
+          180,
+          180
+        ],
+        "events": {
+          "cleric": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "golden_shrine": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 48,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          },
+          "golden_wing": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "goop": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "purifier": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "shining_light": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "upgrade_shrine": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          }
+        }
+      },
+      "officialEventStyle": {
+        "baselineEventViewDirectChildren": 13,
+        "slotSize": [
+          330,
+          330
+        ],
+        "events": {
+          "cleric": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "golden_shrine": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 48,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          },
+          "golden_wing": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "goop": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "purifier": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "shining_light": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          },
+          "upgrade_shrine": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 60,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "REJECTED_AS_EXPECTED"
+          }
+        }
+      }
+    },
+    "sourceCommit": "141ecee3560c9fc70526267854e0349fe104b944"
+  }
+}
