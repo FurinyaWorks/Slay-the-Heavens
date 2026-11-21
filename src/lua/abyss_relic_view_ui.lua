@@ -163,14 +163,17 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             else row:SetVisible(false) end
         end
     end
-    local function renderPageControls(run,single,compact,width,height)
-        local many=self:pages()>1
-        child('previous'):SetVisible(single and self.selectedIndex>1 or not single and many)
-        child('next'):SetVisible(single and self.selectedIndex<#run.relics or not single and many)
+    local function positionPageControls(single,compact,width,height)
         for _,name in ipairs({'previous','next'})do
             local frame=Theme.layout.relicView[name]
             child(name):SetAnchoredPosition(single and (name=='previous' and -width/2+112 or width/2-112) or frame[1],compact and -height/2+26 or frame[2])
         end
+    end
+    local function renderPageControls(run,single,compact,width,height)
+        local many=self:pages()>1
+        child('previous'):SetVisible(single and self.selectedIndex>1 or not single and many)
+        child('next'):SetVisible(single and self.selectedIndex<#run.relics or not single and many)
+        positionPageControls(single,compact,width,height)
         child('pageHint'):SetVisible(not single and many)
         child('pageHint').text=not single and many and ('第 '..self.page..'/'..self:pages()..' 页') or ''
         child('placeholder'):SetVisible(#run.relics==0)

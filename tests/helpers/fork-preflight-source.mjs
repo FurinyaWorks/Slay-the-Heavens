@@ -120,7 +120,7 @@ function beforeIntegratedReleaseCopier(path,source){
 function beforeRebasedCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='70153f0f991e671f8d30a77aac622eaf73a1d959549633c3c43955f320856de2')return source;
+ if(hash(lf)!=='0d7325144169030f64ec5675be9c9e82cc9f8d4bd2a5dbcbaadbf667dd6bb6d9')return source;
  const limit=lf.indexOf('const releaseUiFiles='),end=lf.indexOf('const inside=',limit);
  assert(limit>=0&&end>limit,'exact reconciled copy closure');
  const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(stsCloseoutFiles))','Object.entries(powerMembershipFiles))');
