@@ -34,6 +34,19 @@ local function bind(c,key,box,token,projection,command,argument,describe,choice,
  local mapId,mapFloor,mapSignature=map.currentNodeId,map.floor,map.sourceSignature
  local desiredOpen=expectOpened~=false
  local handler
+ local function contextValid()
+  return self.root==root and self.visible and not self.busy and not self.presentationBusy and self.mode=='main'
+   and self.run==run and self.map==map and self.view==view and self.opened==desiredOpen
+ end
+ local function flowValid()
+  return run.nodeFlow==flow and flow.reward==reward and flow.complete==false and flow.chest==chest
+   and chest.opened==desiredOpen and reward.items==items
+ end
+ local function roomValid()
+  return map.currentNodeId==mapId and map.floor==mapFloor and map.sourceSignature==mapSignature
+   and reward.sapphireKey==link and run.roomGeneration==generation and run.act==act and run.floor==floor
+   and self.treasureChoice==selection and box.parent==parent
+ end
  local function owned()
   -- Every logical check follows the final native read, which can reenter render.
   if not ancestry(root,host,key,box)then return false end
@@ -44,13 +57,7 @@ local function bind(c,key,box,token,projection,command,argument,describe,choice,
    for field,value in pairs(itemSnapshot)do if type(value)~='table' and live[field]~=value then return false end end
   end
   local action=self.actions[key]
-  return self.root==root and self.visible and not self.busy and not self.presentationBusy and self.mode=='main'
-   and self.run==run and self.map==map and self.view==view and self.opened==desiredOpen
-   and run.nodeFlow==flow and flow.reward==reward and flow.complete==false and flow.chest==chest
-   and chest.opened==desiredOpen and reward.items==items
-   and map.currentNodeId==mapId and map.floor==mapFloor and map.sourceSignature==mapSignature
-   and reward.sapphireKey==link and run.roomGeneration==generation and run.act==act and run.floor==floor
-   and self.treasureChoice==selection and box.parent==parent
+  return contextValid() and flowValid() and roomValid()
    and action and action.enabled and action.handler==handler
  end
  local function observe()
@@ -75,40 +82,52 @@ local function renderRewardPicture(c,row,item)
  c.picture(row:GetChild('icon'),item.kind=='gold' and Theme.icon.gold or Theme.icon.relic[item.id] or Theme.icon.node.treasure)
  if c.relicPicture then c.relicPicture(row:GetChild('icon'),item.kind=='relic' and item.id or nil,Theme.layout.nativeNode.treasure.rewardDisc)end
 end
-function M.render(c)
- local self,node=c.self,c.node
- local chest,reward=node.chest,node.reward
- local panel=c.child('treasureView')
- local boss,opened=node.roomKind=='boss_treasure',chest.opened==true
- self.opened=opened
- local items=reward.items
- local linked=source(self,opened,boss,reward)
+local function selectReward(self,items,linked)
  if displayed[self]~=self.run.nodeFlow.reward then
   displayed[self]=self.run.nodeFlow.reward;self.treasureChoice=1
   if linked then for index,item in ipairs(items)do if item.origin=='base' then self.treasureChoice=index;break end end end
  end
  self.treasureChoice=math.max(1,math.min(self.treasureChoice or 1,#items))
  local item=items[self.treasureChoice]
- local row,take=panel:GetChild('reward'),panel:GetChild('take')
+ return item
+end
+local function paintTreasureVisibility(c,panel,row,take,opened,items,item)
  c.show(panel:GetChild('closed'),not opened);c.show(panel:GetChild('open'),opened)
  c.show(panel:GetChild('hint'),not opened)
  c.tint(panel:GetChild('glow'),opened and Theme.color.gold or Theme.color.goldDim)
  for _,name in ipairs({'previous','next','page','bossDescription'})do c.show(panel:GetChild(name),opened and #items>0)end
  c.show(row,opened and item~=nil);c.show(take,opened and item~=nil)
+end
+local function treasureItemLabel(c,item)
+ return item.kind=='gold' and (item.amount..' 金币') or item.kind=='sapphire' and '蓝钥匙' or c.relicName(item.id)
+end
+local function treasureItemDescription(c,item,items,available)
+ return item.kind=='sapphire' and ('放弃关联遗物「'..c.relicName(item.relicId)..'」；保留金币和额外遗物。')
+  or item.kind=='gold' and '独立领取宝箱金币。'
+  or available and c.relicText(item.id) or RewardList.unavailableDescription(item,items)
+end
+local function treasureTakeLabel(linked,item)
+ return linked and item.origin=='base' and '领取遗物' or item.kind=='sapphire' and '选择蓝钥匙' or '领取奖励'
+end
+local function treasureChoiceDescription(boss,linked)
+ return boss and '选择一件遗物，其余奖励将放弃。' or linked and '各项奖励可以分别领取；遗物与其关联蓝钥匙只能选择一项。' or '各项奖励可以分别领取。'
+end
+local function paintTreasureReward(c,self,panel,row,take,chest,boss,linked,item,items)
  local label=''
  if item then
-  label=item.kind=='gold' and (item.amount..' 金币') or item.kind=='sapphire' and '蓝钥匙' or c.relicName(item.id)
+  label=treasureItemLabel(c,item)
   local available=item.kind~='relic' or item.available==true
   row:GetChild('name').text=(item.kind=='relic' and '遗物 · ' or '')..label
-  row:GetChild('description').text=item.kind=='sapphire' and ('放弃关联遗物「'..c.relicName(item.relicId)..'」；保留金币和额外遗物。')
-   or item.kind=='gold' and '独立领取宝箱金币。'
-   or available and c.relicText(item.id) or RewardList.unavailableDescription(item,items)
+  row:GetChild('description').text=treasureItemDescription(c,item,items,available)
   renderRewardPicture(c,row,item)
-  take:GetChild('label').text=linked and item.origin=='base' and '领取遗物' or item.kind=='sapphire' and '选择蓝钥匙' or '领取奖励'
+  take:GetChild('label').text=treasureTakeLabel(linked,item)
   c.state(take,available,false,true)
   panel:GetChild('page').text=(kinds[chest.kind] or '宝箱')..' · '..self.treasureChoice..' / '..#items
-  panel:GetChild('bossDescription').text=boss and '选择一件遗物，其余奖励将放弃。' or linked and '各项奖励可以分别领取；遗物与其关联蓝钥匙只能选择一项。' or '各项奖励可以分别领取。'
+  panel:GetChild('bossDescription').text=treasureChoiceDescription(boss,linked)
  end
+ return label
+end
+local function bindTreasurePages(c,self,panel,opened,items)
  for _,step in ipairs({{name='previous',delta=-1},{name='next',delta=1}})do
   local index=self.treasureChoice+step.delta
   c.state(panel:GetChild(step.name),opened and index>=1 and index<=#items)
@@ -116,6 +135,8 @@ function M.render(c)
    self.treasureChoice=index;self.notice='';self:render();return true
   end)
  end
+end
+local function bindTreasureOpening(c,self,panel,opened)
  local openToken={id=self.run.nodeFlow.id,generation=self.run.roomGeneration,opened=opened}
  local function openProjection()
   local flow=self.run.nodeFlow
@@ -124,6 +145,8 @@ function M.render(c)
  local openFn,openObserve=bind(c,'treasureView/chest',panel:GetChild('chest'),openToken,openProjection,
   'openTreasure',nil,function()return '' end,nil,false)
  c.action('treasureView/chest',not opened,openFn,nil,nil,openObserve)
+end
+local function bindTreasureTaking(c,self,take,item,boss,linked,opened,label)
  local token=item and Nodes.treasureRewardSource(self.run,item.slot)
  local command,argument,choice,projection='claimTreasureReward',token,nil
  if boss then command,argument='claimBossTreasure',self.treasureChoice
@@ -137,6 +160,22 @@ function M.render(c)
  local takeFn,observe=bind(c,'treasureView/take',take,token,projection,command,argument,
   function()return '已领取「'..label..'」'end,choice,true,item)
  c.action('treasureView/take',opened and item~=nil and (item.kind~='relic' or item.available==true),takeFn,nil,nil,observe)
+end
+function M.render(c)
+ local self,node=c.self,c.node
+ local chest,reward=node.chest,node.reward
+ local panel=c.child('treasureView')
+ local boss,opened=node.roomKind=='boss_treasure',chest.opened==true
+ self.opened=opened
+ local items=reward.items
+ local linked=source(self,opened,boss,reward)
+ local item=selectReward(self,items,linked)
+ local row,take=panel:GetChild('reward'),panel:GetChild('take')
+ paintTreasureVisibility(c,panel,row,take,opened,items,item)
+ local label=paintTreasureReward(c,self,panel,row,take,chest,boss,linked,item,items)
+ bindTreasurePages(c,self,panel,opened,items)
+ bindTreasureOpening(c,self,panel,opened)
+ bindTreasureTaking(c,self,take,item,boss,linked,opened,label)
  local hint=opened and '领取所需奖励，或离开宝箱。' or ((kinds[chest.kind] or '宝箱')..'就在眼前；可以打开或直接离开。')
  if linked then hint='遗物与蓝钥匙只能选一项 · 选择蓝钥匙将放弃遗物「'..c.relicName(linked.relicId)..'」' end
  if c.list then
