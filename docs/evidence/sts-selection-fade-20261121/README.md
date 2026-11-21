@@ -33,3 +33,17 @@ python docs/evidence/v2-ui-20261119/render-runtime.py build/sts-evidence-states
 最新 preserve785 定向：9/9通过，新增断言覆盖原生圆角及选角常驻veil消失。用户指出的白色句子待按具体控件确认；普通加载的message已隐藏，角色信息不擅自删除。图片已更新为保留 #785 的版本，旧独审不是新源码的合并准入证明。
 
 完整npm test尝试尚未完成，过程中已有 `actual CRLF source and helper checkout retain the frozen LF Git identity`、`Act1 failure boundaries 1/4 preserve all original values and aliases` 失败，未取得完整绿灯；其运行期间发生了用户纠正后的源码更新，不能用于认证最终候选。尚未创建PR、启用Auto-merge或合入。
+
+## 继续执行后的回归收口
+
+2026-11-21 用户要求继续后核对develop仍为345ba083；保留#785按钮与去常驻遮罩，不接管其他在途PR。正式命座宿主不分配旧头像，开发/旧宿主仍保留原头像可见性、暂停与缓存流程；未选中时不借用旧run的角色图。普通加载提示隐藏，角色介绍按原规格保留，不添加过场句子。
+
+- 选角、page ready、牌组复用、白名单、菜单、视口等定向56/56通过（regressions.log.gz）。
+- 原生角色/头像生命周期30/30通过（portrait.log.gz）；官方布局的离线运行回归35/35通过（official-runtime.log.gz，名称中的official指正式配置，非官方客户端）。
+- check:engineering通过：架构与Lua静态无新增诊断、4项变异及7项原生UI合同通过（engineering.log.gz）；语法与Backlog检查通过。
+- 旧全量尝试发现的CRLF和两份隔离源读回，分别1/1与2/2复验通过；Act1失败边界1/4完整原图142144428字节比较通过，未增加超时或减少场景。
+- 新增测试的历史discovery与复制闭包按精确完整身份接续，缺项、重复、foreign、字节漂移负控继续有效；原始当前测试发现不删除新增测试。
+
+上轮完整npm test在源码修正期间中断，不作最终候选证明；本轮正式Full、独审与Merge Queue以PR/Actions真实结果为准。官方候选写入/读回、官方导入/ready、PC/实体手机仍未验，保持TASK-111进行中。
+
+历史CI与完整选角回放收口：74/74通过（ci-custody.log.gz），包含本轮精确复制闭包后继与清单接续后的旧合同；没有改写旧归档。正式配置runtime的35项包含末击/奖励不闪屏及移动商店返回触摸归属。当前只承诺这些已执行结果，Full托管组合与官方设备验收分别追踪。

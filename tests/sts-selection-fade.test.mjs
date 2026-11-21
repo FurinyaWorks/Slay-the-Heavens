@@ -107,3 +107,15 @@ print('CANCEL_REENTRY_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/CANCEL_REENTRY_PASS/);
 });
+
+test('STS discovery custody removes only the complete authenticated added test',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const {stsCurrentJsDiscovery}=await import('./helpers/sts-selection-fade-source.mjs');
+ const {inventory}=JSON.parse(readFileSync('tests/fixtures/sts-selection-fade-source.json','utf8'));
+ const raw=[...inventory.before,inventory.addition];
+ assert.deepEqual(stsCurrentJsDiscovery(raw),inventory.before);
+ for(const invalid of [inventory.before,[...raw,inventory.addition],raw.slice(1),[...raw,'foreign']])
+  assert.throws(()=>stsCurrentJsDiscovery(invalid),/complete STS raw/);
+ assert.throws(()=>stsCurrentJsDiscovery(raw,()=>null),/fresh STS added/);
+ assert.throws(()=>stsCurrentJsDiscovery(raw,p=>readFileSync(p,'utf8')+'\n'),/fresh STS added/);
+});

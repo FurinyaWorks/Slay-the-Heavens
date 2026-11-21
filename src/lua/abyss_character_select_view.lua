@@ -119,6 +119,7 @@ function M.render(panel,state,platform,published)
     panel:GetChild('deckView'):SetVisible(false)
     local roster=panel:GetChild('v25Roster')
     if nativeV25 and roster then
+        roster:SetVisible(open==1)
         panel:GetChild('title'):SetVisible(info==nil)
         roster:GetChild('selected'):GetChild('selection'):SetVisible(info~=nil)
         panel:GetChild('traveler'):GetChild('selected'):SetVisible(false)
