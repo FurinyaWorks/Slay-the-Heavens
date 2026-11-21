@@ -174,11 +174,11 @@ test('current Run architecture admission uses its declared target and rereads ev
  // Independent complete Git config at the declared develop target d8a57cae,
  // not a hash obtained from the projector's own return value or current proof.
  const targetHash='0e75d9e1f08cfb7738215b9a31cce141f03cc2469077bce0db3376fe1f446a9c';
- let changed,replacement,onlyOnReread=false,reads=[];
+ let changed,replacement,mutationOccurrence=0,reads=[];
  const reader=file=>{
-  const seen=onlyOnReread&&reads.includes(file);
+  const seen=reads.filter(previous=>previous===file).length;
   reads.push(file);
-  if(file!==changed||(onlyOnReread&&!seen))return readFileSync(file,'utf8');
+  if(file!==changed||seen<mutationOccurrence)return readFileSync(file,'utf8');
   if(replacement instanceof Error)throw replacement;
   return replacement;
  };
@@ -208,9 +208,10 @@ test('current Run architecture admission uses its declared target and rereads ev
   assert.equal(project(raw),accepted,`valid projection recovers after ${fault}`);
   assert.deepEqual(reads,admittedReads,`recovery reads the complete owner closure after ${fault}`);
  }
- onlyOnReread=true;
+
  for(const [index,owner] of currentProductionRereads.entries()){
   changed=owner;
+  mutationOccurrence=admittedReads.slice(0,owners.length+index).filter(file=>file===owner).length;
   replacement=readFileSync(owner,'utf8')+'\n';
   reads=[];
   assert.throws(()=>project(raw),{

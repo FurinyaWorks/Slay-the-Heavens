@@ -514,6 +514,79 @@ assert(cr:GetChild('mapPanel'):GetChild('previewBack'):GetChild('label').text~='
 `, 'OFFICIAL_RUNTIME_COMBAT_PASS');
 });
 
+
+test('official lethal feedback and reward widgets do not flash the page cover',t=>{
+ runOfficial(t,`
+local GameUI=require('abyss_game_ui')
+local original=GameUI.new
+GameUI.new=function(root,data,presentation,event,platform)
+ platform.presentationReady=function()return true end
+ return original(root,data,presentation,event,platform)
+end
+local Gate=require('abyss_page_reveal')
+local F=H.F
+local host,ui,battle,_,tap,_,_,root=H.setup({'bludgeon'},{'acid_slime_s'})
+local gate=assert(host.pageReveal)
+local cover=root:GetChild('pageReveal')
+local rewards=battle:GetChild('rewardList')
+local picker=battle:GetChild('rewardStage')
+local map=root:GetChild('mapPanel')
+local function frame()
+ host:update(1/60)
+ if gate:step(Gate.intent(host)) then host:refresh()end
+ gate:paint(not host.exitOpen)
+end
+local function actor()
+ local exists,box=pcall(F.actorControl,battle,'enemy1')
+ return exists and box.visible
+end
+local function uncovered(stage)
+ assert(not cover.visible and not gate:covered(),stage..' flashed the page cover')
+end
+for _=1,6 do frame()end
+local combat=host.run.combat
+assert(actor() and battle.visible and combat.enemies[1].hp>0 and not rewards.visible)
+uncovered('ready battle')
+tap('card1',201);tap('enemy1',201)
+assert(combat.enemies[1].hp<=0 and actor(),'public lethal card must leave a visible actor for feedback')
+uncovered('lethal input')
+local actorGone,rewardVisible=false,false
+for _=1,240 do
+ frame()
+ local present=actor()
+ uncovered(present and 'before final enemy disappeared' or 'after final enemy disappeared')
+ assert(not actorGone or not present,'the retired enemy returned')
+ actorGone=not present
+ if rewards.visible then
+  assert(actorGone and battle.visible and host.run.phase=='reward','reward painted before feedback retired the last actor')
+  rewardVisible=true;break
+ end
+end
+assert(actorGone and rewardVisible,'untouched-HP public lethal input did not publish rewards')
+local function expectReward(listVisible,pickerVisible)
+ uncovered(pickerVisible and 'reward picker' or 'reward list')
+ assert(battle.visible and not actor() and not map.visible and rewards.visible==listVisible and picker.visible==pickerVisible)
+end
+for _=1,4 do frame();expectReward(true,false)end
+battle:GetChild('cardReward').click();expectReward(false,true)
+for _=1,4 do frame();expectReward(false,true)end
+local count=#host.run.deck
+tap('card1',203);expectReward(true,false)
+for _=1,4 do frame();expectReward(true,false)end
+assert(#host.run.deck==count+1 and host.run.rewards.cardResolved,'public pick must claim exactly one card')
+battle:GetChild('continue').click()
+local priorCover=cover.visible
+local coverRuns=priorCover and 1 or 0
+for _=1,8 do
+ frame()
+ if cover.visible and not priorCover then coverRuns=coverRuns+1 end
+ priorCover=cover.visible
+end
+assert(coverRuns==1 and not cover.visible and host.run.phase=='map' and map.visible and not battle.visible,
+ 'a genuine map transition must cover once, then release')
+`,'PC13_OFFICIAL_REWARD_FRAMES_PASS');
+});
+
 test('official candidate keeps C-mode, repeated pile modals, real victory and return-map controls live',t=>{
  runOfficial(t,`
 local F=H.F

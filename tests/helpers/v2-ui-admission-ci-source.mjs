@@ -106,7 +106,22 @@ function beforeExtractionWitness(path,source) {
   return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
 }
 
+const pc13CiBytes = readFileSync(new URL('../fixtures/pc13-reward-cover-ci-source.json.gz', import.meta.url));
+assert.equal(sha256(pc13CiBytes),'b2c7fabab863f5967831723d3671af1210c77668d1151de895ba8e884fd1db95','PC13 CI source predecessor identities');
+const pc13Ci = JSON.parse(gunzipSync(pc13CiBytes));
+for(const row of Object.values(pc13Ci)){
+  assert.equal(sha256(row.before),row.beforeSha256);
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.beforeGitBlob);
+}
+function beforePc13Ci(path,source){
+  if(!Object.hasOwn(pc13Ci,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+  const row=pc13Ci[path];
+  if(sha256(source.replaceAll('\r\n','\n'))!==row.afterSha256)return source;
+  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+}
+
 export function beforeTinyHouseCiSource(path, source) {
+  source = beforePc13Ci(path,source);
   if (!Object.hasOwn(tinyHouseCi,path)) return source;
   const row = tinyHouseCi[path];
   return project(source,{sha256:row.afterSha256,before:row.before});

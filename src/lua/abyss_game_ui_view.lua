@@ -280,11 +280,11 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
                 suspendBattle(run,deckOpen,potionOpen))
             child("battlePanel"):SetVisible(self.mode == "battle")
-            self.mapUI:setVisible(self.mode == "map" and not deckOpen and not potionOpen and not blocked)
+            self.mapUI:setVisible(self.mode == "map" and not deckOpen and not potionOpen and not blocked,self.mode == "map")
             if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
             child("mapPanel"):SetVisible(self.mode == "map")
             refreshMapResources(run)
-            self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked)
+            self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node")
             child("nodePanel"):SetVisible(self.mode == "node")
         end
 end

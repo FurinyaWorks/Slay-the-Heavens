@@ -1,3 +1,4 @@
+import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
@@ -35,6 +36,9 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeAuthenticatedPc13RewardCover(path,source,read);
+  const readCurrent=read;
+  read=owner=>beforePc13RewardCover(owner,readCurrent(owner));
   source = beforeTinyHouseUiSource(path, source, read);
   source = beforePotionPointerSource(path, source, read);
   source = beforeV2UiHudSource(path, source, read);
@@ -52,10 +56,15 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 
 const currentContinuationOwners = new Set([
   ...characterPreparationOwners, ...v2UiHudSourcePaths, selectorSourcePair.path, potionTextSourcePair.path,
-  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths,
+  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths,
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  // A historic successor may still be recognised by an older projector; that
+  // must not let it claim the latest PC13 identity at this current-only entry.
+  if (pc13RewardCoverSourcePaths.includes(path)) {
+    assert.notEqual(beforePc13RewardCover(path,source),source, 'fresh current production owner: '+path);
+  }
   const prior = beforeCharacterPreparationSource(path, source, read);
   if (currentContinuationOwners.has(path)) {
     assert.notEqual(prior, source, 'fresh current production owner: '+path);

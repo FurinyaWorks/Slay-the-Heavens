@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {beforePc13RewardCover} from './pc13-reward-cover-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -19,6 +20,7 @@ assert.equal(sha256(potionMerge.before),potionMerge.beforeSha256);
 assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.before)}\0`).update(potionMerge.before).digest('hex'),potionMerge.beforeGitBlob);
 
 export function beforeV2UiEvidence(path, source) {
+  source = beforePc13RewardCover(path,source);
   // The P1 merge recognizes the immediate pre-Tiny-House bytes only.
   source = beforeTinyHouseCiSource(path,source);
   if (path === potionMerge.path && typeof source === 'string' && !source.includes('\r\r\n')

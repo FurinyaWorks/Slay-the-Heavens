@@ -207,3 +207,12 @@ assert(#run.deck==deck+1 and run.nodeFlow.event.attemptsLeft==attempts-1,'Match 
 assert(run.elapsedSeconds>0 and ruleCalls==4 and battleCalls==4)
 print('PAGE_REVEAL_PASS')`);
 });
+
+test('new battle still gates input while settlement and reward cards stay on the ready scene',t=>{
+ const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});const out=mkdtempSync(join(base,'pc13-cover-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
+ buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out);
+ lua(`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path
+dofile('tests/lua/support/pc13_reward_cover.lua')
+dofile('tests/lua/support/modal_cover_setters.lua')
+print('PAGE_REVEAL_PASS')`);
+});
