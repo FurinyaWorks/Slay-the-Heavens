@@ -4,8 +4,8 @@ title: PC商店商品压盖及删牌浏览布局专项
 status: In Progress
 assignee:
   - Furinya
-created_date: 2026-11-15 20:14
-updated_date: '2026-11-18T14:00:00Z'
+created_date: '2026-11-15 20:14'
+updated_date: '2026-11-21 09:27'
 labels: []
 milestone: m-8
 dependencies: []
@@ -39,4 +39,6 @@ type: bug
 
 <!-- SECTION:NOTES:BEGIN -->
 #672 开放 PR 声明修复商品压盖，包含 shop-shelf-clearance 测试。代码正在实施但仍无相同正式候选设备验收；保持 In Progress、AC 全部未勾。严重度P0/P1，不能靠静态截图断言触控命中区正确。
+
+2026-11-21 营地锻造切片按本轮授权接入 release/v2.0.0。以卡组原生滚动控件的五列布局复用现有卡面，独立覆盖选牌、取消、确认与营地结果。离线夹具测 12 张、少量居中、跨卡回收与拖动误选；全任务继续待正式 CI 和同一候选 PC/手机验收。
 <!-- SECTION:NOTES:END -->
