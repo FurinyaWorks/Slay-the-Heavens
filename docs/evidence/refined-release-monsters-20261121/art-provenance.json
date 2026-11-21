@@ -1,0 +1,785 @@
+{
+  "schemaVersion": 1,
+  "registrySha256": "8cbcb576b9be266ddd078ac811edbfe3842e89876fc19c79a4c5e9baf4721c0a",
+  "sourceRosterManifestSha256": "554da5db7bb74cbd25b53675f7eeaeb77a09d854421b0125c48c60d309443213",
+  "notes": [
+    "Reference URLs and their associated receipts are provenance metadata only; no official raw artwork included.",
+    "All source and catalogue projected 127px RGBA values match under an independent offline native projection; no actual GIL/client check here.",
+    "32 archived right-half native triangles were baked one for one with centered positive-scale native transforms. Source drawing order preserved.",
+    "Old reference sheet mask renderer discrepancies are separately documented."
+  ],
+  "assets": [
+    {
+      "enemyId": "acid_slime_s",
+      "geometrySha256": "00eed78095381e2f4db8650ddd5a07bcee78dac73c9a487a1672616e0934c5d8",
+      "sourceSha256": "5c474aec0887aad7deae4ea9beac0bc0029cd69847dd9262fe9d5a74c789111d",
+      "schema": "archived runtime rows",
+      "drawings": 32,
+      "drawingControls": 35,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-02/acid-small/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "15d9e5004ccb0d316e04c9f004fcad1c1506660992bdb1240c1c9d2de0f05e5a",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "acid_slime_m",
+      "geometrySha256": "cafd395483fea352dbf3134f6b6d5f3d29806b356dbf7e172dc1f491b860469d",
+      "sourceSha256": "1dcfd92d72fd2bbda2ed9be2f156fadea15ed301524700cb505e1ca1d0a3b26f",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": {
+        "commit": "ae832ba85f5aae1fef6e870ecfef2202051f99c2",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/r5/slime/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "1dab7f46622af979418eb7eedbea37fd695aeda9f88fe4e0ec61ff37e0769d11",
+      "bakedRightHalfMasks": 6
+    },
+    {
+      "enemyId": "acid_slime_l",
+      "geometrySha256": "70a13bdcb5b66fac27a24e2a3854f46f1526ff87e9d3d7deaa364cc4ff8450ae",
+      "sourceSha256": "b5cf87307f95d439a68a5aa4e9884e1c6f0552786288056fe1ca302461f114a3",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-01/official/dendro/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "70ecdab5fee10cce5aeeb47bd10b5f64d260083d599606f5d546f3b03a61afb5",
+      "bakedRightHalfMasks": 2
+    },
+    {
+      "enemyId": "spike_slime_s",
+      "geometrySha256": "e4e220dbeff4bf6466542e8d1b32ab5d3df0544648f94758f6e80a8fa6abdcfb",
+      "sourceSha256": "e50522cb761bb80508b6e7a619a6e445ad0f262469edcc2ce6a2c9693c564f2d",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-slime-feedback-r2/spike-small/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "45cdf4424ef72c54994ae85131155d7cdceda13c532fc91860ef0d9eca333708",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "spike_slime_m",
+      "geometrySha256": "be74e7f13bb61b57a7c2aef3fae60ff438e230190b226f384fef8bb3cbae4a2d",
+      "sourceSha256": "95e3e9d2bdf2721caf39b88bf165e0d9aabf45d36bd62310622a8e5ef14b266a",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-02/spike-medium/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "ab45be6c9aeff71a4f98f2f15bd458ff5465d48b43c9fde46594c09c8ca96adc",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "spike_slime_l",
+      "geometrySha256": "98d074cfd482a5dc7d2b77b2e1110b9e84956d7ed533780001662c79a3ecebe2",
+      "sourceSha256": "fb676e91c835ce0d0d7106d0fe7bf5d6c12acf74898a950c7d4cf98ea1e0d22b",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-01/geo-slime/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "a086f0665e6861eebb344fdf902050bb66f513b3df8fff67c3080b0065976a05",
+      "bakedRightHalfMasks": 2
+    },
+    {
+      "enemyId": "red_louse",
+      "geometrySha256": "5eb6d3ea20bc314c70f7452ab84d9bbccc4538f1f1f99e45fee6d12c0c463909",
+      "sourceSha256": "6856bce36b84ec6f5739747db2b8293c9a6d17280c1577f13cb14e9fd5cc8ba9",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-03/red-louse/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "ed8398ea521c803a02ca1e38b809db31d7db1fde6515c68ba20dbea57a1a4b90",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "green_louse",
+      "geometrySha256": "c329ab092bd899eb1ba9a3fc0e5669b1ec5dab482ef9078e5697ccea4a6dc944",
+      "sourceSha256": "22ecb2551b4faf62f421d66a1e042822397001e2cc979cf823259724b4910e15",
+      "schema": "archived runtime rows",
+      "drawings": 40,
+      "drawingControls": 43,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-03/green-louse/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "ac1a7be92e51c3887ff3e4ef96972bc46f112c08cf7e8c076801be9961037160",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "cultist",
+      "geometrySha256": "23413092980a34a52a0318493198caae444714a6cb1aaab05ba14ae090a009e9",
+      "sourceSha256": "36a4f8550ec37d2b0eb52044c4f7f69ab8580149477d40bd86e4411feea27ed6",
+      "schema": "archived runtime rows",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-03/cultist/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "98f4c8c5b4f2cd6ee8c88baa5ae38442538ffc97a607cfac8c30a4312f04e7a2",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "looter",
+      "geometrySha256": "73d8e450c79b236d1f6085d4fe6cc695282dd4d33c73c4234ef2a3a9f00e92dd",
+      "sourceSha256": "e530b73dcb3e58cfce5700195749d2b2685f0e4119d585b5b002be2373826789",
+      "schema": "archived runtime rows",
+      "drawings": 113,
+      "drawingControls": 117,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-04/looter/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "e243b6f869ccd00f58042e9a5c64186cf6e5043ab0b594f38ba39eb8a794d722",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "mugger",
+      "geometrySha256": "1bba974103ecef1a3ebebce4418176331352f67b5a0e7971c2fe2466714d4394",
+      "sourceSha256": "cfe1af9986e3eb2a5e478d396218689c8d227831bbb18246c8c6b5119ab35ca7",
+      "schema": "locked Image Editor scene",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "a6e83fb2dcfd2a66171ff5d40df95c7891ba8a9074dfc5f5e4254bbb0cb46df0",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/09/26/94675339/4037a36ad1a24d3a71cd75138e004f21_3268427385611281519.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2208?lang=ja-jp"
+          ]
+        }
+      },
+      "pixelSha256At127": "7f598928a51e3bd600ba40413592ceff8907fd7c68a2a9cbee63aea903a9fa1f",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "blue_slaver",
+      "geometrySha256": "1e3ddb17a0a7525914461560af9899bdd21b8b1a8d475619306db9e68aec1561",
+      "sourceSha256": "7841c7cb07bc932d26e96de29d0ab7138bdf6f9b1ade60db3a9a1229085210ad",
+      "schema": "locked Image Editor scene",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "6f0d17ea856f7d3a2dea05b21a230b8fde930c55384969751675743571980904",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/04/09/94675339/87bf6b3f746c4bf52698f42439ebb234_965940507081681397.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2201?lang=ja-jp"
+          ]
+        }
+      },
+      "pixelSha256At127": "2dd6b0121fe05476b77db337b4da18be9a42d98e68251c0c51da4724d2e725f8",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "red_slaver",
+      "geometrySha256": "059e0b1b3e61dbeea37159f4ede9e8a696b1e43f6a2129f4eba2e0327ffcdba1",
+      "sourceSha256": "cd4422655b070c77d845e70719eaa5be3622dde1ad2ad3daf4b910bdb8d4b378",
+      "schema": "locked Image Editor scene",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "4913115aa0e7ff8447a955e8c15315f3bf0773cc7db45546b2ec1c0975f6a712",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/03/11/94675339/aa7964340ee1d75fe50ad0594769c496_3326346753799054394.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2720?lang=ja-jp",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2720?lang=zh-cn"
+          ]
+        }
+      },
+      "pixelSha256At127": "8eb0ac6ad415a8bca185f8781b3b150c00a7372168b5d76a83fb92df3f2224e8",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "taskmaster",
+      "geometrySha256": "963cf33866aa0cf07089e88dee722a0ba3c3c266b858b7156fe0f9942c547f4b",
+      "sourceSha256": "18ebb0c0a8333642168c103c9a591253458f6b55ef8bf843306003fe4c6b911c",
+      "schema": "locked Image Editor scene",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "5ca7dff4f88bb0b3b471fea59a768d2290c8101dae4b08715822127df5f248ae",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/09/14/94675339/fd36d7c41a36f3139d0e0ffdf52521b5_6721106216773119606.jpg",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2148?lang=ja-jp"
+          ]
+        }
+      },
+      "pixelSha256At127": "d442383cda73944c3648d8a7612d9bdbda7569d07a69496fe5ae186e654110b2",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "sneaky_gremlin",
+      "geometrySha256": "ce84ac71718365a34c192aae161dae3d8443d68276ed23a041e72c874461b89d",
+      "sourceSha256": "3c1d55b86f642dd1e2711238c772b7076a008409c7cfe5fdb73d34433605bfb6",
+      "schema": "archived runtime rows",
+      "drawings": 89,
+      "drawingControls": 93,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "ba06a01ca74516450d8135735aa8788677b96d1c82d441196bd4a03a63f31faa",
+          "referenceUrls": [
+            "https://cdn.shopify.com/s/files/1/0747/5317/9944/files/Genshin_Impact_Hydro_Abyss_Mage.png?v=1745307812"
+          ]
+        }
+      },
+      "pixelSha256At127": "f59dafd30e741cba910356ef847ca3de7fccbbd56ee36d3ebbe4916a536b2a67",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "shield_gremlin",
+      "geometrySha256": "30cf173d3d0983b0971f85cf7bf24ec5c085fbce81b3270d4e93009a41af2865",
+      "sourceSha256": "33ab383d00dc8adc41566d1ad2f2dbde5cfbf0aef9197830a15d444524cda71b",
+      "schema": "locked Image Editor scene",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "75281fcf7b41be2e316c4a4f1980642ccc4380acbd2b44857d6b4922f1977c49",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/07/35428890/18a6d5a9c341b576a17a2bfde3b37713_3883290946504879747.png",
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/07/35428890/370a0d8a17226354ca3d7c45c6834fe5_3574494921145456716.png",
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/08/35428890/3955a34c468a0e45097b3e4d30bce68c_2395125174749103237.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/2164?lang=en-us",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2138?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "5b0e83909b29d0565f87f2fe4459fd73d0ddd763ffeca006bf87cb31654d10f6",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "wizard_gremlin",
+      "geometrySha256": "d520bf672c5d0e7130888a1acc28731aa10367d4c5e7613360ee88040a934b7e",
+      "sourceSha256": "ef9db20404bf89b9fdea505f26bc70271d546d3ab035604e7a08c48c106a1eb2",
+      "schema": "archived runtime rows",
+      "drawings": 86,
+      "drawingControls": 90,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "99c5909a69d851831ffa6b30a7f27c78b8a0eecf903e03cd2819bcfba7199d45",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/04/19/35428890/8f7b5637b0524a1b6ed531fe3ce7bafd_6242083900349386124.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2234?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "44acb21254effe631be071f2bc22473a7370eea7157cc8d89982268446f31136",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "mad_gremlin",
+      "geometrySha256": "7ffc40c3a6f927d74a2f3f1f076217f09fe1624460a8ae630396bbc22441b231",
+      "sourceSha256": "db5d4e085440448ac2742e124effa2cfa5bb8eca3c7aa38f0f71a0c5164b867c",
+      "schema": "archived runtime rows",
+      "drawings": 95,
+      "drawingControls": 99,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "23873b968d51fba0454d59426bf42b2de2d9bba102997a02c0f071f4decb090c",
+          "referenceUrls": [
+            "https://cdn.shopify.com/s/files/1/0747/5317/9944/files/Genshin_Impact_Pyro_Abyss_Mage.png",
+            "https://cdn.shopify.com/s/files/1/0747/5317/9944/files/Genshin_Impact_Pyro_Abyss_Mage.png?v=1745307631",
+            "https://genshinfans.com/blogs/news/genshi-abyss-mage",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2185?lang=zh-cn"
+          ]
+        }
+      },
+      "pixelSha256At127": "77d81d4fd0a77c17ca0fb41e5666e0fb2391c1be440db3b49d8a4aedac9f32b6",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "fat_gremlin",
+      "geometrySha256": "b4669c9ad2d0e3ae8fde8ab58f04cd6e5b6aded2fd978e51195a25181a2bf9ff",
+      "sourceSha256": "1b874106891337b36d441afbaaf4f6521afcda3a11a06ef02813694293f0d450",
+      "schema": "locked Image Editor scene",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "da4a9d983a64d0a20812eddaaa02f6a6f85febe73f2ff025f823211450e0546e",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "gremlin_nob",
+      "geometrySha256": "bb107f8802192a23fe662d06aad3977857882914201160c787bba08212a12827",
+      "sourceSha256": "9a657596703b232f771c5852e70517f286ee05ee12979052509ed5e7448c8004",
+      "schema": "archived runtime rows",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "bf8a70c70130a0022771b5f06f99e6b89c5aee22e597c81c1070cc7d01d71158",
+          "referenceUrls": [
+            "https://exploregenshin.gg/blazing-axe-mitachurl/",
+            "https://exploregenshin.gg/wp-content/uploads/2025/04/Blazing-Axe-Mitachurl.webp",
+            "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e095a08a5d4b544ee9629b0ea24f2d27cdb9f8a6/art/monster-benchmarks/genshin-v2/blazing-axe-mitachurl/source-generation.json"
+          ]
+        }
+      },
+      "pixelSha256At127": "753e1933a45b4cb0eaeac7e8237d4f1c5d97e5f82fac3250277d9a566d2ba48c",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "jaw_worm",
+      "geometrySha256": "a56ba3b24c32d50b216fa108ec9f3ed2e6b8166b7eefcad02095ab93a62e5c6e",
+      "sourceSha256": "f204118afae8581769c9a381b8ceacdd449fa7dcdf8529a42e5ccda80866b184",
+      "schema": "archived runtime rows",
+      "drawings": 114,
+      "drawingControls": 118,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-03/jaw-worm/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "87419785e30eca5a47c655b4f279bb483d9197d15ac8f78cf1bd1c2a0e5e1857",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "fungi_beast",
+      "geometrySha256": "a7a5e90f3875d371fc9a568e995d441363bb06d55d924a226958b9985177521a",
+      "sourceSha256": "ac49e40faa789269af0df1f6096e0774f7dbb4e163b96b787043c8055e242287",
+      "schema": "archived runtime rows",
+      "drawings": 114,
+      "drawingControls": 118,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-04/fungi-beast/native-layout.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "0928f92d64383f907769275d25c7bed0def986544c592288e377b417bd1b331e",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "lagavulin",
+      "geometrySha256": "50db011080017ca6db932b14345b00b23b640a704f70c5714f1a9123a3a3e1b4",
+      "sourceSha256": "d68e2a5ac2aa76403d6b9a58a406f98faac3d6e2c9344ab02c3dd1e62e6b12d1",
+      "schema": "archived runtime rows",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": {
+        "commit": "ae832ba85f5aae1fef6e870ecfef2202051f99c2",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/r5/ruin/native-layout-whole-119.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "4be39ba527188bb5aeca6c37aad0e82067ef7d933c031db0492a03dc9df8f782",
+      "bakedRightHalfMasks": 10
+    },
+    {
+      "enemyId": "sentry",
+      "geometrySha256": "319d62ee007299bcec0b1112b0650e3122655dbccda41518e8a37b73a367cca7",
+      "sourceSha256": "fd10ab6675266e334e4c6cc5025a2bd7bb45e00da34cb41770cd10d7a490e0f2",
+      "schema": "locked Image Editor scene",
+      "drawings": 92,
+      "drawingControls": 96,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "658fb9ded147957af89180a6a5e3d9b627adef79df6017118ee7dbab53fc4b50",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2022/10/07/1023623/60aa5a703106abea12e09b790da7972b_5430006765600172881.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2893?lang=zh-cn",
+            "https://wiki.hoyolab.com/pc/genshin/entry/3799?lang=zh-cn"
+          ]
+        }
+      },
+      "pixelSha256At127": "78cfb3f3f8924630f337cc69355e3ec99963d70e0a48aa2fbb38e625d8d74f98",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "spheric_guardian",
+      "geometrySha256": "fac5518205f540f4fa5c5afe7a5b25dbb3de2d9e85c4f7b63ca24c7aaaa39cfa",
+      "sourceSha256": "b7babc270438168760fd64265c4480643decd47b4a4cdaf127c39ebfb9fb88dc",
+      "schema": "locked Image Editor scene",
+      "drawings": 94,
+      "drawingControls": 98,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "c2427b643362c5a2694f1c0f111226a7d573917821ae265bafd7e91d5fdaa791",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/05/18/35428890/dd2275f2bdbf0f68aa5c5dd71e0d27be_5698372268019213457.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/2226?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "fffd282bc5b1922c017f87a794d3f25fbb059f27c83a7648882f1aeceff42383",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "guardian",
+      "geometrySha256": "dac3eebba1d1d12881b3991f1a7700117fbf002a65fe2326a66aacc1c51ec3ce",
+      "sourceSha256": "2b70734292dc048fbbe1dfb834ab8f05e60013ba2deef461c5a19ef45fe27867",
+      "schema": "locked Image Editor scene",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "d52be1eb22038c6cf1c2f381a431a5c14044ff40e88ee5b644084e0df7445502",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "slime_boss",
+      "geometrySha256": "8df969d8e77a981222f4009ae60f2d4080baa82b25d71b3b2dba6494ca593d76",
+      "sourceSha256": "d14b8241a4a4a1e11faa60947ef2f7bdfbb2b020e2ff828a3787f1912a142ab5",
+      "schema": "locked Image Editor scene",
+      "drawings": 40,
+      "drawingControls": 43,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "d0a20f5f85dc6d612285104a2a655354fb9ee76f0f076caccad545bfcbd33230",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/04/35428890/5ae48c83de4fcd7b724c5306102045de_9096271965912117538.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/2128?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "88eafbf7772628497f45f91c3fba6833e2fda5adffc6c4cc23f43cd47c51e0ef",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "hexaghost",
+      "geometrySha256": "e95d452dc20f3781736e5acb9afb4d6ffc6189bdf24a120382068580d0e5ccfc",
+      "sourceSha256": "18e487d8ee20d10cf6dd986885e31e25d7a65fd0737fc9972b4a90799f4194ef",
+      "schema": "archived runtime rows",
+      "drawings": 95,
+      "drawingControls": 99,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "4319704c2e145544c324c8b0f4f63d249323c7cdc151d69c8ca78eb16f526ae5",
+          "referenceUrls": [
+            "https://gi.yatta.moe/assets/UI/monster/UI_MonsterIcon_Effigy_Fire.png",
+            "https://gi.yatta.moe/en/archive/monster/20040601/pyro-hypostasis",
+            "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/db8bca6ad226bc816de7e6919a320d9d41fe9a78/art/monster-benchmarks/genshin-v2/pyro-hypostasis/source-generation.json"
+          ]
+        }
+      },
+      "pixelSha256At127": "9bc69c3bc89c0461a61a3b14b3ef7d9dc45e9805c7d5b2f0ba087093a057bcdb",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "centurion",
+      "geometrySha256": "417598bdc728d744f77df96872d9d5a6e0685231f31fadd2d2baf097b7921daf",
+      "sourceSha256": "a4c95b4c3fe783046e4a59b8a5f8bcd5f5383b8e863be64a3fb2148b72c24ee6",
+      "schema": "archived runtime rows",
+      "drawings": 112,
+      "drawingControls": 116,
+      "archive": {
+        "commit": "ba7c04af719153c53d2f839acd9f3aa028a98429",
+        "path": "docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/archive/monster-pilot-01/mitachurl/official119/native-layout-whole-116.json"
+      },
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "e6f67eb4138377a5aa9e9ce3b4ab7b854a73637ac7d7e4132ce55d6467dbc573",
+      "bakedRightHalfMasks": 12
+    },
+    {
+      "enemyId": "mystic",
+      "geometrySha256": "cf6e59be676c9fec4687d393a56ef303482b9bb26afb2c703ee019603cf41209",
+      "sourceSha256": "4701d911d331d73f8e48a019509ed9c930ff56c6873f4bcd1161db425e028cc4",
+      "schema": "archived runtime rows",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "e8e7828a21cb19c30548aaddda1a71dfbd56f01903dd195525b99a5ac20e2636",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/11/03/36893887/b925a2d2bb76989c0765d4983edac5f0_3789732098596455184.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2166?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "0d52ab62e6b87156411ffac18778c3ea91168bb48bf70e7aa2e481cd2681d82e",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "chosen",
+      "geometrySha256": "2b989714fc72f791ee5c853923d1299be7c621484faeb0f64eeda969d98ef559",
+      "sourceSha256": "7cc265ff7a5d8de45488d17a56fc184d78ff07af2cb21ccd7fbc4351eeaa93a7",
+      "schema": "archived runtime rows",
+      "drawings": 84,
+      "drawingControls": 88,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "a8099c3cd5fe27e9674ea21dfc15ff503c8ff146844b835e66868e14afb8406f",
+          "referenceUrls": [
+            "https://blog.playstation.com/?p=348228",
+            "https://genshin.hoyoverse.com/en/news/detail/12241",
+            "https://s3.us-east-1.amazonaws.com/gamewith-en/article_tools/genshin-impact/gacha/26576_e.png"
+          ]
+        }
+      },
+      "pixelSha256At127": "cca64cf7be304d9d6f1e72d0dec0c091c50d86113a0007c262c6afbc77b38dfb",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "book_of_stabbing",
+      "geometrySha256": "c0663d5c63501fec366ac4c73dce4b98fd0934193f8a5bcdbf22bd712304e777",
+      "sourceSha256": "4cc32a8f685ee6cf11871a739e31c51292828ef174c01aa5bfeddbe90b5b45b5",
+      "schema": "locked Image Editor scene",
+      "drawings": 36,
+      "drawingControls": 39,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "b84c989f121eb8af77ca6dd438d83cf0011c3b18a3e9421793aa819ae80d3b96",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/04/10/35428890/452d9b39379a147ea2ac9e8841c6495c_4428038750182056309.png",
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/07/15/94376896/b2577224ba9d21c28b0ea003f133a172_2499825424629718261.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/2006?lang=en-us",
+            "https://wiki.hoyolab.com/pc/genshin/entry/1991?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "dbc184bdac05264db209725d297ba073ab3054e0919a9b2ced9ac05a14f90421",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "snake_plant",
+      "geometrySha256": "8cd177e69860f90e9c27b4c8fd97ed8a0c3e7b0ac6519c2bcabbb39b23020755",
+      "sourceSha256": "892e808cb10db5e776ea03c3ab74e072bd42d1bf582a84acadc9172b69792ab4",
+      "schema": "locked Image Editor scene",
+      "drawings": 40,
+      "drawingControls": 43,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "f3d64d7de3a21c6f0184808e02a70de569fad7df43535a25c419dae36f1bcefe",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/04/16/35428890/1cb19d8c44643d4ce909812ca02db549_1084330282212436996.png",
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/04/16/35428890/848a5378220af3d7a5c52782b45c5234_7843352586907255691.png",
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/04/16/35428890/ce37101b3ee9069d4e1b3a2748c2f5bb_6900065639795204002.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/2190?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "4fd7018dbb0776fbf9afe732faf4a44187525b2729b8bbfb968e3592f535ce69",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "shelled_parasite",
+      "geometrySha256": "66fc9e9769b26b2cf3bdf19a75ff5a2a146ed5abc0cf0e3dbc48c772823b66de",
+      "sourceSha256": "9a6c43f12ae294adc1d5f745eaa80491ebcac3d8ef9b950796a8028ab5aba993",
+      "schema": "locked Image Editor scene",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "8c44c512c3452e8f33fdad19caeb6379084d75dfbbc32db355a59c3d66e8a62a",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/09/01/94675339/9e4dbbe967a9dc87e0ec11952b6eb173_3444920229987931705.png?x-oss-process=image%2Fformat%2Cwebp",
+            "https://wiki.hoyolab.com/pc/genshin/entry/4059?lang=ja-jp"
+          ]
+        }
+      },
+      "pixelSha256At127": "6b1868f6fe5a9515933fa2c5dd1078a8d82a33ee36d8442e96b80aa15f2b1151",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "byrd",
+      "geometrySha256": "47f5fb43e3102f1763950372319f2d4cc8da68570f7f70f1b92991141e7dd060",
+      "sourceSha256": "f9d02df1bd8f062fd8120f7fb8e01c4b2c0d15eaeaf409c475054ac8e21adb21",
+      "schema": "locked Image Editor scene",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "690c4673a5eb276b503c1def1c6ba1ea8582d399036759577dddcc059d35ed41",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/01/19/35428890/401ac93ccaa0f94d6540f6175018ad0a_4339207692366795963.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/9256?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "a93b535cec32586f2b4f790e826366bff735109dca9a7df1244a6af7cff9bae3",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "snecko",
+      "geometrySha256": "a3f518cde737bd78d79aeea181bd5b2023787439217d76f4e9f245394bcafb43",
+      "sourceSha256": "b5f42ec56236219c111e78688d40202afd25efa21a08ef44f590e50f8fb12eff",
+      "schema": "locked Image Editor scene",
+      "drawings": 113,
+      "drawingControls": 117,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "23e419fa77afa0b3d9b92d9217a73a14f096b3274dc309e5799e7f7a095bd114",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2026/03/03/35428890/a1a03c5d28f495e49fe54deccf9aec44_5349007135099800898.png",
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/04/04/77454259/8a70b19ece621932e25d54f03d8ac625_7578530681108529638.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/9478?lang=en-us",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2939?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "9bdfa054d6146ec4a4b4e4eb26aa793fc74c1b143f9309257ba1968efa76779b",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "torch_head",
+      "geometrySha256": "72e8839ba4bbdfb5651201804f599e2b538538f5d74430b14cda306a76d191f9",
+      "sourceSha256": "af44c6ea30e67637c807ad48c3787d2419a0dd38eca7562a04040f7908204d3e",
+      "schema": "archived runtime rows",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "4507d2fbb64a84357d9b2d5c2258822292bdd2e4c70bb8b3493434f0c71116bf",
+          "referenceUrls": [
+            "https://cdn.th.gl/genshin-impact/icons/db/enemy_606.webp",
+            "https://genshin.hoyoverse.com/en/news/detail/18271",
+            "https://genshinimpact.th.gl/db/enemies/enemy_606",
+            "https://static1-us.millenium.gg/articles/6/27/60/6/%40/242066-spectre-orig-1-article_cover_bd-1.jpg",
+            "https://us.millenium.gg/guide/27606.html"
+          ]
+        }
+      },
+      "pixelSha256At127": "0be900e0a2eeb3860fd8784c9917bf2f9bf4bad4366354cab802e7d0474926dc",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "collector",
+      "geometrySha256": "bd883d8084e86bd8cc79333060a27145c6bd6d9fbe3393824966ea4e58b3ad13",
+      "sourceSha256": "203ca011427269c022cab73e0f6528d48b673d89550b0186503fefbf3900b0c9",
+      "schema": "archived runtime rows",
+      "drawings": 115,
+      "drawingControls": 119,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "67c80b0dd4496d27e073110bbd458ae84f232ba0875ed733d9d3f596f8c66706",
+          "referenceUrls": [
+            "https://cdn.th.gl/genshin-impact/icons/db/enemy_20302.webp",
+            "https://gamewith.net/genshin-impact/article/show/30819",
+            "https://genshin.hoyoverse.com/en/news/detail/18271",
+            "https://genshinimpact.th.gl/db/enemies/enemy_20302",
+            "https://s3.us-east-1.amazonaws.com/gamewith-en/article_tools/genshin-impact/gacha/30819_e.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2181?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "df34738d0f2bebfe21a0d504ea349c9d8cb2723995ffa8c5ded40f8861d7569e",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "automaton",
+      "geometrySha256": "0ce2d048401402834d827409287da98a196717e6863f2211c0d55c5f11269732",
+      "sourceSha256": "7760252dcde1aeac77cfa5f76bc56ebd43478b0d4db85090350c5e8b21e3a243",
+      "schema": "locked Image Editor scene",
+      "drawings": 41,
+      "drawingControls": 44,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "3f75bbab3dce1c0cf928a3f954fc4d03f9c2ac58df2fa90c26f25bcd674d9d0e",
+          "referenceUrls": [
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/04/19/35428890/aa1a9099a33ff8b591fb0d058de9626f_5292732680500259613.png",
+            "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/08/16/35428890/c52298ecd5a0b22758457acf43a0ba98_5873883459900576436.png",
+            "https://wiki.hoyolab.com/m/genshin/entry/2225?lang=en-us",
+            "https://wiki.hoyolab.com/pc/genshin/entry/6561?lang=en-us"
+          ]
+        }
+      },
+      "pixelSha256At127": "ee668887ed72423384d3859fc968a3bcfc6cf47a8a6578e7998bd41e89dec136",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "bronze_orb",
+      "geometrySha256": "85b5e330fc09744f06ad46c0e1b3765d2826312706b5b6b15e21ca0902972cca",
+      "sourceSha256": "3a0185baf74b57e5091dffe26cbf21e1f24d87c52bf999e7dfae693c2c49fbe6",
+      "schema": "locked Image Editor scene",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "review.json": {
+          "sha256": "06cb570331b2d92bac4b879f6a89c7b37ec4ebba0e687b18ff34c4f0c54bb51d",
+          "referenceUrls": [
+            "https://upload-static.hoyoverse.com/hoyolab-wiki/2023/04/16/36540823/1da5796e33027fa9de6fc0b86cb08be6_3722644797316156621.png",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2219?lang=zh-cn"
+          ]
+        }
+      },
+      "pixelSha256At127": "b5d3b8d45a206e1f05707ae4901c7f5ee9851463c2c8975de493b5b640e43310",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "champ",
+      "geometrySha256": "ff1210d945db16aca12b94e52fedef3172e25daf060d5fdd0133ff1b1d58edcc",
+      "sourceSha256": "b799c29f9b7c9945aa2776d6f9b95c706cbbd1edfd643c33cb49b029f912cb56",
+      "schema": "locked Image Editor scene",
+      "drawings": 96,
+      "drawingControls": 100,
+      "archive": null,
+      "externalReferenceReceipts": {},
+      "pixelSha256At127": "f3df7da2a7f48fe7f6b396cff3c8605d8380084e2d7fbd0bb03298891eb96299",
+      "bakedRightHalfMasks": 0
+    },
+    {
+      "enemyId": "gremlin_leader",
+      "geometrySha256": "038aced43275f3198a235fb69fab5204afa692a1c05cad36acd4580cf6bf6596",
+      "sourceSha256": "2e675cf4c32ca58fbe75355ab98c8e242cc3091d6870ef2a14acc5330de97c3a",
+      "schema": "archived runtime rows",
+      "drawings": 109,
+      "drawingControls": 113,
+      "archive": null,
+      "externalReferenceReceipts": {
+        "source.json": {
+          "sha256": "9f3336ee8c1ceb60c804d3f8874abdc6ec6f62d59e7cd2fd6703c6f8277d0c4a",
+          "referenceUrls": [
+            "https://exploregenshin.gg/stonehide-lawachurl/",
+            "https://exploregenshin.gg/wp-content/uploads/2025/04/Stonehide-Lawachurl.webp",
+            "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e095a08a5d4b544ee9629b0ea24f2d27cdb9f8a6/art/monster-benchmarks/genshin-v1/stonehide-lawachurl/generation-provenance.json",
+            "https://wiki.hoyolab.com/pc/genshin/entry/2103"
+          ]
+        }
+      },
+      "pixelSha256At127": "0a6a2455846f128ff26ab2c3ef56b691d15a828fd798f47124841d9c26b9b7a5",
+      "bakedRightHalfMasks": 0
+    }
+  ]
+}

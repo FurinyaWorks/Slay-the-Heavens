@@ -1,4 +1,4 @@
-import {candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetFlags,validateOfficialAssets,officialAssetsFromReceipt} from './official-assets-profile.mjs';
+import {candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetFlagsFor,validateOfficialAssets,officialAssetsFromReceipt,refinedReleaseMonsterArtFromReceipt} from './official-assets-profile.mjs';
 import {uiProfileArgs,uiProfileFromReceipt,validateUiProfileOptions} from './ui-profile.mjs';
 import {resolveArtFeatures,artFeatureArgs,withCandidateArtDefaults,verifyArtFeatureReceipt,artBuildOptionsFromReceipt} from './art-features.mjs';
 // Production audio entrypoint: build every module before enabling native BGM.
@@ -26,13 +26,15 @@ export function nativeAudioBuildArgs(argv) {
   const features=artFeatureArgs(profile.args);
   const art = nativeCardArtArgs(features.args);
   const parsed = releaseBuildArgs(art.args);
-  const custom=!matchesOfficialAssetFlags(features.artFeatures)||art.nativeCardArt!==undefined||profile.args.length!==official.args.length;
+  const custom=!matchesOfficialAssetFlags(features.artFeatures,official)||art.nativeCardArt!==undefined||profile.args.length!==official.args.length;
   const officialAssets=official.officialAssets||!official.legacy&&!custom;
-  if(officialAssets)validateOfficialAssets({...parsed.options,officialAssets,artFeatures:features.artFeatures,nativeCardArt:art.nativeCardArt,readyCardArt:art.readyCardArt});
+  const refinedReleaseMonsterArt=official.refinedReleaseMonsterArt===true||officialAssets&&!official.officialAssets&&features.artFeatures.monsters!==false;
+  const refinedOptions=refinedReleaseMonsterArt?{refinedReleaseMonsterArt:true}:{};
+  if(officialAssets)validateOfficialAssets({...parsed.options,officialAssets,...refinedOptions,artFeatures:features.artFeatures,nativeCardArt:art.nativeCardArt,readyCardArt:art.readyCardArt});
   return { ...parsed, options: { ...parsed.options,
-    ...(officialAssets?{officialAssets:true}:{}),
+    ...(officialAssets?{officialAssets:true}:{}),...refinedOptions,
     ...(profile.nativePageLifecycle||officialAssets?{nativePageLifecycle:true}:{}),
-    artFeatures:resolveArtFeatures({artFeatures:officialAssets?officialAssetFlags:withCandidateArtDefaults(features.artFeatures,{cardsDecided:art.nativeCardArt!==undefined||art.readyCardArt!==undefined}),nativeCardArt:art.nativeCardArt,readyCardArt:art.readyCardArt}),
+    artFeatures:resolveArtFeatures({artFeatures:officialAssets?officialAssetFlagsFor(refinedOptions):withCandidateArtDefaults(features.artFeatures,{cardsDecided:art.nativeCardArt!==undefined||art.readyCardArt!==undefined}),nativeCardArt:art.nativeCardArt,readyCardArt:art.readyCardArt}),
     ...(explicit&&!officialAssets ? {nativeCardArt:art.nativeCardArt ?? {count:0}} : {}),
     ...(art.readyCardArt===false ? {readyCardArt:false} : {}) } };
 }
@@ -44,11 +46,12 @@ function runScript(script, args, root) {
 }
 
 export async function buildNativeAudioGame({ baseMap, output, root = process.cwd(),
-  releaseCandidate = false, workKey = 'alpha-test', nativeCardArt, readyCardArt, artFeatures, officialAssets=false, nativePageLifecycle=false, buildFull = buildNativeCandidateFromToolchain, run = runScript } = {}) {
+  releaseCandidate = false, workKey = 'alpha-test', nativeCardArt, readyCardArt, artFeatures, officialAssets=false, refinedReleaseMonsterArt=false, nativePageLifecycle=false, buildFull = buildNativeCandidateFromToolchain, run = runScript } = {}) {
   if (!baseMap) throw new Error('A base .gil is required');
-  validateOfficialAssets({officialAssets,releaseCandidate,artFeatures,readyCardArt,nativeCardArt});
+  validateOfficialAssets({officialAssets,refinedReleaseMonsterArt,releaseCandidate,artFeatures,readyCardArt,nativeCardArt});
+  const refinedOptions=refinedReleaseMonsterArt?{refinedReleaseMonsterArt:true}:{};
   validateUiProfileOptions({officialAssets,nativePageLifecycle,releaseCandidate});
-  const flags=resolveArtFeatures({artFeatures:officialAssets?officialAssetFlags:artFeatures,readyCardArt,nativeCardArt});
+  const flags=resolveArtFeatures({artFeatures:officialAssets?officialAssetFlagsFor(refinedOptions):artFeatures,readyCardArt,nativeCardArt});
   const outputRoot = prepareOutputDirectory(root, output ?? 'build/native-audio-game');
   const directory = output === undefined ? mkdtempSync(join(outputRoot, 'candidate-')) : outputRoot;
   const audioDirectory = join(directory, 'audio');
@@ -61,10 +64,10 @@ export async function buildNativeAudioGame({ baseMap, output, root = process.cwd
   let full;
   try {
     // Consume the exact returned full candidate receipt from its UUID workspace.
-    full = await buildFull({ baseMap: resolve(root, baseMap), output: join(directory, 'full'), root, releaseCandidate, workKey, officialAssets, nativePageLifecycle, artFeatures:flags, ...(readyCardArt===false?{readyCardArt:false}:{}), ...(nativeCardArt ? {nativeCardArt} : {}) });
+    full = await buildFull({ baseMap: resolve(root, baseMap), output: join(directory, 'full'), root, releaseCandidate, workKey, officialAssets, ...refinedOptions, nativePageLifecycle, artFeatures:flags, ...(readyCardArt===false?{readyCardArt:false}:{}), ...(nativeCardArt ? {nativeCardArt} : {}) });
     const fullFlags=verifyArtFeatureReceipt(full.artFeatures);
     artBuildOptionsFromReceipt(full);
-    if(officialAssetsFromReceipt(full)!==officialAssets||uiProfileFromReceipt(full)!==nativePageLifecycle)throw Error('Full candidate UI profile differs from request');
+    if(officialAssetsFromReceipt(full)!==officialAssets||refinedReleaseMonsterArtFromReceipt(full)!==refinedReleaseMonsterArt||uiProfileFromReceipt(full)!==nativePageLifecycle)throw Error('Full candidate UI profile differs from request');
     if(JSON.stringify(fullFlags)!==JSON.stringify(flags))throw Error('Full candidate art feature configuration differs from request');
     if (fileRecord(full.mapPath).sha256 !== full.candidate.sha256) throw new Error('Full candidate changed before audio packaging');
     verifyNativeCardArtReceipt(full.nativeCardArt,{root});
@@ -80,18 +83,20 @@ export async function buildNativeAudioGame({ baseMap, output, root = process.cwd
     || fileRecord(audio.mapPath).sha256 !== audio.sha256 || audio.candidate?.sha256 !== audio.sha256
     || !full.buildId || audio.buildId !== full.buildId) throw new Error('Final audio artifact/build marker is not bound to the full candidate');
   verifyNativeCardArtReceipt(full.nativeCardArt,{root});
-  if (payloadDigest(sourceInputs(root,{artFeatures:flags,nativeCardArt,readyCardArt,toolchainIdentity:full.toolchainIdentity})) !== full.payloadDigest) throw new Error('Source changed during audio packaging');
+  if (payloadDigest(sourceInputs(root,{artFeatures:flags,nativeCardArt,readyCardArt,...refinedOptions,toolchainIdentity:full.toolchainIdentity})) !== full.payloadDigest) throw new Error('Source changed during audio packaging');
   if (releaseCandidate) {
     const identity = gitSourceIdentity(root);
     if (identity.sourceCommit !== full.sourceCommit || identity.sourceDirty || full.sourceDirty !== false
       || !full.release?.notesSha256) throw new Error('Release candidate provenance changed during audio packaging');
   }
   if(JSON.stringify(audio.officialAssetsProfile)!==JSON.stringify(full.officialAssetsProfile)||JSON.stringify(audio.uiProfile)!==JSON.stringify(full.uiProfile))throw Error('Audio UI profile differs from full candidate');
+  if(refinedReleaseMonsterArtFromReceipt(audio)!==refinedReleaseMonsterArt
+   ||refinedReleaseMonsterArt&&JSON.stringify(audio.nativeMonsterArt)!==JSON.stringify(full.nativeMonsterArt))throw Error('Audio refined monster artwork differs from full candidate');
   if(JSON.stringify(audio.artFeatures)!==JSON.stringify(full.artFeatures))throw Error('Audio art feature configuration differs from full candidate');
   Object.assign(audio, { artFeatures:full.artFeatures, sourceCommit: full.sourceCommit, sourceDirty: full.sourceDirty, payloadDigest: full.payloadDigest,
     startedAt: full.startedAt, productionManifest: full.productionManifest,
     monsterActors: full.monsterActors,
-    ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}),
+    ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}), ...refinedOptions,
     ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
     ...(full.toolchainIdentity ? {toolchainIdentity:full.toolchainIdentity} : {}),
     sourceReceipt: fileRecord(full.receiptPath), ...(full.release ? { release: full.release } : {}),
@@ -107,7 +112,7 @@ export async function buildNativeAudioGame({ baseMap, output, root = process.cwd
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
     const { paths, options } = nativeAudioBuildArgs(process.argv.slice(2));
-    if (!paths[0] || paths.length > 2) throw new Error('Usage: npm run build:native -- <base.gil> [new-output-directory] [--release-candidate] [--work-key=alpha-test] [--art-version=legacy | --official-assets] [--no-ready-card-art | --native-card-art-count=0 | --native-card-art-registry=<file> --native-card-art-count=1|5|10 | --native-card-art-host=<host>]');
+    if (!paths[0] || paths.length > 2) throw new Error('Usage: npm run build:native -- <base.gil> [new-output-directory] [--release-candidate] [--work-key=alpha-test] [--art-version=legacy | --official-assets] [--refined-release-monsters] [--no-ready-card-art | --native-card-art-count=0 | --native-card-art-registry=<file> --native-card-art-count=1|5|10 | --native-card-art-host=<host>]');
     const receipt = await buildNativeAudioGame({ baseMap: paths[0], output: paths[1], ...options });
     console.log(`Complete game with native music: ${receipt.receiptPath}`);
   } catch (error) { console.error(error.message); process.exitCode = 1; }

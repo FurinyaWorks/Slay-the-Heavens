@@ -1,4 +1,5 @@
-import {validateOfficialAssets,officialAssetsArgs,officialAssetFlags} from './official-assets-profile.mjs';
+import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from './refined-release-monsters.mjs';
+import {validateOfficialAssets,candidateAssetsArgs,officialAssetFlagsFor} from './official-assets-profile.mjs';
 import {applyOfficialAssets,officialAssetsTheme} from './official-assets-layout.mjs';
 import {assertOfficialRunContracts} from './official-run-layout.mjs';
 import {resolveArtFeatures,artFeatureArgs,writeArtFeatures,artFeatureModule} from './art-features.mjs';
@@ -6,7 +7,7 @@ import {portraitRuntimeInputs,portraitSources,attachOfficialPortraits,attachLowp
 import {selectionHalfImage} from './lumine-selection-background.mjs';
 import {attachReadyCardHosts,readyArtTemplates,writeReadyCardAssets,prepareReadyCardAssets,readyArtGroupTemplate,readyArtImageTemplate,writeReadyArtBinding,readyArtSourceInputs} from './art/ready-card-runtime.mjs';
 import { backgroundInputs, backgroundSources, backgroundModule, attachOfficialBackground, writeBackgroundModule } from './official-background.mjs';
-import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding} from './monster-art.mjs';
+import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,monsterActorTiers,writeMonsterActorBinding} from './monster-art.mjs';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, existsSync, lstatSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -125,7 +126,7 @@ function rejectInputOutputAliases(outputDirectory, extraInputs = []) {
 export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYSS_PYTHON || 'python', options = {}) {
   // Preflight the entire batch before any generated file can be changed.
   const officialAssets=validateOfficialAssets(options);
-  if(officialAssets)options={...options,artFeatures:{...officialAssetFlags}};
+  if(officialAssets)options={...options,artFeatures:{...officialAssetFlagsFor(options)}};
   const v25BattleChrome=validateV25Chrome(options);
   if(v25BattleChrome&&options.performanceArt)throw Error('V25 reference mode cannot use compact art sampling');
   const v25Cards=options.v25CardAssets?prepareV25CardTemplates(options.v25CardAssets,{root:process.cwd()}):null;
@@ -143,7 +144,11 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   portraitSources(process.cwd(),flags);
   rejectInputOutputAliases(outputDirectory, [...(v25Cards?.inputs.map(row=>row.path)??[]),...(v25Masks?.inputs.map(row=>row.path)??[]),...(flags.menuBackground?backgroundInputs:[]),...portraitRuntimeInputs(flags), ...(readyArt?readyArtSourceInputs():[]), ...(art?.inputPaths??[])].map(path=>resolve(path)));
   // The optional-art identity scan above also protects grass sources before decoding.
-  const monsterArt=flags.monsters?prepareMonsterArt(options.monsterArt):null;
+  const refined=options.refinedReleaseMonsterArt===true;
+  const refinedSource=refined?prepareRefinedReleaseMonsterArt(JSON.parse(readFileSync(refinedReleaseMonsterRegistry,'utf8'))):null;
+  if(refinedSource)refinedSource.hostOrigin=[0,0];
+  const tiers=refined?monsterActorTiers(refinedSource):null;
+  const monsterArt=tiers?tiers.artData:flags.monsters?prepareMonsterArt(options.monsterArt):null;
   if(flags.monsters&&!monsterArt)throw Error('Enabled monster artwork requires its registry');
   const releaseNotes = loadReleaseNotes({ releaseCandidate: options.releaseCandidate, workKey: options.workKey,
     sourceIdentity: options.sourceIdentity });
@@ -163,7 +168,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   attachOfficialPortraits(layout,flags);attachLowpolyScenes(layout,flags);
   const genericTemplates=readyArtTemplates();
   templates.push(...(flags.cards||flags.menuBackground||flags.selectionAvatar||flags.battlePortrait?genericTemplates:genericTemplates.filter(t=>t.name===readyArtGroupTemplate)),
-    monsterActorTemplate(monsterArt),enemyPowerTemplate());
+    ...(tiers?tiers.templates:[monsterActorTemplate(monsterArt)]),enemyPowerTemplate());
   if((v25Cards||v25Masks)&&!templates.some(t=>t.name===readyArtImageTemplate))templates.push(genericTemplates.find(t=>t.name===readyArtImageTemplate));
   if(readyArt){attachReadyCardHosts(battle);attachReadyCardHosts(layout);attachReadyCardHosts(templates[0]);}
   if (art) { attachNativeCardArt(battle,art,{battleOnly:true}); attachNativeCardArt(layout,art); }
@@ -232,14 +237,14 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
-    const official=officialAssetsArgs(process.argv.slice(2));
+    const official=candidateAssetsArgs(process.argv.slice(2));
     const chrome=v25ChromeArgs(official.args);
     const profile=uiProfileArgs(chrome.args),args = profile.args, experimentalCharacters = args.includes('--experimental-characters'),lightweight2d=args.includes('--lightweight-2d'),legacyCardFrames=args.includes('--legacy-card-frames');
     const features=artFeatureArgs(args.filter(arg => !['--experimental-characters','--lightweight-2d','--legacy-card-frames'].includes(arg)));
     const native = nativeCardArtArgs(features.args);
     const { paths, options } = releaseBuildArgs(native.args);
     if (paths.length > 1) throw new Error('Expected at most one output directory');
-    buildUI(paths[0], undefined, {officialAssets:official.officialAssets, v25BattleChrome:chrome.v25BattleChrome,v25CardAssets:chrome.v25CardAssets,v25UiMasks:chrome.v25UiMasks, experimentalCharacters, lightweight2d, legacyCardFrames, nativePageLifecycle:profile.nativePageLifecycle, ...options, artFeatures:features.artFeatures, nativeCardArt:native.nativeCardArt, readyCardArt:native.readyCardArt });
+    buildUI(paths[0], undefined, {officialAssets:official.officialAssets,refinedReleaseMonsterArt:official.refinedReleaseMonsterArt===true, v25BattleChrome:chrome.v25BattleChrome,v25CardAssets:chrome.v25CardAssets,v25UiMasks:chrome.v25UiMasks, experimentalCharacters, lightweight2d, legacyCardFrames, nativePageLifecycle:profile.nativePageLifecycle, ...options, artFeatures:features.artFeatures, nativeCardArt:native.nativeCardArt, readyCardArt:native.readyCardArt });
     console.log('Native battle UI and Traveler display module built.');
   }
   catch (error) { console.error(error.message); process.exitCode = 1; }

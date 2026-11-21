@@ -6,6 +6,7 @@ import {applyV25MapLayout} from './v25-map-layout.mjs';
 import {applyOfficialMapReturnControls} from './official-map-return-controls.mjs';
 import {applyV25RewardLayout,styleMerchant,styleEvent} from './v25-node-layout.mjs';
 import {officialRunChrome} from './official-battle-hud.mjs';
+import {monsterActorTierNames,monsterActorTemplateName} from './monster-art.mjs';
 import {applyStsRewardRows} from './sts-reward-row-layout.mjs';
 
 const parts=node=>node?.children??node?.controls??[];
@@ -13,7 +14,8 @@ const child=(node,name)=>parts(node).find(part=>part.name===name);
 const stage=tree=>child(tree,'stage')??tree;
 const walk=(node,visit)=>{visit(node);for(const part of parts(node))walk(part,visit);};
 const templates=new Set(['AbyssDeckCard','AbyssBattlePileCard','AbyssReadyCardGroup',
- 'AbyssReadyCardImage','AbyssMonsterActor','AbyssMonsterPower','AbyssSelectionHalfTriangle']);
+ 'AbyssReadyCardImage',monsterActorTemplateName,'AbyssMonsterPower','AbyssSelectionHalfTriangle',
+ ...monsterActorTierNames]);
 const composed=new WeakSet();
 const runRoles=['menuPanel','characterPanel','mapPanel','nodePanel','battlePanel',
  'deckPanel','potionEntry','relicBar','relicPanel'];

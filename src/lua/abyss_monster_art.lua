@@ -57,7 +57,8 @@ local function newPool(stage,platform,data,poolIndex,actorBox)
   if self.root and self.data.enabled and self.platform.nativeMonsterArtEnabled~=false then
    for slot,entry in ipairs(rows)do
     local identity=self.data.bindings and self.data.bindings[entry.actor.definitionId]
-    local asset=self.data.assets and self.data.assets[identity] or (entry.actor.definitionId==self.data.asset.enemyId and self.data.asset)
+    local legacy=self.data.asset
+    local asset=self.data.assets and self.data.assets[identity] or (legacy and entry.actor.definitionId==legacy.enemyId and legacy)
     if asset and (not poolIndex or slot==poolIndex)then wanted,wantedId,wantedAsset=actorBox or stage:GetChild('enemy'..slot),entry.id,asset;break end
    end
   end

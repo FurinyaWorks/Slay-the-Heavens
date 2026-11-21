@@ -4,7 +4,7 @@ import {gameBuildArgs} from '../scripts/build-game.mjs';
 import {nativeCandidateBuildArgs} from '../scripts/build-native-candidate.mjs';
 test('default game build selects the approved official UI and native page lifecycle',()=>{
  const args=gameBuildArgs(['base.gil','build/candidates']);
- assert.deepEqual(args,['base.gil','build/candidates','--official-assets','--native-page-lifecycle']);
+ assert.deepEqual(args,['base.gil','build/candidates','--official-assets','--native-page-lifecycle','--refined-release-monsters']);
 });
 test('documented direct GIL build and default game alias select the same native UI',()=>{
  const direct=nativeCandidateBuildArgs(['base.gil','out']);

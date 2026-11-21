@@ -1,5 +1,6 @@
-import {officialAssetsFromReceipt,officialAssetsProfile} from './official-assets-profile.mjs';
+import {officialAssetsFromReceipt,officialAssetsProfile,refinedReleaseMonsterArtFromReceipt} from './official-assets-profile.mjs';
 import {prepareMonsterArt} from './monster-art.mjs';
+import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from './refined-release-monsters.mjs';
 import {portraitInventory,portraitRuntimeInputs} from './official-portraits.mjs';
 import {lightweightInventory,lightweightProfile} from './lightweight-2d-profile.mjs';
 import {v25ChromeFromReceipt,v25CardAssetsFromReceipt,v25UiMasksFromReceipt,validateV25TextureReceipt} from './v25-profile.mjs';
@@ -68,12 +69,35 @@ export function verifyArtFeatureReceipt(receipt) {
  if(receipt.configSha256!==expected.configSha256)throw Error('Art feature receipt config digest mismatch');
  return expected.flags;
 }
+function validateRefinedReleaseMonsterReceipt(actual,deferExperimentalInventory){
+ const expected={enabled:true,assetCount:42,bindingCount:42,allocation:'per-drawable-actor-instance'};
+ const input=actual?.inputs?.[0];
+ if(!actual||typeof actual!=='object'||Array.isArray(actual)
+  ||Reflect.ownKeys(actual).some(key=>![...Object.keys(expected),'capacity','inputs'].includes(key))
+  ||Object.entries(expected).some(([key,value])=>actual[key]!==value)
+  ||!Number.isInteger(actual.capacity)||actual.capacity<1||actual.capacity>115
+  ||!Array.isArray(actual.inputs)||actual.inputs.length!==1
+  ||!input||typeof input!=='object'||Reflect.ownKeys(input).length!==3||input.path!==refinedReleaseMonsterRegistry
+  ||typeof input.sha256!=='string'||!/^[a-f0-9]{64}$/.test(input.sha256)
+  ||!Number.isSafeInteger(input.bytes)||input.bytes<1)
+  throw Error('Refined release monster artwork receipt has invalid inventory');
+ // Audit first checks the receipt shape, then reloads this module from the
+ // receipt's pinned source snapshot for exact bytes and compiled geometry.
+ if(deferExperimentalInventory)return;
+ const bytes=readFileSync(new URL('../'+refinedReleaseMonsterRegistry,import.meta.url));
+ if(bytes.length!==input.bytes||createHash('sha256').update(bytes).digest('hex')!==input.sha256)
+  throw Error('Refined release monster artwork input differs from receipt');
+ const art=prepareRefinedReleaseMonsterArt(JSON.parse(bytes));
+ if(Object.keys(art.assets).length!==actual.assetCount||Object.keys(art.bindings).length!==actual.bindingCount
+  ||art.poolCapacity!==actual.capacity||art.surfaceAllocation!==actual.allocation)
+  throw Error('Refined release monster artwork inventory differs from receipt');
+}
 export function artBuildOptionsFromReceipt(receipt,{deferExperimentalInventory=false}={}) {
  validateV25TextureReceipt(receipt);
  const v25BattleChrome=v25ChromeFromReceipt(receipt);
  const v25CardAssets=v25CardAssetsFromReceipt(receipt);
  const v25UiMasks=v25UiMasksFromReceipt(receipt);
- const officialAssets=officialAssetsFromReceipt(receipt);
+ const officialAssets=officialAssetsFromReceipt(receipt),refinedReleaseMonsterArt=refinedReleaseMonsterArtFromReceipt(receipt);
  const flags=verifyArtFeatureReceipt(receipt?.artFeatures),native=receipt.nativeCardArt;
  const lightweight2d=receipt.experimentalProfile===lightweightProfile;
  if(receipt.experimentalProfile!==undefined&&!lightweight2d||lightweight2d&&(!flags.menuBackground||!flags.selectionAvatar||!flags.battlePortrait||flags.cards||flags.monsters))throw Error('Invalid experimental artwork profile');
@@ -81,7 +105,8 @@ export function artBuildOptionsFromReceipt(receipt,{deferExperimentalInventory=f
  if(flags.cards!==Boolean(native||receipt.readyCardArt?.enabled===true)||native&&receipt.readyCardArt)
   throw Error('Card artwork receipt conflicts with art features');
  if(flags.monsters!==Boolean(receipt.nativeMonsterArt))throw Error('Monster artwork receipt conflicts with art features');
- if(receipt.nativeMonsterArt){
+ if(refinedReleaseMonsterArt)validateRefinedReleaseMonsterReceipt(receipt.nativeMonsterArt,deferExperimentalInventory);
+ else if(receipt.nativeMonsterArt){
   const actual=receipt.nativeMonsterArt;
   const registry=JSON.parse(readFileSync(new URL('../data/presentation/native-monster-art.json',import.meta.url),'utf8'));
   const art=prepareMonsterArt(registry);
@@ -98,7 +123,7 @@ export function artBuildOptionsFromReceipt(receipt,{deferExperimentalInventory=f
  if((flags.selectionAvatar||flags.battlePortrait||flags.cards||flags.menuBackground)!==Boolean(receipt.officialPortraits))throw Error('Portrait artwork receipt conflicts with art features');
  if(receipt.officialPortraits){
   const actual=receipt.officialPortraits;
-  const expected=lightweight2d?(deferExperimentalInventory?{renderProfile:lightweightProfile}:lightweightInventory()):portraitInventory(flags,{v25:v25BattleChrome,officialAssets:receipt.officialAssetsProfile===officialAssetsProfile});
+  const expected=lightweight2d?(deferExperimentalInventory?{renderProfile:lightweightProfile}:lightweightInventory()):portraitInventory(flags,{v25:v25BattleChrome,officialAssets:refinedReleaseMonsterArt||receipt.officialAssetsProfile===officialAssetsProfile});
   for(const [key,value]of Object.entries(expected))if(JSON.stringify(actual[key])!==JSON.stringify(value))throw Error('Portrait artwork inventory differs from art features: '+key);
   const paths=portraitRuntimeInputs(flags);
   if(!Array.isArray(actual.inputs)||actual.inputs.length!==paths.length||paths.some(path=>actual.inputs.filter(row=>
@@ -107,7 +132,7 @@ export function artBuildOptionsFromReceipt(receipt,{deferExperimentalInventory=f
  }
 
  if(native&&(typeof native.registry?.path!=='string'||!native.registry.path||!Array.isArray(native.hosts)||!native.hosts.length))throw Error('Invalid static card artwork receipt');
- return {artFeatures:flags,...(officialAssets?{officialAssets:true}:{}),...(receipt.toolchainIdentity?{toolchainIdentity:receipt.toolchainIdentity}:{}),...(v25CardAssets?{v25CardAssets}:{}),...(v25UiMasks?{v25UiMasks}:{}),...(v25BattleChrome?{v25BattleChrome:true}:{}),...(lightweight2d?{lightweight2d:true}:{}),...(receipt.experimentalUi==='legacy-card-frames'?{legacyCardFrames:true}:{}),...(native?{nativeCardArt:{registry:native.registry.path,hosts:[...native.hosts]}}:{})};
+ return {artFeatures:flags,...(officialAssets?{officialAssets:true}:{}),...(refinedReleaseMonsterArt?{refinedReleaseMonsterArt:true}:{}),...(receipt.toolchainIdentity?{toolchainIdentity:receipt.toolchainIdentity}:{}),...(v25CardAssets?{v25CardAssets}:{}),...(v25UiMasks?{v25UiMasks}:{}),...(v25BattleChrome?{v25BattleChrome:true}:{}),...(lightweight2d?{lightweight2d:true}:{}),...(receipt.experimentalUi==='legacy-card-frames'?{legacyCardFrames:true}:{}),...(native?{nativeCardArt:{registry:native.registry.path,hosts:[...native.hosts]}}:{})};
 }
 export function readArtFeatures(directory) {
  const source=readFileSync(join(directory,artFeatureModule+'.lua'),'utf8');

@@ -1,4 +1,4 @@
-import {validateOfficialAssets,officialAssetsFromReceipt,officialAssetsProfile} from './official-assets-profile.mjs';
+import {validateOfficialAssets,officialAssetsFromReceipt,officialAssetsProfile,refinedReleaseOfficialAssetsProfile} from './official-assets-profile.mjs';
 import {createHash} from 'node:crypto';
 import {lightweightProfile} from './lightweight-2d-profile.mjs';
 import {v25ChromeProfile,validateV25Chrome} from './v25-profile.mjs';
@@ -46,7 +46,7 @@ function configFor(values) {
 
 export function validateUiProfileOptions(options = {}) {
   const {lightweight2d = false, releaseCandidate = false, v25BattleChrome = false, officialAssets = false} = options;
-  validateOfficialAssets({officialAssets, releaseCandidate, lightweight2d, v25BattleChrome});
+  validateOfficialAssets({officialAssets, releaseCandidate, lightweight2d, v25BattleChrome, refinedReleaseMonsterArt:options.refinedReleaseMonsterArt});
   validateV25Chrome({v25BattleChrome, lightweight2d, releaseCandidate});
   const config = configFor(options);
   for (const [key, flag] of flags) {
@@ -125,7 +125,7 @@ export function uiProfileFromReceipt(receipt) {
   const config = configFor(profile);
   if (profile.configSha256 !== profileDigest(config)) throw new Error('UI profile config digest mismatch');
   for (const [key, flag] of flags) {
-    if (config[key] && (!validReleaseMetadata(receipt.release, receipt.officialAssetsProfile === officialAssetsProfile &&
+    if (config[key] && (!validReleaseMetadata(receipt.release, [officialAssetsProfile,refinedReleaseOfficialAssetsProfile].includes(receipt.officialAssetsProfile) &&
       officialAssetsFromReceipt(receipt)) || !flag.allowedInReceipt(receipt))) {
       throw new Error(`${flag.name.replaceAll('-', ' ')} receipt requires the approved official profile or a bounded non-release experiment`);
     }
