@@ -82,8 +82,8 @@ const releaseGuideFiles=Object.freeze({
 const tinyHouseFiles=Object.freeze({
  ...releaseGuideFiles,
  [runtime]:'c69727aeeeacd96469492cdce40b3d100eab1b1d6bd78ff03d67565615fc02d7',
- 'tests/helpers/tiny-house-integrated-source.mjs':'fe9b8a2c3756d90dc9b047584ed0b41f4bfd9e221723aa9a97c5c25587a02697',
- 'tests/helpers/develop-tiny-house-predecessors.json.gz':'07c41cb6acb35fa7b7992f3289c88330c7f031f016f0950eaf1dbd2f4402fca6',
+ 'tests/helpers/tiny-house-integrated-source.mjs':'dbe8ab324dd2f0a4154e2b1c420a19b12c21a00cb5c5739049f1baa4ae8980e8',
+ 'tests/helpers/develop-tiny-house-predecessors.json.gz':'b699c3e7a0dfc70c24a47ba43b1fc68cc2cd340b67d2927c71af7b95d73887d5',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

@@ -59,7 +59,7 @@ for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),ro
 function beforeTinyHouseCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='2b3480675419cb8de63ca2d913e88a7b5a030cd8e4aa472cf0ff2f9a715c5224')return source;
+ if(hash(lf)!=='d94b9d90c3801579637517844efb21c168c678c751f2cb37962f9f39cbee8c07')return source;
  const start=lf.indexOf('const tinyHouseFiles='),end=lf.indexOf('const inside=',start);
  assert(start>=0&&end>start,'exact Tiny House copy block');
  const prior=(lf.slice(0,start)+lf.slice(end)).replace('Object.entries(tinyHouseFiles)','Object.entries(releaseGuideFiles)');
@@ -68,8 +68,8 @@ function beforeTinyHouseCopier(path,source){
 }
 // Preserve the reviewed copier bytes when replaying older CI observations.
 export function beforeLoadingRecoveryCopier(path,source){
- source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,source));
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,source));
  const lf=normalize(source);
  if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;
  const prior=lf.replace("const loadingRecoveryFiles=Object.freeze({\n ...m05Files,\n 'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',\n 'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',\n});\n",'').replace('Object.entries(loadingRecoveryFiles))','Object.entries(m05Files))');

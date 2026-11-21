@@ -7,10 +7,11 @@ const hash=source=>createHash('sha256').update(source).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
 // Exact mainline predecessors of the existing Tiny House CI replay.
 const tinyHousePreviousBytes=readFileSync(new URL('./develop-tiny-house-predecessors.json.gz',import.meta.url));
-assert.equal(hash(tinyHousePreviousBytes),'07c41cb6acb35fa7b7992f3289c88330c7f031f016f0950eaf1dbd2f4402fca6','exact Tiny House integration predecessor archive');
+assert.equal(hash(tinyHousePreviousBytes),'b699c3e7a0dfc70c24a47ba43b1fc68cc2cd340b67d2927c71af7b95d73887d5','exact Tiny House integration predecessor archive');
 const tinyHousePrevious=JSON.parse(gunzipSync(tinyHousePreviousBytes));
 assert.equal(tinyHousePrevious.before,'73fd14aab04c590037c39197364f725a767fed19');
-assert.equal(tinyHousePrevious.after,'7e3f38fda4c17eb7b17eb9d0dc4eba8d79e9d02f');
+assert.equal(tinyHousePrevious.mainlineBase,'535c541515ca93e21a4189efaa604776b975507e');
+assert.deepEqual(tinyHousePrevious.candidatePaths,['tests/helpers/combined-epoch/source-epoch-runtime.mjs']);
 for(const row of Object.values(tinyHousePrevious.files))assert.equal(hash(row.before),row.beforeSha);
 export function beforeTinyHouseIntegratedSource(path,source){
  const row=Object.hasOwn(tinyHousePrevious.files,path)?tinyHousePrevious.files[path]:null;
