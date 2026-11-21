@@ -1,3 +1,4 @@
+import {authorizeSts1MapSource,beforeSts1MapSource} from '../sts1-map-source.mjs';
 import {beforeM05ShopSource,authorizeM05ShopSource} from '../m05-shop-source.mjs';
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
@@ -118,7 +119,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
-  const rawInput=source,guidePrior=beforeReleaseGuideSource(path,source);
+  const rawInput=source,mapPrior=beforeSts1MapSource(path,source),guidePrior=beforeReleaseGuideSource(path,mapPrior);
   const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,guidePrior));
   source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
@@ -128,20 +129,23 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
   if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
-  const samples=[],rawSamples=[];
-  let guideProjected=guidePrior!==rawInput;
+  const samples=[],rawSamples=[],mapSamples=[];
+  let guideProjected=guidePrior!==mapPrior;
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-   const prior=beforeReleaseGuideSource(owner,actual);
-   guideProjected ||= prior!==actual;
+   mapSamples.push([owner,actual]);
+   const mapOwner=beforeSts1MapSource(owner,actual),prior=beforeReleaseGuideSource(owner,mapOwner);
+   guideProjected ||= prior!==mapOwner;
    actual=prior;
    const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,beforeM05ShopSource(owner,actual));samples.push([owner,actual,binding]);
    actual=projectTinyHouseUiSource(owner,projectV2UiHudSource(owner,projectPotionPointerSource(owner,actual,binding),binding),binding);
    actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
-  if(guideProjected)authorizeReleaseGuideSources(readSource);
-  const readGuidePrior=owner=>beforeReleaseGuideSource(owner,readSource(owner));
+  authorizeSts1MapSource([...mapSamples,[path,rawInput]],readSource);
+  const readMapPrior=owner=>beforeSts1MapSource(owner,readSource(owner));
+  if(guideProjected)authorizeReleaseGuideSources(readMapPrior);
+  const readGuidePrior=owner=>beforeReleaseGuideSource(owner,readMapPrior(owner));
   const readM05Prior=owner=>beforeM05ShopSource(owner,readGuidePrior(owner));
   const readPrior=owner=>beforePc13RewardCover(owner,readM05Prior(owner));
   authorizeFatalBgmSource(path,inputSource,current,samples,readPrior);

@@ -164,8 +164,8 @@ test('official build adopts the existing paper map without replacing graph or in
  assert(child(map,'v25MapPaper'),'official candidate must include the adopted map, not the old black fallback');
  const group=child(map,'mapGroup1'),legend=child(group,'typeLegend');
  assert(child(legend,'v25LegendPaper'));
- assert.equal(child(legend,'bossLabel').text.content,'首领');
- assert.equal(child(legend,'bossIcon').visible,true);
+ assert.deepEqual(legend.children.filter(n=>n.name.endsWith('Label')).map(n=>n.text.content),['未知','商人','宝箱','休息','敌人','精英']);
+ assert(!legend.children.some(n=>n.name==='bossIcon'||n.name==='bossLabel'));
  for(const [expected,selected]of [[nodes,n=>/^node\d+$/.test(n.name)],[edges,n=>/^edge\d+$/.test(n.name)],[hits,n=>n.kind==='cursorArea']]){
   const current=all(map).filter(selected);assert.equal(current.length,expected.length);
   current.forEach((node,index)=>assert.strictEqual(node,expected[index],'retain live graph/input owner '+node.name));

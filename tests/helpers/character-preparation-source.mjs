@@ -1,3 +1,4 @@
+import {authorizeSts1MapSource,beforeSts1MapSource,sts1MapSourcePaths} from './sts1-map-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
@@ -38,6 +39,11 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  const mapPrior = beforeSts1MapSource(path,source);
+  if (mapPrior !== source) authorizeSts1MapSource([[path,source]],read);
+  source = mapPrior;
+  const readMapCurrent=read;
+  read=owner=>beforeSts1MapSource(owner,readMapCurrent(owner));
   source = beforeAuthenticatedReleaseGuideSource(path,source,read);
   const readGuideCurrent=read;
   read=owner=>beforeReleaseGuideSource(owner,readGuideCurrent(owner));
@@ -68,6 +74,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if (sts1MapSourcePaths.includes(path)) {
+    assert.notEqual(beforeSts1MapSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   if (releaseGuideSourcePaths.includes(path)) {
     assert.notEqual(beforeReleaseGuideSource(path,source),source, 'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);

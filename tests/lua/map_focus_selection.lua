@@ -16,7 +16,7 @@ for act=1,4 do for _,dt in ipairs({0,1/60,.1,.5,1,3})do
  assert(ui.scroll==expected,'selection must preserve first-floor focus offset')
  for i,node in ipairs(map.nodes)do if node.id==chosen.id then
   local box=F.mapControl(panel,'node'..i)
-  assert(box.visible and box:GetChild('positionToken').visible,'selected room must be visible without another update')
+  assert(box.visible and box:GetChild('ring').visible,'selected room must be visible without another update')
   bounds(box,Layout.viewport)
   for _,step in ipairs({0,1/120,1/60,.25})do
    assert(ui:update(step));assert(box.visible,'selected room must stay visible after focus');bounds(box,Layout.viewport)

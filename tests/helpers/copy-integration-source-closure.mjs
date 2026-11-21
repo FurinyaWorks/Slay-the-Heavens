@@ -79,11 +79,17 @@ const releaseGuideFiles=Object.freeze({
  'tests/helpers/release-guide-backflow-source.mjs':'9a18f8a3c11130899e51b17cba7ca9b5de25c7daf30cf3badf24db9808210062',
  'tests/fixtures/release-guide-backflow-source.json.gz':'7fe4f04ac99a35a19b6faee1b1678204b38476776729cb679886973eeff53d56',
 });
+const mapFiles=Object.freeze({
+ ...releaseGuideFiles,
+ [runtime]:'985fc70e2f49e04b18528cbf08b97e1fbb9abd0349fec80b1af1b634265da8ad',
+ 'tests/helpers/sts1-map-source.mjs':'72fda46722191a66d379b63def58d7c6ea47084ffe1cee14d97357a5f746d180',
+ 'tests/fixtures/sts1-map-source.json.gz':'a356e09f7fb3a7c2f16c09adbbafaae6290bc615fe3be530a9f02d2c3a6e8d39',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(releaseGuideFiles)){
+ for(const [path,sha]of Object.entries(mapFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

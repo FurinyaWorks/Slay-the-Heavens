@@ -98,7 +98,7 @@ end
 local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
     bossComplete(host,bossFloor)
-    assert(host.mapUI:choose(Map.available(map)[1].id))
+    assert(host.mode=='node' and run.floor==bossFloor+1 and run.nodeFlow.roomKind=='boss_treasure')
     assert(host.nodeUI:press('treasureView/chest'))
     host.nodeUI:update(2)
     assert(host.nodeUI:press('back'))
