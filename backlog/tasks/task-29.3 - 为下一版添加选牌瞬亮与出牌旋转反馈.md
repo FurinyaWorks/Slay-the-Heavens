@@ -5,8 +5,9 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-21 12:38'
-updated_date: '2026-11-21 12:41'
+updated_date: '2026-11-21 12:43'
 labels: []
+milestone: m-5
 dependencies: []
 parent_task_id: TASK-29
 priority: medium
