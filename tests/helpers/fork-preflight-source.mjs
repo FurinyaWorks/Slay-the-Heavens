@@ -118,7 +118,7 @@ function beforeIntegratedReleaseCopier(path,source){
 function beforeRebasedCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='d56b0a5dd90eb550ba0830ed36f156464d07b14c372584c26452b8911e902e81')return source;
+ if(hash(lf)!=='783aa88908e78fbe48f8f1fdc56621dba5f09af68b9d752073bc86c5bc655362')return source;
  const limit=lf.indexOf('const releaseUiFiles='),end=lf.indexOf('const inside=',limit);
  assert(limit>=0&&end>limit,'exact reconciled copy closure');
  const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(reconciledReleaseFiles))','Object.entries(powerMembershipFiles))');
@@ -144,8 +144,9 @@ export function beforeReleaseTinyHouseSource(path,source,read=readFileSync){
  return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,releaseHistoricalInput(path,source),releaseRead));
 }
 export function historicalReleaseBuildInput(path,read){
- if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,(owner,encoding)=>beforeReleaseCapacitySource(owner,read(owner,encoding)));
- const source=read(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source);
+ const releaseRead=(owner,encoding)=>releaseHistoricalInput(owner,read(owner,encoding));
+ if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,(owner,encoding)=>beforeReleaseCapacitySource(owner,releaseRead(owner,encoding)));
+ const source=releaseRead(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source,releaseRead);
  assert.notEqual(prior,source,'fresh approved build source: '+path);
  return prior;
 }

@@ -294,7 +294,8 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(field.text.fontSize,Math.max(14,theme.font.minimum,tokens.typography[key]));
    }
    assert.deepEqual(child(card,'stsReferenceBack').children,material.children.filter(n=>['body','portraits'].includes(n.name)));
-   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits','costMaterial'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceCost').children,material.children.filter(n=>n.name==='costMaterial'));
    assert.deepEqual(child(card,'roundBody').children,[],'retired square paper must not leak through reference corners');
    assert.equal(child(card,'nameBand').visible,false);
    for(const role of ['nativeRibbon','nativeCostOrb','skin']){
@@ -360,7 +361,7 @@ test('official selection keeps its approved 1600 background while battle and opt
  assert(child(child(battle,'card1'),'stsReferenceChrome'),'official battle card must mount the shared reference chrome');
  assert(child(child(battle,'hero'),'officialFigure'));
  const portrait=readFileSync(join(dir,'abyss_traveler_portrait_assets.lua'),'utf8');
- assert.match(portrait,/battle133=/);assert.match(portrait,/avatar96=/);
+ assert.doesNotMatch(portrait,/battle133=/);assert.match(portrait,/avatar96=/);
  assert.match(portrait,/battlePixel=/);
  const inventory=portraitInventory(officialAssetFlags,{officialAssets:true});
  assert.equal(inventory.assets.some(a=>a.asset==='temporary-pixel-traveler'),false);

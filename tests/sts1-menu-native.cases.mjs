@@ -30,12 +30,14 @@ test('STS1 menu retains transactions, unplated resting controls and four states'
  for(const n of all(scene)){assert(kids(n).length<=60);if(n.kind==='image')assert([100001,100003].includes(n.image));}
 });
 
+import {beforeRebasedRelease} from './helpers/rebased-release-source.mjs';
 import {beforeSts1MenuCiSource} from './helpers/sts1-menu-ci-source.mjs';
 test('menu historical source continuation projects only exact complete new test bytes',()=>{
  const path='tests/official-assets.test.mjs',source=readFileSync(path,'utf8');
- const prior=beforeSts1MenuCiSource(path,source);assert.notEqual(prior,source);
- assert.equal(beforeSts1MenuCiSource(path,source+'\n'),source+'\n');
- assert.equal(beforeSts1MenuCiSource('tests/foreign.mjs',source),source);
- assert.equal(beforeSts1MenuCiSource(path,null),null);
- assert.equal(beforeSts1MenuCiSource(path,source.replaceAll('\n','\r\n')),prior.replaceAll('\n','\r\n'));
+ const project=(path,input)=>beforeSts1MenuCiSource(path,beforeRebasedRelease(path,input));
+ const prior=project(path,source);assert.notEqual(prior,source);
+ assert.equal(project(path,source+'\n'),source+'\n');
+ assert.equal(project('tests/foreign.mjs',source),source);
+ assert.equal(project(path,null),null);
+ assert.equal(project(path,source.replaceAll('\n','\r\n')),prior.replaceAll('\n','\r\n'));
 });

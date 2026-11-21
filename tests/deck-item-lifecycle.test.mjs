@@ -32,7 +32,7 @@ test('historical map deck replay authenticates every current Lua owner before re
  assert.equal(beforeMapDeckSource(path,current.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
  assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));
  for(const owner of paths){
-  assert.throws(()=>beforeMapDeckSource(path,current,p=>p===owner?read(p,'utf8')+'\n':read(p,'utf8')),/map deck linked owner identity/);
+  assert.throws(()=>beforeMapDeckSource(path,current,p=>p===owner?read(p,'utf8')+'\n':read(p,'utf8')),/(?:map deck|combined) linked owner identity/);
  }
  assert.throws(()=>beforeMapDeckSource(path,current,p=>{
   if(p===other)throw Error('missing fixture');
