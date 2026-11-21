@@ -426,12 +426,22 @@ end
 local function fallbackControls(row)
     return (row.name~='selection' or row.active or row.restoreOnPause)and row.fallback or {}
 end
+local function anyPortrait(selecting,fighting,carding,landing)
+    return selecting or fighting or carding or landing
+end
+local function portraitTemplates(Asset,cardTemplates)
+    return integer(Asset.imagePrefabId) and Asset.imagePrefabId~=100001 and integer(Asset.containerPrefabId) and Asset
+        or type(cardTemplates)=='table' and {imagePrefabId=cardTemplates.imageTemplateIndex,containerPrefabId=cardTemplates.containerTemplateIndex}
+end
+local function portraitTimeBudget(selecting,fighting,carding,landing,Asset,battleDrawing)
+    return selecting and Asset.avatar96.runtimeV2 or fighting and battleDrawing.runtimeV2 or carding or landing
+end
 function M.new(stage,report,flags,cardTemplates)
     local selecting=enabled(flags,'selectionAvatar')
     local fighting=enabled(flags,'battlePortrait')
     local carding=enabled(flags,'cards')
     local landing=enabled(flags,'menuBackground')
-    if not selecting and not fighting and not carding and not landing then return nil end
+    if not anyPortrait(selecting,fighting,carding,landing) then return nil end
     if owners[stage]then return owners[stage]end
     local Asset=require('abyss_traveler_portrait_assets')
     local profile=v25Profile(Asset)
@@ -440,75 +450,96 @@ function M.new(stage,report,flags,cardTemplates)
     local epoch=0
     if carding and not lowpoly(Asset.lowpolyCardFan) then carding=false end
     if landing and not lowpoly(Asset.lowpolyLand) then landing=false end
-    if not selecting and not fighting and not carding and not landing then return nil end
+    if not anyPortrait(selecting,fighting,carding,landing) then return nil end
     local avatar,battle,selection,details,rows=nil,nil,nil,nil,{}
     local result,resultHost,resultRow,resultOutcome
-    local templates=integer(Asset.imagePrefabId) and Asset.imagePrefabId~=100001 and integer(Asset.containerPrefabId) and Asset
-        or type(cardTemplates)=='table' and {imagePrefabId=cardTemplates.imageTemplateIndex,containerPrefabId=cardTemplates.containerTemplateIndex}
-    if landing and templates then
-        -- Bottom-most layout slot (first child): behind every hand/monster/HUD control.
-        for _,entry in ipairs({{'selectScene','characterPanel',{'border','face'}},{'battleScene','battlePanel',{}},{'menuScene','menuPanel',{}}})do
-            local panel=stage:GetChild(entry[2]);local host=panel and panel:GetChild('lowpolyScene')
-            if host then
-                local cover={};for _,name in ipairs(entry[3])do cover[#cover+1]=panel:GetChild(name)end
-                rows[#rows+1]={name=entry[1],adapter=controller(host,Asset.lowpolyLand,Asset.lowpolyLand.width,templates),fallback=cover,active=false}
+    local templates=portraitTemplates(Asset,cardTemplates)
+    local function prepareLanding()
+        if landing and templates then
+            -- Bottom-most layout slot (first child): behind every hand/monster/HUD control.
+            for _,entry in ipairs({{'selectScene','characterPanel',{'border','face'}},{'battleScene','battlePanel',{}},{'menuScene','menuPanel',{}}})do
+                local panel=stage:GetChild(entry[2]);local host=panel and panel:GetChild('lowpolyScene')
+                if host then
+                    local cover={};for _,name in ipairs(entry[3])do cover[#cover+1]=panel:GetChild(name)end
+                    rows[#rows+1]={name=entry[1],adapter=controller(host,Asset.lowpolyLand,Asset.lowpolyLand.width,templates),fallback=cover,active=false}
+                end
             end
         end
     end
-    if selecting then
-        validate(Asset.avatar96,96,4822,'c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb','93bcf4303d370f7faac2b8289146acfe655bae6dced0abf5257e407d69f748ef')
-        local panel=assert(stage:GetChild('characterPanel'))
-        local traveler=assert(panel:GetChild('traveler'))
-        local bust=assert(traveler:GetChild('hit'):GetChild('normal'):GetChild('bust'))
-        avatar=controller(traveler:GetChild('officialAvatar'),Asset.avatar96,assert(bust.sizeDeltaX),Asset,
-            profile and {nativeLifecycle=true,ownerEpoch=function()return epoch end})
-        details=panel:GetChild('details')
+    local function selectionHost(panel)
         local host
         if official then host=assert(panel:GetChild('lumineSelectionBackground'),'missing approved selection background host')
         else host=details and details:GetChild('officialSelectionFigure')end
+        return host
+    end
+    local function createSelectionController(host,figure)
+        local display=official and 1280 or profile and profile.selectionDisplay or assert(details:GetChild('portraitFrame').sizeDeltaX)
+        return controller(host,figure,display,Asset,profile and {position=profile.selectionPosition,
+            nativeLifecycle=true,ownerEpoch=function()return epoch end})
+    end
+    local function prepareSelectionFigure(panel)
+        local host=selectionHost(panel)
         if host then
             if official then assert(Asset.selectionUses=='lowpolyLumine','official selection requires approved background schema')end
             local figure=selectionFigure(Asset,official,profile)
             if figure.renderProfile~='lowpoly-v1' then
                 validate(figure,133,4315,'ae2161957033d688b1bed1c7ab2ad2891d5f7bf5e34b291f9ecaef7cfa11f880','f8a7af7b079aa5bbb7e16b502b222f1fd7dbfaa2c30f6eef1bf0d76af0a0a248')
             end
-            local display=official and 1280 or profile and profile.selectionDisplay or assert(details:GetChild('portraitFrame').sizeDeltaX)
-            selection=controller(host,figure,display,Asset,profile and {position=profile.selectionPosition,
-                nativeLifecycle=true,ownerEpoch=function()return epoch end})
+            selection=createSelectionController(host,figure)
             local fallback=selectionFallback(panel,details,official)
             rows[#rows+1]={name='selection',adapter=selection,fallback=fallback,active=false,restoreOnPause=official}
         end
-        local row={name='avatar',adapter=avatar,fallback={},active=false,visibleOwner=traveler,symbolOwner=panel:GetChild('v25Roster')}
-        for _,name in ipairs({'normal','hover','pressed','disabled'})do row.fallback[#row.fallback+1]=traveler:GetChild('hit'):GetChild(name):GetChild('bust')end
-        rows[#rows+1]=row
     end
-    if carding then
-        -- Premium frames + low-poly illustrations fanned under the select details, like the breakthrough GIF.
-        local panel=stage:GetChild('characterPanel')
-        local parent=panel and panel:GetChild('details')
-        if templates and parent and integer(templates.containerPrefabId) then
-            local host=game.InstantiateClientUIControl(templates.containerPrefabId,parent)
-            if host then
-                pcall(host.SetVisible,host,false)
-                pcall(host.SetAnchoredPosition,host,0,-250)
-                local fan=controller(host,Asset.lowpolyCardFan,Asset.lowpolyCardFan.width,templates)
-                rows[#rows+1]={name='cardFan',adapter=fan,fallback={},active=false}
+    local function prepareSelection()
+        if selecting then
+            validate(Asset.avatar96,96,4822,'c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb','93bcf4303d370f7faac2b8289146acfe655bae6dced0abf5257e407d69f748ef')
+            local panel=assert(stage:GetChild('characterPanel'))
+            local traveler=assert(panel:GetChild('traveler'))
+            local bust=assert(traveler:GetChild('hit'):GetChild('normal'):GetChild('bust'))
+            avatar=controller(traveler:GetChild('officialAvatar'),Asset.avatar96,assert(bust.sizeDeltaX),Asset,
+                profile and {nativeLifecycle=true,ownerEpoch=function()return epoch end})
+            details=panel:GetChild('details')
+            prepareSelectionFigure(panel)
+            local row={name='avatar',adapter=avatar,fallback={},active=false,visibleOwner=traveler,symbolOwner=panel:GetChild('v25Roster')}
+            for _,name in ipairs({'normal','hover','pressed','disabled'})do row.fallback[#row.fallback+1]=traveler:GetChild('hit'):GetChild(name):GetChild('bust')end
+            rows[#rows+1]=row
+        end
+    end
+    local function prepareCards()
+        if carding then
+            -- Premium frames + low-poly illustrations fanned under the select details, like the breakthrough GIF.
+            local panel=stage:GetChild('characterPanel')
+            local parent=panel and panel:GetChild('details')
+            if templates and parent and integer(templates.containerPrefabId) then
+                local host=game.InstantiateClientUIControl(templates.containerPrefabId,parent)
+                if host then
+                    pcall(host.SetVisible,host,false)
+                    pcall(host.SetAnchoredPosition,host,0,-250)
+                    local fan=controller(host,Asset.lowpolyCardFan,Asset.lowpolyCardFan.width,templates)
+                    rows[#rows+1]={name='cardFan',adapter=fan,fallback={},active=false}
+                end
             end
         end
     end
     local battleDrawing
-    if fighting then
-        battleDrawing=battleFigure(Asset,official)
-        local hero=assert(stage:GetChild('battlePanel'):GetChild('hero'))
-        battle=controller(hero:GetChild('officialFigure'),battleDrawing,profile and profile.battleDisplay or official and theme.layout.player.portrait or 400/3,Asset,
-            {retryFailedOnPause=true,position=profile and profile.battlePosition or official and theme.officialAssets.battlePortraitPosition,
-                nativeLifecycle=profile~=nil,ownerEpoch=function()return epoch end})
-        -- UnitView deliberately hides the shipped geometric player placeholder.
-        -- Publication failure or pause must not override that presentation policy.
-        local icon=require('abyss_theme').icon.player
-        rows[#rows+1]={name='battle',adapter=battle,fallback={hero:GetChild('portrait')},active=false,
-            fallbackVisible=not(type(icon)=='table' and icon.status=='placeholder')}
+    local function prepareBattle()
+        if fighting then
+            battleDrawing=battleFigure(Asset,official)
+            local hero=assert(stage:GetChild('battlePanel'):GetChild('hero'))
+            battle=controller(hero:GetChild('officialFigure'),battleDrawing,profile and profile.battleDisplay or official and theme.layout.player.portrait or 400/3,Asset,
+                {retryFailedOnPause=true,position=profile and profile.battlePosition or official and theme.officialAssets.battlePortraitPosition,
+                    nativeLifecycle=profile~=nil,ownerEpoch=function()return epoch end})
+            -- UnitView deliberately hides the shipped geometric player placeholder.
+            -- Publication failure or pause must not override that presentation policy.
+            local icon=require('abyss_theme').icon.player
+            rows[#rows+1]={name='battle',adapter=battle,fallback={hero:GetChild('portrait')},active=false,
+                fallbackVisible=not(type(icon)=='table' and icon.status=='placeholder')}
+        end
     end
+    prepareLanding()
+    prepareSelection()
+    prepareCards()
+    prepareBattle()
     local function resultController(outcome)
         local defeat=outcome=='defeat'
         return controller(resultHost,Asset.battle133,260,Asset,{position={-342.5,defeat and -157 or -56},
@@ -517,17 +548,20 @@ function M.new(stage,report,flags,cardTemplates)
             rotation=defeat and 83 or 0,tint={brightness=.45,saturation=.45,opacity=defeat and .30 or .38},
             nativeLifecycle=true,ownerEpoch=function()return epoch end})
     end
-    if profile then
-        local menu=stage:GetChild('menuPanel');local page=menu and menu:GetChild('result')
-        local chrome=page and page:GetChild('v25ResultChrome')
-        resultHost=chrome and chrome:GetChild('subject')
-        if resultHost then
-            resultOutcome='victory';result=resultController(resultOutcome)
-            resultRow={name='result',adapter=result,fallback={},active=false};rows[#rows+1]=resultRow
+    local function prepareResult()
+        if profile then
+            local menu=stage:GetChild('menuPanel');local page=menu and menu:GetChild('result')
+            local chrome=page and page:GetChild('v25ResultChrome')
+            resultHost=chrome and chrome:GetChild('subject')
+            if resultHost then
+                resultOutcome='victory';result=resultController(resultOutcome)
+                resultRow={name='result',adapter=result,fallback={},active=false};rows[#rows+1]=resultRow
+            end
         end
     end
+    prepareResult()
     if #rows==0 then return nil end
-    local timeBudget=selecting and Asset.avatar96.runtimeV2 or fighting and battleDrawing.runtimeV2 or carding or landing
+    local timeBudget=portraitTimeBudget(selecting,fighting,carding,landing,Asset,battleDrawing)
     local self,busy,destroyed,painting={},false,false,false
     local fallbackVisibility=setmetatable({},{__mode='k'})
     local function paintFallback(control,visible,phase)
