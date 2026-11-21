@@ -49,63 +49,58 @@ end
 
 -- Shape of each hit, read from the committed card/intent and the actual event amounts only.
 -- form: single | multi | area | dot | self; weight: light | normal | heavy.
-local function classify(queue, catalog)
-    local styles, context = {}, nil
-    for i, entry in ipairs(queue) do
-        local d = type(entry.detail) == "table" and entry.detail or {}
-        if entry.kind == "play" or entry.kind == "intent" or banners[entry.kind] or entry.kind == "potion" then
-            local area = false
-            if entry.kind == "play" then
-                for _, effect in ipairs(catalog.cards[d.cardId].effects) do area = area or effect.op == "damageAll" end
-            end
-            context = {kind = entry.kind, area = area, cardId = d.cardId, hits = {}}
-            local skill=skillContext(entry,catalog)
-            context.family=SkillFeedback.resolve(entry.kind,d,skill)
-            styles[i] = {context = context}
-        else
-            local style = {context = context}
-            styles[i] = style
-            if entry.kind == "damage" and context then
-                style.target = d.target
-                context.hits[#context.hits + 1] = style
-            end
-            if entry.kind == "status_damage" then style.form = "dot"
-            elseif entry.kind == "hp_loss" then style.form = "self" end
-            local total = (d.amount or 0) + (d.blocked or 0)
-            style.weight = total >= T.heavyHitDamage and "heavy" or "normal"
-            local victim = entry.frame and d.target
-            if victim then
-                for _, a in ipairs(entry.frame.enemies) do
-                    if a.id == victim and a.hp <= 0 then style.lethal = true end
-                end
-                if victim == "player" and entry.frame.player.hp <= 0 then style.lethal = true end
-            end
-            if entry.kind == "damage" and (d.amount or 0) > 0 then
-                style.stop = (style.weight == "heavy" or style.lethal) and T.hitStopHeavy or T.hitStop
-            end
-        end
+local function classifyContext(entry,d,catalog)
+    local area = false
+    if entry.kind == "play" then
+        for _, effect in ipairs(catalog.cards[d.cardId].effects) do area = area or effect.op == "damageAll" end
     end
-    for _, style in ipairs(styles) do
-        local groupContext = style.context
-        if groupContext and not groupContext.classified then
-            groupContext.classified = true
-            local rounds, round, targets = {}, {}, {}
-            for _, hit in ipairs(groupContext.hits) do
-                -- Repeated damageAll actions (Whirlwind) have one action wait
-                -- and one contact cue per pass, not one for the entire card.
-                if groupContext.area and targets[hit.target] then
-                    rounds[#rounds + 1], round, targets = round, {}, {}
-                end
-                round[#round + 1], targets[hit.target] = hit, true
-            end
-            rounds[#rounds + 1] = round
-            for _, group in ipairs(rounds) do for k, hit in ipairs(group) do
-                hit.form = groupContext.area and "area" or #group > 1 and "multi" or "single"
-                hit.hit, hit.hits = k, #group
-            end
-            end
+    local context = {kind = entry.kind, area = area, cardId = d.cardId, hits = {}}
+    local skill=skillContext(entry,catalog)
+    context.family=SkillFeedback.resolve(entry.kind,d,skill)
+    return context
+end
+local function classifyVictim(entry,d,style)
+    local victim = entry.frame and d.target
+    if victim then
+        for _, a in ipairs(entry.frame.enemies) do
+            if a.id == victim and a.hp <= 0 then style.lethal = true end
         end
+        if victim == "player" and entry.frame.player.hp <= 0 then style.lethal = true end
     end
+end
+local function classifyHit(entry,d,context,style)
+    if entry.kind == "damage" and context then
+        style.target = d.target
+        context.hits[#context.hits + 1] = style
+    end
+    if entry.kind == "status_damage" then style.form = "dot"
+    elseif entry.kind == "hp_loss" then style.form = "self" end
+    local total = (d.amount or 0) + (d.blocked or 0)
+    style.weight = total >= T.heavyHitDamage and "heavy" or "normal"
+    classifyVictim(entry,d,style)
+    if entry.kind == "damage" and (d.amount or 0) > 0 then
+        style.stop = (style.weight == "heavy" or style.lethal) and T.hitStopHeavy or T.hitStop
+    end
+end
+local function classifyRounds(groupContext)
+    groupContext.classified = true
+    local rounds, round, targets = {}, {}, {}
+    for _, hit in ipairs(groupContext.hits) do
+        -- Repeated damageAll actions (Whirlwind) have one action wait
+        -- and one contact cue per pass, not one for the entire card.
+        if groupContext.area and targets[hit.target] then
+            rounds[#rounds + 1], round, targets = round, {}, {}
+        end
+        round[#round + 1], targets[hit.target] = hit, true
+    end
+    rounds[#rounds + 1] = round
+    for _, group in ipairs(rounds) do for k, hit in ipairs(group) do
+        hit.form = groupContext.area and "area" or #group > 1 and "multi" or "single"
+        hit.hit, hit.hits = k, #group
+    end
+    end
+end
+local function classifyFamilies(queue,catalog,styles)
     for i,entry in ipairs(queue)do
         local d=type(entry.detail)=='table' and entry.detail or {}
         local style=styles[i]
@@ -113,6 +108,25 @@ local function classify(queue, catalog)
         style.family=SkillFeedback.resolve(entry.kind,d,{family=style.context and style.context.family,
             weight=style.weight,statusKind=status and status.kind})
     end
+end
+local function classify(queue,catalog)
+    local styles,context={},nil
+    for i,entry in ipairs(queue)do
+        local d=type(entry.detail)=='table' and entry.detail or {}
+        if entry.kind=='play' or entry.kind=='intent' or banners[entry.kind] or entry.kind=='potion'then
+            context=classifyContext(entry,d,catalog)
+            styles[i]={context=context}
+        else
+            local style={context=context}
+            styles[i]=style
+            classifyHit(entry,d,context,style)
+        end
+    end
+    for _,style in ipairs(styles)do
+        local groupContext=style.context
+        if groupContext and not groupContext.classified then classifyRounds(groupContext)end
+    end
+    classifyFamilies(queue,catalog,styles)
     return styles
 end
 
@@ -126,7 +140,7 @@ local function damageDuration(style,fastMode)
         return base + (not skip and POST_ATTACK_WAIT or 0)
 end
 
-local function duration(entry, style, fastMode)
+local function actionDuration(entry,style,fastMode)
     local kind = entry.kind
     if kind == "action_wait" then
         return fastMode and math.min(entry.detail.seconds, 0.1) or entry.detail.seconds
@@ -137,6 +151,11 @@ local function duration(entry, style, fastMode)
     if kind == "intent" then return T.enemyActionGap end
     if kind == "enemy_escape" then return Escape.actionDuration end
     if kind == "gold_stolen" then return T.base end
+end
+local function duration(entry,style,fastMode)
+    local value=actionDuration(entry,style,fastMode)
+    if value~=nil then return value end
+    local kind=entry.kind
     -- AbstractMonster.die starts an independent creature timer, not an action wait.
     if kind == "death" then return 0 end
     -- Area hits land on consecutive rendered frames: one shockwave rippling across the row.
