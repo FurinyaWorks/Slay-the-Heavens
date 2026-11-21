@@ -1,0 +1,70 @@
+✖ current native menu pointer, controller and settlement boundaries (4834.749292ms)
+✔ approved title omits initial speed selection (39.915384ms)
+✖ route menu native enabled states and commands share real run and opening admission (5009.305602ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5255.070194
+
+✖ failing tests:
+
+test at tests/menu-input-boundaries-current.test.mjs:4:1
+✖ current native menu pointer, controller and settlement boundaries (4834.749292ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
+  ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:24: assertion failed!
+  stack traceback:
+    [JS]: in function 'assert'
+    ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:24: in local 'fn'
+    ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:9: in local 'test'
+    ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:10: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///workspace/menu-sts1/tests/menu-input-boundaries-current.test.mjs:6:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/title-menu-admission.test.mjs:9:1
+✖ route menu native enabled states and commands share real run and opening admission (5009.305602ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
+  /workspace/menu-sts1/tests/lua/title_menu_admission.lua:5: whole map entry must be hidden until route admission
+  stack traceback:
+    [JS]: in function 'assert'
+    /workspace/menu-sts1/tests/lua/title_menu_admission.lua:5: in local 'state'
+    /workspace/menu-sts1/tests/lua/title_menu_admission.lua:17: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///workspace/menu-sts1/tests/title-menu-admission.test.mjs:11:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

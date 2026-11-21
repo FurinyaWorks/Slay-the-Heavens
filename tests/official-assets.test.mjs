@@ -1,3 +1,4 @@
+import './sts1-menu-native.cases.mjs';
 import {nativeAudioBuildArgs,buildNativeAudioGame} from '../scripts/build-native-audio-game.mjs';
 import test from 'node:test';
 import {cardFaceChildren} from '../scripts/card-face.mjs';
@@ -452,10 +453,9 @@ test('approved native title and button artwork preserve the official menu hit su
   const receiver=child(child(menu,'start'),'hit');
   applyOfficialNoncombatLayout(layout,theme);
   assert.strictEqual(child(child(menu,'start'),'hit'),receiver);
-  const logo=child(child(menu,'v25MainMenu'),'approvedTitleLogo');
-  assert(logo && child(logo,'subtitlePlate'));
-  assert(children(logo).filter(part=>part.name.startsWith('lettering')).every(part=>
-    children(part).length>0 && children(part).length<=48));
+  const logo=child(child(menu,'v25MainMenu'),'sts1TitleLogo');
+  assert(logo && children(logo).length>0);
+  assert(children(logo).every(part=>children(part).length>0 && children(part).length<=60));
   for(const [name,frame,text] of [
     ['start',theme.menuPresentation.start,'开始游戏'],
     ['titleQuit',theme.menuPresentation.quit,'退出游戏'],
@@ -464,12 +464,13 @@ test('approved native title and button artwork preserve the official menu hit su
     assert.deepEqual(button.position,frame.slice(0,2));
     assert.deepEqual(hit.size,frame.slice(2));
     assert.equal(hit.kind,'cursorArea');
-    assert.equal(child(button,'label').text.align,'centre');
+    assert.equal(child(button,'label').text.align,'left');
     assert.equal(child(button,'label').text.content,text);
     const faces=children(child(button,'v25MenuFace'));
     assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
-    assert(faces.every(face=>children(child(face,'rim')).length===2 && children(child(face,'fill')).length===2));
-    assert.notDeepEqual(child(faces[0],'fill'),child(faces[1],'fill'));
+    assert.equal(children(faces[0]).length,0,'STS1 resting text has no plate');
+    assert(faces.slice(1).every(face=>children(face).length===24));
+    assert.notDeepEqual(children(faces[1]),children(faces[2]));
     assert.equal(child(button,'menuAccent'),undefined);
   }
 });

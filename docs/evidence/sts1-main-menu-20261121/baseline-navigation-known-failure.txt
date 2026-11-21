@@ -1,0 +1,17 @@
+ABYSS_RUN seed=1 source=explicit
+ABYSS_RUN seed=1 source=explicit
+ABYSS_RUN seed=1 source=explicit
+ABYSS_FEEDBACK orb_end_turn source=- target=- amount=0
+ABYSS_FEEDBACK recovered cancelled
+ABYSS_RUN seed=1 source=explicit
+ok session menu 1 - map, battle, busy feedback and node survive repeated title round trips
+ABYSS_RUN seed=1 source=explicit
+...e/menu-sts1-before/tests/lua/session_menu_navigation.lua:62: assertion failed!
+stack traceback:
+    [JS]: in function 'assert'
+    ...e/menu-sts1-before/tests/lua/session_menu_navigation.lua:62: in local 'fn'
+    ...e/menu-sts1-before/tests/lua/session_menu_navigation.lua:16: in local 'test'
+    ...e/menu-sts1-before/tests/lua/session_menu_navigation.lua:50: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+Lua fixture tests/lua/session_menu_navigation.lua: 12866 ms

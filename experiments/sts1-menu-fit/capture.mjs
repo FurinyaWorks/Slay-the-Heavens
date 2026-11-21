@@ -1,0 +1,15 @@
+import {createRequire} from 'node:module';
+import {spawnSync} from 'node:child_process';
+import {mkdirSync,writeFileSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import assert from 'node:assert/strict';
+import {buildUI} from '../../scripts/build-ui.mjs';
+import {buildLuaData,luaString} from '../../scripts/build-lua-data.mjs';
+const out=resolve(process.argv[2]);mkdirSync(out,{recursive:true});
+const generated=join(out,'generated');buildLuaData('data',join(generated,'abyss_data.lua'));
+buildUI(generated,undefined,{officialAssets:true,nativePageLifecycle:true});
+const cmd=`package.path=${luaString(generated+'/?.lua;src/lua/?.lua')};dofile('experiments/sts1-menu-fit/capture.lua')`;
+const r=spawnSync(process.execPath,[createRequire(import.meta.url).resolve('fengari-node-cli/src/lua-cli.js'),'-e',cmd],{encoding:'utf8',maxBuffer:32*1024*1024,timeout:120000});
+assert.equal(r.status,0,r.stdout+r.stderr);const prefix='OFFICIAL_VISUAL_SCENES ';
+const lines=r.stdout.trim().split('\n');writeFileSync(join(out,'scenes.json'),lines.find(l=>l.startsWith(prefix)).slice(prefix.length));
+console.log(lines.filter(l=>!l.startsWith(prefix)).join('\n'));
