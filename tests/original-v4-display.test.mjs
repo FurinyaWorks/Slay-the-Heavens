@@ -1,3 +1,4 @@
+import './helpers/architecture-display-equivalence.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { runLua } from '../scripts/test-lua.mjs';
