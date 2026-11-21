@@ -330,7 +330,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         -- Browser instances already belong to this read-only snapshot. Details
         -- make their own copy before calculating or previewing upgrades.
         self.bindings[control].instance=instance
-        self.bindings[control].bodyText=bodyText
+        if self.browserShell then self.bindings[control].bodyText=bodyText end
     end
     local function paintBody(face,binding,display,definition,instance,battle)
         -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
@@ -379,7 +379,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         control:GetChild("uid").text = selected and '已选择' or ''
         local hit=control:GetChild('hit')
         hit:SetVisible(true)
-        bindCard(control,hit,instance,self.browserShell and text or nil)
+        bindCard(control,hit,instance,text)
         control:SetVisible(true)
     end
     -- Pure presentation projection. The permanent deck and the three combat

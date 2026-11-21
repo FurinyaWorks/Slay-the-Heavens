@@ -54,14 +54,3 @@ export function roundedFramedButton(button,theme,{stretch=false}={}){
  const {gold,panelRaised}=theme.color;
  button.children.splice(base,0,roundedButtonMaterial('roundedButton',button.size,[gold,panelRaised],{stretch}));
 }
-
-// Static captions on route controls are edited by Lua outside the hit.
-export function roundedCaptionButton(button,theme,palette){
- const hit=child(button,'hit'),label=child(button,'label');
- const names=['normal','hover','pressed','disabled'];
- Object.assign(hit,{kind:'presetButton',states:Object.fromEntries(names.map(name=>[name,name])),
-  children:names.map(name=>({name,kind:'container',size:[...hit.size],children:[]}))});
- roundedPresetButton(hit,theme,palette);
- label.position=[0,0];
- button.children=[hit,label];
-}

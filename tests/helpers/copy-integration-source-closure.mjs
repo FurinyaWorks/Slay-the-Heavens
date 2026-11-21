@@ -141,8 +141,8 @@ const integratedReleaseFiles=Object.freeze({
 });
 const reconciledReleaseFiles=Object.freeze({
  ...integratedReleaseFiles,
- 'tests/helpers/rebased-release-source.mjs':'f91536a43851e7e901b9d6576ff2006e7e234fb754d62c7fcdb9400c7593fd15',
- 'tests/helpers/rebased-release-source.json.gz':'16d70fbab9c02cd255844f7e9c0628e2e284728de3d6b22fb01ff995cbc32774',
+ 'tests/helpers/rebased-release-source.mjs':'f72112818ce4ceff96dab25f7955cb399037af031710b5b1a705407ec479121c',
+ 'tests/helpers/rebased-release-source.json.gz':'157154980ccc86bd6c9951b46f0b0b761661ea10f29206124d6e28ed1a4903e8',
  'tests/helpers/loading-recovery-source.mjs':'0c177f516b3bb09fb24bb39076b2bf649d15ded75b5d2f0ec4aba36db11e4d7b',
  'tests/helpers/pc13-reward-cover-source.mjs':'e8d58b2f3484855a9e986c945b6add861436ca754fb24ef8be71f0777ef46b9b',
  [runtime]:'d25494ab5a1d269568c321fe3e9c1a2494239f3916d46bd93331a5328fff549b',
