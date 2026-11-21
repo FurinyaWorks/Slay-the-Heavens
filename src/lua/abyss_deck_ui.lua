@@ -124,9 +124,16 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintPileSort()
         if self.browserShell then for _,mode in ipairs({'original','type','cost','name'})do
-            local label=root:GetChild('pileTools'):GetChild(mode):GetChild('label')
-            label.text=(mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode])..(self.sortMode==mode and not self.sortAscending and ' ▾' or ' ▴')
-            if platform.color then label.fontColor=self.sortMode==mode and platform.color(228,211,94,255) or platform.color(233,230,220,255)end
+            local box=root:GetChild('pileTools'):GetChild(mode)
+            local label,arrow=box:GetChild('label'),box:GetChild('direction')
+            label.text=mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode]
+            arrow:SetVisible(true)
+            local descending=self.sortMode==mode and not self.sortAscending
+            arrow.localRotationZ=descending and 180 or 0
+            if platform.color then
+                local ink=self.sortMode==mode and platform.color(228,211,94,255) or platform.color(233,230,220,255)
+                label.fontColor=ink;arrow.imageColor=ink
+            end
         end end
     end
     local function paintBrowseSort(active)
@@ -254,6 +261,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     -- existing deck-open gate (battle input, map paths, rewards) stays read-only.
     function self.inspectRelics(_,run,view,index)
         if self.visible or not view then return false end
+        self.openSession=self.openSession+1
         self.visible,self.run,self.detailOnly,self.relicView=true,run,'relics',view
         self.generation=self.generation+1;root:SetVisible(false)
         if not view:open(run,index)then self.visible,self.run,self.detailOnly,self.relicView=false,nil,nil,nil;return false end

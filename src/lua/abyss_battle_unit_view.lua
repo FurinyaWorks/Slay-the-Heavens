@@ -158,7 +158,7 @@ function M.new(picture, tint, ink, statusKind)
             local y = (L.statusIcon.rows - 1) * layout.pitch / 2 - line * layout.pitch
             statusImage:SetAnchoredPosition(x, y)
             target:SetAnchoredPosition(x, y)
-            picture(statusImage, Theme.icon.status[entry.icon or entry.id] or Theme.icon.intent[entry.kind] or Theme.icon.intent.unknown)
+            picture(statusImage, (Theme.icon.status[entry.id] or Theme.icon.status[entry.id:match('^colorless_bomb_') and 'colorless_bomb' or entry.icon]) or Theme.icon.intent[entry.kind] or Theme.icon.intent.unknown)
             tint(statusImage, C.text)
             local countX, countY = statusCount(count, entry, x, y, overflow, layout)
             local digits=math.max(L.statusIcon.size,utf8.len(count.text)*Theme.font.small+S.hairline*2)

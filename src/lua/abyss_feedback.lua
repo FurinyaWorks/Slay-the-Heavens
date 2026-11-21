@@ -457,7 +457,7 @@ function M.new(stage, platform, present, complete)
             if text ~= "" then
                 local floating = box:GetChild("floating")
                 floating.text, floating.fontColor = text, colour(ink)
-                local icon = (kind == "status" or kind == "status_damage") and Theme.icon.status[d.status]
+                local icon = (kind == "status" or kind == "status_damage") and (Theme.icon.status[d.status] or Theme.icon.status[type(d.status)=='string' and d.status:match('^colorless_bomb_') and 'colorless_bomb' or false])
                 box:GetChild("impact"):SetImage(platform.imageSource, icon or Theme.image.diamond)
                 self.effects[d.target] = {kind = kind, age = 0, detail = d, ink = ink, style = style,
                     icon = icon and true or false, stop = style.stop or 0, dir = d.target == "player" and -1 or 1,

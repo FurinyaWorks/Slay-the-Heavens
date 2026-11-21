@@ -1,0 +1,209 @@
+{
+  "base": "5991585aabde667eef9852b8c340c194c42a5c62",
+  "develop": "345ba08398b6ca8e1361a126f2ce1de85210e634",
+  "beforeThemeDuplicates": {
+    "103066": [
+      "next_turn_block",
+      "blur",
+      "like_water",
+      "block_return",
+      "after_image",
+      "mental_fortress",
+      "nirvana",
+      "metallicize",
+      "feel_no_pain",
+      "curl_up",
+      "artifact",
+      "mode_shift",
+      "barricade",
+      "plated_armor",
+      "juggernaut"
+    ],
+    "102024": [
+      "time_warp",
+      "collect",
+      "wrath_next_turn",
+      "mantra",
+      "devotion"
+    ],
+    "102045": [
+      "draw_reduction",
+      "energy_down",
+      "bias",
+      "entangled",
+      "weak"
+    ],
+    "103055": [
+      "flame_barrier",
+      "fire_breathing",
+      "sharp_hide",
+      "thorns"
+    ],
+    "103056": [
+      "evolve",
+      "dark_embrace",
+      "regen"
+    ],
+    "103059": [
+      "choked",
+      "mark",
+      "combust",
+      "envenom",
+      "noxious_fumes",
+      "corruption",
+      "spore_cloud",
+      "poison"
+    ],
+    "103047": [
+      "shackled",
+      "vigor",
+      "rupture",
+      "brutality",
+      "berserk",
+      "rage",
+      "demon_form",
+      "strength",
+      "enrage",
+      "angry",
+      "ritual",
+      "pen_nib",
+      "duplication",
+      "double_tap"
+    ],
+    "102026": [
+      "draw_next_turn",
+      "study",
+      "draw_card_next_turn",
+      "heat_sinks",
+      "rushdown"
+    ],
+    "102035": [
+      "lock_on",
+      "thousand_cuts",
+      "storm",
+      "electrodynamics"
+    ],
+    "102012": [
+      "battle_hymn",
+      "accuracy",
+      "infinite_blades"
+    ],
+    "102020": [
+      "energized",
+      "energized_blue",
+      "focus",
+      "loop"
+    ]
+  },
+  "formalStatusCount": 49,
+  "formal": {
+    "next_turn_block": 105215,
+    "buffer": 102036,
+    "split": 100114,
+    "duplication": 105046,
+    "plated_armor": 105055,
+    "spore_cloud": 105243,
+    "entangled": 100169,
+    "artifact": 105182,
+    "strength": 103047,
+    "dexterity": 103065,
+    "vulnerable": 103049,
+    "weak": 102045,
+    "frail": 103054,
+    "poison": 103059,
+    "thorns": 103055,
+    "regen": 103056,
+    "barricade": 103066,
+    "enrage": 102034,
+    "ritual": 105207,
+    "mode_shift": 105214,
+    "sharp_hide": 105216,
+    "angry": 102044,
+    "curl_up": 105073,
+    "thievery": 105077,
+    "dark_embrace": 102026,
+    "feel_no_pain": 105067,
+    "corruption": 105197,
+    "evolve": 105068,
+    "fire_breathing": 105045,
+    "flame_barrier": 105131,
+    "rage": 102035,
+    "combust": 102002,
+    "rupture": 105058,
+    "demon_form": 102033,
+    "berserk": 105191,
+    "brutality": 105204,
+    "double_tap": 105217,
+    "juggernaut": 105065,
+    "metallicize": 105071,
+    "vigor": 102012,
+    "pen_nib": 105301,
+    "shackled": 105099,
+    "panache": 105127,
+    "no_block": 100108,
+    "intangible": 105242,
+    "magnetism": 105076,
+    "mayhem": 105023,
+    "sadistic_nature": 105048,
+    "colorless_bomb": 102049
+  },
+  "remainingThemeDuplicates": {
+    "102024": [
+      "time_warp",
+      "collect",
+      "wrath_next_turn",
+      "mantra",
+      "devotion"
+    ],
+    "102045": [
+      "draw_reduction",
+      "energy_down",
+      "bias",
+      "weak"
+    ],
+    "103066": [
+      "blur",
+      "like_water",
+      "block_return",
+      "after_image",
+      "mental_fortress",
+      "nirvana",
+      "barricade"
+    ],
+    "103059": [
+      "choked",
+      "mark",
+      "envenom",
+      "noxious_fumes",
+      "poison"
+    ],
+    "102026": [
+      "draw_next_turn",
+      "study",
+      "draw_card_next_turn",
+      "heat_sinks",
+      "rushdown",
+      "dark_embrace"
+    ],
+    "102035": [
+      "lock_on",
+      "thousand_cuts",
+      "rage",
+      "storm",
+      "electrodynamics"
+    ],
+    "102012": [
+      "battle_hymn",
+      "vigor",
+      "accuracy",
+      "infinite_blades"
+    ],
+    "102020": [
+      "energized",
+      "energized_blue",
+      "focus",
+      "loop"
+    ]
+  },
+  "scope": "正式基础及无色能力49类含Bomb动态实例家族；实验职业资源别名仅审计，不改玩法。原生图库代用，不声称STS1原图。"
+}

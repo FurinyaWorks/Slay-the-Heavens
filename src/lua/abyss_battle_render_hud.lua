@@ -201,6 +201,10 @@ function M.install(owner, _ownership, host, dependencies)
         icon:GetChild("valueShadow").text = value
         dependencies.tint(icon:GetChild("face"), charged and L.energy.faceColour or C.energyEmpty)
         icon:GetChild("light"):SetVisible(charged == true)
+        -- The official ornament owns most of the visible light, above the old face.
+        if Theme.presentationProfile=='official-assets-first' then
+            icon:GetChild('v25Chrome'):SetVisible(charged == true)
+        end
         dependencies.tint(icon:GetChild("core"), charged and L.energy.elementColour or C.energyEmpty)
         dependencies.ink(dependencies.child("energy"), L.energy.numberColour)
     end

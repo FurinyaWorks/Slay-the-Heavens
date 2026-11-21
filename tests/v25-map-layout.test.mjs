@@ -77,3 +77,57 @@ test('map legend title retains source centre and font while fitting one native g
  assert.deepEqual(title.position,[0,129]);assert.equal(title.text.fontSize,26);assert.equal(title.text.minFontSize,26);
  assert.equal(title.text.content,'图例');assert.deepEqual(title.size,[230,52]);
 });
+
+import {mkdirSync,writeFileSync} from 'node:fs';
+import {battleLayout} from '../scripts/ui-layout.mjs';
+import {applyStsRewardRows} from '../scripts/sts-reward-row-layout.mjs';
+import {runLua} from '../scripts/test-lua.mjs';
+test('reward return uses the adopted low-control rounded character material in every state',()=>{
+ const layout=battleLayout();applyStsRewardRows(layout,structuredClone(nativeTheme));
+ const find=(n,k)=>n.name===k?n:(n.children??n.controls??[]).map(c=>find(c,k)).find(Boolean);
+ const button=find(layout,'continue');
+ for(const state of button.children){
+  const flag=find(state,'v25Flag');assert(flag);
+  assert(find(flag,'corner-1_-1'),'rounded disc corners replace stepped flag bands');
+  assert(!JSON.stringify(flag).includes('band0'));
+ }
+});
+test('curved route geometry is stable, bounded, endpoint preserving and independent of RNG',()=>{
+ mkdirSync('build',{recursive:true});
+ const path='build/recording-route-curve.lua';
+ writeFileSync(path,`local UI=require('abyss_map_ui')
+assert(type(UI.routePoint)=='function','missing curved route geometry')
+for seed=1,40 do
+ local lastY=-1000
+ for i=0,100 do
+  local t=i/100
+  local x,y=UI.routePoint(20,30,140,180,t,seed)
+  local xx,yy=UI.routePoint(20,30,140,180,t,seed)
+  assert(x==xx and y==yy,'unstable decoration')
+  assert(math.abs(x-(20+120*t))<=12 and y>=lastY,'curve escapes bounded corridor')
+  if i==0 then assert(x==20 and y==30)end
+  if i==100 then assert(math.abs(x-140)<.00001 and y==180)end
+  lastY=y
+ end
+ local x=UI.routePoint(20,30,140,180,.5,seed)
+ assert(math.abs(x-80)>1,'route remains straight')
+end
+print('ROUTE_CURVE_PASS')
+`);
+ const result=runLua(path);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
+
+import {readFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {beforeRecordingUi,authorizeReleaseUiRestore} from './helpers/release-ui-restore-source.mjs';
+test('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{
+ const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));
+ for(const [path,row] of Object.entries(files)){
+  const live=readFileSync(path,'utf8');
+  assert.equal(beforeRecordingUi(path,live),row.before.source,path);
+  const drift=live+'\n-- unreviewed drift\n';
+  assert.equal(beforeRecordingUi(path,drift),drift,'unknown bytes must remain unprojected');
+  assert.throws(()=>authorizeReleaseUiRestore([[path,live]],()=>drift),/recording UI linked owner changed/);
+ }
+});

@@ -117,11 +117,20 @@ assert(box:GetChild('name').fontSize==18,'resolved title token must drive the ru
 Theme.officialAssets.stsCardReference.typography.title=14
 Display.writeArt(box:GetChild('art'),definition('power','rare'),function(c,id)c.image=id end,box)
 assert(box:GetChild('art').position[2]==geometry.portrait.position[2])
+for _,reason in ipairs({'insufficient_energy','entangled','unplayable_card','not_player_turn'})do
+ Skin.apply(box,definition('attack','common'),api,{dim=true,blockReason=reason,cost=1,baseCost=1,surfaceScope='battle'})
+ assert(box:GetChild('blockedVeil').visible)
+ assert(box:GetChild('stsReferenceCost'):GetChild('costMaterial').visible and box:GetChild('cost').visible)
+end
+Skin.apply(box,definition('attack','common'),api,{dim=false,cost=0,baseCost=1,surfaceScope='battle'})
+assert(not box:GetChild('blockedVeil').visible and box:GetChild('cost').visible)
 Skin.apply(box,definition('status','common',-2),api,{})
-assert(not root:GetChild('costMaterial').visible and not box:GetChild('cost').visible)
+assert(not box:GetChild('stsReferenceCost'):GetChild('costMaterial').visible and not box:GetChild('cost').visible)
 assert(reads==firstReads)
 print('STS_SHARED_CARD_RUNTIME_PASS')
 `;
  const script=join(directory,'runtime.lua');writeFileSync(script,lua);
  const result=runLua(script,{timeout:15000});assert.equal(result.status,0,result.stderr+'\n'+result.stdout);assert.match(result.stdout,/STS_SHARED_CARD_RUNTIME_PASS/);
 });
+
+import './helpers/combat-visual-feedback.cases.mjs';

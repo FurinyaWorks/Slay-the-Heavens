@@ -177,7 +177,8 @@ export function deckControls(theme = nativeTheme) {
       {name:'pileTools',kind:'container',position:[0,241.5],size:[856,33],visible:false,children:[
         plate('plate',[0,0,856,33],'#76191B'),
         ...['original','type','cost','name'].map((mode,i)=>({name:mode,kind:'container',position:[(i-1.5)*150,0],size:[150,44],children:[
-          text('label',[0,0,150,40],['默认 ▴','类型 ▴','费用 ▴','名称 ▴'][i],18,'#E9E6DC'),
+          text('label',[-9,0,120,40],['默认','类型','费用','名称'][i],18,'#E9E6DC'),
+          {name:'direction',kind:'image',position:[46,0],size:[9,7],image:100003,colour:'#E9E6DC',raycastTarget:false},
           {name:'hit',kind:'cursorArea',size:[150,44],focusable:true},
         ]})),
       ]},

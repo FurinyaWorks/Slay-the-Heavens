@@ -506,7 +506,7 @@ for _,case in ipairs({
 end
 local costless=C.copy(definition);costless.cost=-2
 Skin.apply(card,costless,paint,{surfaceScope='battle'})
-local costMaterial=sharedFace(card).front:GetChild('costMaterial')
+local costMaterial=card:GetChild('stsReferenceCost'):GetChild('costMaterial')
 assert(not costMaterial.visible and not number.visible,'costless card keeps a coin')
 u:render();assert(costMaterial.visible and number.visible,'live shared cost material not restored')
 colour(number.fontColor,battleInk,'battle neutral ink restored after semantic cost changes')
@@ -1261,7 +1261,7 @@ end
             local face=grid.items[0]:GetChild('face')
             assert(face.y==0 and not grid.items[0]:GetChild('uid').visible)
             local shared=sharedFace(face)
-            assert(shared.front.visible~=false and shared.back.visible~=false and shared.front:GetChild('costMaterial').visible)
+            assert(shared.front.visible~=false and shared.back.visible~=false and face:GetChild('stsReferenceCost'):GetChild('costMaterial').visible)
             for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
                 assert(not face:GetChild(name).visible,'read-only piles cannot flash ready/cost halos')
             end
@@ -1791,4 +1791,24 @@ test('official aim regression rejects the escaped lifted-card origin and a centr
  assert.throws(()=>runOfficial(t,body,'OFFICIAL_AIM_NATIVE_TOUCH_MATRIX 12',{
   abyss_battle_aim_arrow:arrow.replace('local apex=17*scale','local apex=0'),
  }),/first target tip x/);
+});
+
+test('recording sort triangles remain visible and reverse across clicks, mode changes and reopening',t=>{
+ runOfficial(t,officialDeckBrowserSetup+`
+host.run.deck={instance(1,'defend'),instance(2,'bash')}
+assert(deck:open(host.run));deck:update(0)
+for _,mode in ipairs({'original','type','cost','name','cost'})do
+ for i=1,4 do
+  assert(tool(mode));deck:update(0)
+  local box=panel:GetChild('pileTools'):GetChild(mode)
+  local arrow=assert(box:GetChild('direction'),'missing font-independent triangle')
+  assert(arrow.visible~=false and arrow.localRotationZ==(deck.sortAscending and 0 or 180))
+  assert(not box:GetChild('label').text:find('▴') and not box:GetChild('label').text:find('▾'))
+ end
+end
+local before=C.copy(host.run)
+assert(deck:close());assert(deck:open(host.run));deck:update(0)
+assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('direction').localRotationZ==(deck.sortAscending and 0 or 180))
+unchanged(host.run,before,'sorting changed run')
+`,'RECORDING_SORT_TRIANGLE_PASS');
 });

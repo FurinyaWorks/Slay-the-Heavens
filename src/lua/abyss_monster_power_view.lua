@@ -19,7 +19,7 @@ function M.new(platform,picture,tint,ink,onCreate,onRetire)
   native(icon,'SetVisible',not entry.overflow)
   native(icon,'SetAnchoredPosition',0,0);native(icon,'SetSizeDelta',size,size)
   if entry.overflow then return end
-  local image=Theme.icon.status[entry.icon or entry.id]
+  local image=(Theme.icon.status[entry.id] or Theme.icon.status[entry.id:match('^colorless_bomb_') and 'colorless_bomb' or entry.icon])
   if (not image or Theme.icon.statusReplacementNotes and Theme.icon.statusReplacementNotes[entry.id])and not self.missingIcons[entry.id]then
    self.missingIcons[entry.id]=true;print('ABYSS_POWER_ICON_MISSING '..entry.id..' using labelled unknown placeholder')
   end

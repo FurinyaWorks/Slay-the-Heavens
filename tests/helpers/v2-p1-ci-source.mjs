@@ -1,7 +1,7 @@
 import {beforeRefinedReleaseCiSource} from './refined-release-source.mjs';
 import assert from 'node:assert/strict';
 import {beforePc13RewardCover} from './pc13-reward-cover-source.mjs';
-import {beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
+import {beforeRecordingUi,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -59,6 +59,7 @@ function beforeFieldConfirmation(path, source) {
 }
 
 export function beforeV2UiEvidence(path, source) {
+  source = beforeRecordingUi(path,source);
   source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source));
   source = beforeReleaseSharedRelicCi(path,source);
   source = beforeReleaseSharedRelicUi(path,source);

@@ -111,7 +111,7 @@ local function referenceState(box,root)
         local key=bodyKinds[part.name];state.bodyMaterials[key]=state.bodyMaterials[key]or{};collect(part,state.bodyMaterials[key])
     end
     for _,part in ipairs(root:GetChild('banner'):GetChildren())do collect(part,state.banner[part.name=='front'and'front'or'fold'])end
-    state.cost=root:GetChild('costMaterial')
+    state.cost=box:GetChild('stsReferenceCost'):GetChild('costMaterial')
     referenceStates[box]=state;return state
 end
 local function referenceBody(state,definition,tint)

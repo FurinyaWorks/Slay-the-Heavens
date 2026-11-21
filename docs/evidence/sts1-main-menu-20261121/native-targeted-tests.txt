@@ -1,0 +1,13 @@
+✔ one image retains source triangle geometry under native single-axis rotations (23.208154ms)
+✔ minimal menu uses the supplied native background, fixed input and two actions (112.837921ms)
+✔ one unmasked native triangle preserves all three vertices under affine placement (0.754307ms)
+✔ STS1 menu retains transactions, unplated resting controls and four states (147.44026ms)
+✔ menu historical source continuation projects only exact complete new test bytes (1.043138ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 361.286272

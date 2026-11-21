@@ -1,0 +1,41 @@
+{
+  "seconds": 3.5113370010000153,
+  "background": {
+    "sky": {
+      "images": 92,
+      "spacing": 90
+    },
+    "glow": {
+      "images": 81,
+      "spacing": 23
+    },
+    "tower": {
+      "images": 206,
+      "spacing": 15
+    },
+    "ceiling": {
+      "images": 97,
+      "spacing": 43
+    },
+    "diagonalCloud": {
+      "images": 310,
+      "spacing": 23
+    },
+    "foregroundCloud": {
+      "images": 204,
+      "spacing": 27
+    },
+    "fissures": {
+      "images": 48,
+      "budget": 48
+    }
+  },
+  "logo": {
+    "shadow": 180,
+    "gold": 477,
+    "epsilon": 3.383
+  },
+  "backgroundImages": 1039,
+  "logoImages": 657,
+  "method": "hand-traced semantic silhouettes; per-region local meshes and source median colours; gold mask with counters"
+}

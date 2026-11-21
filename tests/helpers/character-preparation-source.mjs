@@ -1,3 +1,4 @@
+import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
 import {beforeRefinedReleaseProduction,refinedReleaseProductionPaths} from './refined-release-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseForgeSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
@@ -65,6 +66,9 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+ assertCombatVisualCurrent(path,source,read);
+ source=beforeCombatVisualSource(path,source,read);
+ read=combatVisualPriorRead(read);
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (refinedReleaseProductionPaths.includes(path)) {

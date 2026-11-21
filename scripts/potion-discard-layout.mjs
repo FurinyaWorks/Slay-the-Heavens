@@ -1,4 +1,5 @@
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
+import { finishOfficialPotionFace } from './official-run-hud-components.mjs';
 import { potionSlotVisual } from './potion-slot-visual.mjs';
 
 // Existing node counter, modal, shop slots and four-state utility-button tokens.
@@ -24,9 +25,9 @@ export function potionDiscardControls(theme = nativeTheme) {
           plate('border',[0,0,...size],border),plate('plate',[0,0,...size.map(v=>v-s.border*2)],fill),
           text('label',[0,0,...size.map((v,i)=>v-l.exitMenu.buttonInset[i])],label,font,ink)]}))} ]};
   };
-  const [w,h]=l.modal.size,entry=l.nativeNode.topBar.potions;
+  const [w,h]=[560,450],entry=l.nativeNode.topBar.potions;
   const y=-h/2+s.l+l.exitMenu.cancel[3]/2;
-  const slots=l.potionDiscard, head=slots.header;
+  const slots=l.potionDiscard;
   const actionWidth=(w-s.xxl*2-s.m*2)/3, actionStep=actionWidth+s.m;
   // One unchanged management action; physical bottle silhouettes are not new
   // direct-use buttons. Runtime paints sparse inventory and actual 3/5 capacity.
@@ -54,16 +55,23 @@ export function potionDiscardControls(theme = nativeTheme) {
     {name:'potionPanel',kind:'container',size:[...theme.canvas.base],visible:false,children:[
       plate('veil',[0,0,...theme.canvas.base],c.backdropVeil),
       {name:'blocker',kind:'cursorArea',size:[...theme.canvas.base],focusable:false},
-      plate('border',[0,0,w,h],c.goldDim),plate('face',[0,0,w-s.border*2,h-s.border*2],c.panel),
-      text('title',[0,head.titleY,w-s.xxl*2,head.textHeight],'药水管理',f.title,c.goldBright),
-      plate('rule',[0,head.ruleY,...head.ruleSize],c.goldDim),
-      text('hint',[0,head.hintY,w-s.xxl*2,head.textHeight],'选择一瓶药水查看效果',f.label,c.textDim),
-      ...Array.from({length:l.battlePotions.count},(_,i)=>({
-        ...button(`slot${i+1}`,[slots.columns[i%slots.columns.length],slots.rows[Math.floor(i/slots.columns.length)],...slots.size],`槽 ${i+1}\n空槽`,'secondary',f.body),
-        ...(i>=3?{visible:false}:{}),
-      })),
-      plate('detailWell',slots.detail,c.panelSunken),
-      text('detail',slots.detail,'',f.body,c.text),
+      {...plate('border',[0,0,w,h],c.goldDim),visible:false},{...plate('face',[0,0,w,h],c.panel),visible:false},
+      text('title',[0,200,w,40],'药水',f.heading,c.goldBright),
+      {...plate('rule',[0,174,120,2],c.goldDim),visible:false},
+      text('hint',[0,54,w,40],'选择一瓶药水查看效果',f.label,c.textDim),
+      ...Array.from({length:l.battlePotions.count},(_,i)=>{
+        const slot=button(`slot${i+1}`,[(i-2)*92,120,72,80],'','secondary',f.body);
+        for(const state of slot.children[0].children){
+          const label=state.children.find(n=>n.name==='label');label.visible=false;
+          state.children=[...potionSlotVisual(theme,{
+            border:plate('border',[0,0,44,44],c.goldDim),
+            plate:plate('plate',[0,0,42,42],c.panel),bottleSize:40,ink:c.text}),label];
+          finishOfficialPotionFace(state);
+        }
+        return {...slot,visible:i<3};
+      }),
+      plate('detailWell',[0,-52,500,156],c.panel),
+      text('detail',[0,-52,468,144],'',f.label,c.text),
       button('cancel',[-actionStep,y,actionWidth,l.exitMenu.cancel[3]],'关闭','ghost'),
       button('use',[0,y,actionWidth,l.exitMenu.confirm[3]],'使用药水','primary'),
       button('discard',[actionStep,y,actionWidth,l.exitMenu.confirm[3]],'确认丢弃','danger'),
