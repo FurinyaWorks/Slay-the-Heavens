@@ -9,7 +9,7 @@ import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
-  'f7f0764b55cb11845a642525599ae17d7b7a2a8aba19b869174f1ba0e1cf2fa3');
+  '8f413d3c8b24f510339ef22098f2b212c7f877c526fcb8643dc83998dc236e52');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(bytes),'126bc5faaa880285c3e28b96fa3781ed6d188e9b5ee2889a5a41c0a7c2c30cd4','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
@@ -26,12 +26,15 @@ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.bef
 // Keep the card confirmation fix and its live regression out of older UI replays.
 const fieldConfirmation = {
   'scripts/official-assets-layout.mjs': {
-    current: '1d7fa0e8abb2dd246676de028e98b952f12a2c0d24b86ea487acdf89e6bbb7e5',
+    current: ['1d7fa0e8abb2dd246676de028e98b952f12a2c0d24b86ea487acdf89e6bbb7e5',
+      '922af096af2868f1bfc6c480640e4705eaafd63dbb662433c9307030f4913cfc'],
     prior: '976f3ac618d10f73ae256f267966e4185c05c9b0c1ce6c6bfab0d90662292ada',
-    added: " // The play area is a battlefield-wide hit surface with a line and caption.\n if(node.name==='playArea')return;\n",
+    added: /^ \/\/ The play area is a (?:battlefield-wide hit surface with a line and caption|transparent battlefield-wide hit surface)\.\n if\(node\.name==='playArea'\)return;\n/m,
   },
   'tests/official-assets-runtime.test.mjs': {
-    current: 'f214dff087837db37ad9719826930b67af5e6a705d5871d5c386aa57256a9d8e',
+    current: ['f214dff087837db37ad9719826930b67af5e6a705d5871d5c386aa57256a9d8e',
+      '1ccbfa1c23bce59d0a2755b5e57058039a14d549df231e049524aac87d8ca30f',
+      'db065e0b4a84f09d6c898863ca8e46e9959eab049e96c95506a81a8de73b9f0b'],
     prior: '2fb2148a78b0dd238ec66a51981b02fafe32bf54aecc72505f060c7459f7beb0',
     added: /^test\('official card confirmation keeps the battlefield visible[\s\S]+?^\}\);\n\n/m,
   },
@@ -39,7 +42,7 @@ const fieldConfirmation = {
 function beforeFieldConfirmation(path, source) {
   if (!Object.hasOwn(fieldConfirmation,path) || typeof source!=='string' || source.includes('\r\r\n')) return source;
   const row=fieldConfirmation[path], text=source.replaceAll('\r\n','\n');
-  if (sha256(text)!==row.current) return source;
+  if (!row.current.includes(sha256(text))) return source;
   const prior=text.replace(row.added,'');
   assert.equal(sha256(prior),row.prior,'complete pre-fix card confirmation source: '+path);
   return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
