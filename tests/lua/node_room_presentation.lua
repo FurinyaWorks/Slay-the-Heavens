@@ -165,7 +165,11 @@ test('forge opens a five-column grid and confirms only from the before-after pre
  assert(get('campView').visible and not get('pickerView').visible)
 end)
 test('forge retains the native list and skips unchanged faces during scroll callbacks',function()
- local ui,get,emit,tap=setup('camp',nil,3)
+ local ui,get,_,tap=setup('camp',nil,3)
+ assert(Run.obtainCard(ui.run,'searing_blow',{upgrades=2}))
+ local repeatable=ui.run.deck[#ui.run.deck]
+ assert(repeatable.lastUpgradeOrigin)
+ ui:render()
  local scroll=get('pickerView/forgeScroll')
  local refresh,refreshes=scroll.RefreshItems,0
  function scroll:RefreshItems(...)
@@ -202,7 +206,7 @@ test('forge retains the native list and skips unchanged faces during scroll call
  assert(refreshes==3 and writes>0, 'a changed card still needs to be painted')
  ui:setVisible(false)
  ui:setVisible(true)
- assert(refreshes==4 and scroll.itemCount==13)
+ assert(refreshes==4 and scroll.itemCount==14)
 end)
 test('the visible grid restores artwork for cells recycled while covered',function()
  local ui,get,_,tap=setup('camp',nil,3)

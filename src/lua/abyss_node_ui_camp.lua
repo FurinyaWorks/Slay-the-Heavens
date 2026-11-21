@@ -15,15 +15,16 @@ local function find(rows, uid)
     for _, row in ipairs(rows) do if row.uid == uid then return row end end
 end
 
--- Nodes.view returns new snapshots even when the eligible cards are unchanged.
+-- Nodes.view copies the deck. Upgrade provenance is used by card details,
+-- while this list paints only the card face and submits the selected UID.
 local function sameCard(a, b, ignoreUid)
     if a == b then return true end
     if not a or not b then return false end
     for key, value in pairs(a) do
-        if b[key] ~= value and not (ignoreUid and key == 'uid') then return false end
+        if key ~= 'lastUpgradeOrigin' and b[key] ~= value and not (ignoreUid and key == 'uid') then return false end
     end
     for key in pairs(b) do
-        if a[key] == nil then return false end
+        if key ~= 'lastUpgradeOrigin' and a[key] == nil then return false end
     end
     return true
 end
