@@ -204,6 +204,28 @@ test('forge retains the native list and skips unchanged faces during scroll call
  ui:setVisible(true)
  assert(refreshes==4 and scroll.itemCount==13)
 end)
+test('the visible grid restores artwork for cells recycled while covered',function()
+ local ui,get,_,tap=setup('camp',nil,3)
+ local display=Presentation[ui.run.deck[1].cardId]
+ local previousArt=display.nativeArt
+ display.nativeArt={cardId=ui.run.deck[1].cardId}
+ local CardDisplay=require('abyss_card_display')
+ local write=CardDisplay.writeNativeArt
+ local box,paints
+ function CardDisplay.writeNativeArt(face,...)
+  if face==box then paints=paints+1 end
+  return write(face,...)
+ end
+ local scroll=get('pickerView/forgeScroll')
+ assert(tap('campView/forge',1))
+ box,paints=scroll.items[0],0
+ ui:setVisible(false,true)
+ scroll:recycle(0,1)
+ assert(paints==0)
+ ui:setVisible(true,true)
+ CardDisplay.writeNativeArt,display.nativeArt=write,previousArt
+ assert(paints==1,'the recycled face must request its artwork when revealed')
+end)
 test('a small eligible set is centered without a scroll bar and re-entry starts clean',function()
  local ui,get,_,tap=setup('camp')
  for i=3,#ui.run.deck do ui.run.deck[i].upgraded=true end
@@ -246,7 +268,12 @@ test('a remaining mandatory upgrade returns to the grid and removes the ineligib
  local source=Combat.copy(Data);source.rules.camp.upgradeCount=2
  local ui,get,_,tap=setup('camp',nil,nil,source)
  local fit=get('pickerView/forgeFit')
- assert(tap('campView/forge',1));assert(tapCard(fit.items[0],2));assert(tap('confirm',3));ui:update(2)
+ assert(tap('campView/forge',1));assert(tapCard(fit.items[0],2));assert(tap('confirm',3))
+ local hit,event=fit.items[0]:GetChild('hit'),{touchId=4}
+ hit.listeners.down(event)
+ ui:update(.25)
+ hit.listeners.up(event)
+ assert(not hit.listeners.click(event), 'a press during the forge effect must stay blocked')
  assert(ui.run.phase=='node' and not ui.selected and not get('back').visible)
  assert(ui.run.deck[1].upgraded and fit.itemCount==9 and ui.upgradeRows[1].uid==ui.run.deck[2].uid)
  assert(tapCard(fit.items[0],5));assert(tap('confirm',6));ui:update(2)

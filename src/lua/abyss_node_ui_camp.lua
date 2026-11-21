@@ -93,6 +93,7 @@ function M.new(ctx)
         actions = nil
         showList(nil)
         for box, binding in pairs(bindings) do
+            binding.press = nil
             if box.alive ~= false then pose(box, binding, false) end
             -- Release optional artwork so it can use its native pools in the preview.
             if binding.art then
@@ -133,7 +134,7 @@ function M.new(ctx)
         local cursor = ctx.cursor
         if cursor and cursor.CursorDown then
             hit:AddCursorEventListener(cursor.CursorDown, function(event)
-                b.observed, b.press, b.touch, b.released = true, entry(), touch(event), false
+                b.observed, b.press, b.touch, b.released = true, enabled() and entry() or nil, touch(event), false
                 b.x, b.y = ctx.point(event)
             end)
         end
@@ -193,14 +194,17 @@ function M.new(ctx)
     local function paintFace(box, binding, card)
         local display = owner.presentation[card.cardId]
         local art = display and display.nativeArt
-        if binding.display == display and binding.art == art and sameCard(binding.face, card, not art) then
+        local visibleArt = owner.visible and art or nil
+        if art and not owner.visible then list.paintOnReveal = true end
+        if binding.display == display and (binding.art == art or binding.art == visibleArt)
+            and sameCard(binding.face, card, not art) then
             ctx.skinFaces[box] = true
             return
         end
         ctx.fillCard(box, card.cardId, card.upgraded, { instance = card })
         -- These recycled cells are owned by the list, outside the shared node render pass.
         ctx.artFaces[box] = nil
-        binding.face, binding.display, binding.art = card, display, owner.visible and art or nil
+        binding.face, binding.display, binding.art = card, display, visibleArt
     end
 
     local function refreshGrid(source)
@@ -263,8 +267,11 @@ function M.new(ctx)
             refreshGrid(list)
         else
             if list.resetScroll then list.resetScroll, list.progress = false, 0 end
-            if not wasActive then
-                if list.grid == scroll and scroll.scrollProgress ~= list.progress then scroll.scrollProgress = list.progress end
+            if not wasActive and list.grid == scroll and scroll.scrollProgress ~= list.progress then
+                scroll.scrollProgress = list.progress
+            end
+            if not wasActive or owner.visible and list.paintOnReveal then
+                list.paintOnReveal = nil
                 for box, binding in pairs(bindings) do
                     local card = binding.list == list and list.rows[binding.index]
                     if card and box.alive ~= false then paintFace(box, binding, card) end
