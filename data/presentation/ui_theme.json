@@ -2635,7 +2635,7 @@
         "popScale": 1.25,
         "rowStagger": 0.07,
         "restDuration": 1.2,
-        "forgeDuration": 0.9,
+        "forgeDuration": 0.24,
         "sparkCount": 8,
         "sparkRadius": 160,
         "sparkSize": 8
