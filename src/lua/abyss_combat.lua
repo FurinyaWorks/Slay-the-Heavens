@@ -239,7 +239,7 @@ local function splitEnemy(state, parent)
     local children, hp = {}, parent.hp -- capture before the non-triggering death
     for i = 1, ai.splitCount do
         children[i] = makeEnemy(state, ai.splitEnemies and ai.splitEnemies[i] or ai.splitEnemy, state.nextEnemyId, hp)
-        if ai.splitPositions then children[i].sourcePosition=copy(ai.splitPositions[i]) end
+        children[i].sourcePosition = EnemySetup.splitPosition(parent, i)
         state.nextEnemyId = state.nextEnemyId + 1
     end
     -- Suicide(false): no damage, death Power, relic callback or extra reward.
