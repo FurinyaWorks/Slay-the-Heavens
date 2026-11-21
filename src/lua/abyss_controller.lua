@@ -108,6 +108,19 @@ function M.unbind(manager,control,engineDestroyed)
     if not engineDestroyed and control.alive~=false then control.canControllerFocus=false end
     return true
 end
+-- The native Grid scrolls the list. A trailing click may still carry drag
+-- metadata even when the host did not send a press to the card itself.
+function M.pointerDragged(event, threshold)
+    if not event then return false end
+    if event.dragging then return true end
+    if not event.GetPressUIPos or not event.GetUIPos then return false end
+    local x, y = event:GetUIPos()
+    local startX, startY = event:GetPressUIPos()
+    if type(x) ~= 'number' or type(y) ~= 'number' or type(startX) ~= 'number' or type(startY) ~= 'number' then
+        return false
+    end
+    return (x - startX)^2 + (y - startY)^2 >= threshold^2
+end
 function M.pointerBlocked(manager)
     return manager and (manager.blocked and manager.blocked() or manager.consumed and manager.api.isController()) or false
 end

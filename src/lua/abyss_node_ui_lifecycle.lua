@@ -40,6 +40,7 @@ function M.install(ctx)
     function ctx.self.prepare(_,dt)
         -- Resource/skin work may run behind the publication cover. Match clocks,
         -- input holds and room/merchant timelines start only after publication.
+        ctx.campUI:update()
         for box in pairs(ctx.skinFaces)do CardSkin.tick(box,dt)end
     end
 
@@ -181,7 +182,7 @@ function M.install(ctx)
                     hold.run, hold.map, hold.nodeId = ctx.self.run, ctx.self.map, flow.id
                     -- A shop farewell shows no shelf: only the merchant and 继续 remain.
                     hold.view = node.type == "event" and "eventView" or node.type == "shop" and "farewell"
-                        or (hold.choice == "upgrade" and "pickerView" or "campView")
+                        or (hold.choice == "upgrade" and not ctx.options.enhancedRooms and "pickerView" or "campView")
                     hold.eventId = node.event and node.event.id
                     ctx.self.result = hold
                 end

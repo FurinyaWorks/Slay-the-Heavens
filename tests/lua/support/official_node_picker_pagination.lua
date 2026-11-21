@@ -55,13 +55,12 @@ assert(ui:setPage(1) and ui.selected==chosen)
 assert(ui:press('confirm'));assert(#run.deck==9)
 for _,card in ipairs(run.deck)do assert(card.uid~=chosen)end
 
--- The camp still uses all twelve rich forge faces, while hiding the six
--- ordinary semantic parents (including the three retired payloads).
+-- Camp uses the native grid while hiding all six semantic picker parents.
 local camp,cget=setup('camp')
 assert(camp:press('campView/forge'))
 for i=1,6 do assert(not cget('pickerView/card'..i).visible)end
-for i=1,12 do assert(cget('pickerView/forgeGrid/card'..i):GetChild('hit'))end
-assert(camp:press('pickerView/forgeGrid/card1'))
+assert(cget('pickerView/forgeFit').itemCount==10 and not cget('confirm').visible)
+assert(camp:press('pickerView/forgeScroll/card1'))
 assert(camp:press('confirm'))
 
 local H=dofile('tests/helpers/act2_choice_events.lua')

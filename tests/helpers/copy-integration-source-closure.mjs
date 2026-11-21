@@ -74,9 +74,10 @@ const releaseUiFiles=Object.freeze({
 // Refined enemy art extends only the existing historical helper closure.
 const refinedReleaseFiles=Object.freeze({
  ...releaseUiFiles,
- 'tests/helpers/release-ui-restore-source.mjs':'480fc5a304dab1fdcb2a6b84ad84f20cfafae52791c2f253bd619313ed4a2901',
- 'tests/helpers/refined-release-source.mjs':'e2dd6e408cafa4363509e30ddb33c471e2f95f73d5efea1d8056e1d44717cd05',
- 'tests/helpers/refined-release-source.json.gz':'9690204ed22bd6c7529e94f0cc2c23dc0ec5ac8d40d327a96db68df6a1f57528',
+ 'tests/helpers/release-ui-restore-source.mjs':'26d8b8099e6b8f6fb30869479dcbcac90ff8c77ea04bc80ab4f8ad25c8bc8be3',
+ 'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',
+ 'tests/helpers/refined-release-source.mjs':'f867fd8bc929acac8c9402b6ddaeb6333cf91e1ffb685b080afa6216e8e23421',
+ 'tests/helpers/refined-release-source.json.gz':'07a1ff6c727d11c194d0b3624a6694be668405a7b0a24888116263d174f9f073',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

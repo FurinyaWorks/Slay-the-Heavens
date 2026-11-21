@@ -28,7 +28,7 @@ test('production composition selects one reused Match board without disclosing c
  local r,m,ui,get,shown=playing();local before,mapBefore=H.snapshot(r),H.Copy(m)
  eq(ui.picker,'match_board');eq(ui.mode,'picker');eq(ui.pageCount,1)
  assert(shown('pickerView/forgeGrid'));assert(not shown('eventView'))
- for _,path in ipairs({'back','confirm','pickerView/previous','pickerView/next','pickerView/forgePrevious','pickerView/forgeNext','pickerView/matchRetry'})do assert(not shown(path),path)end
+ for _,path in ipairs({'back','confirm','pickerView/previous','pickerView/next','pickerView/matchRetry'})do assert(not shown(path),path)end
  assert(ui.view.node.event.board==nil)
  for i,slot in ipairs(ui.view.node.event.match.slots)do
   eq(slot.cardId,nil);eq(slot.uid,nil)

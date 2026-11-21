@@ -1,25 +1,9 @@
-local NativeContract = dofile('tests/lua/support/native_ui_contract.lua')
--- Real Run/Map/Nodes and generated native controls; no gameplay rules are mocked.
-package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
+-- Real Run/Map/Nodes and generated native controls.
+local F = dofile('tests/lua/support/game_ui_fixture.lua')
 local UI, Nodes = require("abyss_node_ui"), require("abyss_nodes")
 local Run, Map, Combat = require("abyss_run"), require("abyss_map"), require("abyss_combat")
-local Data, Layout, Presentation = require("abyss_data"), require("abyss_ui_layout"), require("abyss_presentation")
+local Data, Layout, Presentation = F.Data, F.Layout, F.Presentation
 local cursor = {CursorEnter="enter", CursorExit="exit", CursorDown="down", CursorUp="up", CursorEndDrag="endDrag"}
-local function control(spec, parent)
-    local box = {parent=parent, visible=spec.visible~=false, children={}, listeners={}}
-    function box:GetChild(key) return self.children[key] end
-    function box:SetVisible(value) self.visible=value end
-    function box:SetSizeDelta(width,height) NativeContract.sizeDelta(width,height);
-        self.size={width,height};self.sizeDeltaX,self.sizeDeltaY=width,height
-    end
-    function box:SetLocalScale(x,y,z) self.scale={x,y,z} end
-    function box:SetAnchoredPosition(x,y) self.x,self.y=x,y end
-    function box:AddCursorEventListener(event, fn) NativeContract.listener(event,fn);
-        assert(not self.listeners[event], "duplicate listener") self.listeners[event]=fn
-    end
-    for _, child in ipairs(spec.children or {}) do box.children[child.name]=control(child,box) end
-    return box
-end
 local function same(a,b)
     assert(type(a)==type(b))
     if type(a)~="table" then assert(a==b, tostring(a).." ~= "..tostring(b)) return end
@@ -50,7 +34,7 @@ local function setup(kind,linked,extraCards,source)
             local found=spec.children and find(spec.children) if found then return found end
         end
     end
-    local root=control(assert(find(Layout)))
+    local root=F.control(assert(find(Layout)))
     local sounds={}
     local ui=UI.new(root,run,map,Presentation,"click",nil,{cursorEvents=cursor,enhancedRooms=true,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,sound=function(cue)sounds[#sounds+1]=cue end})
     ui.testSounds=sounds
@@ -153,33 +137,76 @@ test('rest has a result beat and never heals twice',function()
  ui:update(2);assert(not ui.presentationBusy and ui.run.hp==hp and hp>20)
  assert(not ui:press('campView/rest'))
 end)
-test('smithing uses a full grid and a separate enlarged before-after confirmation',function()
- local ui,get,emit,tap=setup('camp');assert(tap('campView/forge',1))
- assert(get('pickerView/forgeGrid').visible)
- assert(tap('pickerView/forgeGrid/card1',2))
- assert(not get('pickerView/forgeGrid').visible)
- assert(get('pickerView/before').scale[1]>=1.4 and get('pickerView/after').visible)
- local uid=ui.selected;assert(uid and tap('back',3))
- assert(ui.mode=='picker' and not ui.selected and get('pickerView/forgeGrid').visible)
- assert(tap('pickerView/forgeGrid/card1',4));assert(tap('confirm',5))
+local function tapCard(box, id)
+ local hit = box:GetChild('hit')
+ local event = {touchId=id}
+ hit.listeners.down(event)
+ return hit.listeners.click(event)
+end
+test('forge opens a five-column grid and confirms only from the before-after preview',function()
+ local ui,get,_,tap=setup('camp',nil,2)
+ assert(tap('campView/forge',1))
+ local scroll=get('pickerView/forgeScroll')
+ assert(scroll.visible and scroll.itemCount==12 and not get('pickerView/forgeFit').visible)
+ assert(not get('confirm').visible and get('back'):GetChild('label').text=='返回营地')
+ assert(get('pickerView/forgePrompt/label').text=='选择一张卡牌升级' and get('pickerView/page').text=='')
+ scroll.scrollProgress=.8
+ assert(tapCard(scroll.items[0],2))
+ assert(not scroll.visible and not get('pickerView/forgePrompt').visible)
+ assert(get('pickerView/before').scale[1]>=1.4 and get('pickerView/after').visible and get('pickerView/arrow').visible)
+ assert(get('confirm').visible and get('back'):GetChild('label').text=='取消')
+ assert(not ui.run.deck[1].upgraded and tap('back',3))
+ assert(ui.mode=='picker' and not ui.selected and scroll.visible and scroll.scrollProgress==.8)
+ assert(tapCard(scroll.items[0],4));assert(tap('confirm',5))
  assert(ui.presentationBusy);ui:update(2)
- assert(ui.result and ui.result.choice=='upgrade')
+ assert(ui.run.deck[1].upgraded and ui.result and ui.result.choice=='upgrade')
+ assert(get('campView').visible and not get('pickerView').visible)
 end)
-test('a thirteen-card smithing grid has separate reachable page buttons',function()
- local ui,get,emit,tap=setup('camp',nil,3)
- assert(tap('campView/forge',1));assert(ui.pageCount==2)
- assert(get('pickerView/forgeNext').visible)
- assert(tap('pickerView/forgeNext',2) and ui.pickPage==2)
- assert(tap('pickerView/forgeGrid/card1',3) and ui.selected==ui.run.deck[13].uid)
- assert(tap('back',4) and get('pickerView/forgePrevious').visible)
+test('a small eligible set is centered without a scroll bar and re-entry starts clean',function()
+ local ui,get,_,tap=setup('camp')
+ for i=3,#ui.run.deck do ui.run.deck[i].upgraded=true end
+ ui:render()
+ assert(tap('campView/forge',1))
+ local fit=get('pickerView/forgeFit')
+ assert(fit.visible and fit.itemCount==2 and not get('pickerView/forgeScroll').visible)
+ assert(fit.sizeDeltaX==387 and fit.sizeDeltaY==273)
+ assert(tap('back',2) and get('campView').visible)
+ assert(tap('campView/forge',3) and not ui.selected and not get('confirm').visible)
 end)
-test('a remaining mandatory upgrade returns to the grid and retires the upgraded card',function()
+test('scroll reaches the last card without allowing a recycled or dragged touch to select it',function()
+ local ui,get,_,tap=setup('camp',nil,3)
+ local scroll=get('pickerView/forgeScroll')
+ scroll.indexBase=1
+ scroll.deferRefresh=true
+ assert(tap('campView/forge',1))
+ scroll:flush();ui:update(0);scroll:flush()
+ assert(scroll.itemCount==13 and scroll.visible)
+ local box=scroll.items[0]
+ local old=box:GetChild('hit')
+ local event={touchId=2}
+ old.listeners.down(event)
+ scroll.scrollProgress=1
+ assert(scroll:recycle(0,13)==box)
+ assert(not old.listeners.click(event) and not ui.selected)
+ old.listeners.down(event);old.listeners.endDrag(event)
+ assert(not old.listeners.click(event) and not ui.selected)
+ local other={touchId=3}
+ local second=scroll.items[1]:GetChild('hit')
+ assert(not second.listeners.click({touchId=3, GetPressUIPos=function() return 20,-100 end,
+  GetUIPos=function() return 20,-220 end}) and not ui.selected)
+ old.listeners.down(event);old.listeners.down(other)
+ old.listeners.endDrag(event)
+ assert(not old.listeners.click(event) and not ui.selected)
+ old.listeners.up(other)
+ assert(old.listeners.click({}) and ui.selected==ui.run.deck[13].uid)
+end)
+test('a remaining mandatory upgrade returns to the grid and removes the ineligible card',function()
  local source=Combat.copy(Data);source.rules.camp.upgradeCount=2
- local ui,get,emit,tap=setup('camp',nil,nil,source)
- assert(tap('campView/forge',1));assert(tap('pickerView/forgeGrid/card1',2));assert(tap('confirm',3));ui:update(2)
+ local ui,get,_,tap=setup('camp',nil,nil,source)
+ local fit=get('pickerView/forgeFit')
+ assert(tap('campView/forge',1));assert(tapCard(fit.items[0],2));assert(tap('confirm',3));ui:update(2)
  assert(ui.run.phase=='node' and not ui.selected and not get('back').visible)
- assert(get('pickerView/forgeGrid/card1/stamp').text=='已升级')
- assert(not tap('pickerView/forgeGrid/card1',4))
- assert(tap('pickerView/forgeGrid/card2',5));assert(tap('confirm',6));ui:update(2)
- assert(ui.run.phase=='map' and ui.result.choice=='upgrade')
+ assert(ui.run.deck[1].upgraded and fit.itemCount==9 and ui.upgradeRows[1].uid==ui.run.deck[2].uid)
+ assert(tapCard(fit.items[0],5));assert(tap('confirm',6));ui:update(2)
+ assert(ui.run.phase=='map' and ui.run.deck[2].upgraded and ui.result.choice=='upgrade')
 end)

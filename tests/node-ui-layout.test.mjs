@@ -201,7 +201,7 @@ test('each enlarged shop card keeps every price, the merchant and mobile cancel 
   for(const c of items){const r=bounds(c);assert.ok(r.left>=-600 && r.right<=600 && r.bottom>=-340 && r.top<=340,c.name);}
  }
 });
-test('source reward rows and the twelve-card smithing grid fit without hiding neighboring content',()=>{
+test('reward rows, Match board and the scrolling forge fit without hiding neighboring content',()=>{
  const l=nativeTheme.layout.nativeNode;
  const items=l.rewardList.rows.map((y,i)=>({name:'reward'+i,position:[l.rewardList.x,y],size:l.rewardList.size}));
  for(const name of ['heading','note'])items.push({name,position:l.rewardList[name].slice(0,2),size:l.rewardList[name].slice(2)});
@@ -212,11 +212,17 @@ test('source reward rows and the twelve-card smithing grid fit without hiding ne
  for(let a=0;a<grid.length;a++)for(let b=a+1;b<grid.length;b++)assert.ok(!overlaps(bounds(grid[a]),bounds(grid[b])));
  for(const card of grid){const r=bounds(card);assert.ok(r.left>=-600 && r.right<=600 && r.bottom>=-340 && r.top<=242);}
  const picker=find(panel.children,'pickerView').children;
- for(const name of ['forgePrevious','forgeNext']){
-  const arrow=find(picker,name);
-  for(const c of [...grid,find(panel.children,'back'),find(panel.children,'confirm')])
-   assert.ok(!overlaps(bounds(arrow),bounds(c)),name+' overlaps '+c.name);
- }
+ const scrolling=find(picker,'forgeScroll'),fit=find(picker,'forgeFit');
+ assert.equal(scrolling.grid.columns,5);
+ assert.equal(scrolling.grid.horizontal,false);
+ assert.equal(scrolling.grid.scrollbar,true);
+ assert.equal(fit.grid.scrollbar,false);
+ assert.equal(scrolling.itemTemplate,fit.itemTemplate);
+ const prompt=find(find(picker,'forgePrompt').children,'label');
+ assert.equal(prompt.text.content,'选择一张卡牌升级');
+ for(const footer of [prompt,find(panel.children,'back'),find(panel.children,'confirm')])
+  assert.ok(!overlaps(bounds(scrolling),bounds(footer)),scrolling.name+' / '+footer.name);
+
 });
 
  test('merchant pages fit wrapped short text inside the head-relative bubble',()=>{

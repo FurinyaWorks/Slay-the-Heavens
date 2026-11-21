@@ -77,14 +77,15 @@ local function click(key)
  action('battle:'..key,function()return F.click(root,'battlePanel',key)end)
 end
 local function selectUID(uid)
- local n=h.nodeUI;local forge=n.picker=='upgrade'
- local rows=forge and n.upgradeRows or n.removeRows
+ local n=h.nodeUI;local upgrade=n.picker=='upgrade';local forge=upgrade and n.view.node.type=='camp'
+ local rows=upgrade and n.upgradeRows or n.removeRows
  local index;for i,c in ipairs(rows)do if c.uid==uid then index=i end end
  assert(index,'picker UID missing '..tostring(uid))
- local size=forge and 12 or #F.Theme.layout.nativeNode.picker.columns
+ if forge then press('pickerView/forgeScroll/card'..index);press('confirm');return end
+ local size=#F.Theme.layout.nativeNode.picker.columns
  local page=math.floor((index-1)/size)+1
- while n.pickPage~=page do press('pickerView/'..(forge and (n.pickPage<page and 'forgeNext' or 'forgePrevious') or(n.pickPage<page and 'next' or 'previous')))end
- press('pickerView/'..(forge and 'forgeGrid/'or'')..'card'..((index-1)%size+1));press('confirm')
+ while n.pickPage~=page do press('pickerView/'..(n.pickPage<page and 'next' or 'previous'))end
+ press('pickerView/card'..((index-1)%size+1));press('confirm')
 end
 while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
  assert(h.run==run and h.map==map,'campaign replaced run/map owner')

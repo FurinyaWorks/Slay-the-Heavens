@@ -237,7 +237,7 @@ test("node panels compose through Boss16, independent treasure17 then restart", 
                 end
             elseif ui.nodeUI.actions["campView/rest"].enabled then click(root, "nodePanel", "campView/rest")
             else
-                click(root, "nodePanel", "campView/forge"); click(root, "nodePanel", "pickerView/forgeGrid/card1")
+                click(root, "nodePanel", "campView/forge"); assert(root:GetChild('nodePanel'):GetChild('pickerView'):GetChild('forgeFit').items[0]:GetChild('hit').click())
                 click(root, "nodePanel", "confirm")
             end
             if node.type == "camp" or node.type == "event" then

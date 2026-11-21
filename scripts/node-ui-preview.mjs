@@ -60,7 +60,8 @@ function draw(control, parentSize) {
   }
   const inner = (control.children ?? []).map(child => draw(child, [w, h])).join('');
   const scale=control.scale ? `;transform:scale(${control.scale[0]},${control.scale[1]})` : '';
-  return `<div style="${box}${scale}">${inner}</div>`;
+  const clip = control.kind === 'grid' ? ';overflow:hidden' : '';
+  return `<div style="${box}${scale}${clip}">${inner}</div>`;
 }
 
 export function page(tree) {

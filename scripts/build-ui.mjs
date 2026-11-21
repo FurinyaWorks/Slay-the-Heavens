@@ -192,8 +192,15 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   if(officialAssets){
     applyOfficialAssets([battle,layout,...templates],theme);
     templates.push(battlePileCardTemplate(layout,templates[0]));
-    assertOfficialRunContracts([battle,layout,...templates]);
+
   }
+  const child = (node, name) => (node.controls ?? node.children).find(control => control.name === name);
+  const picker = child(child(child(layout, 'stage') ?? layout, 'nodePanel'), 'pickerView');
+  const forgeCard = structuredClone(child(child(picker, 'forgeGrid'), 'card1'));
+  Object.assign(forgeCard, { name: 'AbyssForgeCard', position: [0, 0], visible: true });
+  forgeCard.children = forgeCard.children.filter(control => control.name !== 'matchBack');
+  templates.push(forgeCard);
+  if (officialAssets) assertOfficialRunContracts([battle, layout, ...templates]);
   for (const tree of [battle, layout, ...templates]) assertNativeUiCapacity(tree);
   const rendered = spawnSync(python, ['tools/render_traveler_cards.py', 'data/cards.json', 'data/presentation/traveler.zh-CN.json'],
     { encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PYTHONUTF8: '1' } });
