@@ -179,7 +179,7 @@ function jsDiscovery(source) {
   }
   return { references, directories, dynamicLua, dynamicScript };
 }
-export function selectTests(changed, sources, {advisory = false} = {}) {
+export function selectTests(changed, sources, {advisory = false, reportDynamicDependencies = false} = {}) {
   const paths = Object.keys(sources), deps = new Map(), integration = new Set(), dynamicImports = new Set(), dynamicScripts = new Set();
   for (const [module, producer] of Object.entries(generated)) {
     if (!(producer in sources)) continue;
@@ -278,6 +278,7 @@ export function selectTests(changed, sources, {advisory = false} = {}) {
     visit(start); return seen;
   };
   const mapped = new Set(), selected = [], dependenciesByRoot = new Map();
+  let unresolvedRuntimeDependency;
   for (const test of roots) {
     const dependencies = closure(test);
     dependenciesByRoot.set(test, dependencies);
@@ -304,11 +305,12 @@ export function selectTests(changed, sources, {advisory = false} = {}) {
     // Script-driven integration tests can discover sources/fixtures at runtime.
     // Keep these for every script change rather than guessing their dynamic IO.
     const dynamicScript = scriptChange && [...runtimeDependencies].some(p => dynamicScripts.has(p));
+    if (reportDynamicDependencies && (dynamicLua || dynamicScript)) unresolvedRuntimeDependency ??= test;
     if ([...dependencies].some(p => affected.has(p)) || dynamicLua || dynamicScript) selected.push(test);
   }
   const isIntegration = test => [...dependenciesByRoot.get(test)].some(p => integration.has(p));
   return { full: false, reason: 'Transitive imports and literal fixture references',
-    fast: selected.filter(p => js.includes(p) && !isIntegration(p)),
+    ...(unresolvedRuntimeDependency ? {unresolvedRuntimeDependency} : {}), fast: selected.filter(p => js.includes(p) && !isIntegration(p)),
     integration: selected.filter(p => js.includes(p) && isIntegration(p)), lua: selected.filter(p => lua.includes(p)) };
 }
 

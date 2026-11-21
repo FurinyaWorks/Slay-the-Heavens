@@ -24,16 +24,22 @@ export function approvedBattleIdle(root=process.cwd()){
  // The existing renderer already supports this cadence; static rows stay exact.
  return {...data,samplesPerCycle:20};
 }
-function approvedIdleInventory(){
- const data=approvedBattleIdle();let page=0,group=0,groups=0;
- for(let i=0;i<data.rows.length;i++){
-  const band=data.bandByRow[i],next=Math.floor(i/60)+1;
-  if(page!==band){page=band;group=0;}
-  if(group!==next){group=next;groups++;}
- }
- return {asset:'traveler-geo/idle-approved-v1',images:data.count,groups,pages:data.bands.length,
-  sourceSha256:data.sourceSha256,jsonSha256:data.jsonSha256,periodSeconds:data.period,
-  motion:'approved-source-field-native-band-approximation',officialCapacity:'not_measured',devicePerformance:'not_run'};
+export const approvedBattleNativePath='art/characters/traveler-geo/portraits/battle133/lumine-native-v1.json';
+const approvedBattleNativeSha='a0c792109a74f71be0a52d9a59f39828e1d4818ce8d1bba915606b984d89f831';
+export function approvedBattleNative(root=process.cwd()){
+ const bytes=readFileSync(join(root,approvedBattleNativePath),'utf8').replaceAll('\r\n','\n');
+ if(hash(bytes)!==approvedBattleNativeSha)throw Error('Approved Lumine battle drawing changed');
+ const data=JSON.parse(bytes);
+ if(data.renderProfile!=='lowpoly-v1'||data.width!==133||data.height!==133||data.count!==464||data.rows.length!==464
+  ||data.rows.some(r=>r.length!==20||r.some(n=>!Number.isFinite(n))||![100001,100002,100003].includes(r[0])))
+  throw Error('Invalid approved Lumine battle drawing');
+ return {...data,jsonSha256:approvedBattleNativeSha};
+}
+function approvedNativeInventory(){
+ const data=approvedBattleNative();
+ return {asset:'traveler-geo/portraits/lumine-native-v1',images:data.count,groups:8,pages:1,
+  sourceSha256:data.sourceSha256,jsonSha256:data.jsonSha256,motion:'shared-actor-root-only',
+  officialCapacity:'not_measured',devicePerformance:'not_run'};
 }
 const base='art/characters/traveler-geo/portraits';
 const assets=[
@@ -44,7 +50,7 @@ const licensePath=`${base}/avatar96/LICENSE-runtime-MIT.txt`;
 const selectionBudgetPath='art/performance/selection-budget-v1.json';
 export const portraitInputs=[...assets.flatMap(a=>['runtime-no-snapshot.lua','native-art.json'].map(f=>`${base}/${a.kind}/${f}`)),licensePath,selectionBudgetPath,
  `${base}/avatar96/preview-native-1x.png`,`${base}/battle133/preview-native-1x.png`,'art/lowpoly-select/select-lowpoly.json',
- approvedBattleIdlePath,approvedIdleSource,approvedIdleGif];
+ approvedBattleNativePath,approvedBattleIdlePath,approvedIdleSource,approvedIdleGif];
 const hash=b=>createHash('sha256').update(b).digest('hex');
 export function selectionBudget(root=process.cwd()) {
  const bytes=readFileSync(join(root,selectionBudgetPath));
@@ -67,7 +73,7 @@ const selectedAssets=({selectionAvatar=true,battlePortrait=true}={})=>assets.fil
 export function portraitSourceInputs(options={}) {
  const selected=selectedAssets(options);if(!selected.length)return [];
  return [...selected.flatMap(a=>['runtime-no-snapshot.lua','native-art.json'].map(f=>`${base}/${a.kind}/${f}`)),licensePath,
-  ...(selected.some(a=>a.kind==='battle133')?[approvedBattleIdlePath,approvedIdleSource,approvedIdleGif]:[]),
+  ...(selected.some(a=>a.kind==='battle133')?[approvedBattleNativePath]:[]),
   ...(selected.some(a=>a.kind==='avatar96')?[selectionBudgetPath,`${base}/avatar96/preview-native-1x.png`,`${base}/battle133/preview-native-1x.png`,lumineSelectionPath]:[])];
 }
 export function portraitSources(root=process.cwd(),options) {
@@ -167,15 +173,9 @@ function combineInventory(inventory,lowpoly) {
   peakDynamicControls:assets.reduce((n,a)=>n+(a.images+a.groups+a.pages)*(a.instances??1)+(a.hosts??0),0),
   maxDirectDynamicChildren:60,officialCapacity:'not_measured',measurement:'offline-runtime-control-contract-not-official-capacity',devicePerformance:'not_run'};
 }
-export function lowpolySelectLiterals(root=process.cwd(),{selectionAvatar=false,cards=false,menuBackground=false,requireSelection=false}={}) {
+export function lowpolySelectLiterals(root=process.cwd(),{selectionAvatar=false,cards=false,menuBackground=false}={}) {
  if(!selectionAvatar&&!cards&&!menuBackground)return [];
  const bytes=readFileSync(join(root,lowpolySelectPath)),data=JSON.parse(bytes),sha=createHash('sha256').update(bytes).digest('hex');
- if(requireSelection&&selectionAvatar){
-  const hero=data.hero;
-  if(!hero||!Number.isSafeInteger(hero.width)||hero.width<1||!Number.isSafeInteger(hero.height)||hero.height<1
-   ||!Array.isArray(hero.rows)||hero.rows.length<1||hero.rows.length>2304)
-   throw Error('Native default selection requires valid bounded lowpolyHero data');
- }
  const asset=(name,a)=>`${name}=${toLua({rows:a.rows.map(r=>[r[0],r[1],r[2],r[3],r[4],.5,.5,.5,.5,.5,.5,1,1,r[7],r[8],r[9],r[10],r[11],r[5],r[6]]),
   width:a.width,height:a.height,count:a.rows.length,renderProfile:'lowpoly-v1',cache:true,jsonSha256:sha,sourceSha256:data.sourceSha256,
   root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0]})}`;
@@ -191,13 +191,12 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
   const source=boundedPortraitSource(imageTemplateIndex,containerTemplateIndex);
   writeFileSync(join(directory,`${portraitModule}.lua`),source);return source;
  }
- const runtimeV2=existsSync(join(directory,'art-render-v2.json'));
- const nativeSelection=runtimeV2&&selectionAvatar&&!v25BattleChrome&&!officialAssets;
- const lowpoly=lowpolySelectLiterals(root,{selectionAvatar:selectionAvatar&&!v25BattleChrome&&!officialAssets,cards,menuBackground,requireSelection:nativeSelection});
+ const lowpoly=lowpolySelectLiterals(root,{selectionAvatar:selectionAvatar&&!v25BattleChrome&&!officialAssets,cards,menuBackground});
  if(v25BattleChrome&&menuBackground)lowpoly.push('v25SceneOwnerCount=1');
  if(!selectionAvatar&&!battlePortrait){const source=lowpoly.length?`-- Disabled portraits; low-poly select fan / scene backgrounds only.\nreturn {imagePrefabId=${imageTemplateIndex},containerPrefabId=${containerTemplateIndex},\n${lowpoly.join(',\n')}\n}\n`:'-- Disabled optional drawings.\nreturn {imagePrefabId=0,containerPrefabId=0}\n';writeFileSync(join(directory,`${portraitModule}.lua`),source);return source;}
  const compactPath=join(directory,'art-performance.json');
  const compact=existsSync(compactPath)?JSON.parse(readFileSync(compactPath,'utf8')):null;
+ const runtimeV2=existsSync(join(directory,'art-render-v2.json'));
  const budget=selectionAvatar&&(runtimeV2||!battlePortrait)&&!compact?selectionBudget(root):null;
  const budgetLiteral=(a,asset)=>toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,
   display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'selection-budget-v1',runtimeV2:true,cache:true,rectanglesOnly:true});
@@ -206,17 +205,15 @@ export function writePortraitModule(directory,{root=process.cwd(),imageTemplateI
   if(compact){const asset=compact.assets[a.kind];return `${a.kind}=${toLua({root:[0,0,a.width,a.width,.5,.5,.5,.5,.5,.5,1,1,0],rows:asset.rows,width:a.width,count:asset.count,display:a.display,sourceSha256:a.runtime,jsonSha256:a.json,renderProfile:'compact-v1',sourcePreviewSha256:asset.sha256})}`;}
   return `${a.kind}=(function()\n${a.literals}\nreturn {root=ROOT,rows=ELEMENTS,width=${a.width},count=${a.count},display=${a.display},sourceSha256='${a.runtime}',jsonSha256='${a.json}'${runtimeV2?',runtimeV2=true,cache=true,rectanglesOnly=true':''}}\nend)()`;
  });
- // Both approved native selections have a generated, validated source. The
- // isolated legacy producer retains its selection133 data and original assets.
- if(budget&&!v25BattleChrome&&!officialAssets&&!nativeSelection)data.push(`selection133=${budgetLiteral(assets[1],budget.assets.selection133)}`);
+ if(budget&&!v25BattleChrome)data.push(`selection133=${budgetLiteral(assets[1],budget.assets.selection133)}`);
  data.push(...lowpoly);
  // Selection keeps its bounded temporary actor. Full-body literals remain
- // available to other profiles; official combat uses the approved idle below.
+ // available to other profiles; official combat uses the approved native drawing below.
  if(officialAssets&&(selectionAvatar||battlePortrait))data.push(`battlePixel=${toLua(lightweightAssets().battle133)}`);
  if(officialAssets&&selectionAvatar)data.push("selectionUses='lowpolyLumine'",`selectionHalfImagePrefabId=${selectionHalfImageTemplateIndex}`,`lowpolyLumine=${toLua(lumineSelectionBackground(root))}`);
  // One approved combat figure. The temporary pixel remains selection-only;
- // missing or changed approved idle data is a build error, never a fallback.
- if(officialAssets&&battlePortrait)data.push(`battleApprovedIdle=${toLua(approvedBattleIdle(root))}`);
+ // missing or changed approved geometry is a build error, never a fallback.
+ if(officialAssets&&battlePortrait)data.push(`battleApprovedNative=${toLua(approvedBattleNative(root))}`);
  if(v25BattleChrome){
   const theme=v25Theme(JSON.parse(readFileSync(join(root,'data/presentation/ui_theme.json'),'utf8')));
   data.push(`v25PortraitProfile=${toLua(v25PortraitRuntimeProfile(theme))}`);
@@ -244,7 +241,7 @@ export function portraitInventory({selectionAvatar=true,battlePortrait=true,card
  const rows=inventoryRows(selectionAvatar,battlePortrait,budget,v25);
  if(officialAssets&&battlePortrait){
   const row=rows.find(a=>a.asset==='traveler-geo/portraits/battle133');
-  Object.assign(row,approvedIdleInventory());
+  Object.assign(row,approvedNativeInventory());
  }
  if(officialAssets&&selectionAvatar){
   const selected=rows.find(a=>a.asset==='traveler-geo/portraits/selection133'||a.asset==='traveler-geo/portraits/battle133-selection');
@@ -267,8 +264,12 @@ export function portraitRuntimeInventory(directory) {
  const flags={selectionAvatar:/\bavatar96=/.test(source),battlePortrait:/\bbattle133=/.test(source)};
  const officialAssets=source.includes('battlePixel=');
  if(officialAssets&&flags.battlePortrait){
-  const expected=`battleApprovedIdle=${toLua(approvedBattleIdle())}`;
-  if(source.split(expected).length!==2)throw Error('Official battle idle differs from the pinned producer');
+  const expected=`battleApprovedNative=${toLua(approvedBattleNative())}`;
+  const parse=createRequire(import.meta.url)('luaparse').parse;
+  const fields=parse(source,{ranges:true}).body.at(-1)?.arguments?.[0]?.fields??[];
+  const matched=fields.filter(field=>field.key?.name==='battleApprovedNative');
+  if(fields.some(field=>field.type!=='TableKeyString')||matched.length!==1||source.slice(...matched[0].range)!==expected)
+   throw Error('Official battle drawing differs from the pinned producer');
  }
  const selectionMarkers=source.split(/\r?\n/).filter(line=>line.startsWith('selectionUses='));
  if(flags.selectionAvatar&&(officialAssets||selectionMarkers.length)){

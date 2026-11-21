@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compareNativeCandidate, requireSourceSha, candidateEntrySource,nativeControlsEqual } from '../scripts/native-candidate-audit.mjs';
+import { withNativeImageTypes } from '../scripts/native-ui-encoder.mjs';
 import {auditPortraitTemplateBindings} from '../scripts/audit-native-candidate.mjs';
 import {selectionHalfImage,selectionHalfTemplate} from '../scripts/lumine-selection-background.mjs';
 
@@ -61,6 +62,40 @@ test('unencoded gallery imageType remains a real difference, including stretch',
   const source={name:'gallery',kind:'image',image:106056,imageType};
   assert(!nativeControlsEqual([source],[{name:'gallery',kind:'image',image:106056}]));
  }
+});
+
+test('native gallery modes preserve explicit Basic and Stretch while absent stays absent',async()=>{
+ const source=`
+const field=(id,wire,value)=>Buffer.from(JSON.stringify({id,wire,value})+'\\n');
+const clientBlock=(_kind,bytes)=>bytes;
+export function clientControlRecord({rootForm,image,colour,mask}){
+ return {image:[clientBlock(96,Buffer.concat([field(502,0,colour),field(503,0,image)]))]}.image[0];
+}
+export function write(c){
+ const only=(keys,kinds)=>{if(keys.some(key=>c[key]!==undefined)&&!kinds.includes(c.kind))throw Error('Unexpected field');};
+ only(['image','colour','opacity','mask'],['image']);
+ return clientControlRecord({image:c.image,colour:c.colour});
+}
+export function read(picture){
+ const out={},has=(b,id)=>Object.hasOwn(b,id),number=(b,id)=>b[id];
+ if(has(picture,503))out.image=number(picture,503);
+ return out;
+}`;
+ const load=code=>import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+ const before=await load(source),after=await load(withNativeImageTypes(source));
+ const gallery={kind:'image',image:106056,colour:0xffffffff};
+ assert.deepEqual(after.write(gallery),before.write(gallery));
+ assert.deepEqual(after.read({503:gallery.image}),{image:gallery.image});
+ for(const [imageType,value] of [['basic',0],['stretch',1]]){
+  const data=after.write({...gallery,imageType}).toString().trim().split('\n').map(JSON.parse);
+  assert.deepEqual(data[0],{id:501,wire:0,value});
+  assert.deepEqual(after.read(Object.fromEntries(data.map(row=>[row.id,row.value]))),{image:gallery.image,imageType});
+ }
+ assert.throws(()=>after.write({...gallery,imageType:'unknown'}),/requires a gallery image/);
+ assert.throws(()=>after.write({...gallery,image:100002,imageType:'basic'}),/requires a gallery image/);
+ assert.throws(()=>after.write({kind:'text',imageType:'basic'}),/Unexpected field/);
+ assert.throws(()=>after.read({501:2,503:gallery.image}),/Unsupported native image type/);
+ assert.throws(()=>withNativeImageTypes(source.replace('if(has(picture,503))','if(true)')),/schema changed/);
 });
 
 test('official selection audit binds the read-back half triangle to the same candidate and distinct native IDs',()=>{
@@ -355,28 +390,4 @@ test('alpha encoding cannot hide wrong bytes, invalid readback or unrelated floa
       input.actual.ui.interface.scripts = [{ name: 'abyss_ui', values: { opacity: 128 / 255 } }];
     },
   ]) assert.ok(audit(change).issues.length);
-});
-
-test('shared card audit requires the complete same-source plan and unique same-candidate bindings',async()=>{
- const helper=await import('../scripts/native-ui-card-sharing.mjs');
- assert.equal(typeof helper.assertCardSharingPlan,'function','audit must reproduce the physical packing from pinned source');
- const face=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
- const layout={name:'Test',controls:[face('one'),face('two')]},templates=[];
- const packed=helper.packNativeCardFaces(layout,templates),record={sharing:packed.sharing,templateIndices:{AbyssSharedCardFace1:201}};
- assert.deepEqual(helper.assertCardSharingPlan(layout,templates,record),packed);
- for(const bad of [{...record,sharing:{...record.sharing,packedDigest:'0'.repeat(64)}},
-  {...record,sharing:{...record.sharing,sourceDigest:'0'.repeat(64)}},
-  {...record,templateIndices:{}},{...record,templateIndices:{AbyssSharedCardFace1:0}},
-  {...record,templateIndices:{AbyssSharedCardFace1:201,extra:202}},
-  {...record,sharing:{...record.sharing,profile:'unknown'}}])
-  assert.throws(()=>helper.assertCardSharingPlan(layout,templates,bad));
- const prior={candidate:{sha256:'a'.repeat(64)},nativeUiPacking:record};
- assert.deepEqual(helper.assertSharedCardBaseOwnership('a'.repeat(64),prior,[{name:'AbyssSharedCardFace1',templateIndex:201}]),['AbyssSharedCardFace1']);
- for(const actual of [[],[{name:'AbyssSharedCardFace1',templateIndex:202}],
-  [{name:'AbyssSharedCardFace1',templateIndex:201},{name:'AbyssSharedCardFace2',templateIndex:202}]])
-  assert.throws(()=>helper.assertSharedCardBaseOwnership('a'.repeat(64),prior,actual),/ownership/);
- assert.throws(()=>helper.assertSharedCardBaseOwnership('b'.repeat(64),prior,[{name:'AbyssSharedCardFace1',templateIndex:201}]),/ownership/);
- assert.throws(()=>helper.assertNoExternalSharedCardReferences({name:'foreign',children:[{name:'face',kind:'reference',template:'AbyssSharedCardFace1'}]}),/External UI/);
- for(const spec of [{name:'foreign',kind:'grid',itemTemplate:'AbyssSharedCardFace1'},{name:'foreign',kind:'grid',grid:{itemTemplate:'AbyssSharedCardFace1'}}])
-  assert.throws(()=>helper.assertNoExternalSharedCardReferences(spec),/External UI/);
 });

@@ -118,7 +118,6 @@ function fixture(t,{invalid=false,invalidPower=false}={}) {
  const client={async readResource(){return {contents:[]}},async close(){},async callTool({name,arguments:args}){
   calls.push({name,args});const data={mapPath:args.mapPath};
   if(name==='scene_add_client_template'){data.templateIndex=((invalid&&args.template.name===monsterActorTemplateName)||(invalidPower&&args.template.name===monsterPowerTemplateName))?0:++index;indices.set(args.template.name,data.templateIndex);}
-  if(name==='scene_list_interface')Object.assign(data,{clientTemplates:[],clientInterfaces:[]});
   if(name==='scene_set_client_script')sources.set(args.name,readFileSync(args.sourceFile,'utf8'));
   if(name==='scene_list_client_scripts')data.scripts=[...sources].map(([name,source])=>({name,file:name+'.lua',source}));
   if(name==='inspect_map')data.graphs=[{name:'_GSTS_ABYSS_SETTLEMENT',id:23,type:20000,writable:true}];

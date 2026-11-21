@@ -1,11 +1,11 @@
 ---
 id: TASK-25.7
 title: 验证旧怪物美术的几百图元低成本拟合
-status: To Do
+status: Blocked
 assignee:
   - Furinya
-created_date: '2026-11-14 03:03'
-updated_date: '2026-11-14 03:04'
+created_date: 2026-11-14 03:03
+updated_date: '2026-11-18T01:56:00Z'
 labels:
   - art
   - technical-spike
@@ -15,8 +15,9 @@ dependencies: []
 references:
   - docs/TOOLCHAIN.md
   - docs/plans/2026-11-06-sts-art-render-feasibility-protocol.md
-  - 'https://github.com/FurinyaWorks/Slay-the-Abyss/pull/650'
-  - 'https://github.com/FurinyaWorks/Slay-the-Abyss/pull/648'
+  - https://github.com/FurinyaWorks/Slay-the-Abyss/pull/650
+  - https://github.com/FurinyaWorks/Slay-the-Abyss/pull/648
+  - https://github.com/FurinyaWorks/Slay-the-Heavens/pull/715
 parent_task_id: TASK-25
 priority: low
 type: spike
@@ -37,3 +38,9 @@ ordinal: 176000
 - [ ] #4 独立可运行样品实际验证显示、命中与意图血条对齐、切换复用、中断/退出与释放；统计真实载荷和创建/变更调用，官方容量、PC/手机未测明确标为UNVERIFIED
 - [ ] #5 依据同条件画质和资源实测给Go/No-Go及逐项取舍；实验通过并获用户批准后才另行正式采用，不批量替换官方ID、不把已有素材或生成成功当实验通过
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+2026-11-18 依赖纠正：Owner 于 2026-11-15 明确暂停怪物拟合和资产生产，前置为 Owner 完成怪物新设计并明确恢复本任务。当前未核实解除；不因离线实验、SDK controls 通过或旧授权继续实施。旧来源与 AC 全保留。#715 的 feat/monster-fit-replay@382a78feb8f810468c953638b5ddb4e9e484df89 仅保全成果，暂停集成；原 feat/monster-fit-study@d31c400972d380d119c48e4ef92573670cd5a2e8 及历史样图不删除。恢复时先核实新设计适用范围、明确授权、基线与文件所有权，再协调原负责人接续，不重领重做。用户设计属于外部审批前置，未虚构已完成的任务 ID。来源：https://github.com/FurinyaWorks/Slay-the-Heavens/pull/715#issuecomment-6966602551
+<!-- SECTION:NOTES:END -->

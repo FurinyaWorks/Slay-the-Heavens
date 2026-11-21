@@ -33,11 +33,10 @@ export function runLua(script = 'tests/lua/combat.lua', { timeout, cwd = process
   // The upstream CLI's positional-script path loses Lua errors' exit status.
   // Its -e path explicitly exits nonzero when dofile raises, including syntax errors.
   const normalizedScript = script.replaceAll('\\', '/');
-  // These fixtures need an isolated official profile.
-  const needsOfficialProfile = normalizedScript === 'tests/lua/lowcost_art.lua' ||
-    (normalizedScript === 'tests/lua/support/enemy_geometry_metrics.lua' &&
-      resolve(cwd) === resolve(fileURLToPath(new URL('..', import.meta.url))));
-  const artProfile = needsOfficialProfile ? mkdtempSync(join(tmpdir(), 'abyss-lowcost-')) : null;
+  // This fixture verifies imported art pools, absent from the default profile.
+  // Prepare its own real production profile; never rewrite shared build/lua.
+  const artProfile = normalizedScript === 'tests/lua/lowcost_art.lua'
+    ? mkdtempSync(join(tmpdir(), 'abyss-lowcost-')) : null;
   const luaPath = (artProfile ? artProfile.replaceAll('\\','/')+'/?.lua;' : '')+'./build/lua/?.lua;./src/lua/?.lua;;';
   const frozenHand = historicalCardInputPrelude(normalizedScript,{cwd}) + frozenBattleHandPrelude(normalizedScript, {cwd})
     + eventCombatRoutePrelude(normalizedScript,{cwd}) + v25TextureBindingPrelude(normalizedScript,{cwd});

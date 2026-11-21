@@ -1,9 +1,14 @@
 // Native Backlog metadata only. Keep this parser dependency-free: CI status
 // publishers import delivery verification before npm packages are installed.
+import {readDependencies,readNativeTask} from './task-dependencies.mjs';
+
 export function readTaskHeader(source) {
   const header = source.replace(/^\uFEFF/, '').split(/^---\s*$/m)[1] ?? '';
   const keys=[...header.matchAll(/^([\w-]+):/gm)].map(match=>match[1]);
   const metadataErrors=[...new Set(keys.filter((key,index)=>keys.indexOf(key)!==index))].map(key=>`重复元数据 ${key}`);
+  if(!readNativeTask(source))metadataErrors.push('invalid task metadata');
+  const {dependencies,dependencyErrors}=readDependencies(source);
+  metadataErrors.push(...dependencyErrors);
   if(!/^\uFEFF?---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$)/.test(source))metadataErrors.push('缺少完整frontmatter');
   const criteria=[...(source.match(/<!-- AC:BEGIN -->([\s\S]*?)<!-- AC:END -->/)?.[1]??'').matchAll(/^- \[([ xX])\] /gm)];
   const scalar = key => header.match(new RegExp(`^${key}:\\s*([^\\r\\n]+)`, 'm'))?.[1].trim().replace(/^['"]|['"]$/g, '') ?? null;
@@ -15,5 +20,5 @@ export function readTaskHeader(source) {
   };
   return { id: scalar('id'), status: scalar('status'), priority: scalar('priority'), milestone: scalar('milestone'),
     parentTaskId: scalar('parent_task_id'), assignees: list('assignee'), labels: list('labels'), documentation: list('documentation'),
-    dependencies:list('dependencies'),references:list('references'),metadataErrors,acCount:criteria.length,acCompleted:criteria.filter(match=>match[1].toLowerCase()==='x').length };
+    dependencies,references:list('references'),metadataErrors,acCount:criteria.length,acCompleted:criteria.filter(match=>match[1].toLowerCase()==='x').length };
 }

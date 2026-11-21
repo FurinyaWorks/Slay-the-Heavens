@@ -69,7 +69,6 @@ export async function buildNativeAudioGame({ baseMap, output = 'build/native-aud
     if (identity.sourceCommit !== full.sourceCommit || identity.sourceDirty || full.sourceDirty !== false
       || !full.release?.notesSha256) throw new Error('Release candidate provenance changed during audio packaging');
   }
-  if(JSON.stringify(audio.nativeUiPacking)!==JSON.stringify(full.nativeUiPacking))throw Error('Audio UI packing differs from full candidate');
   if(JSON.stringify(audio.officialAssetsProfile)!==JSON.stringify(full.officialAssetsProfile)||JSON.stringify(audio.uiProfile)!==JSON.stringify(full.uiProfile))throw Error('Audio UI profile differs from full candidate');
   if(JSON.stringify(audio.artFeatures)!==JSON.stringify(full.artFeatures))throw Error('Audio art feature configuration differs from full candidate');
   Object.assign(audio, { artFeatures:full.artFeatures, sourceCommit: full.sourceCommit, sourceDirty: full.sourceDirty, payloadDigest: full.payloadDigest,
@@ -77,7 +76,6 @@ export async function buildNativeAudioGame({ baseMap, output = 'build/native-aud
     monsterActors: full.monsterActors,
     ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}),
     ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
-    ...(full.nativeUiPacking ? {nativeUiPacking:full.nativeUiPacking} : {}),
     ...(full.toolchainIdentity ? {toolchainIdentity:full.toolchainIdentity} : {}),
     sourceReceipt: fileRecord(full.receiptPath), ...(full.release ? { release: full.release } : {}),
     ...(full.nativeMonsterArt ? {nativeMonsterArt:full.nativeMonsterArt} : {}),

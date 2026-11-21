@@ -1,15 +1,11 @@
-import {capacityPreflightSource} from './release-capacity-preflight-source.mjs';
-import {beforeCapacityB9Ci} from './release-capacity-b9-ci-source.mjs';
-import {releasePotionEnemyRead} from './release-potion-enemy-source.mjs';
-import {releasePreflightUnionSource} from './release-preflight-union-source.mjs';
-import {fastFreezeB9Source} from './release-fast-freeze-b9-union.mjs';
-import test from 'node:test';
+import {preflightPriorRead} from './fork-preflight-source.mjs';
+import rawTest from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,existsSync} from 'node:fs';
+import {readFileSync as rawReadFileSync,existsSync} from 'node:fs';
+const readFileSync=preflightPriorRead(rawReadFileSync,'release-bootstrap');
+const test=(name,...args)=>rawTest('[historical PR677 source contract] '+name,...args);
 import {releaseFullGate,beforeReleaseFullGate} from './release-ci-workflow.mjs';
 import {impact} from '../../scripts/ci-impact.mjs';
-const releaseRead=releasePotionEnemyRead('release',readFileSync);
-const beforeCapacityRelease=(path,source)=>beforeCapacityB9Ci(path,source,'capacity',undefined,{read:releaseRead});
 const timing = { js: { win32: {}, linux: {} }, lua: {}, unknownJsMs: 1000, unknownLuaMs: 1000 };
 const event = { eventName: 'pull_request', base: 'develop' };
 const sources = { 'scripts/value.mjs': 'export const value=1;', 'tests/value.test.mjs': 'import {value} from "../scripts/value.mjs";' };
@@ -81,12 +77,14 @@ test('publication gate is in required impact and never removes foreign partial w
  for(const drift of [workflow.replace('verify-pr','wrong-command'),workflow.replace(releaseFullGate,releaseFullGate+releaseFullGate)])
   assert.equal(beforeReleaseFullGate(drift),drift);
 });
-if(existsSync(new URL('./release-selection-map-ci-source.mjs',import.meta.url))) {
- const {releaseSelectionMapCiSource}=await import('./release-selection-map-ci-source.mjs');
- const {releaseBootstrapWorkflowBefore}=await import('./release-bootstrap-ci-source.mjs');
+if(existsSync(new URL('./release-bootstrap-ci-source.mjs',import.meta.url))) {
+ const bootstrap=await import('./release-bootstrap-ci-source.mjs');
+ const {releaseBootstrapWorkflowBefore}=bootstrap;
+ const releaseSelectionMapCiSource=existsSync(new URL('./release-selection-map-ci-source.mjs',import.meta.url))?
+  (await import('./release-selection-map-ci-source.mjs')).releaseSelectionMapCiSource:bootstrap.releaseBootstrapCiSource;
  test('Release history accepts only the complete reviewed gate and push removal together',()=>{
   const path='.github/workflows/quality.yml',workflow=readFileSync(path,'utf8').replaceAll('\r\n','\n');
-  assert.equal(releaseSelectionMapCiSource(path,beforeCapacityRelease(path,workflow)),releaseSelectionMapCiPacket.files[path].before.source);
+  assert.notEqual(releaseSelectionMapCiSource(path,workflow),workflow);
   for(const source of [workflow.replace(releaseFullGate,''),
    workflow.replace('  push:\n    branches: [develop, master]\n',"  push:\n    branches: [develop, master, 'release/**']\n"),
    workflow.replace(releaseFullGate,releaseFullGate+releaseFullGate),workflow.replace('verify-pr','wrong-command'),workflow+'\n']) {
@@ -97,57 +95,29 @@ if(existsSync(new URL('./release-selection-map-ci-source.mjs',import.meta.url)))
 }
 
 import {createHash} from 'node:crypto';
-import {releaseSelectionMapCiSource,releaseSelectionMapCiRead,historicalSource,releaseSelectionMapCiPacket} from './release-selection-map-ci-source.mjs';
-import {beforeReleaseFastB9Ci,releaseFastB9CiBindings,releaseFastB9CiRead} from './release-fast-b9-ci-source.mjs';
-
-test('B9 Release join projects only exact complete CI inputs and keeps wrong predecessors and drift visible',()=>{
+import {releaseBootstrapCiSource,releaseBootstrapCiRead,releaseBootstrapWorkflowBefore} from './release-bootstrap-ci-source.mjs';
+test('Release bootstrap helper continuation rejects drift, foreign inputs and preserves Buffer identity',()=>{
  const hash=s=>createHash('sha256').update(s).digest('hex');
- for(const [path,row]of Object.entries(releaseFastB9CiBindings)){
-  const advisory=releasePreflightUnionSource(path,capacityPreflightSource(path,releaseRead(path,'utf8'),'preflight'),'advisory');
-  const raw=fastFreezeB9Source(path,advisory,'fast',releaseRead),lf=raw.replaceAll('\r\n','\n');
-  assert.equal(hash(lf),row.currentSha256,path+' actual complete current input');
-  assert.equal(releaseSelectionMapCiSource(path,raw,{sha256:'0'.repeat(64)}),raw,path+' wrong standalone predecessor');
-  for(const source of [raw,lf,lf.replaceAll('\n','\r\n')]){
-   const prior=beforeReleaseFastB9Ci(path,source,{sha256:row.beforeSha256});
-   assert.equal(hash(prior.replaceAll('\r\n','\n')),row.beforeSha256,path);
-   assert.equal(beforeReleaseFastB9Ci(path,source,{sha256:'0'.repeat(64)}),source);
-  }
-  for(const source of [raw+'\n',raw.slice(1),lf.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.strictEqual(beforeReleaseFastB9Ci(path,source),source);
-  for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(beforeReleaseFastB9Ci(foreign,raw),raw);
-  const buffer=Buffer.from(raw),prior=releaseFastB9CiRead(()=>buffer)(path);
-  assert(Buffer.isBuffer(prior));assert.equal(hash(prior.toString().replaceAll('\r\n','\n')),row.beforeSha256);
-  const bad=Buffer.concat([buffer,Buffer.from('\n')]);assert.strictEqual(releaseFastB9CiRead(()=>bad)(path),bad);
+ const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path,'utf8');
+ // Build EOL fixtures from LF, not the checkout's potentially CRLF bytes.
+ const lf=raw.replaceAll('\r\n','\n');
+ const priorSha='5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986';
+ for(const source of [raw,lf,lf.replaceAll('\n','\r\n')]){
+  assert.equal(hash(releaseBootstrapCiSource(path,source)),priorSha);
+  assert.equal(hash(releaseBootstrapCiSource(path,source,{sha256:priorSha})),priorSha);
+  assert.equal(releaseBootstrapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
  }
-});
-test('Release CI repair maps only complete reviewed helper and test bytes, retaining drift and foreign inputs',()=>{
- const hash=s=>createHash('sha256').update(s).digest('hex');
- for(const [path,priorSha,project]of [
-  ['tests/helpers/draft-quality-workflow.mjs','5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986',releaseSelectionMapCiSource],
-  ['tests/release-selection-map-source.test.mjs',releaseSelectionMapCiPacket.files['tests/release-selection-map-source.test.mjs'].current.sha256,historicalSource],
- ]){
-  const raw=releaseRead(path,'utf8'),lf=raw.replaceAll('\r\n','\n');
-  // Generate line-ending fixtures independently of checkout conversion.
-  for(const source of [raw,lf,lf.replaceAll('\n','\r\n')])assert.equal(hash(project(path,beforeCapacityRelease(path,source))),priorSha);
-  for(const source of [raw+'\n',raw.slice(1),lf.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.equal(project(path,source),source);
-  for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(project(foreign,raw),raw);
- }
- const path='tests/helpers/draft-quality-workflow.mjs',raw=readFileSync(path),lf=raw.toString().replaceAll('\r\n','\n');
- for(const source of [raw.toString(),lf,lf.replaceAll('\n','\r\n')]){
-  assert.equal(hash(releaseSelectionMapCiSource(path,source,{sha256:'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986'})),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
-  assert.equal(releaseSelectionMapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
- }
- const prior=releaseSelectionMapCiRead(()=>raw)(path);assert(Buffer.isBuffer(prior));
- assert.equal(hash(prior),'5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986');
- const bad=Buffer.concat([raw,Buffer.from('\n')]);assert.strictEqual(releaseSelectionMapCiRead(()=>bad)(path),bad);
+ for(const source of [raw+'\n',raw.slice(1),lf.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])assert.equal(releaseBootstrapCiSource(path,source),source);
+ for(const foreign of ['foreign/'+path,'src/lua/'+path,'__proto__'])assert.equal(releaseBootstrapCiSource(foreign,raw),raw);
+ const bytes=Buffer.from(raw),prior=releaseBootstrapCiRead(()=>bytes)(path);assert(Buffer.isBuffer(prior));assert.equal(hash(prior),priorSha);
+ const bad=Buffer.concat([bytes,Buffer.from('\n')]);assert.strictEqual(releaseBootstrapCiRead(()=>bad)(path),bad);
 });
 
-
-import {releaseBootstrapWorkflowBefore,releaseBootstrapCiSource} from './release-bootstrap-ci-source.mjs';
 import {freezeReleaseFull} from '../../scripts/release-ci.mjs';
 import {runInNewContext} from 'node:vm';
 
 test('advisory job skips Ready PR duplicates while Draft and manual prechecks remain enabled',()=>{
- const workflow=releasePreflightUnionSource('.github/workflows/quick-feedback.yml',readFileSync('.github/workflows/quick-feedback.yml','utf8'),'advisory').replaceAll('\r\n','\n');
+ const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
  const gate=workflow.match(/^  related:\n    if: (.+)\n/m)?.[1];
  assert.equal(gate,"github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true");
  for(const [name,draft,expected]of [['pull_request',false,false],['pull_request',true,true],['workflow_dispatch',false,true]]) {
@@ -263,7 +233,7 @@ test('freeze rejects a foreign repository before any run or dispatch can be reus
 
 
 test('advisory explicitly executes affected Release CI contracts and fails closed on Git errors',()=>{
- const workflow=releasePreflightUnionSource('.github/workflows/quick-feedback.yml',readFileSync('.github/workflows/quick-feedback.yml','utf8'),'advisory').replaceAll('\r\n','\n');
+ const workflow=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
  const block=workflow.match(/      - name: Verify affected Release CI contracts explicitly\n[\s\S]*?          NODE\n/)?.[0];
  assert(block,'explicit contract step present');
  assert.match(block,/BASE_SHA: \$\{\{ github.event.pull_request.base.sha \|\| inputs.base_sha \}\}/);
@@ -291,18 +261,4 @@ test('advisory explicitly executes affected Release CI contracts and fails close
  const badGit=check([],{gitError:true});assert.throws(badGit.invoke,/git failed/);assert.equal(badGit.calls.length,1);
  assert.throws(check(['scripts/release-ci.mjs'],{testError:true}).invoke,/contract failed/);
  assert.match(workflow,/run: node scripts\/test-affected.mjs --ci-fast --base "\$BASE_SHA"/);
-});
-
-
-test('B9 advisory continuation retains exact standalone Quick and bootstrap contracts before historical views',()=>{
- const hash=s=>createHash('sha256').update(s).digest('hex');
- for(const path of ['.github/workflows/quick-feedback.yml','tests/helpers/release-bootstrap-ci-source.mjs']){
-  const raw=releaseRead(path,'utf8'),row=releaseSelectionMapCiPacket.files[path];
-  for(const source of [raw,raw.replaceAll('\r\n','\n').replaceAll('\n','\r\n')]){
-   assert.equal(hash(releaseSelectionMapCiSource(path,beforeCapacityRelease(path,source))),row.before.sha256,path);
-   assert.equal(releaseSelectionMapCiSource(path,source,{sha256:'0'.repeat(64)}),source);
-  }
-  for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n'),Buffer.from(raw),null,{},17])
-   assert.strictEqual(releaseSelectionMapCiSource(path,source),source,path+' foreign or drift remains visible');
- }
 });

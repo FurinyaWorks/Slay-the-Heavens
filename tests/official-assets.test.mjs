@@ -87,7 +87,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  // geometry/input field to that projection while retaining unrelated pages.
  const expectedMenuLayout=structuredClone(layout);
  applyOfficialNoncombatLayout(expectedMenuLayout,theme);
- const menuProjection=new Map(paths(child(expectedMenuLayout,'menuPanel'),'/SlayTheAbyss'));
+ const menuProjection=new Map(['menuPanel','runMenu','pageReveal'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
  const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
   .map(([path,node])=>[path,node,structuredClone(node)]);
  const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
@@ -104,6 +104,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  const result=applyOfficialAssets([layout,template],theme);
  const current=new Map([...paths(layout),...paths(template)]);
  const retiredDeckPrefix='/SlayTheAbyss/characterPanel/deckView/';
+ const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deckOpen(?:\/|$)/.test(path);
  const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
  const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[3-9]|10)(?:\/|$)/.test(path);
  const retiredDeck=child(child(layout,'characterPanel'),'deckView');
@@ -114,8 +115,8 @@ test('approved pages keep live input identities while unrelated pages retain the
    if(retiredPickerChild(path)||retiredChoice(path)){
     assert.equal(current.has(path),false,path+' exact unused capacity face is retired');continue;
    }
-   if(path.startsWith(retiredDeckPrefix)){
-    assert.equal(current.has(path),false,path+' duplicate selection browser must be removed');continue;
+   if(path.startsWith(retiredDeckPrefix)||retiredStarterEntry(path)){
+    assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
     // The approved pile return uses permanent artwork plus one native receiver.
@@ -184,8 +185,8 @@ test('approved pages keep live input identities while unrelated pages retain the
     for(const key of Object.keys(before))assert.deepEqual(node[key],key==='visible'?false:key==='size'?theme.layout.card.size:before[key],path+' semantic parent '+key);
     continue;
    }
-   if(path.startsWith(retiredDeckPrefix)){
-    assert.equal(current.has(path),false,path+' duplicate selection browser must be removed');continue;
+   if(path.startsWith(retiredDeckPrefix)||retiredStarterEntry(path)){
+    assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(menuProjection.has(path)){
     assert.equal(current.get(path),node,path+' menu input owner identity');
@@ -361,11 +362,11 @@ test('official selection keeps its approved 1600 background while battle and opt
  assert.match(portrait,/battlePixel=/);
  const inventory=portraitInventory(officialAssetFlags,{officialAssets:true});
  assert.equal(inventory.assets.some(a=>a.asset==='temporary-pixel-traveler'),false);
- assert.match(portrait,/battleApprovedIdle=/);
+ assert.match(portrait,/battleApprovedNative=/);
  const selected=inventory.assets.find(a=>a.asset==='lowpolyLumine');
- const fighting=inventory.assets.find(a=>a.asset==='traveler-geo/idle-approved-v1');
- assert.equal(fighting?.images,7303);
- assert.equal(fighting.motion,'approved-source-field-native-band-approximation');
+ const fighting=inventory.assets.find(a=>a.asset==='traveler-geo/portraits/lumine-native-v1');
+ assert.equal(fighting?.images,464);
+ assert.equal(fighting.motion,'shared-actor-root-only');
  assert.equal(inventory.selectionUses,'lowpolyLumine');assert.equal(selected?.images,1600);
  assert.notEqual(selected.sourceSha256,fighting.sourceSha256,'approved background and combat idle retain distinct source identities');
  assert.equal(inventory.assets.some(a=>a.asset==='traveler-geo/portraits/battle133-selection'),false);
@@ -389,3 +390,85 @@ test('audio wrapper forwards the explicit official profile and lifecycle without
  }}),error=>error===stop);assert(called);
 });
 import {replayReviewedSelection} from './helpers/replay-reviewed-selection.mjs';
+
+test('official selection leaves the portrait unobscured and exit retains the live button owner',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const panel=child(layout,'characterPanel'),details=child(panel,'details');
+ const hit=child(child(child(layout,'runMenu'),'mainMenu'),'hit');
+ applyOfficialNoncombatLayout(layout,theme);
+ assert.equal(child(details,'informationBoard'),undefined,'the left copy must not shade the portrait');
+ for(const name of ['name','stats','gold','v25Story','relic','relicText','deckTitle','deckSummary']){
+  const control=child(details,name);
+  assert.equal(control.text.align,'left',name);
+  assert.equal(control.text.outline,true,name);
+ }
+ assert.equal(child(panel,'scrim').visible,false);
+ assert.strictEqual(child(child(child(layout,'runMenu'),'mainMenu'),'hit'),hit);
+ assert.deepEqual(hit.size,[180,60]);
+ assert.equal(hit.kind,'presetButton');
+ assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
+ const back=child(child(panel,'cancel'),'hit');
+ for(const state of children(hit)){
+  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
+  assert.equal(child(state,'label').text.content,'退出游戏');
+ }
+});
+
+test('official run pages use one three-step floor marker just after the potion slots',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ applyOfficialAssets([layout],theme);
+ const battle=child(layout,'battlePanel'),map=child(layout,'mapPanel'),node=child(layout,'nodePanel');
+ const marks=[child(battle,'topBar'),child(map,'officialRunBar'),child(node,'officialRunBar')]
+  .map(bar=>child(bar,'officialStairs'));
+ const [stairs]=marks;
+ assert(stairs,'shared floor indicator');
+ assert.deepEqual(marks,[stairs,stairs,stairs]);
+ assert.equal(children(stairs).length,3);
+ assert.deepEqual(children(stairs).map(step=>step.size),[[7,18],[7,12],[7,6]]);
+ assert(children(stairs).every(step=>step.image===theme.image.rect));
+ assert(stairs.position[0]>child(battle,'potion3').position[0]);
+ assert.equal(child(battle,'title').text.content,'');
+ assert.equal(child(battle,'title').text.align,'left');
+ assert.deepEqual(child(node,'title').position,child(battle,'title').position);
+});
+
+test('ordinary readiness overlay uses the same Liyue crest and seven elements',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const cover=child(layout,'pageReveal'),blocker=child(cover,'blocker'),cancel=child(cover,'cancel');
+ const scene=child(child(layout,'prologuePanel'),'scene');
+ applyOfficialNoncombatLayout(layout,theme);
+ assert.deepEqual(child(cover,'seal'),child(scene,'seal'));
+ for(let i=1;i<=7;i++){
+  const name='element'+i,lit=child(cover,name);
+  assert.deepEqual(lit,{...child(scene,name),colour:theme.layout.prologue.ink});
+ }
+ assert.strictEqual(child(cover,'blocker'),blocker);
+ assert.strictEqual(child(cover,'cancel'),cancel);
+ assert.equal(child(cover,'message').text.content,'正在准备画面…');
+});
+test('approved native title and button artwork preserve the official menu hit surfaces',()=>{
+  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme),menu=child(layout,'menuPanel');
+  const receiver=child(child(menu,'start'),'hit');
+  applyOfficialNoncombatLayout(layout,theme);
+  assert.strictEqual(child(child(menu,'start'),'hit'),receiver);
+  const logo=child(child(menu,'v25MainMenu'),'approvedTitleLogo');
+  assert(logo && child(logo,'subtitlePlate'));
+  assert(children(logo).filter(part=>part.name.startsWith('lettering')).every(part=>
+    children(part).length>0 && children(part).length<=48));
+  for(const [name,frame,text] of [
+    ['start',theme.menuPresentation.start,'开始游戏'],
+    ['titleQuit',theme.menuPresentation.quit,'退出游戏'],
+  ]) {
+    const button=child(menu,name), hit=child(button,'hit');
+    assert.deepEqual(button.position,frame.slice(0,2));
+    assert.deepEqual(hit.size,frame.slice(2));
+    assert.equal(hit.kind,'cursorArea');
+    assert.equal(child(button,'label').text.align,'centre');
+    assert.equal(child(button,'label').text.content,text);
+    const faces=children(child(button,'v25MenuFace'));
+    assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
+    assert(faces.every(face=>children(child(face,'rim')).length===2 && children(child(face,'fill')).length===2));
+    assert.notDeepEqual(child(faces[0],'fill'),child(faces[1],'fill'));
+    assert.equal(child(button,'menuAccent'),undefined);
+  }
+});

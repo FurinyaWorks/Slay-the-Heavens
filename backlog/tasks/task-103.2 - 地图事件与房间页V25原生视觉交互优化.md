@@ -5,15 +5,12 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-10 11:46'
-updated_date: '2026-11-15 21:04'
+updated_date: '2026-11-15 20:14'
 labels:
   - 待验
   - delivery-verify
 milestone: m-8
 dependencies: []
-references:
-  - docs/evidence/release-selection-map-admission-1116/README.md
-  - docs/evidence/release-selection-map-release1cc-1116/README.md
 parent_task_id: TASK-103
 priority: medium
 ordinal: 169000
@@ -31,12 +28,7 @@ Owner明确追加授权接续地图优化，打磨两幕剧情事件及商店营
 - [x] #2 既有事件选择、费用奖励、卡牌选择、返回地图与同局状态回归通过。
 - [x] #3 可交互Web Simulator入口及同源SDK连续操作/资源释放证据可复现；官方设备未测明确说明。
 - [x] #4 独立PR和证据交付，不擅自合并或发布。
-- [ ] #5 #676 拟议 TASK-103.7 AC1：在5卡、遗物、药水、删牌、售价/不足金币等完整商品布局中，卡面、物品icon、价格、交互命中区及提示互不压盖且Z序正确；截图08缺陷有RED→GREEN回归。
-- [ ] #6 #676 拟议 TASK-103.7 AC2：固定原版卡牌选择语义与项目正式浏览器；商店删牌、营地升级、战斗看牌组的分页/滚动以现有可复用的正式方案为准，不能另造第三套、不靠盲猜滚动成本。
-- [ ] #7 #676 拟议 TASK-103.7 AC3：连续购买、移除、分页、返回、取消和再次进入页面不出现未销毁旧控件、幽灵商品/重复结算；商品图标身份与 TASK-4.15 / #672 交叉验收。
-- [ ] #8 #676 拟议 TASK-103.7 AC4：在PC目标尺寸、常见宽高比、手机受影响布局进行真实来源与像素检查；保留较长中文卡面、优惠与不同库存数量压力。
-- [ ] #9 #676 拟议 TASK-103.7 AC5：逐项审查 #672 的 shop-shelf-clearance 及图标修复，不能把未合并或软件生成截图冒充正式候选实机通过。
-- [ ] #10 #676 旧任务 TASK-103.2 AC5：PC实机截图02/05/07的返回战斗、事件继续、营地升级/奖励确认等按钮按既有批准全局设计复用，保持合法输入，避免锯齿、非统一边框、页内闪屏或文字截断；同候选PC/相关手机逐屏验收。
+- [ ] #5 PC实机截图02/05/07的返回战斗、事件继续、营地升级/奖励确认等按钮按既有批准全局设计复用，保持合法输入，避免锯齿、非统一边框、页内闪屏或文字截断；同候选PC/相关手机逐屏验收。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -71,8 +63,5 @@ Owner要求集中减负：2026-11-10旧PR/分支入口已关闭或清理，唯�
 2026-11-14 追加拒收已修于90c46efc：普通选项切角遮片排到装饰层后，上沿保留而不再溢出；大问号按事件换官方物品图，复用单一图片控件与主题映射。最终SDK大鱼/实验室5图、44/66/88三高度普通/悬停12组切角像素均通过，14官方图预取成功。新版试玩55316，旧62127保留至交付。源码来源10/10、隔离1/1和独审通过，证据在docs/evidence/sts-feedback-20261113/。官方与设备验收仍未完成；按用户授权送正常自动合并门禁。
 
 Full43473829313失败后已用原入口暂停授权并续修。真实冷列表提前ready的P1修于ab895b0c：按文档可见索引+不同存活控件准入，保空弃牌与warm排序。新SDK自然7屏/181祝福帧0cover、controlled17卡266排序帧0cover通过；旧55316已停，新56606可玩。Full旧合同按明确新要求续接并保原before全文、原业务/RNG/输入断言和预算；source10与repair binding复验通过，Defect隔离旧H身份明确保留。按用户最新指示不扩测，收口后立即重新挂正常自动合并，不等待整轮CI。
-
-PC08 Release36最小产品70664a69/证据e7fa已选择性组合至74a598；共享最终选角四态旗帜，保留旧命令、触点和焦点许可。11定向与独立对抗probe通过，PC04+PC08组合5/5通过；565cb735来源接续有独立复审，21项代码/合同加1项可执行证据逐blob核对。PC08像素/正式ready/PC手机与容量未验；PC19仅已有bcca切片的controlled golden_wing option3 leave held Continue已验证可复用，golden_idol双步无heldfooter，不代表私图05或所有事件已修。仍In Progress，不勾新AC。
-
-#692已实际合入Release1cc，PC04/08旧9b703分支保留history合流；代码eafcaeee/绑定80e1d3ec新base独立增审通过。352生产Git等价、26CI before/after+10bootstrap/96档案保全，产品8路径/旧production producer原样。原合流6pass3CI fail完整保留，来源10/10与两侧raw2/2通过，当前23代码/合同输入及原1可执行证据逐blob追踪。官方像素、PC04批准HUD backing位置、新ready/PC手机/容量及当前Hosted Full仍未验，不因#692合入勾AC。
+2026-11-15 PC实机补充：截图02、05、07；录音08:14、15:52、24:01、41:12。主要遮屏时序归TASK-103.6，商店布局/删牌归TASK-103.7，避免同一问题并行重修。
 <!-- SECTION:NOTES:END -->

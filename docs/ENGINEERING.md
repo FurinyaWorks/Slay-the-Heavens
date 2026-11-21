@@ -55,6 +55,14 @@ GameUI入口及全部`abyss_game_ui_*`模块另受绝对门禁约束：入口文
 
 `officialImport` / `playtest` 保持 `not_run`，实际启动证据另存 `startup-evidence.json`；静态成功不提升产品任务状态。失败轮保留 `failure.json` 和MCP逐次响应。当前dirty候选的收据会明确标记，不能报告为某个干净HEAD已验收。
 
+## 候选 Feature Flag
+
+`--feature=<登记名称>=true|false` 复用 Node 构建选项、生成的 `abyss_ui_profile.lua` 和候选收据。临时功能在 [候选开关表](../scripts/ui-profile.mjs)登记负责人、移除条件、构建和收据的适用范围。新开关默认关闭，禁止在正式 RC 启用。开关决定候选内的策略，运行中不读远程配置。历史选项和已经冻结的收据沿用原身份。
+
+渐进重构先让新旧实现共享调用契约，在现有工厂处选实现。原生页面生命周期使用现有 `refreshPageVisibility`。`--feature=native-page-lifecycle=true` 只在显式限定的实验配置启用原生页可见性。关闭时沿用旧策略。`build-ui.mjs` 和 `build-native-candidate.mjs` 支持显式 `false`，可用于配对对照。音频入口的 `--official-assets` 沿用既有生命周期策略。
+
+合入前用同一基线分别验证开关两种构建、生成模块和收据身份、初始化、资源与状态变化。原生页面的复验依次运行 `npm run build:data`、`npm run build:ui` 和 `node --test tests/native-page-lifecycle.test.mjs`。涉及容量或设备的变化还须按本页现行验收取证。满足移除条件后沿原任务删除开关、旧分支与过渡测试。实验被否决时移除实验分支和开关。
+
 ## 日志与UI迁移
 
 启动验证要求调用方传入真实start返回的runId/runDir、调用时刻、实际mapPath摘要与buildId，核对MCP落盘request。以当前MCP `inspectDebugLog` 实际重解码原始GIA；空/旧/跨目录文件、错run/候选、与原始文件不符的prints、错构建标记或runtime fault拒绝。解码适配只覆盖已观察格式，不为文件来源真实性提供密码学保证。
@@ -73,17 +81,9 @@ CLI从候选旁收据和启动证据取得预期身份，重验原始日志与�
 
 ## CI与交付
 
-必需作业是 `check`、`presentation`、`engineering-posix`。日常来源运行GitHub-hosted，显式诊断入口见上文；Ubuntu作业实际跑Node文件别名回归。保持只读权限、超时、取消旧运行、7天产物保留；check产出当前event/runId/attempt/head/base/tested SHA收据。
+正式检查、独立评审、应急批准和合并证据按 [CI](CI.md#pr-自动合并准入) 核对。关键重构、游戏逻辑与跨模块组合需深审状态边界、契约和 CI 盲区。纯说明文档的免独立审查范围由 [交付验证器](../scripts/verify-delivery.mjs) 的 `--low-risk-docs` 判定；该交付验证路径不免除 Ruleset 的 `independent-review` 或 `merge:auto` 的准入要求。
 
-独立 Sub-agent 在功能切片稳定后、合并前聚焦状态边界、契约和 CI 盲区；与 CI 可并行，不重复完整检查。关键重构、游戏逻辑与跨模块集成深审，其余运行时/测试/配置/资产任务仍需独立评审，但可缩小范围。只有 README.md、CHANGELOG.md 或 docs/drafts|history|lore|research 下的 .md/.txt 非执行说明文件，且同一 PR 不超过20个新增/修改文件，可用 `npm run verify:delivery -- <PR> --low-risk-docs` 免独立 Sub-agent；删除、重命名及任何其他文件一律不豁免。该入口从 GitHub 分页读取完整 PR 文件清单，核对文件状态与 blob SHA、总数，绑定 head/base，合入后重新读取对比；失败退回正常独立评审，不新增 CI 作业或绕过原门禁。免审仅适用于 develop；GitHub Ruleset 目前不强制另一个账号审批，独立证据仍由协调 Agent 核验。
-
-正常交付检查读取所有分页及当前attempt作业，拒绝必需回归作业的queued/failed/cancelled/skipped/missing和旧head/base组合；Full路径未选中的fast作业按下述版本合同验证。PR合并测试SHA允许不同于head，但实际parents必须是当前base/head。独立审查记录提供 `reviewedHeadSha`、`reviewedBaseSha`、可追溯 `reviewId`、`conclusion: pass`、`unresolved: []`；字段通过不自证审查独立，须检查真实会话/审查来源。记录可放PR附属产物，避免提交记录包含自身SHA的循环。合并前再查head/base，用现成expected-head机制，并复查合并结果。唯一基础设施应急例外按[CI流程](CI.md)取得Owner对精确PR/HEAD的一次聊天批准后执行；不改本验证器、不伪造绿灯，明确记录缺失检查与独立证据。
-
-自动合并准入 schema4（`auto-merge-arm`）绑定独立 reviewId、精确 HEAD/BASE、合成双父和 sourceTree，允许 Full 未结束时授权。原四项检查另加 Actions 来源的 `full-quality` 和独立审查状态，strict 必须开启；早期授权不能当作成功 Full 证明。合后 schema5 历史 PR Full 核对原始 artifact、27项作业和最新 attempt，再验证实际 squash 唯一父/树及 push Full；不把合后目标冒充合前观测，不改写 schema2/3。暂停须原生取消并读回；标签/正文不能当作原子撤销入口。详细配置与用法见 [CI](CI.md)。
-
-保存预审收据后，合入结果必须另验。`pr_passed` 只证明PR组合；实际合入提交的完整CI尚缺时为 `merged_pending`，实际SHA、源码tree、唯一父=预审base及对应push Quality均通过才是 `merged_passed`。验证后base前移即使源码tree相同也不能沿用旧组合。历史schemaVersion 2冻结为原15项成功作业（三个必需作业、8个Windows及4个POSIX分片），不改写或升级旧收据。新采证使用schemaVersion 3：原15项仍须全部成功，另要求impact成功、未展开的fast作业completed/skipped，共17项；Fast矩阵通过不能代替Full，缺少路由作业不能回退历史合同。PR预审与实际push各按自己的版本验证。逐作业绑定run_id、head_sha和attempt；采证末尾重新核对运行与attempt，拒绝诊断运行或旧成功记录。POSIX继续按文件使用Node原生分片，片内串行，每片保留完整工程门禁与20分钟作业预算。未来调整已有matrix须同步交付合同与其回归，不能只保留聚合作业名称。
-
-schemaVersion 3预审在采证前后独立读取目标分支的Git ref，保存`targetBeforeSha`和`targetAfterSha`，两者都须等于已测base。PR API的base.sha与合成merge ref可能同时保留旧组合，不能代替实际目标引用；不一致即拒绝，不追认旧CI。该检查仅记录预审时的目标，合入后的历史验收仍按实际squash父与树验证，不要求之后的分支tip停留原位。
+`pr_passed` 表示已验 PR 组合。合后用 `verify:delivery --merged` 在实际 squash、源码树、当前合入提交的 push Quality 及 Backlog 核实后才取得 `merged_passed`。历史证据使用原收据合同，完整版本记录见[历史工程说明](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/2ec45b9e52c870badc4d4888f6243a30556eecb4/docs/ENGINEERING.md#ci与交付)。
 
 ## 尚未取得的证据
 

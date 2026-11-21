@@ -2,10 +2,7 @@ local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Asset=require('abyss_traveler_portrait_assets')
 Asset.imagePrefabId,Asset.containerPrefabId=41,73
 local lowpolyHero=assert(Asset.lowpolyHero)
-assert(#lowpolyHero.rows==2011 and #Asset.avatar96.rows==457 and #Asset.battle133.rows==4315)
-local legacy=Asset.selection133~=nil
-if legacy then assert(#Asset.selection133.rows==1940)
-else assert(Asset.selection133==nil,'current native output must omit legacy data')end
+assert(#lowpolyHero.rows==2011 and #Asset.avatar96.rows==457 and #Asset.selection133.rows==1940 and #Asset.battle133.rows==4315)
 local function profile(useLowpoly,battleEnabled,expected)
 Asset.lowpolyHero=useLowpoly and lowpolyHero or nil
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
@@ -122,7 +119,8 @@ if battleEnabled then assert(battle.visible and battle.active and not battleFall
 portraits:onEngineDestroy();tick()
 assert(destroyed==0 and created==complete,'engine teardown called native destruction')
 end
-if legacy then profile(false,true,2440)
-else profile(true,true,2512);profile(true,false,2512)end
+profile(true,true,2512)
+profile(true,false,2512)
+profile(false,true,2440)
 Asset.lowpolyHero=lowpolyHero
 print('SELECTION_PORTRAIT_PRELOAD_PASS')

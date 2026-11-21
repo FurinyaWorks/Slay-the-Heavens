@@ -1,0 +1,96 @@
+{
+  "measurement": "completed-hosted-run-history-not-new-CI",
+  "sourceCommit": "e65d9b98fbec69442047650254238cd9244df805",
+  "runs": [
+    {
+      "id": 43615128387,
+      "event": "push",
+      "mode": "full",
+      "requiredWallSeconds": 4442,
+      "qualityWallSeconds": 4442,
+      "conclusion": "success"
+    },
+    {
+      "id": 43605179989,
+      "event": "merge_group",
+      "mode": "full",
+      "requiredWallSeconds": 6623,
+      "qualityWallSeconds": 6623,
+      "conclusion": "success"
+    }
+  ],
+  "naturalFastSamples": 0,
+  "fastTargetSampleCount": 20,
+  "task75TargetSeconds": 1800,
+  "task75TargetMet": false,
+  "slowPushShard": {
+    "run": 43615128387,
+    "job": 132508908756,
+    "files": 49,
+    "totalMs": 1485033.9004999988,
+    "top": [
+      {
+        "file": "tests/relic-query-source-inverse.test.mjs",
+        "durationMs": 584077.3832,
+        "success": true,
+        "plannedMs": 52731,
+        "ratio": 11.07654668411371
+      },
+      {
+        "file": "tests/approved-ui-inverse.test.mjs",
+        "durationMs": 212429.3697,
+        "success": true,
+        "plannedMs": 430309,
+        "ratio": 0.4936670385699579
+      },
+      {
+        "file": "tests/compendium-source-inverse.test.mjs",
+        "durationMs": 135301.7967,
+        "success": true,
+        "plannedMs": 10000,
+        "ratio": 13.53017967
+      },
+      {
+        "file": "tests/power-shop-boundaries.test.mjs",
+        "durationMs": 128310.5039,
+        "success": true,
+        "plannedMs": 10000,
+        "ratio": 12.83105039
+      },
+      {
+        "file": "tests/defect-final-execute.test.mjs",
+        "durationMs": 86140.2439,
+        "success": true,
+        "plannedMs": 10000,
+        "ratio": 8.61402439
+      },
+      {
+        "file": "tests/end-turn-responsibilities.test.mjs",
+        "durationMs": 69589.1663,
+        "success": true,
+        "plannedMs": 10000,
+        "ratio": 6.95891663
+      },
+      {
+        "file": "tests/combat-shuffle.test.mjs",
+        "durationMs": 35530.2781,
+        "success": true,
+        "plannedMs": 34382,
+        "ratio": 1.0333976528416033
+      },
+      {
+        "file": "tests/potion-callback.test.mjs",
+        "durationMs": 34907.3811,
+        "success": true,
+        "plannedMs": 10000,
+        "ratio": 3.4907381099999997
+      }
+    ]
+  },
+  "limitations": [
+    "Only two completed Full runs measured; no stable cohort claim",
+    "No new workflow triggered; no queue polling",
+    "Unknown Fast sample sufficiency outside this subset",
+    "Planning weights do not represent measured current wall time"
+  ]
+}

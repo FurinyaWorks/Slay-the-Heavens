@@ -13,7 +13,7 @@ local CharacterSelect = require("abyss_character_select")
 require("abyss_character_select_view")
 local Controller = require("abyss_controller")
 local MenuView=require("abyss_game_ui_menu_view")
-require("abyss_theme")
+local Theme = require("abyss_theme")
 local M = {}
 require("abyss_numbers")
 require("abyss_run_seed")
@@ -45,7 +45,11 @@ function M.new(root, data, presentation, clickEvent, platform)
         local cover=assert(root:GetChild('pageReveal'),'missing shared page reveal cover')
         self.pageReveal=PageReveal.new(cover,platform.presentationReady,function()
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
-        end)
+        end,{full={0,0,Theme.canvas.base[1],Theme.canvas.base[2]},
+            deckPanel=Theme.layout.deckView.viewport,
+            nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
+            potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
+            choicePanel=Theme.layout.combatChoice.panel})
         if controller then controller.blocked=function()return self.pageReveal:covered() and not self.exitOpen end end
         cover:GetChild('blocker'):AddCursorEventListener(clickEvent,function()return true end)
         local cancel=cover:GetChild('cancel'):GetChild('hit')
@@ -190,6 +194,13 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.update = Lifecycle.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     self.disable = Lifecycle.disable(self,platform,controller,characterPanel,owner)
     local dismissFromOutside = Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
+    local backKey = platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
+    if Theme.presentationProfile=='official-assets-first' and backKey and runMenu.AddKeyEventListener then
+        runMenu.disableKeyEventPassthrough = true
+        runMenu:AddKeyEventListener(backKey,function()
+            return runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
+        end)
+    end
     local bindCommand = Input.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
     Input.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
     Input.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside,runMenu,canViewRoute,child,owner)

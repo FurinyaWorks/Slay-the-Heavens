@@ -106,7 +106,6 @@ try {
     candidate: fileRecord(mapPath), ...(full ? { buildId: full.buildId, artFeatures:full.artFeatures, moduleDigests: full.moduleDigests,
       ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}),
       ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
-      ...(full.nativeUiPacking ? {nativeUiPacking:full.nativeUiPacking} : {}),
       ...(full.officialPortraits ? {officialPortraits:full.officialPortraits} : {}),
     ...(full.readyCardArt ? {readyCardArt:full.readyCardArt} : {}),
     ...(full.officialBackground ? {officialBackground:full.officialBackground} : {}) } : {}),

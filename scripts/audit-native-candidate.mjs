@@ -1,4 +1,3 @@
-import {cardSharingBindings,assertSharedCardBaseOwnership} from './native-ui-card-sharing.mjs';
 import {monsterPowerTemplateName,monsterActorBindingModule,monsterActorTemplateName} from './monster-art.mjs';
 import {normalizeArtFeatures,artFeatureBuildArgs,artBuildOptionsFromReceipt} from './art-features.mjs';
 import {portraitRuntimeInputs,portraitModule} from './official-portraits.mjs';
@@ -130,9 +129,7 @@ export async function auditNativeCandidate(options) {
       if(buildReceipt.toolchainIdentity[key]!==identity[key])throw Error('Native UI encoder identity differs: '+key);
     }
     save('native-ui-encoder.json',identity);
-    const { getClientUi, checkClientScripts, listInterface } = native;
-    const sharedCardNames=buildReceipt?.nativeUiPacking?Object.keys(cardSharingBindings(buildReceipt.nativeUiPacking.sharing,buildReceipt.nativeUiPacking.templateIndices)):[];
-    if(buildReceipt?.nativeUiPacking)assertSharedCardBaseOwnership(before,buildReceipt,listInterface({mapPath}).clientTemplates);
+    const { getClientUi, checkClientScripts } = native;
     const { inspectFile } = await load('src/adapter.mjs');
     const { container, fields, one } = await load('src/scene/wire.mjs');
     const scripts = save('scripts.json', embeddedScripts({ mapPath, includeSource: true },{container,fields,one}));
@@ -141,7 +138,7 @@ export async function auditNativeCandidate(options) {
     const background = flags.menuBackground
       ? save('background-template.json', getClientUi({mapPath,template:backgroundTemplate})) : undefined;
     const runtimeNames=[...(flags.cards||portraits||flags.menuBackground||buildReceipt?.v25CardAssets||buildReceipt?.v25UiMasks?[readyArtImageTemplate]:[]),readyArtGroupTemplate,monsterActorTemplateName,monsterPowerTemplateName,
-      ...(artOptions.officialAssets&&flags.selectionAvatar?[selectionHalfTemplate]:[]),...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{}),...sharedCardNames];
+      ...(artOptions.officialAssets&&flags.selectionAvatar?[selectionHalfTemplate]:[]),...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{})];
     const runtimeTemplates=runtimeNames.map(name=>save(name+'.json',getClientUi({mapPath,template:name})));
     const inspected = save('inspect.json', inspectFile(mapPath));
     const checked = save('static-check.json', checkClientScripts({ mapPath }));
@@ -227,16 +224,11 @@ export async function auditNativeCandidate(options) {
       const source = readFileSync(sourceFile, 'utf8');
       return { name, source: name === 'abyss_ui' ? candidateEntrySource(source, buildReceipt, before) : source };
     });
-    let expectedUi = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui.json'), 'utf8'));
-    let expectedTemplates = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui-templates.json'), 'utf8'));
-    if(buildReceipt?.nativeUiPacking){
-      const {assertCardSharingPlan}=await import(pathToFileURL(join(snapshot,'scripts/native-ui-card-sharing.mjs')));
-      const packed=assertCardSharingPlan(expectedUi,expectedTemplates,buildReceipt.nativeUiPacking);
-      expectedUi=packed.layout;expectedTemplates=packed.templates;
-    }
+    const expectedUi = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui.json'), 'utf8'));
+    const expectedTemplates = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui-templates.json'), 'utf8'));
     const expectedTemplate = expectedTemplates.find(template => template.name === 'AbyssDeckCard');
     const expectedRuntimeTemplates=runtimeNames.map(name=>({
-      template:expectedTemplates.find(row=>row.name===name),templateIndex:buildReceipt?.nativeUiPacking?.templateIndices[name]??buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:
+      template:expectedTemplates.find(row=>row.name===name),templateIndex:buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:
         name===monsterActorTemplateName?buildReceipt?.monsterActors?.templateIndex:name===selectionHalfTemplate?
         buildReceipt?.officialPortraits?.selectionHalfImageTemplateIndex:name===readyArtImageTemplate?
         buildReceipt?.v25TextureRuntime?.imageTemplateIndex??sharedReceipt?.imageTemplateIndex:
@@ -256,7 +248,6 @@ export async function auditNativeCandidate(options) {
       expected: { modules, ui: expectedUi, template: expectedTemplate, background:expectedBackground, runtimeTemplates:expectedRuntimeTemplates, graphs, uiBgmParameter }, sourceSha,
       candidateBefore: before, candidateAfter: sha256(readFileSync(mapPath)), bgm: options.bgm });
     report.artFeatures=buildReceipt?.artFeatures;
-    if(buildReceipt?.nativeUiPacking)report.nativeUiPacking={...buildReceipt.nativeUiPacking,physicalReadbackCompared:true,logicalExpansion:'same-source pack invariant',officialRuntime:'UNVERIFIED'};
     if(registryPath)report.staticArtPathRebase='Pinned source hashes checked; source locator paths rebased to isolated snapshot only';
     report.expectedGraphs = graphs;
     report.graphCheckScope = 'Graph identity, server type, nonempty payload, monitored signal names and enabled mount; compiled node parameters/semantics are not certified.';

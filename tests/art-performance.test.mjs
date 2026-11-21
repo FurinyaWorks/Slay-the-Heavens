@@ -1,6 +1,3 @@
-import {createLegacySelectionFixture} from './helpers/legacy-selection-fixture.mjs';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
 import test,{after} from 'node:test';
 import assert from 'node:assert/strict';
 import {loadPerformancePack} from '../scripts/art/performance-pack.mjs';
@@ -12,7 +9,6 @@ test('reduced selection preserves battle art and reuses both cached selection ho
  const selection=portraitRuntimeInventory(fixture.directory).assets.filter(a=>a.asset==='lowpolyHero'||a.asset.endsWith('/avatar96'));
  assert.deepEqual(selection.map(a=>[a.asset,a.images]),[['traveler-geo/portraits/avatar96',457],['lowpolyHero',2011]]);
  assert.equal(selection.reduce((sum,a)=>sum+a.images+a.groups+a.pages,0),2512,'current source inventory pins the full selection control count');
- assert.doesNotMatch(readFileSync(join(fixture.directory,'abyss_traveler_portrait_assets.lua'),'utf8'),/^selection133=/m);
  const r=fixture.runLua('tests/lua/support/selection_budget_loading.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/SELECTION_BUDGET_LOADING_PASS/);
 });
@@ -35,10 +31,4 @@ test('adaptive background builds hidden, loads with progress and reuses without 
 test('actual default run activates Geo portrait without changing other classes',()=>{
  const r=fixture.runLua('tests/lua/default_traveler_portrait.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/DEFAULT_TRAVELER_PORTRAIT_PASS/);
-});
-
-test('legacy selection retains its complete isolated selection_budget_loading contract',async t=>{
- const legacy=await createLegacySelectionFixture();t.after(()=>legacy.dispose());
- const r=legacy.runLua('tests/lua/support/selection_budget_loading.lua');
- assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/SELECTION_BUDGET_LOADING_PASS/);
 });

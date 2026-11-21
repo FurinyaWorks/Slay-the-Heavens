@@ -1,74 +1,9 @@
 -- Presentation state from ShopScreen's hover and touchscreen-confirm paths.
 -- Offers remain owned by the current run; this module never changes inventory.
 local Theme = require('abyss_theme')
-local Controller = require('abyss_controller')
 local L = Theme.layout.nativeNode.shop
 local M = {}
 local integer=require('abyss_numbers').integer
-
-local function bindOutside(state, owner, hit, clickEvent, cursor, controller, current)
-    local active,foreground,released,observed={},{},nil,false
-    local noTouch={}
-    local function key(event) return event and event.touchId or noTouch end
-    local function ready(token)
-        return token and not owner.busy and not owner.presentationBusy and not Controller.pointerBlocked(controller)
-            and state.selected==token.selection and current(token.selection)
-    end
-    local function matches(token,event) return token and token.touch==(event and event.touchId) end
-    local function cancel(event)
-        active[key(event)]=nil
-        if matches(released,event) then released=nil end
-        return true
-    end
-    state.resetOutside=function() active,foreground,released={},{},nil end
-    state.foregroundDown=function(event)
-        observed=true
-        foreground[key(event)]=true;cancel(event)
-    end
-    state.foregroundUp=function(event)
-        if foreground[key(event)] then foreground[key(event)]=false end
-    end
-    state.foregroundClick=function(event)
-        if event and event.touchId~=nil then foreground[key(event)]=nil;return end
-        for touch,down in pairs(foreground)do if not down then foreground[touch]=nil end end
-    end
-    state.foregroundCancel=function(event) foreground[key(event)]=nil;cancel(event) end
-    local function foregroundActive()
-        for _,down in pairs(foreground)do if down then return true end end
-        return false
-    end
-    if cursor and cursor.CursorDown and cursor.CursorUp then
-        hit:AddCursorEventListener(cursor.CursorDown,function(event)
-            observed=true
-            if foreground[key(event)] then return true end
-            foreground[key(event)]=nil;released=nil
-            local token={selection=state.selected,touch=event and event.touchId}
-            if not ready(token) then token.selection=nil end
-            active[key(event)]=token
-            return true
-        end)
-        hit:AddCursorEventListener(cursor.CursorUp,function(event)
-            local held=active[key(event)];active[key(event)]=nil
-            if held then released=ready(held) and held or nil end
-            return true
-        end)
-        for _,kind in ipairs({'CursorDrag','CursorExit','CursorEndDrag'}) do
-            if cursor[kind] then hit:AddCursorEventListener(cursor[kind],cancel) end
-        end
-    end
-    hit:AddCursorEventListener(clickEvent,function(event)
-        local token=released
-        if observed then
-            local touch=event and event.touchId
-            if not token or touch~=nil and token.touch~=touch or touch==nil and next(active)~=nil then return true end
-            released=nil
-        else token={selection=state.selected} end
-        if Controller.pointerBlocked(controller) or foregroundActive() then return true end
-        if ready(token) then state:cancel() end
-        -- This surface never dispatches to purchase, leave, or another page.
-        return true
-    end)
-end
 
 function M.new(owner, root, options)
     local state = { entries = {}, scales = {} }
@@ -86,17 +21,12 @@ function M.new(owner, root, options)
         if not current(q) then q.retired=true;return false end
         return true
     end
-    function state:bindOutside(hit,clickEvent,cursor,controller)
-        bindOutside(self,owner,hit,clickEvent,cursor,controller,current)
-    end
     function state:clear()
-        if self.resetOutside then self.resetOutside() end
         local repaint=self.selected~=nil or self.focus~=nil or self.dirty
         self.selected, self.focus = nil, nil
         if repaint then self.dirty=true;self:paint(1) end
     end
     function state:begin()
-        if self.resetOutside then self.resetOutside() end
         self.dirty=true
         self.entries = {}
         self.focus = nil

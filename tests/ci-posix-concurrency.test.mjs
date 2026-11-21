@@ -1,4 +1,4 @@
-import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -35,7 +35,7 @@ test('current twelve and historical six both restore the exact original source',
 
 test('exact concurrency inverse preserves old bytes and LF or CRLF endings',()=>{
   assert.match(current,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
-  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',releaseFreezeCiBefore('.github/workflows/quality.yml',current));
+  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',current);
   for(const eol of ['\n','\r\n']){
     const old=current.replace(cap,'').replaceAll('\n',eol);
     const capped=current.replaceAll('\n',eol);

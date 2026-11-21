@@ -5,17 +5,17 @@
 - [ ] fix (PATCH)   - [ ] feat (MINOR)   - [ ] breaking (MAJOR)
 - [ ] chore / docs / refactor / test / ci (no release)
 
-## Base branch
-- [ ] 新Feature → `develop`；不反向引入Release
-- [ ] v2.0.0必要修复 → `release/v2.0.0`
-- [ ] release/* or hotfix/* → `master` (+ back-merge into `develop`)
-
-## Release scope
-<!-- Targeting release/*: fill each declaration exactly once. Rules: .codebuddy/skills/release-maintenance/SKILL.md -->
-Change-Type:
-Target-Version:
-Release-Necessity:
-<!-- Types: bugfix, performance, regression, release-engineering. Feature goes to develop; self-declared exceptions are invalid. -->
+## Target version / base branch
+Target version: v2.0.0 / post-v2.0.0 / experiment (select one)
+Branch closeout owner (Agent / takeover coordinator): [name or session]
+Supersedes / inherits: none
+Expected exit: DELIVERED_VERIFIED / SUPERSEDED / FROZEN / DISCARDED (select one; pending is not Done)
+<!-- On actual closeout, post a single CLOSEOUT receipt in this PR or existing Backlog task (fixed HEAD SHA, evidence, successor, remote deletion/retention). Do not mark delivery complete just because auto-merge was enabled. -->
+- [ ] v2.0.0 recovery, defect or stabilization → `develop` (source based on latest develop)
+- [ ] future feature or non-release docs → `develop` (source based on develop)
+- [ ] release cut or production hotfix → `master` (then sync back to develop)
+- [ ] frozen experiment / HOLD (normally no merge PR)
+<!-- Confirm actual base matches selected target, and record closeout/successor when closing without merge. See docs/BRANCH_LIFECYCLE.md. -->
 
 ## PR dependencies
 Depends-on: none
@@ -38,11 +38,17 @@ Use recorded for cleanup/status updates already committed; it validates without 
 verify:delivery --merged applies this line via CLI after exact merged verification.
 Use none only when this PR has no task updates. -->
 
+## Integration slice
+<!-- Describe the independently verified behavior, the next dependent slice if any, and the
+flag owner/removal condition if applicable. For over-budget production that cannot reasonably be split, use
+Slice-exception: atomic | why it must land together | verification command or evidence
+Other valid reasons: mechanical, generated, tests. The independent reviewer verifies the reason and evidence. -->
+
 ## How to test
 1.
 
 ## Checklist
-- [ ] PR < ~400 lines (or explained why not)
+- [ ] Production fits 400 added/deleted lines and 10 files, or includes a reviewed exception
 - [ ] Tests added/updated and passing locally
 - [ ] No secrets/PII in diff
 - [ ] Breaking changes documented + migration notes

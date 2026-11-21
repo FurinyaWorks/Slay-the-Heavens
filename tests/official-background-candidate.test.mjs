@@ -15,12 +15,10 @@ function fixture(t,templateIndex=1470123456,templateOverrides={}){
  const client={async readResource(){return {contents:[]}},async close(){},async callTool({name,arguments:args}){
   calls.push({name,args});let data={mapPath:args.mapPath};
   if(name==='scene_add_client_template'){
-   if(/^AbyssSharedCardFace[1-9][0-9]*$/.test(args.template.name)){data.templateIndex=2000+Number(args.template.name.slice('AbyssSharedCardFace'.length));return {structuredContent:data};}
    assert.ok(Object.hasOwn(templateOffsets,args.template.name),'unregistered native template '+args.template.name);
    data.templateIndex=Object.hasOwn(templateOverrides,args.template.name)?templateOverrides[args.template.name]:
     templateIndex===null?null:templateIndex+templateOffsets[args.template.name];
   }
-  if(name==='scene_list_interface')Object.assign(data,{clientTemplates:[],clientInterfaces:[]});
   if(name==='scene_set_client_script')sources.set(args.name,readFileSync(args.sourceFile,'utf8'));
   if(name==='scene_list_client_scripts')data.scripts=[...sources].map(([name,source])=>({name,file:name+'.lua',source}));
   if(name==='inspect_map')data.graphs=[{name:'_GSTS_ABYSS_SETTLEMENT',id:23,type:20000,writable:true}];

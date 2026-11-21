@@ -27,12 +27,6 @@ export async function main(){
  const head=pr.head.sha,base=pr.base.sha;
  if(![head,base].every(x=>/^[a-f0-9]{40}$/.test(x)))throw Error('Exact SHA required');
  if(process.env.GITHUB_REPOSITORY_ID!=='1429751262')throw Error('Formal admission belongs to the organization repository');
- // Quality and Licenses share this entry point. Release validates on the main
- // repository; optional Fork runs are for early feedback only.
- if(pr.base.ref==='release/v2.0.0'){
-  console.log('Fork preflight is optional for release/v2.0.0; proceeding with formal checks.');
-  return;
- }
  const runs=[];
  for(const id of forks){
   const fork=await api(`/repositories/${id}`);

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-22 13:48'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 05:24'
 labels:
   - 待验
   - delivery-verify
@@ -19,6 +19,7 @@ references:
   - docs/backlog-details/TRAVELER-SCOPE-20261029.md
   - docs/backlog-details/MOBILE-QA-20261029.md
   - docs/backlog-details/MOBILE-QA-20261029-SOURCES.md
+  - docs/drafts/TASK-18-PUBLISHING-COPY-20261115.md
 priority: medium
 ordinal: 18000
 ---
@@ -40,6 +41,12 @@ ordinal: 18000
 - [ ] #7 定位并核对加载封面的原图、导出文件和实际平台绑定；同候选手机加载画面只显示一个标题数字2，宽屏扩展不复制带字区域。
 - [ ] #8 本轮加载封面报告取得实际源文件、上传绑定和目标手机加载截图后才能关闭；重截发布UI图只使用当前已验收的公开玩法，不拿旧包或原型宣传。
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. 核对当前Production单角色两幕范围及真实操作入口。2. 仅在docs/drafts新增投稿文案和一页玩法说明，不改发布流程、版本、素材绑定或候选。3. 独立复核可见操作与宣传边界，运行现有Fast和Backlog校验后交PR与自动合并；官方表单、图片、同候选设备及Owner冻结仍待验。
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
@@ -81,4 +88,8 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-14清理旧窗口日期：原due_date=2026-10-29保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-15 协助离线文案切片：根树旧看板曾显示To Do，但最新e65d9b98已是In Progress（注明非持续占用）。本轮不重复认领或重置原任务，仅补无在途PR和工作树占用的docs/drafts/TASK-18-PUBLISHING-COPY-20261115.md；保留最新历史及全部未验AC。PR668名称统一待最终发行确认，不改其Lore、版本、候选或门禁。
+
+2026-11-15 离线验证：verify:backlog与check:guidance通过，git diff --check通过。Fast计划对本次两份文档返回full=true（unmodelled input），不将零测试当通过；完整必要CI交现有PR路由执行，不添加ci:full或重复本地全量。首次运行缺依赖，已用npm ci --offline --ignore-scripts从现有缓存补齐。技术与范围依据随稿保存，官方/设备未验。
 <!-- SECTION:NOTES:END -->

@@ -4,8 +4,8 @@ title: 补齐敌人与遗物的低成本可辨识图像
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-14 02:48'
-updated_date: '2026-11-14 05:36'
+created_date: 2026-11-14 02:48
+updated_date: '2026-11-18T01:56:00Z'
 labels: []
 milestone: m-8
 dependencies: []
@@ -49,4 +49,6 @@ Owner已审阅并批准简图，完整88/42覆盖与生产接线证据齐，AC2�
 PR654已完成推送/创建，明确ci:full、Depends-on:none及精确独审；GitHub首个impact作业持续QUEUED，原merge:auto仍明确拒绝Full CI routing is not ready，尚未获得auto-merge-requested，不可报告已入自动合并队列。无新源码失败或审批缺失，不绕过入口。接续命令：在 .worktrees/lowcost-missing-art 运行 npm run merge:auto -- 654 .artifacts/lowcost-art/independent-review.json；若BASE变化须先重新独审，不沿用旧记录。保持In Progress及工作树/证据。
 
 当前单主角版集成接续：原PR654完整纳入integration-next，保留42敌人/88遗物源图、原精绘及许可；组合功能与共享页面定向验证通过。仅集成，不将离线/旧图当官方手机或发布验收。
+
+2026-11-18 范围依赖纠正：Owner 于 2026-11-15 明确暂停尚未完成新设计的怪物拟合、精修与新资产生产，须待 Owner 新设计完成并明确恢复授权。该限制只针对怪物新设计/制作部分，不暂停本任务已有独立角色、遗物及明确授权的发版缺陷修复；既有已批准素材与证据保留，不推翻既有验收、不将旧实验当恢复许可。TASK-25.7 与 PR #715 保全暂停，继续任务前协调原负责人和实际范围。
 <!-- SECTION:NOTES:END -->

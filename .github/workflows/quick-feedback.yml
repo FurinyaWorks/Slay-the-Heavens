@@ -54,25 +54,12 @@ jobs:
         run: node scripts/ci-media-lfs.mjs
       - name: Cheap governance and syntax preflight
         run: npm run check:guidance && npm run verify:backlog && npm run check:syntax
+      - name: Validate versioned UI references
+        run: node scripts/check-ui-references.mjs --hosted
       - name: Enforce existing changed Lua quality ratchet
         env:
           QUALITY_RATCHET_BASE: ${{ inputs.base_sha }}
         run: node scripts/check-quality-ratchet.mjs
-      - name: Verify affected Release CI contracts explicitly
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
-        run: |
-          node --input-type=module <<'NODE'
-          import {execFileSync} from 'node:child_process';
-          const base=process.env.BASE_SHA;
-          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');
-          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\0');
-          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);
-          if(changed.some(path=>contracts.has(path))){
-            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');
-            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});
-          }else console.log('No Release CI contract changes');
-          NODE
       - name: Complete affected JS and Lua preflight
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}

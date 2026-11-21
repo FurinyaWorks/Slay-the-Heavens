@@ -21,12 +21,11 @@ function holder(children) {
  if(index===0)throw Error('Missing fallback card image');
  children.splice(index,0,{name:'artSamples',kind:'container',position:[0,40],size:[144,64],visible:false,children:[]});
 }
-export const isReadyCardHost=node=>(node.children??node.controls??[]).some(child=>child.name==='artPlate');
 export function attachReadyCardHosts(tree) {
  const hosts=[];
  function visit(node,path) {
   const current=[...path,node.name??''],children=node.children??node.controls??[];
-  if(isReadyCardHost(node)){holder(children);hosts.push(current.join('/'));}
+  if(children.some(c=>c.name==='artPlate')){holder(children);hosts.push(current.join('/'));}
   for(const child of children)if(child.name!=='artSamples')visit(child,current);
  }
  visit(tree,[]);return hosts;

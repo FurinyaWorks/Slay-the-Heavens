@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {auditOutcomeTasks} from './product-outcome.mjs';
 import {readTaskHeader} from './backlog-metadata.mjs';
+import {auditDependencies,normalizeTaskId} from './task-dependencies.mjs';
 export {readTaskHeader} from './backlog-metadata.mjs';
 
 // Priority describes the current queue, not whether a launch requirement matters.
@@ -134,18 +135,27 @@ export function auditRoadmap(tasks, roadmap, milestones, completed = []) {
   return errors;
 }
 
-// Explicit capacity-proof dependency for mass character rollouts, independent of M7 stage completion.
+// Preserve the concrete design/capacity prerequisites of mass rollout. This is
+// not a gate on isolated experiments, unrelated fixes or milestone ordering.
 export function auditRoleCapacityGate(tasks, completed = []) {
-  const byId = new Map([...completed, ...tasks].map(task => [task.id, task]));
+  const byId = new Map([...completed, ...tasks].map(task => [normalizeTaskId(task.id), task]));
   const rollout = byId.get('TASK-97');
   if (!rollout) return [];
   const capacity = byId.get('TASK-105');
+  const design = byId.get('TASK-96');
+  const dependencies = (Array.isArray(rollout.dependencies) ? rollout.dependencies : []).map(normalizeTaskId);
   const errors = [];
   if (!capacity) errors.push('TASK-97: 缺少角色容量前置TASK-105');
-  if (!rollout.dependencies?.includes('TASK-105'))
+  if (!dependencies.includes('TASK-105'))
     errors.push('TASK-97: 必须显式依赖TASK-105，禁止绕过容量量产准入');
+  if (!dependencies.includes('TASK-96'))
+    errors.push('TASK-97: 必须显式依赖TASK-96，禁止绕过设计前置');
   if (['In Progress','Done'].includes(rollout.status) && capacity?.status !== 'Done')
-    errors.push('TASK-97: 容量TASK-105未取得GO，不得启动或完成角色批量量产');
+    errors.push('TASK-97: 容量前置TASK-105尚未完成，不得启动或完成角色批量量产');
+  if (['In Progress','Done'].includes(rollout.status) && design?.status !== 'Done')
+    errors.push('TASK-97: 设计前置TASK-96尚未完成，不得启动或完成正式角色扩展');
+  // Done proves task closure, not GO or Owner approval. The existing explicit
+  // approval hold in task:pick remains independent even after both tasks close.
   return errors;
 }
 
@@ -197,7 +207,7 @@ export function verifyBacklogRoadmap(root = '.') {
   const intakeM7Errors=existsSync(intakeFile)&&JSON.parse(readFileSync(intakeFile,'utf8')).currentMilestoneIds?.includes('m-7')
     ?['M7: task-intake仍宣称已归档工程里程碑为活动阶段']:[];
   return [...new Set([...stateErrors,...auditRoadmap(tasks, readFileSync(join(root, 'docs/MILESTONES.md'), 'utf8'), milestones, completed),
-    ...auditPriorities(tasks), ...auditQueueOwners(tasks), ...auditRoleCapacityGate(tasks,completed), ...retiredM7Errors, ...intakeM7Errors,
+    ...auditPriorities(tasks), ...auditQueueOwners(tasks), ...auditDependencies(tasks,completed), ...auditRoleCapacityGate(tasks,completed), ...retiredM7Errors, ...intakeM7Errors,
     ...auditOrderedStageIds(milestoneRecords, requiresCurrent), ...auditOutcomeTasks([...tasks,...completed],root)])];
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

@@ -1,0 +1,104 @@
+local F = dofile('tests/lua/support/game_ui_fixture.lua')
+local V = dofile('scripts/official-assets-preview.lua')
+local canvas = F.control({children = F.Layout})
+local root = F.Viewport.apply(canvas, 1280, 720)
+local settlements = 0
+local host = F.GameUI.new(root, F.Data, F.Presentation, 'click', {
+    seed = 42, campaign = true, campaignProfile = 'competition-two-act',
+    characterProfile = 'production', prologue = true, imageSource = 'static',
+    keyEvents = {KeyboardCraftspersonKey42Down = 'backspace'},
+    color = function(r, g, b, a) return {r = r, g = g, b = b, a = a} end,
+    settle = function(victory) assert(not victory); settlements = settlements + 1; return true end,
+})
+root.ui = host
+
+local function click(panel, action)
+    assert(F.click(root, panel, action), panel .. '/' .. action)
+end
+local function untilReady(isReady)
+    for _ = 1, 100 do
+        if isReady() then return end
+        host:update(0.05)
+    end
+    assert(isReady(), 'Host did not reach the requested scene')
+end
+local function capture(name, provenance)
+    V.capture(name, host, root, provenance)
+end
+local function floorIn(page, expected)
+    local panel = root:GetChild(page)
+    local title = page == 'mapPanel' and F.mapControl(panel, 'title') or panel:GetChild('title')
+    local bar = panel:GetChild(page == 'battlePanel' and 'topBar' or 'officialRunBar')
+    assert(bar:GetChild('officialStairs').visible and title.visible)
+    assert(title.text == tostring(expected), page .. ' floor text: ' .. title.text)
+end
+
+click('menuPanel', 'start')
+assert(host:selectCharacter('traveler') and host:selectElement('ironclad'))
+assert(host:confirmCharacter())
+untilReady(function() return host.prologue.phase == 'close' end)
+local transition = root:GetChild('prologuePanel'):GetChild('scene')
+assert(transition.visible and transition:GetChild('element7').visible)
+capture('transition-opening', 'Chapter opening at the completed seventh light')
+untilReady(function() return host.nodeUI.visible and not host.prologue:covering() end)
+click('nodePanel', 'eventView/option1')
+assert(host.run.nodeFlow.event.stage == 'neow_blessing')
+floorIn('nodePanel', 0)
+capture('neow', 'Fresh two-act run, real Neow blessing choices')
+click('nodePanel', 'eventView/option2')
+assert(host.run.nodeFlow.event.stage == 'neow_result')
+click('nodePanel', 'eventView/option1')
+untilReady(function() return host.mode == 'map' and host.mapUI.visible end)
+floorIn('mapPanel', 0)
+capture('map', 'Real map after taking a Neow blessing')
+local run, map = host.run, host.map
+local floor = map.floor
+assert(host.mapUI:scrollBy(10000))
+local hasBoss
+for _, node in ipairs(map.nodes) do
+    if node.type == 'boss' then
+        for slot, id in pairs(host.mapUI.slots) do
+            if id == node.id then
+                local icon = F.mapControl(root:GetChild('mapPanel'), 'node' .. slot):GetChild('icon')
+                assert(icon.imageId == require('abyss_theme').icon.node.boss)
+                hasBoss = true
+            end
+        end
+    end
+end
+assert(hasBoss and map.floor == floor, 'Boss must be visible without selecting a room')
+capture('map-boss', 'Same live route after scrolling to the boss')
+assert(host.mapUI:scrollBy(-10000))
+
+click('exitEntry', 'open')
+local menu = root:GetChild('runMenu')
+for _, name in ipairs({'resume', 'help', 'map', 'abandon', 'quit'}) do
+    assert(not menu:GetChild(name).visible, 'Unexpected visible action: ' .. name)
+end
+assert(menu.visible and menu:GetChild('mainMenu').visible)
+capture('run-menu', 'Actual upper-right menu input with its sole visible action')
+click('runMenu', 'blocker')
+assert(host.mode == 'map' and not menu.visible and host.run == run)
+local backspace = assert(menu.keyListeners and menu.keyListeners.backspace, 'missing native Backspace receiver')
+assert(not backspace(), 'closed menu accepted Backspace')
+click('exitEntry', 'open')
+assert(menu.disableKeyEventPassthrough and backspace())
+assert(host.mode == 'map' and not menu.visible and host.run == run and map.floor == floor)
+click('exitEntry', 'open')
+click('runMenu', 'mainMenu')
+assert(host.sessionPaused and host.mode == 'menu' and host.run == run and host.map == map)
+click('menuPanel', 'continueRun')
+assert(host.mode == 'map' and not host.sessionPaused and host.run == run and host.map == map)
+assert(map.floor == floor and settlements == 0, 'Pause and resume must not leave the game')
+assert(host.mapUI:choose(F.Nodes.available(run, map)[1].id))
+untilReady(function() return host.mode == 'battle' and host.battleUI.active end)
+floorIn('battlePanel', 1)
+click('exitEntry', 'open')
+click('runMenu', 'mainMenu')
+click('menuPanel', 'titleQuit')
+assert(host.exitOpen and not host.settlementRequested)
+capture('exit-confirm', 'Main menu confirmation before its real settlement request')
+click('exitPanel', 'confirm')
+assert(settlements == 1 and host.settlementRequested)
+print('V2_RUNTIME_EVIDENCE_PASS')
+V.print()

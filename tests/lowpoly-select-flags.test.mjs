@@ -23,7 +23,7 @@ function run(assetSource,flags,readyTemplates='{imageTemplateIndex=11,containerT
 package.path='build/lua/?.lua;src/lua/?.lua;'..package.path
 local created,rot3d,loads=0,0,0
 local function control(name)
- local c={alive=true,visible=true,sizeDeltaX=200,children={},name=name,text=''}
+ local c={alive=true,visible=true,sizeDeltaX=200,children={},name=name}
  for _,m in ipairs({'SetAnchorMin','SetAnchorMax','SetPivot','SetSizeDelta','SetLocalScale','SetAnchoredPosition','SetImage','SetAsLastSibling','SetActive'})do c[m]=function()return true end end
  function c.SetVisible(self,v)self.visible=v;return true end
  function c.SetLocalRotation(_,x,y)if x~=0 or y~=0 then rot3d=rot3d+1 end;return true end
@@ -129,22 +129,4 @@ test('layout attaches scene slots only with the flag, as first drawn children',a
  const off=tree();attachLowpolyScenes(off,{menuBackground:false});assert.doesNotMatch(JSON.stringify(off),/lowpolyScene/);
  const on=tree();attachLowpolyScenes(on,{menuBackground:true});const [select,battle]=on.controls[0].children;
  assert.equal(battle.children[0].name,'lowpolyScene');assert.deepEqual(select.children.map(c=>c.name),['veil','lowpolyScene','border','face']);
-});
-
-test('native selection paints the same controls when the unread legacy figure is absent or traps reads',()=>{
- const dir=mkdtempSync(join(tmpdir(),'lowpoly-default-selection-'));
- try{
-  const options={selectionAvatar:true,battlePortrait:false,imageTemplateIndex:11,containerTemplateIndex:22};
-  const legacy=writePortraitModule(dir,options);
-  assert.match(legacy,/^selection133=/m);
-  writeFileSync(join(dir,'art-render-v2.json'),'{}');
-  const native=writePortraitModule(dir,options);
-  assert.doesNotMatch(native,/^selection133=/m);
-  assert.equal(native,legacy.replace(/^selection133=.*\n/m,''),'only the unselected legacy data field may differ');
-  const trapped=legacy.replace(/^selection133=.*\n/m,"selection133=setmetatable({}, {__index=function()error('unselected legacy figure read')end}),\n");
-  assert.notEqual(trapped,legacy);
-  const flags='{cards=false,selectionAvatar=true,battlePortrait=false}';
-  const normal=run(legacy,flags);assert.match(normal,/^owner\|1\|[1-9]/);
-  assert.equal(run(native,flags),normal);assert.equal(run(trapped,flags),normal);
- }finally{rmSync(dir,{recursive:true,force:true});}
 });

@@ -3,6 +3,7 @@ local CharacterSelect = require("abyss_character_select")
 local Controller = require("abyss_controller")
 local Theme = require('abyss_theme')
 local V25View=require('abyss_v25_menu_view')
+local Navigation=require('abyss_game_ui_navigation')
 local M = {}
 local menuKinds={start=true,settle=true,egg_open=true,titleQuit=true,continueRun=true}
 local function titleAvailable(self,kind)
@@ -52,8 +53,8 @@ function M.dismissFromOutside(controller,self)
         end
 end
 
-local function bindV25Hover(box,hit,cursor,available,routeReturn)
-    local officialMenu=Theme.presentationProfile=='official-assets-first' and (box:GetChild('v25MenuFace') or routeReturn and box:GetChild('v25Face'))
+local function bindV25Hover(box,hit,cursor,available)
+    local officialMenu=Theme.presentationProfile=='official-assets-first' and box:GetChild('v25MenuFace')
     if (Theme.presentationProfile~='v25-reference' and not officialMenu) or not cursor.CursorEnter then return end
     if not box:GetChild('v25Face') and not box:GetChild('v25MenuFace')then return end
     hit:AddCursorEventListener(cursor.CursorEnter,function()V25View.pointer(box,'enter',available())end)
@@ -110,7 +111,10 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 return resultAvailable()
             end
             local function runMenuAvailable()
-                if runMenuAction then return self.exitOpen and self.menuOpen == true and not self.routeOpen and (not enabled or enabled()) end
+                if runMenuAction then
+                    if kind~='run_mainMenu' and Navigation.minimalRunMenu(self) then return false end
+                    return self.exitOpen and self.menuOpen == true and not self.routeOpen and (not enabled or enabled())
+                end
                 if self.menuOpen or self.routeOpen then return false end
                 return characterAvailable()
             end
@@ -147,14 +151,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                     and (not mapContext or currentMapReturn(token))
             end
             local function touch(event) return event and event.touchId end
-            bindV25Hover(box,hit,cursor,available,kind=='routeClose')
-            if kind=='routeClose' and Theme.presentationProfile=='official-assets-first' and box:GetChild('v25Face') then
-                local previousFocus=onFocus
-                onFocus=function()
-                    V25View.pointer(box,'enter',available())
-                    if previousFocus then return previousFocus() end
-                end
-            end
+            bindV25Hover(box,hit,cursor,available)
             if cursor.CursorDown and cursor.CursorUp then
                 hit:AddCursorEventListener(cursor.CursorDown, function(event)
                     if held and not current(held) then held = nil end
@@ -298,13 +295,13 @@ function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside
     end)
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)
     bindCommand(runMenu:GetChild('mainMenu'),'run_mainMenu',function()return self:returnToMainMenu()end,
-        function()return require('abyss_game_ui_navigation').hasRun(self) and not self.sessionPaused end)
+        function()return Navigation.hasRun(self) and not self.sessionPaused end)
     bindCommand(runMenu:GetChild('quit'),'run_quit',function()
         owner.exitGeneration=owner.exitGeneration+1
         self.menuOpen=false;self.navigationAction=nil;self:refresh();return true
-    end,function()return require('abyss_game_ui_navigation').hasRun(self) and not self.sessionPaused end)
+    end,function()return Navigation.hasRun(self) and not self.sessionPaused end)
     bindCommand(runMenu:GetChild('abandon'), 'run_abandon', function()
-        if require('abyss_game_ui_navigation').hasRun(self) then return self:requestNavigation('abandon') end
+        if Navigation.hasRun(self) then return self:requestNavigation('abandon') end
         owner.exitGeneration = owner.exitGeneration + 1
         self.menuOpen = false
         self:refresh()
@@ -329,10 +326,12 @@ function M.installCharacters(self,characterPanel,clickEvent,bindCommand,controll
     bindCommand(characterPanel:GetChild("cancel"),"character_cancel",function() return self:closeCharacters() end,nil,90)
     bindCommand(characterPanel:GetChild('confirm'),'character_confirm',function()return self:confirmCharacter()end,
         function()return self.characterSelection:canConfirm() and not self.characterSelection.deckOpen end,100)
-    -- 查看初始牌组（STS 式卡面网格）；返回/取消先关牌组再退选角。
-    bindCommand(characterPanel:GetChild('details'):GetChild('deckOpen'),'character_deck',function()
-        return self:openStarterDeck()
-    end,function()return self.characterSelection.info~=nil and not self.characterSelection.deckOpen end,95)
+    local starterDeck=characterPanel:GetChild('details'):GetChild('deckOpen')
+    if starterDeck then
+        bindCommand(starterDeck,'character_deck',function()
+            return self:openStarterDeck()
+        end,function()return self.characterSelection.info~=nil and not self.characterSelection.deckOpen end,95)
+    end
     for i,id in ipairs(CharacterSelect.characters)do
         local box=characterPanel:GetChild(i==5 and 'traveler' or 'character'..i)
         bindCommand(box,'character_'..i,function()return self:selectCharacter(id)end,

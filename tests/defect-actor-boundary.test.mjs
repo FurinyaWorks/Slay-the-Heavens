@@ -9,6 +9,7 @@ import {discoverSources,dependencyCycles} from '../scripts/lua-quality-metrics.m
 import {generatedRuntimeModules} from '../scripts/build-native-candidate.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {sourceEpoch,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
 const require=createRequire(import.meta.url),luaparse=require('luaparse');
 const utility='src/lua/abyss_defect_utility_cards.lua',queued='src/lua/abyss_combat_queued_play.lua';
 const fixture='tests/lua/defect_utility_build.lua',protocol='tests/lua/support/m9_combat_protocol_baseline.lua';
@@ -20,7 +21,8 @@ const actorRead=currentDefectActorReader(read);
 function capabilityPreStyle(raw=discoverSources()){
  const config='config/architecture.json',live={...raw,[config]:read(config)},proof=sourceEpoch.proof;
  assert.deepEqual(Object.keys(live).sort(),Object.keys(proof.current).sort(),'complete live source inventory before preStyle');
- for(const [path,binding]of Object.entries(proof.current))assert.equal(live[path].replaceAll('\r\n','\n'),binding.source,'live preStyle input identity: '+path);
+ for(const [path,binding]of Object.entries(proof.current))
+  assert.equal(beforeCurrentProductionSource(path,live[path],read).replaceAll('\r\n','\n'),binding.source,'live preStyle input identity: '+path);
  const admitted=sourceEpoch.preCombinedSource(config,live[config],{target:'stsStylePrior',readSource:read});
  assert.equal(admitted,ciRepairSourceEpoch.proof.current[config].source,'fresh complete current owners authorize the cb view');
  const prior=proof.targets.stsStylePrior.files;
@@ -97,7 +99,10 @@ test('production changes remain the two narrow capability edits and one policy r
  assert.deepEqual(rule.from,['abyss_defect_utility_cards']);
  assert.deepEqual(rule.forbiddenTargets,['abyss_actor','abyss_combat','abyss_combat_queued_play','abyss_card_actions']);
  const foreign=discoverSources();foreign['src/lua/abyss_page_reveal.lua']+='\n-- unrelated drift';
- assert.throws(()=>capabilityPreStyle(foreign),/live preStyle input identity/,'historical policy cannot conceal current owner drift');
+ assert.throws(()=>capabilityPreStyle(foreign),{message:'fresh current production owner: src/lua/abyss_page_reveal.lua'},'historical policy cannot conceal current owner drift');
+ const updated='src/lua/abyss_character_presentation.lua';
+ const reverted={...discoverSources(),[updated]:sourceEpoch.proof.current[updated].source};
+ assert.throws(()=>capabilityPreStyle(reverted),{message:'fresh current production owner: '+updated},'frozen predecessor bytes cannot pass as current input');
 });
 
 function reachable(report,root){

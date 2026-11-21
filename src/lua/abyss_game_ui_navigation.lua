@@ -1,9 +1,14 @@
 -- Session navigation keeps the live Run in memory; it is never a save file.
 local NeowHistory=require('abyss_neow_history')
+local Theme=require('abyss_theme')
 local M={}
 function M.hasRun(self)
     return self.run~=nil and self.run.phase~='victory' and self.run.phase~='defeat'
         and not self.settlementRequested
+end
+function M.minimalRunMenu(self)
+    return Theme.presentationProfile=='official-assets-first' and M.hasRun(self)
+        and not self.sessionPaused and not self.characterOpen
 end
 local function blocked(self)
     return self.disabled or self.characterOpen or self.controlsOpen or self.routeOpen

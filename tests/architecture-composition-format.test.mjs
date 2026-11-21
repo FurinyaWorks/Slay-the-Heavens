@@ -2,19 +2,23 @@ import {historicalTest as test} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {pr323AcceptedSourceInverse as proof,requirePr323Source,preAcceptedPr323Source,preOriginalPr323Source,normalizePr323CompositionSource} from './helpers/pr323-accepted-source-inverse.mjs';
+import {
+ pr323AcceptedSourceInverse as proof,normalizePr323HistoryInput,
+ requireHistoricalPr323Source,projectHistoricalPr323Source,requirePr323Source,
+} from './helpers/pr323-accepted-source-inverse.mjs';
 
 const path='config/architecture.json';
 const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
 const hash=text=>createHash('sha256').update(text).digest('hex');
 
 test('architecture layout whitespace projects to the same immutable complete historical bytes',()=>{
- assert.equal(hash(normalizePr323CompositionSource(path,source)),proof.files[path].afterSha256);
- for(const variant of [JSON.stringify(JSON.parse(source)),JSON.stringify(JSON.parse(source),null,'\t'),source+'\n\t ',source.replaceAll('\n','\r\n')]){
-  assert.deepEqual(JSON.parse(variant),JSON.parse(source),'production JSON.parse receives the same policy');
-  requirePr323Source(path,variant);
-  for(const [project,target]of [[preAcceptedPr323Source,'accepted'],[preOriginalPr323Source,'original']]){
-   const historical=project(path,variant);
+ const policy=JSON.parse(source);
+ for(const variant of [source,JSON.stringify(policy),JSON.stringify(policy,null,'\t'),source+'\n\t ',source.replaceAll('\n','\r\n')]){
+  assert.deepEqual(JSON.parse(variant),policy,'production JSON.parse receives the same policy');
+  const normalized=normalizePr323HistoryInput(path,variant);
+  requireHistoricalPr323Source(path,normalized);
+  for(const target of ['accepted','original']){
+   const historical=projectHistoricalPr323Source(path,normalized,target);
    assert.equal(historical,proof.files[path][target+'Source']);
    assert.equal(hash(historical),proof.files[path][target+'Sha256']);
   }
@@ -41,9 +45,10 @@ test('whitespace permission never hides changed tokens, duplicate keys, array or
   compact+' invalid',compact.replace('{','{/*comment*/')];
  for(const variant of variants){
   assert.notEqual(variant,compact,'negative control changes the input');
-  assert.throws(()=>requirePr323Source(path,variant),/unreviewed integrated/);
-  assert.equal(preAcceptedPr323Source(path,variant),variant,'unrecognized bytes remain exposed');
-  assert.equal(preOriginalPr323Source(path,variant),variant);
+  const normalized=normalizePr323HistoryInput(path,variant);
+  assert.throws(()=>requireHistoricalPr323Source(path,normalized),/unreviewed integrated/);
+  for(const target of ['accepted','original'])
+   assert.equal(projectHistoricalPr323Source(path,normalized,target),variant,'unrecognized bytes remain exposed');
  }
  assert.throws(()=>requirePr323Source('data/presentation/ui_theme.json',' '+readFileSync('data/presentation/ui_theme.json','utf8')),/unreviewed integrated/,'permission stays on architecture only');
 });

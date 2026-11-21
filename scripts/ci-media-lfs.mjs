@@ -1,6 +1,6 @@
 // Existing media and native state evidence: exact manifest-only LFS I/O.
 import assert from 'node:assert/strict';
-import {readFileSync, lstatSync, realpathSync} from 'node:fs';
+import {copyFileSync, mkdirSync, readFileSync, lstatSync, realpathSync, writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve, relative, isAbsolute} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -90,11 +90,35 @@ export function verifyMediaAssets(root){
  for(const row of mediaFiles){const data=readFileSync(mediaPath(root,row));assert.equal(data.length,row.bytes,'exact media size: '+row.path);assert.equal(hash(data),row.sha256,'complete media bytes: '+row.path);}
  return {files:mediaFiles.length,objects:unique.size,bytes:maxStoragePayloadBytes};
 }
+function bundleMedia(root, directory, env){
+ root=realpathSync.native(root);
+ const result=prepareMediaAssets({root,env});
+ mkdirSync(directory);
+ const pathsByOid=new Map(mediaFiles.map(row=>[row.sha256,row]));
+ for(const [oid,row] of pathsByOid)copyFileSync(mediaPath(root,row),resolve(directory,oid));
+ return result;
+}
+
+function restoreMediaBundle(root, directory, needed){
+ const bundle=realpathSync.native(directory);
+ for(const path of needed){
+  const row=mediaByPath.get(path);
+  const source=resolve(bundle,row.sha256);
+  const info=lstatSync(source);
+  assert(info.isFile()&&!info.isSymbolicLink()&&info.size===row.bytes,'exact bundled media object: '+path);
+  const data=readFileSync(source);
+  assert.equal(hash(data),row.sha256,'complete bundled media bytes: '+path);
+  writeFileSync(mediaPath(root,row),data);
+ }
+ return {status:'restored',...verifyMediaAssets(root)};
+}
+
 export function prepareMediaAssets({root=process.cwd(),env=process.env}={}){
  root=realpathSync.native(root);validateMediaIndex(root,env);
  const needed=[];
  for(const row of mediaFiles){const data=readFileSync(mediaPath(root,row));if(data.equals(mediaPointer(row)))needed.push(row.path);else{assert.equal(data.length,row.bytes,'changed media size');assert.equal(hash(data),row.sha256,'changed media content: '+row.path);}}
  if(!needed.length)return {status:'cached',...verifyMediaAssets(root)};
+ if(env.CI_MEDIA_BUNDLE)return restoreMediaBundle(root,env.CI_MEDIA_BUNDLE,needed);
  const batches=[];let batch=[],length=0;
  for(const path of needed){if(length+path.length+1>12000){batches.push(batch);batch=[];length=0;}batch.push(path);length+=path.length+1;}if(batch.length)batches.push(batch);
  const deadline=Date.now()+90000;
@@ -107,5 +131,10 @@ export function prepareMediaAssets({root=process.cwd(),env=process.env}={}){
  return {status:'materialized',...verifyMediaAssets(root)};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
- try{assert.equal(process.argv.length,2);console.log(JSON.stringify(prepareMediaAssets()));}catch(error){console.error(error.message);process.exitCode=1;}
+ try{
+  const [option,directory]=process.argv.slice(2);
+  assert(process.argv.length===2||process.argv.length===4&&option==='--bundle'&&directory,'expected --bundle <directory> or no arguments');
+  const result=option==='--bundle'?bundleMedia(process.cwd(),directory,process.env):prepareMediaAssets();
+  console.log(JSON.stringify(result));
+ }catch(error){console.error(error.message);process.exitCode=1;}
 }

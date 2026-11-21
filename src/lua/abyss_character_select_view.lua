@@ -72,16 +72,7 @@ local function paintCharacterButtons(panel,state,platform,originalSts,open)
         if not originalSts or id~='traveler' then paintBust(box,bust,platform)end
     end
 end
-function M.render(panel,state,platform)
-    local info=state.info
-    local originalSts=Theme.presentationProfile=='official-assets-first' and panel:GetChild('stsCharacter')~=nil
-    local nativeV25=Theme.presentationProfile=='official-assets-first' and (originalSts or panel:GetChild('v25Roster')~=nil)
-    panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))
-    -- 只剩一个可选角色/元素时不摆假选择钮（Pan 2026-10-31：单角色发版）。
-    local open,elementsOpen=0,0
-    for _,id in ipairs(Select.characters)do if state:allowsCharacter(id)then open=open+1 end end
-    for _,id in ipairs(Select.elements)do if state:allowsElement(id)then elementsOpen=elementsOpen+1 end end
-    paintCharacterButtons(panel,state,platform,originalSts,open)
+local function paintThemesAndElements(panel,state,platform,elementsOpen)
     local traveler=state.character=='traveler'
     -- Theme layers are prebuilt per character/element; only visibility changes.
     local theme=traveler and state.element or state.character
@@ -98,11 +89,8 @@ function M.render(panel,state,platform)
         selected(box,state.element==id)
         paintBust(box,Theme.icon.heroSlots.bust.traveler[id],platform)
     end
-    local details=panel:GetChild('details');details:SetVisible(info~=nil)
-    panel:GetChild('deckView'):SetVisible(false)
-    local confirm=panel:GetChild('confirm'):GetChild('hit')
-    confirm.interactable,confirm.raycastTarget=state:canConfirm(),state:canConfirm()
-    if not info then return end
+end
+local function paintDetails(details,state,platform,originalSts,nativeV25,info)
     details:GetChild('name').text=info.name
     details:GetChild('stats').text=(nativeV25 and '生命：' or '生命  ')..number(info.maxHp)..(nativeV25 and '/' or ' / ')..number(info.maxHp)
     details:GetChild('gold').text=(nativeV25 and '金币：' or '金币  ')..number(info.gold)
@@ -114,5 +102,23 @@ function M.render(panel,state,platform)
     local large,key,portraits=paintPortraits(details,state,platform)
     if originalSts then portraits:SetVisible(false)end
     paintPortraitNote(details,info,platform,large,key,portraits)
+end
+function M.render(panel,state,platform)
+    local info=state.info
+    local originalSts=Theme.presentationProfile=='official-assets-first' and panel:GetChild('stsCharacter')~=nil
+    local nativeV25=Theme.presentationProfile=='official-assets-first' and (originalSts or panel:GetChild('v25Roster')~=nil)
+    panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))
+    -- 只剩一个可选角色/元素时不摆假选择钮（Pan 2026-10-31：单角色发版）。
+    local open,elementsOpen=0,0
+    for _,id in ipairs(Select.characters)do if state:allowsCharacter(id)then open=open+1 end end
+    for _,id in ipairs(Select.elements)do if state:allowsElement(id)then elementsOpen=elementsOpen+1 end end
+    paintCharacterButtons(panel,state,platform,originalSts,open)
+    paintThemesAndElements(panel,state,platform,elementsOpen)
+    local details=panel:GetChild('details');details:SetVisible(info~=nil)
+    panel:GetChild('deckView'):SetVisible(false)
+    local confirm=panel:GetChild('confirm'):GetChild('hit')
+    confirm.interactable,confirm.raycastTarget=state:canConfirm(),state:canConfirm()
+    if not info then return end
+    paintDetails(details,state,platform,originalSts,nativeV25,info)
 end
 return M

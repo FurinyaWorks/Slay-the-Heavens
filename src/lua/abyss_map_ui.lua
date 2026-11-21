@@ -366,7 +366,8 @@ function M.new(root, map, onChoose, clickEvent, options)
         local terminal = chapter.terminal == 'boss_treasure' and "已抵达首领宝箱 · 请完成当前房间"
             or current.act == 4 and "已抵达终幕首领 · 请完成最终战斗与结算"
             or "已抵达终点 · 请完成当前房间"
-        at("title").text = chapter.name .. " · 第 " .. current.floor .. " 层"
+        at("title").text = Theme.presentationProfile=='official-assets-first' and tostring(current.floor)
+            or chapter.name .. " · 第 " .. current.floor .. " 层"
         at("notice").text = self.entryError or (current.complete and terminal or
             (current.floor == chapter.boss and (self.navigationEnabled
                 and (chapter.terminal == 'boss_treasure' and "首领奖励已处理 · 请选择首领宝箱" or "首领奖励已处理 · 请前往终点")
@@ -562,11 +563,12 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled = enabled self:render()
     end
-    function self.setVisible(_, visible)
+    function self.setVisible(_, visible, retainPage)
         assert(type(visible) == "boolean", "map visibility must be boolean")
         if visible and not self.map then return false, "map_unbound" end
         if not visible then cancelDrag() end
-        self.visible = visible root:SetVisible(visible)
+        -- A modal suspends navigation but retains its already mounted backdrop.
+        self.visible = visible root:SetVisible(visible or retainPage==true)
         if visible then self:focusCurrent() end
     end
     function self.choose(_, nodeId)

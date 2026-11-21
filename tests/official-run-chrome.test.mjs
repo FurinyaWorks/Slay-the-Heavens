@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,mkdtempSync,rmSync} from 'node:fs';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
@@ -11,70 +9,9 @@ import {assertOfficialRunContracts} from '../scripts/official-run-layout.mjs';
 import {deckCardTemplate,battlePileCardTemplate} from '../scripts/deck-ui-layout.mjs';
 import {toLua,luaString} from '../scripts/build-lua-data.mjs';
 import {colourToLua} from '../scripts/build-ui-theme.mjs';
-import {buildUI} from '../scripts/build-ui.mjs';
-import {officialBattleUtilityFaces} from '../scripts/official-battle-hud.mjs';
 
 const child=(node,name)=>(node?.children??node?.controls??[]).find(part=>part.name===name);
 const all=node=>[node,...(node.children??node.controls??[]).flatMap(all)];
-
-test('official settings replace the Unicode gear with the existing native picture in all four states',()=>{
- const layout=gameLayout(),hit=child(child(child(layout,'exitEntry'),'open'),'hit');
- officialBattleUtilityFaces(layout,nativeTheme);
- const palette={normal:'#D6CBA5',hover:'#FFF3CE',pressed:'#D6CBA5',disabled:'#8F918B'};
- assert.equal(nativeTheme.icon.settings,100161);
- for(const state of ['normal','hover','pressed','disabled']){
-  const face=child(hit,state),overlay=child(face,'officialBattleHud'),symbol=child(overlay,'symbol');
-  assert.equal(symbol.kind,'image',state+' uses the registered native picture rather than a font glyph');
-  assert.equal(symbol.image,nativeTheme.icon.settings);
-  assert.deepEqual(symbol.size,[28,28]);assert.deepEqual(symbol.position,[0,0]);
-  assert.equal(symbol.text,undefined);assert.equal(symbol.colour,palette[state]);
-  assert.equal(overlay.visible,false,'existing runtime writer retains activation ownership');
- }
-});
-
-test('official settings decoration preserves the original hit, position, states and deck symbol/count',()=>{
- const layout=gameLayout(),before=structuredClone(layout);
- const open=child(child(layout,'exitEntry'),'open'),hit=child(open,'hit'),deckHit=child(child(child(layout,'deckEntry'),'open'),'hit');
- const inputs=all(layout).filter(n=>['cursorArea','presetButton'].includes(n.kind));
- officialBattleUtilityFaces(layout,nativeTheme);
- assert.equal(child(open,'hit'),hit);assert.deepEqual(open.position,nativeTheme.layout.exitMenu.entry.slice(0,2));
- assert.deepEqual(hit.size,[48,48]);assert.equal(hit.focusable,true);
- assert.deepEqual(hit.states,{normal:'normal',hover:'hover',pressed:'pressed',disabled:'disabled'});
- assert.deepEqual(all(layout).filter(n=>['cursorArea','presetButton'].includes(n.kind)),inputs,'decorating creates no input owner');
- for(const state of ['normal','hover','pressed','disabled']){
-  const face=child(deckHit,state),overlay=child(face,'officialBattleHud');
-  assert.deepEqual(overlay.children.map(n=>n.name),['symbol','count']);
-  assert.equal(child(overlay,'symbol').kind,'text');assert.equal(child(overlay,'symbol').text.content,'▱');
-  assert.deepEqual(child(overlay,'symbol').position,[-16,0]);assert.deepEqual(child(overlay,'symbol').size,[30,36]);
-  assert.equal(child(overlay,'count').text.content,'');assert.deepEqual(child(overlay,'count').position,[10,0]);
-  assert.deepEqual(child(overlay,'count').size,[34,36]);
- }
- const restored=structuredClone(layout);
- for(const entry of ['exitEntry','deckEntry'])for(const face of child(child(child(restored,entry),'open'),'hit').children)
-  face.children=face.children.filter(n=>n.name!=='officialBattleHud');
- assert.deepEqual(restored,before,'all original controls, labels, geometry and state scales remain exact');
-});
-
-test('official settings picture is generated only by the official profile while fallback profiles retain their menu',t=>{
- const directory=mkdtempSync(join(tmpdir(),'pc06-settings-facet-'));
- t.after(()=>rmSync(directory,{recursive:true,force:true}));
- const original=child(gameLayout(),'exitEntry');
- for(const [name,options]of [['default',{}],['candidate-art',{artFeatures:{menuBackground:true,selectionAvatar:true,battlePortrait:true}}],
-  ['v25',{v25BattleChrome:true}],['official',{officialAssets:true,nativePageLifecycle:true}]]){
-  const output=join(directory,name);buildUI(output,undefined,options);
-  const tree=JSON.parse(readFileSync(join(output,'game-ui.json'),'utf8')),stage=child(tree,'stage')??tree;
-  const entry=child(stage,'exitEntry'),open=child(entry,'open'),hit=child(open,'hit');
-  assert.deepEqual(open.position,[576,316]);assert.deepEqual(hit.size,[48,48]);
-  if(name!=='official'){
-   assert.deepEqual(entry,original,name+' fallback retains its exact original controls');
-   assert(!all(entry).some(n=>n.name==='officialBattleHud'),name+' must not gain an official face');
-  }else for(const state of ['normal','hover','pressed','disabled']){
-   const overlay=child(child(hit,state),'officialBattleHud'),symbol=child(overlay,'symbol');
-   assert.equal(symbol.kind,'image');assert.equal(symbol.image,nativeTheme.icon.settings);
-   assert.deepEqual(symbol.size,[28,28]);assert.equal(overlay.visible,false);
-  }
- }
-});
 
 test('official composition rejects a missing run page before mutating any host',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=gameLayout();

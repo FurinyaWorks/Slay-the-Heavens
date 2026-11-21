@@ -1,12 +1,16 @@
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { resolve, join } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
+import {inflateRawSync} from 'node:zlib';
+import {tmpdir} from 'node:os';
+import {isDeepStrictEqual} from 'node:util';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import {qualityShardJobs} from './ci-quality-shape.mjs';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';
 import {prFastErrors,collectFastCheckout} from './pr-quality-evidence.mjs';
 import {syncBacklogCloseout} from './backlog-closeout.mjs';
+import {validateIndependentAiReview,cloudGateSourceErrors,collectCloudGateSource} from './independent-ai-review.mjs';
 export {planBacklogCloseout,syncBacklogCloseout} from './backlog-closeout.mjs';
 
 export const requiredJobs=['check','presentation','engineering-posix'];
@@ -229,7 +233,10 @@ export function verifyMergedDelivery(e) {
     if(repositories.some(repository=>!projectRepositoryMatches(repository,e.repo)))errors.push('Transferred PR/run repository identity differs from the fixed project');
   }
   if(early)errors.push(...verifyHistoricalAutoFull(e.prFull,preflight,e.identityWitness));
-  if([6,7].includes(preflight.schemaVersion))errors.push(...verifyFastQueueFull(e.queueFull,preflight,e.pr?.merge_commit_sha));
+  if(preflight.nativeReview!==undefined){
+    errors.push(...nativeReviewErrors(preflight));
+    errors.push(...verifyNativeQueueFull(e.queueFull,preflight,e.pr?.merge_commit_sha));
+  }else if([6,7].includes(preflight.schemaVersion))errors.push(...verifyFastQueueFull(e.queueFull,preflight,e.pr?.merge_commit_sha));
   if(![2,3].includes(e.schemaVersion))errors.push('Missing versioned merged evidence');
   if(e.repo!==preflight.repo&&!transferred)errors.push('Merged evidence repository differs from preflight');
   if(preflight.review?.disposition==='low-risk-docs'&&
@@ -238,17 +245,21 @@ export function verifyMergedDelivery(e) {
   if(e.pr?.number!==preflight.prNumber||!e.pr?.merged||e.pr?.state!=='closed')errors.push('Expected the verified PR to be merged');
   if(e.pr?.head?.sha!==preflight.head||e.pr?.base?.ref!==preflight.baseRef)errors.push('Merged PR head/target differs from preflight');
   if(!validSha(e.commit?.sha)||e.commit?.sha!==e.pr?.merge_commit_sha)errors.push('Actual merged commit does not match merge_commit_sha');
-  if(JSON.stringify(parentShas(e.commit))!==JSON.stringify([preflight.base]))errors.push('Actual squash parent differs from verified base; obtain fresh evidence for the new combination');
-  if(!validSha(e.commit?.commit?.tree?.sha)||e.commit?.commit?.tree?.sha!==preflight.sourceTree)errors.push('Actual merged source tree differs from the verified source tree');
+  const native=preflight.nativeReview!==undefined,squashBase=native?e.queueFull?.checkout?.base:preflight.base;
+  const testedTree=native?e.queueFull?.commit?.commit?.tree?.sha:preflight.sourceTree;
+  if(!validSha(squashBase)||JSON.stringify(parentShas(e.commit))!==JSON.stringify([squashBase]))
+    errors.push(native?'Actual squash parent differs from the verified native queue parent':'Actual squash parent differs from verified base; obtain fresh evidence for the new combination');
+  if(!validSha(e.commit?.commit?.tree?.sha)||e.commit.commit.tree.sha!==testedTree)
+    errors.push('Actual merged source tree differs from the verified source tree');
   if(e.current?.number!==e.pr?.number||e.current?.head?.sha!==e.pr?.head?.sha||e.current?.base?.ref!==e.pr?.base?.ref||!e.current?.merged||e.current?.state!=='closed'||e.current?.merge_commit_sha!==e.pr?.merge_commit_sha)errors.push('Merged PR identity changed during verification');
   errors.push(...runErrors(e.run,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));
   errors.push(...runErrors(e.currentRun,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));
   errors.push(...qualityErrors(e.jobs,{attempt:e.run?.run_attempt,runId:e.run?.id,head:e.commit?.sha,schemaVersion:e.schemaVersion}));
   errors.push(...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,e.run,e.schemaVersion));
-  for(const [field,value] of Object.entries({event:'push',runId:e.run?.id,tested:e.commit?.sha,head:e.commit?.sha,base:preflight.base})) {
+  for(const [field,value] of Object.entries({event:'push',runId:e.run?.id,tested:e.commit?.sha,head:e.commit?.sha,base:squashBase})) {
     if(value===undefined||e.checkout?.[field]!==value)errors.push(`Merged checkout ${field} is missing, stale or mismatched`);
   }
-  if(e.checkout?.prNumber!==undefined||JSON.stringify(e.checkout?.parents)!==JSON.stringify([preflight.base]))errors.push('Merged checkout is not the actual squash commit');
+  if(e.checkout?.prNumber!==undefined||JSON.stringify(e.checkout?.parents)!==JSON.stringify([squashBase]))errors.push('Merged checkout is not the actual squash commit');
   return {state:errors.length?'merged_pending':'merged_passed',errors};
 }
 
@@ -278,19 +289,32 @@ export function verifyHistoricalAutoFull(e,arm,identityWitness){
 }
 // Fast PR evidence authorizes entry only. A separate immutable Full run must
 // certify the native queue's actual squash SHA, followed by ordinary push Full.
-export function verifyFastQueueFull(e,arm,mergedSha){
-  if(!e||e.schemaVersion!==8||e.kind!=='fast-queue-full')return ['Missing native queue Full evidence for Fast PR'];
+export const verifyFastQueueFull=(e,arm,mergedSha)=>verifyQueueFull(e,arm,mergedSha,'fast-queue-full');
+export const verifyNativeQueueFull=(e,preflight,mergedSha)=>verifyQueueFull(e,preflight,mergedSha,'native-queue-full');
+function verifyQueueFull(e,arm,mergedSha,kind){
+  if(!e||e.schemaVersion!==8||e.kind!==kind)return ['Missing native queue Full evidence for '+(kind==='fast-queue-full'?'Fast':'native-reviewed')+' PR'];
   const run=e.run??{},errors=[];
   errors.push(...runErrors(run,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),
     ...runErrors(e.currentRun,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),
     ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:mergedSha,schemaVersion:3}),
     ...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,run,3));
-  if(run.head_branch!==`gh-readonly-queue/develop/pr-${arm.prNumber}-${arm.base}`)
-    errors.push('Queue Full does not belong to the authorized PR/BASE');
+  const native=kind==='native-queue-full',queueBase=native?e.commit?.parents?.[0]?.sha:arm.base;
+  if(native){
+    const c=e.commit,comparison=e.reviewBaseAncestry?.comparison;
+    if(c?.sha!==mergedSha||!validSha(c?.commit?.tree?.sha)||!validSha(queueBase)||
+      JSON.stringify(parentShas(c))!==JSON.stringify([queueBase]))
+      errors.push('Actual native queue commit/tree/sole parent evidence is missing or mismatched');
+    if(e.reviewBaseAncestry?.before!==arm.base||e.reviewBaseAncestry?.after!==queueBase||comparison?.base_commit?.sha!==arm.base||!['ahead','identical'].includes(comparison?.status)||comparison?.merge_base_commit?.sha!==arm.base)
+      errors.push('Original reviewed BASE is not an ancestor of the actual native queue parent');
+    if(queueBase===arm.base&&c?.commit?.tree?.sha!==arm.sourceTree)
+      errors.push('First native group tree differs from the original reviewed combination');
+  }
+  if(run.head_branch!==`gh-readonly-queue/develop/pr-${arm.prNumber}-${queueBase}`)
+    errors.push('Queue Full does not belong to the authorized PR/actual queue parent');
   for(const [field,value]of Object.entries({schemaVersion:1,event:'merge_group',runId:run.id,
-    tested:mergedSha,head:mergedSha,base:arm.base}))
+    tested:mergedSha,head:mergedSha,base:queueBase}))
     if(e.checkout?.[field]!==value)errors.push('Queue Full checkout differs: '+field);
-  if(e.checkout?.prNumber!=null||JSON.stringify(e.checkout?.parents)!==JSON.stringify([arm.base]))
+  if(e.checkout?.prNumber!=null||JSON.stringify(e.checkout?.parents)!==JSON.stringify([queueBase]))
     errors.push('Queue Full checkout must be the exact native squash');
   for(const context of ['full-quality','pr-quality','independent-review']){
     const status=e.statuses?.filter(s=>s.context===context).sort((a,b)=>b.id-a.id)[0];
@@ -300,6 +324,26 @@ export function verifyFastQueueFull(e,arm,mergedSha){
       errors.push('Queue Full/admission status is missing or no longer successful: '+context);
   }
   const licenses=e.licenses;
+  let licenseJobs=licenses?.jobs;
+  if(native&&Array.isArray(licenseJobs)){
+    const ids=new Set(),executions=new Set(),latest=new Map(),attempt=licenses?.run?.run_attempt;
+    for(const job of licenseJobs){
+      const key=job?.name+'@'+job?.run_attempt;
+      if(!['inventory','independent-ai-review','cancel-obsolete-queue'].includes(job?.name)||
+        !positiveId(job?.id)||ids.has(job?.id)||executions.has(key)||!positiveId(attempt)||
+        !positiveId(job?.run_attempt)||job.run_attempt>attempt||job.run_id!==licenses?.run?.id||job.head_sha!==mergedSha)
+        errors.push('Native queue inventory history contains unknown, duplicate or mismatched execution identities');
+      ids.add(job?.id);executions.add(key);
+      const previous=latest.get(job?.name);
+      if(!previous||job?.run_attempt>previous.run_attempt||job?.run_attempt===previous.run_attempt&&job?.id>previous.id)
+        latest.set(job?.name,job);
+    }
+    // Preserve raw history. Inventory needs a current execution; a conditional
+    // auxiliary may retain its latest genuine skipped execution. Never relabel rows.
+    licenseJobs=[...latest.values()];
+  }
+  const inventory=Array.isArray(licenseJobs)?licenseJobs.filter(job=>job?.name==='inventory'):[],
+    extra=Array.isArray(licenseJobs)?licenseJobs.filter(job=>job?.name!=='inventory'):[];
   if(!positiveId(licenses?.run?.id)||!positiveId(licenses?.run?.run_attempt)||
     licenses.run.head_sha!==mergedSha||licenses.run.event!=='merge_group'||
     licenses.run.status!=='completed'||licenses.run.conclusion!=='success'||
@@ -308,12 +352,127 @@ export function verifyFastQueueFull(e,arm,mergedSha){
     licenses.currentRun?.status!=='completed'||licenses.currentRun?.conclusion!=='success'||
     licenses.currentRun?.event!=='merge_group'||licenses.currentRun?.path!==licenses.run.path||
     licenses.currentRun?.head_sha!==mergedSha||licenses.currentRun?.repository?.full_name!==arm.repo||
-    !Array.isArray(licenses.jobs)||licenses.jobs.length!==1||!positiveId(licenses.jobs[0]?.id)||
-    licenses.jobs[0].name!=='inventory'||licenses.jobs[0].run_id!==licenses.run.id||
-    licenses.jobs[0].run_attempt!==licenses.run.run_attempt||licenses.jobs[0].head_sha!==mergedSha||
-    licenses.jobs[0].status!=='completed'||licenses.jobs[0].conclusion!=='success')
+    !Array.isArray(licenses.jobs)||inventory?.length!==1||!positiveId(inventory[0]?.id)||
+    inventory[0].run_id!==licenses.run.id||inventory[0].run_attempt!==licenses.run.run_attempt||inventory[0].head_sha!==mergedSha||
+    inventory[0].status!=='completed'||inventory[0].conclusion!=='success'||
+    (kind==='fast-queue-full'?extra.length!==0:extra.length>2||new Set(extra.map(job=>job?.name)).size!==extra.length||new Set(extra.map(job=>job?.id)).size!==extra.length||extra.some(job=>!['independent-ai-review','cancel-obsolete-queue'].includes(job?.name)||
+      !positiveId(job.id)||job.id===inventory[0].id||job.run_id!==licenses.run.id||!positiveId(job.run_attempt)||job.run_attempt>licenses.run.run_attempt||job.head_sha!==mergedSha||
+      job.status!=='completed'||job.conclusion!=='skipped')))
     errors.push('Queue inventory is missing, stale or unsuccessful');
   return errors;
+}
+
+function nativeReviewErrors(preflight){
+  const n=preflight?.nativeReview,o=n?.observations,errors=[];
+  if(!n||!o)return ['Missing native Review observations'];
+  const recorded=o.prBefore,pr={...recorded,user:{id:recorded?.authorId}};
+  const checked=validateIndependentAiReview({repository:{id:n.repositoryId,full_name:n.repo},pr,
+    baseSha:preflight.base,sourceCommit:o.sourceCommit,reviews:o.reviews,permissions:o.permissions,dependencies:o.dependencies});
+  errors.push(...checked.errors.map(error=>'Native review: '+error));
+  if(n.conclusion!=='pass'||!Array.isArray(n.errors)||n.errors.length||
+    !isDeepStrictEqual(o.prBefore,o.prAfter)||!isDeepStrictEqual(o.targetBefore,o.targetAfter)||
+    o.targetBefore?.ref!=='refs/heads/develop'||o.targetBefore.object?.type!=='commit'||o.targetBefore.object.sha!==preflight.base||
+    !isDeepStrictEqual(n.report,checked.report)||!isDeepStrictEqual(n.coordinator,checked.coordinator))
+    errors.push('Native Review proof is incomplete, changed or unsuccessful');
+  for(const [field,value]of Object.entries({repo:preflight.repo,repositoryId:projectRepositoryId,prNumber:preflight.prNumber,
+    head:preflight.head,base:preflight.base,tree:preflight.sourceTree,mergeCommitSha:preflight.tested,
+    githubReviewId:checked.githubReviewId,reviewId:preflight.review?.reviewId}))
+    if(value===undefined||n[field]!==value)errors.push('Native Review binding differs: '+field);
+  if(n.nativeApprovalReviewId!==undefined&&n.nativeApprovalReviewId!==n.githubReviewId)
+    errors.push('Legacy review ID alias differs from the actual signed Review');
+  return errors;
+}
+
+// A custom download adapter supplies the original ZIP bytes. Its API digest is
+// the ZIP digest, not a digest of JSON an adapter has reconstructed.
+function nativeProofZip(bytes,artifact){
+  if(!Buffer.isBuffer(bytes)&&!(bytes instanceof Uint8Array))throw Error('Native proof adapter must return original ZIP bytes');
+  bytes=Buffer.from(bytes);
+  if(artifact.digest!=='sha256:'+createHash('sha256').update(bytes).digest('hex'))throw Error('Native proof ZIP digest differs from immutable artifact');
+  const end=bytes.lastIndexOf(Buffer.from([80,75,5,6]));
+  if(end<0||end+22>bytes.length||bytes.readUInt16LE(end+10)!==1)throw Error('Native proof artifact must contain exactly one JSON file');
+  const offset=bytes.readUInt32LE(end+16);
+  if(offset+46>end||bytes.readUInt32LE(offset)!==0x02014b50)throw Error('Malformed native proof ZIP directory');
+  const method=bytes.readUInt16LE(offset+10),size=bytes.readUInt32LE(offset+24),compressed=bytes.readUInt32LE(offset+20);
+  const nameSize=bytes.readUInt16LE(offset+28),local=bytes.readUInt32LE(offset+42);
+  const name=bytes.subarray(offset+46,offset+46+nameSize).toString('utf8');
+  if(name!=='native-ai-review-proof.json'||bytes.readUInt16LE(offset+8)&1||![0,8].includes(method)||size>32*1024*1024||
+    local+30>offset||bytes.readUInt32LE(local)!==0x04034b50||bytes.readUInt16LE(local+8)!==method)
+    throw Error('Unexpected native proof ZIP entry');
+  const localName=bytes.readUInt16LE(local+26),start=local+30+localName+bytes.readUInt16LE(local+28);
+  if(bytes.subarray(local+30,local+30+localName).toString('utf8')!==name||start+compressed>offset)
+    throw Error('Native proof ZIP entry differs from its directory');
+  const data=method===0?bytes.subarray(start,start+compressed):inflateRawSync(bytes.subarray(start,start+compressed),{maxOutputLength:size});
+  if(data.length!==size)throw Error('Native proof ZIP JSON size differs');
+  return data;
+}
+
+export function resolveNativePreflight(intent,query=gh,{loadProof}={}){
+  if(intent?.schemaVersion!==9||intent.kind!=='native-auto-merge-intent'||intent.repositoryId!==projectRepositoryId||
+    !positiveId(intent.prNumber)||![intent.head,intent.base,intent.sourceTree].every(validSha)||
+    !positiveId(intent.githubReviewId)||intent.nativeApprovalReviewId!==undefined&&intent.githubReviewId!==intent.nativeApprovalReviewId||
+    typeof intent.gateRef!=='string'||!intent.gateRef.startsWith('refs/heads/')||intent.gateRef.length<=11||
+    typeof intent.createdAt!=='string'||!Number.isFinite(Date.parse(intent.createdAt))||intent.nativeAuto?.confirmed!==true)
+    throw Error('Invalid native auto-merge intent locator; this is not CI preflight evidence');
+  const repository=JSON.parse(query('api','repositories/'+projectRepositoryId)),repo=intent.repo;
+  if(!projectRepositoryMatches(repository,repo))throw Error('Native intent repository differs from the fixed project');
+  const get=path=>JSON.parse(query('api',`repos/${repo}/${path}`));
+  const status=()=>{
+    const pages=JSON.parse(query('api','--paginate','--slurp',`repos/${repo}/commits/${intent.head}/statuses?per_page=100`));
+    if(!Array.isArray(pages)||!pages.length||pages.some(page=>!Array.isArray(page)))throw Error('Complete native review status pages are missing');
+    const rows=pages.flat().filter(row=>row?.context==='independent-review');
+    if(rows.some(row=>!positiveId(row.id)))throw Error('Malformed native review status identity');
+    const latest=rows.sort((a,b)=>b.id-a.id)[0],match=latest?.description?.match(/^AI review ([1-9]\d*) \[base:([a-f0-9]{40})\] \[proof:([1-9]\d*)\]$/);
+    if(latest?.state!=='success'||latest.creator?.id!==41898282||latest.creator?.login!=='github-actions[bot]'||
+      !match||Number(match[1])!==intent.githubReviewId||match[2]!==intent.base||!positiveId(Number(match[3])))
+      throw Error('Latest trusted native review status is missing, rejected or bound to another review/BASE');
+    return {status:latest,artifactId:Number(match[3])};
+  };
+  const first=status(),runMatch=first.status.target_url?.match(new RegExp('^https://github\\.com/'+repo+'/actions/runs/([1-9]\\d*)$'));
+  if(!runMatch||!positiveId(Number(runMatch[1])))throw Error('Native review status does not identify a real gate run');
+  const runId=Number(runMatch[1]),gateRun=get('actions/runs/'+runId),artifact=get('actions/artifacts/'+first.artifactId);
+  const runValid=run=>run?.id===runId&&positiveId(run.run_attempt)&&run.status==='completed'&&run.conclusion==='success'&&
+    projectRepositoryMatches(run.repository,repo);
+  const artifactValid=value=>value?.id===first.artifactId&&value.name===`independent-review-${intent.prNumber}-${intent.head.slice(0,12)}-${runId}-${gateRun.run_attempt}`&&
+    value.expired===false&&value.workflow_run?.id===runId&&value.workflow_run.head_sha===gateRun.head_sha&&
+    [value.workflow_run.repository_id,value.workflow_run.head_repository_id].every(id=>id===undefined||id===projectRepositoryId);
+  if(!runValid(gateRun)||!artifactValid(artifact)||!/^sha256:[a-f0-9]{64}$/.test(artifact.digest??''))throw Error('Native proof artifact or main-repository gate run is missing, stale or mismatched');
+  let bytes;
+  if(loadProof)bytes=nativeProofZip(loadProof({repo,intent,artifact,gateRun},query),artifact);
+  else{
+    const matches=pages(query,`repos/${repo}/actions/runs/${runId}/artifacts?per_page=100`,'artifacts').filter(row=>row.name===artifact.name);
+    if(matches.length!==1||matches[0].id!==artifact.id)throw Error('Native proof artifact name is ambiguous or replaced');
+    const dir=mkdtempSync(join(tmpdir(),'abyss-native-review-'));
+    try{
+      query('run','download',String(runId),'--repo',repo,'--name',artifact.name,'--dir',dir);
+      bytes=readFileSync(join(dir,'native-ai-review-proof.json'));
+    }finally{rmSync(dir,{recursive:true,force:true});}
+  }
+  const proof=JSON.parse(bytes.toString('utf8')),preflight=proof?.preflight;
+  if(proof.schemaVersion!==1||proof.kind!=='native-ai-review-proof'||proof.mode!=='publish'||proof.state!=='pr_passed'||
+    proof.repo!==repo||proof.prNumber!==intent.prNumber||proof.head!==intent.head||proof.base!==intent.base||
+    ![3,7].includes(preflight?.schemaVersion)||preflight.repo!==repo||preflight.prNumber!==intent.prNumber||
+    preflight.head!==intent.head||preflight.base!==intent.base||preflight.sourceTree!==intent.sourceTree||
+    preflight.baseRef!=='develop'||preflight.review?.disposition==='low-risk-docs'||
+    proof.nativeReview?.githubReviewId!==intent.githubReviewId||
+    proof.nativeReview?.nativeApprovalReviewId!==undefined&&proof.nativeReview.nativeApprovalReviewId!==intent.githubReviewId||
+    preflight.nativeReview!==undefined&&!isDeepStrictEqual(preflight.nativeReview,proof.nativeReview)||
+    !Array.isArray(proof.policyErrors)||proof.policyErrors.length||proof.gate?.runId!==runId||
+    proof.gate.attempt!==gateRun.run_attempt||proof.gate.ref!==intent.gateRef||
+    proof.gate.bootstrap!==(intent.gateRef!=='refs/heads/develop'))
+    throw Error('Native proof is shadow, unsuccessful or belongs to a different exact preflight');
+  const converted={...preflight,nativeReview:proof.nativeReview};
+  const sourceContext={repo,head:intent.head,base:intent.base,ref:intent.gateRef,bootstrap:proof.gate.bootstrap,
+    coordinator:proof.nativeReview?.coordinator,reviewedBranch:proof.nativeReview?.observations?.prBefore?.head?.ref,
+    installBaseSha:proof.nativeReview?.report?.installBaseSha};
+  const source=collectCloudGateSource({api:path=>JSON.parse(query('api',path)),run:gateRun,...sourceContext});
+  sourceContext.installation=source.observations.installation;
+  const errors=[...verifyDelivery(preflight),...nativeReviewErrors(converted),...source.errors];
+  if(errors.length)throw Error('Native proof failed existing delivery/review verification: '+errors.join('; '));
+  const current=get('actions/artifacts/'+artifact.id),currentRun=get('actions/runs/'+runId),last=status();
+  if(!artifactValid(current)||current.digest!==artifact.digest||!runValid(currentRun)||cloudGateSourceErrors(currentRun,sourceContext).length||currentRun.run_attempt!==gateRun.run_attempt||
+    last.status.id!==first.status.id||!isDeepStrictEqual(last,first))throw Error('Native review artifact, gate attempt or latest status changed during download');
+  return {...converted,nativeProof:{artifact,gateRun,status:first.status,sourceObservations:source.observations}};
 }
 function gh(...args) {
   const result=spawnSync('gh',args,{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});
@@ -421,12 +580,11 @@ export function collectMergedDelivery(repo,number,preflight,query=gh,loadCheckou
   const run=latestQualityRun(query,repo,identity);
   const jobs=run?.status==='completed'?pages(query,`repos/${repo}/actions/runs/${run.id}/jobs?filter=all&per_page=100`,'jobs'):[];
   const receipt=run?.status==='completed'&&run.conclusion==='success'?loadCheckout(run,jobs):{};
-  const current=JSON.parse(query('api',`repos/${repo}/pulls/${number}`));
-  const currentRun=latestQualityRun(query,repo,identity);
   let queueFull;
-  if([6,7].includes(preflight.schemaVersion)){
+  if([6,7].includes(preflight.schemaVersion)||preflight.nativeReview!==undefined){
+    const native=preflight.nativeReview!==undefined,queueBase=native?parentShas(commit)[0]:preflight.base;
     const groupIdentity={event:'merge_group',head:pr.merge_commit_sha,
-      branch:`gh-readonly-queue/develop/pr-${number}-${preflight.base}`};
+      branch:`gh-readonly-queue/develop/pr-${number}-${queueBase}`};
     const groupRun=latestQualityRun(query,repo,groupIdentity);
     const groupJobs=groupRun?.status==='completed'?pages(query,`repos/${repo}/actions/runs/${groupRun.id}/jobs?filter=all&per_page=100`,'jobs'):[];
     const groupReceipt=groupRun?.conclusion==='success'?loadCheckout(groupRun,groupJobs):{};
@@ -434,11 +592,16 @@ export function collectMergedDelivery(repo,number,preflight,query=gh,loadCheckou
     const licenseRuns=pages(query,`repos/${repo}/actions/workflows/licenses.yml/runs?event=merge_group&head_sha=${pr.merge_commit_sha}&per_page=100`,'workflow_runs');
     const licenseRun=licenseRuns.filter(r=>r.head_sha===pr.merge_commit_sha&&r.event==='merge_group').sort((a,b)=>b.id-a.id)[0];
     const licenseJobs=licenseRun?pages(query,`repos/${repo}/actions/runs/${licenseRun.id}/jobs?filter=all&per_page=100`,'jobs'):[];
-    queueFull={schemaVersion:8,kind:'fast-queue-full',run:groupRun,jobs:groupJobs,...groupReceipt,statuses,
+    queueFull={schemaVersion:8,kind:native?'native-queue-full':'fast-queue-full',
+      ...(native?{commit,reviewBaseAncestry:{before:preflight.base,after:queueBase,comparison:JSON.parse(query('api',`repos/${repo}/compare/${preflight.base}...${queueBase}`))}}:{}),run:groupRun,jobs:groupJobs,...groupReceipt,statuses,
       currentRun:latestQualityRun(query,repo,groupIdentity),licenses:{run:licenseRun,jobs:licenseJobs,
         currentRun:pages(query,`repos/${repo}/actions/workflows/licenses.yml/runs?event=merge_group&head_sha=${pr.merge_commit_sha}&per_page=100`,'workflow_runs')
           .filter(r=>r.head_sha===pr.merge_commit_sha&&r.event==='merge_group').sort((a,b)=>b.id-a.id)[0]}};
   }
+  // Queue artifact downloads may outlive a push rerun or PR update. These
+  // mutable observations must be read after every receipt and license query.
+  const current=JSON.parse(query('api',`repos/${repo}/pulls/${number}`));
+  const currentRun=latestQualityRun(query,repo,identity);
   const waived=preflight.review?.disposition==='low-risk-docs';
   const changedFileCount=waived?pr.changed_files:undefined;
   const changedFiles=waived?lowRiskFiles(query,repo,number,changedFileCount):undefined;
@@ -453,7 +616,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
     if(!projectRepositoryMatches(currentProjectRepository(gh),repo))throw Error('Current repository differs from the fixed project');
     const dir=join('build/delivery',randomUUID());mkdirSync(dir,{recursive:true});
     if(mode==='--merged') {
-      const preflightText=readFileSync(evidenceFile,'utf8'),preflight=JSON.parse(preflightText);
+      const preflightText=readFileSync(evidenceFile,'utf8'),saved=JSON.parse(preflightText),
+        preflight=saved.schemaVersion===9?resolveNativePreflight(saved,gh):saved;
       const errors=[4,6].includes(preflight.schemaVersion)?verifyAutoMergeArm(preflight):verifyDelivery(preflight);
       const identityWitness=preflight.repo!==repo?collectIdentityWitness(preflightText,repo,gh):undefined;
       if(preflight.prNumber!==Number(number)||errors.length)throw new Error('Preflight evidence is invalid, stale or belongs to a different PR/repository');

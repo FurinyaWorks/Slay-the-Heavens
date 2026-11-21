@@ -5,8 +5,6 @@ description: 原神「千星奇域」(Miliastra Wonderland) UGC 关卡开发。�
 
 # 千星奇域开发（本机环境）
 
-Release修复先读[冻结规则](../release-maintenance/SKILL.md)，只修既有功能，数字键/快捷键/预输入留Develop。
-
 ## 先读这个
 
 工具链的完整路径、版本、环境变量：`docs/TOOLCHAIN.md`（仓库内）。

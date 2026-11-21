@@ -3,7 +3,6 @@ local Combat = require("abyss_combat")
 local Run = require("abyss_run")
 local Theme = require("abyss_theme")
 local CardInput = require("abyss_card_input")
-local Intent = require("abyss_battle_card_gestures").Intent
 local RewardOwner = require("abyss_battle_reward_owner")
 local Controller = require("abyss_controller")
 local M = {}
@@ -30,8 +29,8 @@ function M.install(owner, ownership, host, dependencies)
         g.grabDx, g.grabDy = o and o[1]-x or 0, o and o[2]-y or 0
         g.vx, g.vy, g.t = 0, 0, os.clock()
         CardInput.begin(g, Theme.canvas.base[2], host.platform.touchScreen and host.platform.touchScreen(), Theme.canvas.base[1])
-        -- Native motion may arrive only on Up; the real Down still owns its origin and time.
-        Intent.sample(g,x,y)
+        -- Up may be the first motion event. Preserve this press for the flick velocity window.
+        g.intentSamples = {{t=g.elapsed,x=x,y=y}}
         g.handCancelY = L.hand.y + Theme.motion.hoverLift
         owner.hover, owner.handHover = nil, nil
         owner.carry = nil

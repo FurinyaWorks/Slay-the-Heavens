@@ -15,17 +15,13 @@ local function basic(id,sourceId,color,attack)
         color=color,type=attack and "attack" or "skill",rarity="basic",cost=1,sourceTags=attack and {'STRIKE'} or nil,
         effects={{op=op,value=attack and 6 or 5}},upgrade={effects={{op=op,value=attack and 9 or 8}}}}
 end
-function M.prepare(data,id)
-    local spec=specs[id]
-    assert(id=="ironclad" or spec,"unknown experimental character")
+local function validateSource(data)
     assert(type(data)=="table" and type(data.rules)=="table" and type(data.rules.player)=="table"
         and type(data.cards)=="table" and type(data.cards.cards)=="table"
         and type(data.relics)=="table" and type(data.relics.relics)=="table", "invalid character source data")
     assert(data.experimentalCharacter==nil,"character data already prepared")
-    -- Ironclad builds its explicit verified subset, even when production has
-    -- additional red cards. Other classes retain only shared statuses/curses.
-    if id == "ironclad" then return require("abyss_warrior_cards").prepareProfile(data) end
-    local prepared=copy(data)
+end
+local function prepareClassCards(prepared,id)
     local retained={}
     for _,card in ipairs(prepared.cards.cards) do
         -- Defect utility supplies its audited Burn lifecycle definition.
@@ -58,14 +54,9 @@ function M.prepare(data,id)
         prepared=require('abyss_watcher_flow_cards').withCards(prepared)
         prepared=require('abyss_watcher_final_cards').withCards(prepared)
     end
-    local cards=prepared.cards.cards
-    -- Foundation helpers currently contain only this class's verified subset.
-    for _,card in ipairs(cards) do
-        if card.type~="status" and card.type~="curse" and card.rarity~="special" then card.color=spec.color end
-    end
-    local strike,defend="strike_"..spec.color,"defend_"..spec.color
-    cards[#cards+1]=basic(strike,"Strike_"..spec.suffix,spec.color,true)
-    cards[#cards+1]=basic(defend,"Defend_"..spec.suffix,spec.color,false)
+    return prepared
+end
+local function addStarterDerivatives(cards,id)
     if id=="silent" then
         cards[#cards+1]={id="neutralize",sourceId="Neutralize",sts_name="Neutralize",name="Neutralize",color="green",
             type="attack",rarity="basic",cost=0,
@@ -78,10 +69,15 @@ function M.prepare(data,id)
             type="skill",rarity="special",cost=0,selfRetain=true,exhaust=true,
             effects={{op="energy",value=1}},upgrade={effects={{op="energy",value=2}}}} end
     end
+end
+local function makeStarterDeck(spec,strike,defend)
     local deck={}
     for _=1,spec.count do deck[#deck+1]=strike end
     for _=1,spec.count do deck[#deck+1]=defend end
     for _,card in ipairs(spec.extras) do deck[#deck+1]=card end
+    return deck
+end
+local function finishProfile(prepared,id,spec,deck)
     prepared.cards.starter_deck={cards=deck,note="Experimental "..id.." source starter; incomplete class pool"}
     prepared.cards.note="Experimental "..id.." foundation subset; not a complete class pool or release qualification"
     if id=='defect'then
@@ -104,5 +100,22 @@ function M.prepare(data,id)
         startingRelic=spec.relic,starterDeck=copy(deck),enableStances=true,enableOrbs=true,startingOrbSlots=id=='defect' and 3 or 0}
     require('abyss_class_card_pools').apply(prepared,id)
     return prepared,profile
+end
+function M.prepare(data,id)
+    local spec=specs[id]
+    assert(id=="ironclad" or spec,"unknown experimental character")
+    validateSource(data)
+    -- Ironclad keeps its verified subset; each class remains opt-in.
+    if id=="ironclad" then return require("abyss_warrior_cards").prepareProfile(data) end
+    local prepared=prepareClassCards(copy(data),id)
+    local cards=prepared.cards.cards
+    for _,card in ipairs(cards) do
+        if card.type~="status" and card.type~="curse" and card.rarity~="special" then card.color=spec.color end
+    end
+    local strike,defend="strike_"..spec.color,"defend_"..spec.color
+    cards[#cards+1]=basic(strike,"Strike_"..spec.suffix,spec.color,true)
+    cards[#cards+1]=basic(defend,"Defend_"..spec.suffix,spec.color,false)
+    addStarterDerivatives(cards,id)
+    return finishProfile(prepared,id,spec,makeStarterDeck(spec,strike,defend))
 end
 return M

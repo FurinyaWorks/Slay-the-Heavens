@@ -71,14 +71,14 @@ local function handValues(pose, target)
     local high=math.max(target.baseY+restH,hotY+hotH)
     local dy,a=(low+high)/2-pose.y,pose.angle*math.pi/180
     local width=math.max(restW*2,w*Theme.motion.hoverScale)
-    return pose.x,pose.y,pose.scale,pose.angle,
+    return {pose.x,pose.y,pose.scale,pose.angle,
         math.sin(a)*dy/pose.scale,math.cos(a)*dy/pose.scale,
-        math.min(width,target.hitWidth or width)/pose.scale,(high-low)/pose.scale
+        math.min(width,target.hitWidth or width)/pose.scale,(high-low)/pose.scale}
 end
 
-local function sameHandValues(first,x,y,scale,angle,hitX,hitY,width,height)
-    return first[1]==x and first[2]==y and first[3]==scale and first[4]==angle
-        and first[5]==hitX and first[6]==hitY and first[7]==width and first[8]==height
+local function sameHandValues(first,second)
+    for i=1,8 do if first[i]~=second[i] then return false end end
+    return true
 end
 local function writeHandValues(box,hit,v)
     local accepted=box:SetAnchoredPosition(v[1],v[2])~=false
@@ -93,12 +93,10 @@ end
 local function applyHandPose(entry,owner)
     local box,pose=entry.box,entry.current
     local hit=box:GetChild('hit')
-    local x,y,scale,angle,hitX,hitY,width,height=handValues(pose,entry.target)
+    local values=handValues(pose,entry.target)
     local painted=handGeometry[box]
     if painted and painted.owner==owner and painted.hit[1]==hit and box.alive~=false
-        and hit.alive~=false and sameHandValues(painted.values,x,y,scale,angle,hitX,hitY,width,height) then return end
-    -- Only an actual native write needs the immutable tuple retained by the cache.
-    local values={x,y,scale,angle,hitX,hitY,width,height}
+        and hit.alive~=false and sameHandValues(painted.values,values) then return end
     local pending={};handGeometry[box]=pending
     local ok,accepted=pcall(writeHandValues,box,hit,values)
     local current=handGeometry[box]==pending

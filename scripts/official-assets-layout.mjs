@@ -1,3 +1,4 @@
+import {nativeMenuFrames} from './native-menu-approved-layout.mjs';
 import {compactBoundedCardFaces} from './lightweight-card-layout.mjs';
 import {applyV25BattleScene} from './v25-battle-scene.mjs';
 import {applyV25BattleChrome} from './v25-battle-chrome.mjs';
@@ -28,7 +29,8 @@ export function officialAssetsTheme(source){
   // receive the same palette instead of the retired dark-map gold/lavender.
   theme.color.mapCanvas=structuredClone(approved.color.mapCanvas);
   theme.color.node=structuredClone(approved.color.node);
-  theme.layout.v25Menu=structuredClone(approved.layout.v25Menu);
+  theme.layout.v25Menu={...structuredClone(approved.layout.v25Menu),...structuredClone(nativeMenuFrames)};
+  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:32,labelX:0};
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
   theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
   theme.layout.nativeNode.event.neow.bubbleText=[-45,96,270,130];

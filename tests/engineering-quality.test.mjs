@@ -1,4 +1,4 @@
-import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -188,7 +188,7 @@ test('quality reports are collected by the existing gate and uploaded on failed 
   assert.equal(workflow.split(qualityPosixPaths).length,2);
   assert.ok(workflow.includes('        if: always() && matrix.shard == 1\n        with:\n          name: engineering-'));
   assert.match(workflow,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
-  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',releaseFreezeCiBefore('.github/workflows/quality.yml',workflow));
+  const historical=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',workflow);
   const restored=beforeQualityArtifacts(historical);
   assert.ok(!restored.includes('build/engineering-quality.json'));
   for(const old of ['build/architecture.json','build/lua-static.json','build/lua-complexity.json','build/ui-complexity.json','build/test-strength/*/report.json'])assert.ok(restored.includes(old));

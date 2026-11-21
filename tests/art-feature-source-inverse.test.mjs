@@ -1,4 +1,3 @@
-import {releaseBootstrapCiSource,capacityReviewCiPacket} from './helpers/release-bootstrap-ci-source.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -17,6 +16,7 @@ import {nativeMonsterSourceLayer} from './helpers/epochs/develop/tests/helpers/n
 import {betaSources} from './helpers/beta-integration-source.mjs';
 import {round3CatalogProof} from './helpers/epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.mjs';
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 
 // Execute the exact original 98fef helper closure on the original 98fef inputs.
 // The reviewed ready-art manifest supplies 34 files; this extension adds only
@@ -276,17 +276,22 @@ test('current feature and history entries authenticate supported intermediates a
 test('current feature entries preserve unsupported input bytes and never use unknown input to authorize raw reads',()=>{
  for(const [path,intermediate]of Object.entries(currentTargets)){
   const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const binding=sourceEpoch.proof.current[path],epochSource=beforeCharacterPreparationSource(path,source);
+  assert.equal(epochSource,binding.source,'exact approved current source: '+path);
   for(const project of [currentFeature,currentHistory]){
    for(const input of [source+'\n-- unknown',source.slice(1),source+source,null,undefined,{},intermediate]){
     const seen=[],readSource=owner=>{seen.push(owner);throw Error('unknown source must not authorize reads');};
     assert.equal(project(path,input,{readSource}),input);assert.deepEqual(seen,[]);
    }
    for(const readSource of [null,{},'not a reader']){
-    assert.throws(()=>project(path,source,{readSource}),/GameUI extraction linked reader must be a function/);
-    assert.throws(()=>project(path,source+'\n-- unknown',{readSource}),error=>{
-     assert.equal(error.code,'ERR_ASSERTION');assert(error.message.startsWith('final M7 linked reader must be a function'));
-     assert.equal(error.actual,typeof readSource);assert.equal(error.expected,'function');return true;
+    const reject=(input,message)=>assert.throws(()=>project(path,input,{readSource}),{
+     code:'ERR_ASSERTION',actual:typeof readSource,expected:'function',message,
     });
+    reject(epochSource,/^GameUI extraction linked reader must be a function/);
+    // Exact source continuations still reject an invalid reader through the
+    // frozen inner guard. It reaches the outer epoch only with a real reader.
+    if(epochSource!==source)reject(source,/^final M7 linked reader must be a function/);
+    reject(source+'\n-- unknown',/^final M7 linked reader must be a function/);
    }
   }
  }
@@ -298,12 +303,9 @@ test('pre-component unsupported feature and art compositions expose their exact 
  // The outer admits only a complete known current source, never foreign drift.
  const readSource=path=>preComponentUiCiSource(path,readFileSync(path,'utf8'));
  const featurePath='scripts/art/ready-card-runtime.mjs',featureOwner='scripts/native-script-batch.mjs';
- const featureRaw=readFileSync(featurePath,'utf8'),featureSource=releaseBootstrapCiSource(featurePath,featureRaw);
- assert.equal(hash(featureRaw.replaceAll('\r\n','\n')),capacityReviewCiPacket.files[featurePath].current.sha256);
- assert.equal(featureSource,capacityReviewCiPacket.files[featurePath].before.source);
  const featureActual=hash(readFileSync(featureOwner,'utf8').replaceAll('\r\n','\n')),featureExpected=betaSources[featureOwner].sha256;
  assert.notEqual(featureActual,featureExpected);
- for(const project of [currentFeature,currentHistory])assert.throws(()=>project(featurePath,featureSource,{readSource}),error=>{
+ for(const project of [currentFeature,currentHistory])assert.throws(()=>project(featurePath,readFileSync(featurePath,'utf8'),{readSource}),error=>{
   assert.equal(error.code,'ERR_ASSERTION');
   assert(error.message.startsWith('unreviewed beta linked owner; linked source drift: '+featureOwner));
   assert.equal(error.actual,featureActual);assert.equal(error.expected,featureExpected);return true;
@@ -326,12 +328,9 @@ test('pre-component unsupported feature and art compositions expose their exact 
  }finally{process.chdir(cwd);rmSync(directory,{recursive:true,force:true});}
 });
 
-test('pre-capacity feature consumers reject the exact first unsupported component-era linked owner',()=>{
+test('current feature consumers reject the exact first unsupported component-era linked owner',()=>{
  const path='scripts/art/ready-card-runtime.mjs',owner='scripts/native-candidate-ui-cache.mjs';
- const raw=readFileSync(path,'utf8'),source=releaseBootstrapCiSource(path,raw);
- assert.equal(hash(raw.replaceAll('\r\n','\n')),capacityReviewCiPacket.files[path].current.sha256);
- assert.equal(source,capacityReviewCiPacket.files[path].before.source);
- const actual=hash(readFileSync(owner,'utf8').replaceAll('\r\n','\n')),expected=betaSources[owner].sha256;
+ const source=readFileSync(path,'utf8'),actual=hash(readFileSync(owner,'utf8').replaceAll('\r\n','\n')),expected=betaSources[owner].sha256;
  assert.notEqual(actual,expected);
  for(const project of [currentFeature,currentHistory])assert.throws(()=>project(path,source),error=>{
   assert.equal(error.code,'ERR_ASSERTION');assert(error.message.startsWith('unreviewed beta linked owner; linked source drift: '+owner));
@@ -391,13 +390,4 @@ test('original helper closure rejects changed reused or embedded bytes and wrong
   }else assert.throws(()=>originalHelperInputs({[path]:{...binding,source:binding.source+'\n'}}),/original helper complete bytes/);
   assert.throws(()=>originalHelperInputs({[path]:{...binding,gitBlob:'0'.repeat(40)}}),/original helper Git blob/);
  }
-});
-
-
-test('capacity ready-card source remains raw to unsupported old feature consumers without authorizing linked reads',()=>{
- const path='scripts/art/ready-card-runtime.mjs',raw=readFileSync(path,'utf8');
- const noRead=()=>{throw Error('unrecognized source must not authorize linked reads');};
- for(const project of [currentFeature,currentHistory])for(const source of [raw,raw.replaceAll('\n','\r\n'),raw+'\n-- unknown'])
-  assert.equal(project(path,source,{readSource:noRead}),source);
- for(const source of [raw+'\n',raw.slice(1),raw.replaceAll('\n','\r\r\n')])assert.equal(releaseBootstrapCiSource(path,source),source);
 });

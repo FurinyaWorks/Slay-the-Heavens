@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 15:41'
-updated_date: '2026-11-15 16:54'
+updated_date: '2026-11-17 15:57'
 labels:
   - 待验
   - delivery-verify
@@ -62,4 +62,6 @@ PR584本地历史合同修复：六项Draft/Fast完整外层投影接入既有�
 2026-11-16 Release bootstrap43715790645原14JS失败job日志归并10唯一断言。独立36b9树以相同测试/helper仅替完整quality.yml，B1/B2/B4 c240=3/3 PASS、36=3/3 RED，确认bootstrap前驱边界。仅bootstrap3workflow完整认证接续，不依赖P0；保当前物理Release触发/cap/artifact/readonly/实际硬超时，历史逆变换与原负控用明确旧输入。10原失败名+新exact/raw及2旧来源合同14/14通过，raw仍876JS/1423Lua，92旧gzip与workflow/runtime/调度配置未改；新增live预测仅诊断，原frozen预算断言保留。原日志矩阵在主树.artifacts/release-bootstrap-failures-1116，当前证据在独立树.artifacts/bootstrap-compat-1116。未73/Full/手机，状态/Owner/AC不变；独立审后再协调PR。
 
 政策来源补记：Owner已明确docs/CI.md的2026-11-07决定仍有效，Windows30/POSIX20是性能目标，预测与60秒预留只作提示，不凭预测阻交付。#684(ae5194a7)及#690(11ec36bf/base36b9)新增live target门禁不是新的Owner指令；本bootstrap-only raw合同不机械采用它们，保原实际执行guard并输出预测/overrun。#690 PC navigation不是本片4raw来源，不重复产品实现，不改他人PR/JSON或冻结业务。
+
+2026-11-17本轮CI治理：主仓规则保持Required/Strict/SQUASH-ALLGREEN及原发版保护，不采用额外三项原生人工审批。真实682队列收据证明原审B0=c240与实际非首组父Q=b85不同，旧同BASE夹具不足，193可部署判定已撤销，正在分离原独审/正式CI与实际Queue Full证明；不改写旧收据。703与707已完成Release原生自动合并，但Release无Queue；本次712高风险Full也不能代验安全Fast样本。AC与待验状态保持，真实安全Fast闭环尚未完成。追溯 https://github.com/FurinyaWorks/Slay-the-Heavens/pull/712 。
 <!-- SECTION:NOTES:END -->

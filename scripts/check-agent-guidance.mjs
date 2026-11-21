@@ -1,6 +1,7 @@
 import { readFileSync, statSync, realpathSync } from 'node:fs';
 import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { checkHostedSlice } from './check-pr-slice.mjs';
 
 const limits = {
   'AGENTS.md': { lines: 80, characters: 5000 },
@@ -8,6 +9,29 @@ const limits = {
   '.cursor/rules/miliastra.mdc': { lines: 16, characters: 1000 },
 };
 const outside = path => path === '..' || path.startsWith('../') || path.startsWith('..\\') || isAbsolute(path);
+
+function headingIds(source) {
+  const ids = new Set();
+  let fence;
+  for (const line of source.split(/\r\n?|\n/)) {
+    const [, marker, rest] = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line) ?? [];
+    if (fence) {
+      if (marker?.[0] === fence[0] && marker.length >= fence.length && /^[ \t]*$/.test(rest)) fence = undefined;
+      continue;
+    }
+    if (marker && (marker[0] === '~' || !rest.includes('`'))) {
+      fence = marker;
+      continue;
+    }
+    const [, heading] = /^ {0,3}#{1,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$/.exec(line) ?? [];
+    if (heading === undefined) continue;
+    const slug = heading.trim().toLowerCase().replace(/[^\p{L}\p{M}\p{N}_ \t-]/gu, '').replace(/[ \t]/g, '-');
+    let id = slug;
+    for (let suffix = 1; ids.has(id); suffix++) id = `${slug}-${suffix}`;
+    ids.add(id);
+  }
+  return ids;
+}
 
 export function auditGuidance(root = '.') {
   root = realpathSync(root);
@@ -21,13 +45,16 @@ export function auditGuidance(root = '.') {
     metrics.push({ file, lines, characters });
     if (lines > limit.lines || characters > limit.characters) errors.push(`${file}: budget exceeded (${lines}/${limit.lines} lines, ${characters}/${limit.characters} characters)`);
     let pointsToAgents = false;
-    // Entry files use inline Markdown links. Remote links and in-page anchors
-    // do not require network access; local file targets must resolve in-tree.
+    // Entry links use inline Markdown and plain ATX headings for local anchors.
     for (const [, raw] of source.matchAll(/\[[^\]\n]+\]\(([^)\n]+)\)/g)) {
-      if (/^(?:https?:|mailto:|miliastra:|plugin:|#)/i.test(raw)) continue;
-      const target = resolve(root, dirname(file), raw.split('#')[0]);
+      if (/^(?:https?:|mailto:|miliastra:|plugin:)/i.test(raw)) continue;
       try {
+        const [path, anchor] = raw.split('#');
+        const target = path ? resolve(root, dirname(file), decodeURIComponent(path)) : resolve(root, file);
         if (outside(relative(root, target)) || outside(relative(root, realpathSync(target))) || !statSync(target).isFile()) throw new Error('invalid');
+        if (anchor && /\.mdc?$/i.test(target) && !headingIds(readFileSync(target, 'utf8')).has(decodeURIComponent(anchor))) {
+          throw new Error('invalid heading');
+        }
         if (relative(root, target) === 'AGENTS.md') pointsToAgents = true;
       } catch { errors.push(`${file}: invalid local link ${raw}`); }
     }
@@ -46,4 +73,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const result = auditGuidance();
   console.log(JSON.stringify(result, null, 2));
   if (result.errors.length) process.exitCode = 1;
+  else {
+    try { checkHostedSlice(); }
+    catch (error) { console.error(error.message); process.exitCode = 1; }
+  }
 }

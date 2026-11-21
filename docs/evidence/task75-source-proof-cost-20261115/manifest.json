@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "encoding": "gzip JSON with exact per-file base64",
+  "archiveSha256": "c730d1a13f7471cbe672ae5587eeed0bc1919cc934fca410e9a26e5acc08da86",
+  "files": [
+    {
+      "name": "after.test.mjs",
+      "bytes": 14711,
+      "sha256": "5b62355f539ae77e5a6f45d5839ed1a38d3518303b85ab8648f2c85c7987dbcb"
+    },
+    {
+      "name": "before.test.mjs",
+      "bytes": 14521,
+      "sha256": "f10dd63401b93d753fb35905d6a7bd9c91e27a24fffd71ff1922435c72d6dab3"
+    },
+    {
+      "name": "candidate.test.mjs",
+      "bytes": 14532,
+      "sha256": "603020d5d29e8c3d66886609f2dd7e3a142321ec63bb7465c23adf575db4a77e"
+    },
+    {
+      "name": "collect.mjs",
+      "bytes": 2002,
+      "sha256": "be9827b17adcd428bfd1ae6448c32c209cd5d2643ad6ef2f5454d89c6a98fe74"
+    },
+    {
+      "name": "exact.diff",
+      "bytes": 1864,
+      "sha256": "13e252bb651d66a14d47a08731375385a10894130144c493f5b1db75c543db6f"
+    },
+    {
+      "name": "handoff.json",
+      "bytes": 2326,
+      "sha256": "0538dd27f1d039bbe34ab4685e0be71833a9cc04cb53a626fa3482dfe6e26e55"
+    },
+    {
+      "name": "named-owner-matrix.log",
+      "bytes": 270,
+      "sha256": "217bf8a159ff815389d08ab524d1e689c5dd83150f306cfe623ea93bde7d6b55"
+    },
+    {
+      "name": "probe.json",
+      "bytes": 827,
+      "sha256": "004a982bed6a51364a3a5b8899fa8b9127d872d21b49c2fa8bc4565591ac4127"
+    },
+    {
+      "name": "probe.log",
+      "bytes": 679,
+      "sha256": "45cb9335d4ef903cd6c870b1e967f5a8ffe745d34a4294d76a7ad5187d1ca13e"
+    },
+    {
+      "name": "probe.mjs",
+      "bytes": 5134,
+      "sha256": "41645658acc354d4194f2694370db4f67e6fc54f8b09848d765dcdbf5fe0142c"
+    }
+  ]
+}

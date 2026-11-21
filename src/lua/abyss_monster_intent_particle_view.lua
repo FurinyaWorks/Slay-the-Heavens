@@ -11,8 +11,6 @@ local M={}
 local function call(control,name,...)assert(control[name](control,...)~=false,'intent particle native write rejected: '..name)end
 local function createIntent(state)Particles.createIntent(state);state.createPending=true end
 function M.new(platform,picture,tint)
- -- Values contain only source effects, never a native handle/back-reference.
- local configured=setmetatable({},{__mode='k'})
  local self={states={},outputs={},seenEvents=setmetatable({},{__mode="k"})}
  function self.release(_,box,engineDestroyed)
   local output=self.outputs[box]
@@ -116,16 +114,10 @@ function M.new(platform,picture,tint)
    for _,row in ipairs(rows[layer])do
     local control=assert(pool:find(row.id));local e=row.effect
     local function write(target,name,...)valid(control,row.id);call(target,name,...);valid(control,row.id)end
-    local icon=control:GetChild('icon')
-    if configured[control]~=e then
-     -- Source texture/bounds and icon-local geometry are immutable for this
-     -- effect lifetime. Commit only after all native writes and owner checks.
-     for _,name in ipairs({'edge','body','badge','count','hit'})do write(control:GetChild(name),'SetVisible',false)end
-     write(icon,'SetVisible',true)
-     valid(control,row.id);assert(picture(icon,e.textureKey=='TINY_STAR' and Theme.image.star or Theme.icon.intent.unknown)~=false,'intent particle image rejected');valid(control,row.id)
-     write(icon,'SetAnchoredPosition',0,0);write(icon,'SetSizeDelta',e.width,e.height)
-     configured[control]=e
-    end
+    for _,name in ipairs({'edge','body','badge','count','hit'})do write(control:GetChild(name),'SetVisible',false)end
+    local icon=control:GetChild('icon');write(icon,'SetVisible',true)
+    valid(control,row.id);picture(icon,e.textureKey=='TINY_STAR' and Theme.image.star or Theme.icon.intent.unknown);valid(control,row.id)
+    write(icon,'SetAnchoredPosition',0,0);write(icon,'SetSizeDelta',e.width,e.height)
     write(icon,'SetLocalScale',e.scale,e.scale,1);write(icon,'SetLocalRotation',0,0,e.rotationDeg)
     valid(control,row.id);tint(icon,{r=e.color[1]*255,g=e.color[2]*255,b=e.color[3]*255,a=e.color[4]*255});valid(control,row.id)
     write(control,'SetAnchoredPosition',e.centerX-g.x,e.centerY-g.y);write(control,'SetVisible',allowed)

@@ -63,7 +63,6 @@ export function addClientTemplate({mapPath,name,...template}){
  const indices={AbyssDeckCard:1073741846,AbyssReadyCardImage:1073741847,AbyssReadyCardGroup:1073741848,
   AbyssMonsterActor:1073741849,AbyssMonsterPower:1073741850,AbyssOfficialBackgroundImage:1073741851,
   AbyssSelectionHalfTriangle:1073741852,AbyssBattlePileCard:1073741853};
- if(/^AbyssSharedCardFace[1-9][0-9]*$/.test(name))indices[name]=1073741866+Number(name.slice('AbyssSharedCardFace'.length));
  if(!Object.hasOwn(indices,name))throw Error('Unregistered native template '+name);
  return {mapPath,templateIndex:indices[name]};
 }

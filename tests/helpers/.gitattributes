@@ -1,3 +1,0 @@
-# These CI packets authenticate raw Git bytes before parsing on every OS.
-task111-capacity-ci-source.json text eol=lf
-task111-capacity-review-ci-source.json text eol=lf

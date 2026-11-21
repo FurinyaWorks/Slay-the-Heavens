@@ -40,7 +40,7 @@ function M.install(owner, _ownership, _host, dependencies)
         local rows = EnemyView.slots(battle,owner.feedback)
         for _, entry in ipairs(rows) do
             local enemy = entry.actor
-            local geometry=EnemyView.geometry(enemy,false)
+            local geometry=EnemyView.geometry(enemy)
             if math.abs(g.x-geometry.hitX)<=geometry.hitWidth/2
                 and math.abs(g.y-geometry.hitY)<=geometry.hitHeight/2
                 and Actors.isActive(enemy) then
@@ -57,7 +57,7 @@ function M.install(owner, _ownership, _host, dependencies)
         if math.abs(aim.x)>Theme.canvas.base[1]/2 or math.abs(aim.y)>Theme.canvas.base[2]/2 then return false,nil,true end
         local rows=EnemyView.slots(aim.battle,owner.feedback)
         for _,entry in ipairs(rows)do
-            local geometry=EnemyView.geometry(entry.actor,false)
+            local geometry=EnemyView.geometry(entry.actor)
             if Actors.isActive(entry.actor) and math.abs(aim.x-geometry.hitX)<=geometry.hitWidth/2
                 and math.abs(aim.y-geometry.hitY)<=geometry.hitHeight/2 then
                 return true,entry.index,true

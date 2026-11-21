@@ -167,3 +167,103 @@ test('CLI reads the non-calendar policy and remains read-only for ALLOW and HOLD
     assert.equal(readFileSync(path,'utf8'),before);
   }
 });
+test('closed research prerequisites never replace the separate rollout approval',()=>{
+  const task={id:'TASK-97',status:'To Do',dependencies:['TASK-96','TASK-105']};
+  const completed=['TASK-96','TASK-105'].map(id=>({id,status:'Done',acCount:1,acCompleted:1}));
+  const result=evaluateIntake({id:task.id,task,policy,tasks:[task],completed});
+  assert.equal(result.decision,'HOLD');
+  assert.deepEqual(result.reasons,['explicit Owner approval required']);
+});
+
+test('CLI holds a real unfinished dependency chain without changing known To Do or Blocked records',t=>{
+  const root=fixture(t),script=fileURLToPath(new URL('../scripts/check-task-intake.mjs',import.meta.url));
+  writeRawTask(root,'---\nid: TASK-25\nstatus: To Do\ndependencies: [TASK-26]\n---\n');
+  writeTask(root,'TASK-26','Done');
+  const intermediate=join(root,'backlog/tasks/task-26 - fixture.md');
+  writeFileSync(intermediate,'---\nid: TASK-26\nstatus: Done\ndependencies:\n  - TASK-27\n---\n');
+  for(const status of ['To Do','Blocked']) {
+    writeTask(root,'TASK-27',status);
+    const path=join(root,'backlog/tasks/task-27 - fixture.md'),before=readFileSync(path,'utf8');
+    const result=spawnSync(process.execPath,[script,'TASK-25'],{cwd:root,encoding:'utf8'});
+    assert.ifError(result.error);
+    assert.equal(result.status,1,result.stdout+result.stderr);
+    assert.match(result.stdout,/^HOLD TASK-25\n/);
+    assert.match(result.stderr,/TASK-25 -> TASK-26 -> TASK-27/);
+    assert.ok(result.stderr.includes(status),result.stderr);
+    assert.equal(readFileSync(path,'utf8'),before);
+  }
+});
+
+test('CLI dependency readiness handles native lists, completed records, AC and structural errors',t=>{
+  const script=fileURLToPath(new URL('../scripts/check-task-intake.mjs',import.meta.url));
+  const cases=[
+    {name:'satisfied',field:'dependencies: [task-00026]',depStatus:'Done',expected:0},
+    {name:'completed satisfies',field:'dependencies:\n  - TASK-26',location:'completed',depStatus:'Done',expected:0},
+    {name:'completed pending',field:'dependencies: [TASK-26]',location:'completed',depStatus:'To Do',reason:/not Done/},
+    {name:'unchecked Done AC',field:'dependencies: [TASK-26]',depStatus:'Done',ac:'- [ ] #1 pending',reason:/unchecked AC/},
+    {name:'checked Done AC',field:'dependencies: [TASK-26]',depStatus:'Done',ac:'- [x] #1 delivered',expected:0},
+    {name:'missing',field:'dependencies: [TASK-26]',reason:/TASK-25 -> TASK-26.*missing/},
+    {name:'archive not authoritative',field:'dependencies: [TASK-26]',location:'archive/tasks',depStatus:'Done',reason:/missing/},
+    {name:'cross-directory duplicate',field:'dependencies: [TASK-26]',depStatus:'Done',duplicate:true,reason:/ambiguous/},
+    {name:'malformed duplicate cannot hide its header identity',field:'dependencies: [TASK-26]',depStatus:'Done',
+      duplicate:true,duplicateName:'task-99',duplicateStatus:'Done\nstatus: To Do',reason:/ambiguous/},
+    {name:'self-cycle',field:'dependencies: [task-025]',reason:/TASK-25 -> TASK-25.*cycle/},
+    {name:'transitive cycle',field:'dependencies: [TASK-26]',depStatus:'Done',depField:'dependencies: [TASK-25]',reason:/TASK-25 -> TASK-26 -> TASK-25.*cycle/},
+    {name:'scalar dependency',field:'dependencies: TASK-26',reason:/malformed dependencies/},
+    {name:'bad transitive field',field:'dependencies: [TASK-26]',depStatus:'Done',depField:'dependencies: null',reason:/TASK-25 -> TASK-26.*malformed dependencies/},
+    {name:'untrusted dependency status',field:'dependencies: [TASK-26]',depStatus:'Done\n  Blocked',reason:/metadata/},
+  ];
+  for(const example of cases) {
+    const root=fixture(t),snapshots=[];
+    const save=(path,source)=>{writeFileSync(path,source);snapshots.push([path,source]);};
+    save(join(root,'backlog/tasks/task-25 - fixture.md'),`---\nid: TASK-25\nstatus: To Do\n${example.field}\n---\n`);
+    if(example.depStatus) {
+      const dir=join(root,'backlog',example.location??'tasks');
+      mkdirSync(dir,{recursive:true});
+      save(join(dir,'task-26 - fixture.md'),`---\nid: TASK-26\nstatus: ${example.depStatus}\n${example.depField??''}\n---\n${example.ac?'<!-- AC:BEGIN -->\n'+example.ac+'\n<!-- AC:END -->':''}`);
+    }
+    if(example.duplicate) {
+      const dir=join(root,'backlog/completed');mkdirSync(dir,{recursive:true});
+      save(join(dir,`${example.duplicateName??'task-0026'} - duplicate.md`),`---\nid: task-0026\nstatus: ${example.duplicateStatus??'Done'}\n---\n`);
+    }
+    const result=spawnSync(process.execPath,[script,'TASK-25'],{cwd:root,encoding:'utf8'});
+    assert.ifError(result.error);
+    assert.equal(result.status,example.expected??1,example.name+'\n'+result.stdout+result.stderr);
+    if(example.reason)assert.match(result.stderr,example.reason,example.name);
+    for(const [path,source] of snapshots)assert.equal(readFileSync(path,'utf8'),source,example.name);
+  }
+});
+
+test('normalized target identity cannot bypass approval or duplicate and location checks',t=>{
+  const root=fixture(t),script=fileURLToPath(new URL('../scripts/check-task-intake.mjs',import.meta.url));
+  writeTask(root,'TASK-25');writeTask(root,'TASK-85');
+  for(const [id,expected,reason] of [['task-00025',0],['task-00085',1,/Owner approval/]]) {
+    const result=spawnSync(process.execPath,[script,id],{cwd:root,encoding:'utf8'});
+    assert.equal(result.status,expected,result.stdout+result.stderr);
+    if(reason)assert.match(result.stderr,reason);
+  }
+  mkdirSync(join(root,'backlog/completed'),{recursive:true});
+  writeFileSync(join(root,'backlog/completed/task-0025 - duplicate.md'),'---\nid: task-0025\nstatus: Done\n---\n');
+  assert.equal(loadTask('TASK-25',root),null);
+  const result=spawnSync(process.execPath,[script,'TASK-25'],{cwd:root,encoding:'utf8'});
+  assert.equal(result.status,1,result.stdout+result.stderr);
+  assert.match(result.stderr,/ambiguous/);
+  writeFileSync(join(root,'backlog/completed/task-30 - fixture.md'),'---\nid: TASK-30\nstatus: To Do\n---\n');
+  assert.equal(loadTask('TASK-30',root),null,'completed is dependency-only, even if its status claims To Do');
+});
+
+test('short-branch start holds blocked dependencies even with a valid plan',t=>{
+  const root=fixture(t);
+  writeRawTask(root,'---\nid: TASK-25\nstatus: To Do\ndependencies: [TASK-26]\n---\n');
+  writeTask(root,'TASK-26','Blocked');
+  const script=fileURLToPath(new URL('../scripts/check-pr-slice.mjs',import.meta.url));
+  const run=()=>spawnSync(process.execPath,[script,'--start','TASK-25','--slice','Update one caller','--verify','npm run test:related'],{cwd:root,encoding:'utf8'});
+  const held=run();
+  assert.equal(held.status,1,held.stdout+held.stderr);
+  assert.match(held.stdout,/^HOLD TASK-25\n/);
+  assert.match(held.stderr,/TASK-25 -> TASK-26: dependency not Done \(Blocked\)/);
+  writeTask(root,'TASK-26','Done');
+  const allowed=run();
+  assert.equal(allowed.status,0,allowed.stdout+allowed.stderr);
+  assert.match(allowed.stdout,/^ALLOW TASK-25\n/);
+});

@@ -1,4 +1,4 @@
-import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
@@ -233,7 +233,7 @@ test('reviewed workflow inverse rejects partial wiring and preserves original ar
  assert.match(physical,/permissions:\n  contents: read/);
  assert.match(physical,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
  assert(physical.includes('run: node scripts/publish-full-quality.mjs'));
- const workflow=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',releaseFreezeCiBefore('.github/workflows/quality.yml',physical));
+ const workflow=releaseBootstrapWorkflowBefore('.github/workflows/quality.yml',physical);
  const before=beforeAutoMergeWorkflow(workflow);assert.equal(typeof before,'string');assert(!before.includes('full-quality'));
  for(const drift of [workflow.replace('statuses: write','statuses: read'),
   workflow.replace('run: node scripts/publish-full-quality.mjs','run: echo forged'),
@@ -244,7 +244,7 @@ test('reviewed workflow inverse rejects partial wiring and preserves original ar
 });
 
 test('execution slack restores only the complete approved workflow edit for historical guards',()=>{
- const current=beforeDraftQualityWorkflow(releaseFreezeCiBefore('.github/workflows/quality.yml',readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n')));
+ const current=beforeDraftQualityWorkflow(beforePreflightSource('.github/workflows/quality.yml',readFileSync('.github/workflows/quality.yml','utf8')).replaceAll('\r\n','\n'));
  for(const eol of ['\n','\r\n']){
   const source=current.replaceAll('\n',eol),old=beforeExecutionTimeoutWorkflow(source);
   assert.notEqual(old,source);

@@ -1,325 +1,168 @@
-import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
+import {readFileSync,mkdirSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
-import {resolve} from 'node:path';
-import {randomUUID} from 'node:crypto';
+import {resolve,join} from 'node:path';
+import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
-import {collectPrDelivery,verifyDelivery,isLowRiskDocumentationChange} from './verify-delivery.mjs';
+import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches} from './repository-identity.mjs';
-import {queueRulesFingerprint} from './merge-queue-policy.mjs';
-
-// Status on the reviewed HEAD, not a general-purpose label or an old CI run.
-// This status MUST be required by the develop ruleset before arming is allowed.
+import {collectIndependentAiReview,parseIndependentAiReview,independentAiReportErrors,INDEPENDENT_AI_REVIEW_MARKER,TRUSTED_REVIEW_COORDINATOR_IDS} from './independent-ai-review.mjs';
+export {parseDependencies} from './independent-ai-review.mjs';
 export const reviewContext='independent-review';
-export const requiredContexts=['check','presentation','engineering-posix','inventory','full-quality',reviewContext];
-const validSha=sha=>typeof sha==='string'&&/^[0-9a-f]{40}$/.test(sha);
-const prId=id=>Number.isSafeInteger(id)&&id>0;
+export const requiredContexts=['check','presentation','engineering-posix','inventory',reviewContext,'pr-quality'];
+const validSha=s=>typeof s==='string'&&/^[a-f0-9]{40}$/.test(s);
+function gh(...args){
+ const p=spawnSync('gh',args,{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});
+ if(p.error||p.status!==0)throw Error('GitHub CLI failed: '+(p.error?.message??p.stderr));
+ return p.stdout;
+}
+const json=(query,...args)=>JSON.parse(query(...args));
 
-export function parseDependencies(body) {
-  const declarations=[...(body??'').matchAll(/^\s*Depends-on:\s*(.*?)\s*$/gim)];
-  if(declarations.length!==1)throw Error('PR body must declare exactly one Depends-on: none or Depends-on: #123, #456 line');
-  const value=declarations[0][1].trim();
-  if(/^none$/i.test(value))return [];
-  const entries=value.split(/[\s,]+/).filter(Boolean);
-  if(!entries.length||entries.some(item=>!/^#[1-9][0-9]*$/.test(item)))
-    throw Error('Invalid Depends-on: use none or comma-separated #PR numbers in this repository');
-  return [...new Set(entries.map(item=>Number(item.slice(1))))];
+export function queueBypassActorsAllowed(ruleset,{allowAdministratorPullRequest=false}={}) {
+ if(!Object.hasOwn(ruleset??{},'bypass_actors'))return true; // Redacted metadata.
+ const actors=ruleset.bypass_actors;
+ return Array.isArray(actors)&&(actors.length===0||allowAdministratorPullRequest&&
+  isDeepStrictEqual(actors,[{actor_id:5,actor_type:'RepositoryRole',bypass_mode:'pull_request'}]));
 }
 
-export function autoMergeErrors({repo,settings,pr,baseSha,ruleset,review,dependencies,changedFiles}) {
-  const errors=[];
-  if(!projectRepositoryMatches(settings,repo)||!projectRepositoryMatches(pr?.head?.repo,repo)||
-    !projectRepositoryMatches(pr?.base?.repo,repo))errors.push('Unexpected project repository identity');
-  if(settings?.allow_auto_merge!==true||settings?.allow_squash_merge!==true)
-    errors.push('Repository auto-merge and squash must both be enabled');
-  if(!prId(pr?.number)||typeof pr?.node_id!=='string'||!pr.node_id.trim()||pr?.state!=='open'||pr?.merged||pr?.draft)errors.push('PR must be open, ready and unmerged');
-  if(pr?.base?.ref!=='develop'||!validSha(pr?.base?.sha)||!validSha(pr?.head?.sha))
-    errors.push('PR must target develop with valid HEAD and BASE SHAs');
-  if(pr?.head?.repo?.full_name!==repo)errors.push('Cross-repository PRs require manual handling');
-  if(pr?.mergeable!==true)errors.push('PR mergeability is conflicting or unknown');
-  if(!validSha(baseSha)||pr?.base?.sha!==baseSha)errors.push('Actual develop tip differs from the current PR base');
-  const labels=(pr?.labels??[]).map(label=>(typeof label==='string'?label:label?.name??'').toLowerCase());
-  if(labels.some(label=>['hold','blocked','do-not-merge','manual-merge','merge:manual','risk:critical'].includes(label)))
-    errors.push('PR has a manual/blocked merge label');
-  // Conservative scope: reject unsupported/glob rules rather than assume they protect develop.
-  if(!ruleset||ruleset.target!=='branch'||ruleset.enforcement!=='active'||
-    JSON.stringify(ruleset.conditions?.ref_name?.include)!==JSON.stringify(['refs/heads/develop'])||
-    !Array.isArray(ruleset.conditions?.ref_name?.exclude)||ruleset.conditions.ref_name.exclude.length)
-    errors.push('Active develop ruleset is missing');
-  const rules=ruleset?.rules??[];
-  const queues=rules.filter(rule=>rule.type==='merge_queue');
-  if(queues.length&&(queues.length!==1||queues[0].parameters?.merge_method!=='SQUASH'||
-    queues[0].parameters?.grouping_strategy!=='ALLGREEN'||!Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length))
-    errors.push('Native queue requires SQUASH, ALLGREEN and no bypass actors');
-  const checks=rules.find(rule=>rule.type==='required_status_checks');
-  const actualChecks=checks?.parameters?.required_status_checks??[];
-  if(checks?.parameters?.strict_required_status_checks_policy!==true)
-    errors.push('Auto-merge requires strict up-to-date branch protection; current non-strict queue cannot preserve reviewed BASE');
-  const admissionContexts=actualChecks.some(check=>check.context==='pr-quality')?
-    requiredContexts.map(name=>name==='full-quality'?'pr-quality':name):requiredContexts;
-  if(admissionContexts.includes('pr-quality')&&queues.length!==1)
-    errors.push('PR Fast admission requires the native Full Merge Queue');
-  for(const context of admissionContexts)if(!actualChecks.some(check=>check.context===context))
-    errors.push('Required status check missing from develop ruleset: '+context);
-  for(const context of admissionContexts.filter(name=>name!==reviewContext))
-    if(!actualChecks.some(check=>check.context===context&&check.integration_id===15368))
-      errors.push('Existing CI check must retain GitHub Actions as its required source: '+context);
-  if(actualChecks.some(check=>check.context===reviewContext&&check.integration_id!=null))
-    errors.push('independent-review must accept the status source used by the review coordinator');
-  const pull=rules.find(rule=>rule.type==='pull_request');
-  if(!pull?.parameters?.allowed_merge_methods?.includes('squash')||
-    pull.parameters.allowed_merge_methods.length!==1||pull.parameters.required_review_thread_resolution!==true||
-    !rules.some(rule=>rule.type==='required_linear_history'))
-    errors.push('develop must require squash-only PRs, resolved threads and linear history');
-  if(!Array.isArray(dependencies)||dependencies.some(dep=>dep?.merged!==true||dep?.base?.ref!=='develop'||dep?.contained!==true))
-    errors.push('A declared prerequisite PR is not confirmed merged');
-  if(review?.disposition==='low-risk-docs') {
-    if(!isLowRiskDocumentationChange(changedFiles,pr?.changed_files))
-      errors.push('Low-risk waiver is not valid for the complete changed-file list');
-  } else if(typeof review?.reviewId!=='string'||!review.reviewId.trim()||
-    review?.conclusion!=='pass'||!Array.isArray(review?.unresolved)||review.unresolved.length)
-    errors.push('Independent review is missing, unresolved, or unsuccessful');
-  if(review?.reviewedHeadSha!==pr?.head?.sha||review?.reviewedBaseSha!==baseSha)
-    errors.push('Review is stale for the current PR HEAD/BASE');
-  if(review?.repo!=null&&review.repo!==repo||review?.prNumber!=null&&review.prNumber!==pr?.number)
-    errors.push('Review belongs to a different repository/PR');
-  return errors;
+// GitHub owns merge authorization. This adapter validates the real independent
+// cloud AI report signed by the existing trusted coordinator and dispatches the existing CI gate; it never posts commit statuses.
+export function mergePolicyErrors({repo,settings,pr,ruleset}){
+ const errors=[];
+ if(!projectRepositoryMatches(settings,repo)||!projectRepositoryMatches(pr?.head?.repo,repo)||!projectRepositoryMatches(pr?.base?.repo,repo))errors.push('Unexpected project repository identity');
+ if(settings?.allow_auto_merge!==true||settings?.allow_squash_merge!==true)errors.push('Native auto-merge and squash must be enabled');
+ if(pr?.state!=='open'||pr.merged||pr.draft||pr.mergeable!==true||pr.base?.ref!=='develop')errors.push('PR must be ready, mergeable and target develop');
+ if((pr?.labels??[]).some(l=>['hold','blocked','do-not-merge','manual-merge','merge:manual','risk:critical'].includes((typeof l==='string'?l:l.name)?.toLowerCase())))errors.push('PR has a manual/blocked merge label');
+ const rules=ruleset?.rules??[],checks=rules.find(r=>r.type==='required_status_checks')?.parameters;
+ if(ruleset?.id!==25870651||ruleset.target!=='branch'||ruleset.enforcement!=='active'||!isDeepStrictEqual(ruleset.conditions?.ref_name,{include:['refs/heads/develop'],exclude:[]}))errors.push('Active develop ruleset is missing');
+ if(checks?.strict_required_status_checks_policy!==true)errors.push('Strict required checks must remain enabled');
+ for(const context of requiredContexts)if(!checks?.required_status_checks?.some(c=>c.context===context&&(context===reviewContext||c.integration_id===15368)))errors.push('Required check/source missing: '+context);
+ const q=rules.filter(r=>r.type==='merge_queue'),pull=rules.find(r=>r.type==='pull_request')?.parameters;
+ if(q.length!==1||q[0].parameters?.merge_method!=='SQUASH'||q[0].parameters?.grouping_strategy!=='ALLGREEN')errors.push('Native SQUASH ALLGREEN queue must remain enabled');
+ if(!isDeepStrictEqual(pull?.allowed_merge_methods,['squash'])||pull.required_review_thread_resolution!==true||!rules.some(r=>r.type==='required_linear_history'))errors.push('Squash, resolved threads and linear history must remain enabled');
+ if(!queueBypassActorsAllowed(ruleset,{allowAdministratorPullRequest:true}))errors.push('Unexpected explicit bypass actors');
+ return errors;
 }
-
-// Every unmerged readback must still name the reviewed PR and merge proposal.
-// Comparing SHAs alone does not bind the target branch or repository identity.
-function sameAdmission(actual,expected) {
-  return actual?.number===expected.number&&actual.node_id===expected.node_id&&actual.state==='open'&&actual.merged===false&&
-    actual.draft===false&&actual.mergeable===true&&actual.base?.ref==='develop'&&
-    actual.base.sha===expected.base.sha&&actual.head?.sha===expected.head.sha&&
-    actual.head.repo?.full_name===expected.head.repo.full_name&&
-    actual.head.repo?.id===expected.head.repo.id&&actual.base.repo?.id===expected.base.repo.id&&
-    actual.base.repo?.full_name===expected.base.repo.full_name&&
-    actual.merge_commit_sha===expected.merge_commit_sha&&actual.body===expected.body&&
-    actual.changed_files===expected.changed_files&&
-    JSON.stringify(actual.labels)===JSON.stringify(expected.labels);
+export function autoMergeErrors(options){
+ const errors=mergePolicyErrors(options),review=options.nativeReview;
+ if(review?.conclusion!=='pass')errors.push(...(review?.errors??['A trusted signed cloud AI review record is required']));
+ return errors;
 }
-
-function gh(...args) {
-  const p=spawnSync('gh',args,{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});
-  if(p.error||p.status!==0)throw Error('GitHub CLI failed: '+(p.error?.message??p.stderr??'unknown error'));
-  return p.stdout;
+// A complete report is an explicit attestation by the current trusted cloud
+// coordinator, who verified the actual independent session. The payload check
+// alone is not authorization: eligibility is collected again from real server
+// records after signing. Repeated commands reuse the same report identity and
+// cannot silently repost an old pass over a later rejection.
+export function signCloudReview(repo,number,report,query=gh,{dryRun=false}={}){
+ const api=path=>json(query,'api',path),repository=api('repositories/'+projectRepositoryId),actor=api('user');
+ if(!TRUSTED_REVIEW_COORDINATOR_IDS.includes(actor?.id)||typeof actor.login!=='string'||!/^[-a-z0-9]+$/i.test(actor.login))throw Error('Only the existing trusted cloud coordinator can attest an actual review');
+ const permission=api(`repos/${repo}/collaborators/${actor.login}/permission`),role=permission.role_name??permission.permission;
+ if(permission.user?.id!==actor.id||permission.user.login!==actor.login||!(role==='admin'&&permission.permission==='admin'||role==='maintain'&&['write','maintain'].includes(permission.permission)))throw Error('Current coordinator must retain maintain/admin authority');
+ const pr=api(`repos/${repo}/pulls/${number}`),target=api(`repos/${repo}/git/ref/heads/develop`),ruleset=api(`repos/${repo}/rulesets/25870651`);
+ const policyErrors=mergePolicyErrors({repo,settings:repository,pr,ruleset});
+ if(target.ref!=='refs/heads/develop'||target.object?.type!=='commit'||target.object.sha!==pr.base?.sha)policyErrors.push('Actual BASE changed before cloud attestation');
+ if(policyErrors.length)throw Error(policyErrors.join('\n'));
+ const sourceCommit=api(`repos/${repo}/git/commits/${pr.merge_commit_sha}`);
+ const payloadErrors=independentAiReportErrors(report,{repository,pr,baseSha:target.object.sha,sourceCommit,coordinator:actor});
+ if(payloadErrors.length)throw Error(payloadErrors.join('\n'));
+ const prior=[];
+ for(let page=1;;page++){
+  const rows=api(`repos/${repo}/pulls/${number}/reviews?per_page=100&page=${page}`);if(!Array.isArray(rows))throw Error('Complete server-side review records required');
+  prior.push(...rows);if(prior.some(row=>!Number.isSafeInteger(row?.id)||row.id<=0)||new Set(prior.map(row=>row.id)).size!==prior.length)throw Error('Malformed or duplicate server-side review page');
+  if(rows.length<100)break;
+ }
+ const sameId=prior.filter(row=>{
+  if(row.user?.id!==actor.id)return false;
+  try{return parseIndependentAiReview(row.body)?.provenance?.reviewId===report.provenance.reviewId;}catch{return false;}
+ });
+ if(sameId.length){
+  if(sameId.some(row=>row.commit_id!==pr.head.sha||!isDeepStrictEqual(parseIndependentAiReview(row.body),report)))throw Error('Review identity already belongs to different evidence; obtain a fresh actual independent review');
+  return {githubReviewId:sameId.sort((a,b)=>b.id-a.id)[0].id,reused:true};
+ }
+ if(dryRun)throw Error('Report is not yet signed on GitHub; dry-run cannot authorize an unsigned local JSON');
+ const dir=mkdtempSync(join(tmpdir(),'cloud-review-attestation-'));
+ try{
+  const file=join(dir,'review.json');writeFileSync(file,JSON.stringify({commit_id:pr.head.sha,event:'COMMENT',body:INDEPENDENT_AI_REVIEW_MARKER+'\n'+JSON.stringify(report,null,2)}));
+  const written=json(query,'api','--method','POST',`repos/${repo}/pulls/${number}/reviews`,'--input',file);
+  if(!Number.isSafeInteger(written.id)||written.id<=0||written.state!=='COMMENTED'||written.user?.id!==actor.id||written.commit_id!==pr.head.sha)throw Error('GitHub cloud attestation identity was not confirmed');
+  return {githubReviewId:written.id,reused:false};
+ }finally{rmSync(dir,{recursive:true,force:true});}
 }
-function json(query,...args) {return JSON.parse(query(...args));}
-
-export function collectEligibility(repo,number,review,query=gh) {
-  const pr=json(query,'api','repos/'+repo+'/pulls/'+number);
-  if(pr?.number!==number)throw Error('GitHub returned a different PR identity');
-  const settings=json(query,'api','repos/'+repo);
-  const ruleset=json(query,'api','repos/'+repo+'/rulesets/25870651');
-  const target=json(query,'api','repos/'+repo+'/git/ref/heads/develop');
-  if(target?.ref!=='refs/heads/develop'||target.object?.type!=='commit'||!validSha(target.object.sha))
-    throw Error('Cannot read the actual develop commit');
-  const dependsOn=parseDependencies(pr.body);
-  if(dependsOn.includes(number))throw Error('PR cannot depend on itself');
-  const dependencies=dependsOn.map(id=>{
-    const dep=json(query,'api','repos/'+repo+'/pulls/'+id);
-    if(dep?.merged!==true||dep?.base?.ref!=='develop'||!validSha(dep.merge_commit_sha))return dep;
-    const comparison=json(query,'api','repos/'+repo+'/compare/'+dep.merge_commit_sha+'...'+target.object.sha);
-    return {...dep,contained:['ahead','identical'].includes(comparison?.status)&&
-      comparison?.merge_base_commit?.sha===dep.merge_commit_sha};
-  });
-  let changedFiles;
-  if(review?.disposition==='low-risk-docs') {
-    const pages=json(query,'api','--paginate','--slurp','repos/'+repo+'/pulls/'+number+'/files?per_page=100');
-    if(!Array.isArray(pages)||!pages.length||pages.some(page=>!Array.isArray(page)))
-      throw Error('Cannot read all changed files for a low-risk waiver');
-    changedFiles=pages.flat().map(file=>({filename:file?.filename,status:file?.status,sha:file?.sha}))
-      .sort((a,b)=>a.filename<b.filename?-1:a.filename>b.filename?1:0);
-  }
-  if(!validSha(pr.merge_commit_sha))throw Error('GitHub has not produced the exact proposed merge commit');
-  const testedCommit=json(query,'api','repos/'+repo+'/commits/'+pr.merge_commit_sha);
-  const parents=(testedCommit.parents??[]).map(p=>p.sha);
-  if(JSON.stringify(parents)!==JSON.stringify([target.object.sha,pr.head?.sha])||
-    !validSha(testedCommit.commit?.tree?.sha))
-    throw Error('Proposed merge commit is stale or lacks the reviewed source tree');
-  const errors=autoMergeErrors({repo,pr,settings,baseSha:target.object.sha,ruleset,review,dependencies,changedFiles});
-  const queueRequired=ruleset?.rules?.some(rule=>rule.type==='merge_queue')===true;
-  let rulesFingerprint;
-  if(queueRequired)try{rulesFingerprint=queueRulesFingerprint(ruleset);}catch(error){errors.push(error.message);}
-  return {pr,baseSha:target.object.sha,headSha:pr.head?.sha,dependsOn,errors,
-    queueRequired,rulesFingerprint,
-    fastAdmission:ruleset?.rules?.find(rule=>rule.type==='required_status_checks')?.parameters?.required_status_checks?.some(check=>check.context==='pr-quality')===true,
-    tested:pr.merge_commit_sha,parents,sourceTree:testedCommit.commit.tree.sha,changedFiles};
+export function collectEligibility(repo,number,review,query=gh){
+ const api=path=>json(query,'api',path),settings=api('repositories/'+projectRepositoryId);
+ const nativeReview=collectIndependentAiReview({api,prNumber:number});
+ const pr=api('repos/'+repo+'/pulls/'+number),ruleset=api('repos/'+repo+'/rulesets/25870651');
+ const errors=autoMergeErrors({repo,settings,pr,ruleset,nativeReview});
+ const id=typeof review==='number'?review:review?.githubReviewId;
+ if(!Number.isSafeInteger(id)||id!==nativeReview.githubReviewId)errors.push('Requested server-side Review ID differs from the verified native approval');
+ if(pr.head?.sha!==nativeReview.head||pr.base?.sha!==nativeReview.base||pr.merge_commit_sha!==nativeReview.mergeCommitSha)errors.push('PR changed during native review collection');
+ return {pr,ruleset,nativeReview,errors,headSha:nativeReview.head,baseSha:nativeReview.base,sourceTree:nativeReview.tree,tested:nativeReview.mergeCommitSha,defaultBranch:settings.default_branch};
 }
-
-export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,loadCheckout,persist=()=>{}}={}) {
-  const before=collectEligibility(repo,number,review,query);
-  if(before.errors.length)throw Error(before.errors.join('\n'));
-  // Read the actual branch ref and PR a second time immediately before writing.
-  const current=collectEligibility(repo,number,review,query);
-  if(current.errors.length||before.headSha!==current.headSha||before.baseSha!==current.baseSha||before.queueRequired!==current.queueRequired||before.rulesFingerprint!==current.rulesFingerprint||
-    !sameAdmission(current.pr,before.pr))
-    throw Error('PR or review eligibility changed while preparing auto-merge: '+current.errors.join('; '));
-  if(before.tested!==current.tested||before.sourceTree!==current.sourceTree)
-    throw Error('Proposed merge commit changed while preparing auto-merge');
-  const proof={schemaVersion:4,kind:'auto-merge-arm',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',
-    head:current.headSha,base:current.baseSha,tested:current.tested,parents:current.parents,
-    sourceTree:current.sourceTree,review,targetBeforeSha:before.baseSha,targetAfterSha:current.baseSha,
-    ...(current.queueRequired?{queueRulesFingerprint:current.rulesFingerprint}:{}),
-    ...(review?.disposition==='low-risk-docs'?{changedFileCount:current.pr.changed_files,changedFiles:current.changedFiles}:{})};
-  // The server-side full-quality context remains pending until the existing
-  // aggregate has checked every actual shard. Review authorization can precede
-  // that result without claiming a successful Full preflight.
-  const latest=()=>{
-    const pages=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/workflows/quality.yml/runs?event=pull_request&head_sha=${current.headSha}&per_page=100`);
-    return pages.flatMap(p=>p.workflow_runs).filter(r=>r.head_sha===current.headSha&&
-      r.event==='pull_request'&&r.path==='.github/workflows/quality.yml'&&r.pull_requests?.some(p=>p.number===number))
-      .sort((a,b)=>b.id-a.id)[0];
-  };
-  const verifyWitness=()=>{
-    const preflight=proof.fastPreflight??proof.fullPreflight;
-    const run=latest(),expected=preflight?
-      {id:preflight.runId,attempt:preflight.attempt}:proof.pendingRun;
-    if(!run||run.id!==expected?.id||run.run_attempt!==expected.attempt||
-      preflight&&(run.status!=='completed'||run.conclusion!=='success')||
-      run.status==='completed'&&run.conclusion!=='success')throw Error('Latest Full run/attempt changed or failed before release');
-    const jobs=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/runs/${run.id}/jobs?filter=all&per_page=100`).flatMap(p=>p.jobs);
-    const effective=new Map();
-    for(const job of jobs)if(!effective.has(job.name)||effective.get(job.name).run_attempt<job.run_attempt)effective.set(job.name,job);
-    if([...effective.values()].some(j=>['failure','cancelled','timed_out','action_required'].includes(j.conclusion)))
-      throw Error('Latest Full job failed before release');
-    if(proof.pendingRun?.awaitingRouting&&!fullRouting([...effective.values()])&&!waitingForExplicitFull([...effective.values()],run))
-      throw Error('Explicit pending Full routing changed before release');
-    if(proof.fastPreflight){
-      const refreshed=collectPrDelivery(repo,number,review,query,()=>({checkout:preflight.checkout,checkoutArtifact:preflight.checkoutArtifact,plan:preflight.plan}));
-      if(verifyDelivery(refreshed.evidence).length||refreshed.evidence.runId!==preflight.runId||
-        refreshed.evidence.attempt!==preflight.attempt||!sameAdmission(refreshed.current,current.pr))
-        throw Error('Exact Fast proof changed before release');
-    }
-  };
-  const pending=latest();
-  if(!pending)throw Error('Current Quality run has not started; do not authorize missing CI');
-  const fullRouting=jobs=>jobs.some(j=>/^rules \(\d+\/\d+\)$/.test(j.name))&&!jobs.some(j=>/^fast \(/.test(j.name));
-  const waitingForExplicitFull=(jobs,run)=>current.queueRequired&&(current.pr.labels??[]).some(label=>(typeof label==='string'?label:label?.name)==='ci:full')&&
-    !jobs.some(j=>/^fast \(/.test(j.name))&&jobs.some(j=>j.name==='impact'&&j.run_id===run.id&&j.head_sha===run.head_sha&&
-      j.run_attempt===run.run_attempt&&['queued','in_progress','waiting'].includes(j.status)&&j.conclusion==null);
-  if(pending.status!=='completed'){
-    const jobs=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/runs/${pending.id}/jobs?filter=all&per_page=100`).flatMap(p=>p.jobs);
-    const effective=new Map();
-    for(const job of jobs)if(!effective.has(job.name)||effective.get(job.name).run_attempt<job.run_attempt)effective.set(job.name,job);
-    if([...effective.values()].some(j=>['failure','cancelled','timed_out','action_required'].includes(j.conclusion)))
-      throw Error('Current Full CI already failed or was cancelled');
-    const awaitingRouting=!fullRouting([...effective.values()]);
-    if(awaitingRouting&&!waitingForExplicitFull([...effective.values()],pending))
-      throw Error('Full CI routing is unknown; explicit ci:full and the exact pending impact job are required');
-    const final=collectEligibility(repo,number,review,query),lastRun=latest();
-    if(final.errors.length||final.queueRequired!==current.queueRequired||final.rulesFingerprint!==current.rulesFingerprint||!sameAdmission(final.pr,current.pr)||lastRun?.id!==pending.id||lastRun.run_attempt!==pending.run_attempt)
-      throw Error('PR admission or Full attempt changed before authorization');
-    proof.pendingRun={id:pending.id,attempt:pending.run_attempt,head:pending.head_sha,...(awaitingRouting?{awaitingRouting:true}:{})};
-    return requestNativeMerge(repo,number,current,proof,review,query,{dryRun,persist,verifyWitness});
-  }
-  // Completed CI still uses the original exact Full proof, including its
-  // immutable checkout artifact. Fast greens cannot take this path.
-  const {evidence,current:fullCurrent}=collectPrDelivery(repo,number,review,query,loadCheckout);
-  const fullErrors=verifyDelivery(evidence);
-  const fast=evidence.schemaVersion===7&&current.fastAdmission&&current.queueRequired;
-  if(fullErrors.length||(!fast&&evidence.schemaVersion!==3)||evidence.head!==current.headSha||
-    evidence.base!==current.baseSha||evidence.tested!==current.tested||
-    evidence.sourceTree!==current.sourceTree||!sameAdmission(fullCurrent,current.pr))throw Error('Exact Full CI preflight failed: '+fullErrors.join('; '));
-  const final=collectEligibility(repo,number,review,query);
-  if(final.errors.length||final.queueRequired!==current.queueRequired||final.rulesFingerprint!==current.rulesFingerprint||final.headSha!==current.headSha||final.baseSha!==current.baseSha||
-    final.tested!==current.tested||!sameAdmission(final.pr,current.pr))
-    throw Error('PR admission changed during Full preflight');
-  // Recheck current Full after the slower rules/dependency admission reads.
-  // Reuse only the immutable artifact; a changed run/attempt fails its identity.
-  const refreshed=collectPrDelivery(repo,number,review,query,()=>({
-    checkout:evidence.checkout,checkoutArtifact:evidence.checkoutArtifact,plan:evidence.plan}));
-  const refreshedErrors=verifyDelivery(refreshed.evidence);
-  if(refreshedErrors.length||refreshed.evidence.runId!==evidence.runId||
-    refreshed.evidence.attempt!==evidence.attempt||!sameAdmission(refreshed.current,current.pr))
-    throw Error('Exact Full CI or admission changed before authorization: '+refreshedErrors.join('; '));
-  if(fast){proof.schemaVersion=6;proof.kind='auto-merge-arm-fast';proof.fastPreflight=refreshed.evidence;}
-  else proof.fullPreflight=refreshed.evidence;
-  proof.review=refreshed.evidence.review;
-  if(review?.disposition==='low-risk-docs')proof.changedFiles=refreshed.evidence.changedFiles;
-  return requestNativeMerge(repo,number,current,proof,review,query,{dryRun,persist,verifyWitness});
+function dispatchGate(repo,number,current,query,{shadow=false,bootstrapRef}={}){
+ const ref=bootstrapRef??current.defaultBranch;
+ if(!ref||ref.startsWith('refs/')||bootstrapRef&&bootstrapRef!==current.pr.head.ref)throw Error('Gate must use the trusted default branch or the exact explicitly approved bootstrap branch');
+ const dir=mkdtempSync(join(tmpdir(),'native-review-dispatch-'));
+ try{
+  const file=join(dir,'request.json');writeFileSync(file,JSON.stringify({ref,inputs:{ai_review_pr:String(number),ai_review_head:current.headSha,ai_review_mode:shadow?'shadow':'publish',ai_review_bootstrap:!!bootstrapRef}}));
+  query('api','--method','POST',`repos/${repo}/actions/workflows/licenses.yml/dispatches`,'--input',file);
+ }finally{rmSync(dir,{recursive:true,force:true});}
+ return 'refs/heads/'+ref;
 }
+export function armAutoMerge(repo,number,review,query=gh,{dryRun=false,shadow=false,bootstrapRef,persist=()=>{}}={}){
+ const before=collectEligibility(repo,number,review,query);
+ const blocking=record=>record.errors;
+ if(blocking(before).length)throw Error(blocking(before).join('\n'));
+ const current=collectEligibility(repo,number,review,query);
+ if(blocking(current).length||!isDeepStrictEqual(before,current))throw Error('PR, native Review or policy changed before activation');
+ const runs=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/workflows/quality.yml/runs?event=pull_request&head_sha=${current.headSha}&per_page=100`).flatMap(p=>p.workflow_runs)
+  .filter(r=>r.head_sha===current.headSha&&r.path==='.github/workflows/quality.yml'&&r.pull_requests?.some(p=>p.number===number)).sort((a,b)=>b.id-a.id);
+ const run=runs[0];
+ if(!run||run.status==='completed'&&run.conclusion!=='success')throw Error('Current formal Quality CI is missing, failed or cancelled');
+ const jobs=json(query,'api','--paginate','--slurp',`repos/${repo}/actions/runs/${run.id}/jobs?filter=latest&per_page=100`).flatMap(p=>p.jobs);
+ if(jobs.some(j=>['failure','cancelled','timed_out','action_required'].includes(j.conclusion)))throw Error('Current formal Quality job failed');
+ if(dryRun)return {state:'eligible',head:current.headSha,base:current.baseSha};
+ if(run.status!=='completed'&&(shadow||bootstrapRef))throw Error('Exact formal CI must finish before shadow or first-installation proof dispatch');
+ // Once installed, the existing workflow_run callback releases proof after CI.
+ // Avoid dispatching a guaranteed-to-fail gate while formal tests are pending.
+ const gateRef=run.status==='completed'?dispatchGate(repo,number,current,query,{shadow,bootstrapRef}):'refs/heads/'+current.defaultBranch;
+ if(shadow)return {state:'shadow-requested',head:current.headSha,base:current.baseSha,gateRef};
+ const proof={schemaVersion:9,kind:'native-auto-merge-intent',repo,repositoryId:projectRepositoryId,prNumber:number,baseRef:'develop',head:current.headSha,base:current.baseSha,sourceTree:current.sourceTree,githubReviewId:current.nativeReview.githubReviewId,gateRef,nativeAuto:{confirmed:false,state:'prepared'},createdAt:new Date().toISOString()};
+ persist({state:'prepared',proof});
+ try{
+ // expectedHeadOid prevents a new push from being armed. Required Checks and
+ // the real independent-review Required Check remain responsible for the actual merge.
+ let enableError;
+ try{const enabled=json(query,'api','graphql','-f','query=mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{number}}}', '-f','id='+current.pr.node_id,'-f','head='+current.headSha);
+ if(enabled.errors?.length)throw Error('Native auto-merge enable failed: '+JSON.stringify(enabled.errors));
+ }catch(error){enableError=error;}
+ // An error may arrive after GitHub committed the mutation. Read actual state
+ // once; only the exact native intent can convert an uncertain reply to success.
+ const after=json(query,'api',`repos/${repo}/pulls/${number}`);
+ if(after.head?.sha!==current.headSha||after.base?.ref!=='develop'||after.node_id!==current.pr.node_id)throw Error('PR identity changed after native enable');
+ let native;
+ if(after.merged){
+  const commit=json(query,'api',`repos/${repo}/commits/${after.merge_commit_sha}`);
+  if(!isDeepStrictEqual(commit.parents?.map(p=>p.sha),[current.baseSha])||commit.commit?.tree?.sha!==current.sourceTree)throw Error('Native merge differs from reviewed squash');
+  native={confirmed:true,state:'merged',sha:after.merge_commit_sha};
+ }else{
+  if(after.base.sha!==current.baseSha||after.merge_commit_sha!==current.tested)throw Error('PR proposal changed after native enable');
+  const node=readNativeQueueState(repo,number,after,query,true);
+  if(!node.isInMergeQueue&&!node.autoMergeRequest)throw enableError??Error('Native auto-merge/queue request was not confirmed');
+  native={confirmed:true,state:node.isInMergeQueue?'queued':'waiting',queueId:node.mergeQueue.id,entryId:node.mergeQueueEntry?.id??null};
+ }
 
-function requestNativeMerge(repo,number,current,proof,review,query,{dryRun,persist,verifyWitness}){
-  if(dryRun)return {state:'eligible',head:current.headSha,base:current.baseSha,dependsOn:current.dependsOn,proof};
-  persist({state:'prepared',proof});
-  const desc=review?.disposition==='low-risk-docs'?'Verified narrow documentation waiver':
-    'Independent review '+review.reviewId.slice(0,55);
-  const authorizedDescription=current.queueRequired?
-    (review?.disposition==='low-risk-docs'?'Docs waiver':review.reviewId.slice(0,19))+
-      ` [rules:${current.rulesFingerprint}] [base:${current.baseSha}]`:desc+` [base:${current.baseSha}]`;
-  const status=state=>{
-    const created=json(query,'api','--method','POST','repos/'+repo+'/statuses/'+current.headSha,
-      '-f','state='+state,'-f','context='+reviewContext,'-f','description='+
-      (state==='pending'?'Review accepted; arming native auto-merge':state==='success'?authorizedDescription:desc));
-    if(!prId(created.id)||created.state!==state||created.context!==reviewContext)throw Error('Review status write was not confirmed');
-    return created;
-  };
-  const requirePending=id=>{
-    const pages=json(query,'api','--paginate','--slurp',`repos/${repo}/commits/${current.headSha}/statuses?per_page=100`);
-    const latest=pages.flat().filter(s=>s.context===reviewContext).sort((a,b)=>b.id-a.id)[0];
-    if(latest?.id!==id||latest.state!=='pending')throw Error('Arming review gate was replaced or not confirmed');
-  };
-  const confirmNative=pr=>{
-    if(!current.queueRequired)return pr.auto_merge?.merge_method==='squash';
-    const node=readNativeQueueState(repo,number,pr,query,true);
-    if(proof.nativeQueue&&(proof.nativeQueue.id!==node.mergeQueue.id||
-      proof.nativeQueue.entryId&&proof.nativeQueue.entryId!==node.mergeQueueEntry?.id))
-      throw Error('Native queue entry identity changed during activation');
-    // The queue ignores the enable mutation's mergeMethod. Its live policy,
-    // exact PR identity and entry are authoritative, not REST auto_merge.
-    proof.nativeQueue={id:node.mergeQueue.id,state:node.isInMergeQueue?'queued':'waiting',
-      entryId:node.mergeQueueEntry?.id??null};
-    return node.isInMergeQueue||['MERGE','SQUASH','REBASE'].includes(node.autoMergeRequest?.mergeMethod);
-  };
-  try {
-    persist({state:'authorizing',proof});
-    const pending=status('pending');proof.reviewGate={pendingStatusId:pending.id};requirePending(pending.id);
-    let after;
-    for(let attempt=0;attempt<2;attempt++){
-      let enableError;
-      try{
-        query('api','graphql','-f','query=mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{number}}}',
-          '-f','id='+current.pr.node_id,'-f','head='+current.headSha);
-      }catch(error){enableError=error;}
-      after=json(query,'api','repos/'+repo+'/pulls/'+number);
-      if(after.merged)throw Error('PR merged while the arming review gate was pending; handshake anomaly');
-      if(!sameAdmission(after,current.pr))throw Error('PR admission changed during native activation');
-      if(confirmNative(after))break;
-      if(attempt===1||after.auto_merge!==null)throw enableError??Error('Native squash auto-merge was not confirmed');
-      requirePending(pending.id);
-    }
-    persist({state:'native-queued',proof});
-    const final=collectEligibility(repo,number,review,query);
-    if(final.errors.length||final.queueRequired!==current.queueRequired||final.rulesFingerprint!==current.rulesFingerprint||!sameAdmission(final.pr,current.pr)||final.sourceTree!==current.sourceTree)
-      throw Error('PR admission changed before review release');
-    verifyWitness();requirePending(pending.id);
-    persist({state:'releasing',proof});status('success');persist({state:'authorized',proof});
-    after=json(query,'api','repos/'+repo+'/pulls/'+number);
-    if(after.number!==number||after.head?.sha!==current.headSha||after.base?.ref!=='develop')
-      throw Error('PR identity changed after review release');
-    if(after.merged) {
-      const commit=json(query,'api','repos/'+repo+'/commits/'+after.merge_commit_sha);
-      if(after.state!=='closed'||JSON.stringify((commit.parents??[]).map(p=>p.sha))!==JSON.stringify([current.baseSha])||
-        commit.commit?.tree?.sha!==current.sourceTree)throw Error('Merged identity differs from reviewed squash');
-    } else if(!sameAdmission(after,current.pr)||!confirmNative(after))
-      throw Error('Native squash auto-merge was not confirmed by readback');
-    const result={state:after.merged?'merged':'auto-merge-requested',head:current.headSha,
-      base:current.baseSha,dependsOn:current.dependsOn,proof};
-    persist(result);return result;
-  } catch(error) {
-    // Even a failed API response may have committed. Revoke both authorizations,
-    // and preserve cleanup failures instead of claiming the queue was cancelled.
-    const cleanup=[];
-    try {status('failure');}catch(e){cleanup.push('status revocation uncertain: '+e.message);}
-    try {cancelNativeMerge(repo,number,current.pr,query);}
-    catch(e){cleanup.push('native queue/auto-merge cancellation uncertain: '+e.message);}
-    try {persist({state:'activation-failed',proof,error:error.message,cleanup});}
-    catch(e){cleanup.push('evidence persistence failed: '+e.message);}
-    throw Error(error.message+(cleanup.length?'\n'+cleanup.join('\n'):''));
-  }
+ proof.nativeAuto=native;
+ const result={state:native.state==='merged'?'merged':'auto-merge-requested',head:proof.head,base:proof.base,proof};persist(result);return result;
+ }catch(error){
+  const cleanup=[];
+  try{
+   const active=json(query,'api',`repos/${repo}/pulls/${number}`);
+   if(active.node_id!==current.pr.node_id||active.number!==number||active.state!=='open'||active.merged||active.base?.ref!=='develop'||!projectRepositoryMatches(active.head?.repo,repo)||!projectRepositoryMatches(active.base?.repo,repo))throw Error('Cannot safely identify an open native request for cleanup');
+   cancelNativeMerge(repo,number,active,query);
+  }catch(failure){cleanup.push('native cancellation uncertain: '+failure.message);}
+  persist({state:'activation-failed',proof,error:error.message,cleanup});
+  throw Error(error.message+(cleanup.length?'\n'+cleanup.join('\n'):''));
+ }
 }
-
 function readNativeQueueState(repo,number,pr,query,requirePolicy=false){
     const result=json(query,'api','graphql','-f','query=query($id:ID!){node(id:$id){... on PullRequest{id number state baseRefName headRefOid repository{databaseId nameWithOwner} isInMergeQueue '+
       (requirePolicy?'isMergeQueueEnabled autoMergeRequest{mergeMethod} mergeQueue{id configuration{mergeMethod mergingStrategy}} mergeQueueEntry{id state mergeQueue{id} pullRequest{id number headRefOid baseRefName}}':'mergeQueueEntry{id}')+'}}}',
@@ -363,49 +206,22 @@ function cancelNativeMerge(repo,number,before,query){
 }
 
 export function pauseAutoMerge(repo,number,query=gh){
-  const before=json(query,'api',`repos/${repo}/pulls/${number}`);
-  if(before.number!==number||typeof before.node_id!=='string'||!before.node_id.trim()||before.state!=='open'||before.merged||before.base?.ref!=='develop'||!validSha(before.head?.sha)||
-    !projectRepositoryMatches(before.head?.repo,repo)||!projectRepositoryMatches(before.base?.repo,repo))
-    throw Error('Pause requires the open develop PR');
-  const after=cancelNativeMerge(repo,number,before,query);
-  for(const head of new Set([before.head.sha,after.head.sha])){
-    const status=json(query,'api','--method','POST',`repos/${repo}/statuses/${head}`,
-      '-f','state=failure','-f','context='+reviewContext,'-f','description=Auto-merge explicitly paused; new authorization required');
-    if(status.state!=='failure'||status.context!==reviewContext)throw Error('Review revocation readback failed');
-  }
-  return {state:'paused',prNumber:number,head:after.head.sha};
+ const before=json(query,'api',`repos/${repo}/pulls/${number}`);
+ if(before.number!==number||before.state!=='open'||before.merged||before.base?.ref!=='develop'||!validSha(before.head?.sha)||!projectRepositoryMatches(before.head?.repo,repo)||!projectRepositoryMatches(before.base?.repo,repo))throw Error('Pause requires the open same-repository develop PR');
+ const after=cancelNativeMerge(repo,number,before,query);
+ return {state:'paused',prNumber:number,head:after.head.sha};
 }
-
-export function main(args=process.argv.slice(2),query=gh) {
-    const [numberArg,reviewArg,option,...extra]=args;
-    const repository=currentProjectRepository(query),repo=repository.full_name;
-    if(/^[1-9][0-9]*$/.test(numberArg??'')&&reviewArg==='--pause'&&option===undefined&&!extra.length){
-      const result=pauseAutoMerge(repo,Number(numberArg),query);
-      console.log(JSON.stringify(result,null,2));return result;
-    }
-    if(!/^[1-9][0-9]*$/.test(numberArg??'')||!reviewArg||
-      option!==undefined&&option!=='--dry-run'||extra.length)
-      throw Error('Usage: npm run merge:auto -- <PR-number> <review.json>|--low-risk-docs [--dry-run]');
-    const review=reviewArg==='--low-risk-docs'?{disposition:'low-risk-docs'}:
-      JSON.parse(readFileSync(reviewArg,'utf8'));
-    // Waiver is bound to the current SHA by the collector; no forged CI receipt.
-    if(review.disposition==='low-risk-docs') {
-      const first=json(query,'api',`repos/${repo}/pulls/`+Number(numberArg));
-      review.reviewedHeadSha=first.head?.sha;
-      review.reviewedBaseSha=first.base?.sha;
-    }
-    const dir='build/delivery';mkdirSync(dir,{recursive:true});
-    const journal=dir+'/auto-merge-'+numberArg+'-'+randomUUID()+'-attempt.json';
-    const result=armAutoMerge(repo,Number(numberArg),review,query,
-      {dryRun:option==='--dry-run',persist:record=>writeFileSync(journal,JSON.stringify(record,null,2)+'\n')});
-    const proofFile=dir+'/auto-merge-'+numberArg+'-'+result.head.slice(0,12)+'.json';
-    if(option!=='--dry-run')writeFileSync(proofFile,JSON.stringify(result.proof,null,2)+'\n');
-    console.log(JSON.stringify({state:result.state,head:result.head,base:result.base,
-      dependsOn:result.dependsOn,...(option!=='--dry-run'?{proofFile}:{})},null,2));
-    console.log(option==='--dry-run'?'Read-only eligibility PASS':
-      'GitHub controls the required CI. After merge: npm run verify:delivery -- '+numberArg+' '+proofFile+' --merged');
-    return result;
+export function main(args=process.argv.slice(2),query=gh){
+ const [numberArg,reviewArg,...flags]=args,number=Number(numberArg),repo=currentProjectRepository(query).full_name;
+ if(!/^[1-9][0-9]*$/.test(numberArg??''))throw Error('Usage: merge:auto <PR> <GitHub-Review-record-ID|review.json> [--dry-run|--shadow] [--bootstrap-ref=branch]');
+ if(reviewArg==='--pause'&&!flags.length){const r=pauseAutoMerge(repo,number,query);console.log(JSON.stringify(r));return r;}
+ if(!reviewArg||flags.some(f=>!['--dry-run','--shadow'].includes(f)&&!f.startsWith('--bootstrap-ref='))||flags.filter(f=>f.startsWith('--bootstrap-ref=')).length>1||flags.includes('--dry-run')&&flags.includes('--shadow'))throw Error('Invalid native merge options');
+ let review=/^[1-9][0-9]*$/.test(reviewArg)?Number(reviewArg):JSON.parse(readFileSync(reviewArg,'utf8'));
+ if(review?.schemaVersion===1&&review.kind==='independent-ai-review'&&!review.githubReviewId)review=signCloudReview(repo,number,review,query,{dryRun:flags.includes('--dry-run')});
+ if(!flags.includes('--dry-run'))mkdirSync('build/delivery',{recursive:true});
+ const journal=`build/delivery/native-auto-${number}-${Date.now()}-attempt.json`;
+ const result=armAutoMerge(repo,number,review,query,{persist:record=>writeFileSync(journal,JSON.stringify(record,null,2)+'\n'),dryRun:flags.includes('--dry-run'),shadow:flags.includes('--shadow'),bootstrapRef:flags.find(f=>f.startsWith('--bootstrap-ref='))?.slice(16)});
+ if(result.proof){mkdirSync('build/delivery',{recursive:true});const file=`build/delivery/auto-merge-${number}-${result.head.slice(0,12)}.json`;writeFileSync(file,JSON.stringify(result.proof,null,2)+'\n');result.proofFile=file;}
+ console.log(JSON.stringify(result,null,2));return result;
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
-  try{main();}catch(error){console.error(error.message);process.exitCode=1;}
-}
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{main();}catch(error){console.error(error.message);process.exitCode=1;}}

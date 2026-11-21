@@ -74,23 +74,6 @@ local function paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
     LowCostArt.dim(icon,dim and .4 or 1)
     LowCostArt.refresh(box,{r=tone.r,g=tone.g,b=tone.b,a=255})
 end
-local function intentTone(alpha,kind)
-    -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
-    -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
-    local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
-    return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
-end
-local function renderIntentBadge(box,face,x,y,size,allowed,alpha,binding,picture,tint)
-    local badge=box:GetChild('intentBadge')
-    local visible=allowed~=false and face.sourceEnum=='DEFEND_BUFF'and face.worldVisible==true and face.badge=='buff'
-    intentVisible(badge,visible,binding)
-    if not visible then return end
-    local glyph=math.min(size,L.intent.size)
-    intentSize(badge,L.intent.badge,L.intent.badge,binding)
-    intentPosition(badge,x+glyph/2+S.xs+L.intent.badge/2,y,binding)
-    picture(badge,Theme.icon.intent.buff)
-    tint(badge,intentTone(alpha,'buff'))
-end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)
     -- A new view binding starts fresh; weak native keys cannot retain retired actors.
@@ -149,6 +132,12 @@ function M.install(owner, ownership, host, dependencies)
         if geometry then return geometry.intentX,geometry.intentY,geometry.intentWidth end
         return 0,portrait/2,128*Theme.canvas.base[1]/1920
     end
+    local function intentTone(alpha,kind)
+        -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
+        -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
+        local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
+        return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
+    end
     local function renderIntentIcon(box,face,x,y,size,allowed,alpha)
         local kind=face.worldKind or face.kind
         local visible=allowed~=false and (face.sourceEnum and face.worldVisible or not face.sourceEnum)
@@ -181,8 +170,7 @@ function M.install(owner, ownership, host, dependencies)
     local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
         local x,y,size=intentGeometry(portrait,geometry)
         renderIntentIcon(box,face,x,y,size,allowed,alpha)
-        renderIntentBadge(box,face,x,y,size,allowed,alpha,intentGeometryOwner,intentPicture,dependencies.tint)
-        for _,name in ipairs({'intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
+        for _,name in ipairs({'intentBadge','intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
         renderIntentValue(box,face,x,y,allowed,alpha)
         local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
         local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,intentGeometryOwner)
@@ -250,7 +238,7 @@ function M.install(owner, ownership, host, dependencies)
             local box=host.monsterSurfaces:find(entry.id)
             if box then
             local face=enemyIntentFace({battle=battle,enemyPlayback=owner.feedback.busy},actor,entry.index)
-            local g=EnemyView.geometry(actor,false)
+            local g=EnemyView.geometry(actor)
             local dying,escaping=owner.feedback.dying[entry.id],owner.feedback.escaping[entry.id]
             host.monsterIntentParticles:update(entry.id,dt,face,g,dying,escaping)
             renderEnemyIntent(box,face,g.portrait,g,enemyIntentAllowed(actor,battle),
@@ -280,7 +268,7 @@ function M.install(owner, ownership, host, dependencies)
             local id,actor=entry.id,entry.actor;wanted[id]=true
             local state=ownership.nameStates[id] or {timer=0,alpha=0}
             ownership.nameStates[id]=state
-            local g=EnemyView.geometry(actor,false)
+            local g=EnemyView.geometry(actor)
             local hovered=x and y and math.abs(x-g.hitX)<g.hitWidth/2 and math.abs(y-g.hitY)<g.hitHeight/2
             local offset
             state.timer,state.alpha,offset=EnemyView.nameStep(state.timer,state.alpha,dt,hovered,nameBlocked(actor),1)

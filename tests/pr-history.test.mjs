@@ -180,32 +180,3 @@ test('real Git preserves multiple agent histories and conflict resolution while 
     assert.equal(git('show', `${newerA}:later.txt`), 'not in this batch');
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-
-test('Release freeze requires explicit type, matching version and necessity without interpreting prose', async()=>{
-  const {checkReleaseScope}=await import('../scripts/check-release-scope.mjs');
-  const pr={base:{ref:'release/v2.0.0'},title:'fix(input): restore drag response',body:'Change-Type: bugfix, regression\nTarget-Version: 2.0.0\nRelease-Necessity: Restore lost existing drag release input.'};
-  assert.equal(checkReleaseScope(pr).status,'allowed');
-  for(const body of ['',pr.body.replace('bugfix, regression','feature'),pr.body.replace('bugfix, regression','bugfix, feature'),pr.body.replace('2.0.0','2.1.0'),pr.body.replace('Restore lost existing drag release input.','TODO'),pr.body+'\nChange-Type: bugfix'])assert.throws(()=>checkReleaseScope({...pr,body}));
-  assert.throws(()=>checkReleaseScope({...pr,title:'feat(input): new keyboard',body:pr.body+'\nOwner-approved: true'}),/Feature/);
-  assert.throws(()=>checkReleaseScope({...pr,body:pr.body.replace('bugfix, regression','feature')+'\nOwner-approved: true'}),/Feature/);
-  assert.equal(checkReleaseScope({...pr,body:pr.body+'\nDiscussion: no new shortcuts or pre-input; TASK-42.1 remains deferred.'}).status,'allowed');
-  assert.equal(checkReleaseScope({...pr,base:{ref:'develop'},title:'feat(input): new keyboard',body:''}).status,'not-release');
-});
-
-test('Release freeze reads live metadata and binds repository, base and exact head',async()=>{
- const {auditReleaseScope}=await import('../scripts/check-release-scope.mjs');
- const pr={number:19,base:{ref:'release/v2.0.0',repo:{full_name:'owner/repo'}},head:{sha:sha(10)},title:'fix: restore input',body:'Change-Type: performance\nTarget-Version: 2.0.0\nRelease-Necessity: Remove redundant work blocking existing drag.'};
- const event={number:19,pull_request:pr};let calls=0;
- assert.equal((await auditReleaseScope(event,'owner/repo',async p=>{calls++;assert.equal(p,'/repos/owner/repo/pulls/19');return pr;})).status,'allowed');assert.equal(calls,1);
- for(const current of [{...pr,body:''},{...pr,head:{sha:sha(11)}},{...pr,base:{...pr.base,ref:'develop'}},{...pr,number:20}])await assert.rejects(auditReleaseScope(event,'owner/repo',async()=>current));
- await assert.rejects(auditReleaseScope(event,'other/repo',async()=>pr));
- await assert.rejects(auditReleaseScope(event,'owner/repo',async()=>{throw Error('offline');}),/offline/);
- assert.equal((await auditReleaseScope({pull_request:{base:{ref:'develop'}}},'',()=>assert.fail('not a Release query'))).status,'not-release');
-});
-
-test('existing PR metadata gate enforces Release freeze and reruns when metadata is edited',()=>{
- const workflow=readFileSync('.github/workflows/quality.yml','utf8');
- assert.match(workflow,/types: \[[^\]\n]*\bedited\b/);
- const metadata=workflow.slice(workflow.indexOf('name: Validate PR metadata'),workflow.indexOf('- id: plan'));
- assert.match(metadata,/node scripts\/check-release-scope\.mjs/);
-});

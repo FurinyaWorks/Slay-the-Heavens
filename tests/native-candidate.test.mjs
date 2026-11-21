@@ -1,5 +1,3 @@
-import {enemyFastRead} from './helpers/release-enemy-fast-source.mjs';
-import {releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, linkSync, symlinkSync, rmSync, existsSync, realpathSync } from 'node:fs';
@@ -43,14 +41,13 @@ async function fixture(t, overrides = {}) {
   writeFileSync(join(root,'base.gil'),'ORIGINAL');
   const output=join(root,'output'); mkdirSync(output);
   const names=[],sources=new Map(),calls=[]; let workspace;
-  const {scriptContent,initialSources={},existingScripts=[],graphs=[],signals=[],prepareGenerated,clientTemplates=[],...checkOverrides}=overrides;
+  const {scriptContent,initialSources={},existingScripts=[],graphs=[],signals=[],prepareGenerated,...checkOverrides}=overrides;
   for(const [name,source] of Object.entries(initialSources))sources.set(name,source);
   const client={async readResource(){return {contents:[]};},async callTool({name,arguments:args}) {
     calls.push({name,args});
     let data={};
     const mapPath=join(workspace,'mock.gil');
-    if(name==='scene_add_client_template')data={templateIndex:{AbyssReadyCardGroup:31,AbyssMonsterActor:32,AbyssMonsterPower:33}[args.template.name]??(/^AbyssSharedCardFace[1-9][0-9]*$/.test(args.template.name)?200+Number(args.template.name.slice('AbyssSharedCardFace'.length)):undefined)};
-    if(name==='scene_list_interface')data={clientTemplates,clientInterfaces:[]};
+    if(name==='scene_add_client_template')data={templateIndex:{AbyssReadyCardGroup:31,AbyssMonsterActor:32,AbyssMonsterPower:33}[args.template.name]};
     if(name==='scene_set_client_script'){ names.push(args.name);sources.set(args.name,readFileSync(args.sourceFile,'utf8')); writeFileSync(mapPath,'candidate'); data={mapPath}; }
     if(name==='scene_add_graph')data={graphId:7,name:'ABYSS_SETTLEMENT'};
     if(name==='write_graphs')data={written:[7]};
@@ -68,7 +65,7 @@ async function fixture(t, overrides = {}) {
     for(const update of updates)sources.set(update.name,readFileSync(update.sourceFile,'utf8'));
     const destination=join(workspace,'batch.gil');writeFileSync(destination,'candidate');return destination;
   };
-  return {root,output,calls,clientTemplates,writeScripts,run:extra=>mod.buildNativeCandidate({root,baseMap:join(root,'base.gil'),output,client,prepare,
+  return {root,output,calls,writeScripts,run:extra=>mod.buildNativeCandidate({root,baseMap:join(root,'base.gil'),output,client,prepare,
     sourceCommit:'f'.repeat(40),...extra,generatedModules:{abyss_monster_actor_binding:'builder',...extra?.generatedModules}})};
 }
 
@@ -211,7 +208,7 @@ async function releaseFixture(t, stale = false, mutate = () => {}) {
     const notes=loadReleaseNotes({root,releaseCandidate:true});
     writeFileSync(join(dir,'abyss_narrative.lua'),stale ? (stale === 'wrong-version' ? 'return {["codeVersion"]="v0.0.1"}' : 'return {}')
       : `return {["codeVersion"]=${toLua(notes.build.version)}}`);
-    mutate(root,dir);
+    mutate(root);
   }});
   root=f.root;mkdirSync(join(root,'data/release'));
   writeFileSync(join(root,'package.json'),'{"version":"0.1.1"}');
@@ -261,134 +258,4 @@ test('custom preparation cannot smuggle disabled artwork templates or hosts into
   await assert.rejects(f.run({generatedModules:{abyss_art_features:'builder',abyss_menu_background_asset:'builder'}}),/disabled artwork/i,label);
   assert.equal(f.calls.length,0,'reject before SDK mutations');
  }
-});
-
-// Storage factoring must retain the entire authored UI and per-instance state.
-test('default native card packing shares repeated faces and expands to the exact authored trees',async()=>{
- const helper=new URL('../scripts/native-ui-card-sharing.mjs',import.meta.url);
- assert.ok(existsSync(helper),'native card storage sharing is required');
- const {packNativeCardFaces,expandSharedCardFaces}=await import(helper);
- const {gameLayout}=await import('../scripts/game-ui-layout.mjs');
- const {deckCardTemplate}=await import('../scripts/deck-ui-layout.mjs');
- const layout=gameLayout(),templates=[deckCardTemplate()],original=structuredClone({layout,templates});
- const packed=packNativeCardFaces(layout,templates);
- assert.equal(packed.sharing.logicalHosts,61);assert.equal(packed.sharing.sharedHosts,48);
- assert.equal(packed.sharing.templateNames.length,3);
- assert.ok(packed.sharing.beforeControls-packed.sharing.afterControls>6000);
- assert.deepEqual({layout,templates},original,'packing must not mutate the generator inputs');
- assert.deepEqual(expandSharedCardFaces(packed.layout,packed.templates),original);
- assert.deepEqual(packNativeCardFaces(layout,templates),packed,'stable names and output for the same content');
- const expanded=expandSharedCardFaces(packed.layout,packed.templates),faces=[];
- const walk=n=>{if((n.children??[]).some(c=>c.name==='artPlate'))faces.push(n);for(const c of n.children??n.controls??[])walk(c);};walk(expanded.layout);
- const a=faces[0].children.find(c=>c.name==='name'),b=faces[1].children.find(c=>c.name==='name');
- a.text.content='one instance';assert.notEqual(b.text.content,a.text.content,'template instances cannot share writable data');
- assert.deepEqual({layout,templates},original);
-});
-
-test('native card packing preserves nonmatching and container-specific roots and rejects ambiguous references',async()=>{
- const helper=new URL('../scripts/native-ui-card-sharing.mjs',import.meta.url);
- assert.ok(existsSync(helper),'native card storage sharing is required');
- const {packNativeCardFaces,expandSharedCardFaces}=await import(helper);
- const face=(name,extra={})=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',size:[10,10],image:100001},{name:'ink',kind:'image',size:[10,10],image:100002}],...extra});
- const base={name:'Test',controls:[face('a'),face('b',{visible:false,position:[12,9],scale:[.5,.5]})]};
- const packed=packNativeCardFaces(base,[]);
- assert.equal(packed.sharing.sharedHosts,2);assert.deepEqual(expandSharedCardFaces(packed.layout,packed.templates),{layout:base,templates:[]});
- for(const extra of [{size:[147,208]},{children:[{name:'artPlate',kind:'image',image:100002}]},
-  {blockKeys:false},{showCursor:false},{blockCursor:true},{isolateNavigation:true},{script:'private'},{unknownState:1}]){
-  const x={name:'Test',controls:[face('a'),face('b',extra)]},result=packNativeCardFaces(x,[]);
-  assert.equal(result.sharing.sharedHosts,0,JSON.stringify(extra));assert.deepEqual(result.layout,x);
- }
- const scripted={name:'Scripted',controls:['a','b'].map(name=>face(name,{children:[{name:'artPlate',kind:'image',image:100001},{name:'scripted',kind:'image',script:'private',image:100002}]}))};
- assert.equal(packNativeCardFaces(scripted,[]).sharing.sharedHosts,0,'private child scripts and their control bindings remain in their authored scope');
- const navigated={name:'Navigation',controls:[face('a',{navigation:{right:'a/ink'}}),face('b',{navigation:{right:'b/ink'}})]};
- assert.equal(packNativeCardFaces(navigated,[]).sharing.sharedHosts,0,'explicit root navigation targets cannot cross a template boundary');
- const outside={name:'Navigation',controls:[...base.controls,{name:'outside',kind:'cursorArea',navigation:{right:'a/ink'}}]};
- assert.equal(packNativeCardFaces(outside,[]).sharing.sharedHosts,0,'external navigation targets also preserve authored scope');
- const tiny={name:'Tiny',controls:['a','b'].map(name=>face(name,{children:[{name:'artPlate',kind:'image',image:100001}]}))};
- assert.equal(packNativeCardFaces(tiny,[]).sharing.sharedHosts,0,'packing may not add records to small duplicate trees');
- const empty=packNativeCardFaces(base,[],{enabled:false});assert.equal(empty.sharing.sharedHosts,0);assert.deepEqual(empty.layout,base);
- assert.throws(()=>expandSharedCardFaces(packed.layout,[]),/shared.*template|missing/i);
- assert.throws(()=>expandSharedCardFaces(packed.layout,[...packed.templates,...packed.templates]),/duplicate/i);
- const cyclic=structuredClone(packed.templates);cyclic[0].children=[{name:'loop',kind:'reference',template:cyclic[0].name}];
- assert.throws(()=>expandSharedCardFaces(packed.layout,cyclic),/cycle/i);
- assert.throws(()=>packNativeCardFaces(base,packed.templates),/reserved|shared.*template/i);
-});
-
-
-test('default candidate imports shared faces before their references and binds the physical output',async t=>{
- const helper=new URL('../scripts/native-ui-card-sharing.mjs',import.meta.url);
- assert.ok(existsSync(helper));
- const card=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
- const prepareGenerated=dir=>writeFileSync(join(dir,'game-ui.json'),JSON.stringify({name:'SlayTheAbyss',controls:[card('one'),card('two')]}));
- const f=await fixture(t,{prepareGenerated}),receipt=await f.run();
- assert.equal(receipt.nativeUiPacking?.sharing.sharedHosts,2,'formal default must actually use sharing');
- assert.equal(receipt.nativeUiPacking.templateIndices.AbyssSharedCardFace1,201);
- const templates=f.calls.filter(c=>c.name==='scene_add_client_template');assert.equal(templates[0].args.template.name,'AbyssSharedCardFace1');
- const ui=f.calls.find(c=>c.name==='scene_add_client_ui').args;
- assert.equal(ui.controls[0].kind,'reference');assert.equal(ui.controls[0].template,'AbyssSharedCardFace1');
- assert.ok(receipt.productionManifest.packedLayout);assert.ok(receipt.productionManifest.packedTemplates);
- assert.equal(JSON.parse(readFileSync(receipt.productionManifest.layout.path)).controls[0].kind,'container','authored tree stays intact');
- const foreign=await fixture(t,{prepareGenerated,clientTemplates:[{name:'AbyssSharedCardFace1',templateIndex:201}]});
- await assert.rejects(foreign.run(),/shared.*ownership|unowned.*shared/i);
- assert.equal(foreign.calls.some(c=>c.name==='scene_add_client_template'),false,'foreign template collision must fail before writes');
-});
-
-
-test('packed candidates cannot reuse the legacy logical-only UI cache',async t=>{
- const face=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
- const f=await fixture(t,{prepareGenerated:dir=>writeFileSync(join(dir,'game-ui.json'),JSON.stringify({name:'SlayTheAbyss',controls:[face('one'),face('two')]}))});
- const first=await f.run(),prior=structuredClone(first);
- prior.candidate.sha256=sha256(readFileSync(join(f.root,'base.gil')));
- // Populate every binding that the old logical-only cache would accept.
- prior.officialPortraits={imageTemplateIndex:50,containerTemplateIndex:31};prior.officialBackground={templateIndex:51};
- writeFileSync(join(f.root,'candidate.json'),JSON.stringify(prior));
- f.clientTemplates.push({name:'AbyssSharedCardFace1',templateIndex:201});
- const start=f.calls.length,second=await f.run();
- assert.equal(second.reusedUi,undefined);
- assert.ok(f.calls.slice(start).some(c=>c.name==='scene_add_client_ui'),'packed physical UI must be rewritten');
- assert.equal(f.calls.slice(start).filter(c=>c.name==='scene_add_client_template'&&c.args.template.name==='AbyssSharedCardFace1').length,1);
-});
-
-test('default reduction CI continuation authenticates every new current owner without rewriting prior packets',async()=>{
- const adapter=await import('./helpers/release-bootstrap-ci-source.mjs');
- const {assertIntegratedCurrent}=await import('./helpers/integrated-ci-source.mjs');
- const historicalRead=enemyFastRead('release',releasePotionEnemyRead('release',readFileSync));
- const packet=adapter.defaultReductionCiPacket;assert.ok(packet,'complete default reduction continuation required');
- assert.equal(packet.baseCommit,'396b55757a9e536b052f6c960daf1159351f57b1');
- assertIntegratedCurrent();
- const audio=adapter.defaultReductionAudioCiPacket;assert.ok(audio,'complete audio handoff continuation required');
- assert.equal(audio.baseCommit,'d46bf7aa9a27e0a47528412d7f0ad8fd7e2cbf2b');
- for(const [file,row]of Object.entries({...packet.files,...packet.addedFiles,...audio.files})){
-  const source=historicalRead(file,'utf8').replaceAll('\r\n','\n');assert.equal(sha256(source),row.current.sha256);
-  const owner=file==='scripts/native-ui-card-sharing.mjs'
-   ?'fresh complete TASK-111 CI source: default reduction / fresh complete integration source:'
-   :'fresh complete integration source: potion Release';
-  for(const changed of [source+'\n',source.replace(/./,'!')]){
-   assert.equal(adapter.releaseBootstrapCiSource(file,changed),changed);
-   assert.throws(()=>assertIntegratedCurrent((path,encoding)=>path===file?changed:readFileSync(path,encoding)),
-    error=>error.code==='ERR_ASSERTION'&&error.message.split('\n')[0]===`${owner} ${file}`);
-  }
-  assert.throws(()=>assertIntegratedCurrent((path,encoding)=>{if(path===file)throw Error('ENOENT '+file);return readFileSync(path,encoding);}),error=>error.message==='ENOENT '+file);
- }
- assertIntegratedCurrent();
-});
-
-
-test('native card packing only factors nonoverlapping hosts and reduces physical records',async()=>{
- const {packNativeCardFaces,expandSharedCardFaces}=await import('../scripts/native-ui-card-sharing.mjs');
- const nested=(name,depth)=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},
-  depth?nested('nested',depth-1):{name:'ink',kind:'image',image:100002}]});
- const source={name:'Nested',controls:[nested('a',2),nested('b',2)]},packed=packNativeCardFaces(source,[]);
- assert.equal(packed.sharing.logicalHosts,6);assert.equal(packed.sharing.sharedHosts,2,'only outermost nonoverlapping hosts may be factored');
- assert.equal(packed.sharing.templateNames.length,1);assert.ok(packed.sharing.afterControls<packed.sharing.beforeControls);
- assert.deepEqual(expandSharedCardFaces(packed.layout,packed.templates),{layout:source,templates:[]});
-});
-
-
-test('frozen release-candidate mode uses the same default card storage sharing',async t=>{
- const face=name=>({name,kind:'container',size:[148,208],children:[{name:'artPlate',kind:'image',image:100001},{name:'ink',kind:'image',image:100002}]});
- const f=await releaseFixture(t,false,(_root,dir)=>writeFileSync(join(dir,'game-ui.json'),JSON.stringify({name:'SlayTheAbyss',controls:[face('one'),face('two')]})));
- const r=await f.run();assert.equal(r.sourceDirty,false);assert.equal(r.release.version,'v0.1.1');
- assert.equal(r.officialAssetsProfile,undefined);assert.equal(r.nativeUiPacking.sharing.sharedHosts,2);
- assert.equal(f.calls.find(c=>c.name==='scene_add_client_ui').args.controls[0].kind,'reference');
 });

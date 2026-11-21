@@ -1,3 +1,4 @@
+import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import nativeTest,{after} from 'node:test';
 import {historicalTest as test,withHistoricalBaseline,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -191,6 +192,7 @@ nativeTest('original Roster closure rejects relabeled missing changed or redirec
 nativeTest('current Roster registration admission validates every raw owner freshly at the supported develop target',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),layers=JSON.parse(raw).layers,owners=sourceEpoch.proof.owners;
+ const admittedReads=[...owners,...currentProductionRereads];
  for(const file of readdirSync('src/lua',{recursive:true}).filter(file=>file.endsWith('.lua')))
   assert.ok(Object.hasOwn(layers,file.slice(0,-4).replaceAll('/','.')),'current source remains classified: '+file);
  assert.equal(layers.abyss_run_admission,'core');
@@ -201,15 +203,15 @@ nativeTest('current Roster registration admission validates every raw owner fres
  let changed,replacement,reads=[];
  const reader=file=>{reads.push(file);if(file===changed){if(replacement instanceof Error)throw replacement;return replacement;}return readFileSync(file,'utf8');};
  const project=input=>sourceEpoch.preCombinedSource(path,input,{target:'develop',readSource:reader});
- const accepted=project(raw);assert.equal(hash(accepted),expected);assert.notEqual(accepted,raw);assert.deepEqual(reads,owners,'complete raw owner admission in original order');
- reads=[];assert.equal(project(raw.replaceAll('\n','\r\n')),accepted);assert.deepEqual(reads,owners,'CRLF is not cached authorization');
+ const accepted=project(raw);assert.equal(hash(accepted),expected);assert.notEqual(accepted,raw);assert.deepEqual(reads,admittedReads,'complete raw owner admission in original order');
+ reads=[];assert.equal(project(raw.replaceAll('\n','\r\n')),accepted);assert.deepEqual(reads,admittedReads,'CRLF is not cached authorization');
  for(const owner of owners){
   changed=owner;
   for(replacement of [readFileSync(owner,'utf8')+'\n',null,new Error('missing current owner')]){
    reads=[];assert.throws(()=>project(raw),/linked owner (identity|missing)/);
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'stop at the first untrusted raw owner');
   }
-  changed=undefined;reads=[];assert.equal(project(raw),accepted);assert.deepEqual(reads,owners,'each restored owner requires a new complete admission');
+  changed=undefined;reads=[];assert.equal(project(raw),accepted);assert.deepEqual(reads,admittedReads,'each restored owner requires a new complete admission');
  }
 });
 

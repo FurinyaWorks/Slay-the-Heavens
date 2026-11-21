@@ -1,16 +1,17 @@
 ---
 id: TASK-42
 title: 在电脑上用鼠标和键盘完整玩一遍
-status: To Do
+status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-23 12:23'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-15 20:14'
 labels:
   - awaiting-live
 milestone: m-8
 dependencies: []
 references:
+  - docs/backlog-details/PC-QA-20261115.md
   - TASK-4
   - TASK-10
   - TASK-30
@@ -55,4 +56,5 @@ ordinal: 40000
 2026-11-03 赛后调整：m-5 → M7（产品体验与核心特色）；保留状态和未验 AC；旧截止日期 '2026-10-28' 已移除，不设新期限。
 
 2026-11-14第二轮逐项核对，保留To Do：本项要求同一当前候选的完整PC鼠标键盘操作矩阵，未找到本项已执行的设备记录；源码输入支持不等于该整轮实测已经开始。
+2026-11-15 用户已完成约58分钟PC实机边玩边录并提交12张静态截图，详见 docs/backlog-details/PC-QA-20261115.md 与原逐字记录。该试玩证明已启动PC验收，但尚缺明确最终候选SHA、完整两幕同一版本记录、后继PR #672的官方设备/新ready证据，因此原6条AC不勾、任务改In Progress而非Done。子任务TASK-42.1（实际输入响应）与TASK-42.2（取消提示/瞄准反馈）独立按症状收口，#670新增数字键/预输入仍严格后置。
 <!-- SECTION:NOTES:END -->

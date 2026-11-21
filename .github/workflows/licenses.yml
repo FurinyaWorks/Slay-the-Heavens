@@ -3,19 +3,44 @@ on:
   pull_request:
     branches: [develop, master, 'release/**']
     types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_target:
+    branches: [develop]
+    types: [dequeued]
   merge_group:
     types: [checks_requested]
     branches: [develop]
   push:
     branches: [develop, master, 'release/**']
+  workflow_run:
+    workflows: [Quality]
+    types: [completed]
   workflow_dispatch:
+    inputs:
+      ai_review_pr:
+        description: 'Existing develop PR number; blank runs the normal license audit'
+        type: string
+      ai_review_head:
+        description: 'Exact reviewed PR HEAD'
+        type: string
+      ai_review_mode:
+        description: 'Shadow records evidence without publishing a Required status'
+        type: choice
+        options: [shadow, publish]
+        default: shadow
+      ai_review_bootstrap:
+        description: 'One-time independently audited cloud gate installation'
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
-  group: licenses-${{ github.ref }}
+  group: ${{ github.event_name == 'pull_request_target' && format('queue-cleanup-{0}', github.repository_id) || (github.event_name == 'workflow_run' || inputs.ai_review_pr != '') && format('ai-review-{0}', inputs.ai_review_pr || github.event.workflow_run.pull_requests[0].number || github.run_id) || format('licenses-{0}', github.ref) }}
   cancel-in-progress: true
 jobs:
   inventory:
+    # Gate-only and cleanup events must not publish a skipped Required inventory check.
+    name: ${{ (github.event_name == 'pull_request_target' || github.event_name == 'workflow_run' || inputs.ai_review_pr != '') && 'license-audit-not-requested' || 'inventory' }}
+    if: github.event_name != 'pull_request_target' && github.event_name != 'workflow_run' && (github.event_name != 'workflow_dispatch' || inputs.ai_review_pr == '')
     permissions:
       contents: read
       actions: read
@@ -28,11 +53,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.18.0'
-      - name: Require completed Fork preflight before formal test jobs
-        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node scripts/fork-preflight.mjs
       - name: Restore exact existing media for the license audit
         timeout-minutes: 2
         env:
@@ -45,3 +65,65 @@ jobs:
         run: node scripts/ci-reviewed-lfs.mjs
       - run: node --test scripts/check-license.test.mjs
       - run: node scripts/check-license.mjs
+  independent-ai-review:
+    if: github.event_name != 'pull_request_target' && github.repository_id == '1429751262' && (inputs.ai_review_pr != '' || (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'))
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      statuses: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AI_REVIEW_PR: ${{ inputs.ai_review_pr || github.event.workflow_run.pull_requests[0].number }}
+      AI_REVIEW_HEAD: ${{ inputs.ai_review_head || github.event.workflow_run.head_sha }}
+      AI_REVIEW_MODE: ${{ inputs.ai_review_mode || 'publish' }}
+      AI_REVIEW_BOOTSTRAP: ${{ inputs.ai_review_bootstrap || 'false' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Verify signed cloud AI review and exact formal test evidence
+        id: review
+        run: node scripts/publish-pr-quality.mjs --independent-review
+      - name: Name immutable proof
+        if: steps.review.outputs.proof_ready == 'true'
+        id: identity
+        run: node -e 'const fs=require("node:fs");fs.appendFileSync(process.env.GITHUB_OUTPUT,"head="+process.env.AI_REVIEW_HEAD.slice(0,12)+"\n")'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: steps.review.outputs.proof_ready == 'true'
+        id: proof
+        with:
+          name: independent-review-${{ env.AI_REVIEW_PR }}-${{ steps.identity.outputs.head }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/native-ai-review-proof.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Release required review status after immutable proof upload
+        if: steps.review.outputs.proof_ready == 'true'
+        env:
+          AI_REVIEW_ARTIFACT_ID: ${{ steps.proof.outputs.artifact-id }}
+        run: node scripts/publish-pr-quality.mjs --release-independent-review
+  cancel-obsolete-queue:
+    if: github.repository_id == '1429751262' && github.event_name == 'pull_request_target' && github.event.action == 'dequeued' && github.event.pull_request.base.ref == 'develop' && github.ref == 'refs/heads/develop'
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Cancel only verified obsolete native queue Quality runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/publish-merge-group.mjs --cancel-obsolete

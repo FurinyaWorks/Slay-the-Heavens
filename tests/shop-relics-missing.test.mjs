@@ -16,3 +16,5 @@ test('shop relics acquired through Run expose real permanent reward and copy com
  assert.equal(result.status,0,result.stdout+result.stderr);
  assert.match(result.stdout,/LUA_SHOP_RELIC_ACQUISITION_PASS 8/);
 });
+
+import './tiny-house-pending-ui.cases.mjs';

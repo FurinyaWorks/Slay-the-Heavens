@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-23 00:59'
-updated_date: '2026-11-16 09:34'
+updated_date: '2026-11-15 19:11'
 labels:
   - ui
   - combat
@@ -35,7 +35,6 @@ references:
   - docs/backlog-details/MOBILE-QA-20261029-SOURCES.md
   - docs/evidence/m3-completion-20261031/
   - docs/backlog-details/MOBILE-RELEASE-QA-20261101.md
-  - docs/evidence/release-freeze-20261116/reproduce-p0.mjs
 priority: medium
 type: enhancement
 ordinal: 36000
@@ -64,6 +63,8 @@ ordinal: 36000
 - [x] #13 保留点选后备、双击取消和长按关键词；去除贯穿战场的常驻阈值横线与冗余操作提示后，合法目标/取消仍清楚，旧触点不重复出牌。
 - [ ] #14 当前选牌、明确目标、牌面预览与最终提交使用一致的卡牌和目标身份；固定原版点击携牌、拖放、触屏和手柄映射有可追溯对照，移动端确认前可见目标伤害，旧触点不得误提交新牌；与原版的既有项目差异明确留档。
 - [x] #15 official-assets-first与旧版均覆盖触屏和鼠标，多敌人自由瞄准、锁定、移出及取消；断言实际绘制的箭头方向、终点及目标身份，原错误实现被回归拒绝。
+- [ ] #16 2026-11-15手机点选目标牌后点击已高亮怪物**偶发**不出牌，而拖放可成功；按触点身份/当前卡与目标UID/忙碌态做快慢、1/2/3敌人RED→GREEN回归，点选与拖动均须一致、只提交一次，同候选手机验证。
+- [ ] #17 对照固定原版触屏携牌展示，评估激活牌放大比例是否遮挡敌人与有效目标；先测再决定是否调，保留点击/拖放/取消行为及用户认可的放大可读性。
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -164,6 +165,5 @@ PR327手机反馈来源增量（基于20a74da的历史观察；不认证6795160�
 2026-11-14清理旧窗口日期：原due_date=2026-10-28保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已有8/15项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
-
-本轮Release冻结审查只读复现新增协议缺口（Release33d71575，正式UI/data、真实GameUI Host）：卡牌及playArea的Down/Up带ID、Click无ID时丢选择/出牌；补带IDClick即正常，9个拒绝/兼容场景PASS、2个预期RED。action_bindings仍有两处消费者未纳入#686目标归属协议。不得仅放松touch比较：同控件/跨控件多指覆盖held会误接。沿TASK30/#686统一有限指针归属协议接续，避免复制tracker/重复PR；busy、手柄、旧turn/回调与拖动尾事件保护必须保留。复现docs/evidence/release-freeze-20261116/reproduce-p0.mjs；当前未修、未官方/设备验收，不称手机根因或极致流畅通过，原AC/status保持。新数字键/快捷键/预输入仍仅TASK42.1/#670后续版本。
+2026-11-15手机录音新证据与优先级细节见docs/backlog-details/MOBILE-QA-20261115.md；新增AC待本次候选的定向和移动真机证据，不冒充历史已合实现无效。
 <!-- SECTION:NOTES:END -->

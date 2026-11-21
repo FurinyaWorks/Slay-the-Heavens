@@ -3,7 +3,6 @@
 import {applyOfficialNoncombatLayout} from './noncombat-v25-layout.mjs';
 import {applyOfficialNeowLayout} from './noncombat-neow-layout.mjs';
 import {applyV25MapLayout} from './v25-map-layout.mjs';
-import {applyOfficialMapReturnControls} from './official-map-return-controls.mjs';
 import {applyV25RewardLayout,styleMerchant,styleEvent} from './v25-node-layout.mjs';
 import {officialRunChrome} from './official-battle-hud.mjs';
 import {applyStsRewardRows} from './sts-reward-row-layout.mjs';
@@ -73,7 +72,6 @@ export function composeOfficialRun(tree,theme){
    required(shop,'price'+(i+1)).position[0]=x;
   });
   applyV25MapLayout(tree,theme);
-  applyOfficialMapReturnControls(child(stage(tree),'mapPanel'),child(stage(tree),'characterPanel'),theme);
  }
  if(kind!=='template'){
   applyV25RewardLayout(tree,theme);

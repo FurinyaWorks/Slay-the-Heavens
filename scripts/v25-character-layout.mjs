@@ -168,11 +168,14 @@ function detailsLayout(details,theme){
  const figure=optional(details,'officialSelectionFigure');
  if(figure){figure.position=[273,-239];figure.size=[133,133];figure.scale=[1380/133,1380/133];}
  child(details,'portraitFrame').visible=false;child(details,'floorShadow').visible=false;
- const deck=child(details,'deckOpen');Object.assign(deck,frame(1040,642,180,40));
- const hit=child(deck,'hit');hit.size=[180,40];
- for(const state of children(hit)){
-  state.size=[180,40];child(state,'border').size=[180,40];child(state,'plate').size=[176,36];
-  const label=child(state,'label');label.size=[170,32];label.text.fontSize=14;label.text.minFontSize=14;
+ const deck=optional(details,'deckOpen');
+ if(deck){
+  Object.assign(deck,frame(1040,642,180,40));
+  const hit=child(deck,'hit');hit.size=[180,40];
+  for(const state of children(hit)){
+   state.size=[180,40];child(state,'border').size=[180,40];child(state,'plate').size=[176,36];
+   const label=child(state,'label');label.size=[170,32];label.text.fontSize=14;label.text.minFontSize=14;
+  }
  }
 }
 export function applyV25CharacterLayout(layout,theme,options={}){

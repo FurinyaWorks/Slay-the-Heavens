@@ -21,98 +21,50 @@ const bytes=readFileSync(new URL('./integration-source-closure.json',import.meta
 assert.equal(hash(bytes),'800fcc9efd889f482259d0e1e9f1501f0e9597ac05552622ede00dd3dcdb4a94','complete integration helper closure identity');
 const currentBytes=readFileSync(new URL('./closeout-source-closure.json',import.meta.url));
 assert.equal(hash(currentBytes),'031c42758ec5b37d1782c5fdb70542358d4b2631a5ee9b486b6bb5faccc988b5','complete closeout source helper closure');
-const files={...extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure))};
-const potionFiles={...files};
-const releaseFiles={...files};
-export const mobilePotionHelperCopies=[
- {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'05ffc1ef75dd3acce2d91062714c19ed578de2dd45d7897b238019aaaaaf3c60'},
- {path:'tests/helpers/mobile-potion-source.mjs',before:null,after:'6ed42296f87ed7ba349e6f1cf258c60003bfd7cdea70279a8ada00d06ce84669'},
- {path:'tests/helpers/mobile-potion-source.json.gz',before:null,after:'2af4fb9d547eb50d7dc75fd54fc4b505ecaf8b5f343330e31ac91054d75c2a06'}
-];
-for(const row of mobilePotionHelperCopies){assert.equal(potionFiles[row.path]??null,row.before,'exact mobile potion helper-copy predecessor: '+row.path);potionFiles[row.path]=row.after;}
-export const potionRegressionHelperCopies=[
- {path:'tests/helpers/closeout-source-epoch.mjs',before:'05ffc1ef75dd3acce2d91062714c19ed578de2dd45d7897b238019aaaaaf3c60',after:'c094647f798d6ca9c98c49b646cbd0ba034d90bd107d07e060c9d24396ec4a28'},
- {path:'tests/helpers/potion-regression-source.mjs',before:null,after:'222f5d4ca9ae55b0ff47c18d466fed620ea1ea87209b82f9c4567615409b4cad'},
- {path:'tests/helpers/potion-regression-source.json.gz',before:null,after:'fff211fab47d021bb4d6cd936a719bba03afcec03f7078aa49d3b165de5b8b2d'}
-];
-for(const row of potionRegressionHelperCopies){assert.equal(potionFiles[row.path]??null,row.before,'exact potion regression helper-copy predecessor: '+row.path);potionFiles[row.path]=row.after;}
-export const potionClickHelperCopies=[
- {path:'tests/helpers/closeout-source-epoch.mjs',before:'c094647f798d6ca9c98c49b646cbd0ba034d90bd107d07e060c9d24396ec4a28',after:'b0260eb43becd74e52a8b5ed04e1909f52741d8cc9813c42ec5bc109f3c5723c'},
- {path:'tests/helpers/potion-click-source.mjs',before:null,after:'eb133eb610ed646a566bde84c1113083ef710f68ad6bb34cb219fd306837dc82'},
- {path:'tests/helpers/potion-click-source.json.gz',before:null,after:'823ccaff8ee4d2d6e48fb94c758f9ae11a001c73872fef2a890109de0c8e0dbf'}
-];
-for(const row of potionClickHelperCopies){assert.equal(potionFiles[row.path]??null,row.before,'exact potion click helper-copy predecessor: '+row.path);potionFiles[row.path]=row.after;}
-export const potionPost697HelperCopies=[{"path":"tests/helpers/closeout-source-epoch.mjs","before":"b0260eb43becd74e52a8b5ed04e1909f52741d8cc9813c42ec5bc109f3c5723c","after":"217f68beb3e466b842b8be13c71a9172960f8c07d0f3fc87ee0a8c9e41b33829"},{"path":"tests/helpers/release-selection-map-source.mjs","before":null,"after":"920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52"},{"path":"tests/helpers/release-selection-map-source.json.gz","before":null,"after":"0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62"},{"path":"tests/helpers/potion-post697-source.mjs","before":null,"after":"adf79a31356f5568a0c7d061ed0f82fcee8fa70966d152359ec74bd24f14b66d"},{"path":"tests/helpers/potion-post697-source.json.gz","before":null,"after":"af71c0335451f4729681a86aea723526b151d5d1732d6885d1a7a0d50cc79304"}];
-for(const row of potionPost697HelperCopies){assert.equal(potionFiles[row.path]??null,row.before,'exact post697 helper-copy predecessor: '+row.path);potionFiles[row.path]=row.after;}
-export const releasePc22BasicFeedbackHelperCopies=[
- {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'0c7ff98c42c47a1a48ad83537d1d7c37a6cc23aed55ada9c763122d4ea102d07'},
- {path:'tests/helpers/release-pc22-basic-feedback-source.mjs',before:null,after:'395e3810c67852768340eb868ee7397bb9ed0b232ff112efa93fb4b520e80b96'},
- {path:'tests/helpers/release-pc22-basic-feedback-source.json.gz',before:null,after:'1cb0fddfea365de7be5331dc169bd438f2cde36b372c4c15bf9c8ac8a2eed157'}
-];
-export const releaseSelectionMapHelperCopies=[
- {path:'tests/helpers/closeout-source-epoch.mjs',before:'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7',after:'9bc2594f88cd780a31a429f5a493568f076d039ab92f55b952631b586ce335c1'},
- {path:'tests/helpers/release-selection-map-source.mjs',before:null,after:'920fd01fa07dad36ed7e9b70ace199246000d87ad20c258221a2aca4a8e0ee52'},
- {path:'tests/helpers/release-selection-map-source.json.gz',before:null,after:'0c056c020ad655d5a2a901a6f196350582eaf0709afa736f363a0d68509daf62'}
-];
-for(const rows of [releasePc22BasicFeedbackHelperCopies,releaseSelectionMapHelperCopies])for(const row of rows){
- assert.equal(releaseFiles[row.path]??null,row.before,'exact standalone Release helper-copy predecessor: '+row.path);
- if(row.path!=='tests/helpers/closeout-source-epoch.mjs')releaseFiles[row.path]=row.after;
-}
-releaseFiles['tests/helpers/closeout-source-epoch.mjs']='3101ebf6deee9f081fad6e3c8d4617b6db4bf17ee01453c82fc8d8a3fb742215';
-export const releaseEnemyArtHelperCopies=[
-  {
-    "path": "tests/helpers/closeout-source-epoch.mjs",
-    "before": "3101ebf6deee9f081fad6e3c8d4617b6db4bf17ee01453c82fc8d8a3fb742215",
-    "after": "2a89d96cd40b689dc9ba73cbcb1abe4023a5cf79a0002023d3ebc61aeecaf1aa"
-  },
-  {
-    "path": "tests/helpers/release-enemy-art-source.mjs",
-    "before": null,
-    "after": "4ae006a612f0604081c8135ce6f7ccad6459416232dad2f3cfccbf7ad02a2b65"
-  },
-  {
-    "path": "tests/helpers/release-enemy-art-source.json.gz",
-    "before": null,
-    "after": "b2c17392b591bc57ec0f8de9236cfc862d74fcfef76d13261baa746966e411a4"
-  }
-];
-for(const row of releaseEnemyArtHelperCopies){assert.equal(releaseFiles[row.path]??null,row.before,'exact release enemy art helper-copy predecessor');releaseFiles[row.path]=row.after;}
-
-const closeoutPath='tests/helpers/closeout-source-epoch.mjs';
-assert.equal(potionFiles[closeoutPath],'217f68beb3e466b842b8be13c71a9172960f8c07d0f3fc87ee0a8c9e41b33829');
-assert.equal(releaseFiles[closeoutPath],'2a89d96cd40b689dc9ba73cbcb1abe4023a5cf79a0002023d3ebc61aeecaf1aa');
-for(const map of [potionFiles,releaseFiles])for(const [path,sha]of Object.entries(map)){
- if(path===closeoutPath)continue;
- if(Object.hasOwn(files,path))assert.equal(files[path],sha,'identical inherited helper-copy source: '+path);
- files[path]=sha;
-}
-files[closeoutPath]='f4c87730da1c7410700e1d652f18cdf3aa005b3f33034db1c705294947b54fe9';
-assert.equal(files[closeoutPath], 'f4c87730da1c7410700e1d652f18cdf3aa005b3f33034db1c705294947b54fe9');
-files[closeoutPath] = '3a6959a4323b6294612d0af940cb19d3ba56c322b869edc21fa8bb59e06d3508';
-files['tests/helpers/mobile-hand-source.json.gz'] = 'f09812ac4f7c422d8a4530a8efa9ca0e35048eb1a2f4a7940495d76495f5ee4c';
-assert.equal(files[closeoutPath], '3a6959a4323b6294612d0af940cb19d3ba56c322b869edc21fa8bb59e06d3508');
-files[closeoutPath] = 'dc7edeaf20da6dbf586c96752a77432fd6c4b5adddf2d603b6e4a56aa23e0150';
-files['tests/helpers/enemy-geometry-source.json.gz'] = 'af5ac18b5bb3346fe000d22a184e04b8d064d38e723bd328a06cdf1b37fecfae';
-assert.equal(files[closeoutPath], 'dc7edeaf20da6dbf586c96752a77432fd6c4b5adddf2d603b6e4a56aa23e0150');
-files[closeoutPath] = 'a935712406ce226efd237b76416bf9e1a7d3c141f8a5f0f126181e84c54a7d3d';
-files['tests/helpers/release-sparse-pointer-source.json.gz'] = '24126de8efaf5088cc67d045391bbd2ba19a464e0a616d9d2483a12f70648340';
-files[closeoutPath] = '3405d434f2c38c42ac48aea22eee27ab05d9912ac4915584fcc89f291e7b26f6';
-files['tests/helpers/release-composite-intent-source.json.gz'] = '813ee7d1c86932e518c8b5c2d23c339c8dbd86b73d53151531c58ed8414ae7ef';
-files[closeoutPath] = '430dcaa055be3c350047256f7b6b8ceefd9aeff0fb0401f911a7589cad98eb5c';
-files['tests/helpers/runtime-particle-source.json.gz'] = '2cef28e3bd47c3638c421c9f152453b7e446501f69e32bdaac39417a3731ad6a';
-assert.equal(files[closeoutPath], '430dcaa055be3c350047256f7b6b8ceefd9aeff0fb0401f911a7589cad98eb5c');
-files[closeoutPath] = 'ed7b31a7e316c40fd15f770b7bca0e6a9460981a831de5966634241ad80270ba';
-files['tests/helpers/release-target-corners-source.json.gz'] = '74900cc6bcc96f29a430067d609bda9c7de8a2d3245b9fad59fc69ae4d3181c7';
-files[closeoutPath] = '9032d8a3f16e816c4d6161566c593fb5759041bfdfc0f357960407ac1128bd1a';
-files['tests/helpers/release-shop-dismissal-source.json.gz'] = 'a8c7fd5bcba44c200ddfc644761adb69b35d7d2ab1e92d619f01fc050fb3ae24';
-assert.equal(files[closeoutPath], '9032d8a3f16e816c4d6161566c593fb5759041bfdfc0f357960407ac1128bd1a');
-files[closeoutPath] = 'db62afcde4326ccd03291c0c8dc7e76bd9fe6a6aea891c02c9fdf042cd152b53';
-files['tests/helpers/release-card-cancel-notice-source.json.gz'] = '639ea6a234785a1a492aae6d911b6d7c8a6051a1b610d5b5d530f5d9711569d5';
+const predecessor=extendIntegratedHelperClosure(extendFeedbackHelperClosure(JSON.parse(currentBytes),feedbackCiPatch.helperClosure));
+const runtime='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
+const closeout='tests/helpers/closeout-source-epoch.mjs';
+assert.equal(predecessor[runtime],'ee54191f327d412a5e37a76ff236af6f4aac692e51884a0e3afd33fe62e427e4','fatal BGM helper copy predecessor');
+assert.equal(predecessor[closeout],'163f0f84fcd4f9b4bcb982b250891a9c5156df556699d8a65ec0cf1b354d25f7','closeout source slice copy predecessor');
+const priorFiles=Object.freeze({
+ ...predecessor,
+ 'tests/helpers/lumine-portrait-source.mjs':'f6b48bd50ffc703348648cfe6c75686531f319952806a4376b25841c9f7acee0',
+ [runtime]:'1e50066c015e6d886b9380795d83fbe266f3ddc9705d9a65cba77bc296f56333',
+ [closeout]:'873523684eb7561b705b558b6b38eba752e5d7a7d29c386841d4b61276268e88',
+ 'tests/helpers/fatal-bgm-source-continuation.mjs':'c0a1f30805b3c5c0680888ee9de4ff77cef2bc8a729271d5ff7f967dada02382',
+ 'tests/fixtures/fatal-bgm-e65-source.json.gz':'3e560e461232785753f5a574732ec834b19c51cfd700f09cce212009dd4a22fb',
+ 'tests/helpers/exact-source-continuation.mjs':'9046457a50fa3c137985906423be546424287dc5a06ef940f6ffbeb553d63ccf',
+ 'tests/helpers/potion-text-source.mjs':'75dcd901e15f07831e1eeaf943e93ca5795068fa9d841e34cd0bb20e57f426b3',
+ 'tests/helpers/character-selector-source.mjs':'7b3e77e5a190772e6a7d063eb2134aeabd928a6db691705ffa220fa92b71b974',
+ 'tests/helpers/potion-pointer-source.mjs':'cdf4027a2b9f68804f37c827d8cf6affcc1b322bce0b98147c502c7b60a2c80f',
+ 'tests/fixtures/potion-pointer-source.json.gz':'9fce9e414190da11df3d1451bd4f373a1b6ec0d227d33a2e4e8d8cc1c34ecb41',
+ 'tests/helpers/official-ui-repair-source-epoch.mjs':'edabe5fc268d443e837dea9bd5785856b1b92874b75d9c32193ba53eb98fd46e',
+ 'tests/helpers/v2-ui-hud-source.mjs':'dca36319e8eb77df3e6db39b13db949736bae1ab11681cf6eab8269f9f4be268',
+ 'tests/fixtures/v2-ui-hud-source.json.gz':'649a52b20d2b9b2ad338a77b24daf29998014522e0dc0d5888bccce1529faa58',
+ 'tests/helpers/v2-run-menu-source-epoch.mjs':'a7e11793af79e698ed2a6ae832bd94cc8c47e2d6149e60d58db8138f1a1c77b8',
+ 'tests/fixtures/v2-run-menu-source.json':'b078f617134d3189f5a815e1c85b1edfd50c8e133950d5b81cbecb67a1358508',
+ 'tests/fixtures/develop-character-architecture-before.json.gz':'7a5ab46cd4e7d27fc414f05bebb1ffe06dcba742f990412205113f672b8db541',
+});
+const files=Object.freeze({
+ ...priorFiles,
+ [runtime]:'32993c1ea683a1e81311636002b5520608d12fa247eea62a88b121c8d557c4dd',
+ "tests/helpers/tiny-house-ui-source.mjs":'55cde238d2b9fd6f70a92c7501e2802bb73ab6e603bd49991200982c737c46c7',
+ "tests/fixtures/tiny-house-ui-source.json.gz":'66bfcad375c58f5c96a6e0b06afd1cdf5df490002628d5e837eb9ab6cc3a3c02',
+ 'tests/helpers/v2-ui-hud-source.mjs':'bf32590ea3e8c172ced44a9a9399ba022c0926dd83475dcb6ae62741ab1a09f0',
+ 'tests/fixtures/v2-ui-hud-source.json.gz':'9a1881227d100bf4a3a39908dd44d64d6b16f87bdb2220d55a2f3ce61f2882fe',
+});
+assert.equal(files[runtime],'32993c1ea683a1e81311636002b5520608d12fa247eea62a88b121c8d557c4dd','PC13 runtime helper predecessor');
+const pc13Files=Object.freeze({
+ ...files,
+ [runtime]:'fb10a5dc6bf09177fe77bf858b1ffb39ee93dbacb784995dfc1bb1771bf5e545',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'e1cf572bc792c036aaf03f25e03b1c7ab384bf257be353c43be775441a7c67ee',
+ 'tests/fixtures/pc13-reward-cover-source.json.gz':'9779296bb7bedc99990fa6ccad9c7ba0a0e581982a020c9dcc4a71210b3299cd',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(files)){
+ for(const [path,sha]of Object.entries(pc13Files)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "baseSha": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+  "scope": "SDK standalone merchant, modeled cursor and frame timeline only; direct React is not a shop transaction; no rendering or official/device/Owner acceptance",
+  "productionWorktreeStatus": "",
+  "artifacts": [
+    {
+      "file": "default.json",
+      "bytes": 9152,
+      "sha256": "88dddebe0964bfc557eb745b96cfba112300f161b0784d68e03a603534783b70"
+    },
+    {
+      "file": "existing-regressions.txt",
+      "bytes": 717,
+      "sha256": "e7ec9dee8cb6a2fc0c8e8693c3f269fc8a6fb054760f805cf8f2bb9e3db05b33"
+    },
+    {
+      "file": "official-projection.json",
+      "bytes": 6972,
+      "sha256": "09d2831d285dde1efb851f8306ec0bf725947a4ccc002ae12caa7d7030e9bff6"
+    },
+    {
+      "file": "probe-first-wiring-failure.txt",
+      "bytes": 619,
+      "sha256": "233134096b7e3dd9bd55d7900ce88b1fd06820e30c1fae8387b2744160f8858c"
+    },
+    {
+      "file": "probe-rounding-failure.txt",
+      "bytes": 1137,
+      "sha256": "ec39b5c35419335fedbb7b6f4a1fbcd27791ec4c51cb9fc01fd4b6e236f6f436"
+    },
+    {
+      "file": "receipt.json",
+      "bytes": 21381,
+      "sha256": "8904da96d8d437057995b0f32487170c654a958c2602e3aa95cf3048c95f7c3b"
+    },
+    {
+      "file": "replay-inputs.zip",
+      "bytes": 292259,
+      "sha256": "2c5262498184208b5dc9c441fbb4e861a73d7d022bbc60f0eff0db310288dce1"
+    },
+    {
+      "file": "sdk-export-receipt.json",
+      "bytes": 1019,
+      "sha256": "0cf45c71079a067aeb795d56af8c773e425cb6c56be782b0457f3b0b36c64584"
+    },
+    {
+      "file": "sdk-run.txt",
+      "bytes": 196,
+      "sha256": "0e69eda29b9460dd375c3df3084eb74d25efe5c664ee361e55b5222b35d11132"
+    }
+  ],
+  "archiveCommit": "ed50199b5fb74f420de93d3c1769c893f5006c60",
+  "archiveBaseUrl": "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/ed50199b5fb74f420de93d3c1769c893f5006c60/docs/evidence/merchant-native-reading-20261118"
+}

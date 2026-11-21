@@ -1,13 +1,15 @@
 import {existsSync,readFileSync} from 'node:fs';
 import {dirname,join} from 'node:path';
 import {fileRecord} from './evidence-files.mjs';
-export function reusableUi(base,generated,{privateTemplates=false}={}) {
+export function reusableUi(base,generated,{privateTemplates=false,galleryImageTypes}={}) {
  // The legacy receipt only carries the shared image/group/background bindings.
  // Re-encode private templates until their complete binding set is cacheable.
  if(privateTemplates)return null;
  const receiptPath=join(dirname(base.path),'candidate.json');
  if(!existsSync(receiptPath))return null;
  const receipt=JSON.parse(readFileSync(receiptPath,'utf8'));
+ // The same layout could have been encoded before gallery modes were carried.
+ if(galleryImageTypes!==undefined&&galleryImageTypes!==(receipt.toolchainIdentity?.galleryImageTypes===true))return null;
  if(receipt.candidate?.sha256!==base.sha256||receipt.statuses?.staticCheck!=='pass'
   ||receipt.productionManifest?.layout?.sha256!==fileRecord(join(generated,'game-ui.json')).sha256
   ||receipt.productionManifest?.templates?.sha256!==fileRecord(join(generated,'game-ui-templates.json')).sha256)return null;

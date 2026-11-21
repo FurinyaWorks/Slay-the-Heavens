@@ -1,5 +1,13 @@
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
+import {projectTinyHouseUiSource,authorizeTinyHouseUiSource} from '../tiny-house-ui-source.mjs';
+import {beforePc13RewardCover,authorizePc13RewardCover} from '../pc13-reward-cover-source.mjs';
+import {projectPotionPointerSource,authorizePotionPointerSource} from '../potion-pointer-source.mjs';
+import {projectLumineSource,authorizeLumineSource} from '../lumine-portrait-source.mjs';
+import {projectV2UiHudSource,authorizeV2UiHudSource} from '../v2-ui-hud-source.mjs';
+import {projectFatalBgmSource,authorizeFatalBgmSource} from '../fatal-bgm-source-continuation.mjs';
+import {projectSelectorSource,authorizeSelectorSource} from '../character-selector-source.mjs';
+import {projectPotionTextSource,authorizePotionTextSource} from '../potion-text-source.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
@@ -108,16 +116,32 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
+  const rawInput=source,inputSource=beforePc13RewardCover(path,source);
+  source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  source=projectTinyHouseUiSource(path,projectV2UiHudSource(path,projectPotionPointerSource(path,source,current),current),current);
+  source=projectLumineSource(path,projectPotionTextSource(path,projectSelectorSource(path,projectFatalBgmSource(path,source,current),current),current),current);
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return source;
+  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
+  const samples=[],rawSamples=[];
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-   const binding=proof.current[owner];
+   const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,actual);samples.push([owner,actual,binding]);
+   actual=projectTinyHouseUiSource(owner,projectV2UiHudSource(owner,projectPotionPointerSource(owner,actual,binding),binding),binding);
+   actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
+  const readPrior=owner=>beforePc13RewardCover(owner,readSource(owner));
+  authorizeFatalBgmSource(path,inputSource,current,samples,readPrior);
+  authorizeSelectorSource(path,inputSource,current,samples,readPrior);
+  authorizePotionTextSource(path,inputSource,current,samples,readPrior);
+  authorizeLumineSource(path,inputSource,current,samples,readPrior);
+  authorizeV2UiHudSource(path,inputSource,current,samples,readPrior);
+  authorizePotionPointerSource(path,inputSource,current,samples,readPrior);
+  authorizePc13RewardCover(rawSamples,readSource);
+  authorizeTinyHouseUiSource(path,inputSource,current,samples,readPrior);
   return before.source;
  }
  function combinedReader(readSource=readLive,target){

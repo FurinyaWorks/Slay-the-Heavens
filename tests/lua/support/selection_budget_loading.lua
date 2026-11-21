@@ -1,12 +1,9 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Asset=require('abyss_traveler_portrait_assets')
-assert(#Asset.avatar96.rows==457 and #Asset.battle133.rows==4315)
+assert(#Asset.avatar96.rows==457 and #Asset.selection133.rows==1940 and #Asset.battle133.rows==4315)
 Asset.imagePrefabId,Asset.containerPrefabId=41,73
 local lowpolyHero=assert(Asset.lowpolyHero)
 assert(#lowpolyHero.rows==2011)
-local legacy=Asset.selection133~=nil
-if legacy then assert(#Asset.selection133.rows==1940)
-else assert(Asset.selection133==nil,'current native output must omit legacy data')end
 local function profile(useLowpoly,expected)
 Asset.lowpolyHero=useLowpoly and lowpolyHero or nil
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
@@ -60,6 +57,8 @@ portraits:sync('menu',true,false,'ironclad');portraits:tick()
 assert(created==expected and destroyed==0,'return to selection rebuilt cached images')
 portraits:onEngineDestroy();assert(destroyed==0)
 end
-if legacy then profile(false,2440) else profile(true,2512) end
+profile(true,2512)
+-- Retain the exact legacy selection133 contract, independently of the default low-poly branch.
+profile(false,2440)
 Asset.lowpolyHero=lowpolyHero
 print('SELECTION_BUDGET_LOADING_PASS')

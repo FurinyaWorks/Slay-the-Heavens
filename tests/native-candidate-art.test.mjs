@@ -1,4 +1,3 @@
-import {expandSharedCardFaces} from '../scripts/native-ui-card-sharing.mjs';
 import {prepareMonsterArt} from '../scripts/monster-art.mjs';
 import {portraitInputs} from '../scripts/official-portraits.mjs';
 import {readyArtInputs,readyArtSourceInputs} from '../scripts/art/ready-card-runtime.mjs';
@@ -26,8 +25,7 @@ export class Client {
  async readResource({uri}) {return {contents:[{uri,text:'MCP mock; not official compile'}]};}
  async callTool({name,arguments:args}) {
   appendFileSync(process.env.ART_CALLS,JSON.stringify({name,args})+'\\n');
-  if(name==='scene_list_interface')return {structuredContent:{clientTemplates:[],clientInterfaces:[]}};
-  if(name==='scene_add_client_template')return {structuredContent:{mapPath:args.mapPath,templateIndex:1073741846+({AbyssReadyCardImage:1,AbyssReadyCardGroup:2,AbyssMonsterActor:3,AbyssMonsterPower:4,AbyssOfficialBackgroundImage:5}[args.template.name]??(/^AbyssSharedCardFace[1-9][0-9]*$/.test(args.template.name)?20+Number(args.template.name.slice('AbyssSharedCardFace'.length)):0))}};
+  if(name==='scene_add_client_template')return {structuredContent:{mapPath:args.mapPath,templateIndex:1073741846+({AbyssReadyCardImage:1,AbyssReadyCardGroup:2,AbyssMonsterActor:3,AbyssMonsterPower:4,AbyssOfficialBackgroundImage:5}[args.template.name]??0)}};
   if(name==='scene_set_client_script')throw Error('Art build must use the actual batch writer');
   if(name==='scene_remove_client'){writeScripts(args.mapPath,readScripts(args.mapPath).filter(s=>s.name!==args.script));return {structuredContent:{removed:{script:args.script}}};}
   if(name==='scene_list_client_scripts')throw Error('Art build must use local complete source readback');
@@ -39,14 +37,14 @@ export class Client {
  }
 }
 `;
-function fixture(t,{monsterOnly=false,officialAssets=false,standardRelease=false}={}) {
+function fixture(t,{monsterOnly=false,officialAssets=false}={}) {
   mkdirSync(join(repo,'build'),{recursive:true});
   const root=mkdtempSync(join(repo,'build/native-art-entry-'));
   t.after(()=>rmSync(root,{recursive:true,force:true}));
   for(const file of ['src/lua','data','scripts','tools','art/monsters/acid_slime_m/native-art-r02','package.json','package-lock.json','CHANGELOG.md','.release-please-manifest.json'])
     cpSync(join(repo,file),join(root,file),{recursive:true});
   const put=(file,bytes)=>{const path=join(root,file);mkdirSync(dirname(path),{recursive:true});writeFileSync(path,bytes);return path;};
-  if(officialAssets||standardRelease)put(lumineSelectionPath,readFileSync(join(repo,lumineSelectionPath)));
+  if(officialAssets)put(lumineSelectionPath,readFileSync(join(repo,lumineSelectionPath)));
   // This isolated experiment exercises the opt-in renderer, not production permission.
   // The explicit test policy remains an ordinary hashed source input.
   if(!monsterOnly)put('data/release/candidate-art-policy.json',JSON.stringify({schemaVersion:1,disabledFeatures:{}}));
@@ -89,7 +87,6 @@ function fixture(t,{monsterOnly=false,officialAssets=false,standardRelease=false
     const receipt=await build(${JSON.stringify({root,baseMap,output:'output',...options})});console.log('Candidate receipt: '+receipt.receiptPath);`]);
   return {root,put,literal,registry,baseMap,cli,api};
 }
-function importedUi(run){const layout=run.calls.find(c=>c.name==='scene_add_client_ui').args,templates=run.calls.filter(c=>c.name==='scene_add_client_template').map(c=>c.args.template);return expandSharedCardFaces(layout,templates).layout;}
 function pools(tree){const found=[];function visit(n,p=''){if(n.name==='artSamples')found.push({path:p,pool:n});for(const c of n.children??n.controls??[])visit(c,p+'/'+(n.name??''));}visit(tree);return found;}
 const success=run=>assert.equal(run.result.status,0,run.result.stderr);
 
@@ -99,9 +96,9 @@ test('MCP mock: formal CLI consumes opt-in art in the actual UI and dynamic pres
   const prebuilt=spawnSync(process.execPath,['scripts/build-ui.mjs','build/lua',`--native-card-art-registry=${f.literal}`,'--native-card-art-count=1'],{cwd:f.root,encoding:'utf8'});
   assert.equal(prebuilt.status,0,prebuilt.stderr);
   const baseline=f.cli(['--no-ready-card-art']);success(baseline);
-  assert.equal(pools(importedUi(baseline)).length,0);
+  assert.equal(pools(baseline.calls.find(c=>c.name==='scene_add_client_ui').args).length,0);
   const one=f.cli([`--native-card-art-registry=${f.literal}`,'--native-card-art-count=1']);success(one);
-  const ui=importedUi(one),selected=pools(ui);
+  const ui=one.calls.find(c=>c.name==='scene_add_client_ui').args,selected=pools(ui);
   assert.equal(selected.length,1);assert(selected[0].path.endsWith('/battlePanel/card1'));
   assert.equal(selected[0].pool.children[0].children.length,1);
   const script=one.calls.find(c=>c.name==='native_batch_script'&&c.args.name==='abyss_presentation').args;
@@ -133,7 +130,7 @@ test('MCP mock: formal CLI consumes opt-in art in the actual UI and dynamic pres
   assert(!one.calls.some(c=>c.name==='scene_add_graph'||c.name==='scene_add_signal'));
   assert.equal(one.calls.filter(c=>c.name==='scene_list_client_scripts').length,0,'full readback uses local map records, asserted above');
   const disabled=f.cli(['--native-card-art-count=0']);success(disabled);
-  assert.equal(pools(importedUi(disabled)).length,0);
+  assert.equal(pools(disabled.calls.find(c=>c.name==='scene_add_client_ui').args).length,0);
   assert.equal(disabled.receipt().nativeCardArt,undefined);
 });
 
@@ -180,19 +177,15 @@ test('MCP mock: audio wrapper preserves full art receipt and rejects input chang
       runs++;mkdirSync(directory,{recursive:true});const mapPath=join(directory,'audio.gil');writeFileSync(mapPath,'MCP mock audio');
       writeFileSync(join(directory,'candidate.json'),JSON.stringify({mapPath,sha256:fileRecord(mapPath).sha256,candidate:fileRecord(mapPath),
         baseSha256:full.candidate.sha256,baseAfter:full.candidate.sha256,buildId:full.buildId,artFeatures:full.artFeatures,
-    uiProfile:full.uiProfile,nativeUiPacking:full.nativeUiPacking,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
-      mutate?.(directory);
+    uiProfile:full.uiProfile,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
+      mutate?.();
     }});
   const audio=await packageAudio();assert.deepEqual(audio.nativeCardArt,full.nativeCardArt);
   assert.deepEqual(audio.toolchainIdentity,full.toolchainIdentity);
-  assert.deepEqual(audio.nativeUiPacking,full.nativeUiPacking);
-  for(const corrupt of [undefined,{...full.nativeUiPacking,sharing:{...full.nativeUiPacking.sharing,packedDigest:'0'.repeat(64)}}])
-    await assert.rejects(packageAudio(directory=>{const p=join(directory,'candidate.json'),r=JSON.parse(readFileSync(p));r.nativeUiPacking=corrupt;writeFileSync(p,JSON.stringify(r));}),/Audio UI packing differs/);
-
   const {verifyUiCandidateInputs}=await import('../scripts/verify-ui-acceptance.mjs');
   assert.doesNotThrow(()=>verifyUiCandidateInputs(audio,audio.mapPath,{root:f.root}));
   const original=readFileSync(f.literal);writeFileSync(f.literal,Buffer.concat([original,Buffer.from('\n')]));
-  await assert.rejects(packageAudio(),/Native art.*changed/);assert.equal(runs,3,'stale art must not start audio packaging');
+  await assert.rejects(packageAudio(),/Native art.*changed/);assert.equal(runs,1,'stale art must not start audio packaging');
   writeFileSync(f.literal,original);
   const drawing=f.registry.sourceInputs[0].path,drawingBytes=readFileSync(drawing);
   await assert.rejects(packageAudio(()=>writeFileSync(drawing,'changed during audio')),/Native art.*changed/);
@@ -249,10 +242,10 @@ test('MCP mock: explicit API host and CLI 5/10 candidates remain bounded, never 
   assert.deepEqual(api.receipt().nativeCardArt.hosts,['battlePanel/card1']);
   const host='nodePanel/pickerView/before',run=f.cli([`--native-card-art-registry=${f.literal}`,`--native-card-art-host=${host}`]);success(run);
   assert.deepEqual(run.receipt().nativeCardArt.hosts,[host]);
-  assert(pools(importedUi(run))[0].path.endsWith('/'+host));
+  assert(pools(run.calls.find(c=>c.name==='scene_add_client_ui').args)[0].path.endsWith('/'+host));
   for(const count of [5,10]) {
     const candidate=f.cli([`--native-card-art-registry=${f.literal}`,`--native-card-art-count=${count}`]);success(candidate);
-    assert.equal(pools(importedUi(candidate)).length,count);
+    assert.equal(pools(candidate.calls.find(c=>c.name==='scene_add_client_ui').args).length,count);
     assert.equal(candidate.receipt().nativeCardArt.staticAddedControls,3*count,'synthetic one-slot pools, not performance evidence');
   }
 });
@@ -265,7 +258,7 @@ test('MCP mock: registered Cleave/Heavy one-pool entry carries 2657/2043 slots a
   const run=f.cli([`--native-card-art-registry=${f.literal}`,'--native-card-art-count=1']);success(run);
   const receipt=run.receipt();assert.equal(receipt.nativeCardArt.staticAddedControls,2703);
   assert.equal(receipt.nativeCardArt.sources.cleave.images,2657);assert.equal(receipt.nativeCardArt.sources.heavy_blade.images,2043);
-  assert.equal(pools(importedUi(run)).length,1);
+  assert.equal(pools(run.calls.find(c=>c.name==='scene_add_client_ui').args).length,1);
   const presentation=run.calls.find(c=>c.name==='native_batch_script'&&c.args.name==='abyss_presentation').args.source;
   assert.equal((presentation.match(/\["path"\]=/g)??[]).length,4700);
   console.log('MCP mock registered one-pool: '+JSON.stringify({registrySha256:receipt.nativeCardArt.registrySha256,sources:receipt.nativeCardArt.sources,controls:receipt.nativeCardArt.staticAddedControls}));
@@ -306,7 +299,7 @@ test('MCP mock: all three reviewed drawings reach the formal candidate with inde
   assert.deepEqual(Object.keys(receipt.nativeCardArt.sources),['armaments','cleave','heavy_blade']);
   assert.deepEqual(Object.values(receipt.nativeCardArt.sources).map(a=>a.images),[1834,2657,2043]);
   assert.equal(receipt.nativeCardArt.staticAddedControls,2703);
-  const ui=importedUi(run);
+  const ui=run.calls.find(c=>c.name==='scene_add_client_ui').args;
   assert.equal(pools(ui).length,1);
   const presentation=run.calls.find(c=>c.name==='native_batch_script'&&c.args.name==='abyss_presentation').args.source;
   assert.equal((presentation.match(/\["path"\]=/g)??[]).length,6534);
@@ -325,7 +318,7 @@ test('MCP mock: explicit monster-only CLI packages approved candidate drawing wh
  assert.equal(expectedInputs.length,2);assert.deepEqual(receipt.nativeMonsterArt.inputs.map(row=>row.path),expectedInputs.map(row=>row.path));
  for(const [index,row]of receipt.nativeMonsterArt.inputs.entries()){assert.equal(row.sha256,expectedInputs[index].sha256);assert.equal(row.bytes,fileRecord(join(f.root,row.path)).bytes);}
  assert(!receipt.nativeCardArt&&!receipt.readyCardArt&&!receipt.officialBackground&&!receipt.officialPortraits);
- const ui=importedUi(run);
+ const ui=run.calls.find(c=>c.name==='scene_add_client_ui').args;
  function all(node){return [node,...(node.children??node.controls??[]).flatMap(all)];}
  const nodes=all(ui);assert.equal(nodes.filter(n=>n.name==='actorLayer').length,1);
  assert(!nodes.some(n=>n.name==='monsterArt'||/^enemy[0-9]+$/.test(n.name)));
@@ -385,39 +378,9 @@ test('MCP mock: monster-only audio preserves source receipt and rejects changed 
    mkdirSync(directory,{recursive:true});const mapPath=join(directory,'audio.gil');writeFileSync(mapPath,'MCP mock audio');
    writeFileSync(join(directory,'candidate.json'),JSON.stringify({mapPath,sha256:fileRecord(mapPath).sha256,candidate:fileRecord(mapPath),
     baseSha256:full.candidate.sha256,baseAfter:full.candidate.sha256,buildId:full.buildId,artFeatures:full.artFeatures,
-    uiProfile:full.uiProfile,nativeUiPacking:full.nativeUiPacking,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
+    uiProfile:full.uiProfile,...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile}:{})}));
   }});
  const audio=await run();assert.deepEqual(audio.nativeMonsterArt,full.nativeMonsterArt);
  const path=join(f.root,full.nativeMonsterArt.inputs[0].path);writeFileSync(path,readFileSync(path,'utf8')+'\n-- changed');
  await assert.rejects(run(),/Source changed during audio/);
-});
-
-const releaseEnemyFlags={cards:false,menuBackground:true,selectionAvatar:true,battlePortrait:true,monsters:false};
-test('MCP mock: standard audio profile packages the bounded enemy template and correct runtime data',t=>{
- const f=fixture(t,{standardRelease:true}),run=f.api({artFeatures:releaseEnemyFlags});success(run);
- const receipt=run.receipt();
- assert.deepEqual(receipt.artFeatures.flags,releaseEnemyFlags);
- assert.equal(receipt.monsterActors.shapesPerActor,41);
- assert.equal(receipt.monsterActors.controlsPerActor,77);
- assert.equal(receipt.nativeMonsterArt,undefined);
- const actor=run.calls.find(c=>c.name==='scene_add_client_template'&&c.args.template.name==='AbyssMonsterActor').args.template;
- const pool=actor.children.find(n=>n.name==='portraitArt');
- assert.equal(pool.children.length,41);
- assert(pool.children.every(n=>n.visible===false&&n.raycastTarget===false));
- const theme=run.calls.find(c=>c.name==='native_batch_script'&&c.args.name==='abyss_theme').args.source;
- assert(theme.includes('["lowCostArt"]={["enemy"]='));
- assert(theme.includes('["ry"]='));
- assert.equal(receipt.statuses.officialImport,'not_run');
- assert.equal(receipt.liveWriteEnabled,false);
-});
-
-test('MCP mock: incomplete standard enemy template rejects before connection',t=>{
- const f=fixture(t,{standardRelease:true}),path=join(f.root,'scripts/build-ui.mjs');
- writeFileSync(path,readFileSync(path,'utf8')+`\nconst p=join(process.argv[2],'game-ui-templates.json'),tree=JSON.parse(readFileSync(p,'utf8'));
- tree.find(n=>n.name==='AbyssMonsterActor').children.find(n=>n.name==='portraitArt').children.pop();
- writeFileSync(p,JSON.stringify(tree));`);
- const run=f.api({artFeatures:releaseEnemyFlags});
- assert.notEqual(run.result.status,0);
- assert.match(run.result.stderr,/Monster actor template differs/);
- assert.deepEqual(run.calls,[]);
 });

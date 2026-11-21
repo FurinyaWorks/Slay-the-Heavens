@@ -1,11 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {existsSync,mkdirSync,mkdtempSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
+import {mkdirSync,mkdtempSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {dirname,join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {pathToFileURL} from 'node:url';
 
 const pinned=['tools/oracles/library-event-oracle.py','tools/sts1-card-rng-oracle.py',
  'tests/fixtures/library-event-vectors.json','tests/fixtures/library-event-vectors.lua',
@@ -17,46 +16,6 @@ const inputs=[...pinned,...facts];
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const json=path=>JSON.parse(readFileSync(path,'utf8'));
 const pythonEnv={...process.env,PYTHONUTF8:'1'};
-
-test('TASK-111 exact CI packets load after Windows checkout and still reject raw packet drift',t=>{
- const root=mkdtempSync(join(tmpdir(),'abyss-capacity-ci-checkout-'));
- t.after(()=>rmSync(root,{recursive:true,force:true}));
- const source=join(root,'seed');mkdirSync(join(source,'tests/helpers'),{recursive:true});
- const packets=['task111-capacity-ci-source.json','task111-capacity-review-ci-source.json'];
- for(const file of ['release-bootstrap-ci-source.mjs','release-bootstrap-ci-source.json.gz',...packets,
-  'task111-default-reduction-ci-source.json.gz','task111-default-audio-ci-source.json.gz'])
-  writeFileSync(join(source,'tests/helpers',file),readFileSync('tests/helpers/'+file));
- writeFileSync(join(source,'.gitattributes'),readFileSync('.gitattributes'));
- if(existsSync('tests/helpers/.gitattributes'))
-  writeFileSync(join(source,'tests/helpers/.gitattributes'),readFileSync('tests/helpers/.gitattributes'));
- writeFileSync(join(source,'control.txt'),'checkout conversion control\nsecond line\n');
- git(source,'init','--quiet','--initial-branch=fixture');
- git(source,'config','user.name','Fixture');git(source,'config','user.email','fixture@example.invalid');
- git(source,'-c','core.autocrlf=false','add','.');git(source,'commit','--quiet','-m','test: exact capacity CI packets');
- const load=directory=>spawnSync(process.execPath,['--input-type=module','--eval',
-  `await import(${JSON.stringify(pathToFileURL(join(directory,'tests/helpers/release-bootstrap-ci-source.mjs')).href)})`],
-  {encoding:'utf8',timeout:15000});
- for(const windows of [false,true]){
-  const checkout=join(root,windows?'windows':'lf');
-  git(root,'clone','--quiet','--no-hardlinks','--config',`core.autocrlf=${windows}`,
-   '--config',`core.eol=${windows?'crlf':'lf'}`,source,checkout);
-  assert.equal(readFileSync(join(checkout,'control.txt'),'utf8').includes('\r\n'),windows,
-   'the Windows checkout must actually convert unpinned text');
-  const loaded=load(checkout);
-  assert.equal(loaded.status,0,loaded.stderr||loaded.error?.message||loaded.stdout);
-  for(const file of packets){
-   const target=join(checkout,'tests/helpers',file),original=readFileSync(target);
-   assert.deepEqual(original,readFileSync('tests/helpers/'+file),'authenticated packet retains exact Git bytes');
-   for(const drift of [Buffer.concat([original,Buffer.from('\n')]),Buffer.from(original.toString().replaceAll('\n','\r\n'))]){
-    writeFileSync(target,drift);const rejected=load(checkout);
-    assert.notEqual(rejected.status,0,'raw packet drift must remain rejected');
-    assert.match(rejected.stderr,/complete TASK-111 (?:review )?CI continuation/);
-   }
-   writeFileSync(target,original);
-  }
- }
-});
-
 function git(cwd,...args){
  const result=spawnSync('git',['-c','core.hooksPath=.no-test-hooks','-c','commit.gpgSign=false',...args],
   {cwd,encoding:'utf8',timeout:15000});

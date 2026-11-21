@@ -4,18 +4,21 @@ import assert from 'node:assert/strict';
 import {readFileSync as nativeReadFileSync} from 'node:fs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
+import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {beforePc13ThenV2UiHudSource,beforeAuthenticatedPc13RewardCover} from './helpers/pc13-reward-cover-source.mjs';
 // Original assertions retain their explicit frozen source view.
 const currentRaw=p=>nativeReadFileSync(p,'utf8');
-const readFileSync=(p,encoding)=>{const value=nativeReadFileSync(p,encoding);return typeof value==='string'?jointUiSourceAt(p,combinedCurrent.preCombinedSource(p,value,{target:'jointUiPrior',readSource:currentRaw}),'room'):value;};
+const roomPriorRead=combinedCurrent.combinedReader(currentRaw,'jointUiPrior');
 import {roomUiSourceEpoch as room} from './helpers/room-ui-source-epoch.mjs';
 import {componentUiSourceEpoch as component} from './helpers/component-ui-source-epoch.mjs';
 import {preJointUiEpoch as epoch,preRoomUiEpoch as prior} from './helpers/combined-epoch/source-epoch.mjs';
-const live=p=>readFileSync(p,'utf8'),raw=p=>epoch.proof.current[p]?.source??null;
+const live=p=>jointUiSourceAt(p,beforePc13ThenV2UiHudSource(p,roomPriorRead(p),currentRaw),'room'),raw=p=>epoch.proof.current[p]?.source??null;
 const changed=['src/lua/abyss_game_ui_view.lua','src/lua/abyss_map_ui.lua','src/lua/abyss_node_ui_faces.lua'];
 import {preJoustEpoch as joint,joustIntegratedEpoch as current} from './helpers/combined-epoch/source-epoch.mjs';
 import {joustSourceProof} from './helpers/joust-source-epoch.mjs';
 import {readdirSync} from 'node:fs';
-const currentLive=p=>{try{return sourceSlice(p,nativeReadFileSync(p,'utf8'),'pr612').replaceAll('\r\n','\n');}catch(e){if(e.code==='ENOENT')return null;throw e;}};
+const admittedRaw=p=>beforeCurrentProductionSource(p,currentRaw(p),currentRaw);
+const currentLive=p=>{try{return sourceSlice(p,admittedRaw(p),'pr612',admittedRaw).replaceAll('\r\n','\n');}catch(e){if(e.code==='ENOENT')return null;throw e;}};
 // Preserve the original joint UI assertions against their explicit predecessor.
 const jointLive=current.combinedReader(currentLive,'joustPrior');
 function retainedPaths(historical){
@@ -26,7 +29,7 @@ function retainedPaths(historical){
  combinedCurrent.preCombinedSource('config/architecture.json',currentRaw('config/architecture.json'),{target:'stsStylePrior',readSource:currentRaw});
  for(const p of styleAdded){
   assert.equal(combinedCurrent.proof.targets.stsStylePrior.files[p],null,'complete original absence must remain explicit');
-  assert.equal(currentRaw(p).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
+  assert.equal(beforeAuthenticatedPc13RewardCover(p,currentRaw(p),currentRaw).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
   assert(combinedCurrent.proof.owners.includes(p),'new module is an authenticated current owner');
  }
  const actual=live.filter(p=>!styleAdded.includes(p));

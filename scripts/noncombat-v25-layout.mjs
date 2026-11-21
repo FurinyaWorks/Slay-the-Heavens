@@ -1,9 +1,11 @@
+import {applyApprovedNativeMenu} from './native-menu-approved-layout.mjs';
 // Reuse the frozen V25 page layout and existing input paths. Native textures
 // replace bounded decorative surfaces; no new page owner or image rasterizer.
+import {styleLiyuePageReveal} from './cinematic-ui-layout.mjs';
 import {applyV25MenuLayout} from './v25-menu-layout.mjs';
 import {applyV25CharacterLayout} from './v25-character-layout.mjs';
 import {constellationGeometry} from './constellation-geometry.mjs';
-import {characterSelectionComposition} from './character-selection-composition.mjs';
+import {characterSelectionComposition,styleCharacterFlag} from './character-selection-composition.mjs';
 const parts=n=>n?.controls??n?.children??[];
 const child=(n,name)=>parts(n).find(c=>c.name===name);
 export function applyOfficialNoncombatLayout(layout,theme){
@@ -12,12 +14,10 @@ export function applyOfficialNoncombatLayout(layout,theme){
  const start=child(child(stage,'menuPanel'),'start');
  if(!child(start,'officialResultLabel'))start.children.push({...structuredClone(child(start,'label')),name:'officialResultLabel',visible:false});
  applyV25MenuLayout(layout,theme);
+ applyApprovedNativeMenu(child(stage,'menuPanel'));
  const characterTheme={...theme,v25Character:{...theme.v25Character,story:theme.v25Character?.story?.replaceAll('\\n','\n')}};
  applyV25CharacterLayout(layout,characterTheme);
  const panel=child(stage,'characterPanel'),selected=child(child(panel,'v25Roster'),'selected');
- // The approved scene replaces the legacy backdrop. Its inherited full-screen
- // shade would otherwise remain above the ready native artwork.
- child(panel,'officialBackdropVeil').visible=false;
  // The static exact-alpha constellation replaces the release initial placeholder.
  selected.children.splice(selected.children.indexOf(child(selected,'v25Constellation')),1,constellationGeometry(theme));
  const background=child(panel,'v25Background');
@@ -30,5 +30,15 @@ export function applyOfficialNoncombatLayout(layout,theme){
  child(child(panel,'details'),'portraitNote').visible=false;
  panel.children=panel.children.filter(n=>n.name!=='lumineSelectionBackground');
  characterSelectionComposition(panel,theme);
+ const exit=child(child(stage,'runMenu'),'mainMenu');
+ exit.size=[180,60];child(exit,'hit').size=[180,60];
+ for(const state of parts(child(exit,'hit'))){
+  state.size=[180,60];
+  const label=child(state,'label');
+  label.text.content='退出游戏';label.size=[160,52];
+  label.text.colour=state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk;
+ }
+ styleCharacterFlag(exit,'cancel',theme);
+ styleLiyuePageReveal(child(stage,'pageReveal'),theme);
  return layout;
 }

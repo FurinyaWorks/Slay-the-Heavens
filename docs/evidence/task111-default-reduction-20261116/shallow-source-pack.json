@@ -1,8 +1,0 @@
-{
-  "measurement": "offline-current-commit-and-tree-pack-not-network-GIL-or-official-storage",
-  "sourceCommit": "bf74c0c391a0700740fee9b7cb8695bff615366a",
-  "bytes": 126772044,
-  "hostedLimitBytes": 134217728,
-  "belowHostedLimitOffline": true,
-  "hostedCheckout": "UNVERIFIED"
-}

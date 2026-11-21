@@ -3,9 +3,16 @@ import assert from 'node:assert/strict';
 import {readFileSync as nativeReadFileSync} from 'node:fs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
+import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
+import {beforePotionPointerSource} from './helpers/potion-pointer-source.mjs';
 // Original assertions retain their explicit frozen source view.
 const currentRaw=p=>nativeReadFileSync(p,'utf8');
-const readFileSync=(p,encoding)=>{const value=nativeReadFileSync(p,encoding);return typeof value==='string'?jointUiSourceAt(p,currentSourceEpoch.preCombinedSource(p,value,{target:'noncombatPrior',readSource:currentRaw}),'official'):value;};
+const noncombatPriorRead=currentSourceEpoch.combinedReader(currentRaw,'noncombatPrior');
+// noncombatPrior may leave unchanged owners at their newer live identity.
+const beforePointerRead=p=>beforePotionPointerSource(p,noncombatPriorRead(p),currentRaw);
+const readFileSync=(p,encoding)=>encoding==='utf8'
+ ?jointUiSourceAt(p,beforePc13ThenV2UiHudSource(p,beforePointerRead(p),currentRaw),'official')
+ :nativeReadFileSync(p,encoding);
 import {createHash} from 'node:crypto';
 import {sevenRefactorEpoch as epoch} from './helpers/seven-refactor-source-epoch.mjs';
 import {componentUiSourceEpoch as componentEpoch} from './helpers/component-ui-source-epoch.mjs';

@@ -1,4 +1,5 @@
 import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
+import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync as nativeReadFileSync,mkdtempSync,rmSync} from 'node:fs';
@@ -9,10 +10,12 @@ import {goldenIdolIntegratedEpoch as sourceEpoch,preGoldenIdolEpoch} from './hel
 import {goldenIdolEpoch} from './helpers/golden-idol-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 
+const currentRaw=file=>nativeReadFileSync(file,'utf8');
 const readFileSync=(file,encoding)=>{
  const value=nativeReadFileSync(file,encoding);
  if(file!=='config/architecture.json'&&!file.startsWith('src/lua/'))return value;
- const source=typeof value==='string'?value:value.toString('utf8'),prior=sourceSlice(file,source,'pr614');
+ const source=typeof value==='string'?value:value.toString('utf8');
+ const prior=beforePc13ThenV2UiHudSource(file,sourceSlice(file,source,'pr614',currentRaw),currentRaw);
  return typeof value==='string'?prior:prior===source?value:Buffer.from(prior);
 };
 const path='src/lua/abyss_golden_idol_event.lua',proof=sourceEpoch.proof,prior=preGoldenIdolEpoch.proof;

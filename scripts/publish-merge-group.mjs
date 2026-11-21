@@ -5,8 +5,9 @@ import {spawnSync} from 'node:child_process';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {checkoutReceipt,receiptErrors,currentFullQualityJobs,qualityWorkflowPath} from './verify-delivery.mjs';
-import {collectQueueAdmission} from './merge-queue-admission.mjs';
-import {queueRulesAttested} from './merge-queue-policy.mjs';
+import {collectQueueAdmission,queueAdmissionCompatible} from './merge-queue-admission.mjs';
+import {queueBypassActorsAllowed} from './arm-auto-merge.mjs';
+import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryMatches} from './repository-identity.mjs';
 
 const contexts=['check','presentation','engineering-posix','inventory','full-quality','independent-review'];
@@ -35,11 +36,10 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
  const statusPolicy=ruleset?.rules?.find(rule=>rule.type==='required_status_checks')?.parameters;
  const checks=statusPolicy?.required_status_checks;
  const pull=ruleset?.rules?.find(rule=>rule.type==='pull_request')?.parameters;
- if(ruleset?.target!=='branch'||ruleset?.enforcement!=='active'||
+ if(ruleset?.id!==25870651||ruleset?.target!=='branch'||ruleset?.enforcement!=='active'||
   JSON.stringify(ruleset?.conditions?.ref_name?.include)!==JSON.stringify(['refs/heads/develop'])||
   JSON.stringify(ruleset?.conditions?.ref_name?.exclude)!=='[]'||
-  (Object.hasOwn(ruleset??{},'bypass_actors')?
-   !Array.isArray(ruleset.bypass_actors)||ruleset.bypass_actors.length!==0:!queueRulesAttested(ruleset,admission))||
+  !queueBypassActorsAllowed(ruleset,{allowAdministratorPullRequest:cloudAuthorizationOnly(admission)})||
   !ruleset.rules?.some(rule=>rule.type==='merge_queue'&&
    rule.parameters?.merge_method==='SQUASH'&&rule.parameters?.grouping_strategy==='ALLGREEN'))
   errors.push('Native develop Merge Queue protection is not active or has bypass actors');
@@ -91,6 +91,12 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
   errors.push('Immutable queue checkout receipt does not match tested group');
  if(!metadataOnly)errors.push(...receiptErrors(receipt,checkout?.checkoutArtifact,jobs,run,3));
  return errors;
+}
+function cloudAuthorizationOnly(admission){
+ try{
+  const members=JSON.parse(admission);
+  return Array.isArray(members)&&members.length>0&&members.every(member=>member?.authorizationKind==='cloud');
+ }catch{return false;}
 }
 
 function gh(...args) {
@@ -155,6 +161,120 @@ function post(query,expectedRepo,head,state,context,runId,attempt,{validate,wait
   wait(250*(retry+1));
  }
 }
+// Event-driven resource cleanup only: no admission, statuses, refs or PR writes.
+export function cancelObsoleteQueueRuns(event,env,query=gh){
+ const repo=env.GITHUB_REPOSITORY,results=[];
+ let phase='event';
+ const httpCode=error=>{const code=Number(error?.httpStatus??error?.message?.match(/\bHTTP(?:\/[0-9.]+)?\s+([1-5][0-9]{2})\b/)?.[1]);return Number.isInteger(code)&&code>=100&&code<=599?code:null;};
+ if(env.GITHUB_EVENT_NAME!=='pull_request_target'||event?.action!=='dequeued'||
+  !projectRepositoryMatches(event?.repository,repo)||env.GITHUB_REPOSITORY_ID!=='1429751262'||
+  env.GITHUB_REF!=='refs/heads/develop'||!sha(env.GITHUB_SHA)||
+  event?.pull_request?.base?.ref!=='develop'||event.pull_request.base.sha!==env.GITHUB_SHA||!projectRepositoryMatches(event.pull_request.base.repo,repo))
+  return {state:'skipped',reason:'not-trusted-develop-dequeue',results};
+ const get=path=>JSON.parse(query('api',`repos/${repo}/${path}`));
+ const unavailable=error=>({state:'skipped',reason:'incomplete-or-unavailable-inventory',phase,httpStatus:httpCode(error),results});
+ const liveQueue=()=>{
+  const [owner,name]=repo.split('/');
+  const response=JSON.parse(query('api','graphql','-f','query='+`query { repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}) {
+   databaseId nameWithOwner ref(qualifiedName:"refs/heads/develop") { target { oid } }
+   mergeQueue(branch:"develop") { entries(first:100) { pageInfo { hasNextPage } nodes {
+    id position state headCommit { oid } pullRequest { number headRefOid baseRefName }
+   } } }
+  } }`));
+  const repository=response?.data?.repository,entries=repository?.mergeQueue?.entries;
+  if(response.errors?.length||repository?.databaseId!==1429751262||repository.nameWithOwner!==repo||
+   !sha(repository.ref?.target?.oid)||entries?.pageInfo?.hasNextPage!==false||
+   !Array.isArray(entries.nodes)||entries.nodes.length>100)throw Error('Incomplete queue');
+  const ids=new Set(),numbers=new Set(),heads=new Set();
+  const ordered=[...entries.nodes].sort((a,b)=>a.position-b.position);
+  for(const [index,entry]of ordered.entries()){
+   const pr=entry?.pullRequest,head=entry?.headCommit?.oid;
+   if(typeof entry?.id!=='string'||!entry.id||ids.has(entry.id)||entry.position!==index+1||
+    !['QUEUED','AWAITING_CHECKS','MERGEABLE','UNMERGEABLE','LOCKED'].includes(entry.state)||
+    !id(pr?.number)||numbers.has(pr.number)||pr.baseRefName!=='develop'||!sha(pr.headRefOid)||
+    !(sha(head)||entry.headCommit===null&&entry.state==='QUEUED'))throw Error('Ambiguous queue');
+   ids.add(entry.id);numbers.add(pr.number);heads.add(pr.headRefOid);if(head)heads.add(head);
+  }
+  return {develop:repository.ref.target.oid,heads,fingerprint:JSON.stringify(ordered)};
+ };
+ const refs=()=>{
+  const found=new Map();
+  for(let page=1;page<=100;page++){
+   const rows=get(`git/matching-refs/heads/gh-readonly-queue/develop/?per_page=100&page=${page}`);
+   if(!Array.isArray(rows)||rows.length>100)throw Error('Incomplete refs');
+   for(const row of rows){
+    if(typeof row?.ref!=='string'||!row.ref.startsWith('refs/heads/gh-readonly-queue/develop/')||
+     row.object?.type!=='commit'||!sha(row.object.sha)||found.has(row.ref))throw Error('Ambiguous ref');
+    found.set(row.ref,row.object.sha);
+   }
+   if(rows.length<100)return found;
+  }
+  throw Error('Incomplete refs');
+ };
+ let queue,liveRefs,workflow,runs=[];
+ const eligible=run=>id(run?.id)&&id(run.run_attempt)&&run.event==='merge_group'&&
+  ['queued','in_progress'].includes(run.status)&&run.conclusion===null&&sha(run.head_sha)&&
+  run.workflow_id===workflow.id&&run.path===qualityWorkflowPath&&
+  projectRepositoryMatches(run.repository,repo)&&projectRepositoryMatches(run.head_repository,repo)&&
+  /^gh-readonly-queue\/develop\/[^/\s]+$/.test(run.head_branch??'');
+ try{
+  phase='initial-repository';const repository=JSON.parse(query('api','repositories/1429751262'));
+  if(!projectRepositoryMatches(repository,repo))throw Error('Repository changed');
+  phase='initial-develop';const develop=get('git/ref/heads/develop');
+  if(develop?.ref!=='refs/heads/develop'||develop.object?.type!=='commit'||!sha(develop.object.sha))throw Error('Develop unavailable');
+  phase='initial-queue';queue=liveQueue();if(queue.develop!==develop.object.sha)throw Error('Develop changed');
+  phase='initial-workflow';workflow=get('actions/workflows/quality.yml');
+  if(!id(workflow?.id)||workflow.path!==qualityWorkflowPath)throw Error('Workflow unavailable');
+  const ids=new Set();
+  for(const status of ['queued','in_progress']){
+   let total;
+   for(let page=1;page<=10;page++){
+    phase='initial-runs';const data=get(`actions/workflows/quality.yml/runs?event=merge_group&status=${status}&per_page=100&page=${page}`);
+    if(!Number.isInteger(data?.total_count)||data.total_count<0||data.total_count>1000||
+     total!==undefined&&total!==data.total_count||!Array.isArray(data.workflow_runs)||data.workflow_runs.length>100||data.workflow_runs.some(run=>run?.status!==status))
+     throw Error('Incomplete runs');
+    total=data.total_count;
+    for(const run of data.workflow_runs){if(!id(run?.id)||ids.has(run.id))throw Error('Ambiguous run');ids.add(run.id);runs.push(run);}
+    const count=runs.filter(run=>run.status===status).length;
+    if(count===total)break;
+    if(count>total||data.workflow_runs.length!==100||page===10)throw Error('Incomplete runs');
+   }
+  }
+  phase='initial-refs';liveRefs=refs();
+ }catch(error){return unavailable(error);}
+ for(const run of runs){
+  if(!eligible(run))continue;
+  const ref='refs/heads/'+run.head_branch;
+  if(queue.heads.has(run.head_sha)||liveRefs.has(ref))continue;
+  const entry={runId:run.id,attempt:run.run_attempt,head:run.head_sha,ref};
+  try{
+   phase='fresh-queue';const fresh=liveQueue();
+   phase='fresh-refs';const freshRefs=refs();
+   phase='fresh-run';const current=get('actions/runs/'+run.id);
+   if(fresh.develop!==queue.develop||fresh.fingerprint!==queue.fingerprint||fresh.heads.has(run.head_sha)||
+    freshRefs.has(ref)||!eligible(current)||current.id!==run.id||current.run_attempt!==run.run_attempt||
+    current.head_sha!==run.head_sha||current.head_branch!==run.head_branch){
+    results.push({...entry,state:'skipped',reason:'live-or-changed-candidate'});continue;
+   }
+   phase='cancel-post';let cancelError;
+   try{query('api','--method','POST',`repos/${repo}/actions/runs/${run.id}/cancel`);}catch(error){cancelError=error;}
+   const transport=cancelError?{uncertain:true,cancelPhase:'cancel-post',cancelHttpStatus:httpCode(cancelError)}:{};
+   // Acceptance is not completion. Never label a still-running job cancelled.
+   try{
+    phase='cancel-readback';const after=get('actions/runs/'+run.id);
+    if(after.id!==run.id||after.run_attempt!==run.run_attempt||after.head_sha!==run.head_sha||
+     after.event!=='merge_group'||after.workflow_id!==workflow.id||after.path!==qualityWorkflowPath||
+     after.head_branch!==run.head_branch||!['queued','in_progress','completed'].includes(after.status)||
+     (after.status==='completed'?!['success','failure','neutral','cancelled','skipped','timed_out','action_required','stale','startup_failure'].includes(after.conclusion):after.conclusion!==null)||
+     !projectRepositoryMatches(after.repository,repo)||!projectRepositoryMatches(after.head_repository,repo))throw Error('Changed cancellation readback');
+    results.push({...entry,state:after.status==='completed'?'terminal':'cancel-requested',
+     status:after.status,conclusion:after.conclusion??null,...transport});
+   }catch(error){results.push({...entry,state:'cancel-requested',reason:'readback-unavailable',phase,httpStatus:httpCode(error),...transport});}
+  }catch(error){results.push({...entry,state:'skipped',reason:'fresh-check-unavailable',phase,httpStatus:httpCode(error)});}
+ }
+ return {state:'inspected',results};
+}
+
 export function main(env=process.env,query=gh,{pending=false,loadCheckout,
  wait=ms=>Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,ms)}={}) {
  const event=JSON.parse(readFileSync(env.GITHUB_EVENT_PATH,'utf8'));
@@ -208,10 +328,11 @@ export function main(env=process.env,query=gh,{pending=false,loadCheckout,
  // overwrite the new group's pending/failure status.
  const validate=()=>{
   const current=activeRun(false),finalRules=get('rulesets/25870651');
+  if(!isDeepStrictEqual(ruleset,finalRules))throw Error('Visible native queue protection changed during evidence verification');
   const currentJobs=pages(`actions/runs/${runId}/jobs?filter=all&per_page=100`,'jobs');
   const finalErrors=queueFullErrors({...context,...current,jobs:currentJobs,ruleset:finalRules,checkout:receipt});
   if(finalErrors.length)throw Error(finalErrors.join('\n'));
-  if(collectQueueAdmission(event,env,query,finalRules)!==admission)
+  if(!queueAdmissionCompatible(admission,collectQueueAdmission(event,env,query,finalRules)))
    throw Error('Native group PR authorization changed during artifact verification');
  };
  validate();
@@ -219,6 +340,9 @@ export function main(env=process.env,query=gh,{pending=false,loadCheckout,
  return {state:'success',runId,head};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
- try{console.log(JSON.stringify(main(process.env,gh,{pending:process.argv[2]==='--pending'})));}
+ try{
+  const result=process.argv[2]==='--cancel-obsolete'?cancelObsoleteQueueRuns(JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')),process.env):main(process.env,gh,{pending:process.argv[2]==='--pending'});
+  console.log(JSON.stringify(result));
+ }
  catch(error){console.error(error.message);process.exitCode=1;}
 }

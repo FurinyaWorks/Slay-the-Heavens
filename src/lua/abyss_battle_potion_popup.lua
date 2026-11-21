@@ -206,8 +206,13 @@ function M.new(root,owner,platform,clickEvent,actions)
                 if not ready(token)then forget(token);return false end
             elseif not ready()then return false end
             if actions.pointerClick and not actions.pointerClick(event,token)then forget(token);return false end
+            local menu=owner.potionMenu
             local accepted,reason=act(name)
-            if actions.pointerConsumed then actions.pointerConsumed(event,token)end
+            if owner.potionMenu==menu then
+                -- Eligibility may have changed since Down. Retire this press;
+                -- the open popup still protects the controls underneath it.
+                forget(token)
+            elseif actions.pointerConsumed then actions.pointerConsumed(event,token)end
             return accepted,reason
         end)
     end
@@ -219,7 +224,13 @@ function M.new(root,owner,platform,clickEvent,actions)
         plate:AddCursorEventListener(cursor.CursorUp,function(event)releasePointer(plate,event)end)
         for _,kind in pairs({cursor.CursorEndDrag,cursor.CursorExit})do plate:AddCursorEventListener(kind,function(event)cancelPointer(plate,event)end)end
     end
-    plate:AddCursorEventListener(clickEvent,function(event)forgetReleased(plate,event);return true end)
+    plate:AddCursorEventListener(clickEvent,function(event)
+        -- Neutral Click consumes no action. Retire only its matched release;
+        -- a missing ID must not choose among competing pointers.
+        local pointer=currentPointer(plate,event)
+        if pointer and pointer.released then forget(pointer)end
+        return true
+    end)
     root.disableCursorEventPassthrough=true
     root:SetVisible(false)
     return popup

@@ -21,14 +21,12 @@ function energyFinish(root,theme){
  Object.assign(number.text,{outline:true,outlineColour:'#4C2425',outlineOpacity:1});
 }
 export function officialBattleUtilityFaces(stage,theme){
- for(const entry of ['deckEntry','exitEntry']){
+ for(const [entry,symbol]of [['deckEntry','▱'],['exitEntry','⚙']]){
   const hit=child(child(child(stage,entry),'open'),'hit');if(!hit)continue;
   for(const variant of hit.children){
    const deck=entry==='deckEntry',colour=variant.name==='hover'?'#FFF3CE':variant.name==='disabled'?'#8F918B':'#D6CBA5';
    variant.children.push({name:'officialBattleHud',kind:'container',size:[...variant.size],visible:false,children:[
-    ...(deck?[text('symbol',[-16,0],[30,36],'▱',18,colour)]:[
-     {name:'symbol',kind:'image',position:[0,0],size:[28,28],image:theme.icon.settings,colour},
-    ]),
+    text('symbol',[deck?-16:0,0],[30,36],symbol,18,colour),
     ...(deck?[text('count',[10,0],[34,36],'',18,colour)]:[]),
    ]});
   }

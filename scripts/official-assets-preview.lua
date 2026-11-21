@@ -33,8 +33,9 @@ local function dump(c,s)
    card.position={-s.size[1]/2+g.padding[3]+g.itemSize[1]/2+(i%g.columns)*(g.itemSize[1]+g.spacing[1]),s.size[2]/2-g.padding[1]-g.itemSize[2]/2-math.floor(i/g.columns)*(g.itemSize[2]+g.spacing[2])};children[#children+1]=card
   end
  end
+ local size=s.size or {0,0}
  local states={};if s.kind=='presetButton' then for _,v in ipairs(s.children or {})do states[#states+1]=v end end
- return {name=s.name,kind=s.kind,visible=c.visible,position={c.x or (s.position or {0,0})[1],c.y or (s.position or {0,0})[2]},size={c.sizeDeltaX or s.size[1],c.sizeDeltaY or s.size[2]},scale=c.scale,image=c.imageId or s.image,colour=hex(c.imageColor)or s.colour,rotation=c.localRotationZ or(c.rotation and c.rotation[3]),opacity=s.opacity,interactable=c.kind~='cursorArea' and c.interactable or nil,raycastTarget=c.raycastTarget,states=states,text=s.text and {content=c.text,fontSize=s.text.fontSize,minFontSize=s.text.minFontSize,colour=hex(c.fontColor)or s.text.colour,align=s.text.align,valign=s.text.valign},children=children}
+ return {name=s.name,kind=s.kind,visible=c.visible,position={c.x or (s.position or {0,0})[1],c.y or (s.position or {0,0})[2]},size={c.sizeDeltaX or size[1],c.sizeDeltaY or size[2]},scale=c.scale,image=c.imageId or s.image,colour=hex(c.imageColor)or s.colour,rotation=c.localRotationZ or(c.rotation and c.rotation[3]),opacity=s.opacity,interactable=c.kind~='cursorArea' and c.interactable or nil,raycastTarget=c.raycastTarget,states=states,text=s.text and {content=c.text,fontSize=s.text.fontSize,minFontSize=s.text.minFontSize,colour=hex(c.fontColor)or s.text.colour,align=s.text.align,valign=s.text.valign},children=children}
 end
 local M={scenes={}}
 function M.capture(name,ui,root,provenance)

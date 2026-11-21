@@ -1,28 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,readFileSync,writeFileSync,rmSync,existsSync,mkdirSync} from 'node:fs';
+import {mkdtempSync,readFileSync,writeFileSync,rmSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 
 const modulePath=new URL('../scripts/official-portraits.mjs',import.meta.url);
-
-test('native approved selections omit the superseded figure while isolated legacy profiles preserve it',async t=>{
- const {writePortraitModule}=await import(modulePath);
- const dir=mkdtempSync(join(tmpdir(),'abyss-no-legacy-selection-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
- writeFileSync(join(dir,'art-render-v2.json'),'{}');
- const official=writePortraitModule(dir,{officialAssets:true});
- assert.doesNotMatch(official,/^selection133=/m);
- assert.match(official,/^lowpolyLumine=/m);
- assert.match(official,/^battleApprovedIdle=/m);
- assert.match(official,/^battle133=/m,'result pages still own this drawing');
- const native=writePortraitModule(dir);
- assert.doesNotMatch(native,/^selection133=/m,'validated native lowpolyHero must not ship its unused fallback');
- assert.match(native,/^lowpolyHero=/m);
- rmSync(join(dir,'art-render-v2.json'));
- const legacy=writePortraitModule(dir,{battlePortrait:false});
- assert.match(legacy,/^selection133=/m,'isolated legacy generation retains the original data');
-});
 
 test('official runtime inventory preserves every producer field and rejects selection or idle tampering',async t=>{
  const {writePortraitModule,portraitRuntimeInventory,portraitInventory,portraitModule,portraitRuntimeInputs}=await import(modulePath);
@@ -34,7 +17,7 @@ test('official runtime inventory preserves every producer field and rejects sele
  const actual=portraitRuntimeInventory(dir),expected=portraitInventory(officialAssetFlags,{officialAssets:true});
  assert.deepEqual(actual,expected,'complete production inventory, including order, profile, budgets and hashes');
  assert.equal(actual.renderProfile,'selection-budget-v1');
- assert.deepEqual(actual.assets.map(row=>row.asset),['traveler-geo/portraits/avatar96','lowpolyLumine','traveler-geo/idle-approved-v1']);
+ assert.deepEqual(actual.assets.map(row=>row.asset),['traveler-geo/portraits/avatar96','lowpolyLumine','traveler-geo/portraits/lumine-native-v1']);
  assert.equal(actual.assets[1].sourceSha256,'29c47e50581951d1f3cf509eb39b1a73bf8d6ae4934a5b0606a3c76f9857c050');
  const receipt={officialAssetsProfile,artFeatures:artFeatureReceipt(officialAssetFlags),officialPortraits:{...actual,
   imageTemplateIndex:77,containerTemplateIndex:88,selectionHalfImageTemplateIndex:99,inputs:portraitRuntimeInputs(officialAssetFlags).map(path=>({path}))}};
@@ -48,8 +31,8 @@ test('official runtime inventory preserves every producer field and rejects sele
   source.replace(selected,selected+'\n'+selected),source.replace(selected,'-- '+selected+',\nlowpolyLumine={count=1,rows={{1}}},'),
   source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpolyLumine']=")),
   source.replace(selected,selected+'\n'+selected.replace(/^lowpolyLumine=/,"['lowpoly'..'Lumine']=")),
-  source.replace('battleApprovedIdle=','battleApprovedIdleChanged=')]){
-  writeFileSync(file,invalid);assert.throws(()=>portraitRuntimeInventory(dir),/official selection|Official battle idle/);
+  source.replace('battleApprovedNative=','battleApprovedNativeChanged=')]){
+  writeFileSync(file,invalid);assert.throws(()=>portraitRuntimeInventory(dir),/official selection|Official battle drawing/);
  }
 });
 test('V25 inventory counts the actual independent selection and result source instances',async t=>{
@@ -90,7 +73,7 @@ test('official shared selection inventory requires the explicit producer schema 
  assert.equal(portraitRuntimeInventory(dir).assets.find(row=>row.asset==='traveler-geo/portraits/battle133-selection').images,4315);
  const battleOnly=writePortraitModule(dir,{officialAssets:true,selectionAvatar:false,battlePortrait:true});
  assert.doesNotMatch(battleOnly,/^selectionUses=/m);
-  assert.equal(portraitRuntimeInventory(dir).assets.find(row=>row.asset==='traveler-geo/idle-approved-v1').images,7303);
+  assert.equal(portraitRuntimeInventory(dir).assets.find(row=>row.asset==='traveler-geo/portraits/lumine-native-v1').images,464);
 });
 test('native selection budget changes only selection art and preserves the frozen battle literal',async t=>{
  const {writePortraitModule,selectionBudget,portraitRuntimeInventory}=await import(modulePath);
@@ -101,7 +84,7 @@ test('native selection budget changes only selection art and preserves the froze
  const original=readFileSync('art/characters/traveler-geo/portraits/battle133/runtime-no-snapshot.lua','utf8');
  const block=original.slice(original.indexOf('local ROOT = '),original.indexOf('\nlocal created = {}'));
  assert(source.includes(block),'battle must keep every original row');
- assert.doesNotMatch(source,/selection133=/);assert.equal(portraitRuntimeInventory(dir).peakDynamicControls,6901,'lowpolyHero replaces the unused selection133 instance');
+ assert.match(source,/selection133=/);assert.equal(portraitRuntimeInventory(dir).peakDynamicControls,6901,'lowpolyHero replaces the unused selection133 instance');
 });
 test('portrait builder adds dedicated thumbnail, selection and battle hosts without changing existing controls',async()=>{
  assert(existsSync(modulePath),'portrait helper must implement actual asset integration');
@@ -149,18 +132,4 @@ test('candidate binding rejects placeholders and extracts frozen byte-identical 
  assert.throws(()=>writePortraitModule(dir,{imageTemplateIndex:100001,containerTemplateIndex:88}),/templateIndex/);
  const inventory=portraitRuntimeInventory(dir);assert.equal(inventory.batchSize,64);assert.equal(inventory.peakDynamicControls,11340,'full avatar/battle plus lowpolyHero selection');
  assert.equal(inventory.maxDirectDynamicChildren,60);assert.equal(inventory.officialCapacity,'not_measured');
-});
-
-
-test('native default fallback removal requires a valid bounded lowpolyHero schema',async t=>{
- const {lowpolySelectLiterals,lowpolySelectPath}=await import(modulePath);
- const root=mkdtempSync(join(tmpdir(),'abyss-selection-schema-'));t.after(()=>rmSync(root,{recursive:true,force:true}));
- mkdirSync(join(root,'art/lowpoly-select'),{recursive:true});
- const original=JSON.parse(readFileSync(lowpolySelectPath));
- for(const patch of [{width:0},{height:1.5},{rows:[]},{rows:Array.from({length:2305},()=>original.hero.rows[0])}]){
-  const changed=structuredClone(original);Object.assign(changed.hero,patch);writeFileSync(join(root,lowpolySelectPath),JSON.stringify(changed));
-  assert.throws(()=>lowpolySelectLiterals(root,{selectionAvatar:true,requireSelection:true}),/native.*selection|lowpolyHero/i);
- }
- writeFileSync(join(root,lowpolySelectPath),JSON.stringify(original));
- assert.match(lowpolySelectLiterals(root,{selectionAvatar:true,requireSelection:true})[0],/^lowpolyHero=/);
 });

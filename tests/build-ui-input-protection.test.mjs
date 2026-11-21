@@ -16,15 +16,18 @@ const outputs = ['abyss_theme.lua', 'map-ui.json', 'abyss_map_layout.lua', 'abys
   'abyss_narrative.lua', 'abyss_presentation.lua', 'battle-ui.json', 'game-ui.json', 'abyss_ui_layout.lua',
   'game-ui-templates.json', 'abyss_ui_templates.lua', 'abyss_ui_profile.lua', 'abyss_menu_background_asset.lua',
   'abyss_ready_card_binding.lua','abyss_ready_card_assets.lua','abyss_traveler_portrait_assets.lua','abyss_monster_art_data.lua','abyss_art_features.lua','abyss_monster_actor_binding.lua',
-  'abyss_component_binding.lua','abyss_v25_card_assets.lua','art-render-v2.json','assembly-profile.json'];
+  'abyss_component_binding.lua','abyss_v25_card_assets.lua','art-render-v2.json'];
+// Every fixture gets a fresh copy of the same validated repository inputs.
+const artInputs = [...new Set([...backgroundInputs, ...readyArtSourceInputs(), ...portraitInputs])];
+const monsterInputs = prepareMonsterArt().inputPaths;
 function fixture(action, cli = false) {
   const root = mkdtempSync(join(tmpdir(), 'abyss-ui-input-'));
   try {
     // Every case owns fresh mutable data/output. Only CLI cases need a script
     // tree; the in-process cases use the real already-imported production code.
     cpSync(resolve('data'), join(root, 'data'), { recursive: true });
-    for(const file of [...backgroundInputs,...readyArtSourceInputs(),...portraitInputs]){mkdirSync(dirname(join(root,file)),{recursive:true});copyFileSync(resolve(file),join(root,file));}
-    for(const file of prepareMonsterArt().inputPaths){mkdirSync(dirname(join(root,file)),{recursive:true});cpSync(resolve(file),join(root,file));}
+    for(const file of artInputs){mkdirSync(dirname(join(root,file)),{recursive:true});copyFileSync(resolve(file),join(root,file));}
+    for(const file of monsterInputs){mkdirSync(dirname(join(root,file)),{recursive:true});cpSync(resolve(file),join(root,file));}
     for (const file of ['package.json', 'package-lock.json', '.release-please-manifest.json', 'CHANGELOG.md'])
       copyFileSync(resolve(file), join(root, file));
     if (cli) cpSync(resolve('scripts'), join(root, 'scripts'), { recursive: true });
@@ -69,20 +72,25 @@ function build(root) {
   const cwd = process.cwd();
   try { process.chdir(root); buildUI('out'); } finally { process.chdir(cwd); }
 }
-for (const mode of ['hardlink', 'symlink']) for (const input of inputs) for (const output of [...outputs,'art-performance.json','lightweight-2d.json']) {
-  test(`UI build rejects ${output} ${mode} to ${input} before writing`, t => fixture(root => {
-    const source = join(root, 'data', input), target = join(root, 'out', output);
-    try { if (mode === 'hardlink') linkSync(source, target); else symlinkSync(source, target, 'file'); }
-    catch (error) {
-      if (mode === 'symlink' && ['EPERM', 'EACCES', 'ENOSYS'].includes(error.code)) { t.skip(`Symlink unavailable: ${error.code}`); return; }
-      throw error;
-    }
+for (const mode of ['hardlink', 'symlink']) for (const input of inputs) {
+  test(`UI build protects ${input} from every generated output ${mode}`, t => fixture(root => {
+    const source = join(root, 'data', input), outputDirectory = join(root, 'out');
     const before = inputs.map(file => readFileSync(join(root, 'data', file)));
-    let error;
-    try { build(root); } catch (caught) { error = caught; }
-    inputs.forEach((file, index) => assert.equal(readFileSync(join(root, 'data', file)).equals(before[index]), true, `${file} changed`));
-    assert.match(error?.message ?? '', /Output must not overwrite an input file/);
-    assert.deepEqual(readdirSync(join(root, 'out')), [output], 'must not leave partial generated files');
+    for (const output of [...outputs, 'art-performance.json', 'lightweight-2d.json']) {
+      const target = join(outputDirectory, output);
+      const scenario = `${output} ${mode} to ${input}`;
+      try { if (mode === 'hardlink') linkSync(source, target); else symlinkSync(source, target, 'file'); }
+      catch (error) {
+        if (mode === 'symlink' && ['EPERM', 'EACCES', 'ENOSYS'].includes(error.code)) { t.skip(`Symlink unavailable: ${error.code}`); return; }
+        throw error;
+      }
+      let error;
+      try { build(root); } catch (caught) { error = caught; }
+      inputs.forEach((file, index) => assert.equal(readFileSync(join(root, 'data', file)).equals(before[index]), true, `${scenario}: ${file} changed`));
+      assert.match(error?.message ?? '', /Output must not overwrite an input file/, scenario);
+      assert.deepEqual(readdirSync(outputDirectory), [output], `${scenario}: must not leave partial generated files`);
+      rmSync(target);
+    }
   }));
 }
 test('UI build creates and replaces all normal generated outputs without touching inputs', () => fixture(root => {

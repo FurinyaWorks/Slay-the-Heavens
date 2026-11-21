@@ -15,6 +15,16 @@ local C = Theme.color
 local kinds = { camp = "营地", shop = "商店", event = "未知事件", treasure = "宝箱",ending_proceed='真结局' }
 local layout = Theme.layout.nativeNode
 local OPTIONS = #layout.event.options.rows
+local function nodeHeaderTitle(node, runFloor)
+    if Theme.presentationProfile == 'official-assets-first' then
+        return tostring(node and node.floor or runFloor or 0)
+    end
+    if not node then return '路线' end
+    local room = node.roomKind == 'neow' and '七天神像'
+        or node.roomKind == 'boss_treasure' and '首领宝箱'
+        or kinds[node.type] or '节点'
+    return '第 ' .. node.floor .. ' 层 · ' .. room
+end
 local function repeatedEventNotice(ctx,node,message)
     return layout.event.reference and node and node.type=='event' and not ctx.self.failed
         and (ctx.self.notice=='' or message==ctx.child('eventView'):GetChild('body').text)
@@ -101,8 +111,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
             identity.text = layout.referenceIdentity[ctx.self.run.character or 'ironclad'] or ctx.self.run.character or '旅行者'
             identity:SetVisible(not node or node.type ~= 'ending_proceed')
         end
-        ctx.child("title").text = node and ("第 " .. node.floor .. " 层 · " ..
-        (node.roomKind == "neow" and "七天神像" or node.roomKind == "boss_treasure" and "首领宝箱" or kinds[node.type] or "节点")) or "路线"
+        ctx.child("title").text = nodeHeaderTitle(node, ctx.self.run.floor)
         ctx.child("hp").text = number(ctx.self.run.hp) .. "/" .. number(ctx.self.run.maxHp)
         ctx.child("gold").text = number(ctx.self.run.gold)
         ctx.child("deck").text = tostring(#ctx.self.run.deck)

@@ -1,6 +1,4 @@
-import {capacityPreflightSource} from './helpers/release-capacity-preflight-source.mjs';
-import {enemyFastSource} from './helpers/release-enemy-fast-source.mjs';
-import {releaseFreezeCiBefore} from './helpers/release-selection-map-ci-source.mjs';
+import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -14,37 +12,20 @@ import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpe
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
-const rawWorkflow = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
-const workflow = enemyFastSource('.github/workflows/quality.yml',rawWorkflow,'release');
+const workflow = beforePreflightSource('.github/workflows/quality.yml', readFileSync('.github/workflows/quality.yml', 'utf8')).replaceAll('\r\n', '\n');
 const job = (name,source=workflow) => source.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [\\w-]+:|(?![\\s\\S]))`, 'm'))[1];
 const digest = text => createHash('sha256').update(text).digest('hex');
 
-test('raw Release controls use standard hosted runners with only the three runner labels changed',()=>{
- let restored=rawWorkflow;
- for(const name of ['impact','check','engineering-posix']){
-  const current=job(name,rawWorkflow),previous=job(name,workflow);
-  assert.match(current,/^    runs-on: ubuntu-24\.04$/m);
-  assert.equal((current.match(/^    runs-on:/gm)??[]).length,1,name+' single runner');
-  const prior=current.replace('    runs-on: ubuntu-24.04','    runs-on: ubuntu-slim');
-  assert.equal(prior,previous,name+' retains every condition, permission, dependency and timeout');
-  restored=restored.replace(current,prior);
- }
- assert.equal(restored,workflow,'all other Release workflow bytes retain the exact af77 parent');
- assert.notEqual(rawWorkflow,workflow);
- assert.equal((rawWorkflow.match(/^    runs-on: ubuntu-slim$/gm)??[]).length,0);
- for(const path of ['.github/workflows/quality.yml','tests/ci-summary-runners.test.mjs']){
-  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
-  for(const eol of ['\n','\r\n']){
-   const source=raw.replaceAll('\n',eol),prior=enemyFastSource(path,source,'release');
-   assert.equal(capacityPreflightSource(path,source,'preflight'),prior);
-   for(const bad of [source+eol,source.slice(1),raw.replaceAll('\n','\r\r\n'),null,{},17,Buffer.from(source)])
-    assert.strictEqual(capacityPreflightSource(path,bad,'preflight'),bad);
-   for(const foreign of ['foreign/'+path,'__proto__','constructor','src/lua/abyss_run.lua'])
-    assert.strictEqual(capacityPreflightSource(foreign,source,'preflight'),source);
-   assert.strictEqual(capacityPreflightSource(path,source,'foreign'),source);
-   for(const before of [{},{sha256:'0'.repeat(64)}])assert.strictEqual(capacityPreflightSource(path,source,'preflight',before),source);
+test('current control jobs use the existing standard hosted pool after slim acquisition failures', () => {
+  const current = readFileSync('.github/workflows/quality.yml', 'utf8').replaceAll('\r\n', '\n');
+  for (const name of ['impact', 'check', 'engineering-posix']) {
+    assert.match(job(name, current), /^    runs-on: ubuntu-24\.04$/m);
+    assert.match(job(name, current), new RegExp(`^    timeout-minutes: ${name === 'impact' ? 6 : 2}$`, 'm'));
   }
- }
+  assert.match(job('check', current), /^    needs: \[impact, rules, fast, presentation, engineering-posix\]$/m);
+  assert.match(job('engineering-posix', current), /^    needs: \[impact, engineering-posix-shards, fast\]$/m);
+  const licenses = readFileSync('.github/workflows/licenses.yml', 'utf8').replaceAll('\r\n', '\n');
+  assert.match(job('cancel-obsolete-queue', licenses), /^    runs-on: ubuntu-24\.04$/m);
 });
 
 test('only the lightweight impact planner and two required summaries use slim', () => {
@@ -89,18 +70,15 @@ test('draft Quality is deferred, Ready and integration retain the real gates', (
     const condition = job(name).match(/^    if: (.+)$/m)?.[1];
     assert.ok(condition, name + ' must explicitly gate drafts');
     const expression = condition.replace(/^\$\{\{\s*|\s*\}\}$/g, '');
-    const evaluate = compileFunction('return (' + expression + ');', ['github', 'cancelled', 'needs']);
+    const evaluate = compileFunction('return (' + expression + ');', ['github', 'cancelled']);
     for (const draft of [true, false]) {
       const github = {event_name: 'pull_request', event: {pull_request: {draft}}};
-      const needs={impact:{result:draft?'skipped':'success'}};
-      assert.equal(evaluate(github, () => false, needs), !draft, name + '/draft=' + draft);
-      if (['check', 'engineering-posix', 'presentation'].includes(name))
-        assert.equal(evaluate(github, () => true, needs), false, name + '/cancelled');
+      assert.equal(evaluate(github, () => false), !draft, name + '/draft=' + draft);
+      if (['check', 'engineering-posix'].includes(name))
+        assert.equal(evaluate(github, () => true), false, name + '/cancelled');
     }
     for (const event_name of ['merge_group', 'push', 'workflow_dispatch'])
-      assert.equal(evaluate({event_name, event: {}}, () => false, {impact:{result:'success'}}), true, name + '/' + event_name);
-    if(name==='presentation')for(const result of ['failure','cancelled','skipped'])
-      assert.equal(evaluate({event_name:'pull_request',event:{pull_request:{draft:false}}},()=>false,{impact:{result}}),false,'presentation rejects '+result);
+      assert.equal(evaluate({event_name, event: {}}, () => false), true, name + '/' + event_name);
   }
   const fast = job('fast');
   assert.match(fast, /^        os: \[ubuntu-24\.04, windows-2025\]$/m);
@@ -114,7 +92,7 @@ test('[historical PR620 workflow] complete Draft/Fast projection restores exact 
   // Git blob 2d41d729 at develop 1eb28847, independently obtained before #584.
   const expected = 'aeb022f9209eda1311f3893acefc2c55a8d75c497b3b950a276d609964ea7535';
   for (const eol of ['\n', '\r\n']) {
-    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\n', eol);
+    const current = workflow.replaceAll('\n', eol);
     const old = beforeDraftQualityWorkflow(current);
     assert.notEqual(old, current);
     assert.equal(createHash('sha256').update(old.replaceAll('\r\n', '\n')).digest('hex'), expected);
@@ -130,7 +108,7 @@ test('[historical PR620 workflow] complete Draft/Fast projection restores exact 
 
 test('Draft/Fast projection refuses every partial migration, duplicate and changed policy block', () => {
   for (const eol of ['\n', '\r\n']) {
-    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\n', eol);
+    const current = workflow.replaceAll('\n', eol);
     const edits = draftQualityWorkflowEdits.map(pair => pair.map(value => value.replaceAll('\n', eol)));
     for (let mask = 1; mask < 2 ** edits.length; mask++) {
       let partial = current;
@@ -160,7 +138,7 @@ test('Draft/Fast projection refuses every partial migration, duplicate and chang
 
 test('Draft/Fast projection preserves unrelated drift and never partially restores execution slack', () => {
   for (const eol of ['\n', '\r\n']) {
-    const current = releaseFreezeCiBefore('.github/workflows/quality.yml', workflow).replaceAll('\n', eol);
+    const current = workflow.replaceAll('\n', eol);
     for (const [from, to] of [['contents: read', 'contents: write'], ['max-parallel: 12', 'max-parallel: 13'],
       ['npm run check:engineering', 'npm run check:missing']]) {
       const drift = current.replace(from, to), projected = beforeDraftQualityWorkflow(drift);
@@ -258,33 +236,47 @@ test('[historical ratchet integration workflow] ratchet gates project only their
 });
 
 test('workflow-only historical views cannot project production sources or test inventories',()=>{
+ const actual=closeoutRead('qualityRatchetIntegrated');
+ for(const path of ['scripts/test-affected.mjs','tests/ci-summary-runners.test.mjs']){
+  const raw=readFileSync(path);assert.deepEqual(actual(path),raw,'workflow-only preserves actual '+path);
+  assert.equal(actual(path,'utf8'),raw.toString('utf8'));
+ }
  const raw=Buffer.from('current raw source\r\n'),read=closeoutRead('qualityRatchetIntegrated',()=>raw);
  for(const path of ['src/lua/abyss_game_ui.lua','config/architecture.json','data/relics.json'])assert.strictEqual(read(path),raw,path);
  assert.throws(()=>closeoutInventory(['tests/current.test.mjs'],'qualityRatchetIntegrated'),/workflow-only/);
 });
 
-// Authenticate the complete live input before using any historical test fixture.
-test('Release freeze fixture continuation rejects unknown paths and all byte drift', () => {
-  const predecessors = {
-  "tests/ci-summary-runners.test.mjs": "c13e584a22ca96185e638ec5e9da85fc45183eed3bb15c9170508f0385058e28",
-  "tests/ci-windows-shape-expansion.test.mjs": "d28a52f2e892ed88e68cbe5fd29d123dfe6a5b86de5d8053b48a6a117504c874",
-  "tests/engineering-quality.test.mjs": "202561d7a39e1390441b8ff13c1dacedd29688c48fd6f00524293091d585cd1b",
-  "tests/full-quality.test.mjs": "a3e104aba2134af3681eda85522b76b6886a1e040cb4f8cfb557aed6f922db51"
-};
-  for (const [path, expected] of Object.entries(predecessors)) {
-    const live = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
-    for (const eol of ['\n', '\r\n']) {
-      const source = live.replaceAll('\n', eol);
-      assert.equal(digest(releaseFreezeCiBefore(path, source)), expected);
-      for (const foreign of [source + eol, source.slice(1), source.replaceAll(eol, '\r\r\n'), null, {}, 17])
-        assert.equal(releaseFreezeCiBefore(path, foreign), foreign);
-      for (const unknown of ['__proto__', 'constructor', 'foreign/' + path])
-        assert.equal(releaseFreezeCiBefore(unknown, source), source);
-    }
-  }
-  assert.match(workflow, /reopened, edited, ready_for_review/);
-  assert(workflow.includes('node scripts/check-release-scope.mjs'));
-  for (const bad of [workflow + '\n', workflow.replace('reopened, edited,', 'reopened,'),
-    workflow.replace('node scripts/check-release-scope.mjs', 'echo bypass')])
-    assert.equal(releaseFreezeCiBefore('.github/workflows/quality.yml', bad), bad);
+test('preflight continuation authenticates complete LF/CRLF input and rejects foreign or partial bytes',()=>{
+ const path='.github/workflows/quality.yml',live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const before=beforePreflightSource(path,live);assert.notEqual(before,live);
+ for(const eol of ['\n','\r\n']){
+  const input=live.replaceAll('\n',eol);
+  assert.equal(beforePreflightSource(path,input),before.replaceAll('\n',eol));
+  for(const drift of [input+'# foreign'+eol,input.replace('contents: read','contents: write'),
+   input.replace('    needs: impact'+eol,''),input.replace('run: node scripts/ci-media-lfs.mjs','run: echo forged')])
+   assert.equal(beforePreflightSource(path,drift),drift,'unbound workflow stays visible');
+ }
+ assert.equal(beforePreflightSource(path,live.replaceAll('\n','\r\r\n')),live.replaceAll('\n','\r\r\n'));
+ const buffer=Buffer.from(live);assert.equal(beforePreflightSource(path,buffer),buffer);
+ assert.equal(beforePreflightSource('foreign.yml',live),live);
+ assert.equal(beforePreflightSource(path,before),before);
+});
+
+test('combined preflight selects a complete fixed Release predecessor without masking source drift',()=>{
+ const path='.github/workflows/quality.yml',live=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const prior=beforePreflightSource(path,live),release=beforePreflightSource(path,live,'release-bootstrap');
+ assert.notEqual(prior,release);assert.notEqual(live,release);
+ assert.match(release,/release-ci.mjs verify-pr/);assert.doesNotMatch(release,/fork-preflight.mjs/);
+ assert.doesNotMatch(prior,/release-ci.mjs verify-pr|fork-preflight.mjs/);
+ for(const eol of ['\n','\r\n']){
+  const source=live.replaceAll('\n',eol);
+  assert.equal(beforePreflightSource(path,source,'release-bootstrap'),release.replaceAll('\n',eol));
+  for(const changed of [source+'# foreign'+eol,source.replace('verify-pr','forged'),
+   source.replace('run: node scripts/ci-media-lfs.mjs','run: echo skipped')])
+   assert.equal(beforePreflightSource(path,changed,'release-bootstrap'),changed);
+ }
+ const bad=live.replaceAll('\n','\r\r\n');assert.equal(beforePreflightSource(path,bad,'release-bootstrap'),bad);
+ for(const source of [Buffer.from(live),null,{},17])assert.equal(beforePreflightSource(path,source,'release-bootstrap'),source);
+ assert.equal(beforePreflightSource('__proto__',live,'release-bootstrap'),live);
+ assert.throws(()=>beforePreflightSource(path,live,'unknown'),/explicit preflight predecessor/);
 });

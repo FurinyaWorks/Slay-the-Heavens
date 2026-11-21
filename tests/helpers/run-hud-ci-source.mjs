@@ -1,4 +1,3 @@
-import {releaseCalibrationReaderSource} from './release-calibration-reader-source.mjs';
 // Exact outer continuation into the immutable 903bf closeout CI corpus.
 // New files remain unmeasured raw Full work; no historical archive is rewritten.
 import assert from 'node:assert/strict';
@@ -7,6 +6,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {preStsStyleCiSource,stsStylePriorInventory,stsStylePriorRead} from './sts-style-ci-source.mjs';
+import {beforePotionReadabilityEvidence} from './v2-ui-admission-ci-source.mjs';
 import {preMenuRedCiSource} from './menu-red-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const normalize=s=>s.replaceAll('\r\n','\n');
@@ -33,8 +33,7 @@ const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value))
 freeze(runHudCiProof);
 freeze(runHudBeforeCiRepairProof);
 export function preRunHudCiSource(path,source){
- source=releaseCalibrationReaderSource(path,source,'nativeCloseout');
- source=preMenuRedCiSource(path,source);
+ source=preMenuRedCiSource(path,beforePotionReadabilityEvidence(path,source));
  source=preStsStyleCiSource(path,source);
  source=preNativePreviewCiSource(path,source);
  if(path===tooling.path&&typeof source==='string'&&!source.includes('\r\r\n')&&

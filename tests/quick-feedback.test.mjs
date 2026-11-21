@@ -1,7 +1,7 @@
-import {capacityPreflightSource} from './helpers/release-capacity-preflight-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import {releaseBootstrapWorkflowBefore} from './helpers/release-bootstrap-ci-source.mjs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -318,22 +318,37 @@ test('unknown preflight fails instead of silently passing or starting local Full
  const r=spawnSync(process.execPath,['scripts/test-affected.mjs','--preflight','--files','unknown.txt'],{encoding:'utf8'});
  assert.notEqual(r.status,0); assert.match(r.stderr,/Full required/);
 });
-test('formal preflight reuses existing jobs and precedes costly PR work',()=>{
+test('formal Quality retains required jobs and runs independently of Fork dispatch',()=>{
  const q=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  const jobs=[...q.slice(q.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]);
  assert.deepEqual(jobs,['impact','fast','rules','check','presentation','engineering-posix-shards','engineering-posix']);
  assert.doesNotMatch(q,/needs: admission/);
  const impact=q.slice(q.indexOf('  impact:'),q.indexOf('  fast:'));
- const gate=impact.indexOf('run: node scripts/fork-preflight.mjs');
- assert(gate>impact.indexOf('uses: actions/setup-node@'));
- for(const command of ['publish-full-quality.mjs --pending','publish-pr-quality.mjs --pending'])assert(gate>impact.indexOf(command));
- for(const command of ['Check feature branch history','npm ci','node scripts/ci-impact.mjs'])assert(gate<impact.indexOf(command));
+ assert.doesNotMatch(q,/node scripts\/fork-preflight\.mjs/);
+ for(const name of ['Check feature branch history','npm ci','node scripts/ci-impact.mjs'])assert(impact.includes(name));
  assert.match(impact,/actions: read/);
  assert.doesNotMatch(impact,/continue-on-error:/);
  assert.match(q,/  presentation:\n    needs: impact\n    if: \$\{\{ !cancelled\(\) && needs\.impact\.result == 'success' \}\}/);
- assert.match(q,/merge_group:/);assert.match(q,/branches: \[develop, master\]/);
+ assert.match(q,/merge_group:/);assert.match(q,/branches: \[develop, master, 'release\/\*\*'\]/);
  const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
  assert.match(quick,/--preflight --base/); assert.doesNotMatch(quick,/--ci-fast --base/);
+});
+
+test('combined Release routing retains frozen publication Full and manual-only Fork preflight',async()=>{
+ const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
+ for(const source of [workflow,licenses])assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+ const publication=workflow.indexOf('run: node scripts/release-ci.mjs verify-pr');
+ assert.doesNotMatch(workflow+licenses,/node scripts\/fork-preflight\.mjs/);
+ assert(publication<workflow.indexOf('Check feature branch history'));
+ assert.equal(workflow.split('run: node scripts/release-ci.mjs verify-pr').length,2);
+ assert.match(workflow,/github.event.pull_request.base.ref == 'master' && startsWith\(github.event.pull_request.head.ref, 'release\/'\)/);
+ const quick=readFileSync('.github/workflows/quick-feedback.yml','utf8').replaceAll('\r\n','\n');
+ assert.doesNotMatch(quick,/^  pull_request:|Verify affected Release CI contracts explicitly/m);
+ assert.match(quick,/--preflight --base/);
+ const {impact}=await import('../scripts/ci-impact.mjs');
+ for(const base of ['develop','release/v2.0.0'])for(const name of ['release-ci','fork-preflight'])
+  assert.equal(impact(['scripts/'+name+'.mjs'],{}, {eventName:'pull_request',base},{}).mode,'full');
 });
 
 test('preflight retains integration JS and every slow Lua without duplicated execution',()=>{
@@ -349,16 +364,30 @@ test('newer failed or active dispatch invalidates older success across forks',()
   assert.equal(newestPreflight([old,{...old,...patch,id:2,created_at:'2026-11-17T04:00:00Z'}],{head,base}),null);
 });
 
-test('draft license gate stays in the existing inventory before media and retries on ready',()=>{
+test('license inventory stays independent of Fork dispatch and retries on ready',()=>{
  const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
  assert.doesNotMatch(licenses,/^  admission:|needs: admission|draft == false/m);
- assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory']);
+ assert.deepEqual([...licenses.slice(licenses.indexOf('\njobs:\n')).matchAll(/^  ([\w-]+):$/gm)].map(m=>m[1]),['inventory','independent-ai-review','cancel-obsolete-queue']);
  assert.match(licenses,/types: \[opened, synchronize, reopened, ready_for_review\]/);
- assert.match(licenses,/  inventory:\n    permissions:\n      contents: read\n      actions: read/);
- const gate=licenses.indexOf('run: node scripts/fork-preflight.mjs');
- assert(gate>licenses.indexOf('uses: actions/setup-node@'));
- for(const command of ['node scripts/ci-media-lfs.mjs','node scripts/ci-reviewed-lfs.mjs','node --test scripts/check-license.test.mjs','node scripts/check-license.mjs'])assert(gate<licenses.indexOf(command));
+ assert.match(licenses,/  inventory:[\s\S]*?    permissions:\n      contents: read\n      actions: read/);
+ assert.match(licenses,/license-audit-not-requested/);
+ assert.match(licenses,/if: github.event_name != 'pull_request_target' && github.event_name != 'workflow_run'/);
+ assert.doesNotMatch(licenses,/node scripts\/fork-preflight\.mjs/);
+ assert(licenses.indexOf('uses: actions/setup-node@')<licenses.indexOf('node scripts/ci-media-lfs.mjs'));
  assert.doesNotMatch(licenses,/continue-on-error:/);
+});
+test('dequeued cleanup uses a separate trusted-base job without executing PR code',()=>{
+ const licenses=readFileSync('.github/workflows/licenses.yml','utf8').replaceAll('\r\n','\n');
+ assert.match(licenses,/pull_request_target:\n    branches: \[develop\]\n    types: \[dequeued\]/);
+ assert.match(licenses,/format\('queue-cleanup-\{0\}', github.repository_id\)/);
+ const cleanup=licenses.slice(licenses.indexOf('\n  cancel-obsolete-queue:\n'));
+ assert.match(cleanup,/github.repository_id == '1429751262' && github.event_name == 'pull_request_target'/);
+ assert.match(cleanup,/github.event.action == 'dequeued' && github.event.pull_request.base.ref == 'develop' && github.ref == 'refs\/heads\/develop'/);
+ assert.match(cleanup,/permissions:\n      contents: read\n      actions: write\n      pull-requests: read/);
+ assert.match(cleanup,/ref: \$\{\{ github\.sha \}\}/);
+ assert.match(cleanup,/persist-credentials: false/);
+ assert.match(cleanup,/run: node scripts\/publish-merge-group\.mjs --cancel-obsolete/);
+ assert.doesNotMatch(cleanup,/pull_request\.head|npm ci|persist-credentials: true/);
 });
 test('admission implementation always requires Full even with a tiny proven mapping',async()=>{
  const {impact}=await import('../scripts/ci-impact.mjs');
@@ -375,16 +404,17 @@ test('native successful reruns are valid preflight without making a new commit',
 });
 
 import {runInNewContext as evaluateJobIf} from 'node:vm';
-test('inline preflight preserves required Fast and POSIX fail-closed impact consumers',()=>{
+test('Fast, Windows and POSIX reject incomplete impact even if it emitted a plan',()=>{
  const workflow=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
- for(const [job,mode]of [['fast','fast'],['engineering-posix-shards','full']]){
+ for(const [job,mode]of [['fast','fast'],['rules','full'],['engineering-posix-shards','full']]){
   const section=workflow.slice(workflow.indexOf('  '+job+':\n')).split(/\n  [a-z][\w-]*:\n/)[0];
   const expression=section.match(/^    if: (.+)$/m)?.[1];
   assert(expression,'required consumer condition exists: '+job);
   assert.match(expression,/!cancelled\(\)/,'explicit status check removes default success(): '+job);
   const js=expression.replace(/^\$\{\{\s*|\s*\}\}$/g,'');
   const invoke=(result,cancelled=false,selected=mode)=>evaluateJobIf(js,{
-   cancelled:()=>cancelled,needs:{impact:{result,outputs:{mode:selected}}}
+   cancelled:()=>cancelled,needs:{impact:{result,outputs:{mode:selected}}},
+   inputs:{runner_pool:'hosted'},github:{event_name:'pull_request'}
   });
   assert.equal(invoke('success'),true,job+' runs after a successful impact');
   for(const result of ['failure','cancelled','skipped'])assert.equal(invoke(result),false,job+' rejects '+result);
@@ -393,20 +423,7 @@ test('inline preflight preserves required Fast and POSIX fail-closed impact cons
  }
 });
 
-test('inline admission runs only for organization non-master PRs and downstream rejects gate failure',()=>{
- const condition="github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master' && github.repository_id == '1429751262'";
- for(const file of ['quality','licenses']){
-  const source=readFileSync('.github/workflows/'+file+'.yml','utf8').replaceAll('\r\n','\n');
-  assert.equal(source.split('run: node scripts/fork-preflight.mjs').length,2);
-  const block=source.match(/      - name: Require completed Fork preflight before formal test jobs\n([\s\S]*?)        run: node scripts\/fork-preflight.mjs/)[1];
-  assert.equal(block.match(/^        if: (.+)$/m)[1],condition);
-  assert.match(block,/GH_TOKEN: \$\{\{ github.token \}\}/);
-  for(const [event,repo,base,expected]of [
-   ['pull_request','1429751262','develop',true],['pull_request','1429751262','release/v2.0.0',true],
-   ['pull_request','1429751262','master',false],['pull_request','1460097312','develop',false],
-   ['workflow_dispatch','1429751262','develop',false],['push','1429751262','develop',false],['merge_group','1429751262','develop',false]
-  ])for(const draft of [true,false])assert.equal(evaluateJobIf(condition,{github:{event_name:event,repository_id:repo,event:{pull_request:{base:{ref:base},draft}}}}),expected);
- }
+test('drafts and failed impact never start presentation',()=>{
  const quality=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  const impact=quality.slice(quality.indexOf('  impact:'),quality.indexOf('  fast:'));
  const impactIf=impact.match(/^    if: (.+)$/m)[1];
@@ -416,77 +433,4 @@ test('inline admission runs only for organization non-master PRs and downstream 
  const downstream=presentation.match(/^    if: (.+)$/m)[1].replace(/^\$\{\{\s*|\s*\}\}$/g,'');
  for(const result of ['success','failure','cancelled','skipped'])for(const cancelled of [false,true])
   assert.equal(evaluateJobIf(downstream,{needs:{impact:{result}},cancelled:()=>cancelled}),result==='success'&&!cancelled);
-});
-
-import {releasePotionEnemyRead} from './helpers/release-potion-enemy-source.mjs';
-import {releasePreflightUnionSource,assertReleasePreflightUnionCurrent} from './helpers/release-preflight-union-source.mjs';
-import {assertFastFreezeB9UnionCurrent,fastFreezeB9Source} from './helpers/release-fast-freeze-b9-union.mjs';
-import {beforeReleaseFastB9Ci} from './helpers/release-fast-b9-ci-source.mjs';
-import {gunzipSync} from 'node:zlib';
-import {createHash} from 'node:crypto';
-test('current complete Quick preserves the exact Release contract step beside complete preflight and receipts',()=>{
- const path='.github/workflows/quick-feedback.yml',raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
- const advisory=releasePreflightUnionSource(path,raw,'advisory');assert.notEqual(advisory,raw);
- const block=source=>source.match(/      - name: Verify affected Release CI contracts explicitly\n[\s\S]*?          NODE\n/)?.[0];
- assert(block(raw));assert.equal(block(raw),block(advisory),'the current execution keeps the complete reviewed command and its error propagation');
- assert.match(raw,/run: node scripts\/test-affected.mjs --preflight --base "\$BASE_SHA"/);
- assert.doesNotMatch(raw,/--ci-fast --base/);assert.doesNotMatch(raw,/^  pull_request:/m);
- assert.match(raw,/PREFLIGHT_BASE_SHA: \$\{\{ inputs.base_sha \}\}/);
- assert.match(raw,/name: preflight-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
- const q=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
- const exact='${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}';
- for(const variable of ['CI_COMPARISON_BASE','BASE_SHA','QUALITY_RATCHET_BASE'])assert(q.includes(variable+': '+exact),variable+' consumes the manual base');
- assert(q.includes("github.event_name == 'workflow_dispatch' && inputs.base_sha != ''"));
- assert.match(q,/      - run: node scripts\/write-ci-receipt.mjs\n        if: matrix.shard == 1\n        env:\n          PREFLIGHT_BASE_SHA: \$\{\{ inputs.base_sha \}\}/);
-});
-test('outer Release union retains complete named predecessors and rejects every changed source boundary',()=>{
- const hash=s=>createHash('sha256').update(s).digest('hex');
- const releaseRead=releasePotionEnemyRead('release',readFileSync);
- const packet=JSON.parse(gunzipSync(releaseRead('tests/helpers/release-preflight-union-source.json.gz')));
- assertReleasePreflightUnionCurrent(releaseRead);assertFastFreezeB9UnionCurrent(releaseRead);
- for(const [target,files]of Object.entries(packet.views))for(const [path,row]of Object.entries(files)){
-  const raw=releaseRead(path,'utf8').replaceAll('\r\n','\n');assert.equal(hash(capacityPreflightSource(path,raw,'preflight')),row.current.sha256);
-  for(const eol of ['\n','\r\n']){
-   const source=raw.replaceAll('\n',eol);
-   assert.equal(releasePreflightUnionSource(path,source,target).replaceAll('\r\n','\n'),row.before.source);
-   for(const foreign of [source+eol,source.slice(1),source.slice(0,-1),source.replaceAll(eol,'\r\r\n'),null,{},17])
-    assert.strictEqual(releasePreflightUnionSource(path,foreign,target),foreign);
-   for(const unknown of ['foreign/'+path,'__proto__','constructor','src/lua/abyss_ui.lua'])
-    assert.strictEqual(releasePreflightUnionSource(unknown,source,target),source);
-  }
-  for(const mode of ['changed','missing','null','buffer']){
-   let injected=false;
-   const mutationRead=releasePotionEnemyRead('release',(p,e)=>{
-    if(p!==path)return readFileSync(p,e);
-    injected=true;
-    if(mode==='missing')throw Error('missing current source: '+p);
-    if(mode==='null')return null;
-    return mode==='buffer'?readFileSync(p):readFileSync(p,e)+'\n';
-   });
-   assert.throws(()=>assertReleasePreflightUnionCurrent(mutationRead));
-   assert(injected,mode+' '+path);
-  }
- }
- const path='.github/workflows/quick-feedback.yml',source=releaseRead(path,'utf8');
- assert.notEqual(releasePreflightUnionSource(path,source,'release'),releasePreflightUnionSource(path,source,'advisory'));
- assert.strictEqual(fastFreezeB9Source(path,source),source,'old union cannot gain a Quick target');
- for(const before of [{},{sha256:'0'.repeat(64)}])assert.strictEqual(beforeReleaseFastB9Ci(path,source,before),source);
- assert.strictEqual(releasePreflightUnionSource(path,source,'foreign'),source);
-});
-test('old union uses the supplied fresh dependency reader including its new archive',()=>{
- for(const path of ['tests/helpers/release-capacity-preflight-source.json.gz','tests/helpers/release-preflight-union-source.json.gz','tests/helpers/release-ci.cases.mjs']){
-  for(const mode of ['changed','missing','null']){
-   let injected=false;
-   const mutationRead=releasePotionEnemyRead('release',(p,e)=>{
-    if(p!==path)return readFileSync(p,e);
-    injected=true;
-    if(mode==='missing')throw Error('missing dependency: '+p);
-    if(mode==='null')return null;
-    const raw=readFileSync(p,e);return typeof raw==='string'?raw+'\n':Buffer.concat([raw,Buffer.from('\n')]);
-   });
-   assert.throws(()=>assertFastFreezeB9UnionCurrent(mutationRead));
-   assert(injected,mode+' '+path);
-  }
- }
- assertFastFreezeB9UnionCurrent(releasePotionEnemyRead('release',readFileSync));
 });

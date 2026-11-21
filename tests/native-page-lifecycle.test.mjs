@@ -1,13 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,existsSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
+import {readFileSync,existsSync,mkdtempSync,readdirSync,writeFileSync,rmSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createRequire} from 'node:module';
 import {buildNativeCandidate,generatedRuntimeModules} from '../scripts/build-native-candidate.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {auditUiBuildArgs} from '../scripts/audit-native-candidate.mjs';
-import {artFeatureReceipt} from '../scripts/art-features.mjs';
+import {artFeatureBuildArgs,artFeatureReceipt} from '../scripts/art-features.mjs';
+import {nativeAudioBuildArgs} from '../scripts/build-native-audio-game.mjs';
 import {compareNativeCandidate} from '../scripts/native-candidate-audit.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 
@@ -29,15 +31,22 @@ test('enabled native lifecycle cannot omit its generated policy module',async()=
  await assert.rejects(buildNativeCandidate({nativePageLifecycle:true,lightweight2d:true,artFeatures:flags,
   generatedModules:{}}),/native page lifecycle.*generated/i);
 });
-test('the actual generated profile toggles independently of art and card geometry',async t=>{
+test('canonical flag toggles the real builder and changes only generated policy bytes',async t=>{
  const p=await profile(),dir=mkdtempSync(join(tmpdir(),'native-page-build-'));
  t.after(()=>rmSync(dir,{recursive:true,force:true}));
- buildUI(dir,undefined,{lightweight2d:true,artFeatures:flags});
- assert.equal(readFileSync(join(dir,'abyss_ui_profile.lua'),'utf8'),p.uiProfileSource(false));
- const unchanged=Object.fromEntries(['game-ui.json','game-ui-templates.json','abyss_art_features.lua','abyss_traveler_portrait_assets.lua'].map(name=>[name,readFileSync(join(dir,name),'utf8')]));
- buildUI(dir,undefined,{lightweight2d:true,artFeatures:flags,nativePageLifecycle:true});
- assert.equal(readFileSync(join(dir,'abyss_ui_profile.lua'),'utf8'),p.uiProfileSource(true));
- for(const [name,source]of Object.entries(unchanged))assert.equal(readFileSync(join(dir,name),'utf8'),source,name+' changed with lifecycle factor');
+ const build=enabled=>{
+  const target=join(dir,enabled===undefined?'default':String(enabled));
+  const arg=enabled===undefined?[]:[`--feature=native-page-lifecycle=${enabled}`];
+  const result=spawnSync(process.execPath,['scripts/build-ui.mjs',target,'--lightweight-2d',...artFeatureBuildArgs(flags),...arg],
+   {encoding:'utf8',timeout:60000});
+  assert.equal(result.status,0,result.error?.message??result.stderr);
+  assert.equal(readFileSync(join(target,'abyss_ui_profile.lua'),'utf8'),p.uiProfileSource(enabled));
+  return Object.fromEntries(readdirSync(target).filter(name=>name!=='abyss_ui_profile.lua').sort()
+   .map(name=>[name,readFileSync(join(target,name))]));
+ };
+ const defaultOutputs=build(undefined);
+ assert.deepEqual(build(false),defaultOutputs);
+ assert.deepEqual(build(true),defaultOutputs);
 });
 test('profile source defaults off, uses a separate generated runtime module and rejects conflicting CLI input',async()=>{
  const p=await profile();
@@ -47,6 +56,29 @@ test('profile source defaults off, uses a separate generated runtime module and 
  assert.deepEqual(p.uiProfileArgs(['x','--native-page-lifecycle']),{args:['x'],nativePageLifecycle:true});
  for(const args of [['--native-page-lifecycle=false'],['--native-page-lifecycle','--native-page-lifecycle'],['--native-page-lifecycle-unknown']])
   assert.throws(()=>p.uiProfileArgs(args),/native page lifecycle/i);
+});
+test('registered flag is explicit and has an exit while legacy candidate identity stays reproducible',async()=>{
+ const p=await profile();
+ assert.equal(p.candidateFeatureFlags.nativePageLifecycle.owner,'Furinya');
+ assert.match(p.candidateFeatureFlags.nativePageLifecycle.removeWhen,/TASK-103/);
+ assert.deepEqual(p.uiProfileArgs(['base.gil','--feature=native-page-lifecycle=true']),{args:['base.gil'],nativePageLifecycle:true});
+ assert.deepEqual(p.uiProfileArgs(['--feature=native-page-lifecycle=false']),{args:[],nativePageLifecycle:false});
+ for(const args of [['--feature'],['--feature=unknown=true'],['--feature=native-page-lifecycle=1'],
+  ['--native-page-lifecycle','--feature=native-page-lifecycle=false'],
+  ['--feature=native-page-lifecycle=true','--feature=native-page-lifecycle=false']])assert.throws(()=>p.uiProfileArgs(args));
+ assert.equal(nativeAudioBuildArgs(['base.gil','--official-assets']).options.nativePageLifecycle,true);
+ assert.equal(nativeAudioBuildArgs(['base.gil','--feature=native-page-lifecycle=false']).options.nativePageLifecycle,undefined);
+ assert.equal(p.uiProfileReceipt(false).configSha256,'f162e53dcf4da6e3e0e92c80f947844d85fb45ff5a4c77ecf189ebf594adfeb1');
+ assert.equal(p.uiProfileReceipt(true).configSha256,'fcd16aa1d35aeab4102c7bc49c0889a3c46135466e9a3198f6dcac21e5c59c81');
+ const experimental={uiProfile:p.uiProfileReceipt(true),experimentalProfile:'bounded-2d-v1'};
+ const release={version:'v1.0.0',workKey:'alpha-test'};
+ assert.equal(p.uiProfileFromReceipt({...experimental,release}),true);
+ assert.equal(p.uiProfileFromReceipt({...experimental,release:{...release,version:`v${'9'.repeat(28)}.2.3`}}),true);
+ for(const version of ['v01.2.3',`v${'9'.repeat(29)}.2.3`])
+  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,version}}),/non-release/);
+ assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{}}),/non-release/);
+ assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,notesSha256:'b'.repeat(64)}}),/non-release/);
+ assert.throws(()=>nativeAudioBuildArgs(['base.gil','--official-assets','--release-candidate']),/separate non-release/);
 });
 test('receipt digest and native source audit reject a flipped runtime policy',async()=>{
  const p=await profile(),off=p.uiProfileReceipt(false),on=p.uiProfileReceipt(true);

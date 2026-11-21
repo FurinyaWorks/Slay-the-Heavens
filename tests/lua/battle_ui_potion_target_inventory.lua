@@ -6,14 +6,6 @@ local registered,executed=0,0
 local H = dofile("tests/lua/support/potion_targeting_fixture.lua")
 local setup,Run,Combat,F,eq,untouched = H.setup,H.Run,H.Combat,H.F,H.eq,H.untouched
 local test,finish = H.suite("LUA_POTION_TARGET_INVENTORY")
--- These cases mean a new physical action, not the anonymous tail of Use.
--- Keep the shared click-only fixture and the explicit paired cases unchanged.
-local function freshPointerSetup()
- local h,u,p,r,e,_,tap,drain=setup(true)
- local touch=100
- local function click(name)touch=touch+1;return tap(name,touch)end
- return h,u,p,r,e,click,tap,drain
-end
 local originalTest=test
 test=function(name,fn)
  registered=registered+1
@@ -24,35 +16,26 @@ end
 
 for _,id in ipairs({'fire_potion','block_potion'}) do
  test('real discard/refill '..id..' cannot inherit old pending without redraw',function()
-  local h,u,p,r,e,click=freshPointerSetup();click('potion1');assert(Run.discardPotion(h.run,1));assert(Run.obtainPotion(h.run,id));local z=h.run.combat.enemies[2].hp
+  local h,u,p,r,e,click=setup();click('potion1');assert(Run.discardPotion(h.run,1));assert(Run.obtainPotion(h.run,id));local z=h.run.combat.enemies[2].hp
   click('enemy2');eq(h.run.potions[1],id);eq(h.run.combat.enemies[2].hp,z);eq(h.run.combat.player.block,0);eq(u.potionAim,nil)
-  e('enemy2','up',102);e('enemy2','click',102)
-  eq(h.run.potions[1],id);eq(h.run.combat.enemies[2].hp,z);eq(h.run.combat.player.block,0)
-  click('potion1')
-  if id=='fire_potion'then click('enemy2');eq(h.run.combat.enemies[2].hp,z-20)
-  else eq(h.run.combat.player.block,12)end
-  eq(h.run.potions[1],nil)
  end)
 end
 test('other-slot real use changes inventory and invalidates pending',function()
-  local h,u,p,r,e,click=freshPointerSetup();assert(Run.obtainPotion(h.run,'energy_potion'));h:refresh();click('potion1')
+  local h,u,p,r,e,click=setup();assert(Run.obtainPotion(h.run,'energy_potion'));h:refresh();click('potion1')
   assert(Run.usePotion(h.run,2));click('enemy2');eq(h.run.potions[1],'fire_potion');eq(u.potionAim,nil);eq(h.run.combat.energy,5)
 end)
 test('switch same-ID bottle only arms new physical slot',function()
-  local h,u,p,r,e,click=freshPointerSetup();assert(Run.obtainPotion(h.run,'fire_potion'));h:refresh();click('potion1');click('potion2');eq(Run.potionCount(h.run),2)
+  local h,u,p,r,e,click=setup();assert(Run.obtainPotion(h.run,'fire_potion'));h:refresh();click('potion1');click('potion2');eq(Run.potionCount(h.run),2)
   click('enemy2');eq(h.run.potions[1],'fire_potion');eq(h.run.potions[2],nil)
 end)
 test('dead enemy is rejected and never retargets to survivor',function()
-  local h,u,p,r,e,click=freshPointerSetup();click('potion1');local b=h.run.combat
-  local retiredClick=monsterControl(p,'enemy1'):GetChild('hit').listeners.click
+  local h,u,p,r,e,click=setup();click('potion1');local b=h.run.combat
   for _=1,5 do
     if b.enemies[1].hp<=0 then break end
     local uid;for _,c in ipairs(b.hand) do if Combat.cardDefinition(b,c).type=='attack' and Combat.canPlay(b,c.uid,1) then uid=c.uid;break end end
     assert(uid);assert(Run.play(h.run,uid,1))
   end
   eq(b.enemies[1].hp,0);local z=b.enemies[2].hp;click('enemy1');eq(h.run.potions[1],'fire_potion');eq(b.enemies[2].hp,z)
-  retiredClick({touchId=102});retiredClick({});e('enemy1','click',102);e('enemy1','click')
-  eq(h.run.potions[1],'fire_potion');eq(b.enemies[2].hp,z)
   -- The integrated controller cancels when the live roster changes.
   click('enemy2');eq(b.enemies[2].hp,z);eq(h.run.potions[1],'fire_potion')
   assert(monsterControl(p,'enemy1').visible and monsterControl(p,'enemy1'):GetChild('name').text==b.enemies[2].name)

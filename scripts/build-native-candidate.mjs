@@ -1,7 +1,6 @@
-import {packNativeCardFaces,cardSharingBindings,assertSharedCardBaseOwnership,assertNoExternalSharedCardReferences} from './native-ui-card-sharing.mjs';
 import {validateOfficialAssets,officialAssetsArgs,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
-import {attachLowCostArt,attachLowCostEnemyArt,loadReleaseEnemyArt,usesReleaseEnemyArt} from './lowcost-art.mjs';
+import {attachLowCostArt} from './lowcost-art.mjs';
 import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';
 import {resolveArtFeatures,artFeatureArgs,artFeatureBuildArgs,artFeatureReceipt,artFeaturesSource,artFeatureModule,withCandidateArtDefaults} from './art-features.mjs';
 import {portraitSourceInputs,portraitRuntimeInputs,lowpolySelectPath,portraitModule,bindPortraitTemplates,portraitRuntimeInventory} from './official-portraits.mjs';
@@ -169,8 +168,8 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     }
     if(releaseCandidate && !readFileSync(join(generated,'abyss_narrative.lua'),'utf8')
       .includes(`["codeVersion"]=${toLua(releaseNotes.build.version)}`))throw new Error('Bundled code version differs from candidate provenance');
-    let layout=JSON.parse(readFileSync(join(generated,'game-ui.json'),'utf8'));
-    let templates=JSON.parse(readFileSync(join(generated,'game-ui-templates.json'),'utf8'));
+    const layout=JSON.parse(readFileSync(join(generated,'game-ui.json'),'utf8'));
+    const templates=JSON.parse(readFileSync(join(generated,'game-ui-templates.json'),'utf8'));
     if(componentWidgets){
       const binding=JSON.parse(readFileSync(join(generated,'native-component-binding.json'),'utf8'));
       assertComponentControlOutput(layout,templates,binding,componentWidgets);
@@ -214,8 +213,6 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       const actorTemplates=templates.filter(template=>template.name===monsterActorTemplateName);
       const actorSource=monsterActorTemplate(monster);
       if(officialAssets)attachLowCostArt(actorSource);
-      else if(usesReleaseEnemyArt(flags,{officialAssets,v25BattleChrome,lightweight2d}))
-        attachLowCostEnemyArt(actorSource,loadReleaseEnemyArt().enemy.capacity);
       const expectedActor=componentWidgets?prepareComponentControlLayout({controls:[{name:'stage',kind:'container',children:[]}]},[actorSource],componentWidgets).templates[0]:actorSource;
       if(actorTemplates.length!==1||JSON.stringify(actorTemplates[0])!==JSON.stringify(expectedActor))throw Error('Monster actor template differs from candidate features or source');
       const expected=`-- Generated from the bounded native monster registry.\nreturn ${toLua(monster??{})}\n`;
@@ -230,36 +227,11 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       throw Error('Official background requires exactly one native image template');
     if(payloadDigest(sourceInputs(root,inputOptions))!==digest||fileRecord(base.path).sha256!==base.sha256)throw new Error('Build input changed during preparation');
     verifyNativeCardArtReceipt(receipt.nativeCardArt,{root});
-    const packedUi=packNativeCardFaces(layout,templates,{enabled:!officialAssets&&!v25BattleChrome&&!lightweight2d&&!componentWidgets});
-    const sharing=packedUi.sharing;
-    if(sharing.sharedHosts){
-      layout=packedUi.layout;templates=packedUi.templates;
-      writeExclusive(join(generated,'game-ui-packed.json'),layout);
-      writeExclusive(join(generated,'game-ui-packed-templates.json'),templates);
-      receipt.nativeUiPacking={sharing,templateIndices:{}};
-    }
-    const priorPath=join(base.path,'..','candidate.json');
-    const priorBase=existsSync(priorPath)?JSON.parse(readFileSync(priorPath,'utf8')):null;
     // Preflight missing/unreadable modules before starting any MCP process.
     for(const source of modules.values())fileRecord(source);
     client??=await createClient(workspace);
     for(const uri of ['miliastra://workflow','miliastra://platform-rules'])writeExclusive(join(workspace,`${uri.split('//')[1]}.json`),await client.readResource({uri}));
-    const readyTemplates={},v25TemplateIndices={},maskTemplateIndices={},allTemplateIds=[];let monsterTemplate,monsterPowerTemplate,cachedUi=sharing.sharedHosts||priorBase?.nativeUiPacking?null:reusableUi(base,generated,{privateTemplates:!!(v25Cards||v25Masks||officialAssets&&flags.selectionAvatar)});
-    let priorShared=[];
-    if(sharing.sharedHosts||priorBase?.nativeUiPacking){
-      const listed=await call('scene_list_interface',{mapPath});
-      if(!Array.isArray(listed.clientTemplates)||!Array.isArray(listed.clientInterfaces))throw Error('Cannot verify shared card template ownership');
-      priorShared=assertSharedCardBaseOwnership(base.sha256,priorBase,listed.clientTemplates);
-      if(priorShared.length){
-        const replaced=new Set(templates.map(t=>t.name));
-        for(const row of listed.clientInterfaces)if(row.name!==layout.name){
-          const other=await call('scene_get_client_ui',{mapPath,ui:row.name});assertNoExternalSharedCardReferences(other.interface);
-        }
-        for(const row of listed.clientTemplates)if(!priorShared.includes(row.name)&&!replaced.has(row.name)){
-          const other=await call('scene_get_client_ui',{mapPath,template:row.name});assertNoExternalSharedCardReferences(other.template);
-        }
-      }
-    }
+    const readyTemplates={},v25TemplateIndices={},maskTemplateIndices={},allTemplateIds=[];let monsterTemplate,monsterPowerTemplate,cachedUi=reusableUi(base,generated,{privateTemplates:!!(v25Cards||v25Masks||officialAssets&&flags.selectionAvatar),galleryImageTypes:toolchainIdentity?.galleryImageTypes});
     if(cachedUi){
       const cached=JSON.parse(readFileSync(cachedUi.receipt.path,'utf8')), actors=cached.monsterActors;
       if(!actors||![actors.templateIndex,actors.powerTemplateIndex,actors.containerTemplateIndex].every(n=>Number.isSafeInteger(n)&&n>0)
@@ -271,7 +243,6 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     for(const template of templates) {
       const result=cachedUi?(cachedUi.templateResults[template.name]??{reused:true}):await call('scene_add_client_template',{template,mapPath,replace:true,outputName:'abyss-full-game-test'});
       allTemplateIds.push(result.templateIndex);
-      if(sharing.templateNames.includes(template.name))receipt.nativeUiPacking.templateIndices[template.name]=result.templateIndex;
       if(v25Masks&&template.name===v25UiMaskTemplate)maskTemplateIndices[template.name]=result.templateIndex;
       if(v25Cards?.templates.some(row=>row.name===template.name))v25TemplateIndices[template.name]=result.templateIndex;
       if(template.name===monsterActorTemplateName)monsterTemplate=result;
@@ -284,7 +255,6 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
         readyTemplates.background=result;
       }
     }
-    if(receipt.nativeUiPacking)cardSharingBindings(sharing,receipt.nativeUiPacking.templateIndices);
     if(readyTemplates.background){
       bindBackgroundTemplate(generated,readyTemplates.background,{root,containerTemplateIndex:readyTemplates.group.templateIndex});
       receipt.officialBackground={...backgroundRuntimeInventory(generated),templateIndex:readyTemplates.background.templateIndex,
@@ -346,11 +316,6 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     }
     if(writeScripts&&pendingScripts.length)mapPath=await writeScripts(mapPath,pendingScripts,workspace);
     if(!cachedUi)await call('scene_add_client_ui',{...layout,mapPath,replace:true,outputName:'abyss-full-game-test'});
-    for(const name of priorShared)if(!sharing.templateNames.includes(name)){
-      // No evenIfUsed escape: the native tool must reject any remaining global reference.
-      const removed=await call('scene_remove_client',{mapPath,template:name,outputName:'abyss-full-game-test'});
-      if(removed.removed?.template!==name)throw Error('Shared card template retirement was not acknowledged');
-    }
     // Preserve the integrated builder's ownership checks when reusing a base.
     const expectedScripts=new Set(modules.keys());
     async function scriptInventory() {
@@ -397,9 +362,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     for(const record of receipt.outputs)if(fileRecord(record.path,workspace).sha256!==record.sha256)throw new Error('Packaged output changed during build');
     receipt.moduleDigests=moduleDigests;
     receipt.productionManifest={modules:[...modules.keys()].map(name=>({name,...fileRecord(join(payload,`${name}.lua`),workspace)})),
-      layout:fileRecord(join(generated,'game-ui.json'),workspace),templates:fileRecord(join(generated,'game-ui-templates.json'),workspace),
-      ...(sharing.sharedHosts?{packedLayout:fileRecord(join(generated,'game-ui-packed.json'),workspace),
-        packedTemplates:fileRecord(join(generated,'game-ui-packed-templates.json'),workspace)}:{})};
+      layout:fileRecord(join(generated,'game-ui.json'),workspace),templates:fileRecord(join(generated,'game-ui-templates.json'),workspace)};
     receipt.checkedModules=names;receipt.warnings={count:checked.warnings,problems:checked.problems??[],review:'not_run'};
     if(payloadDigest(sourceInputs(root,inputOptions))!==digest||fileRecord(base.path).sha256!==base.sha256)throw new Error('Build input changed during packaging');
     verifyNativeCardArtReceipt(receipt.nativeCardArt,{root});
