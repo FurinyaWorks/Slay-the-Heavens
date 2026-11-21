@@ -36,3 +36,5 @@ npm run check:engineering
 最新组合回归：32项中31通过，唯一失败为原历史卡面重放的 `fresh current production owner: abyss_battle_detail_bindings.lua`。从精确最新BASE独立提取源码并复跑同一项，获得完全相同的actual/expected hash，确认由并行详情延迟修复引入的既存基线续接缺口；未跳过或弱化该断言。药水、详情延迟、排序/地图、状态/费用/能量及守卫负控均通过。`integrated.log.gz` 与 `latest-baseline.log.gz` 保留两份完整结果。
 
 energy定向用例使用独立生成主题目录，避免覆盖后续测试的共享主题；官方界面完整runtime文件曾中止，不能记为完整通过。管理员应急合并与上述非全绿基线状态一并在PR记录。
+
+最终合并前release再推进主菜单#797至 `89682d6f`。合并冲突仅为历史测试入口两处，保留双方import及按时间顺序的Combat→Menu→原链投影；生产文件无交集。续接包before再固定此BASE。重新构建数据/UI成功，重跑32项仍31通过及相同唯一基线detail_bindings失败（该文件在新BASE亦未变化），见 `latest-combination.log.gz`。原9a88独审与首次未成功的合并操作不冒充最终HEAD已合入。

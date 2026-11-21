@@ -6,9 +6,9 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceContinuation} from './exact-source-continuation.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/combat-visual-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'445e065c6a996a736d1e3a5445702e0d4eb407a4ffa9aa5a393b8a285a137eda');
+assert.equal(hash(bytes),'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d');
 const packet=JSON.parse(gunzipSync(bytes));
-assert.equal(packet.base,'1a60a09704ec8e0699cb2a705721b623545a5f09');
+assert.equal(packet.base,'89682d6f6638e727b3e33ed6d5b2d4722a1139e7');
 const rows=packet.files,continuations=new Map();
 for(const [path,row]of Object.entries(rows)){
  assert.equal(path,row.path);assert.equal(hash(row.before.source),row.before.sha256);
