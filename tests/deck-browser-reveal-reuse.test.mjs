@@ -1,12 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,readdirSync,rmSync,writeFileSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,readFileSync,readdirSync,rmSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {buildLuaData,luaString} from '../scripts/build-lua-data.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
+import {beforeMapDeckSource,mapDeckPriorRead} from './helpers/release-map-deck-source.mjs';
 const require=createRequire(import.meta.url);
+test('historical map deck replay authenticates every current Lua owner before restoring its predecessor',()=>{
+ const paths=['abyss_card_skin','abyss_deck_ui','abyss_game_ui_view','abyss_map_ui'].map(name=>'src/lua/'+name+'.lua');
+ const [path,other]=paths;
+ const read=(name,encoding)=>readFileSync(name,encoding);
+ const current=read(path,'utf8');
+ const prior=beforeMapDeckSource(path,current,read);
+ assert.notEqual(prior,current);
+ assert.equal(beforeMapDeckSource(path,current.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
+ assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));
+ for(const owner of paths){
+  assert.throws(()=>beforeMapDeckSource(path,current,p=>p===owner?read(p,'utf8')+'\n':read(p,'utf8')),/map deck linked owner identity/);
+ }
+ assert.throws(()=>beforeMapDeckSource(path,current,p=>{
+  if(p===other)throw Error('missing fixture');
+  return read(p,'utf8');
+ }),/map deck linked owner missing/);
+ const drift=current+'\n';
+ assert.equal(beforeMapDeckSource(path,drift,()=>assert.fail('unknown source read another owner')),drift);
+});
 function lua(body){
  const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8',timeout:60000,maxBuffer:2*1024*1024});
  if(result.status!==0){mkdirSync('.artifacts/deck-sort-reveal-audit-20261113',{recursive:true});writeFileSync('.artifacts/deck-sort-reveal-audit-20261113/failed-regression.lua',body);}
