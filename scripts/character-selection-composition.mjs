@@ -43,14 +43,11 @@ export function characterSelectionComposition(panel,theme){
  const bag=child(details,'v25GoldIcon');Object.assign(bag,frame(295,284,25,28));
  const relic=child(details,'v25RelicIcon');
  Object.assign(relic,frame(115,383,36,44),{visible:true});
- // Amber crystal facets for the rock Traveler's starter relic.
- relic.children=[
-  [-9,-4,12,19,18,'#855434'],[9,-6,13,18,-23,'#B17945'],
-  [0,9,21,22,0,'#D9A255'],[0,-8,21,12,180,'#9B5D39'],
-  [-3,7,10,17,14,'#F2D58F'],[1,-5,9,10,176,'#D6A365'],
- ].map(([x,y,w,h,rotation,colour],index)=>({
-  name:'facet'+index,kind:'image',position:[x,y],size:[w,h],
-  image:100003,colour,rotation,raycastTarget:false,
+ const relicArt=theme.lowCostArt.relic;
+ const relicScale=40/relicArt.canvas;
+ relic.children=relicArt.assets.burning_blood.shapes.map(({x,y,w,h,image,colour,rotation},index)=>({
+  name:'facet'+index,kind:'image',position:[x*relicScale,y*relicScale],size:[w*relicScale,h*relicScale],
+  image,colour,rotation,raycastTarget:false,
  }));
  const roster=child(panel,'v25Roster');
  Object.assign(child(roster,'selected'),frame(360,533,124,124));

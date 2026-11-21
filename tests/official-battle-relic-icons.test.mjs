@@ -10,7 +10,7 @@ test('official relic material is shared across run phases while the legacy profi
  const theme=JSON.parse(readFileSync('data/presentation/ui_theme.json','utf8'));
  const relics=JSON.parse(readFileSync('data/relics.json','utf8')).relics;
  const icons=theme.officialAssets.battleRelicIcons;
- assert.deepEqual(['burning_blood','kunai','ink_bottle'].map(id=>icons[id].id),[105045,105217,105243]);
+ assert.deepEqual(['burning_blood','kunai','ink_bottle'].map(id=>icons[id].id),[105071,105217,105243]);
  for(const relic of relics.filter(r=>r.rarity==='common'))assert.ok(icons[relic.id],relic.id+' common mapping');
  const admitted=new Set([102001,102034,105023,105043,105045,105046,105048,105055,105058,105065,105067,105068,105070,105071,105073,105076,105077,105078,105090,105099,105114,105127,105131,105182,105186,105191,105194,105196,105197,105204,105207,105214,105215,105216,105217,105242,105243,105246,105301]);
  for(const [id,icon]of Object.entries(icons)){
@@ -24,6 +24,10 @@ test('official relic material is shared across run phases while the legacy profi
  for(const official of [false,true]){
   const dir=mkdtempSync(join(base,'relic-icons-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
   buildLuaData('data',join(dir,'abyss_data.lua'));buildUI(dir,undefined,{officialAssets:official});
+  const child=(node,name)=>(node.controls??node.children).find(part=>part.name===name);
+  const layout=JSON.parse(readFileSync(join(dir,'game-ui.json'),'utf8'));
+  const stage=child(layout,'stage')??layout;
+  const selectionArt=official?child(child(child(stage,'characterPanel'),'details'),'v25RelicIcon').children:[];
   const modules=readdirSync(dir).filter(n=>n.endsWith('.lua')).map(n=>n.slice(0,-4));
   const script=join(dir,'verify.lua');
   writeFileSync(script,`local generated=${luaString(dir.replaceAll('\\','/'))}
@@ -37,11 +41,29 @@ for _,id in ipairs({'burning_blood','kunai','ink_bottle'})do
  assert(V.icon(id,true)==(official and Theme.officialAssets.battleRelicIcons[id].id or baseIcon(id)),'profile guard')
 end
 local F=dofile('tests/lua/support/game_ui_fixture.lua');local h,r=F.fixture();assert(F.start(h))
-h.run.relics={'burning_blood','kunai','ink_bottle'};h:refresh()
+assert(h.run.relics[1]=='burning_blood');h.run.relics[2],h.run.relics[3]='kunai','ink_bottle';h:refresh()
 local bar=r:GetChild('relicBar');local panel=r:GetChild('relicPanel')
 local function runIcon(id)return official and Theme.officialAssets.battleRelicIcons[id].id or baseIcon(id)end
+local selectionArt=${toLua(selectionArt)}
+local function sameScale(actual,expected) return math.abs(actual-expected)<0.0001 end
+local function checkCrystal(host,size)
+ local art=host:GetChild('iconArt')
+ assert(art.visible and not host:GetChild('icon').visible,'the painted crystal must replace the atlas icon')
+ assert(#selectionArt==6 and sameScale(art.localScaleX,size/100) and sameScale(art.localScaleY,size/100))
+ for i,facet in ipairs(selectionArt)do
+  local shape=art:GetChild('shape'..(i-1))
+  assert(shape.visible and shape.imageId==facet.image and shape.rotation[3]==facet.rotation)
+  assert(sameScale(shape.x*0.4,facet.position[1]) and sameScale(shape.y*0.4,facet.position[2]))
+  assert(sameScale(shape.sizeDeltaX*0.4,facet.size[1]) and sameScale(shape.sizeDeltaY*0.4,facet.size[2]))
+  local colour=shape.imageColor
+  assert(string.format('#%02X%02X%02X',colour.r,colour.g,colour.b)==facet.colour)
+ end
+ assert(not art:GetChild('shape6').visible)
+end
+if official then checkCrystal(bar:GetChild('slot1'),Theme.officialAssets.battleRelicBar.icon)end
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==runIcon(id),'shared run map icon')end
 assert(require('abyss_run').startCombat(h.run,'cultist_solo'));h:refresh()
+if official then checkCrystal(bar:GetChild('slot1'),Theme.officialAssets.battleRelicBar.icon)end
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==V.icon(id,true),'battle HUD icon')end
 local hp,energy,turn=h.run.hp,h.run.combat.energy,h.run.combat.turn
 assert(h:openRelics(2));assert(h.relicUI.selected.id=='kunai')
@@ -52,11 +74,18 @@ assert(h.relicUI:turn(-1));assert(h.relicUI.selected.id=='kunai');assert(h:close
 assert(h.run.hp==hp and h.run.combat.energy==energy and h.run.combat.turn==turn,'read-only detail')
 h.run.phase='map';h:refresh()
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==runIcon(id),'same atlas on return to map')end
-assert(h:openRelics(1))
 if official then
+ assert(bar:GetChild('slot1'):GetChild('hit').click())
  assert(h.relicUI.selectedIndex==1 and h.relicUI.selected.id=='burning_blood','shared single entry from map')
+ checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
  assert(panel:GetChild('single'):GetChild('icon').imageId==runIcon('burning_blood'),'same single atlas outside combat')
+ assert(h.relicUI:turn(1))
+ assert(not panel:GetChild('single'):GetChild('iconArt').visible,'other relics must not inherit the crystal')
+ assert(panel:GetChild('single'):GetChild('icon').visible)
+ assert(h.relicUI:turn(-1))
+ checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
 else
+ assert(h:openRelics(1))
  assert(not h.relicUI.selectedIndex)
  assert(panel:GetChild('row1'):GetChild('slot'):GetChild('icon').imageId==baseIcon('burning_blood'),'legacy list restore')
 end
