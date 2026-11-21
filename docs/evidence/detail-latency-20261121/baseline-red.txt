@@ -1,0 +1,10 @@
+1 ABYSS_RUN seed=1 source=explicit
+tests/lua/detail_latency.lua:10: relic entry built then discarded the deck
+stack traceback:
+	[JS]: in function 'assert'
+	tests/lua/detail_latency.lua:10: in main chunk
+	[JS]: in function 'dofile'
+	...pace/detail-latency/build/detail-baseline-regression.lua:7: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk
+

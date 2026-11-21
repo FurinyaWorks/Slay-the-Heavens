@@ -2,6 +2,16 @@
 local M = {}
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, dependencies)
+    -- Detail changes reuse native controls; mutable content is queried on each paint.
+    -- Preserve the explicit render's pointer invalidation and validity checks.
+    function owner:renderDetailsOnly(full)
+        local run=self.run
+        if full or self.busy or self.gesture or self.carry or self.potionAim
+            or self.viewRun~=run or self.viewBattle~=(run and run.combat) then return self:render() end
+        run=dependencies.prepareRenderInputs(self)
+        if not dependencies.renderFeedbackReady(run) then return end
+        dependencies.renderDetails(dependencies.renderFrame(run))
+    end
     function owner:render(presentationOnly)
         local run = dependencies.prepareRenderInputs(self, presentationOnly)
         if not dependencies.renderFeedbackReady(run) then return end
