@@ -4,6 +4,38 @@ import {join} from 'node:path';
 import {enemyUnitTemplate,enemyPowerTemplate} from './ui-layout.mjs';
 import {createHash} from 'node:crypto';
 import {nativeArtPool,validateNativeCardArt} from './card-art-samples.mjs';
+import {toLua} from './build-lua-data.mjs';
+
+const compactSlotKeys=['anchorMax','anchorMin','colour','image','imageType','pivot','position','rotation','scale','size'];
+function compactMonsterSlot(slot){
+  const same=(value,expected)=>JSON.stringify(value)===JSON.stringify(expected);
+  const vector=(value,count)=>Array.isArray(value)&&value.length===count&&value.every(Number.isFinite);
+  if(!same(Object.keys(slot).sort(),compactSlotKeys)||!['anchorMax','anchorMin','pivot'].every(key=>same(slot[key],[.5,.5]))
+    ||!same(slot.scale,[1,1])||![100001,100002,100003].includes(slot.image)||!['basic','stretch'].includes(slot.imageType)
+    ||!vector(slot.position,2)||!vector(slot.size,2)||!vector(slot.rotation,3)||!vector(slot.colour,4))throw Error('Unsupported compact monster slot');
+  return [slot.image,slot.imageType==='basic'?0:1,...slot.position,...slot.size,...slot.rotation,...slot.colour].join(',');
+}
+export function monsterArtPayloadSource(art){
+  const header='-- Generated from the bounded native monster registry.\n';
+  if(art?.status!=='refined-release')return `${header}return ${toLua(art??{})}\n`;
+  const packed={...art,assets:Object.fromEntries(Object.entries(art.assets).map(([id,asset])=>
+    [id,{...asset,slots:asset.slots.map(compactMonsterSlot).join(';')}]))};
+  // Retain every numeric spelling and restore independent mutable arrays once
+  // at module load, before the existing renderer receives the original schema.
+  return `${header}local art=${toLua(packed)}
+for _,asset in pairs(art.assets) do
+ local slots={}
+ for row in string.gmatch(asset.slots,"[^;]+") do
+  local v={}
+  for number in string.gmatch(row,"[^,]+") do v[#v+1]=assert(tonumber(number)) end
+  slots[#slots+1]={image=v[1],imageType=v[2]==0 and "basic" or "stretch",
+   position={v[3],v[4]},size={v[5],v[6]},rotation={v[7],v[8],v[9]},colour={v[10],v[11],v[12],v[13]},
+   anchorMin={0.5,0.5},anchorMax={0.5,0.5},pivot={0.5,0.5},scale={1,1}}
+ end
+ asset.slots=slots
+end
+return art\n`;
+}
 export const monsterSourceInputs=Object.freeze(['art/monsters/acid_slime_m/native-art-r02/native-art.lua','art/monsters/acid_slime_m/native-art-r02/native-art.json']);
 export function prepareMonsterArt(input) {
   const registry=input??JSON.parse(readFileSync('data/presentation/native-monster-art.json','utf8'));
