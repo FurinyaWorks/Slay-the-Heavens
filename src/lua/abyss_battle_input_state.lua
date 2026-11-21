@@ -1,15 +1,9 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
-local Combat = require("abyss_combat")
 local Actors = require("abyss_actor")
 local Run = require("abyss_run")
 local EnemyView = require('abyss_battle_enemy_view')
 local RewardOwner = require("abyss_battle_reward_owner")
 local M = {}
-local function needsTarget(state, instance)
-    -- Ask the core to validate the same card with and without a target.
-    local _, reason = Combat.canPlay(state, instance.uid, nil)
-    return reason == "invalid_target"
-end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, _dependencies)
     function owner:setData(nextData, nextPresentation)
@@ -107,7 +101,7 @@ function M.install(owner, ownership, host, _dependencies)
         if g.aim then return owner.potionAim == g.aim and aimReady(g.aim) end
         local instance = g.battle and g.battle.hand[g.slot or 0]
         return dragReady(g) and instance and instance.uid == g.uid and owner.selected == g.uid
-            and owner.selectionEpoch == g.selectionEpoch and not needsTarget(g.battle, instance)
+            and owner.selectionEpoch == g.selectionEpoch and not (owner.carry and owner.carry.aiming)
     end
     local function rewardListActionReady(g, rewards)
         local relicIndex=g.name:match('^relicReward(%d)$')

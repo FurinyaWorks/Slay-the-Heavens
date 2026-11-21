@@ -240,9 +240,12 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     services.bind("playArea", function()
         if services.cancelPotionAim("已取消药水瞄准。") then services.refresh() return end
         local battle = self.run and self.run.phase == "combat" and self.run.combat
-        if not battle then return end
+        if not battle or self.carry and self.carry.aiming then return end
         for _,instance in ipairs(battle.hand) do
-            if instance.uid == self.selected and not needsTarget(battle,instance) then self:playSelected(nil) return end
+            if instance.uid == self.selected then
+                if needsTarget(battle,instance) then return self:controllerBack() end
+                return self:playSelected(nil)
+            end
         end
     end)
     services.bind("skip", function()

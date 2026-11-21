@@ -619,7 +619,7 @@ assert(coverRuns==1 and not cover.visible and host.run.phase=='map' and map.visi
 
 test('official card confirmation keeps the battlefield visible while selecting and playing Defend',t=>{
  runOfficial(t,`
-local h,u,p,_,tap,drain=H.setup({'defend','strike'},{'spike_slime_s','acid_slime_m'})
+local h,u,p,event,tap,drain=H.setup({'defend','strike'},{'spike_slime_s','acid_slime_m'})
 local b=h.run.combat
 local area=p:GetChild('playArea')
 local label,hit=area:GetChild('label'),area:GetChild('hit')
@@ -642,10 +642,22 @@ unchanged(b,before,'selection played the card')
 tap(defend,72)
 assert(not u.selected and not area.visible,'tapping the same card must cancel confirmation')
 tap(strike,73)
-assert(u.selected and not area.visible,'targeted attacks must keep their enemy-only confirmation')
-tap(strike,74)
+assert(u.selected and area.visible and hit.sizeDeltaY==720,
+ 'a tapped attack must receive empty clicks across the battlefield')
+local function field(kind,touch,x,y) event('playArea',kind,touch,x,y) end
+field('down',74,0,240);field('up',74,0,240);field('click',75,0,240)
+assert(u.selected,'a foreign tap must not cancel the selected attack')
+field('click',74,0,240)
+assert(not u.selected and not area.visible,'tapping empty ground must cancel the selected attack')
 unchanged(b,before,'cancelling selection changed combat')
+event(strike,'down',77);event(strike,'drag',77,0,50);event('dragLayer','up',77,0,50)
+assert(u.carry and u.carry.aiming and not area.visible,'dragging into aim must retain desktop targeting')
+field('down',78,0,50);field('up',78,0,50);field('click',78,0,50)
+assert(u.carry and u.selected,'empty clicks must preserve established desktop aim')
+assert(u:controllerBack() and not u.selected and not u.carry,'explicit cancel must clear established aim')
+unchanged(b,before,'aim cancellation changed combat')
 tap(defend,75);tap('playArea',76);drain()
+assert(hit.sizeDeltaX==1200 and hit.sizeDeltaY==272,'restoring field confirmation must restore its original limits')
 assert(not area.visible and not u.selected,'played card left confirmation visible')
 assert(b.energy==before.energy-1 and b.player.block==before.player.block+5 and #b.hand==#before.hand-1,
  'the transparent field must still play Defend exactly once')

@@ -43,13 +43,22 @@ function M.install(owner, ownership, host, dependencies)
         if name == "playArea" and battle then
             g.aim = owner.potionAim
             g.x, g.y, g.invalidPoint = dependencies.point(event)
-            for i, instance in ipairs(battle.hand) do if instance.uid == owner.selected then g.slot = i break end end
+            for i, instance in ipairs(battle.hand) do
+                if instance.uid == owner.selected then
+                    g.slot, g.targeted = i, needsTarget(battle, instance)
+                    break
+                end
+            end
         end
         return g
     end
+    local function insideField(held, x, y)
+        if not held.targeted then return dependencies.inPlayArea(x, y) end
+        return math.abs(x) <= Theme.canvas.base[1] / 2 and math.abs(y) <= Theme.canvas.base[2] / 2
+    end
     local function fieldReleaseValid(name, held, event)
         local x, y, invalidPoint = dependencies.point(event)
-        return name ~= "playArea" or not invalidPoint and (not x or dependencies.inPlayArea(x, y)
+        return name ~= "playArea" or not invalidPoint and (not x or insideField(held, x, y)
             and (not held.x or (x-held.x)^2+(y-held.y)^2 < D.threshold^2))
     end
     local function bind(name, fn)

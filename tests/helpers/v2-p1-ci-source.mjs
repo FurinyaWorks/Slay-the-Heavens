@@ -9,7 +9,7 @@ import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
-  '67e17c4de0698f9db96b3416a0a78f0a0c0c3fbbc64515416fbb630329312c11');
+  '8ac60ac2399c9ded610b9c472caefc8e22f7d2db83faec8bd72caf84482700fd');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(bytes),'126bc5faaa880285c3e28b96fa3781ed6d188e9b5ee2889a5a41c0a7c2c30cd4','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
@@ -33,7 +33,8 @@ const fieldConfirmation = {
   },
   'tests/official-assets-runtime.test.mjs': {
     current: ['f214dff087837db37ad9719826930b67af5e6a705d5871d5c386aa57256a9d8e',
-      '1ccbfa1c23bce59d0a2755b5e57058039a14d549df231e049524aac87d8ca30f'],
+      '1ccbfa1c23bce59d0a2755b5e57058039a14d549df231e049524aac87d8ca30f',
+      'db065e0b4a84f09d6c898863ca8e46e9959eab049e96c95506a81a8de73b9f0b'],
     prior: '2fb2148a78b0dd238ec66a51981b02fafe32bf54aecc72505f060c7459f7beb0',
     added: /^test\('official card confirmation keeps the battlefield visible[\s\S]+?^\}\);\n\n/m,
   },

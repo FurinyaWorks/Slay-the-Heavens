@@ -28,6 +28,7 @@ end
 function M.install(owner, _ownership, host, dependencies)
     local R = L.rewardPick
     local rewardSizeOwner = {}
+    local fullField = false
     local function renderStartControls(frame)
         local run = frame.run
         dependencies.show("start", not owner.busy and not host.options.embedded and (not run or run.phase == "defeat"))
@@ -97,15 +98,27 @@ function M.install(owner, _ownership, host, dependencies)
         end
     end
     local function fieldCardSelected(frame)
-        if not frame.active or owner.gesture then return false end
+        if not frame.active or not owner.selected or owner.gesture or owner.carry and owner.carry.aiming then return false end
         for _, instance in ipairs(frame.battle.hand) do
-            if instance.uid == owner.selected and not needsTarget(frame.battle, instance) then return true end
+            if instance.uid == owner.selected then return true, needsTarget(frame.battle, instance) end
         end
         return false
     end
     local function renderPlayArea(frame)
-        dependencies.show("playArea", fieldCardSelected(frame) or frame.active and owner.potionAim ~= nil)
-        dependencies.child("playArea"):GetChild("label").text = owner.potionAim and "点击空白处取消药水瞄准" or ""
+        local selected, targeted = fieldCardSelected(frame)
+        local area = dependencies.child("playArea")
+        local wide = targeted == true
+        if wide ~= fullField then
+            -- Empty background cancels a tapped attack. Untargeted cards and
+            -- potions retain their ordinary, smaller confirmation area.
+            local hit, bounds = area:GetChild("hit"), L.cardDrag.playArea
+            local width, height = table.unpack(Theme.canvas.base)
+            hit:SetSizeDelta(wide and width or bounds[3], wide and height or bounds[4])
+            hit:SetAnchoredPosition(wide and -bounds[1] or 0, wide and -bounds[2] or 0)
+            fullField = wide
+        end
+        dependencies.show("playArea", selected or frame.active and owner.potionAim ~= nil)
+        area:GetChild("label").text = owner.potionAim and "点击空白处取消药水瞄准" or ""
     end
     local function renderHudVisibility(frame)
         for _, name in ipairs({"energyRing", "energyDisc", "energyIcon", "energy", "drawIcon", "drawBadgeRing", "drawBadge",

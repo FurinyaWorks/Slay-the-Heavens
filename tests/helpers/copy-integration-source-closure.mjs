@@ -64,8 +64,8 @@ const releaseUiFiles=Object.freeze({
  ...pc13Files,
  [runtime]:'8536d9f54bc814e92db509a248b199be0bbd8c84c5a8fac7369637f94e21c513',
  'tests/helpers/potion-pointer-source.mjs':'ba6547de02ef3188b9658764452283cd671e3324f19cf0775bce3221db53cdab',
- 'tests/helpers/release-ui-restore-source.mjs':'e6e83f242422de0f6208f954c68c8b22f56b3afc6e09c8459795b7d113e9abfd',
- 'tests/helpers/release-ui-restore-source.json.gz':'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b',
+ 'tests/helpers/release-ui-restore-source.mjs':'95bb286129a1856314f3ee0ad7b86338972f9f0efe0c02e0b7880a850891ba54',
+ 'tests/helpers/release-ui-restore-source.json.gz':'fe89fa28c084bdcd18d5c52a925c36b7191b5c5d94eab59a5ef8dca22f1d21c7',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
