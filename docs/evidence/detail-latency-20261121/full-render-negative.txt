@@ -15,14 +15,14 @@ test at tests/detail-latency.test.mjs:4:1
   AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
   /workspace/detail-latency/tests/lua/detail_latency.lua:16: detail open repainted the battle
   stack traceback:
-  	[JS]: in function 'assert'
-  	/workspace/detail-latency/tests/lua/detail_latency.lua:16: in main chunk
-  	[JS]: in function 'dofile'
-  	(command line):1: in main chunk
-  
-  
+    [JS]: in function 'assert'
+    /workspace/detail-latency/tests/lua/detail_latency.lua:16: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+
+
   1 !== 0
-  
+
       at TestContext.<anonymous> (file:///workspace/detail-latency/tests/detail-latency.test.mjs:6:9)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
