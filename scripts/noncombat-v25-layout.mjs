@@ -12,11 +12,18 @@ const child=(n,name)=>parts(n).find(c=>c.name===name);
 export function applyOfficialNoncombatLayout(layout,theme){
  const stage=child(layout,'stage')??layout;
  const menu=child(stage,'menuPanel');
- if(!menu||!child(stage,'characterPanel')||child(child(menu,'v25MainMenu'),'approvedTitleLogo'))return layout;
+ if(!menu||!child(stage,'characterPanel')||child(child(menu,'v25MainMenu'),'sts1TitleLogo'))return layout;
  const start=child(child(stage,'menuPanel'),'start');
  if(!child(start,'officialResultLabel'))start.children.push({...structuredClone(child(start,'label')),name:'officialResultLabel',visible:false});
  applyV25MenuLayout(layout,theme);
- applyApprovedNativeMenu(child(stage,'menuPanel'));
+ applyApprovedNativeMenu(menu);
+ // Preserve the user's released removal of the guide from both menus (#784).
+ const retired=new Set(['help','guide']);
+ for(const name of ['exitPanel','runMenu']){
+  const panel=child(stage,name);
+  panel.children=panel.children.filter(part=>!retired.has(part.name));
+ }
+ child(child(stage,'exitPanel'),'title').position[0]=0;
  const characterTheme={...theme,v25Character:{...theme.v25Character,story:'使用岩元素护盾与结晶应对敌人。'}};
  applyV25CharacterLayout(layout,characterTheme);
  const panel=child(stage,'characterPanel'),selected=child(child(panel,'v25Roster'),'selected');

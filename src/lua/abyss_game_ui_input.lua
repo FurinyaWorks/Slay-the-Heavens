@@ -223,7 +223,10 @@ function M.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,
         function()return self:openDeck()end)
     if not self.potionUI.localPanel then
         local potionHit=child('potionEntry'):GetChild('open'):GetChild('hit')
-        local function openPotion()if not inCombat() then return self:openPotions()end end
+        local function openPotion()
+            if inCombat() then return false end
+            return self:openPotions()
+        end
         potionHit:AddCursorEventListener(clickEvent,openPotion)
         Controller.bind(controller,potionHit,function()return self.mode end,openPotion)
     end
@@ -313,13 +316,16 @@ function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside
         end)
         guide:GetChild('catch'):AddCursorEventListener(clickEvent, function() return true end)
     end
-    bindCommand(runMenu:GetChild('help'), 'run_help', function()
-        owner.exitGeneration = owner.exitGeneration + 1
-        self.controlsOpen = true
-        guide:SetVisible(true)
-        self:refresh()
-        return true
-    end)
+    local runHelp=runMenu:GetChild('help')
+    if guide and runHelp then
+        bindCommand(runHelp,'run_help',function()
+            owner.exitGeneration=owner.exitGeneration+1
+            self.controlsOpen=true
+            guide:SetVisible(true)
+            self:refresh()
+            return true
+        end)
+    end
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)
     bindCommand(runMenu:GetChild('mainMenu'),'run_mainMenu',function()return self:returnToMainMenu()end,
         function()return Navigation.hasRun(self) and not self.sessionPaused end)

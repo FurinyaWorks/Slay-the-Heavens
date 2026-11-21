@@ -25,12 +25,16 @@ test('official menu and selection reuse live inputs with bounded native decorati
  assert.equal(JSON.stringify(child(stage,'battlePanel')),oldBattle);
  assert.equal(child(menu,'vista').visible,false);
  assert.equal(child(menu,'emblem').visible,false);
+ assert(child(child(menu,'v25MainMenu'),'sts1TitleLogo'),'retain the released #797 logo');
+ for(const name of ['exitPanel','runMenu'])for(const key of ['guide','help'])
+  assert.equal(child(child(stage,name),key),undefined,'retain the released #784 removal in '+name);
  // Pin the approved menu geometry independently of the layout theme.
- assert.deepEqual(child(menu,'start').position,[-426.41148325358853,-174.83528161530285]);
- assert.deepEqual(child(menu,'start').size,[316.9377990430622,59.681190223166844]);
+ assert.deepEqual(child(menu,'start').position,[-464,-114]);
+ assert.deepEqual(child(menu,'start').size,[208,48]);
  assert.deepEqual(start.size,child(menu,'start').size,'paint and hit areas share the approved bounds');
  assert.deepEqual(child(child(menu,'start'),'officialResultLabel'),{...resultLabel,name:'officialResultLabel',visible:false});
  for(const key of ['confirm','cancel'])for(const state of parts(child(child(panel,key),'hit'))){
+  assert.equal(child(state,'label').text.content,key==='confirm'?'开始挑战':'返回');
   const flag=child(state,'v25Flag'),cloth=child(flag,'cloth'),rim=child(flag,'rim');
   assert(rim&&cloth,'smooth buttons retain separate rim and cloth');
   assert.equal(parts(cloth).length,6,'preserve #785 smooth rounded cloth');assert.equal(parts(rim).length,6);
@@ -100,7 +104,7 @@ test('selection uses static exact-alpha geometry and reuses the selected frame w
 });
 
 test('official host uses direct inventory actions, read-only relic details and explicit run discard',async t=>{
- const {mkdtempSync,mkdirSync,rmSync}=await import('node:fs');
+ const {mkdtempSync,mkdirSync,readFileSync,rmSync}=await import('node:fs');
  const {join,resolve}=await import('node:path');
  const {spawnSync}=await import('node:child_process');
  const {createRequire}=await import('node:module');
@@ -111,6 +115,14 @@ test('official host uses direct inventory actions, read-only relic details and e
  t.after(()=>rmSync(directory,{recursive:true,force:true}));
  buildLuaData('data',join(directory,'abyss_data.lua'));
  buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
+ const stage=child(JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8')),'stage');
+ for(const [name,sha] of [
+  ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0'],
+  ['exitPanel','7715c4bf68220f4110d3e600032647e2d6d3a1a47b9ff5fcd268af3e9acfa82b'],
+ ]){
+  assert.equal(createHash('sha256').update(JSON.stringify(child(stage,name))).digest('hex'),sha,
+   'preserve the complete released layout at 8af38667: '+name);
+ }
  const script=`package.path=${luaString(directory.replaceAll('\\','/')+'/?.lua;src/lua/?.lua')}
 dofile('tests/lua/support/sts_ui_closeout.lua')`;
  const require=createRequire(import.meta.url);

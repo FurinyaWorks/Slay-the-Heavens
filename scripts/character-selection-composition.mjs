@@ -46,14 +46,11 @@ export function characterSelectionComposition(panel,theme){
  const bag=child(details,'v25GoldIcon');Object.assign(bag,frame(295,284,25,28));
  const relic=child(details,'v25RelicIcon');
  Object.assign(relic,frame(115,383,36,44),{visible:true});
- // Amber crystal facets for the rock Traveler's starter relic.
- relic.children=[
-  [-9,-4,12,19,18,'#855434'],[9,-6,13,18,-23,'#B17945'],
-  [0,9,21,22,0,'#D9A255'],[0,-8,21,12,180,'#9B5D39'],
-  [-3,7,10,17,14,'#F2D58F'],[1,-5,9,10,176,'#D6A365'],
- ].map(([x,y,w,h,rotation,colour],index)=>({
-  name:'facet'+index,kind:'image',position:[x,y],size:[w,h],
-  image:100003,colour,rotation,raycastTarget:false,
+ const relicArt=theme.lowCostArt.relic;
+ const relicScale=40/relicArt.canvas;
+ relic.children=relicArt.assets.burning_blood.shapes.map(({x,y,w,h,image,colour,rotation},index)=>({
+  name:'facet'+index,kind:'image',position:[x*relicScale,y*relicScale],size:[w*relicScale,h*relicScale],
+  image,colour,rotation,raycastTarget:false,
  }));
  const roster=child(panel,'v25Roster');
  const t=theme.layout.stsCharacter,[x,y]=t.roster.origin,[w,h]=t.roster.size;
@@ -84,10 +81,7 @@ export function characterSelectionComposition(panel,theme){
  for(const state of children(child(traveler,'hit')))for(const part of children(state))part.visible=false;
  child(traveler,'selected').visible=false;
  const avatar=child(traveler,'officialAvatar');if(avatar)avatar.visible=false;
- for(const name of ['cancel','confirm']){
-  const button=child(panel,name);styleCharacterFlag(button,name,theme);
-  if(name==='confirm')for(const state of children(child(button,'hit')))child(state,'label').text.content='启程';
- }
+ for(const name of ['cancel','confirm'])styleCharacterFlag(child(panel,name),name,theme);
  // Same existing native portrait controller; a bottom-most, dedicated host.
  panel.children.unshift({name:'lumineSelectionBackground',kind:'container',position:[0,0],size:[1280,720],visible:false,children:[]});
 }

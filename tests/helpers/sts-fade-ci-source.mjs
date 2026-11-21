@@ -7,7 +7,16 @@ const bytes=readFileSync(new URL('../fixtures/sts-fade-ci-source.json',import.me
 assert.equal(hash(bytes),'be33c862d5b8d8d3f3d40a70228c9eba52c8391e0425b77df07a04297e8bfdb6');
 const {base,files}=JSON.parse(bytes);
 assert.equal(base,'345ba08398b6ca8e1361a126f2ce1de85210e634');
+const closeoutBytes=readFileSync(new URL('../fixtures/sts-ui-closeout-ci.json',import.meta.url));
+assert.equal(hash(closeoutBytes),'5848e7d6efdb649a467f19d0a14ad502ad1a0548cea7e308e7f034923375629d','exact STS closeout CI continuation');
+const closeout=JSON.parse(closeoutBytes).files;
+function fromCloseout(path,source){
+ const row=Object.hasOwn(closeout,path)?closeout[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.after)return source;
+ return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+}
 export function beforeStsFadeCi(path,source){
+ source=fromCloseout(path,source);
  const row=Object.hasOwn(files,path)?files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.after)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;

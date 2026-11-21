@@ -212,7 +212,7 @@ function M.refreshPotionEntry(child,inCombat,canManagePotions,platform)
             local mapSlots=official and run~=nil or anchor and mapVisible==true
             if anchor or official then mapPotionFrame(open,potionHit,run,mapSlots)end
             if official then
-                potionHit.interactable=true;potionHit.raycastTarget=false
+                potionHit.interactable=not inCombat();potionHit.raycastTarget=false
                 for i=1,Theme.layout.battlePotions.count do
                     local slot=child('potionEntry'):GetChild('slot'..i)
                     if slot then
@@ -249,7 +249,7 @@ function M.refreshDeckEntry(child,self)
 end
 
 local function potionEntryVisible(self,utilitiesVisible,potionOpen)
-    return utilitiesVisible or potionOpen and self.potionUI.localPanel
+    return utilitiesVisible or potionOpen and self.potionUI.localPanel==true
 end
 
 function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEntry)

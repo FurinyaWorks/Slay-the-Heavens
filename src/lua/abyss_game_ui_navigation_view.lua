@@ -16,7 +16,8 @@ local function dialogGeometry(panel,compact)
     local size=compact and {0,0,480,204} or layout.panel
     frame(panel:GetChild('border'),size,0)
     frame(panel:GetChild('face'),size,Theme.space.border*2)
-    frame(panel:GetChild('title'),compact and {0,64,430,48} or layout.title,0)
+    local title=compact and {0,64,430,48} or layout.title
+    frame(panel:GetChild('title'),title,0)
     frame(panel:GetChild('message'),compact and {0,12,430,48} or layout.message,0)
     local buttons=compact and {cancel={-110,-58},confirm={110,-58}} or layout
     for _,name in ipairs({'cancel','confirm'})do
@@ -24,7 +25,7 @@ local function dialogGeometry(panel,compact)
         control:SetAnchoredPosition(at[1],at[2])
         control:SetLocalScale(compact and .58 or 1,compact and .85 or 1,1)
     end
-    for _,name in ipairs({'border','rule','help'})do panel:GetChild(name):SetVisible(not compact)end
+    for _,name in ipairs({'border','rule'})do panel:GetChild(name):SetVisible(not compact)end
 end
 local function confirmation(self)
     local spec=confirmations[self.navigationAction]
@@ -56,7 +57,7 @@ function M.title(self,menu,outcome,v25)
 end
 local function compact(menu,routeEnabled,mainEnabled)
     local R=Theme.layout.runMenu
-    local step=R.help[2]-R.map[2]
+    local step=R.map[2]-R.mainMenu[2]
     local upperGap=(routeEnabled and 0 or step)+(mainEnabled and 0 or step)
     local gap=upperGap+(mainEnabled and 0 or step)
     local function at(name,spec,dy)menu:GetChild(name):SetAnchoredPosition(spec[1],spec[2]+dy)end
@@ -71,9 +72,11 @@ local function compact(menu,routeEnabled,mainEnabled)
     end
 end
 local function showRunOptions(menu,show)
-    for _,name in ipairs({'border','face','catch','title','resume','help','rule','abandon','dismissHint'}) do
+    for _,name in ipairs({'border','face','catch','title','resume','rule','abandon','dismissHint'}) do
         menu:GetChild(name):SetVisible(show)
     end
+    local help=menu:GetChild('help')
+    if help then help:SetVisible(show)end
     menu:GetChild('catch').raycastTarget=show
 end
 function M.runMenu(self,menu,routeEnabled)

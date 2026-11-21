@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const archive=readFileSync(new URL('../fixtures/sts-ui-closeout-source.json',import.meta.url));
-assert.equal(hash(archive),'c3415006f33840d3154a460684867f75810cb00eabcd0afa12f73fd423aca6d5','exact STS UI predecessor archive');
+assert.equal(hash(archive),'4ffb2110fe4bc0683f4384fba62e4aca80267bf87fc2b7ba49d5f89d532d3c90','exact STS UI predecessor archive');
 const {files}=JSON.parse(archive);
 for(const record of Object.values(files))assert.equal(hash(record.before),record.sha256);
 

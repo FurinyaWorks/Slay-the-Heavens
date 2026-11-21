@@ -81,9 +81,10 @@ const stsFadeFiles=Object.freeze({...loadingRecoveryFiles,...{
 assert.equal(stsFadeFiles['tests/helpers/sts-selection-fade-source.mjs'],'73b46c3cebe908ea332c56264b1300937d9e67de678225b5ac213b16ef245adf','STS UI exact fade helper predecessor');
 const stsCloseoutFiles=Object.freeze({
  ...stsFadeFiles,
+ 'tests/helpers/potion-pointer-source.mjs':'7fe84ca4ec6fa72ad78d83cf2613a60326127ac9906c72fc4c72daf04c14b488',
  'tests/helpers/sts-selection-fade-source.mjs':'d3be357f4c639c9f6d305eaa45b08674168f9f7166ecd50f8f4d6f41b3e560e7',
- 'tests/helpers/sts-ui-closeout-source.mjs':'be1c66d54731677a1ce485168a60c5a14d8494915bd678bf18ebe613f477f1c3',
- 'tests/fixtures/sts-ui-closeout-source.json':'c3415006f33840d3154a460684867f75810cb00eabcd0afa12f73fd423aca6d5',
+ 'tests/helpers/sts-ui-closeout-source.mjs':'0f7306498987f2d3575373bd67dcace916538ada929ee601bcf329ee1b6d8cf1',
+ 'tests/fixtures/sts-ui-closeout-source.json':'4ffb2110fe4bc0683f4384fba62e4aca80267bf87fc2b7ba49d5f89d532d3c90',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

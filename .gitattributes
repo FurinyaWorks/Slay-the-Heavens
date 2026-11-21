@@ -1459,3 +1459,4 @@ tests/fixtures/sts-selection-fade-source.json text eol=lf
 tests/fixtures/sts-fade-ci-source.json text eol=lf
 
 tests/fixtures/sts-ui-closeout-source.json text eol=lf
+tests/fixtures/sts-ui-closeout-ci.json text eol=lf

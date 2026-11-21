@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-21T12:50:00Z'
-updated_date: '2026-11-21T16:16:58Z'
+updated_date: '2026-11-21T16:30:33Z'
 labels:
   - P2
   - non-blocking
@@ -69,4 +69,6 @@ PR803已创建并仅指向develop，ci:full申请正式Full。最终独审发现
 在 develop 73fd14aa 接续 #803 b5e7c915，原 PR 原生自动合并已暂停。前后正式 UI 布局及 Lua Host 投影见 docs/evidence/sts1-ui-closeout。新增主菜单／药水／遗物／淡出／恢复定向回归，正式 GIL 写入读回及 PC／手机／手柄实机仍未取得。
 
 集成 PR #812 指向 develop，针对独立评审补了换瓶前的触点撤销、过期弹窗的同帧恢复，以及失败路线预览的手柄返回。正式验证和官方实机证据仍待取得。
+
+Owner 纠正界面基线为最新 Release。按只读 release/v2.0.0@8af38667 接回 #797 菜单与 #784 说明删除，重新拍摄；主菜单与退出确认正式布局树逐字节相同，集成目标仍 develop。
 <!-- SECTION:NOTES:END -->
