@@ -79,7 +79,7 @@ export function finishOfficialPotionFace(variant){
 
 export function officialRunHudComponent(battle){
  const bar=clone(child(battle,'topBar'));bar.name='officialRunBar';
- bar.children=bar.children.filter(part=>part.name!=='battleRoute');
+ bar.children=bar.children.filter(part=>!['battleRoute','floorIcon'].includes(part.name));
  const resources=Object.fromEntries([['hpIcon','hpIcon'],['hp','player'],['goldIcon','goldIcon'],['gold','piles']]
   .map(([role,name])=>[role,clone(child(battle,name))]));
  const title=clone(child(battle,'title'));
