@@ -1,3 +1,4 @@
+import {beforeTinyHouseIntegratedSource} from '../tiny-house-integrated-source.mjs';
 import {beforeM05ShopSource,authorizeM05ShopSource} from '../m05-shop-source.mjs';
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
@@ -119,7 +120,8 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
   const rawInput=source,guidePrior=beforeReleaseGuideSource(path,source);
-  const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,guidePrior));
+  source=beforeTinyHouseIntegratedSource(path,guidePrior);
+  const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,source));
   source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
   source=projectTinyHouseUiSource(path,projectV2UiHudSource(path,projectPotionPointerSource(path,source,current),current),current);
@@ -134,14 +136,14 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
    const prior=beforeReleaseGuideSource(owner,actual);
    guideProjected ||= prior!==actual;
-   actual=prior;
+   actual=beforeTinyHouseIntegratedSource(owner,prior);
    const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,beforeM05ShopSource(owner,actual));samples.push([owner,actual,binding]);
    actual=projectTinyHouseUiSource(owner,projectV2UiHudSource(owner,projectPotionPointerSource(owner,actual,binding),binding),binding);
    actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
   if(guideProjected)authorizeReleaseGuideSources(readSource);
-  const readGuidePrior=owner=>beforeReleaseGuideSource(owner,readSource(owner));
+  const readGuidePrior=owner=>beforeTinyHouseIntegratedSource(owner,beforeReleaseGuideSource(owner,readSource(owner)));
   const readM05Prior=owner=>beforeM05ShopSource(owner,readGuidePrior(owner));
   const readPrior=owner=>beforePc13RewardCover(owner,readM05Prior(owner));
   authorizeFatalBgmSource(path,inputSource,current,samples,readPrior);
