@@ -136,9 +136,16 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintPileSort()
         if self.browserShell then for _,mode in ipairs({'original','type','cost','name'})do
-            local label=root:GetChild('pileTools'):GetChild(mode):GetChild('label')
-            label.text=(mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode])..(self.sortMode==mode and not self.sortAscending and ' ▾' or ' ▴')
-            if platform.color then label.fontColor=self.sortMode==mode and platform.color(228,211,94,255) or platform.color(233,230,220,255)end
+            local box=root:GetChild('pileTools'):GetChild(mode)
+            local label,arrow=box:GetChild('label'),box:GetChild('direction')
+            label.text=mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode]
+            arrow:SetVisible(true)
+            local descending=self.sortMode==mode and not self.sortAscending
+            arrow.localRotationZ=descending and 180 or 0
+            if platform.color then
+                local ink=self.sortMode==mode and platform.color(228,211,94,255) or platform.color(233,230,220,255)
+                label.fontColor=ink;arrow.imageColor=ink
+            end
         end end
     end
     local function paintBrowseSort(active)

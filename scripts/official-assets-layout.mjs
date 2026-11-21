@@ -9,7 +9,6 @@ import {officialBattleHud,officialBattleUtilityFaces} from './official-battle-hu
 import {officialBattleCardChrome} from './official-battle-card-chrome.mjs';
 import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferenceTokens} from './sts-card-reference-profile.mjs';
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
-import {battlePileReturn} from './official-battle-pile-chrome.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
 const children=node=>node?.controls??node?.children??[];
 const child=(node,name)=>children(node).find(item=>item.name===name);
@@ -33,6 +32,7 @@ export function officialAssetsTheme(source){
   theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:32,labelX:0};
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
   theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
+  theme.layout.deckView.pileViewport=[0,-75.5,918,557];
   theme.layout.nativeNode.event.neow.bubbleText=[-45,96,270,130];
  if(theme.officialAssets?.profile!=='official-assets-first-v1')throw Error('Missing official asset theme');
   Object.assign(theme.officialAssets.rewardRows,{pressed:theme.officialAssets.neowChoice.pressed,
@@ -154,6 +154,7 @@ function buttonFaces(node,theme){
  if(!isStateButton&&!(hasHit&&hasCaption))return;
  const faces=isStateButton?parts:[node];
   for(const face of faces){
+  if(child(face,'roundedButton'))continue;
   const label=child(face,'label');if(!label||!face.size||face.size[0]<face.size[1]*1.8)continue;
   for(const name of ['plate','normal','hover','pressed','disabled','selected']){
    const plate=child(face,name);
@@ -281,7 +282,6 @@ export function applyOfficialAssets(trees,theme){
    else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
   const pileReturn=child(child(tree,'stage')??tree,'deckPanel');
-  if(child(pileReturn,'pileReturn'))battlePileReturn(child(pileReturn,'pileReturn'),true,theme.officialAssets.images.button,theme.officialAssets.buttonInk);
   const tools=child(pileReturn,'pileTools');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;

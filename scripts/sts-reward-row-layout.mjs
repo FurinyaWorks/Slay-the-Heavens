@@ -1,4 +1,5 @@
 import {nativeRoundedMaterial} from './official-battle-card-chrome.mjs';
+import {styleCharacterFlag} from './character-selection-composition.mjs';
 import {flagButton} from './v25-character-layout.mjs';
 export const stsRewardRowNames=Object.freeze(['goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward']);
 const children=n=>n?.children??n?.controls??[];
@@ -31,6 +32,7 @@ function proceedFlag(button,theme){
  // without changing its state objects, listeners or controller ownership.
  const hit={name:'hit',kind:'container',children:button.children};
  const proxy={...button,children:[hit]};flagButton(proxy,'confirm',theme);
+ styleCharacterFlag(proxy,'confirm',theme);
  button.size=[...proxy.size];button.position=position;button.children=hit.children;
  for(const state of button.children){
   for(const node of children(state))if(!['v25Flag','label'].includes(node.name)){node.visible=false;if(node.kind==='image')node.image=theme.image.rect;}

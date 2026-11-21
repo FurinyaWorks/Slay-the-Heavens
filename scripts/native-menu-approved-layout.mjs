@@ -1,3 +1,4 @@
+import {roundedButtonMaterial} from './native-rounded-button.mjs';
 import { readFileSync } from 'node:fs';
 import { flatTriangle } from './menu-flat-triangle.mjs';
 import { nativeMenuTriangle } from './menu-red-scene.mjs';
@@ -54,7 +55,7 @@ function titleLogo() {
 }
 
 function styleButton(button, points, primary, lift = 0) {
-  const {centre,frame} = bounds(points), [x,y,w,h] = frame;
+  const {frame} = bounds(points), [x,y,w,h] = frame;
   button.position = [x,y+lift];
   button.size = [w,h];
   find(button,'hit').size = [w,h];
@@ -70,11 +71,8 @@ function styleButton(button, points, primary, lift = 0) {
     pressed: ['#F8D6BB','#681019'],
     disabled: ['#A88C83','#403034'],
   };
-  const local = ([px,py])=>[(px-centre[0])*sx,(centre[1]-py)*sy];
-  const inset = points.map(([px,py])=>[centre[0]+(px-centre[0])*.982,centre[1]+(py-centre[1])*.91]);
   for (const state of controls(find(button,'v25MenuFace'))) {
-    const [rim,fill] = colours[state.name];
-    state.children = [polygon('rim',points,rim,local),polygon('fill',inset,fill,local)];
+    state.children = [roundedButtonMaterial('roundedButton',button.size,colours[state.name])];
   }
 }
 

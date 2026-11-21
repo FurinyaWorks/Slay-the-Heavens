@@ -26,6 +26,27 @@ local function neowChoiceChrome(ctx, box, look, hover, pressed)
     for _, part in ipairs(chrome:GetChild('face'):GetChildren()) do ctx.tint(part, face) end
 end
 
+local function roundedPalette(look,hover,pressed)
+    if not look.enabled then return C.line,C.panelSunken end
+    if pressed then return C.goldBright,C.buttonPressedFill end
+    if hover then return C.goldBright,C.buttonHover end
+    if look.primary or look.selected then return C.goldBright,C.panel end
+    return C.gold,C.panelRaised
+end
+
+local function paintRoundedButton(ctx,box,look,hover,pressed)
+    local chrome=box:GetChild('roundedButton')
+    if not chrome then return end
+    local neow=box:GetChild('stsNeowChrome')
+    chrome:SetVisible(not neow or not neow.visible)
+    for _,state in ipairs({'border','normal','hover','pressed','disabled','selected'})do
+        box:GetChild(state):SetVisible(false)
+    end
+    local rim,fill=roundedPalette(look,hover,pressed)
+    for _,part in ipairs(chrome:GetChild('rim'):GetChildren())do ctx.tint(part,rim) end
+    for _,part in ipairs(chrome:GetChild('cloth'):GetChildren())do ctx.tint(part,fill) end
+end
+
 local function referenceCamp(ctx, box)
     local reference, camp = layout.camp.reference, ctx.child('campView')
     if not reference or box.parent ~= camp then return end
@@ -105,6 +126,7 @@ function M.install(ctx)
         paintButtonFrame()
         referenceChrome(ctx, box, look, hover)
         neowChoiceChrome(ctx, box, look, hover, pressed)
+        paintRoundedButton(ctx,box,look,hover,pressed)
         local scale = pressed and layout.buttonStates.pressedScale or layout.buttonStates.normalScale
         box:SetLocalScale(scale, scale, 1)
     end
