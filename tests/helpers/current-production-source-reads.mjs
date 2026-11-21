@@ -36,4 +36,11 @@ export const currentProductionRereads = Object.freeze([...priorCurrentProduction
   'src/lua/abyss_game_ui_navigation.lua',
   'src/lua/abyss_game_ui_navigation_view.lua',
   'src/lua/abyss_game_ui_overlays.lua',
+  'src/lua/abyss_battle_reward_layout.lua',
+  'src/lua/abyss_node_ui.lua',
+  'src/lua/abyss_node_ui_treasure.lua',
+  'src/lua/abyss_node_ui_treasure_list.lua',
+  'src/lua/abyss_relic_view_ui.lua',
+  'src/lua/abyss_shop_ui.lua',
+  'src/lua/abyss_treasure_ui.lua',
 ]);
