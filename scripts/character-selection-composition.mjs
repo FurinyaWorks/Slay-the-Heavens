@@ -1,6 +1,6 @@
 // Positions measured in the 1280x720 Slay the Spire character-screen reference.
 // Data and input controls remain owned by the existing selection controller.
-import {roundedButtonState} from './native-rounded-button.mjs';
+import {rounded} from './v25-character-layout.mjs';
 
 const children=n=>n.children??n.controls??[];
 const child=(n,name)=>children(n).find(c=>c.name===name);
@@ -15,10 +15,13 @@ export function styleCharacterFlag(button,key,theme){
  const hit=child(button,'hit');
  const [rim,cloth]=theme.officialAssets.flagButton[key];
  for(const state of children(hit)){
-  const label=child(state,'label');
+  const label=child(state,'label'),previous=child(state,'v25Flag');
   const factor=state.name==='hover'?1.17:state.name==='pressed'?.9:state.name==='disabled'?.6:1;
   const tint=hex=>'#'+hex.slice(1).match(/../g).map(v=>Math.min(255,Math.round(parseInt(v,16)*factor)).toString(16).padStart(2,'0')).join('');
-  roundedButtonState(state,[180,60],[tint(rim),tint(cloth)],'v25Flag');
+  const face={name:'v25Flag',kind:'container',size:[180,60],children:[
+   rounded('rim',180,60,10,tint(rim),theme),rounded('cloth',176,56,8,tint(cloth),theme)]};
+  if(previous)state.children.splice(state.children.indexOf(previous),1,face);
+  else state.children.splice(state.children.indexOf(label),0,face);
   label.position=[0,0];label.text.fontSize=24;label.text.minFontSize=24;
  }
 }
@@ -36,14 +39,11 @@ export function characterSelectionComposition(panel,theme){
  const bag=child(details,'v25GoldIcon');Object.assign(bag,frame(295,284,25,28));
  const relic=child(details,'v25RelicIcon');
  Object.assign(relic,frame(115,383,36,44),{visible:true});
- // Amber crystal facets for the rock Traveler's starter relic.
- relic.children=[
-  [-9,-4,12,19,18,'#855434'],[9,-6,13,18,-23,'#B17945'],
-  [0,9,21,22,0,'#D9A255'],[0,-8,21,12,180,'#9B5D39'],
-  [-3,7,10,17,14,'#F2D58F'],[1,-5,9,10,176,'#D6A365'],
- ].map(([x,y,w,h,rotation,colour],index)=>({
-  name:'facet'+index,kind:'image',position:[x,y],size:[w,h],
-  image:100003,colour,rotation,raycastTarget:false,
+ const relicArt=theme.lowCostArt.relic;
+ const relicScale=40/relicArt.canvas;
+ relic.children=relicArt.assets.burning_blood.shapes.map(({x,y,w,h,image,colour,rotation},index)=>({
+  name:'facet'+index,kind:'image',position:[x*relicScale,y*relicScale],size:[w*relicScale,h*relicScale],
+  image,colour,rotation,raycastTarget:false,
  }));
  const roster=child(panel,'v25Roster');
  Object.assign(child(roster,'selected'),frame(360,533,124,124));

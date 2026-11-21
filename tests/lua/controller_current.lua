@@ -51,8 +51,13 @@ assert(ui.carry==nil and ui.selected==nil and battle.energy==energy and battle.e
 pointer('card1','up',7,-285,0);pointer('card1','click',7)
 assert(ui.selected==nil,'late pointer release cannot reclaim controller-cancelled card ownership')
 press(hit('card1'));assert(ui.selected==battle.hand[1].uid)
+host:update(.01)
+local endTurn=root:GetChild('battlePanel'):GetChild('endTurn')
+assert(endTurn.listeners.down)({touchId=8})
+local turn=battle.turn
 assert(root:GetChild('battlePanel').keyListeners.right())
-assert(ui.selected==nil and ui.carry==nil and battle.energy==energy,
+assert(endTurn.listeners.up)({touchId=8});endTurn.listeners.click({touchId=8})
+assert(ui.selected==nil and ui.carry==nil and battle.energy==energy and battle.turn==turn and not ui.busy,
     'current right-click keyboard cancellation must stay separate and harmless')
 host:disable()
 print('controller current: ownerless title, source carry cancel, stale pointer and right-click passed')

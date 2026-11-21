@@ -3,9 +3,11 @@
 import {applyOfficialNoncombatLayout} from './noncombat-v25-layout.mjs';
 import {applyOfficialNeowLayout} from './noncombat-neow-layout.mjs';
 import {applyV25MapLayout} from './v25-map-layout.mjs';
+import {applyOfficialMapReturnControls} from './official-map-return-controls.mjs';
 import {applyV25RewardLayout,styleMerchant,styleEvent} from './v25-node-layout.mjs';
 import {officialRunChrome} from './official-battle-hud.mjs';
-import {roundedCaptionButton,roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
+import {roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
+import {monsterActorTierNames,monsterActorTemplateName} from './monster-art.mjs';
 import {applyStsRewardRows} from './sts-reward-row-layout.mjs';
 
 const parts=node=>node?.children??node?.controls??[];
@@ -13,7 +15,8 @@ const child=(node,name)=>parts(node).find(part=>part.name===name);
 const stage=tree=>child(tree,'stage')??tree;
 const walk=(node,visit)=>{visit(node);for(const part of parts(node))walk(part,visit);};
 const templates=new Set(['AbyssDeckCard','AbyssBattlePileCard','AbyssReadyCardGroup',
- 'AbyssReadyCardImage','AbyssMonsterActor','AbyssMonsterPower','AbyssSelectionHalfTriangle']);
+ 'AbyssReadyCardImage',monsterActorTemplateName,'AbyssMonsterPower','AbyssSelectionHalfTriangle','AbyssForgeCard',
+ ...monsterActorTierNames]);
 const composed=new WeakSet();
 const runRoles=['menuPanel','characterPanel','mapPanel','nodePanel','battlePanel',
  'deckPanel','potionEntry','relicBar','relicPanel'];
@@ -73,7 +76,6 @@ function roundRunActions(host,theme){
  for(const [panel,actions] of Object.entries(panels))for(const [name,palette] of Object.entries(actions)){
   roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,palette);
  }
- roundedCaptionButton(required(required(host,'mapPanel'),'previewBack'),theme,danger);
  const grid=required(required(host,'deckPanel'),'pileGrid'),viewport=theme.layout.deckView.pileViewport;
  grid.position=viewport.slice(0,2);grid.size=viewport.slice(2);
  const node=required(host,'nodePanel');
@@ -104,6 +106,7 @@ export function composeOfficialRun(tree,theme){
    required(shop,'price'+(i+1)).position[0]=x;
   });
   applyV25MapLayout(tree,theme);
+  applyOfficialMapReturnControls(child(stage(tree),'mapPanel'),child(stage(tree),'characterPanel'),theme);
   roundRunActions(stage(tree),theme);
  }
  if(kind!=='template'){
@@ -114,7 +117,7 @@ export function composeOfficialRun(tree,theme){
  if(kind==='run')officialRunChrome(tree,theme);
 }
 
-const cardRoles=['nativeCardBody','nativeRibbon','nativeCostOrb','tagEdge','tagBody','stsReferenceBack','stsReferenceChrome'];
+const cardRoles=['nativeCardBody','nativeRibbon','nativeCostOrb','tagEdge','tagBody','stsReferenceBack','stsReferenceChrome','stsReferenceCost'];
 function cardMaterial(face){
  return JSON.stringify(cardRoles.map(role=>required(face,role)));
 }
@@ -134,7 +137,7 @@ export function assertOfficialRunContracts(trees){
   for(const role of runRoles)required(host,role);
   const battle=child(host,'battlePanel'),bar=required(battle,'topBar');
   const source=structuredClone(bar);source.name='officialRunBar';
-  source.children=parts(source).filter(part=>part.name!=='battleRoute');
+  source.children=parts(source).filter(part=>!['battleRoute','floorIcon'].includes(part.name));
   walk(source,node=>{
    if(['cursorArea','presetButton'].includes(node.kind))throw Error('Shared run bar duplicates input ownership');
   });

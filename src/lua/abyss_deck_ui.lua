@@ -56,18 +56,6 @@ local browseFilters={{id='all',control='All'},{id='attack',control='Attack'},
 local browseSorts={'original','type','cost'}
 local sortNames={original='获得顺序',cost='耗能',type='类型',name='名称'}
 
--- Observe native click metadata only; leave drag handlers and scroll offsets
--- to the native Grid rather than synthesizing scrolling. Click-only C-mode works.
-local function scrollClick(event)
-    if not event then return false end
-    if event.dragging then return true end
-    if not event.GetPressUIPos or not event.GetUIPos then return false end
-    local x,y=event:GetUIPos()
-    local startX,startY=event:GetPressUIPos()
-    if type(x)~='number' or type(y)~='number' or type(startX)~='number' or type(startY)~='number' then return false end
-    return (x-startX)^2+(y-startY)^2>=Theme.layout.cardDrag.threshold^2
-end
-
 local function frozenEye(run)
     for _, relic in ipairs(run.relics or {}) do if relic=="frozen_eye" then return true end end
     return false
@@ -161,6 +149,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         for _,mode in ipairs({'original','type','cost','name'})do
             local box=tools:GetChild(mode)
             local label,arrow=box:GetChild('label'),box:GetChild('direction')
+            label.text=mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode]
+            arrow:SetVisible(true)
             local selected=self.sortMode==mode
             arrow.localRotationZ=selected and not self.sortAscending and 180 or 0
             if platform.color then
@@ -328,7 +318,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 if callback then callback(token,uid) end
             end
             hit:AddCursorEventListener(clickEvent,function(event)
-                if Controller.pointerBlocked(platform.controller) or scrollClick(event) then return false end
+                if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
                 return pick()
             end)
             Controller.bind(platform.controller,hit,'deck',pick,function()
@@ -375,7 +365,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         local selected=false
         for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
-        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,surfaceScope=self.pileView and 'battle' or 'deck'})
+        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,
+            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil})
         if self.browserShell then
             face:GetChild('nativePlayableRim'):SetVisible(false)
             face:GetChild('glow'):SetVisible(false)

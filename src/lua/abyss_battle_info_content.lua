@@ -11,14 +11,14 @@ local tailStates={
 }
 
 -- CJK glyphs take one font size; ASCII takes about half. Count UTF-8 lead bytes.
-function M.lines(text, boxWidth, fontSize)
+function M.lines(text, boxWidth, fontSize, inset)
     if not text or text == "" then return 0 end
     local I, width = L.statusInfo, 0
     for i = 1, #text do
         local b = text:byte(i)
         width = width + (b < 128 and 0.55 or b >= 192 and 1 or 0)
     end
-    local per = math.max(1,math.floor(((boxWidth or I.width) - I.pad * 2 - I.icon - I.gap) / (fontSize or Theme.font.reading)))
+    local per = math.max(1,math.floor(((boxWidth or I.width) - (inset or I.pad * 2 + I.icon + I.gap)) / (fontSize or Theme.font.reading)))
     return math.max(1, math.ceil(width / per))
 end
 
@@ -27,7 +27,13 @@ local function find(list, key, value)
 end
 
 local function selectedEntries(entries, info)
-    if info.statusId then
+    if info.position and info.kind == "powerTips" then
+        local position = info.position
+        if position == L.statusIcon.perRow * L.statusIcon.rows then
+            return {table.unpack(entries, position)}
+        end
+        return {entries[position]}
+    elseif info.statusId then
         local selected = find(entries, "id", info.statusId)
         if not selected then return end
         return {selected}
@@ -62,7 +68,7 @@ function M.new(self, describe, lines)
     local function statusRow(entry, battle, actor)
         local text, tag, note = ownedStatusText(self, describe, entry, battle, actor)
         local kind = describe.statusKind(entry)
-        return { status = entry.id, icon = Theme.icon.status[entry.icon or entry.id],
+        return { status = entry.id, icon = (Theme.icon.status[entry.id] or Theme.icon.status[entry.id:match('^colorless_bomb_') and 'colorless_bomb' or entry.icon]),
             colour = kind == "buff" and C.buff or C.debuff, tag = tag, text = text, note = note,
             name = entry.name .. (entry.stack == "none" and "" or " " .. number(entry.amount)) }
     end
@@ -269,8 +275,21 @@ function M.new(self, describe, lines)
         end
     end
 
+    local function powerRows(entries, battle, info, actor)
+        local rows = {}
+        for _, entry in ipairs(selectedEntries(entries, info) or {}) do
+            local row = statusRow(entry, battle, actor)
+            local body = row.text or ""
+            if row.tag and row.tag ~= "" and tonumber(row.tag) == nil then body = body .. "。 " .. row.tag end
+            if row.note and row.note ~= "" then body = body .. "。 " .. row.note end
+            rows[#rows + 1] = {name = row.name, body = body}
+        end
+        return #rows > 0 and rows or nil
+    end
+
     return function(data, presentation, battle, info, actor)
         local entries = Combat.statusView(actor)
+        if info.kind == "powerTips" then return powerRows(entries, battle, info, actor) end
         local card = {title = actor.name or "旅行者", tag = "当前状态", accent = C.gold,
             hp = actor.hp, maxHp = actor.maxHp, block = actor.block, sections = {}}
         if info.kind == "intent" then return intentCard(card, battle, info) end

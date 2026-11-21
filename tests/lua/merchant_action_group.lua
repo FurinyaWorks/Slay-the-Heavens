@@ -17,6 +17,7 @@ for _,mobile in ipairs({false,true})do
  local node=root:GetChild('nodePanel')
  local back,confirm,merchant=node:GetChild('back'),node:GetChild('confirm'),node:GetChild('merchant')
  local function click(key)return F.click(root,'nodePanel',key)end
+ assert(click('merchant/talk'));ui:update(.31)
  local before=F.Combat.copy(ui.run)
  assert(click('shopView/card1'))
  assert(back.visible and back:GetChild('label').text=='取消选择')
@@ -25,15 +26,12 @@ for _,mobile in ipairs({false,true})do
  local buyLeft=confirm.x-Theme.layout.nativeNode.confirm[3]/2
  assert(buyLeft-(back.x+Theme.layout.nativeNode.back[3]/2)<=32,'dialogue separates purchase actions')
  same(before,ui.run)
- local current=ui.nodeUI.merchant.current
- assert(click('merchant/talk'))
+ assert(not merchant:GetChild('portrait').visible and not merchant:GetChild('talk').visible)
  same(before,ui.run)
- ui:update(.1)
- assert(ui.nodeUI.merchant.current==current and merchant.visible,'shopping must not reset or hide the active dialogue')
  before=F.Combat.copy(ui.run)
  assert(click('back'));same(before,ui.run)
- assert(confirm.x==Theme.layout.nativeNode.confirm[1],'unselected footer anchor must restore')
- assert(not back.visible and confirm:GetChild('label').text=='离开商店')
+ assert(back.x==Theme.layout.nativeNode.back[1],'unselected footer anchor must restore')
+ assert(back.visible and not confirm.visible and back:GetChild('label').text=='离开')
  local offer=ui.run.nodeFlow.cards[1];local gold,deck=ui.run.gold,#ui.run.deck
  assert(click('shopView/card1') and click('confirm'))
  assert(ui.run.gold==gold-offer.price and #ui.run.deck==deck+1 and ui.run.nodeFlow.cards[1].sold)
@@ -48,7 +46,7 @@ for _,mobile in ipairs({false,true})do
  assert(root:GetChild('mapPanel'):GetChild('previewBack'):GetChild('hit').click() and not ui.routeOpen and ui.nodeUI.visible)
  assert(ui.nodeUI.merchant.current==reaction and merchant:GetChild('bubble').visible,'return from map must resume the current reaction')
  assert(not click('shopView/card1'),'sold offer cannot purchase twice')
- assert(click('confirm') and ui.nodeUI:holding())
+ assert(click('back'));ui:update(.31);assert(ui.nodeUI:holding())
  assert(ui.nodeUI.merchant.current.kind=='leave' and not node:GetChild('shopView').visible)
  assert(not back.visible and confirm:GetChild('label').text=='继续')
  assert(click('confirm') and not ui.nodeUI:holding())

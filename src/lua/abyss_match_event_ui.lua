@@ -106,7 +106,7 @@ function M.install(ctx)
    active=true
   end
   local grid=panel:GetChild('forgeGrid');ctx.show(panel,true);ctx.show(grid,true)
-  for _,name in ipairs({'previous','next','before','after','target','arrow','empty','forgePrevious','forgeNext'})do ctx.show(panel:GetChild(name),false)end
+  for _,name in ipairs({'previous','next','before','after','target','arrow','empty'})do ctx.show(panel:GetChild(name),false)end
   for i=1,6 do ctx.show(panel:GetChild('card'..i),false)end
   local info=assert(event.match,'missing detached Match view')
   local layout=Theme.layout.nativeNode;local top=layout.topBar.plate

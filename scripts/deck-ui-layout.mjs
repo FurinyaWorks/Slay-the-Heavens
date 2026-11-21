@@ -6,6 +6,12 @@ import {battlePileChrome,battlePileReturn} from './official-battle-pile-chrome.m
 const itemSize = theme => [theme.layout.deckView.itemSize[0], Math.max(theme.layout.deckView.itemSize[1],
   theme.layout.card.size[1] + theme.layout.nativeText.lineHeight)];
 
+export function fiveColumnCardGrid(name, viewport, itemTemplate, scrollbar = true) {
+  return { name, kind: 'grid', position: viewport.slice(0, 2), size: viewport.slice(2), itemTemplate,
+    grid: { columns: 5, horizontal: false, itemSize: [150, 210],
+      spacing: [27, 27], padding: [18, 45, 30, 30], scrollbar } };
+}
+
 export function deckCardTemplate(theme = nativeTheme) {
   const { text } = nativeControls(theme);
   const { color: c, font: f, layout: l } = theme;
@@ -150,9 +156,7 @@ export function deckControls(theme = nativeTheme) {
       { name: 'grid', kind: 'grid', position: l.deckView.viewport.slice(0, 2), size: l.deckView.viewport.slice(2),
         itemTemplate: deckCardTemplate(theme).name, grid: { columns: l.deckView.columns, horizontal: false,
           itemSize: itemSize(theme), spacing: [...l.deckView.spacing], padding: [...l.deckView.padding], scrollbar: true } },
-      { name: 'pileGrid', kind: 'grid', visible: false, position: l.deckView.viewport.slice(0, 2), size: l.deckView.viewport.slice(2),
-        itemTemplate: deckCardTemplate(theme).name, grid: { columns: 5, horizontal: false,
-          itemSize: [150,210], spacing: [27,27], padding: [18,45,30,30], scrollbar: true } },
+      { ...fiveColumnCardGrid('pileGrid', l.deckView.viewport, deckCardTemplate(theme).name), visible: false },
       plate('header', [0, l.deckView.title[1], l.deckView.viewport[2],
         Math.max(l.deckView.title[3], l.deckView.close[3]) + s.s], c.panel),
       text('title', l.deckView.title, '', f.heading, c.goldBright),

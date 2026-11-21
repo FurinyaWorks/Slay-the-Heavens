@@ -29,7 +29,7 @@ export function officialAssetsTheme(source){
   theme.color.mapCanvas=structuredClone(approved.color.mapCanvas);
   theme.color.node=structuredClone(approved.color.node);
   theme.layout.v25Menu={...structuredClone(approved.layout.v25Menu),...structuredClone(nativeMenuFrames)};
-  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:32,labelX:0};
+  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:24,labelX:0};
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
   theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
   theme.layout.deckView.pileViewport=[0,-75.5,918,557];
@@ -147,6 +147,8 @@ function battleSurfaces(root,theme){
  });
 }
 function buttonFaces(node,theme){
+ // The play area is a transparent battlefield-wide hit surface.
+ if(node.name==='playArea')return;
  if(node.name==='endTurn'&&child(child(node,'normal'),'v25Chrome'))return;
  const parts=children(node),isStateButton=node.kind==='presetButton';
  const hasHit=parts.some(item=>item.name==='hit'&&item.kind==='cursorArea');

@@ -10,8 +10,10 @@
 ```sh
 gh workflow run quick-feedback.yml --repo FurinyaDev/Slay-the-Heavens-Fork-A --ref <branch> -f base_sha=<BASE>
 # 仅风险或未知影响要求 Full 时使用；没有第二次默认 Full
-gh workflow run quality.yml --repo v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <branch> -f base_sha=<BASE>
+gh workflow run quality.yml --repo v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <branch> -f runner_pool=hosted -f base_sha=<BASE>
 ```
+
+dispatch 前读取候选 ref 的工作流和测试入口。旧 Fork 默认分支可能仍使用 5 分钟 Quick，或仅声明 `runner_pool` 的 Quality。把当前候选的精确提交推到诊断短分支，以带 `base_sha` 的对应工作流运行。旧输入合同生成的运行无法认证 BASE。以 `preflight-<run>-<attempt>` 的 checkout 收据核对实际执行身份，再计为有效预检。
 
 固定仓库 ID：主1429751262、A1460097312、B1460133275；名称变化按 ID 解析。HEAD 已绑定工作流、测试、依赖和配置。成功 rerun 可以复用；读取权限不足时保留精确 HEAD/BASE 与运行链接，由已有授权维护者核对。
 

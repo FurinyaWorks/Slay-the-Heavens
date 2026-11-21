@@ -1,5 +1,7 @@
 import {portraitInventory,portraitRuntimeInputs as portraitSourceInputs} from '../scripts/official-portraits.mjs';
-import {artFeatureReceipt} from '../scripts/art-features.mjs';
+import {artFeatureReceipt,artBuildOptionsFromReceipt} from '../scripts/art-features.mjs';
+import {officialAssetsProfile,refinedReleaseOfficialAssetsProfile,refinedReleaseOfficialAssetFlags} from '../scripts/official-assets-profile.mjs';
+import {uiProfileReceipt} from '../scripts/ui-profile.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
@@ -8,14 +10,20 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { buildNativeAudioGame, defaultNativeCardArt, nativeAudioBuildArgs } from '../scripts/build-native-audio-game.mjs';
 import { sourceInputs, payloadDigest } from '../scripts/build-native-candidate.mjs';
-import {monsterActorInventory,monsterActorTemplate} from '../scripts/monster-art.mjs';
+import {monsterActorInventory,monsterActorTemplate,monsterActorTiers} from '../scripts/monster-art.mjs';
 import { fileRecord } from '../scripts/evidence-files.mjs';
 import { gitSourceIdentity } from '../scripts/release-notes.mjs';
+import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from '../scripts/refined-release-monsters.mjs';
 
-function fixture(t, mutate = () => {}) {
+function fixture(t, mutate = () => {}, {refined=false}={}) {
   const root = mkdtempSync(join(tmpdir(), 'abyss-audio-release-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   mkdirSync(join(root, 'data')); writeFileSync(join(root, 'data/input.json'), '{}');
+  const registryPath=join(root,refinedReleaseMonsterRegistry);
+  if(refined){
+    mkdirSync(join(root,'data/release'));
+    writeFileSync(registryPath,readFileSync(new URL('../'+refinedReleaseMonsterRegistry,import.meta.url)));
+  }
   writeFileSync(join(root, '.gitignore'), 'build/\n'); writeFileSync(join(root, 'base.gil'), 'original base');
   for (const args of [['init', '-q'], ['add', '.'], ['-c', 'user.name=Release Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'fixture']]) {
     const git = spawnSync('git', args, { cwd: root, encoding: 'utf8' }); assert.equal(git.status, 0, git.stderr);
@@ -27,11 +35,20 @@ function fixture(t, mutate = () => {}) {
     mkdirSync(directory, { recursive: true });
     const mapPath = join(directory, 'candidate.gil'), receiptPath = join(directory, 'candidate.json');
     writeFileSync(mapPath, 'complete game');
+    const monster=options.refinedReleaseMonsterArt?prepareRefinedReleaseMonsterArt(JSON.parse(readFileSync(registryPath,'utf8'))):null;
+    const monsterReceipt=monster?{enabled:true,assetCount:Object.keys(monster.assets).length,bindingCount:Object.keys(monster.bindings).length,
+      capacity:monster.poolCapacity,allocation:monster.surfaceAllocation,inputs:[{...fileRecord(registryPath,root),path:refinedReleaseMonsterRegistry}]}:null;
+    const actors=monster?monsterActorTiers(monster):null;
+    const tiers=actors?Object.fromEntries(actors.templates.slice(1).map((t,i)=>[t.name,{...monsterActorInventory(t),templateIndex:1470123462+i}])):null;
+    const templateIndexByDefinition=actors?Object.fromEntries(Object.entries(actors.templateByDefinition).map(([id,name])=>[id,tiers[name].templateIndex])):null;
     full = { mapPath, receiptPath, artFeatures:artFeatureReceipt(options.artFeatures), buildId: '7cf6f22e-2f12-44bb-9f01-aad514071a5f', candidate: fileRecord(mapPath), ...gitSourceIdentity(root),
-      payloadDigest: payloadDigest(sourceInputs(root)),
-      monsterActors:{...monsterActorInventory(monsterActorTemplate(null)),templateIndex:1470123460,containerTemplateIndex:1470123458,powerTemplateIndex:1470123461},
+      payloadDigest: payloadDigest(sourceInputs(root,{artFeatures:options.artFeatures,nativeCardArt:options.nativeCardArt,readyCardArt:options.readyCardArt,refinedReleaseMonsterArt:options.refinedReleaseMonsterArt})),
+      ...(options.officialAssets?{officialAssetsProfile:monster?refinedReleaseOfficialAssetsProfile:officialAssetsProfile,uiProfile:uiProfileReceipt(options.nativePageLifecycle)}:{}),
+      ...(monster?{refinedReleaseMonsterArt:true,nativeMonsterArt:monsterReceipt}:{}),
+      monsterActors:{...monsterActorInventory(monsterActorTemplate(null)),templateIndex:1470123460,containerTemplateIndex:1470123458,powerTemplateIndex:1470123461,...(actors?{tiers,templateIndexByDefinition}:{})},
       ...(options.artFeatures.menuBackground?{officialBackground: {templateIndex:1470123456,peakDynamicControls:13201,inputs:[{sha256:'c'.repeat(64)}]}}:{}),
-      ...(options.artFeatures.selectionAvatar||options.artFeatures.battlePortrait||options.artFeatures.cards||options.artFeatures.menuBackground?{officialPortraits: {...portraitInventory(options.artFeatures),imageTemplateIndex:1470123457,containerTemplateIndex:1470123458,inputs:portraitSourceInputs(options.artFeatures).map(path=>({path,sha256:'d'.repeat(64),bytes:1}))}}:{}),
+      ...(options.artFeatures.selectionAvatar||options.artFeatures.battlePortrait||options.artFeatures.cards||options.artFeatures.menuBackground?{officialPortraits: {...portraitInventory(options.artFeatures,{officialAssets:options.officialAssets}),imageTemplateIndex:1470123457,containerTemplateIndex:1470123458,
+        ...(options.officialAssets?{selectionHalfImageTemplateIndex:1470123459}:{}),inputs:portraitSourceInputs(options.artFeatures).map(path=>({path,sha256:'d'.repeat(64),bytes:1}))}}:{}),
       ...(options.artFeatures.cards?{readyCardArt: {enabled:true,assetCount:75,imageTemplateIndex:1470123457,containerTemplateIndex:1470123458}}:{}),
       release: { version: 'v0.1.1', workKey: options.workKey,
         ...(options.releaseCandidate ? { notesSha256: 'b'.repeat(64) } : {}) } };
@@ -46,6 +63,8 @@ function fixture(t, mutate = () => {}) {
     writeFileSync(mapPath, 'complete game plus music');
     const audio = { mapPath, artFeatures:full.artFeatures, sha256: fileRecord(mapPath).sha256, baseMap,
       candidate: fileRecord(mapPath), buildId: full.buildId,
+      ...(full.officialAssetsProfile?{officialAssetsProfile:full.officialAssetsProfile,uiProfile:full.uiProfile}:{}),
+      ...(full.refinedReleaseMonsterArt?{refinedReleaseMonsterArt:true,nativeMonsterArt:full.nativeMonsterArt}:{}),
       baseSha256: full.candidate.sha256, baseAfter: full.candidate.sha256,
       liveWriteEnabled: false, officialImport: 'NOT_TESTED', playtest: 'NOT_TESTED', listening: 'NOT_TESTED' };
     mutate({ audio, full, root, mapPath });
@@ -55,7 +74,7 @@ function fixture(t, mutate = () => {}) {
 }
 
 test('actual audio entrypoint follows UUID full receipt and binds FINAL audio hash/version/source/notes', async t => {
-  const f = fixture(t), result = await f.run({ releaseCandidate: true, workKey: 'alpha-test',artFeatures:{cards:true,menuBackground:true,selectionAvatar:true,battlePortrait:true} });
+  const f = fixture(t), result = await f.run({ output: 'build/native-audio-game', releaseCandidate: true, workKey: 'alpha-test',artFeatures:{cards:true,menuBackground:true,selectionAvatar:true,battlePortrait:true} });
   assert.equal(f.observed.releaseCandidate, true); assert.equal(f.observed.workKey, 'alpha-test');
   assert.equal(result.receiptPath, join(f.root, 'build/native-audio-game/audio/candidate.json'));
   assert.equal(result.sha256, fileRecord(result.mapPath).sha256);
@@ -81,20 +100,49 @@ test('ordinary audio packaging does not opt into frozen notes or assert publicat
   assert.equal(f.observed.nativeCardArt, undefined,'ordinary audio build must not implicitly select static card art');
   assert.notEqual(f.observed.readyCardArt,false);
 });
+test('repeated default builds preserve the first candidate and publish a fresh receipt', async t => {
+  const f = fixture(t);
+  const first = await f.run();
+  const firstReceipt = readFileSync(first.receiptPath);
+  const second = await f.run();
+  assert.notEqual(second.receiptPath, first.receiptPath);
+  assert.notEqual(second.mapPath, first.mapPath);
+  assert.deepEqual(readFileSync(first.receiptPath), firstReceipt);
+  assert.deepEqual(fileRecord(first.mapPath), first.candidate);
+});
+test('an occupied explicit audio output is rejected before another full build', async t => {
+  const f = fixture(t), output = 'build/release';
+  const first = await f.run({ output });
+  const firstReceipt = readFileSync(first.receiptPath);
+  assert.equal(first.receiptPath, join(f.root, output, 'audio/candidate.json'));
+  const priorOptions = f.observed;
+  await assert.rejects(f.run({ output }), /Audio output already exists/);
+  assert.equal(f.observed, priorOptions);
+  assert.deepEqual(readFileSync(first.receiptPath), firstReceipt);
+  assert.deepEqual(fileRecord(first.mapPath), first.candidate);
+});
 test('normal build CLI keeps deferred cards off and preserves independent art, legacy parsing and release options', async t => {
   const ordinary = nativeAudioBuildArgs(['base.gil']);
   assert.deepEqual(ordinary.paths, ['base.gil']);
   assert.equal(ordinary.options.nativeCardArt,undefined);
   assert.notEqual(ordinary.options.readyCardArt,false);
-  assert.deepEqual(ordinary.options.artFeatures,{cards:false,menuBackground:true,selectionAvatar:true,battlePortrait:true,monsters:false});
-  const disabled = nativeAudioBuildArgs(['base.gil', '--native-card-art-count=0']);
+  assert.deepEqual(ordinary.options.artFeatures,refinedReleaseOfficialAssetFlags);
+  assert.equal(ordinary.options.refinedReleaseMonsterArt,true);
+  assert.equal(ordinary.options.officialAssets,true);
+  assert.equal(ordinary.options.nativePageLifecycle,true);
+  const legacyUi=nativeAudioBuildArgs(['base.gil','--art-version=legacy']);
+  assert.equal(legacyUi.options.officialAssets,undefined);
+  assert.equal(legacyUi.options.artFeatures.menuBackground,true);
+  assert.throws(()=>nativeAudioBuildArgs(['base.gil','--art-version=legacy','--official-assets']),/Conflicting UI profile/);
+  const disabled = nativeAudioBuildArgs(['base.gil', '--art-version=legacy', '--native-card-art-count=0']);
   assert.deepEqual(disabled.options.nativeCardArt, { count: 0 });
   assert.equal(disabled.options.readyCardArt,false);
-  const f = fixture(t); await f.run(disabled.options);
+  const f = fixture(t,undefined,{refined:true}); await f.run(disabled.options);
   assert.deepEqual(f.observed.nativeCardArt, { count: 0 });
   assert.equal(f.observed.readyCardArt,false);
   const noReady=nativeAudioBuildArgs(['base.gil','--no-ready-card-art']);
   assert.equal(noReady.options.readyCardArt,false);
+  assert.equal(noReady.options.officialAssets,true);
   await f.run(noReady.options);assert.equal(f.observed.readyCardArt,false);
   for(const count of [1,5,10]) {
     const chosen=nativeAudioBuildArgs(['base.gil',`--native-card-art-registry=${defaultNativeCardArt.registry}`,`--native-card-art-count=${count}`]);
@@ -110,6 +158,62 @@ test('normal build CLI keeps deferred cards off and preserves independent art, l
   for (const args of [['--native-card-art-count=10'], ['--native-card-art-registry='], ['--native-card-art-unknown=1']])
     assert.throws(() => nativeAudioBuildArgs(['base.gil', ...args]), /native art|Native art|registry/);
 });
+test('default release CLI keeps the approved layout in the final audio receipt', async t => {
+  const f = fixture(t,undefined,{refined:true});
+  for(const flag of ['--art-cards=false','--no-ready-card-art','--native-card-art-count=0','--art-menu-background=false','--art-battle-portrait=true']){
+    const {options}=nativeAudioBuildArgs(['base.gil','--release-candidate',flag]);
+    assert.equal(options.officialAssets,true,flag);
+    assert.equal(options.nativePageLifecycle,true,flag);
+    assert.equal(options.refinedReleaseMonsterArt,true,flag);
+    assert.equal(options.nativeCardArt,undefined,flag);
+  }
+  const {options} = nativeAudioBuildArgs(['base.gil', '--release-candidate', '--work-key=release-test', '--no-ready-card-art']);
+  const result = await f.run(options);
+  assert.equal(f.observed.officialAssets, true);
+  assert.equal(f.observed.nativePageLifecycle, true);
+  assert.equal(result.officialAssetsProfile,refinedReleaseOfficialAssetsProfile);
+  assert.equal(result.refinedReleaseMonsterArt,true);
+  assert.deepEqual(result.nativeMonsterArt,f.full.nativeMonsterArt);
+  assert.equal(result.nativeMonsterArt.assetCount,42);
+  assert.equal(result.nativeMonsterArt.bindingCount,42);
+  assert.equal(result.nativeMonsterArt.capacity,115);
+  assert.deepEqual(result.monsterActors,f.full.monsterActors);
+  assert.equal(Object.keys(result.monsterActors.templateIndexByDefinition).length,42);
+  assert.deepEqual(Object.keys(result.monsterActors.tiers),['AbyssMonsterActor41','AbyssMonsterActor96','AbyssMonsterActor115']);
+  assert.deepEqual(result.nativeMonsterArt.inputs,
+    [{...fileRecord(join(f.root,refinedReleaseMonsterRegistry),f.root),path:refinedReleaseMonsterRegistry}]);
+  assert.deepEqual(result.sourceReceipt,fileRecord(f.full.receiptPath));
+  assert.deepEqual(result.uiProfile, uiProfileReceipt(true));
+  assert.deepEqual(result.release, {version:'v0.1.1',workKey:'release-test',notesSha256:'b'.repeat(64)});
+  assert.equal(result.sourceDirty, false);
+  assert.equal(result.candidate.sha256, fileRecord(result.mapPath).sha256);
+});
+test('refined receipt validates exact registry bytes and fails closed before deferred snapshot reads',async t=>{
+  const f=fixture(t,undefined,{refined:true});
+  const {options}=nativeAudioBuildArgs(['base.gil','--release-candidate']);
+  const receipt=await f.run(options);
+  assert.equal(artBuildOptionsFromReceipt(receipt).refinedReleaseMonsterArt,true);
+  for(const patch of [
+    {capacity:600},{assetCount:41},{bindingCount:41},
+    {inputs:[{...receipt.nativeMonsterArt.inputs[0],path:'data/presentation/native-monster-art.json'}]},
+  ]){
+    const altered={...receipt,nativeMonsterArt:{...receipt.nativeMonsterArt,...patch}};
+    assert.throws(()=>artBuildOptionsFromReceipt(altered,{deferExperimentalInventory:true}),/invalid inventory/);
+  }
+  for(const patch of [{bytes:receipt.nativeMonsterArt.inputs[0].bytes+1},{sha256:'0'.repeat(64)}]){
+    const altered={...receipt,nativeMonsterArt:{...receipt.nativeMonsterArt,inputs:[{...receipt.nativeMonsterArt.inputs[0],...patch}]}};
+    assert.equal(artBuildOptionsFromReceipt(altered,{deferExperimentalInventory:true}).refinedReleaseMonsterArt,true);
+    assert.throws(()=>artBuildOptionsFromReceipt(altered),/input differs from receipt/);
+  }
+  const wrongPeak={...receipt,nativeMonsterArt:{...receipt.nativeMonsterArt,capacity:114}};
+  assert.throws(()=>artBuildOptionsFromReceipt(wrongPeak),/inventory differs from receipt/);
+});
+test('audio packaging cannot publish refined provenance if its exact child inventory changed',async t=>{
+  const f=fixture(t,({audio})=>{audio.nativeMonsterArt={...audio.nativeMonsterArt,capacity:114};},{refined:true});
+  const {options}=nativeAudioBuildArgs(['base.gil','--release-candidate']);
+  await assert.rejects(f.run(options),/Audio refined monster artwork differs/);
+});
+
 for (const [name, mutate] of [
   ['wrong full artifact', ({ audio }) => { audio.baseSha256 = '0'.repeat(64); }],
   ['changed full artifact', ({ audio }) => { audio.baseAfter = '0'.repeat(64); }],
@@ -121,7 +225,7 @@ for (const [name, mutate] of [
   ['new untracked source identity', ({ root }) => { writeFileSync(join(root, 'untracked.txt'), 'dirty'); }],
 ]) test(`audio candidate cannot inherit trusted release provenance with ${name}`, async t => {
   const f = fixture(t, mutate);
-  await assert.rejects(f.run({ releaseCandidate: true }), /artifact|Source changed|provenance changed|art feature configuration/);
+  await assert.rejects(f.run({ output: 'build/native-audio-game', releaseCandidate: true }), /artifact|Source changed|provenance changed|art feature configuration/);
   const receipt = JSON.parse(readFileSync(join(f.root, 'build/native-audio-game/audio/candidate.json')));
   assert.equal('sourceReceipt' in receipt, false, 'failed packaging must not claim full-source provenance');
 });

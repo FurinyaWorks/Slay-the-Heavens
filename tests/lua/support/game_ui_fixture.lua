@@ -198,6 +198,12 @@ local function actorControl(panel,name)
     return panel:GetChild(name)
 end
 local function click(root, panel, button)
+    -- Higher-level shop actions include the deliberate merchant entry gesture.
+    -- Raw listener suites separately verify the closed scene and transition lock.
+    if panel=='nodePanel' and button:match('^shopView/') and root.ui and not root.ui.nodeUI.shopOpen then
+        assert(root:GetChild(panel):GetChild('merchant'):GetChild('talk'):GetChild('hit').click())
+        root.ui:update(.31)
+    end
     local box = panel == "mapPanel" and mapControl(root:GetChild(panel), button) or root:GetChild(panel)
     if panel ~= "mapPanel" then for part in button:gmatch("[^/]+") do box = assert(actorControl(box,part), button) end end
     local target = box.click and box or box:GetChild("hit")

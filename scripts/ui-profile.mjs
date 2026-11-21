@@ -1,4 +1,4 @@
-import {validateOfficialAssets,officialAssetsFromReceipt} from './official-assets-profile.mjs';
+import {validateOfficialAssets,officialAssetsFromReceipt,officialAssetsProfile,refinedReleaseOfficialAssetsProfile} from './official-assets-profile.mjs';
 import {createHash} from 'node:crypto';
 import {lightweightProfile} from './lightweight-2d-profile.mjs';
 import {v25ChromeProfile,validateV25Chrome} from './v25-profile.mjs';
@@ -46,11 +46,11 @@ function configFor(values) {
 
 export function validateUiProfileOptions(options = {}) {
   const {lightweight2d = false, releaseCandidate = false, v25BattleChrome = false, officialAssets = false} = options;
-  validateOfficialAssets({officialAssets, releaseCandidate, lightweight2d, v25BattleChrome});
+  validateOfficialAssets({officialAssets, releaseCandidate, lightweight2d, v25BattleChrome, refinedReleaseMonsterArt:options.refinedReleaseMonsterArt});
   validateV25Chrome({v25BattleChrome, lightweight2d, releaseCandidate});
   const config = configFor(options);
   for (const [key, flag] of flags) {
-    if (config[key] && (releaseCandidate !== false || !flag.allowedInBuild(options))) {
+    if (config[key] && (!flag.allowedInBuild(options) || (releaseCandidate !== false && officialAssets !== true))) {
       throw new Error(`${flag.name.replaceAll('-', ' ')} requires an explicit bounded non-release experiment`);
     }
   }
@@ -101,13 +101,16 @@ export function uiProfileReceipt(nativePageLifecycle = false) {
   return {...config, configSha256: profileDigest(config)};
 }
 
-function hasOnlyVersionMetadata(release) {
-  return release === undefined || (
-    release !== null && typeof release === 'object' && Reflect.ownKeys(release).length === 2 &&
+function validReleaseMetadata(release, official) {
+  if (release === undefined) return true;
+  if (release === null || typeof release !== 'object') return false;
+  const fields = Reflect.ownKeys(release);
+  const validNotes = fields.length === 3 && official && Object.hasOwn(release, 'notesSha256') &&
+    typeof release.notesSha256 === 'string' && /^[a-f0-9]{64}$/.test(release.notesSha256);
+  return (fields.length === 2 || validNotes) &&
     Object.hasOwn(release, 'version') && typeof release.version === 'string' && release.version.length <= 33 &&
     /^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/.test(release.version) &&
-    Object.hasOwn(release, 'workKey') && typeof release.workKey === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(release.workKey)
-  );
+    Object.hasOwn(release, 'workKey') && typeof release.workKey === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(release.workKey);
 }
 
 export function uiProfileFromReceipt(receipt) {
@@ -122,8 +125,9 @@ export function uiProfileFromReceipt(receipt) {
   const config = configFor(profile);
   if (profile.configSha256 !== profileDigest(config)) throw new Error('UI profile config digest mismatch');
   for (const [key, flag] of flags) {
-    if (config[key] && (!hasOnlyVersionMetadata(receipt.release) || !flag.allowedInReceipt(receipt))) {
-      throw new Error(`${flag.name.replaceAll('-', ' ')} receipt requires bounded non-release experiment`);
+    if (config[key] && (!validReleaseMetadata(receipt.release, [officialAssetsProfile,refinedReleaseOfficialAssetsProfile].includes(receipt.officialAssetsProfile) &&
+      officialAssetsFromReceipt(receipt)) || !flag.allowedInReceipt(receipt))) {
+      throw new Error(`${flag.name.replaceAll('-', ' ')} receipt requires the approved official profile or a bounded non-release experiment`);
     }
   }
   return config.nativePageLifecycle;

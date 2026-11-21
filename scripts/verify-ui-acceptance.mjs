@@ -23,10 +23,9 @@ export function approvedDesignDigest(root=resolve('docs/design'), references=loa
     JSON.stringify({codePath,state,revision,reference,acceptanceScreen,note})).sort()));
 }
 
-// Critical information/actions from the approved PR19 specification. Decoration
-// and animations may remain in the parity ledger; missing HP may not.
+// Required information and actions for the approved v2.0.0 screens.
 export const criticalUiChecks = {
-  menu: ['start', 'instructions'],
+  menu: ['title', 'start', 'quit'],
   character: ['selection', 'initialStats', 'initialDeck', 'confirm', 'back'],
   potions: ['effect', 'target', 'cancelWithoutConsumption', 'discard'],
   exit: ['discoverable', 'blocksUnderlyingInput', 'cancelPreservesRun', 'platformSettlement'],

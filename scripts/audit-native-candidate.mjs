@@ -1,4 +1,4 @@
-import {monsterPowerTemplateName,monsterActorBindingModule,monsterActorTemplateName} from './monster-art.mjs';
+import {refinedMonsterTierNames,monsterPowerTemplateName,monsterActorBindingModule,monsterActorTemplateName} from './monster-art.mjs';
 import {normalizeArtFeatures,artFeatureBuildArgs,artBuildOptionsFromReceipt} from './art-features.mjs';
 import {portraitRuntimeInputs,portraitModule} from './official-portraits.mjs';
 import {lightweightInputs} from './lightweight-2d-profile.mjs';
@@ -38,7 +38,7 @@ export function auditPortraitTemplateBindings(receipt,templates,{sourceSha,candi
 
 export function auditUiBuildArgs(receipt,{registryPath,deferExperimentalInventory=false,v25CardAssetsPath,v25UiMasksPath}={}) {
   const options=receipt===undefined?{artFeatures:normalizeArtFeatures()}:artBuildOptionsFromReceipt(receipt,{deferExperimentalInventory});
-  return ['scripts/build-ui.mjs',...artFeatureBuildArgs(options.artFeatures),...(options.officialAssets?['--official-assets']:[]),...(options.v25UiMasks?[`--v25-ui-masks=${v25UiMasksPath??options.v25UiMasks}`]:[]),...(options.v25CardAssets?[`--v25-card-assets=${v25CardAssetsPath??options.v25CardAssets}`]:[]),...(options.v25BattleChrome?['--v25-battle-chrome']:[]),...(uiProfileFromReceipt(receipt)?['--native-page-lifecycle']:[]),...(options.lightweight2d?['--lightweight-2d']:[]),...(options.legacyCardFrames?['--legacy-card-frames']:[]),...(options.nativeCardArt?
+  return ['scripts/build-ui.mjs',...artFeatureBuildArgs(options.artFeatures),...(options.officialAssets?['--official-assets']:[]),...(options.refinedReleaseMonsterArt?['--refined-release-monsters']:[]),...(options.v25UiMasks?[`--v25-ui-masks=${v25UiMasksPath??options.v25UiMasks}`]:[]),...(options.v25CardAssets?[`--v25-card-assets=${v25CardAssetsPath??options.v25CardAssets}`]:[]),...(options.v25BattleChrome?['--v25-battle-chrome']:[]),...(uiProfileFromReceipt(receipt)?['--native-page-lifecycle']:[]),...(options.lightweight2d?['--lightweight-2d']:[]),...(options.legacyCardFrames?['--legacy-card-frames']:[]),...(options.nativeCardArt?
     [`--native-card-art-registry=${registryPath??options.nativeCardArt.registry}`,...options.nativeCardArt.hosts.map(host=>`--native-card-art-host=${host}`)]:[])];
 }
 
@@ -138,6 +138,7 @@ export async function auditNativeCandidate(options) {
     const background = flags.menuBackground
       ? save('background-template.json', getClientUi({mapPath,template:backgroundTemplate})) : undefined;
     const runtimeNames=[...(flags.cards||portraits||flags.menuBackground||buildReceipt?.v25CardAssets||buildReceipt?.v25UiMasks?[readyArtImageTemplate]:[]),readyArtGroupTemplate,monsterActorTemplateName,monsterPowerTemplateName,
+      ...(artOptions.refinedReleaseMonsterArt?refinedMonsterTierNames(buildReceipt):[]),
       ...(artOptions.officialAssets&&flags.selectionAvatar?[selectionHalfTemplate]:[]),...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{})];
     const runtimeTemplates=runtimeNames.map(name=>save(name+'.json',getClientUi({mapPath,template:name})));
     const inspected = save('inspect.json', inspectFile(mapPath));
@@ -159,7 +160,7 @@ export async function auditNativeCandidate(options) {
     if(v25Masks)save('v25-ui-mask-locators.json',v25Masks.locatorRebase);
     if(v25Private)save('v25-private-locators.json',v25Private.locatorRebase);
     // Geometry identity belongs to the requested source epoch, never the tool checkout.
-    if(artOptions.lightweight2d){
+    if(artOptions.lightweight2d||artOptions.refinedReleaseMonsterArt){
       const pinned=await import(pathToFileURL(join(snapshot,'scripts/art-features.mjs')));
       pinned.artBuildOptionsFromReceipt(buildReceipt);
     }
@@ -203,8 +204,21 @@ export async function auditNativeCandidate(options) {
         ||actor?.templateIndex!==buildReceipt?.monsterActors?.templateIndex
         ||group?.templateIndex!==buildReceipt?.monsterActors?.containerTemplateIndex)
         throw Error('Monster actors require matching same-candidate binding and template readback');
-      const {bindMonsterActorTemplates}=await import(pathToFileURL(join(snapshot,'scripts/monster-art.mjs')));
-      bindMonsterActorTemplates(join(snapshot,'build/lua'),{actor,group,power});
+      const {bindMonsterActorTemplates,monsterActorTiers}=await import(pathToFileURL(join(snapshot,'scripts/monster-art.mjs')));
+      let templateIndexByDefinition;
+      if(artOptions.refinedReleaseMonsterArt){
+        const {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry}=await import(pathToFileURL(join(snapshot,'scripts/refined-release-monsters.mjs')));
+        const tierPlan=monsterActorTiers(prepareRefinedReleaseMonsterArt(JSON.parse(readFileSync(join(snapshot,refinedReleaseMonsterRegistry),'utf8'))));
+        const names=tierPlan.templates.map(template=>template.name).filter(name=>name!==monsterActorTemplateName);
+        const indexes=new Map(names.map(name=>[name,runtimeTemplates.find(row=>row.template?.name===name)?.templateIndex]));
+        if(Object.keys(buildReceipt.monsterActors?.tiers??{}).length!==names.length||new Set(indexes.values()).size!==names.length||
+          [...indexes].some(([name,index])=>!Number.isSafeInteger(index)||index!==buildReceipt.monsterActors.tiers[name]?.templateIndex))
+          throw Error('Refined monster tier receipt differs from native readback');
+        templateIndexByDefinition=Object.fromEntries(Object.entries(tierPlan.templateByDefinition).map(([id,name])=>[id,indexes.get(name)]));
+        if(JSON.stringify(templateIndexByDefinition)!==JSON.stringify(buildReceipt.monsterActors.templateIndexByDefinition))
+          throw Error('Refined monster definition binding differs from pinned roster');
+      }
+      bindMonsterActorTemplates(join(snapshot,'build/lua'),{actor,group,power,templateIndexByDefinition});
     }
     if(v25Private||v25Masks){
       if(buildReceipt.v25TextureRuntime){
@@ -229,10 +243,10 @@ export async function auditNativeCandidate(options) {
     const expectedTemplate = expectedTemplates.find(template => template.name === 'AbyssDeckCard');
     const expectedRuntimeTemplates=runtimeNames.map(name=>({
       template:expectedTemplates.find(row=>row.name===name),templateIndex:buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:
-        name===monsterActorTemplateName?buildReceipt?.monsterActors?.templateIndex:name===selectionHalfTemplate?
+        name===monsterActorTemplateName?buildReceipt?.monsterActors?.templateIndex:buildReceipt?.monsterActors?.tiers?.[name]?.templateIndex??(name===selectionHalfTemplate?
         buildReceipt?.officialPortraits?.selectionHalfImageTemplateIndex:name===readyArtImageTemplate?
         buildReceipt?.v25TextureRuntime?.imageTemplateIndex??sharedReceipt?.imageTemplateIndex:
-        buildReceipt?.v25TextureRuntime?.containerTemplateIndex??sharedReceipt?.containerTemplateIndex??buildReceipt?.monsterActors?.containerTemplateIndex)}));
+        buildReceipt?.v25TextureRuntime?.containerTemplateIndex??sharedReceipt?.containerTemplateIndex??buildReceipt?.monsterActors?.containerTemplateIndex))}));
     const expectedBackgroundTemplate = expectedTemplates.find(template => template.name === backgroundTemplate);
     const expectedBackground = expectedBackgroundTemplate ? {template:expectedBackgroundTemplate,
       templateIndex:buildReceipt?.officialBackground?.templateIndex} : undefined;

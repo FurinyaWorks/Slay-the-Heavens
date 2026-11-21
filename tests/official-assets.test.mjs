@@ -1,3 +1,4 @@
+import './sts1-menu-native.cases.mjs';
 import {nativeAudioBuildArgs,buildNativeAudioGame} from '../scripts/build-native-audio-game.mjs';
 import test from 'node:test';
 import {cardFaceChildren} from '../scripts/card-face.mjs';
@@ -43,12 +44,13 @@ test('official art is opt-in and preserves both legacy CLI presets and strict ca
  assert.equal(validateOfficialAssets({officialAssets:true}),true);
  assert.deepEqual(officialAssetsArgs(['map.gil','--official-assets']),{args:['map.gil'],officialAssets:true});
  for(const args of [['--official-assets=false'],['--official-assets','--official-assets']])assert.throws(()=>officialAssetsArgs(args));
- for(const patch of [{officialAssets:1},{releaseCandidate:true},{lightweight2d:true},{v25BattleChrome:true},{v25CardAssets:'private'},{v25UiMasks:'private'},
+ assert.equal(validateOfficialAssets({officialAssets:true,releaseCandidate:true}),true);
+ for(const patch of [{officialAssets:1},{lightweight2d:true},{v25BattleChrome:true},{v25CardAssets:'private'},{v25UiMasks:'private'},
   {nativeCardArt:{count:0}},{performanceArt:true},{readyCardArt:true},{componentWidgets:{}},{prepare(){}},{artFeatures:{cards:true}},
   {artFeatures:{selectionAvatar:false}},{artFeatures:{battlePortrait:false}},{artFeatures:{menuBackground:true}}]){
   assert.throws(()=>validateOfficialAssets({officialAssets:true,...patch}));
  }
- await assert.rejects(buildNativeCandidate({officialAssets:true,prepare(){}}),/separate non-release/);
+ await assert.rejects(buildNativeCandidate({officialAssets:true,prepare(){}}),/separate candidate/);
  assert.deepEqual(gameBuildArgs(['base.gil','--art-version=official']),['base.gil','--official-assets','--native-page-lifecycle']);
  for(const version of ['legacy','enhanced'])assert(!gameBuildArgs(['base.gil','--art-version='+version]).includes('--official-assets'));
 });
@@ -456,10 +458,9 @@ test('approved native title and button artwork preserve the official menu hit su
   const receiver=child(child(menu,'start'),'hit');
   applyOfficialNoncombatLayout(layout,theme);
   assert.strictEqual(child(child(menu,'start'),'hit'),receiver);
-  const logo=child(child(menu,'v25MainMenu'),'approvedTitleLogo');
-  assert(logo && child(logo,'subtitlePlate'));
-  assert(children(logo).filter(part=>part.name.startsWith('lettering')).every(part=>
-    children(part).length>0 && children(part).length<=48));
+  const logo=child(child(menu,'v25MainMenu'),'sts1TitleLogo');
+  assert(logo && children(logo).length>0);
+  assert(children(logo).every(part=>children(part).length>0 && children(part).length<=60));
   for(const [name,frame,text] of [
     ['start',theme.menuPresentation.start,'开始游戏'],
     ['titleQuit',theme.menuPresentation.quit,'退出游戏'],
@@ -468,13 +469,13 @@ test('approved native title and button artwork preserve the official menu hit su
     assert.deepEqual(button.position,frame.slice(0,2));
     assert.deepEqual(hit.size,frame.slice(2));
     assert.equal(hit.kind,'cursorArea');
-    assert.equal(child(button,'label').text.align,'centre');
+    assert.equal(child(button,'label').text.align,'left');
     assert.equal(child(button,'label').text.content,text);
     const faces=children(child(button,'v25MenuFace'));
     assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
-    const materials=faces.map(face=>child(face,'roundedButton'));
-    assert(materials.every(face=>children(child(face,'rim')).length===6 && children(child(face,'cloth')).length===6));
-    assert.notDeepEqual(child(materials[0],'cloth'),child(materials[1],'cloth'));
+    assert.equal(children(faces[0]).length,0,'STS1 resting text has no plate');
+    assert(faces.slice(1).every(face=>children(face).length===24));
+    assert.notDeepEqual(children(faces[1]),children(faces[2]));
     assert.equal(child(button,'menuAccent'),undefined);
   }
 });

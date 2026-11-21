@@ -1,6 +1,6 @@
-import {officialAssetsFromReceipt} from './official-assets-profile.mjs';
+import {officialAssetsFromReceipt,refinedReleaseMonsterArtFromReceipt} from './official-assets-profile.mjs';
 import {uiProfileFromReceipt,uiProfileSource,uiProfileModule} from './ui-profile.mjs';
-import {verifyArtFeatureReceipt,artFeaturesSource,artFeatureModule} from './art-features.mjs';
+import {verifyArtFeatureReceipt,artFeaturesSource,artFeatureModule,artBuildOptionsFromReceipt} from './art-features.mjs';
 // Explicit audio audition candidate. Never imported or played automatically.
 import { readFileSync, mkdirSync, writeFileSync, copyFileSync, constants, existsSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
@@ -23,6 +23,7 @@ const full = sourceReceiptFile ? JSON.parse(readFileSync(sourceReceiptFile, 'utf
 if(!full)throw Error('Candidate artwork policy requires a full source receipt; untracked legacy audition is not a delivery candidate');
 assertCandidateArtReceipt(full);
 officialAssetsFromReceipt(full);
+if(refinedReleaseMonsterArtFromReceipt(full))artBuildOptionsFromReceipt(full);
 const nativePageLifecycle=uiProfileFromReceipt(full);
 if(full.uiProfile){
  const source=readFileSync(join(dirname(resolve(sourceReceiptFile)),'payload',uiProfileModule+'.lua'),'utf8');
@@ -105,6 +106,7 @@ try {
   writeFileSync(join(workspace, 'candidate.json'), JSON.stringify({ mapPath, sha256: hash(mapPath),
     candidate: fileRecord(mapPath), ...(full ? { buildId: full.buildId, artFeatures:full.artFeatures, moduleDigests: full.moduleDigests,
       ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}),
+      ...(full.refinedReleaseMonsterArt === true ? {refinedReleaseMonsterArt:true,nativeMonsterArt:full.nativeMonsterArt} : {}),
       ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
       ...(full.officialPortraits ? {officialPortraits:full.officialPortraits} : {}),
     ...(full.readyCardArt ? {readyCardArt:full.readyCardArt} : {}),

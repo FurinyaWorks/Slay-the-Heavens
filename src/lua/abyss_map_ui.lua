@@ -8,11 +8,12 @@ local Acts = require("abyss_acts")
 local Controller = require("abyss_controller")
 local M = {}
 -- MapRoomNode.render sizes: glyph 128*scale, MAP_CIRCLE_5 192*(scale*.95+.2).
--- TASK-4.13: STS breathes reachable glyphs .91..1.25 (up to 2.5x rest), which on
--- this 76px floor gap overlaps the current ring. Keep the STS rhythm but remap the
--- reachable glyph into [rest*1.1, rest*availableScaleCap] so pulses never collide.
 function M.drawScale(fx)
-    -- TASK-4.13 judge: current beacon reads by scale/tint only (no extra chrome).
+    if fx.boss then
+        if fx.pressed then return .50 end
+        if fx.hovered then return .58 end
+        return fx.state == 'available' and .53 + .02 * fx.alpha or .55
+    end
     if fx.state == "current" then return fx.scale * 1.15 end
     if fx.state ~= "available" then
         local visual=Theme.layout.map.presentation
@@ -23,7 +24,7 @@ function M.drawScale(fx)
     local t = math.max(0, math.min(1, (fx.scale - .91) / (1.25 - .91)))
     local minimum=Theme.layout.map.presentation.availableScaleFloor or 1.1
     local scale=base * (minimum + (cap - minimum) * t)
-    return fx.pressed and scale*.92 or fx.hovered and math.min(base*cap,scale*1.06) or scale
+    return fx.pressed and scale*.92 or fx.hovered and base*cap*1.06 or scale
 end
 -- Track the last native writer, including pooled handles reused by another map/view.
 -- Tokens have no control back-reference; weak keys do not retain retired handles.
@@ -46,7 +47,10 @@ function M.paintRoom(fx)
     roomSize(fx,icon,iconSize)
     -- oscillateColor drives color.a for reachable rooms.
     local ink = fx.ink
-    if ink then icon.imageColor = fx.colour(ink.r, ink.g, ink.b, math.floor(ink.a * (fx.hovered and 1 or fx.alpha) + .5)) end
+    if ink then
+        local alpha = fx.boss or fx.hovered or fx.pressed
+        icon.imageColor = fx.colour(ink.r, ink.g, ink.b, math.floor(ink.a * (alpha and 1 or .82 + .18 * fx.alpha) + .5))
+    end
     local ringSize = fx.size * Layout.sts.circlePerScale * (fx.scale * .95 + .2)
     roomSize(fx,ring,ringSize)
 end
@@ -60,8 +64,16 @@ function M.pathWidth(taken, reachable)
     local v = Theme.layout.map.presentation
     return taken and v.takenPathWidth or reachable and Layout.lineWidth or v.lockedPathWidth
 end
+-- Presentation-only curve: monotone Y preserves viewport clipping; endpoints
+-- and the route's narrow corridor stay fixed. Never touch the Run RNG.
+function M.routePoint(x1,y1,x2,y2,t,seed)
+    local bend=(seed%2==0 and 1 or -1)*(5+seed%6)
+    local sway=math.sin(2*math.pi*t)*math.sin(math.pi*t)*(seed%3-1)
+    return x1+(x2-x1)*t+bend*4*t*(1-t)+sway,y1+(y2-y1)*t
+end
 function M.roomInk(node, state, currentFloor)
     local palette = Theme.color.mapCanvas
+    if node.type == 'boss' and state == 'locked' then return palette.kind.boss end
     if node.hasEmeraldKey then return Theme.color.positive end
     if state == "visited" then return palette.visited end
     -- TASK-4.13: current is a steady warm-white beacon, never the breathing type ink of its options.
@@ -108,7 +120,16 @@ local function sameContext(a, b)
     end
     return true
 end
-local function localFloor(map, floor) return floor - (map.firstFloor or 1) + 1 end
+local function maxScroll(chapter)
+    if chapter.terminal == 'boss_treasure' then return Layout.bossTreasureMaxScroll end
+    return Layout.maxScroll + (chapter.act == 3 and 2 * Theme.layout.map.bossFloorLift or 0)
+end
+local function floorY(chapter, floor)
+    local y = Layout.firstY + math.max(0, floor - chapter.first) * Theme.layout.map.floorGap
+    if floor == chapter.boss then return y + Theme.layout.map.bossFloorLift end
+    if chapter.act == 3 and floor == chapter.last then return y + 2 * Theme.layout.map.bossFloorLift end
+    return y
+end
 -- ===== Port of STS MapRoomNode update/render state (aeubanks/sts@319009d map/MapRoomNode.java) =====
 local Sts = Layout.sts
 -- MathHelper.scaleLerpSnap
@@ -139,17 +160,13 @@ end
 -- Native clipping is not assumed: include the full animated glyph and rotated
 -- ring, while preserving the original unpainted hit target.
 function M.roomRadius(fx)
-    local scale = fx.state == 'available' and Sts.baseScale * Theme.layout.map.presentation.availableScaleCap or math.max(Sts.baseScale,fx.scale)
-    local iconRadius=fx.size*Sts.iconPerScale*scale/2
+    local scale = math.max(Sts.baseScale,fx.scale)
+    local iconRadius=fx.size*Sts.iconPerScale*M.drawScale(fx)/2
     local radius = math.max(fx.size/2,iconRadius+(fx.emerald and math.abs(Theme.layout.map.emeraldIconY)or 0))
     if fx.state == 'current' or fx.state == 'visited' then
         local angle = fx.angle*math.pi/180
         local ring = fx.size*Sts.circlePerScale*(scale*.95+.2)/2
         radius = math.max(radius,ring*(math.abs(math.cos(angle))+math.abs(math.sin(angle))))
-    end
-    if fx.state == 'current' then
-        local visual=Theme.layout.map.presentation
-        radius=math.max(radius,math.abs(visual.tokenOffset[1])+visual.tokenSize/2,math.abs(visual.tokenOffset[2])+visual.tokenSize/2)
     end
     if fx.emerald then
         local label=Theme.layout.map.emeraldLabel
@@ -194,11 +211,11 @@ function M.new(root, map, onChoose, clickEvent, options)
         panel = child(stage, "mapPanel")
     end
     -- The title host binds real owners only after Start succeeds.
-    if map ~= nil then assert(chapterFor(map), "invalid map chapter context") end
+    local initialChapter = map ~= nil and assert(chapterFor(map), "invalid map chapter context") or nil
     local view = map and mapView(map)
     local self = { root = root, map = map, visible = map ~= nil, navigationEnabled = view and atStart(view) or false,
         scroll = 0, slots = {}, time = 0, breathing = {}, roomFx = {}, stage = stage, panel = panel,
-        embedded = embedded, scale = 1, observedMap = map, observedContext = view,
+        embedded = embedded, scale = 1, chapter = initialChapter, observedMap = map, observedContext = view,
         observedNodeId = view and view.currentNodeId, observedFloor = view and view.floor }
     local drag, released, pointerObserved, scrollAnimation
     local buttonHover, buttonPress
@@ -266,7 +283,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     end
     local function buttonEnabled(name)
         return self.visible and chapterFor(self.map) ~= nil and (name == "previous" and self.scroll > 0
-            or name == "next" and self.scroll < Layout.maxScroll)
+            or name == "next" and self.scroll < maxScroll(self.chapter))
     end
     local function paintButton(name)
         local box, enabled = at(name), buttonEnabled(name)
@@ -291,19 +308,18 @@ function M.new(root, map, onChoose, clickEvent, options)
     end
     local function position(node)
         return (node.lane - (Layout.lanes + 1) / 2) * Theme.layout.map.columnGap,
-            Layout.firstY + (localFloor(self.map, node.floor) - 1) * Theme.layout.map.floorGap - self.scroll
+            floorY(self.chapter, node.floor) - self.scroll
     end
     local function observeMap(current)
         if self.map == self.observedMap and sameContext(current,self.observedContext) then return false end
         cancelDrag()
         -- A restarted run can share floor/node ids with the previous run. Identity
         -- resets its presentation and default gate before the host grants access.
-        self.observedMap, self.observedContext = self.map, current
+        self.observedMap, self.observedContext, self.chapter = self.map, current, chapterFor(self.map)
         self.entryError=nil
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled, self.time = atStart(current), 0
-        self.scroll = clamp(Layout.firstY + (math.max(1, localFloor(current, current.floor)) - 1) *
-            Theme.layout.map.floorGap - Layout.focusY, 0, Layout.maxScroll)
+        self.scroll = clamp(floorY(self.chapter, current.floor) - Layout.focusY, 0, maxScroll(self.chapter))
         return true
     end
     local function line(control, source, target, taken, reachable, far)
@@ -313,7 +329,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         -- destination room and stop ICON_SRC_RADIUS short of the source room.
         do
             local len = math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
-            local r1 = Theme.layout.map.node * Sts.srcRadius
+            local r1 = source.type == 'boss' and Theme.layout.map.bossNode * Sts.bossRadius or Theme.layout.map.node * Sts.srcRadius
             local r2 = target.type == "boss" and Theme.layout.map.bossNode * Sts.bossRadius or Theme.layout.map.node * Sts.dstRadius
             if len <= r1 + r2 then control:SetVisible(false) return end
             local ux, uy = (x2 - x1) / len, (y2 - y1) / len
@@ -336,13 +352,31 @@ function M.new(root, map, onChoose, clickEvent, options)
         control.localRotationZ = math.atan(dy, dx) * 180 / math.pi
         local ink=taken and pathColours.taken or reachable and pathColours.next or far and pathColours.far or pathColours.future
         if control:GetChild('routeInk1') then
-            for i=1,8 do child(control,'routeInk'..i).imageColor=ink end
+            local seed=0
+            local identity=tostring(source.id)..':'..tostring(target.id)
+            for i=1,#identity do seed=(seed*31+identity:byte(i))%997 end
+            local length=math.sqrt(dx*dx+dy*dy)
+            local ux,uy=dx/length,dy/length
+            for i=1,8 do
+                local dash=child(control,'routeInk'..i)
+                local first,last=math.max(a,(i-1)/8),math.min(b,(i-1+.48)/8)
+                dash:SetVisible(last>first)
+                if last>first then
+                    local sx,sy=M.routePoint(x1,y1,x2,y2,first,seed)
+                    local ex,ey=M.routePoint(x1,y1,x2,y2,last,seed)
+                    local cx,cy=(sx+ex-ax-bx)/2,(sy+ey-ay-by)/2
+                    dash:SetAnchoredPosition(cx*ux+cy*uy,-cx*uy+cy*ux)
+                    dash:SetSizeDelta(math.sqrt((ex-sx)^2+(ey-sy)^2),width)
+                    dash.localRotationZ=math.atan(ey-sy,ex-sx)*180/math.pi-control.localRotationZ
+                    dash.imageColor=ink
+                end
+            end
         else control.imageColor=ink end
     end
     function self.render(_)
         if not self.map then return false, "map_unbound" end
-        local context = chapterFor(self.map)
-        if not context then
+        local chapter = chapterFor(self.map)
+        if not chapter then
             cancelDrag()
             self.navigationEnabled, self.slots, self.breathing = false, {}, {}
             at("title").text, at("notice").text = "", "地图章节信息无效 · 请重新启程"
@@ -362,7 +396,6 @@ function M.new(root, map, onChoose, clickEvent, options)
         for _, node in ipairs(current.nodes) do nodes[node.id] = node end
         for i = 1, #current.path - 1 do taken[current.path[i] .. ":" .. current.path[i + 1]] = true end
         self.slots, self.breathing = {}, {}
-        local chapter = Acts.get(current.act or 1)
         local terminal = chapter.terminal == 'boss_treasure' and "已抵达首领宝箱 · 请完成当前房间"
             or current.act == 4 and "已抵达终幕首领 · 请完成最终战斗与结算"
             or "已抵达终点 · 请完成当前房间"
@@ -370,7 +403,7 @@ function M.new(root, map, onChoose, clickEvent, options)
             or chapter.name .. " · 第 " .. current.floor .. " 层"
         at("notice").text = self.entryError or (current.complete and terminal or
             (current.floor == chapter.boss and (self.navigationEnabled
-                and (chapter.terminal == 'boss_treasure' and "首领奖励已处理 · 请选择首领宝箱" or "首领奖励已处理 · 请前往终点")
+                and (chapter.terminal == 'boss_treasure' and "首领奖励已处理 · 即将前往宝箱" or "首领奖励已处理 · 请前往终点")
                 or "已抵达首领 · 请完成首领战斗与奖励") or
             (self.navigationEnabled and "" or "请先完成当前节点")
             ))
@@ -385,18 +418,21 @@ function M.new(root, map, onChoose, clickEvent, options)
         for _, name in ipairs({"previous","next"}) do paintButton(name) end
         local edge = 0
         for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do
-            edge = edge + 1
-            assert(edge <= Layout.maxEdges, "map UI edge capacity exceeded")
             local target = assert(nodes[id], "map UI dangling route")
-            line(at("edge" .. edge), node, target, taken[node.id .. ":" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor))
+            if target.roomKind ~= 'boss_treasure' then
+                edge = edge + 1
+                assert(edge <= Layout.maxEdges, "map UI edge capacity exceeded")
+                line(at("edge" .. edge), node, target, taken[node.id .. ":" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor))
+            end
         end end
         for i = edge + 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
         assert(#current.nodes <= Layout.maxNodes, "map UI node capacity exceeded")
         self.activeFx = {}
+        local bossName = options.bossName and options.bossName(self.map)
         for i = 1, Layout.maxNodes do
             local box, node = at("node" .. i), current.nodes[i]
             local visible = false
-            if node then
+            if node and node.roomKind ~= 'boss_treasure' then
                 local size = node.type == "boss" and Theme.layout.map.bossNode or Theme.layout.map.node
                 local x, y = position(node)
                 local state = node.id == current.currentNodeId and "current" or
@@ -407,12 +443,12 @@ function M.new(root, map, onChoose, clickEvent, options)
                 -- pulse first so focus never culls that ring at the first row.
                 if state == "current" and fx.state ~= state then fx.scale = Sts.baseScale end
                 fx.state,fx.size,fx.box,fx.x,fx.y,fx.emerald=state,size,box,x,y,node.hasEmeraldKey
+                fx.boss = node.type == 'boss'
                 fx.hovered,fx.pressed=false,false
                 visible=roomVisible(fx);fx.visible=visible
                 -- Hidden transitions still lerp to rest; otherwise a temporarily
                 -- oversized current ring could remain culled forever.
                 self.activeFx[#self.activeFx+1]=fx
-                child(box, "positionToken"):SetVisible(state == "current")
                 -- Hidden rows have no slots or focus targets. Avoid rewriting
                 -- every child of all 17 floors during each pan animation frame.
                 if visible then
@@ -422,14 +458,15 @@ function M.new(root, map, onChoose, clickEvent, options)
                 local icon = child(box, "icon")
                 if state ~= "available" then fx.alpha = 1 end
                 local ring = child(box, "ring")
-                -- render(): circle when taken, or current after the first room was chosen.
-                -- TASK-4.13 (Pan t95u): the walked path already links visited rooms, so only the
-                -- current room keeps a ring, and it is a soft translucent halo of the old circle.
-                ring:SetVisible(state == "current")
+                local circled = state == 'current' or state == 'visited'
+                ring:SetVisible(circled)
                 ring.localRotationZ = fx.angle
-                -- TASK-4.13: visited rings sink to trail gold so the current ring is the only bright one.
-                tint(ring, Theme.color.mapCanvas.currentRing)
-                local iconId = assert(Theme.icon.node[node.type], "missing node icon")
+                if circled then
+                    local ink = state == 'current' and Theme.color.mapCanvas.currentRing or Theme.color.mapCanvas.visitedRing
+                    tint(child(ring, 'outline'), ink)
+                    tint(child(ring, 'brush'), ink)
+                end
+                local iconId = fx.boss and Theme.icon.mapBoss[bossName] or Theme.icon.node[node.type]
                 icon:SetImage(imageSource, iconId)
                 -- color: NOT_TAKEN for locked rooms, AVAILABLE ink for taken/current/available.
                 fx.colour = colour
@@ -447,9 +484,13 @@ function M.new(root, map, onChoose, clickEvent, options)
                 hit.canControllerFocus = clickable
                 if visible then self.slots[i] = node.id end
                 if clickable then self.breathing[#self.breathing + 1] = box end
-                else
-                    child(box, 'hit'):SetVisible(false)
-                    child(box, 'hit').canControllerFocus = false
+                end
+            end
+            if not visible then
+                local hit = child(box, 'hit')
+                if node or hit.canControllerFocus then
+                    hit:SetVisible(false)
+                    hit.canControllerFocus = false
                 end
             end
             box:SetVisible(visible)
@@ -490,7 +531,7 @@ function M.new(root, map, onChoose, clickEvent, options)
                 scrollAnimation.elapsed = scrollAnimation.elapsed + dt
                 local t = clamp(scrollAnimation.elapsed / Layout.scrollSeconds,0,1)
                 local from, target = scrollAnimation.from, scrollAnimation.target
-                self.scroll = clamp(from + (target - from) * (1 - (1 - t)^3),0,Layout.maxScroll)
+                self.scroll = clamp(from + (target - from) * (1 - (1 - t)^3),0,maxScroll(self.chapter))
                 if t == 1 then self.scroll, scrollAnimation = target, nil end
             end
             -- render's update(0) only paints breathing; it cannot advance/recurse.
@@ -523,14 +564,16 @@ function M.new(root, map, onChoose, clickEvent, options)
     end
     function self.setScroll(_, value)
         if not finite(value) then return false, "invalid_scroll" end
-        value = clamp(value, 0, Layout.maxScroll)
+        local chapter = chapterFor(self.map)
+        if not chapter then self:render(); return false, 'invalid_map_context' end
+        value = clamp(value, 0, maxScroll(chapter))
         if value ~= self.scroll or scrollAnimation then cancelSelection() end
         scrollAnimation = nil
         self.scroll = value self:render() return true
     end
     local function animateScrollTo(value)
         if not self.visible then return false,"map_hidden" end
-        value = clamp(value,0,Layout.maxScroll)
+        value = clamp(value,0,maxScroll(self.chapter))
         if scrollAnimation and scrollAnimation.target == value then return true end
         cancelDrag()
         if value == self.scroll or self.reducedMotion then return self:setScroll(value) end
@@ -548,14 +591,21 @@ function M.new(root, map, onChoose, clickEvent, options)
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local current = mapView(self.map)
         observeMap(current)
-        local target = Layout.firstY + (math.max(1,localFloor(current,current.floor)) - 1) * Theme.layout.map.floorGap - Layout.focusY
+        local floor = current.floor
+        if self.chapter.terminal == 'boss_treasure' then floor = math.min(floor, self.chapter.boss) end
+        local target = floorY(self.chapter, floor) - Layout.focusY
         if animated then return animateScrollTo(target) end
         return self:setScroll(target)
     end
-    function self.setNavigationEnabled(_, enabled)
+    function self.setNavigationEnabled(_, enabled, retainBackdrop)
         if not self.map then return false, "map_unbound" end
         assert(type(enabled) == "boolean", "navigation enabled must be boolean")
-        if not enabled then cancelDrag() end
+        if not enabled then
+            cancelDrag()
+            -- A covering deck already gates all map input and retains the map's
+            -- drawing. Repaint the navigation state when the map is uncovered.
+            if retainBackdrop and not self.visible then self.navigationEnabled=false;return end
+        end
         -- An explicit coordinator grant acknowledges any external map advance.
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local current = mapView(self.map)
@@ -563,13 +613,17 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled = enabled self:render()
     end
-    function self.setVisible(_, visible, retainPage)
+    local function atPaintedPosition()
+        return self.map==self.observedMap and sameContext(self.map,self.observedContext)
+            and self.map.floor==self.observedFloor and self.map.currentNodeId==self.observedNodeId
+    end
+    function self.setVisible(_, visible, retainPage, retainPosition)
         assert(type(visible) == "boolean", "map visibility must be boolean")
         if visible and not self.map then return false, "map_unbound" end
         if not visible then cancelDrag() end
         -- A modal suspends navigation but retains its already mounted backdrop.
         self.visible = visible root:SetVisible(visible or retainPage==true)
-        if visible then self:focusCurrent() end
+        if visible and not (retainPosition and atPaintedPosition()) then self:focusCurrent() end
     end
     function self.choose(_, nodeId)
         if not self.map then return false, "map_unbound" end
@@ -586,6 +640,7 @@ function M.new(root, map, onChoose, clickEvent, options)
             for _, node in ipairs(before.nodes) do if node.id == nodeId then return false, "node_unavailable" end end
             return false, "invalid_node"
         end
+        if selected.roomKind == 'boss_treasure' then return false, 'node_outside_viewport' end
         local expectedFloor = selected.floor
         self.choosing = true
         local called, accepted, reason = pcall(onChoose, selected)

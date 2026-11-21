@@ -52,6 +52,13 @@ local function connect(links, services)
         end
     end
 end
+local function configureInputSurface(host, self)
+    host.stage = host.options.embedded and host.root or assert(host.root:GetChild("stage"), "missing stage")
+    host.cursor = host.platform.cursorEvents
+    self.dragEnabled = host.cursor and host.cursor.CursorDown and host.cursor.CursorDrag and host.cursor.CursorUp and host.cursor.CursorEndDrag
+    self.instructions = self.dragEnabled and "拖到战场出牌区域松手，目标牌拖向敌人；再点原牌取消。"
+        or "点选卡牌，再点敌人或战场出牌区域；再点原牌取消。"
+end
 function M.new(root, data, presentation, clickEvent, platform, options)
     options = options or {}
     local self = { root = root, data = data, presentation = presentation, target = 1, seed = 1, busy = false, active = true }
@@ -65,7 +72,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     })))
     install(services, require("abyss_battle_details").install(self, ownership, host, ports(links, {
         "tint", "ink", "child", "cancelPotionAim", "cancelCardInputs",
-        "cancelPotionInputs", "cancelActionInputs", "consumeReleasedDragClick"
+        "cancelPotionInputs", "cancelActionInputs"
     })))
     install(services, require("abyss_battle_card_layout").install(self, ownership, host, ports(links, {
     })))
@@ -117,7 +124,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     })))
     install(services, require("abyss_battle_detail_bindings").install(self, ownership, host, ports(links, {
         "enemyAt", "listen", "child", "closeInfo", "controllerReady",
-        "helpActorReady", "swallowed", "down", "consumeReleasedDragClick"
+        "helpActorReady", "swallowed", "down", "consumeReleasedDragClick", "dragReady"
     })))
     connect(links, services)
     -- Runtime bindings keep only their own ports, not the construction registry.
@@ -129,13 +136,10 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         bindEnemyPowerControl=services.bindEnemyPowerControl, unbindEnemyPowerControl=services.unbindEnemyPowerControl,
         bindEnemyDetailControls=services.bindEnemyDetailControls, unbindEnemyDetailControls=services.unbindEnemyDetailControls, bindDetailControls=services.bindDetailControls,
         potionDragTarget=services.potionDragTarget,
-        cancelCardInputs=services.cancelCardInputs, consumeReleasedDragClick=services.consumeReleasedDragClick
+        cancelCardInputs=services.cancelCardInputs, cancelActionInputs=services.cancelActionInputs,
+        cancelPotionInputs=services.cancelPotionInputs, consumeReleasedDragClick=services.consumeReleasedDragClick
     }
-    host.stage = host.options.embedded and host.root or assert(host.root:GetChild("stage"), "missing stage")
-    host.cursor = host.platform.cursorEvents
-    self.dragEnabled = host.cursor and host.cursor.CursorDown and host.cursor.CursorDrag and host.cursor.CursorUp and host.cursor.CursorEndDrag
-    self.instructions = self.dragEnabled and "拖到战场出牌区域松手，目标牌拖向敌人；再点原牌取消。"
-        or "点选卡牌，再点敌人或战场出牌区域；再点原牌取消。"
+    configureInputSurface(host, self)
     -- A card click is the final event of one physical pointer sequence. Retain
     -- its original rule identity, not a global permission another Down can reset.
     ownership.cardInputs, ownership.pointerObserved, ownership.releasedDragTouch = {}, false, nil
@@ -240,9 +244,12 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     services.bind("playArea", function()
         if services.cancelPotionAim("已取消药水瞄准。") then services.refresh() return end
         local battle = self.run and self.run.phase == "combat" and self.run.combat
-        if not battle then return end
+        if not battle or self.carry and self.carry.aiming then return end
         for _,instance in ipairs(battle.hand) do
-            if instance.uid == self.selected and not needsTarget(battle,instance) then self:playSelected(nil) return end
+            if instance.uid == self.selected then
+                if needsTarget(battle,instance) then return self:controllerBack() end
+                return self:playSelected(nil)
+            end
         end
     end)
     services.bind("skip", function()
@@ -359,13 +366,22 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         Controller.bind(host.controller,hit,'battle',openPile,available,80)
     end
     local keys = host.platform.keyEvents
-    if keys and keys.KeyboardSprintKeyDown and host.root.AddKeyEventListener then
-        -- The official UI maps SprintKey to the user's right-mouse binding.
-        host.root:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
-            if not self.active or not (self.gesture or self.carry or self.selected) then return false end
+    local keyRoot = host.platform.keyRoot or host.root
+    if keys and keys.KeyboardSprintKeyDown and keyRoot.AddKeyEventListener then
+        -- The official sprint binding defaults to RMB. Listen on the persistent UI root.
+        keyRoot:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
+            local run, gesture = self.run, self.gesture or self.carry
+            if not self.active or self.busy or not run or run.phase ~= 'combat' or run.combat.phase ~= 'player'
+                or not (gesture or self.selected) or host.root.visible == false then return false end
             services.cancelCardInputs()
-            self.gesture,self.carry,self.selected,self.hover = nil,nil,nil,nil
-            self.suppressClick = true
+            services.cancelActionInputs()
+            services.cancelPotionInputs()
+            self.gesture, self.carry, self.selected, self.cardAim = nil, nil, nil, nil
+            self.hover, self.handHover, self.help = nil, nil, nil
+            self.selectionEpoch = (self.selectionEpoch or 0) + 1
+            if gesture then ownership.releasedDragTouch = gesture.touch end
+            self.suppressClick = gesture ~= nil
+            services.notice('')
             self:render()
             return true
         end)

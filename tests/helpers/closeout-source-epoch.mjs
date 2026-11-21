@@ -12,6 +12,9 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendV2RunMenuEpoch} from './v2-run-menu-source-epoch.mjs';
+import {extendPowerMembershipEpoch} from './power-membership-source.mjs';
+import {beforeRewardTransitionSource,beforePc13RewardCover,authorizePc13RewardCover} from './pc13-reward-cover-source.mjs';
+import {projectPotionPointerSource,authorizePotionPointerSource} from './potion-pointer-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -51,7 +54,8 @@ export const menuRedEpoch=extendMenuRedSourceEpoch(menuRedPriorEpoch);
 export const menuPresentationEpoch=extendMenuPresentationEpoch(menuRedEpoch);
 export const releaseSourceEpoch=extendReleaseSourceEpoch(menuPresentationEpoch);
 export const sessionMenuSourceEpoch=extendSessionMenuEpoch(releaseSourceEpoch);
-export const sourceEpoch=extendV2RunMenuEpoch(sessionMenuSourceEpoch);
+export const prePowerMembershipEpoch=extendV2RunMenuEpoch(sessionMenuSourceEpoch);
+export const sourceEpoch=extendPowerMembershipEpoch(prePowerMembershipEpoch);
 const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
@@ -61,5 +65,15 @@ export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf
  if(!row||typeof source!=='string')return source;
  // Keep configuration strict here and let the projector authenticate exact Lua continuations.
  if(path==='config/architecture.json'&&hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
- return sourceEpoch.preCombinedSource(path,source,{target,readSource});
+ const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource});
+ if(projected!==source)return projected;
+ if(beforeRewardTransitionSource(path,source)===source)return source;
+ const intermediate=beforePc13RewardCover(path,source);
+ const prior=projectPotionPointerSource(path,intermediate,row);
+ if(prior.replaceAll('\r\n','\n')===proof.targets[target].files[path]?.source){
+  authorizePc13RewardCover([[path,source]],readSource);
+  authorizePotionPointerSource(path,intermediate,row,[],owner=>beforePc13RewardCover(owner,readSource(owner)));
+  return prior;
+ }
+ return source;
 }

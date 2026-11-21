@@ -83,6 +83,12 @@ function M.make(state,id,serial,explicitHp,hpRandom)
  end
  return enemy
 end
+function M.splitPosition(parent,childIndex)
+ if parent.ai.splitPositions then return Copy(parent.ai.splitPositions[childIndex])end
+ -- Large slime takeTurn places medium children +/-134 source pixels from the parent.
+ local origin=parent.sourcePosition or {x=0,y=0}
+ return {x=origin.x+(childIndex==1 and -134 or 134),y=origin.y}
+end
 local function sourceSpec(options)
  if options.sourceEncounter~=nil then
   assert(Formation.supports(options.sourceEncounter),'unknown source formation')

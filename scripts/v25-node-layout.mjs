@@ -1,5 +1,6 @@
 import {roundedFramedButton} from './native-rounded-button.mjs';
 import {merchantControl} from './cinematic-ui-layout.mjs';
+import {proceedFlag} from './sts-reward-row-layout.mjs';
 // Independently authored native geometry from the frozen V25 room composition.
 // No private raster, SVG path, sample transactions or random data is embedded.
 export const v25NodeSource=Object.freeze({
@@ -300,9 +301,9 @@ function nodeCardChrome(face,theme){
  for(const child of parts(face))nodeCardChrome(child,theme);
 }
 
-function rewardHost(stage,title){
- must(stage,'border').opacity=0;must(stage,'plate').opacity=0;
- stage.children.unshift(group('v25RewardField',[rect('dark',0,-22,1280,676,'#070B0B')],[0,-stage.position[1]]));
+function rewardHost(stage,title,veil){
+ stage.children.unshift(group('v25RewardField',[rect('dark',0,-22,1280,676,veil.slice(0,7),
+  {opacity:parseInt(veil.slice(7),16)/255})],[0,-stage.position[1]]));
  const paper=group('v25RewardPaper',[polygon('banner',[[365,170],[409,164],[425,153],[563,151],[859,153],[877,165],[915,171],[893,205],[855,202],[849,211],[431,211],[420,202],[387,205]],'#A79E80'),
   // A continuous native centre closes antialias seams between the silhouette's
   // triangles without changing its authored outline or adding an atlas plate.
@@ -313,13 +314,31 @@ function rewardHost(stage,title){
 }
 function styleRewards(battle,theme){
  const stage=must(battle,'rewardStage'),r=theme.layout.rewardPick;setRect(stage,r.stage);
- rewardHost(stage,r.title);
+ const hero=must(battle,'hero');battle.children.splice(battle.children.indexOf(hero),1);
+ battle.children.splice(battle.children.indexOf(stage),0,hero);
+ for(const name of ['border','plate'])must(stage,name).opacity=0;
+ const relative=box=>[box[0]-stage.position[0],box[1]-stage.position[1],...box.slice(2)];
+ const veil=theme.officialAssets.backdropVeil;
+ rewardHost(stage,relative(r.title),veil);
  const list=must(battle,'rewardList'),base=theme.layout.battleRewards;
- rewardHost(list,[base.title[0]-base.stage[0],base.title[1]-base.stage[1],...base.title.slice(2)]);
- must(list,'title').text.colour='#EFE8D4';must(list,'subtitle').text.colour='#D6D5C5';
- setRect(must(stage,'title'),r.title);type(must(stage,'title'),29,'#EFE8D4');
- setRect(must(stage,'subtitle'),r.subtitle);type(must(stage,'subtitle'),16,'#D6D5C5');
- const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);
+ rewardHost(list,[base.title[0]-base.stage[0],base.title[1]-base.stage[1],...base.title.slice(2)],veil);
+ if(theme.presentationProfile==='official-assets-first'){
+  for(const name of ['border','plate'])must(list,name).opacity=0;
+ }else{
+  const plate=must(list,'plate');plate.colour=theme.officialAssets.rewardRows.panel;
+  for(const [name,y] of [['upperRoll',1],['lowerRoll',0]]){
+   const roll=rect(name,0,0,theme.space.l,theme.space.s,theme.officialAssets.rewardRows.normal,
+    {anchor:{min:[0,y],max:[1,y]}});
+   list.children.splice(2,0,roll);
+  }
+  proceedFlag(must(battle,'continue'),theme);
+ }
+ must(list,'title').text.colour=theme.color.text;must(list,'subtitle').text.colour='#D6D5C5';
+ setRect(must(stage,'title'),relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));
+ if(theme.presentationProfile){
+  type(must(stage,'title'),29,'#EFE8D4');type(must(stage,'subtitle'),16,'#D6D5C5');
+  const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);
+ }
 }
 
 function preflight(root){

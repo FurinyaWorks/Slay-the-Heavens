@@ -1,4 +1,4 @@
-import {monsterActorInventory,monsterActorTemplateName} from './monster-art.mjs';
+import {monsterActorInventory,monsterActorTemplateName,monsterActorTierNames} from './monster-art.mjs';
 import {artBuildOptionsFromReceipt,readArtFeatures} from './art-features.mjs';
 import {portraitRuntimeInventory} from './official-portraits.mjs';
 import {readyArtRuntimeInventory} from './art/ready-card-runtime.mjs';
@@ -73,12 +73,15 @@ export function packageInventory(directory = 'build/lua') {
     if (templateNames.has(name) || templateDigests.has(digest)) throw Error(`Duplicate UI template: ${name}`);
     templateNames.add(name); templateDigests.add(digest);
   }
+  const actorTiers=templates.filter(t=>monsterActorTierNames.includes(t.name)).map(t=>[t.name,monsterActorInventory(t)]);
   return {schemaVersion: 1, ...gitSourceIdentity(process.cwd()), measurement: 'offline-production-inputs-not-official-storage', modules,
     luaBytes: modules.reduce((n, row) => n + row.bytes, 0),
     layoutJsonBytes: Buffer.byteLength(JSON.stringify(layout)), templateJsonBytes: Buffer.byteLength(JSON.stringify(templates)),
     controls, hiddenControls, templates: templates.length, artPools, maxChildren,
     monsterActors: {...monsterActorInventory(templates.find(t=>t.name===monsterActorTemplateName)),
-      runtimeControlsFormula: "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers", peakDrawableActors: null,
+      ...(actorTiers.length?{tiers:Object.fromEntries(actorTiers)}:{}),
+      runtimeControlsFormula: (actorTiers.length?"sum(selectedTier.controlsPerActor per drawable actor)":"controlsPerActor * drawableActors")
+        +" + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers", peakDrawableActors: null,
       peakStatus: "unverified-not-a-static-visibility-cap"},
     repeatedPrimitiveInstances: [...primitives.values()].reduce((n, count) => n + Math.max(0, count - 1), 0),
     artFeatures,

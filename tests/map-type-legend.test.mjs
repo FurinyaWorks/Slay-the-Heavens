@@ -1,23 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mapLayout,mapGeometry,loadMapTheme} from '../scripts/map-ui-layout.mjs';
-const rows=[['combat','普通战斗'],['elite','精英'],['event','事件'],['shop','商店'],['camp','营地'],['treasure','宝箱'],['boss','首领']];
+const rows=[['event','未知'],['shop','商人'],['treasure','宝箱'],['camp','休息'],['combat','敌人'],['elite','精英']];
 const theme=loadMapTheme();
 function legend(source=theme){
  const controls=mapLayout(source).controls.find(c=>c.name==='stage').children[0].children.flatMap(g=>g.children);
  const panel=controls.find(c=>c.name==='typeLegend');
- assert(panel,'map must explain all seven node types');
+ assert(panel,'map must explain the six legend entries');
  return panel;
 }
-test('approved map type legend retains seven Chinese meanings and the same official node icons',()=>{
+test('approved map type legend retains six ordered Chinese meanings and the same official node icons',()=>{
  const panel=legend();
- assert.equal(panel.children.find(c=>c.name==='title').text.content,'节点类型');
+ assert.equal(panel.children.find(c=>c.name==='title').text.content,'图例');
  for(const [kind,label] of rows){
   assert.equal(panel.children.find(c=>c.name===kind+'Icon').image,theme.icon.node[kind]);
   const text=panel.children.find(c=>c.name===kind+'Label');
   assert.equal(text.text.content,label);assert(text.size[1]>=40);assert(text.text.fontSize>=theme.font.minimum);
  }
- assert.equal(panel.children.filter(c=>c.kind==='text').length,8,'no retired state explanations');
+ assert.deepEqual(panel.children.filter(c=>c.name.endsWith('Label')).map(c=>c.text.content),rows.map(([,label])=>label));
+ assert.equal(panel.children.filter(c=>c.kind==='text').length,7);
 });
 test('type legend stays outside routes, phone safe margins and resource/menu bars',()=>{
  const panel=legend(),g=mapGeometry(theme),[x,y]=panel.position,[w,h]=panel.size;

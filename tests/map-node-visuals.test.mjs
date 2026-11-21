@@ -5,7 +5,7 @@ import { buildUiTheme } from '../scripts/build-ui-theme.mjs';
 import { buildMapLayout } from '../scripts/map-ui-layout.mjs';
 import { runLua } from '../scripts/test-lua.mjs';
 
-test('ring-free native nodes preserve four states, official icons, full hits and legal controller choices after repaint', () => {
+test('native ink circles preserve four states, official icons, full hits and legal controller choices after repaint', () => {
   buildLuaData();
   buildUiTheme();
   buildMapLayout();

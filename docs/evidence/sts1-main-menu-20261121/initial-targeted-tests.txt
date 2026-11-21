@@ -1,0 +1,71 @@
+✔ one image retains source triangle geometry under native single-axis rotations (12.80423ms)
+✔ minimal menu uses the supplied native background, fixed input and two actions (104.278814ms)
+✔ one unmasked native triangle preserves all three vertices under affine placement (0.515347ms)
+✔ STS1 menu retains transactions, unplated resting controls and four states (70.358534ms)
+✔ menu historical source continuation projects only exact complete new test bytes (1.029447ms)
+✔ official art is opt-in and preserves both legacy CLI presets and strict candidate guards (2.899673ms)
+✔ receipts and pinned source audits reconstruct official art and reject mismatched profiles (46.801451ms)
+✔ historical approved pages keep live input identities while unrelated pages retain their geometry (6096.918934ms)
+ℹ TAP version 13
+# Subtest: official art is opt-in and preserves both legacy CLI presets and strict candidate guards
+ok 1 - official art is opt-in and preserves both legacy CLI presets and strict candidate guards
+  ---
+  duration_ms: 10.531764
+  type: 'test'
+  ...
+# Subtest: receipts and pinned source audits reconstruct official art and reject mismatched profiles
+ok 2 - receipts and pinned source audits reconstruct official art and reject mismatched profiles
+  ---
+  duration_ms: 95.804688
+  type: 'test'
+  ...
+# Subtest: approved pages keep live input identities while unrelated pages retain their geometry
+ok 3 - approved pages keep live input identities while unrelated pages retain their geometry
+  ---
+  duration_ms: 1493.995239
+  type: 'test'
+  ...
+# Subtest: scene and button substitutions preserve semantic icons and all four native button states
+ok 4 - scene and button substitutions preserve semantic icons and all four native button states
+  ---
+  duration_ms: 898.263716
+  type: 'test'
+  ...
+# Subtest: official selection and battle share the approved idle while opt-out retains its explicit source
+ok 5 - official selection and battle share the approved idle while opt-out retains its explicit source
+  ---
+  duration_ms: 2249.17656
+  type: 'test'
+  ...
+# Subtest: audio wrapper forwards the explicit official profile and lifecycle without legacy background defaults
+ok 6 - audio wrapper forwards the explicit official profile and lifecycle without legacy background defaults
+  ---
+  duration_ms: 1.258601
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5163.445349
+
+✔ approved pages keep live input identities while unrelated pages retain their geometry (1245.553663ms)
+✔ scene and button substitutions preserve semantic icons and all four native button states (475.561126ms)
+✔ official selection keeps its approved 1600 background while battle and opt-out retain their explicit sources (2017.537983ms)
+✔ audio wrapper forwards the explicit official profile and lifecycle without legacy background defaults (2.274284ms)
+✔ official selection leaves the portrait unobscured and exit retains the live button owner (24.94291ms)
+✔ official run pages use one three-step floor marker just after the potion slots (343.712739ms)
+✔ ordinary readiness overlay uses the same Liyue crest and seven elements (22.054559ms)
+✔ approved native title and button artwork preserve the official menu hit surfaces (26.051618ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12841.475494
