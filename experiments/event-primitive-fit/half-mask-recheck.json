@@ -1,0 +1,329 @@
+{
+  "simulator": "beyond-simulator-mcp@0.5.2",
+  "scope": "neutral pixels and actual GIA sign bytes; no official import or device evidence",
+  "neutral": [
+    {
+      "case": "straight",
+      "old_different_pixels": 4406,
+      "mirrored_different_pixels": 0,
+      "gia_bytes": 2151,
+      "signed_x_scale_records": 4
+    },
+    {
+      "case": "rotated",
+      "old_different_pixels": 4382,
+      "mirrored_different_pixels": 0,
+      "gia_bytes": 2171,
+      "signed_x_scale_records": 4
+    },
+    {
+      "case": "rotated-mirror-y",
+      "old_different_pixels": 4400,
+      "mirrored_different_pixels": 0,
+      "gia_bytes": 2171,
+      "signed_x_scale_records": 4
+    }
+  ],
+  "regenerated": {
+    "count": 49,
+    "unchanged_gia_bytes": 2606717,
+    "unchanged_controls_min": 47,
+    "unchanged_controls_max": 61,
+    "rows": [
+      {
+        "event": "accursed_blacksmith",
+        "controls": 61,
+        "gia_bytes": 54257,
+        "gia_sha256": "0ee13669c844e2717942ae253cc918e27b3259001965342e661ebc28feb36f8a"
+      },
+      {
+        "event": "addict",
+        "controls": 61,
+        "gia_bytes": 54411,
+        "gia_sha256": "6e3607f9f3fc1d1c83831f085f3029e7a0cc04eb11d00ae406e0222641fe3707"
+      },
+      {
+        "event": "back_to_basics",
+        "controls": 61,
+        "gia_bytes": 54307,
+        "gia_sha256": "adda2d9f32e339a8fe86b94adb9bcef713211839604206cafbaa0d4aa0089e59"
+      },
+      {
+        "event": "beggar",
+        "controls": 61,
+        "gia_bytes": 54533,
+        "gia_sha256": "f4e6788265d24726cdd59d934e06637b3be5e233a06917d6004a189bd0e20f7d"
+      },
+      {
+        "event": "big_fish",
+        "controls": 61,
+        "gia_bytes": 54417,
+        "gia_sha256": "f5427d876644dd90d2e10fcd092c3080a0887b5a149457d12c47dd0b81596fa7"
+      },
+      {
+        "event": "bonfire",
+        "controls": 61,
+        "gia_bytes": 54355,
+        "gia_sha256": "02e32206f8de2281559dc027d57630f26cf569751d91d22d40b175f9158bcfda"
+      },
+      {
+        "event": "cleric",
+        "controls": 61,
+        "gia_bytes": 54313,
+        "gia_sha256": "2c2917e45b5a3a21cf6c4a035c62f49d51dbabad7c566946d57af42ad3437041"
+      },
+      {
+        "event": "colosseum",
+        "controls": 47,
+        "gia_bytes": 40089,
+        "gia_sha256": "f8d7ef8b04d9c2546931e2dcd4a820c8e1eee3e53f1c032174e9df3c728fe2a4"
+      },
+      {
+        "event": "cursed_tome",
+        "controls": 61,
+        "gia_bytes": 54181,
+        "gia_sha256": "94a2afb7c7a77b3d3169a7256e41550b8b97145e9fc983beda668b18c3a815b1"
+      },
+      {
+        "event": "dead_adventurer",
+        "controls": 61,
+        "gia_bytes": 54351,
+        "gia_sha256": "5c37cfce789e78ad4b931c02d81bd33544631e89dc4a60db71661f8707d3ed02"
+      },
+      {
+        "event": "designer",
+        "controls": 61,
+        "gia_bytes": 54215,
+        "gia_sha256": "e97a37e0ef5e6d0906cb60446ed38ba08766b7a2533035e647968e25c5613b3d"
+      },
+      {
+        "event": "drug_dealer",
+        "controls": 61,
+        "gia_bytes": 54423,
+        "gia_sha256": "9fcf187fb67d7d58d5e8287b277a4fa8d99380d8e09b7d4d640ac1f4e7c6b260"
+      },
+      {
+        "event": "duplicator",
+        "controls": 61,
+        "gia_bytes": 54321,
+        "gia_sha256": "25661b589d7d613fd840c4896a005ea3749abcba5a9b793bf292bf58c3f05223"
+      },
+      {
+        "event": "face_trader",
+        "controls": 61,
+        "gia_bytes": 54423,
+        "gia_sha256": "e01ac0914ddb632fe280087d65f8d0f87a3b425d2a4efbb35ec139b3f715e014"
+      },
+      {
+        "event": "falling",
+        "controls": 61,
+        "gia_bytes": 54475,
+        "gia_sha256": "0df0f2e0cf03bb1894bfb816aae220abd4bb26b74f2e3cb8afff071e42c26b50"
+      },
+      {
+        "event": "forgotten_altar",
+        "controls": 61,
+        "gia_bytes": 54371,
+        "gia_sha256": "0143ff3de727e1c05ae2e364acc5d803feb00842e59a1535910521688fc2fb4f"
+      },
+      {
+        "event": "fountain",
+        "controls": 61,
+        "gia_bytes": 54417,
+        "gia_sha256": "8d2a4e1298413e3055bc0fc166e57300009b67282319fe8561f8058c42d30e9f"
+      },
+      {
+        "event": "ghosts",
+        "controls": 61,
+        "gia_bytes": 54333,
+        "gia_sha256": "86a35d27bdddfc515b8c8bedd5a5ad6fe272434af059aa3cca5deee12577bcde"
+      },
+      {
+        "event": "golden_idol",
+        "controls": 61,
+        "gia_bytes": 54543,
+        "gia_sha256": "b180772ba986577ab513c8b559921b4878480e8ad79e3abede4ea1d52caaade9"
+      },
+      {
+        "event": "golden_shrine",
+        "controls": 49,
+        "gia_bytes": 41771,
+        "gia_sha256": "4215d6f3e0a0ead525d3c6ef69b6cce89437462b7789a0889082b5f6ec38f47b"
+      },
+      {
+        "event": "golden_wing",
+        "controls": 61,
+        "gia_bytes": 54361,
+        "gia_sha256": "05d7aac401c810fc5a528ba0aa8e0878fd1a63d319681d9569139f3abf2ffedb"
+      },
+      {
+        "event": "goop",
+        "controls": 61,
+        "gia_bytes": 54289,
+        "gia_sha256": "caeec4d3678e2ce404602c3929482467956ae75f0883535de99b48ab8dfa28e7"
+      },
+      {
+        "event": "joust",
+        "controls": 61,
+        "gia_bytes": 54389,
+        "gia_sha256": "f7b88e5d2faa0eff5f2276c71f942589518d9789a7d4bdbaf5c4d22e97d7e2dc"
+      },
+      {
+        "event": "knowing_skull",
+        "controls": 61,
+        "gia_bytes": 54407,
+        "gia_sha256": "538768b0da6457c3a7c0068bb1d3ab266c150de925edef877fee8d220f4205c8"
+      },
+      {
+        "event": "lab",
+        "controls": 60,
+        "gia_bytes": 51378,
+        "gia_sha256": "46d1acd326c3c6093f2a88a24245339b49c3363f8faf1bf6c7b1c0edc205f5f9"
+      },
+      {
+        "event": "living_wall",
+        "controls": 60,
+        "gia_bytes": 51418,
+        "gia_sha256": "21f1c3b238135d44b282626af3533bf0d0ede45c5a440b21c3448e99244abf49"
+      },
+      {
+        "event": "masked_bandits",
+        "controls": 60,
+        "gia_bytes": 53720,
+        "gia_sha256": "448eca86d912bf792b31086312754cf65c66ef76152d19ec7d0fdeb0e9107afe"
+      },
+      {
+        "event": "match_game",
+        "controls": 61,
+        "gia_bytes": 54461,
+        "gia_sha256": "6298d2b993cec5198dac673b5b50f37dea074b3f69337607dcbca47bfafa3e1d"
+      },
+      {
+        "event": "mausoleum",
+        "controls": 61,
+        "gia_bytes": 54397,
+        "gia_sha256": "b92109c148b9ce0580b9348ffd2e02eff2826036d1199ac214da53cd992f1a9a"
+      },
+      {
+        "event": "mind_bloom",
+        "controls": 61,
+        "gia_bytes": 54237,
+        "gia_sha256": "320987e8c9490a331d1e2fd3bfff69e2561530123d7f079bb44ab6d88bea07e3"
+      },
+      {
+        "event": "moai_head",
+        "controls": 61,
+        "gia_bytes": 54599,
+        "gia_sha256": "f83f89d2d6b9981a7e2b4ddf3e0cfc98a37eba2985cfe26ddd13a2408e81745e"
+      },
+      {
+        "event": "mushrooms",
+        "controls": 61,
+        "gia_bytes": 54359,
+        "gia_sha256": "5a6c2e7f257a573ab5d0591f7c5454f9fffee0ace47871fca5504c056257277e"
+      },
+      {
+        "event": "mysterious_sphere",
+        "controls": 53,
+        "gia_bytes": 45100,
+        "gia_sha256": "ede8efb7636b086d61bdc15d5545ae27b053c0bc574558be557273386267d8b2"
+      },
+      {
+        "event": "nest",
+        "controls": 60,
+        "gia_bytes": 51404,
+        "gia_sha256": "8f7e402cc8c2cfbc95667d8e66686e147e51e0c995419f3c36b0c0e72299a330"
+      },
+      {
+        "event": "nloth",
+        "controls": 61,
+        "gia_bytes": 54531,
+        "gia_sha256": "5b34212b73b411625daf102e62b89073659e97c944da6e8f8588ecf3681de2c1"
+      },
+      {
+        "event": "purifier",
+        "controls": 59,
+        "gia_bytes": 50515,
+        "gia_sha256": "37ca0a2f84f63d5779d0c054db0b5814032365fa56e4f538088a7236c1a89ec0"
+      },
+      {
+        "event": "scrap_ooze",
+        "controls": 61,
+        "gia_bytes": 54361,
+        "gia_sha256": "29298dbf0a42892277627849d9eb863e68f38f53b7df80d5857da15c510ec392"
+      },
+      {
+        "event": "sensory_stone",
+        "controls": 61,
+        "gia_bytes": 54487,
+        "gia_sha256": "e28004f655eeec6496c4dc11cef7abd34a28adc3cbaefecf19ed4766ec6b9090"
+      },
+      {
+        "event": "shining_light",
+        "controls": 61,
+        "gia_bytes": 54487,
+        "gia_sha256": "581695d5f5b09f89827440dbec617de45d92458e9e13bb76489e927de21fa390"
+      },
+      {
+        "event": "sssserpent",
+        "controls": 61,
+        "gia_bytes": 54421,
+        "gia_sha256": "59eb6a44adb5c4fb69ef7bd29c208c9758df5bc14743eb4dab9a84df60598406"
+      },
+      {
+        "event": "the_library",
+        "controls": 60,
+        "gia_bytes": 51394,
+        "gia_sha256": "b35343a12379983d28250bdba85165568a123d6fe373ba6bea3b3831914eecc7"
+      },
+      {
+        "event": "tomb_red_mask",
+        "controls": 61,
+        "gia_bytes": 54487,
+        "gia_sha256": "10aeaacec89b57d2e49ae045dfccabfb61544e6b8b7809b6458eeaf58fe9d010"
+      },
+      {
+        "event": "transmogrifier",
+        "controls": 57,
+        "gia_bytes": 48853,
+        "gia_sha256": "f55b83d0a6dc71ab7e381c5bb475221a984259476d737898fc6fabd0943882c0"
+      },
+      {
+        "event": "upgrade_shrine",
+        "controls": 61,
+        "gia_bytes": 54549,
+        "gia_sha256": "9e02b20d4153c82a3f8c30daed9dba963671772f065eb41451479f7fe2725847"
+      },
+      {
+        "event": "vampires",
+        "controls": 61,
+        "gia_bytes": 54357,
+        "gia_sha256": "ee4bb47d0235f42e18539160501d44924604f2d716752a7c00e6135481b229de"
+      },
+      {
+        "event": "we_meet_again",
+        "controls": 61,
+        "gia_bytes": 54547,
+        "gia_sha256": "bebfc7e1dae488215569a80ffc8bf5508f9c5cf30d253d95d5e4f31beaee20a0"
+      },
+      {
+        "event": "wheel",
+        "controls": 61,
+        "gia_bytes": 54291,
+        "gia_sha256": "17e625d739e74cfceb4caf28af449a2849d18bc8cd97f886ee0d7963a356b61f"
+      },
+      {
+        "event": "winding_halls",
+        "controls": 61,
+        "gia_bytes": 54207,
+        "gia_sha256": "7230e85b122b1136ed88615b0f7c1d796b10b170dca752bfd6836ba424e7b6d5"
+      },
+      {
+        "event": "woman_in_blue",
+        "controls": 61,
+        "gia_bytes": 54205,
+        "gia_sha256": "77f81daf724738444eea7bed81e85de0d396f75ee0452b25280f9e7728bbc6df"
+      }
+    ]
+  }
+}

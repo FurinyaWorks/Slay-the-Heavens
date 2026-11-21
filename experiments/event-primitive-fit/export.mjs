@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
+import {portableHalfMasks} from './portable-half-mask.mjs';
 import {readFileSync,writeFileSync,mkdirSync,readdirSync,statSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
-const [repo,inDir,outDir]=process.argv.slice(2).map(x=>resolve(x));
+const args=process.argv.slice(2);
+const portable=args.at(-1)==='--mirror-left-masks';if(portable)args.pop();
+const [repo,inDir,outDir]=args.map(x=>resolve(x));
 const imp=path=>import(pathToFileURL(join(repo,path)));
 const {nativeShape}=await imp('scripts/v25-battle-scene.mjs');
 const {simulatorSave}=await imp('experiments/coop-primitive-lab/build.mjs');
@@ -49,7 +52,7 @@ for(const id of readdirSync(inDir).sort()){
   record.tiers[budget]=info;
   if(budget===60){
    record.controlTree=root;
-   const filename=key+'.save.json',ss=simulatorSave(key,{roots:[root]});
+   const filename=key+'.save.json',ss=simulatorSave(key,{roots:[portable?portableHalfMasks(root):root]});
    save(join(outDir,'scenes',filename),ss);
    cases.push({id:key,filename,sha256:sha(join(outDir,'scenes',filename)),expectedCreated:stats.created,expectedInitialVisible:stats.visible,expectedPeakVisible:stats.visible});
   }
@@ -57,7 +60,7 @@ for(const id of readdirSync(inDir).sort()){
  data[id]=record;
 }
 assert.equal(Object.keys(data).length,49);
-const info={schemaVersion:1,description:'Offline event art candidate; only one event root is intended on screen. No game integration.',canvas:[330,330],officialCapacity:'NOT_RUN',physicalDevices:'NOT_RUN',fits:data};
+const info={schemaVersion:1,exportHalfMaskMode:portable?'left-mirror-x':'legacy-left-unmirrored',description:'Offline event art candidate; only one event root is intended on screen. No game integration.',canvas:[330,330],officialCapacity:'NOT_RUN',physicalDevices:'NOT_RUN',fits:data};
 save(join(outDir,'native-controls.json'),info);
 const byTier=Object.fromEntries(tierIds.map(t=>{
  const values=Object.values(data).map(x=>x.tiers[t]);

@@ -26,3 +26,14 @@
 固定 simulator 0.5.2 按 experiments/coop-primitive-lab 的安装说明。沿用 TASK-94 的色区提取、单轴三角位姿及仓库矩形性能包作为两个候选家族。对同一缩小图比较偏重边缘的平均误差，仅作自动选档，不代替人审。没有调用角色专用的眼、鼻、口局部拟合。使用的仓库工具与源码基线 18c733c9 及本任务分支的转换入口逐字节一致。
 
 **资料隔离**：公开技术分支放复现脚本、摘要和逐图收据，不含待审重绘、拟合图形数据、导出 GIA 和任何原版素材字节。这些只在隔离 Git 资料分支与私审流程保留。批准公开或确定私有目标后，完整 PNG 用定向 Git LFS，图元 JSON 和索引用普通 Git；不得推送缺失真实 LFS 对象的指针，也不把原版参考 PNG 放入仓库。
+
+## 半三角导出复验（同档、零额外控件）
+
+建议这个离线实验的独立 GIA 导出使用 --mirror-left-masks。共享的实验 GIA 序列化器只写左填充；对已有中心横轴的对称图片 100003，把左填充控件的局部 X 单独镜像，保留宽高、中心、Z 角和纵向镜像。原始右填充图元仍保存在控制树数据，供将来走正式编码器；镜像仅用于实验 GIA，不修改游戏正式渲染或原生库。
+
+使用中性三角对照，旧左填充与真实右填充相差 4,382–4,406 个像素；左填充加横向镜像后，在直放、旋转及旋转加纵向镜像三场景均为 **0 像素差**（含 RGBA）。真实 GIA 每场景仅改变四套平台的 X 缩放符号位，大小不变。按此选项重导 49/49：每项控件数、字节数均逐项不变，仍为 **47–61 / 单张，2,606,717 B 合计**。原始文件 SHA 保留在首轮成本表；新 SHA 见 half-mask-recheck.json。模拟截图和二进制并不等于官方导入或手机美术验收。
+
+    node experiments/event-primitive-fit/export.mjs . build/event-fit build/event-fit-mirror --mirror-left-masks
+    node experiments/coop-primitive-lab/run.mjs build/event-fit-mirror/scenes
+    node experiments/event-primitive-fit/probe-half-mask.mjs build/event-mask-probe
+    python experiments/event-primitive-fit/verify-half-mask.py build/event-mask-probe --receipt build/event-fit-mirror/scenes/simulator-all.json --baseline experiments/event-primitive-fit/event-fit-summary.json
