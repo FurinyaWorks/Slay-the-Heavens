@@ -93,7 +93,7 @@ function shopEntryPreflightRead(read){
 function beforeIntegratedReleaseCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='08e05caaa7d1d548bae14695b7babb4cbb7b35e52ee1a5215b5896d6f3764807')return source;
+ if(hash(lf)!=='9990fcb1e83d9a2cff45c6f6442a350b5d6fe52c72be9ff4d740bdc4903265d1')return source;
  const prior=lf.replace(/^const integratedReleaseFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(integratedReleaseFiles))','Object.entries(refinedReleaseFiles))');
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
@@ -151,7 +151,7 @@ const newerTests={
  lua:{
   'tests/lua/detail_latency.lua':'8cd646c8d369ffdf1a59d08ee59c336acf2d064757b27c0c658e08c182caf4a0',
   'tests/lua/potion_management_visual.lua':'4732441f834fa47346ac567392bb4c68758b580b091ef2ce54ab05591d89c5f4',
-  'tests/lua/traveler_power_tooltip.lua':'33c53a378998014847554910c23db18b53608d137793514cb7824088040d17af'
+  'tests/lua/traveler_power_tooltip.lua':'eacaefc663ef5800d114a4118546a170ee7c93be09800df02108a223285afda0'
  },
 };
 export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){

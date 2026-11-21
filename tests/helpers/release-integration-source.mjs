@@ -7,7 +7,7 @@ import { gunzipSync } from 'node:zlib';
 const hash = (value, algorithm='sha256') => createHash(algorithm).update(value).digest('hex');
 const blob = value => hash('blob ' + Buffer.byteLength(value) + '\0' + value, 'sha1');
 const archive = readFileSync(new URL('../fixtures/release-integration-source.json.gz', import.meta.url));
-assert.equal(hash(archive), '6e28e2aa153bd2f3464204abaf74ad3ff43069becb7f2c8370f16c89e6c60c86', 'exact Release integration source archive');
+assert.equal(hash(archive), '0bc178f6d91c587444aece1532ae47c1afd484b4ac22e2da788caeb6dc678bca', 'exact Release integration source archive');
 const layers = JSON.parse(gunzipSync(archive));
 
 for (const layer of Object.values(layers)) {
