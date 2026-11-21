@@ -63,6 +63,7 @@ const pc13Files=Object.freeze({
 const releaseUiFiles=Object.freeze({
  ...pc13Files,
  [runtime]:'8536d9f54bc814e92db509a248b199be0bbd8c84c5a8fac7369637f94e21c513',
+ 'tests/helpers/potion-pointer-source.mjs':'ba6547de02ef3188b9658764452283cd671e3324f19cf0775bce3221db53cdab',
  'tests/helpers/release-ui-restore-source.mjs':'4717bb8b8f2c7f6517cbf922601940869bcba65f2c0b60fabb19d5f2007bd673',
  'tests/helpers/release-ui-restore-source.json.gz':'71c7c20e615dd0d5ec8324a2eec5f503ddcab7ca04db63b928a9dff6c21a36c9',
 });
