@@ -176,28 +176,44 @@ function M.choose(map, nodeId,winged)
     return false, "node_unavailable"
 end
 
+-- Validate each provenance stage lazily: malformed owners must be rejected
+-- before a later stage dereferences them or consults the source RNG.
+local function emeraldMapShape(map)
+    return type(map)=='table' and getmetatable(map)==nil and map.emeraldBoost==nil
+        and array(map.nodes,107) and type(map.emeraldSelection)=='table'
+end
+local function emeraldCoordinates(selection)
+    return getmetatable(selection)==nil and selection.version==1 and integer(selection.act)
+        and selection.act>=1 and selection.act<=3 and integer(selection.x) and integer(selection.y)
+        and selection.x>=0 and selection.x<=6 and selection.y>=0 and selection.y<=14
+end
+local function emeraldIdentity(map,selection,nodeId,act)
+    return nodeId==selection.nodeId and selection.act==act
+        and type(map.runSeed)=='string' and map.seed==map.runSeed
+        and type(map.sourceSignature)=='string' and map.sourceSignature~=''
+end
+local function emeraldMember(map,node,selection,nodeId,found)
+    if type(node)~='table' then return false end
+    if node.hasEmeraldKey~=nil and (node.hasEmeraldKey~=true or node.id~=nodeId) then return false end
+    if node.id==nodeId then
+        if found or node.type~='elite' or node.hasEmeraldKey~=true
+            or node.lane~=selection.x+1 or node.floor~=(map.firstFloor or 1)+selection.y then return false end
+        return true,node
+    end
+    return true,found
+end
 local function emeraldNode(map,nodeId)
-    if type(map)~='table' or getmetatable(map)~=nil or map.emeraldBoost~=nil
-        or not array(map.nodes,107) or type(map.emeraldSelection)~='table' then return end
+    if not emeraldMapShape(map) then return end
     local selection,found=map.emeraldSelection,nil
     local act=map.act
     if act==nil then act=1 end
-    if getmetatable(selection)~=nil or selection.version~=1 or not integer(selection.act)
-        or selection.act<1 or selection.act>3 or not integer(selection.x) or not integer(selection.y)
-        or selection.x<0 or selection.x>6 or selection.y<0 or selection.y>14
-        or nodeId~=selection.nodeId or selection.act~=act
-        or type(map.runSeed)~='string' or map.seed~=map.runSeed
-        or type(map.sourceSignature)~='string' or map.sourceSignature=='' then return end
+    if not emeraldCoordinates(selection) or not emeraldIdentity(map,selection,nodeId,act) then return end
     local ok,mapSeed=pcall(Acts.mapSeed,map.runSeed,selection.act)
     if not ok or map.mapSeed~=mapSeed then return end
     for _,node in ipairs(map.nodes)do
-        if type(node)~='table' then return end
-        if node.hasEmeraldKey~=nil and (node.hasEmeraldKey~=true or node.id~=nodeId) then return end
-        if node.id==nodeId then
-            if found or node.type~='elite' or node.hasEmeraldKey~=true
-                or node.lane~=selection.x+1 or node.floor~=(map.firstFloor or 1)+selection.y then return end
-            found=node
-        end
+        local valid,nextFound=emeraldMember(map,node,selection,nodeId,found)
+        if not valid then return end
+        found=nextFound
     end
     return found
 end

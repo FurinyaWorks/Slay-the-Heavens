@@ -1,3 +1,4 @@
+import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
@@ -50,21 +51,75 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+const rewardScreenBytes=readFileSync(new URL('./reward-screen-ci-source.json.gz',import.meta.url));
+assert.equal(hash(rewardScreenBytes),'04094f1942139397d7e267131fe819c49a5045b7027a4663157ccac985c5cd82');
+const rewardScreenCi=JSON.parse(gunzipSync(rewardScreenBytes));
+assert.equal(rewardScreenCi.base,'cc33beaa12bd827c1de2f2f76b5238c5d203609f');
+for(const {before} of Object.values(rewardScreenCi.files)){
+ assert.equal(hash(before.source),before.sha256);
+ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(before.source)}\0${before.source}`).digest('hex'),before.gitBlob);
+}
+function beforeRewardScreenCiSource(path,source){
+ const row=Object.hasOwn(rewardScreenCi.files,path)?rewardScreenCi.files[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(normalize(source))!==row.after)return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
 const coopLabCiBytes=readFileSync(new URL('./coop-lab-ci-predecessors.json.gz',import.meta.url));
 assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc469830fe0ae9255285dc','complete co-op lab CI predecessors');
 const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
 assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
-// Preserve the reviewed copier bytes when replaying older CI observations.
-function beforeLoadingRecoveryCopier(path,source){
+function beforeTinyHouseCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='d94b9d90c3801579637517844efb21c168c678c751f2cb37962f9f39cbee8c07')return source;
+ const start=lf.indexOf('const tinyHouseFiles='),end=lf.indexOf('const inside=',start);
+ assert(start>=0&&end>start,'exact Tiny House copy block');
+ const prior=(lf.slice(0,start)+lf.slice(end)).replace('Object.entries(tinyHouseFiles)','Object.entries(releaseGuideFiles)');
+ assert.equal(hash(prior),'a6bab3346445c43728ecbc21a3519090028eada17303a513363687c773833b0c','exact Tiny House copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+// Preserve the reviewed copier bytes when replaying older CI observations.
+export function beforeLoadingRecoveryCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ source=beforeRewardScreenCiSource(path,source);
+ source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,source));
  const lf=normalize(source);
  if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;
  const prior=lf.replace("const loadingRecoveryFiles=Object.freeze({\n ...m05Files,\n 'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',\n 'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',\n});\n",'').replace('Object.entries(loadingRecoveryFiles))','Object.entries(m05Files))');
  assert.equal(hash(prior),'1b708b758eb4f6af2f6ede84e9f38099a0aabc348d86d0873733eed28cf7ce51','exact loading recovery helper copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// Preserve the exact #807 source predecessor for existing CI receipts only.
+// Ordinary build/test entry points still consume the compacted live payload.
+const capacityBuildSource=Object.freeze({
+ "scripts/build-native-candidate.mjs":{"before":"f74f1c5b59c5529e25e7d28566d642bf8b5deef99943de647853cbd788a23d9a","after":"b109a73cbdd3f56c293c149af72296684ae554d1d9aae6ac936eef9232c456bf","hunks":[["import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory,monsterArtPayloadSource} from './monster-art.mjs';\n","import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';\n"],["      const expected=monsterArtPayloadSource(monster);\n","      const expected=`-- Generated from the bounded native monster registry.\\nreturn ${toLua(monster??{})}\\n`;\n"]]},
+ "scripts/build-ui.mjs":{"before":"76fbf00c577458f1211f5c78a08698de4dc6f51a019074a8c00e55887691f907","after":"3084d2610113682b46dfe768c61b416ee85b650a09fee258c1eba9269866bc5f","hunks":[["import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding,monsterArtPayloadSource} from './monster-art.mjs';\n","import {prepareMonsterArt,attachMonsterArt,monsterActorTemplate,writeMonsterActorBinding} from './monster-art.mjs';\n"],["  writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),monsterArtPayloadSource(monsterArt));\n","  writeFileSync(join(outputDirectory,'abyss_monster_art_data.lua'),`-- Generated from the bounded native monster registry.\\nreturn ${toLua(monsterArt??{})}\\n`);\n"]]},
+ "scripts/official-portraits.mjs":{"before":"03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186","after":"b7b84c7cb8a10b84fe2459329ff6b1f538301c62472de59289d6a5151f34a308","hunks":[[" const data=portraitSources(root,{selectionAvatar,battlePortrait:battlePortrait&&!officialAssets}).map(a=>{\n"," const data=portraitSources(root,{selectionAvatar,battlePortrait}).map(a=>{\n"],[" if(officialAssets&&battlePortrait)data.push('battlePortraitEnabled=true',`battleApprovedNative=${toLua(approvedBattleNative(root))}`);\n"," if(officialAssets&&battlePortrait)data.push(`battleApprovedNative=${toLua(approvedBattleNative(root))}`);\n"],[" const flags={selectionAvatar:/\\bavatar96=/.test(source),battlePortrait:/\\b(?:battle133|battleApprovedNative)=|^battlePortraitEnabled=true,?$/m.test(source)};\n"," const flags={selectionAvatar:/\\bavatar96=/.test(source),battlePortrait:/\\bbattle133=/.test(source)};\n"]]},
+ "tests/official-portraits-build.test.mjs":{"before":"06280b8717f0c0194479cab956e3fea53d00b7d26c06f3fbb37b1152224e4a63","after":"3516de013895e0d8eb050e82c402b6cba779d23a4ce659551a07e29ff643f893","hunks":[["import './capacity-payload.cases.mjs';\n",""]]},
+});
+const exactCapacityBuild=(source,sha)=>typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha;
+function assertDevelopCapacityCohort(read){
+ const inputs=Object.entries(capacityBuildSource).map(([path,row])=>[path,row.after,beforeRewardScreenCiSource(path,read(path,'utf8'))]);
+ if(inputs.some(([,sha,source])=>exactCapacityBuild(source,sha))){
+  for(const [path,sha,source]of inputs)assert(exactCapacityBuild(source,sha),'fresh complete integration source: '+path);
+ }
+}
+export function beforeDevelopCapacityBuildSource(path,source){
+ const row=Object.hasOwn(capacityBuildSource,path)?capacityBuildSource[path]:null;
+ if(row)source=beforeRewardScreenCiSource(path,source);
+ if(!row||!exactCapacityBuild(source,row.after))return source;
+ let lf=normalize(source);
+ for(const [current,prior]of row.hunks){
+  assert.equal(lf.split(current).length,2,'exact #807 source hunk: '+path);
+  lf=lf.replace(current,()=>prior);
+ }
+ assert.equal(hash(lf),row.before,'exact #807 source predecessor: '+path);
+ return source.includes('\r\n')?lf.replaceAll('\n','\r\n'):lf;
+}
 function beforeCoopCiSource(path,source){
+ source=beforeRewardScreenCiSource(path,source);
+ source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
  source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
@@ -152,8 +207,9 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ assertDevelopCapacityCohort(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeRewardScreenCiSource(path,read(path,'utf8'))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){
