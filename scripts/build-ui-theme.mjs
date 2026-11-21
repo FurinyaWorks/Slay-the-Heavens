@@ -28,6 +28,17 @@ function requireIcons(errors, table, ids, label) {
   for (const id of ids) if (!isImage(iconId(table?.[id]))) errors.push(`icon.${label} has no picture for ${id}`);
 }
 
+// Formal colorless families are registered after base content loading. Bomb
+// instance IDs deliberately resolve to one family; different powers must not.
+const colorlessStatusFamilies=['shackled','panache','no_block','intangible','magnetism','mayhem','sadistic_nature','colorless_bomb'];
+function requireDistinctStatusIcons(errors,icons,ids){
+  const seen=new Map();
+  for(const name of new Set(ids)){
+    const picture=iconId(icons?.[name]);if(!isImage(picture))continue;
+    if(seen.has(picture))errors.push(`icon.status.${name} shares picture ${picture} with ${seen.get(picture)}`);
+    else seen.set(picture,name);
+  }
+}
 export function validateTheme(theme, content) {
   const errors = [];
   walk(theme.color, 'color', (value, path) => {
@@ -51,7 +62,9 @@ export function validateTheme(theme, content) {
     if (Math.min(w / width, h / height) < 1) errors.push(`canvas.${device} is smaller than the base canvas`);
   }
   requireIcons(errors, theme.icon.enemy, content.enemies.enemies.map(enemy => enemy.id), 'enemy');
-  requireIcons(errors, theme.icon.status, content.statuses.statuses.map(status => status.id), 'status');
+  const statuses=[...content.statuses.statuses.map(status=>status.id),...colorlessStatusFamilies];
+  requireIcons(errors,theme.icon.status,statuses,'status');
+  requireDistinctStatusIcons(errors,theme.icon.status,statuses);
   requireIcons(errors, theme.icon.potion, content.potions.potions.map(potion => potion.id), 'potion');
   requireIcons(errors, theme.icon.relic, content.relics.relics.map(relic => relic.id), 'relic');
   requireIcons(errors, theme.icon.node, content.rules.map.nodeTypes, 'node');
