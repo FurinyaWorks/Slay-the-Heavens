@@ -1,0 +1,141 @@
+{
+  "eventId": "golden_shrine",
+  "sourceSha256": "006ba1096bc9ae360e60553e0d5bfa353ae627aa14fa8cdd27afe51684957841",
+  "method": "deterministic cue-weighted pruning of manual trace; compare actual simulator at 330",
+  "previousManual": {
+    "controls": 61,
+    "giaBytes": 54547
+  },
+  "cases": [
+    {
+      "variant": "golden_shrine_48-60",
+      "saveSha256": "923fa61640319bb1819f73405b99b5bf8091690442e3cb3b833f51758797b172",
+      "time": 0,
+      "frame": 0,
+      "created": 49,
+      "visible": 49,
+      "containers": 1,
+      "images": 48,
+      "paintEntries": 48,
+      "giaBytes": 43945,
+      "giaSha256": "81775b710feaceff853e436a2b68d13de0e8fd089cb8c3bb8dbdc8a72b2aea5a",
+      "simulator": "PASS"
+    },
+    {
+      "variant": "golden_shrine_52-60",
+      "saveSha256": "38d69be6a023d19fe9ff3247477cd255485d89b579cfb2165420842ff4681f97",
+      "time": 0,
+      "frame": 0,
+      "created": 53,
+      "visible": 53,
+      "containers": 1,
+      "images": 52,
+      "paintEntries": 52,
+      "giaBytes": 47501,
+      "giaSha256": "5124025814ebe5736808e803b3ff3bbd35ce786378e012977c8c0d5452289eee",
+      "simulator": "PASS"
+    },
+    {
+      "variant": "golden_shrine_56-60",
+      "saveSha256": "4af2ebe07fb963b08fc6f0fbc05bad9b14f9156a72396b49decea2757a9e0b4c",
+      "time": 0,
+      "frame": 0,
+      "created": 57,
+      "visible": 57,
+      "containers": 1,
+      "images": 56,
+      "paintEntries": 56,
+      "giaBytes": 51057,
+      "giaSha256": "ff03ca7899985d0da662073ef5dea2d8a80d1dfe6b1e4f825adbbd390b044c44",
+      "simulator": "PASS"
+    }
+  ],
+  "selected": {
+    "controls": 49,
+    "giaBytes": 43945,
+    "deltaControls": -12,
+    "deltaGiaBytes": -10602
+  },
+  "separateFilesSevenSum": 369567,
+  "cumulativeDeltaAllBaseline": 5282,
+  "sevenCombinedRun": "NOT_RUN_FOR_THIS_SELECTION",
+  "host": {
+    "stage": "offline static layout validation only",
+    "profiles": {
+      "default": {
+        "baselineEventViewDirectChildren": 13,
+        "slotSize": [
+          180,
+          180
+        ],
+        "events": {
+          "golden_shrine_48": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 48,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          },
+          "golden_shrine_52": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 52,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          },
+          "golden_shrine_56": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 56,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          }
+        }
+      },
+      "officialEventStyle": {
+        "baselineEventViewDirectChildren": 13,
+        "slotSize": [
+          330,
+          330
+        ],
+        "events": {
+          "golden_shrine_48": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 48,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          },
+          "golden_shrine_52": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 52,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          },
+          "golden_shrine_56": {
+            "eventViewDirectChildren": 14,
+            "fitRootDirectChildren": 56,
+            "separateRoot": "PASS",
+            "flattened": "REJECTED_AS_EXPECTED",
+            "asImageChildren": "REJECTED_AS_EXPECTED",
+            "root61Direct": "NOT_APPLICABLE"
+          }
+        }
+      }
+    }
+  },
+  "review": {
+    "selected": "49 controls",
+    "preserved": "gold face and altar and flanking silhouettes",
+    "tradeoff": "fewer floor/rock facets and one less foreground gold flash"
+  },
+  "officialCapacity": "NOT_RUN",
+  "physicalDevices": "NOT_RUN",
+  "integratedWithGame": false
+}
