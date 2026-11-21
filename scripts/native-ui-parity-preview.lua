@@ -45,7 +45,7 @@ local function capture(name)
 end
 capture('menu')
 assert(ui:openExit());capture('exit')
-assert(ui:closeExit()and ui:start());capture('map-start')
+assert(ui:closeExit() and F.start(ui));capture('map-start')
 assert(ui:openDeck());for _=1,3 do ui:update(0)end;capture('deck');assert(ui:closeDeck())
 assert(ui.mapUI:choose(F.Nodes.available(ui.run,ui.map)[1].id));F.win(ui,root);capture('rewards')
 F.click(root,'battlePanel','cardReward');F.click(root,'battlePanel','skip')

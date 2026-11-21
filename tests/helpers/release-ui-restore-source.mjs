@@ -37,7 +37,7 @@ const rightClick=releaseUiRestoreArchive(readFileSync(new URL('./release-card-ri
 const fieldCancel=releaseUiRestoreArchive(readFileSync(new URL('./release-card-field-cancel-source.json.gz',import.meta.url)),
  'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca','aa8fde88c2a077f3e7266984cdf3a4e6be8fc45a');
 const controlsGuideRemoval=releaseUiRestoreArchive(readFileSync(new URL('./release-controls-guide-removal-source.json.gz',import.meta.url)),
- 'c0124d8879ae800a7eb1aff1efecc321122e721615faaf4cd8080808a249c53e','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
+ '321abc9fb6759dd27644f414c88f3a2df0be32f236a258a52d5b89cc6d22d687','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));

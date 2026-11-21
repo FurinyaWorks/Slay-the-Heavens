@@ -64,11 +64,11 @@ const releaseUiFiles=Object.freeze({
  ...pc13Files,
  [runtime]:'8536d9f54bc814e92db509a248b199be0bbd8c84c5a8fac7369637f94e21c513',
  'tests/helpers/potion-pointer-source.mjs':'ba6547de02ef3188b9658764452283cd671e3324f19cf0775bce3221db53cdab',
- 'tests/helpers/release-ui-restore-source.mjs':'8c4c33d4aa28e7295a34314752ca957038fc5772fbcc74620eb042b0e8552b96',
+ 'tests/helpers/release-ui-restore-source.mjs':'1373844324388a8299e2fa50f24ac66410f1d1583f806d8d24616f0be0f0843b',
  'tests/helpers/release-ui-restore-source.json.gz':'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b',
  'tests/helpers/release-card-field-cancel-source.json.gz':'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca',
  'tests/helpers/release-card-right-click-source.json.gz':'a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a',
- 'tests/helpers/release-controls-guide-removal-source.json.gz':'c0124d8879ae800a7eb1aff1efecc321122e721615faaf4cd8080808a249c53e',
+ 'tests/helpers/release-controls-guide-removal-source.json.gz':'321abc9fb6759dd27644f414c88f3a2df0be32f236a258a52d5b89cc6d22d687',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
