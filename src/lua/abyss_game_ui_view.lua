@@ -64,7 +64,7 @@ function M.syncController(self,controller,openingCovered)
             if self.disabled or self.settlementRequested or self.settlementBusy then scope='blocked'
             elseif self.easterEggOpen then scope='easterEgg'
             elseif self.exitOpen then scope='exit'
-            elseif self.pageReveal and self.pageReveal:covered() then scope='pageReveal'
+            elseif self.pageReveal and self.pageReveal:covered() then scope=self.pageReveal.state=='failed' and 'pageReveal' or 'blocked'
             elseif self.motion.deathReveal then scope='blocked'
             elseif openingCovered() then scope='blocked'
             elseif self.characterOpen and not self.deckUI.visible then scope='characters'

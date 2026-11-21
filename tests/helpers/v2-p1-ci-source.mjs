@@ -1,4 +1,5 @@
 import {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
+import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 import assert from 'node:assert/strict';
 import {beforePc13RewardCover} from './pc13-reward-cover-source.mjs';
 import {createHash} from 'node:crypto';
@@ -21,6 +22,7 @@ assert.equal(sha256(potionMerge.before),potionMerge.beforeSha256);
 assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.before)}\0`).update(potionMerge.before).digest('hex'),potionMerge.beforeGitBlob);
 
 export function beforeV2UiEvidence(path, source) {
+  source = beforeLoadingRecoverySource(path,source);
   source = beforeM05ShopCiSource(path,source);
   source = beforePc13RewardCover(path,source);
   // The P1 merge recognizes the immediate pre-Tiny-House bytes only.

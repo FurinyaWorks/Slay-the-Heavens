@@ -53,12 +53,13 @@ function M.new(root, data, presentation, clickEvent, platform)
         if controller then controller.blocked=function()return self.pageReveal:covered() and not self.exitOpen end end
         cover:GetChild('blocker'):AddCursorEventListener(clickEvent,function()return true end)
         local cancel=cover:GetChild('cancel'):GetChild('hit')
+        local function canRecover()return self.pageReveal.state=='failed' and not self.exitOpen end
         local function leave()
-            if not self.pageReveal:covered() or self.exitOpen then return false end
+            if not canRecover()then return false end
             return self:openMenu()
         end
         cancel:AddCursorEventListener(clickEvent,leave)
-        Controller.bind(controller,cancel,'pageReveal',leave,function()return self.pageReveal:covered() and not self.exitOpen end,1)
+        Controller.bind(controller,cancel,'pageReveal',leave,canRecover,1)
     end
     local newSeed = platform.newSeed or function() return require("abyss_new_run_seed").next() end
     local bgm = Bgm.new(platform.music)

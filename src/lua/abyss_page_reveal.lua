@@ -123,6 +123,8 @@ function M.new(cover,ready,onIntent,frames)
         self.localFrame=localFrame(intent,self.intent)
         self.painting=nil
         self.epoch=self.epoch+1;self.intent=intent;self.state='preparing';self.armed=nil;self.error=nil
+        local recovery=cover:GetChild('cancel')
+        if recovery then recovery:SetVisible(false)end
         local ticket=self.epoch
         if onIntent then onIntent(ticket)end
         if self.epoch~=ticket then return false end
@@ -172,6 +174,8 @@ function M.new(cover,ready,onIntent,frames)
         if self:covered() and raise then cover:SetAsLastSibling()end
         local message=cover:GetChild('message')
         if message then message.text=self.error and '画面暂未准备完成，可返回菜单。' or '正在准备画面…'end
+        local recovery=cover:GetChild('cancel')
+        if recovery then recovery:SetVisible(self.state=='failed')end
     end
     function gate:step(intent)
         self.tick=self.tick+1
@@ -183,6 +187,7 @@ function M.new(cover,ready,onIntent,frames)
         local value,reason=readiness(ready,intent)
         if ticket~=self.epoch then return false end
         if reason then return reject(self,tostring(reason))end
+        self.error=nil
         if value~=true then self.state='preparing';self.armed=nil;return false end
         -- New base pages confirm on another scheduler turn. A retained base's
         -- local work publishes as soon as this turn's real owners report ready.
