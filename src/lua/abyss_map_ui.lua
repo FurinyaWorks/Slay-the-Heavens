@@ -374,17 +374,132 @@ function M.new(root, map, onChoose, clickEvent, options)
             end
         else control.imageColor=ink end
     end
+    local function hideInvalidChapter()
+        cancelDrag()
+        self.navigationEnabled, self.slots, self.breathing = false, {}, {}
+        at("title").text, at("notice").text = "", "地图章节信息无效 · 请重新启程"
+        at("notice"):SetVisible(true)
+        for i = 1, Layout.maxNodes do at("node" .. i):SetVisible(false) end
+        for i = 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
+        for _, name in ipairs({"previous","next"}) do paintButton(name) end
+    end
+    local function terminalNotice(chapter, current)
+        return chapter.terminal == 'boss_treasure' and "已抵达首领宝箱 · 请完成当前房间"
+            or current.act == 4 and "已抵达终幕首领 · 请完成最终战斗与结算"
+            or "已抵达终点 · 请完成当前房间"
+    end
+    local function mapNotice(current, chapter, terminal)
+        return self.entryError or (current.complete and terminal or
+            (current.floor == chapter.boss and (self.navigationEnabled
+                and (chapter.terminal == 'boss_treasure' and "首领奖励已处理 · 即将前往宝箱" or "首领奖励已处理 · 请前往终点")
+                or "已抵达首领 · 请完成首领战斗与奖励") or
+            (self.navigationEnabled and "" or "请先完成当前节点")
+            ))
+    end
+    local function paintMapHeader(current, chapter)
+        local terminal = terminalNotice(chapter, current)
+        at("title").text = Theme.presentationProfile=='official-assets-first' and tostring(current.floor)
+            or chapter.name .. " · 第 " .. current.floor .. " 层"
+        at("notice").text = mapNotice(current, chapter, terminal)
+        local notice=current.emeraldSelection and Theme.layout.map.emeraldNotice or Theme.layout.map.notice
+        at('notice'):SetAnchoredPosition(notice[1],notice[2]);at('notice'):SetSizeDelta(notice[3],Theme.layout.map.presentation.noticeHeight)
+        if current.emeraldSelection then
+            local prefix=at('notice').text~='' and at('notice').text..' · ' or ''
+            at('notice').text=prefix..'绿字节点为燃烧精英，胜利可另领绿钥匙'
+        end
+        at('notice'):SetVisible(at('notice').text~='')
+        buttonHover, buttonPress = nil, nil
+        for _, name in ipairs({"previous","next"}) do paintButton(name) end
+    end
+    local function paintMapEdges(current, nodes, taken)
+        local edge = 0
+        for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do
+            local target = assert(nodes[id], "map UI dangling route")
+            if target.roomKind ~= 'boss_treasure' then
+                edge = edge + 1
+                assert(edge <= Layout.maxEdges, "map UI edge capacity exceeded")
+                line(at("edge" .. edge), node, target, taken[node.id .. ":" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor))
+            end
+        end end
+        for i = edge + 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
+    end
+    local function paintVisibleRoom(i, node, fx, floor, bossName)
+        local box, state, size = fx.box, fx.state, fx.size
+        box:SetAnchoredPosition(fx.x, fx.y)
+        box:SetSizeDelta(size, size)
+        box.localScaleX, box.localScaleY = 1, 1
+        local icon = child(box, "icon")
+        if state ~= "available" then fx.alpha = 1 end
+        local ring = child(box, "ring")
+        local circled = state == 'current' or state == 'visited'
+        ring:SetVisible(circled)
+        ring.localRotationZ = fx.angle
+        if circled then
+            local ink = state == 'current' and Theme.color.mapCanvas.currentRing or Theme.color.mapCanvas.visitedRing
+            tint(child(ring, 'outline'), ink)
+            tint(child(ring, 'brush'), ink)
+        end
+        local iconId = fx.boss and Theme.icon.mapBoss[bossName] or Theme.icon.node[node.type]
+        icon:SetImage(imageSource, iconId)
+        -- color: NOT_TAKEN for locked rooms, AVAILABLE ink for taken/current/available.
+        fx.colour = colour
+        -- TASK-4.13: on the dark canvas, taken rooms share the gold path ink and
+        -- unreachable rooms recede by opacity, so current/visited/next read at a glance.
+        fx.ink = M.roomInk(node, state, floor)
+        M.paintRoom(fx)
+        icon:SetAnchoredPosition(0,node.hasEmeraldKey and Theme.layout.map.emeraldIconY or 0)
+        child(box,'emeraldLabel'):SetVisible(node.hasEmeraldKey==true)
+        local hit = child(box, "hit")
+        hit:SetSizeDelta(size, size)
+        local clickable = state == "available" and self.navigationEnabled
+            and not self.choosing and not scrollAnimation
+        hit:SetVisible(clickable)
+        hit.canControllerFocus = clickable
+        self.slots[i] = node.id
+        if clickable then self.breathing[#self.breathing + 1] = box end
+    end
+    local function roomState(node, currentNodeId)
+        if node.id == currentNodeId then return "current" end
+        if node.visited then return "visited" end
+        return node.available and "available" or "locked"
+    end
+    local function paintMapRoom(i, current, bossName)
+        local box, node = at("node" .. i), current.nodes[i]
+        local visible = false
+        if node and node.roomKind ~= 'boss_treasure' then
+            local size = node.type == "boss" and Theme.layout.map.bossNode or Theme.layout.map.node
+            local x, y = position(node)
+            local state = roomState(node, current.currentNodeId)
+            local fx = self.roomFx[node.id] or newRoomFx(node.id)
+            self.roomFx[node.id] = fx
+            -- A newly selected room adds a rotated ring. Retire its reachable
+            -- pulse first so focus never culls that ring at the first row.
+            if state == "current" and fx.state ~= state then fx.scale = Sts.baseScale end
+            fx.state,fx.size,fx.box,fx.x,fx.y,fx.emerald=state,size,box,x,y,node.hasEmeraldKey
+            fx.boss = node.type == 'boss'
+            fx.hovered,fx.pressed=false,false
+            visible=roomVisible(fx);fx.visible=visible
+            -- Hidden transitions still lerp to rest; otherwise a temporarily
+            -- oversized current ring could remain culled forever.
+            self.activeFx[#self.activeFx+1]=fx
+            -- Hidden rows have no slots or focus targets. Avoid rewriting
+            -- every child of all 17 floors during each pan animation frame.
+            if visible then paintVisibleRoom(i, node, fx, current.floor, bossName) end
+        end
+        if not visible then
+            local hit = child(box, 'hit')
+            if node or hit.canControllerFocus then
+                hit:SetVisible(false)
+                hit.canControllerFocus = false
+            end
+        end
+        box:SetVisible(visible)
+    end
     function self.render(_)
         if not self.map then return false, "map_unbound" end
         local chapter = chapterFor(self.map)
         if not chapter then
-            cancelDrag()
-            self.navigationEnabled, self.slots, self.breathing = false, {}, {}
-            at("title").text, at("notice").text = "", "地图章节信息无效 · 请重新启程"
-            at("notice"):SetVisible(true)
-            for i = 1, Layout.maxNodes do at("node" .. i):SetVisible(false) end
-            for i = 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
-            for _, name in ipairs({"previous","next"}) do paintButton(name) end
+            hideInvalidChapter()
             return
         end
         local current, nodes, taken = mapView(self.map), {}, {}
@@ -397,105 +512,12 @@ function M.new(root, map, onChoose, clickEvent, options)
         for _, node in ipairs(current.nodes) do nodes[node.id] = node end
         for i = 1, #current.path - 1 do taken[current.path[i] .. ":" .. current.path[i + 1]] = true end
         self.slots, self.breathing = {}, {}
-        local terminal = chapter.terminal == 'boss_treasure' and "已抵达首领宝箱 · 请完成当前房间"
-            or current.act == 4 and "已抵达终幕首领 · 请完成最终战斗与结算"
-            or "已抵达终点 · 请完成当前房间"
-        at("title").text = Theme.presentationProfile=='official-assets-first' and tostring(current.floor)
-            or chapter.name .. " · 第 " .. current.floor .. " 层"
-        at("notice").text = self.entryError or (current.complete and terminal or
-            (current.floor == chapter.boss and (self.navigationEnabled
-                and (chapter.terminal == 'boss_treasure' and "首领奖励已处理 · 即将前往宝箱" or "首领奖励已处理 · 请前往终点")
-                or "已抵达首领 · 请完成首领战斗与奖励") or
-            (self.navigationEnabled and "" or "请先完成当前节点")
-            ))
-        local notice=current.emeraldSelection and Theme.layout.map.emeraldNotice or Theme.layout.map.notice
-        at('notice'):SetAnchoredPosition(notice[1],notice[2]);at('notice'):SetSizeDelta(notice[3],Theme.layout.map.presentation.noticeHeight)
-        if current.emeraldSelection then
-            local prefix=at('notice').text~='' and at('notice').text..' · ' or ''
-            at('notice').text=prefix..'绿字节点为燃烧精英，胜利可另领绿钥匙'
-        end
-        at('notice'):SetVisible(at('notice').text~='')
-        buttonHover, buttonPress = nil, nil
-        for _, name in ipairs({"previous","next"}) do paintButton(name) end
-        local edge = 0
-        for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do
-            local target = assert(nodes[id], "map UI dangling route")
-            if target.roomKind ~= 'boss_treasure' then
-                edge = edge + 1
-                assert(edge <= Layout.maxEdges, "map UI edge capacity exceeded")
-                line(at("edge" .. edge), node, target, taken[node.id .. ":" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor))
-            end
-        end end
-        for i = edge + 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
+        paintMapHeader(current, chapter)
+        paintMapEdges(current, nodes, taken)
         assert(#current.nodes <= Layout.maxNodes, "map UI node capacity exceeded")
         self.activeFx = {}
         local bossName = options.bossName and options.bossName(self.map)
-        for i = 1, Layout.maxNodes do
-            local box, node = at("node" .. i), current.nodes[i]
-            local visible = false
-            if node and node.roomKind ~= 'boss_treasure' then
-                local size = node.type == "boss" and Theme.layout.map.bossNode or Theme.layout.map.node
-                local x, y = position(node)
-                local state = node.id == current.currentNodeId and "current" or
-                    (node.visited and "visited" or (node.available and "available" or "locked"))
-                local fx = self.roomFx[node.id] or newRoomFx(node.id)
-                self.roomFx[node.id] = fx
-                -- A newly selected room adds a rotated ring. Retire its reachable
-                -- pulse first so focus never culls that ring at the first row.
-                if state == "current" and fx.state ~= state then fx.scale = Sts.baseScale end
-                fx.state,fx.size,fx.box,fx.x,fx.y,fx.emerald=state,size,box,x,y,node.hasEmeraldKey
-                fx.boss = node.type == 'boss'
-                fx.hovered,fx.pressed=false,false
-                visible=roomVisible(fx);fx.visible=visible
-                -- Hidden transitions still lerp to rest; otherwise a temporarily
-                -- oversized current ring could remain culled forever.
-                self.activeFx[#self.activeFx+1]=fx
-                -- Hidden rows have no slots or focus targets. Avoid rewriting
-                -- every child of all 17 floors during each pan animation frame.
-                if visible then
-                box:SetAnchoredPosition(x, y)
-                box:SetSizeDelta(size, size)
-                box.localScaleX, box.localScaleY = 1, 1
-                local icon = child(box, "icon")
-                if state ~= "available" then fx.alpha = 1 end
-                local ring = child(box, "ring")
-                local circled = state == 'current' or state == 'visited'
-                ring:SetVisible(circled)
-                ring.localRotationZ = fx.angle
-                if circled then
-                    local ink = state == 'current' and Theme.color.mapCanvas.currentRing or Theme.color.mapCanvas.visitedRing
-                    tint(child(ring, 'outline'), ink)
-                    tint(child(ring, 'brush'), ink)
-                end
-                local iconId = fx.boss and Theme.icon.mapBoss[bossName] or Theme.icon.node[node.type]
-                icon:SetImage(imageSource, iconId)
-                -- color: NOT_TAKEN for locked rooms, AVAILABLE ink for taken/current/available.
-                fx.colour = colour
-                -- TASK-4.13: on the dark canvas, taken rooms share the gold path ink and
-                -- unreachable rooms recede by opacity, so current/visited/next read at a glance.
-                fx.ink = M.roomInk(node, state, current.floor)
-                M.paintRoom(fx)
-                icon:SetAnchoredPosition(0,node.hasEmeraldKey and Theme.layout.map.emeraldIconY or 0)
-                child(box,'emeraldLabel'):SetVisible(node.hasEmeraldKey==true)
-                local hit = child(box, "hit")
-                hit:SetSizeDelta(size, size)
-                local clickable = visible and state == "available" and self.navigationEnabled
-                    and not self.choosing and not scrollAnimation
-                hit:SetVisible(clickable)
-                hit.canControllerFocus = clickable
-                if visible then self.slots[i] = node.id end
-                if clickable then self.breathing[#self.breathing + 1] = box end
-                end
-            end
-            if not visible then
-                local hit = child(box, 'hit')
-                if node or hit.canControllerFocus then
-                    hit:SetVisible(false)
-                    hit.canControllerFocus = false
-                end
-            end
-            box:SetVisible(visible)
-        end
+        for i = 1, Layout.maxNodes do paintMapRoom(i, current, bossName) end
         self:update(0)
     end
     function self.resize(_, width, height)
