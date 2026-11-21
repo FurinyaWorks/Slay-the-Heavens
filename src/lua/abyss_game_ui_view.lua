@@ -384,7 +384,15 @@ function M.exitEntryVisible(self)
 end
 
 function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVisible,exitPanel,exitDialogOwnsForeground,runMenu,canViewRoute,child,refreshExitDialog)
-    local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
+    local official=Theme.presentationProfile=='official-assets-first'
+    local hud=official and Theme.officialAssets.battleHud
+    local backKey=official and platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
+    local menuKeyListener=backKey and runMenu.AddKeyEventListener
+    if menuKeyListener then
+        runMenu:AddKeyEventListener(backKey,function()
+            return not self.disabled and runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
+        end)
+    end
     local utilitiesReady=false
     local routeLabels={}
     local function routeCaption(back)
@@ -432,6 +440,9 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             exitEntry:SetAsLastSibling()
             exitPanel:SetVisible(exitDialogOwnsForeground())
             runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.controlsOpen and not self.routeOpen)
+            if menuKeyListener and runMenu.disableKeyEventPassthrough ~= runMenu.visible then
+                runMenu.disableKeyEventPassthrough = runMenu.visible
+            end
             require('abyss_game_ui_navigation_view').runMenu(self,runMenu,canViewRoute())
             if runMenu.visible then runMenu:SetAsLastSibling() end
             local back = child('mapPanel'):GetChild('previewBack')

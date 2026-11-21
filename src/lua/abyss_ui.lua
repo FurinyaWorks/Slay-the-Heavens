@@ -252,6 +252,7 @@ function OnStart()
               monsterActors=setmetatable({instantiate=actorInstantiate,destroy=actorDestroy},{__index=actorBinding}),
               nativeMonsterArtEnabled=flags.monsters,
               color = Color, imageSource = Enum.ImageSource.StaticReference, cursorEvents = Enum.CursorEventType, keyEvents = Enum.KeyEventType,
+              keyRoot = not componentBridge and script.object or nil,
               tween = game.Tween and function(control,fields,duration)
                   return game.Tween(componentBridge and componentBridge.unwrap(control) or control,fields,duration)
               end,
