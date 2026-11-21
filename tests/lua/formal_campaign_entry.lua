@@ -2,7 +2,20 @@
 -- engine doubles. Only combat completion and prior Boss progress are staged;
 -- no keys or historical wins are granted. This is not a natural playthrough.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
-local Map,Run=require('abyss_map'),require('abyss_run')
+local Map,Run,Nodes=require('abyss_map'),require('abyss_run'),require('abyss_nodes')
+local Theme=require('abyss_theme')
+local function verifyBossBadge(host,root)
+    assert(host.mapUI:scrollBy(10000))
+    local name=host.run.bossInitialization.bossList[1]
+    local nodes=host.map.nodes
+    local boss=F.mapControl(root:GetChild('mapPanel'),'node'..(#nodes-1))
+    local chest=F.mapControl(root:GetChild('mapPanel'),'node'..#nodes)
+    local icon=boss:GetChild('icon')
+    assert(boss.visible and icon.imageId==assert(Theme.icon.mapBoss[name]) and not chest.visible)
+    local ratio=icon.sizeDeltaX/(Theme.layout.map.node*.6)
+    assert(ratio>=2 and ratio<=2.5,'boss emblem size outside STS1 target')
+    assert(host.mapUI:focusCurrent())
+end
 local function finishOpening(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
@@ -139,10 +152,12 @@ local function fight(host,root,floor)
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
     assert(Run.finishCombat(host.run));host:refresh()
     assert(host.run.phase=='reward' and host.run.rewards.cards)
-    F.click(root,'battlePanel','continue')
-    assert(host.mode=='map' and host.run.nodeFlow.complete)
+    if nextNode.type~='boss' then
+        F.click(root,'battlePanel','continue')
+        assert(host.mode=='map' and host.run.nodeFlow.complete)
+    end
 end
-local function bossComplete(host,bossFloor)
+local function bossComplete(host,bossFloor,skipCard)
     local map,run=host.map,host.run
     -- Skip the intervening played rooms, retaining the actual generated map,
     -- legal path and chapter owners. Do not fabricate a chest or ending reward.
@@ -153,12 +168,55 @@ local function bossComplete(host,bossFloor)
     run.nodeFlow={id=map.currentNodeId,floor=map.floor,type='combat',complete=true,result='victory',
         mapSeed=map.seed,mapSignature=map.sourceSignature}
     host:refresh()
-    fight(host,host.root,bossFloor)
+    local root=host.root
+    fight(host,root,bossFloor)
+    local rewards=run.rewards
+    local signature, generation, deck=map.sourceSignature,run.roomGeneration,#run.deck
+    assert(run.phase=='reward' and map.floor==bossFloor and #Nodes.available(run,map)==0)
+    host:refresh()
+    assert(run.rewards==rewards and run.roomGeneration==generation,'refresh skipped battle rewards')
+    F.click(root,'battlePanel','goldReward')
+    assert(rewards.goldClaimed)
+    F.click(root,'battlePanel','cardReward')
+    assert(host.battleUI.rewardScreen=='cards')
+    if skipCard then
+        F.click(root,'battlePanel','skip')
+        assert(not rewards.cardResolved and #run.deck==deck)
+    else
+        F.click(root,'battlePanel','card1')
+        assert(rewards.cardResolved and #run.deck==deck+1)
+    end
+    assert(run.phase=='reward' and map.floor==bossFloor and host.battleUI.rewardScreen=='list')
+    if bossFloor==16 and not skipCard then
+        local enter=Nodes.enter
+        local tried=false
+        Nodes.enter=function(r,m,id)
+            assert(r==run and m==map and id==Map.available(map)[1].id)
+            tried=true
+            return false,'test_temporary_entry_failure'
+        end
+        local called,reason=pcall(F.click,root,'battlePanel','continue')
+        Nodes.enter=enter
+        assert(called,reason)
+        assert(tried and run.phase=='reward' and run.rewards==rewards and map.floor==bossFloor)
+        assert(run.roomGeneration==generation and not run.pendingCombatRewards)
+    end
+    local button=root:GetChild('battlePanel'):GetChild('continue')
+    assert(button:GetChild('normal'):GetChild('label').text=='前往首领宝箱')
+    local proceed=button.click or button:GetChild('hit').click
+    F.click(root,'battlePanel','continue')
+    assert(run.phase=='node' and host.mode=='node' and run.floor==bossFloor+1 and map.floor==run.floor)
+    assert(run.roomGeneration==generation+1 and #map.path==bossFloor-(map.firstFloor or 1)+2)
+    local chest=run.nodeFlow
+    assert(chest.roomKind=='boss_treasure' and chest.id==map.currentNodeId and chest.mapSignature==signature)
+    assert(run.pendingCombatRewards==nil and run.rewards==nil)
+    proceed()
+    host:refresh()
+    assert(run.nodeFlow==chest and run.roomGeneration==generation+1,'repeat Proceed reentered the boss chest')
 end
 local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
     bossComplete(host,bossFloor)
-    assert(host.mapUI:choose(Map.available(map)[1].id))
     assert(host.nodeUI:press('treasureView/chest'))
     host.nodeUI:update(2)
     assert(host.nodeUI:press('back'))
@@ -173,6 +231,7 @@ end
 
 local host,root,signals=fixture(false,true)
 assert(start(host,root,'traveler')==80)
+verifyBossBadge(host,root)
 assert(not host.run.characterProfile and host.run.maxHp==88,'fresh HP mini reward changes the actual maximum')
 assert(#signals==2 and signals[1]=='ABYSS_BGM_STOP' and signals[2]=='ABYSS_BGM_MAP')
 fight(host,root,1)
@@ -194,9 +253,9 @@ end
 noVisibleKeyPromise(root:GetChild('nodePanel'))
 assert(host.nodeUI:press('back'))
 chest(host,16,2)
+verifyBossBadge(host,root)
 fight(host,root,18)
 bossComplete(host,33)
-assert(host.mapUI:choose(Map.available(host.map)[1].id))
 assert(host.run.floor==34 and host.run.phase=='node')
 assert(host.nodeUI:press('treasureView/chest'));host.nodeUI:update(2)
 local rewardKey
@@ -238,8 +297,7 @@ print('PASS formal two-act route, claim endpoint, new run, defeat and settlement
 -- The skip route enters the same endpoint, and settlement earns platform WIN
 -- for this bounded challenge only, never a source full-campaign historical win.
 local skipped,skipRoot,skipSignals=fixture(false,false)
-start(skipped,skipRoot,'traveler');chest(skipped,16,2);bossComplete(skipped,33)
-assert(skipped.mapUI:choose(Map.available(skipped.map)[1].id))
+start(skipped,skipRoot,'traveler');chest(skipped,16,2);bossComplete(skipped,33,true)
 assert(skipped.nodeUI:press('back'))
 assert(skipped.run.phase=='victory' and skipped.run.ending=='two_act_complete' and skipped.run.floor==34)
 assert(F.statValue(skipRoot,'floor')=='34 / 34' and not skipped.run.pendingAct)

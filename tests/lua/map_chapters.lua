@@ -39,21 +39,33 @@ local function setup(map,onChoose)
     end
     return ui,box,emit,calls
 end
+local function presentedY(chapter,floor,scroll)
+    local row=math.max(0,floor-chapter.first)
+    local lift=Theme.layout.map.bossFloorLift
+    local extra=floor==chapter.boss and lift or chapter.act==3 and floor==chapter.last and 2*lift or 0
+    return Layout.firstY+row*Theme.layout.map.floorGap+extra-scroll
+end
 local function focused(map,ui,box)
     local chapter=Acts.get(map.act or 1)
-    local row=math.max(1,map.floor-chapter.first+1)
-    local expected=math.max(0,math.min(Layout.maxScroll,Layout.firstY+(row-1)*Theme.layout.map.floorGap-Layout.focusY))
+    local hiddenChest=chapter.terminal=='boss_treasure'
+    local maximum=hiddenChest and Layout.bossTreasureMaxScroll
+        or Layout.maxScroll+(chapter.act==3 and 2*Theme.layout.map.bossFloorLift or 0)
+    local focusFloor=hiddenChest and math.min(chapter.boss,map.floor) or map.floor
+    local expected=math.max(0,math.min(maximum,presentedY(chapter,focusFloor,0)-Layout.focusY))
     assert(ui.scroll==expected,'focus used a global floor as a map row')
     assert(box('title').text==chapter.name..' · 第 '..map.floor..' 层')
     if map.currentNodeId then
         for i,node in ipairs(map.nodes) do
-            if node.id==map.currentNodeId then assert(box(i).visible and box(i):GetChild('positionToken').visible) end
+            if node.id==map.currentNodeId then
+                if node.roomKind=='boss_treasure' then assert(not box(i).visible)
+                else assert(box(i).visible and box(i):GetChild('ring').visible) end
+            end
         end
     end
 end
 
 for act=1,4 do
-    test('canonical Act '..act..' projects every global floor into unchanged chapter geometry',function()
+    test('canonical Act '..act..' projects visible global floors into chapter geometry',function()
         local chapter=Acts.get(act)
         local map=Map.generate(F.Data,'42',act)
         local before=Map.snapshot(map)
@@ -66,10 +78,9 @@ for act=1,4 do
             ui:setScroll(scroll)
             for i,node in ipairs(map.nodes) do
                 local b=box(i)
-                local row=node.localFloor or node.floor-chapter.first+1
                 if b.visible then
                     assert(b.x==(node.lane-(Layout.lanes+1)/2)*Theme.layout.map.columnGap)
-                    assert(b.y==Layout.firstY+(row-1)*Theme.layout.map.floorGap-ui.scroll)
+                    assert(b.y==presentedY(chapter,node.floor,ui.scroll))
                     assert(b:GetChild('icon').imageId==Theme.icon.node[node.type])
                     seen[node.id]=true
                     dofile('tests/lua/support/map_draw_bounds.lua')(b,Layout.viewport)
@@ -85,7 +96,7 @@ for act=1,4 do
                 end
             end
         end
-        for _,node in ipairs(map.nodes) do assert(seen[node.id],node.id..' never enters viewport') end
+        for _,node in ipairs(map.nodes) do assert((seen[node.id]==true)==(node.roomKind~='boss_treasure'),node.id) end
         same(map,before,'presentation changed map/RNG')
         ui:focusCurrent()
         while #Map.available(map)>0 do
@@ -97,7 +108,7 @@ for act=1,4 do
                     or '已抵达首领 · 请完成首领战斗与奖励'))
                 ui:setNavigationEnabled(true)
                 if chapter.terminal=='boss_treasure' then
-                    assert(box('notice').text=='首领奖励已处理 · 请选择首领宝箱')
+                    assert(box('notice').text=='首领奖励已处理 · 即将前往宝箱')
                 elseif act==4 then
                     assert(box('notice').text=='已抵达终幕首领 · 请完成最终战斗与结算')
                 else assert(box('notice').text=='首领奖励已处理 · 请前往终点') end
@@ -275,15 +286,17 @@ test('later-act missing localFloor falls back from global18/34 to rows1/17 with 
     local terminal=map.nodes[#map.nodes]
     assert(terminal.floor==34 and terminal.localFloor==nil)
     local slot=#map.nodes
-    assert(box(slot).y==Layout.firstY+16*Theme.layout.map.floorGap-ui.scroll)
-    assert(box(slot).visible and box(slot):GetChild('hit').visible)
+    assert(not box(slot).visible and not box(slot):GetChild('hit').visible)
+    assert(Map.available(map)[1].id==terminal.id)
     local terminalBefore=Map.snapshot(map)
     ui:setScroll(0);ui:focusCurrent();ui:render()
     same(map,terminalBefore);same(run,runBefore)
     expected=Map.snapshot(map);assert(Map.choose(expected,terminal.id))
-    emit(slot,'down',33);emit(slot,'up',33);assert(emit(slot,'click',33))
-    assert(map.floor==34 and ui.scroll==Layout.maxScroll and #calls==2)
-    assert(box(slot).y==Layout.firstY+16*Theme.layout.map.floorGap-Layout.maxScroll)
+    emit(slot,'down',33);emit(slot,'up',33);assert(not emit(slot,'click',33))
+    assert(map.floor==33 and ui.scroll==Layout.bossTreasureMaxScroll and #calls==1)
+    assert(not ui:choose(terminal.id) and not box(slot).visible)
+    assert(Map.choose(map,terminal.id));ui:focusCurrent()
+    focused(map,ui,box)
     same(map,expected);same(run,runBefore)
 end)
 

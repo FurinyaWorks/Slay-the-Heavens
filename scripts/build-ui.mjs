@@ -192,7 +192,9 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   if(officialAssets){
     applyOfficialAssets([battle,layout,...templates],theme);
     templates.push(battlePileCardTemplate(layout,templates[0]));
-
+  }else if(!v25BattleChrome){
+    applyV25RewardLayout(battle,theme);
+    applyV25RewardLayout(layout,theme);
   }
   const child = (node, name) => (node.controls ?? node.children).find(control => control.name === name);
   const picker = child(child(child(layout, 'stage') ?? layout, 'nodePanel'), 'pickerView');

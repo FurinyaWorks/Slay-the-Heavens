@@ -84,7 +84,12 @@ function M.new(root, data, presentation, clickEvent, platform)
         return ok, reason
     end, clickEvent, { embedded = true, color = platform.color, imageSource = platform.imageSource,
         cursor = platform.cursorEvents, controller = controller,
-        available=function(map)return Nodes.available(self.run,map)end })
+        available=function(map)return Nodes.available(self.run,map)end,
+        bossName=function(map)
+            local run = self.run
+            local bosses = run and run.bossInitialization and run.bossInitialization.bossList
+            if self.map == map and type(bosses) == 'table' then return bosses[1] end
+        end })
     self.nodeUI = NodeUI.new(child("nodePanel"), nil, nil,
         presentation, clickEvent, changed, { color = platform.color, imageSource = platform.imageSource,
             imageTypes = platform.imageTypes,

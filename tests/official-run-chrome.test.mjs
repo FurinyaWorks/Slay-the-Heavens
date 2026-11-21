@@ -103,7 +103,8 @@ test('reward overview retains live rows while adopting measured compact rows and
   assert(all(battle).includes(node));
   const before=geometry.get(node),isRow=['goldReward','cardReward','claimPotion'].includes(node.name);
   const position=node.name==='title'?[before.position[0],token.titleY-list.position[1]]:
-   node.name==='subtitle'?[before.position[0],token.subtitleY-list.position[1]]:before.position;
+   node.name==='subtitle'?[before.position[0],token.subtitleY-list.position[1]]:
+   node.name==='continue'?[theme.layout.endTurn.position[0],theme.layout.battleRewards.expanded.continue[1]]:before.position;
   assert.deepEqual(node.position,position,node.name+' measured placement');
   assert.deepEqual(node.size,isRow?token.rowSize:node.name==='continue'?[180,60]:before.size,node.name+' shared size');
  }
@@ -111,13 +112,17 @@ test('reward overview retains live rows while adopting measured compact rows and
  assert.equal(child(list,'title').text.content,'战斗奖励');
  assert.equal(child(list,'plate').opacity,0);assert.equal(child(list,'border').opacity,0);
  const field=child(list,'v25RewardField'),paper=child(list,'v25RewardPaper');
- assert.equal(child(field,'dark').colour,'#070B0B');
+ assert.equal(child(field,'dark').colour,theme.officialAssets.backdropVeil.slice(0,7));
+ assert(child(field,'dark').opacity>0&&child(field,'dark').opacity<1);
  assert.equal(field.position[1]+list.position[1],0);
  assert.equal(paper.position[1],child(list,'title').position[1]);
  assert(child(paper,'paperCore'));
  const visibleCatalog=all(list).filter(n=>n.kind==='image'&&n.image===theme.officialAssets.images.panel&&n.opacity!==0&&n.visible!==false);
  assert.deepEqual(visibleCatalog,[],'summary must not expose the catalog plaque');
  const picking=child(battle,'rewardStage');assert(child(picking,'v25RewardPaper'));assert(child(picking,'v25RewardField'));
+ assert.deepEqual(child(child(picking,'v25RewardField'),'dark'),child(field,'dark'));
+ assert(battle.children.indexOf(child(battle,'hero'))<battle.children.indexOf(picking));
+ const panel=child(list,'stsRewardPanel');assert(child(panel,'upperRoll')&&child(panel,'lowerRoll'));
 });
 test('real reward layout keeps the shared host aligned through expanded and ordinary lists',()=>{
  const f=createRequire(import.meta.url)('fengari'),L=f.lauxlib.luaL_newstate();f.lualib.luaL_openlibs(L);
@@ -181,8 +186,8 @@ test('official build adopts the existing paper map without replacing graph or in
  assert(child(map,'v25MapPaper'),'official candidate must include the adopted map, not the old black fallback');
  const group=child(map,'mapGroup1'),legend=child(group,'typeLegend');
  assert(child(legend,'v25LegendPaper'));
- assert.equal(child(legend,'bossLabel').text.content,'首领');
- assert.equal(child(legend,'bossIcon').visible,true);
+ assert.deepEqual(legend.children.filter(n=>n.name.endsWith('Label')).map(n=>n.text.content),['未知','商人','宝箱','休息','敌人','精英']);
+ assert(!legend.children.some(n=>n.name==='bossIcon'||n.name==='bossLabel'));
  for(const [expected,selected]of [[nodes,n=>/^node\d+$/.test(n.name)],[edges,n=>/^edge\d+$/.test(n.name)],[hits,n=>n.kind==='cursorArea']]){
   const current=all(map).filter(selected);assert.equal(current.length,expected.length);
   current.forEach((node,index)=>assert.strictEqual(node,expected[index],'retain live graph/input owner '+node.name));

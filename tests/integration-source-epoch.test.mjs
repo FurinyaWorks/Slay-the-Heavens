@@ -1,3 +1,5 @@
+import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from './helpers/card-feedback-owner-source.mjs';
+import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-source.mjs';
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
@@ -262,4 +264,21 @@ test('round3 retirement rejects live hardlinks and live source roots',async()=>{
  assert.throws(()=>prepare(sandbox,{sourceRoot:sandbox}),/separate/);
  const root=mkdtempSync(join(sandbox,'retirement-hardlink-')),path='src/lua/abyss_combat_catalog.lua';mkdirSync(dirname(join(root,path)),{recursive:true});
  linkSync(join(sandbox,path),join(root,path));try{assert.throws(()=>prepare(root,{sourceRoot:sandbox}),/single link|inode/);}finally{unlinkSync(join(root,path));}
+});
+
+test('map and card replay require every same-path sample and live reread to match',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ for(const [path,prior,authorize]of [
+  ['src/lua/abyss_game_ui_view.lua',beforeSts1MapSource,authorizeSts1MapSource],
+  ['src/lua/abyss_battle_card_glow.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
+  ['src/lua/abyss_feedback.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
+ ]){
+  const current=read(path),old=prior(path,current);
+  assert.notEqual(current,old,path);
+  for(const samples of [[[path,old],[path,current]],[[path,current],[path,old]]])
+   assert.throws(()=>authorize(samples,read),/mixed live and stale sources/);
+  assert.throws(()=>authorize([[path,current]],()=>old),/changed during owner validation/);
+  assert.throws(()=>beforeCurrentProductionSource(path,old,read),/fresh current production owner/);
+  assert.throws(()=>beforeCurrentProductionSource(path,current,owner=>owner===path?old:read(owner)),/combined linked owner identity/);
+ }
 });

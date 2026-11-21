@@ -149,6 +149,7 @@ function M.install(owner, _ownership, host, dependencies)
         end
         dependencies.updateEnemyIntents(dt)
         self.feedback:update(dt)
+        if host.updateRewardBanner then host.updateRewardBanner(dt) end
         dependencies.updateEnemyNames(dt)
         updateRewardCards(dt)
         host.cardView.update(dt)

@@ -30,6 +30,34 @@ test('chapter-local map geometry, real same-table transitions and stale gestures
   // Reverse only the exact registration/selection instrumentation. Every
   // original loop, input matrix, helper and assertion remains byte-identical.
   let original=read(parts.entry);assert(original.startsWith(prefix));assert(original.endsWith(footer));
+  // Reverse the reviewed display changes for the historical partition proof.
+  // The runtime assertions below still exercise all 38 current groups.
+  const mapPresentationChanges=[
+    ["local function presentedY(chapter,floor,scroll)\n    local row=math.max(0,floor-chapter.first)\n    local lift=Theme.layout.map.bossFloorLift\n    local extra=floor==chapter.boss and lift or chapter.act==3 and floor==chapter.last and 2*lift or 0\n    return Layout.firstY+row*Theme.layout.map.floorGap+extra-scroll\nend\n",
+     ""],
+    ["    local hiddenChest=chapter.terminal=='boss_treasure'\n    local maximum=hiddenChest and Layout.bossTreasureMaxScroll\n        or Layout.maxScroll+(chapter.act==3 and 2*Theme.layout.map.bossFloorLift or 0)\n    local focusFloor=hiddenChest and math.min(chapter.boss,map.floor) or map.floor\n    local expected=math.max(0,math.min(maximum,presentedY(chapter,focusFloor,0)-Layout.focusY))\n",
+     "    local row=math.max(1,map.floor-chapter.first+1)\n    local expected=math.max(0,math.min(Layout.maxScroll,Layout.firstY+(row-1)*Theme.layout.map.floorGap-Layout.focusY))\n"],
+    ["            if node.id==map.currentNodeId then\n                if node.roomKind=='boss_treasure' then assert(not box(i).visible)\n                else assert(box(i).visible and box(i):GetChild('ring').visible) end\n            end\n",
+     "            if node.id==map.currentNodeId then assert(box(i).visible and box(i):GetChild('positionToken').visible) end\n"],
+    ["    test('canonical Act '..act..' projects visible global floors into chapter geometry',function()\n",
+     "    test('canonical Act '..act..' projects every global floor into unchanged chapter geometry',function()\n"],
+    ["                local b=box(i)\n                if b.visible then\n",
+     "                local b=box(i)\n                local row=node.localFloor or node.floor-chapter.first+1\n                if b.visible then\n"],
+    ["                    assert(b.y==presentedY(chapter,node.floor,ui.scroll))\n",
+     "                    assert(b.y==Layout.firstY+(row-1)*Theme.layout.map.floorGap-ui.scroll)\n"],
+    ["        for _,node in ipairs(map.nodes) do assert((seen[node.id]==true)==(node.roomKind~='boss_treasure'),node.id) end\n",
+     "        for _,node in ipairs(map.nodes) do assert(seen[node.id],node.id..' never enters viewport') end\n"],
+    ["                    assert(box('notice').text=='首领奖励已处理 · 即将前往宝箱')\n",
+     "                    assert(box('notice').text=='首领奖励已处理 · 请选择首领宝箱')\n"],
+    ["    assert(not box(slot).visible and not box(slot):GetChild('hit').visible)\n    assert(Map.available(map)[1].id==terminal.id)\n",
+     "    assert(box(slot).y==Layout.firstY+16*Theme.layout.map.floorGap-ui.scroll)\n    assert(box(slot).visible and box(slot):GetChild('hit').visible)\n"],
+    ["    emit(slot,'down',33);emit(slot,'up',33);assert(not emit(slot,'click',33))\n    assert(map.floor==33 and ui.scroll==Layout.bossTreasureMaxScroll and #calls==1)\n    assert(not ui:choose(terminal.id) and not box(slot).visible)\n    assert(Map.choose(map,terminal.id));ui:focusCurrent()\n    focused(map,ui,box)\n",
+     "    emit(slot,'down',33);emit(slot,'up',33);assert(emit(slot,'click',33))\n    assert(map.floor==34 and ui.scroll==Layout.maxScroll and #calls==2)\n    assert(box(slot).y==Layout.firstY+16*Theme.layout.map.floorGap-Layout.maxScroll)\n"],
+  ];
+  for(const [current, prior] of mapPresentationChanges){
+    assert.equal(original.split(current).length,2,'one map presentation assertion migration');
+    original=original.replace(current,prior);
+  }
   // The removed recenter control has no hit area; both remaining paging hits
   // must fail closed. Reverse only these three reviewed assertion migrations.
   const pagingHidden="assert(not box(1).visible and not box('next'):GetChild('hit').visible\n            and not box('previous'):GetChild('hit').visible)";

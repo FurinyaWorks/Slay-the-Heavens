@@ -567,6 +567,7 @@
     },
     {
       "codePath": "scripts/sts-reward-row-layout.mjs",
+      "codePaths": ["scripts/v25-node-layout.mjs"],
       "targetVersion": "v2.0.0",
       "state": "rewardList",
       "revision": "develop",

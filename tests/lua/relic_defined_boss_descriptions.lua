@@ -7,7 +7,7 @@ assert(F.Nodes.enter(h.run,h.map,Map.available(h.map)[1].id))
 for _,e in ipairs(h.run.combat.enemies)do e.hp=0 end
 assert(Run.finishCombat(h.run));assert(Run.claimCardReward(h.run,0))
 dofile('tests/lua/support/finish_combat_rewards.lua')(h.run);h:refresh()
-assert(h.mapUI:choose(F.Nodes.available(h.run,h.map)[1].id))
+assert(h.mode=='node' and h.run.nodeFlow.roomKind=='boss_treasure' and h.map.floor==17)
 assert(h.nodeUI:press('treasureView/chest'));h.nodeUI:update(2)
 local chest=root:GetChild('nodePanel'):GetChild('treasureView')
 local count=0

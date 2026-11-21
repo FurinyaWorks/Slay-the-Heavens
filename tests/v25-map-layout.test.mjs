@@ -37,12 +37,14 @@ test('paper and blue legend have layered native silhouettes, continuous light an
  assert.equal(paper.name,'v25MapPaper');assert(paper.children.length>10);
  assert(paper.children.some(c=>c.image===106095));assert(paper.children.some(c=>c.name.startsWith('paperEdge')));
  const legend=find(layout,'typeLegend'),chrome=legend.children[0];assert.equal(chrome.name,'v25LegendPaper');
- assert.deepEqual(legend.position,[486,22.5]);assert.deepEqual(legend.size,[266,333]);
+ assert.deepEqual(legend.position,[486,40]);assert.deepEqual(legend.size,[266,298]);
  assert(chrome.children.some(c=>c.name==='topRoll'));assert(chrome.children.some(c=>c.name==='bottomRoll'));
  assert.equal(find(legend,'title').text.content,'图例');
- assert.equal(find(legend,'eventLabel').text.content,'未知');assert.equal(find(legend,'shopLabel').text.content,'商人');
- assert.equal(find(legend,'bossIcon').visible,true);assert.equal(find(legend,'bossLabel').visible,true);
- assert.equal(find(legend,'bossLabel').text.content,'首领');
+ assert.deepEqual(legend.children.filter(c=>c.name.endsWith('Label')).map(c=>c.text.content),['未知','商人','宝箱','休息','敌人','精英']);
+ assert(!find(legend,'bossIcon')&&!find(legend,'bossLabel'));
+ const eliteBottom=find(legend,'eliteLabel').position[1]-20;
+ const bottomRoll=find(chrome,'bottomRoll');
+ assert(eliteBottom-(bottomRoll.position[1]+bottomRoll.size[1]/2)<24,'scroll must end immediately after elite');
  assert.equal(all(layout).filter(c=>c.kind==='cursorArea').length,hits);
  for(const node of all(paper).concat(all(chrome)))assert(!node.script&&!node.scripts&&!node.focusable);
 });
@@ -74,7 +76,7 @@ test('duplicate or malformed map refuses before changing input',()=>{
 test('map legend title retains source centre and font while fitting one native glyph line',()=>{
  const layout=mapLayout();applyV25MapLayout(layout,nativeTheme);
  const title=find(find(layout,'typeLegend'),'title');
- assert.deepEqual(title.position,[0,129]);assert.equal(title.text.fontSize,26);assert.equal(title.text.minFontSize,26);
+ assert.deepEqual(title.position,[0,111.5]);assert.equal(title.text.fontSize,26);assert.equal(title.text.minFontSize,26);
  assert.equal(title.text.content,'图例');assert.deepEqual(title.size,[230,52]);
 });
 

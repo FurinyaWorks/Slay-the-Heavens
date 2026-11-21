@@ -42,7 +42,7 @@ local function verify()
             local state=node.id==view.currentNodeId and 'current' or node.visited and 'visited' or node.available and 'available' or 'locked'
             seen[state]=true
             for _,child in pairs(b.children) do
-                assert(not child.visible or child.spec.kind~='image' or child.spec.name=='icon' or child.spec.name=='positionToken' or child.spec.name=='ring',
+                assert(not child.visible or child.spec.kind~='image' or child.spec.name=='icon',
                     'route nodes must not repaint rings or background discs: '..child.spec.name)
             end
             local icon,hit=b:GetChild('icon'),b:GetChild('hit')
@@ -50,24 +50,30 @@ local function verify()
             local palette=Theme.color.mapCanvas
             local expectedInk=node.hasEmeraldKey and Theme.color.positive
                 or state=='visited' and palette.visited or state=='current' and Theme.color.node.current
-                or state=='available' and Theme.color.node.pathTaken or palette.far
-            if state=='locked' and not node.hasEmeraldKey then
+                or state=='available' and Theme.color.node.pathTaken or node.type=='boss' and palette.kind.boss or palette.far
+            if state=='locked' and not node.hasEmeraldKey and node.type~='boss' then
                 local v=Theme.layout.map.presentation
                 local alpha=math.floor(palette.far.a*(node.floor>view.floor+1 and v.farLockedOpacity or v.lockedOpacity)+.5)
                 expectedInk={r=expectedInk.r,g=expectedInk.g,b=expectedInk.b,a=alpha}
                 assert(icon.imageColor.a==alpha,'near/far disabled rooms retain the exact approved opacity')
             end
             equalColor(icon.imageColor,expectedInk)
-            if state=="locked" then assert(icon.imageColor.a<palette.far.a,'TASK-4.13 locked rooms recede') end
+            if state=="locked" and node.type~="boss" then assert(icon.imageColor.a<palette.far.a,'TASK-4.13 locked rooms recede') end
             if state=='visited' then assert(icon.imageColor.r==palette.visited.r,'TASK-4.13 visited rooms share gold path ink') end
-            assert(b:GetChild('positionToken').visible==(state=='current'),'existing token identifies only current node')
+            assert(not b:GetChild('positionToken'),'the circle is the sole position marker')
             local size=node.type=='boss' and Theme.layout.map.bossNode or Theme.layout.map.node
-            assert(b:GetChild('ring').visible==(state=='current'),'TASK-4.13 only current room has a halo; visited rooms keep gold path ink')
-            if state=='current' then equalColor(b:GetChild('ring').imageColor,Theme.color.mapCanvas.currentRing) end
+            local ring=b:GetChild('ring')
+            local circled=state=='current' or state=='visited'
+            assert(ring.visible==circled,'current and visited rooms have distinct ink circles')
+            if circled then
+                local ink=state=='current' and palette.currentRing or palette.visitedRing
+                equalColor(ring:GetChild('outline').imageColor,ink)
+                equalColor(ring:GetChild('brush').imageColor,ink)
+            end
             -- STS MapRoomNode: glyph 128*scale, MAP_CIRCLE_5 192*(scale*.95+.2), rotated by room angle.
             local fx=ui.roomFx[node.id]
             assert(math.abs(icon.size[1]-size*Layout.sts.iconPerScale*UI.drawScale(fx))<1e-6,'STS glyph scale')
-            if state=='available' then assert(UI.drawScale(fx)<=Layout.sts.baseScale*Theme.layout.map.presentation.availableScaleCap+1e-9,'TASK-4.13 reachable pulse capped') end
+            if state=='available' and node.type~='boss' then assert(UI.drawScale(fx)<=Layout.sts.baseScale*Theme.layout.map.presentation.availableScaleCap+1e-9,'TASK-4.13 reachable pulse capped') end
             assert(math.abs(b:GetChild('ring').size[1]-size*Layout.sts.circlePerScale*(fx.scale*.95+.2))<1e-6,'STS circle scale')
             assert(b:GetChild('ring').localRotationZ==fx.angle,'STS circle angle')
             assert(fx.scale>=.5 and fx.scale<=1.25,'STS scale bounds')
@@ -100,7 +106,7 @@ assert(focus.navigation.confirm())
 assert(calls==1 and map.floor==1)
 verify()
 for _=1,12 do ui:update(.09);verify()end
-assert(box(1).visible and box(1):GetChild('positionToken').visible,
+assert(box(1).visible and box(1):GetChild('ring').visible,
     'a temporarily culled current room must reappear after its ring settles')
 assert(not focus.navigation.confirm() and calls==1,'repeated confirmation must not advance again')
 ui:setNavigationEnabled(true)
@@ -144,7 +150,7 @@ for _=1,16 do assert(Map.choose(bossMap,Map.available(bossMap)[1].id)) end
 ui.map=bossMap;ui:render();ui:setNavigationEnabled(false)
 assert(notice().text=='已抵达首领 · 请完成首领战斗与奖励' and notice().visible)
 ui:setNavigationEnabled(true)
-assert(notice().text=='首领奖励已处理 · 请选择首领宝箱' and notice().visible,'actual target choice must remain visible')
+assert(notice().text=='首领奖励已处理 · 即将前往宝箱' and notice().visible,'the coordinator owns the automatic transition')
 print('MAP_NOTICE_PASS no teaching; real errors, room locks and reward target retained')
 print('MAP_NODE_VISUALS_PASS 4 states, official icons, hit areas, controller and illegal routes')
 return {root=root,map=map,ui=ui,controller=manager}

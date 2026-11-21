@@ -47,6 +47,14 @@ GameUI入口及全部`abyss_game_ui_*`模块另受绝对门禁约束：入口文
 
 需要 Python 3 和 Pillow 12.3.0，可用 `ABYSS_PYTHON` 指定已有解释器。工具缺失、下载/hash错误、解析失败、超时或空报告一律非零，不静默跳过。Luacheck安装只写仓库 `build/tools/`，不改全局工具链；来源与两个平台hash在 `config/lua-tools.json`。
 
+## 关键架构变更
+
+跨模块状态提交、依赖方向、公共命令或关键生命周期变更使用规约驱动开发。在 `docs/plans/` 用 REASONS 记录需求、实体及唯一状态 owner、方案、结构、步骤、规则与验收。重要架构取舍在 `docs/adr/` 说明背景、决策、备选、后果及适用范围。现有入口见[核心架构规约](plans/2026-11-21-core-architecture.md)。
+
+先用真实生产调用和独立旧新 VM 固定完整状态图、RNG、队列、返回及错误合同，保留完整历史来源和断言。迁移先提供兼容调用入口，再切换消费者，最后按规约移除旧入口。用可执行负控证明关键回归和禁止依赖可被捕获。
+
+运行 `npm run check:engineering` 重新采集完整依赖与 Luacheck 数据，使用 `node scripts/check-quality-ratchet.mjs --base <BASE>` 验证精确提交增量。按[质量验收机制](ENGINEERING_QUALITY.md)为已完成约束启用绝对门禁。规约、ADR、测试、门禁与 Backlog 随代码更新；验证发现契约变化时也回写规约或 ADR。PR 绑定本轮证据与当前决策，合后按原交付入口验收。
+
 ## 候选身份
 
 每轮生成UUID子目录，源存档先复制再交MCP，`MILIASTRA_ALLOW_LIVE_WRITE=0`。历史目录中的同名清单不会被覆盖。新目录重新构建运行时生成模块，正式打包集合见[候选构建器](../scripts/build-native-candidate.mjs)的`generatedRuntimeModules`，不扫描共享build目录；测试fixture和残留Lua不能混入。成功收据包含源提交、脏工作树状态、逐文件输入/产物摘要、payloadDigest、最终candidate.gil摘要、实际checked集合和逐条MCP告警。未审查告警保留 `not_run`，不批量忽略。
