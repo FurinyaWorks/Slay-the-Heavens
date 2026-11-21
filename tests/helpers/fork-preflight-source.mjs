@@ -1,4 +1,4 @@
-import {beforeRebasedCi,beforeRebasedRelease} from './rebased-release-source.mjs';
+import {beforeRebasedCi,beforeRebasedRelease,historicalReleaseCopier} from './rebased-release-source.mjs';
 import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {assertReleaseCapacityCohort,beforeReleaseCapacitySource} from './release-integration-source.mjs';
@@ -118,17 +118,17 @@ function beforeIntegratedReleaseCopier(path,source){
 function beforeRebasedCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='55a97c6d45fe66572b9a58563d48dddf25d0e2dd64aa09d94b0085da46a9aaa3')return source;
+ if(hash(lf)!=='1595f839ded78778b6cadb75d670a918ffe90f6bde7d9bfcb29ccec4baad2de2')return source;
  const limit=lf.indexOf('const releaseUiFiles='),end=lf.indexOf('const inside=',limit);
  assert(limit>=0&&end>limit,'exact reconciled copy closure');
  const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(reconciledReleaseFiles))','Object.entries(powerMembershipFiles))');
  assert.equal(hash(prior),'fbc236306831104020bf6d83133ab8b978ad9ffd5d6dae1bde13ee12176651e2','exact final develop copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeReleaseUiBuildSource(path,source){
+function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  source=beforeIntegratedReleaseCopier(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
- source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>beforeIntegratedReleaseCopier(owner,readFileSync(owner,'utf8'))));
+ source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>beforeIntegratedReleaseCopier(owner,read(owner,'utf8'))));
  source=beforeSts1MenuCiSource(path,source);
  source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,beforeReleaseCapacitySource(path,source)));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -136,8 +136,12 @@ function beforeReleaseUiBuildSource(path,source){
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
-export function beforeReleaseTinyHouseSource(path,source){
- return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source))));
+function releaseHistoricalInput(path,source){
+ return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
+}
+export function beforeReleaseTinyHouseSource(path,source,read=readFileSync){
+ const releaseRead=(owner,encoding)=>releaseHistoricalInput(owner,read(owner,encoding));
+ return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,releaseHistoricalInput(path,source),releaseRead));
 }
 export function historicalReleaseBuildInput(path,read){
  if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,(owner,encoding)=>beforeReleaseCapacitySource(owner,read(owner,encoding)));
