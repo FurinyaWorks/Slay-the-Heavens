@@ -18,7 +18,18 @@ const priorCurrentProductionRereads = Object.freeze([
   ),
 ]);
 
-export const currentProductionRereads = Object.freeze([...priorCurrentProductionRereads,
+export const currentProductionRereads = Object.freeze([
+  'src/lua/abyss_game_ui.lua',
+  'src/lua/abyss_game_ui_input.lua',
+  'src/lua/abyss_game_ui_navigation.lua',
+  'src/lua/abyss_game_ui_navigation_view.lua',
+  'src/lua/abyss_game_ui_overlays.lua',
+  'src/lua/abyss_game_ui_view.lua',
+  ...priorCurrentProductionRereads,
+  'src/lua/abyss_battle_actions.lua',
+  'src/lua/abyss_battle_render_hud.lua',
+  'src/lua/abyss_battle_reward_layout.lua',
+  'src/lua/abyss_feedback.lua',
   'src/lua/abyss_game_ui.lua',
   'src/lua/abyss_game_ui_view.lua',
   'src/lua/abyss_map_ui.lua',

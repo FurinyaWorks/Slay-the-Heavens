@@ -25,7 +25,7 @@ function rowFace(row,theme){
   state.children=[border,plate,face,icon,label];
  }
 }
-function proceedFlag(button,theme){
+export function proceedFlag(button,theme){
  const position=[...button.position],caption=required(button,'label').text.content;
  // Existing flagButton accepts a control wrapper. Adapt the native preset
  // without changing its state objects, listeners or controller ownership.
@@ -45,6 +45,11 @@ export function applyStsRewardRows(tree,theme){
  const layout=theme.layout.battleRewards;layout.rowSize=[...token.rowSize];layout.rowStep=token.rowStep;layout.expanded.rowStep=token.rowStep;
  layout.rowOrigin=[...token.rowOrigin];layout.title[1]=token.titleY;layout.subtitle[1]=token.subtitleY;
  const list=required(battle,'rewardList'),panel=nativeRoundedMaterial('stsRewardPanel',...token.panelSize,token.cornerRadius,token.panel);
+ const [width,height]=token.panelSize;
+ for(const [name,y] of [['upperRoll',height/2],['lowerRoll',-height/2]]){
+  panel.children.push({name,kind:'image',position:[0,y],size:[width+theme.space.l,theme.space.s],
+   image:theme.image.rect,colour:token.normal});
+ }
  for(const name of ['title','subtitle'])required(list,name).position=layout[name].slice(0,2).map((v,axis)=>v-layout.stage[axis]);
  const paper=find(list,'v25RewardPaper');if(paper)paper.position=layout.title.slice(0,2).map((v,axis)=>v-layout.stage[axis]);
  const heading=find(required(battle,'rewardStage'),'title');
@@ -53,5 +58,9 @@ export function applyStsRewardRows(tree,theme){
  panel.position=token.panelPosition.map((value,axis)=>value-layout.stage[axis]);
  required(list,'border').visible=false;required(list,'plate').visible=false;
  const background=children(list).findIndex(n=>n.name==='v25RewardField');list.children.splice(background+1,0,panel);
- proceedFlag(required(battle,'continue'),theme);
+ const proceed=required(battle,'continue');
+ const position=[theme.layout.endTurn.position[0],layout.expanded.continue[1]];
+ for(const page of [layout,layout.expanded])page.continue.splice(0,2,...position);
+ proceed.position=position;
+ proceedFlag(proceed,theme);
 }

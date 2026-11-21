@@ -10,8 +10,12 @@ end
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 local Gate=require('abyss_page_reveal')
-local host,root=F.fixture(nil,function()return true end,nil,{CursorDown='down',CursorUp='up'})
+local victoryCues=0
+local function sound(cue)if cue=='victory'then victoryCues=victoryCues+1 end end
+local host,root=F.fixture(nil,function()return true end,nil,{CursorDown='down',CursorUp='up'},nil,sound)
 local battle=root:GetChild('battlePanel')
+local bannerPlate=battle:GetChild('feedback'):GetChild('bannerPlate')
+local list=battle:GetChild('rewardList')
 local hit=battle:GetChild('card1'):GetChild('hit')
 local cover=root:GetChild('pageReveal')
 local veil=cover:GetChild('veil')
@@ -44,9 +48,21 @@ for _=1,400 do
  assert(not cover.visible and not host.pageReveal:covered(),'lethal feedback/settlement flashed a cover')
  if not host.battleUI.busy then break end
  tick()
+ assert(not bannerPlate.visible,'victory displayed the combat feedback plate')
+ if victoryCues>0 then assert(list.visible and not host.battleUI.busy,'victory cue must hand off in the same frame')end
 end
 assert(host.run==run and run.combat==lethalCombat and run.phase=='reward')
+assert(victoryCues==1 and list.visible and list:GetChild('title').text=='战斗胜利')
+local title=list:GetChild('title')
+local shade=list:GetChild('v25RewardField'):GetChild('dark')
+local alpha=F.Theme.officialAssets.backdropVeil.a
+assert(title.localScaleX<1 and title.fontColor.a<255 and battle:GetChild('hero').visible)
+assert(shade.imageColor.a>0 and shade.imageColor.a<alpha)
+host:update(F.Theme.motion.slow)
+assert(title.localScaleX==1 and title.fontColor.a==255 and shade.imageColor.a==alpha)
 battle:GetChild('cardReward').click()
 assert(host.battleUI.rewardScreen=='cards' and not cover.visible)
 assert(host.battleUI:controllerBack() and not cover.visible)
+assert(list.visible and not battle:GetChild('rewardStage').visible)
+assert(title.localScaleX==1 and shade.imageColor.a==alpha)
 print('PC13_REWARD_COVER_PASS')
