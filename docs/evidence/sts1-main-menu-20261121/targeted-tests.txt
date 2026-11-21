@@ -1,19 +1,19 @@
-✔ one image retains source triangle geometry under native single-axis rotations (61.22724ms)
-✔ minimal menu uses the supplied native background, fixed input and two actions (194.9054ms)
-✔ one unmasked native triangle preserves all three vertices under affine placement (0.517827ms)
-✔ STS1 menu retains transactions, unplated resting controls and four states (155.713968ms)
-✔ menu historical source continuation projects only exact complete new test bytes (3.536913ms)
-✔ official art is opt-in and preserves both legacy CLI presets and strict candidate guards (7.827582ms)
-✔ receipts and pinned source audits reconstruct official art and reject mismatched profiles (93.204598ms)
-✖ historical approved pages keep live input identities while unrelated pages retain their geometry (37.774253ms)
-✔ approved pages keep live input identities while unrelated pages retain their geometry (2410.532194ms)
-✔ scene and button substitutions preserve semantic icons and all four native button states (1054.035037ms)
-✔ official selection keeps its approved 1600 background while battle and opt-out retain their explicit sources (2476.223716ms)
-✔ audio wrapper forwards the explicit official profile and lifecycle without legacy background defaults (2.795397ms)
-✔ official selection leaves the portrait unobscured and exit retains the live button owner (27.562092ms)
-✔ official run pages use one three-step floor marker just after the potion slots (359.885103ms)
-✔ ordinary readiness overlay uses the same Liyue crest and seven elements (21.410652ms)
-✔ approved native title and button artwork preserve the official menu hit surfaces (33.426574ms)
+✔ one image retains source triangle geometry under native single-axis rotations (16.973954ms)
+✔ minimal menu uses the supplied native background, fixed input and two actions (152.909578ms)
+✔ one unmasked native triangle preserves all three vertices under affine placement (0.593812ms)
+✔ STS1 menu retains transactions, unplated resting controls and four states (66.443481ms)
+✔ menu historical source continuation projects only exact complete new test bytes (0.84506ms)
+✔ official art is opt-in and preserves both legacy CLI presets and strict candidate guards (2.415659ms)
+✔ receipts and pinned source audits reconstruct official art and reject mismatched profiles (41.539868ms)
+✖ historical approved pages keep live input identities while unrelated pages retain their geometry (236.694107ms)
+✔ approved pages keep live input identities while unrelated pages retain their geometry (904.314408ms)
+✔ scene and button substitutions preserve semantic icons and all four native button states (413.868335ms)
+✔ official selection keeps its approved 1600 background while battle and opt-out retain their explicit sources (2097.058471ms)
+✔ audio wrapper forwards the explicit official profile and lifecycle without legacy background defaults (2.176727ms)
+✔ official selection leaves the portrait unobscured and exit retains the live button owner (31.877759ms)
+✔ official run pages use one three-step floor marker just after the potion slots (351.795528ms)
+✔ ordinary readiness overlay uses the same Liyue crest and seven elements (22.550528ms)
+✔ approved native title and button artwork preserve the official menu hit surfaces (29.632503ms)
 ℹ tests 16
 ℹ suites 0
 ℹ pass 15
@@ -21,27 +21,30 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 10170.154051
+ℹ duration_ms 6590.892557
 
 ✖ failing tests:
 
 test at tests/official-assets.test.mjs:74:1
-✖ historical approved pages keep live input identities while unrelated pages retain their geometry (37.774253ms)
-  AssertionError [ERR_ASSERTION]: fresh complete integration source: docs/legal/assets.json
-      at assertIntegrationSuccessorsCurrent (file:///workspace/menu-sts1/tests/helpers/fork-preflight-source.mjs:190:3)
-      at assertReleaseBootstrapCiCurrent (file:///workspace/menu-sts1/tests/helpers/release-bootstrap-ci-source.mjs:112:2)
-      at assertIntegratedCurrent (file:///workspace/menu-sts1/tests/helpers/integrated-ci-source.mjs:39:2)
-      at replayReviewedSelection (file:///workspace/menu-sts1/tests/helpers/replay-reviewed-selection.mjs:22:2)
+✖ historical approved pages keep live input identities while unrelated pages retain their geometry (236.694107ms)
+  AssertionError [ERR_ASSERTION]: fresh current production owner: src/lua/abyss_battle_detail_bindings.lua
+  + actual - expected
+
+  + 'd5e4a1878deadef59670b72b46a015e379412f103460e1c5ce27b46b5a485160'
+  - '2eee30b903e8d41618cfd320da89ea57ccdf7470d31e33e1a0617228e054a9bd'
+
+      at replayReviewedSelection (file:///workspace/menu-sts1/tests/helpers/replay-reviewed-selection.mjs:25:10)
       at TestContext.<anonymous> (file:///workspace/menu-sts1/tests/official-assets.test.mjs:75:15)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
       at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
       at Test.postRun (node:internal/test_runner/test:1522:19)
-      at Test.run (node:internal/test_runner/test:1447:12) {
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
     generatedMessage: false,
     code: 'ERR_ASSERTION',
-    actual: false,
-    expected: true,
-    operator: '==',
+    actual: 'd5e4a1878deadef59670b72b46a015e379412f103460e1c5ce27b46b5a485160',
+    expected: '2eee30b903e8d41618cfd320da89ea57ccdf7470d31e33e1a0617228e054a9bd',
+    operator: 'strictEqual',
     diff: 'simple'
   }

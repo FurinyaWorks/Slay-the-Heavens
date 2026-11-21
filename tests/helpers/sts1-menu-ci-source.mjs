@@ -5,7 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import assert from 'node:assert/strict';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('./sts1-menu-prior.test.mjs.gz',import.meta.url));
-assert.equal(hash(bytes),'b083b2480465cbe19513a58f66db9d873eef694c3ae43f38246891cad649a398');
+assert.equal(hash(bytes),'b10cce10b072edcd45acc8204944ece9b604343699658543229999991ec94431');
 const files=JSON.parse(gunzipSync(bytes));
 for(const row of Object.values(files))assert.equal(hash(row.before),row.beforeSha256);
 export function beforeSts1MenuCiSource(path,source){

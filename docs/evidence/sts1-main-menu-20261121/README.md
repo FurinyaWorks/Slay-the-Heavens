@@ -34,10 +34,11 @@
 ## 验证与复现
 
 - `python experiments/sts1-menu-fit/fit.py`：分层轮廓/局部网格/颜色采样/标题遮罩/离线原生变换；fit-receipt记录精度预算，旧稿不覆盖。
-- `node --test tests/official-assets.test.mjs tests/menu-red-background.cases.mjs tests/menu-flat-triangle.cases.mjs`：16/16通过，包含原始历史合同完整重放、事务身份、四态、预算、无背景贴图和新的精确源码续接负对照。
+- `node --test tests/official-assets.test.mjs tests/menu-red-background.cases.mjs tests/menu-flat-triangle.cases.mjs`：初始5991585a基线实现时16/16通过；接续最新1a60a097基线后15通过、1个历史重放因基线已存在的战斗详情源码身份漂移失败（见下）。包含原始历史合同完整重放、事务身份、四态、预算、无背景贴图和新的精确源码续接负对照。
 - `node experiments/sts1-menu-fit/capture.mjs /tmp/sts1-menu-capture`，再 `python docs/evidence/v2-ui-20261119/render-runtime.py /tmp/sts1-menu-capture`：正式原生构建通过；CursorEnter/Down、退出模态禁用、fresh/paused继续显隐、同一Run继续均通过。
 - `node scripts/test-lua.mjs tests/lua/session_menu_choices.lua`：2个场景通过。
 - `node scripts/check-ui-references.mjs`、`git diff --check`：通过。准确BASE对照在PR提交前重验。
+- 接续基线：1a60a097（#793、#794、#795均保留，未覆盖其他Session）。最终`official-assets.test.mjs`历史重放在`src/lua/abyss_battle_detail_bindings.lua`身份校验失败，未改动最新基线亦复现同一实际/期望SHA；这项不是菜单引入，未扩展continuation去掩盖其他Session源码。最终本轮5项原生定向断言全部通过，正式原生构建与运行输入通过，JS语法通过。
 - 既有失败保留：`session_menu_navigation.lua:62` 和 `menu_input_boundaries_current.lua:24` 仍尝试已被Release禁用的runMenu/abandon；`title_menu_admission.lua:5` 的地图入口约束也失败。均在未改动5991585a基线复现同一位置；未删除/跳过测试、未降低断言，不扩大本轮到其他页面。日志随目录保存。
 
 官方导入、当前ready、真实PC/手机画面、加载墙钟和设备内存均未运行，不能用本次离线证据替代。正式发布仍由Owner人工验收操作。
