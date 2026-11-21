@@ -5,21 +5,25 @@ import { toLua } from './build-lua-data.mjs';
 import { nativeFontSize } from './native-ui-theme.mjs';
 
 export const loadMapTheme = () => JSON.parse(readFileSync('data/presentation/ui_theme.json', 'utf8'));
+export const mapLegendRows = [['event', '未知'], ['shop', '商人'], ['treasure', '宝箱'],
+  ['camp', '休息'], ['combat', '敌人'], ['elite', '精英']];
 
 // Positions absent from the shared theme come from PR #19's approved map viewport.
 // These are presentation capacities, never a replacement for Map.view's graph.
 export function mapGeometry(theme = loadMapTheme()) {
-  const { floorGap, viewportHeight } = theme.layout.map;
+  const { floorGap, viewportHeight, bossNode, bossFloorLift } = theme.layout.map;
+  const firstY = -308 + 60, top = -308 + viewportHeight;
   return { floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,
-    viewport: { left: -460, right: 440, bottom: -308, top: -308 + viewportHeight },
-    firstY: -308 + 60, contentHeight: 17 * floorGap + 120,
+    viewport: { left: -460, right: 440, bottom: -308, top },
+    firstY, contentHeight: 17 * floorGap + 120,
     maxScroll: 17 * floorGap + 120 - viewportHeight, focusY: -72,
+    bossTreasureMaxScroll: firstY + 15 * floorGap + bossFloorLift - top + Math.ceil(bossNode * .65) + 8,
     scrollStep: floorGap * theme.layout.map.scrollStepFloors, scrollSeconds: theme.motion.base,
     breathSeconds: 1.4, breathScale: 1.5,
     // Ported constants from STS MapRoomNode/MapEdge (aeubanks/sts@319009d, TASK-40 hash).
     // iconPerScale maps STS scale 0.5 (64px of a 128px glyph) onto 0.6 of our node box.
     sts: { baseScale: .5, iconPerScale: 1.2, circlePerScale: 1.35, oscillateRate: 5, lerpSpeed: 8, snap: .003,
-      srcRadius: 29 / 64 * .6, dstRadius: 20 / 64 * .6, bossRadius: .5 },
+      srcRadius: 29 / 64 * .6, dstRadius: 20 / 64 * .6, bossRadius: .35 },
     glowPadding: 0, lineWidth: theme.layout.map.presentation.pathWidth, dragThreshold: theme.layout.cardDrag.threshold };
 }
 
@@ -37,9 +41,8 @@ export function mapLayout(theme = loadMapTheme()) {
   // Map.dc.html retains TYPE explanations. Only the old STATE key was retired.
   const legend = visual.typeLegend;
   const typeLegend = { name: 'typeLegend', kind: 'container', position: legend.position, size: legend.size,
-    children: [text('title', 0, legend.titleY, legend.size[0], legend.textHeight, '节点类型', f.label, c.mapHeader.title),
-      ...[['combat', '普通战斗'], ['elite', '精英'], ['event', '事件'], ['shop', '商店'],
-        ['camp', '营地'], ['treasure', '宝箱'], ['boss', '首领']].flatMap(([kind, label], i) => {
+    children: [text('title', 0, legend.titleY, legend.size[0], legend.textHeight, '图例', f.label, c.mapHeader.title),
+      ...mapLegendRows.flatMap(([kind, label], i) => {
         const y = legend.firstY - i * legend.rowGap;
         return [image(`${kind}Icon`, legend.iconX, y, legend.iconSize, legend.iconSize, c.mapHeader.legendInk, theme.icon.node[kind]),
           text(`${kind}Label`, legend.labelX, y, legend.labelWidth, legend.textHeight, label, f.label, c.mapHeader.legendInk, 'left')];
@@ -77,15 +80,17 @@ export function mapLayout(theme = loadMapTheme()) {
   });
   for (let i = 1; i <= g.maxNodes; i++) {
     const s = theme.layout.map.node;
-    // State is carried by the official icon tint and the existing current token,
-    // never an enclosing disc. Keep the full invisible pointer/focus target.
-    // Retain STS MAP_CIRCLE_5 geometry and rotation for the current-room halo.
-    // TASK-4.13 uses gold path/icon ink for visited rooms instead of another ring.
+    // Two offset native strokes give the rotated circle uneven ink weight.
+    const stroke = (name, min, max) => ({
+      ...image(name, 0, 0, 0, 0, c.goldBright, im.ring), anchor: { min, max },
+    });
     const children = [
-      { ...image('ring', 0, 0, s * .95, s * .95, c.goldBright, im.ring), visible: false },
+      { name: 'ring', kind: 'container', size: [s * .95, s * .95], visible: false, children: [
+        stroke('outline', [.025, .06], [.975, .94]),
+        stroke('brush', [.08, .045], [.97, .96]),
+      ] },
       image('icon', 0, 0, s * .6, s * .6, c.node.locked, theme.icon.node.combat), hit(s, s)];
     children.push({ ...text('emeraldLabel', ...theme.layout.map.emeraldLabel, '绿钥匙', f.label, c.positive), visible: false });
-    children.push({ ...image('positionToken', ...visual.tokenOffset, visual.tokenSize, visual.tokenSize, c.goldBright, im.diamond), visible: false });
     controls.push({ name: `node${i}`, kind: 'container', position: [0, 0], size: [s, s], visible: false, children });
   }
   // MCP accepts at most 60 children per control. Keep draw order and positions

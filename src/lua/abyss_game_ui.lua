@@ -93,7 +93,12 @@ function M.new(root, data, presentation, clickEvent, platform)
         return ok, reason
     end, clickEvent, { embedded = true, color = platform.color, imageSource = platform.imageSource,
         cursor = platform.cursorEvents, controller = controller,
-        available=function(map)return Nodes.available(self.run,map)end })
+        available=function(map)return Nodes.available(self.run,map)end,
+        bossName=function(map)
+            local run = self.run
+            local bosses = run and run.bossInitialization and run.bossInitialization.bossList
+            if self.map == map and type(bosses) == 'table' then return bosses[1] end
+        end })
     self.nodeUI = NodeUI.new(child("nodePanel"), nil, nil,
         presentation, clickEvent, changed, { color = platform.color, imageSource = platform.imageSource,
             imageTypes = platform.imageTypes,
@@ -135,7 +140,7 @@ function M.new(root, data, presentation, clickEvent, platform)
 
     self.openExit = Overlays.openExit(self,owner)
     self.openMenu = Overlays.openMenu(self,owner)
-    self.closeExit = Overlays.closeExit(self,exitPanel,owner)
+    self.closeExit = Overlays.closeExit(self,owner)
     self.confirmExit = Overlays.confirmExit(self,owner)
     require('abyss_game_ui_navigation').install(self,owner,neowHistory)
 
@@ -143,7 +148,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)
     -- TASK-4.7 owned relics: icon-disc slots, not a text dump. Opening rides
     -- the deck gate so it stays read-only for battle, map, camp and chest.
-    self.openRelics = Overlays.openRelics(self,inputCovered)
+    self.openRelics = Overlays.openRelics(self,inputCovered,platform)
     self.closeDeck = Overlays.closeDeck(self)
 
     local menuView = MenuView.new(self,menu,data,platform)
@@ -203,17 +208,10 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.resize = Lifecycle.resize(self,owner)
     self.update = Lifecycle.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     self.disable = Lifecycle.disable(self,platform,controller,characterPanel,owner)
-    local dismissFromOutside = Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
-    local backKey = platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
-    if Theme.presentationProfile=='official-assets-first' and backKey and runMenu.AddKeyEventListener then
-        runMenu.disableKeyEventPassthrough = true
-        runMenu:AddKeyEventListener(backKey,function()
-            return runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
-        end)
-    end
+    Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
     local bindCommand = Input.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
     Input.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
-    Input.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside,runMenu,canViewRoute,child,owner)
+    Input.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     Input.installCharacters(self,characterPanel,clickEvent,bindCommand,controller)
     owner.ready = true
     if controller then

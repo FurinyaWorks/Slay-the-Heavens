@@ -83,3 +83,16 @@ test('native card portrait source dimensions are validated without treating them
     assert(validateTheme(portrait,content).some(error=>error.includes('cardPortraits.strike.size')),JSON.stringify(size));
   }
 });
+
+test('candidate theme build rejects distinct formal statuses sharing one picture',()=>temporary(directory=>{
+ for(const [status,other]of [['ritual','strength'],['buffer','artifact'],['panache','strength']]){
+  const changed=theme();changed.icon.status[status]=changed.icon.status[other];
+  const file=join(directory,'theme.json');writeFileSync(file,JSON.stringify(changed));
+  assert.throws(()=>buildUiTheme(file,'data',join(directory,'rejected.lua')),/status.*shares.*picture/);
+ }
+}));
+
+test('missing whole status icon table reports validation errors without throwing',()=>{
+ const changed=theme();delete changed.icon.status;
+ assert.match(validateTheme(changed,content).join('\n'),/icon.status has no picture for ritual/);
+});

@@ -27,6 +27,9 @@ export function attachLowCostArt(tree){
   const relic= /\/relicBar\/slot\d+$/.test(path)||/\/relicPanel\/(row\d+\/slot|single)$/.test(path)||
    /\/shopView\/relic\d+$/.test(path)||/\/treasureView\/(reward|rewardItem\d+)$/.test(path);
   if(icon&&relic&&!child(node,'iconArt'))children.splice(children.indexOf(icon)+1,0,pool(icon,16));
+  const rewardIcon=child(node,'rewardIcon');
+  if(rewardIcon&&/\/relicReward[12]\/[^/]+$/.test(path)&&!child(node,'rewardIconArt'))
+   children.splice(children.indexOf(rewardIcon)+1,0,pool(rewardIcon,16));
  }
  walk(tree);return tree;
 }

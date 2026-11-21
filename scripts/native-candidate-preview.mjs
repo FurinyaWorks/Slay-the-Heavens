@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {refinedMonsterTierNames} from './monster-art.mjs';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
@@ -34,6 +35,7 @@ if(candidate.officialPortraits?.selectionHalfImageTemplateIndex)requiredTemplate
 // Explicit experiment manifests may instantiate native templates from Lua IDs.
 // Read their actual GIL trees too; never synthesize them from preview geometry.
 for(const name of candidate.experiment?.nativeTemplateNames??[])requiredTemplates.add(name);
+if(candidate.refinedReleaseMonsterArt===true)for(const name of refinedMonsterTierNames(candidate))requiredTemplates.add(name);
 function collectTemplateReferences(node){
  for(const key of ['itemTemplate','template'])if(node[key])requiredTemplates.add(node[key]);
  for(const child of node.children??node.controls??[])collectTemplateReferences(child);

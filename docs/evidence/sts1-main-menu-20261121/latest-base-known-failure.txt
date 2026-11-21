@@ -1,0 +1,45 @@
+✔ official art is opt-in and preserves both legacy CLI presets and strict candidate guards (4.663121ms)
+✔ receipts and pinned source audits reconstruct official art and reject mismatched profiles (29.361547ms)
+✖ historical approved pages keep live input identities while unrelated pages retain their geometry (205.483315ms)
+✔ approved pages keep live input identities while unrelated pages retain their geometry (1022.845214ms)
+✔ scene and button substitutions preserve semantic icons and all four native button states (430.608795ms)
+✔ official selection keeps its approved 1600 background while battle and opt-out retain their explicit sources (2072.005472ms)
+✔ audio wrapper forwards the explicit official profile and lifecycle without legacy background defaults (1.897186ms)
+✔ official selection leaves the portrait unobscured and exit retains the live button owner (26.613781ms)
+✔ official run pages use one three-step floor marker just after the potion slots (348.080192ms)
+✔ ordinary readiness overlay uses the same Liyue crest and seven elements (21.351465ms)
+✔ approved native title and button artwork preserve the official menu hit surfaces (24.479686ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6394.536716
+
+✖ failing tests:
+
+test at tests/official-assets.test.mjs:73:1
+✖ historical approved pages keep live input identities while unrelated pages retain their geometry (205.483315ms)
+  AssertionError [ERR_ASSERTION]: fresh current production owner: src/lua/abyss_battle_detail_bindings.lua
+  + actual - expected
+
+  + 'd5e4a1878deadef59670b72b46a015e379412f103460e1c5ce27b46b5a485160'
+  - '2eee30b903e8d41618cfd320da89ea57ccdf7470d31e33e1a0617228e054a9bd'
+
+      at replayReviewedSelection (file:///workspace/menu-sts1-before/tests/helpers/replay-reviewed-selection.mjs:25:10)
+      at TestContext.<anonymous> (file:///workspace/menu-sts1-before/tests/official-assets.test.mjs:74:15)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'd5e4a1878deadef59670b72b46a015e379412f103460e1c5ce27b46b5a485160',
+    expected: '2eee30b903e8d41618cfd320da89ea57ccdf7470d31e33e1a0617228e054a9bd',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

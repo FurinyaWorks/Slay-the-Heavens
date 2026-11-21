@@ -2,7 +2,7 @@
 -- including rotated circle corners, rather than the old half-node assumption.
 return function(box,viewport)
  local x,y=box.x or box.position[1],box.y or box.position[2]
- for _,name in ipairs({'icon','ring','positionToken','emeraldLabel','hit'})do
+ for _,name in ipairs({'icon','ring','emeraldLabel','hit'})do
   local part=box:GetChild(name)
   if part.visible~=false then
    local px,py=part.x or part.position and part.position[1] or 0,part.y or part.position and part.position[2] or 0

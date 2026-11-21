@@ -1,4 +1,9 @@
+import {beforeRebasedCi} from './helpers/rebased-release-source.mjs';
+import {beforeAuthenticatedReleaseGuideSource} from './helpers/release-guide-backflow-source.mjs';
+import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from './helpers/card-feedback-owner-source.mjs';
+import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-source.mjs';
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -66,9 +71,11 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  assert.deepEqual(Object.keys(frozen.current),Object.keys(closeoutPriorEpoch.proof.current));
  assert.equal(proof.currentTreeCommitted,false,'working source hashes do not invent a committed corpus');
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
+ const readLive=file=>readFileSync(file,'utf8');
+ const readPredecessor=file=>beforeReleaseUiRestore(file,readLive(file));
  for(const path of shopDeckPaths){
-  const readLive = file=>readFileSync(file,'utf8');
-  assert.equal(beforePc13ThenV2UiHudSource(path,readLive(path),readLive).replaceAll('\r\n','\n'),raw(path),path);
+  const predecessor=beforeAuthenticatedReleaseUiRestore(path,readLive(path),readLive);
+  assert.equal(beforePc13ThenV2UiHudSource(path,predecessor,readPredecessor).replaceAll('\r\n','\n'),raw(path),path);
   for(const input of [raw(path),raw(path).replaceAll('\n','\r\n')])for(const target of Object.keys(proof.targets)){
    const before=proof.targets[target].files[path];
    const expected=before&&before.sha256!==proof.current[path].sha256?before.source:input;
@@ -158,22 +165,40 @@ test('combined epoch authenticates the complete current production tree',()=>{
   assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),previous,path);
   if(latest.replaceAll('\r\n','\n')===previous)continue;
   for(const invalid of [previous,latest+'\n',null]){
-   assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh current production owner/);
-   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|combined linked owner identity/);
+   assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh (?:current production owner|combat visual source|energy reference source)/);
+   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|(?:combined|map deck) linked owner identity/);
   }
+ }
+});
+test('combined replay rejects a menu owner from before the controls guide removal',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ const path='config/architecture.json',source=read(path),target='develop';
+ assert.equal(sourceEpoch.preCombinedSource(path,source,{target,readSource:read}),proof.targets[target].files[path].source);
+ for(const owner of releaseControlsGuideRemovalSourcePaths){
+  const prior=beforeReleaseControlsGuideRemoval(owner,read(owner));
+  assert.notEqual(prior,read(owner),owner);
+  assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target,readSource:path=>path===owner?prior:read(path)}),
+   new RegExp('(?:combined|map deck) linked owner identity: '+owner.replaceAll('.','\\.')));
  }
 });
 test('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{
  const read=path=>readFileSync(path,'utf8');
  assert.equal(pc13RewardCoverSourcePaths.length,5);
  for(const path of pc13RewardCoverSourcePaths){
-  const successor=read(path),predecessor=beforePc13RewardCover(path,successor);
-  assert.notEqual(predecessor,successor,path);
+  const successor=read(path),rebased=beforeRebasedCi(path,successor),mapPrior=beforeSts1MapSource(path,rebased);
+  const readMapPrior=owner=>beforeSts1MapSource(owner,beforeRebasedCi(owner,read(owner)));
+  const pc13=beforeAuthenticatedReleaseGuideSource(path,mapPrior,readMapPrior);
+  const predecessor=beforePc13RewardCover(path,pc13);
+  assert.notEqual(predecessor,pc13,path);
   assert.equal(beforeCurrentProductionSource(path,successor,read).replaceAll('\r\n','\n'),raw(path),path);
   assert.equal(beforeCharacterPreparationSource(path,predecessor,read).replaceAll('\r\n','\n'),raw(path),'historical predecessor remains supported: '+path);
   assert.throws(()=>beforeCurrentProductionSource(path,predecessor,read),{message:'fresh current production owner: '+path});
   const forbidden=()=>{throw Error('must not read for an unrecognized current owner');};
-  for(const invalid of [predecessor,successor+'\n',null])
+  const invalidSources=[predecessor,successor+'\n',null];
+  if(rebased!==successor)invalidSources.push(rebased);
+  if(mapPrior!==rebased)invalidSources.push(mapPrior);
+  if(pc13!==mapPrior)invalidSources.push(pc13);
+  for(const invalid of invalidSources)
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,forbidden),{message:'fresh current production owner: '+path});
   assert.throws(()=>beforeCurrentProductionSource(path,successor,owner=>owner===path?predecessor:read(owner)),
    /combined linked owner identity/,path);
@@ -245,4 +270,22 @@ test('round3 retirement rejects live hardlinks and live source roots',async()=>{
  assert.throws(()=>prepare(sandbox,{sourceRoot:sandbox}),/separate/);
  const root=mkdtempSync(join(sandbox,'retirement-hardlink-')),path='src/lua/abyss_combat_catalog.lua';mkdirSync(dirname(join(root,path)),{recursive:true});
  linkSync(join(sandbox,path),join(root,path));try{assert.throws(()=>prepare(root,{sourceRoot:sandbox}),/single link|inode/);}finally{unlinkSync(join(root,path));}
+});
+
+test('map and card replay require every same-path sample and live reread to match',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ for(const [path,prior,authorize]of [
+  ['src/lua/abyss_game_ui_view.lua',beforeSts1MapSource,authorizeSts1MapSource],
+  ['src/lua/abyss_battle_card_glow.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
+  ['src/lua/abyss_feedback.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
+ ]){
+  const current=read(path),signedView=beforeRebasedCi(path,current),old=prior(path,signedView);
+  const readSigned=owner=>beforeRebasedCi(owner,read(owner));
+  assert.notEqual(signedView,old,path);
+  for(const samples of [[[path,old],[path,signedView]],[[path,signedView],[path,old]]])
+   assert.throws(()=>authorize(samples,readSigned),/mixed live and stale sources/);
+  assert.throws(()=>authorize([[path,signedView]],()=>old),/changed during owner validation/);
+  assert.throws(()=>beforeCurrentProductionSource(path,old,read),/fresh current production owner/);
+  assert.throws(()=>beforeCurrentProductionSource(path,current,owner=>owner===path?old:read(owner)),/combined linked owner identity/);
+ }
 });

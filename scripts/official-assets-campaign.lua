@@ -77,14 +77,15 @@ local function click(key)
  action('battle:'..key,function()return F.click(root,'battlePanel',key)end)
 end
 local function selectUID(uid)
- local n=h.nodeUI;local forge=n.picker=='upgrade'
- local rows=forge and n.upgradeRows or n.removeRows
+ local n=h.nodeUI;local upgrade=n.picker=='upgrade';local forge=upgrade and n.view.node.type=='camp'
+ local rows=upgrade and n.upgradeRows or n.removeRows
  local index;for i,c in ipairs(rows)do if c.uid==uid then index=i end end
  assert(index,'picker UID missing '..tostring(uid))
- local size=forge and 12 or #F.Theme.layout.nativeNode.picker.columns
+ if forge then press('pickerView/forgeScroll/card'..index);press('confirm');return end
+ local size=#F.Theme.layout.nativeNode.picker.columns
  local page=math.floor((index-1)/size)+1
- while n.pickPage~=page do press('pickerView/'..(forge and (n.pickPage<page and 'forgeNext' or 'forgePrevious') or(n.pickPage<page and 'next' or 'previous')))end
- press('pickerView/'..(forge and 'forgeGrid/'or'')..'card'..((index-1)%size+1));press('confirm')
+ while n.pickPage~=page do press('pickerView/'..(n.pickPage<page and 'next' or 'previous'))end
+ press('pickerView/card'..((index-1)%size+1));press('confirm')
 end
 while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
  assert(h.run==run and h.map==map,'campaign replaced run/map owner')
@@ -157,6 +158,7 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
     assert(item,'no claimable treasure');press('treasureView/rewardItem'..item)
    end
   else
+   if flow.type=='shop' and not h.nodeUI.shopOpen then press('merchant/talk') end
    local plan=assert(Policy.suggestNodeAction(run,map,coverage,done),'no node plan')
    if plan.method=='rest'and not h.nodeUI.actions['campView/rest'].enabled then
     local card=h.nodeUI.view.node.upgradeCards[1];assert(card);plan={method='upgrade',uid=card.uid}
@@ -164,7 +166,7 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
    if plan.method=='rest'then press('campView/rest')
    elseif plan.method=='upgrade'then press('campView/forge');selectUID(plan.uid)
    elseif plan.method=='removeCard'then press('shopView/removal');selectUID(plan.uid)
-   elseif plan.method=='leaveShop'then press('confirm')
+   elseif plan.method=='leaveShop'then press('back')
    elseif plan.method=='buyPotion'then press('shopView/potion'..plan.slot);press('confirm')
    elseif plan.method=='buyCardSlot'then press('shopView/card'..plan.slot);press('confirm')
    else error('unsupported plan '..plan.method)end

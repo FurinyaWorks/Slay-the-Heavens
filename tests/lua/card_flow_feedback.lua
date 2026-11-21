@@ -46,11 +46,18 @@ local function test(id,destination)
  local committed=Combat.copy(battle)
  feedback:begin(before,battle,first,Presentation,{0,-200})
  local observed,endpoint=false,false
+ local contact
  for _=1,500 do
   feedback:update(.01)
+  local played=stage:GetChild('feedback'):GetChild('playedCard')
+  if not contact and feedback.current and feedback.current.kind~='play' and played.visible then
+   contact={played.x,played.y}
+  end
   for slot,entry in pairs(feedback.cardFlow and feedback.cardFlow.active or{})do if entry.uid==uid then
    assert(entry.to==destination,'played UID sent to the wrong destination')
    assert(stage:GetChild('feedback'):GetChild('cardTrail'..slot).visible)
+   assert(contact and math.abs(entry.start[1]-contact[1])<1e-8 and math.abs(entry.start[2]-contact[2])<1e-8,
+    'pile trail must start at the visible card contact')
    observed=true
    if entry.arrived then
     local expected=destination=='discard'and Theme.layout.discardPile.position or destination=='exhaust'and{Theme.layout.topBar.exhaustIcon[1],Theme.layout.topBar.y}or Theme.layout.player.position

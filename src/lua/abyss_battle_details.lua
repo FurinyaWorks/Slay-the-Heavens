@@ -36,6 +36,7 @@ function M.install(owner, ownership, host, dependencies)
         dependencies.cancelActionInputs()
         for _, input in ipairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
         if cancelled then self.gesture, self.carry, self.selected, self.suppressClick = nil, nil, nil, true end
+        self:closePowerTip()
         if closeInfo() then cancelled = true end
         self.canvasWidth, self.canvasHeight = width, height
         local k = math.min(width / Theme.canvas.base[1], height / Theme.canvas.base[2])
@@ -59,15 +60,32 @@ function M.install(owner, ownership, host, dependencies)
         dependencies.child("statusInfo"):SetVisible(false)
         return true,automaticCard
     end
+    function owner:closePowerTip(source)
+        if not self.powerTip or source and source ~= self.powerTip.source then return end
+        self.powerTip = nil
+        host.renderInfo(self.run and self.run.combat)
+        return true
+    end
+    function owner:showPowerTip(spec, source, touch)
+        local run = self.run
+        if not run or run.phase ~= "combat" or not self.active or self.info then return end
+        local tip = self.powerTip
+        if touch and tip and tip.source == source and tip.touch then
+            return self:closePowerTip(source)
+        end
+        self.powerTip = {kind = "powerTips", index = 0, statusId = spec.statusId, offset = spec.offset,
+            source = source, touch = touch, battle = run.combat, position = not touch and spec.position or nil}
+        host.renderInfo(run.combat)
+    end
     function owner:showStatus(index)
         local run = self.run
         if not self.active or self.busy or self.gesture or not run or run.phase ~= "combat" then return false end
         local actor = index == 0 and run.combat.player or run.combat.enemies[index]
         if not Actors.isPresent(actor) then return false end
-        dependencies.cancelPotionAim("已取消药水瞄准。")
+        local cancelled=dependencies.cancelPotionAim("已取消药水瞄准。")
         if self.info and self.info.index == index and self.info.id == actor.id then closeInfo()
         else self.info = {index = index, id = actor.id, battle = run.combat} end
-        self:render()
+        self:renderDetailsOnly(cancelled)
         return true
     end
     function owner.openHelp(_, spec, source, transient)
@@ -76,11 +94,11 @@ function M.install(owner, ownership, host, dependencies)
         if not owner.active or owner.busy or not run or run.phase~="combat" and not reward then return false end
         local actor=spec.index==0 and run.combat.player or run.combat.enemies[spec.index]
         if not Actors.isPresent(actor)then return false end
-        dependencies.cancelPotionAim("已取消药水瞄准。")
+        local cancelled=dependencies.cancelPotionAim("已取消药水瞄准。")
         owner.info={index=spec.index,id=actor.id,battle=run.combat,kind=spec.kind,statusId=spec.statusId,
             offset=spec.offset,uid=spec.uid,source=source,transient=transient==true,
             slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
-        owner:render()
+        owner:renderDetailsOnly(cancelled)
         return owner.info~=nil
     end
     function owner.queueHelp(_,spec,source,held,touch,card)

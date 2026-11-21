@@ -10,6 +10,7 @@ GameUI.new = function(...) host=originalNew(...); return host end
 script = {object=canvas, GetParam=function() return false end,
     EnableUpdate=function(self,value) self.updating=value end}
 Enum = {CursorEventType={CursorClick='click',CursorDown='down',CursorUp='up',CursorExit='out'},
+    KeyEventType={KeyboardSprintKeyDown='right'},
     ImageSource={StaticReference='static'},
     Device={Mobile='mobile',Controller='controller',MobileController='mobile-controller'}}
 Color = setmetatable({}, {__call=function(_,r,g,b,a) return {r=r,g=g,b=b,a=a} end})
@@ -32,6 +33,8 @@ dofile('src/lua/abyss_ui.lua')
 OnStart()
 GameUI.new = originalNew
 assert(host and script.updating,'real native entry must start')
+local rightClick=assert(canvas.keyListeners and canvas.keyListeners.right,'native root must own right-click')
+assert(not rightClick(),'title must not consume a combat cancellation')
 host.seed=42 -- deterministic first-room encounters; native platform remains intact
 local root = canvas:GetChild('stage')
 local function finishOpening()
@@ -73,6 +76,23 @@ local function defeat()
     assert(host.run.phase=='map','native Neow opening must finish through its buttons')
     host.run.hp=3
     assert(host.mapUI:choose(F.Nodes.available(host.run,host.map)[1].id))
+    for _=1,80 do
+        if not host.pageReveal or not host.pageReveal:covered() then break end
+        OnUpdate(0.05)
+    end
+    local panel, battle = root:GetChild('battlePanel'), host.run.combat
+    local card = hit('battlePanel','card1')
+    local energy, uid = battle.energy, battle.hand[1].uid
+    assert(not (panel.keyListeners and panel.keyListeners.right),'battle page must not bind a second right-click handler')
+    card.click()
+    assert(host.battleUI.selected==uid,'left click should select the card')
+    assert(rightClick() and host.battleUI.selected==nil and battle.energy==energy and battle.hand[1].uid==uid,
+        'right-click must return a selected card without spending energy')
+    assert(not rightClick(),'right-click with no selection should pass through')
+    card.click()
+    assert(host.battleUI.selected==uid,'a fresh click must select again on the click-only card surface')
+    card.click()
+    assert(host.battleUI.selected==nil and battle.energy==energy,'a second click on the same card must still cancel')
     local feedbackUpdates,revealUpdates=0,0
     for _=1,30 do
         if host.run.phase~='combat' then break end
@@ -144,4 +164,4 @@ assert(not fire(hit('menuPanel','start'),'click',34) and host.run==run)
 assert(not host.disabled and script.updating,'native update must stay healthy')
 print('NATIVE_EXIT_TIMER_RETRY_PASS native exit chain, signal failure/cancel/retry, single accepted request; device NOT_RUN')
 OnDestroy()
-assert(not script.updating)
+assert(not script.updating and not rightClick(),'destroyed native entry must not handle a stale right-click')

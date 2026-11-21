@@ -70,11 +70,11 @@ test('node and edge pools match controller contract, with type meanings and with
     const node = index.get(`node${i}`);
     assert.equal(node.visible, false);
     assert.deepEqual(node.children.filter(child => child.kind === 'image').map(child => child.name),
-      ['ring', 'icon', 'positionToken'], 'only the STS current-room circle; no per-node discs');
+      ['icon'], 'no extra marker or per-node disc');
     const hit = node.children.find(child => child.name === 'hit');
     assert.deepEqual(hit.size, node.size);
     assert.equal(hit.focusable, true);
-    for (const name of ['icon', 'positionToken', 'hit']) {
+    for (const name of ['icon', 'ring', 'hit']) {
       assert(node.children.some(child => child.name === name), name);
     }
   }
@@ -84,7 +84,7 @@ test('node and edge pools match controller contract, with type meanings and with
   for (const name of ['previous', 'next']) assert.equal(index.get(name).visible, false);
   assert.equal(index.has('focus'), false, 'recenter is an internal entry behaviour, not a visible button');
   assert.equal(index.get('notice').size[1], 40);
-  assert.equal(index.get('node1').children.find(c => c.name === 'positionToken').image, theme.image.diamond);
+  assert.deepEqual(index.get('node1').children.find(c => c.name === 'ring').children.map(c => c.image), [theme.image.ring, theme.image.ring]);
   assert.equal([...index.keys()].filter(name => /^fog/.test(name)).length, 4);
 });
 
@@ -106,7 +106,7 @@ test('actual Lua controller validates navigation, scroll, locked input, path and
   buildMapLayout();
   const result = runLua('tests/lua/map_ui.lua');
   assert.equal(result.status, 0, result.stderr + result.stdout);
-  assert.match(result.stdout, /LUA_MAP_UI_PASS 27/);
+  assert.match(result.stdout, /LUA_MAP_UI_PASS 28/);
 });
 
  test('complete native interface respects MCP per-container import limits', async () => {

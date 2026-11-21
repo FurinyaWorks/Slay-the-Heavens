@@ -70,8 +70,8 @@ require('abyss_card_actions').drain(C,s)
 assert(s.player.statuses.next_turn_block==3,'Self Forming Clay must actually generate next-turn Block')
 renderReadonly()
 local nextIcon=Theme.icon.status.next_turn_block
-assert((type(nextIcon)=='table'and nextIcon.id or nextIcon)==103066,'approved next-turn Block metadata is missing')
-status('next_turn_block',3,103066)
+assert((type(nextIcon)=='table'and nextIcon.id or nextIcon)==105215,'approved next-turn Block metadata is missing')
+status('next_turn_block',3,105215)
 assert(C.endTurn(s));assert(not s.player.statuses.next_turn_block and s.player.block>=3)
 renderReadonly()
 for _,enemy in ipairs(s.enemies)do enemy.hp=0 end
@@ -97,3 +97,15 @@ for _=1,1000 do if not feedback.busy then break end;feedback:update(0.1)end
 assert(not feedback.busy)
 same(r,unchanged);renderReadonly()
 print('RELIC_NATIVE_STATUS_FEEDBACK_PASS real ApplyPower event and native playback, generated numeric status IDs')
+
+-- Formal colorless powers carry old entry.icon aliases. Their own identity
+-- must win in the hero row, detail popup and real read-only view pipeline.
+for _,id in ipairs({'shackled','panache','no_block','intangible','magnetism','mayhem','sadistic_nature'})do
+ C.addStatus(r.combat.player,id,1)
+ renderReadonly();status(id,1,Theme.icon.status[id])
+end
+print('COLORLESS_DISTINCT_STATUS_PASS')
+
+for _=1,4 do require('abyss_colorless_cards').apply(C,r.combat,{effect={kind='bomb',value=40}})end
+renderReadonly();status('colorless_bomb_4',3,Theme.icon.status.colorless_bomb)
+print('BOMB_FAMILY_DISTINCT_STATUS_PASS')

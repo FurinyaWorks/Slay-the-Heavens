@@ -31,6 +31,7 @@ function M.install(ctx)
         ctx.resetButtons()
         ctx.shopSelection:clear()
         ctx.roomMotion:cancel()
+        ctx.cancelShop(false)
         self.canvasWidth, self.canvasHeight = width, height
         if self.pendingOwner then self:render();return end
         if self.view and self.view.node and (self.view.node.type=='shop' or ctx.options.enhancedRooms) then self:render() end
@@ -40,12 +41,14 @@ function M.install(ctx)
     function ctx.self.prepare(_,dt)
         -- Resource/skin work may run behind the publication cover. Match clocks,
         -- input holds and room/merchant timelines start only after publication.
+        ctx.campUI:update()
         for box in pairs(ctx.skinFaces)do CardSkin.tick(box,dt)end
     end
 
     function ctx.self:update(dt)
         self:prepare(dt)
         ctx.roomMotion:update(dt)
+        ctx.updateShop(dt)
         ctx.rewardDetail:update(dt)
         ctx.shopSelection:update(dt)
         ctx.updateMatch(dt)
@@ -82,8 +85,9 @@ function M.install(ctx)
         assert(type(value) == "boolean", "node visibility must be boolean")
         if value and not self.run then return false, "node_unbound" end
         if not value then
-            ctx.resetButtons();ctx.shopSelection:clear();ctx.roomMotion:cancel()
+            ctx.resetButtons();ctx.shopSelection:clear();ctx.roomMotion:cancel();ctx.cancelShop(false)
             if not retainPage then
+                ctx.campUI:hide()
                 for box in pairs(ctx.artFaces)do CardDisplay.clearNativeArt(box)end;ctx.artFaces={}
             end
         end
@@ -108,18 +112,32 @@ function M.install(ctx)
 
     end
 
+    local function currentPendingRelic(self)
+        if self.renderRun ~= self.run or self.renderMap ~= self.map
+            or require('abyss_relic_pending').owner(self.run) ~= self.pendingOwner then return false, 'stale_action' end
+        return true, self.view
+    end
+
+    local function currentCampView(self, flow)
+        -- Camp controls use live node identity and phase without rebuilding the eligible deck.
+        local view = self.view
+        if flow.id ~= self.nodeId or not view or not view.node or view.phase ~= self.run.phase
+            or view.node.complete ~= flow.complete then return false, 'stale_action' end
+        return true, view
+    end
+
     function ctx.current()
-        if not ctx.self.visible then return false, "panel_hidden" end
-        if ctx.self.busy or ctx.self.presentationBusy then return false, "unavailable_action" end
-        if ctx.self.pendingOwner then
-            if ctx.self.renderRun~=ctx.self.run or ctx.self.renderMap~=ctx.self.map
-                or require('abyss_relic_pending').owner(ctx.self.run)~=ctx.self.pendingOwner then return false,'stale_action'end
-            return true,ctx.self.view
+        local self = ctx.self
+        if not self.visible then return false, "panel_hidden" end
+        if self.busy or self.presentationBusy or self.shopBusy then return false, "unavailable_action" end
+        if self.pendingOwner then return currentPendingRelic(self) end
+        if self.renderRun ~= self.run or self.renderMap ~= self.map then return false, "stale_action" end
+        local flow = self.run.nodeFlow
+        if ctx.options.enhancedRooms and flow and flow.type == 'camp' and self.run.phase ~= 'ending_proceed' then
+            return currentCampView(self, flow)
         end
-        local view = Nodes.view(ctx.self.run, ctx.self.map)
-        if ctx.self.renderRun ~= ctx.self.run or ctx.self.renderMap ~= ctx.self.map or not view.node or view.node.id ~= ctx.self.nodeId then
-            return false, "stale_action"
-        end
+        local view = Nodes.view(self.run, self.map)
+        if not view.node or view.node.id ~= self.nodeId then return false, "stale_action" end
         return true, view
     end
 
@@ -181,7 +199,7 @@ function M.install(ctx)
                     hold.run, hold.map, hold.nodeId = ctx.self.run, ctx.self.map, flow.id
                     -- A shop farewell shows no shelf: only the merchant and 继续 remain.
                     hold.view = node.type == "event" and "eventView" or node.type == "shop" and "farewell"
-                        or (hold.choice == "upgrade" and "pickerView" or "campView")
+                        or (hold.choice == "upgrade" and not ctx.options.enhancedRooms and "pickerView" or "campView")
                     hold.eventId = node.event and node.event.id
                     ctx.self.result = hold
                 end
@@ -198,6 +216,7 @@ function M.install(ctx)
     end
 
     function ctx.self:press(key)
+        if key:match("^shopView/") and not self.shopOpen then return false,"unavailable_action" end
         local ok, view = ctx.current()
         if not ok then
             local entry = self.actions[key]

@@ -48,7 +48,7 @@ test('native purge pickers use the shared legal group in all four rooms',functio
   local ui=UI.new(root,r,map,F.Presentation,'click',nil,{color=function(...)return{...}end,imageSource='static'})
   eq(#ui.removeRows,1);eq(ui.removeRows[1].uid,2)
   local key=kind=='shop' and 'shopView/removal' or kind=='cleric' and 'eventView/option2' or 'eventView/option1'
-  ui:setVisible(true);assert(ui:press(key));eq(#ui.removeRows,1);eq(ui.removeRows[1].uid,2)
+  ui:setVisible(true);if kind=='shop' then assert(root:GetChild('merchant'):GetChild('talk'):GetChild('hit').click());ui:update(.31) end;assert(ui:press(key));eq(#ui.removeRows,1);eq(ui.removeRows[1].uid,2)
   r.deck[2].inBottleTornado=true;ui:render();eq(#ui.removeRows,0)
  end
 end)

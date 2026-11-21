@@ -1,3 +1,4 @@
+import './sts1-menu-native.cases.mjs';
 import {nativeAudioBuildArgs,buildNativeAudioGame} from '../scripts/build-native-audio-game.mjs';
 import test from 'node:test';
 import {cardFaceChildren} from '../scripts/card-face.mjs';
@@ -43,12 +44,13 @@ test('official art is opt-in and preserves both legacy CLI presets and strict ca
  assert.equal(validateOfficialAssets({officialAssets:true}),true);
  assert.deepEqual(officialAssetsArgs(['map.gil','--official-assets']),{args:['map.gil'],officialAssets:true});
  for(const args of [['--official-assets=false'],['--official-assets','--official-assets']])assert.throws(()=>officialAssetsArgs(args));
- for(const patch of [{officialAssets:1},{releaseCandidate:true},{lightweight2d:true},{v25BattleChrome:true},{v25CardAssets:'private'},{v25UiMasks:'private'},
+ assert.equal(validateOfficialAssets({officialAssets:true,releaseCandidate:true}),true);
+ for(const patch of [{officialAssets:1},{lightweight2d:true},{v25BattleChrome:true},{v25CardAssets:'private'},{v25UiMasks:'private'},
   {nativeCardArt:{count:0}},{performanceArt:true},{readyCardArt:true},{componentWidgets:{}},{prepare(){}},{artFeatures:{cards:true}},
   {artFeatures:{selectionAvatar:false}},{artFeatures:{battlePortrait:false}},{artFeatures:{menuBackground:true}}]){
   assert.throws(()=>validateOfficialAssets({officialAssets:true,...patch}));
  }
- await assert.rejects(buildNativeCandidate({officialAssets:true,prepare(){}}),/separate non-release/);
+ await assert.rejects(buildNativeCandidate({officialAssets:true,prepare(){}}),/separate candidate/);
  assert.deepEqual(gameBuildArgs(['base.gil','--art-version=official']),['base.gil','--official-assets','--native-page-lifecycle']);
  for(const version of ['legacy','enhanced'])assert(!gameBuildArgs(['base.gil','--art-version='+version]).includes('--official-assets'));
 });

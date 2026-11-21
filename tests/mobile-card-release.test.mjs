@@ -18,3 +18,9 @@ test('a sparse flick rejects slow, lateral, cancelled and foreign releases',()=>
  assert.equal(result.status,0,result.stdout+result.stderr);
  assert.match(result.stdout,/^SPARSE_CARD_FLICK_SAFETY_PASS 8$/m);
 });
+
+test('cancelling a selected card clears its previous rejection notice',()=>{
+ const result=runLua('tests/lua/support/card_cancel_notice.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/CARD_CANCEL_NOTICE_PASS failure\/cancel\/repeat/);
+});

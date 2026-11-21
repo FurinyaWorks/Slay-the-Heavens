@@ -6,6 +6,7 @@ local Run, Map, Combat = require("abyss_run"), require("abyss_map"), require("ab
 local data = require("abyss_data")
 local Presentation = require("abyss_presentation")
 local Layout = require("abyss_ui_layout")
+local Templates = require("abyss_ui_templates")
 
 local function findSpec(list, name)
     for _, spec in ipairs(list) do
@@ -27,6 +28,26 @@ local function control(spec,parent)
     function c:AddCursorEventListener(event, callback)
         self.listeners[event]=callback
         if event=='click' then self.click=callback end
+    end
+    if spec.kind == 'grid' then
+        local g = spec.grid
+        function c:GetItemSize() return table.unpack(g.itemSize) end
+        function c:GetItemSpacing() return table.unpack(g.spacing) end
+        function c:GetPadding() return table.unpack(g.padding) end
+        function c:RefreshItems(count, paint)
+            self.order = {}
+            local w, h = table.unpack(self.size or spec.size)
+            for i = 0, count - 1 do
+                local x = -w / 2 + g.padding[3] + g.itemSize[1] / 2 + (i % g.columns) * (g.itemSize[1] + g.spacing[1])
+                local y = h / 2 - g.padding[1] - g.itemSize[2] / 2 - math.floor(i / g.columns) * (g.itemSize[2] + g.spacing[2])
+                if y + g.itemSize[2] / 2 > -h / 2 then
+                    local item = control(Templates[spec.itemTemplate], self)
+                    item:SetAnchoredPosition(x, y)
+                    self.order[#self.order + 1] = item
+                    paint(item, i)
+                end
+            end
+        end
     end
     for _, item in ipairs(spec.children or {}) do
         c.children[item.name] = control(item,c)
@@ -89,6 +110,7 @@ local function scene(kind, source, prepare, mobile, enhanced)
           enhancedRooms=enhanced==true,
           cursorEvents={CursorEnter='enter',CursorExit='exit',CursorDown='down',CursorUp='up',CursorEndDrag='endDrag'} })
     ui:setVisible(true)
+    if kind=='shop' then assert(ui:press('merchant/talk'));ui:update(.31) end
     return ui, root
 end
 local function midRun(run) run.hp, run.gold = 62, 99 end
@@ -112,7 +134,7 @@ ui:update(.5);capture('camp-heal',root)
 ui:update(2);capture('camp-rest-result',root)
 ui,root=scene('camp',nil,midRun,false,true)
 assert(ui:press('campView/forge'));capture('forge-grid',root)
-assert(ui:press('pickerView/forgeGrid/card1'));capture('forge-preview',root)
+assert(ui:press('pickerView/forgeScroll/card1'));capture('forge-preview',root)
 assert(ui:press('confirm'));ui:update(.4);capture('forge-impact',root)
 ui:update(2);capture('forge-done',root)
 

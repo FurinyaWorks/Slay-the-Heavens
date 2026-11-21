@@ -13,7 +13,7 @@ end
 local routeModes={battleRoute='battle',runRoute='node'}
 
 local function mapReturnCovered(self)
-    return self.characterOpen or self.easterEggOpen or self.controlsOpen
+    return self.characterOpen or self.easterEggOpen
         or self.deckUI.visible or self.potionUI.visible
         or self.choiceUI and self.choiceUI.visible
 end
@@ -53,8 +53,8 @@ function M.dismissFromOutside(controller,self)
         end
 end
 
-local function bindV25Hover(box,hit,cursor,available)
-    local officialMenu=Theme.presentationProfile=='official-assets-first' and box:GetChild('v25MenuFace')
+local function bindV25Hover(box,hit,cursor,available,routeReturn)
+    local officialMenu=Theme.presentationProfile=='official-assets-first' and (box:GetChild('v25MenuFace') or routeReturn and box:GetChild('v25Face'))
     if (Theme.presentationProfile~='v25-reference' and not officialMenu) or not cursor.CursorEnter then return end
     if not box:GetChild('v25Face') and not box:GetChild('v25MenuFace')then return end
     hit:AddCursorEventListener(cursor.CursorEnter,function()V25View.pointer(box,'enter',available())end)
@@ -62,7 +62,7 @@ end
 
 local function battleRouteAvailable(self,enabled,mode)
     if self.mode~=mode or self.exitOpen or self.deckUI.visible or self.potionUI.visible
-        or self.characterOpen or self.controlsOpen or self.easterEggOpen then return false end
+        or self.characterOpen or self.easterEggOpen then return false end
     if self.choiceUI and self.choiceUI.visible then return false end
     return enabled()
 end
@@ -131,8 +131,6 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 if menuAction and self.motion.deathReveal then return false end
                 if kind == 'routeClose' then return self.exitOpen and self.routeOpen == true end
                 if mapReturn then return M.mapReturnAvailable(self) end
-                if kind == 'helpClose' then return self.exitOpen and self.controlsOpen == true end
-                if self.controlsOpen then return false end
                 return runMenuAvailable()
             end
             local function available()
@@ -161,7 +159,14 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                     and (not mapContext or currentMapReturn(token))
             end
             local function touch(event) return event and event.touchId end
-            bindV25Hover(box,hit,cursor,available)
+            bindV25Hover(box,hit,cursor,available,kind=='routeClose')
+            if kind=='routeClose' and Theme.presentationProfile=='official-assets-first' and box:GetChild('v25Face') then
+                local previousFocus=onFocus
+                onFocus=function()
+                    V25View.pointer(box,'enter',available())
+                    if previousFocus then return previousFocus() end
+                end
+            end
             if cursor.CursorDown and cursor.CursorUp then
                 hit:AddCursorEventListener(cursor.CursorDown, function(event)
                     if held and not current(held) then held = nil end
@@ -195,7 +200,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 if kind=='egg_close' then return 'easterEgg'end
                 if characterAction then return 'characters' end
                 if mapReturn then return self.routeOpen and 'exit' or 'map' end
-                if runMenuAction or kind=='routeClose' or kind=='cancel' or kind=='confirm' or kind=='help' or kind=='helpClose' then return 'exit' end
+                if runMenuAction or kind=='routeClose' or kind=='cancel' or kind=='confirm' then return 'exit' end
                 return self.mode
             end,action,available,order or (kind=='cancel' and 1 or kind=='open' and 200 or 100),group,onFocus)
             hit:AddCursorEventListener(clickEvent, function(event)
@@ -233,15 +238,13 @@ function M.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,
     exitPanel.disableCursorEventPassthrough = true
     exitPanel:GetChild("blocker"):AddCursorEventListener(clickEvent, function() return true end)
     runMenu.disableCursorEventPassthrough = true
-    -- TASK-4.16 AC#1：点菜单/说明外的空白 = 非破坏性返回（继续游戏 / 回到菜单），
-    -- 永不触发放弃本局；点击被吞掉，不会穿透到后台战斗或地图。
+    -- 点击菜单外的空白继续游戏，并吞掉点击以避免穿透到战斗或地图。
     local dismissFromOutside = M.dismissFromOutside(controller,self)
     runMenu:GetChild('blocker'):AddCursorEventListener(clickEvent, function()
-        if self.exitOpen and self.menuOpen and not self.controlsOpen and not self.routeOpen then return dismissFromOutside() end
+        if self.exitOpen and self.menuOpen and not self.routeOpen then return dismissFromOutside() end
         return true
     end)
     runMenu:GetChild('catch'):AddCursorEventListener(clickEvent, function() return true end)
-    return dismissFromOutside
 end
 
 function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
@@ -290,7 +293,7 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
     bindCommand(exitPanel:GetChild("confirm"), "confirm", function() return self:confirmExit() end)
 end
 
-function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside,runMenu,canViewRoute,child,owner)
+function M.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     local bar=Theme.presentationProfile=='official-assets-first' and child('battlePanel'):GetChild('topBar')
     local function openRoute()
         if not self:openMenu()then return false end
@@ -300,32 +303,6 @@ function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside
     if shortcut then bindCommand(shortcut,'battleRoute',openRoute,canViewRoute)end
     local nodeShortcut=Theme.presentationProfile=='official-assets-first' and child('nodePanel'):GetChild('runRoute')
     if nodeShortcut then bindCommand(nodeShortcut,'runRoute',openRoute,canViewRoute)end
-    local guide = exitPanel:GetChild('guide')
-    if guide then
-        bindCommand(exitPanel:GetChild('help'), 'help', function()
-            owner.exitGeneration = owner.exitGeneration + 1
-            self.controlsOpen = true
-            guide:SetVisible(true)
-            self:refresh()
-            return true
-        end)
-        bindCommand(guide:GetChild('close'), 'helpClose', function() return self:closeExit() end)
-        guide:GetChild('blocker'):AddCursorEventListener(clickEvent, function()
-            if self.exitOpen and self.controlsOpen then return dismissFromOutside() end
-            return true
-        end)
-        guide:GetChild('catch'):AddCursorEventListener(clickEvent, function() return true end)
-    end
-    local runHelp=runMenu:GetChild('help')
-    if guide and runHelp then
-        bindCommand(runHelp,'run_help',function()
-            owner.exitGeneration=owner.exitGeneration+1
-            self.controlsOpen=true
-            guide:SetVisible(true)
-            self:refresh()
-            return true
-        end)
-    end
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)
     bindCommand(runMenu:GetChild('mainMenu'),'run_mainMenu',function()return self:returnToMainMenu()end,
         function()return Navigation.hasRun(self) and not self.sessionPaused end)

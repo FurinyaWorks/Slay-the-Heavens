@@ -1,5 +1,6 @@
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeStsSelectionFade} from './sts-selection-fade-source.mjs';
+import {beforeTooltipLuaInventory} from './tiny-house-integrated-source.mjs';
 // Authenticated CI-only continuation; raw scheduler discovery stays unchanged.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -35,6 +36,7 @@ export function beforeM05ShopCiSource(path,source){
 }
 export function m05CurrentDiscovery(paths,kind,read=readFileSync){
  assert(Object.hasOwn(additions,kind),'known M05 inventory kind');
+ if(kind==='lua')paths=beforeTooltipLuaInventory(paths,read);
  const path=additions[kind],prior=inventories[kind];
  assert.deepEqual([...paths].sort(),[...prior,path].sort(),'complete M05 raw '+(kind==='lua'?'Lua':'JS')+' discovery inventory');
  assert(matches(read(path,'utf8'),files[path].after),'fresh M05 added '+kind+' source: '+path);
@@ -45,4 +47,25 @@ export function m05HistoricalDiscovery(paths,kind,read=readFileSync){
  // Genuine older callers retain their existing contracts; only live M05 mode
  // may remove the exact newly discovered entry after hashing it.
  return paths.includes(additions[kind])?m05CurrentDiscovery(paths,kind,read):paths;
+}
+
+// The Release integration retains #776's extra tests. Historical Release
+// receipts remove only those exact test bytes before checking their inventory.
+const backflowTestHashes={
+ js:'207c98d6243b318cac7bfccb2fe0822107e9ae57b3aa013c7fa10f87e3e5d43f',
+ lua:'b7290fd614807fa585a8041b0cc2848a172188726308dbd812a7fa8212058d8b',
+};
+export function beforeM05BackflowInventory(paths,kind,read=readFileSync){
+ assert(Object.hasOwn(additions,kind),'known M05 inventory kind');
+ const path=additions[kind],matches=paths.filter(candidate=>candidate===path);
+ if(!matches.length)return paths;
+ assert.equal(matches.length,1,'single M05 backflow '+kind+' test');
+ const source=read(path,'utf8');
+ assert(typeof source==='string'&&!source.includes('\r\r\n')&&
+  hash(source.replaceAll('\r\n','\n'))===backflowTestHashes[kind],'fresh M05 backflow '+kind+' test: '+path);
+ return paths.filter(candidate=>candidate!==path);
+}
+export function m05FrozenInventory(kind){
+ assert(Object.hasOwn(additions,kind),'known M05 inventory kind');
+ return [...inventories[kind],additions[kind]].sort();
 }

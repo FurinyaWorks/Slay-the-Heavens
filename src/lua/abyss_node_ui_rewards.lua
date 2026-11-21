@@ -20,12 +20,11 @@ local M = {}
 -- Installs the rewards responsibility on one node UI instance.
 function M.install(ctx)
     function ctx.renderPicker(_view, node, result)
-        if ctx.enhancedForge(node) then return ctx.campUI:render(node,result) end
+        if ctx.enhancedForge(node) then return ctx.campUI:render(node) end
         local picker, before, after, target
         local function resetPickerLayout()
             picker = ctx.child("pickerView")
             ctx.show(picker:GetChild('forgeGrid'),false)
-            ctx.show(picker:GetChild('forgePrevious'),false);ctx.show(picker:GetChild('forgeNext'),false)
             for _,name in ipairs({'before','after'})do
                 picker:GetChild(name):SetLocalScale(1,1,1)
                 picker:GetChild(name):SetAnchoredPosition(layout.picker[name],layout.picker.previewY)
@@ -254,7 +253,7 @@ function M.install(ctx)
     end
 
     function ctx.pickerLabels(node,living,act1,dream,restReward)
-        if ctx.enhancedForge(node) then return CampUI.labels(ctx.self.selected,node,ctx.self.run) end
+        if ctx.enhancedForge(node) then return CampUI.labels(ctx.self.selected,node) end
         local backLabel,confirmLabel,skipRestReward
         if dream then
             confirmLabel,backLabel='选择此牌','跳过卡牌'
@@ -332,6 +331,10 @@ function M.install(ctx)
                 if command == "upgrade" or command=='upgradeEvent' then
                     local upgraded=find(ctx.self.run.deck,selected,'uid')
                     local text="已升级「"..name.."」→「"..ctx.cardName(instance.cardId,true,upgraded.upgrades).."」"
+                    if command == "upgrade" and ctx.options.enhancedRooms then
+                        ctx.self.selected = nil
+                        if ctx.self.run.nodeFlow.complete then ctx.self.mode, ctx.self.picker = "main", nil end
+                    end
                     return text, { choice = "upgrade", card = instance, text=text }
                 end
                 local paid = before.gold - ctx.self.run.gold

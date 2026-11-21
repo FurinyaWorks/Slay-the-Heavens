@@ -1,6 +1,10 @@
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
+import {authorizeRebasedDevelop,beforeRebasedCi,rebasedDevelopOwns} from './rebased-release-source.mjs';
+import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner,cardFeedbackOwnerPaths} from './card-feedback-owner-source.mjs';
+import {authorizeSts1MapSource,beforeSts1MapSource,sts1MapSourcePaths} from './sts1-map-source.mjs';
+import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
-import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
+import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths,beforeRewardTransitionSource,rewardTransitionSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
@@ -35,11 +39,105 @@ export function assertCharacterPreparationSources(read = readRaw) {
   }
 }
 
+// Authenticate the develop split fix before restoring an older receipt.
+const slimeSplitSources=Object.freeze({
+  "src/lua/abyss_combat.lua": {
+    "before": "609e75ba6e83da7b2311629adfdc2fd101c8167d3d17dbb1cdc0748baa9b1d1c",
+    "after": "e2722605fad6ba7c56526d878cd6e0d571ef61156a5c5c5e28ad0d6bbc034355",
+    "hunks": [
+      [
+        "        children[i].sourcePosition = EnemySetup.splitPosition(parent, i)\n",
+        "        if ai.splitPositions then children[i].sourcePosition=copy(ai.splitPositions[i]) end\n"
+      ]
+    ]
+  },
+  "src/lua/abyss_combat_enemy_setup.lua": {
+    "before": "76c8aa93a85a272b80ff4ae74645bc26fe33b7f6d18eb733d8c54d904b9331da",
+    "after": "bd4875cf008fd05fa65f90eea11a29165b4b98733c5d30e2210e3f7545dcc725",
+    "hunks": [
+      [
+        "end\nfunction M.splitPosition(parent,childIndex)\n if parent.ai.splitPositions then return Copy(parent.ai.splitPositions[childIndex])end\n -- Large slime takeTurn places medium children +/-134 source pixels from the parent.\n local origin=parent.sourcePosition or {x=0,y=0}\n return {x=origin.x+(childIndex==1 and -134 or 134),y=origin.y}\n",
+        ""
+      ]
+    ]
+  }
+});
+function beforeSlimeSplitReceipt(path,source,read){
+  const row=Object.hasOwn(slimeSplitSources,path)?slimeSplitSources[path]:null;
+  if(!row||typeof source!=='string'||source.includes('\r\r\n')||digest(normalize(source))!==row.after)return source;
+  const live=read(path);
+  assert(typeof live==='string'&&!live.includes('\r\r\n')&&digest(normalize(live))===row.after,
+    'fresh slime split source: '+path);
+  let prior=normalize(source);
+  for(const [current,before] of row.hunks)prior=prior.replace(current,()=>before);
+  assert.equal(digest(prior),row.before,'exact split source predecessor: '+path);
+  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+
+// Only authenticated current admission sources may replay earlier receipts.
+const admissionSources=Object.freeze({
+  "src/lua/abyss_map.lua": [
+    "71f7e26cfea9410137f4df1473bcd39ceee8950fd50a878159557889b78953ad",
+    "52d311bc4a863303906dfa3a29d65bc11606eda30759a560ed80266381900810"
+  ],
+  "src/lua/abyss_treasure_source.lua": [
+    "54d0acda4504e6af9edb284fbcaa3b1d9058e1e4268b27204d4a8bbe395f8c6a",
+    "44ae73c0d996c4f336d18f225a44466c73db6db85921f1eca28c00865f8601da"
+  ],
+  "src/lua/abyss_wheel_event.lua": [
+    "c35ece2bddd6a950fd68b5b615f328f8a126d039b22fa977f57a0bab9068d4b7",
+    "f775746a95c2f33eeb9a5d7c688c536b3dd0b6b3ddefeb3455fbd28468f6bc2c"
+  ],
+  "src/lua/abyss_winding_event.lua": [
+    "687e186a65de0153769a1515a46f35cb289e8a5b6b06be91179661d696d9453c",
+    "1f3a5d5f40847660638443ac9c553065b1e8cec03bb523882d235d4271daebaa"
+  ]
+});
+let admissionBefore;
+function beforeAdmissionReceipt(path,source,read){
+  if(!Object.hasOwn(admissionSources,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+  const [after,before]=admissionSources[path];
+  if(digest(normalize(source))!==after)return source;
+  const live=read(path);
+  assert(typeof live==='string'&&!live.includes('\r\r\n')&&digest(normalize(live))===after,
+    'fresh admission receipt source: '+path);
+  if(!admissionBefore){
+    const bytes=readFileSync(new URL('../fixtures/architecture-admission-before.json.gz',import.meta.url));
+    assert.equal(digest(bytes),'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42','complete historical admission receipt sources');
+    const evidence=JSON.parse(gunzipSync(bytes));
+    assert.equal(evidence.revision,'c2409ad750c15124b7b843c6bbfa5b222537cb75');
+    admissionBefore=Object.freeze(evidence.sources);
+  }
+  const prior=admissionBefore[path.slice(8,-4)];
+  assert.equal(digest(prior),before,'complete admission predecessor: '+path);
+  return prior;
+}
+
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   source=beforeAuthenticatedStsSelectionFade(path,source,read);
   const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
+  const rebound=beforeRebasedCi(path,source);
+  if(rebound!==source)authorizeRebasedDevelop([[path,source]],read);
+  source=rebound;
+  const readRebased=read;
+  read=owner=>beforeRebasedCi(owner,readRebased(owner));
+  source = beforeSlimeSplitReceipt(path,source,read);
+  const cardPrior = beforeCardFeedbackOwner(path,source);
+  if (cardPrior !== source) authorizeCardFeedbackOwners([[path,source]],read);
+  source = cardPrior;
+  const readCardFeedbackCurrent=read;
+  read=owner=>beforeCardFeedbackOwner(owner,readCardFeedbackCurrent(owner));
+  const mapPrior = beforeSts1MapSource(path,source);
+  if (mapPrior !== source) authorizeSts1MapSource([[path,source]],read);
+  source = mapPrior;
+  const readMapCurrent=read;
+  read=owner=>beforeSts1MapSource(owner,readMapCurrent(owner));
+  source = beforeAuthenticatedReleaseGuideSource(path,source,read);
+  const readGuideCurrent=read;
+  read=owner=>beforeReleaseGuideSource(owner,readGuideCurrent(owner));
+  source = beforeAdmissionReceipt(path,source,read);
   source = beforeAuthenticatedM05ShopSource(path,source,read);
   const readM05Current=read;
   read=owner=>beforeM05ShopSource(owner,readM05Current(owner));
@@ -62,6 +160,7 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 }
 
 const currentContinuationOwners = new Set([
+  ...Object.keys(admissionSources), ...Object.keys(slimeSplitSources),
   ...characterPreparationOwners, ...v2UiHudSourcePaths, selectorSourcePair.path, potionTextSourcePair.path,
   fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths, ...m05ShopSourcePaths,
 ]);
@@ -69,6 +168,26 @@ const currentContinuationOwners = new Set([
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   source=beforeAuthenticatedStsSelectionFade(path,source,read);
   const fadeRead=read;read=owner=>beforeStsSelectionFade(owner,fadeRead(owner));
+  if(rebasedDevelopOwns(path)){
+    assert.notEqual(beforeRebasedCi(path,source),source,'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
+  if (cardFeedbackOwnerPaths.includes(path)) {
+    assert.notEqual(beforeCardFeedbackOwner(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
+  if (sts1MapSourcePaths.includes(path)) {
+    assert.notEqual(beforeSts1MapSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
+  if (rewardTransitionSourcePaths.includes(path)) {
+    assert.notEqual(beforeRewardTransitionSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
+  if (releaseGuideSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseGuideSource(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (pc13RewardCoverSourcePaths.includes(path)) {

@@ -1,0 +1,12 @@
+import {spawnSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import assert from 'node:assert/strict';
+import {luaString} from '../../scripts/build-lua-data.mjs';
+const out=resolve(process.argv[2]),generated=resolve(process.argv[3]);mkdirSync(out,{recursive:true});
+const code=`package.path=${luaString(generated+'/?.lua;src/lua/?.lua')};dofile('experiments/sts1-combat-feedback/capture-flow.lua')`;
+const r=spawnSync(process.execPath,[createRequire(import.meta.url).resolve('fengari-node-cli/src/lua-cli.js'),'-e',code],{encoding:'utf8',maxBuffer:64*1024*1024,timeout:120000});
+writeFileSync(join(out,'capture.log'),r.stdout+r.stderr);assert.equal(r.status,0,r.stdout+r.stderr);
+const data=r.stdout.split('\n').find(l=>l.startsWith('OFFICIAL_VISUAL_SCENES '));writeFileSync(join(out,'scenes.json'),data.slice('OFFICIAL_VISUAL_SCENES '.length));
+console.log(r.stdout.split('\n').filter(l=>!l.startsWith('OFFICIAL_VISUAL_SCENES ')).join('\n'));

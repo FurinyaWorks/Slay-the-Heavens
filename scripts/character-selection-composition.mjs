@@ -1,6 +1,7 @@
 import {rounded,bands} from './v25-character-layout.mjs';
 // Positions measured in the 1280x720 Slay the Spire character-screen reference.
 // Data and input controls remain owned by the existing selection controller.
+
 const children=n=>n.children??n.controls??[];
 const child=(n,name)=>children(n).find(c=>c.name===name);
 const frame=(x,y,w,h)=>({position:[x+w/2-640,360-y-h/2],size:[w,h]});

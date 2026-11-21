@@ -1,0 +1,11 @@
+{
+  "experiments/sts1-combat-feedback/capture-flow.mjs": "2b4d7aebd76049e6d47e358eac292cbc6315239f2bf31fabc609ab8028ce1a6b",
+  "experiments/sts1-combat-feedback/capture-flow.lua": "024b14c8753f9c6e7ce81865abc0e74b366a2c08903ad4fc2d573b8c80c0bd05",
+  "experiments/sts1-combat-feedback/light-trails.lua": "ec5792255679524005b7d08c0fe86788114c08b86714f522d7e00b6e4925c03c",
+  "experiments/sts1-combat-feedback/capture-energy.mjs": "f8115a76624a09b08bd2c4a6a1000bda24ed8f98e173aecaff06b5879e599727",
+  "experiments/sts1-combat-feedback/render-scenes.mjs": "9219dd62c128999a4e1f6db8061c0dff697a53b9802a7f2856552ad557e3d83a",
+  "data/presentation/ui_theme.json": "5f793e5268383a2dd360e2d9ea17f9aecd529399bcc004f1253c8c94728282e7",
+  "src/lua/abyss_battle_render_hud.lua": "dee09864f0855985aed7a2a760a938b2228ead71a953d92bfda963b8de1d5c5f",
+  "scripts/official-battle-hud.mjs": "306c64c7be858b8746e270fc0307641e84993141530e39c3b89340262f1eae8d",
+  "scripts/build-ui-theme.mjs": "a48cb4b8755ab948f12e8db4ede3fb1f2f7d5cc6d7f667152a3ae6a703da8374"
+}

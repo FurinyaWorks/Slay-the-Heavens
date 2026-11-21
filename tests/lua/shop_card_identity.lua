@@ -95,6 +95,7 @@ local function uiFor(run, map)
     local root = control(findSpec(Layout, 'nodePanel'))
     local ui = UI.new(root, run, map, Presentation, 'click', nil, {imageSource='static', cursorEvents=cursor,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end})
     ui:setVisible(true)
+    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").listeners.click());ui:update(.31)
     return ui, root
 end
 local function emit(root, slot, event, touch)
@@ -190,6 +191,7 @@ for _, boundary in ipairs({'purchase', 'external_purchase', 'render', 'overlay',
         rejected(run, map, function() return emit(root, 2, 'click', 11) end)
         if boundary ~= 'leave' then
             ui:render()
+            if not ui.shopOpen then assert(root:GetChild('merchant'):GetChild('talk'):GetChild('hit').listeners.click());ui:update(.31) end
             local price, size, gold = run.nodeFlow.cards[2].price, #run.deck, run.gold
             emit(root, 2, 'down', 12); emit(root, 2, 'up', 12)
             assert(emit(root, 2, 'click', 12), 'fresh gesture must preview current selected offer')

@@ -55,18 +55,6 @@ local browseFilters={{id='all',control='All'},{id='attack',control='Attack'},
 local browseSorts={'original','type','cost'}
 local sortNames={original='获得顺序',cost='耗能',type='类型',name='名称'}
 
--- Observe native click metadata only; leave drag handlers and scroll offsets
--- to the native Grid rather than synthesizing scrolling. Click-only C-mode works.
-local function scrollClick(event)
-    if not event then return false end
-    if event.dragging then return true end
-    if not event.GetPressUIPos or not event.GetUIPos then return false end
-    local x,y=event:GetUIPos()
-    local startX,startY=event:GetPressUIPos()
-    if type(x)~='number' or type(y)~='number' or type(startX)~='number' or type(startY)~='number' then return false end
-    return (x-startX)^2+(y-startY)^2>=Theme.layout.cardDrag.threshold^2
-end
-
 local function frozenEye(run)
     for _, relic in ipairs(run.relics or {}) do if relic=="frozen_eye" then return true end end
     return false
@@ -136,9 +124,16 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintPileSort()
         if self.browserShell then for _,mode in ipairs({'original','type','cost','name'})do
-            local label=root:GetChild('pileTools'):GetChild(mode):GetChild('label')
-            label.text=(mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode])..(self.sortMode==mode and not self.sortAscending and ' ▾' or ' ▴')
-            if platform.color then label.fontColor=self.sortMode==mode and platform.color(228,211,94,255) or platform.color(233,230,220,255)end
+            local box=root:GetChild('pileTools'):GetChild(mode)
+            local label,arrow=box:GetChild('label'),box:GetChild('direction')
+            label.text=mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode]
+            arrow:SetVisible(true)
+            local descending=self.sortMode==mode and not self.sortAscending
+            arrow.localRotationZ=descending and 180 or 0
+            if platform.color then
+                local ink=self.sortMode==mode and platform.color(228,211,94,255) or platform.color(233,230,220,255)
+                label.fontColor=ink;arrow.imageColor=ink
+            end
         end end
     end
     local function paintBrowseSort(active)
@@ -313,7 +308,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         local selected=false
         for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
-        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,surfaceScope=self.pileView and 'battle' or 'deck'})
+        CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,
+            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil})
         if self.browserShell then
             face:GetChild('nativePlayableRim'):SetVisible(false)
             face:GetChild('glow'):SetVisible(false)
@@ -339,7 +335,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 if callback then callback(token,uid) end
             end
             hit:AddCursorEventListener(clickEvent,function(event)
-                if Controller.pointerBlocked(platform.controller) or scrollClick(event) then return false end
+                if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
                 return pick()
             end)
             Controller.bind(platform.controller,hit,'deck',pick,function()
@@ -365,7 +361,14 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if entry.definition.costMode=='all_energy' then cost=-1 end
         return tostring(cost)..name
     end
-    local function projectCards()
+    local function orderedCards()
+        -- Acquisition order needs no definitions or comparison sort. Resolve
+        -- card faces only when the native scroller asks for a cell.
+        if self.typeFilter=='all' and self.sortMode=='original' and self.sortAscending then
+            local cards={}
+            for i,card in ipairs(self.allCards) do cards[i]=card end
+            return cards
+        end
         local entries={}
         for i,card in ipairs(self.allCards or {})do
             local definition=Combat.cardDefinition(self.battle or {catalog=self.catalog},card)
@@ -382,8 +385,12 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 return x>y
             end)
         end
-        self.cards={}
-        for _,entry in ipairs(entries)do self.cards[#self.cards+1]=entry.card end
+        local cards={}
+        for _,entry in ipairs(entries)do cards[#cards+1]=entry.card end
+        return cards
+    end
+    local function projectCards()
+        self.cards=orderedCards()
         local total=#(self.allCards or {})
         local amount=self.typeFilter=='all' and tostring(total) or #self.cards..'/'..total
         self.listTitle=browserHeading(self.pileKind)..' · '..amount..' 张'
@@ -413,7 +420,10 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             if not self.visible or self.generation~=generation or not self.calibrating then return end
             self.indexBase,self.pending=index,true
             indexBases[grid]=index
-            fill(control,cards[1],catalog)
+            -- The official reveal waits for the real viewport. Painting the
+            -- calibration cell can allocate a card face that is never shown.
+            if self.browserShell then control:SetVisible(false)
+            else fill(control,cards[1],catalog) end
         end)
         liveFaces()
     end

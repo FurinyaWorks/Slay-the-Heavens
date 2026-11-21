@@ -5,7 +5,9 @@ local number = require("abyss_numbers").integer
 local M = {}
 local UnitView=require("abyss_battle_unit_view")
 local C, L, S = Theme.color, Theme.layout, Theme.space
-local I = L.statusInfo
+local I, P = L.statusInfo, L.powerTips
+local wrappedLines = require("abyss_battle_info_content").lines
+local powerTitle = string.format("<color=#%02X%02X%02X>", P.title.r, P.title.g, P.title.b)
 
 local function openPage(paging)
     paging.page = {items = {}, rows = 0, sections = 0}
@@ -78,6 +80,49 @@ end
 
 local function detailActor(battle, info)
     return info and battle and (info.index == 0 and battle.player or battle.enemies[info.index])
+end
+
+local function powerColumns(rows, width, font, room)
+    local column, used, columns = {}, 0, {}
+    local pitch = math.ceil(font * 1.25)
+    for i = 1, math.min(#rows, P.rows) do
+        local row = rows[i]
+        local count = wrappedLines(row.name, width, font, P.padding * 2)
+        for paragraph in row.body:gmatch("[^\n]+") do
+            count = count + wrappedLines(paragraph, width, font, P.padding * 2)
+        end
+        local height = math.max(L.nativeText.lineHeight, count * pitch + P.padding * 2)
+        if used > 0 and used + height > room then
+            columns[#columns + 1] = {rows = column, height = used - P.gap}
+            column, used = {}, 0
+        end
+        column[#column + 1] = {row = row, height = height, y = used}
+        used = used + height + P.gap
+    end
+    columns[#columns + 1] = {rows = column, height = used - P.gap}
+    return columns
+end
+
+local function powerLayout(rows)
+    local left = L.player.position[1] + L.player.portrait / 2 + S.l
+    local safeRight = Theme.canvas.base[1] / 2 - Theme.canvas.safe.x
+    local top = L.battlePotions.origin[2] - L.battlePotions.size[2] / 2 - S.s
+    local floor = L.battleNotice.bandTop + S.s
+    local width = P.width
+    for font = P.font, P.minFont, -1 do
+        local columns = powerColumns(rows, width, font, top - floor)
+        local fits = left + #columns * (width + P.gap) - P.gap <= safeRight
+        if fits and (#columns == 1 or #rows > 3 or font == P.minFont) then
+            return columns, left, top, floor, width, font, 1
+        end
+        if #rows > 3 then width = math.max(P.minWidth, width - S.l) end
+    end
+    -- At the smallest size, use the whole safe battlefield for an unusually long list.
+    local columns = powerColumns(rows, width, P.minFont, top - floor)
+    local span = #columns * (width + P.gap) - P.gap
+    local scale = math.min(1, 2 * safeRight / span)
+    left = math.min(left, safeRight - span * scale)
+    return columns, left, top, floor, width, P.minFont, scale
 end
 
 function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, picture)
@@ -274,6 +319,55 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         panel:SetAsLastSibling()
     end
 
+    local compact, shown = false, 0
+    local staticFrame = {"shadow", "border", "plate", "accent", "rule"}
+    local function nativePowerBox(layer, index, geometry, entry)
+        local box = place(layer, "tip" .. index, geometry.x, geometry.y, geometry.width, entry.height)
+        place(box, "edge", 0, 0, geometry.width, entry.height)
+        place(box, "face", 0, 0, geometry.width - 2, entry.height - 2)
+        box:SetLocalScale(geometry.scale, geometry.scale, 1)
+        local copy = place(box, "copy", 0, 0, geometry.width - P.padding * 2, entry.height)
+        copy.fontSize, copy.minimumFontSize = geometry.font, geometry.font
+        copy.text = powerTitle .. entry.row.name .. "</color>\n" .. entry.row.body
+        box:SetVisible(true)
+    end
+
+    local function paintPowers(panel, tip, rows, heroTop)
+        local layer = panel:GetChild("powerTips")
+        if not compact then
+            for _, name in ipairs(staticFrame) do panel:GetChild(name):SetVisible(false) end
+            for _, name in ipairs({"title", "tag", "hpIcon", "summary", "blockIcon", "guard", "more", "hit", "page"}) do
+                panel:GetChild(name):SetVisible(false)
+            end
+            hideUnused(panel, {sections = 0, rows = 0})
+        end
+        local columns, left, top, floor, width, font, scale = powerLayout(rows)
+        local index = 0
+        for column, items in ipairs(columns) do
+            local y = math.min(top, math.max(heroTop, floor + items.height * scale))
+            local x = left + ((column - 1) * (width + P.gap) + width / 2) * scale
+            for _, entry in ipairs(items.rows) do
+                index = index + 1
+                nativePowerBox(layer, index, {x=x, y=y-(entry.y+entry.height/2)*scale, width=width, font=font, scale=scale}, entry)
+            end
+        end
+        for i = index + 1, shown do layer:GetChild("tip" .. i):SetVisible(false) end
+        compact, shown = true, index
+        layer:SetVisible(true)
+        panel.disableCursorEventPassthrough = false
+        panel:SetVisible(true)
+        panel:SetAsLastSibling()
+        child("statusDismiss"):SetVisible(tip.touch == true)
+    end
+
+    local function clearPowers(panel)
+        if not compact then return end
+        panel:GetChild("powerTips"):SetVisible(false)
+        child("statusDismiss"):SetVisible(false)
+        for _, name in ipairs(staticFrame) do panel:GetChild(name):SetVisible(true) end
+        compact = false
+    end
+
     local function transientHand(info)return info and info.transient and info.kind=='card'end
     local function positionContext(battle,info,positionOnly)
         if positionOnly and not transientHand(info)then return nil,true end
@@ -289,8 +383,33 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         if not actor or actor.id~=info.id or not Actors.isPresent(actor)then return end
         return describeInfo(battle,info,actor)
     end
+    local function currentPowerRows(battle, tip)
+        if not battle or tip.battle ~= battle or not self.active or self.gesture
+            or self.carry or self.potionAim or self.potionMenu or not Actors.isPresent(battle.player) then
+            self.powerTip = nil
+            return
+        end
+        if self.busy then return end
+        local rows = describeInfo(battle, tip, battle.player)
+        if not rows and (tip.touch or tip.statusId or tip.offset) then self.powerTip = nil end
+        return rows
+    end
+
+    local function updatePowers(panel, battle, info)
+        local rows = not info and self.powerTip and currentPowerRows(battle, self.powerTip)
+        if rows then
+            local y = L.player.position[2]
+            local top = y + UnitView.noticeLift(battle.player, L.player.portrait, y, true) + L.player.portrait / 2
+            paintPowers(panel, self.powerTip, rows, top)
+            return true
+        end
+        clearPowers(panel)
+        if info then self.powerTip = nil end
+    end
+
     return function(battle,positionOnly)
         local panel, info = child("statusInfo"), self.info
+        if not positionOnly and updatePowers(panel, battle, info) then return end
         local anchor,skip=positionContext(battle,info,positionOnly)
         if skip then return end
         local card=describedCard(battle,info)

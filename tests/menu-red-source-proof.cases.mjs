@@ -1,4 +1,5 @@
 import {beforeAuthenticatedPc13RewardCover} from './helpers/pc13-reward-cover-source.mjs';
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseUiRestore} from './helpers/release-ui-restore-source.mjs';
 import test from 'node:test';
 import {integratedRead} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -13,7 +14,9 @@ const releasePaths=[...patch.inventory,'src/lua/abyss_lowcost_art.lua','src/lua/
 const complete=files=>Object.fromEntries(releasePaths.map(path=>[path,files[path]??null]));
 test('red menu production preserves every prior owner and target and freshly rejects each changed owner drift',()=>{
  for(const path of patch.paths){
-  assert.equal(beforeAuthenticatedPc13RewardCover(path,raw(path),raw),sourceEpoch.proof.current[path].source,path);
+  const predecessor=beforeAuthenticatedReleaseUiRestore(path,raw(path),raw);
+  const readPredecessor=owner=>beforeReleaseUiRestore(owner,raw(owner));
+  assert.equal(beforeAuthenticatedPc13RewardCover(path,predecessor,readPredecessor),sourceEpoch.proof.current[path].source,path);
   assert.equal(sourceEpoch.preCombinedSource(path,raw(path),{target:'menuPresentationPrior',readSource:raw}),patch.current[path].source);
   assert.deepEqual(patch.before[path],menuRedPriorEpoch.proof.current[path]);
   assert.equal(sourceEpoch.preCombinedSource(path,raw(path),{target:'menuRedPrior',readSource:raw}),patch.before[path].source);

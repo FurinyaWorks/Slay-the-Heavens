@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {exactSourceContinuation} from './exact-source-continuation.mjs';
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseUiRestore} from './release-ui-restore-source.mjs';
 
 const bytes=readFileSync(new URL('../fixtures/potion-pointer-source.json.gz',import.meta.url));
 const sha256=value=>createHash('sha256').update(value).digest('hex');
@@ -25,6 +26,8 @@ export function authorizePotionPointerSource(path,source,binding,samples,read){
 export function beforePotionPointerSource(path,source,read){
  const continuation=continuations.get(path);
  if(!continuation)return source;
- const predecessor=beforeStsUiCloseoutSource(path,source);
- return continuation.predecessor(path,predecessor,owner=>beforeStsUiCloseoutSource(owner,read(owner)));
+ source=beforeStsUiCloseoutSource(path,source);
+ const readSts=owner=>beforeStsUiCloseoutSource(owner,read(owner));
+ source=beforeAuthenticatedReleaseUiRestore(path,source,readSts);
+ return continuation.predecessor(path,source,owner=>beforeReleaseUiRestore(owner,readSts(owner)));
 }
