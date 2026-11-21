@@ -25,4 +25,6 @@ export const currentProductionRereads = Object.freeze([...priorCurrentProduction
   'src/lua/abyss_node_ui_lifecycle.lua',
   'src/lua/abyss_page_reveal.lua',
   'src/lua/abyss_node_ui_events.lua',
+  'src/lua/abyss_battle_card_gestures.lua',
+  'src/lua/abyss_battle_render_actors.lua',
 ]);

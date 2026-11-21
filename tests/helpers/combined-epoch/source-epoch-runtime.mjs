@@ -148,9 +148,9 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   authorizeLumineSource(path,inputSource,current,samples,readPrior);
   authorizeV2UiHudSource(path,inputSource,current,samples,readPrior);
   authorizePotionPointerSource(path,inputSource,current,samples,readPrior);
-  authorizeReleaseUiRestore(latestSamples,readSource);
   authorizePc13RewardCover(rawSamples,readReleasePrior);
   authorizeTinyHouseUiSource(path,inputSource,current,samples,readPrior);
+  authorizeReleaseUiRestore(latestSamples,readSource);
   return before.source;
  }
  function combinedReader(readSource=readLive,target){

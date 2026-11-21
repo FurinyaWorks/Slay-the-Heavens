@@ -9,7 +9,7 @@ import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
-  '3f08357ad62b6137cf545f7e31bee3304b5e86055e2695ea596c246890ecfe4e');
+  '9255ef86ccf318fbdfdecab72a04a3c58eac729c612d691d2b35604cc737b546');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(bytes),'126bc5faaa880285c3e28b96fa3781ed6d188e9b5ee2889a5a41c0a7c2c30cd4','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
