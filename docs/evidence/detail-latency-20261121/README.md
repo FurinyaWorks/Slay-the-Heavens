@@ -10,7 +10,7 @@
 
 ## 离线测量
 
-`tests/lua/detail_latency_benchmark.lua`，LuaTeX 内置 Lua 5.3（`luatex --luaonly`），真实 Host/战斗/遗物 Lua + 仓库 mock 原生控件。`LUA_PATH='./build/lua/?.lua;./src/lua/?.lua;;'`；先 npm ci --ignore-scripts、build:data、build:ui。基线使用相同 benchmark 与六个生产模块的准确基线源码覆盖加载（package.preload），其余输入一致。源码对照无跨工作树写入。原始数据 before.txt / after.txt；均每路由 50 次打开/关闭，再重复 50 次看稳态内存。卡牌通过真实 openHelp，状态通过 showStatus；不是物理触摸事件采样。
+`tests/benchmarks/detail_latency.lua`，LuaTeX 内置 Lua 5.3（`luatex --luaonly`），真实 Host/战斗/遗物 Lua + 仓库 mock 原生控件。`LUA_PATH='./build/lua/?.lua;./src/lua/?.lua;;'`；先 npm ci --ignore-scripts、build:data、build:ui。基线使用相同 benchmark 与六个生产模块的准确基线源码覆盖加载（package.preload），其余输入一致。源码对照无跨工作树写入。原始数据 before.txt / after.txt；均每路由 50 次打开/关闭，再重复 50 次看稳态内存。卡牌通过真实 openHelp，状态通过 showStatus；不是物理触摸事件采样。
 
 | 路由 | CPU 中位/P95 ms 前→后 | 打开到 mock 内容可见墙钟中位/P95 ms 前→后 | 原控件方法调用总量前→后（含关闭） | 首50次GC后保留 KiB 前→后 |
 |---|---|---|---|---|
@@ -29,3 +29,5 @@
 本地最终定向：生成式详情/页面/遗物组合12/12通过（原组合另外两项历史输入在补齐 closeout-ci-source LFS 后单独2/2通过）；native-ui-contract 7/7通过。原始广泛定向组合中卡牌详情、动态怪物/能力输入、手机输入恢复、遗物等17项通过，初始7项LFS环境失败已由恢复后的定向覆盖。独立会话另跑11/11 Node、7个Lua及药水瞄准取消/更换战斗full fallback、遗物session单调检查，无发现。独审的准确HEAD/BASE/tree及原生Review见PR。
 
 完整 `npm test` 曾启动，因广泛测试/LFS环境未齐而中止，NOT_COMPLETED；不冒称全套通过。`check:engineering` 当前失败在与基线字节完全相同的 `abyss_battle_ui.lua`（Git blob `26120e4e7089273e4a07529d09d386ddb93a06c7`）M.new CC16>15；351模块/6259测量、架构351模块1990边通过，不修改阈值。首次缺 Luacheck 后已按固定hash安装；短暂全绘制负控时的 unused cancelled 诊断不属于最终树。
+
+测量脚本仅用于 LuaTeX，放在 tests/benchmarks（不进入 Fengari tests/lua 测试发现）；生产回归 detail_latency.lua 仍由正式 Lua/Node 测试发现执行。独审发现测量脚本原位置不兼容 Fengari 后已修正，不改变测试发现器或有效回归。
