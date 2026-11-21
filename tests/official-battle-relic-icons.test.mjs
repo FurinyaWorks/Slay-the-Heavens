@@ -84,6 +84,53 @@ if official then
  assert(panel:GetChild('single'):GetChild('icon').visible)
  assert(h.relicUI:turn(-1))
  checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
+ assert(h:closeDeck())
+ local battleHost,root=F.fixture();assert(F.start(battleHost))
+ local run=battleHost.run
+ assert(require('abyss_run').startCombat(run,'cultist_solo'))
+ run.phase='reward'
+ run.rewards={manualContinue=true,gold=0,goldClaimed=true,cards={},cardResolved=true,
+  relics={{id='blue_candle',sourceId='Blue Candle',claimed=false},
+          {id='strike_dummy',sourceId='StrikeDummy',claimed=false}}}
+ battleHost:refresh()
+ local reward=root:GetChild('battlePanel'):GetChild('potionHelp')
+ local row=reward:GetChild('relicReward1')
+ local candle=Theme.lowCostArt.relic.assets.blue_candle.shapes
+ local function checkCandle(part,iconName)
+  local art=assert(part:GetChild(iconName..'Art'),'reward and held slots must share an authored relic art pool')
+  assert(art.visible and not part:GetChild(iconName).visible,'the candle must replace the fallback image')
+  for i,shape in ipairs(candle)do
+   local facet=art:GetChild('shape'..(i-1))
+   assert(facet.visible and facet.imageId==shape.image and facet.x==shape.x and facet.y==shape.y)
+   assert(facet.imageColor.r==shape.colour.r and facet.imageColor.g==shape.colour.g and facet.imageColor.b==shape.colour.b)
+  end
+  assert(not art:GetChild('shape'..#candle).visible)
+ end
+ for _,state in ipairs({'normal','hover','pressed','disabled'})do checkCandle(row:GetChild(state),'rewardIcon')end
+ local second=reward:GetChild('relicReward2'):GetChild('normal')
+ assert(second:GetChild('rewardIconArt'):GetChild('shape0').imageId==Theme.lowCostArt.relic.assets.strike_dummy.shapes[1].image)
+ local normal=row:GetChild('normal')
+ local original=run.rewards.relics[1]
+ run.rewards.relics[1]={id='missing_relic',sourceId='Unregistered Relic',unavailable=true,claimed=false}
+ battleHost:refresh()
+ assert(not normal:GetChild('rewardIconArt').visible and normal:GetChild('rewardIcon').visible)
+ assert(normal:GetChild('rewardIcon').imageId==V.icon('missing_relic',true))
+ run.rewards.relics[1]={sourceId='Burning Blood',claimed=false}
+ local facet=normal:GetChild('rewardIconArt'):GetChild('shape0')
+ local setImage=facet.SetImage;facet.SetImage=function()return false end
+ battleHost:refresh()
+ assert(not normal:GetChild('rewardIconArt').visible and normal:GetChild('rewardIcon').visible)
+ assert(normal:GetChild('rewardIcon').imageId==V.icon('burning_blood',true),'old source ID shares the correct fallback')
+ facet.SetImage=setImage
+ run.rewards.relics[1]=original
+ battleHost:refresh()
+ checkCandle(normal,'rewardIcon')
+ assert(row.listeners.click())
+ assert(run.relics[2]=='blue_candle' and run.rewards.relics[1].claimed and not run.rewards.relics[2].claimed)
+ assert(not row.visible and reward:GetChild('relicReward2').visible)
+ checkCandle(root:GetChild('relicBar'):GetChild('slot2'),'icon')
+ assert(battleHost:openRelics(2))
+ checkCandle(root:GetChild('relicPanel'):GetChild('single'),'icon')
 else
  assert(h:openRelics(1))
  assert(not h.relicUI.selectedIndex)

@@ -9,6 +9,7 @@ local Theme = require("abyss_theme")
 local M = {}
 local CardDisplay = require('abyss_card_display')
 local EndingUI=require('abyss_node_ui_ending')
+local RelicView=require('abyss_relic_view_ui')
 local MatchUI=require('abyss_match_event_ui')
 local number = require("abyss_numbers").integer
 local C = Theme.color
@@ -73,12 +74,8 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     function ctx.picture(control, id)
         if ctx.options.imageSource and id then control:SetImage(ctx.options.imageSource, iconId(id)) end
     end
-    function ctx.relicPicture(control,id,size)
-        local art=require('abyss_lowcost_art')
-        if id then
-            ctx.picture(control,require('abyss_relic_view_ui').icon(id,Theme.presentationProfile=='official-assets-first'))
-            art.paint(control,'relic',id,size,ctx.options)
-        else art.hide(control)end
+    function ctx.relicPicture(control,id,size,fallback)
+        RelicView.paint(control,id,size,ctx.options,ctx.self.run,fallback)
     end
 
     require("abyss_node_ui_feedback").install(ctx)

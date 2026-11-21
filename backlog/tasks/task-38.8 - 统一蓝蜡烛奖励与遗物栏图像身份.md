@@ -1,11 +1,11 @@
 ---
 id: TASK-38.8
 title: 统一蓝蜡烛图标，让奖励与遗物栏都能辨认
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-19 03:49'
+updated_date: '2026-11-21 08:33'
 labels:
   - mobile
   - playtest-20261115
@@ -54,6 +54,8 @@ ordinal: 179000
 
 <!-- SECTION:PLAN:BEGIN -->
 先查最新develop、开放PR与现有实现，在真实状态/事件层复现问题并保存RED；仅对证实的根因做最小修复，提供GREEN/负控、独立复审与候选交付。没有同候选实体手机证据时AC保留未勾，遵守独立worktree、Backlog认领、CI与用户发版边界。
+
+基于已修复岩脉残晶的 release/v2.0.0，复现奖励未调用原生遗物图形。让奖励、持有栏、详情和房间复用现有遗物绘制器，核对领取、四态、备用图和旧配置。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
