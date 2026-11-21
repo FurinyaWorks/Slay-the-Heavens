@@ -4,6 +4,7 @@ import { readFileSync, mkdtempSync, writeFileSync, rmSync, mkdirSync, renameSync
 import {spawnSync} from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { verifyDelivery, verifyMergedDelivery, collectPrDelivery, collectMergedDelivery, checkoutReceipt, isLowRiskDocumentationChange, fullQualityJobs, currentFullQualityJobs, deliverySchemaVersion, qualityWorkflowPath } from '../scripts/verify-delivery.mjs';
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import * as delivery from '../scripts/verify-delivery.mjs';
@@ -90,6 +91,57 @@ test('merged Release paths are compared against the develop snapshot with unavai
   assert.deepEqual(residual.different_develop_paths, [missing, moved]);
   assert.deepEqual(residual.review, ['release-backflow-review']);
   assert.equal(residual.release_merge, mergedHistory.merge_commit_sha);
+});
+
+test('Release event and default-branch sweep report residuals against an immutable develop tree', t => {
+  const cwd = mkdtempSync(join(tmpdir(), 'release-backflow-'));
+  t.after(() => rmSync(cwd, {recursive: true, force: true}));
+  const base = {ref: releaseBranch, repo: {full_name: handoffRepo}};
+  const updatedAt = new Date().toISOString();
+  const pr = historyPr(34, {...mergedHistory, base, merged_at: updatedAt, updated_at: updatedAt, merged: true});
+  const successor = historyPr(35, {state: 'open', body: '回流 #34'});
+  const old = {...pr, number: 36, merged_at: '2000-01-01T00:00:00Z', updated_at: '2000-01-01T00:00:00Z'};
+  const prefix = '/repos/' + handoffRepo;
+  const page = 'per_page=100&page=1';
+  const responses = {
+    '/pulls/34': pr,
+    '/branches/develop': {commit: {sha: handoffSha}},
+    ['/git/trees/' + handoffSha + '?recursive=1']: {tree: [{type: 'blob', path: 'src/lua/fix.lua', sha: 'old'}]},
+    ['/pulls/34/files?' + page]: [historyFile('src/lua/fix.lua', 'fixed')],
+    ['/pulls?state=open&base=develop&' + page]: [successor],
+    ['/pulls?state=closed&sort=updated&direction=desc&' + page]: [pr, old]
+  };
+  const fixture = join(cwd, 'fetch.mjs'), event = join(cwd, 'event.json');
+  writeFileSync(fixture, `const responses = ${JSON.stringify(responses)};
+globalThis.fetch = async (address, init) => {
+  const {pathname, search} = new URL(address);
+  const path = pathname.slice(${prefix.length}) + search;
+  if (!pathname.startsWith(${JSON.stringify(prefix + '/')}) || init.method || !Object.hasOwn(responses, path)) {
+    throw new Error('Unexpected audit request: ' + address);
+  }
+  return {ok: true, json: async () => responses[path]};
+};`);
+  const script = fileURLToPath(new URL('../scripts/branch-hygiene.mjs', import.meta.url));
+  const run = mode => spawnSync(process.execPath, ['--import', fixture, script], {cwd, encoding: 'utf8',
+    env: {...process.env, GITHUB_REPOSITORY: handoffRepo, GITHUB_TOKEN: 'fixture', GITHUB_EVENT_NAME: mode,
+      GITHUB_EVENT_PATH: event, GITHUB_STEP_SUMMARY: ''}});
+  writeFileSync(event, JSON.stringify({action: 'closed', pull_request: pr}));
+  for (const mode of ['pull_request_target', 'schedule']) {
+    const result = run(mode);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stderr, /Merged Release PR #34/);
+    const report = JSON.parse(readFileSync(join(cwd, 'build/branch-hygiene.json'), 'utf8'));
+    assert.equal(report.develop_sha, handoffSha);
+    assert.equal(report.releases.length, 1);
+    const [release] = report.releases;
+    assert.equal(release.release_merge, pr.merge_commit_sha);
+    assert.deepEqual(release.different_develop_paths, ['src/lua/fix.lua']);
+    assert.deepEqual(release.linked_develop_prs.map(row => row.pr), [35]);
+  }
+  writeFileSync(event, JSON.stringify({action: 'closed', pull_request: {...pr, merge_commit_sha: '3'.repeat(40)}}));
+  const mismatch = run('pull_request_target');
+  assert.equal(mismatch.status, 1);
+  assert.match(mismatch.stderr, /Release merge identity changed/);
 });
 
 test('checkout writer binds BASE to the event and ignores an empty preflight environment',t=>{
