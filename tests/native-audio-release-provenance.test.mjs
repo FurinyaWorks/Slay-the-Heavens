@@ -119,7 +119,7 @@ test('normal build CLI keeps deferred cards off and preserves independent art, l
   assert.equal(legacyUi.options.officialAssets,undefined);
   assert.equal(legacyUi.options.artFeatures.menuBackground,true);
   assert.throws(()=>nativeAudioBuildArgs(['base.gil','--art-version=legacy','--official-assets']),/Conflicting UI profile/);
-  const disabled = nativeAudioBuildArgs(['base.gil', '--native-card-art-count=0']);
+  const disabled = nativeAudioBuildArgs(['base.gil', '--art-version=legacy', '--native-card-art-count=0']);
   assert.deepEqual(disabled.options.nativeCardArt, { count: 0 });
   assert.equal(disabled.options.readyCardArt,false);
   const f = fixture(t); await f.run(disabled.options);
@@ -127,6 +127,7 @@ test('normal build CLI keeps deferred cards off and preserves independent art, l
   assert.equal(f.observed.readyCardArt,false);
   const noReady=nativeAudioBuildArgs(['base.gil','--no-ready-card-art']);
   assert.equal(noReady.options.readyCardArt,false);
+  assert.equal(noReady.options.officialAssets,true);
   await f.run(noReady.options);assert.equal(f.observed.readyCardArt,false);
   for(const count of [1,5,10]) {
     const chosen=nativeAudioBuildArgs(['base.gil',`--native-card-art-registry=${defaultNativeCardArt.registry}`,`--native-card-art-count=${count}`]);
@@ -144,7 +145,13 @@ test('normal build CLI keeps deferred cards off and preserves independent art, l
 });
 test('default release CLI keeps the approved layout in the final audio receipt', async t => {
   const f = fixture(t);
-  const {options} = nativeAudioBuildArgs(['base.gil', '--release-candidate', '--work-key=release-test']);
+  for(const flag of ['--art-cards=false','--no-ready-card-art','--native-card-art-count=0','--art-menu-background=false','--art-battle-portrait=true']){
+    const {options}=nativeAudioBuildArgs(['base.gil','--release-candidate',flag]);
+    assert.equal(options.officialAssets,true,flag);
+    assert.equal(options.nativePageLifecycle,true,flag);
+    assert.equal(options.nativeCardArt,undefined,flag);
+  }
+  const {options} = nativeAudioBuildArgs(['base.gil', '--release-candidate', '--work-key=release-test', '--no-ready-card-art']);
   const result = await f.run(options);
   assert.equal(f.observed.officialAssets, true);
   assert.equal(f.observed.nativePageLifecycle, true);

@@ -1,6 +1,9 @@
 // Approved native art and layout, with its own fixed artwork inventory.
 export const officialAssetsProfile = 'official-assets-battle-v2';
 export const officialAssetFlags = Object.freeze({cards:false,menuBackground:false,selectionAvatar:true,battlePortrait:true,monsters:false});
+export function matchesOfficialAssetFlags(artFeatures) {
+ return Object.entries(artFeatures).every(([key,value])=>Object.hasOwn(officialAssetFlags,key)&&value===officialAssetFlags[key]);
+}
 export function validateOfficialAssets(options={}) {
  const {officialAssets=false,lightweight2d=false,v25BattleChrome=false,
   v25CardAssets,v25UiMasks,nativeCardArt,readyCardArt,artFeatures={},performanceArt=false,componentWidgets,prepare}=options;
@@ -9,10 +12,8 @@ export function validateOfficialAssets(options={}) {
  if(lightweight2d||v25BattleChrome||v25CardAssets!==undefined||v25UiMasks!==undefined
   ||nativeCardArt!==undefined||readyCardArt===true||performanceArt||componentWidgets||prepare)
   throw Error('Official assets require a separate candidate without other art profiles');
- for(const [key,value] of Object.entries(artFeatures)){
-  if(!Object.hasOwn(officialAssetFlags,key)||value!==officialAssetFlags[key])
-   throw Error('Official assets preserve the existing Traveler portraits and disable custom cards, monsters and scenery');
- }
+ if(!matchesOfficialAssetFlags(artFeatures))
+  throw Error('Official assets preserve the existing Traveler portraits and disable custom cards, monsters and scenery');
  return true;
 }
 export function officialAssetsArgs(argv){

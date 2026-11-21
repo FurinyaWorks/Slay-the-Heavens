@@ -52,7 +52,7 @@ const normalize=s=>s.replaceAll('\r\n','\n');
 // Keep earlier CI observations bound to the Release baseline while current
 // tests execute the approved default and frozen candidate paths.
 const releaseUiBuildBytes=readFileSync(new URL('./release-ui-build-ci-source.json.gz',import.meta.url));
-assert.equal(hash(releaseUiBuildBytes),'eda8226994b6d21bc75bff129688320052f51896df8973d7c65b9b6fa361a0ee');
+assert.equal(hash(releaseUiBuildBytes),'e7a41ad3a06b8fa264aaad151a8b12e9c399f78a35183a35d9ed3f655abae044');
 const releaseUiBuild=JSON.parse(gunzipSync(releaseUiBuildBytes));
 assert.equal(releaseUiBuild.base,'ff6af63d9bf93056dd772347d10dc749e7fa8d34');
 const blob=source=>createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0${source}`).digest('hex');

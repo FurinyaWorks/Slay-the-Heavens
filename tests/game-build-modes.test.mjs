@@ -14,7 +14,15 @@ test('documented direct GIL build and default game alias select the same native 
  assert.equal(direct.options.nativePageLifecycle,true);
  assert.equal(nativeCandidateBuildArgs(['base.gil','--release-candidate']).options.officialAssets,true);
  assert.equal(nativeCandidateBuildArgs(['base.gil','--art-version=legacy']).options.officialAssets,false);
- assert.equal(nativeCandidateBuildArgs(['base.gil','--art-menu-background=false']).options.officialAssets,false);
+ assert.equal(nativeCandidateBuildArgs(['base.gil','--art-menu-background=true']).options.officialAssets,false);
+});
+test('card-art disable options and matching artwork flags keep the approved UI for release builds',()=>{
+ for(const flag of ['--art-cards=false','--no-ready-card-art','--native-card-art-count=0','--art-menu-background=false','--art-battle-portrait=true']){
+  const {options}=nativeCandidateBuildArgs(['base.gil','--release-candidate',flag]);
+  assert.equal(options.officialAssets,true,flag);
+  assert.equal(options.nativePageLifecycle,true,flag);
+  assert.equal(options.nativeCardArt,undefined,flag);
+ }
 });
 test('explicit Enhanced selects the bounded 2D preset',()=>{
  const args=gameBuildArgs(['base.gil','--art-version=enhanced']);

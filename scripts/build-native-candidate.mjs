@@ -1,4 +1,4 @@
-import {validateOfficialAssets,candidateAssetsArgs,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
+import {validateOfficialAssets,candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
 import {attachLowCostArt} from './lowcost-art.mjs';
 import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';
@@ -441,8 +441,8 @@ export function nativeCandidateBuildArgs(argv) {
   const [baseMap,output]=paths;
   const explicitLifecycle=profile.args.length!==chrome.args.length;
   const custom=lightweight2d||legacyCardFrames||chrome.v25BattleChrome||chrome.v25CardAssets!==undefined||
-    chrome.v25UiMasks!==undefined||explicitLifecycle||Object.keys(features.artFeatures).length>0||
-    native.nativeCardArt!==undefined||native.readyCardArt!==undefined;
+    chrome.v25UiMasks!==undefined||explicitLifecycle||!matchesOfficialAssetFlags(features.artFeatures)||
+    native.nativeCardArt!==undefined;
   const officialAssets=official.officialAssets||!official.legacy&&!custom;
   const nativePageLifecycle=explicitLifecycle?profile.nativePageLifecycle:officialAssets;
   const artFeatures=officialAssets?features.artFeatures:withCandidateArtDefaults(features.artFeatures,

@@ -68,11 +68,11 @@ test('candidate flags CLI rejects unknown, duplicate, nonboolean and legacy conf
  // Explicit developer presets retain the independent scene and portrait flags.
  const custom={...off,menuBackground:true,selectionAvatar:true,battlePortrait:true};
  const ordinary=nativeAudioBuildArgs(['base.gil','--art-version=legacy']);assert.deepEqual(ordinary.options.artFeatures,custom);
- const official=nativeAudioBuildArgs(['base.gil','--art-cards=false','--art-selection-avatar=false','--art-menu-background=false','--art-battle-portrait=false']);assert.deepEqual(official.options.artFeatures,off);
- const single=nativeAudioBuildArgs(['base.gil','--art-battle-portrait=true']);assert.deepEqual(single.options.artFeatures,{...custom,battlePortrait:true});
+ const explicitOff=nativeAudioBuildArgs(['base.gil','--art-cards=false','--art-selection-avatar=false','--art-menu-background=false','--art-battle-portrait=false']);assert.deepEqual(explicitOff.options.artFeatures,off);
+ const single=nativeAudioBuildArgs(['base.gil','--art-battle-portrait=false']);assert.deepEqual(single.options.artFeatures,{...custom,battlePortrait:false});
  const monster=nativeAudioBuildArgs(['base.gil','--art-monsters=true']);assert.deepEqual(monster.options.artFeatures,{...custom,monsters:true});
  const legacy=nativeAudioBuildArgs(['base.gil','--native-card-art-registry=missing.json','--native-card-art-count=1']);assert.deepEqual(legacy.options.artFeatures,{...custom,cards:true});
- const legacyOff=nativeAudioBuildArgs(['base.gil','--no-ready-card-art']);assert.deepEqual(legacyOff.options.artFeatures,{...off,menuBackground:true,selectionAvatar:true,battlePortrait:true});
+ const legacyOff=nativeAudioBuildArgs(['base.gil','--art-version=legacy','--no-ready-card-art']);assert.deepEqual(legacyOff.options.artFeatures,custom);
 });
 
 test('audio forwards a complete explicit default-off snapshot without changing unrelated release flags',async()=>{

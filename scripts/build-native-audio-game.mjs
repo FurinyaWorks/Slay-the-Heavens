@@ -1,4 +1,4 @@
-import {candidateAssetsArgs,officialAssetFlags,validateOfficialAssets,officialAssetsFromReceipt} from './official-assets-profile.mjs';
+import {candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetFlags,validateOfficialAssets,officialAssetsFromReceipt} from './official-assets-profile.mjs';
 import {uiProfileArgs,uiProfileFromReceipt,validateUiProfileOptions} from './ui-profile.mjs';
 import {resolveArtFeatures,artFeatureArgs,withCandidateArtDefaults,verifyArtFeatureReceipt,artBuildOptionsFromReceipt} from './art-features.mjs';
 // Production audio entrypoint: build every module before enabling native BGM.
@@ -26,15 +26,14 @@ export function nativeAudioBuildArgs(argv) {
   const features=artFeatureArgs(profile.args);
   const art = nativeCardArtArgs(features.args);
   const parsed = releaseBuildArgs(art.args);
-  // Explicit developer artwork and lifecycle options retain their existing behavior.
-  const custom=Object.keys(features.artFeatures).length>0||explicit||art.readyCardArt!==undefined||profile.args.length!==official.args.length;
+  const custom=!matchesOfficialAssetFlags(features.artFeatures)||art.nativeCardArt!==undefined||profile.args.length!==official.args.length;
   const officialAssets=official.officialAssets||!official.legacy&&!custom;
   if(officialAssets)validateOfficialAssets({...parsed.options,officialAssets,artFeatures:features.artFeatures,nativeCardArt:art.nativeCardArt,readyCardArt:art.readyCardArt});
   return { ...parsed, options: { ...parsed.options,
     ...(officialAssets?{officialAssets:true}:{}),
     ...(profile.nativePageLifecycle||officialAssets?{nativePageLifecycle:true}:{}),
     artFeatures:resolveArtFeatures({artFeatures:officialAssets?officialAssetFlags:withCandidateArtDefaults(features.artFeatures,{cardsDecided:art.nativeCardArt!==undefined||art.readyCardArt!==undefined}),nativeCardArt:art.nativeCardArt,readyCardArt:art.readyCardArt}),
-    ...(explicit ? {nativeCardArt:art.nativeCardArt ?? {count:0}} : {}),
+    ...(explicit&&!officialAssets ? {nativeCardArt:art.nativeCardArt ?? {count:0}} : {}),
     ...(art.readyCardArt===false ? {readyCardArt:false} : {}) } };
 }
 
