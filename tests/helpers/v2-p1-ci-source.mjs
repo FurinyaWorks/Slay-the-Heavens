@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {beforePc13RewardCover} from './pc13-reward-cover-source.mjs';
-import {releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
+import {beforeReleaseRightClick,releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -46,6 +46,7 @@ function beforeFieldConfirmation(path, source) {
 }
 
 export function beforeV2UiEvidence(path, source) {
+  source = beforeReleaseRightClick(path,source);
   source = beforeFieldConfirmation(path,source);
   source = beforeReleaseUiRestoreCi(path,source);
   source = beforePc13RewardCover(path,source);
