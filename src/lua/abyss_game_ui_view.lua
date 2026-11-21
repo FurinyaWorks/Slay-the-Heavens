@@ -343,7 +343,7 @@ end
 
 function M.exitDialogOwnsForeground(self)
     return function()
-            return self.exitOpen == true and not self.routeOpen and (not self.menuOpen or self.controlsOpen == true)
+            return self.exitOpen == true and not self.routeOpen and not self.menuOpen
         end
 end
 
@@ -439,7 +439,7 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             exitEntry:SetVisible(exitEntryVisible())
             exitEntry:SetAsLastSibling()
             exitPanel:SetVisible(exitDialogOwnsForeground())
-            runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.controlsOpen and not self.routeOpen)
+            runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.routeOpen)
             if menuKeyListener and runMenu.disableKeyEventPassthrough ~= runMenu.visible then
                 runMenu.disableKeyEventPassthrough = runMenu.visible
             end

@@ -1,19 +1,21 @@
 import assert from 'node:assert/strict';
 import {beforePc13RewardCover} from './pc13-reward-cover-source.mjs';
-import {beforeReleaseRightClick,releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
+import {beforeReleaseControlsGuideRemoval,beforeReleaseRightClick,releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-source.mjs';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
+const {project:beforeReleaseControlsGuideRemovalCi}=releaseUiRestoreArchive(
+  readFileSync(new URL('./release-controls-guide-removal-ci-source.json.gz',import.meta.url)),
+  'cb2f6afc7a5b4c78ac7248c84e1092801d6ca4a31a7562134e6739edefb9d2d9','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
 const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
   '2efd379b5ff0f87497082f422b395a3bed55b6243ed8af1d03be6f48e3993a3b');
 const {project:beforeReleaseRelicCrystal}=releaseUiRestoreArchive(
   readFileSync(new URL('./release-relic-crystal-ci-source.json.gz',import.meta.url)),
-  '36890b8966bf3483c11ebb413cb3f284d5123619257c49c042ca26b4e5d81c4b',
-  'bb3d0d07ebee3592bee4673f1a1378ddbf513698');
+  '39527f12baa379591acfcf9446c100bd6c27cd467ec434eb100939c1a31d10a0', '068e1acbc6f98b591f84bf5cdb35a7620bb4cf17');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(bytes),'126bc5faaa880285c3e28b96fa3781ed6d188e9b5ee2889a5a41c0a7c2c30cd4','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
@@ -54,7 +56,8 @@ function beforeFieldConfirmation(path, source) {
 
 export function beforeV2UiEvidence(path, source) {
   source = beforeReleaseRelicCrystal(path,source);
-  source = beforeReleaseRightClick(path,source);
+  source = beforeReleaseControlsGuideRemovalCi(path,source);
+  source = beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source));
   source = beforeFieldConfirmation(path,source);
   source = beforeReleaseUiRestoreCi(path,source);
   source = beforePc13RewardCover(path,source);

@@ -1,5 +1,5 @@
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
-import {beforeReleaseUiRestore} from './helpers/release-ui-restore-source.mjs';
+import {beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -162,6 +162,17 @@ test('combined epoch authenticates the complete current production tree',()=>{
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh current production owner/);
    assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|combined linked owner identity/);
   }
+ }
+});
+test('combined replay rejects a menu owner from before the controls guide removal',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ const path='config/architecture.json',source=read(path),target='develop';
+ assert.equal(sourceEpoch.preCombinedSource(path,source,{target,readSource:read}),proof.targets[target].files[path].source);
+ for(const owner of releaseControlsGuideRemovalSourcePaths){
+  const prior=beforeReleaseControlsGuideRemoval(owner,read(owner));
+  assert.notEqual(prior,read(owner),owner);
+  assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target,readSource:path=>path===owner?prior:read(path)}),
+   new RegExp('combined linked owner identity: '+owner.replaceAll('.','\\.')));
  }
 });
 test('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{

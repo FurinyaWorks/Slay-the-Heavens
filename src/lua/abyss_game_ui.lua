@@ -125,7 +125,7 @@ function M.new(root, data, presentation, clickEvent, platform)
 
     self.openExit = Overlays.openExit(self,owner)
     self.openMenu = Overlays.openMenu(self,owner)
-    self.closeExit = Overlays.closeExit(self,exitPanel,owner)
+    self.closeExit = Overlays.closeExit(self,owner)
     self.confirmExit = Overlays.confirmExit(self,owner)
     require('abyss_game_ui_navigation').install(self,owner,neowHistory)
 
@@ -193,10 +193,10 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.resize = Lifecycle.resize(self,owner)
     self.update = Lifecycle.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     self.disable = Lifecycle.disable(self,platform,controller,characterPanel,owner)
-    local dismissFromOutside = Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
+    Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
     local bindCommand = Input.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
     Input.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
-    Input.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside,runMenu,canViewRoute,child,owner)
+    Input.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     Input.installCharacters(self,characterPanel,clickEvent,bindCommand,controller)
     owner.ready = true
     if controller then
