@@ -60,8 +60,21 @@ assert(host:openDeck('draw'));settle();assert(#host.deckUI.cards==0 and not host
 local other;for _,candidate in ipairs(run.deck)do if candidate.cardId~=card.cardId then other=candidate;break end end;assert(other)
 for i=1,3 do local instance=F.Combat.copy(i==2 and card or other);instance.uid=900+i;run.combat.draw[i]=instance end
 local originalPile=F.Combat.copy(run.combat.draw)
-sizes={};assert(host:openDeck('draw'));settle();local deck=host.deckUI
+local renderOriginal=host.battleUI.render;local openRenders=0
+host.battleUI.render=function(self,...)openRenders=openRenders+1;return renderOriginal(self,...)end
+sizes={};assert(host:openDeck('draw'));local deck=host.deckUI
+assert(openRenders==1,'opening the deck rendered the covered battle twice')
+host.battleUI.render=renderOriginal
+assert(deck.calibrating and not pile.items[0].visible,'calibration painted a provisional card')
+assert(host.pageReveal.localFrame==F.Theme.layout.deckView.pileViewport,'deck preparation covered title or sort controls')
+settle()
 assert(deck.indexBase==0 and sizes[1]==1 and sizes[2]==3,'first nonempty list did not calibrate its actual zero base')
+local field=panel:GetChild('pileTools'):GetChild('type')
+assert(field:GetChild('hit').click());assert(field:GetChild('direction').localRotationZ==0)
+assert(field:GetChild('hit').click());assert(field:GetChild('direction').localRotationZ==180)
+assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('hit').click())
+assert(field:GetChild('direction').localRotationZ==0,'switching fields retained a stale descending arrow')
+
 assert(require('abyss_art_features').flags.cards==false)
 for _,mode in ipairs({'type','cost','name','original'})do assert(deck:setPileSort(mode));assert(not host.pageReveal:covered(),'ordinary cards=false sort acquired a cover')end
 assert(deck:setPileSort('name'));local firstName=host.nodeUI.presentation[deck.cards[1].cardId].name

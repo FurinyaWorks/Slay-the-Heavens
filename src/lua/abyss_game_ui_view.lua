@@ -277,8 +277,10 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
+            -- A deck open still commits one battle render below (input retirement,
+            -- art ownership and suspension), after the host's visibility writes.
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen))
+                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)
             child("battlePanel"):SetVisible(self.mode == "battle")
             self.mapUI:setVisible(self.mode == "map" and not deckOpen and not potionOpen and not blocked,self.mode == "map")
             if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
