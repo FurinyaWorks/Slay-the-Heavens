@@ -1,5 +1,6 @@
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
+import {beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './helpers/release-guide-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
@@ -15,6 +16,17 @@ import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,e
 const readLive = path => readFileSync(path,'utf8');
 const readBeforeUiCloseout = path => beforePc13ThenV2UiHudSource(path,readLive(path),readLive);
 const readHistoricalMenu = liveEpoch.combinedReader(readBeforeUiCloseout,'v2RunMenuPrior');
+test('Release guide backflow authenticates all changed develop owners before replay',()=>{
+ for(const path of releaseGuideSourcePaths){
+  const live=readLive(path), prior=beforeAuthenticatedReleaseGuideSource(path,live,readLive);
+  assert.notEqual(prior,live,path);
+  const drift=live+'\n';
+  assert.equal(beforeAuthenticatedReleaseGuideSource(path,drift,()=>assert.fail('Unknown source may not authorize a read')),drift);
+  for(const owner of releaseGuideSourcePaths){
+   assert.throws(()=>beforeAuthenticatedReleaseGuideSource(path,live,p=>p===owner?readLive(p)+'\n':readLive(p)),/combined linked owner identity/);
+  }
+ }
+});
 test('session menu preserves live state, confirms destructive actions and uses platform settlement',()=>{
  const r=runLua('tests/lua/session_menu_navigation.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);
