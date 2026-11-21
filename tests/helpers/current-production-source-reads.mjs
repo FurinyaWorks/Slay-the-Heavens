@@ -23,6 +23,8 @@ export const currentProductionRereads = Object.freeze([
   'src/lua/abyss_game_ui.lua',
   'src/lua/abyss_game_ui_view.lua',
   'src/lua/abyss_map_ui.lua',
+  'src/lua/abyss_battle_card_glow.lua',
+  'src/lua/abyss_feedback.lua',
   'src/lua/abyss_game_ui.lua',
   'src/lua/abyss_game_ui_input.lua',
   'src/lua/abyss_game_ui_navigation.lua',

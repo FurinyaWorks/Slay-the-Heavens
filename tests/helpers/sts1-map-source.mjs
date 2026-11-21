@@ -27,7 +27,9 @@ export function beforeSts1MapSource(path,source){
 
 export function authorizeSts1MapSource(samples,read){
  for(const [path,{after}] of Object.entries(files)){
-  if(!matches(samples.find(row=>row[0]===path)?.[1],after))continue;
+  const owners=samples.filter(([owner])=>owner===path);
+  if(!owners.some(([,source])=>matches(source,after)))continue;
+  assert(owners.every(([,source])=>matches(source,after)),'combined linked owner identity: '+path+' mixed live and stale sources');
   let live;
   try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
   assert(matches(live,after),'combined linked owner identity: '+path+' changed during owner validation');

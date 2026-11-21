@@ -1,4 +1,4 @@
-import {beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
+import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
 import {authorizeSts1MapSource,beforeSts1MapSource} from '../sts1-map-source.mjs';
 import {beforeTinyHouseIntegratedSource} from '../tiny-house-integrated-source.mjs';
 import {beforeM05ShopSource,authorizeM05ShopSource} from '../m05-shop-source.mjs';
@@ -144,7 +144,9 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
    actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
-  authorizeSts1MapSource([...mapSamples,[path,rawInput]],readSource);
+  mapSamples.push([path,rawInput]);
+  authorizeSts1MapSource(mapSamples,readSource);
+  authorizeCardFeedbackOwners(mapSamples,readSource);
   const readMapPrior=owner=>beforeCardFeedbackOwner(owner,beforeSts1MapSource(owner,readSource(owner)));
   if(guideProjected)authorizeReleaseGuideSources(readMapPrior);
   const readGuidePrior=owner=>beforeTinyHouseIntegratedSource(owner,beforeReleaseGuideSource(owner,readMapPrior(owner)));

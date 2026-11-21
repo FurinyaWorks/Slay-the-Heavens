@@ -1,4 +1,5 @@
-import {beforeSts1MapSource} from './helpers/sts1-map-source.mjs';
+import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from './helpers/card-feedback-owner-source.mjs';
+import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-source.mjs';
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
 import {beforeAuthenticatedReleaseGuideSource} from './helpers/release-guide-backflow-source.mjs';
@@ -70,7 +71,12 @@ test('shop/deck continuation retains the complete closeout predecessor and every
  for(const path of Object.keys(frozen.current))if(!shopDeckPaths.includes(path))assert.deepEqual(frozen.current[path],closeoutPriorEpoch.proof.current[path],path);
  for(const path of shopDeckPaths){
   const readLive = file=>readFileSync(file,'utf8');
-  assert.equal(beforePc13ThenV2UiHudSource(path,readLive(path),readLive).replaceAll('\r\n','\n'),raw(path),path);
+  const readMapPrior=file=>{
+   const current=readLive(file);
+   authorizeSts1MapSource([[file,current]],readLive);
+   return beforeSts1MapSource(file,current);
+  };
+  assert.equal(beforePc13ThenV2UiHudSource(path,readMapPrior(path),readMapPrior).replaceAll('\r\n','\n'),raw(path),path);
   for(const input of [raw(path),raw(path).replaceAll('\n','\r\n')])for(const target of Object.keys(proof.targets)){
    const before=proof.targets[target].files[path];
    const expected=before&&before.sha256!==proof.current[path].sha256?before.source:input;
@@ -253,4 +259,21 @@ test('round3 retirement rejects live hardlinks and live source roots',async()=>{
  assert.throws(()=>prepare(sandbox,{sourceRoot:sandbox}),/separate/);
  const root=mkdtempSync(join(sandbox,'retirement-hardlink-')),path='src/lua/abyss_combat_catalog.lua';mkdirSync(dirname(join(root,path)),{recursive:true});
  linkSync(join(sandbox,path),join(root,path));try{assert.throws(()=>prepare(root,{sourceRoot:sandbox}),/single link|inode/);}finally{unlinkSync(join(root,path));}
+});
+
+test('map and card replay require every same-path sample and live reread to match',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ for(const [path,prior,authorize]of [
+  ['src/lua/abyss_game_ui_view.lua',beforeSts1MapSource,authorizeSts1MapSource],
+  ['src/lua/abyss_battle_card_glow.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
+  ['src/lua/abyss_feedback.lua',beforeCardFeedbackOwner,authorizeCardFeedbackOwners],
+ ]){
+  const current=read(path),old=prior(path,current);
+  assert.notEqual(current,old,path);
+  for(const samples of [[[path,old],[path,current]],[[path,current],[path,old]]])
+   assert.throws(()=>authorize(samples,read),/mixed live and stale sources/);
+  assert.throws(()=>authorize([[path,current]],()=>old),/changed during owner validation/);
+  assert.throws(()=>beforeCurrentProductionSource(path,old,read),/fresh current production owner/);
+  assert.throws(()=>beforeCurrentProductionSource(path,current,owner=>owner===path?old:read(owner)),/combined linked owner identity/);
+ }
 });

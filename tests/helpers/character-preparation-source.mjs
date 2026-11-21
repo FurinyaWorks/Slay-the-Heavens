@@ -1,4 +1,4 @@
-import {beforeCardFeedbackOwner} from './card-feedback-owner-source.mjs';
+import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner,cardFeedbackOwnerPaths} from './card-feedback-owner-source.mjs';
 import {authorizeSts1MapSource,beforeSts1MapSource,sts1MapSourcePaths} from './sts1-map-source.mjs';
 import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
@@ -79,7 +79,9 @@ function beforeAdmissionReceipt(path,source,read){
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  source = beforeCardFeedbackOwner(path,source);
+  const cardPrior = beforeCardFeedbackOwner(path,source);
+  if (cardPrior !== source) authorizeCardFeedbackOwners([[path,source]],read);
+  source = cardPrior;
   const readCardFeedbackCurrent=read;
   read=owner=>beforeCardFeedbackOwner(owner,readCardFeedbackCurrent(owner));
   const mapPrior = beforeSts1MapSource(path,source);
@@ -119,13 +121,16 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if (cardFeedbackOwnerPaths.includes(path)) {
+    assert.notEqual(beforeCardFeedbackOwner(path,source),source, 'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   if (sts1MapSourcePaths.includes(path)) {
     assert.notEqual(beforeSts1MapSource(path,source),source, 'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);
   }
   if (rewardTransitionSourcePaths.includes(path)) {
-    const current = beforeCardFeedbackOwner(path,source);
-    assert.notEqual(beforeRewardTransitionSource(path,current),current, 'fresh current production owner: '+path);
+    assert.notEqual(beforeRewardTransitionSource(path,source),source, 'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);
   }
   if (releaseGuideSourcePaths.includes(path)) {

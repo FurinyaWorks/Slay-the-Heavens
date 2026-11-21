@@ -71,7 +71,7 @@ assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
 // Map integration changes the live layout and helper closure without changing recorded receipts.
 const mapCiBytes=readFileSync(new URL('./sts1-map-ci-predecessors.json.gz',import.meta.url));
-assert.equal(hash(mapCiBytes),'3deb10b9f14adb14b10998e938b54b22480690607dc350ea0c162326398429c7','exact STS1 map CI predecessors');
+assert.equal(hash(mapCiBytes),'aeef5cc99787581d2d99bc26dfe4100073a569bd1ca13cf14d7d120c84f861fb','exact STS1 map CI predecessors');
 const mapCi=JSON.parse(gunzipSync(mapCiBytes));
 assert.equal(mapCi.base,'cd454bd8dbd9241a119603fcd67439492c121ead');
 for(const row of Object.values(mapCi.files))assert.equal(hash(row.before),row.beforeSha);
