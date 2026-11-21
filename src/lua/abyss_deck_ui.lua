@@ -104,6 +104,23 @@ local function pileCards(run, kind, presentation)
     return result
 end
 
+local function permanentOrChoiceCards(run,choice)
+    local catalog={cards={}}
+    for _,card in ipairs(run.data.cards.cards) do catalog.cards[card.id]=card end
+    -- Permanent cards never acquire temporary hand cost/growth/status.
+    if not choice then return Combat.copy(run.deck),catalog end
+    if choice.cards then return Combat.copy(choice.cards),catalog end
+    local cards={}
+    for _,uid in ipairs(choice.uids) do
+        for _,pile in ipairs({run.combat.hand,run.combat.draw,run.combat.discard,run.combat.exhaust}) do
+            for _,card in ipairs(pile) do
+                if card.uid==uid then cards[#cards+1]=Combat.copy(card) end
+            end
+        end
+    end
+    return cards,catalog
+end
+
 function M.new(root, presentation, clickEvent, platform, onClose)
     local self = { root = root, visible = false, generation = 0, openSession=0,contentRevision=0,bindings={} }
     local onChanged=platform.deckChanged
@@ -293,6 +310,38 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
     local function picture(control,id) control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
+    local function bindCard(control,hit,instance,bodyText)
+        if not self.bindings[control] then
+            -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
+            self.bindings[control]={hit=hit}
+            local function pick()
+                local b=self.bindings[control]
+                if control.alive==false or not b then return false end
+                if self.visible and not self.choiceToken and b.generation==self.generation then
+                    return self:showCardDetails(b.instance)
+                end
+                if not self.visible or not self.choiceToken or b.generation~=self.generation
+                    or not self.run or self.run.combat~=self.battle
+                    or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
+                local callback,token,uid=self.onPick,self.choiceToken,b.uid
+                self:close()
+                if callback then callback(token,uid) end
+            end
+            hit:AddCursorEventListener(clickEvent,function(event)
+                if Controller.pointerBlocked(platform.controller) or scrollClick(event) then return false end
+                return pick()
+            end)
+            Controller.bind(platform.controller,hit,'deck',pick,function()
+                local b=self.bindings[control]
+                return control.alive~=false and self.visible and b~=nil and b.generation==self.generation
+            end,10)
+        end
+        self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
+        -- Browser instances already belong to this read-only snapshot. Details
+        -- make their own copy before calculating or previewing upgrades.
+        self.bindings[control].instance=instance
+        self.bindings[control].bodyText=bodyText
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -331,36 +380,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         control:GetChild("uid").text = selected and '已选择' or ''
         local hit=control:GetChild('hit')
         hit:SetVisible(true)
-        if not self.bindings[control] then
-            -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
-            self.bindings[control]={hit=hit}
-            local function pick()
-                local b=self.bindings[control]
-                if control.alive==false or not b then return false end
-                if self.visible and not self.choiceToken and b.generation==self.generation then
-                    return self:showCardDetails(b.instance)
-                end
-                if not self.visible or not self.choiceToken or b.generation~=self.generation
-                    or not self.run or self.run.combat~=self.battle
-                    or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
-                local callback,token,uid=self.onPick,self.choiceToken,b.uid
-                self:close()
-                if callback then callback(token,uid) end
-            end
-            hit:AddCursorEventListener(clickEvent,function(event)
-                if Controller.pointerBlocked(platform.controller) or scrollClick(event) then return false end
-                return pick()
-            end)
-            Controller.bind(platform.controller,hit,'deck',pick,function()
-                local b=self.bindings[control]
-                return control.alive~=false and self.visible and b~=nil and b.generation==self.generation
-            end,10)
-        end
-        self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
-        -- Browser instances already belong to this read-only snapshot. Details
-        -- make their own copy before calculating or previewing upgrades.
-        self.bindings[control].instance=instance
-        self.bindings[control].bodyText=self.browserShell and text or nil
+        bindCard(control,hit,instance,self.browserShell and text or nil)
         control:SetVisible(true)
     end
     -- Pure presentation projection. The permanent deck and the three combat
@@ -518,9 +538,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if pileKind then
             cards,catalog=pileCards(run,pileKind,presentation),run.combat.catalog
         else
-            -- Permanent cards never acquire temporary hand cost/growth/status.
-            cards,catalog=choice and {} or Combat.copy(run.deck),{cards={}}
-            for _,card in ipairs(run.data.cards.cards) do catalog.cards[card.id]=card end
+            cards,catalog=permanentOrChoiceCards(run,choice)
         end
         self.choiceToken,self.onPick,self.battle=choice and choice.token,onPick,(choice or pileKind) and run.combat
         self.pileKind=pileKind
@@ -528,14 +546,6 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if Theme.presentationProfile=='official-assets-first' then root:GetChild('pileChrome'):GetChild('empty'):SetVisible(self.browserShell and #cards==0)end
         self.multiple,self.choiceSelected=choice and choice.multiple,choice and choice.selected
         self.optional=choice and choice.optional
-        if choice then
-            cards=Combat.copy(choice.cards or {})
-            for _,uid in ipairs(choice.cards and {} or choice.uids) do
-                for _,pile in ipairs({run.combat.hand,run.combat.draw,run.combat.discard,run.combat.exhaust}) do
-                    for _,c in ipairs(pile) do if c.uid==uid then cards[#cards+1]=Combat.copy(c) end end
-                end
-            end
-        end
         self.visible,self.run,self.allCards,self.cards,self.catalog=true,run,cards,cards,catalog
         self.browseEnabled=choice==nil
         self.typeFilter='all'
