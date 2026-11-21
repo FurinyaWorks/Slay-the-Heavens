@@ -1,5 +1,7 @@
 # v2.0.0 主菜单还原取证
 
+日志仅展开制表符并清除行尾空格，未删减失败内容。
+
 仅主菜单，Owner 本轮指定 release/v2.0.0。初始基线 5991585a（PR #791），保留其他 Session 的提交和设计历史。Backlog CLI 缺失，未伪称认领或改写任务。设计与源稿见 [新修订](../../design/reference-assets/v2.0.0/sts1-main-menu-20261121/REFERENCE.md)。
 
 ## 画面对照
@@ -27,7 +29,7 @@
 | 21次构建中位数 ms | 30.78 | 25.76 |
 | JS保留堆 bytes | 7313200 | 6964720 |
 
-完整记录：[before](performance-before.json)、[after](performance-after.json)。标题另含654图元（精确数见fit-receipt与生产包），背景与标题变换均离线预编译；不在运行时解码绘画PNG或求解逐三角形变换。控件直接子节点均≤60。测量有调度/GC噪声，不把一次运行视为稳定设备基准。
+完整记录：[before](performance-before.json)、[after](performance-after.json)。标题另含657图元（精确数见fit-receipt与生产包），背景与标题变换均离线预编译；不在运行时解码绘画PNG或求解逐三角形变换。控件直接子节点均≤60。测量有调度/GC噪声，不把一次运行视为稳定设备基准。
 
 ## 验证与复现
 

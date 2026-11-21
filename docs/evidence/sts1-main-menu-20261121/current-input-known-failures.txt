@@ -17,16 +17,16 @@ test at tests/menu-input-boundaries-current.test.mjs:4:1
   AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
   ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:24: assertion failed!
   stack traceback:
-  	[JS]: in function 'assert'
-  	...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:24: in local 'fn'
-  	...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:9: in local 'test'
-  	...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:10: in main chunk
-  	[JS]: in function 'dofile'
-  	(command line):1: in main chunk
-  
-  
+    [JS]: in function 'assert'
+    ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:24: in local 'fn'
+    ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:9: in local 'test'
+    ...ce/menu-sts1/tests/lua/menu_input_boundaries_current.lua:10: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+
+
   1 !== 0
-  
+
       at TestContext.<anonymous> (file:///workspace/menu-sts1/tests/menu-input-boundaries-current.test.mjs:6:9)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
@@ -45,15 +45,15 @@ test at tests/title-menu-admission.test.mjs:9:1
   AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
   /workspace/menu-sts1/tests/lua/title_menu_admission.lua:5: whole map entry must be hidden until route admission
   stack traceback:
-  	[JS]: in function 'assert'
-  	/workspace/menu-sts1/tests/lua/title_menu_admission.lua:5: in local 'state'
-  	/workspace/menu-sts1/tests/lua/title_menu_admission.lua:17: in main chunk
-  	[JS]: in function 'dofile'
-  	(command line):1: in main chunk
-  
-  
+    [JS]: in function 'assert'
+    /workspace/menu-sts1/tests/lua/title_menu_admission.lua:5: in local 'state'
+    /workspace/menu-sts1/tests/lua/title_menu_admission.lua:17: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+
+
   1 !== 0
-  
+
       at TestContext.<anonymous> (file:///workspace/menu-sts1/tests/title-menu-admission.test.mjs:11:9)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
