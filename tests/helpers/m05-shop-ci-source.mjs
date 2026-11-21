@@ -1,3 +1,4 @@
+import {beforeTooltipLuaInventory} from './tiny-house-integrated-source.mjs';
 // Authenticated CI-only continuation; raw scheduler discovery stays unchanged.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -31,6 +32,7 @@ export function beforeM05ShopCiSource(path,source){
 }
 export function m05CurrentDiscovery(paths,kind,read=readFileSync){
  assert(Object.hasOwn(additions,kind),'known M05 inventory kind');
+ if(kind==='lua')paths=beforeTooltipLuaInventory(paths,read);
  const path=additions[kind],prior=inventories[kind];
  assert.deepEqual([...paths].sort(),[...prior,path].sort(),'complete M05 raw '+(kind==='lua'?'Lua':'JS')+' discovery inventory');
  assert(matches(read(path,'utf8'),files[path].after),'fresh M05 added '+kind+' source: '+path);

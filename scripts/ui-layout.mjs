@@ -163,9 +163,22 @@ function statusInfo() {
     panel('rule', 0, 0, inner, s.hairline, c.line),
     ...sections,
     ...rows,
+    powerTips(),
     text('more', 0, 0, inner, line, '', f.small, c.textDim),
     { ...hit(si.width, si.width), name: 'page' },
   ] };
+}
+
+function powerTips() {
+  const tip = l.powerTips;
+  return { name: 'powerTips', kind: 'container', size: [...theme.canvas.base], visible: false,
+    children: Array.from({ length: tip.rows }, (_, i) => ({
+      name: `tip${i + 1}`, kind: 'container', size: [tip.width, l.nativeText.lineHeight], visible: false, children: [
+        panel('edge', 0, 0, tip.width, l.nativeText.lineHeight, tip.border),
+        panel('face', 0, 0, tip.width, l.nativeText.lineHeight, tip.fill),
+        aligned(text('copy', 0, 0, tip.width, l.nativeText.lineHeight, '', tip.font, c.text)),
+      ],
+    })) };
 }
 
 export function handPose(count, index, selected = false) {
@@ -230,6 +243,9 @@ export function battleLayout() {
     ];
   };
   const controls = [
+    // Empty ground only. Actors, hand and combat actions are above this hit.
+    { ...hit(width - theme.canvas.safe.x * 2, height - bar.height - theme.canvas.safe.y), name: 'statusDismiss',
+      position: [0, (theme.canvas.safe.y - bar.height) / 2], focusable: false, visible: false },
     // Behind actors and hand: a distinct C-mode confirmation surface on open ground.
     { name: 'playArea', kind: 'container', position: l.cardDrag.playArea.slice(0, 2), size: l.cardDrag.playArea.slice(2), visible: false, children: [
       panel('line', 0, -l.cardDrag.playArea[3] / 2, l.cardDrag.playArea[2], s.border, c.goldBright),

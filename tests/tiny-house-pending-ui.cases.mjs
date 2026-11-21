@@ -66,13 +66,14 @@ test('Tiny House projects the exact copy helper before P1 and still rejects fore
  const {readFileSync}=await import('node:fs');
  const {assertIntegrationSuccessorsCurrent,beforeLoadingRecoveryCopier}=await import('./helpers/fork-preflight-source.mjs');
  const {beforeTinyHouseCiSource}=await import('./helpers/v2-ui-admission-ci-source.mjs');
+ const {beforeTinyHouseIntegratedSource}=await import('./helpers/tiny-house-integrated-source.mjs');
  const path='tests/helpers/copy-integration-source-closure.mjs',raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  const reader=input=>(file,encoding)=>file===path?input:readFileSync(file,encoding);
  const crlf=raw.replaceAll('\n','\r\n');
- const beforeTinyHouse=source=>beforeTinyHouseCiSource(path,beforeLoadingRecoveryCopier(path,source));
+ const beforeTinyHouse=source=>beforeTinyHouseCiSource(path,beforeLoadingRecoveryCopier(path,beforeTinyHouseIntegratedSource(path,source)));
  const prior=beforeTinyHouse(raw);
  assert.notEqual(prior,raw);
- assert.notEqual(prior,beforeLoadingRecoveryCopier(path,raw));
+ assert.notEqual(prior,beforeLoadingRecoveryCopier(path,beforeTinyHouseIntegratedSource(path,raw)));
  assert.equal(beforeTinyHouse(crlf),prior.replaceAll('\n','\r\n'));
  for(const input of [raw,crlf])assert.doesNotThrow(()=>assertIntegrationSuccessorsCurrent(reader(input)));
  for(const foreign of [raw+'\n',crlf+'\r\n',raw.replaceAll('\n','\r\r\n')]){

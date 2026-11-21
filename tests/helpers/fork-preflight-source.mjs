@@ -1,3 +1,4 @@
+import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
@@ -91,7 +92,7 @@ export function beforeDevelopCapacityBuildSource(path,source){
  return source.includes('\r\n')?lf.replaceAll('\n','\r\n'):lf;
 }
 function beforeCoopCiSource(path,source){
- source=beforeDevelopCapacityBuildSource(path,source);
+ source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
  source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
@@ -181,7 +182,7 @@ function beforeIntegrationSuccessor(path,source){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertDevelopCapacityCohort(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){
