@@ -1,9 +1,4 @@
-import {assertCurrentReleaseOwner} from './release-integration-source.mjs';
-import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
-import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
-import {authorizeReleaseUiRestore,beforeReleaseShopEntry,shopEntryPriorRead,shopEntrySourcePaths} from './release-ui-restore-source.mjs';
-import {beforeRefinedReleaseProduction,refinedReleaseProductionPaths} from './refined-release-source.mjs';
-import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseForgeSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
+import {authorizeRebasedDevelop,beforeRebasedCi,rebasedDevelopOwns} from './rebased-release-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner,cardFeedbackOwnerPaths} from './card-feedback-owner-source.mjs';
 import {authorizeSts1MapSource,beforeSts1MapSource,sts1MapSourcePaths} from './sts1-map-source.mjs';
 import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
@@ -120,11 +115,11 @@ function beforeAdmissionReceipt(path,source,read){
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  source = beforeMapDeckSource(path,source,read);
-  read = mapDeckPriorRead(read);
-  source = beforeAuthenticatedReleaseUiRestore(path,source,read);
-  const readLatest=read;
-  read=owner=>beforeReleaseUiRestore(owner,readLatest(owner));
+  const rebound=beforeRebasedCi(path,source);
+  if(rebound!==source)authorizeRebasedDevelop([[path,source]],read);
+  source=rebound;
+  const readRebased=read;
+  read=owner=>beforeRebasedCi(owner,readRebased(owner));
   source = beforeSlimeSplitReceipt(path,source,read);
   const cardPrior = beforeCardFeedbackOwner(path,source);
   if (cardPrior !== source) authorizeCardFeedbackOwners([[path,source]],read);
@@ -168,19 +163,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
- if(assertCurrentReleaseOwner(path,source,read))return beforeCharacterPreparationSource(path,source,read);
- source=beforeMapDeckSource(path,source,read);
- read=mapDeckPriorRead(read);
- if(shopEntrySourcePaths.includes(path)){
-  const prior=beforeReleaseShopEntry(path,source);
-  assert.notEqual(prior,source,'fresh current production owner: '+path);
-  authorizeReleaseUiRestore([[path,source]],read);
-  source=prior;
- }
- read=shopEntryPriorRead(read);
- assertCombatVisualCurrent(path,source,read);
- source=beforeCombatVisualSource(path,source,read);
- read=combatVisualPriorRead(read);
+  if(rebasedDevelopOwns(path)){
+    assert.notEqual(beforeRebasedCi(path,source),source,'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   if (cardFeedbackOwnerPaths.includes(path)) {
     assert.notEqual(beforeCardFeedbackOwner(path,source),source, 'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);
@@ -199,19 +185,7 @@ export function beforeCurrentProductionSource(path, source, read = readRaw) {
   }
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
-  if (refinedReleaseProductionPaths.includes(path)) {
-    assert.notEqual(beforeRefinedReleaseProduction(path,source),source,'fresh current production owner: '+path);
-  } else if (releaseForgeSourcePaths.includes(path)) {
-    assert.notEqual(beforeReleaseForgeGridUi(path,source),source,'fresh current production owner: '+path);
-  } else if (releaseSharedRelicSourcePaths.includes(path)) {
-    assert.notEqual(beforeReleaseSharedRelicUi(path,source),source,'fresh current production owner: '+path);
-  } else if (releaseControlsGuideRemovalSourcePaths.includes(path)) {
-    assert.notEqual(beforeReleaseControlsGuideRemoval(path,source),source,'fresh current production owner: '+path);
-  } else if (releaseRightClickSourcePaths.includes(path)) {
-    assert.notEqual(beforeReleaseRightClick(path,source),source,'fresh current production owner: '+path);
-  } else if (releaseUiRestoreSourcePaths.includes(path)) {
-    assert.notEqual(beforeReleaseUiRestore(path,source),source, 'fresh current production owner: '+path);
-  } else if (pc13RewardCoverSourcePaths.includes(path)) {
+  if (pc13RewardCoverSourcePaths.includes(path)) {
     assert.notEqual(beforePc13RewardCover(path,source),source, 'fresh current production owner: '+path);
   }
   const prior = beforeCharacterPreparationSource(path, source, read);

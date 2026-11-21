@@ -1,3 +1,4 @@
+import {authorizeRebasedRelease,beforeRebasedRelease} from './rebased-release-source.mjs';
 import {beforeReconciledReleaseSource} from './release-integration-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -26,12 +27,14 @@ function current(source,binding){
 }
 
 export function beforeMapDeckSource(path,source,read){
-  source=beforeReconciledReleaseSource(path,source);
+  const rebound=beforeRebasedRelease(path,source);
+  if(rebound!==source)authorizeRebasedRelease([[path,source]],read);
+  source=beforeReconciledReleaseSource(path,rebound);
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
     let live;
     try{live=read(owner,'utf8');}catch{assert.fail('map deck linked owner missing: '+owner);}
-    assert(current(beforeReconciledReleaseSource(owner,typeof live==='string'?live:live?.toString('utf8')),after),'map deck linked owner identity: '+owner);
+    assert(current(beforeReconciledReleaseSource(owner,beforeRebasedRelease(owner,typeof live==='string'?live:live?.toString('utf8'))),after),'map deck linked owner identity: '+owner);
   }
   const prior=files[path].before.source;
   return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;

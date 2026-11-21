@@ -1,3 +1,4 @@
+import {beforeRebasedCi,beforeRebasedRelease} from './rebased-release-source.mjs';
 import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {assertReleaseCapacityCohort,beforeReleaseCapacitySource} from './release-integration-source.mjs';
@@ -114,6 +115,16 @@ function beforeIntegratedReleaseCopier(path,source){
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeRebasedCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='55a97c6d45fe66572b9a58563d48dddf25d0e2dd64aa09d94b0085da46a9aaa3')return source;
+ const limit=lf.indexOf('const releaseUiFiles='),end=lf.indexOf('const inside=',limit);
+ assert(limit>=0&&end>limit,'exact reconciled copy closure');
+ const prior=(lf.slice(0,limit)+lf.slice(end)).replace('Object.entries(reconciledReleaseFiles))','Object.entries(powerMembershipFiles))');
+ assert.equal(hash(prior),'fbc236306831104020bf6d83133ab8b978ad9ffd5d6dae1bde13ee12176651e2','exact final develop copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeReleaseUiBuildSource(path,source){
  source=beforeIntegratedReleaseCopier(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
@@ -126,7 +137,7 @@ function beforeReleaseUiBuildSource(path,source){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 export function beforeReleaseTinyHouseSource(path,source){
- return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,source));
+ return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source))));
 }
 export function historicalReleaseBuildInput(path,read){
  if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,(owner,encoding)=>beforeReleaseCapacitySource(owner,read(owner,encoding)));
@@ -191,7 +202,7 @@ function beforeTinyHouseCopier(path,source){
 // Preserve the reviewed copier bytes when replaying older CI observations.
 export function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- source=beforeRewardScreenCiSource(path,beforeMapCiSource(path,beforePowerMembershipHelper(path,source)));
+ source=beforeRewardScreenCiSource(path,beforeMapCiSource(path,beforePowerMembershipHelper(path,beforeRebasedCopier(path,source))));
  source=beforeTinyHouseIntegratedSource(path,beforeTinyHouseCopier(path,source));
  const lf=normalize(source);
  if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;
@@ -216,7 +227,7 @@ function assertDevelopCapacityCohort(read){
 }
 export function beforeDevelopCapacityBuildSource(path,source){
  const row=Object.hasOwn(capacityBuildSource,path)?capacityBuildSource[path]:null;
- if(row)source=beforeRewardScreenCiSource(path,beforeMapCiSource(path,beforePowerMembershipHelper(path,source)));
+ if(row)source=beforeRewardScreenCiSource(path,beforeMapCiSource(path,beforePowerMembershipHelper(path,beforeRebasedCopier(path,source))));
  if(!row||!exactCapacityBuild(source,row.after))return source;
  let lf=normalize(source);
  for(const [current,prior]of row.hunks){
@@ -247,7 +258,7 @@ function beforePowerMembershipConfig(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeCoopCiSource(path,source){
- source=beforeReleaseUiBuildSource(path,source);
+ source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)));
  source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));
  source=beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,beforeRelicCrystal(path,beforeMapCiSource(path,source)))));
  source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
@@ -324,11 +335,6 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
- // Bind the v2.0.0 candidate metadata without rewriting any archived view.
- 'package.json':'f1b1fa527b0a019901c4aa48789a52df9efd31e00f7b4c0ca19057efc2fae15a',
- 'package-lock.json':'4324b6b6d38e7c8dc3d8d00a374663cf4eaf27e02f72ca4eebd51a63414c2436',
- '.release-please-manifest.json':'9e38a481f52b5af8537babca8f5d13d5a0ab72473e1deba2e1aeb71e05dcd5b9',
- 'CHANGELOG.md':'50a35daf679051577ce4cc49709a6914ecd01378294ef76b06057541046808f8',
  'docs/legal/assets.json':'1092785bd84163abd9ba779f6447807513c3ddf1bb8c0787584a93b1fb468b70',
  'scripts/official-portraits.mjs':'03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186',
  'tests/lumine-idle.test.mjs':'183cc0be21ca7a757e3cde25529064a62d5315915e88c3427412786e9ad69e09',
@@ -383,12 +389,11 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- assertReleaseCapacityCohort(read);
- read=shopEntryPreflightRead(read);
- assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,read(path,encoding)));
- read=combatVisualPriorRead(read);
+ const releaseRead=(path,encoding)=>beforeRebasedRelease(path,read(path,encoding));
+ assertReleaseCapacityCohort(releaseRead);
+ assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,shopEntryPreflightRead(releaseRead)(path,encoding)));
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,read(path,'utf8'))));
+  const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,read(path,'utf8')))));
   const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,input)))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }

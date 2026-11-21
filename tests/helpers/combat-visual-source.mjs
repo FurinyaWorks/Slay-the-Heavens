@@ -1,3 +1,4 @@
+import {beforeRebasedRelease} from './rebased-release-source.mjs';
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
 import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
 // Exact predecessor view for historical receipts; live builds keep current sources.
@@ -19,7 +20,8 @@ for(const [path,row]of Object.entries(rows)){
 }
 export function beforeCombatVisualSource(path,source,read=p=>readFileSync(p,'utf8')){
  source=beforeMapDeckSource(path,source,read);
- read=mapDeckPriorRead(read);
+ const sampled=read;
+ read=mapDeckPriorRead((owner,encoding)=>beforeRebasedRelease(owner,sampled(owner,encoding??'utf8')));
  source=beforeEnergyReferenceSource(path,source,read);
  read=energyReferencePriorRead(read);
  return continuations.get(path)?.predecessor(path,source,read)??source;
@@ -33,7 +35,8 @@ export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>
 
 export function assertCombatVisualCurrent(path,source,read=p=>readFileSync(p,'utf8')){
  source=beforeMapDeckSource(path,source,read);
- read=mapDeckPriorRead(read);
+ const sampled=read;
+ read=mapDeckPriorRead((owner,encoding)=>beforeRebasedRelease(owner,sampled(owner,encoding??'utf8')));
  assertEnergyReferenceCurrent(path,source,read);
  source=beforeEnergyReferenceSource(path,source,read);
  read=energyReferencePriorRead(read);

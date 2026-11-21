@@ -1,3 +1,5 @@
+import {beforeRebasedCi} from './helpers/rebased-release-source.mjs';
+import {beforeAuthenticatedReleaseGuideSource} from './helpers/release-guide-backflow-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from './helpers/card-feedback-owner-source.mjs';
 import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-source.mjs';
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
@@ -183,19 +185,23 @@ test('current PC13 facade rejects every exact immediate predecessor before older
  const read=path=>readFileSync(path,'utf8');
  assert.equal(pc13RewardCoverSourcePaths.length,5);
  for(const path of pc13RewardCoverSourcePaths){
-  const latest=read(path),successor=beforeReleaseUiRestore(path,latest);
-  const predecessor=beforePc13RewardCover(path,successor);
-  assert.notEqual(predecessor,successor,path);
-  assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),raw(path),path);
+  const successor=read(path),rebased=beforeRebasedCi(path,successor),mapPrior=beforeSts1MapSource(path,rebased);
+  const readMapPrior=owner=>beforeSts1MapSource(owner,beforeRebasedCi(owner,read(owner)));
+  const pc13=beforeAuthenticatedReleaseGuideSource(path,mapPrior,readMapPrior);
+  const predecessor=beforePc13RewardCover(path,pc13);
+  assert.notEqual(predecessor,pc13,path);
+  assert.equal(beforeCurrentProductionSource(path,successor,read).replaceAll('\r\n','\n'),raw(path),path);
   assert.equal(beforeCharacterPreparationSource(path,predecessor,read).replaceAll('\r\n','\n'),raw(path),'historical predecessor remains supported: '+path);
   assert.throws(()=>beforeCurrentProductionSource(path,predecessor,read),{message:'fresh current production owner: '+path});
   const forbidden=()=>{throw Error('must not read for an unrecognized current owner');};
-  const invalidInputs=[predecessor,latest+'\n',null];
-  if(successor!==latest)invalidInputs.push(successor);
-  for(const invalid of invalidInputs)
+  const invalidSources=[predecessor,successor+'\n',null];
+  if(rebased!==successor)invalidSources.push(rebased);
+  if(mapPrior!==rebased)invalidSources.push(mapPrior);
+  if(pc13!==mapPrior)invalidSources.push(pc13);
+  for(const invalid of invalidSources)
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,forbidden),{message:'fresh current production owner: '+path});
-  assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?predecessor:read(owner)),
-   /(?:combined|map deck) linked owner identity/,path);
+  assert.throws(()=>beforeCurrentProductionSource(path,successor,owner=>owner===path?predecessor:read(owner)),
+   /combined linked owner identity/,path);
  }
  const unrelated='src/lua/abyss_battle_ui.lua';
  assert.equal(beforeCurrentProductionSource(unrelated,read(unrelated),read).replaceAll('\r\n','\n'),raw(unrelated));
