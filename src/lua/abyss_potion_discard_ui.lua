@@ -77,7 +77,17 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
         end
         return table.concat(result,'；')
     end
-    function self:render()
+    local function renderActions()
+        local selected=self.selected
+        child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
+        local view=selected and Run.potionView(self.run)[selected.slot]
+        local discard=child('discard'):GetChild('hit');discard.interactable=view and view.canDiscard~=false or false;discard.raycastTarget=discard.interactable
+        local use=child('use'):GetChild('hit');use.interactable=self.run.phase~='combat' and view and view.canUse or false;use.raycastTarget=use.interactable
+        if view and view.reason=='potion_event_restricted' then
+            child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
+        end
+    end
+    function self.render(_)
         if not self.visible then return end
         self.generation=self.generation+1
         if not currentSelection()then self.selected=nil end
@@ -96,21 +106,14 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
             end
             hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
         end
-        local selected=self.selected
-        child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
-        local view=selected and Run.potionView(self.run)[selected.slot]
-        local discard=child('discard'):GetChild('hit');discard.interactable=view and view.canDiscard~=false or false;discard.raycastTarget=discard.interactable
-        local use=child('use'):GetChild('hit');use.interactable=self.run.phase~='combat' and view and view.canUse or false;use.raycastTarget=use.interactable
-        if view and view.reason=='potion_event_restricted' then
-            child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
-        end
+        renderActions()
     end
-    function self:open(run)
+    function self.open(_,run)
         if self.visible or not allowed(run)then return false end
         self.visible,self.run,self.selected=true,run,nil
         root:SetVisible(true);root:SetAsLastSibling();self:render();return true
     end
-    function self:close()
+    function self.close(_)
         if not self.visible then return false end
         self.visible,self.run,self.selected=false,nil,nil
         self.generation=self.generation+1;root:SetVisible(false);return true

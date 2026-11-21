@@ -306,6 +306,17 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
         self.bindings[control].instance=Combat.copy(instance)
     end
+    local function paintCardText(face,instance,display,definition,battle)
+        CardDisplay.writeTitle(face:GetChild("name"),display.name,instance.upgraded,
+            definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
+        face:GetChild("name").fontColor = colour(Theme.cardSkin.text.title)
+        -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
+        local text=battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
+            or CardDisplay.permanentText(display,definition,instance)
+        CardDisplay.writeBody(face:GetChild("label"),text,face)
+        if Theme.cardSkin.text.body then face:GetChild('label').fontColor=colour(Theme.cardSkin.text.body)end
+        face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -319,15 +330,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             control:GetChild('hit'):SetAnchoredPosition(0,0)
             control:GetChild('uid'):SetVisible(false)
         end
-        CardDisplay.writeTitle(face:GetChild("name"),display.name,instance.upgraded,
-            definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
-        face:GetChild("name").fontColor = colour(Theme.cardSkin.text.title)
-        -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
-        local text=battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
-            or CardDisplay.permanentText(display,definition,instance)
-        CardDisplay.writeBody(face:GetChild("label"),text,face)
-        if Theme.cardSkin.text.body then face:GetChild('label').fontColor=colour(Theme.cardSkin.text.body)end
-        face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
+        paintCardText(face,instance,display,definition,battle)
         tint(face:GetChild("border"), Theme.color.rarity[definition.rarity] or Theme.color.line)
         tint(face:GetChild("nameBand"), Theme.color.rarityBand[definition.rarity] or Theme.color.rarityBand.basic)
         tint(face:GetChild("nameRule"), Theme.color.rarity[definition.rarity] or Theme.color.line)
