@@ -1,9 +1,12 @@
 -- Actor arithmetic and turn status rules; no UI or platform globals.
 local Presence=require('abyss_actor_presence')
+local Artifact=require('abyss_actor_artifact')
 local function presenceIndex(_,key)
+    if key=='tryBlockDebuff' then return Artifact[key] end
     if key=='isActive' or key=='isPresent' then return Presence[key] end
 end
 local function presenceNewIndex(self,key,value)
+    if key=='tryBlockDebuff' then Artifact[key]=value;return end
     if key=='isActive' or key=='isPresent' then Presence[key]=value else rawset(self,key,value) end
 end
 local M=setmetatable({}, {__index=presenceIndex,__newindex=presenceNewIndex})
@@ -124,26 +127,6 @@ function M.status(state, actor, id, amount, source, sourceIsMonster)
         status = id, amount = actor.statuses[id] - before})
 end
 
-local function blockDebuff(state, actor, id)
-    local before = actor.statuses.artifact or 0
-    if before <= 0 then return false end
-    actor.statuses.artifact = before - 1
-    if before==1 and actor.definitionId then require('abyss_power_order').remove(actor,'artifact') end
-    local callbackBefore=#state.events
-    Events.emit(state, "status", {source=actor.id, target=actor.id, status="artifact",
-        amount=-1, blockedStatus=id})
-    -- Current core already compresses Artifact's queued Reduce/Remove into this
-    -- consumption. Attribute its callback to that reduction, not failed Apply.
-    Events.onModifyPower(state,'ArtifactPower.queuedReduction',callbackBefore,'compressed-existing-reduction')
-    return true
-end
-
--- Shared Artifact event path for specialized Power lifecycle implementations.
-function M.tryBlockDebuff(state, actor, id)
-    if not M.isActive(actor) then return false end
-    return blockDebuff(state, actor, id)
-end
-
 -- Pure prediction for an already validated application. Artifact's gate occurs
 -- before stackPower, so a blocked application has no prospective stack overflow.
 function M.artifactBlocksPower(actor, id, amount)
@@ -205,7 +188,7 @@ function M.applyPower(state, actor, id, amount, source, sourceIsMonster, prepare
     -- Strength/Dexterity's incoming Power has DEBUFF type at amount <= 0,
     -- regardless of the target's existing signed total. Zero is not an early exit.
     if require('abyss_relic_family_combat').rare.blockPower(state,actor,id)then return false end
-    if M.artifactBlocksPower(actor, id, amount) then blockDebuff(state, actor, id); return false end
+    if M.artifactBlocksPower(actor, id, amount) then Artifact.consume(state, actor, id); return false end
     if id=='vulnerable'and source==state.player and actor~=source then require('abyss_relic_family_combat').rare.onVulnerableApplied(state,actor)end
     rememberConstrictedSource(state,actor,id,source)
     local callbackBefore=#state.events
@@ -219,7 +202,7 @@ end
 function M.applyNoDraw(state, actor)
     -- ApplyPowerAction's duplicate NoDraw gate precedes Artifact's generic gate.
     if not M.isActive(actor) or actor.noDraw then return false end
-    if blockDebuff(state, actor, "no_draw") then return false end
+    if Artifact.consume(state, actor, "no_draw") then return false end
     local callbackBefore=#state.events
     actor.noDraw = true
     if not state.originalV4 then
@@ -287,7 +270,7 @@ local function addTemporaryStat(actor, id, amount, state)
         -- Flex/Speed queue the gain then a separate timed-loss DEBUFF. Artifact
         -- can block that latter application while preserving the positive stat.
         M.applyPower(state, actor, id, amount, actor)
-        if not blockDebuff(state, actor, "lose_" .. id) then
+        if not Artifact.consume(state, actor, "lose_" .. id) then
             rememberTemporaryOrder(actor, id)
             actor[field] = total
             state.events[#state.events].frame = Events.frame(state)
@@ -588,7 +571,7 @@ local function attackFloat(state, source, target, base, fixed,trace)
         end
     end
     if state.player.stance and source then
-        local multiplier=require("abyss_stances").damageMultiplier(state, source, target, fixed)
+        local multiplier=require("abyss_stance_damage").damageMultiplier(state, source, target, fixed)
         amount = amount * multiplier
         damageStep(trace,'stance',amount,multiplier)
         if slow then amount=damageStep(trace,'binary32',f32(amount)) end
