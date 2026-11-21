@@ -277,6 +277,35 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
     local function picture(control,id) control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
+    local function bindCard(control,hit,instance)
+        if not self.bindings[control] then
+            -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
+            self.bindings[control]={hit=hit}
+            local function pick()
+                local b=self.bindings[control]
+                if control.alive==false or not b then return false end
+                if self.visible and not self.choiceToken and b.generation==self.generation then
+                    return self:showCardDetails(b.instance)
+                end
+                if not self.visible or not self.choiceToken or b.generation~=self.generation
+                    or not self.run or self.run.combat~=self.battle
+                    or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
+                local callback,token,uid=self.onPick,self.choiceToken,b.uid
+                self:close()
+                if callback then callback(token,uid) end
+            end
+            hit:AddCursorEventListener(clickEvent,function(event)
+                if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
+                return pick()
+            end)
+            Controller.bind(platform.controller,hit,'deck',pick,function()
+                local b=self.bindings[control]
+                return control.alive~=false and self.visible and b~=nil and b.generation==self.generation
+            end,10)
+        end
+        self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
+        self.bindings[control].instance=Combat.copy(instance)
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -318,33 +347,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         control:GetChild("uid").text = selected and '已选择' or ''
         local hit=control:GetChild('hit')
         hit:SetVisible(true)
-        if not self.bindings[control] then
-            -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
-            self.bindings[control]={hit=hit}
-            local function pick()
-                local b=self.bindings[control]
-                if control.alive==false or not b then return false end
-                if self.visible and not self.choiceToken and b.generation==self.generation then
-                    return self:showCardDetails(b.instance)
-                end
-                if not self.visible or not self.choiceToken or b.generation~=self.generation
-                    or not self.run or self.run.combat~=self.battle
-                    or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
-                local callback,token,uid=self.onPick,self.choiceToken,b.uid
-                self:close()
-                if callback then callback(token,uid) end
-            end
-            hit:AddCursorEventListener(clickEvent,function(event)
-                if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
-                return pick()
-            end)
-            Controller.bind(platform.controller,hit,'deck',pick,function()
-                local b=self.bindings[control]
-                return control.alive~=false and self.visible and b~=nil and b.generation==self.generation
-            end,10)
-        end
-        self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
-        self.bindings[control].instance=Combat.copy(instance)
+        bindCard(control,hit,instance)
         control:SetVisible(true)
     end
     -- Pure presentation projection. The permanent deck and the three combat
