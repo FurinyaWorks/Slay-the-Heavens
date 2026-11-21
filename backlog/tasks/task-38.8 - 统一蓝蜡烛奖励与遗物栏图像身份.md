@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-21 08:33'
+updated_date: '2026-11-21 08:38'
 labels:
   - mobile
   - playtest-20261115
@@ -62,4 +62,6 @@ ordinal: 179000
 
 <!-- SECTION:NOTES:BEGIN -->
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
+
+正式原生布局的真实战后奖励在旧版缺少遗物图形池。共享绘制入口修复后，覆盖蓝蜡烛四态、领取后顶栏与详情、另一奖励独立、旧来源 ID、绘制失败备用与槽位换图。Lua 架构及改动棘轮通过，官方客户端和手机验收待完成。
 <!-- SECTION:NOTES:END -->

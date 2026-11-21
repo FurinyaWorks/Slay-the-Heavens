@@ -1,4 +1,4 @@
-import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseRightClick,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseRightClickSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
@@ -66,7 +66,9 @@ const currentContinuationOwners = new Set([
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
-  if (releaseControlsGuideRemovalSourcePaths.includes(path)) {
+  if (releaseSharedRelicSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseSharedRelicUi(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseControlsGuideRemovalSourcePaths.includes(path)) {
     assert.notEqual(beforeReleaseControlsGuideRemoval(path,source),source,'fresh current production owner: '+path);
   } else if (releaseRightClickSourcePaths.includes(path)) {
     assert.notEqual(beforeReleaseRightClick(path,source),source,'fresh current production owner: '+path);

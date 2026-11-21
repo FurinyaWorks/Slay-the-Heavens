@@ -38,25 +38,32 @@ const fieldCancel=releaseUiRestoreArchive(readFileSync(new URL('./release-card-f
  'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca','aa8fde88c2a077f3e7266984cdf3a4e6be8fc45a');
 const controlsGuideRemoval=releaseUiRestoreArchive(readFileSync(new URL('./release-controls-guide-removal-source.json.gz',import.meta.url)),
  '321abc9fb6759dd27644f414c88f3a2df0be32f236a258a52d5b89cc6d22d687','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
+const sharedRelics=releaseUiRestoreArchive(readFileSync(new URL('./release-shared-relic-source.json.gz',import.meta.url)),
+ '4e72ca430cf8740dd6cb828547d8b8f29ba169c0c90cf49c2c662aa5964df5cc','da94ed7bbcb3002255442f8d120c6c2146878ae7');
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
+export const releaseSharedRelicSourcePaths=Object.freeze(Object.keys(sharedRelics.files).filter(path=>path.startsWith('src/lua/')));
+export const beforeReleaseSharedRelicUi=sharedRelics.project;
 export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
-export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source)));
-const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths])];
+export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,beforeReleaseSharedRelicUi(path,source))));
+const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
  // A combined replay that contains current menu code must use the same release
  // version for every sampled menu owner. Older all-historical views still replay.
  const currentMenu=samples.some(([path,input])=>releaseControlsGuideRemovalSourcePaths.includes(path)
   &&matches(input,controlsGuideRemoval.files[path].after));
+ const currentRelics=samples.some(([path,input])=>releaseSharedRelicSourcePaths.includes(path)
+  &&matches(input,sharedRelics.files[path].after));
  for(const path of authorizationPaths){
   const inputs=samples.filter(sample=>sample[0]===path).map(sample=>sample[1]);
   if(!inputs.length)continue;
   const menuBinding=controlsGuideRemoval.files[path]?.after;
-  const expected=currentMenu&&menuBinding?menuBinding
-   :[menuBinding,fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
+  const relicBinding=sharedRelics.files[path]?.after;
+  const expected=currentRelics&&relicBinding?relicBinding:currentMenu&&menuBinding?menuBinding
+   :[relicBinding,menuBinding,fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
     .find(binding=>inputs.some(input=>matches(input,binding)));
   if(!expected)continue;
   const message='combined linked owner identity: '+path+' changed during owner validation';
