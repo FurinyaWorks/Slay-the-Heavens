@@ -11,7 +11,7 @@ function M.minimalRunMenu(self)
         and not self.sessionPaused and not self.characterOpen
 end
 local function blocked(self)
-    return self.disabled or self.characterOpen or self.controlsOpen or self.routeOpen
+    return self.disabled or self.characterOpen or self.routeOpen
         or self.settlementRequested or self.settlementBusy or self.easterEggOpen
 end
 local function dismiss(self,owner)

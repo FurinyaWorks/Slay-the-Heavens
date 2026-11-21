@@ -30,7 +30,7 @@ function M.title(self,menu,outcome,v25)
 end
 local function compact(menu,routeEnabled,mainEnabled)
     local R=Theme.layout.runMenu
-    local step=R.help[2]-R.map[2]
+    local step=R.map[2]-R.mainMenu[2]
     local upperGap=(routeEnabled and 0 or step)+(mainEnabled and 0 or step)
     local gap=upperGap+(mainEnabled and 0 or step)
     local function at(name,spec,dy)menu:GetChild(name):SetAnchoredPosition(spec[1],spec[2]+dy)end
@@ -45,7 +45,7 @@ local function compact(menu,routeEnabled,mainEnabled)
     end
 end
 local function showRunOptions(menu,show)
-    for _,name in ipairs({'border','face','catch','title','resume','help','rule','abandon','dismissHint'}) do
+    for _,name in ipairs({'border','face','catch','title','resume','rule','abandon','dismissHint'}) do
         menu:GetChild(name):SetVisible(show)
     end
     menu:GetChild('catch').raycastTarget=show
