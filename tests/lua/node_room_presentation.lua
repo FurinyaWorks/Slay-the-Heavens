@@ -159,9 +159,50 @@ test('forge opens a five-column grid and confirms only from the before-after pre
  assert(not ui.run.deck[1].upgraded and tap('back',3))
  assert(ui.mode=='picker' and not ui.selected and scroll.visible and scroll.scrollProgress==.8)
  assert(tapCard(scroll.items[0],4));assert(tap('confirm',5))
- assert(ui.presentationBusy);ui:update(2)
+ assert(ui.presentationBusy);ui:update(.25)
+ assert(not ui.presentationBusy and ui.testSounds[1]=='forge')
  assert(ui.run.deck[1].upgraded and ui.result and ui.result.choice=='upgrade')
  assert(get('campView').visible and not get('pickerView').visible)
+end)
+test('forge retains the native list and skips unchanged faces during scroll callbacks',function()
+ local ui,get,emit,tap=setup('camp',nil,3)
+ local scroll=get('pickerView/forgeScroll')
+ local refresh,refreshes=scroll.RefreshItems,0
+ function scroll:RefreshItems(...)
+  refreshes=refreshes+1
+  return refresh(self,...)
+ end
+ assert(tap('campView/forge',1) and refreshes==2)
+ local box=scroll.items[0]
+ local face=box:GetChild('description')
+ local sizeDelta,writes=face.SetSizeDelta,0
+ function face:SetSizeDelta(...)
+  writes=writes+1
+  return sizeDelta(self,...)
+ end
+ local old=ui.actions['pickerView/forgeScroll/card1'].handler
+ -- The first two copies look identical, but tapping a recycled control must use its new UID.
+ local event={touchId=2}
+ local hit=box:GetChild('hit')
+ hit.listeners.down(event)
+ for i=1,30 do
+  scroll.scrollProgress=i/30
+  assert(scroll:recycle(0,i%2)==box)
+ end
+ assert(writes==0 and not hit.listeners.click(event) and not ui.selected)
+ scroll:recycle(0,1)
+ assert(tapCard(box,3) and ui.selected==ui.upgradeRows[2].uid)
+ assert(tap('back',4) and scroll.scrollProgress==1 and refreshes==2)
+ assert(not old() and not ui.selected)
+ assert(tap('back',5) and tap('campView/forge',6))
+ assert(scroll.scrollProgress==0 and refreshes==2 and writes==0)
+ ui.run.deck[2].damageBonus=5
+ ui:render()
+ scroll:recycle(0,1)
+ assert(refreshes==3 and writes>0, 'a changed card still needs to be painted')
+ ui:setVisible(false)
+ ui:setVisible(true)
+ assert(refreshes==4 and scroll.itemCount==13)
 end)
 test('a small eligible set is centered without a scroll bar and re-entry starts clean',function()
  local ui,get,_,tap=setup('camp')

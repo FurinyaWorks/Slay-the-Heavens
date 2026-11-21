@@ -163,7 +163,9 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     function ctx.renderNodePage(view,node,result,active)
         local screen,hint=ctx.nodeScreen(view,node,result,active)
         local recallSource,treasureSource
-        if screen ~= 'pickerView' or not ctx.enhancedForge(node) then ctx.campUI:hide() end
+        if screen ~= 'pickerView' or not ctx.enhancedForge(node) then
+            ctx.campUI:hide(active and node.type == 'camp')
+        end
         for _, name in ipairs({ "shopView", "campView", "pickerView", "eventView", "treasureView" }) do ctx.show(ctx.child(name), name == screen) end
         -- Reset shared card faces before the ordinary picker/camp renderer writes them.
         if not (active and MatchUI.isBoard(node.event)) then ctx.resetMatch() end

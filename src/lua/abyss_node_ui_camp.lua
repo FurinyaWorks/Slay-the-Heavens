@@ -15,6 +15,25 @@ local function find(rows, uid)
     for _, row in ipairs(rows) do if row.uid == uid then return row end end
 end
 
+-- Nodes.view returns new snapshots even when the eligible cards are unchanged.
+local function sameCard(a, b, ignoreUid)
+    if a == b then return true end
+    if not a or not b then return false end
+    for key, value in pairs(a) do
+        if b[key] ~= value and not (ignoreUid and key == 'uid') then return false end
+    end
+    for key in pairs(b) do
+        if a[key] == nil then return false end
+    end
+    return true
+end
+
+local function sameRows(a, b)
+    if #a ~= #b then return false end
+    for i, card in ipairs(a) do if not sameCard(card, b[i]) then return false end end
+    return true
+end
+
 local function touch(event)
     return event and event.touchId or false
 end
@@ -25,12 +44,27 @@ function M.new(ctx)
     local fit, scroll = picker:GetChild('forgeFit'), picker:GetChild('forgeScroll')
     local shade, prompt = picker:GetChild('forgeShade'), picker:GetChild('forgePrompt')
     local bases, bindings = {}, {}
-    local session, painting, pending, progress
+    local session, list, actions
+    local function currentSession()
+        return session and session.run == owner.run and session.flow == owner.run.nodeFlow and session.map == owner.map
+    end
+
+    local function show(control, visible)
+        if control.visible ~= visible then ctx.show(control, visible) end
+    end
+
+    local function pose(box, binding, hovered)
+        if binding.hovered == hovered then return end
+        binding.hovered = hovered
+        local scale = hovered and L.hoverScale or 1
+        box:SetLocalScale(scale, scale, 1)
+        binding.glow:SetVisible(hovered)
+    end
 
     local function forget(box, binding)
         Controller.unbind(ctx.options.controller, binding.hit, box.alive == false)
-        CardDisplay.clearNativeArt(box)
-        ctx.artFaces[box], ctx.skinFaces[box], bindings[box] = nil, nil, nil
+        if binding.art then CardDisplay.clearNativeArt(box) end
+        ctx.skinFaces[box], bindings[box] = nil, nil
     end
 
     local function updateBindings()
@@ -41,52 +75,65 @@ function M.new(ctx)
 
     function state.update(_)
         updateBindings()
-        if pending then
-            local refresh = pending
-            pending = nil
+        if actions and list.pending then
+            local refresh = list.pending
+            list.pending = nil
             refresh()
         end
     end
 
     local function showList(grid)
-        ctx.show(fit, grid == fit)
-        ctx.show(scroll, grid == scroll)
-        ctx.show(prompt, grid ~= nil)
+        show(fit, grid == fit)
+        show(scroll, grid == scroll)
+        show(prompt, grid ~= nil)
     end
 
-    function state.hide(_)
-        if not session then return end
-        session, pending, painting, progress = nil, nil, nil, nil
+    local function suspendList()
+        if not actions then return end
+        actions = nil
         showList(nil)
-        ctx.show(shade, false)
         for box, binding in pairs(bindings) do
-            binding.entry = nil
-            CardDisplay.clearNativeArt(box)
-            ctx.artFaces[box], ctx.skinFaces[box] = nil, nil
+            if box.alive ~= false then pose(box, binding, false) end
+            -- Release optional artwork so it can use its native pools in the preview.
+            if binding.art then
+                CardDisplay.clearNativeArt(box)
+                binding.art, binding.face = nil, nil
+            end
+            ctx.skinFaces[box] = nil
+        end
+    end
+
+    function state.hide(_, keepList)
+        if not session then return end
+        suspendList()
+        show(shade, false)
+        if keepList and currentSession() then
+            if list then list.resetScroll = true end
+        else
+            session, list = nil, nil
+            for _, binding in pairs(bindings) do binding.list, binding.face = nil, nil end
         end
     end
 
     local function bindCard(box)
         local hit = box:GetChild('hit')
-        local b = { hit = hit }
+        local b = { hit = hit, glow = box:GetChild('glow'), hovered = false }
         bindings[box] = b
+        local function entry()
+            if actions and b.list == list then return actions[b.index] end
+        end
         local function enabled()
-            return box.alive ~= false and b.entry and b.entry.observe()
+            local action = entry()
+            return box.alive ~= false and action and action.observe()
         end
         local function pick()
-            if enabled() then return b.entry.handler() end
+            if enabled() then return entry().handler() end
             return false, 'stale_action'
-        end
-        local function hover(entered)
-            if not enabled() then return end
-            local scale = entered and L.hoverScale or 1
-            box:SetLocalScale(scale, scale, 1)
-            box:GetChild('glow'):SetVisible(entered)
         end
         local cursor = ctx.cursor
         if cursor and cursor.CursorDown then
             hit:AddCursorEventListener(cursor.CursorDown, function(event)
-                b.observed, b.press, b.touch, b.released = true, b.entry, touch(event), false
+                b.observed, b.press, b.touch, b.released = true, entry(), touch(event), false
                 b.x, b.y = ctx.point(event)
             end)
         end
@@ -101,16 +148,18 @@ function M.new(ctx)
             end)
         end
         if cursor and cursor.CursorEnter and cursor.CursorExit then
-            hit:AddCursorEventListener(cursor.CursorEnter, function() hover(true) end)
+            hit:AddCursorEventListener(cursor.CursorEnter, function()
+                if enabled() then pose(box, b, true) end
+            end)
             hit:AddCursorEventListener(cursor.CursorExit, function(event)
                 if b.touch == touch(event) then b.press = nil end
-                hover(false)
+                pose(box, b, false)
             end)
         end
         hit:AddCursorEventListener(ctx.clickEvent, function(event)
             local id = touch(event)
             if b.press and id ~= b.touch and (id or not b.released) then return false end
-            local samePress = b.press and b.press == b.entry
+            local samePress = b.press and b.press == entry()
             local x, y = ctx.point(event)
             local limit = Theme.layout.cardDrag.threshold
             local moved = b.x and x and (x - b.x)^2 + (y - b.y)^2 >= limit^2
@@ -127,8 +176,9 @@ function M.new(ctx)
         local key = 'pickerView/forgeScroll/card' .. index
         local source = session
         local function observe()
-            return painting == entries and source.run == owner.run and source.flow == owner.run.nodeFlow
-                and source.map == owner.map and owner.picker == 'upgrade' and not source.flow.complete and not owner.selected
+            return actions == entries and source.run == owner.run and source.flow == owner.run.nodeFlow
+                and source.map == owner.map and owner.run.phase == 'node' and not source.flow.complete
+                and owner.picker == 'upgrade' and not owner.selected
                 and grid.visible and picker.visible and owner.visible and not owner.busy and not owner.presentationBusy
         end
         ctx.action(key, true, function()
@@ -140,56 +190,87 @@ function M.new(ctx)
         return owner.actions[key]
     end
 
-    local function refreshGrid(grid, rows)
-        local entries = {}
-        for i, card in ipairs(rows) do entries[i] = actionFor(grid, entries, card, i) end
+    local function paintFace(box, binding, card)
+        local display = owner.presentation[card.cardId]
+        local art = display and display.nativeArt
+        if binding.display == display and binding.art == art and sameCard(binding.face, card, not art) then
+            ctx.skinFaces[box] = true
+            return
+        end
+        ctx.fillCard(box, card.cardId, card.upgraded, { instance = card })
+        -- These recycled cells are owned by the list, outside the shared node render pass.
+        ctx.artFaces[box] = nil
+        binding.face, binding.display, binding.art = card, display, owner.visible and art or nil
+    end
+
+    local function refreshGrid(source)
+        local grid, rows = source.grid, source.rows
         local function paint(box, index)
-            local b = bindings[box] or bindCard(box)
-            b.entry = entries[index]
+            local binding = bindings[box] or bindCard(box)
             local card = rows[index]
-            ctx.show(box, card ~= nil)
-            if not card then return end
-            ctx.fillCard(box, card.cardId, card.upgraded, { instance = card })
-            box:SetLocalScale(1, 1, 1)
+            if binding.list ~= source or binding.index ~= index then
+                binding.list, binding.index, binding.press = source, index, nil
+                pose(box, binding, false)
+                show(box, card ~= nil)
+            end
+            if card and actions then paintFace(box, binding, card) end
         end
         local function refresh()
-            if painting ~= entries then return end
+            if list ~= source or not currentSession() then return end
             grid:RefreshItems(#rows, function(box, index)
-                if painting == entries then paint(box, index - bases[grid] + 1) end
+                if list == source and currentSession() then paint(box, index - bases[grid] + 1) end
             end)
-            grid.scrollProgress = progress or 0
+            if grid == scroll then scroll.scrollProgress = source.progress end
+            source.resetScroll = false
         end
-        painting, pending = entries, nil
         if #rows == 0 then grid:RefreshItems(0, function() end); return end
         if bases[grid] then refresh(); return end
-        -- Like the deck browser, probe one item before refreshing the whole list.
+        -- Match the native deck browser's zero-/one-based index probe.
         grid:RefreshItems(1, function(box, index)
-            if painting ~= entries then return end
-            bases[grid], pending = index, refresh
+            if list ~= source or not currentSession() then return end
+            bases[grid], source.pending = index, refresh
             paint(box, 1)
         end)
         state:update()
     end
 
     local function renderList(rows)
-        local w, h = L.viewport[3], L.viewport[4]
-        local _, cardHeight = fit:GetItemSize()
-        local _, gap = fit:GetItemSpacing()
-        local top, bottom = fit:GetPadding()
-        local rowCount = math.ceil(#rows / 5)
-        local height = top + bottom + rowCount * cardHeight + math.max(0, rowCount - 1) * gap
-        local grid = height > h and scroll or fit
-        if grid == fit then
-            local cardWidth = fit:GetItemSize()
-            local spacing = fit:GetItemSpacing()
-            local _, _, left, right = fit:GetPadding()
-            local columns = math.min(#rows, 5)
-            local width = left + right + columns * cardWidth + math.max(0, columns - 1) * spacing
-            fit:SetSizeDelta(math.min(w, width), height)
+        local previous = list
+        if not list or not sameRows(list.rows, rows) then
+            suspendList()
+            local w, h = L.viewport[3], L.viewport[4]
+            local cardWidth, cardHeight = fit:GetItemSize()
+            local spacing, gap = fit:GetItemSpacing()
+            local top, bottom, left, right = fit:GetPadding()
+            local rowCount = math.ceil(#rows / 5)
+            local height = top + bottom + rowCount * cardHeight + math.max(0, rowCount - 1) * gap
+            local grid = height > h and scroll or fit
+            if grid == fit then
+                local columns = math.min(#rows, 5)
+                local width = left + right + columns * cardWidth + math.max(0, columns - 1) * spacing
+                fit:SetSizeDelta(math.min(w, width), height)
+            end
+            list = { grid = grid, rows = rows, progress = previous and not previous.resetScroll and previous.progress or 0 }
         end
-        showList(grid)
-        prompt:GetChild('label').text = #rows > 0 and '选择一张卡牌升级' or '没有可升级的卡牌'
-        refreshGrid(grid, rows)
+        local wasActive = actions ~= nil
+        actions = {}
+        for i, card in ipairs(list.rows) do actions[i] = actionFor(list.grid, actions, card, i) end
+        showList(list.grid)
+        local label = prompt:GetChild('label')
+        local text = #rows > 0 and '选择一张卡牌升级' or '没有可升级的卡牌'
+        if label.text ~= text then label.text = text end
+        if list ~= previous then
+            refreshGrid(list)
+        else
+            if list.resetScroll then list.resetScroll, list.progress = false, 0 end
+            if not wasActive then
+                if list.grid == scroll and scroll.scrollProgress ~= list.progress then scroll.scrollProgress = list.progress end
+                for box, binding in pairs(bindings) do
+                    local card = binding.list == list and list.rows[binding.index]
+                    if card and box.alive ~= false then paintFace(box, binding, card) end
+                end
+            end
+        end
     end
 
     local function preview(selected)
@@ -207,22 +288,24 @@ function M.new(ctx)
     end
 
     function state:render(node)
-        if not session or session.run ~= owner.run or session.flow ~= owner.run.nodeFlow or session.map ~= owner.map then
+        if not currentSession() then
             self:hide()
             session = { run = owner.run, flow = owner.run.nodeFlow, map = owner.map }
         end
-        if scroll.visible then progress = scroll.scrollProgress end
+        if list and list.grid == scroll and scroll.visible then list.progress = scroll.scrollProgress or 0 end
         owner.upgradeRows, owner.pickPage, owner.pageCount = node.upgradeCards, 1, 1
         local selected = find(owner.upgradeRows, owner.selected)
         if not selected then owner.selected = nil end
-        for i = 1, 6 do ctx.show(picker:GetChild('card' .. i), false) end
-        for _, key in ipairs({ 'before', 'after', 'arrow' }) do ctx.show(picker:GetChild(key), selected ~= nil) end
-        for _, key in ipairs({ 'target', 'forgeGrid', 'previous', 'next' }) do ctx.show(picker:GetChild(key), false) end
-        for _, key in ipairs({ 'label', 'hint', 'page', 'empty' }) do picker:GetChild(key).text = '' end
-        ctx.show(shade, true)
+        for i = 1, 6 do show(picker:GetChild('card' .. i), false) end
+        for _, key in ipairs({ 'before', 'after', 'arrow' }) do show(picker:GetChild(key), selected ~= nil) end
+        for _, key in ipairs({ 'target', 'forgeGrid', 'previous', 'next' }) do show(picker:GetChild(key), false) end
+        for _, key in ipairs({ 'label', 'hint', 'page', 'empty' }) do
+            local control = picker:GetChild(key)
+            if control.text ~= '' then control.text = '' end
+        end
+        show(shade, true)
         if selected then
-            pending, painting = nil, nil
-            showList(nil)
+            suspendList()
             preview(selected)
         else
             renderList(owner.upgradeRows)
