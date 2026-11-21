@@ -45,8 +45,10 @@ local function binding(c,key,box,item,index,linked,boss,bind)
         function()return '已领取「'..label(c,item)..'」'end,choice,true,item)
 end
 local function renderPicture(c,box,item)
-    c.picture(box:GetChild('icon'),item.kind=='gold' and Theme.icon.gold or Theme.icon.relic[item.id] or Theme.icon.node.treasure)
-    if c.relicPicture then c.relicPicture(box:GetChild('icon'),item.kind=='relic' and item.id or nil,48)end
+    local icon=box:GetChild('icon')
+    local fallback=item.kind=='gold' and Theme.icon.gold or Theme.icon.node.treasure
+    if c.relicPicture then c.relicPicture(icon,item.kind=='relic' and item.id or nil,48,fallback)
+    else c.picture(icon,Theme.icon.relic[item.id] or fallback)end
 end
 local function renderRow(c,panel,item,index,y,opened,linked,boss,bind,items)
         local key='treasureView/rewardItem'..index

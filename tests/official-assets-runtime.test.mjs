@@ -409,9 +409,14 @@ local function slotFor(id)
 end
 local function targetCorners(expected)
  for _,box in ipairs(boxes)do
-  for _,x in ipairs({-1,1})do for _,y in ipairs({-1,1})do for _,axis in ipairs({'H','V'})do
-   assert(box:GetChild('target'..axis..x..'_'..y).visible==expected,'AoE/self target corner')
-  end end end
+  local half=box:GetChild('portrait').sizeDeltaX/2
+  for _,x in ipairs({-1,1})do for _,y in ipairs({-1,1})do
+   local horizontal=box:GetChild('targetH'..x..'_'..y)
+   local vertical=box:GetChild('targetV'..x..'_'..y)
+   assert(horizontal.visible==expected and vertical.visible==expected,'AoE/self target corner')
+   assert(horizontal.x==x*(half-horizontal.sizeDeltaX/2) and horizontal.y==y*half,'horizontal marker must extend inward')
+   assert(vertical.x==x*half and vertical.y==y*(half-vertical.sizeDeltaY/2),'vertical marker must extend inward')
+  end end
   assert(not box:GetChild('damagePreview').visible,'future HP label must stay absent')
  end
 end
@@ -501,7 +506,7 @@ for _,case in ipairs({
 end
 local costless=C.copy(definition);costless.cost=-2
 Skin.apply(card,costless,paint,{surfaceScope='battle'})
-local costMaterial=sharedFace(card).front:GetChild('costMaterial')
+local costMaterial=card:GetChild('stsReferenceCost'):GetChild('costMaterial')
 assert(not costMaterial.visible and not number.visible,'costless card keeps a coin')
 u:render();assert(costMaterial.visible and number.visible,'live shared cost material not restored')
 colour(number.fontColor,battleInk,'battle neutral ink restored after semantic cost changes')
@@ -559,6 +564,31 @@ assert(cr:GetChild('mapPanel'):GetChild('previewBack'):GetChild('label').text=='
 assert(ch:closeExit()and not ch.routeOpen and ch.mode=='battle')
 assert(cr:GetChild('mapPanel'):GetChild('previewBack'):GetChild('label').text~='返回战斗')
 `, 'OFFICIAL_RUNTIME_COMBAT_PASS');
+});
+
+test('official map return paints four states through the existing battle route',t=>{
+ runOfficial(t,`
+local host,_,panel,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local route=panel:GetChild('topBar'):GetChild('battleRoute'):GetChild('hit')
+route.listeners.down({touchId=1});route.listeners.up({touchId=1})
+assert(route.click({touchId=1})and host.routeOpen)
+local back=root:GetChild('mapPanel'):GetChild('previewBack')
+local label,hit,face=back:GetChild('label'),back:GetChild('hit'),assert(back:GetChild('v25Face'))
+local function state(expected)
+ for _,name in ipairs({'normal','hover','pressed','disabled'})do
+  assert(face:GetChild(name).visible==(name==expected),'map return state '..name)
+ end
+end
+assert(label.text=='返回战斗');state('normal')
+hit.listeners.enter({});state('hover')
+hit.listeners.down({touchId=703});state('pressed')
+hit.listeners.endDrag({touchId=703});state('normal')
+assert(not hit.click({touchId=703})and host.routeOpen)
+hit.listeners.down({touchId=704});hit.listeners.up({touchId=704})
+assert(hit.click({touchId=704})and not host.routeOpen and host.mode=='battle')
+assert(label.text~='返回战斗');state('disabled')
+print('OFFICIAL_MAP_RETURN_STATES_PASS')
+`, 'OFFICIAL_MAP_RETURN_STATES_PASS');
 });
 
 
@@ -636,10 +666,10 @@ assert(coverRuns==1 and not cover.visible and host.run.phase=='map' and map.visi
 
 test('official card confirmation keeps the battlefield visible while selecting and playing Defend',t=>{
  runOfficial(t,`
-local h,u,p,_,tap,drain=H.setup({'defend','strike'},{'spike_slime_s','acid_slime_m'})
+local h,u,p,event,tap,drain=H.setup({'defend','strike'},{'spike_slime_s','acid_slime_m'})
 local b=h.run.combat
 local area=p:GetChild('playArea')
-local line,label,hit=area:GetChild('line'),area:GetChild('label'),area:GetChild('hit')
+local label,hit=area:GetChild('label'),area:GetChild('hit')
 assert(not area.visible,'confirmation area must start hidden')
 local slots={}
 for i,card in ipairs(b.hand)do slots[card.cardId]=i end
@@ -647,9 +677,11 @@ local defend,strike='card'..slots.defend,'card'..slots.strike
 local uid=b.hand[slots.defend].uid
 local before=C.copy(b)
 tap(defend,71)
-assert(u.selected==uid and area.visible and line.visible,'Defend must show the confirmation line')
-assert(not area:GetChild('officialButtonBacking') and #area:GetChildren()==3,
- 'visible confirmation area must contain only its line, caption and input surface')
+assert(u.selected==uid and area.visible,'Defend must enable the field click target')
+assert(not area:GetChild('line') and not area:GetChild('officialButtonBacking') and #area:GetChildren()==2,
+ 'selecting a card must not paint a line or a backing across the battlefield')
+assert(p:GetChild('dragLayer'):GetChild('line').kind=='container',
+ 'the drag boundary anchor must have no visible surface')
 assert(label.text=='' and hit.kind=='cursorArea' and hit.raycastTarget,
  'Defend must retain the same transparent confirmation target')
 assert(hit.sizeDeltaX==area.sizeDeltaX and hit.sizeDeltaY==area.sizeDeltaY,'confirmation target must still cover the field')
@@ -657,10 +689,22 @@ unchanged(b,before,'selection played the card')
 tap(defend,72)
 assert(not u.selected and not area.visible,'tapping the same card must cancel confirmation')
 tap(strike,73)
-assert(u.selected and not area.visible,'targeted attacks must keep their enemy-only confirmation')
-tap(strike,74)
+assert(u.selected and area.visible and hit.sizeDeltaY==720,
+ 'a tapped attack must receive empty clicks across the battlefield')
+local function field(kind,touch,x,y) event('playArea',kind,touch,x,y) end
+field('down',74,0,240);field('up',74,0,240);field('click',75,0,240)
+assert(u.selected,'a foreign tap must not cancel the selected attack')
+field('click',74,0,240)
+assert(not u.selected and not area.visible,'tapping empty ground must cancel the selected attack')
 unchanged(b,before,'cancelling selection changed combat')
+event(strike,'down',77);event(strike,'drag',77,0,50);event('dragLayer','up',77,0,50)
+assert(u.carry and u.carry.aiming and not area.visible,'dragging into aim must retain desktop targeting')
+field('down',78,0,50);field('up',78,0,50);field('click',78,0,50)
+assert(u.carry and u.selected,'empty clicks must preserve established desktop aim')
+assert(u:controllerBack() and not u.selected and not u.carry,'explicit cancel must clear established aim')
+unchanged(b,before,'aim cancellation changed combat')
 tap(defend,75);tap('playArea',76);drain()
+assert(hit.sizeDeltaX==1200 and hit.sizeDeltaY==272,'restoring field confirmation must restore its original limits')
 assert(not area.visible and not u.selected,'played card left confirmation visible')
 assert(b.energy==before.energy-1 and b.player.block==before.player.block+5 and #b.hand==#before.hand-1,
  'the transparent field must still play Defend exactly once')
@@ -1217,7 +1261,7 @@ end
             local face=grid.items[0]:GetChild('face')
             assert(face.y==0 and not grid.items[0]:GetChild('uid').visible)
             local shared=sharedFace(face)
-            assert(shared.front.visible~=false and shared.back.visible~=false and shared.front:GetChild('costMaterial').visible)
+            assert(shared.front.visible~=false and shared.back.visible~=false and face:GetChild('stsReferenceCost'):GetChild('costMaterial').visible)
             for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
                 assert(not face:GetChild(name).visible,'read-only piles cannot flash ready/cost halos')
             end
@@ -1773,6 +1817,8 @@ end
 local function tap(hit,id)
  emit(hit,'down',id);emit(hit,'up',id);return emit(hit,'click',id)
 end
+assert(tap(page:GetChild('merchant'):GetChild('talk'):GetChild('hit'),809))
+host.nodeUI:update(.31)
 local a=assert(shopView:GetChild('relic1')):GetChild('hit')
 local b=assert(shopView:GetChild('relic2')):GetChild('hit')
 local route=assert(page:GetChild('runRoute')):GetChild('hit')
@@ -1807,26 +1853,26 @@ invariant('fresh inspection')
 });
 
 test('M05 exact source and discovery custody reject drift before older adapters',async()=>{
- const {discoverJs}=await import('../scripts/ci-shards.mjs');
- const {m05CurrentDiscovery,beforeM05ShopCiSource}=await import('./helpers/m05-shop-ci-source.mjs');
+ const {developReleaseBackflowRead}=await import('./helpers/develop-release-backflow-predecessors.mjs');
+ const {m05CurrentDiscovery,beforeM05ShopCiSource,m05FrozenInventory}=await import('./helpers/m05-shop-ci-source.mjs');
  const {beforeV2UiEvidence}=await import('./helpers/v2-p1-ci-source.mjs');
  const {beforeAuthenticatedM05ShopSource,m05ShopSourcePaths}=await import('./helpers/m05-shop-source.mjs');
- const raw=path=>readFileSync(path,'utf8');
+ const raw=path=>developReleaseBackflowRead('e095a08a5d4b544ee9629b0ea24f2d27cdb9f8a6',path);
  for(const [kind,list,added]of [
-  ['js',discoverJs(),'tests/shop-dismiss.test.mjs'],
-  ['lua',readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n),'tests/lua/shop_dismiss.lua'],
+  ['js',m05FrozenInventory('js'),'tests/shop-dismiss.test.mjs'],
+  ['lua',m05FrozenInventory('lua'),'tests/lua/shop_dismiss.lua'],
  ]){
-  const left=m05CurrentDiscovery(list,kind);
+  const left=m05CurrentDiscovery(list,kind,raw);
   assert.deepEqual(left,list.filter(path=>path!==added));
   for(const invalid of [left,[...list,added],list.slice(1),[...list,'foreign']])
-   assert.throws(()=>m05CurrentDiscovery(invalid,kind),/complete M05 raw/);
+   assert.throws(()=>m05CurrentDiscovery(invalid,kind,raw),/complete M05 raw/);
   for(const invalid of [null,raw(added)+'\n',raw(added).replaceAll('\n','\r\r\n')])
    assert.throws(()=>m05CurrentDiscovery(list,kind,()=>invalid),/fresh M05 added/);
  }
  const path='tests/official-assets-runtime.test.mjs',source=raw(path),prior=beforeM05ShopCiSource(path,source);
  assert.notEqual(source,prior);
  assert.notEqual(beforeV2UiEvidence(path,prior),prior,'exact PC13 predecessor hop must still run');
- assert.equal(beforeV2UiEvidence(path,source),beforeV2UiEvidence(path,prior));
+ assert.equal(beforeV2UiEvidence(path,beforeM05ShopCiSource(path,source)),beforeV2UiEvidence(path,prior));
  assert.equal(beforeV2UiEvidence(path,source+'\n'),source+'\n');
  for(const owner of m05ShopSourcePaths){
   const source=raw(owner),calls=[];
@@ -1839,4 +1885,24 @@ test('M05 exact source and discovery custody reject drift before older adapters'
   assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>source+'\n'),/linked owner identity/);
   assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>{throw Error('unavailable')}),/linked owner missing/);
  }
+});
+
+test('recording sort triangles remain visible and reverse across clicks, mode changes and reopening',t=>{
+ runOfficial(t,officialDeckBrowserSetup+`
+host.run.deck={instance(1,'defend'),instance(2,'bash')}
+assert(deck:open(host.run));deck:update(0)
+for _,mode in ipairs({'original','type','cost','name','cost'})do
+ for i=1,4 do
+  assert(tool(mode));deck:update(0)
+  local box=panel:GetChild('pileTools'):GetChild(mode)
+  local arrow=assert(box:GetChild('direction'),'missing font-independent triangle')
+  assert(arrow.visible~=false and arrow.localRotationZ==(deck.sortAscending and 0 or 180))
+  assert(not box:GetChild('label').text:find('▴') and not box:GetChild('label').text:find('▾'))
+ end
+end
+local before=C.copy(host.run)
+assert(deck:close());assert(deck:open(host.run));deck:update(0)
+assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('direction').localRotationZ==(deck.sortAscending and 0 or 180))
+unchanged(host.run,before,'sorting changed run')
+`,'RECORDING_SORT_TRIANGLE_PASS');
 });

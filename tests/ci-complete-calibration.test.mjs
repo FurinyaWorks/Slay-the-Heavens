@@ -1,4 +1,3 @@
-import {m05CurrentDiscovery} from './helpers/m05-shop-ci-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
@@ -1974,7 +1973,7 @@ test('run HUD continuation authenticates complete current sources and raw Full i
 
 test('menu current complete JS and Lua workload retains Full budgets and every added Lua byte',t=>{
  const js=liveDiscoverJs(),lua=liveCloseoutLua();
- assertCurrentJsInventory(m05CurrentDiscovery(js,'js'),integratedCiProof.inventory);
+ assertCurrentJsInventory(js,integratedCiProof.inventory);
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);
  for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){
   assert.equal(liveDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source);
@@ -2004,8 +2003,7 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
 test('Release bootstrap raw Full retains complete discovery costs and physical guards while forecasts stay diagnostic',t=>{
  assertReleaseBootstrapCiCurrent(rawBootstrapReadFileSync);
  const js=liveDiscoverJs(),lua=readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n).sort();
- assertReleaseBootstrapRawInventory(m05CurrentDiscovery(js,'js'),'js');
- assertReleaseBootstrapRawInventory(m05CurrentDiscovery(lua,'lua'),'lua');
+ assertReleaseBootstrapRawInventory(js,'js');assertReleaseBootstrapRawInventory(lua,'lua');
  assert.equal(rawCurrentTimings.unknownJsMs,10000);assert.equal(rawCurrentTimings.unknownLuaMs,10000);
  const physical=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
  for(const path of ['.github/workflows/quality.yml','.github/workflows/licenses.yml']){

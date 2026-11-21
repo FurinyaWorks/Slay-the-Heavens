@@ -6,8 +6,9 @@ import {tmpdir} from 'node:os';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {buildUI,assertNativeUiCapacity} from '../scripts/build-ui.mjs';
 import {enemyUnitTemplate,enemyPowerTemplate,battleLayout} from '../scripts/ui-layout.mjs';
-import {prepareMonsterArt,monsterActorTemplate,monsterActorInventory,monsterActorTemplateName,monsterPowerTemplateName,monsterActorBindingModule,bindMonsterActorTemplates} from '../scripts/monster-art.mjs';
+import {prepareMonsterArt,monsterActorTemplate,monsterActorInventory,monsterActorTemplateName,monsterPowerTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorTiers} from '../scripts/monster-art.mjs';
 import {buildNativeCandidate,generatedRuntimeModules,sourceInputs} from '../scripts/build-native-candidate.mjs';
+import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from '../scripts/refined-release-monsters.mjs';
 import {candidateScriptFiles} from '../scripts/native-candidate-scripts.mjs';
 import {artBuildOptionsFromReceipt} from '../scripts/art-features.mjs';
 import {compareNativeCandidate} from '../scripts/native-candidate-audit.mjs';
@@ -112,14 +113,14 @@ test('real generated layout uses an empty actor layer and one complete hidden ca
  const noArt=monsterActorTemplate(null);assert.equal(descendants(noArt).length,35);assert.equal(noArt.visible,false);
  assert.equal(descendants(battleLayout()).filter(n=>n.name==='actorLayer').length,1);
 });
-function fixture(t,{invalid=false,invalidPower=false}={}) {
+function fixture(t,{invalid=false,invalidPower=false,aliasedTier=false}={}) {
  mkdirSync('build',{recursive:true});const dir=mkdtempSync(join(process.cwd(),'build/monster-actor-candidate-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  const baseMap=join(dir,'base.gil');writeFileSync(baseMap,'offline MCP test fixture, not an official GIL');
  const calls=[],sources=new Map();let index=1000;
  const indices=new Map();
  const client={async readResource(){return {contents:[]}},async close(){},async callTool({name,arguments:args}){
   calls.push({name,args});const data={mapPath:args.mapPath};
-  if(name==='scene_add_client_template'){data.templateIndex=((invalid&&args.template.name===monsterActorTemplateName)||(invalidPower&&args.template.name===monsterPowerTemplateName))?0:++index;indices.set(args.template.name,data.templateIndex);}
+  if(name==='scene_add_client_template'){data.templateIndex=((invalid&&args.template.name===monsterActorTemplateName)||(invalidPower&&args.template.name===monsterPowerTemplateName))?0:++index;if(aliasedTier&&args.template.name==='AbyssMonsterActor115')data.templateIndex=indices.get('AbyssMonsterActor96');indices.set(args.template.name,data.templateIndex);}
   if(name==='scene_set_client_script')sources.set(args.name,readFileSync(args.sourceFile,'utf8'));
   if(name==='scene_list_client_scripts')data.scripts=[...sources].map(([name,source])=>({name,file:name+'.lua',source}));
   if(name==='inspect_map')data.graphs=[{name:'_GSTS_ABYSS_SETTLEMENT',id:23,type:20000,writable:true}];
@@ -128,7 +129,7 @@ function fixture(t,{invalid=false,invalidPower=false}={}) {
   if(name==='scene_check_client')Object.assign(data,{ok:true,errors:0,warnings:0,checked:[...sources.keys()]});
   return {structuredContent:data};
  }};
- return {calls,sources,indices,run:()=>buildNativeCandidate({baseMap,output:join(dir,'out'),client,artFeatures:{monsters:true}})};
+ return {calls,sources,indices,run:(options={artFeatures:{monsters:true}})=>buildNativeCandidate({baseMap,output:join(dir,'out'),client,...options})};
 }
 test('candidate registers the complete actor and binds exact returned actor/group indices before payload copy',async t=>{
  const f=fixture(t),receipt=await f.run(),actor=f.indices.get(monsterActorTemplateName),group=f.indices.get('AbyssReadyCardGroup'),power=f.indices.get(monsterPowerTemplateName);
@@ -141,6 +142,31 @@ test('candidate registers the complete actor and binds exact returned actor/grou
  assert(receipt.productionManifest.modules.some(m=>m.name===monsterActorBindingModule&&m.sha256===receipt.moduleDigests[monsterActorBindingModule]));
  assert.equal(receipt.statuses.officialImport,'not_run');assert.equal(receipt.statuses.playtest,'not_run');
 });
+test('refined release packages every definition using its actual distinct candidate-local tier index',async t=>{
+ const f=fixture(t),receipt=await f.run({officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true});
+ const compiled=prepareRefinedReleaseMonsterArt(JSON.parse(readFileSync(refinedReleaseMonsterRegistry,'utf8')));
+ const names=monsterActorTiers(compiled).templateByDefinition;
+ const mapping=Object.fromEntries(Object.entries(names).map(([def,name])=>[def,f.indices.get(name)]));
+ assert.equal(Object.keys(mapping).length,42);
+ assert.deepEqual(receipt.monsterActors.templateIndexByDefinition,mapping);
+ assert.deepEqual(Object.values(receipt.monsterActors.tiers).map(t=>t.shapesPerActor),[41,96,115]);
+ assert.equal(receipt.nativeMonsterArt.assetCount,42);
+ assert.equal(receipt.nativeMonsterArt.capacity,115);
+ assert.equal(artBuildOptionsFromReceipt(receipt).refinedReleaseMonsterArt,true);
+ assert(receipt.inputs.some(row=>row.path===refinedReleaseMonsterRegistry));
+ assert(!receipt.inputs.some(row=>row.path==='data/presentation/native-monster-art.json'));
+ const binding=f.sources.get(monsterActorBindingModule);
+ for(const [id,index] of Object.entries(mapping))assert(binding.includes('["'+id+'"]='+index));
+ assert.equal(receipt.statuses.staticCheck,'pass');
+ assert.equal(receipt.statuses.officialImport,'not_run');
+});
+
+test('refined release rejects aliased returned tier IDs before installing any script',async t=>{
+ const f=fixture(t,{aliasedTier:true});
+ await assert.rejects(f.run({officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true}),/distinct candidate-local indices/);
+ assert(!f.calls.some(c=>c.name==='scene_set_client_script'));
+});
+
 test('invalid actor binding rejects before installing any script and refuses alias/malformed indices',async t=>{
  const f=fixture(t,{invalid:true});await assert.rejects(f.run(),/monster actor template index/);assert(!f.calls.some(c=>c.name==='scene_set_client_script'));
  for(const value of [undefined,null,0,-1,1.5,'123',Infinity,Number.MAX_SAFE_INTEGER+1])assert.throws(()=>bindMonsterActorTemplates('must-not-write',{actor:{templateIndex:value},group:{templateIndex:50},power:{templateIndex:51}}));

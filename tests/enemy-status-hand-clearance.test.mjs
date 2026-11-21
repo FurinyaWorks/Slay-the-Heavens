@@ -4,6 +4,7 @@ import {mkdtempSync,mkdirSync,readdirSync,readFileSync,rmSync,writeFileSync} fro
 import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
+import './helpers/mobile-composite-intent.cases.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString} from '../scripts/build-lua-data.mjs';
 const require=createRequire(import.meta.url);

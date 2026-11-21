@@ -7,6 +7,8 @@ import {createHash} from 'node:crypto';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.mjs';
 import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
+import {historicalReleaseBuildInput} from './fork-preflight-source.mjs';
+import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const reviewedContracts=Object.freeze({
  'tests/sts-character-reference.test.mjs':5,
@@ -28,12 +30,23 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
  const started=Date.now(),remaining=()=>{const ms=60000-(Date.now()-started);assert(ms>0,'original selection replay deadline');return ms;};
  try{
   const paths=execFileSync('git',['ls-files','scripts','data','config','tools','tests/helpers'],{encoding:'utf8'}).trim().split('\n');
-  for(const path of paths){assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});copyFileSync(path,target);}
+  for(const path of paths){
+   assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
+   const predecessor=historicalReleaseBuildInput(path,readFileSync);
+   if(predecessor===undefined)copyFileSync(path,target);
+   else writeFileSync(target,predecessor);
+  }
   cpSync(join(root,'tests/fixtures'),join(directory,'tests/fixtures'),{recursive:true});
   for(const [path,row]of Object.entries(integratedCiProof.files)){
    if(!row.views.release||path.startsWith('src/'))continue;
    const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,row.views.release.source);
   }
+  // This retired layout is absent from live Git discovery, but the exact
+  // archived exit layout still imports it. Restore only its frozen runtime dependency.
+  const controls='scripts/controls-guide-layout.mjs';
+  const savedControls=stsStylePriorRuntime.files[controls];
+  assert.equal(hash(savedControls.source),'0dd26ffbe94d487478a961c1fd90c8ff348a3615347102a1478f3f7fa56a444f');
+  writeFileSync(join(directory,controls),savedControls.source);
   for(const [path,row]of Object.entries(sourceEpoch.proof.targets.releaseReviewed.files)){
    if(!row)continue;const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,row.source);
   }

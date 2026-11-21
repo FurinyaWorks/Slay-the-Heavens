@@ -1,10 +1,8 @@
-import {beforeTinyHouseIntegratedSource} from '../tiny-house-integrated-source.mjs';
-import {beforeM05ShopSource,authorizeM05ShopSource} from '../m05-shop-source.mjs';
 // Proposal only. No authorization cache; callers retain the original epoch proofs.
 import assert from 'node:assert/strict';
 import {projectTinyHouseUiSource,authorizeTinyHouseUiSource} from '../tiny-house-ui-source.mjs';
 import {beforePc13RewardCover,authorizePc13RewardCover} from '../pc13-reward-cover-source.mjs';
-import {beforeReleaseGuideSource,authorizeReleaseGuideSources} from '../release-guide-backflow-source.mjs';
+import {beforeReleaseUiRestore,authorizeReleaseUiRestore} from '../release-ui-restore-source.mjs';
 import {projectPotionPointerSource,authorizePotionPointerSource} from '../potion-pointer-source.mjs';
 import {projectLumineSource,authorizeLumineSource} from '../lumine-portrait-source.mjs';
 import {projectV2UiHudSource,authorizeV2UiHudSource} from '../v2-ui-hud-source.mjs';
@@ -119,42 +117,40 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
-  const rawInput=source,guidePrior=beforeReleaseGuideSource(path,source);
-  source=beforeTinyHouseIntegratedSource(path,guidePrior);
-  const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,source));
+  const latestInput=source,rawInput=beforeReleaseUiRestore(path,source);
+  const inputSource=beforePc13RewardCover(path,rawInput);
   source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
   source=projectTinyHouseUiSource(path,projectV2UiHudSource(path,projectPotionPointerSource(path,source,current),current),current);
   source=projectLumineSource(path,projectPotionTextSource(path,projectSelectorSource(path,projectFatalBgmSource(path,source,current),current),current),current);
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
+  if(typeof source!=='string'||!current||!before||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return latestInput;
+  if(current.sha256===before.sha256){
+   if(rawInput!==latestInput)authorizeReleaseUiRestore([[path,latestInput]],rawReader(readSource));
+   return rawInput;
+  }
   assert.equal(typeof readSource,'function','linked owner reader');readSource=rawReader(readSource);
-  const samples=[],rawSamples=[];
-  let guideProjected=guidePrior!==rawInput;
+  const samples=[],rawSamples=[],latestSamples=[[path,latestInput]];
   for(const owner of proof.owners){
    let actual;try{actual=readSource(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-   const prior=beforeReleaseGuideSource(owner,actual);
-   guideProjected ||= prior!==actual;
-   actual=beforeTinyHouseIntegratedSource(owner,prior);
-   const binding=proof.current[owner];rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,beforeM05ShopSource(owner,actual));samples.push([owner,actual,binding]);
+   const binding=proof.current[owner];latestSamples.push([owner,actual]);actual=beforeReleaseUiRestore(owner,actual);
+   rawSamples.push([owner,actual]);actual=beforePc13RewardCover(owner,actual);samples.push([owner,actual,binding]);
    actual=projectTinyHouseUiSource(owner,projectV2UiHudSource(owner,projectPotionPointerSource(owner,actual,binding),binding),binding);
    actual=projectLumineSource(owner,projectPotionTextSource(owner,projectSelectorSource(owner,projectFatalBgmSource(owner,actual,binding),binding),binding),binding);
    assert(binding===null?actual===null||actual===undefined:typeof actual==='string'&&sourceHash(actual)===binding.sha256,'combined linked owner identity: '+owner);
   }
-  if(guideProjected)authorizeReleaseGuideSources(readSource);
-  const readGuidePrior=owner=>beforeTinyHouseIntegratedSource(owner,beforeReleaseGuideSource(owner,readSource(owner)));
-  const readM05Prior=owner=>beforeM05ShopSource(owner,readGuidePrior(owner));
-  const readPrior=owner=>beforePc13RewardCover(owner,readM05Prior(owner));
+  const readReleasePrior=owner=>beforeReleaseUiRestore(owner,readSource(owner));
+  const readPrior=owner=>beforePc13RewardCover(owner,readReleasePrior(owner));
   authorizeFatalBgmSource(path,inputSource,current,samples,readPrior);
   authorizeSelectorSource(path,inputSource,current,samples,readPrior);
   authorizePotionTextSource(path,inputSource,current,samples,readPrior);
   authorizeLumineSource(path,inputSource,current,samples,readPrior);
   authorizeV2UiHudSource(path,inputSource,current,samples,readPrior);
   authorizePotionPointerSource(path,inputSource,current,samples,readPrior);
-  authorizeM05ShopSource(rawSamples,readGuidePrior);
-  authorizePc13RewardCover(rawSamples,readM05Prior);
+  authorizePc13RewardCover(rawSamples,readReleasePrior);
   authorizeTinyHouseUiSource(path,inputSource,current,samples,readPrior);
+  authorizeReleaseUiRestore(latestSamples,readSource);
   return before.source;
  }
  function combinedReader(readSource=readLive,target){

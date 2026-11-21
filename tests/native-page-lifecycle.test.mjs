@@ -10,6 +10,7 @@ import {buildUI} from '../scripts/build-ui.mjs';
 import {auditUiBuildArgs} from '../scripts/audit-native-candidate.mjs';
 import {artFeatureBuildArgs,artFeatureReceipt} from '../scripts/art-features.mjs';
 import {nativeAudioBuildArgs} from '../scripts/build-native-audio-game.mjs';
+import {officialAssetsProfile,officialAssetFlags} from '../scripts/official-assets-profile.mjs';
 import {compareNativeCandidate} from '../scripts/native-candidate-audit.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 
@@ -78,7 +79,12 @@ test('registered flag is explicit and has an exit while legacy candidate identit
   assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,version}}),/non-release/);
  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{}}),/non-release/);
  assert.throws(()=>p.uiProfileFromReceipt({...experimental,release:{...release,notesSha256:'b'.repeat(64)}}),/non-release/);
- assert.throws(()=>nativeAudioBuildArgs(['base.gil','--official-assets','--release-candidate']),/separate non-release/);
+ const official={uiProfile:p.uiProfileReceipt(true),officialAssetsProfile,artFeatures:artFeatureReceipt(officialAssetFlags),
+  release:{...release,notesSha256:'b'.repeat(64)}};
+ assert.equal(p.uiProfileFromReceipt(official),true);
+ assert.throws(()=>p.uiProfileFromReceipt({...official,release:{...release,notesSha256:'invalid'}}),/non-release/);
+ assert.throws(()=>p.uiProfileFromReceipt({...official,officialAssetsProfile:'official-assets-first-v1'}),/non-release/);
+ assert.equal(nativeAudioBuildArgs(['base.gil','--official-assets','--release-candidate']).options.nativePageLifecycle,true);
 });
 test('receipt digest and native source audit reject a flipped runtime policy',async()=>{
  const p=await profile(),off=p.uiProfileReceipt(false),on=p.uiProfileReceipt(true);

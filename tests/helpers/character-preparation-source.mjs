@@ -1,4 +1,8 @@
-import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
+import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
+import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
+import {authorizeReleaseUiRestore,beforeReleaseShopEntry,shopEntryPriorRead,shopEntrySourcePaths} from './release-ui-restore-source.mjs';
+import {beforeRefinedReleaseProduction,refinedReleaseProductionPaths} from './refined-release-source.mjs';
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseForgeSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
@@ -8,7 +12,6 @@ import {beforeSelectorSource,selectorSourcePair} from './character-selector-sour
 import {beforePotionTextSource,potionTextSourcePair} from './potion-text-source.mjs';
 import {beforeFatalBgmSource,fatalBgmPair} from './fatal-bgm-source-continuation.mjs';
 import {beforeEndingTerminalSource,endingTerminalSourcePath} from './ending-terminal-source.mjs';
-import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './release-guide-backflow-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -38,12 +41,11 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  source = beforeAuthenticatedReleaseGuideSource(path,source,read);
-  const readGuideCurrent=read;
-  read=owner=>beforeReleaseGuideSource(owner,readGuideCurrent(owner));
-  source = beforeAuthenticatedM05ShopSource(path,source,read);
-  const readM05Current=read;
-  read=owner=>beforeM05ShopSource(owner,readM05Current(owner));
+  source = beforeMapDeckSource(path,source,read);
+  read = mapDeckPriorRead(read);
+  source = beforeAuthenticatedReleaseUiRestore(path,source,read);
+  const readLatest=read;
+  read=owner=>beforeReleaseUiRestore(owner,readLatest(owner));
   source = beforeAuthenticatedPc13RewardCover(path,source,read);
   const readCurrent=read;
   read=owner=>beforePc13RewardCover(owner,readCurrent(owner));
@@ -64,17 +66,37 @@ export function beforeCharacterPreparationSource(path, source, read = readRaw) {
 
 const currentContinuationOwners = new Set([
   ...characterPreparationOwners, ...v2UiHudSourcePaths, selectorSourcePair.path, potionTextSourcePair.path,
-  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths, ...m05ShopSourcePaths,
+  fatalBgmPair.path, endingTerminalSourcePath, luminePortraitSourcePath, ...potionPointerSourcePaths, ...tinyHouseUiSourcePaths, ...pc13RewardCoverSourcePaths,
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
-  if (releaseGuideSourcePaths.includes(path)) {
-    assert.notEqual(beforeReleaseGuideSource(path,source),source, 'fresh current production owner: '+path);
-    return beforeCharacterPreparationSource(path,source,read);
-  }
+ source=beforeMapDeckSource(path,source,read);
+ read=mapDeckPriorRead(read);
+ if(shopEntrySourcePaths.includes(path)){
+  const prior=beforeReleaseShopEntry(path,source);
+  assert.notEqual(prior,source,'fresh current production owner: '+path);
+  authorizeReleaseUiRestore([[path,source]],read);
+  source=prior;
+ }
+ read=shopEntryPriorRead(read);
+ assertCombatVisualCurrent(path,source,read);
+ source=beforeCombatVisualSource(path,source,read);
+ read=combatVisualPriorRead(read);
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
-  if (pc13RewardCoverSourcePaths.includes(path)) {
+  if (refinedReleaseProductionPaths.includes(path)) {
+    assert.notEqual(beforeRefinedReleaseProduction(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseForgeSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseForgeGridUi(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseSharedRelicSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseSharedRelicUi(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseControlsGuideRemovalSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseControlsGuideRemoval(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseRightClickSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseRightClick(path,source),source,'fresh current production owner: '+path);
+  } else if (releaseUiRestoreSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseUiRestore(path,source),source, 'fresh current production owner: '+path);
+  } else if (pc13RewardCoverSourcePaths.includes(path)) {
     assert.notEqual(beforePc13RewardCover(path,source),source, 'fresh current production owner: '+path);
   }
   const prior = beforeCharacterPreparationSource(path, source, read);

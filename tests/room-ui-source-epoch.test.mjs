@@ -5,7 +5,7 @@ import {readFileSync as nativeReadFileSync} from 'node:fs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
-import {beforePc13ThenV2UiHudSource,beforeReleaseGuideThenPc13Source} from './helpers/pc13-reward-cover-source.mjs';
+import {beforePc13ThenV2UiHudSource,beforeAuthenticatedPc13RewardCover} from './helpers/pc13-reward-cover-source.mjs';
 // Original assertions retain their explicit frozen source view.
 const currentRaw=p=>nativeReadFileSync(p,'utf8');
 const roomPriorRead=combinedCurrent.combinedReader(currentRaw,'jointUiPrior');
@@ -29,7 +29,7 @@ function retainedPaths(historical){
  combinedCurrent.preCombinedSource('config/architecture.json',currentRaw('config/architecture.json'),{target:'stsStylePrior',readSource:currentRaw});
  for(const p of styleAdded){
   assert.equal(combinedCurrent.proof.targets.stsStylePrior.files[p],null,'complete original absence must remain explicit');
-  assert.equal(beforeReleaseGuideThenPc13Source(p,currentRaw(p),currentRaw).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
+  assert.equal(beforeAuthenticatedPc13RewardCover(p,currentRaw(p),currentRaw).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
   assert(combinedCurrent.proof.owners.includes(p),'new module is an authenticated current owner');
  }
  const actual=live.filter(p=>!styleAdded.includes(p));

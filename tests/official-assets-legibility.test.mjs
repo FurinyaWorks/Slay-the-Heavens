@@ -31,10 +31,11 @@ function assertSharedCard(card,theme){
  const back=child(card,'stsReferenceBack'),front=child(card,'stsReferenceChrome'),tokens=geoCardReferenceTokens(theme);
  assert(back&&front,'shared StS back and front must own the visible frame');
  assert.deepEqual(children(back).map(n=>n.name),['body','portraits']);
- assert.deepEqual(children(front).map(n=>n.name),['frame','plaqueFace','banner','costMaterial']);
+ assert.deepEqual(children(front).map(n=>n.name),['frame','plaqueFace','banner']);
  const index=n=>children(card).indexOf(n),art=children(card).filter(n=>n.name==='art'||n.name.startsWith('art_')||n.name==='artSamples');
  assert(art.length>0);for(const image of art)assert(index(back)<index(image)&&index(image)<index(front),'illustration stays between back and front');
- const cost=child(card,'cost'),material=child(front,'costMaterial');
+ const cost=child(card,'cost'),layer=child(card,'stsReferenceCost'),material=child(layer,'costMaterial');
+ assert(index(child(card,'blockedVeil'))<index(layer)&&index(layer)<index(cost),'cost survives the blocked veil');
  assert(cost&&cost.visible!==false,'printed cost remains visible');assert(index(front)<index(cost),'printed cost is above its material');
  assert.equal(child(material,'field').colour,tokens.cost.face,'shared character cost face token');
  assert.equal(child(material,'rim').colour,tokens.cost.rim);assert.equal(child(material,'light').colour,tokens.cost.light);

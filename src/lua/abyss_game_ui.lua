@@ -134,7 +134,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)
     -- TASK-4.7 owned relics: icon-disc slots, not a text dump. Opening rides
     -- the deck gate so it stays read-only for battle, map, camp and chest.
-    self.openRelics = Overlays.openRelics(self)
+    self.openRelics = Overlays.openRelics(self,inputCovered,platform)
     self.closeDeck = Overlays.closeDeck(self)
 
     local menuView = MenuView.new(self,menu,data,platform)
@@ -195,13 +195,6 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.update = Lifecycle.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     self.disable = Lifecycle.disable(self,platform,controller,characterPanel,owner)
     Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
-    local backKey = platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
-    if Theme.presentationProfile=='official-assets-first' and backKey and runMenu.AddKeyEventListener then
-        runMenu.disableKeyEventPassthrough = true
-        runMenu:AddKeyEventListener(backKey,function()
-            return runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
-        end)
-    end
     local bindCommand = Input.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
     Input.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
     Input.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)

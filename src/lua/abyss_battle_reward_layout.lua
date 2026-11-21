@@ -5,6 +5,7 @@ local M={}
 local rowFaces=setmetatable({},{__mode='k'})
 local names={'goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward'}
 local rowNames={};for _,name in ipairs(names)do rowNames[name]=true end
+local relicRows={relicReward1=1,relicReward2=2}
 local function iconId(value)return type(value)=='table'and value.id or value end
 local function rewardIcon(name,run)
  if name=='goldReward'or name=='stolenGold'then return iconId(Theme.icon.gold)end
@@ -12,11 +13,18 @@ local function rewardIcon(name,run)
  if name=='emeraldKeyReward'then return iconId(Theme.icon.lock)end
  local rewards=run and run.rewards
  if name=='claimPotion'then return Theme.icon.potion[rewards and rewards.potion and rewards.potion.id]or Theme.icon.potion.empty end
- local index=tonumber(name:match('^relicReward(%d)$'))
- local item=rewards and rewards.relics and rewards.relics[index]
- return item and RelicView.icon(item.sourceId or item.id,true)or iconId(Theme.icon.node.treasure)
 end
-local function paintIcon(cached,name,run,platform)
+local function paintRelic(cached,index,run,platform,size)
+ local rewards=run and run.rewards
+ local item=rewards and rewards.relics and rewards.relics[index]
+ local id=item and (item.id or item.sourceId) or false
+ if cached.relic==id then return end
+ RelicView.paint(cached.icon,id or nil,size,platform,run,Theme.icon.node.treasure)
+ cached.relic=id
+end
+local function paintIcon(cached,name,run,platform,size)
+ local index=relicRows[name]
+ if index then return paintRelic(cached,index,run,platform,size)end
  local id=rewardIcon(name,run)
  if platform.imageSource and cached.id~=id then cached.icon:SetImage(platform.imageSource,id);cached.id=id end
 end
@@ -32,7 +40,7 @@ function M.paintButton(name,part,state,run,platform,tint,ink)
  local tone=token[state]or token.normal
  if cached.tone~=tone then for _,image in ipairs(cached.parts)do tint(image,tone)end;cached.tone=tone end
  ink(part:GetChild('label'),state=='disabled'and Theme.color.textMuted or token.ink)
- paintIcon(cached,name,run,platform)
+ paintIcon(cached,name,run,platform,token.iconSize)
  return true
 end
 -- Last successful size writer per native handle; owner tokens hold no view references.

@@ -19,7 +19,7 @@ local function pageEnd(current)return current.ends[current.page] end
 -- options.color, options.sound. box is the merchant container from merchantControl().
 function M.new(box, options)
     options = options or {}
-    local merchant = { visible = false, queue = {}, met = setmetatable({}, { __mode = "k" }) }
+    local merchant = { compact = options.compact, visible = false, queue = {}, met = setmetatable({}, { __mode = "k" }) }
     local portrait, line = box:GetChild("portrait"), box:GetChild("line")
     local bubble = L.bubble and box:GetChild("bubble")
     local function colour(c, alpha)
@@ -40,6 +40,7 @@ function M.new(box, options)
     end
     -- First visit in a run opens with the scene narration; later shops start at the greeting.
     function merchant:enter(run)
+        if self.compact then self.current=nil;self.queue={};line.text="";if bubble then bubble:SetVisible(false) end;return end
         local first = not self.met[run]
         self.met[run], self.idleUsed = true, false
         self.queue = first and { "greet" } or {}
@@ -48,6 +49,14 @@ function M.new(box, options)
     end
     -- A reaction interrupts whatever is being said so repeated buying always gets instant feedback.
     function merchant:react(kind)
+        if self.compact then
+            local short={buy='谢啦！',poor='金币不够。',leave='再会。'}
+            if not short[kind] then return false end
+            self.current={kind=kind,hold=0,shown=0};line.text=short[kind]
+            if bubble then bubble:SetVisible(true) end;line:SetVisible(true)
+            if cues[kind] and options.sound then pcall(options.sound,cues[kind]) end
+            return true
+        end
         if not lines[kind] then return false end
         self.queue = {}
         begin(kind)
@@ -87,6 +96,10 @@ function M.new(box, options)
     end
     function merchant:pose()
         local current = self.current
+        if self.compact then
+            box:GetChild('name'):SetVisible(false);box:GetChild('namePlate'):SetVisible(false);box:GetChild('next'):SetVisible(false)
+            return
+        end
         if not self.visible or not current then return end
         local marker,more=paintSpeech(current)
         -- Nod on a sale, a short head shake when the purse is short; both settle back to rest.
@@ -122,8 +135,16 @@ function M.new(box, options)
             end
         end
     end
-    function merchant:update(dt)
-        if not self.visible or not self.current then return end
+    local function advanceCompact(current,dt)
+        if current.dismissed then return end
+        current.hold=current.hold+math.max(0,dt)
+        if current.hold>=1.5 then
+            current.dismissed=true
+            if bubble then bubble:SetVisible(false) end
+            line:SetVisible(false)
+        end
+    end
+    local function advanceLegacy(self,dt)
         self.clock = (self.clock or 0) + dt
         local current = self.current
         advanceSpeech(current,dt)
@@ -137,6 +158,10 @@ function M.new(box, options)
         if self.nod then self.nod = self.nod + dt; if self.nod >= L.nod then self.nod = nil end end
         if self.shake then self.shake = self.shake + dt; if self.shake >= L.shake then self.shake = nil end end
         self:pose()
+    end
+    function merchant:update(dt)
+        if not self.visible or not self.current then return end
+        if self.compact then advanceCompact(self.current,dt) else advanceLegacy(self,dt) end
     end
     box:SetVisible(false)
     return merchant

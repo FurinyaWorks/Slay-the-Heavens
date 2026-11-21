@@ -333,7 +333,7 @@ function M.install(owner, ownership, host, dependencies)
             dependencies.cancelPotionAim();owner.selected,owner.carry,owner.hover=nil,nil,nil;owner.suppressClick=movingAim or false
             if movingAim then ownership.releasedDragTouch=movingAim.touch end
             owner.selectionEpoch=(owner.selectionEpoch or 0)+1
-            dependencies.cancelCardInputs();dependencies.cancelActionInputs();dependencies.refresh()
+            dependencies.cancelCardInputs();dependencies.cancelActionInputs();dependencies.notice("");dependencies.refresh()
             return true
         end
         if owner.run and owner.run.phase=="reward" and owner.rewardScreen=="cards" then

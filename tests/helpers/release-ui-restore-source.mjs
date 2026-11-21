@@ -1,0 +1,124 @@
+import {beforeLateReleaseUiSource,beforeReleaseDetailSource} from './release-integration-source.mjs';
+import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
+import {authorizeRefinedReleaseProduction,beforeRefinedReleaseProduction} from './refined-release-source.mjs';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+
+const hash=(source,algorithm='sha256')=>createHash(algorithm).update(source).digest('hex');
+const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
+
+function matches(source,binding){
+ if(!binding||typeof source!=='string'||source.includes('\r\r\n'))return false;
+ const text=source.replaceAll('\r\n','\n');
+ return hash(text)===binding.sha256&&blob(text)===binding.gitBlob;
+}
+
+export function releaseUiRestoreArchive(bytes,expectedSha,expectedBase='ff6af63d9bf93056dd772347d10dc749e7fa8d34'){
+ assert.equal(hash(bytes),expectedSha,'exact Release UI source archive');
+ const {base,files}=JSON.parse(gunzipSync(bytes));
+ assert.equal(base,expectedBase);
+ for(const [path,{before,after}] of Object.entries(files)){
+  assert.equal(hash(before.source),before.sha256,path+' base SHA256');
+  assert.equal(blob(before.source),before.gitBlob,path+' base Git blob');
+  assert.match(after.sha256,/^[a-f0-9]{64}$/);
+  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+ }
+ function project(path,source){
+  if(!Object.hasOwn(files,path)||!matches(source,files[path].after))return source;
+  const prior=files[path].before.source;
+  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
+ return {files,project};
+}
+
+const {files,project}=releaseUiRestoreArchive(readFileSync(new URL('./release-ui-restore-source.json.gz',import.meta.url)),
+ 'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b');
+const rightClick=releaseUiRestoreArchive(readFileSync(new URL('./release-card-right-click-source.json.gz',import.meta.url)),
+ 'a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a','ae15cf5f597728f0fe876f7136230955c3ec6179');
+const fieldCancel=releaseUiRestoreArchive(readFileSync(new URL('./release-card-field-cancel-source.json.gz',import.meta.url)),
+ 'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca','aa8fde88c2a077f3e7266984cdf3a4e6be8fc45a');
+const controlsGuideRemoval=releaseUiRestoreArchive(readFileSync(new URL('./release-controls-guide-removal-source.json.gz',import.meta.url)),
+ '321abc9fb6759dd27644f414c88f3a2df0be32f236a258a52d5b89cc6d22d687','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
+const sharedRelics=releaseUiRestoreArchive(readFileSync(new URL('./release-shared-relic-source.json.gz',import.meta.url)),
+ '4e72ca430cf8740dd6cb828547d8b8f29ba169c0c90cf49c2c662aa5964df5cc','da94ed7bbcb3002255442f8d120c6c2146878ae7');
+const forgeGrid=releaseUiRestoreArchive(readFileSync(new URL('./release-forge-source.json.gz',import.meta.url)),
+ '8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564','7381cf7152ba7a726506f9a5b525e13cfbd2c87a');
+const recording=releaseUiRestoreArchive(readFileSync(new URL('./recording-0401-source.json.gz',import.meta.url)),
+ '9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24','d26c4dc59e639741471580a242718a284a67f758');
+const shopEntry=releaseUiRestoreArchive(readFileSync(new URL('./release-shop-entry-source.json.gz',import.meta.url)),
+ 'd3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7','b0505f57def990f9d80d7cf917402d7616164f4f');
+export const shopEntrySourcePaths=Object.freeze(Object.keys(shopEntry.files).filter(path=>path.startsWith('src/lua/')));
+export const beforeReleaseShopEntry=shopEntry.project;
+export function shopEntryPriorRead(read){
+ return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));
+}
+export const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));
+export const releaseForgeSourcePaths=Object.freeze(Object.keys(forgeGrid.files).filter(path=>path.startsWith('src/lua/')));
+export const beforeReleaseForgeGridUi=forgeGrid.project;
+export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
+export const releaseSharedRelicSourcePaths=Object.freeze(Object.keys(sharedRelics.files).filter(path=>path.startsWith('src/lua/')));
+export const beforeReleaseSharedRelicUi=sharedRelics.project;
+export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
+export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
+export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
+export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
+export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,beforeReleaseSharedRelicUi(path,beforeReleaseForgeGridUi(path,beforeRefinedReleaseProduction(path,beforeRecordingUi(path,beforeReleaseShopEntry(path,beforeLateReleaseUiSource(path,source)))))))));
+const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
+
+export function authorizeReleaseUiRestore(samples,read){
+ samples=samples.map(([path,source])=>[path,beforeLateReleaseUiSource(path,source)]);
+ const readLive=read;
+ read=path=>beforeLateReleaseUiSource(path,readLive(path));
+ for(const [path,input] of samples){
+  const expected=shopEntry.files[path]?.after;
+  if(matches(input,expected))assert(matches(read(path),expected),'shop entry linked owner changed: '+path);
+ }
+ samples=samples.map(([path,input])=>[path,beforeReleaseShopEntry(path,input)]);
+ read=shopEntryPriorRead(read);
+ for(const [path,input]of samples){
+  try{beforeCombatVisualSource(path,input,read);}catch{assert.fail('recording UI linked owner changed: '+path);}
+ }
+ samples=samples.map(([path,input])=>[path,beforeCombatVisualSource(path,input,read)]);
+ read=combatVisualPriorRead(read);
+ for(const [path,input] of samples){
+  const expected=recording.files[path]?.after;
+  if(!matches(input,expected))continue;
+  assert(matches(read(path),expected),'recording UI linked owner changed: '+path);
+ }
+ const rawRead=read;
+ samples=samples.map(([path,input])=>[path,beforeRecordingUi(path,input)]);
+ read=path=>beforeRecordingUi(path,rawRead(path));
+ authorizeRefinedReleaseProduction(samples,read);
+ // A combined replay that contains current menu code must use the same release
+ // version for every sampled menu owner. Older all-historical views still replay.
+ const currentMenu=samples.some(([path,input])=>releaseControlsGuideRemovalSourcePaths.includes(path)
+  &&matches(input,controlsGuideRemoval.files[path].after));
+ const currentRelics=samples.some(([path,input])=>releaseSharedRelicSourcePaths.includes(path)
+  &&matches(input,sharedRelics.files[path].after));
+ const currentForge=samples.some(([path,input])=>releaseForgeSourcePaths.includes(path)
+  &&matches(input,forgeGrid.files[path].after));
+ for(const path of authorizationPaths){
+  const inputs=samples.filter(sample=>sample[0]===path).map(sample=>sample[1]);
+  if(!inputs.length)continue;
+  const menuBinding=controlsGuideRemoval.files[path]?.after;
+  const relicBinding=sharedRelics.files[path]?.after;
+  const forgeBinding=forgeGrid.files[path]?.after;
+  const expected=currentForge&&forgeBinding?forgeBinding:currentRelics&&relicBinding?relicBinding:currentMenu&&menuBinding?menuBinding
+   :[forgeBinding,relicBinding,menuBinding,fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
+    .find(binding=>inputs.some(input=>matches(input,binding)));
+  if(!expected)continue;
+  const message='combined linked owner identity: '+path+' changed during owner validation';
+  assert(inputs.every(input=>matches(input,expected)),message);
+  let live;
+  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,expected),message);
+ }
+}
+
+export function beforeAuthenticatedReleaseUiRestore(path,source,read){
+ const prior=beforeReleaseUiRestore(path,source);
+ if(prior!==source)authorizeReleaseUiRestore([[path,source]],read);
+ return prior;
+}

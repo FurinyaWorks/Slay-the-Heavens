@@ -4,8 +4,6 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeV2UiHudSource} from './v2-ui-hud-source.mjs';
-import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
-import {beforeReleaseGuideSource,beforeAuthenticatedReleaseGuideSource} from './release-guide-backflow-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/pc13-reward-cover-source.json.gz',import.meta.url));
@@ -24,16 +22,15 @@ const matches=(source,binding)=>{
 };
 export const pc13RewardCoverSourcePaths=Object.freeze(Object.keys(files));
 export function beforePc13RewardCover(path,source){
-  source=beforeLoadingRecoverySource(path,source);
-  const row=files[path];if(!Object.hasOwn(files,path)||!matches(source,row.after))return source;
+ const row=files[path];if(!Object.hasOwn(files,path)||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 export function authorizePc13RewardCover(samples,read){
  for(const [path,{after}] of Object.entries(files)){
-    const input=beforeLoadingRecoverySource(path,samples.find(sample=>sample[0]===path)?.[1]);
+  const input=samples.find(sample=>sample[0]===path)?.[1];
   if(!matches(input,after))continue;
   let live;try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
-    assert(matches(beforeLoadingRecoverySource(path,live),after),'combined linked owner identity: '+path+' changed during owner validation');
+  assert(matches(live,after),'combined linked owner identity: '+path+' changed during owner validation');
  }
 }
 
@@ -46,11 +43,7 @@ export function beforeAuthenticatedPc13RewardCover(path,source,read){
 // Explicit older HUD view: validate the newest owner before offering its exact
 // predecessor to the independent HUD continuation. Keep the original reader
 // for all non-PC13 source; it still verifies the exact HUD owner invocation.
-export function beforeReleaseGuideThenPc13Source(path,source,read){
- const guidePrior=beforeAuthenticatedReleaseGuideSource(path,source,read);
- return beforeAuthenticatedPc13RewardCover(path,guidePrior,owner=>beforeReleaseGuideSource(owner,read(owner)));
-}
 export function beforePc13ThenV2UiHudSource(path,source,read){
- const prior=beforeReleaseGuideThenPc13Source(path,source,read);
- return beforeV2UiHudSource(path,prior,owner=>beforePc13RewardCover(owner,beforeReleaseGuideSource(owner,read(owner))));
+ const prior=beforeAuthenticatedPc13RewardCover(path,source,read);
+ return beforeV2UiHudSource(path,prior,owner=>beforePc13RewardCover(owner,read(owner)));
 }

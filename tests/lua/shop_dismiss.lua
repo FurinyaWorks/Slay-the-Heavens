@@ -43,6 +43,8 @@ local function setup(touch,withController)
         return assert(box.listeners[kind],path..' missing '..kind)({touchId=id})
     end
     local function tap(path,id)emit(path,'down',id);emit(path,'up',id);return emit(path,'click',id)end
+    assert(tap('merchant/talk',900))
+    ui:update(.31)
     return ui,get,emit,tap,spec,manager
 end
 local count=0
@@ -56,7 +58,7 @@ test('mobile blank tap closes only current detail, then supports another item, p
     assert(tap('shopView/potion1',3));assert(get('shopView/detail').visible)
     local price=ui.run.nodeFlow.potions[1].price;local gold=ui.run.gold
     assert(tap('confirm',4));assert(ui.run.gold==gold-price and Run.potionCount(ui.run)==1)
-    assert(tap('confirm',5));assert(ui.run.nodeFlow.complete,'leaving shop stopped working')
+    assert(tap('back',5));ui:update(.31);assert(ui.run.nodeFlow.complete,'leaving shop stopped working')
 end)
 test('desktop hover and selected focus are both removed by outside dismissal',function()
     local ui,get,emit,tap=setup(false)
@@ -86,7 +88,7 @@ test('hidden page and pre-dismiss purchase callbacks cannot act on the next sele
     local ui,get,emit,tap=setup(true)
     assert(tap('shopView/relic3',1));local oldBuy=ui.actions.confirm.handler
     emit('shopDismiss','down',2);emit('shopDismiss','up',2)
-    ui:setVisible(false);ui:setVisible(true);ui:render()
+    ui:setVisible(false);ui:setVisible(true);ui:render();if not ui.shopOpen then assert(tap('merchant/talk',901));ui:update(.31)end
     assert(tap('shopView/potion1',3));local before=F.Combat.copy(ui.run)
     emit('shopDismiss','click',2);assert(get('shopView/detail').visible);same(before,ui.run)
     assert(tap('shopDismiss',4));assert(not oldBuy());same(before,ui.run)
@@ -189,7 +191,7 @@ test('all foreground terminal paths reject old background tokens and permit a fr
         local ui,get,emit,tap=setup(true)
         assert(tap('shopView/relic3',1));local before=F.Combat.copy(ui.run)
         emit('shopDismiss','down',2);emit('shopView/potion1','down',2)
-        if kind=='hide' then ui:setVisible(false);ui:setVisible(true);ui:render();assert(tap('shopView/relic3',3))
+        if kind=='hide' then ui:setVisible(false);ui:setVisible(true);ui:render();if not ui.shopOpen then assert(tap('merchant/talk',901));ui:update(.31)end;assert(tap('shopView/relic3',3))
         elseif kind=='render' then ui:render()
         elseif kind=='click' then emit('shopView/potion1','up',2);emit('shopView/potion1','click',2)
         else emit('shopView/potion1',kind,2) end

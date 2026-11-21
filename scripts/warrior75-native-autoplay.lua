@@ -117,6 +117,11 @@ local function selectPicker(ui,s)
     local wanted
     for i,c in ipairs(rows) do if c.uid==plan.uid then wanted=i break end end
     if not wanted then return stop(ui,s,"suggested_UID_not_in_picker") end
+    if node.picker=="upgrade" and node.view.node.type=="camp" then
+        if node.selected~=plan.uid then return press(ui,s,"pickerView/forgeScroll/card"..wanted,{uid=plan.uid}) end
+        if press(ui,s,"confirm",{uid=plan.uid,method=plan.method}) then mark(s,plan) end
+        return
+    end
     local size=#Theme.layout.nativeNode.picker.columns
     local page=math.floor((wanted-1)/size)+1
     if node.pickPage~=page then return press(ui,s,"pickerView/"..(page>node.pickPage and "next" or "previous")) end
@@ -134,6 +139,8 @@ end
 local function actNode(ui,s)
     local node,flow=ui.nodeUI,ui.run.nodeFlow
     if node:holding() then return press(ui,s,"confirm",{continueResult=true}) end
+    if node.shopBusy then return end
+    if flow.type=="shop" and not node.shopOpen then return press(ui,s,"merchant/talk") end
     if node.mode=="picker" then return selectPicker(ui,s) end
     local plan=Policy.suggestNodeAction(ui.run,ui.map,s.coverage,s.localDone)
     if not plan then return stop(ui,s,"node_has_no_legal_suggestion") end
@@ -158,7 +165,7 @@ local function actNode(ui,s)
         key="shopView/card"..slot
     elseif method=="removeCard" then key="shopView/removal";s.plan=plan
     elseif method=="buyPotion" then key="shopView/potion"..plan.slot
-    elseif method=="leaveShop" then key="confirm"
+    elseif method=="leaveShop" then key="back"
     elseif method=="chooseEvent" then key=eventKey(ui,plan);s.plan=plan
     elseif method=="claimTreasure" or method=="claimBossTreasure" then
         if not node.opened then return press(ui,s,"treasureView/chest") end

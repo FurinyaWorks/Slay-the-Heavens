@@ -1,0 +1,462 @@
+[
+  {
+    "id": "next_turn_block",
+    "name": "下回合格挡",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "下一回合开始时获得对应层数的固定格挡，随后移除。",
+    "picture": 105215,
+    "sha256": "951b97ae3fc2451d60806243ce30fbc18d6ce98894cf34a127bcfa3c121a8570"
+  },
+  {
+    "id": "buffer",
+    "name": "缓冲",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "抵消接下来的对应次数正数生命损失；完全格挡的伤害不消耗次数。",
+    "picture": 102036,
+    "sha256": "051eae3534d1c2da2cf22b30792e81c7651b88f20f2be25717d6e0c1894bb350"
+  },
+  {
+    "id": "split",
+    "sourceId": "Split",
+    "name": "分裂",
+    "kind": "buff",
+    "stack": "none",
+    "decay": "none",
+    "priority": 5,
+    "description": "生命值降至一半或以下时，打断当前意图并分裂。",
+    "picture": 100114,
+    "sha256": "5c80c08cbadcae6e0ca002708ff61acdcd61521b61a195446a844256a235b055"
+  },
+  {
+    "id": "duplication",
+    "name": "复制",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "round_end_minus_1",
+    "description": "接下来的牌额外使用一次，每次消耗1层；轮末另减少1层。",
+    "picture": 105046,
+    "sha256": "2a55baf10c92309d304af0f6ff069d92993e4ab4a049a75c0a7bfda3bbe71c82"
+  },
+  {
+    "id": "plated_armor",
+    "name": "多层护甲",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "回合结束时获得固定格挡；受到有来源的普通攻击生命伤害时失去1层。",
+    "picture": 105055,
+    "sha256": "773266eab5f801ce16aabbe5461120fc3f5c2f2f974550c1e4f878095759310e"
+  },
+  {
+    "id": "spore_cloud",
+    "name": "菌雾",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "它倒下时，玩家获得与层数相同的易伤；若战斗已因此结束则不触发",
+    "picture": 105243,
+    "sha256": "94319e69b274878ddcbc4524b6d3a985918cab9db4e5b5574a5ef5173553a6dd"
+  },
+  {
+    "id": "entangled",
+    "name": "缠绕",
+    "kind": "debuff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "本回合不能打出攻击牌；玩家回合结束时移除",
+    "picture": 100169,
+    "sha256": "4fe195bfe6f7e9704c153319328497c21ee9c0700c228464cd99ce4a9c7d041e"
+  },
+  {
+    "id": "artifact",
+    "name": "人工制品",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每层抵挡一次减益效果；不抵挡塞入牌堆的状态牌",
+    "picture": 105182,
+    "sha256": "f7dfd554c5cf9e089b5c869a2d7d0dd860196bef51895d63ac5b51297d9af744"
+  },
+  {
+    "id": "strength",
+    "name": "力量",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每层使攻击伤害 +1",
+    "picture": 103047,
+    "sha256": "e995fc9ee063258fe13f9e5a7c63feebfaad8d1f0844ac0ff1bd78164f6cb790"
+  },
+  {
+    "id": "dexterity",
+    "name": "敏捷",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每层使卡牌获得的格挡 +1；本场战斗有效，不影响固定格挡药水",
+    "picture": 103065,
+    "sha256": "6f3f9bb82fd5f6e5f309a46e85a16721d873a66d0140975ca57bdaaa22245c15"
+  },
+  {
+    "id": "vulnerable",
+    "name": "易伤",
+    "kind": "debuff",
+    "stack": "duration",
+    "decay": "round_end_minus_1",
+    "description": "受到普通攻击伤害 +50%；数字表示持续回合，轮末递减，不放大中毒",
+    "picture": 103049,
+    "sha256": "bcda377fe2fc9c76cec869f2fd6460254790afec21723c9e0c1e307a881c5991"
+  },
+  {
+    "id": "weak",
+    "name": "虚弱",
+    "kind": "debuff",
+    "stack": "duration",
+    "decay": "round_end_minus_1",
+    "description": "造成普通攻击伤害 -25%；数字表示持续回合，轮末递减，不减少中毒",
+    "picture": 102045,
+    "sha256": "151778db1e0024a295184cbfd9b80a1ceb5e6bc783928f84d4018bc7044069c3"
+  },
+  {
+    "id": "frail",
+    "name": "脆弱",
+    "kind": "debuff",
+    "stack": "duration",
+    "decay": "round_end_minus_1",
+    "description": "卡牌获得的格挡 -25%；数字表示持续回合，轮末递减，不影响固定格挡药水",
+    "picture": 103054,
+    "sha256": "d64f36ceeca3eb6d531c30a675c69c57c388226460c977200145ec175f38de56"
+  },
+  {
+    "id": "poison",
+    "name": "中毒",
+    "kind": "debuff",
+    "stack": "intensity",
+    "decay": "turn_start_trigger_then_minus_1",
+    "description": "自己的回合开始时失去与层数相同的生命，无视格挡，然后层数减 1；施加时不立即扣血",
+    "picture": 103059,
+    "sha256": "86e3b911aabc2e8cdf5c4c05a7dd55f8053af08ab909375128278e84d8a8bf81"
+  },
+  {
+    "id": "thorns",
+    "name": "荆棘",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "受到攻击时，对攻击者造成与层数相同的伤害",
+    "picture": 103055,
+    "sha256": "aeeee1f72166f5d9e06b30ae05b6d8ff1a4bdbce37882fa18ca1462040d288c2"
+  },
+  {
+    "id": "regen",
+    "name": "再生",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "turn_end_trigger_then_minus_1",
+    "description": "回合结束时回复与层数相同的生命，然后层数减 1",
+    "picture": 103056,
+    "sha256": "31dec1753dc586b9555162b15de408f004ac3a46bc069e3484fb41d84cb46d78"
+  },
+  {
+    "id": "barricade",
+    "name": "壁垒",
+    "kind": "buff",
+    "stack": "none",
+    "decay": "none",
+    "description": "回合开始时格挡不会清空",
+    "picture": 103066,
+    "sha256": "ec7b6851051a05a94675baefd97fdf985e4323874c9907b3641c129401c6e383"
+  },
+  {
+    "id": "enrage",
+    "name": "激怒",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "玩家每打出一张技能牌，拥有者先获得与层数相同的力量，再结算那张牌",
+    "picture": 102034,
+    "sha256": "331dfa1079fd6aff1dff73a059a65936f2f28921687d666197e649477d9a504e"
+  },
+  {
+    "id": "ritual",
+    "name": "仪式",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每个敌方回合结束时获得与层数相同的力量；获得本状态的那一轮不触发",
+    "picture": 105207,
+    "sha256": "6d21fff51726111826f79688338e844b924380bbdb49b6640161dfc4fc9c5db3"
+  },
+  {
+    "id": "mode_shift",
+    "name": "模式转换",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "层数是转入防守形态前还能损失的生命；降到 0 时转入防守形态并获得格挡",
+    "picture": 105214,
+    "sha256": "0513a0d27c07c9b5c57455960e1d9411b7070118584b9c5145cfbb1945b803a0"
+  },
+  {
+    "id": "sharp_hide",
+    "name": "尖刺甲壳",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "玩家每打出一张攻击牌，受到与层数相同的伤害，可被格挡；多段攻击也只触发一次",
+    "picture": 105216,
+    "sha256": "6069944c6900cfe8e8ea3df0d817aadaeda6d8572167adb6c22a86ea8eb92f39"
+  },
+  {
+    "id": "angry",
+    "name": "狂怒",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每次被普通攻击并损失生命，获得与层数相同的力量；药水、中毒和反伤不触发",
+    "picture": 102044,
+    "sha256": "86dcfb64bbc9c11891084da05c77c01a1cc6934a5ec092fe72647f3e1909ccf4"
+  },
+  {
+    "id": "curl_up",
+    "name": "蜷甲",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "第一次被非致命的普通攻击并损失生命后，在本次行动结束时获得与层数相同的格挡；每场战斗一次",
+    "picture": 105073,
+    "sha256": "b18bd55854a7b502d67c2d94621c888ece06ee9968284da7cfb275385a30a7df"
+  },
+  {
+    "id": "thievery",
+    "name": "窃金",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "攻击时先窃取最多等于层数的金币，完全格挡也会失金；击败后可在奖励中取回，逃跑则不返还",
+    "picture": 105077,
+    "sha256": "17e50569dd50fe22e80acbd41e5acf0f2cc7503e87f87261e0883db4530ce7b4"
+  },
+  {
+    "id": "dark_embrace",
+    "name": "临机应变",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每消耗一张牌，抽对应层数张牌。",
+    "picture": 102026,
+    "sha256": "005c983db0d1c13427e6387919ca4f61730da0fb925c187eb20bd23c0c7bf2f7"
+  },
+  {
+    "id": "feel_no_pain",
+    "name": "百折不挠",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每消耗一张牌，获得固定格挡。",
+    "picture": 105067,
+    "sha256": "c9401c41af6b0731bb5a052df425f4037dd630af0e2dbae7173d4b685372fd89"
+  },
+  {
+    "id": "corruption",
+    "name": "孤注一掷",
+    "kind": "buff",
+    "stack": "none",
+    "decay": "none",
+    "description": "技能费用变为0，使用后消耗。",
+    "picture": 105197,
+    "sha256": "3479517aa4bd63477f12c55aba39670d2fa1bc5a36a6af7e75c4cbe4a350583d"
+  },
+  {
+    "id": "evolve",
+    "name": "逆境求变",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "抽到状态牌时额外抽牌。",
+    "picture": 105068,
+    "sha256": "079d89f0c46a1f1cc3de2334d2255d903d2a7b8d4a191bef2a5e2649fb7acb8f"
+  },
+  {
+    "id": "fire_breathing",
+    "name": "逆势反攻",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "抽到状态或诅咒时对所有敌人造成固定伤害。",
+    "picture": 105045,
+    "sha256": "ffa45be97e190594283f31d28fbcc97a779232fc6b897e826b18d244ff9af441"
+  },
+  {
+    "id": "flame_barrier",
+    "name": "反击架势",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "本轮受到攻击时反击；下回合开始移除。",
+    "picture": 105131,
+    "sha256": "4af16c01833c223c02a8c628a91e66c3f79a009dfb835da0cca8fc35fcc92f9b"
+  },
+  {
+    "id": "rage",
+    "name": "攻守相济",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "本回合每使用攻击牌获得固定格挡。",
+    "picture": 102035,
+    "sha256": "8759e2bbaeb0c033c7d960d085e5042c35c5e18f0260557f16db5791ebe93810"
+  },
+  {
+    "id": "combust",
+    "name": "强攻压阵",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "回合结束时失去生命并对所有敌人造成固定伤害。",
+    "picture": 102002,
+    "sha256": "7c1894aae9fe6873c770b56084bdf614c898e72fe87c717a5041d48acc418792"
+  },
+  {
+    "id": "rupture",
+    "name": "愈挫愈勇",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "因自己的效果失去生命时获得力量。",
+    "picture": 105058,
+    "sha256": "193496eec4a752c94c4aa58a22063deece539580e9a21d001f7777fcf9c4f247"
+  },
+  {
+    "id": "demon_form",
+    "name": "渐入佳境",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每回合开始时获得力量。",
+    "picture": 102033,
+    "sha256": "f7d3d5138f8c0cddfa287aaa4c4acad806690ad0ff9b138e6a14ff4c22b7b91d"
+  },
+  {
+    "id": "berserk",
+    "name": "背水之战",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每回合开始时获得额外能量。",
+    "picture": 105191,
+    "sha256": "5b5c78506767d2b808c6974288a4bd204cd50cb8907c281fc1ef0dba7c7f3b77"
+  },
+  {
+    "id": "brutality",
+    "name": "破釜沉舟",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每回合开始时失去生命并额外抽牌。",
+    "picture": 105204,
+    "sha256": "119a7346791295a562e74304d495925de335beb394c49a2d208f2d27f443b000"
+  },
+  {
+    "id": "double_tap",
+    "name": "叠势连击",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "本回合接下来的攻击牌额外使用一次。",
+    "picture": 105217,
+    "sha256": "fcc085255af0381040674f27e3059e0d43f27fb3889cc59cf084c01e1da39107"
+  },
+  {
+    "id": "juggernaut",
+    "name": "守中有攻",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "每次获得格挡，对随机敌人造成固定伤害。",
+    "picture": 105065,
+    "sha256": "72823fab065f2d0eab7b59c2c4fd05fe272563bbab2dc53bae9f5d39ae5b42e4"
+  },
+  {
+    "id": "metallicize",
+    "name": "持续防守",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "回合结束时获得固定格挡。",
+    "picture": 105071,
+    "sha256": "ae394d1a9f1e8358f631c9a9c8e610645b68f965b20b17279da7218b33f38dea"
+  },
+  {
+    "id": "vigor",
+    "name": "活力",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "下一张攻击牌的每次伤害增加对应层数；攻击牌打出后移除。",
+    "picture": 102012,
+    "sha256": "829a126ab567201efe0a2fe0c2ecaa830b3f120bf93a3e94dfa805b515357504"
+  },
+  {
+    "id": "pen_nib",
+    "name": "钢笔尖",
+    "kind": "buff",
+    "stack": "intensity",
+    "decay": "none",
+    "description": "下一张攻击牌造成双倍伤害；攻击牌打出后移除。",
+    "picture": 105301,
+    "sha256": "e0c4550780d65d5cb774900bf02f37f400bbb9a244f23bad26df70697c176fc9"
+  },
+  {
+    "id": "shackled",
+    "name": "力量恢复",
+    "picture": 105099,
+    "sha256": "f175ce2db9586fa4ab45e043fea85e53409c13ebd96be3eddc8fcff28a3c85b9"
+  },
+  {
+    "id": "panache",
+    "name": "声势",
+    "picture": 105127,
+    "sha256": "f70daac9f936c0fe17ebb65773978caba6bec76891814cb5c2343552ef948f32"
+  },
+  {
+    "id": "no_block",
+    "name": "无法格挡",
+    "picture": 100108,
+    "sha256": "b8a35677b81624ab084713c8fd6618d789e6ceccdbc7ad3c91e77e55e4a9529d"
+  },
+  {
+    "id": "intangible",
+    "name": "无实体",
+    "picture": 105242,
+    "sha256": "a97219ac74089868de062c0d1db5a68a63298b16ca0329f34e5d7f8cecd9bd9b"
+  },
+  {
+    "id": "magnetism",
+    "name": "磁引",
+    "picture": 105076,
+    "sha256": "c2862413a73de09130317830ea08915978c34d9d4261ab47bc0b72bb56becdc0"
+  },
+  {
+    "id": "mayhem",
+    "name": "混沌",
+    "picture": 105023,
+    "sha256": "692fbb9d1aae1a68d863c699ef596a9892dbbe5f48b1920d13e39efe61927752"
+  },
+  {
+    "id": "sadistic_nature",
+    "name": "苦痛天性",
+    "picture": 105048,
+    "sha256": "a42a73b66419934ead9d484d37a1314bd9c7ca1a434f1eb2bd62f4cfd2636031"
+  },
+  {
+    "id": "colorless_bomb",
+    "name": "延时爆破",
+    "picture": 102049,
+    "sha256": "7b1f5b4724e64732409fced2d564b53cc90339fdf22d4755c9d89f89f500d501"
+  }
+]

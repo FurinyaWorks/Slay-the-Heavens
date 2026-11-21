@@ -1,6 +1,5 @@
 -- TASK-4.7 owned-relic art slots: a top-bar disc row plus a read-only detail
 -- overlay. Each entry is icon disc + Chinese name + status chip + effect text.
--- Icons bind Theme.icon.relic[id]; placeholder ids are swapped by data only.
 local Theme=require('abyss_theme')
 local Controller=require('abyss_controller')
 local Hooks=require('abyss_relic_hooks')
@@ -10,14 +9,32 @@ local Art=require('abyss_lowcost_art')
 local rarityNames={starter='初始遗物',common='普通遗物',uncommon='罕见遗物',rare='稀有遗物',
     boss='首领遗物',shop='商店遗物',special='特殊遗物'}
 local function iconId(value)if type(value)=='table'then value=value.id end return type(value)=='number' and value or nil end
-function M.icon(id,battle)
-    local local_=Hooks.localId(id)
+local function iconKey(id,run)
+    local key=Hooks.localId(id)
+    if key and not Theme.icon.relic[key] and run and run.data and run.data.relics then
+        local definition=Rewards.definition(run,id)
+        if definition then return definition.id end
+    end
+    return key
+end
+local function atlasIcon(id,key,battle)
     if battle and Theme.presentationProfile=='official-assets-first' then
         local icons=Theme.officialAssets.battleRelicIcons
-        local override=icons and (iconId(icons[local_]) or iconId(icons[id]))
+        local override=icons and (iconId(icons[key]) or iconId(icons[id]))
         if override then return override end
     end
-    return iconId(Theme.icon.relic[local_]) or iconId(Theme.icon.relic[id]) or iconId(Theme.icon.node.treasure)
+    return iconId(Theme.icon.relic[key]) or iconId(Theme.icon.relic[id]) or iconId(Theme.icon.node.treasure)
+end
+function M.icon(id,battle)
+    return atlasIcon(id,iconKey(id),battle)
+end
+-- The same stable ID selects both the native artwork and its atlas fallback.
+function M.paint(control,id,size,platform,run,fallback)
+    local key=iconKey(id,run)
+    local image=key and atlasIcon(id,key,true) or iconId(fallback)
+    if platform.imageSource and image then control:SetImage(platform.imageSource,image) end
+    if key then Art.paint(control,'relic',key,size,platform)
+    else Art.hide(control) end
 end
 local function counterValue(run,id)
     local local_=Hooks.localId(id)
@@ -64,7 +81,6 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
     local boundCount=official and battleBar.count or baseBar.count
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
-    local function picture(control,id)if platform.imageSource then control:SetImage(platform.imageSource,id)end end
     function self.resetBarHover(_)
         if self.hoverIndex then local icon=bar:GetChild('slot'..self.hoverIndex):GetChild('icon');icon:SetLocalScale(1,1,1);Art.scale(icon,1)end
         self.hoverIndex=nil
@@ -84,7 +100,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         local id=run.relics[i]
         local definition=Rewards.definition(run,id)
         local description=definition and describe(run,definition.id) or ''
-        return {id=id,name=definition and definition.name or '未识别遗物',icon=M.icon(id,official),
+        return {id=id,name=definition and definition.name or '未识别遗物',icon=M.icon(definition and definition.id or id,official),
             rarity=definition and rarityNames[definition.rarity] or '遗物',
             status=M.status(run,id),description=description~='' and description or '效果说明待补充。'}
     end
@@ -111,8 +127,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         if single then
             local e=self:entry(run,self.selectedIndex);self.selected=e
             local view=child('single')
-            picture(view:GetChild('icon'),e.icon)
-            Art.paint(view:GetChild('icon'),'relic',Hooks.localId(e.id),Theme.layout.relicView.disc*2,platform)
+            M.paint(view:GetChild('icon'),e.id,Theme.layout.relicView.disc*2,platform,run)
             for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
             view:GetChild('status').text=e.status or ''
         end
@@ -122,8 +137,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             local i=(self.page-1)*n+slot
             if not single and i<=#run.relics then
                 local e=self:entry(run,i);self.rows[slot]=e
-                picture(row:GetChild('slot'):GetChild('icon'),e.icon)
-                Art.paint(row:GetChild('slot'):GetChild('icon'),'relic',Hooks.localId(e.id),Theme.layout.relicView.icon,platform)
+                M.paint(row:GetChild('slot'):GetChild('icon'),e.id,Theme.layout.relicView.icon,platform,run)
                 row:GetChild('name').text=e.name
                 row:GetChild('description').text=e.description
                 row:GetChild('chip'):SetVisible(e.status~=nil)
@@ -193,7 +207,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             icon:SetVisible(not more)
             slot:GetChild('more'):SetVisible(more)
             slot:GetChild('more').text=more and cell or ''
-            if cell and not more then picture(icon,M.icon(relics[i],official));Art.paint(icon,'relic',Hooks.localId(relics[i]),style.icon,platform)end
+            if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
             paintCounter(slot,run,cell and not more and relics[i] or nil,official)
         end
     end

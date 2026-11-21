@@ -72,8 +72,10 @@ local function source(self,opened,boss,reward)
  return token
 end
 local function renderRewardPicture(c,row,item)
- c.picture(row:GetChild('icon'),item.kind=='gold' and Theme.icon.gold or Theme.icon.relic[item.id] or Theme.icon.node.treasure)
- if c.relicPicture then c.relicPicture(row:GetChild('icon'),item.kind=='relic' and item.id or nil,Theme.layout.nativeNode.treasure.rewardDisc)end
+ local icon=row:GetChild('icon')
+ local fallback=item.kind=='gold' and Theme.icon.gold or Theme.icon.node.treasure
+ if c.relicPicture then c.relicPicture(icon,item.kind=='relic' and item.id or nil,Theme.layout.nativeNode.treasure.rewardDisc,fallback)
+ else c.picture(icon,Theme.icon.relic[item.id] or fallback)end
 end
 function M.render(c)
  local self,node=c.self,c.node

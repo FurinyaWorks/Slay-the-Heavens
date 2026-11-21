@@ -33,7 +33,7 @@ local function setup(r,beforeRender)
  function ctx.show(c,v)c:SetVisible(v~=nil and v~=false)end
  function ctx.ink()end;function ctx.tint()end
  function ctx.picture(c,id)c:SetImage('static',id)end
- ctx.inspectCards,ctx.skinFaces,ctx.artFaces={},{},{}
+ ctx.inspectCards,ctx.skinFaces,ctx.artFaces={},{},{};ctx.clickEvent='click'
  function ctx.state(c,enabled)for _,name in ipairs({'normal','disabled','hover','pressed','selected'})do c:GetChild(name):SetVisible(name==(enabled and'normal'or'disabled'))end end
  function ctx.action(key,enabled,fn,reason,_,observe)self.actions[key]={enabled=enabled,handler=fn,reason=reason,observe=observe}end
  require('abyss_node_ui_faces').install(ctx);UI.install(ctx)
@@ -64,7 +64,7 @@ test('all twelve actual native card faces stay concealed until core reveal and u
  assert(get('pickerView/forgeGrid/card1/name').text:find(ctx.cardName(slot.cardId,false),1,true))
  assert(get('pickerView/label').text:find('5',1,true));eq(ctx.self.actions['pickerView/forgeGrid/card1'].enabled,false)
 end)
-test('Match and real normal forge reuse the same faces with restored backs, selection and stale ownership',function()
+test('Match and camp use the shared card face without leaving card backs or stale ownership',function()
  local r=H.play(H.fixture());local before=H.C.copy(r.deck)
  local ctx,get=setup(r,function(c)
   local box=c.child('pickerView'):GetChild('forgeGrid'):GetChild('card1')
@@ -74,13 +74,13 @@ test('Match and real normal forge reuse the same faces with restored backs, sele
  eq(old(),false);same(r.deck,before)
  local render=ctx.self.render;ctx.self.mode,ctx.self.picker,ctx.self.selected='picker','upgrade',nil
  ctx.self.upgradeRows=H.C.copy(r.deck);ctx.self.view={node={type='camp'}}
- local camp=require('abyss_node_ui_camp').new(ctx.self,ctx);local node={type='camp',upgradeCards=H.C.copy(r.deck)}
+ local camp=require('abyss_node_ui_camp').new(ctx);local node={type='camp',upgradeCards=H.C.copy(r.deck)}
  ctx.self.render=function()camp:render(node)end;camp:render(node)
  for i=1,12 do eq(get('pickerView/forgeGrid/card'..i..'/matchBack').visible,false)end
- eq(get('pickerView/forgeGrid/card1/name').visible,true)
- assert(get('pickerView/forgeGrid/card1/name').text:find(ctx.cardName(r.deck[1].cardId,false),1,true))
- local forge=ctx.self.actions['pickerView/forgeGrid/card1'].handler;assert(forge());eq(ctx.self.selected,r.deck[1].uid)
- ctx.self.render=render;ctx.self.picker,ctx.self.selected='match',nil;ctx.self:render()
+ local face=get('pickerView/forgeFit').items[0]
+ assert(face:GetChild('name').text:find(ctx.cardName(r.deck[1].cardId,false),1,true))
+ local forge=ctx.self.actions['pickerView/forgeScroll/card1'].handler;assert(forge());eq(ctx.self.selected,r.deck[1].uid)
+ camp:hide();ctx.self.render=render;ctx.self.picker,ctx.self.selected='match',nil;ctx.self:render()
  eq(forge(),false);eq(old(),false);same(r.deck,before)
  assert(get('pickerView/forgeGrid/card1/matchBack').visible);eq(get('pickerView/forgeGrid/card1/name').text,'')
 end)

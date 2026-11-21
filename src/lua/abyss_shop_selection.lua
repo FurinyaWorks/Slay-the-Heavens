@@ -11,7 +11,7 @@ local function bindOutside(state, owner, hit, clickEvent, cursor, controller, cu
     local noTouch={}
     local function key(event) return event and event.touchId or noTouch end
     local function ready(token)
-        return token and not owner.busy and not owner.presentationBusy and not Controller.pointerBlocked(controller)
+        return token and not owner.busy and not owner.presentationBusy and not owner.shopBusy and not Controller.pointerBlocked(controller)
             and state.selected==token.selection and current(token.selection)
     end
     local function matches(token,event) return token and token.touch==(event and event.touchId) end
@@ -140,7 +140,7 @@ function M.new(owner, root, options)
         self:clear(); owner:render(); return true
     end
     function state:enter(key)
-        if mobile() or not owner.visible or owner.mode ~= 'main' then return end
+        if mobile() or not owner.visible or owner.shopBusy or owner.shopOpen==false or owner.mode ~= 'main' then return end
         local q = self.entries[key]
         -- Insufficient funds must not prevent reading a card or item.
         if q and not q.offer.sold and not q.offer.unavailable then self.focus = key;self.dirty=true end

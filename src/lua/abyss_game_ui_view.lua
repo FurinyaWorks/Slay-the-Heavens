@@ -274,16 +274,23 @@ end
 
 function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResources,nativePageLifecycle)
     local syncNative=nativePageLifecycle==true and NativePages.new(child,self) or nil
+    local coveredMapRun
+    local function refreshMapVisibility(run,deckOpen,blocked)
+        local onMap=self.mode=="map"
+        local returningFromDeck=coveredMapRun~=nil and coveredMapRun==run
+        coveredMapRun=onMap and deckOpen and run or nil
+        self.mapUI:setVisible(onMap and not deckOpen and not blocked,onMap,returningFromDeck)
+        if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
+        child("mapPanel"):SetVisible(onMap)
+        refreshMapResources(run)
+    end
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
                 suspendBattle(run,deckOpen,potionOpen))
             child("battlePanel"):SetVisible(self.mode == "battle")
-            self.mapUI:setVisible(self.mode == "map" and not deckOpen and not potionOpen and not blocked,self.mode == "map")
-            if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
-            child("mapPanel"):SetVisible(self.mode == "map")
-            refreshMapResources(run)
+            refreshMapVisibility(run,deckOpen,potionOpen or blocked)
             self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node")
             child("nodePanel"):SetVisible(self.mode == "node")
         end
@@ -321,8 +328,9 @@ end
 
 function M.renderMapPage(self)
     return function(run,deckOpen,potionOpen,blocked,covering)
+            if deckOpen then return self.mapUI:setNavigationEnabled(false,true) end
             -- While the cinematic's last fade uncovers the map, the map is visible but inert.
-            self.mapUI:setNavigationEnabled(not deckOpen and not potionOpen and not blocked and not covering and #Nodes.available(run, self.map) > 0)
+            self.mapUI:setNavigationEnabled(not potionOpen and not blocked and not covering and #Nodes.available(run, self.map) > 0)
             if run.neowStatus=='unavailable' and self.map.floor==0 and not self.mapUI.entryError then
                 self.mapUI.entryError='开局恩赐暂不可用：未取得上一局历史；本次保持原开局资源。'
                 self.mapUI:render()
@@ -384,7 +392,15 @@ function M.exitEntryVisible(self)
 end
 
 function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVisible,exitPanel,exitDialogOwnsForeground,runMenu,canViewRoute,child,refreshExitDialog)
-    local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
+    local official=Theme.presentationProfile=='official-assets-first'
+    local hud=official and Theme.officialAssets.battleHud
+    local backKey=official and platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
+    local menuKeyListener=backKey and runMenu.AddKeyEventListener
+    if menuKeyListener then
+        runMenu:AddKeyEventListener(backKey,function()
+            return not self.disabled and runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
+        end)
+    end
     local utilitiesReady=false
     local routeLabels={}
     local function routeCaption(back)
@@ -432,6 +448,9 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             exitEntry:SetAsLastSibling()
             exitPanel:SetVisible(exitDialogOwnsForeground())
             runMenu:SetVisible(self.exitOpen == true and self.menuOpen == true and not self.routeOpen)
+            if menuKeyListener and runMenu.disableKeyEventPassthrough ~= runMenu.visible then
+                runMenu.disableKeyEventPassthrough = runMenu.visible
+            end
             require('abyss_game_ui_navigation_view').runMenu(self,runMenu,canViewRoute())
             if runMenu.visible then runMenu:SetAsLastSibling() end
             local back = child('mapPanel'):GetChild('previewBack')
@@ -441,6 +460,10 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
                 back:GetChild('hit').raycastTarget=showBack
             end
             back:SetVisible(showBack)
+            if hud and back:GetChild('v25Face') then
+                require('abyss_v25_menu_view').button(back,showBack and not self.disabled
+                    and not self.settlementRequested and not self.settlementBusy)
+            end
             routeCaption(back)
             if self.routeOpen then
                 self.mapUI.map = self.map
