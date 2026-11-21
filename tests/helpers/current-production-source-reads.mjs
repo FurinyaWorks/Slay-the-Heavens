@@ -29,7 +29,11 @@ export const currentProductionRereads = Object.freeze([...priorCurrentProduction
   'src/lua/abyss_battle_render_actors.lua',
   'src/lua/abyss_game_ui_input.lua',
   'src/lua/abyss_game_ui_view.lua',
+  'src/lua/abyss_battle_render_hud.lua',
   'src/lua/abyss_battle_ui.lua',
   'src/lua/abyss_game_ui.lua',
   'src/lua/abyss_ui.lua',
+  'src/lua/abyss_game_ui_navigation.lua',
+  'src/lua/abyss_game_ui_navigation_view.lua',
+  'src/lua/abyss_game_ui_overlays.lua',
 ]);

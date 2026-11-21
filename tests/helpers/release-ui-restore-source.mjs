@@ -36,18 +36,29 @@ const rightClick=releaseUiRestoreArchive(readFileSync(new URL('./release-card-ri
  'a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a','ae15cf5f597728f0fe876f7136230955c3ec6179');
 const fieldCancel=releaseUiRestoreArchive(readFileSync(new URL('./release-card-field-cancel-source.json.gz',import.meta.url)),
  'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca','aa8fde88c2a077f3e7266984cdf3a4e6be8fc45a');
+const controlsGuideRemoval=releaseUiRestoreArchive(readFileSync(new URL('./release-controls-guide-removal-source.json.gz',import.meta.url)),
+ '321abc9fb6759dd27644f414c88f3a2df0be32f236a258a52d5b89cc6d22d687','db8bca6ad226bc816de7e6919a320d9d41fe9a78');
+export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
+export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
-export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,source));
-const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths])];
+export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source)));
+const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ // A combined replay that contains current menu code must use the same release
+ // version for every sampled menu owner. Older all-historical views still replay.
+ const currentMenu=samples.some(([path,input])=>releaseControlsGuideRemovalSourcePaths.includes(path)
+  &&matches(input,controlsGuideRemoval.files[path].after));
  for(const path of authorizationPaths){
   const inputs=samples.filter(sample=>sample[0]===path).map(sample=>sample[1]);
-  const expected=[fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
-   .find(binding=>inputs.some(input=>matches(input,binding)));
-  if(!inputs.some(input=>matches(input,expected)))continue;
+  if(!inputs.length)continue;
+  const menuBinding=controlsGuideRemoval.files[path]?.after;
+  const expected=currentMenu&&menuBinding?menuBinding
+   :[menuBinding,fieldCancel.files[path]?.after,rightClick.files[path]?.after,files[path]?.after]
+    .find(binding=>inputs.some(input=>matches(input,binding)));
+  if(!expected)continue;
   const message='combined linked owner identity: '+path+' changed during owner validation';
   assert(inputs.every(input=>matches(input,expected)),message);
   let live;

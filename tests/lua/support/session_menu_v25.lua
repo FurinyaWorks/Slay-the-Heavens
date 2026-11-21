@@ -32,7 +32,7 @@ local function separated(panel,names)
  end end
 end
 assert(F.start(h));assert(press('exitEntry','open'))
-separated(root:GetChild('runMenu'),{'resume','help','map','mainMenu','abandon','quit','dismissHint'})
+separated(root:GetChild('runMenu'),{'resume','map','mainMenu','abandon','quit','dismissHint'})
 assert(press('runMenu','mainMenu') and h.sessionPaused)
 local menu=root:GetChild('menuPanel')
 assert(menu:GetChild('continueRun'):GetChild('v25MenuFace'):GetChild('normal').visible)
@@ -46,7 +46,7 @@ h:update(0);h:syncController()
 local title=menu:GetChild('titleQuit'):GetChild('hit')
 assert(title.canControllerFocus);focus=title
 assert(title.navigationListeners.cancel())
-separated(root:GetChild('runMenu'),{'resume','help','map','mainMenu','abandon','quit','dismissHint'})
+separated(root:GetChild('runMenu'),{'resume','map','mainMenu','abandon','quit','dismissHint'})
 assert(not root:GetChild('runMenu'):GetChild('mainMenu').visible and not root:GetChild('runMenu'):GetChild('quit').visible)
 h:disable()
 print('SESSION_MENU_V25_PASS')

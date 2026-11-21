@@ -69,7 +69,7 @@
     "battleAim": {"segments":20,"idle":"#FFFFFF","locked":"#FF334D","headSize":32,"lockScale":1.2,"bend":[0.25,0.5]},
     "battleRelicBar": {"origin":[-597.3333333333,292],"step":48,"icon":42.6666666667,"hit":48,"count":25},
     "battleRelicIcons": {
-      "burning_blood":{"id":105045,"placeholder":true,"note":"官方火焰徽章代用；非原版遗物专图，名称与效果保持真实数据。"},
+      "burning_blood":{"id":105071,"placeholder":true,"note":"官方石块图标仅在岩脉残晶原生图形不可用时代用。"},
       "kunai":{"id":105217,"placeholder":true,"note":"官方交叉利刃徽章代用苦无；非原版遗物专图。"},
       "ink_bottle":{"id":105243,"placeholder":true,"note":"官方紫色液体瓶代用墨水瓶；非原版遗物专图。"},
       "smiling_mask":{"id":105023,"placeholder":true,"note":"官方笑脸徽章代用面具。"},
@@ -2635,7 +2635,7 @@
         48
       ],
       "panel": [0, 0, 760, 440],
-      "title": [-90, 172, 500, 48],
+      "title": [0, 172, 500, 48],
       "message": [0, 82, 688, 96],
       "status": [0, -44, 688, 40],
       "cancel": [-180, -142, 320, 64],
@@ -2647,9 +2647,8 @@
       "pressedScale": 0.96,
       "nodeNotice": [-60, 262, 1080, 40],
       "whyText": [0, 10, 688, 40],
-      "help": [254, 172, 160, 48],
       "rule": [0, 138, 688, 2],
-      "hierarchyNote": "TASK-4.11：页眉=标题+操作说明（互不遮挡），金线分隔；后果正文 → 小字存档说明 → 状态 → 取消/确认，逐层不重叠。",
+      "hierarchyNote": "TASK-4.11：页眉居中显示标题，金线分隔；后果正文 → 小字存档说明 → 状态 → 取消/确认，逐层不重叠。",
       "entryVisual": {
         "diameter": 36,
         "border": 1,
@@ -3345,50 +3344,21 @@
       "pageCharacters": 9
     },
     "runMenu": {
-      "panel": [460, 90, 280, 512],
+      "panel": [460, 122, 280, 448],
       "title": [460, 318, 252, 48],
       "resume": [460, 254, 252, 56],
-      "help": [460, 190, 252, 56],
-      "map": [460, 126, 252, 56],
-      "mainMenu": [460, 62, 252, 56],
-      "rule": [460, 20, 232, 2],
-      "abandon": [460, -22, 252, 56],
-      "quit": [460, -86, 252, 56],
-      "dismissHint": [460, -136, 260, 40],
+      "map": [460, 190, 252, 56],
+      "mainMenu": [460, 126, 252, 56],
+      "rule": [460, 84, 232, 2],
+      "abandon": [460, 42, 252, 56],
+      "quit": [460, -22, 252, 56],
+      "dismissHint": [460, -72, 260, 40],
       "mapBack": [
         -522,
         -296,
         148,
         44
       ]
-    },
-    "nativeGuide": {
-      "panel": [0, 0, 1080, 680],
-      "title": [0, 282, 820, 48],
-      "columns": [-344, 0, 344],
-      "close": [0, -312, 260, 48],
-      "entry": [
-        184,
-        92,
-        128,
-        48
-      ],
-      "footer": [0, -260, 1000, 40],
-      "sectionY": 8,
-      "sectionSize": [332, 496],
-      "sectionTitle": [0, 224, 300, 40],
-      "sectionRule": [0, 202, 292, 2],
-      "rowTop": 174,
-      "rowStep": 116,
-      "rowHeight": 40,
-      "rowIcon": 28,
-      "rowIconX": -140,
-      "actionX": 0,
-      "actionWidth": 240,
-      "howX": 0,
-      "howDrop": 42,
-      "howWidth": 316,
-      "dismissHint": [344, 282, 300, 40]
     },
     "battleUnit": {
       "nameGap": 9.333333333333334,
