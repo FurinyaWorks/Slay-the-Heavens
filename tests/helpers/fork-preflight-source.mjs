@@ -132,6 +132,11 @@ const closeoutSuccessors=Object.freeze({
 // Reuse the existing immutable archive for historical inputs while authenticating
 // exact live source successors, including their current tests.
 const sourceSuccessors=Object.freeze({
+ // Bind the v2.0.0 candidate metadata without rewriting any archived view.
+ 'package.json':'f1b1fa527b0a019901c4aa48789a52df9efd31e00f7b4c0ca19057efc2fae15a',
+ 'package-lock.json':'4324b6b6d38e7c8dc3d8d00a374663cf4eaf27e02f72ca4eebd51a63414c2436',
+ '.release-please-manifest.json':'9e38a481f52b5af8537babca8f5d13d5a0ab72473e1deba2e1aeb71e05dcd5b9',
+ 'CHANGELOG.md':'50a35daf679051577ce4cc49709a6914ecd01378294ef76b06057541046808f8',
  'docs/legal/assets.json':'1092785bd84163abd9ba779f6447807513c3ddf1bb8c0787584a93b1fb468b70',
  'scripts/official-portraits.mjs':'03d4ea596257e87e4d3ea3f22fc1f1e938f516b8d20c4e9983aceeb51d5b5186',
  'tests/lumine-idle.test.mjs':'183cc0be21ca7a757e3cde25529064a62d5315915e88c3427412786e9ad69e09',
