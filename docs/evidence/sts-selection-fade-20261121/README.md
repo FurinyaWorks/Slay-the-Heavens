@@ -32,7 +32,7 @@ python docs/evidence/v2-ui-20261119/render-runtime.py build/sts-evidence-states
 
 最新 preserve785 定向：9/9通过，新增断言覆盖原生圆角及选角常驻veil消失。用户指出的白色句子待按具体控件确认；普通加载的message已隐藏，角色信息不擅自删除。图片已更新为保留 #785 的版本，旧独审不是新源码的合并准入证明。
 
-完整npm test尝试尚未完成，过程中已有 `actual CRLF source and helper checkout retain the frozen LF Git identity`、`Act1 failure boundaries 1/4 preserve all original values and aliases` 失败，未取得完整绿灯；其运行期间发生了用户纠正后的源码更新，不能用于认证最终候选。尚未创建PR、启用Auto-merge或合入。
+完整npm test尝试尚未完成，过程中已有 `actual CRLF source and helper checkout retain the frozen LF Git identity`、`Act1 failure boundaries 1/4 preserve all original values and aliases` 失败，未取得完整绿灯；其运行期间发生了用户纠正后的源码更新，不能用于认证最终候选。该次记录时尚未创建PR、启用Auto-merge或合入。
 
 ## 继续执行后的回归收口
 
@@ -47,3 +47,5 @@ python docs/evidence/v2-ui-20261119/render-runtime.py build/sts-evidence-states
 上轮完整npm test在源码修正期间中断，不作最终候选证明；本轮正式Full、独审与Merge Queue以PR/Actions真实结果为准。官方候选写入/读回、官方导入/ready、PC/实体手机仍未验，保持TASK-111进行中。
 
 历史CI与完整选角回放收口：74/74通过（ci-custody.log.gz），包含本轮精确复制闭包后继与清单接续后的旧合同；没有改写旧归档。正式配置runtime的35项包含末击/奖励不闪屏及移动商店返回触摸归属。当前只承诺这些已执行结果，Full托管组合与官方设备验收分别追踪。
+
+最终独审追加的Windows检出问题已修正：仅为两份新黄金JSON追加 `text eol=lf`，保留原字节哈希断言；真实 `core.autocrlf=true checkout-index` 后两模块导入通过（windows-checkout.log.gz）。PR [#803](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/803) 仅指向develop，申请正式Full；最终签署与原生队列状态以GitHub记录为准。

@@ -28,8 +28,9 @@
     "tests/helpers/character-preparation-source.mjs": "83af963f9bf01827fad55d2fdb631eeaf3fc755137741fb0f55c89ca283d31df"
   },
   "files": {
+    "docs/evidence/sts-selection-fade-20261121/windows-checkout.log.gz": "fa4c7da9781f51c42721324d71f63208a17887bb7e71e9c8a479c60422beae0f",
     "docs/evidence/sts-selection-fade-20261121/after-selection.png": "3f47445dbdf43362bb36e4b27467af3b0d0dc903a853912f538ed2c217d8a961",
-    "docs/evidence/sts-selection-fade-20261121/README.md": "5b28537e4f6b293bb4046c580863dce5b3242a234658eed99184492e99c16615",
+    "docs/evidence/sts-selection-fade-20261121/README.md": "802652df85c1e2e2d3129b1dccd26561837b3215ff047d180e4d23fa8be07b18",
     "docs/evidence/sts-selection-fade-20261121/before-selection.png": "accb6e67e7e465125a319a30e48fabe195c43aa2c60c7b9a90f484218b4bf61d",
     "docs/evidence/sts-selection-fade-20261121/capture.mjs": "ec23cf8cd8488d60d4627fa2beb1acdd404d104eaf186a4713aa87fcc7c499d6",
     "docs/evidence/sts-selection-fade-20261121/official-runtime.log.gz": "e586785d4ddfb05bf65307fd657c9af58a36c77846ded582b7ca5863c49676ab",

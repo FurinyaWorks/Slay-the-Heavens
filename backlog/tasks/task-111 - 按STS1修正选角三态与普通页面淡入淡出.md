@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-21 12:50'
-updated_date: '2026-11-21 13:32'
+updated_date: '2026-11-21 13:37'
 labels:
   - P2
   - non-blocking
@@ -59,4 +59,6 @@ ordinal: 186000
 继续执行已保留#785圆角/去常驻veil，修复开发头像被过度禁用；定向56/56、头像30/30、正式配置运行35/35、工程(架构/静态/变异/原生合同)通过。CRLF1项、隔离源2项、Act1失败边界1/4均复验通过；历史清单/复制闭包保持精确身份和负控。证据docs/evidence/sts-selection-fade-20261121，白色普通加载提示隐藏、保留既有角色信息。准备仅develop正常PR、最终独审和Full；官方PC/手机继续未验，P2不进入当前发版门禁。
 
 历史CI校准与完整旧选角回放74/74通过，CI拷贝闭包/源码次序与新测试custody已完整接续且保留旧断言。完整正式配置runtime35/35通过，含末击奖励不闪屏和移动商店返回触摸；原生角色30/30、主要回归56/56、工程全部通过。开始最终精确SHA独审与develop PR，不标官方验收/Full或已合入。
+
+PR803已创建并仅指向develop，ci:full申请正式Full。最终独审发现两新JSON未固定LF；已仅补text eol=lf并保留原始字节hash断言，真实core.autocrlf=true checkout-index后两helper导入通过。重新冻结提交并复审后再签署原生独审/Auto-merge；未合入，不标Done，官方设备仍未验。
 <!-- SECTION:NOTES:END -->
