@@ -519,6 +519,31 @@ assert(cr:GetChild('mapPanel'):GetChild('previewBack'):GetChild('label').text~='
 `, 'OFFICIAL_RUNTIME_COMBAT_PASS');
 });
 
+test('official map return paints four states through the existing battle route',t=>{
+ runOfficial(t,`
+local host,_,panel,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local route=panel:GetChild('topBar'):GetChild('battleRoute'):GetChild('hit')
+route.listeners.down({touchId=1});route.listeners.up({touchId=1})
+assert(route.click({touchId=1})and host.routeOpen)
+local back=root:GetChild('mapPanel'):GetChild('previewBack')
+local label,hit,face=back:GetChild('label'),back:GetChild('hit'),assert(back:GetChild('v25Face'))
+local function state(expected)
+ for _,name in ipairs({'normal','hover','pressed','disabled'})do
+  assert(face:GetChild(name).visible==(name==expected),'map return state '..name)
+ end
+end
+assert(label.text=='返回战斗');state('normal')
+hit.listeners.enter({});state('hover')
+hit.listeners.down({touchId=703});state('pressed')
+hit.listeners.endDrag({touchId=703});state('normal')
+assert(not hit.click({touchId=703})and host.routeOpen)
+hit.listeners.down({touchId=704});hit.listeners.up({touchId=704})
+assert(hit.click({touchId=704})and not host.routeOpen and host.mode=='battle')
+assert(label.text~='返回战斗');state('disabled')
+print('OFFICIAL_MAP_RETURN_STATES_PASS')
+`, 'OFFICIAL_MAP_RETURN_STATES_PASS');
+});
+
 
 test('official lethal feedback and reward widgets do not flash the page cover',t=>{
  runOfficial(t,`

@@ -176,6 +176,7 @@ test('official build adopts the existing paper map without replacing graph or in
  const nodes=all(map).filter(n=>/^node\d+$/.test(n.name));
  const edges=all(map).filter(n=>/^edge\d+$/.test(n.name));
  const hits=all(map).filter(n=>n.kind==='cursorArea');
+ const back=child(map,'previewBack'),label=child(back,'label'),hit=child(back,'hit');
  applyOfficialAssets([layout],theme);
  assert(child(map,'v25MapPaper'),'official candidate must include the adopted map, not the old black fallback');
  const group=child(map,'mapGroup1'),legend=child(group,'typeLegend');
@@ -187,6 +188,14 @@ test('official build adopts the existing paper map without replacing graph or in
   current.forEach((node,index)=>assert.strictEqual(node,expected[index],'retain live graph/input owner '+node.name));
  }
  assert(edges.every(n=>n.children?.length===8),'reuse the existing dashed-ink edge adapter');
+ const cancel=child(child(layout,'characterPanel'),'cancel'),face=child(back,'v25Face');
+ assert.equal(child(map,'previewBack'),back);
+ assert.equal(child(back,'label'),label);
+ assert.equal(child(back,'hit'),hit);
+ assert.deepEqual(back.size,cancel.size);
+ for(const name of ['normal','hover','pressed','disabled']){
+  assert.deepEqual(child(child(face,name),'v25Flag'),child(child(child(cancel,'hit'),name),'v25Flag'));
+ }
 });
 
 test('run headers paint above opaque page backgrounds and below their live resource text',()=>{

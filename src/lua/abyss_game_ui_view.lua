@@ -441,6 +441,10 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
                 back:GetChild('hit').raycastTarget=showBack
             end
             back:SetVisible(showBack)
+            if hud and back:GetChild('v25Face') then
+                require('abyss_v25_menu_view').button(back,showBack and not self.disabled
+                    and not self.settlementRequested and not self.settlementBusy)
+            end
             routeCaption(back)
             if self.routeOpen then
                 self.mapUI.map = self.map
