@@ -141,13 +141,13 @@ const integratedReleaseFiles=Object.freeze({
 });
 const reconciledReleaseFiles=Object.freeze({
  ...integratedReleaseFiles,
- 'tests/helpers/rebased-release-source.mjs':'dc753fc1432f000f3ceed7624da46fbd6a79be303bfa1a720426c19cc69624ac',
- 'tests/helpers/rebased-release-source.json.gz':'33ab0223afc0c454213fe0b6e8d0c21d01d85379d4a2d079a961e92a1673de3b',
+ 'tests/helpers/rebased-release-source.mjs':'7fae9738c4408cb1e54a7c1cdc59ce188240286dcefd46caaceddfaac2088b0c',
+ 'tests/helpers/rebased-release-source.json.gz':'597eb11c901cdb335b0b1dfad09d90ce71274838d37687dfef35f629f4dd14c4',
  'tests/helpers/loading-recovery-source.mjs':'0c177f516b3bb09fb24bb39076b2bf649d15ded75b5d2f0ec4aba36db11e4d7b',
  'tests/helpers/pc13-reward-cover-source.mjs':'e8d58b2f3484855a9e986c945b6add861436ca754fb24ef8be71f0777ef46b9b',
  [runtime]:'d25494ab5a1d269568c321fe3e9c1a2494239f3916d46bd93331a5328fff549b',
  'tests/helpers/potion-pointer-source.mjs':'ba6547de02ef3188b9658764452283cd671e3324f19cf0775bce3221db53cdab',
- 'tests/helpers/release-ui-restore-source.mjs':'2a17a830eb9f09d53302986c8e4cffc44791b78c2ac2d02c33ecdc6ea330edcd',
+ 'tests/helpers/release-ui-restore-source.mjs':'75da223110ac6a108face448920b3c07f61c427544cc8953a043721f99499c03',
  'tests/helpers/release-shared-relic-source.json.gz':'4e72ca430cf8740dd6cb828547d8b8f29ba169c0c90cf49c2c662aa5964df5cc',
  'tests/helpers/release-ui-restore-source.json.gz':'e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b',
  'tests/helpers/release-card-field-cancel-source.json.gz':'f38a352f98ef946e1e836781dd9ebd131010c03e04cfa62f928d94f6358c3bca',

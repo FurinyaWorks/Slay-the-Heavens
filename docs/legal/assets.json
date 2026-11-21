@@ -10104,6 +10104,26 @@
     "docs/evidence/sts1-main-menu-20261121/original-sts1-reference.jpg": {
       "sha256": "07ba0a65572376c22c687436afba469993376184a58126578aca52ab00fcd39e",
       "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/energy-comparison.png": {
+      "sha256": "52f577179f30a51b439ff8a997bb22e18645e65848293292ab7104619d0b027e",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/exhaust-spike-still.png": {
+      "sha256": "041a7b20f91a8142a43a642510c31e36e747a35fdcbb7758db497c29e2516569",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/flow-spike.gif": {
+      "sha256": "e948f55ae01adfad50e59cc71024b5dbe195966f34e0d782bd56ebf619b96dd4",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/status-contact-sheet.png": {
+      "sha256": "d383f928822b551bdd1aebb425b3b4940f6292b083df7d459d80193589c61914",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/strength-ritual.png": {
+      "sha256": "ca2edd2f41623bf6e4ccbad25102de6e23d0c2fc7ff3144422c747d51743ae53",
+      "category": "platform-evidence"
     }
   }
 }
