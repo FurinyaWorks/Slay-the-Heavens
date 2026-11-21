@@ -144,7 +144,7 @@ export function renderQuality(report) {
   const topFunctions=[...ranked].sort((a,b)=>b.lines-a.lines||a.file.localeCompare(b.file,'en')).slice(0,15);
   const topComplexity=snapshot.modules.flatMap(m=>m.functions.map(f=>({file:m.file,...f})))
     .sort((a,b)=>b.complexity-a.complexity||a.file.localeCompare(b.file,'en')).slice(0,15);
-  return `# 工程质量报告\n\n${report.status}；新增数值门槛保持 report-only，不代表工程债务已治理。\n\n`
+  return `# 工程质量报告\n\n${report.status}；全库 CC30 检查已执行，其余新增指标继续报告。\n\n`
     +`源码提交：${report.revision??'unknown'}；基线：${report.baselineRevision??'unknown'}；活动规则源：${report.activePolicy?.sourceRevision??'unknown'}。以逐模块源码摘要为实际输入身份。\n\n`
     +`覆盖 ${coverage.modules} 模块、${coverage.functions} 函数；复杂度 ${coverage.measurements}/${coverage.expectedMeasurements} 项。\n\n`
     +table(['指定模块','文件行数','最长函数跨度','最高复杂度'],qualityContract.watchedModules.map(name=>{
@@ -171,6 +171,13 @@ export function main(args=[],collect=collectEngineeringInputs) {
   const report={schemaVersion:1,status:'failed',mode:'report-only',revision:revision(),createdAt:new Date().toISOString(),errors:[]};
   try {
     Object.assign(report,collectQuality(collect()));
+    for(const {file,functions} of report.snapshot.modules) {
+      for(const fn of functions) {
+        if(fn.complexity>30) report.errors.push({
+          file,line:fn.line,column:fn.column,message:`Absolute complexity CC${fn.complexity} exceeds 30: ${fn.name}`,
+        });
+      }
+    }
     const baseline=readJson(baselineFile);
     report.baselineRevision=baseline.revision;report.baselineSha256=digest(baselineFile);
     report.diff=compareQuality(report.snapshot,baseline.snapshot);
@@ -183,7 +190,7 @@ export function main(args=[],collect=collectEngineeringInputs) {
   report.durationMs=Date.now()-started;
   writeFileSync('build/engineering-quality.json',JSON.stringify(report,null,2)+'\n');
   writeFileSync('build/engineering-quality.md',report.snapshot?renderQuality(report):`# 工程质量采集失败\n\n${report.errors.map(e=>e.message).join('\n')}\n`);
-  console.log(`Quality ${report.status}: ${report.coverage?.modules??0} modules; ${report.coverage?.measurements??0}/${report.coverage?.expectedMeasurements??0} measurements; new thresholds report-only. See build/engineering-quality.{json,md}`);
+  console.log(`Quality ${report.status}: ${report.coverage?.modules??0} modules; ${report.coverage?.measurements??0}/${report.coverage?.expectedMeasurements??0} measurements; absolute CC30 checked. See build/engineering-quality.{json,md}`);
   if(report.errors.length){console.error(report.errors.map(e=>`${e.file??''}: ${e.message}`).join('\n'));process.exitCode=1;}
   return report;
 }
