@@ -40,6 +40,7 @@ local function iconId(entry) return type(entry) == "table" and entry.id or entry
 local function merchantVisible(ctx, node, active)
     if not node or node.type ~= 'shop' or ctx.self.mode ~= 'main' or not (active or node.complete) then return false end
     if not layout.shop.referenceBareGoods then return true end
+    if ctx.merchant.compact then return true end
     local current = ctx.merchant.current
     return current ~= nil and current.kind ~= 'encounter' and current.kind ~= 'greet' and current.kind ~= 'idle'
 end
@@ -240,6 +241,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         if backLabel then back:GetChild("label").text = backLabel ctx.state(back, true) end
         if confirmLabel then confirm:GetChild("label").text = confirmLabel ctx.state(confirm, confirmOk, false, true) end
         ctx.action("back", backLabel ~= nil, function()
+            if ctx.self.view.node and ctx.self.view.node.type=='shop' and ctx.self.mode=='main' and not ctx.shopSelection.selected then return ctx.closeShop() end
             if ctx.shopSelection:cancel() then return true end
             if ctx.options.enhancedRooms and ctx.self.picker=='upgrade' and ctx.self.selected then
                 ctx.self.selected=nil;ctx.self:render();return true
@@ -261,6 +263,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         local view = Nodes.view(self.run, self.map)
         local node = view.node
         ctx.syncNodeIdentity(node)
+        ctx.syncShop()
         self.renderRun, self.renderMap, self.nodeId = self.run, self.map, node and node.id
         self.view, self.actions = view, {}
         local result = self:holding() and self.result or nil
@@ -281,6 +284,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         ctx.bindStagedEventActions(node);ctx.clearUnusedNativeArt(previousArt)
         self.failed = false
         ctx.roomMotion:paint()
+        ctx.paintShop()
     end
 
     require('abyss_relic_pending_ui').install(ctx)

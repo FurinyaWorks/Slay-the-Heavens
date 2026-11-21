@@ -39,6 +39,7 @@ local function setup(kind,linked,extraCards,source)
     local ui=UI.new(root,run,map,Presentation,"click",nil,{cursorEvents=cursor,enhancedRooms=true,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,sound=function(cue)sounds[#sounds+1]=cue end})
     ui.testSounds=sounds
     ui:setVisible(true)
+    if kind=="shop" then assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").listeners.click());ui:update(.31) end
     local function get(key)
         local box=root for part in key:gmatch("[^/]+") do box=assert(box:GetChild(part),key) end
         return box

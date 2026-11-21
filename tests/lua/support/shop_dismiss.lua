@@ -33,6 +33,7 @@ local function setup(touch,withController)
     local ui=UI.new(root,run,map,F.Presentation,'click',nil,{cursorEvents=cursor,
         controller=manager,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,touchScreen=function()return touch end})
     ui:setVisible(true)
+    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());ui:update(.31)
     local function get(path)
         local control=root
         for key in path:gmatch('[^/]+')do control=assert(control:GetChild(key),path)end
@@ -56,7 +57,7 @@ test('mobile blank tap closes only current detail, then supports another item, p
     assert(tap('shopView/potion1',3));assert(get('shopView/detail').visible)
     local price=ui.run.nodeFlow.potions[1].price;local gold=ui.run.gold
     assert(tap('confirm',4));assert(ui.run.gold==gold-price and Run.potionCount(ui.run)==1)
-    assert(tap('confirm',5));assert(ui.run.nodeFlow.complete,'leaving shop stopped working')
+    assert(tap('back',5));ui:update(.31);assert(ui.run.nodeFlow.complete,'leaving shop stopped working')
 end)
 test('desktop hover and selected focus are both removed by outside dismissal',function()
     local ui,get,emit,tap=setup(false)

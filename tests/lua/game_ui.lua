@@ -196,7 +196,7 @@ test("node panels compose through Boss16, independent treasure17 then restart", 
                 click(root, "nodePanel", "confirm")
                 assert(ui.run.gold < before)
             end
-            click(root, "nodePanel", "confirm")
+            click(root, "nodePanel", "back");ui:update(.31)
             -- The merchant's farewell holds the shop panel until the player continues.
             assert(ui.mode == "node" and ui.run.phase == "map" and not ui.mapUI.navigationEnabled)
             assert(root:GetChild("nodePanel"):GetChild("merchant").visible)

@@ -31,6 +31,7 @@ function M.install(ctx)
         ctx.resetButtons()
         ctx.shopSelection:clear()
         ctx.roomMotion:cancel()
+        ctx.cancelShop(false)
         self.canvasWidth, self.canvasHeight = width, height
         if self.pendingOwner then self:render();return end
         if self.view and self.view.node and (self.view.node.type=='shop' or ctx.options.enhancedRooms) then self:render() end
@@ -47,6 +48,7 @@ function M.install(ctx)
     function ctx.self:update(dt)
         self:prepare(dt)
         ctx.roomMotion:update(dt)
+        ctx.updateShop(dt)
         ctx.rewardDetail:update(dt)
         ctx.shopSelection:update(dt)
         ctx.updateMatch(dt)
@@ -83,7 +85,7 @@ function M.install(ctx)
         assert(type(value) == "boolean", "node visibility must be boolean")
         if value and not self.run then return false, "node_unbound" end
         if not value then
-            ctx.resetButtons();ctx.shopSelection:clear();ctx.roomMotion:cancel()
+            ctx.resetButtons();ctx.shopSelection:clear();ctx.roomMotion:cancel();ctx.cancelShop(false)
             if not retainPage then
                 for box in pairs(ctx.artFaces)do CardDisplay.clearNativeArt(box)end;ctx.artFaces={}
             end
@@ -111,7 +113,7 @@ function M.install(ctx)
 
     function ctx.current()
         if not ctx.self.visible then return false, "panel_hidden" end
-        if ctx.self.busy or ctx.self.presentationBusy then return false, "unavailable_action" end
+        if ctx.self.busy or ctx.self.presentationBusy or ctx.self.shopBusy then return false, "unavailable_action" end
         if ctx.self.pendingOwner then
             if ctx.self.renderRun~=ctx.self.run or ctx.self.renderMap~=ctx.self.map
                 or require('abyss_relic_pending').owner(ctx.self.run)~=ctx.self.pendingOwner then return false,'stale_action'end
@@ -199,6 +201,7 @@ function M.install(ctx)
     end
 
     function ctx.self:press(key)
+        if key:match("^shopView/") and not self.shopOpen then return false,"unavailable_action" end
         local ok, view = ctx.current()
         if not ok then
             local entry = self.actions[key]
