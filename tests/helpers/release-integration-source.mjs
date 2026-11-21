@@ -7,7 +7,7 @@ import { gunzipSync } from 'node:zlib';
 const hash = (value, algorithm='sha256') => createHash(algorithm).update(value).digest('hex');
 const blob = value => hash('blob ' + Buffer.byteLength(value) + '\0' + value, 'sha1');
 const archive = readFileSync(new URL('../fixtures/release-integration-source.json.gz', import.meta.url));
-assert.equal(hash(archive), 'c84591b4855da4b636fde44d676f85a423bc69443171fff3a22e8e1b0238f837', 'exact Release integration source archive');
+assert.equal(hash(archive), '5e562368b69b46c3b0015b39f6d9d4e4965de023f1995e6e8e4a5f1648f4e846', 'exact Release integration source archive');
 const layers = JSON.parse(gunzipSync(archive));
 
 for (const layer of Object.values(layers)) {
@@ -32,7 +32,7 @@ export function beforeReconciledReleaseSource(path,source) {
 }
 
 export function beforeLateReleaseUiSource(path,source) {
-  return project(layers.potion,path,project(layers.forge,path,source));
+  return project(layers.potion,path,project(layers.forge,path,beforeReconciledReleaseSource(path,source)));
 }
 
 export function beforeReleaseDetailSource(path,source) {

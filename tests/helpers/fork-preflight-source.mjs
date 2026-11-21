@@ -141,7 +141,7 @@ const newerTests={
  lua:{
   'tests/lua/detail_latency.lua':'8cd646c8d369ffdf1a59d08ee59c336acf2d064757b27c0c658e08c182caf4a0',
   'tests/lua/potion_management_visual.lua':'4732441f834fa47346ac567392bb4c68758b580b091ef2ce54ab05591d89c5f4',
-  'tests/lua/traveler_power_tooltip.lua':'eacaefc663ef5800d114a4118546a170ee7c93be09800df02108a223285afda0'
+  'tests/lua/traveler_power_tooltip.lua':'33c53a378998014847554910c23db18b53608d137793514cb7824088040d17af'
  },
 };
 export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
