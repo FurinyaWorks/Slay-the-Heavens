@@ -1,7 +1,7 @@
 import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
-import {beforeV2UiEvidence,beforeFieldConfirmation} from './v2-p1-ci-source.mjs';
+import {beforeV2UiEvidence,beforeFieldConfirmation,beforeRelicCrystal} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
@@ -129,6 +129,7 @@ function beforeCardFeedbackCiSource(path,source){
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
 }
 function beforeCoopCiSource(path,source){
+ source=beforeRelicCrystal(path,source);
  source=beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,source)));
  source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
  source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
@@ -220,7 +221,8 @@ function beforeIntegrationSuccessor(path,source){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertDevelopCapacityCohort(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,read(path,'utf8'))))));
+  const input=beforeRelicCrystal(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,input)))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){

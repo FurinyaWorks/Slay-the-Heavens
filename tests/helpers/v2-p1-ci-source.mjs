@@ -47,7 +47,7 @@ const crystalBytes=readFileSync(new URL('../fixtures/relic-crystal-backflow-sour
 assert.equal(sha256(crystalBytes),'1b887df233d7397eeae862205e043df1c5ab90811442e0ad6fa3d56e5930c176','exact relic crystal backflow archive');
 const crystalSources=JSON.parse(gunzipSync(crystalBytes));
 for(const row of Object.values(crystalSources))assert.equal(sha256(row.before),row.beforeSha);
-function beforeRelicCrystal(path,source){
+export function beforeRelicCrystal(path,source){
   const row=Object.hasOwn(crystalSources,path)?crystalSources[path]:null;
   if(!row||typeof source!=='string'||source.includes('\r\r\n')
     ||sha256(source.replaceAll('\r\n','\n'))!==row.afterSha)return source;
