@@ -6,7 +6,7 @@ import {gunzipSync} from 'node:zlib';
 const hash=(s,alg='sha256')=>createHash(alg).update(s).digest('hex');
 const blob=s=>hash(`blob ${Buffer.byteLength(s)}\0${s}`,'sha1');
 const archive=readFileSync(new URL('../fixtures/m05-shop-ci-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'873d390f1e9fd6026d1f5b47529ff017651c1a5aa46d8a079f69d3f657254a50','exact M05 CI archive');
+assert.equal(hash(archive),'9dd0b49c2d5c2eb084ac798a91b6a38b4a8f36269677bb730b863b8d53727e8d','exact M05 CI archive');
 const {base,files,inventories}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'ff6af63d9bf93056dd772347d10dc749e7fa8d34');
 const additions=Object.freeze({js:'tests/shop-dismiss.test.mjs',lua:'tests/lua/shop_dismiss.lua'});

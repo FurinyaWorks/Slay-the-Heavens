@@ -1752,7 +1752,8 @@ test('M05 exact source and discovery custody reject drift before older adapters'
   const source=raw(owner),calls=[];
   const admit=input=>beforeAuthenticatedM05ShopSource(owner,input,p=>{calls.push(p);return raw(p);});
   assert.notEqual(admit(source),source);
-  assert.notEqual(admit(source.replaceAll('\n','\r\n')),source.replaceAll('\n','\r\n'));
+  const crlf=source.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+  assert.notEqual(admit(crlf),crlf);
   assert.deepEqual(calls,[owner,owner],'read the exact owner for each admission, including warm repeats');
   assert.equal(admit(source+'\n'),source+'\n');assert.deepEqual(calls,[owner,owner]);
   assert.throws(()=>beforeAuthenticatedM05ShopSource(owner,source,()=>source+'\n'),/linked owner identity/);
