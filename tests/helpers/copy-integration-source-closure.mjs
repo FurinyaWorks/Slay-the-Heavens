@@ -83,8 +83,8 @@ const stsCloseoutFiles=Object.freeze({
  ...stsFadeFiles,
  'tests/helpers/potion-pointer-source.mjs':'7fe84ca4ec6fa72ad78d83cf2613a60326127ac9906c72fc4c72daf04c14b488',
  'tests/helpers/sts-selection-fade-source.mjs':'d3be357f4c639c9f6d305eaa45b08674168f9f7166ecd50f8f4d6f41b3e560e7',
- 'tests/helpers/sts-ui-closeout-source.mjs':'0f7306498987f2d3575373bd67dcace916538ada929ee601bcf329ee1b6d8cf1',
- 'tests/fixtures/sts-ui-closeout-source.json':'4ffb2110fe4bc0683f4384fba62e4aca80267bf87fc2b7ba49d5f89d532d3c90',
+ 'tests/helpers/sts-ui-closeout-source.mjs':'0ce050727bcbcada0b9d34784ed81d4e95c8be460d071af02b7b38fa12c44b88',
+ 'tests/fixtures/sts-ui-closeout-source.json':'c8f470fc19bae2ff6ce95b7dabeee54859fb8cba1f3187104d3c9cf60fc2cc67',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
