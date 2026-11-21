@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.mjs';
 import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
+import {historicalReleaseBuildInput} from './fork-preflight-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const reviewedContracts=Object.freeze({
  'tests/sts-character-reference.test.mjs':5,
@@ -28,7 +29,12 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
  const started=Date.now(),remaining=()=>{const ms=60000-(Date.now()-started);assert(ms>0,'original selection replay deadline');return ms;};
  try{
   const paths=execFileSync('git',['ls-files','scripts','data','config','tools','tests/helpers'],{encoding:'utf8'}).trim().split('\n');
-  for(const path of paths){assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});copyFileSync(path,target);}
+  for(const path of paths){
+   assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
+   const predecessor=historicalReleaseBuildInput(path,readFileSync);
+   if(predecessor===undefined)copyFileSync(path,target);
+   else writeFileSync(target,predecessor);
+  }
   cpSync(join(root,'tests/fixtures'),join(directory,'tests/fixtures'),{recursive:true});
   for(const [path,row]of Object.entries(integratedCiProof.files)){
    if(!row.views.release||path.startsWith('src/'))continue;

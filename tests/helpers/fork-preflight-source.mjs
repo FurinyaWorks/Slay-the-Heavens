@@ -52,7 +52,7 @@ const normalize=s=>s.replaceAll('\r\n','\n');
 // Keep earlier CI observations bound to the Release baseline while current
 // tests execute the approved default and frozen candidate paths.
 const releaseUiBuildBytes=readFileSync(new URL('./release-ui-build-ci-source.json.gz',import.meta.url));
-assert.equal(hash(releaseUiBuildBytes),'cf79441a350083ad0aa3a9ab2269b92f670fe58c81613fb4ef686761eb406322');
+assert.equal(hash(releaseUiBuildBytes),'eda8226994b6d21bc75bff129688320052f51896df8973d7c65b9b6fa361a0ee');
 const releaseUiBuild=JSON.parse(gunzipSync(releaseUiBuildBytes));
 assert.equal(releaseUiBuild.base,'ff6af63d9bf93056dd772347d10dc749e7fa8d34');
 const blob=source=>createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0${source}`).digest('hex');
@@ -67,6 +67,12 @@ function beforeReleaseUiBuildSource(path,source){
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
+export function historicalReleaseBuildInput(path,read){
+ if(!Object.hasOwn(releaseUiBuild.files,path))return undefined;
+ const source=read(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source);
+ assert.notEqual(prior,source,'fresh approved build source: '+path);
+ return prior;
 }
 const coopLabCiBytes=readFileSync(new URL('./coop-lab-ci-predecessors.json.gz',import.meta.url));
 assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc469830fe0ae9255285dc','complete co-op lab CI predecessors');

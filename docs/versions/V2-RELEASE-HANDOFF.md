@@ -2,6 +2,8 @@
 
 2026-11-19 起冻结旧 `release/v2.0.0`。冻结提交为 `1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2`。旧候选启动失败，恢复工作在最新 `origin/develop` 上进行。
 
+2026-11-21 恢复发布工作分支并同步到 `ff6af63d`。本轮默认构建及同步回归修复以 `release/v2.0.0` 为基线，候选仍按下文清单重新取证。11-19 的冻结流程留作历史。[同步 PR #775](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/775)
+
 ## 开发与接续
 
 - 从最新 `origin/develop` 创建独立工作树及短分支。所有重建 PR 指向 `develop`。旧分支保留原引用，停止合并，保持保护规则。
