@@ -57,10 +57,23 @@ print('ENERGY_VISUAL_READONLY_PASS')`);
  const r=runLua('build/visual-test/energy.lua');assert.equal(r.status,0,r.stdout+r.stderr);
 });
 
-import {beforeCombatVisualSource} from './combat-visual-source.mjs';
+import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 test('historical adapter only recognises exact current bytes and rejects changed live reads',()=>{
  const path='src/lua/abyss_card_skin.lua',source=readFileSync(path,'utf8');
  assert.notEqual(beforeCombatVisualSource(path,source),source);
  assert.equal(beforeCombatVisualSource(path,source+'-- unknown'),source+'-- unknown');
  assert.throws(()=>beforeCombatVisualSource(path,source,()=>source+'-- changed'),/linked owner identity/);
+});
+
+import {assertRefinedReleaseSourcesCurrent} from './refined-release-source.mjs';
+import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
+test('fresh guards reject mixed old/new sources and integrated readback drift',()=>{
+ const path='src/lua/abyss_card_skin.lua',source=readFileSync(path,'utf8');
+ let reads=0;
+ const reader=()=>++reads===1?source:source+'-- changed';
+ assert.throws(()=>combatVisualPriorRead(reader)(path,'utf8'),/linked owner identity/);
+ const before=beforeCombatVisualSource(path,source);
+ assert.throws(()=>beforeCurrentProductionSource(path,before,p=>readFileSync(p,'utf8')),/fresh combat visual source/);
+ const layout='scripts/official-run-layout.mjs',old=beforeCombatVisualSource(layout,readFileSync(layout,'utf8'));
+ assert.throws(()=>assertRefinedReleaseSourcesCurrent(p=>p===layout?old:readFileSync(p,'utf8')),/fresh combat visual source/);
 });

@@ -184,8 +184,8 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- read=combatVisualPriorRead(read);
  assertRefinedReleaseSourcesCurrent(read);
+ read=combatVisualPriorRead(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
   const source=beforeV2UiEvidence(path,beforeReleaseUiBuildSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);

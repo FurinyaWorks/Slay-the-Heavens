@@ -1,4 +1,4 @@
-import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
+import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
 // Historical-only continuation. Production builds and test discovery use live inputs.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -53,8 +53,11 @@ export function authorizeRefinedReleaseProduction(samples,read){
  }
 }
 export function assertRefinedReleaseSourcesCurrent(read=readFileSync){
- read=combatVisualPriorRead(read);
- for(const path of paths)assert(matches(read(path,'utf8'),files[path].after),'fresh complete integration source: refined Release '+path);
+ for(const path of paths){
+  const source=read(path,'utf8');
+  assertCombatVisualCurrent(path,source,owner=>read(owner,'utf8'));
+  assert(matches(beforeCombatVisualSource(path,source,owner=>read(owner,'utf8')),files[path].after),'fresh complete integration source: refined Release '+path);
+ }
 }
 export function refinedReleaseHistoricalInput(path,read){
  read=combatVisualPriorRead(read);

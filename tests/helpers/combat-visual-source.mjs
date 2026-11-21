@@ -6,7 +6,7 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceContinuation} from './exact-source-continuation.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/combat-visual-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'5f13bbbce5e93009042583e76fdcce42dd09469a14c9cc42126b10ae561572a5');
+assert.equal(hash(bytes),'5b503c991fca3dea975f09560bf3f161d08d67b96518dc74943a7c2e151b0674');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.base,'5991585aabde667eef9852b8c340c194c42a5c62');
 const rows=packet.files,continuations=new Map();
@@ -21,6 +21,11 @@ export function beforeCombatVisualSource(path,source,read=p=>readFileSync(p,'utf
 export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>{
  const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8');
- const prior=beforeCombatVisualSource(path,text);
+ const prior=beforeCombatVisualSource(path,text,owner=>read(owner,'utf8'));
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
+
+export function assertCombatVisualCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ if(!continuations.has(path))return;
+ assert.notEqual(beforeCombatVisualSource(path,source,read),source,'fresh combat visual source: '+path);
+}
