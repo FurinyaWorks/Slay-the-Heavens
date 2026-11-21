@@ -14,8 +14,12 @@ local function travelerMode(owner)
         and (run.character == nil or run.character == "ironclad")
 end
 
-local function bindTraveler(owner, host, dependencies, control, describe)
+local function bindTraveler(owner, host, dependencies, control, describe, shared)
     local held, released, observed
+    local handlers = {}
+    local function on(kind, callback)
+        if shared then handlers[kind] = callback else control:AddCursorEventListener(kind, callback) end
+    end
     local function touchScreen() return host.platform.touchScreen() == true end
     local function clear() held, released = nil, nil end
     local function legacy(spec)
@@ -32,17 +36,18 @@ local function bindTraveler(owner, host, dependencies, control, describe)
         else legacy(spec) end
     end
     if host.cursor and host.cursor.CursorEnter and host.cursor.CursorExit then
-        control:AddCursorEventListener(host.cursor.CursorEnter, function()
+        on(host.cursor.CursorEnter, function()
             if travelerMode(owner) and not touchScreen() then activate(describe(), false) end
         end)
-        control:AddCursorEventListener(host.cursor.CursorExit, function()
+        on(host.cursor.CursorExit, function()
             held = nil
             if not touchScreen() then owner:closePowerTip(control) end
         end)
     end
-    Controller.bind(host.controller, control, "battle", function()
+    function handlers.press()
         if ready() then activate(describe(), true) end
-    end, dependencies.controllerReady, 80)
+    end
+    if not shared then Controller.bind(host.controller, control, "battle", handlers.press, dependencies.controllerReady, 80) end
     local function tapSpec(event)
         local touch, token = event and event.touchId, released
         clear()
@@ -53,14 +58,14 @@ local function bindTraveler(owner, host, dependencies, control, describe)
             return spec
         end
     end
-    control:AddCursorEventListener(host.clickEvent, function(event)
+    on(host.clickEvent, function(event)
         if Controller.pointerBlocked(host.controller) or not ready() then return end
         if travelerMode(owner) and not touchScreen() then return end
         if owner.info and dependencies.swallowed(event) then clear(); return end
         activate(tapSpec(event), true)
     end)
     if host.cursor and host.cursor.CursorDown and host.cursor.CursorUp then
-        control:AddCursorEventListener(host.cursor.CursorDown, function(event)
+        on(host.cursor.CursorDown, function(event)
             observed = true
             clear()
             if not ready() or travelerMode(owner) and not touchScreen() then return end
@@ -69,15 +74,18 @@ local function bindTraveler(owner, host, dependencies, control, describe)
             if spec then held = {run = run, battle = run.combat, turn = run.combat.turn,
                 touch = event and event.touchId, spec = spec} end
         end)
-        control:AddCursorEventListener(host.cursor.CursorUp, function(event)
+        on(host.cursor.CursorUp, function(event)
             if held and held.touch == (event and event.touchId) then
                 if not (event and event.dragging) then released = held end
                 held = nil
             end
         end)
-        if host.cursor.CursorDrag then control:AddCursorEventListener(host.cursor.CursorDrag, clear) end
-        if host.cursor.CursorEndDrag then control:AddCursorEventListener(host.cursor.CursorEndDrag, clear) end
+        if host.cursor.CursorDrag then control:AddCursorEventListener(host.cursor.CursorDrag, function()
+            if travelerMode(owner) then clear() end
+        end) end
+        if host.cursor.CursorEndDrag then on(host.cursor.CursorEndDrag, clear) end
     end
+    return handlers
 end
 
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
@@ -104,9 +112,16 @@ function M.install(owner, _ownership, host, dependencies)
         if owner.info and owner.info.source==control then owner.info=nil end
     end
     -- hoverSlot: a reward card also reports pointer enter/exit for its hover pose (one listener per event).
-    local function bindHelp(control,describe,clickable,hoverSlot,guard,cleanups)
+    local function bindHelp(control,describe,clickable,hoverSlot,guard,cleanups,travel)
         local function current()return not guard or guard()end
         if not current() then return end
+        local function on(kind, callback)
+            if not travel then return control:AddCursorEventListener(kind, callback) end
+            control:AddCursorEventListener(kind, function(event)
+                if travelerMode(owner) then return travel[kind](event) end
+                return callback(event)
+            end)
+        end
         local input={}
         local function cancel(silent,engineDestroyed)
             if engineDestroyed then input.engineDestroyed=true end
@@ -119,18 +134,19 @@ function M.install(owner, _ownership, host, dependencies)
         end
         if cleanups then cleanups[#cleanups+1]={control=control,cancel=cancel} end
         if hasCursorPair("CursorEnter","CursorExit") then
-            control:AddCursorEventListener(host.cursor.CursorEnter,function()
+            on(host.cursor.CursorEnter,function()
                 if not current() then return false end
                 if hoverSlot then owner:setHover(hoverSlot) end
                 owner:queueHelp(describe(),control,false)
             end)
             if not current() then return end
-            control:AddCursorEventListener(host.cursor.CursorExit,cancel)
+            on(host.cursor.CursorExit,cancel)
             if not current() then return end
         end
         if not clickable then return end
         Controller.bind(host.controller,control,function()return owner.potionAim and "aim" or "battle"end,function()
             if not current() then return false end
+            if travel and travelerMode(owner) then return travel.press() end
             local spec=describe()
             if spec then return owner:openHelp(spec,control,false)end
         end,function()return current() and dependencies.controllerReady()end,80)
@@ -142,7 +158,7 @@ function M.install(owner, _ownership, host, dependencies)
                 and dependencies.helpActorReady(token,run)
                 and (token.spec.kind~="potion" or run.potions==token.spec.inventory and run.potions[token.spec.slot]==token.spec.potionId)
         end
-        control:AddCursorEventListener(host.clickEvent,function(event)
+        on(host.clickEvent,function(event)
             if not current() or Controller.pointerBlocked(host.controller)then return false end
             local touch=event and event.touchId
             if input.consumed and input.consumed.touch==touch then input.consumed=nil;return end
@@ -156,7 +172,7 @@ function M.install(owner, _ownership, host, dependencies)
         end)
         if not current() then return end
         if hasCursorPair("CursorDown","CursorUp") then
-            control:AddCursorEventListener(host.cursor.CursorDown,function(event)
+            on(host.cursor.CursorDown,function(event)
                 if not current() then return false end
                 input.pointerObserved=true;input.held,input.released,input.consumed=nil,nil,nil
                 if dependencies.down(event) then return end
@@ -169,7 +185,7 @@ function M.install(owner, _ownership, host, dependencies)
                 if ready(token) then input.held=token;owner:queueHelp(describe(),control,true,token.touch) end
             end)
             if not current() then return end
-            control:AddCursorEventListener(host.cursor.CursorUp,function(event)
+            on(host.cursor.CursorUp,function(event)
                 local token=input.held;input.held=nil
                 if not ready(token) or token.touch~=(event and event.touchId) then return end
                 local help=owner.help
@@ -180,7 +196,7 @@ function M.install(owner, _ownership, host, dependencies)
                 if help and help.source==control then owner.help=nil end
             end)
             if not current() then return end
-            if host.cursor.CursorEndDrag then control:AddCursorEventListener(host.cursor.CursorEndDrag,cancel) end
+            if host.cursor.CursorEndDrag then on(host.cursor.CursorEndDrag,cancel) end
         end
     end
 
@@ -223,7 +239,8 @@ function M.install(owner, _ownership, host, dependencies)
             local index = slot
             local control = row:GetChild("hit" .. slot)
             control:SetSizeDelta(si.size + si.gap, si.size + si.gap)
-            bindTraveler(owner, host, dependencies, control, function() return statusSpec(0, index) end)
+            local function describe() return statusSpec(0, index) end
+            bindHelp(control, describe, true, nil, nil, nil, bindTraveler(owner, host, dependencies, control, describe, true))
         end
         local ground = dependencies.child("statusDismiss")
         ground:AddCursorEventListener(host.clickEvent, function(event)

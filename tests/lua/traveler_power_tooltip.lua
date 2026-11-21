@@ -176,4 +176,25 @@ do
     assert(not panel:GetChild("statusInfo").visible)
 end
 
+for _, mobile in ipairs({false, true}) do
+    local actor, ui, panel, _, icon, descriptions, _, _, _, host = scene(mobile)
+    host.run.character = "silent"
+    Combat.addStatus(actor, "strength", 3)
+    ui:render()
+    local info, power = panel:GetChild("statusInfo"), icon(1)
+    local event = {touchId = 42}
+    if mobile then power.down(event) else power.enter() end
+    ui:update(L.statusInfo.delay)
+    assert(info.visible and ui.info and #descriptions() == 0, "non-traveler icons retain the shared readout")
+    contains(info:GetChild("name1").text, "力量 3")
+    if mobile then
+        power.up(event)
+        power.click(event)
+        assert(info.visible and not ui.info.transient, "a held legacy status reader stays open")
+    else
+        power.exit()
+        assert(not info.visible, "legacy hover still closes on exit")
+    end
+end
+
 print("TRAVELER_POWER_TOOLTIP_PASS")
