@@ -147,7 +147,7 @@ function battleSurfaces(root,theme){
  });
 }
 function buttonFaces(node,theme){
- // The play area is a battlefield-wide hit surface with a line and caption.
+ // The play area is a transparent battlefield-wide hit surface.
  if(node.name==='playArea')return;
  if(node.name==='endTurn'&&child(child(node,'normal'),'v25Chrome'))return;
  const parts=children(node),isStateButton=node.kind==='presetButton';

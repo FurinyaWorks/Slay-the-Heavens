@@ -622,7 +622,7 @@ test('official card confirmation keeps the battlefield visible while selecting a
 local h,u,p,_,tap,drain=H.setup({'defend','strike'},{'spike_slime_s','acid_slime_m'})
 local b=h.run.combat
 local area=p:GetChild('playArea')
-local line,label,hit=area:GetChild('line'),area:GetChild('label'),area:GetChild('hit')
+local label,hit=area:GetChild('label'),area:GetChild('hit')
 assert(not area.visible,'confirmation area must start hidden')
 local slots={}
 for i,card in ipairs(b.hand)do slots[card.cardId]=i end
@@ -630,9 +630,11 @@ local defend,strike='card'..slots.defend,'card'..slots.strike
 local uid=b.hand[slots.defend].uid
 local before=C.copy(b)
 tap(defend,71)
-assert(u.selected==uid and area.visible and line.visible,'Defend must show the confirmation line')
-assert(not area:GetChild('officialButtonBacking') and #area:GetChildren()==3,
- 'visible confirmation area must contain only its line, caption and input surface')
+assert(u.selected==uid and area.visible,'Defend must enable the field click target')
+assert(not area:GetChild('line') and not area:GetChild('officialButtonBacking') and #area:GetChildren()==2,
+ 'selecting a card must not paint a line or a backing across the battlefield')
+assert(p:GetChild('dragLayer'):GetChild('line').kind=='container',
+ 'the drag boundary anchor must have no visible surface')
 assert(label.text=='' and hit.kind=='cursorArea' and hit.raycastTarget,
  'Defend must retain the same transparent confirmation target')
 assert(hit.sizeDeltaX==area.sizeDeltaX and hit.sizeDeltaY==area.sizeDeltaY,'confirmation target must still cover the field')

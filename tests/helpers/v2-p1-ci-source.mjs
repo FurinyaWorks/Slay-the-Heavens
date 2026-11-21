@@ -26,12 +26,14 @@ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.bef
 // Keep the card confirmation fix and its live regression out of older UI replays.
 const fieldConfirmation = {
   'scripts/official-assets-layout.mjs': {
-    current: '1d7fa0e8abb2dd246676de028e98b952f12a2c0d24b86ea487acdf89e6bbb7e5',
+    current: ['1d7fa0e8abb2dd246676de028e98b952f12a2c0d24b86ea487acdf89e6bbb7e5',
+      '922af096af2868f1bfc6c480640e4705eaafd63dbb662433c9307030f4913cfc'],
     prior: '976f3ac618d10f73ae256f267966e4185c05c9b0c1ce6c6bfab0d90662292ada',
-    added: " // The play area is a battlefield-wide hit surface with a line and caption.\n if(node.name==='playArea')return;\n",
+    added: /^ \/\/ The play area is a (?:battlefield-wide hit surface with a line and caption|transparent battlefield-wide hit surface)\.\n if\(node\.name==='playArea'\)return;\n/m,
   },
   'tests/official-assets-runtime.test.mjs': {
-    current: 'f214dff087837db37ad9719826930b67af5e6a705d5871d5c386aa57256a9d8e',
+    current: ['f214dff087837db37ad9719826930b67af5e6a705d5871d5c386aa57256a9d8e',
+      '1ccbfa1c23bce59d0a2755b5e57058039a14d549df231e049524aac87d8ca30f'],
     prior: '2fb2148a78b0dd238ec66a51981b02fafe32bf54aecc72505f060c7459f7beb0',
     added: /^test\('official card confirmation keeps the battlefield visible[\s\S]+?^\}\);\n\n/m,
   },
@@ -39,7 +41,7 @@ const fieldConfirmation = {
 function beforeFieldConfirmation(path, source) {
   if (!Object.hasOwn(fieldConfirmation,path) || typeof source!=='string' || source.includes('\r\r\n')) return source;
   const row=fieldConfirmation[path], text=source.replaceAll('\r\n','\n');
-  if (sha256(text)!==row.current) return source;
+  if (!row.current.includes(sha256(text))) return source;
   const prior=text.replace(row.added,'');
   assert.equal(sha256(prior),row.prior,'complete pre-fix card confirmation source: '+path);
   return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;

@@ -232,8 +232,7 @@ export function battleLayout() {
   const controls = [
     // Behind actors and hand: a distinct C-mode confirmation surface on open ground.
     { name: 'playArea', kind: 'container', position: l.cardDrag.playArea.slice(0, 2), size: l.cardDrag.playArea.slice(2), visible: false, children: [
-      panel('line', 0, -l.cardDrag.playArea[3] / 2, l.cardDrag.playArea[2], s.border, c.goldBright),
-      text('label', 0, -l.cardDrag.playArea[3] / 2 + s.xl, l.cardDrag.playArea[2], l.nativeText.lineHeight, '出牌区域 · 点击出牌', f.body, c.goldBright),
+      text('label', 0, -l.cardDrag.playArea[3] / 2 + s.xl, l.cardDrag.playArea[2], l.nativeText.lineHeight, '', f.body, c.goldBright),
       hit(...l.cardDrag.playArea.slice(2)),
     ] },
     {name: 'topBar', kind: 'container', position: [0,y], size: [width,bar.height], children: [
@@ -380,9 +379,10 @@ export function battleLayout() {
     button('stolenGold', l.battleRewards.rowOrigin, l.battleRewards.rowSize, '取回失金', false, f.body));
   controls.push({ name: 'dragLayer', kind: 'container', size: [width, height], visible: false, children: [
     { ...hit(width, height), focusable: false },
-    panel('line', l.cardDrag.playArea[0], l.cardDrag.lineY, l.cardDrag.playArea[2], s.border, c.goldBright),
+    // The drag renderer positions this anchor at its computed release boundary.
+    { name: 'line', kind: 'container', position: [l.cardDrag.playArea[0], l.cardDrag.lineY], size: [0, 0], visible: false },
     text('hint', 0, l.cardDrag.lineY + s.xl, l.cardDrag.playArea[2], l.nativeText.lineHeight, '', f.body, c.goldBright),
-    // Targeted cards dock below the line and aim with a dotted arc that ends on a reticle.
+    // Targeted cards dock below the play boundary and aim with a dotted arc.
     ...Array.from({ length: l.cardDrag.aimDots }, (_, i) =>
       ({ ...picture(`aim${i + 1}`, 0, 0, l.cardDrag.aimDot[0], l.cardDrag.aimDot[0], im.diamond, c.goldBright), visible: false })),
     { ...picture('reticle', 0, 0, l.enemyRow.portrait, l.enemyRow.portrait, im.ring, c.goldBright), visible: false },
