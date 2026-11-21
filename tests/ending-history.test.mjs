@@ -1,3 +1,4 @@
+import './helpers/architecture-admission-equivalence.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
