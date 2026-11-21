@@ -532,6 +532,7 @@
     },
     {
       "codePath": "scripts/v25-node-layout.mjs",
+      "codePaths": ["scripts/node-ui-layout.mjs"],
       "targetVersion": "v2.0.0",
       "state": "shopView",
       "revision": "develop",

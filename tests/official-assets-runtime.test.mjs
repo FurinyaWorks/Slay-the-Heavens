@@ -362,9 +362,14 @@ local function slotFor(id)
 end
 local function targetCorners(expected)
  for _,box in ipairs(boxes)do
-  for _,x in ipairs({-1,1})do for _,y in ipairs({-1,1})do for _,axis in ipairs({'H','V'})do
-   assert(box:GetChild('target'..axis..x..'_'..y).visible==expected,'AoE/self target corner')
-  end end end
+  local half=box:GetChild('portrait').sizeDeltaX/2
+  for _,x in ipairs({-1,1})do for _,y in ipairs({-1,1})do
+   local horizontal=box:GetChild('targetH'..x..'_'..y)
+   local vertical=box:GetChild('targetV'..x..'_'..y)
+   assert(horizontal.visible==expected and vertical.visible==expected,'AoE/self target corner')
+   assert(horizontal.x==x*(half-horizontal.sizeDeltaX/2) and horizontal.y==y*half,'horizontal marker must extend inward')
+   assert(vertical.x==x*half and vertical.y==y*(half-vertical.sizeDeltaY/2),'vertical marker must extend inward')
+  end end
   assert(not box:GetChild('damagePreview').visible,'future HP label must stay absent')
  end
 end

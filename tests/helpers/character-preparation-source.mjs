@@ -1,3 +1,4 @@
+import {beforeAuthenticatedReleaseUiRestore,beforeReleaseUiRestore,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
@@ -36,6 +37,9 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeAuthenticatedReleaseUiRestore(path,source,read);
+  const readLatest=read;
+  read=owner=>beforeReleaseUiRestore(owner,readLatest(owner));
   source = beforeAuthenticatedPc13RewardCover(path,source,read);
   const readCurrent=read;
   read=owner=>beforePc13RewardCover(owner,readCurrent(owner));
@@ -62,7 +66,9 @@ const currentContinuationOwners = new Set([
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
-  if (pc13RewardCoverSourcePaths.includes(path)) {
+  if (releaseUiRestoreSourcePaths.includes(path)) {
+    assert.notEqual(beforeReleaseUiRestore(path,source),source, 'fresh current production owner: '+path);
+  } else if (pc13RewardCoverSourcePaths.includes(path)) {
     assert.notEqual(beforePc13RewardCover(path,source),source, 'fresh current production owner: '+path);
   }
   const prior = beforeCharacterPreparationSource(path, source, read);

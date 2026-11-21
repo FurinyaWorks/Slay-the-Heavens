@@ -13,6 +13,22 @@ import {colourToLua} from '../scripts/build-ui-theme.mjs';
 const child=(node,name)=>(node?.children??node?.controls??[]).find(part=>part.name===name);
 const all=node=>[node,...(node.children??node.controls??[]).flatMap(all)];
 
+test('official HUD renders a native settings icon in every button state',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const exit=child(child(layout,'exitEntry'),'open'),hit=child(exit,'hit');
+ applyOfficialAssets([layout],theme);
+ assert.equal(child(exit,'hit'),hit);
+ assert.deepEqual(hit.size,[48,48]);
+ const colors={normal:'#D6CBA5',hover:'#FFF3CE',pressed:'#D6CBA5',disabled:'#8F918B'};
+ for(const [state,colour] of Object.entries(colors)){
+  const overlay=child(child(hit,state),'officialBattleHud');
+  assert.equal(overlay.visible,false);
+  assert.deepEqual(child(overlay,'symbol'),{
+   name:'symbol',kind:'image',position:[0,0],size:[28,28],image:theme.icon.settings,colour,
+  });
+ }
+});
+
 test('official composition rejects a missing run page before mutating any host',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=gameLayout();
  const stage=child(layout,'stage')??layout,key=stage.children?'children':'controls';
@@ -197,6 +213,31 @@ test('official shop has an explicit reachable map shortcut outside its decorativ
  assert(child(route,'hit').size.every(value=>value>=44),'direct map needs a touch target');
  assert(node.children.indexOf(route)>node.children.indexOf(child(node,'officialRunBar')));
  assert(!child(child(layout,'mapPanel'),'runRoute'),'map cannot preview itself');
+});
+
+test('shop relics and potions clear every card at rest and on hover',()=>{
+ const bounds=(control,scale=1)=>{
+  const [x,y]=control.position,[width,height]=control.size;
+  return [x-width*scale/2,y-height*scale/2,x+width*scale/2,y+height*scale/2];
+ };
+ const overlaps=(a,b)=>Math.min(a[2],b[2])>Math.max(a[0],b[0])&&Math.min(a[3],b[3])>Math.max(a[1],b[1]);
+ for(const official of [false,true]){
+  const theme=official?officialAssetsTheme(nativeTheme):nativeTheme,layout=gameLayout(theme);
+  if(official)applyOfficialAssets([layout],theme);
+  const shop=child(child(layout,'nodePanel'),'shopView');
+  for(const category of ['relic','potion'])for(let i=1;i<=3;i++){
+   const item=child(shop,category+i),price=child(shop,category+'Price'+i);
+   assert.equal(item.position[0],price.position[0]);
+   assert.deepEqual(child(item,'hit').size,item.size);
+   for(let j=1;j<=7;j++){
+    const card=child(shop,'card'+j);
+    for(const scale of [1,theme.layout.nativeNode.shop.hoverScale]){
+     assert(!overlaps(bounds(card,scale),bounds(item)),card.name+' overlaps '+item.name);
+     assert(!overlaps(bounds(card,scale),bounds(price)),card.name+' overlaps '+price.name);
+    }
+   }
+  }
+ }
 });
 
 test('official potion slots survive battle rewards, map, node and return-to-combat transitions',()=>{

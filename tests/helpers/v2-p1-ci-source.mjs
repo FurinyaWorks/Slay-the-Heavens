@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 import {beforePc13RewardCover} from './pc13-reward-cover-source.mjs';
+import {releaseUiRestoreArchive} from './release-ui-restore-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-source.mjs';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
+const {project:beforeReleaseUiRestoreCi}=releaseUiRestoreArchive(
+  readFileSync(new URL('./release-ui-restore-ci-source.json.gz',import.meta.url)),
+  '3f08357ad62b6137cf545f7e31bee3304b5e86055e2695ea596c246890ecfe4e');
 const bytes = readFileSync(new URL('../fixtures/v2-p1-ci-source.json.gz', import.meta.url));
 assert.equal(sha256(bytes),'126bc5faaa880285c3e28b96fa3781ed6d188e9b5ee2889a5a41c0a7c2c30cd4','historical P1 evidence source identities');
 const archive = JSON.parse(gunzipSync(bytes));
@@ -20,6 +24,7 @@ assert.equal(sha256(potionMerge.before),potionMerge.beforeSha256);
 assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(potionMerge.before)}\0`).update(potionMerge.before).digest('hex'),potionMerge.beforeGitBlob);
 
 export function beforeV2UiEvidence(path, source) {
+  source = beforeReleaseUiRestoreCi(path,source);
   source = beforePc13RewardCover(path,source);
   // The P1 merge recognizes the immediate pre-Tiny-House bytes only.
   source = beforeTinyHouseCiSource(path,source);

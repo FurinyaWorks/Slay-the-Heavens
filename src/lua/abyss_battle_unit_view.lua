@@ -37,6 +37,12 @@ end
 local function portraitVisible(box, icon)
     return not (box.name=="hero" and type(icon)=='table' and icon.status=="placeholder")
 end
+local function targetCornerPosition(corner,axis,x,y,portrait)
+    -- Each bar extends inward from the portrait corner to form an L.
+    local insetX=axis=='H' and corner.sizeDeltaX/2 or 0
+    local insetY=axis=='V' and corner.sizeDeltaY/2 or 0
+    return x*(portrait/2-insetX),y*(portrait/2-insetY)
+end
 
 function M.new(picture, tint, ink, statusKind)
     local function portraitParts(box, actor, portrait, icon, width, selected, targetWidth)
@@ -61,7 +67,7 @@ function M.new(picture, tint, ink, statusKind)
             for _, axis in ipairs({'H','V'}) do
                 local corner=box:GetChild('target'..axis..x..'_'..y)
                 corner:SetVisible(selected == true)
-                corner:SetAnchoredPosition(x*portrait/2,y*portrait/2)
+                corner:SetAnchoredPosition(targetCornerPosition(corner,axis,x,y,portrait))
             end
         end end
         box:GetChild("name").text = actor.name or "旅行者"
