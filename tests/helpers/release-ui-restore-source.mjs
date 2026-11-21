@@ -44,7 +44,7 @@ const sharedRelics=releaseUiRestoreArchive(readFileSync(new URL('./release-share
 const forgeGrid=releaseUiRestoreArchive(readFileSync(new URL('./release-forge-source.json.gz',import.meta.url)),
  '8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564','7381cf7152ba7a726506f9a5b525e13cfbd2c87a');
 const recording=releaseUiRestoreArchive(readFileSync(new URL('./recording-0401-source.json.gz',import.meta.url)),
- '4d6705ca2dfe37caf3ebc70882121b2cd61c4044db77d456cb7c2f7736b44d74','5991585aabde667eef9852b8c340c194c42a5c62');
+ '9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24','d26c4dc59e639741471580a242718a284a67f758');
 export const beforeRecordingUi=recording.project;
 export const releaseForgeSourcePaths=Object.freeze(Object.keys(forgeGrid.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseForgeGridUi=forgeGrid.project;
