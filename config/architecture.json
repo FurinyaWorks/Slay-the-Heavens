@@ -358,20 +358,13 @@
     "abyss_monster_intent_particles": "ui",
     "abyss_combat_native_play": "core",
     "abyss_combat_queued_play": "core",
-    "abyss_actor_presence": "core"
+    "abyss_actor_presence": "core",
+    "abyss_power_membership": "core",
+    "abyss_stance_damage": "core",
+    "abyss_actor_artifact": "core"
   },
   "dynamicExceptions": [],
   "deferredImports": [
-    {
-      "from": "abyss_uncommon_relics",
-      "to": "abyss_run",
-      "reason": "Meat on the Bone delegates raw victory healing to the initialized Run health owner while the room is still in combat, preserving one shared Magic Flower/Bloom modifier pass."
-    },
-    {
-      "from": "abyss_relic_card_rewards",
-      "to": "abyss_run",
-      "reason": "Card reward commands invoke the initialized Run transaction and permanent inventory only when selecting or claiming; never during module initialization."
-    },
     {
       "from": "abyss_boss_relics",
       "to": "abyss_event_transform_context",
@@ -389,11 +382,6 @@
     },
     {
       "from": "abyss_boss_relics",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_boss_relics",
       "to": "abyss_potion_random",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
@@ -403,23 +391,8 @@
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
-      "from": "abyss_boss_relics",
-      "to": "abyss_relic_hooks",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_choices",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
       "from": "abyss_relic_choices",
       "to": "abyss_card_pool",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_choices",
-      "to": "abyss_shop_relics",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
@@ -440,11 +413,6 @@
     {
       "from": "abyss_relic_hooks",
       "to": "abyss_uncommon_relics",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_pending",
-      "to": "abyss_run",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
@@ -479,11 +447,6 @@
     },
     {
       "from": "abyss_act2_powers",
-      "to": "abyss_power_order",
-      "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
-    },
-    {
-      "from": "abyss_power_schedule",
       "to": "abyss_power_order",
       "reason": "Original monster Power list bookkeeping runs only inside initialized constructor/action/removal calls; no module-load execution."
     },
@@ -601,11 +564,6 @@
       "from": "abyss_actor",
       "to": "abyss_card_triggers",
       "reason": "Envenom reaction resolver runs after the combat engine initializes."
-    },
-    {
-      "from": "abyss_actor",
-      "to": "abyss_stances",
-      "reason": "Damage arithmetic calls the stance modifier only at runtime."
     },
     {
       "from": "abyss_silent",
@@ -807,6 +765,7 @@
     {
       "id": "power-metadata-independence",
       "from": [
+        "abyss_power_membership",
         "abyss_power_order",
         "abyss_power_schedule",
         "abyss_turn_power_phases"
@@ -1067,6 +1026,55 @@
         "abyss_card_actions"
       ],
       "reason": "Defect utility plans retain read-only relic queries; the queued-play host supplies lazy Actor arithmetic for Barrage, FTL and X block snapshots."
+    },
+    {
+      "id": "power-membership-independence",
+      "from": [
+        "abyss_power_membership"
+      ],
+      "forbiddenTargets": [
+        "abyss_power_order",
+        "abyss_power_schedule"
+      ],
+      "reason": "Display membership owns list edits. Its callers own application and hook dispatch."
+    },
+    {
+      "id": "power-schedule-independence",
+      "from": [
+        "abyss_power_schedule"
+      ],
+      "forbiddenTargets": [
+        "abyss_power_order"
+      ],
+      "reason": "Hook removal uses the shared display membership operations without loading their coordinator."
+    },
+    {
+      "id": "session-command-consumers",
+      "from": [
+        "abyss_boss_relics",
+        "abyss_relic_card_rewards",
+        "abyss_relic_choices",
+        "abyss_relic_pending",
+        "abyss_uncommon_relics"
+      ],
+      "forbiddenTargets": [
+        "abyss_run"
+      ],
+      "reason": "Session reward and relic commands accept the existing Run transaction and mutation capabilities from their callers."
+    },
+    {
+      "id": "actor-stance-and-focus-leaves",
+      "from": [
+        "abyss_focus",
+        "abyss_actor_artifact",
+        "abyss_stance_damage"
+      ],
+      "forbiddenTargets": [
+        "abyss_actor",
+        "abyss_combat",
+        "abyss_stances"
+      ],
+      "reason": "Focus and Artifact operate on existing actor data. Stance arithmetic does not load its lifecycle coordinator."
     }
   ]
 }

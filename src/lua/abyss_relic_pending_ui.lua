@@ -30,13 +30,7 @@ local function displayRows(ctx,view,page,count)
  end
  return rows
 end
-function M.install(ctx)
- function ctx.renderRelicPending()
-  local self=ctx.self;local view=Pending.view(self.run)
-  self.pendingGeneration=(self.pendingGeneration or 0)+1
-  if not view then self.pendingOwner=nil;return false end
-  if self.pendingOwner~=view.owner then self.pendingPage=1;self.notice=''end
-  self.pendingOwner=view.owner
+local function renderPendingScreen(ctx,self,view)
   self.renderRun,self.renderMap,self.nodeId=self.run,self.map,nil
   self.view={phase=self.run.phase,node={type='relic_pending',complete=false},pendingRelic=view};self.actions={}
   ctx.shopSelection:clear();ctx.roomMotion:cancel();ctx.merchant:setVisible(false)
@@ -52,6 +46,16 @@ function M.install(ctx)
   ctx.child('notice').text=self.notice~=''and self.notice or '请选择一项，完成后返回原界面。'
   EventUI.renderChoices(ctx,event,'relic_pending',displayRows(ctx,view,self.pendingPage,count))
   ctx.show(event:GetChild('art'),false)
+  return count
+end
+function M.install(ctx,Run)
+ function ctx.renderRelicPending()
+  local self=ctx.self;local view=Pending.view(self.run)
+  self.pendingGeneration=(self.pendingGeneration or 0)+1
+  if not view then self.pendingOwner=nil;return false end
+  if self.pendingOwner~=view.owner then self.pendingPage=1;self.notice=''end
+  self.pendingOwner=view.owner
+  local count=renderPendingScreen(ctx,self,view)
   local generation,run,owner=self.pendingGeneration,self.run,view.owner
   local function observe()
    return self.visible and not self.busy and not self.presentationBusy
@@ -68,7 +72,7 @@ function M.install(ctx)
    local row=i<=count and view.rows[(self.pendingPage-1)*count+i]
    if row then
     bind('eventView/option'..i,true,function()
-     self.busy=true;local called,ok,why=pcall(Pending.resolve,run,row.token);self.busy=false
+     self.busy=true;local called,ok,why=pcall(Pending.resolve,run,row.token,Run);self.busy=false
      if not called then error(ok)end
      self.notice=ok and ''or ({potion_slots_full='药水槽已满，请先丢弃药水或放弃本瓶。'})[why]or '操作未完成，请重新选择。'
      self:render();if ctx.onChange then ctx.onChange(ok,why,self)end

@@ -54,7 +54,7 @@ end
 
 -- Admission is deliberately ordered: earlier families may write before a later
 -- family refuses, and bottled choices retain the candidate table itself.
-local function admitEquipment(run,id)
+local function admitEquipment(run,id,Run)
  require('abyss_uncommon_relics').onEquip(run,id)
  local bottled=(id=='bottled_flame' or id=='bottled_lightning' or id=='bottled_tornado') and require('abyss_uncommon_relics').bottleCandidates(run,id)
  if bottled and #bottled>0 then
@@ -62,7 +62,7 @@ local function admitEquipment(run,id)
   run.pendingBottledRelic={id=id,uids=bottled}
  end
  require('abyss_rare_relics').onEquip(run,id)
- local ok,why=require('abyss_boss_relics').onEquip(run,id)
+ local ok,why=require('abyss_boss_relics').onEquip(run,id,Run)
  if not ok then return false,why end
  ok,why=require('abyss_shop_relics').onEquip(run,id)
  if ok==false then return false,why end
@@ -114,7 +114,7 @@ end
 
 function M.onEquip(run,id,upgradeApi)
  id=M.localId(id)
- local ok,why=admitEquipment(run,id)
+ local ok,why=admitEquipment(run,id,upgradeApi and upgradeApi.runCommands)
  if not ok then return false,why end
  if initializeEquipCounter(run,id) then return true
  elseif id=='necronomicon'then return require('abyss_act2_event_relics').onEquip(run,id,upgradeApi)

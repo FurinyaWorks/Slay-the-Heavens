@@ -1,16 +1,11 @@
 -- Source-derived stance semantics; shared combat owns damage and turn ordering.
 local Events = require("abyss_events")
-local M = {}
-local valid = {Neutral=true, Wrath=true, Calm=true, Divinity=true}
+local M = require('abyss_stance_damage')
+local player = M.requirePlayer
 local amounts = {violet_lotus=1, calm_exit=2, divinity_enter=3}
 local powerKinds = {rushdown="draw",mental_fortress="block"}
 local function integer(x)
     return type(x)=="number" and x==x and x%1==0 and x>=0 and x<=2147483647
-end
-local function player(state)
-    assert(type(state)=="table" and type(state.player)=="table", "missing stance player")
-    assert(valid[state.player.stance or "Neutral"], "invalid current stance")
-    return state.player
 end
 local function queueTotal(state)
     local q, total = state.stanceQueue or {}, 0.0
@@ -62,7 +57,7 @@ end
 -- gains are appended, never executed recursively inside the stance transition.
 function M.change(state, id, options)
     local p=player(state)
-    assert(valid[id], "invalid destination stance")
+    assert(M.validStance(id), "invalid destination stance")
     local opts=optionsOf(options)
     assert(integer(p.hp) and integer(state.energy), "invalid stance combat state")
     local pending=queueTotal(state)
@@ -139,21 +134,6 @@ function M.startTurn(state, options)
     local p=player(state)
     if p.stance=="Divinity" then return M.change(state,"Neutral",options) end
     return false
-end
-
--- Apply at the shared Actor.attackAmount modifier stage, before its final floor.
--- Never pre-multiply base damage (that would incorrectly multiply Strength).
-function M.damageMultiplier(state, source, target, fixed)
-    local p=player(state)
-    assert(type(source)=="table" and type(target)=="table", "invalid stance damage actors")
-    assert(fixed==nil or type(fixed)=="boolean", "invalid stance damage type")
-    if fixed then return 1 end
-    local n=1
-    if source==p then
-        if p.stance=="Wrath" then n=2 elseif p.stance=="Divinity" then n=3 end
-    end
-    if target==p and p.stance=="Wrath" then n=n*2 end
-    return n
 end
 
 function M.reset(state)
