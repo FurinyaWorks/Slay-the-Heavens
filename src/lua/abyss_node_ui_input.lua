@@ -35,6 +35,7 @@ function M.install(ctx)
     end
     buildInputTargets()
     ctx.cursor = ctx.options.cursorEvents or (Enum and Enum.CursorEventType)
+    ctx.bindShopEntry(ctx.cursor)
 
     ctx.dispatch = {}
 

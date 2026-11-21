@@ -8,12 +8,12 @@ function M.install(ctx)
     ctx.merchant = Merchant.new(ctx.child("merchant"), { color = ctx.options.color, sound = ctx.options.sound, compact = true })
 
     local hit=ctx.child('merchant'):GetChild('talk'):GetChild('hit')
-    local cursor=ctx.options.cursorEvents or (Enum and Enum.CursorEventType)
     local observed,held,released=false,nil,nil
     local function valid(token)
         return token and token.epoch==ctx.shopEpoch and token.run==ctx.self.run
             and token.map==ctx.self.map and token.actions==ctx.self.actions and not ctx.self.shopBusy
     end
+    function ctx.bindShopEntry(cursor)
     if cursor and cursor.CursorDown and cursor.CursorUp then
         hit:AddCursorEventListener(cursor.CursorDown,function(event)
             observed=true;released=nil
@@ -32,6 +32,7 @@ function M.install(ctx)
         if observed and (not valid(token) or event and event.touchId~=nil and event.touchId~=token.touch)then return false end
         return ctx.openShop()
     end)
+    end
 
     local panel, back = ctx.child('shopView'), ctx.child('back')
     local layout = require('abyss_theme').layout.nativeNode
