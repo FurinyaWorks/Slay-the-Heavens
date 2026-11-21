@@ -92,8 +92,16 @@ const rewardTransitionFiles=Object.freeze({
  'tests/helpers/release-guide-backflow-source.mjs':'b3f38bf200d79d335a0048295b835d4d326ebfc7d52039171984998022b7facf',
  'tests/fixtures/combat-reward-transition-source.json.gz':'08c955924392a2a23a989e08b9bb4e061d06a66871b1cbacd9ad556c0b734476',
 });
-const powerMembershipFiles=Object.freeze({
+const mapFiles=Object.freeze({
  ...rewardTransitionFiles,
+ 'tests/helpers/card-feedback-owner-source.json.gz':'0710facff10a22ddca512869df2b0f526189deb5ca3394369e45fba20bd0d4ec',
+ 'tests/helpers/card-feedback-owner-source.mjs':'eceb0be36e5d40f82ef404cbfb1b2b2c2101b5f0b889e1c215ecff2ab15cd857',
+ [runtime]:'b04107e3d9c8f0d923aa3547276f9ee84651915740c909d998a5b657a589d04f',
+ 'tests/helpers/sts1-map-source.mjs':'12710c7f6b4787876c69cec5f6443447252465be9cbbffa0d85f38729823cfeb',
+ 'tests/fixtures/sts1-map-source.json.gz':'a356e09f7fb3a7c2f16c09adbbafaae6290bc615fe3be530a9f02d2c3a6e8d39',
+});
+const powerMembershipFiles=Object.freeze({
+ ...mapFiles,
  [closeout]:'564a22d425038c24b65fed7d5b1a6c6cc847b71b6f32702d3ed257c3ee18d0d6',
  'tests/helpers/power-membership-source.mjs':'7df5bd25a505c50895ccdf8db84a0f424b9d02baf7659dc69a483ed8ef03ff1d',
  'tests/helpers/power-membership-source.json.gz':'9b4ee9cf761b49297c4a0abfea0df825104e6dcc2e73ca9b633d2c50bce8a039',

@@ -27,13 +27,12 @@ local function beforeBoss(settle)
 end
 local function enterTreasure(settle, prepare, sourceOffer)
     local ui, root = beforeBoss(settle)
-    assert(Run.claimCardReward(ui.run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(ui.run); ui:refresh()
-    assert(ui.mode=="map" and ui.run.nodeFlow.result=="boss_victory")
+    assert(Run.claimCardReward(ui.run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(ui.run)
     -- Gesture/claim components explicitly stage the complete 22-ID source
     -- queue; this is not natural probability evidence. Real offers are below.
     if not sourceOffer then Source.supportedChoices(ui.run)end
     if prepare then prepare(ui.run) end
-    assert(ui.mapUI:choose(F.Nodes.available(ui.run,ui.map)[1].id))
+    ui:refresh()
     assert(ui.map.floor==17 and ui.mode=="node" and ui.run.nodeFlow.roomKind=="boss_treasure")
     assert(ui.nodeUI:press("treasureView/chest"))
     ui.nodeUI:update(2) -- wait for the real opening/reveal timeline
@@ -45,9 +44,7 @@ test("Boss card reward and unopened treasure cannot submit victory",function()
     local ui,root=beforeBoss(function() calls=calls+1 end)
     assert(ui.mode=="battle" and ui.run.phase=="reward" and not ui:settle())
     assert(Run.claimCardReward(ui.run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(ui.run); ui:refresh()
-    assert(ui.mode=="map" and not ui:settle() and calls==0)
-    assert(ui.mapUI:choose(F.Nodes.available(ui.run,ui.map)[1].id))
-    assert(ui.mode=="node" and not ui:settle())
+    assert(ui.mode=="node" and ui.map.floor==17 and not ui:settle() and calls==0)
     assert(not get(root,"nodePanel/treasureView/take").visible)
     assert(get(root,"nodePanel/title").text=="第 17 层 · 首领宝箱")
 end)

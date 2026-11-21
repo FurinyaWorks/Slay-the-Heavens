@@ -42,7 +42,20 @@ export function beforeFieldConfirmation(path, source) {
   return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
 }
 
+// Preserve the exact prior develop inputs for older CI replays.
+const crystalBytes=readFileSync(new URL('../fixtures/relic-crystal-backflow-source.json.gz',import.meta.url));
+assert.equal(sha256(crystalBytes),'1b887df233d7397eeae862205e043df1c5ab90811442e0ad6fa3d56e5930c176','exact relic crystal backflow archive');
+const crystalSources=JSON.parse(gunzipSync(crystalBytes));
+for(const row of Object.values(crystalSources))assert.equal(sha256(row.before),row.beforeSha);
+export function beforeRelicCrystal(path,source){
+  const row=Object.hasOwn(crystalSources,path)?crystalSources[path]:null;
+  if(!row||typeof source!=='string'||source.includes('\r\r\n')
+    ||sha256(source.replaceAll('\r\n','\n'))!==row.afterSha)return source;
+  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+}
+
 export function beforeV2UiEvidence(path, source) {
+  source = beforeRelicCrystal(path,source);
   source = beforeFieldConfirmation(path,source);
   source = beforeM05ShopCiSource(path,source);
   source = beforePc13RewardCover(path,source);
