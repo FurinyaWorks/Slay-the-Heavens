@@ -38,6 +38,25 @@ local ticket=g.epoch;owner.run.combat={hand={1},turn=1};owner.mode='battle';owne
 local fight=Gate.intent(owner);g:request(fight);g:step(fight);g:step(fight);ticket=g.epoch
 owner.run.combat.hand={2,3};owner.run.combat.turn=2
 assert(not g:request(Gate.intent(owner))and g.epoch==ticket,'ordinary combat changes unnecessarily re-covered the page')
+
+for _,operation in ipairs({'lookup','visibility'})do
+ local nested,events,trigger=nil,{},true
+ local replacement={page='mapPanel',run={}}
+ local function reenter()
+  if not trigger then return end
+  trigger=false
+  assert(nested:request(replacement))
+ end
+ local recovery={SetVisible=function()if operation=='visibility'then reenter()end end}
+ local native={SetVisible=function()end,SetAsLastSibling=function()end,GetChild=function(_,name)
+  if name~='cancel'then return end
+  if operation=='lookup'then reenter()end
+  return recovery
+ end}
+ nested=Gate.new(native,function()return false end,function(epoch)events[#events+1]=epoch end)
+ assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)
+ assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')
+end
 print('PAGE_REVEAL_PASS')`);
 });
 test('ready combat choice cannot publish through a synchronous paint or on its first ready turn',()=>{

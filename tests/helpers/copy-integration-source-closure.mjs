@@ -65,18 +65,18 @@ const m05Files=Object.freeze({
  ...pc13Files,
  [runtime]:'7f3a94804f84b4f229b47adcd85adbc3b5387223c018f8e3fc32af145b469ac8',
  'tests/helpers/m05-shop-source.mjs':'5580a50d2c7636d4b3b5d708f39b89527d771af159964db6aab55ca7afb03b08',
-  'tests/fixtures/m05-shop-source.json.gz':'0b394bc2fa5a642b3cf14fa257607703fc4bcbd5da766cffbb4e7733661dda59',
+ 'tests/fixtures/m05-shop-source.json.gz':'0b394bc2fa5a642b3cf14fa257607703fc4bcbd5da766cffbb4e7733661dda59',
 });
 const loadingRecoveryFiles=Object.freeze({
  ...m05Files,
  'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',
- 'tests/helpers/loading-recovery-source.mjs':'5adb90c0c4b93e8008a1089401fa7fa82396dfdca3b7b5ab762195f9314041d4',
+ 'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
-  for(const [path,sha]of Object.entries(loadingRecoveryFiles)){
+ for(const [path,sha]of Object.entries(loadingRecoveryFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

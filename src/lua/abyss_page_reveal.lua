@@ -123,9 +123,11 @@ function M.new(cover,ready,onIntent,frames)
         self.localFrame=localFrame(intent,self.intent)
         self.painting=nil
         self.epoch=self.epoch+1;self.intent=intent;self.state='preparing';self.armed=nil;self.error=nil
-        local recovery=cover:GetChild('cancel')
-        if recovery then recovery:SetVisible(false)end
         local ticket=self.epoch
+        local recovery=cover:GetChild('cancel')
+        if self.epoch~=ticket then return false end
+        if recovery then recovery:SetVisible(false)end
+        if self.epoch~=ticket then return false end
         if onIntent then onIntent(ticket)end
         if self.epoch~=ticket then return false end
         print('ABYSS_PAGE_REVEAL preparing page='..tostring(intent.page)..' epoch='..self.epoch)

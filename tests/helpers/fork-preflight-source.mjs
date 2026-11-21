@@ -55,8 +55,17 @@ assert.equal(hash(coopLabCiBytes),'e55c26c3dbc7cde22ae4e47de876f205b47bdbfc30dc4
 const coopLabCi=JSON.parse(gunzipSync(coopLabCiBytes));
 assert.equal(coopLabCi.base,'ecf54a29a54228e058238fbbc8716a665a3021d6');
 for(const row of Object.values(coopLabCi.files))assert.equal(hash(row.before),row.beforeSha);
+// Preserve the reviewed copier bytes when replaying older CI observations.
+function beforeLoadingRecoveryCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='e597f60ccc438815137de26a0ca6526952c713e3ba52b05db81b0bf5b1eb2288')return source;
+ const prior=lf.replace("const loadingRecoveryFiles=Object.freeze({\n ...m05Files,\n 'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',\n 'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',\n});\n",'').replace('Object.entries(loadingRecoveryFiles))','Object.entries(m05Files))');
+ assert.equal(hash(prior),'1b708b758eb4f6af2f6ede84e9f38099a0aabc348d86d0873733eed28cf7ce51','exact loading recovery helper copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeCoopCiSource(path,source){
- source=beforeV2UiEvidence(path,source);
+ source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
