@@ -299,8 +299,8 @@ function OnUpdate(dt)
         if cardArt then cardArt.update() end
         if view.pageReveal then
             local gate=view.pageReveal
-            if gate:step(require('abyss_page_reveal').intent(view)) then view:refresh()end
-            gate:paint(not view.exitOpen)
+            if gate:step(require('abyss_page_reveal').intent(view),dt) then view:refresh()end
+            gate:paint(not view.exitOpen or view.routeOpen)
         end
     end)
     if not ok then failed("update", reason) end

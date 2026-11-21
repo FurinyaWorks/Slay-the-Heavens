@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {flatTriangle} from './menu-flat-triangle.mjs';
-const pack=JSON.parse(readFileSync(new URL('../data/presentation/native-menu-red.json',import.meta.url),'utf8'));
+const pack=JSON.parse(readFileSync(new URL('../data/presentation/native-menu-sts1.json',import.meta.url),'utf8'));
 const group=(name,children)=>({name,kind:'container',size:[1280,720],children});
 // A = R(u) diag(s1,s2) R(v). Parent scale/rotation and child rotation are
 // ordinary 2D native transforms; one library triangle needs no stencil mask.
@@ -21,6 +21,7 @@ export function nativeMenuTriangle([left,right,tip],name,colour){
 export function menuRedBackground(pack,compact=false){
  const kx=1280/pack.width,ky=720/pack.height;
  const images=pack.shapes.map((s,i)=>{
+  if(s.type==='nativeTriangle')return {name:'facet'+i,kind:'image',image:100003,position:s.position,size:s.size,rotation:s.rotation,colour:s.colour};
   if(s.type==='rect'||s.type==='ellipse')return {name:'facet'+i,kind:'image',position:[(s.box[0]+s.box[2]/2)*kx-640,360-(s.box[1]+s.box[3]/2)*ky],size:[s.box[2]*kx,s.box[3]*ky],image:s.type==='ellipse'?100002:100001,colour:s.colour};
   if(s.type!=='polygon'||s.points.length!==3)throw Error('Menu fit must contain rectangles or triangles');
   const points=s.points.map(([x,y])=>[x*kx-640,360-y*ky]);

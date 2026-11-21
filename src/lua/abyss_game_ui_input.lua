@@ -67,8 +67,17 @@ local function battleRouteAvailable(self,enabled,mode)
     return enabled()
 end
 
+local function potionPointer(run,slot)
+    if not (run and slot) then return nil end
+    return {inventory=run.potions,id=run.potions[slot],phase=run.phase}
+end
+local function samePotionPointer(run,slot,held)
+    if not slot then return true end
+    return held and held.inventory==run.potions and held.id==run.potions[slot] and held.phase==run.phase
+end
+
 function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
-    return function(box, kind, action, enabled, order, group, onFocus)
+    return function(box, kind, action, enabled, order, group, onFocus, potionSlot)
             local hit = box:GetChild("hit")
             local held, released, observed
             local menuAction = menuKinds[kind]
@@ -146,6 +155,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                 return token and token.generation == owner.exitGeneration and token.run == self.run
                     and (not resourceAction or token.deckGeneration==self.deckUI.generation and token.mode==self.mode
                         and token.potionGeneration==self.potionUI.generation)
+                    and samePotionPointer(self.run,potionSlot,token.potion)
                     and (not menuAction and not characterAction or token.menuGeneration == owner.menuGeneration) and available()
                     and currentReward(token)
                     and (not mapContext or currentMapReturn(token))
@@ -161,6 +171,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                     if available() then held = {generation=owner.exitGeneration,menuGeneration=owner.menuGeneration,run=self.run,touch=touch(event),
                         deckGeneration=self.deckUI.generation,potionGeneration=self.potionUI.generation,mode=self.mode,
                         pending=self.run and self.run.pendingCombatRewards,rewardGeneration=self.rewardReturnGeneration,
+                        potion=potionPointer(self.run,potionSlot),
                         mapReturn=mapContext and mapReturnIdentity(self) or nil} end
                     V25View.pointer(box,'down',held~=nil)
                 end)
@@ -208,11 +219,17 @@ function M.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,
     child("relicEntry"):GetChild("open"):GetChild("hit"):AddCursorEventListener(clickEvent, function() return self:openRelics() end)
     Controller.bind(controller,child('relicEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
         function()return self:openRelics()end)
-    child("potionEntry"):GetChild("open"):GetChild("hit"):AddCursorEventListener(clickEvent,function()if inCombat() then return false end;return self:openPotions()end)
     Controller.bind(controller,child('deckEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
         function()return self:openDeck()end)
-    Controller.bind(controller,child('potionEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
-        function()if inCombat() then return false end;return self:openPotions()end)
+    if not self.potionUI.localPanel then
+        local potionHit=child('potionEntry'):GetChild('open'):GetChild('hit')
+        local function openPotion()
+            if inCombat() then return false end
+            return self:openPotions()
+        end
+        potionHit:AddCursorEventListener(clickEvent,openPotion)
+        Controller.bind(controller,potionHit,function()return self.mode end,openPotion)
+    end
     exitPanel.disableCursorEventPassthrough = true
     exitPanel:GetChild("blocker"):AddCursorEventListener(clickEvent, function() return true end)
     runMenu.disableCursorEventPassthrough = true
@@ -237,11 +254,24 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
     end
     -- Source menu actions use the same pointer ownership as exit actions, and also
     -- expire whenever their menu/run context is hidden or replaced.
-    bindCommand(start, "start", function() return self:start() end)
+    bindCommand(start, "start", function()
+        if Theme.presentationProfile=='official-assets-first' and self.sessionPaused then
+            return self:requestNavigation('abandon')
+        end
+        return self:start()
+    end)
     bindCommand(child('menuPanel'):GetChild('continueRun'),'continueRun',function()return self:continueRun()end,nil,90)
     local quit=child('menuPanel'):GetChild('titleQuit')
     if quit then
         bindCommand(quit,'titleQuit',function()return self:openExit()end,nil,190)
+    end
+    if self.potionUI.localPanel then
+        local entry=child('potionEntry')
+        for i=1,Theme.layout.battlePotions.count do
+            local box=entry:GetChild('slot'..i)
+            bindCommand(box,'resource_potion',function()return self:openPotions(i)end,
+                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,30+i,nil,nil,i)
+        end
     end
     bindCommand(settlement, "settle", function() return self:settle() end)
     if self.easterEgg then
@@ -286,13 +316,16 @@ function M.installGuide(self,exitPanel,clickEvent,bindCommand,dismissFromOutside
         end)
         guide:GetChild('catch'):AddCursorEventListener(clickEvent, function() return true end)
     end
-    bindCommand(runMenu:GetChild('help'), 'run_help', function()
-        owner.exitGeneration = owner.exitGeneration + 1
-        self.controlsOpen = true
-        guide:SetVisible(true)
-        self:refresh()
-        return true
-    end)
+    local runHelp=runMenu:GetChild('help')
+    if guide and runHelp then
+        bindCommand(runHelp,'run_help',function()
+            owner.exitGeneration=owner.exitGeneration+1
+            self.controlsOpen=true
+            guide:SetVisible(true)
+            self:refresh()
+            return true
+        end)
+    end
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)
     bindCommand(runMenu:GetChild('mainMenu'),'run_mainMenu',function()return self:returnToMainMenu()end,
         function()return Navigation.hasRun(self) and not self.sessionPaused end)

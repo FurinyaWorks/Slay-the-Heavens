@@ -4,9 +4,33 @@
       "codePath": "scripts/v25-menu-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "menuPanel",
-      "revision": "2026-11-19",
-      "acceptanceScreen": "menu",
+      "revision": "sts1-pc-20261121",
       "status": "APPROVED",
+      "backlogTask": "TASK-103.5",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/REFERENCE.md",
+        "sha256": "e63454152763f665924c7335c4e17e270a9f9eddc4933a2962a728c66aabe8d1"
+      },
+      "supersedes": [
+        "2026-11-19"
+      ],
+      "codePaths": [
+        "scripts/native-menu-approved-layout.mjs",
+        "scripts/menu-red-scene.mjs",
+        "scripts/official-assets-layout.mjs",
+        "data/presentation/native-menu-sts1.json",
+        "data/presentation/native-menu-sts1-logo.json"
+      ],
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-main-menu/",
+      "note": "Owner 本轮明确指定的唯一标准：初代 PC 主菜单。批准设计方向与范围；绘画成图/官方设备验收另记。",
+      "acceptanceScreen": "menu"
+    },
+    {
+      "codePath": "scripts/v25-menu-layout.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "menuPanel",
+      "revision": "2026-11-19",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-103.5",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png",

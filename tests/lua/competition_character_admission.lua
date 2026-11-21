@@ -35,7 +35,7 @@ local function host(profile)
 end
 local candidate,panel=host('competition-candidate')
 for i=1,4 do assert(not panel:GetChild('character'..i).visible)end
-assert(not panel:GetChild('traveler').visible and candidate.characterSelection.info.id=='ironclad')
+assert(panel:GetChild('traveler').visible and candidate.characterSelection.info==nil)
 assert(candidate:selectCharacter('traveler'))
 for i=2,4 do assert(not panel:GetChild('elements'):GetChild('element'..i).visible)end
 assert(not candidate:selectCharacter('furina'))
@@ -46,7 +46,7 @@ assert(candidate:selectCharacter('traveler') and candidate:confirmCharacter())
 assert(not candidate.run.characterProfile and not candidate.run.data.originalV4Role)
 local closed,closedPanel,nativeCanvas=host('production')
 assert(not closed:selectCharacter('raiden') and not closed.run)
-assert(closed.characterSelection.info.id=='ironclad','rejected foreign role retains the preselected legal traveler')
+assert(closed.characterSelection.info==nil,'rejected foreign role must not create a selection')
 assert(not closedPanel:GetChild('hint').text:find('待验收',1,true))
 assert(closed:selectCharacter('traveler') and closed:confirmCharacter() and closed.run)
 

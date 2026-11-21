@@ -60,14 +60,17 @@ local function perPage()return #Theme.layout.relicView.rows*#Theme.layout.relicV
 function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     local self={root=root,bar=bar,visible=false,page=1}
     local official=Theme.presentationProfile=='official-assets-first'
+    self.localPanel=official
     local baseBar=Theme.layout.relicView.bar
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
     local boundCount=official and battleBar.count or baseBar.count
+    local tooltip=bar:GetChild('tooltip')
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
     local function picture(control,id)if platform.imageSource then control:SetImage(platform.imageSource,id)end end
     function self.resetBarHover(_)
         if self.hoverIndex then local icon=bar:GetChild('slot'..self.hoverIndex):GetChild('icon');icon:SetLocalScale(1,1,1);Art.scale(icon,1)end
         self.hoverIndex=nil
+        if tooltip and tooltip.visible then tooltip:SetVisible(false)end
     end
     local function paintCounter(slot,run,id,battle)
         local key,value
@@ -96,23 +99,37 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             child('frame').imageColor=single and platform.color(155,122,78,255) or platform.color(f.r,f.g,f.b,f.a or 255)
         end
     end
+    local function positionSingle(view,compact)
+        if not compact then return end
+        view:GetChild('icon'):SetAnchoredPosition(-177,8)
+        view:GetChild('icon'):SetSizeDelta(96,96)
+        for name,frame in pairs({name={55,91,350,40},rarity={55,53,350,32},
+            description={55,-30,350,126},status={55,-110,350,34}})do
+            local control=view:GetChild(name)
+            control:SetAnchoredPosition(frame[1],frame[2]);control:SetSizeDelta(frame[3],frame[4])
+        end
+    end
     function self.render(_)
         local run,n=self.run,perPage()
         local single=self.selectedIndex~=nil
         child('single'):SetVisible(single)
-        local width=single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
-        local height=Theme.layout.relicView.panel[4]
+        local compact=single and official
+        local width=compact and 560 or single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
+        local height=compact and 342 or Theme.layout.relicView.panel[4]
         child('frame'):SetSizeDelta(width,height)
         child('plate'):SetSizeDelta(width-Theme.space.border*2,height-Theme.space.border*2)
         child('contentBlocker'):SetSizeDelta(width,height)
         paintFrame(single)
-        child('close'):SetAnchoredPosition(single and width/2-58 or Theme.layout.relicView.close[1],Theme.layout.relicView.close[2])
+        child('close'):SetAnchoredPosition(single and width/2-58 or Theme.layout.relicView.close[1],
+            compact and height/2-33 or Theme.layout.relicView.close[2])
+        child('title'):SetVisible(not compact)
         child('title').text=single and '遗物详情' or '持有遗物 · '..#run.relics..' 件'
         if single then
             local e=self:entry(run,self.selectedIndex);self.selected=e
             local view=child('single')
+            positionSingle(view,compact)
             picture(view:GetChild('icon'),e.icon)
-            Art.paint(view:GetChild('icon'),'relic',Hooks.localId(e.id),Theme.layout.relicView.disc*2,platform)
+            Art.paint(view:GetChild('icon'),'relic',Hooks.localId(e.id),compact and 96 or Theme.layout.relicView.disc*2,platform)
             for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
             view:GetChild('status').text=e.status or ''
         end
@@ -136,7 +153,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         child('next'):SetVisible(single and self.selectedIndex<#run.relics or not single and many)
         for _,name in ipairs({'previous','next'})do
             local frame=Theme.layout.relicView[name]
-            child(name):SetAnchoredPosition(single and (name=='previous' and -width/2+112 or width/2-112) or frame[1],frame[2])
+            child(name):SetAnchoredPosition(single and (name=='previous' and -width/2+112 or width/2-112) or frame[1],compact and -height/2+26 or frame[2])
         end
         child('pageHint'):SetVisible(not single and many)
         child('pageHint').text=not single and many and ('第 '..self.page..'/'..self:pages()..' 页') or ''
@@ -175,7 +192,10 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         local relics=run and run.relics or {}
         local style=official and battleBar or baseBar
         self.barInteractive=official and visible and not self.visible or false
-        if not self.barInteractive then self:resetBarHover()end
+        if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[self.hoverIndex]~=self.hoverId then
+            self:resetBarHover()
+        end
+        self.barRun=run
         bar:SetVisible(visible and run~=nil)
         bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
         local cells=M.barCells(#relics,style.count)
@@ -229,6 +249,15 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
                 self:resetBarHover();self.hoverIndex=i
                 slot:GetChild('icon'):SetLocalScale(1.25,1.25,1)
                 Art.scale(slot:GetChild('icon'),1.25)
+                if tooltip and self.barRun and self.barRun.relics[i] then
+                    local entry=self:entry(self.barRun,i)
+                    self.hoverId=entry.id
+                    tooltip:GetChild('name').text=entry.name
+                    tooltip:GetChild('effect').text=entry.description..(entry.status and '\n'..entry.status or '')
+                    local x=battleBar.origin[1]+battleBar.step*(i-1)
+                    tooltip:SetAnchoredPosition(math.max(-450,math.min(450,x+148)),battleBar.origin[2]-108)
+                    tooltip:SetVisible(true);tooltip:SetAsLastSibling()
+                end
                 return true
             end)
             hit:AddCursorEventListener(cursor.CursorExit,function()

@@ -33,7 +33,8 @@ function M.install(self,owner,neowHistory)
     end
     self.requestNavigation=function(_,action)
         if blocked(self) or (action~='abandon' and action~='new') or not M.hasRun(self) then return false end
-        if action=='abandon' and not self.menuOpen then return false end
+        if self.pageReveal and self.pageReveal:covered() then return false end
+        if action=='abandon' and not self.menuOpen and not (self.sessionPaused and self.mode=='menu' and not self.exitOpen) then return false end
         if action=='new' and self.mode~='menu' then return false end
         self.navigationAction,self.exitOpen,self.menuOpen=action,true,false
         owner.exitGeneration=owner.exitGeneration+1
@@ -50,8 +51,9 @@ function M.install(self,owner,neowHistory)
         self.sessionPaused=false
         if self.choiceUI then self.choiceUI:close() end
         self.deckUI:close();self.potionUI:close()
-        dismiss(self,owner);self:refresh()
+        dismiss(self,owner)
         if action=='new' then return self:start() end
+        self:refresh()
         return true,'run_abandoned'
     end
 end

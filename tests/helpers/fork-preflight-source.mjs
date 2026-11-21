@@ -1,3 +1,6 @@
+import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
+import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
+import {stsHistoricalJsDiscovery} from './sts-selection-fade-source.mjs';
 import {m05HistoricalDiscovery} from './m05-shop-ci-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
@@ -65,6 +68,7 @@ function beforeLoadingRecoveryCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeCoopCiSource(path,source){
+ source=beforeStsFadeCi(path,source);
  source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
@@ -80,6 +84,7 @@ export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
   hash(normalize(testSource))===coopLabTestSha,'fresh added inventory source: '+coopLabTest);
 }
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
+ paths=stsHistoricalJsDiscovery(paths,read);
  paths=m05HistoricalDiscovery(paths,'js',read);
  if(!paths.includes(coopLabTest))return paths;
  assertCurrentJsInventory(paths,preceding,read);
@@ -153,15 +158,16 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const source=beforeV2UiEvidence(path,read(path,'utf8'));
+  const source=beforeV2UiEvidence(path,beforeStsUiCloseoutSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){
-  const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,read(path,'utf8')));
+  const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,beforeStsUiCloseoutSource(path,read(path,'utf8'))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeStsUiCloseoutSource(path,source);
  source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.

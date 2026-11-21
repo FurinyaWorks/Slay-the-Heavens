@@ -13,6 +13,20 @@ export function relicDisc(theme, name, size, ring, iconSize, position = [0, 0]) 
   ] };
 }
 
+export function relicTooltip(theme) {
+  const {plate,text}=nativeControls(theme),{color:c,font:f}=theme;
+  const line=(name,box,font,colour,valign)=>{
+    const node=text(name,box,'',font,colour);
+    Object.assign(node.text,{align:'left',valign});
+    return {...node,raycastTarget:false};
+  };
+  return {name:'tooltip',kind:'container',size:[360,156],visible:false,raycastTarget:false,children:[
+    {...plate('face',[0,0,360,156],c.panelSunken),raycastTarget:false},
+    line('name',[0,48,324,36],f.label,c.goldBright,'middle'),
+    line('effect',[0,-19,324,94],f.small,c.text,'top'),
+  ]};
+}
+
 export function relicViewControls(theme = nativeTheme) {
   const { plate, text } = nativeControls(theme);
   const { color: c, font: f, layout: l, space: s } = theme, v = l.relicView;

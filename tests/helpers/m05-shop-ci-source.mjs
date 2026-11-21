@@ -1,3 +1,5 @@
+import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
+import {beforeStsSelectionFade} from './sts-selection-fade-source.mjs';
 // Authenticated CI-only continuation; raw scheduler discovery stays unchanged.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -25,6 +27,8 @@ const matches=(source,binding)=>{
  return hash(text)===binding.sha256&&blob(text)===binding.gitBlob;
 };
 export function beforeM05ShopCiSource(path,source){
+ source=beforeStsFadeCi(path,source);
+ source=beforeStsSelectionFade(path,source);
  if(!Object.hasOwn(files,path)||!files[path].before||!matches(source,files[path].after))return source;
  const prior=files[path].before.source;
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;

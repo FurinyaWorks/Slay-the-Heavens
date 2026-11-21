@@ -10040,6 +10040,30 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "sourceCommit": "dfd45d6ce3f466592700aea94d224b4c660be960"
+    },
+    "docs/evidence/sts-selection-fade-20261121/after-selection.png": {
+      "sha256": "3f47445dbdf43362bb36e4b27467af3b0d0dc903a853912f538ed2c217d8a961",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts-selection-fade-20261121/before-selection.png": {
+      "sha256": "accb6e67e7e465125a319a30e48fabe195c43aa2c60c7b9a90f484218b4bf61d",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts-selection-fade-20261121/empty.png": {
+      "sha256": "2400ce67eb745bf76cb4e557eae1b6b0995be7c829e72f0868d083b4ac117a42",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts-selection-fade-20261121/fade-half.png": {
+      "sha256": "00e8532722618c57814222a50d33a7419b9f157816af116231a6031c713633e5",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts1-ui-closeout/comparison.png": {
+      "sha256": "133db554c1e469d0e6c3d3c614a15b326ffe42ef3eb938721e323f50e8f7eb53",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts1-ui-closeout/additional-states.png": {
+      "sha256": "de9d8afa9df385c32e9e3211894e6de09865c4a88e9e43714fa2ab0639fe9602",
+      "category": "v2-native-menu-layout-evidence"
     }
   }
 }

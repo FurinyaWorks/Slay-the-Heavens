@@ -72,11 +72,25 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',
  'tests/helpers/loading-recovery-source.mjs':'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f',
 });
+assert.equal(loadingRecoveryFiles['tests/helpers/loading-recovery-source.mjs'],'873915500ae2b1a02abebb78a932a8cdfa5e56044ad5dcb34a4d51fd1fc02f5f','STS fade exact loading helper predecessor');
+const stsFadeFiles=Object.freeze({...loadingRecoveryFiles,...{
+  "tests/helpers/loading-recovery-source.mjs": "47104b0a4724a4d8315931ed2f60c33457834bd306eb2f3a6d28cac11faec036",
+  "tests/helpers/sts-selection-fade-source.mjs": "73b46c3cebe908ea332c56264b1300937d9e67de678225b5ac213b16ef245adf",
+  "tests/fixtures/sts-selection-fade-source.json": "aa738acfea89d0c38209c903dca0b0a573e217ce11c0542a022cf18e0b784717"
+}});
+assert.equal(stsFadeFiles['tests/helpers/sts-selection-fade-source.mjs'],'73b46c3cebe908ea332c56264b1300937d9e67de678225b5ac213b16ef245adf','STS UI exact fade helper predecessor');
+const stsCloseoutFiles=Object.freeze({
+ ...stsFadeFiles,
+ 'tests/helpers/potion-pointer-source.mjs':'7fe84ca4ec6fa72ad78d83cf2613a60326127ac9906c72fc4c72daf04c14b488',
+ 'tests/helpers/sts-selection-fade-source.mjs':'d3be357f4c639c9f6d305eaa45b08674168f9f7166ecd50f8f4d6f41b3e560e7',
+ 'tests/helpers/sts-ui-closeout-source.mjs':'9303fe7c8dc88f40b552cdc8f291ec22932d6ee28e1e7f7463191a2f1ffa32a9',
+ 'tests/fixtures/sts-ui-closeout-source.json':'6d3859741054bc3da48bd31b5a520ce559da6a06a866a9232741c82a175e891d',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(loadingRecoveryFiles)){
+ for(const [path,sha]of Object.entries(stsCloseoutFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

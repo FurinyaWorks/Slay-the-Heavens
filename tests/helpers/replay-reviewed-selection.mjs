@@ -1,3 +1,4 @@
+import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,rmSync,copyFileSync,cpSync,symlinkSync,realpathSync} from 'node:fs';
 import {join,dirname,resolve,relative,isAbsolute} from 'node:path';
@@ -29,6 +30,10 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
  try{
   const paths=execFileSync('git',['ls-files','scripts','data','config','tools','tests/helpers'],{encoding:'utf8'}).trim().split('\n');
   for(const path of paths){assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});copyFileSync(path,target);}
+  // The released selection witness predates the shared potion popup mount.
+  const hud='scripts/official-battle-hud.mjs';
+  const current=readFileSync(join(root,hud),'utf8');
+  writeFileSync(join(directory,hud),beforeStsUiCloseoutSource(hud,current));
   cpSync(join(root,'tests/fixtures'),join(directory,'tests/fixtures'),{recursive:true});
   for(const [path,row]of Object.entries(integratedCiProof.files)){
    if(!row.views.release||path.startsWith('src/'))continue;

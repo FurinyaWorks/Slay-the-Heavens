@@ -30,7 +30,13 @@ export function officialAssetsTheme(source){
   theme.color.mapCanvas=structuredClone(approved.color.mapCanvas);
   theme.color.node=structuredClone(approved.color.node);
   theme.layout.v25Menu={...structuredClone(approved.layout.v25Menu),...structuredClone(nativeMenuFrames)};
-  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:32,labelX:0};
+  theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:24,labelX:0};
+  theme.layout.exitMenu.title[0]=0;
+  // #784 compacted the official run menu when the guide was removed.
+  Object.assign(theme.layout.runMenu,{
+   panel:[460,122,280,448],map:[460,190,252,56],mainMenu:[460,126,252,56],
+   rule:[460,84,232,2],abandon:[460,42,252,56],quit:[460,-22,252,56],dismissHint:[460,-72,260,40],
+  });
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
   theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
   theme.layout.nativeNode.event.neow.bubbleText=[-45,96,270,130];

@@ -1732,8 +1732,9 @@ test('M05 exact source and discovery custody reject drift before older adapters'
  const {beforeV2UiEvidence}=await import('./helpers/v2-p1-ci-source.mjs');
  const {beforeAuthenticatedM05ShopSource,m05ShopSourcePaths}=await import('./helpers/m05-shop-source.mjs');
  const raw=path=>readFileSync(path,'utf8');
+ const {stsCurrentJsDiscovery}=await import('./helpers/sts-selection-fade-source.mjs');
  for(const [kind,list,added]of [
-  ['js',discoverJs(),'tests/shop-dismiss.test.mjs'],
+  ['js',stsCurrentJsDiscovery(discoverJs()),'tests/shop-dismiss.test.mjs'],
   ['lua',readdirSync('tests/lua').filter(n=>n.endsWith('.lua')).map(n=>'tests/lua/'+n),'tests/lua/shop_dismiss.lua'],
  ]){
   const left=m05CurrentDiscovery(list,kind);

@@ -71,10 +71,13 @@ export function mountOfficialResourceHints(root,theme){
 export function finishOfficialPotionFace(variant){
  const empty=child(variant,'emptyShell');if(!empty)return;
  child(empty,'face').visible=false;
- child(empty,'dashes').children=Array.from({length:12},(_,i)=>{
-  const angle=i*Math.PI/6;
-  return {name:'dash'+i,kind:'image',image:100001,size:[7,2],position:[21*Math.sin(angle),21*Math.cos(angle)],rotation:-i*30,colour:'#9C8C70',opacity:.8};
- });
+ // Empty slots use the very same native bottle and frame as an owned one.
+ // Multiplying by black suppresses source RGB and retains its native alpha;
+ // no drawn jar/test tube, extra atlas or imported bitmap is needed.
+ const bottle=child(variant,'bottle'),shadow=child(empty,'dashes');
+ shadow.children=[{name:'bottleShadow',kind:'image',image:bottle.image,
+  position:[...bottle.position],size:[...bottle.size],colour:'#000000',opacity:.5}];
+ for(const name of ['filledShell','fireShell'])for(const node of parts(child(variant,name)))node.visible=false;
 }
 
 export function officialRunHudComponent(battle){
