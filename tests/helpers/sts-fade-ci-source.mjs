@@ -8,7 +8,7 @@ assert.equal(hash(bytes),'be33c862d5b8d8d3f3d40a70228c9eba52c8391e0425b77df07a04
 const {base,files}=JSON.parse(bytes);
 assert.equal(base,'345ba08398b6ca8e1361a126f2ce1de85210e634');
 const closeoutBytes=readFileSync(new URL('../fixtures/sts-ui-closeout-ci.json',import.meta.url));
-assert.equal(hash(closeoutBytes),'20b6cc0805bc1e07f6ebd1ba2b4fef5c42ea83d638e57b582a484bae318e8821','exact STS closeout CI continuation');
+assert.equal(hash(closeoutBytes),'d9855569eb08eeb059fa50ec036d65fe7d28050b10bde7b6a5626c081fe02ac0','exact STS closeout CI continuation');
 const closeout=JSON.parse(closeoutBytes).files;
 function fromCloseout(path,source){
  const row=Object.hasOwn(closeout,path)?closeout[path]:null;

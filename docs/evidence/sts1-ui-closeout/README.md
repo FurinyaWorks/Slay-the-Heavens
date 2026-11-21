@@ -1,6 +1,6 @@
 # STS1 交互收口
 
-界面与截图对照以最新 `release/v2.0.0@8af3866714f12abe8d1322f0c2e3cffc623a808b` 为准，目标 PR 仍以 `develop@73fd14aab04c590037c39197364f725a767fed19` 为合并基线。正式生成布局的整个主菜单与退出确认控件树逐字节等于该 Release。运行时仅更改有未完本局的按钮文案及放弃确认。Release 已合的 [#797 主菜单](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/797)、[#784 删除操作说明](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/784)、[#798 瓶形空槽](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/798) 和 [#786 岩脉残晶图元](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/786) 接续至当前范围。实现接续 [#803](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/803) 的 `b5e7c915112e9e741114173d5a58fc95b0313587`。选角沿用 [#760](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/760) 的开放信息布局与 [#785](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/785) 的按钮和去暗层修复。工作目标是后续版本的 `develop`。
+界面与截图对照以最新 `release/v2.0.0@8af3866714f12abe8d1322f0c2e3cffc623a808b` 为准，目标 PR 仍以 `develop@73fd14aab04c590037c39197364f725a767fed19` 为合并基线。正式生成布局的主菜单、退出确认与局内菜单的整个控件树逐字节等于该 Release。运行时仅更改有未完本局的按钮文案及放弃确认。Release 已合的 [#797 主菜单](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/797)、[#784 删除操作说明](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/784)、[#798 瓶形空槽](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/798) 和 [#786 岩脉残晶图元](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/786) 接续至当前范围。实现接续 [#803](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/803) 的 `b5e7c915112e9e741114173d5a58fc95b0313587`。选角沿用 [#760](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/760) 的开放信息布局与 [#785](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/785) 的按钮和去暗层修复。工作目标是后续版本的 `develop`。
 
 ## 原版证据
 
@@ -30,7 +30,7 @@
 | 战斗外药水操作面板 | 514 | 42 | 472 |
 | 完整舞台控件 | 24,284 | 23,556 | 728 |
 | 转场两棵布局树紧凑 JSON 字节 | 38,286 | 1,058 | 37,228 |
-| 构建输出 `game-ui.json` 字节 | 18,378,370 | 18,241,227 | 137,143 |
+| 构建输出 `game-ui.json` 字节 | 18,378,370 | 18,241,229 | 137,141 |
 
 舞台合计包含 Release 与目标集成树上的其他布局差异。转场行直接取各树的对应控件。两个旧树各含 95 个璃月徽记图元。当前正式布局移除了旧树与两个徽记，复用共享 veil。淡出、淡入各为 0.35 秒，中间的全黑等待由实际 Ready 决定。用 [Lua 写入计数探针](measure-fade-writes.lua) 以 60 Hz 驱动开局第一秒，并保持目标未就绪。盖层 Alpha 写入从 62 次降到 23 次，元素着色从 35 次降到 0 次，共少 74 次属性写入。运行脚本时使用各工作树自己的正式生成 Lua 和生产 Lua 搜索路径，旧工作树另设 `STS_UI_BASELINE=true`。实验/旧宿主仍保留过场源码，商店共用其 UTF-8 拆字函数。PNG 全黑帧的三个 RGB 通道极值均为 0。
 

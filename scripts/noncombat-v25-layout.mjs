@@ -9,6 +9,18 @@ import {constellationGeometry} from './constellation-geometry.mjs';
 import {characterSelectionComposition,styleCharacterFlag} from './character-selection-composition.mjs';
 const parts=n=>n?.controls??n?.children??[];
 const child=(n,name)=>parts(n).find(c=>c.name===name);
+function positionRunMenu(panel,theme){
+ const layout=theme.layout.runMenu;
+ for(const name of ['map','mainMenu','rule','abandon','quit','dismissHint']){
+  child(panel,name).position=layout[name].slice(0,2);
+ }
+ for(const name of ['border','face','catch']){
+  const part=child(panel,name),inset=name==='face'?theme.space.border*2:0;
+  part.position=layout.panel.slice(0,2);
+  part.size=layout.panel.slice(2).map(value=>value-inset);
+ }
+}
+
 export function applyOfficialNoncombatLayout(layout,theme){
  const stage=child(layout,'stage')??layout;
  const menu=child(stage,'menuPanel');
@@ -24,6 +36,7 @@ export function applyOfficialNoncombatLayout(layout,theme){
   panel.children=panel.children.filter(part=>!retired.has(part.name));
  }
  child(child(stage,'exitPanel'),'title').position[0]=0;
+ positionRunMenu(child(stage,'runMenu'),theme);
  const characterTheme={...theme,v25Character:{...theme.v25Character,story:'使用岩元素护盾与结晶应对敌人。'}};
  applyV25CharacterLayout(layout,characterTheme);
  const panel=child(stage,'characterPanel'),selected=child(child(panel,'v25Roster'),'selected');

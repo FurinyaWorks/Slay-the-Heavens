@@ -119,6 +119,7 @@ test('official host uses direct inventory actions, read-only relic details and e
  for(const [name,sha] of [
   ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0'],
   ['exitPanel','7715c4bf68220f4110d3e600032647e2d6d3a1a47b9ff5fcd268af3e9acfa82b'],
+  ['runMenu','24166708aeb3f92798e6f0309b9742188821069366daad6de2ede3f35b5e0e5c'],
  ]){
   assert.equal(createHash('sha256').update(JSON.stringify(child(stage,name))).digest('hex'),sha,
    'preserve the complete released layout at 8af38667: '+name);
