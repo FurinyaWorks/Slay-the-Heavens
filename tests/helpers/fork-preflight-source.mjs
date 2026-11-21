@@ -52,7 +52,7 @@ for(const [path,row] of Object.entries(transport.files)){
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
 const rewardScreenBytes=readFileSync(new URL('./reward-screen-ci-source.json.gz',import.meta.url));
-assert.equal(hash(rewardScreenBytes),'735b07f56e70fe324f1243212624bd7463c32c41e3cee079864c5807e3deadfc');
+assert.equal(hash(rewardScreenBytes),'04094f1942139397d7e267131fe819c49a5045b7027a4663157ccac985c5cd82');
 const rewardScreenCi=JSON.parse(gunzipSync(rewardScreenBytes));
 assert.equal(rewardScreenCi.base,'cc33beaa12bd827c1de2f2f76b5238c5d203609f');
 for(const {before} of Object.values(rewardScreenCi.files)){
