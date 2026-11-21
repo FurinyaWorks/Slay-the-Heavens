@@ -11,6 +11,10 @@
       "status": "Owner-selected, session-generated Genshin character derivative visual references for the project fitting experiment. Asset and platform rights remain separate. Project comparison only, with no official distribution authorization, asset sublicense, or native runtime approval.",
       "evidence": "art/characters/battle-figure-reference/2026-11-19/README.md and manifest.json; two original references from PR #744"
     },
+    "traveler-power-tooltip-preview": {
+      "status": "Project-generated offline diagnostic of native UI layout geometry and status copy. Chromium rasterizes project placeholder glyphs and system fonts. No official client capture, reference-game image or additional game asset is distributed.",
+      "evidence": "Base 73fd14aab04c590037c39197364f725a767fed19 and the Tooltip patch with a matched Combat state, generated battle layout, tests/lua/support/game_ui_fixture.lua and the renderer from scripts/battle-ui-preview.mjs."
+    },
     "v2-native-menu-layout-evidence": {
       "status": "Project diagnostic renders of current and prior native UI geometry and text. System fonts are rasterized for offline comparison. No atlas textures or font binaries are distributed; upstream IP rights are reserved.",
       "evidence": "docs/evidence/v2-ui-20261119/README.md"
@@ -9840,6 +9844,10 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "sourceCommit": "f34723b6d54b6153de8a333a8abcc77884737f8f"
+    },
+    "docs/evidence/traveler-power-tooltip/before-after.png": {
+      "category": "traveler-power-tooltip-preview",
+      "sha256": "eddee8680c403cff5b1c7b5af18b3ab22d1f81f4d5f2982ae718f7aa3fb4ec5d"
     },
     "docs/evidence/treasure-readable-20261114/bell-hover.png": {
       "sha256": "0c7341e0afca6547985d42488b3d6ea4e113a546a1d7cfa6c3fc21f07dd90433",
