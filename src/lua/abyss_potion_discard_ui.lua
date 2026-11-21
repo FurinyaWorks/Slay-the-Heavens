@@ -84,6 +84,16 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
             local definition=id and find(self.run.data.potions.potions,id)
             child('slot'..slot):SetVisible(slot<=capacity)
             caption('slot'..slot,'槽 '..slot..'\n'..(definition and definition.name or '空槽'))
+            local control=child('slot'..slot)
+            control:SetAnchoredPosition((slot-(capacity+1)/2)*92,120)
+            for _,state in ipairs({'normal','hover','pressed','disabled'})do
+                local face=control:GetChild('hit'):GetChild(state)
+                face:GetChild('emptyShell'):SetVisible(id==nil)
+                face:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
+                face:GetChild('fireShell'):SetVisible(id=='fire_potion')
+                face:GetChild('selectedShell'):SetVisible(self.selected~=nil and self.selected.slot==slot)
+                refreshBottle(face:GetChild('bottle'),id,platform)
+            end
             local hit=child('slot'..slot):GetChild('hit');hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
         end
         local selected=self.selected

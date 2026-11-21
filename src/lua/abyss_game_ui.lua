@@ -133,7 +133,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)
     -- TASK-4.7 owned relics: icon-disc slots, not a text dump. Opening rides
     -- the deck gate so it stays read-only for battle, map, camp and chest.
-    self.openRelics = Overlays.openRelics(self)
+    self.openRelics = Overlays.openRelics(self,inputCovered,platform)
     self.closeDeck = Overlays.closeDeck(self)
 
     local menuView = MenuView.new(self,menu,data,platform)

@@ -1792,3 +1792,23 @@ test('official aim regression rejects the escaped lifted-card origin and a centr
   abyss_battle_aim_arrow:arrow.replace('local apex=17*scale','local apex=0'),
  }),/first target tip x/);
 });
+
+test('recording sort triangles remain visible and reverse across clicks, mode changes and reopening',t=>{
+ runOfficial(t,officialDeckBrowserSetup+`
+host.run.deck={instance(1,'defend'),instance(2,'bash')}
+assert(deck:open(host.run));deck:update(0)
+for _,mode in ipairs({'original','type','cost','name','cost'})do
+ for i=1,4 do
+  assert(tool(mode));deck:update(0)
+  local box=panel:GetChild('pileTools'):GetChild(mode)
+  local arrow=assert(box:GetChild('direction'),'missing font-independent triangle')
+  assert(arrow.visible~=false and arrow.localRotationZ==(deck.sortAscending and 0 or 180))
+  assert(not box:GetChild('label').text:find('▴') and not box:GetChild('label').text:find('▾'))
+ end
+end
+local before=C.copy(host.run)
+assert(deck:close());assert(deck:open(host.run));deck:update(0)
+assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('direction').localRotationZ==(deck.sortAscending and 0 or 180))
+unchanged(host.run,before,'sorting changed run')
+`,'RECORDING_SORT_TRIANGLE_PASS');
+});

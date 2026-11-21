@@ -137,14 +137,12 @@ export function applyV25MapLayout(layout,theme){
  // All validation completed before mutation. Preserve the mapGroup paths that
  // the real MapUI at() resolver owns, including the complete node/edge pools.
  for(const control of legacy)control.visible=false;
- // Each route remains the very same pooled control/transform. Eight stretched
- // native rectangles make the approved dashed ink; no textures, per-frame
- // allocation, new input or replacement graph. Anchors stretch with the clipped
- // route, including at the viewport boundaries.
+ // Keep the eight existing pooled dashes. Runtime positions each along a
+ // deterministic bounded curve and clips it without allocating controls.
  for(const edge of groups.flatMap(children).filter(c=>/^edge\d+$/.test(c.name))){
   const ink=edge.colour;edge.kind='container';delete edge.image;delete edge.colour;
   edge.children=Array.from({length:8},(_,i)=>({name:'routeInk'+(i+1),kind:'image',image:100001,colour:ink,
-   anchor:{min:[i/8,0],max:[(i+.48)/8,1]},position:[0,0],size:[0,0]}));
+   position:[0,0],size:[0,0],raycastTarget:false}));
  }
  title.position=[116,338];title.size=[220,40];Object.assign(title.text,{fontSize:14,minFontSize:14,colour:'#E4DDD0'});
  const notice=at('notice');notice.size=[820,48];

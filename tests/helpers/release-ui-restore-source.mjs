@@ -43,6 +43,9 @@ const sharedRelics=releaseUiRestoreArchive(readFileSync(new URL('./release-share
  '4e72ca430cf8740dd6cb828547d8b8f29ba169c0c90cf49c2c662aa5964df5cc','da94ed7bbcb3002255442f8d120c6c2146878ae7');
 const forgeGrid=releaseUiRestoreArchive(readFileSync(new URL('./release-forge-source.json.gz',import.meta.url)),
  '8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564','7381cf7152ba7a726506f9a5b525e13cfbd2c87a');
+const recording=releaseUiRestoreArchive(readFileSync(new URL('./recording-0401-source.json.gz',import.meta.url)),
+ '9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24','d26c4dc59e639741471580a242718a284a67f758');
+export const beforeRecordingUi=recording.project;
 export const releaseForgeSourcePaths=Object.freeze(Object.keys(forgeGrid.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseForgeGridUi=forgeGrid.project;
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
@@ -52,10 +55,18 @@ export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
-export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,beforeReleaseSharedRelicUi(path,beforeReleaseForgeGridUi(path,beforeRefinedReleaseProduction(path,source))))));
+export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,beforeReleaseSharedRelicUi(path,beforeReleaseForgeGridUi(path,beforeRefinedReleaseProduction(path,beforeRecordingUi(path,source)))))));
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ for(const [path,input] of samples){
+  const expected=recording.files[path]?.after;
+  if(!matches(input,expected))continue;
+  assert(matches(read(path),expected),'recording UI linked owner changed: '+path);
+ }
+ const rawRead=read;
+ samples=samples.map(([path,input])=>[path,beforeRecordingUi(path,input)]);
+ read=path=>beforeRecordingUi(path,rawRead(path));
  authorizeRefinedReleaseProduction(samples,read);
  // A combined replay that contains current menu code must use the same release
  // version for every sampled menu owner. Older all-historical views still replay.
