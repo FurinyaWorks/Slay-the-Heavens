@@ -90,7 +90,17 @@ function shopEntryPreflightRead(read){
  const prior=shopEntryPriorRead(read);
  return (path,...args)=>beforeShopEntryCopier(path,prior(path,...args));
 }
+function beforeIntegratedReleaseCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='08e05caaa7d1d548bae14695b7babb4cbb7b35e52ee1a5215b5896d6f3764807')return source;
+ const prior=lf.replace(/^const integratedReleaseFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(integratedReleaseFiles))','Object.entries(refinedReleaseFiles))');
+ assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeIntegratedReleaseCopier(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);

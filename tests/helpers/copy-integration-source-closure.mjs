@@ -90,8 +90,8 @@ const integratedReleaseFiles=Object.freeze({
  'tests/helpers/release-map-deck-source.mjs':'e31f57cd3eb1fd7911d55984160eaeebcec50eecfb76718fcba49c59d2616edb',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
- 'tests/helpers/release-integration-source.mjs':'857b0dbcaa24d47637a6a8fe82e6dba8fba0c00695fe454f7437357142d5ce18',
- 'tests/fixtures/release-integration-source.json.gz':'5e562368b69b46c3b0015b39f6d9d4e4965de023f1995e6e8e4a5f1648f4e846',
+ 'tests/helpers/release-integration-source.mjs':'aaee3cebea6044f9b03541b9fc403ef151c545b895f20b96cba70d9c8a08a3f2',
+ 'tests/fixtures/release-integration-source.json.gz':'6e28e2aa153bd2f3464204abaf74ad3ff43069becb7f2c8370f16c89e6c60c86',
  'tests/helpers/release-ui-restore-source.mjs':'d96708ceeb283a4e8dab1fb622c966f1fc1dce67d3ae01a22ac08e6209beeaa0',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
