@@ -13,8 +13,11 @@ assert.equal(hash(bytes),'9779296bb7bedc99990fa6ccad9c7ba0a0e581982a020c9dcc4a71
 const {base,files}=JSON.parse(gunzipSync(bytes));
 assert.equal(base,'901f87c9e7922c78f31154d9c88d2a5f5ef2720c');
 const transitionArchive=readFileSync(new URL('../fixtures/combat-reward-transition-source.json.gz',import.meta.url));
-assert.equal(hash(transitionArchive),'c3cfc51a0c4abbad8a65c35e111c52e5faa9245cf1296baa41f7c529bbf879da');
-const {files:transition}=JSON.parse(gunzipSync(transitionArchive));
+assert.equal(hash(transitionArchive),'08c955924392a2a23a989e08b9bb4e061d06a66871b1cbacd9ad556c0b734476');
+const {base:transitionBase,files:reward,tooltip}=JSON.parse(gunzipSync(transitionArchive));
+assert.equal(transitionBase,'d7d77fe88d3b6fef6da233cfad0ec9361094db0d');
+assert.equal(tooltip.commit,'7e3f38fda4c17eb7b17eb9d0dc4eba8d79e9d02f');
+const transition={...reward,...tooltip.files};
 for(const {before,after} of [...Object.values(files),...Object.values(transition)]){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(hash(`blob ${Buffer.byteLength(before.source)}\0${before.source}`,'sha1'),before.gitBlob);

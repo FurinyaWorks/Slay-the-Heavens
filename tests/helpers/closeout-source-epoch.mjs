@@ -12,7 +12,8 @@ import {extendMenuRedSourceEpoch,extendMenuPresentationEpoch} from './menu-red-s
 import {extendReleaseSourceEpoch} from './release-source-epoch.mjs';
 import {extendSessionMenuEpoch} from './session-menu-source-epoch.mjs';
 import {extendV2RunMenuEpoch} from './v2-run-menu-source-epoch.mjs';
-import {beforeRewardTransitionSource,authorizePc13RewardCover} from './pc13-reward-cover-source.mjs';
+import {beforeRewardTransitionSource,beforePc13RewardCover,authorizePc13RewardCover} from './pc13-reward-cover-source.mjs';
+import {projectPotionPointerSource,authorizePotionPointerSource} from './potion-pointer-source.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const bytes=readFileSync(new URL('./closeout-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(bytes),'36aba7fc07f732a191a750d437eefd27e9b9567221811747abf13c97a9ac237a');
@@ -64,9 +65,12 @@ export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf
  if(path==='config/architecture.json'&&hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
  const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource});
  if(projected!==source)return projected;
- const prior=beforeRewardTransitionSource(path,source);
- if(prior!==source&&prior.replaceAll('\r\n','\n')===proof.targets[target].files[path]?.source){
+ if(beforeRewardTransitionSource(path,source)===source)return source;
+ const intermediate=beforePc13RewardCover(path,source);
+ const prior=projectPotionPointerSource(path,intermediate,row);
+ if(prior.replaceAll('\r\n','\n')===proof.targets[target].files[path]?.source){
   authorizePc13RewardCover([[path,source]],readSource);
+  authorizePotionPointerSource(path,intermediate,row,[],owner=>beforePc13RewardCover(owner,readSource(owner)));
   return prior;
  }
  return source;

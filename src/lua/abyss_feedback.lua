@@ -548,11 +548,11 @@ function M.new(stage, platform, present, complete)
     local function advanceQueue()
         repeat
             local entry=self.queue[self.index+1]
-            if entry and entry.kind=='victory' and pendingMonsterExit()then return end
+            if entry and entry.kind=='victory' and (pendingMonsterExit() or self.effects.player)then return end
             self.index=self.index+1
             if not entry then finish();return end
             step(entry,self.styles[self.index])
-            -- Victory keeps its cue and death gate, then hands off without a banner hold.
+            -- Victory hands off after the last visible effects, without a banner hold.
             -- Source onModifyPower is synchronous as well.
         until entry.kind~='source_intent_powers' and entry.kind~='victory'
     end

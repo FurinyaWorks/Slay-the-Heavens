@@ -81,10 +81,10 @@ const releaseGuideFiles=Object.freeze({
 });
 const rewardTransitionFiles=Object.freeze({
  ...releaseGuideFiles,
- [closeout]:'d955e257af6c24ab453b3f8a3b6d18b734d1b3493554d83cad54d22d23c7ef25',
- 'tests/helpers/pc13-reward-cover-source.mjs':'e4ca442da29a6e1b20ccf5ca8f092324544f47ba8f8c242014f9e7a9c1d800a1',
+ [closeout]:'4d3e6c160de2c6b69e661d5c57229c7b6e0c3f76d1c8eff30df51b23ef305650',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'ce7b2396dca3f2769cb34c628ed39802b485a3a64d7693560d92f334309eb588',
  'tests/helpers/release-guide-backflow-source.mjs':'b3f38bf200d79d335a0048295b835d4d326ebfc7d52039171984998022b7facf',
- 'tests/fixtures/combat-reward-transition-source.json.gz':'c3cfc51a0c4abbad8a65c35e111c52e5faa9245cf1296baa41f7c529bbf879da',
+ 'tests/fixtures/combat-reward-transition-source.json.gz':'08c955924392a2a23a989e08b9bb4e061d06a66871b1cbacd9ad556c0b734476',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

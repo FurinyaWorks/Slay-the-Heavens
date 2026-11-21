@@ -69,6 +69,17 @@ export function assertNativeUiCapacity(layout) {
   visit(layout.controls ?? layout.children ?? [], layout.name ?? 'native UI');
 }
 
+function mountHiddenBattleFloorIcon(tree) {
+  const stage=tree.controls.find(control=>control.name==='stage');
+  const battle=stage.children.find(control=>control.name==='battlePanel')??stage;
+  const extra=battle.children.find(control=>control.name==='potionHelp');
+  const floorIcon=battle.children.find(control=>control.name==='floorIcon');
+  // The hidden glyph has no live writer. Retain it in the existing full-canvas
+  // group so the battle can also host its touch dismissal control.
+  battle.children.splice(battle.children.indexOf(floorIcon),1);
+  extra.children.push(floorIcon);
+}
+
 function rejectInputOutputAliases(outputDirectory, extraInputs = []) {
   // Discover optional source identities without reading/decoding disabled drawings.
   const optionalInputs=[],visited=new Set();
@@ -192,6 +203,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     applyV25RewardLayout(battle,theme);
     applyV25RewardLayout(layout,theme);
   }
+  for(const tree of [battle,layout])mountHiddenBattleFloorIcon(tree);
   for (const tree of [battle, layout, ...templates]) assertNativeUiCapacity(tree);
   const rendered = spawnSync(python, ['tools/render_traveler_cards.py', 'data/cards.json', 'data/presentation/traveler.zh-CN.json'],
     { encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PYTHONUTF8: '1' } });
