@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "officialCapacity": "NOT_RUN",
+  "physicalDevices": "NOT_RUN",
+  "visualProductionApproval": false,
+  "simulatorVersion": "beyond-simulator-mcp@0.5.2",
+  "slot": [
+    330,
+    330
+  ],
+  "comparativeReview": {
+    "cleric": "prefer_contour_prototype",
+    "purifier": "prefer_contour_prototype",
+    "goop": "prefer_contour_prototype",
+    "upgrade_shrine": "prefer_contour_prototype",
+    "golden_wing": "needs_comparison_at_slot_size",
+    "shining_light": "retain_baseline_for_silhouette_and_rays",
+    "golden_shrine": "reject_both_for_missing_mask_and_stone_altar"
+  },
+  "events": {
+    "cleric": {
+      "sourceSha256": "b7215cb4dca7b67f3e6470c795bd8cc3b8a7cc4562c87d5c4f4131adab0a5a93",
+      "rectangle": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 28.522,
+          "edgeMae": 34.173,
+          "cueMae": 50.594
+        },
+        "variantMetrics": {
+          "mae": 24.741,
+          "edgeMae": 28.884,
+          "cueMae": 37.293
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61,
+        "cues": [
+          "helmet and grin",
+          "gold orb",
+          "blue flame"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 28.522,
+          "edgeMae": 34.173,
+          "cueMae": 50.594
+        },
+        "variantMetrics": {
+          "mae": 26.516,
+          "edgeMae": 31.432,
+          "cueMae": 39.193
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 54533,
+        "GIASha256": "2ad4781c0eacf4acf8ceae664cc1910ab233620fa9f086338ca61f9d11f9f7a6",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    },
+    "golden_shrine": {
+      "sourceSha256": "006ba1096bc9ae360e60553e0d5bfa353ae627aa14fa8cdd27afe51684957841",
+      "rectangle": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 21.888,
+          "edgeMae": 23.75,
+          "cueMae": 29.537
+        },
+        "variantMetrics": {
+          "mae": 18.296,
+          "edgeMae": 20.222,
+          "cueMae": 21.747
+        },
+        "totalControlsBefore": 49,
+        "totalControlsAfter": 61,
+        "cues": [
+          "gold emblem",
+          "stone bowl and coins",
+          "stone uprights"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 21.888,
+          "edgeMae": 23.75,
+          "cueMae": 29.537
+        },
+        "variantMetrics": {
+          "mae": 19.862,
+          "edgeMae": 21.747,
+          "cueMae": 22.388
+        },
+        "totalControlsBefore": 49,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 53519,
+        "GIASha256": "251d632ff6669f10da826a53889b7f5bc1052717cfcf00592a84e31c5e66a69f",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    },
+    "golden_wing": {
+      "sourceSha256": "3ea80a74079a0ca0c07e8f014348f111a6e1709a720446fd847980fcc977d36d",
+      "rectangle": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 21.544,
+          "edgeMae": 25.297,
+          "cueMae": 34.423
+        },
+        "variantMetrics": {
+          "mae": 18.579,
+          "edgeMae": 21.176,
+          "cueMae": 25.378
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61,
+        "cues": [
+          "cyan wing silhouette",
+          "upper gold cluster",
+          "floor coins"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 21.544,
+          "edgeMae": 25.297,
+          "cueMae": 34.423
+        },
+        "variantMetrics": {
+          "mae": 19.471,
+          "edgeMae": 22.027,
+          "cueMae": 25.603
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 53555,
+        "GIASha256": "9cd688b08130efd144750e52bdc8e921c4ff4d57a0a9f7f12f65d922b80ab3e7",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    },
+    "goop": {
+      "sourceSha256": "4cfb5ddb6f198a649f13f7abad3b7f113d1846ca884259e1e3dde52fa1e70151",
+      "rectangle": {
+        "variant": "60/43/p6",
+        "baseline": {
+          "mae": 20.227,
+          "edgeMae": 24.925,
+          "cueMae": 28.35
+        },
+        "variantMetrics": {
+          "mae": 20.298,
+          "edgeMae": 24.615,
+          "cueMae": 24.727
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61,
+        "cues": [
+          "large bubble",
+          "rim ellipse",
+          "small bubbles"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 20.227,
+          "edgeMae": 24.925,
+          "cueMae": 28.35
+        },
+        "variantMetrics": {
+          "mae": 20.454,
+          "edgeMae": 24.423,
+          "cueMae": 21.463
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 54227,
+        "GIASha256": "d5bb6951d2da30ee8b093c341029e4d0b1241790e2b6bb8271f70b9b5158eca1",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    },
+    "purifier": {
+      "sourceSha256": "79643cda7d20de7e084820fa44441e55c2a7a25d4b3ed4dcf66c666375f2b202",
+      "rectangle": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 17.258,
+          "edgeMae": 18.932,
+          "cueMae": 32.164
+        },
+        "variantMetrics": {
+          "mae": 15.301,
+          "edgeMae": 16.79,
+          "cueMae": 25.066
+        },
+        "totalControlsBefore": 59,
+        "totalControlsAfter": 61,
+        "cues": [
+          "amber symbol",
+          "vertical core",
+          "ember basin"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 17.258,
+          "edgeMae": 18.932,
+          "cueMae": 32.164
+        },
+        "variantMetrics": {
+          "mae": 15.819,
+          "edgeMae": 17.368,
+          "cueMae": 25.913
+        },
+        "totalControlsBefore": 59,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 53425,
+        "GIASha256": "67c4bf3be8d82ab58322994830916f59978a06b542c3d4797ae48c37693fec43",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    },
+    "shining_light": {
+      "sourceSha256": "cc09de5eb7f97f4e5cff8934e14d0e0bb644b35b6241d6ff4d29a1350c155880",
+      "rectangle": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 23.324,
+          "edgeMae": 24.875,
+          "cueMae": 22.219
+        },
+        "variantMetrics": {
+          "mae": 18.521,
+          "edgeMae": 20.167,
+          "cueMae": 16.755
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61,
+        "cues": [
+          "radiant center",
+          "traveler silhouette",
+          "low rays"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 23.324,
+          "edgeMae": 24.875,
+          "cueMae": 22.219
+        },
+        "variantMetrics": {
+          "mae": 21.11,
+          "edgeMae": 22.702,
+          "cueMae": 17.179
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 54527,
+        "GIASha256": "721e778766b66cb8022867cb21b423fc18c9e88f733adf2500346f210296b02f",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    },
+    "upgrade_shrine": {
+      "sourceSha256": "aa2bf793b47387b4d5276473ed7c8d0625f20a2aa1ecb396e095461b5fb2fd3a",
+      "rectangle": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 12.727,
+          "edgeMae": 15.224,
+          "cueMae": 24.544
+        },
+        "variantMetrics": {
+          "mae": 11.954,
+          "edgeMae": 13.748,
+          "cueMae": 18.845
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61,
+        "cues": [
+          "orange shrine",
+          "floating links",
+          "base"
+        ]
+      },
+      "contour": {
+        "variant": "32/32/p6",
+        "baseline": {
+          "mae": 12.727,
+          "edgeMae": 15.224,
+          "cueMae": 24.544
+        },
+        "variantMetrics": {
+          "mae": 12.093,
+          "edgeMae": 14.126,
+          "cueMae": 19.501
+        },
+        "totalControlsBefore": 61,
+        "totalControlsAfter": 61
+      },
+      "nativeContour": {
+        "imageControls": 60,
+        "rootControls": 1,
+        "visible": 61,
+        "GIABytes": 54589,
+        "GIASha256": "7ff55fca480d42310234ad5dbc1e170631fac8380d82c1a654bce58bfb6b0985",
+        "exportWarnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ]
+      }
+    }
+  },
+  "nativeContourTotalGIABytes": 378375,
+  "nativeContourControlTreeBytes": 77313
+}

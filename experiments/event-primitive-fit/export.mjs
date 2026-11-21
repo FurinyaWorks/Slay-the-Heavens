@@ -5,8 +5,13 @@ import {createHash} from 'node:crypto';
 import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 const args=process.argv.slice(2);
-const portable=args.at(-1)==='--mirror-left-masks';if(portable)args.pop();
-const [repo,inDir,outDir]=args.map(x=>resolve(x));
+const portable=args.includes('--mirror-left-masks');
+const countArg=args.find(x=>x.startsWith('--expected-count='));
+const expected=countArg ? Number(countArg.split('=')[1]) : 49;
+assert(Number.isSafeInteger(expected) && expected>=1 && expected<=49,'invalid event count');
+const positional=args.filter(x=>x!=='--mirror-left-masks' && x!==countArg);
+assert.equal(positional.length,3,'expected repo, input, output');
+const [repo,inDir,outDir]=positional.map(x=>resolve(x));
 const imp=path=>import(pathToFileURL(join(repo,path)));
 const {nativeShape}=await imp('scripts/v25-battle-scene.mjs');
 const {simulatorSave}=await imp('experiments/coop-primitive-lab/build.mjs');
@@ -59,14 +64,15 @@ for(const id of readdirSync(inDir).sort()){
  }
  data[id]=record;
 }
-assert.equal(Object.keys(data).length,49);
+assert.equal(Object.keys(data).length,expected);
 const info={schemaVersion:1,exportHalfMaskMode:portable?'left-mirror-x':'legacy-left-unmirrored',description:'Offline event art candidate; only one event root is intended on screen. No game integration.',canvas:[330,330],officialCapacity:'NOT_RUN',physicalDevices:'NOT_RUN',fits:data};
 save(join(outDir,'native-controls.json'),info);
 const byTier=Object.fromEntries(tierIds.map(t=>{
  const values=Object.values(data).map(x=>x.tiers[t]);
- const stats=k=>{const v=values.map(x=>x[k]).sort((a,b)=>a-b);return {min:v[0],median:v[24],max:v[48],sum:v.reduce((a,b)=>a+b,0)};};
+ const stats=k=>{const v=values.map(x=>x[k]).sort((a,b)=>a-b);return {min:v[0],median:v[Math.floor(v.length/2)],max:v.at(-1),sum:v.reduce((a,b)=>a+b,0)};};
  return [t,{images:stats('images'),total:stats('total'),fitScore:stats('fitScore'),floatBytes:stats('floatBytes')}];
 }));
 save(join(outDir,'summary.json'),{byTier,nativeControlCatalogBytes:statSync(join(outDir,'native-controls.json')).size,cases:cases.length});
 save(join(outDir,'scenes','inventory.json'),{room:{min:1,max:2},cases});
 console.log(JSON.stringify(byTier));
+
