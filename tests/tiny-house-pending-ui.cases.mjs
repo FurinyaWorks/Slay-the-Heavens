@@ -36,22 +36,23 @@ test('Tiny House exact source admission preserves the ordered full owner read an
  const config='config/architecture.json',event='src/lua/abyss_node_ui_events.lua',pending='src/lua/abyss_relic_pending_ui.lua';
  const read=p=>readFileSync(p,'utf8'),reads=[];
  const expected=[...proof.owners,...currentProductionRereads];
+ const eventReread=expected.lastIndexOf(event)+1;
+ assert.ok(eventReread>proof.owners.length,'the event owner must be checked again after the initial scan');
  let readFailure;
  const project=()=>sourceEpoch.preCombinedSource(config,read(config),{target:'develop',readSource:p=>{
   reads.push(p);
-  if(p===event&&reads.length===expected.length&&readFailure!==undefined){
+  if(p===event&&reads.length===eventReread&&readFailure!==undefined){
    if(readFailure instanceof Error)throw readFailure;
    return readFailure;
   }
   return read(p);
  }});
- assert.equal(expected.at(-1),event);
  assert.equal(project(),proof.targets.develop.files[config].source);
  assert.deepEqual(reads,expected);
  for(readFailure of [null,read(event)+'\n',new Error('unavailable')]){
   reads.length=0;
   assert.throws(project,/linked owner (?:identity|missing): .*abyss_node_ui_events\.lua/);
-  assert.deepEqual(reads,expected);
+  assert.deepEqual(reads,expected.slice(0,eventReread));
  }
  readFailure=undefined;reads.length=0;
  assert.equal(project(),proof.targets.develop.files[config].source);

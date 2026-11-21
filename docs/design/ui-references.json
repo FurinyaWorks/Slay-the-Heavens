@@ -471,6 +471,7 @@
       },
       "supersedes": [],
       "note": "首战手牌、战斗操作和共享顶栏。静态投影省略专用贴图。 1280×720 离线投影，官方候选待验。",
+      "codePaths": ["scripts/ui-layout.mjs"],
       "source": "https://playcraft.space/gallery/slay-the-spire/combat-ten-card-hand/"
     },
     {
