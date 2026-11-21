@@ -1,3 +1,4 @@
+import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
@@ -62,14 +63,24 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
+// Authenticate the current copier before giving old CI receipts its exact predecessor.
+function beforeRefinedReleaseCopier(path,source){
+ if(path!=="tests/helpers/copy-integration-source-closure.mjs"||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=="0a577078d1a3fe4ca32421a8d9d93d30f4ef6e6087d72761a2444ffcced5a1ff")return source;
+ const prior=lf.replace("// Refined enemy art extends only the existing historical helper closure.\nconst refinedReleaseFiles=Object.freeze({\n ...releaseUiFiles,\n 'tests/helpers/release-ui-restore-source.mjs':'480fc5a304dab1fdcb2a6b84ad84f20cfafae52791c2f253bd619313ed4a2901',\n 'tests/helpers/refined-release-source.mjs':'e2dd6e408cafa4363509e30ddb33c471e2f95f73d5efea1d8056e1d44717cd05',\n 'tests/helpers/refined-release-source.json.gz':'9690204ed22bd6c7529e94f0cc2c23dc0ec5ac8d40d327a96db68df6a1f57528',\n});\n",'').replace("Object.entries(refinedReleaseFiles))","Object.entries(releaseUiFiles))");
+ assert.equal(hash(prior),"810c7ddebb21d62e26730d225ba218c33aa009656fee38929ee2881821ea813b",'exact refined Release helper copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,source));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 export function historicalReleaseBuildInput(path,read){
- if(!Object.hasOwn(releaseUiBuild.files,path))return undefined;
+ if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,read);
  const source=read(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source);
  assert.notEqual(prior,source,'fresh approved build source: '+path);
  return prior;
@@ -87,16 +98,21 @@ function beforeCoopCiSource(path,source){
 }
 const coopLabTest='tests/coop-primitive-lab.test.mjs';
 const coopLabTestSha='93a22f446fec66df1339fc135071c929a3cc07d0c2473424510842af689d18dc';
-export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
+function assertCoopJsInventory(paths,preceding,read){
  const current=[...preceding,coopLabTest].sort();
  assert.deepEqual([...paths].sort(),current,'complete current raw discovery inventory');
  const testSource=read(coopLabTest,'utf8');
  assert(typeof testSource==='string'&&!testSource.includes('\r\r\n')&&
   hash(normalize(testSource))===coopLabTestSha,'fresh added inventory source: '+coopLabTest);
 }
+export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
+ paths=beforeRefinedReleaseJsInventory(paths,[...preceding,coopLabTest],read,true);
+ assertCoopJsInventory(paths,preceding,read);
+}
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
+ paths=beforeRefinedReleaseJsInventory(paths,[...preceding,coopLabTest],read);
  if(!paths.includes(coopLabTest))return paths;
- assertCurrentJsInventory(paths,preceding,read);
+ assertCoopJsInventory(paths,preceding,read);
  return paths.filter(path=>path!==coopLabTest);
 }
 const closeoutSuccessors=Object.freeze({
@@ -166,6 +182,7 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ assertRefinedReleaseSourcesCurrent(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
   const source=beforeV2UiEvidence(path,beforeReleaseUiBuildSource(path,read(path,'utf8')));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);

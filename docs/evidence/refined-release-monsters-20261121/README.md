@@ -17,4 +17,4 @@ node scripts/build-ui.mjs build/refined-monsters --official-assets --native-page
 node --test tests/refined-release-ui.test.mjs tests/refined-release-monsters.test.mjs tests/refined-monster-tiers.test.mjs tests/native-monster-actor-template.test.mjs tests/native-audio-release-provenance.test.mjs
 ```
 
-计数是离线原生模板控件数量；不是官方容量或手机帧率。候选 API 测试用模拟宿主验证模板索引和打包来源。正式 GIL 导入、同候选出战以及移动端表现需单独验证。
+计数是离线原生模板控件数量；不是官方容量或手机帧率。候选 API 测试用模拟宿主验证模板索引和打包来源。另用生产 Lua 绘制路径跑完 42 份实际几何，逐个核对可见图元数等于清单、清理后无剩余怪物控件。相比旧 v2，输出主界面和战斗静态 UI 完全相同，未压缩怪物 Lua 增加约 1.05 MB，模板 JSON 增加约 0.16 MB；这不是 GIL 容量。正式 GIL 导入、同候选出战以及移动端表现需单独验证。

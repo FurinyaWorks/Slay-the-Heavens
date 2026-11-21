@@ -71,11 +71,18 @@ const releaseUiFiles=Object.freeze({
  'tests/helpers/release-card-right-click-source.json.gz':'a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a',
  'tests/helpers/release-controls-guide-removal-source.json.gz':'321abc9fb6759dd27644f414c88f3a2df0be32f236a258a52d5b89cc6d22d687',
 });
+// Refined enemy art extends only the existing historical helper closure.
+const refinedReleaseFiles=Object.freeze({
+ ...releaseUiFiles,
+ 'tests/helpers/release-ui-restore-source.mjs':'480fc5a304dab1fdcb2a6b84ad84f20cfafae52791c2f253bd619313ed4a2901',
+ 'tests/helpers/refined-release-source.mjs':'e2dd6e408cafa4363509e30ddb33c471e2f95f73d5efea1d8056e1d44717cd05',
+ 'tests/helpers/refined-release-source.json.gz':'9690204ed22bd6c7529e94f0cc2c23dc0ec5ac8d40d327a96db68df6a1f57528',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(releaseUiFiles)){
+ for(const [path,sha]of Object.entries(refinedReleaseFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

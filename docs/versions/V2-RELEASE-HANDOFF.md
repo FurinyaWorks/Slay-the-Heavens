@@ -14,6 +14,6 @@
 ## 候选与放行
 
 - 在 develop 完成集成和全量回归后，从精确、干净的提交构建候选。记录源码、构建参数、模块清单、GIL SHA-256 及写入后读回结果，按同一候选验证启动及两幕核心流程。
-- `npm run build:game`、`npm run build:native` 和直接运行 `node scripts/build-native-candidate.mjs` 默认使用批准的原生 UI。用 `npm run build:native -- <Production底图.gil> <新输出目录> --release-candidate --work-key=<正式作品键>` 构建含音频的发布候选。核对终端报告的最终 `candidate.json`，确认 `officialAssetsProfile` 为 `official-assets-battle-v2`、`uiProfile.nativePageLifecycle` 为 `true`，以及其中的源码版本、候选身份和产物 SHA-256。需要复现旧 UI 时可显式指定 `--art-version=legacy`，或以 `build:game --art-version=enhanced` 选择旧的 Enhanced 配置。
+- `npm run build:game`、`npm run build:native` 和直接运行 `node scripts/build-native-candidate.mjs` 默认使用批准的原生 UI。用 `npm run build:native -- <Production底图.gil> <新输出目录> --release-candidate --work-key=<正式作品键>` 构建含音频的发布候选。核对终端报告的最终 `candidate.json`，确认 `officialAssetsProfile` 为 `official-assets-battle-v3`、`uiProfile.nativePageLifecycle` 为 `true`、`nativeMonsterArt` 为 42 个资产和 42 个绑定，再核对源码版本、候选身份和产物 SHA-256。正式构建不传渲染覆盖参数；单独传 `--official-assets`（直接构建器）或 `--art-version=official`（`build:game`）只用于复现旧 v2 图像，不含本批精修稿。
 - RC 放行须具备同一 `source SHA + buildId + GIL SHA256 + payloadDigest` 的证据，包括官方导入和 ready、两幕自然通关、PC 和实体手机回归、官方关卡容量 ≤20MB 及服务器容量 ≤3MB。有缺项即标「待验收，不可发布」。细节见 [发布操作单](../PUBLISHING.md) 和 [平台负载](../PLATFORM_LOAD.md)。
 - develop 集成和全量回归完成后才重建 Release。正式发布由 Owner 确认。旧分流和候选记录仍可从 Git 历史追溯。
