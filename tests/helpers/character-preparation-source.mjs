@@ -1,5 +1,4 @@
 import {beforeAuthenticatedM05ShopSource,beforeM05ShopSource,m05ShopSourcePaths} from './m05-shop-source.mjs';
-import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 import {beforeAuthenticatedPc13RewardCover,beforePc13RewardCover,pc13RewardCoverSourcePaths} from './pc13-reward-cover-source.mjs';
 import {beforeTinyHouseUiSource,tinyHouseUiSourcePaths} from './tiny-house-ui-source.mjs';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './potion-pointer-source.mjs';
@@ -38,9 +37,6 @@ export function assertCharacterPreparationSources(read = readRaw) {
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
-  source=beforeLoadingRecoverySource(path,source);
-  const readLoadingCurrent=read;
-  read=owner=>beforeLoadingRecoverySource(owner,readLoadingCurrent(owner));
   source = beforeAuthenticatedM05ShopSource(path,source,read);
   const readM05Current=read;
   read=owner=>beforeM05ShopSource(owner,readM05Current(owner));
@@ -68,7 +64,6 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
-  source=beforeLoadingRecoverySource(path,source);
   // A historic successor may still be recognised by an older projector; that
   // must not let it claim the latest PC13 identity at this current-only entry.
   if (pc13RewardCoverSourcePaths.includes(path)) {
