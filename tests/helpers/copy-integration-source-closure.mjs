@@ -76,8 +76,8 @@ const refinedReleaseFiles=Object.freeze({
  ...releaseUiFiles,
  'tests/helpers/release-ui-restore-source.mjs':'26d8b8099e6b8f6fb30869479dcbcac90ff8c77ea04bc80ab4f8ad25c8bc8be3',
  'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',
- 'tests/helpers/refined-release-source.mjs':'a43500ea4a19305c89bad3ca20cfd3eb3ff28bc390785aaa5f6fbe4f8a2c6fa7',
- 'tests/helpers/refined-release-source.json.gz':'7362133512c07d6107d65bd62a021919e527a53589207841b84221dff481ad41',
+ 'tests/helpers/refined-release-source.mjs':'0061c42840a1169990afd5c132d7831f4e4f9654c3e20fbbe93b2e49ec54ce24',
+ 'tests/helpers/refined-release-source.json.gz':'b3f1869b143594d0578b84687cea53d269d18ed04b08d120cf03d2ed72e3fa79',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

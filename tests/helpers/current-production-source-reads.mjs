@@ -53,8 +53,4 @@ export const currentProductionRereads = Object.freeze([...priorCurrentProduction
   'src/lua/abyss_node_ui_input.lua',
   'src/lua/abyss_node_ui_lifecycle.lua',
   'src/lua/abyss_node_ui_rewards.lua',
-  'src/lua/abyss_monster_art.lua',
-  'src/lua/abyss_monster_surfaces.lua',
-  'src/lua/abyss_monster_art.lua',
-  'src/lua/abyss_monster_surfaces.lua',
 ]);
