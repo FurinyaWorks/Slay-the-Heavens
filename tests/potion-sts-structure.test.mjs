@@ -22,8 +22,13 @@ test('official empty slot has bottle silhouette and occupied bottles have no cir
  const face={children:potionSlotVisual(theme,{border:{name:'border',size:[44,44]},plate:{name:'plate'},bottleSize:32,ink:'#FFFFFF'})};
  finishOfficialPotionFace(face);
  const outline=child(child(face,'emptyShell'),'dashes').children;
- assert.ok(outline.some(n=>n.position[1]>10 && n.size[0]<=16),'narrow bottle neck');
- assert.ok(outline.some(n=>n.position[1]<-10 && n.size[0]>=22),'wide bottle base');
+ const bottle=child(face,'bottle');
+ assert.equal(outline.length,1,'empty slot is one native silhouette, no custom outline');
+ assert.equal(outline[0].image,bottle.image);
+ assert.deepEqual(outline[0].size,bottle.size);
+ assert.deepEqual(outline[0].position,bottle.position);
+ assert.equal(outline[0].colour,'#000000','zero RGB suppresses source colours');
+ assert.equal(outline[0].opacity,.5);
  for(const name of ['filledShell','fireShell'])assert.ok(child(face,name).children.every(n=>n.visible===false));
 });
 

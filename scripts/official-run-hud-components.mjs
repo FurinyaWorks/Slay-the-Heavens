@@ -71,14 +71,12 @@ export function mountOfficialResourceHints(root,theme){
 export function finishOfficialPotionFace(variant){
  const empty=child(variant,'emptyShell');if(!empty)return;
  child(empty,'face').visible=false;
- // Existing rect material traces a narrow neck, shoulders and wide base.
- // Occupied slots show the native bottle alone; runtime still owns visibility.
- child(empty,'dashes').children=[
-  [0,16,12,2],[-5,12,2,8],[5,12,2,8],
-  [-10,6,12,2,35],[10,6,12,2,-35],
-  [-15,-4,2,18],[15,-4,2,18],[0,-14,30,2],
- ].map(([x,y,w,h,rotation=0],i)=>({name:'edge'+i,kind:'image',image:100001,
-  position:[x,y],size:[w,h],rotation,colour:'#9C8C70',opacity:.65}));
+ // Empty slots use the very same native bottle and frame as an owned one.
+ // Multiplying by black suppresses source RGB and retains its native alpha;
+ // no drawn jar/test tube, extra atlas or imported bitmap is needed.
+ const bottle=child(variant,'bottle'),shadow=child(empty,'dashes');
+ shadow.children=[{name:'bottleShadow',kind:'image',image:bottle.image,
+  position:[...bottle.position],size:[...bottle.size],colour:'#000000',opacity:.5}];
  for(const name of ['filledShell','fireShell'])for(const node of parts(child(variant,name)))node.visible=false;
 }
 
