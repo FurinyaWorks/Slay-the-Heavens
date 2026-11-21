@@ -1,0 +1,716 @@
+[
+  {
+    "commit": "9aa835609bf351c7999c6ed9b3c86051b27c7203",
+    "ritual": 105207,
+    "strength": 103047,
+    "same": false
+  },
+  {
+    "commit": "56a8cb56730fb08824734135aac80176067b6d9c",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "da94ed7bbcb3002255442f8d120c6c2146878ae7",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ca09aca54b8db956f114607ac0daf89a764b0d14",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "068e1acbc6f98b591f84bf5cdb35a7620bb4cf17",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "4df2c7c29b56ae7d170655279e0909afff2b03e5",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "c2409ad750c15124b7b843c6bbfa5b222537cb75",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "9801fc107721661c78bbc181cef727973c7126eb",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "8930ee3ac6bc6f03b373a01b442d323a6cd6d630",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ca05aa24ae6cd2e893494d1b532e19cfc941eb5a",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "790b7229cb09436ae46271a7c2ca6d868f11378b",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "20e6ee6a3f5d5eedfb5bf1e836cdaed28fb5aa10",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "3623f3075079c760ed07c326ddf503fbd95376b0",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "96c766f75ca17068949e76ff32a0607dec1e68d4",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "cf26532cbbf371c22b0e5500846c6eda3f643fb9",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "9c1fb9513422d67b89966a4b15fb8e1f01125e78",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "1861f6d82885c11ebf359f0e90ba2038d6401752",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e65d9b98fbec69442047650254238cd9244df805",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e02ed4abce6a694fcf63cbd91ccde00e5e1e44e9",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "250077d5cea0c9c0dc87f50f46a1f5cf461eaa41",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "a0d3cd6cfe5e19f720837db2d39b1b69aa995bae",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "90c46efccff0c7b7f9c7dec0c1e96aac2c350bd0",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "7de1d20dda3b0d968ff5596df54404d4b561c285",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ff6fd781e734a276dab87d2062bc8cb74592758c",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "92bf4e0238af50096226792a4ba9995230d7d642",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e805a87dc4df1a048ba5995931d98a4e4899b5e9",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "903bf2a31e91f10fb24763ab4cea23d586d0bb83",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "6a614fc82697750ddb408750e54f59f801c24f1e",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "9f016366af9cc8c5cd505fce0303c1d318d6fedd",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e2152b54a8f9f71cd1b7c6749dd7fa2fec257f27",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "0b9c9b848d916212111f6cb608cbfe0f53f7c2ac",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "1ea159e50d8cd39efef7e1537ebed0d7b13402b0",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "6036cea08b5420f3242fcd7b86f3331c853300cb",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "9a1564dc95d3e8e9f91e076468dbdf51063210c3",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "a7193e1c5d63ab0c2b4892912312d4597e84c642",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "b4f88a1f574b403f4cc68d54ee37565f3012b5ad",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "7adc71b6a7eaff42f30f09862e4cdf54fd956dbc",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "90c044b855bab6d8bf37796855a034eff30fed6a",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "4c821140b7d2d4a3ece05caa89b51d7a266d0451",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "a594f92585518e765ed8ad751d59e3b1fad74196",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "9cfb250bffa495c5cf76d76f9452368a25de9788",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "36c25eb06aa91f530fc38fe41be98f09f523c0e3",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "24fd070167d433fa6cbbb0c54d8844795b0c5608",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ef7b3e80093dd737be5496627250269532da001c",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "38f4dd8aea7fa77370146e616700c68fd1bea911",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "acb09e467967ab41a53bc8b313769cc4a77a85e3",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "1fd94235a13d3b5b0b6c0011583652e97b44b650",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "03ca554bf20275412748274754045377498c3033",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "d4c4b25594798f9d2f4fc6b66a061532c2b71595",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "1dc33fe790a5f82be4f1bf2f0d09e339dcb943dd",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "6795160ef93625f35ac61841f2a92d83524e8414",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "20a74da73ff5379a748e6b9687b258e2c9a22bf8",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "cec690c1701af121e370facde5c1ca2ad9beb99e",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "7784f140a4af511618fb4dc0b53439532d5975bb",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ee693ec81ffab41b4791add0625e94df2b93b40c",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "2ee2f401d4860d65d176f0e0e8151541ccf744b0",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "101509e12bc2e30ddded4f6c41254270481d8f1d",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "58fe0a3ec4a0ed47f9bf98cbdc3f3570aae9bf1e",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e46bd5dd7205d29a4252d73b8623df921bbdab78",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "4a3167808006f67c0c267b453fb188fb6e370a0c",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "8fe1b9fabaf296903d199aaaf616d98557f72c6b",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "f1ab9a9c492071edd723f9285862766ad5ad289b",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "53581f43072f56f59f443869bd270efe257dae12",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e0fad45c74ed574bc4cfb8a4c9ad71424a13c386",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "1f00f7356c91dc70332ec272148b4529d33da539",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "0c07e3dce38ef9d7ce07e90894ac36b57465793d",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "20c6815e02d5fd47f6811f924328e7ddc5c7f6df",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "965616d505b1728727575e3d8fd979ed66190003",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "c91f0d22edb73acad3405c030a330f4b55c3f8fa",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "00229c156c04ec0337df2bc3a67f37b8699a03f9",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e25a0d6b7b0c759e7b5534dd89b082f25d86adf7",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "fc51f1987130e398538e9663b736d66090dfdd07",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "5424030c610eba7193a08744cc411a5b106bf5f9",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "c96a77771070f2027f1d900342279c763d44d8c2",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e2e59165c37326329727f443a1325814c0a75d81",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "45ba918e5719614f36b6a92aeb511e76a1311608",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "2291de41364ca812bdf11f7e311e116779702561",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "66f3afb23500c77d3e437cce37583073c6d4c5c8",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "969ce2831deaac3304940181b024a417f64a8d29",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "9ae1aec7aa6f113c7fed5e5fad6241af7fe4a2db",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "f6712d0976235483794946863ff1bae9436c3053",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "951c2bb47bda3ce62d66272447bb4eb81ecdd624",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "695d94d2f8f238964ad23958d5ee92a667cbabb4",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "fb5658b610e365dcee43e86149908408f9e6f0f8",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "48468534d6648ed5fa62a5a165badc7a92d268a4",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "b91a461bb759ff71fa66a6368ffe0289c36641f2",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "5afd8a4adad1846e50a53f8f557a24a032a196a4",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "6293d117766e56c073d7c0ad97982eeb3c3b301f",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ee9c40d9ee2b9badaab84af8aaa6b9ddc2551f9c",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "f065b7d417bf6f758d938ca38f994dba5206a464",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "f282a9555caa0790f6f3e25011ae91d4e21c77ba",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "e3310bcf91d456b08ed7c231340b20a133083134",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "53a52bb3cd4c2e49fa2abe83d9f8e7155e433b99",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "059295b0f49c37230aab6c10c369a53aac3fc9f4",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ece758d22720d0c4e9931842f98e5211d00d2c27",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "1181764d32c561077986504ca1ae383450f746a2",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "2925f688f9b1b5751a17009b54e939c03eda837b",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ef721480a48bad549b797d21b8f205fac92e1afa",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "dabaaf1b60fa38212079c4cac8b2e57aa732e306",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "8d9a37f5419b21c13a31f889aad1b269bbc8b358",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "4ba2099489c5272b77269b9f70b492c727dd86b9",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "95ce2bd594f62b7d8a1f5b6ad326fa5886973077",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "2f7896a347b5b3f2cecab9656247d92e138c70c4",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "cf5f03009dfa6245cb1375a99e4516ef4036e7da",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "41d7eca873a69267414893a020f4b0e21d1f7034",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "15f62a61ebd1635a93a5f1cc98cbcc4e6d2602dd",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "14979dfb94fc6a7a5f714acb927293a6e96f809b",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "d6d9d05c351304c2479fea569e1b2490cdc903d7",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "ed39f4653ddb555391c0dfe5a4507d1f58387171",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "0fb6dc2fc7eeacea2751209a6e4bfad17f79fa4a",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "3b317178200cc14509e8ecc59fac359e31817088",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "0162b4a06cc98c350496012f3d82809192bed4be",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "7ba8f728f2d34b6ddf5d3abc7138fbda81361488",
+    "ritual": 103047,
+    "strength": 103047,
+    "same": true
+  },
+  {
+    "commit": "fcc1dca5d9b512f932e4122c025bf8d13cf25d5a",
+    "ritual": null,
+    "strength": 103047,
+    "same": false
+  },
+  {
+    "commit": "a6be1b6c7bc2b5f9630151d9bef5edbe7522d4d6",
+    "ritual": null,
+    "strength": 103047,
+    "same": false
+  },
+  {
+    "commit": "fb83e6264bdf6336bab803360f95b04e914b34f1",
+    "ritual": null,
+    "strength": 103047,
+    "same": false
+  },
+  {
+    "commit": "2ff15886b88de479f0b3ffd1722dcc42ba27ee3e",
+    "ritual": null,
+    "strength": 103047,
+    "same": false
+  },
+  {
+    "commit": "f42d9ef7f129e3822c1c5eb141348e09d8699ed3",
+    "ritual": null,
+    "strength": 103047,
+    "same": false
+  },
+  {
+    "commit": "91ae349cb6d3e4a73e4dd7cc158b6a75d41c7fd0",
+    "ritual": null,
+    "strength": 103047,
+    "same": false
+  }
+]

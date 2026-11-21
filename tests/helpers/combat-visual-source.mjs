@@ -1,3 +1,4 @@
+import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
 // Exact predecessor view for historical receipts; live builds keep current sources.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -16,6 +17,8 @@ for(const [path,row]of Object.entries(rows)){
  continuations.set(path,exactSourceContinuation(row));
 }
 export function beforeCombatVisualSource(path,source,read=p=>readFileSync(p,'utf8')){
+ source=beforeEnergyReferenceSource(path,source,read);
+ read=energyReferencePriorRead(read);
  return continuations.get(path)?.predecessor(path,source,read)??source;
 }
 export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>{
@@ -26,6 +29,9 @@ export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>
 };}
 
 export function assertCombatVisualCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ assertEnergyReferenceCurrent(path,source,read);
+ source=beforeEnergyReferenceSource(path,source,read);
+ read=energyReferencePriorRead(read);
  if(!continuations.has(path))return;
  assert.notEqual(beforeCombatVisualSource(path,source,read),source,'fresh combat visual source: '+path);
 }

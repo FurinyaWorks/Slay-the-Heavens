@@ -24,6 +24,18 @@ local function cardRewardCaption(frame)
     if require('abyss_relic_hooks').owns(run,'singing_bowl')then label=label..' / 生命上限+2'end
     return label
 end
+-- STS1 retains the complete empty orb; only the palette and active glow change.
+local energyChromeStates=setmetatable({},{__mode='k'})
+local function renderEnergyChrome(icon,charged,tint)
+    if Theme.presentationProfile~='official-assets-first' then return end
+    charged=charged==true
+    if energyChromeStates[icon]==charged then return end
+    local chrome=icon:GetChild('v25Chrome')
+    chrome:SetVisible(true)
+    local palette=Theme.officialAssets.energyOrb[charged and 'charged' or 'empty']
+    for name,tone in pairs(palette)do tint(chrome:GetChild(name),tone)end
+    energyChromeStates[icon]=charged
+end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, dependencies)
     local R = L.rewardPick
@@ -201,10 +213,7 @@ function M.install(owner, _ownership, host, dependencies)
         icon:GetChild("valueShadow").text = value
         dependencies.tint(icon:GetChild("face"), charged and L.energy.faceColour or C.energyEmpty)
         icon:GetChild("light"):SetVisible(charged == true)
-        -- The official ornament owns most of the visible light, above the old face.
-        if Theme.presentationProfile=='official-assets-first' then
-            icon:GetChild('v25Chrome'):SetVisible(charged == true)
-        end
+        renderEnergyChrome(icon,charged,dependencies.tint)
         dependencies.tint(icon:GetChild("core"), charged and L.energy.elementColour or C.energyEmpty)
         dependencies.ink(dependencies.child("energy"), L.energy.numberColour)
     end
