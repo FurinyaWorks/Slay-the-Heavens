@@ -25,6 +25,11 @@ test('UI proof accepts complete decoded fixture and rejects missing fields, chan
       }]))};
     const options={evidenceRoot:dir,baselineRoot:dir},check=m=>reviewUiAcceptance(m,expected,options);
     assert.deepEqual(check(manifest),[]);
+    const oldMenu=structuredClone(manifest);
+    delete oldMenu.screens.menu.checks.title;
+    delete oldMenu.screens.menu.checks.quit;
+    oldMenu.screens.menu.checks.instructions=true;
+    for(const field of ['title','quit'])assert(check(oldMenu).includes(`menu: ${field} not verified in game`));
     const selection = {targetVersion:'v2.0.0', status:'APPROVED', acceptanceScreen:'menu', reference:{sha256:imageHash}};
     assert.deepEqual(reviewUiAcceptance(manifest,expected,{...options,references:[selection]}),[]);
     const stale = {...selection, status:'SUPERSEDED'};

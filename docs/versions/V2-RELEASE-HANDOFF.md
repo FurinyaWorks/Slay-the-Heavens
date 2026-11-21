@@ -2,6 +2,8 @@
 
 2026-11-19 起冻结旧 `release/v2.0.0`。冻结提交为 `1ceb7c1a0c8575497c29acfd5a407ae399a9aaa2`。旧候选启动失败，恢复工作在最新 `origin/develop` 上进行。
 
+2026-11-21 恢复发布工作分支并同步到 `ff6af63d`。本轮默认构建及同步回归修复以 `release/v2.0.0` 为基线，候选仍按下文清单重新取证。11-19 的冻结流程留作历史。[同步 PR #775](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/775)
+
 ## 开发与接续
 
 - 从最新 `origin/develop` 创建独立工作树及短分支。所有重建 PR 指向 `develop`。旧分支保留原引用，停止合并，保持保护规则。
@@ -12,5 +14,6 @@
 ## 候选与放行
 
 - 在 develop 完成集成和全量回归后，从精确、干净的提交构建候选。记录源码、构建参数、模块清单、GIL SHA-256 及写入后读回结果，按同一候选验证启动及两幕核心流程。
+- `npm run build:game`、`npm run build:native` 和直接运行 `node scripts/build-native-candidate.mjs` 默认使用批准的原生 UI。用 `npm run build:native -- <Production底图.gil> <新输出目录> --release-candidate --work-key=<正式作品键>` 构建含音频的发布候选。核对终端报告的最终 `candidate.json`，确认 `officialAssetsProfile` 为 `official-assets-battle-v2`、`uiProfile.nativePageLifecycle` 为 `true`，以及其中的源码版本、候选身份和产物 SHA-256。需要复现旧 UI 时可显式指定 `--art-version=legacy`，或以 `build:game --art-version=enhanced` 选择旧的 Enhanced 配置。
 - RC 放行须具备同一 `source SHA + buildId + GIL SHA256 + payloadDigest` 的证据，包括官方导入和 ready、两幕自然通关、PC 和实体手机回归、官方关卡容量 ≤20MB 及服务器容量 ≤3MB。有缺项即标「待验收，不可发布」。细节见 [发布操作单](../PUBLISHING.md) 和 [平台负载](../PLATFORM_LOAD.md)。
 - develop 集成和全量回归完成后才重建 Release。正式发布由 Owner 确认。旧分流和候选记录仍可从 Git 历史追溯。

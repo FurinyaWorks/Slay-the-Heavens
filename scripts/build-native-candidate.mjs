@@ -1,4 +1,4 @@
-import {validateOfficialAssets,officialAssetsArgs,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
+import {validateOfficialAssets,candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetsProfile,officialAssetFlags} from './official-assets-profile.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
 import {attachLowCostArt} from './lowcost-art.mjs';
 import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory} from './monster-art.mjs';
@@ -430,17 +430,32 @@ export async function buildNativeCandidateFromToolchain(options) {
     assertCandidateArtReceipt(receipt,{root});
     return receipt;
 }
+export function nativeCandidateBuildArgs(argv) {
+  const official=candidateAssetsArgs(argv);
+  const chrome=v25ChromeArgs(official.args);
+  const profile=uiProfileArgs(chrome.args),args=profile.args;
+  const playtest=args.includes('--playtest'),lightweight2d=args.includes('--lightweight-2d'),legacyCardFrames=args.includes('--legacy-card-frames');
+  const features=artFeatureArgs(args.filter(arg=>!['--playtest','--lightweight-2d','--legacy-card-frames'].includes(arg)));
+  const native=nativeCardArtArgs(features.args);
+  const {paths,options}=releaseBuildArgs(native.args);
+  const [baseMap,output]=paths;
+  const explicitLifecycle=profile.args.length!==chrome.args.length;
+  const custom=lightweight2d||legacyCardFrames||chrome.v25BattleChrome||chrome.v25CardAssets!==undefined||
+    chrome.v25UiMasks!==undefined||explicitLifecycle||!matchesOfficialAssetFlags(features.artFeatures)||
+    native.nativeCardArt!==undefined;
+  const officialAssets=official.officialAssets||!official.legacy&&!custom;
+  const nativePageLifecycle=explicitLifecycle?profile.nativePageLifecycle:officialAssets;
+  const artFeatures=officialAssets?features.artFeatures:withCandidateArtDefaults(features.artFeatures,
+    {cardsDecided:native.nativeCardArt!==undefined||native.readyCardArt!==undefined});
+  return {baseMap,output,paths,options:{...options,officialAssets,nativePageLifecycle,playtest,lightweight2d,
+    legacyCardFrames,v25BattleChrome:chrome.v25BattleChrome,v25CardAssets:chrome.v25CardAssets,
+    v25UiMasks:chrome.v25UiMasks,artFeatures,nativeCardArt:native.nativeCardArt,readyCardArt:native.readyCardArt}};
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   try {
-    const official=officialAssetsArgs(process.argv.slice(2));
-    const chrome=v25ChromeArgs(official.args);
-    const profile=uiProfileArgs(chrome.args),args=profile.args,playtest=args.includes('--playtest'),lightweight2d=args.includes('--lightweight-2d'),legacyCardFrames=args.includes('--legacy-card-frames');
-    const features=artFeatureArgs(args.filter(arg=>!['--playtest','--lightweight-2d','--legacy-card-frames'].includes(arg)));
-    const native=nativeCardArtArgs(features.args);
-    const {paths,options}=releaseBuildArgs(native.args);
-    const [baseMap,output]=paths;
-    if(!baseMap||paths.length>2)throw new Error('Usage: node scripts/build-native-candidate.mjs <base.gil> [output-directory] [--playtest] [--release-candidate] [--work-key=alpha-test] [--native-card-art-registry=<file> --native-card-art-count=0|1|5|10 | --native-card-art-host=<host>]');
-    const receipt=await buildNativeCandidateFromToolchain({officialAssets:official.officialAssets,v25BattleChrome:chrome.v25BattleChrome,v25CardAssets:chrome.v25CardAssets,v25UiMasks:chrome.v25UiMasks,baseMap,output,playtest,lightweight2d,legacyCardFrames,nativePageLifecycle:profile.nativePageLifecycle,...options,artFeatures:official.officialAssets?features.artFeatures:withCandidateArtDefaults(features.artFeatures,{cardsDecided:native.nativeCardArt!==undefined||native.readyCardArt!==undefined}),nativeCardArt:native.nativeCardArt,readyCardArt:native.readyCardArt});
+    const {baseMap,output,paths,options}=nativeCandidateBuildArgs(process.argv.slice(2));
+    if(!baseMap||paths.length>2)throw new Error('Usage: node scripts/build-native-candidate.mjs <base.gil> [output-directory] [--playtest] [--release-candidate] [--work-key=alpha-test] [--art-version=legacy | --official-assets] [--native-card-art-registry=<file> --native-card-art-count=0|1|5|10 | --native-card-art-host=<host>]');
+    const receipt=await buildNativeCandidateFromToolchain({baseMap,output,...options});
     console.log(`Candidate receipt: ${receipt.receiptPath}\nStatic check passed. Official import/gameplay require separate evidence.`);
   }catch(error){console.error(error.message);process.exitCode=1;}
 }
