@@ -45,30 +45,41 @@ local function canonical(value)
  local result={'{'};for _,key in ipairs(keys)do result[#result+1]=canonical(key);result[#result+1]=canonical(value[key])end
  result[#result+1]='}';return table.concat(result)
 end
-function M.pair(reward)
- if not exact(reward,rootFields)or not array(reward.items)then return nil,'treasure_reward_shape_unsupported'end
+local function pairItems(items)
  local base,key,gold,extra,slots=nil,nil,nil,{},{}
- for _,row in ipairs(reward.items)do
-  if not item(row)or slots[row.slot]then return nil,'treasure_reward_shape_unsupported'end
+ for _,row in ipairs(items)do
+  if not item(row)or slots[row.slot]then return nil,nil,nil,nil,'treasure_reward_shape_unsupported'end
   slots[row.slot]=true
-  if row.kind=='gold'then if gold then return nil,'treasure_reward_shape_unsupported'end;gold=row
-  elseif row.kind=='sapphire'then if key then return nil,'treasure_reward_shape_unsupported'end;key=row
-  elseif row.origin=='base'then if base then return nil,'treasure_reward_shape_unsupported'end;base=row
-  elseif row.origin=='boss'then return nil,'boss_treasure_choice_required'
+  if row.kind=='gold'then if gold then return nil,nil,nil,nil,'treasure_reward_shape_unsupported'end;gold=row
+  elseif row.kind=='sapphire'then if key then return nil,nil,nil,nil,'treasure_reward_shape_unsupported'end;key=row
+  elseif row.origin=='base'then if base then return nil,nil,nil,nil,'treasure_reward_shape_unsupported'end;base=row
+  elseif row.origin=='boss'then return nil,nil,nil,nil,'boss_treasure_choice_required'
   else extra[#extra+1]=row end
  end
- if not base or not key then return nil,'treasure_choice_unavailable'end
- if base.linkedSlot~=key.slot or key.linkedSlot~=base.slot or key.relicId~=base.id
-  or reward.relicId~=base.id or reward.relicSourceId~=base.sourceId or reward.relicUnavailable~=not base.available
-  or not exact(reward.sapphireKey,{relicId=true,linkedSlot=true,slot=true})
-  or reward.sapphireKey.relicId~=base.id or reward.sapphireKey.linkedSlot~=base.slot or reward.sapphireKey.slot~=key.slot
-  or reward.gold~=(gold and gold.amount or nil)then return nil,'treasure_reward_shape_unsupported'end
+ return base,key,gold,extra
+end
+local function pairMirror(reward,base,key,gold)
+ return base.linkedSlot==key.slot and key.linkedSlot==base.slot and key.relicId==base.id
+  and reward.relicId==base.id and reward.relicSourceId==base.sourceId and reward.relicUnavailable==not base.available
+  and exact(reward.sapphireKey,{relicId=true,linkedSlot=true,slot=true})
+  and reward.sapphireKey.relicId==base.id and reward.sapphireKey.linkedSlot==base.slot and reward.sapphireKey.slot==key.slot
+  and reward.gold==(gold and gold.amount or nil)
+end
+local function pairExtras(reward,extra)
  if #extra>0 then
-  if not array(reward.extraRelics)or #reward.extraRelics~=#extra then return nil,'treasure_reward_shape_unsupported'end
+  if not array(reward.extraRelics)or #reward.extraRelics~=#extra then return false end
   for i,row in ipairs(reward.extraRelics)do
-   if not item(row)or canonical(row)~=canonical(extra[i])then return nil,'treasure_reward_shape_unsupported'end
+   if not item(row)or canonical(row)~=canonical(extra[i])then return false end
   end
- elseif reward.extraRelics~=nil then return nil,'treasure_reward_shape_unsupported'end
+ elseif reward.extraRelics~=nil then return false end
+ return true
+end
+function M.pair(reward)
+ if not exact(reward,rootFields)or not array(reward.items)then return nil,'treasure_reward_shape_unsupported'end
+ local base,key,gold,extra,reason=pairItems(reward.items)
+ if reason then return nil,reason end
+ if not base or not key then return nil,'treasure_choice_unavailable'end
+ if not pairMirror(reward,base,key,gold)or not pairExtras(reward,extra)then return nil,'treasure_reward_shape_unsupported'end
  return {relicId=base.id,relicAvailable=base.available,baseSlot=base.slot,keySlot=key.slot,itemsSignature=canonical(reward)}
 end
 return M
