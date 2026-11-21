@@ -135,6 +135,7 @@ globalThis.fetch = async (address, init) => {
     assert.equal(report.releases.length, 1);
     const [release] = report.releases;
     assert.equal(release.release_merge, pr.merge_commit_sha);
+    assert.equal(Object.hasOwn(release, 'head_state'), false);
     assert.deepEqual(release.different_develop_paths, ['src/lua/fix.lua']);
     assert.deepEqual(release.linked_develop_prs.map(row => row.pr), [35]);
   }

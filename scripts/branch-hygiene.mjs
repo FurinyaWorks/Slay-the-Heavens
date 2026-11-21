@@ -75,7 +75,10 @@ async function releaseBackflow() {
   const developTree = truncated ? null : new Map(tree.filter(row => row.type !== 'tree').map(row => [row.path, row.sha]));
   const results = await auditHistory({ repo, branches: [], prs: [...prs, ...open], comments: [],
     tasks: [], developTree, loadFiles });
-  const report = { develop_sha: developSha, releases: results };
+  const releases = results.map(({pr, base, release_merge, production_paths, different_develop_paths,
+    linked_develop_prs, review, errors}) => ({pr, base, release_merge, production_paths, different_develop_paths,
+    linked_develop_prs, review, errors}));
+  const report = { develop_sha: developSha, releases };
   const link = number => '[#' + number + '](https://github.com/' + repo + '/pull/' + number + ')';
   const markdown = ['# Release 回流核对', '', 'Develop 比较 SHA `' + developSha + '`', '',
     ...results.flatMap(result => {
