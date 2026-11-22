@@ -175,6 +175,11 @@
     },
     "buttonBacking": "#17252D",
     "buttonInk": "#FFF8E7",
+    "roundedCancelStates": {
+      "hover": ["#D9BE60", "#A84D43"],
+      "pressed": ["#C6A858", "#592A2B"],
+      "disabled": ["#716650", "#483332"]
+    },
     "flagButton": {
       "cancel": ["#BCA348", "#8C3739", "#B95B4A"],
       "confirm": ["#A2B4B5", "#477B89", "#77A4AF"],
@@ -192,7 +197,7 @@
       "barColour": "#30333B",
       "hpIcon": [-466, 338.5, 12, 12],
       "hp": [-417, 338.5, 80, 36],
-      "goldIcon": [-369, 338.5, 8, 8],
+      "goldIcon": [-366, 338.5, 12, 16],
       "gold": [-337, 338.5, 44, 36],
       "numberSize": 18,
       "heading": [-556, 338.5, 120, 36],
@@ -1559,14 +1564,11 @@
       "perRow": 5,
       "rows": 2
     },
-    "powerTips": {
-      "rows": 48,
-      "width": 248,
-      "minWidth": 176,
+    "actorDetail": {
+      "width": 392,
       "font": 18,
-      "minFont": 14,
-      "padding": 8,
-      "gap": 5,
+      "pitch": 27,
+      "tagWidth": 104,
       "fill": "#20292D",
       "border": "#71848B",
       "title": "#F5D78A"

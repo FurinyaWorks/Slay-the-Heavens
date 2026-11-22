@@ -1,6 +1,7 @@
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 import { cardFaceChildren } from './card-face.mjs';
-import {battlePileChrome,battlePileReturn} from './official-battle-pile-chrome.mjs';
+import {battlePileChrome} from './official-battle-pile-chrome.mjs';
+import {roundedButtonPalettes,roundedCursorButton} from './native-rounded-button.mjs';
 
 // Reserve a real native line below the unchanged card face for choice feedback.
 const itemSize = theme => [theme.layout.deckView.itemSize[0], Math.max(theme.layout.deckView.itemSize[1],
@@ -31,6 +32,7 @@ export function battlePileCardTemplate(layout, template) {
   const find = (node, name) => node.name === name ? node
     : (node.controls ?? node.children ?? []).map(child => find(child, name)).find(Boolean);
   const hand = find(layout, 'card1'), grid = find(layout, 'pileGrid');
+  const detail = find(layout, 'cardFocus');
   if (!hand || !grid) throw Error('Official pile template requires the final battle hand and pile grid');
   const pile = structuredClone(template), face = structuredClone(hand);
   pile.name = 'AbyssBattlePileCard'; pile.size = [...grid.grid.itemSize];
@@ -44,6 +46,7 @@ export function battlePileCardTemplate(layout, template) {
   ordinary.position=[...old.position];
   template.children[template.children.indexOf(old)]=ordinary;
   Object.assign(template.children.find(child=>child.name==='hit'),{size:[...hand.size]});
+  detail.children[0] = structuredClone(face);
   pile.children[pile.children.findIndex(child => child.name === 'face')] = face;
   Object.assign(pile.children.find(child => child.name === 'hit'), { position: [0, 0], size: [...hand.size] });
   pile.children.find(child => child.name === 'uid').visible = false;
@@ -173,9 +176,13 @@ export function deckControls(theme = nativeTheme) {
       { ...text('details', l.deckView.viewport, '', f.reading, c.text), visible: false },
       { name: 'detailHit', kind: 'cursorArea', position: l.deckView.viewport.slice(0, 2),
         size: l.deckView.viewport.slice(2), focusable: true, visible: false },
-      { ...button('upgradePreview', l.deckView.upgradePreview, '升级预览'), visible: false },
+      { name: 'cardFocus', kind: 'container', position: [0, 30], size: [...l.card.size], scale: [1.9, 1.9],
+        visible: false, children: [{ ...deckCardTemplate(theme).children[0], position: [0, 0] }] },
+      { ...button('upgradePreview', [0, -245, ...l.deckView.upgradePreview.slice(2)], '查看升级'), visible: false },
       button('close', closeFrame, '关闭'),
-      {...battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),theme.officialAssets.buttonInk),visible:false},
+      {...roundedCursorButton('pileReturn',[-550,-237],[180,54],
+        text('label',[0,0,180-s.s,54-s.s],'返回',f.label,theme.officialAssets.buttonInk),
+        roundedButtonPalettes(theme).cancel),visible:false},
       {name:'pileTools',kind:'container',position:[0,241.5],size:[856,33],visible:false,children:[
         plate('plate',[0,0,856,33],'#76191B'),
         ...['original','type','cost','name'].map((mode,i)=>({name:mode,kind:'container',position:[(i-1.5)*150,0],size:[150,44],children:[

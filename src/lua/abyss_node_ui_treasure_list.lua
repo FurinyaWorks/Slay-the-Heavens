@@ -44,10 +44,21 @@ local function binding(c,key,box,item,index,linked,boss,bind)
     return bind(c,key,box,token,projection,command,argument,
         function()return '已领取「'..label(c,item)..'」'end,choice,true,item)
 end
-local function renderPicture(c,box,item)
+function M.paintPicture(c,box,item,size)
     local icon=box:GetChild('icon')
-    local fallback=item.kind=='gold' and Theme.icon.gold or Theme.icon.node.treasure
-    if c.relicPicture then c.relicPicture(icon,item.kind=='relic' and item.id or nil,48,fallback)
+    local gold=item.kind=='gold'
+    local bag=Theme.presentationProfile=='official-assets-first' and box:GetChild('goldBag')
+    if bag then
+        c.show(bag,gold)
+        if gold then
+            if c.relicPicture then c.relicPicture(icon,nil,size) end
+            c.show(icon,false)
+            return
+        end
+        c.show(icon,true)
+    end
+    local fallback=gold and Theme.icon.gold or Theme.icon.node.treasure
+    if c.relicPicture then c.relicPicture(icon,item.kind=='relic' and item.id or nil,size,fallback)
     else c.picture(icon,Theme.icon.relic[item.id] or fallback)end
 end
 local function renderRow(c,panel,item,index,y,opened,linked,boss,bind,items)
@@ -59,7 +70,7 @@ local function renderRow(c,panel,item,index,y,opened,linked,boss,bind,items)
             c.state(box,available)
             box:GetChild('name').text=(available and '领取 · ' or '')..label(c,item)
             box:GetChild('description').text=description(c,item,boss,items)
-            renderPicture(c,box,item)
+            M.paintPicture(c,box,item,48)
             local handler,observe=binding(c,key,box,item,index,linked,boss,bind)
             c.action(key,opened and available,handler,nil,nil,observe)
             c.details:set(key,label(c,item),description(c,item,boss,items),

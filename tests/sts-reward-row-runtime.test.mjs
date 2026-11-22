@@ -50,7 +50,15 @@ for _,name in ipairs({'goldReward','cardReward','claimPotion','relicReward1'})do
   assert(part:GetChild('label').text=='完整奖励文字')
  end
 end
-assert(boxes.goldReward:GetChild('normal'):GetChild('rewardIcon').imageId==Theme.icon.gold.id)
+for _,name in ipairs({'goldReward','stolenGold'})do
+ local previous=imageWrites
+ writer.button(name,true,false,'金币')
+ for _,state in ipairs({'normal','hover','pressed','disabled'})do
+  local icon=boxes[name]:GetChild(state):GetChild('rewardIcon')
+  assert(icon:GetChild('mark') and icon.imageId==nil,'static gold bag must never receive SetImage')
+ end
+ assert(imageWrites==previous,'redrawing gold must not bind an atlas image')
+end
 assert(boxes.cardReward:GetChild('normal'):GetChild('rewardIcon').imageId==Theme.icon.deck.id)
 assert(boxes.claimPotion:GetChild('normal'):GetChild('rewardIcon').imageId==Theme.icon.potion.fire_potion)
 assert(boxes.relicReward1:GetChild('normal'):GetChild('rewardIcon').imageId==105078)

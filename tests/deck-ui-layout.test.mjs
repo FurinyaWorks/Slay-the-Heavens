@@ -125,16 +125,21 @@ test('controller overlays isolate nearest-control navigation and deck pages leav
   }
 });
 
- test('upgrade preview is an explicit native button outside the text paging hit', () => {
+ test('upgrade preview uses a magnified native card face and a separate focusable switch', () => {
  const panel=gameLayout().controls.find(c=>c.name==='deckPanel');
  const toggle=panel.children.find(c=>c.name==='upgradePreview');
- const textHit=panel.children.find(c=>c.name==='detailHit');
+ const card=panel.children.find(c=>c.name==='cardFocus');
+ const face=card.children[0];
+ assert.equal(card.visible,false);
+ assert.ok(card.scale.every(value=>value>1));
+ assert.deepEqual(face.children,deckCardTemplate().children[0].children);
+ assert.equal(toggle.position[0],card.position[0]);
  assert.equal(toggle.visible,false);
  assert.equal(toggle.children[0].kind,'presetButton');
  assert.equal(toggle.children[0].focusable,true);
  assert.ok(toggle.size[1]>=48);
- assert.ok(toggle.position[1]+toggle.size[1]/2<textHit.position[1]-textHit.size[1]/2);
- for(const state of toggle.children[0].children)assert.equal(state.children.find(c=>c.name==='label').text.content,'升级预览');
+ assert.ok(toggle.position[1]+toggle.size[1]/2<card.position[1]-card.size[1]*card.scale[1]/2);
+ for(const state of toggle.children[0].children)assert.equal(state.children.find(c=>c.name==='label').text.content,'查看升级');
  });
 
  test('original Chinese sort labels fit in every state without truncation at all reported sizes', () => {

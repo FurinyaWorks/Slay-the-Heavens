@@ -1,3 +1,4 @@
+import {goldBag} from './v25-character-layout.mjs';
 import {roundedFramedButton} from './native-rounded-button.mjs';
 import {merchantControl} from './cinematic-ui-layout.mjs';
 import {proceedFlag} from './sts-reward-row-layout.mjs';
@@ -242,6 +243,12 @@ export function styleTreasure(panel,theme,{skinButtons=true}={}){
    rect('lidEdge',0,22,182,7,'#C6A46A'),rect('leftBand',-61,-7,12,92,'#B5985A'),rect('rightBand',61,-7,12,92,'#B5985A'),
    rect('lock',0,12,25,32,'#D2B66C'),image('keyhole',0,12,6,10,100002,'#302B23'),
   ])];
+ }
+ if(theme.presentationProfile==='official-assets-first'){
+  for(const row of parts(panel).filter(n=>/^reward(?:Item\d+)?$/.test(n.name))){
+   const icon=must(row,'icon'),height=icon.size[1];
+   row.children.push({...goldBag('goldBag',theme,icon.position,[height*.9,height],{compact:true}),visible:false});
+  }
  }
  if(skinButtons)for(const n of parts(panel))if(parts(n).some(c=>c.name==='normal'))framedSkin(n);
 }

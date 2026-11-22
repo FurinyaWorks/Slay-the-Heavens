@@ -27,13 +27,7 @@ local function find(list, key, value)
 end
 
 local function selectedEntries(entries, info)
-    if info.position and info.kind == "powerTips" then
-        local position = info.position
-        if position == L.statusIcon.perRow * L.statusIcon.rows then
-            return {table.unpack(entries, position)}
-        end
-        return {entries[position]}
-    elseif info.statusId then
+    if info.statusId then
         local selected = find(entries, "id", info.statusId)
         if not selected then return end
         return {selected}
@@ -275,25 +269,13 @@ function M.new(self, describe, lines)
         end
     end
 
-    local function powerRows(entries, battle, info, actor)
-        local rows = {}
-        for _, entry in ipairs(selectedEntries(entries, info) or {}) do
-            local row = statusRow(entry, battle, actor)
-            local body = row.text or ""
-            if row.tag and row.tag ~= "" and tonumber(row.tag) == nil then body = body .. "。 " .. row.tag end
-            if row.note and row.note ~= "" then body = body .. "。 " .. row.note end
-            rows[#rows + 1] = {name = row.name, body = body}
-        end
-        return #rows > 0 and rows or nil
-    end
-
     return function(data, presentation, battle, info, actor)
         local entries = Combat.statusView(actor)
-        if info.kind == "powerTips" then return powerRows(entries, battle, info, actor) end
         local card = {title = actor.name or "旅行者", tag = "当前状态", accent = C.gold,
             hp = actor.hp, maxHp = actor.maxHp, block = actor.block, sections = {}}
         if info.kind == "intent" then return intentCard(card, battle, info) end
         if info.kind == "card" or info.kind == "potion" or info.kind=='rewardCard' then return keywordCard(card, data, presentation, battle, info, actor) end
+        card.actorDetail = true
         entries = selectedEntries(entries, info)
         if not entries then return end
         if info.index > 0 and not info.statusId and not info.offset then
@@ -303,7 +285,10 @@ function M.new(self, describe, lines)
         end
         playerResources(card, battle, info, actor)
         statusSections(card, entries, battle, actor)
-        if #card.sections == 0 then card.empty = "暂无状态" end
+        if #card.sections == 0 then
+            if info.transient then return end
+            card.empty = "暂无状态"
+        end
         return card
     end
 end

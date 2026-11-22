@@ -140,7 +140,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     })))
     install(services, require("abyss_battle_detail_bindings").install(self, ownership, host, ports(links, {
         "enemyAt", "listen", "child", "closeInfo", "controllerReady",
-        "helpActorReady", "swallowed", "down", "consumeReleasedDragClick", "dragReady"
+        "helpActorReady", "swallowed", "down", "consumeReleasedDragClick"
     })))
     connect(links, services)
     -- Runtime bindings keep only their own ports, not the construction registry.

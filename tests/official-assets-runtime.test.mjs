@@ -112,7 +112,7 @@ print('${marker}')
  return stage;
 }
 
-test('official run HUD keeps complete health through the blessing, map and battle',t=>{
+test('official run HUD keeps complete health and the same live gold balance through blessing, map and battle',t=>{
  const stage=runOfficial(t,`
 local F=H.F
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
@@ -126,17 +126,20 @@ local node=root:GetChild('nodePanel')
 local map=root:GetChild('mapPanel'):GetChild('resources')
 local battle=root:GetChild('battlePanel')
 assert(host.mode=='node' and node:GetChild('hp').text=='80/80')
+assert(node:GetChild('gold').text=='99')
 assert(F.click(root,'nodePanel','eventView/option1'))
 assert(F.click(root,'nodePanel','eventView/option2'))
 assert(host.run.hp==88 and host.run.maxHp==88 and node:GetChild('hp').text=='88/88')
 assert(F.click(root,'nodePanel','eventView/option1'))
 assert(host.mode=='map' and map:GetChild('hp').text=='88/88')
 assert(H.Run.increaseMaxHp(host.run,23))
+H.Run.gainGold(host.run,55)
 host:refresh()
-assert(map:GetChild('hp').text=='111/111')
+assert(map:GetChild('hp').text=='111/111' and map:GetChild('gold').text=='154')
 local first=assert(F.Nodes.available(host.run,host.map)[1])
 assert(host.mapUI:choose(first.id))
 assert(host.mode=='battle' and battle:GetChild('player').text=='111/111')
+assert(battle:GetChild('piles').text=='154')
 local combat=host.run.combat
 C.damage(combat,combat.enemies[1],combat.player,12,true)
 host:refresh()
@@ -153,9 +156,38 @@ assert(battle:GetChild('player').text=='99/111')
   assert(health.size[0]>='999/999'.length*.6*health.text.fontSize+4,pageName+' needs a full health line with native text padding');
   assert(left(health)-right(heart)>=3,pageName+' health clears the heart');
   assert(left(gold)-right(health)>=4,pageName+' health clears the gold icon');
+  assert(right(gold)<left(child(resources,pageName==='battlePanel'?'piles':'gold')),pageName+' gold icon clears the amount');
   const hints=child(page,'resourceHints');
   if(hints)assert(left(child(hints,'gold'))-right(child(hints,'hp'))>=4,pageName+' resource hints stay separate');
  }
+});
+
+test('recycled treasure rows show the gold bag or the relic illustration as their reward changes',t=>{
+ runOfficial(t,`
+local F=H.F
+local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
+local treasure=root:GetChild('nodePanel'):GetChild('treasureView')
+local paint=require('abyss_node_ui_treasure_list').paintPicture
+local relic=require('abyss_relic_view_ui')
+local theme=require('abyss_theme')
+local platform={imageSource='static'}
+local c={
+ show=function(control,visible)control:SetVisible(visible)end,
+ relicPicture=function(control,id,size,fallback)relic.paint(control,id,size,platform,nil,fallback)end,
+}
+for _,name in ipairs({'reward','rewardItem1'})do
+ local row=treasure:GetChild(name)
+ local icon,bag=row:GetChild('icon'),row:GetChild('goldBag')
+ assert(not bag.visible)
+ for _,kind in ipairs({'gold','relic','gold','sapphire'})do
+  paint(c,row,{kind=kind,id=kind=='relic' and 'burning_blood' or nil},48)
+  assert(bag.visible==(kind=='gold'),name..'/'..kind)
+  if kind=='gold' then assert(not icon.visible and not row:GetChild('iconArt').visible) end
+  if kind=='relic' then assert(icon.imageId==relic.icon('burning_blood',true)) end
+  if kind=='sapphire' then assert(icon.visible and icon.imageId==theme.icon.node.treasure) end
+ end
+end
+`,'OFFICIAL_TREASURE_GOLD_BAG_PASS');
 });
 
 test('official long reward descriptions keep the same full illustration and type slots on recycled shared faces',t=>{
@@ -592,7 +624,7 @@ print('OFFICIAL_MAP_RETURN_STATES_PASS')
 });
 
 
-test('official lethal feedback and reward widgets do not flash the page cover',t=>{
+test('official rewards preserve the card picker through a map preview and keep settings separate',t=>{
  runOfficial(t,`
 local GameUI=require('abyss_game_ui')
 local original=GameUI.new
@@ -611,7 +643,7 @@ local map=root:GetChild('mapPanel')
 local function frame()
  host:update(1/60)
  if gate:step(Gate.intent(host)) then host:refresh()end
- gate:paint(not host.exitOpen)
+ gate:paint(not host.exitOpen or host.routeOpen)
 end
 local function actor()
  local exists,box=pcall(F.actorControl,battle,'enemy1')
@@ -647,8 +679,28 @@ end
 for _=1,4 do frame();expectReward(true,false)end
 battle:GetChild('cardReward').click();expectReward(false,true)
 for _=1,4 do frame();expectReward(false,true)end
+local menu,exit=root:GetChild('runMenu'),root:GetChild('exitPanel')
+local showMenu,menuShows=menu.SetVisible,0
+function menu:SetVisible(visible)
+ if visible then menuShows=menuShows+1 end
+ showMenu(self,visible)
+end
+local function press(hit,id)
+ hit.listeners.down({touchId=id});hit.listeners.up({touchId=id})
+ return hit.click({touchId=id})
+end
+local route=battle:GetChild('topBar'):GetChild('battleRoute'):GetChild('hit')
+assert(press(route,202) and host.routeOpen)
+for _=1,4 do frame()end
+assert(map.visible and not cover.visible and not host.mapUI.navigationEnabled)
+assert(press(map:GetChild('previewBack'):GetChild('hit'),203))
+for _=1,4 do frame()end
+expectReward(false,true)
+assert(menuShows==0 and not menu.visible and not exit.visible,'map preview opened the settings menu during its transition')
+assert(press(root:GetChild('exitEntry'):GetChild('open'):GetChild('hit'),204) and menu.visible and menuShows==1)
+assert(host:closeExit());expectReward(false,true)
 local count=#host.run.deck
-tap('card1',203);expectReward(true,false)
+tap('card1',205);expectReward(true,false)
 for _=1,4 do frame();expectReward(true,false)end
 assert(#host.run.deck==count+1 and host.run.rewards.cardResolved,'public pick must claim exactly one card')
 battle:GetChild('continue').click()
@@ -843,6 +895,36 @@ Run.potionView=whole
 `, 'DEFAULT_POTION_INVENTORY_VIEW_PASS',{},false);
 });
 
+test('official reward card picker keeps owned relics visible when inspecting a potion',t=>{
+ runOfficial(t,`
+local Run=require('abyss_run')
+local host,ui,battle,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+assert(Run.obtainPotion(host.run,'speed_potion'))
+host.run.combat.enemies[1].hp=0;host.run.combat.phase='victory'
+assert(Run.finishCombat(host.run));host:refresh()
+battle:GetChild('cardReward').click()
+local picker=battle:GetChild('rewardStage')
+local bar=root:GetChild('relicBar')
+local slot=bar:GetChild('slot1')
+local relicHit=slot:GetChild('hit')
+assert(picker.visible and bar.visible and slot.visible)
+assert(relicHit.listeners.enter())
+local potionHit=root:GetChild('potionEntry'):GetChild('slot1'):GetChild('hit')
+potionHit.listeners.down({touchId=1});potionHit.listeners.up({touchId=1})
+assert(potionHit.click({touchId=1}))
+local popup=root:GetChild('potionPanel')
+assert(popup.visible and picker.visible and ui.rewardScreen=='cards')
+assert(bar.visible and slot.visible,'opening the potion popup hid the relic row')
+assert(popup.y+popup.sizeDeltaY/2 < slot.y-relicHit.sizeDeltaY/2,'potion popup overlaps the relic row')
+assert(not bar:GetChild('tooltip').visible and not relicHit.listeners.enter())
+assert(not relicHit.click(),'an outside relic click must not open its details beneath the potion popup')
+assert(not popup:GetChild('use').interactable and popup:GetChild('discard').interactable)
+assert(popup:GetChild('dismiss').click())
+assert(not popup.visible and picker.visible and bar.visible and relicHit.listeners.enter())
+assert(host.run.potions[1]=='speed_potion' and not host.run.rewards.cardResolved)
+`, 'OFFICIAL_POTION_RELIC_HUD_PASS');
+});
+
 test('official hover refresh touches poses only and falls back on turn, UID and viewport changes',t=>{
  runOfficial(t,`
 local deck={};for i=1,10 do deck[i]='strike'end
@@ -984,6 +1066,49 @@ assert(host.run.nodeFlow.complete and not shelf.visible,'leaving through the vis
 `, 'OFFICIAL_SHOP_ROUTE_INK_PASS');
 });
 
+test('official draw pile return paints shared hover and press without changing the hit target',t=>{
+ runOfficial(t,`
+local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local deck,panel=host.deckUI,root:GetChild('deckPanel')
+local button=panel:GetChild('pileReturn')
+local hit,art=button:GetChild('hit'),button:GetChild('art')
+local chrome=art:GetChild('roundedButton')
+local theme=require('abyss_theme')
+local palette=theme.officialAssets.roundedButtonPalettes.cancel
+local function state(expected)
+ for i,role in ipairs({'rim','cloth'})do
+  for _,part in ipairs(chrome:GetChild(role):GetChildren())do
+   sameColour(part.imageColor,palette[expected][i],expected..' '..role)
+  end
+ end
+ local scale=expected=='pressed' and theme.layout.deckView.pressedScale or 1
+ assert((art.localScaleX or 1)==scale and (hit.localScaleX or 1)==1,'only the visible face may scale on press')
+end
+local function event(kind,id)return hit.listeners[kind]({touchId=id})end
+local function openDraw()
+ assert(host:openDeck('draw'));host:update(0)
+ assert(deck.pileKind=='draw' and button.visible)
+end
+openDraw()
+event('enter');state('hover')
+event('down');state('pressed')
+event('up');state('hover')
+event('exit');state('normal')
+assert(not event('click') and deck.visible,'leaving must discard the pending click')
+event('down',7);state('pressed')
+event('up',8);state('pressed')
+event('endDrag',7);state('normal')
+event('up',7);assert(not event('click',7) and deck.visible,'drag cancellation must prevent navigation')
+event('down',9);event('up',9);state('normal')
+assert(event('click',9) and not deck.visible,'matching touch still returns to battle')
+openDraw();event('enter');state('hover')
+assert(host:closeDeck());state('normal')
+event('enter');state('normal')
+openDraw();state('normal')
+event('enter');event('down');event('up');assert(event('click') and not deck.visible)
+`, 'OFFICIAL_PILE_RETURN_FEEDBACK_PASS');
+});
+
 test('official browser return rejects stale clicks across new choices and browser generations',t=>{
  runOfficial(t,`
 local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
@@ -1049,7 +1174,7 @@ grid.scrollProgress=.4
 local first=grid.items[0];local uid=host.deckUI.bindings[first].uid
 assert(first:GetChild('hit').click() and host.deckUI.cardDetail.instance.uid==uid)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());host:update(0)
-assert(grid.visible and grid.scrollProgress==.4 and not host.deckUI.detailPages and panel:GetChild('pileTools').visible)
+assert(grid.visible and grid.scrollProgress==.4 and not host.deckUI.cardDetail and panel:GetChild('pileTools').visible)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click())
 assert(not host.deckUI.visible and host.mode=='node' and host.nodeUI.visible and host.run.nodeFlow.id==shop.id)
 assert(not grid.visible and grid.itemCount==0)
@@ -1111,16 +1236,16 @@ for _,origin in ipairs({0,1})do
   local late=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
   assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)
-  assert(not hit.click({dragging=true}) and not deck.detailPages and grid.scrollProgress==.45)
+  assert(not hit.click({dragging=true}) and not deck.cardDetail and grid.scrollProgress==.45)
   assert(hit.click() and deck.cardDetail.instance.uid==uid and not grid.visible)
   assert(not panel:GetChild('pileTools').visible and not tool('cost'),'detail cannot sort the hidden list')
-  assert(panel:GetChild('details').text:find('左下角返回',1,true))
+  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)
+  assert(not hit.click(),'hidden list receiver replaced the active detail')
   assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()
-  assert(not deck.detailPages and grid.visible and grid.scrollProgress==.45)
-  local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid
-  late(fresh,origin+amount-1)
-  assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')
-  assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired detail receiver remained live')
+  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)
+  local fresh=grid.items[0]
+  assert(first==fresh and fresh.alive and deck.bindings[fresh].uid==uid and grid.refreshCallback==late,
+      'detail return must retain the warmed native cells and callbacks')
   if amount==17 then
    grid.deferRefresh,grid.destroyOnRefresh=false,false
    local reused=grid:recycle(0,origin+16)
@@ -1174,7 +1299,7 @@ local function permanent()
 end
 assert(deck:open(host.run));deck:update();permanent()
 assert(grid.items[3]:GetChild('hit').click())
-assert(not deck.cardDetail.combat and not panel:GetChild('details').text:find('131',1,true))
+assert(not deck.cardDetail.combat and not panel:GetChild('cardFocus'):GetChild('face'):GetChild('label').text:find('131',1,true))
 assert(deck:toggleUpgradePreview() and deck.cardDetail.preview and not deck.cardDetail.combat)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();permanent()
 assert(tool('name'));deck:update()
@@ -1192,7 +1317,7 @@ assert(face:GetChild('cost').text=='0' and scopes[face]=='battle','pile lost tra
 assert(plain(grid.items[2]:GetChild('face'):GetChild('label').text):find('131',1,true),'pile lost temporary Rampage growth')
 stale(grid.items[0],3);assert(deck.bindings[grid.items[0]].uid==uid,'permanent callback rebound a combat pile')
 assert(grid.items[2]:GetChild('hit').click() and deck.cardDetail.combat)
-assert(panel:GetChild('details').text:find('131',1,true),'pile detail lost its current combat instance')
+assert(panel:GetChild('cardFocus'):GetChild('face'):GetChild('label').text:find('131',1,true),'pile detail lost its current combat instance')
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
 assert(tool('cost'));deck:update();assert(tool('type'));deck:update()
 local pileLate=grid.refreshCallback
@@ -1230,11 +1355,11 @@ local function checkDetailAndScroll(host,root,grid)
  local hit=face:GetChild('hit')
  assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil,'pile must retain native scroll ownership')
  grid.scrollProgress=.35
- assert(not hit.click({dragging=true}) and not host.deckUI.detailPages)
+ assert(not hit.click({dragging=true}) and not host.deckUI.cardDetail)
  assert(hit.click() and host.deckUI.cardDetail.instance.uid==uid)
  assert(root:GetChild('deckPanel'):GetChild('pileReturn'):GetChild('hit').click())
  host.deckUI:update()
- assert(not host.deckUI.detailPages and grid.visible and grid.scrollProgress==.35)
+ assert(not host.deckUI.cardDetail and grid.visible and grid.scrollProgress==.35)
  assert(host.deckUI.bindings[grid.items[0]].uid==uid)
 end
         local host=H.setup()
@@ -1363,11 +1488,13 @@ for _,slot in ipairs({1,5,10})do
  assert(not u.info and not info.visible,'leaving a card retained transient help')
 end
 u:showStatus(0)
-assert(plate.sizeDeltaX==theme.layout.statusInfo.width and info:GetChild('hit').visible,'actor details inherited the narrow card mode')
+assert(plate.sizeDeltaX==theme.layout.actorDetail.width and not info:GetChild('hit').visible,
+ 'actor details did not restore the shared compact style and input')
 event('card1','down',230)
-assert(not u.info and not u.gesture and u.swallow,'actor detail close must still swallow the press')
+assert(not u.info and u.gesture and not u.swallow,'actor detail closed without swallowing the card press')
 event('card1','up',230);event('card1','click',230)
-assert(not u.selected and not u.swallow)
+assert(u.selected==battle.hand[1].uid and not u.swallow)
+assert(u:controllerBack() and not u.selected)
 unchanged(battle,before,'hover/detail layout changed battle state')
 -- A fresh click-only surface has never observed a Down. Automatic card help
 -- must preserve its very first Click, while normal target selection remains core-owned.

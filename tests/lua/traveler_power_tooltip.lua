@@ -1,244 +1,196 @@
 local G = dofile("tests/lua/support/battle_gesture_fixture.lua")
-local Combat, L = G.F.Combat, G.F.Theme.layout
-local number = require("abyss_numbers").integer
+local Combat, Theme = G.F.Combat, G.F.Theme
+local L = Theme.layout
+local enemyControl = dofile("tests/lua/support/monster_control_fixture.lua")
+local enemyPower = dofile("tests/lua/support/monster_power_control_fixture.lua")
 
-local function scene(mobile)
-    local host, ui, panel, event, tap, drain = G.setup({"strike", "defend", "defend"}, nil,
+local function tap(control, touch)
+    local event = {touchId = touch}
+    control.listeners.down(event)
+    control.listeners.up(event)
+    control.listeners.click(event)
+end
+
+local function contains(text, needle)
+    assert(text and text:find(needle, 1, true), tostring(text))
+end
+
+local function setup(mobile)
+    local host, ui, panel, event, namedTap, drain = G.setup({"strike", "defend", "defend"}, {"cultist", "cultist"},
         {touchScreen = function() return mobile end})
-    local hero = panel:GetChild("hero")
-    local info = panel:GetChild("statusInfo")
-    local layer = info:GetChild("powerTips")
-    local actor = host.run.combat.player
-    local function descriptions()
-        local copy = {}
-        if info.visible and layer.visible then
-            for i = 1, L.powerTips.rows do
-                local box = layer:GetChild("tip" .. i)
-                if box.visible then copy[#copy + 1] = box:GetChild("copy").text end
-            end
-        end
-        return copy
-    end
-    local function icon(index) return hero:GetChild("statusRow"):GetChild("hit" .. index).listeners end
-    return actor, ui, panel, hero:GetChild("hit").listeners, icon, descriptions, event, tap, drain, host
-end
-
-local function contains(text, needle) assert(text and text:find(needle, 1, true), tostring(text)) end
-
-do
-    local actor, ui, panel, hero, icon, descriptions = scene(false)
-    local info = panel:GetChild("statusInfo")
-    hero.enter()
-    assert(not info.visible and #descriptions() == 0, "empty hover opens nothing")
-    Combat.addStatus(actor, "strength", 3)
-    ui:render()
-    contains(descriptions()[1], "力量 3")
-    assert(#descriptions() == 1 and not info:GetChild("hit").visible and not info:GetChild("page").visible)
-    assert(info.disableCursorEventPassthrough == false)
-    for _, name in ipairs({"title", "tag", "summary", "guard", "more", "plate"}) do
-        assert(not info:GetChild(name).visible, name .. " must stay hidden")
-    end
-    Combat.addStatus(actor, "weak", 2)
-    Combat.addStatus(actor, "strength", -1)
-    ui:render()
-    local ordered = Combat.statusView(actor)
-    local weak, strength
-    for i, entry in ipairs(ordered) do
-        contains(descriptions()[i], entry.name .. " " .. number(entry.amount))
-        if entry.id == "weak" then weak = i else strength = i end
-    end
-    contains(descriptions()[weak], "2 回合")
-    for _ = 1, 12 do
-        icon(weak).enter()
-        hero.exit()
-        assert(#descriptions() == 1)
-        contains(descriptions()[1], "虚弱 2")
-        icon(strength).enter()
-        icon(weak).exit()
-        contains(descriptions()[1], "力量 2")
-        hero.enter()
-        icon(strength).exit()
-        assert(#descriptions() == 2)
-    end
-    hero.exit()
-    assert(not info.visible)
-    hero.click()
-    assert(not info.visible, "desktop click does not pin status")
-    icon(weak).enter()
-    actor.statuses.weak = nil
-    ui:render()
-    assert(not panel:GetChild("hero"):GetChild("statusRow"):GetChild("hit2").visible)
-    if weak == 1 then contains(descriptions()[1], "力量 2") else assert(not info.visible) end
-    hero.enter()
-    actor.statuses.strength = nil
-    ui:render()
-    assert(not info.visible, "losing the final Power closes its box")
-end
-
-do
-    local actor, ui, panel, hero, icon, descriptions, event, tap, drain, host = scene(true)
     local battle = host.run.combat
-    local function touch(handlers, id)
-        local e = {touchId = id}
-        handlers.down(e)
-        handlers.up(e)
-        handlers.click(e)
-    end
-    local info = panel:GetChild("statusInfo")
-    local ground = panel:GetChild("statusDismiss")
-    local hp, energy, hand = actor.hp, battle.energy, #battle.hand
-    touch(hero, 7)
-    assert(not info.visible and not ground.visible, "empty tap opens nothing")
-    Combat.addStatus(actor, "strength", 3)
-    Combat.addStatus(actor, "weak", 2)
+    Combat.addStatus(battle.player, "strength", 3)
+    Combat.addStatus(battle.enemies[1], "strength", 2)
     ui:render()
-    hero.enter()
-    assert(not info.visible, "touch must not synthesize hover")
-    local fresh, foreign = {touchId = 65}, {touchId = 66}
-    for _, hit in ipairs({hero, icon(1)}) do
-        hit.down(fresh)
-        hit.click(foreign)
-        assert(not info.visible, "a foreign click cannot activate a held status tap")
-        hit.up(fresh)
-        hit.click(foreign)
-        assert(not info.visible, "a foreign click cannot open a status tip")
-        hit.click(fresh)
-        assert(info.visible, "a foreign click cannot consume the released status tap")
-        ground.click(fresh)
-        for _, cancel in ipairs({hit.exit, hit.drag, hit.endDrag}) do
-            hit.down(fresh)
-            cancel(foreign)
-            hit.up(fresh)
-            hit.click(fresh)
-            assert(info.visible, "a foreign pointer exit or drag cannot cancel a held status tap")
-            ground.click(fresh)
-        end
-    end
-    touch(hero, 7)
-    assert(#descriptions() == 2 and ground.visible)
-    local entries = Combat.statusView(actor)
-    touch(icon(2), 7)
-    assert(#descriptions() == 1)
-    contains(descriptions()[1], entries[2].name .. " " .. number(entries[2].amount))
-    touch(icon(1), 7)
-    contains(descriptions()[1], entries[1].name .. " " .. number(entries[1].amount))
-    ground.click({touchId = 7})
-    assert(not info.visible and not ground.visible)
-    assert(hp == actor.hp and energy == battle.energy and hand == #battle.hand)
-    hero.down({touchId = 7})
-    hero.drag({touchId = 7})
-    hero.up({touchId = 7})
-    hero.click({touchId = 7})
-    assert(not info.visible, "a swipe starting on the hero is not a tap")
-    touch(hero, 7)
-    local card = panel:GetChild("card1")
-    event("card1", "down", 8, card.x, card.y)
-    assert(ui.gesture and not info.visible, "a card gesture starts normally while a touch tip is open")
-    touch(hero, 9)
-    assert(ui.gesture and not info.visible and energy == battle.energy)
-    event("card1", "endDrag", 8, card.x, -350)
-
-    local defendSlot
-    for i, card in ipairs(battle.hand) do if card.cardId == "defend" then defendSlot = i break end end
-    tap("card" .. defendSlot, 7)
-    assert(ui.selected, "tap selects a self card")
-    touch(hero, 7)
-    assert(info.visible)
-    tap("playArea", 7)
-    assert(not info.visible and energy == battle.energy and hand == #battle.hand and ui.selected,
-        "an open-ground dismissal never confirms a selected self card")
-
-    assert(G.Run.obtainPotion(host.run, "fire_potion"))
-    host:refresh()
-    local potion = panel:GetChild("potion1")
-    event("potion1", "down", 19, potion.x, potion.y)
-    event("potion1", "drag", 19, 150, 100)
-    assert(ui.potionAim and ui.potionAim.moving)
-    touch(hero, 9)
-    assert(not info.visible and ui.potionAim.moving and host.run.potions[1] == "fire_potion",
-        "a status touch cannot hijack or commit a potion drag")
-    event("dragLayer", "up", 19, -590, -310)
-    assert(not ui.potionAim and host.run.potions[1] == "fire_potion")
-
-    touch(hero, 7)
-    local turn = battle.turn
-    tap("endTurn", 12)
-    drain()
-    assert(not info.visible and battle.turn == turn + 1, "end turn works on the first press")
-end
-
-do
-    local actor, ui, panel, hero, _, descriptions = scene(false)
-    for _, id in ipairs({"strength", "dexterity", "vulnerable", "weak", "frail", "poison", "thorns", "regen",
-        "artifact", "barricade", "ritual", "enrage"}) do Combat.addStatus(actor, id, 2) end
-    ui:render()
-    hero.enter()
-    assert(#descriptions() == #Combat.statusView(actor))
-    local layer = panel:GetChild("statusInfo"):GetChild("powerTips")
-    local column
-    for i, text in ipairs(descriptions()) do
-        local box = layer:GetChild("tip" .. i)
-        assert(box.x - box.sizeDeltaX / 2 >= -600 and box.x + box.sizeDeltaX / 2 <= 600, text)
-        assert(box.y - box.sizeDeltaY / 2 >= L.battleNotice.bandTop and box.y + box.sizeDeltaY / 2 <= 234, text)
-        if i == 1 then column = box.x end
-    end
-    assert(layer:GetChild("tip12").x > column, "a long list wraps to another column")
-    for _, entry in ipairs(G.F.Data.statuses.statuses) do Combat.addStatus(actor, entry.id, 1) end
-    ui:render()
-    assert(#descriptions() == #Combat.statusView(actor), "the whole base catalog fits")
-    for i, text in ipairs(descriptions()) do
-        local box = layer:GetChild("tip" .. i)
-        local halfW, halfH = box.sizeDeltaX * box.localScaleX / 2, box.sizeDeltaY * box.localScaleY / 2
-        assert(box.x - halfW >= -600.01 and box.x + halfW <= 600.01, text)
-        assert(box.y - halfH >= L.battleNotice.bandTop and box.y + halfH <= 234.01, text)
-    end
-    ui:resize(1600, 900)
-    assert(not panel:GetChild("statusInfo").visible)
+    return host, ui, panel, battle, event, namedTap, drain
 end
 
 for _, mobile in ipairs({false, true}) do
-    local actor, ui, panel, _, icon, descriptions, _, _, _, host = scene(mobile)
-    host.run.character = "silent"
-    Combat.addStatus(actor, "strength", 3)
-    ui:render()
-    local info, power = panel:GetChild("statusInfo"), icon(1)
-    local event = {touchId = 42}
-    if mobile then power.down(event) else power.enter() end
-    ui:update(L.statusInfo.delay)
-    assert(info.visible and ui.info and #descriptions() == 0, "non-traveler icons retain the shared readout")
-    contains(info:GetChild("name1").text, "力量 3")
-    if mobile then
-        power.up(event)
-        power.click(event)
-        assert(info.visible and not ui.info.transient, "a held legacy status reader stays open")
-    else
-        power.exit()
-        assert(not info.visible, "legacy hover still closes on exit")
+    local _, ui, panel, battle = setup(mobile)
+    local detail = panel:GetChild("statusInfo")
+    local ground = panel:GetChild("statusDismiss")
+    local player = panel:GetChild("hero")
+    local monster = enemyControl(panel, "enemy1")
+    local targets = {
+        {index = 0, portrait = player:GetChild("hit"), power = player:GetChild("statusRow"):GetChild("hit1"), amount = 3},
+        {index = 1, portrait = monster:GetChild("hit"), power = enemyPower(monster, "strength"):GetChild("hit"), amount = 2},
+    }
+
+    local function opened(index, transient)
+        assert(detail.visible and ui.info.index == index and ui.info.transient == transient)
+        assert(not detail:GetChild("hit").visible and not detail.disableCursorEventPassthrough)
+        assert(detail:GetChild("page").visible == not transient and ground.visible == not transient)
+        assert(detail:GetChild("plate").sizeDeltaX == L.actorDetail.width)
+        local plate = detail:GetChild("plate")
+        assert(plate.x - plate.sizeDeltaX / 2 >= -Theme.canvas.base[1] / 2 + Theme.canvas.safe.x)
+        assert(plate.x + plate.sizeDeltaX / 2 <= Theme.canvas.base[1] / 2 - Theme.canvas.safe.x)
+        assert(plate.y - plate.sizeDeltaY / 2 >= -Theme.canvas.base[2] / 2 + Theme.canvas.safe.y)
+        assert(plate.y + plate.sizeDeltaY / 2 <= Theme.canvas.base[2] / 2 - L.topBar.height)
+        contains(detail:GetChild("summary").text, "生命")
+        contains(detail:GetChild("guard").text, "格挡")
+        return plate.x
     end
+
+    local before = Combat.copy(battle)
+    for _, target in ipairs(targets) do
+        local portrait, power = target.portrait, target.power
+        portrait.listeners.enter()
+        if mobile then assert(not detail.visible) else opened(target.index, true) end
+        tap(portrait, 7)
+        local x = opened(target.index, false)
+        assert(target.index == 0 and x > player.x or target.index == 1 and x < monster.x,
+            "the same card opens on the inward side of each portrait")
+        if target.index == 1 then contains(detail:GetChild("section1").text, "意图 · 尚未执行") end
+        portrait.listeners.exit()
+        opened(target.index, false)
+
+        -- A held chip can switch directly even when the previous reader suppressed its preview.
+        local function holdPower()
+            local held = {touchId = 7}
+            power.listeners.down(held)
+            ui:update(L.statusInfo.delay)
+            power.listeners.up(held)
+            power.listeners.click(held)
+        end
+        holdPower()
+        opened(target.index, false)
+        assert(ui.info.statusId == "strength")
+        contains(detail:GetChild("name1").text, "力量 " .. target.amount)
+        holdPower()
+        assert(not detail.visible and not ground.visible)
+        if not mobile then
+            power.listeners.enter()
+            opened(target.index, true)
+            power.listeners.exit()
+            assert(not detail.visible)
+        end
+    end
+
+    -- The old portrait's exit must not dismiss the next actor's hover.
+    if not mobile then
+        targets[1].portrait.listeners.enter()
+        targets[2].portrait.listeners.enter()
+        targets[1].portrait.listeners.exit()
+        opened(1, true)
+        targets[2].portrait.listeners.exit()
+        assert(not detail.visible)
+    end
+    tap(targets[1].portrait, 7)
+    tap(targets[2].portrait, 7)
+    opened(1, false)
+    ground.listeners.click({touchId = 7})
+    assert(not detail.visible and not ground.visible)
+    assert(battle.energy == before.energy and battle.turn == before.turn and #battle.hand == #before.hand
+        and #battle.events == #before.events and battle.seed == before.seed)
 end
 
-for _, from in ipairs({"silent", "ironclad"}) do
-    local actor, ui, panel, _, icon, descriptions, _, _, _, host = scene(true)
-    host.run.character = from
-    Combat.addStatus(actor, "strength", 3)
-    ui:render()
-    local e = {touchId = 43}
-    icon(1).down(e)
+do
+    local host, ui, panel, battle, event, namedTap, drain = setup(true)
+    local detail = panel:GetChild("statusInfo")
+    local hero = panel:GetChild("hero")
+    local portrait = hero:GetChild("hit")
+    local power = hero:GetChild("statusRow"):GetChild("hit1")
+    local fresh, foreign = {touchId = 65}, {touchId = 66}
+    local monster = enemyControl(panel, "enemy1"):GetChild("hit")
+    for _, hit in ipairs({portrait, power, monster}) do
+        local input = hit.listeners
+        input.down(fresh)
+        input.exit(foreign)
+        input.drag(foreign)
+        input.endDrag(foreign)
+        input.up(foreign)
+        input.click(foreign)
+        assert(not detail.visible, "a foreign touch cannot activate a held inspection")
+        input.up(fresh)
+        input.click(foreign)
+        assert(not detail.visible, "a foreign touch cannot activate a released inspection")
+        input.click(fresh)
+        assert(detail.visible, "a foreign touch cannot consume the valid inspection")
+        panel:GetChild("statusDismiss").listeners.click(fresh)
+
+        input.down(fresh)
+        input.drag(fresh)
+        input.up(fresh)
+        input.click(fresh)
+        assert(not detail.visible, "a swipe does not inspect")
+    end
+
+    tap(portrait, 7)
+    local card = panel:GetChild("card1")
+    event("card1", "down", 8, card.x, card.y)
+    assert(ui.gesture and not detail.visible, "the first card press starts its usual gesture")
+    tap(portrait, 9)
+    assert(ui.gesture and not detail.visible)
+    event("card1", "endDrag", 8, card.x, -350)
+    local defend
+    for i, instance in ipairs(battle.hand) do if instance.cardId == "defend" then defend = i break end end
+    namedTap("card" .. defend, 7)
+    local selected, energy, hand = ui.selected, battle.energy, #battle.hand
+    assert(selected)
+    tap(portrait, 7)
+    assert(detail.visible)
+    namedTap("playArea", 7)
+    assert(not detail.visible and ui.selected == selected and battle.energy == energy and #battle.hand == hand,
+        "field dismissal does not confirm the selected self card")
+
+    assert(G.Run.obtainPotion(host.run, "fire_potion"))
+    host:refresh()
+    event("potion1", "down", 19)
+    event("potion1", "drag", 19, 150, 100)
+    assert(ui.potionAim and ui.potionAim.moving)
+    tap(portrait, 9)
+    assert(not detail.visible and ui.potionAim.moving and host.run.potions[1] == "fire_potion")
+    event("dragLayer", "up", 19, -590, -310)
+    assert(not ui.potionAim and host.run.potions[1] == "fire_potion")
+
+    tap(portrait, 7)
+    local turn = battle.turn
+    namedTap("endTurn", 12)
+    drain()
+    assert(not detail.visible and battle.turn == turn + 1, "end turn works on the first press")
+    tap(portrait, 7)
+    ui:resize(1600, 900)
+    assert(not detail.visible and not panel:GetChild("statusDismiss").visible)
+end
+
+do
+    local host, ui, panel = setup(true)
+    local hit = panel:GetChild("hero"):GetChild("statusRow"):GetChild("hit1")
+    local touch = {touchId = 43}
+    hit.listeners.down(touch)
     local run = G.Run.new(G.F.Data, 43)
     assert(G.Run.startCombat(run, "cultist_solo"))
-    run.character = from == "silent" and "ironclad" or "silent"
+    run.character = "silent"
     Combat.addStatus(run.combat.player, "weak", 2)
     host.run, ui.run = run, run
     host:refresh()
-    icon(1).up(e)
-    icon(1).click(e)
-    assert(not panel:GetChild("statusInfo").visible, "a late cross-route tap cannot open a new battle's status")
-    icon(1).down(e)
-    icon(1).up(e)
-    icon(1).click(e)
-    local info = panel:GetChild("statusInfo")
-    assert(info.visible, "a fresh tap still opens the current status")
-    contains(ui.info and info:GetChild("name1").text or descriptions()[1], "虚弱 2")
+    hit.listeners.up(touch)
+    hit.listeners.click(touch)
+    local detail = panel:GetChild("statusInfo")
+    assert(not detail.visible, "a late tap must not follow a slot into the replacement battle")
+    tap(hit, 43)
+    assert(detail.visible)
+    contains(detail:GetChild("name1").text, "虚弱 2")
 end
 
-print("TRAVELER_POWER_TOOLTIP_PASS")
+print("COMBAT_ACTOR_DETAILS_PASS")

@@ -63,7 +63,8 @@ function M.syncController(self,controller,openingCovered)
             elseif self.deckUI.visible then scope='deck'
             elseif self.potionUI.visible then scope='potions'
             elseif self.mode=='battle' and self.battleUI.potionMenu then scope='battlePotion'
-            elseif self.mode=='battle' and self.battleUI.info then scope='battleInfo'
+            elseif self.mode=='battle' and self.battleUI.info
+                and (self.battleUI.info.kind or not self.battleUI.info.transient) then scope='battleInfo'
             elseif self.mode=='battle' and (self.battleUI.selected or self.battleUI.potionAim) then scope='aim' end
                 return scope
             end
@@ -248,14 +249,12 @@ function M.refreshDeckEntry(child,self)
         end
 end
 
-local function potionEntryVisible(self,utilitiesVisible,potionOpen)
-    return utilitiesVisible or potionOpen and self.potionUI.localPanel==true
-end
-
 function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEntry)
-    return function(run,inMenu,deckOpen,potionOpen,blocked,covering,returnAvailable)
+    return function(run,inMenu,deckOpen,potionOpen,blocked,returnAvailable)
             local ending=run and run.phase=='ending_proceed'
-            local utilitiesVisible=not ending and not inMenu and not deckOpen and not potionOpen and not blocked and not covering
+            local hudVisible=not ending and not inMenu and not deckOpen and not blocked
+            local utilitiesVisible=hudVisible and not potionOpen
+            local inventoryVisible=hudVisible and (not potionOpen or self.potionUI.localPanel==true)
             child("combatRewards"):SetVisible(returnAvailable)
             -- Route preview raises the full-page map. Restore this sibling above it
             -- when returning to navigation; visibility alone leaves it occluded.
@@ -263,13 +262,13 @@ function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEn
             child("deckEntry"):SetVisible(utilitiesVisible)
             -- STS has no separate relic button: the discs under the HP row are the one control.
             child("relicEntry"):SetVisible(false)
-            self.relicUI:refreshBar(run,utilitiesVisible)
+            self.relicUI:refreshBar(run,inventoryVisible,potionOpen)
             for _,state in ipairs({'normal','hover','pressed','disabled'})do
                 local variant=child('relicEntry'):GetChild('open'):GetChild('hit'):GetChild(state)
                 variant:GetChild('label').text=run and '遗物 '..#run.relics or '遗物'
                 variant:GetChild('count').text=run and number(#run.relics) or ''
             end
-            child("potionEntry"):SetVisible(not inCombat() and potionEntryVisible(self,utilitiesVisible,potionOpen))
+            child("potionEntry"):SetVisible(not inCombat() and inventoryVisible)
             refreshPotionEntry(run,mapPotionVisible(self))
             child("nodePanel"):GetChild("potions"):SetVisible(false)
             refreshDeckEntry(run)
@@ -636,7 +635,7 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             local potionOpen=self.potionUI.visible
             local blocked=overlaysBlocked() or covering
             local returnAvailable=syncRewardReturn(run,deckOpen,potionOpen,blocked,covering)
-            refreshUtilities(run,inMenu,deckOpen,potionOpen,blocked,covering,returnAvailable)
+            refreshUtilities(run,inMenu,deckOpen,potionOpen,blocked,returnAvailable)
             refreshPageVisibility(run,inMenu,deckOpen,potionOpen,blocked)
             renderCurrentPage(run,deckOpen,potionOpen,blocked,covering)
             bgm:update(self.settlementRequested and "stop" or Bgm.scene(self.mode, run, self.battleUI.busy, bgm.cue))

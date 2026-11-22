@@ -116,7 +116,7 @@ test('controller pages, filters, sorting, empty results and reentry keep only li
     assert(deck:setFilter('all'));deck:update(0);sync(deck,manager)
     local fresh=grid.items[0]:GetChild('hit')
     api.setFocus(fresh);assert(fresh.navigationListeners.confirm())
-    assert(deck.cardDetail.instance.uid==deck.cards[1].uid and deck.detailPages)
+    assert(deck.cardDetail.instance.uid==deck.cards[1].uid and deck.root:GetChild('cardFocus').visible)
     sync(deck,manager);assert(api.getFocus().navigationListeners.cancel())
     deck:update(0);sync(deck,manager);registry(manager,baseline+12)
     api.using=false;deck:update(0);registry(manager,baseline+12)

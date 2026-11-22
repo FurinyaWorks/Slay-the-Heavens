@@ -6,7 +6,7 @@ import {applyV25MapLayout} from './v25-map-layout.mjs';
 import {applyOfficialMapReturnControls} from './official-map-return-controls.mjs';
 import {applyV25RewardLayout,styleMerchant,styleEvent} from './v25-node-layout.mjs';
 import {officialRunChrome} from './official-battle-hud.mjs';
-import {roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
+import {roundedButtonState,roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
 import {monsterActorTierNames,monsterActorTemplateName} from './monster-art.mjs';
 import {applyStsRewardRows} from './sts-reward-row-layout.mjs';
 
@@ -63,18 +63,18 @@ export function finishOfficialComposition(trees){
  for(const tree of trees)composed.add(tree);
 }
 function roundRunActions(host,theme){
- const c=theme.color,secondary=[c.goldDim,c.panelRaised],primary=[c.gold,c.panel];
- const danger=theme.officialAssets.flagButton.cancel;
+ const c=theme.color,secondary={normal:[c.goldDim,c.panelRaised]},primary={normal:[c.gold,c.panel]};
+ const cancel={tone:'cancel'};
  const panels={
   deckPanel:{close:secondary,upgradePreview:secondary,previous:secondary,next:secondary},
   potionPanel:{cancel:secondary,use:primary,discard:secondary},
   choicePanel:{confirm:primary},
   relicPanel:{close:secondary,previous:secondary,next:secondary},
-  runMenu:{resume:primary,map:secondary,abandon:danger},
-  exitPanel:{cancel:secondary,confirm:danger},
+  runMenu:{resume:primary,map:secondary,abandon:cancel},
+  exitPanel:{cancel:secondary,confirm:cancel},
  };
- for(const [panel,actions] of Object.entries(panels))for(const [name,palette] of Object.entries(actions)){
-  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,palette);
+ for(const [panel,actions] of Object.entries(panels))for(const [name,style] of Object.entries(actions)){
+  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,style);
  }
  const grid=required(required(host,'deckPanel'),'pileGrid'),viewport=theme.layout.deckView.pileViewport;
  grid.position=viewport.slice(0,2);grid.size=viewport.slice(2);
@@ -84,12 +84,11 @@ function roundRunActions(host,theme){
  }
 }
 function roundPotionActions(battle,theme){
- const popup=required(required(battle,'potionHelp'),'potionPopup'),layout=theme.layout.potionPopup;
- const height=Math.max(layout.actionHeight,theme.layout.nativeText.lineHeight),c=theme.color;
+ const popup=required(required(battle,'potionHelp'),'potionPopup'),c=theme.color;
  const use=required(popup,'use'),discard=required(popup,'discard');
- use.size=[layout.width/2,height];discard.size=[layout.width/3-layout.padding,height];
- roundedPresetButton(use,theme,[c.gold,'#3B5A54']);
- roundedPresetButton(discard,theme,[c.goldDim,c.panelSunken]);
+ roundedPresetButton(use,theme);
+ roundedButtonState(required(use,'disabled'),use.size,[c.line,c.panel]);
+ roundedPresetButton(discard,theme,{tone:'cancel'});
 }
 
 export function composeOfficialRun(tree,theme){

@@ -8,7 +8,6 @@ local rowNames={};for _,name in ipairs(names)do rowNames[name]=true end
 local relicRows={relicReward1=1,relicReward2=2}
 local function iconId(value)return type(value)=='table'and value.id or value end
 local function rewardIcon(name,run)
- if name=='goldReward'or name=='stolenGold'then return iconId(Theme.icon.gold)end
  if name=='cardReward'then return iconId(Theme.icon.deck)end
  if name=='emeraldKeyReward'then return iconId(Theme.icon.lock)end
  local rewards=run and run.rewards
@@ -23,6 +22,7 @@ local function paintRelic(cached,index,run,platform,size)
  cached.relic=id
 end
 local function paintIcon(cached,name,run,platform,size)
+ if name=='goldReward'or name=='stolenGold'then return end
  local index=relicRows[name]
  if index then return paintRelic(cached,index,run,platform,size)end
  local id=rewardIcon(name,run)

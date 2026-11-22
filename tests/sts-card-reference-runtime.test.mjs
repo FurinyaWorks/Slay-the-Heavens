@@ -25,6 +25,12 @@ for(const host of ['hand','browser'])test('real '+host+' CardSkin and Display re
 local reads,geometryWrites=0,0
 local function control(spec)
  local c={name=spec.name,visible=spec.visible~=false,children={},order={},text=spec.text and spec.text.content or'',fontSize=spec.text and spec.text.fontSize}
+ c.position=spec.position;c.size=spec.size;c.rotation=spec.rotation or 0
+ c.scale={spec.scale and spec.scale[1] or 1,spec.scale and spec.scale[2] or 1,1}
+ if spec.colour then
+  local hex=spec.colour
+  c.imageColor={r=tonumber(hex:sub(2,3),16),g=tonumber(hex:sub(4,5),16),b=tonumber(hex:sub(6,7),16),a=255}
+ end
  function c:GetChild(name)return assert(self.children[name],self.name..'/'..name)end
  function c:GetChildren()reads=reads+1;return self.order end
  function c:SetVisible(value)self.visible=value end
@@ -35,7 +41,8 @@ local function control(spec)
  for _,s in ipairs(spec.children or{})do local n=control(s);c.children[n.name]=n;c.order[#c.order+1]=n end
  return c
 end
-local box,Skin,Display,Theme=control(${toLua(spec)}),require('abyss_card_skin'),require('abyss_card_display'),require('abyss_theme')
+local spec=${toLua(spec)}
+local box,Skin,Display,Theme=control(spec),require('abyss_card_skin'),require('abyss_card_display'),require('abyss_theme')
 local api={color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end}
 local function definition(kind,rarity,cost)return{type=kind,rarity=rarity,cost=cost or 1,id='defend'}end
 Display.writeTitle(box:GetChild('name'),'短标题',false,nil,box:GetChild('type'),'攻击')
@@ -67,8 +74,27 @@ end
 currentWell('skill',Theme.cardSkin.artWells.skill)
 assert(colourIs(framePart.imageColor,Theme.officialAssets.stsCardReference.rarity.uncommon.frame))
 assert(colourIs(bannerPart.imageColor,Theme.officialAssets.stsCardReference.rarity.uncommon.banner))
+-- This Release hides unused pool pieces without rewriting their transforms.
+-- Prove meaningful recycling for every piece owned by power but not attack.
+local shapes=Theme.officialAssets.stsCardReference.geometry.frameProfiles
+local powerOnly={}
+for i=#shapes.attack+1,#shapes.power do
+ local batch=root:GetChild('frame'):GetChild('batch'..math.floor((i-1)/50))
+ powerOnly[i]=batch:GetChild('part'..i)
+end
+assert(#shapes.power>#shapes.attack,'fixture requires at least one reusable power-only slot')
+local function assertPowerGeometry()
+ for i,part in pairs(powerOnly)do
+  local shape=shapes.power[i]
+  assert(part.visible and part.rotation==shape.rotation and
+   part.position[1]==shape.position[1]and part.position[2]==shape.position[2]and
+   part.size[1]==shape.size[1]and part.size[2]==shape.size[2]and
+   part.scale[1]==shape.scale[1]and part.scale[2]==shape.scale[2],'power slot lost authored geometry: '..i)
+ end
+end
 Skin.apply(box,definition('power','rare'),api,{cost=1,baseCost=1})
 assert(reads==firstReads and portraits:GetChild('power').visible)
+assertPowerGeometry()
 currentWell('power',Theme.cardSkin.artWells.power)
 assert(colourIs(framePart.imageColor,Theme.officialAssets.stsCardReference.rarity.rare.frame))
 assert(colourIs(bannerPart.imageColor,Theme.officialAssets.stsCardReference.rarity.rare.banner))
@@ -81,8 +107,12 @@ assert(attackWell.imageColor==priorWellColour,'idle apply cannot repaint cached 
 assert(box:GetChild('type').enableOutline==false,'reference writer must clear an inherited type outline')
 assert(colourIs(framePart.imageColor,Theme.officialAssets.stsCardReference.rarity.common.frame))
 assert(colourIs(bannerPart.imageColor,Theme.officialAssets.stsCardReference.rarity.common.banner))
-local part=root:GetChild('frame'):GetChild('batch2'):GetChild('part142')
-assert(not part.visible and part.rotation==0 and part.position[1]==0 and part.scale[1]==1,'unused pool slots must reset after power reuse')
+for i,part in pairs(powerOnly)do assert(not part.visible,'unused pool slot retained visibility after power reuse: '..i)end
+Skin.apply(box,definition('power','rare'),api,{cost=1,baseCost=1})
+assertPowerGeometry()
+Skin.apply(box,definition('attack','common'),api,{cost=1,baseCost=1})
+for i,part in pairs(powerOnly)do assert(not part.visible,'recycled slot leaked when returning to attack: '..i)end
+assert(reads==firstReads,'recycling power-only slots must preserve discovered handles')
 local outer=back:GetChild('body'):GetChild('bodyFit'):GetChild('vertical')
 local geo=Theme.officialAssets.stsCardReference.character.outer
 assert(outer.imageColor.r==geo.r and outer.imageColor.g==geo.g)
@@ -127,6 +157,33 @@ assert(not box:GetChild('blockedVeil').visible and box:GetChild('cost').visible)
 Skin.apply(box,definition('status','common',-2),api,{})
 assert(not box:GetChild('stsReferenceCost'):GetChild('costMaterial').visible and not box:GetChild('cost').visible)
 assert(reads==firstReads)
+if ${host==='browser'} then
+ local pile,reference=control(spec),control(spec)
+ local function frame(face)return face:GetChild('stsReferenceChrome'):GetChild('frame')end
+ local function compare(a,b)
+  assert(a.visible==b.visible and a.rotation==b.rotation,a.name)
+  for _,key in ipairs({'position','size','scale'})do
+   if a[key] then for i,value in ipairs(a[key])do assert(value==b[key][i],a.name..' '..key)end end
+  end
+  if a.imageColor then assert(colourIs(a.imageColor,b.imageColor),a.name..' colour')end
+  for name,child in pairs(a.children)do compare(child,b.children[name])end
+ end
+ local before=geometryWrites
+ for _,kind in ipairs({'attack','power','status','skill','curse','attack'})do
+  Skin.apply(pile,definition(kind,'common'),api,{templateKind='attack',templateMaterials=true,cost=1,baseCost=1})
+ end
+ local pileWrites=geometryWrites-before
+ before=geometryWrites
+ for _,kind in ipairs({'attack','power','status','skill','curse','attack'})do
+  Skin.apply(reference,definition(kind,'common'),api,{templateKind='attack',cost=1,baseCost=1})
+ end
+ assert(pileWrites<geometryWrites-before,'pile art repeats reference geometry writes')
+ for _,kind in ipairs({'attack','power','status','skill','curse','attack'})do
+  Skin.apply(pile,definition(kind,'common'),api,{templateKind='attack',templateMaterials=true,cost=1,baseCost=1})
+  Skin.apply(reference,definition(kind,'common'),api,{templateKind='attack',cost=1,baseCost=1})
+  compare(frame(pile),frame(reference))
+ end
+end
 print('STS_SHARED_CARD_RUNTIME_PASS')
 `;
  const script=join(directory,'runtime.lua');writeFileSync(script,lua);

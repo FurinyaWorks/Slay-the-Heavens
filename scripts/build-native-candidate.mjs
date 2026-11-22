@@ -1,4 +1,5 @@
 import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from './refined-release-monsters.mjs';
+import {packNativeScript,nativeScriptStorageProfile} from './native-script-storage.mjs';
 import {validateOfficialAssets,candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetsProfile,refinedReleaseOfficialAssetsProfile,officialAssetFlagsFor} from './official-assets-profile.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
 import {attachLowCostArt} from './lowcost-art.mjs';
@@ -318,10 +319,14 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     const reusable=await call('scene_list_client_scripts',{mapPath,includeSource:true});
     const existingSources=new Map((reusable.scripts??[]).filter(row=>typeof row.source==='string').map(row=>[row.name,row.source]));
     receipt.reusedModules=[];
+    if(officialAssets)receipt.nativeScriptStorage={profile:nativeScriptStorageProfile,modules:[]};
     const moduleDigests={},pendingScripts=[];
     for(const [name,source] of modules) {
-      const bytes=Buffer.from(readFileSync(fileRecord(source).path,'utf8').replace(/^\uFEFF/,'')),destination=join(payload,`${name}.lua`);
-      writeFileSync(destination,name==='abyss_ui'?Buffer.concat([Buffer.from(`print("ABYSS_BUILD ${buildId}")\n`),bytes]):bytes,{flag:'wx'});
+      const original=readFileSync(fileRecord(source).path,'utf8').replace(/^\uFEFF/,'');
+      const compact=packNativeScript(name,original,receipt.nativeScriptStorage?.profile);
+      const bytes=Buffer.from(name==='abyss_ui'?`print("ABYSS_BUILD ${buildId}")\n`+compact:compact),destination=join(payload,`${name}.lua`);
+      receipt.nativeScriptStorage?.modules.push({name,sourceSha256:sha256(original),sourceBytes:Buffer.byteLength(original),packedSha256:sha256(bytes),packedBytes:bytes.length});
+      writeFileSync(destination,bytes,{flag:'wx'});
       receipt.outputs.push(fileRecord(destination,workspace));
       moduleDigests[name]=fileRecord(destination).sha256;
       if(name!=='abyss_ui'&&existingSources.get(name)===readFileSync(destination,'utf8')) {

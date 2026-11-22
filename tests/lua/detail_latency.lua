@@ -18,7 +18,7 @@ assert(ui:showStatus(0));assert(not ui.info)
 assert(ui:showStatus(0));assert(ui.info.index==0)
 assert(ui:showStatus(0));assert(not ui.info and not panel:GetChild('statusInfo').visible)
 assert(counts.render==0,'status toggle repainted the battle')
--- Existing Down closes the reader and consumes its Click; no card is played.
+-- The regular card press dismisses the actor reader and can select without playing.
 local beforeHand=#host.run.combat.hand
 assert(ui:showStatus(0))
 local hit=panel:GetChild('card1'):GetChild('hit')
@@ -26,7 +26,7 @@ hit.listeners.down({touchId=71})
 assert(not ui.info,'new Down must close explicit details')
 if hit.listeners.up then hit.listeners.up({touchId=71}) end
 hit.listeners.click({touchId=71})
-assert(#host.run.combat.hand==beforeHand and not ui.selected,'close click passed through')
+assert(#host.run.combat.hand==beforeHand and ui.selected==host.run.combat.hand[1].uid,'actor reader blocked regular card selection')
 -- Content is re-read, never cached by mutable actor identity.
 host.run.combat.player.hp=17
 assert(ui:showStatus(0))

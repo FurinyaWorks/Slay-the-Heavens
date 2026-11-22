@@ -58,9 +58,9 @@ test('reentrant retirement regression rejects continuation after intent cursor r
   const source=readFileSync('src/lua/abyss_battle_detail_bindings.lua','utf8').replaceAll('\r\n','\n');
   // Remove only the post-CursorEnter retirement fence, before CursorExit can
   // register on an actor retired reentrantly during the Enter registration.
-  const fence='if not current() then return end\n            on(host.cursor.CursorExit,cancel)';
+  const fence='if not current() then return end\n            on(host.cursor.CursorExit,function(event) cancel(false,false,event) end)';
   assert.equal(source.split(fence).length,2);
-  const mutation=source.replace(fence,'on(host.cursor.CursorExit,cancel)');
+  const mutation=source.replace(fence,'on(host.cursor.CursorExit,function(event) cancel(false,false,event) end)');
   const directory=mkdtempSync(join(tmpdir(),'abyss-reentrant-bind-mutation-'));
   try {
     const script=join(directory,'detail.lua');

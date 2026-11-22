@@ -137,6 +137,31 @@ function roster(theme){
  });
  return group('v25Roster',[1280,720],[selected,...locked]);
 }
+// All currency displays use the approved selection silhouette. Small icons
+// simplify the outline and cords to keep the native control count bounded.
+export function goldBag(name,theme,position,size,{compact=false}={}){
+ const bagPath=curve([13,3],[[17,1],[24,1],[27,4]],[[23,13]],[[25,19],[34,27],[32,33]],[[30,40],[9,39],[7,34]],[[5,28],[12,19],[16,13]],[[13,3]]);
+ const geometry={width:36,height:40,step:compact?4:1};
+ const stroke={w:36,h:40};
+ const mark=[
+  lines('mark',[[20,21],[15,29],[25,29]],2.5,'#77796C',theme,stroke),
+  lines('markStem',[[22,21],[22,33]],2.5,'#77796C',theme,stroke),
+ ];
+ const tie=lines('tie',[[15,13],[24,13]],2.5,'#8B8D81',theme,stroke);
+ const bag=compact?[
+  bands('outline',bagPath,'#45443B',theme,geometry),
+  bands('bag',bagPath.map(([x,y])=>[20+(x-20)*.83,20+(y-20)*.88]),'#D1D0BD',theme,geometry),
+  tie,...mark,
+ ]:[
+  bands('bag',bagPath,'#D1D0BD',theme,geometry),
+  lines('outline',[...bagPath,bagPath[0]],2.5,'#45443B',theme,stroke),tie,
+  lines('leftCord',curve([14,14],[[7,13],[6,20],[2,18]]),2.5,'#8B8D81',theme,stroke),
+  lines('rightCord',curve([14,16],[[10,17],[12,22],[7,23]]),2.5,'#8B8D81',theme,stroke),
+  ...mark,
+ ];
+ return {...group(name,[36,40],bag,position),scale:[size[0]/36,size[1]/40]};
+}
+
 function detailsLayout(details,theme){
  const spec={name:[[75,126,503,66.25],53,'#F7E4C7'],stats:[[108,218.25,145,34],19,'#ED6460'],
   gold:[[286,218.25,160,34],19,'#E4C65C'],relicTag:[[165,405.53125,350,22],18,'#E6CDB0'],
@@ -151,16 +176,8 @@ function detailsLayout(details,theme){
  upsert(details,text('v25Story',[75,287.25,503,71.28125],typeof theme.v25Character?.story==='string'?theme.v25Character.story:'',23,'#EEDBBF'));
  const iconId=value=>typeof value==='object'?value.id:value;
  upsert(details,image('v25HealthIcon',frame(75,223.75,24,23).position,[24,23],iconId(theme.icon.hp),'#ED6460'));
- // Approved SVG money-bag silhouette, not the unrelated round gold asset.
- const bagPath=curve([13,3],[[17,1],[24,1],[27,4]],[[23,13]],[[25,19],[34,27],[32,33]],[[30,40],[9,39],[7,34]],[[5,28],[12,19],[16,13]],[[13,3]]);
- const bag=group('v25GoldIcon',[36,40],[bands('bag',bagPath,'#D1D0BD',theme,{width:36,height:40,step:1}),
-  lines('outline',[...bagPath,bagPath[0]],2.5,'#45443B',theme,{w:36,h:40}),
-  lines('tie',curve([15,13],[[24,13]]),2.5,'#8B8D81',theme,{w:36,h:40}),
-  lines('leftCord',curve([14,14],[[7,13],[6,20],[2,18]]),2.5,'#8B8D81',theme,{w:36,h:40}),
-  lines('rightCord',curve([14,16],[[10,17],[12,22],[7,23]]),2.5,'#8B8D81',theme,{w:36,h:40}),
-  lines('mark',[[20,21],[15,29],[25,29]],2.5,'#77796C',theme,{w:36,h:40}),
-  lines('markStem',[[22,21],[22,33]],2.5,'#77796C',theme,{w:36,h:40})],frame(252.421875,221.25,25,28).position);
- bag.scale=[25/36,28/40];upsert(details,bag);
+ const goldFrame=frame(252.421875,221.25,25,28);
+ upsert(details,goldBag('v25GoldIcon',theme,goldFrame.position,goldFrame.size));
  const icon=group('v25RelicIcon',[67,76],[],frame(75,414.6875,67,76).position),id=theme.v25Character?.relicImageId;
  icon.visible=Number.isSafeInteger(id)&&id>0;
  if(icon.visible)icon.children.push(image('image',[0,0],[67,67*90/83],id,'#FFFFFF'));

@@ -294,7 +294,7 @@ for _,capacity in ipairs({3,5})do
  for _,inventory in ipairs({{}, {[1]='fire_potion',[3]='strength_potion'}, {[2]='energy_potion'}})do
  for _,case in ipairs(scenarios)do
   self.mode=case[1];self.run={phase=case[2],capacity=capacity,potions=inventory,deck={},relics={}}
-  refresh(self.run,false,false,false,false,false,false)
+  refresh(self.run,false,false,false,false,false)
   local entry=child('potionEntry');assert(entry.visible==case[3],'potion action availability '..case[1]..'/'..case[2])
   if entry.visible then
    local open,hud=entry:GetChild('open'),theme.officialAssets.battleHud

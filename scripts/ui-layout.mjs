@@ -163,22 +163,9 @@ function statusInfo() {
     panel('rule', 0, 0, inner, s.hairline, c.line),
     ...sections,
     ...rows,
-    powerTips(),
     text('more', 0, 0, inner, line, '', f.small, c.textDim),
     { ...hit(si.width, si.width), name: 'page' },
   ] };
-}
-
-function powerTips() {
-  const tip = l.powerTips;
-  return { name: 'powerTips', kind: 'container', size: [...theme.canvas.base], visible: false,
-    children: Array.from({ length: tip.rows }, (_, i) => ({
-      name: `tip${i + 1}`, kind: 'container', size: [tip.width, l.nativeText.lineHeight], visible: false, children: [
-        panel('edge', 0, 0, tip.width, l.nativeText.lineHeight, tip.border),
-        panel('face', 0, 0, tip.width, l.nativeText.lineHeight, tip.fill),
-        aligned(text('copy', 0, 0, tip.width, l.nativeText.lineHeight, '', tip.font, c.text)),
-      ],
-    })) };
 }
 
 export function handPose(count, index, selected = false) {
@@ -333,21 +320,23 @@ export function battleLayout() {
     potionHelp.push(help);
   }
   const pop=l.potionPopup, ph=pop.minimumHeight;
-  const potionAction=(name,width,label,primary)=>{
-    const action=button(name,[0,0],[width,pop.actionHeight],label,primary,pop.font);
+  const actionWidth=(pop.width-pop.padding*2-pop.buttonGap)/2;
+  const potionAction=(name,direction,label,primary)=>{
+    const action=button(name,[direction*(actionWidth+pop.buttonGap)/2,-ph/2+pop.padding+pop.actionHeight/2],
+      [actionWidth,pop.actionHeight],label,primary,pop.font);
     for(const state of action.children)state.children.find(c=>c.name==='label').size[1]=l.nativeText.lineHeight;
     return action;
   };
   potionHelp.push({name:'potionPopup',kind:'container',position:[l.battlePotions.origin[0],pop.top-ph/2],
     size:[pop.width,ph],visible:false,children:[
       {...hit(...theme.canvas.base),name:'dismiss',position:[-l.battlePotions.origin[0],-(pop.top-ph/2)]},
-      panel('border',0,0,pop.width,ph,c.goldDim),panel('plate',0,0,pop.width-2,ph-2,c.panelSunken),
+      panel('border',0,0,pop.width,ph,c.goldDim),panel('plate',0,0,pop.width-2,ph-2,c.panel),
       hit(pop.width,ph),
       aligned(text('title',0,0,pop.width-pop.padding*2,l.nativeText.lineHeight,'',pop.font,c.goldBright)),
       aligned(text('target',0,0,pop.targetWidth,l.nativeText.lineHeight,'',pop.font,c.textDim),'right'),
       aligned(text('effect',0,0,pop.width-pop.padding*2,l.nativeText.lineHeight,'',pop.font,c.text)),
-      potionAction('use',120,'使用',true),
-      potionAction('discard',64,'丢弃',false),
+      potionAction('use',-1,'使用',true),
+      potionAction('discard',1,'丢弃',false),
     ]});
   // Keep potion explanations in the existing full-canvas group. This avoids
   // exceeding the platform's 60 direct children when rewards and aiming coexist.

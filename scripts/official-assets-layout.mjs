@@ -10,6 +10,7 @@ import {officialBattleCardChrome} from './official-battle-card-chrome.mjs';
 import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferenceTokens} from './sts-card-reference-profile.mjs';
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
+import {roundedButtonPalettes} from './native-rounded-button.mjs';
 const children=node=>node?.controls??node?.children??[];
 const child=(node,name)=>children(node).find(item=>item.name===name);
 const required=(node,name)=>{const value=child(node,name);if(!value)throw Error('Official assets missing '+name);return value;};
@@ -45,6 +46,7 @@ export function officialAssetsTheme(source){
    disabled:theme.officialAssets.neowChoice.disabled,ink:theme.officialAssets.buttonInk});
  theme.officialAssets.stsCardReference={...geoCardReferenceTokens(theme),geometry:structuredClone(stsReferenceRuntimeGeometry)};
  theme.presentationProfile='official-assets-first';
+ theme.officialAssets.roundedButtonPalettes=roundedButtonPalettes(theme);
  theme.lowCostArt=loadLowCostArt();
  theme.cardSkin.text.body=theme.officialAssets.cardInk;
   theme.cardSkin.costText=theme.officialAssets.battleCostInk;
@@ -188,8 +190,7 @@ function relicSurfaces(stage,theme){
   }
  }
  if(panel)for(const host of [panel,...children(panel).filter(n=>/^row\d+$/.test(n.name))]){
-  // The existing battle potion information window uses these same native
-  // rectangle materials. Keep its live bounds and every read-only input owner.
+  // Keep the compact relic information surfaces and their live input bounds.
   setImage(required(host,host===panel?'frame':'border'),theme.image.rect,theme.color.goldDim);
   setImage(required(host,'plate'),theme.image.rect,theme.color.panelSunken);protectedHosts.add(host);
  }
@@ -198,7 +199,7 @@ function relicSurfaces(stage,theme){
 function panelSurfaces(node,theme,protectedHosts){
  // Keep all modal catchers, live field paths, sizes and visibility. Only replace
 // large landscape image surfaces; do not stretch the landscape plaque into icons.
- if(node.kind!=='container'||protectedHosts?.has(node))return;
+ if(node.kind!=='container'||protectedHosts?.has(node)||node.name==='potionPopup')return;
  const hasText=children(node).some(item=>item.kind==='text');
  if(!hasText)return;
  for(const name of ['face','panel','plate']){
@@ -290,13 +291,6 @@ export function applyOfficialAssets(trees,theme){
    else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
   const deckPanel=child(child(tree,'stage')??tree,'deckPanel');
-  const pileReturn=child(deckPanel,'pileReturn');
-  if(pileReturn){
-   // The installed Simulator cannot bind the normal child of a native preset.
-   const preset=child(pileReturn,'hit'),art=child(preset,'normal');
-   art.name='art';
-   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size],focusable:preset.focusable}];
-  }
   const tools=child(deckPanel,'pileTools');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;

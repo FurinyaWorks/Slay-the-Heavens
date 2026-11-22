@@ -18,7 +18,14 @@ test('every reward kind shares measured compact left-icon rows and the existing 
    const face=state.children.find(n=>n.name==='stsRewardFace');assert(face,name+' missing shared row face');
    assert.equal(all(face).filter(n=>n.kind==='image').length,6,'reuse bounded native rounded material');
    const icon=state.children.find(n=>n.name==='rewardIcon'),label=state.children.find(n=>n.name==='label');
-   assert.deepEqual(icon.size,[token.iconSize,token.iconSize]);assert(icon.image>0);
+   if(name==='goldReward'||name==='stolenGold'){
+    assert.equal(icon.kind,'container');
+    assert.equal(icon.image,undefined);
+    assert.equal(icon.size[1]*icon.scale[1],token.iconSize);
+    assert(icon.children.some(part=>part.name==='mark'));
+   }else{
+    assert.deepEqual(icon.size,[token.iconSize,token.iconSize]);assert(icon.image>0);
+   }
    assert.equal(label.text.align,'left');assert.equal(label.text.fontSize,token.fontSize);
    assert.equal(label.text.outline,false);assert.equal(state.children.find(n=>n.name==='plate').visible,false);
    assert(all(state).filter(n=>n.kind==='image'&&n.visible!==false&&n.name!=='rewardIcon').every(n=>[100001,100002].includes(n.image)),'no catalog filigree reward background');

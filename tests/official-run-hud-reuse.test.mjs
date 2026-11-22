@@ -25,6 +25,32 @@ test('every run page mounts the complete battle resource component, preserving w
  }
 });
 
+test('selection, run balance, battle rewards and treasure share the money bag',()=>{
+ const tree=layout(),battle=child(tree,'battlePanel');
+ const selection=child(child(child(tree,'characterPanel'),'details'),'v25GoldIcon');
+ const hud=child(battle,'goldIcon'),bag=child(hud,'bag');
+ assert.equal(hud.kind,'container');
+ assert.equal(hud.image,undefined);
+ assert.deepEqual(child(bag,'mark'),child(selection,'mark'));
+ assert.deepEqual(child(bag,'tie'),child(selection,'tie'));
+ const compactMaterial=icon=>{
+  const copy=material(icon);
+  delete copy.position;delete copy.scale;delete copy.visible;
+  return copy;
+ };
+ for(const name of ['goldReward','stolenGold'])for(const state of child(battle,name).children){
+  assert.deepEqual(compactMaterial(child(state,'rewardIcon')),compactMaterial(bag),name+'/'+state.name);
+ }
+ const treasure=child(child(tree,'nodePanel'),'treasureView');
+ const rows=treasure.children.filter(node=>/^reward(?:Item\d+)?$/.test(node.name));
+ assert(rows.length>1);
+ for(const row of rows){
+  const icon=child(row,'goldBag');
+  assert.equal(icon.visible,false);
+  assert.deepEqual(compactMaterial(icon),compactMaterial(bag),row.name);
+ }
+});
+
 test('blessing, map and reward potion slots mount the same final battle faces in all states',()=>{
  const tree=layout(),battle=child(tree,'battlePanel');
  const management=child(child(child(tree,'potionEntry'),'open'),'hit');
@@ -39,5 +65,23 @@ test('blessing, map and reward potion slots mount the same final battle faces in
     assert.deepEqual(child(slot,name),child(reference,name),state+'/'+i+'/'+name);
    }
   }
+ }
+});
+
+test('battle and noncombat potion popups share compact panel and action tokens',()=>{
+ const tree=layout(),battle=child(tree,'battlePanel'),theme=officialAssetsTheme(nativeTheme);
+ const popup=child(child(battle,'potionHelp'),'potionPopup');
+ assert.deepEqual(child(tree,'potionPanel'),{...popup,name:'potionPanel',isolateNavigation:true});
+ assert.equal(child(popup,'plate').image,theme.image.rect);
+ assert.equal(child(popup,'plate').colour,theme.color.panel);
+ assert.equal(child(popup,'border').colour,theme.color.goldDim);
+ const use=child(popup,'use'),discard=child(popup,'discard');
+ assert.deepEqual(use.size,discard.size);
+ assert.ok(discard.position[0]-use.position[0]>use.size[0]);
+ for(const [button,tone] of [[use,'neutral'],[discard,'cancel']])for(const state of button.children){
+  const material=child(state,'roundedButton');
+  const colours=tone==='neutral'&&state.name==='disabled'?[theme.color.line,theme.color.panel]
+   :theme.officialAssets.roundedButtonPalettes[tone][state.name];
+  assert.deepEqual(material.children.map(layer=>child(layer,'horizontal').colour),colours);
  }
 });

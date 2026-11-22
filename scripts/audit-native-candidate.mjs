@@ -234,8 +234,10 @@ export async function auditNativeCandidate(options) {
           imageTemplateId:runtimeTemplates.find(row=>row.template?.name===readyArtImageTemplate)?.templateIndex,
           groupTemplateId:runtimeTemplates.find(row=>row.template?.name===readyArtGroupTemplate)?.templateIndex});
     }
+    const pack=buildReceipt?.nativeScriptStorage
+      ?(await import(pathToFileURL(join(snapshot,'scripts/native-script-storage.mjs')))).packNativeScript:(_name,source)=>source;
     const modules = deployment.map(({ name, sourceFile }) => {
-      const source = readFileSync(sourceFile, 'utf8');
+      const source = pack(name,readFileSync(sourceFile, 'utf8'),buildReceipt?.nativeScriptStorage?.profile);
       return { name, source: name === 'abyss_ui' ? candidateEntrySource(source, buildReceipt, before) : source };
     });
     const expectedUi = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui.json'), 'utf8'));
