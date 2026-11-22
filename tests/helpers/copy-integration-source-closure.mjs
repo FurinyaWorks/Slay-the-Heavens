@@ -267,7 +267,10 @@ const developReplayUiFiles=Object.freeze({
 const mapRoomEntryFiles=Object.freeze({
  ...developReplayUiFiles,
  "tests/helpers/combined-epoch/source-epoch-runtime.mjs":'4df578d1abba64c7c1313d91b49a4531060b8a8c9e55affce77c7b89979ed1d0',
- 'tests/helpers/develop-release-backflow-source.mjs':'ed525d094afa85e0459cae1988a580271ec8896de0e0e94a874ed42d39eca233',
+ 'tests/helpers/develop-release-backflow-source.mjs':'a73f87270a7a89dbcc642ac4ce763a5de3d487557c3e2cc63e6ff7b9e98007c4',
+ 'tests/helpers/relic-detail-source.mjs':'d0a38c20119cdf8c951b4fb470ab91910a3474d8972d4c2650de4eed667cbfa4',
+ 'tests/helpers/native-host-replay-source.mjs':'e7755ecdd96304a1355b610493cbe7827f62543dcbf94392e22539fbf6160ea7',
+ 'tests/helpers/native-host-replay-source.json.gz':'979352d3332e2cc708d22055ed69bb3fcc00a954c1cd55f8f807924116360145',
  'tests/fixtures/develop-map-room-entry-source.json.gz':'bff89df36b2fbbf1bec727dae075c632dba48d50c6c8c75b8e3f271d7600c160',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
