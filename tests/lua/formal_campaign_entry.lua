@@ -61,7 +61,8 @@ local function opening(host,root,bossCount)
     awaitNativePage(host)
     local run=host.run
     assert(run and run.campaignProfile=='competition-two-act' and host.map.floor==0)
-    assert(not(host.prologue and host.prologue:covering()) and host.mode=='node' and not host.mapUI.navigationEnabled)
+    assert(not(host.prologue and host.prologue:covering()) and host.mode=='node' and not host.mapUI.visible)
+    assert(not host.mapUI:choose(Map.available(host.map)[1].id),'a hidden map cannot enter a room during Neow')
     local event=run.nodeFlow.event
     assert(event.id=='neow' and event.stage=='neow_intro' and event.neowBossCount==bossCount)
     assert(run.neowHistorySource==(bossCount==0 and 'fresh-start' or 'session-completed-run'))
@@ -199,12 +200,14 @@ host.run.floor,host.run.phase=host.map.floor,'map'
 host.run.nodeFlow={id=host.map.currentNodeId,floor=host.map.floor,type='combat',complete=true,result='victory',
     mapSeed=host.map.seed,mapSignature=host.map.sourceSignature}
 host:refresh();awaitNativePage(host)
+local previousFlow=host.run.nodeFlow
 assert(host.mapUI:choose(Map.available(host.map)[1].id))
 assert(host.pageReveal:covered(), 'treasure entry must retain its normal preparation gate')
 local early,reason=host.nodeUI:press('treasureView/chest')
-assert(not early and reason=='panel_hidden' and not host.run.nodeFlow.chest.opened,
-    'a treasure press during preparation must not change the room')
+assert(not early and reason=='panel_hidden' and host.run.nodeFlow==previousFlow,
+    'a treasure press before the opaque frame must not commit the room')
 awaitNativePage(host)
+assert(not host.run.nodeFlow.chest.opened,'a press before publication must not open the new chest')
 assert(host.nodeUI:press('treasureView/chest'));host.nodeUI:update(2)
 assert(not host.run.nodeFlow.reward.sapphireKey)
 for _,item in ipairs(host.run.nodeFlow.reward.items)do assert(item.kind~='sapphire' and not item.linkedSlot)end
@@ -220,8 +223,8 @@ chest(host,16,2)
 fight(host,root,18)
 bossComplete(host,33)
 assert(host.mapUI:choose(Map.available(host.map)[1].id))
-assert(host.run.floor==34 and host.run.phase=='node')
 awaitNativePage(host)
+assert(host.run.floor==34 and host.run.phase=='node')
 assert(host.nodeUI:press('treasureView/chest'));host.nodeUI:update(2)
 local rewardKey
 for index,item in ipairs(host.run.nodeFlow.reward.items)do
@@ -253,6 +256,7 @@ assert(host.run.neowStatus=='complete' and not host.run.endingUnlocked)
 assert(host.run.endingHistory.persistence=='disabled' and not host.run.endingHistoryResult and host.historyCalls()==0)
 -- Defeat preserves an honest outcome and a /34 denominator.
 assert(host.mapUI:choose(Map.available(host.map)[1].id))
+awaitNativePage(host)
 host.run.combat.player.hp=0
 assert(Run.finishCombat(host.run));host:refresh()
 awaitNativePage(host)
