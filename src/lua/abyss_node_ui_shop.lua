@@ -18,7 +18,8 @@ function M.install(ctx)
             hit:AddCursorEventListener(cursor.CursorDown,function(event)
                 observed=true;released=nil
                 held={touch=event and event.touchId,epoch=ctx.shopEpoch,run=ctx.self.run,map=ctx.self.map,actions=ctx.self.actions}
-                if not ctx.self.visible or ctx.self.shopBusy or ctx.self.shopOpen then held=nil end
+                if not ctx.self.visible or ctx.self.shopBusy or ctx.self.shopOpen
+                    or ctx.options.inputCovered and ctx.options.inputCovered() then held=nil end
             end)
             hit:AddCursorEventListener(cursor.CursorUp,function(event)
                 if held and held.touch==(event and event.touchId) then released,held=held,nil end
