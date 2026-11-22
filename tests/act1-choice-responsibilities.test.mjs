@@ -62,7 +62,11 @@ ACT1_GRAPH_WRITE(nil,'empty')
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
 for(const fixture of ['tests/lua/act1_event_content.lua','tests/lua/scrap_ooze.lua','tests/lua/transmogrifier.lua'])test(`${fixture}: old/current VMs retain complete graphs, aliases, RNG, returns and assertions`,t=>{
- const old=replay(before,fixture),current=replay(read(file),fixture);
+ // Update only the approved copy in the replay. Keep the archived source
+ // and compare every state, alias and RNG value against its original rules.
+ const beforeWithReleaseCopy=before.replace("'献祭'","'交换卡牌'")
+  .replace('没有可献祭的卡牌。','没有可交换的卡牌。').replace('卡牌已献祭。','卡牌已交付。');
+ const old=replay(beforeWithReleaseCopy,fixture),current=replay(read(file),fixture);
  assert.equal(old.status,0,old.error);assert.equal(current.status,0,current.error);
  assert(current.checkpoints>0);assert.equal(current.checkpoints,old.checkpoints);
  assert.deepEqual(current.logs,old.logs);assert(current.graph.equals(old.graph),'complete graph bytes differ');
