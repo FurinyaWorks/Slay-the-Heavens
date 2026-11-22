@@ -50,20 +50,19 @@ for(const [path,row] of Object.entries(potionBackflow.files)){
  assert(Object.hasOwn(files,path)&&matches(row.before.source,row.before),'exact potion popup predecessor: '+path);
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
 }
-function beforePotionBackflow(path,source){
+export function beforePotionBackflow(path,source){
  const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];
  if(!row||!matches(source,row.after))return source;
- const prior=source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
- return beforeActionButtons(path,prior);
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 
 export function beforeInputRetirement(path,source,options){
- source=beforePotionBackflow(path,source);
+ const potionPrior=beforePotionBackflow(path,source);
+ if(potionPrior!==source)source=beforeActionButtons(path,potionPrior);
  if(!Object.hasOwn(files,path))return source;
  const row=files[path];
  if(!matches(source,row.after)&&!configLayoutMatches(source,row.after,options))return source;
- const prior=source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
- return beforeActionButtons(path,prior);
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 
 export function beforeInputRetirementReader(read){
