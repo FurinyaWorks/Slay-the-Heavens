@@ -207,7 +207,7 @@ local function visible(role)
 end
 a:sync('menu',false,false,nil,true);warm(true)
 assert(LiveCount()==0)
-warm(true,.06);warm(true,1/60,-.01)
+warm(true,.06);warm(true,1/60,-.01);warm(true,'invalid');warm(true,-1);warm(true,0/0)
 assert(LiveCount()==0,'busy frames warmed a portrait')
 warm(true)
 assert(LiveCount()==24)
@@ -239,6 +239,31 @@ end
 a:sync('menu',true,false,'ironclad')
 visible(nil);assert(LiveCount()==0 and not hosts.ironclad.active)
 os.clock=previousClock
+`,{runtimeV2:true,officialAssets:true});
+});
+
+test('a native setter can refresh the same cold selection before its first artwork publication',()=>{
+ withPortraitVm(`
+local panel=stage.children.characterPanel
+local selectionHost=tree()
+selectionHost:SetVisible(false);panel.children.lumineSelectionBackground=selectionHost
+local backing=tree();backing:SetVisible(true);panel.children.v25Background=backing
+panel.children.details=tree({})
+traveler:SetVisible(false)
+local a=Portraits.new(stage,nil,{selectionAvatar=true})
+local resize=selectionHost.SetSizeDelta
+local refreshed=0
+selectionHost.SetSizeDelta=function(self,...)
+ refreshed=refreshed+1
+ a:sync('menu',true,false,'ironclad')
+ return resize(self,...)
+end
+assert(a:sync('menu',true,false,'ironclad'))
+for _=1,120 do a:tick(1/60)end
+assert(refreshed==1 and a:status().selection.phase=='ready')
+assert(selectionHost.visible and not backing.visible and LiveCount()==1628,
+ 'the queued same-role refresh stranded a completed but hidden portrait')
+assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
 

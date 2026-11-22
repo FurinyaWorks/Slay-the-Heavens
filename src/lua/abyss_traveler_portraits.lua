@@ -106,6 +106,7 @@ local function controller(host, data, display, templates, options)
     local page,group,pageIndex,groupIndex=nil,nil,0,0
     local revealGroups,revealIndex,revealedPages={},1,{}
     local presenting=false
+    local unmaskedTemplate
     local working,pending,hiding=false,false,false
     local reason,cleanupFailures=nil,0
     local activationEpoch,nativePaused=0,nil
@@ -219,11 +220,18 @@ local function controller(host, data, display, templates, options)
         local function channel(value)return math.floor((luminance+(value-luminance)*tint.saturation)*tint.brightness+.5)end
         return Color.FromRGBA(channel(r[15]),channel(r[16]),channel(r[17]),math.floor(r[18]*tint.opacity+.5))
     end
+    local function usesUnmaskedDefaults(c)
+        if unmaskedTemplate==nil then
+            local known,clear=pcall(function()return c.enableMask==false and c.enableFill==false end)
+            unmaskedTemplate=known and clear
+        end
+        return unmaskedTemplate
+    end
     local function imageMask(token,c,r)
         if #r==21 then
             -- The shared white template has no mask/fill by default. Fall back
             -- to explicit initialization when the native clone cannot confirm it.
-            if fixedSelectionTemplate and r[21]~=1 and c.enableMask==false and c.enableFill==false then return end
+            if fixedSelectionTemplate and r[21]~=1 and usesUnmaskedDefaults(c) then return end
             c.enableMask=r[21]==1;check(token)
             if r[21]==1 then call(token,c,'SetFillHorizontal',Enum.ImageFillHorizontalType.Right,.5)
             else call(token,c,'SetFillUnused')end
@@ -301,7 +309,7 @@ local function controller(host, data, display, templates, options)
         if base then self:pose(0,0,1,1)end
         return true
     end
-    function self.begin(_)
+    function self.begin(_,foreground)
         if working or phase=='destroyed' or phase=='failed' or phase=='release_failed'then return false end
         if host.alive==false then self:destroy();return false end
         idlePaused=false
@@ -311,7 +319,7 @@ local function controller(host, data, display, templates, options)
         generation=generation+1;phase='building';nextIndex=1;reason=nil;resetGroups()
         local token=generation;working=true
         local ok,err=pcall(function()
-            if fixedSelectionTemplate then nativeTransition(false,false,false)
+            if fixedSelectionTemplate then nativeTransition(foreground==true,false,false)
             elseif nativeLifecycle then nativeTransition(true,false,false)
             else call(token,host,'SetVisible',false);call(token,host,'SetActive',true)end
             call(token,host,'SetAnchorMin',.5,.5);call(token,host,'SetAnchorMax',.5,.5);call(token,host,'SetPivot',.5,.5)
@@ -805,14 +813,23 @@ function M.new(stage,report,flags,cardTemplates)
         end
         return wanted
     end
+    local function selectionSuperseded(row,token)
+        if epoch~=token then return true end
+        if not pendingSync then return false end
+        -- A queued refresh for the same role must still finish presentation.
+        -- No visibility has been published at this point.
+        row.active=false;activeSelection=nil
+        row.adapter:pause()
+        return true
+    end
     local function showSelected(row,token)
         row.active=true
         local state=row.adapter:status()
         if state.phase=='failed' or state.phase=='release_failed' then
             if not row.adapter:release() then return end
-            if epoch~=token or pendingSync then return end
+            if selectionSuperseded(row,token) then return end
         end
-        if row.adapter:begin() and not pendingSync then
+        if row.adapter:begin(true) and not selectionSuperseded(row,token) then
             if state.phase=='ready' then row.fadeTime=.16 end
             row.adapter:present(true)
         end
@@ -876,11 +893,15 @@ function M.new(stage,report,flags,cardTemplates)
         return true
     end
     local function buildStep(foregroundAllowed)
-        -- Prioritize the current selection over a small thumbnail.
+        -- The selected drawing gets its slice before optional scenes or thumbnails.
+        if activeSelection and foregroundAllowed~=false then
+            local progressed,kind=activeSelection.adapter:step()
+            if progressed then return true,kind,true end
+        end
         for _,row in ipairs(rows)do
-            if row.active and (not row.progressive or foregroundAllowed~=false) then
+            if row.active and not row.progressive then
                 local progressed,kind=row.adapter:step()
-                if progressed then return true,kind,row.progressive end
+                if progressed then return true,kind,false end
             end
         end
         return false
@@ -909,13 +930,16 @@ function M.new(stage,report,flags,cardTemplates)
             if pendingSync or os.clock()-start>=SELECTION_WARM_SECONDS or not adapter:step() then break end
         end
     end
+    local function idleFrame(dt)
+        return type(dt)=='number' and dt>=0 and dt<=.05
+    end
     function self.warmSelection(_,eligible,dt,frameStarted)
         if not official or not selectionRow or destroyed then return end
         local admitted=warmAdmission
         warmAdmission=eligible
         -- Only the default portrait is speculative. The other role caches
         -- acquire controls only when the player selects those roles.
-        if not eligible or not admitted or busy or activeSelection or dt>.05 then return end
+        if not eligible or not admitted or busy or activeSelection or not idleFrame(dt) then return end
         local adapter=selectionRow.adapter
         local phase=adapter:status().phase
         if phase~='idle' and phase~='released' and phase~='building' then return end
@@ -923,7 +947,6 @@ function M.new(stage,report,flags,cardTemplates)
         if start-frameStarted>=SELECTION_BUILD_SECONDS then return end
         busy=true
         buildWarm(adapter,start)
-        if not pendingSync then paint()end
         finishSync()
     end
     function self.battlePose(_,x,y,sx,sy,dt,motionState)

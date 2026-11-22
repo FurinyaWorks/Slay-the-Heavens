@@ -218,10 +218,16 @@ local function install(control)
 end
 install(root)
 local created,destroyed,rejectCreation=0,0,false
+local unsupportedReads=0
+local templateMethods={__index=function(_,field)
+ if field=='enableFill' then unsupportedReads=unsupportedReads+1;error('no fill getter')end
+ return methods[field]
+end}
 game={InstantiateClientUIControl=function(index,parent)
  assert(index==41 or index==73 or index==99)
  if rejectCreation then return nil end
- created=created+1;return setmetatable({parent=parent,alive=true,active=true,visible=false},{__index=methods})
+ created=created+1
+ return setmetatable({parent=parent,alive=true,active=true,visible=false,enableMask=index==99},templateMethods)
 end,DestroyClientUIControl=function()destroyed=destroyed+1 end}
 local portraits=require('abyss_traveler_portraits').new(root,nil,{selectionAvatar=true,battlePortrait=true})
 local covered={}
@@ -248,6 +254,7 @@ os.clock=function()return 0 end
 for _=1,50 do portraits:tick(1/60)end
 assert(portraits:readyForPage('menu',true,'ironclad','characterPanel'))
 assert(portraits:status().selection.phase=='ready' and art.visible and not fallback.visible)
+assert(unsupportedReads==1,'unsupported fill readback did not fall back to explicit writes')
 assert(not dots.visible and not fade.visible,'cold completion replayed a matte fade')
 scope('ready')
 local total=created
