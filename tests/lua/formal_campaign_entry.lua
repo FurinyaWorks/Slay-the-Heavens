@@ -6,7 +6,7 @@ local Map,Run=require('abyss_map'),require('abyss_run')
 local function awaitNativePage(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
-            and not(host.pageReveal and host.pageReveal:covered())then assert(host.run and not host.disabled);return end
+            and not(host.pageReveal and host.pageReveal:covered())then assert(not host.disabled);return end
         OnUpdate(0.05)
     end
     error('native page did not become ready')
@@ -103,14 +103,20 @@ local function opening(host,root,bossCount)
 end
 local function selectedGeo(host,root)
     local panel=root:GetChild('characterPanel')
+    awaitNativePage(host)
     assert(host.characterOpen and panel.visible)
-    assert(not panel:GetChild('traveler').visible and not panel:GetChild('elements').visible,
-        'single-character formal entry must hide redundant selectors')
+    assert(panel:GetChild('traveler').visible and not panel:GetChild('elements').visible,
+        'formal entry offers the Geo selector without unavailable elements')
+    assert(not host.characterSelection.info and not panel:GetChild('confirm'):GetChild('hit').interactable,
+        'confirmation remains disabled before an explicit selection')
+    F.click(root,'characterPanel','traveler')
+    awaitNativePage(host)
     assert(host.characterSelection.character=='traveler' and host.characterSelection.element=='ironclad'
-        and host.characterSelection.info.id=='ironclad','formal entry must preselect the approved Geo loadout')
+        and host.characterSelection.info.id=='ironclad','formal entry must offer the approved Geo loadout')
     assert(panel:GetChild('confirm'):GetChild('hit').interactable,'actual formal confirmation must be enabled')
 end
 local function start(host,root,button,element)
+    awaitNativePage(host)
     F.click(root,'menuPanel','start')
     assert(host.characterOpen and not host.run)
     assert(button=='traveler' and (element==nil or element==1),'formal fixture requests only approved Geo')
@@ -262,13 +268,18 @@ print('PASS formal skip endpoint and one-shot victory settlement')
 -- All eight forms, including Raiden, remain in full_source_campaign_entry.lua.
 -- The public entry refuses every unavailable role and preserves in-memory menu/exit behavior.
 local ui,panel,sent=fixture(false,false)
+awaitNativePage(ui)
 F.click(panel,'menuPanel','start')
+awaitNativePage(ui)
 for index=1,4 do
  local box=panel:GetChild('characterPanel'):GetChild('character'..index)
  assert(not box.visible and not box:GetChild('hit').canControllerFocus)
  assert(not box:GetChild('hit').click()and not ui.run)
 end
-assert(ui:selectCharacter('traveler')and ui:confirmCharacter())
+F.click(panel,'characterPanel','traveler')
+awaitNativePage(ui)
+F.click(panel,'characterPanel','confirm')
+awaitNativePage(ui)
 opening(ui,panel,0)
 assert(ui.run.campaignProfile=='competition-two-act'and not ui.run.characterProfile)
 assert(ui.run.campaign and ui.run.act==1 and #sent==0)

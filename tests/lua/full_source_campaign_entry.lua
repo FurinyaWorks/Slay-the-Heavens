@@ -7,7 +7,7 @@ local Map,Run=require('abyss_map'),require('abyss_run')
 local function awaitNativePage(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
-            and not(host.pageReveal and host.pageReveal:covered())then assert(host.run and not host.disabled);return end
+            and not(host.pageReveal and host.pageReveal:covered())then assert(not host.disabled);return end
         OnUpdate(0.05)
     end
     error('native page did not become ready')
@@ -49,10 +49,16 @@ local function fixture(experimental,bgm)
     return host,canvas:GetChild('stage'),signals
 end
 local function start(host,root,button,element)
+    awaitNativePage(host)
     F.click(root,'menuPanel','start')
+    awaitNativePage(host)
     assert(host.characterOpen and not host.run)
     F.click(root,'characterPanel',button)
-    if element then F.click(root,'characterPanel','elements/element'..element)end
+    awaitNativePage(host)
+    if element then
+        F.click(root,'characterPanel','elements/element'..element)
+        awaitNativePage(host)
+    end
     assert(not host.run,'selection must not create a Run')
     F.click(root,'characterPanel','confirm')
     awaitNativePage(host)

@@ -201,13 +201,13 @@ function M.new(cover,ready,onIntent,frames,motion)
     function gate:begin(intent)
         local roomEntry=self.state=='visible' and entersMapRoom(self.published,intent)
         local localChange=localFrame(intent,self.intent)~=nil
-        local fast=roomEntry or not needsSchedulerConfirmation(intent) and
+        local fast=not needsSchedulerConfirmation(intent) and
             (self.state=='visible' and (canUpdate(intent,self.intent) or localChange)
             or localChange and same(intent,self.published))
         if self.departure then return false end
         if not fast then
             local unchanged=same(intent,self.intent)
-            if not self:request(intent) and not unchanged then return false end
+            if not self:request(intent,roomEntry) and not unchanged then return false end
             if not same(intent,self.intent)then return false end
         end
         if self.state=='fadingOut' then return false end
@@ -291,7 +291,9 @@ function M.new(cover,ready,onIntent,frames,motion)
         gate.state='preparing'
         local commit=gate.departure;gate.departure=nil;gate.cancelDeparture=nil
         if commit then
+            local ticket=gate.epoch
             local ok,accepted=pcall(commit)
+            if gate.epoch~=ticket then return false end
             if not ok or accepted==false then return reject(gate,tostring(accepted))end
         end
         return true -- Destination refresh is permitted only behind opaque black.
