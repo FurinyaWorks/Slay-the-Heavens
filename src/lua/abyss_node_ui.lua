@@ -165,10 +165,10 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         end
         for _, name in ipairs({ "campView", "pickerView", "eventView", "treasureView" }) do ctx.show(ctx.child(name), name == screen) end
         -- Reset shared card faces before the ordinary picker/camp renderer writes them.
-        if not (active and MatchUI.isBoard(node.event)) then ctx.resetMatch() end
-        if active and MatchUI.isBoard(node.event) then hint=ctx.renderMatch(view,node)
-        elseif screen == "shopView" then
-            hint = ctx.self.shopOpen and ctx.renderShop(view, node) or ''
+        local matchBoard = active and MatchUI.isBoard(node.event)
+        if not matchBoard then ctx.resetMatch() end
+        if matchBoard then hint=ctx.renderMatch(view,node)
+        elseif screen == "shopView" then hint = ctx.renderShop(view, node)
         elseif screen == "campView" then hint, recallSource = ctx.renderCamp(view, node, result)
         elseif screen == "pickerView" then
             if ctx.eventCardsActive(node)then hint=ctx.renderEventCards(view,node)
@@ -255,14 +255,22 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         for box in pairs(previous)do if not ctx.artFaces[box]then CardDisplay.clearNativeArt(box)end end
     end
 
+    local function reuseShopRender(self)
+        local done = ctx.shopNotification
+        if not done or done.actions ~= self.actions or done.visible ~= self.visible
+            or self.renderRun ~= self.run or self.renderMap ~= self.map then return false end
+        ctx.shopNotification = nil
+        return true
+    end
+
+    local function activeNode(view)
+        local node = view.node
+        return node and kinds[node.type] and not node.complete and view.phase == "node"
+    end
+
     function ctx.self:render()
         if not self.run then ctx.root:SetVisible(false);return false, "node_unbound" end
-        local done = ctx.shopNotification
-        if done and done.actions==self.actions and done.visible==self.visible
-            and self.renderRun==self.run and self.renderMap==self.map then
-            ctx.shopNotification=nil
-            return
-        end
+        if reuseShopRender(self) then return end
         ctx.resetButtons();local previousArt=ctx.artFaces;ctx.artFaces={}
         ctx.inspectCards={}
         if ctx.renderRelicPending()then ctx.campUI:hide();ctx.clearUnusedNativeArt(previousArt);return true end
@@ -273,7 +281,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         self.renderRun, self.renderMap, self.nodeId = self.run, self.map, node and node.id
         self.view, self.actions = view, {}
         local result = self:holding() and self.result or nil
-        local active = node and kinds[node.type] and not node.complete and view.phase == "node"
+        local active = activeNode(view)
         if active then self.removeRows=snapshotDeck(node.purgeCards) end
         ctx.syncNodePicker(node,active)
         ctx.syncEventCards(node,active)

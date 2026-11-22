@@ -276,6 +276,7 @@ function M.new(controller, ui)
     end
 
     local function render(view, node)
+        if not self.shopOpen then return '' end
         begin()
         for i = 1, SHOP_PAGE do card(view, node, i) end
         return finish(node)
