@@ -55,6 +55,7 @@ local browseFilters={{id='all',control='All'},{id='attack',control='Attack'},
     {id='status',control='Status'},{id='curse',control='Curse'}}
 local browseSorts={'original','type','cost'}
 local sortNames={original='获得顺序',cost='耗能',type='类型',name='名称'}
+local cardChoiceTitle='选择卡牌'
 
 local function frozenEye(run)
     for _, relic in ipairs(run.relics or {}) do if relic=="frozen_eye" then return true end end
@@ -300,7 +301,32 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
     local function picture(control,id) control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
-    local function bindCard(control,hit,instance,bodyText)
+    local function updateForethoughtChoice(choice, token)
+        if not self.visible or self.choiceToken~=token or self.battle.pendingChoice~=choice or choice.token==token then
+            return false
+        end
+        self.choiceToken,self.choiceSelected=choice.token,choice.selected
+        root:GetChild('title').text=cardChoiceTitle..' · 已选'..#choice.selected
+        return true
+    end
+    local function isForethoughtToggle(choice)
+        local item=choice.item
+        return choice.multiple and choice.op=='colorless' and item and item.effect.kind=='forethought'
+    end
+    local function pickChoice(control,binding,repaint)
+        local callback,token,uid=self.onPick,self.choiceToken,binding.uid
+        local choice=self.battle.pendingChoice
+        if callback and isForethoughtToggle(choice) then
+            local ok,reason=callback(token,uid)
+            if updateForethoughtChoice(choice,token) and control.alive~=false then
+                repaint(control,binding.instance,self.catalog)
+            end
+            return ok,reason
+        end
+        self:close()
+        if callback then callback(token,uid) end
+    end
+    local function bindCard(control,hit,instance,bodyText,repaint)
         if not self.bindings[control] then
             -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
             self.bindings[control]={hit=hit}
@@ -313,9 +339,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 if not self.visible or not self.choiceToken or b.generation~=self.generation
                     or not self.run or self.run.combat~=self.battle
                     or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
-                local callback,token,uid=self.onPick,self.choiceToken,b.uid
-                self:close()
-                if callback then callback(token,uid) end
+                return pickChoice(control,b,repaint)
             end
             hit:AddCursorEventListener(clickEvent,function(event)
                 if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
@@ -379,7 +403,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         control:GetChild("uid").text = selected and '已选择' or ''
         local hit=control:GetChild('hit')
         hit:SetVisible(true)
-        bindCard(control,hit,instance,text)
+        bindCard(control,hit,instance,text,fill)
         control:SetVisible(true)
     end
     -- Pure presentation projection. The permanent deck and the three combat
@@ -509,7 +533,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
     end
     local function choicePrompts(choice)
-        return {codex='尼利宝典：选择一张牌洗入抽牌堆（可跳过）',silentFinal=choice and (choice.kind=='retain'and '选择本回合保留的手牌（可不选）'or choice.kind=='setup'and '选择放回牌堆顶并准备的牌'or '选择下回合复制的手牌'),watcher_final=choice and choice.kind=='wish' and '许愿：选择一种效果' or '异界之援：选择一张攻击',discover="选择加入手牌的牌，本回合费用为0",colorless='选择卡牌',exhaustChoose="选择要消耗的牌",recoverExhaust="选择要回收的牌",discardToDraw="选择放回抽牌堆顶的牌",
+        return {codex='尼利宝典：选择一张牌洗入抽牌堆（可跳过）',silentFinal=choice and (choice.kind=='retain'and '选择本回合保留的手牌（可不选）'or choice.kind=='setup'and '选择放回牌堆顶并准备的牌'or '选择下回合复制的手牌'),watcher_final=choice and choice.kind=='wish' and '许愿：选择一种效果' or '异界之援：选择一张攻击',discover="选择加入手牌的牌，本回合费用为0",colorless=cardChoiceTitle,exhaustChoose="选择要消耗的牌",recoverExhaust="选择要回收的牌",discardToDraw="选择放回抽牌堆顶的牌",
             exhaustMany='选择任意张手牌消耗（可不选）',discardRedraw='选择任意张手牌丢弃并重抽',discardToHand='选择弃牌回手，本回合费用为0',
             handToDraw="选择放回抽牌堆顶的手牌",upgradeHand="选择要升级的牌",dualWield="选择要复制的攻击或能力牌"}
     end
