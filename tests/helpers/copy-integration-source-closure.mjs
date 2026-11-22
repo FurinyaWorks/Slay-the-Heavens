@@ -191,11 +191,16 @@ const developBackflowFiles=Object.freeze({
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'4e615ebe00db432f4454613cebc88c3ade5ca1053e6a1bc7ac80fe3c067a5ee3',
  'tests/helpers/sts-selection-fade-source.mjs':'08f3f5786f05014ef56e18ff612c910855bfb1887de50ab8e8c0c86dda65c4cc',
 });
+const developMapRenderFiles=Object.freeze({
+ ...developBackflowFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'9d2a154d8e47491555aafbcf6d536e82bf0cbe96f7f262d6e4cad68829896ca0',
+ 'tests/fixtures/develop-map-render-source.json.gz':'9d52d048c3db1818cb7f9e7fdc8cd881639e958b782593f5dae99923c26d80aa',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developBackflowFiles)){
+ for(const [path,sha]of Object.entries(developMapRenderFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

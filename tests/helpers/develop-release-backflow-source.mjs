@@ -18,13 +18,22 @@ assert.equal(traveler.base,shopBase);
 assert.deepEqual(Object.keys(traveler.files),['src/lua/abyss_battle_detail_bindings.lua','tests/lua/traveler_power_tooltip.lua']);
 for(const path of Object.keys(traveler.files))assert(!Object.hasOwn(releaseFiles,path)&&!Object.hasOwn(shop,path),'distinct Develop backflow source owner: '+path);
 const files={...releaseFiles,...traveler.files};
-for(const {before,after} of [...Object.values(files),...Object.values(shop)]){
+const mapPath='src/lua/abyss_map_ui.lua';
+const mapArchive=readFileSync(new URL('../fixtures/develop-map-render-source.json.gz',import.meta.url));
+assert.equal(hash(mapArchive),'9d52d048c3db1818cb7f9e7fdc8cd881639e958b782593f5dae99923c26d80aa','exact Develop map render source archive');
+const mapRender=JSON.parse(gunzipSync(mapArchive));
+assert.equal(mapRender.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
+assert.deepEqual(Object.keys(mapRender.files),[mapPath]);
+const mapBefore=mapRender.files[mapPath].before;
+assert(matches(mapBefore.source,files[mapPath].after),'map render preserves the exact Develop backflow predecessor');
+const layers=[mapRender.files,files,shop];
+for(const {before,after} of layers.flatMap(layer=>Object.values(layer))){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
-const current=path=>Object.hasOwn(files,path)?files[path]:Object.hasOwn(shop,path)?shop[path]:undefined;
+const current=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path];
 export const developBackflowOwns=path=>current(path)!==undefined;
 function matches(source,expected){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -40,13 +49,13 @@ function predecessor(layer,path,source){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source){
- return predecessor(shop,path,predecessor(files,path,source));
+ return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
 }
 const forethoughtOwners=['src/lua/abyss_deck_ui.lua','scripts/deck-ui-layout.mjs'];
 export function authenticateDevelopBackflow(path,source,read){
  const prior=beforeDevelopBackflow(path,source);
  if(prior===source)return source;
- const row=matches(source,current(path).after)?current(path):shop[path];
+ const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
  const owners=forethoughtOwners.includes(path)?forethoughtOwners:[path];
  for(const owner of owners){
   let live;
