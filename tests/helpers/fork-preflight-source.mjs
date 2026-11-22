@@ -73,6 +73,8 @@ const capacity=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-
  '29e21e465a4102b3b3db501cf4c9d0d44d2584bb0aa6ce56e9adaa624c1e77d1','4d475a485eae7c9bdd84cba1f69db3b5a4d3ddef');
 const capacitySuccessor=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-successor-source.json.gz',import.meta.url)),
  '82a4d72f5d4accce0cf01ac66871640454b62a788fae894384debb2059bb3373','013bdffb7d4767075d7ebcf0be9eacd275bfbe89');
+const menuProofSuccessor=releaseUiRestoreArchive(readFileSync(new URL('./release-menu-proof-successor-source.json.gz',import.meta.url)),
+ '1d3c3ba4b34fb88ceb2f2d287cec69845679c2ab017a4359727fe0e31e118054','ee9f461337e8ae4c84735f0b5461f2be643ef5cd');
 const beforeCapacitySource=(path,source)=>capacity.project(path,capacitySuccessor.project(path,source));
 function assertCapacitySources(read){
  const inputs=Object.keys(capacity.files).map(path=>[path,read(path,'utf8')]);
@@ -96,7 +98,7 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(copier&&hash(lf)==='91e3007fbefc049b32427e4781a2ce6c23e1a719999cf6346240a34e928ebe93'){
+ if(copier&&hash(lf)==='a3e67622418134d3b6fc49a2218a33d54191a8e53663e3785723893c74e02a0c'){
   lf=lf.replace(/^const compactPopupReplayFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(compactPopupReplayFiles)','Object.entries(atomicCardEffectsFiles)');
   assert.equal(hash(lf),'7461c029c6d0f46924a945217354f8b858ec4b817e7ddb6fbcfad5d69744056b','exact pre-popup helper copy source');
@@ -277,6 +279,7 @@ function beforeShopPurchaseRegression(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=menuProofSuccessor.project(path,source);
  source=beforeSelectionReplaySuccessor(path,source);
  if(path==='docs/legal/assets.json'&&typeof source==='string'&&hash(normalize(source))==='1c3ea4f310aaf5dccdf177946728f65eaeb1ed882f70b5543bcae178774f0983'){
   const inventory=JSON.parse(source);

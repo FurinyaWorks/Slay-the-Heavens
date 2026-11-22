@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -180,8 +180,12 @@ test('original Act1 chain preserves exact Git sources, reader unwrapping and one
 test('Act1 current source enters the unchanged historical chain and rereads every raw owner',async()=>{
  const {preRelicQuerySource,relicQueryReader}=await import('./helpers/relic-query-source-inverse.mjs');
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
- const source=read(file),owners=sourceEpoch.proof.owners;
- const admittedReads=[...owners,...currentProductionRereads];
+ const {read:readCheckpoint,rereads}=readHistoricalReleaseCheckpoint('controls');
+ const source=readCheckpoint(file),owners=sourceEpoch.proof.owners;
+ assert.equal(read(file),source,'the active Act1 source still enters the historical chain');
+ const admittedReads=[...owners,...rereads];
+ const checkpointSources=new Map([...new Set(admittedReads)].map(path=>[path,readCheckpoint(path)]));
+ const readStable=path=>checkpointSources.get(path)??readCheckpoint(path);
  // Forty-five belongs to the frozen #562 union, not the evolving live tree.
  const {sevenRefactorEpoch}=await import('./helpers/seven-refactor-source-epoch.mjs');
  const archived=readFileSync('tests/helpers/combined-epoch/source-epoch.json.gz');
@@ -191,13 +195,13 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
  const historicalOwners=[...new Set([...combinedOwners,...sevenRefactorEpoch.proof.owners])];
  assert.equal(historicalOwners.length,45,'unchanged authenticated #562 owner union');
  assert.deepEqual(historicalOwners.filter(owner=>!owners.includes(owner)),[],'current coverage retains every original owner');
- assert.equal(preRelicQuerySource(file,source),before);
+ assert.equal(preRelicQuerySource(file,source,{readSource:readStable}),before);
  let changed,reads=[],replacement;
- const raw=p=>{reads.push(p);return p===changed?replacement:read(p);};
+ const raw=p=>{reads.push(p);return p===changed?replacement:readStable(p);};
  const wrapped=relicQueryReader(raw);assert.equal(relicQueryReader(wrapped),wrapped);
  for(const readSource of [raw,wrapped]){
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);assert.deepEqual(reads,admittedReads);
-  for(const owner of owners)for(replacement of [read(owner)+'\n',null,undefined]){
+  for(const owner of owners)for(replacement of [readStable(owner)+'\n',null,undefined]){
    changed=owner;reads=[];assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/);
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'fresh reads stop at the actual bad owner');
   }
@@ -205,14 +209,14 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
   assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/,'original Act1 bytes cannot authorize a current raw owner');
   assert.deepEqual(reads,owners.slice(0,owners.indexOf(file)+1));
   // Layout tolerance is for the input argument only, never a real raw owner.
-  changed='config/architecture.json';replacement=JSON.stringify(JSON.parse(read(changed)));
+  changed='config/architecture.json';replacement=JSON.stringify(JSON.parse(readStable(changed)));
   assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity: config\/architecture.json/);
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);assert.deepEqual(reads,admittedReads);
  }
- assert.throws(()=>preRelicQuerySource(file,source,{readSource:p=>{if(p===file)throw Error('missing');return read(p);}}),/combined linked owner missing/);
+ assert.throws(()=>preRelicQuerySource(file,source,{readSource:p=>{if(p===file)throw Error('missing');return readStable(p);}}),/combined linked owner missing/);
  // A reader for another target is projected data, not this facade's raw owner.
  // Accepting it would silently combine #546 architecture with the current tree.
- const act1Reader=act1ChoiceReader(p=>read(p));
+ const act1Reader=act1ChoiceReader(readStable);
  assert.equal(act1Reader('config/architecture.json'),sourceEpoch.proof.targets.act1.files['config/architecture.json'].source);
  assert.throws(()=>preRelicQuerySource(file,source,{readSource:act1Reader}),/combined linked owner identity: config\/architecture.json/);
 });

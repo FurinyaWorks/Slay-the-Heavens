@@ -37,7 +37,7 @@ assert.equal(successors.base,'dd7b9cdc1e86094965dbf50f89b92aebbe2c8381');
 for(const {before} of Object.values(successors.files))assert(matches(before.source,before));
 export function beforeSelectionReplaySuccessor(path,source){
  if(path!=='tests/helpers/replay-reviewed-selection.mjs'||typeof source!=='string'||source.includes('\r\r\n')||
-  hash(normalize(source))!=='a95fd1508156d5842fa7896ba9268039abfab1b844dded5e1c45442e17013bf0')return source;
+  hash(normalize(source))!=='482b6db17a2ecfaf1db194f22f973ce2b19b4f42f26c8ef5d8c4296276e13a5b')return source;
  const prior=normalize(source).replace(/^const releaseOwners=[^\n]*\n[\s\S]*?(?=^export function replayReviewedSelection)/m,'')
   .replace("import {stageReleaseReplayDependencies} from './release-selection-replay-dependencies.mjs';\n",'')
   .replace('  stageReleaseReplayDependencies(directory);\n','')

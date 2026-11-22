@@ -4,7 +4,7 @@ import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {copyIntegrationSourceClosure} from './copy-integration-source-closure.mjs';
 
-export function copyCurrentSourceFixture(directory,{crlf=false}={}){
+export function copyCurrentSourceFixture(directory,{crlf=false,readSource=path=>readFileSync(path,'utf8')}={}){
  copyIntegrationSourceClosure(directory);
  const text=source=>crlf?source.replaceAll('\r\n','\n').replaceAll('\n','\r\n'):source;
  // Forethought's deck replay authenticates this linked layout on every read.
@@ -12,7 +12,8 @@ export function copyCurrentSourceFixture(directory,{crlf=false}={}){
   ...readdirSync('src/lua').filter(name=>name.endsWith('.lua')).map(name=>'src/lua/'+name)];
  for(const path of paths){
   mkdirSync(dirname(join(directory,path)),{recursive:true});
-  writeFileSync(join(directory,path),text(readFileSync(path,'utf8')));
+  const source=readSource(path);
+  if(source!==null)writeFileSync(join(directory,path),text(source));
  }
  if(crlf){
   for(const entry of readdirSync(join(directory,'tests/helpers'),{recursive:true,withFileTypes:true})){

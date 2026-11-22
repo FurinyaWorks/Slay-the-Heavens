@@ -121,7 +121,7 @@ const atomicCardEffectsFiles=Object.freeze({
 });
 const compactPopupReplayFiles=Object.freeze({
  ...atomicCardEffectsFiles,
- 'tests/helpers/refined-release-source.mjs':'b9b619fbcc2ef0b0647f7b01949478970f4b360937e999ab93b14cace37a4b47',
+ 'tests/helpers/refined-release-source.mjs':'3b55f033d708eed73deb6f0507f9b178f536dff3c2063aa619d9a92fb018a3e0',
  'tests/helpers/refined-release-successor-source.json.gz':'42e07bbfd3fe5c4ccfa04581fb7bafdb5d9ed99d1d58e586b16bd93511d14ce5',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
