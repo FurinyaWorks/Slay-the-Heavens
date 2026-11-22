@@ -215,9 +215,13 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
   mkdirSync(join(root, 'config'));
   writeFileSync(join(root, 'backlog', 'tasks', 'task-999 - fixture.md'), '---\nid: TASK-999\nstatus: To Do\n---\n');
   writeFileSync(join(root, 'config', 'task-intake.json'), '{"schemaVersion":1,"blockedUntilOwnerApproval":[]}');
+  git('update-ref', 'refs/remotes/origin/develop', base);
+  git('remote', 'add', 'origin', 'https://github.com/FurinyaWorks/Slay-the-Heavens.git');
+  git('remote', 'add', 'fork-a', 'https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A.git');
   const intake = (...args) => spawnSync(process.execPath, [guard, '--start', 'TASK-999', ...args], { cwd: root, encoding: 'utf8' });
   assert.match(intake().stdout, /^HOLD TASK-999/);
-  assert.match(intake('--slice', 'Migrate one compatible caller', '--verify', 'npm run test:related').stdout, /^ALLOW TASK-999/);
+  assert.match(intake('--slice', 'Migrate one compatible caller', '--verify', 'npm run test:related',
+    '--branch', 'refactor/compatible-caller').stdout, /^ALLOW TASK-999/);
 });
 
 test('historical guidance receipts verify their exact predecessor and preserve foreign inputs', () => {

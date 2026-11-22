@@ -7,7 +7,7 @@ import {copyIntegrationSourceClosure} from './copy-integration-source-closure.mj
 export function copyCurrentSourceFixture(directory,{crlf=false}={}){
  copyIntegrationSourceClosure(directory);
  const text=source=>crlf?source.replaceAll('\r\n','\n').replaceAll('\n','\r\n'):source;
- const paths=['config/architecture.json',...readdirSync('src/lua').filter(name=>name.endsWith('.lua')).map(name=>'src/lua/'+name)];
+ const paths=['config/architecture.json','scripts/deck-ui-layout.mjs',...readdirSync('src/lua').filter(name=>name.endsWith('.lua')).map(name=>'src/lua/'+name)];
  for(const path of paths){
   mkdirSync(dirname(join(directory,path)),{recursive:true});
   writeFileSync(join(directory,path),text(readFileSync(path,'utf8')));

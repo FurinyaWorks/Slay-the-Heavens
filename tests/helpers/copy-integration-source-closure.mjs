@@ -212,9 +212,14 @@ const developPortraitLifecycleFiles=Object.freeze({
  'tests/helpers/develop-release-backflow-source.mjs':'89bb991c048ae5817d06453843c9df829c7dc5b3cc660fe49d0849e39e551b95',
  'tests/fixtures/develop-native-portrait-lifecycle-source.json.gz':'1e0d7cf24e2bd08938383e862161fe5d70c9a5ae29a216a8890c1768b8c57422',
 });
-const developBattleFeedbackFiles=Object.freeze({
+const developRewardUiFiles=Object.freeze({
  ...developPortraitLifecycleFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'68af26e885d2fb909f7aa790eecec121f85829b41f60d92ea766757ead907367',
+ 'tests/helpers/develop-release-backflow-source.mjs':'898bc55c77a2f021aa77a2b8e162900566daffa09c4262773de46a39f3b567d7',
+ 'tests/fixtures/develop-reward-ui-responsibilities-source.json.gz':'063a04ed8a26ea941887da6050376f12964baaf63ca62ac63f92a8bc62a4c207',
+});
+const developBattleFeedbackFiles=Object.freeze({
+ ...developRewardUiFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'cdd1d43eb8a0cd6e3b829c52954bddbcbc961449089d4a17f787dea391e890bc',
  'tests/fixtures/develop-battle-feedback-responsibilities-source.json.gz':'c8432495ff7b795025f12f0f931d55e6409505b6347fbbddc46701555f80e791',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};

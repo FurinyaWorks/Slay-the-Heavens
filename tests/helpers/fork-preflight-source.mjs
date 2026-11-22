@@ -150,17 +150,27 @@ function beforeDevelopPortraitLifecycleCopier(path,source){
  assert.equal(hash(prior),'59f327a993b6c55a04fe03df4be341bed7b7cd19c629f85da91542d9d7bf2861','exact Develop portraitLifecycle copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeDevelopRewardUiCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='73b067067041e839e431863fa6af053da07e53caa2d36eaa86fefbdaeb8fb149')return source;
+ const prior=lf.replace(/^const developRewardUiFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developRewardUiFiles))','Object.entries(developPortraitLifecycleFiles))');
+ assert.equal(hash(prior),'b56f2396efb198ba05a6b28e404f47a303d8ef0f4f2e76c436ff206257ef5076','exact Develop reward UI copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeDevelopBattleFeedbackCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='2592bf432d66dd3ef4d8ebbecf578f56b2cc56512dc017e4f39b55997f1bb311')return source;
+ if(hash(lf)!=='202a6beb3429f4aa83c1d40d55a69c63e4d3ba38ec8817140bd3c35e6edce846')return source;
  const prior=lf.replace(/^const developBattleFeedbackFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
-  .replace('Object.entries(developBattleFeedbackFiles))','Object.entries(developPortraitLifecycleFiles))');
- assert.equal(hash(prior),'b56f2396efb198ba05a6b28e404f47a303d8ef0f4f2e76c436ff206257ef5076','exact Develop battle feedback copier predecessor');
+  .replace('Object.entries(developBattleFeedbackFiles))','Object.entries(developRewardUiFiles))');
+ assert.equal(hash(prior),'73b067067041e839e431863fa6af053da07e53caa2d36eaa86fefbdaeb8fb149','exact Develop battle feedback copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
  source=beforeDevelopBattleFeedbackCopier(path,source);
+ source=beforeDevelopRewardUiCopier(path,source);
  source=beforeDevelopPortraitLifecycleCopier(path,source);
  source=beforeDevelopCardDisplayCopier(path,source);
  source=beforeDevelopMapRenderCopier(path,source);
@@ -458,7 +468,7 @@ const sourceSuccessors=Object.freeze({
  'tests/lore-v2.test.mjs':'2aee46188d476f8ee24b0a736da4d2dcfb214c9f2fe54d5593f1c937a7d67d9f',
  'tests/lua/merchant_dialogue_lifecycle.lua':'25393fa6499858dbbf9551b416aca5930d93426b366c6f6c5123ee611bf3cb06',
  'scripts/check-task-intake.mjs':'972cbe675515a1fd4f7866170c37bd7568b94c6dbeca1e7bf340e46742e42029',
- 'tests/sprint-intake.test.mjs':'daeabe161a8a7996b9961b46c37775ffb0e07639a4b34ab32f84f7a658d65929',
+ 'tests/sprint-intake.test.mjs':'b5063ae4b367f236111e7c583413a5e819e70a389407a91bc17e16c71c981758',
  'scripts/backlog-metadata.mjs':'082c419cbd0e20eae4ec4cb36f93541af3149f686dd064f06f5a12c983e27933',
  'scripts/backlog-closeout.mjs':'f732936568466ee86ddfd9735e318a9f03284caa2f45abffd66b319cca58d8b5',
  'scripts/verify-backlog-roadmap.mjs':'1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb',

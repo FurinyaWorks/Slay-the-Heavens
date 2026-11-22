@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { parseArgs } from 'node:util';
 import { checkTaskIntake } from './check-task-intake.mjs';
 
 const production = /^(?:src|scripts|tools|experiments|config|data|schemas|\.github\/workflows)\/|^package(?:-lock)?\.json$/;
@@ -95,15 +96,82 @@ export function checkHostedSlice(env = process.env) {
   checkSlice(base, candidate, pr.body ?? '');
 }
 
-function startSlice([id = '', sliceOption, slice, verifyOption, verify, ...extra]) {
+const developmentRemotes = {
+  origin: 'FurinyaWorks/Slay-the-Heavens',
+  'fork-a': 'FurinyaDev/Slay-the-Heavens-Fork-A',
+  'fork-b': 'v5g95m7t8m-max/Slay-the-Heavens-Fork-B',
+};
+const forkRequired = new Set(['feature', 'feat', 'refactor', 'experiment', 'spike']);
+const gitRead = (...args) => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+
+function verifyDevelopmentRemote(remote, { push = false } = {}) {
+  const expected = developmentRemotes[remote];
+  const side = push ? 'push' : 'fetch';
+  let urls;
+  try {
+    urls = gitRead('remote', 'get-url', '--all', ...(push ? ['--push'] : []), remote).split(/\r?\n/);
+  } catch {
+    throw new Error(`Configure ${remote} to use ${expected} before starting the slice.`);
+  }
+  const repository = urls[0].match(/^(?:https:\/\/github\.com\/|git@github\.com:|ssh:\/\/git@github\.com\/)([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/i)?.[1];
+  if (urls.length !== 1 || repository?.toLowerCase() !== expected.toLowerCase()) {
+    throw new Error(`${remote} must have exactly one ${side} URL for ${expected}.`);
+  }
+}
+
+function developmentPlan(args) {
+  const { values } = parseArgs({
+    args,
+    options: {
+      slice: { type: 'string' }, verify: { type: 'string' }, branch: { type: 'string' },
+      remote: { type: 'string', default: 'fork-a' }, 'main-reason': { type: 'string' },
+    },
+  });
+  const { slice, verify, branch, remote, 'main-reason': mainReason } = values;
+  if (!slice?.trim() || !verify?.trim() || !/^[a-z]+\/.+/i.test(branch ?? '')) {
+    throw new Error('Supply --slice "<scope>" --verify "<command>" --branch "<type>/<topic>".');
+  }
+  try {
+    gitRead('check-ref-format', `refs/heads/${branch}`);
+  } catch {
+    throw new Error('Supply a valid Git branch name.');
+  }
+  if (!Object.hasOwn(developmentRemotes, remote)) throw new Error('Choose fork-a, fork-b or origin.');
+  const type = branch.split('/')[0].toLowerCase();
+  if (type === 'hotfix') throw new Error('Use the existing emergency Release Hotfix procedure for hotfix/*.');
+  if (remote === 'origin' && forkRequired.has(type)) throw new Error(`${type}/* development must start on a Fork.`);
+  if (remote === 'origin' && (!mainReason?.trim() || /[\r\n]/.test(mainReason))) {
+    throw new Error('Supply a specific single-line --main-reason for direct main-repository development.');
+  }
+  if (remote !== 'origin' && mainReason !== undefined) throw new Error('--main-reason only applies to origin.');
+  verifyDevelopmentRemote('origin');
+  if (remote !== 'origin') verifyDevelopmentRemote(remote);
+  verifyDevelopmentRemote(remote, { push: true });
+  let base;
+  try {
+    base = gitRead('rev-parse', '--verify', 'refs/remotes/origin/develop^{commit}');
+  } catch {
+    throw new Error('Fetch origin/develop before starting development.');
+  }
+  return { branch, remote, base, mainReason: mainReason?.trim() };
+}
+
+function startSlice([id = '', ...args]) {
   const result = checkTaskIntake(id);
-  if (result.decision === 'ALLOW' && (sliceOption !== '--slice' || !slice?.trim() || verifyOption !== '--verify' || !verify?.trim() || extra.length)) {
-    result.decision = 'HOLD';
-    result.reasons.push('Supply the first independently mergeable slice: --slice "<scope>" --verify "<command>"');
+  let plan;
+  if (result.decision === 'ALLOW') {
+    try {
+      plan = developmentPlan(args);
+    } catch (error) {
+      result.decision = 'HOLD';
+      result.reasons.push(error.message);
+    }
   }
   console.log(result.decision + ' ' + id);
   if (result.reasons.length) throw new Error(result.reasons.join('\n'));
-  console.log('Before claiming, record this slice and verification in the task. Check approvals, open PRs, claims and file ownership. Finish or hand off your current slice before claiming another.');
+  console.log(`Development branch: ${plan.remote}/${plan.branch}\nDevelop base: ${plan.base}`);
+  if (plan.mainReason) console.log(`Record Fork-First-Exception: ${plan.mainReason} in the task and PR for independent review.`);
+  console.log('Before claiming, record the branch, base, slice and verification in the task. Check approvals, open PRs, claims and file ownership. Finish or hand off your current slice before claiming another.');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

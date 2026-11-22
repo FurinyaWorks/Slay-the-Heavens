@@ -4,8 +4,8 @@ title: 打通三仓库直接贡献并恢复集成吞吐
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-16 15:08'
-updated_date: '2026-11-17 15:57'
+created_date: '2026-11-16T15:08:00Z'
+updated_date: '2026-11-22T02:15:07Z'
 labels: []
 dependencies: []
 parent_task_id: TASK-88.1
@@ -36,6 +36,8 @@ ordinal: 183000
 2026-11-17增量：接续PR712；Quick dispatch完整受影响JS/Lua，未知输入拒绝；Quality PR矩阵前只读核验固定Fork ID、精确HEAD/BASE及先完成的成功run，Full按未知影响升级；保留原生队列/Release策略；定向负控、独审和按需统计。
 
 Owner本轮要求轻量优先：统计复用ci-run-costs，回归并入既有测试文件，撤掉新增测试库存逆投影和重复预算测试；准入仅核验最新同HEAD/BASE已成功的Fork预检，接受原生成功rerun，不要求新提交或额外attempt时间收据。保留全部原生保护和既有历史断言。衡量真实故障收益与CI/维护成本后再加防护。
+
+2026-11-22：按 Owner 最新分流要求，将 Fork-First 接入现有切片认领检查；沿用既有三仓库、定向预检和主仓原生 Review/Required Checks/Merge Queue。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
@@ -60,4 +62,6 @@ Owner轻量要求已实施：复用ci-run-costs及现有Quick/cost测试，撤�
 Owner本轮明确CI疏通：主仓全部在途运行分页核实，已保存并取消4条无队列引用/确定失败旧候选运行（主仓44021706926/44025702622、Fork A44055271729、Fork B44055273547），均已实际cancelled读回。707最小二进制reader修复独审后仅派发Fork A准确558832b6/BASEb9新候选Full44058918461。712独审额外复现push收据PREFLIGHT_BASE_SHA空值吞掉event.before；现限定dispatch来源并新增真实CLI五事件/环境优先级回归，原before档案保持。当前主仓GitHub安装178440181为statuses=read且未含Administration读取，现有merge:auto安全拒绝；需补Commit statuses:write及Administration:read，未绕过。实际合并闭环仍待。
 
 2026-11-17本轮实际推进：703已原生自动合并00ab3fe6，707经Fork A Full44076227211和主仓Quality44086075879实际合为af77fb24，源分支均删除；709完整覆盖后关闭并清理。核实清理主仓17条、Fork A两条，共19条远端ref；两条Fork707来源作为现有归档9edf8592的父提交远端保留。全51页5062条Actions、32个开放PR已刷新；701真实checks_timed_out且最长job等待6760秒，失效后三旧组仍占15jobs，已留证并取消，非403/代码fail。旧merge:auto权限阻塞不再通过追加连接器Admin/status写权限解决，Owner拒绝三项额外审批配置后改用真实云端独审+同账号COMMENTED+既有Actions证明+原生队列。真实不同BASE收据又暴露重复基线P1，193未推广且取消过期Full；新组消费及事件驱动清尾正在独审，不能宣称闭环已完成。710最小CI修复3ad独审通过，Fork A Full44113901367在运行；同独立Fork B工作不互相阻塞。保留In Progress/未验AC，不伪报Done。实际合并和最终证据以 https://github.com/FurinyaWorks/Slay-the-Heavens/pull/712 及 https://github.com/FurinyaWorks/Slay-the-Heavens/pull/710 为准；已有归档 https://github.com/FurinyaWorks/Slay-the-Heavens/commit/9edf859232f70aa057e440d2eccbc22f8ede2851 。
+
+2026-11-22 Fork-First：开发分支 FurinyaDev/Slay-the-Heavens-Fork-A:chore/fork-first-development 已读回源码 ed71a2c6ca708e5ffe21193030a8bc7d582251e7，基线 ae94d8079df3263c88281e04c9eb05847cf65066；Fork B 也已同步该来源作为 Full 候选。最终验证和实际同步的 HEAD/BASE 记在正式 PR。原有待验项保留。
 <!-- SECTION:NOTES:END -->

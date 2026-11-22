@@ -28,6 +28,18 @@ local function ownership(ctx,view,panel,box,grid)
  local epoch,mode,picker=ctx.matchEpoch,self.mode,self.picker
  local hit=box and box:GetChild('hit')
  local retired=false
+ local function hostLinks(owner)
+  return root.parent==parent and panel.parent==root
+   and (not grid or grid.parent==panel)and(not box or box.parent==owner and hit.parent==box)
+ end
+ local function contextValid()
+  return self.root==root and shown(box or panel)
+   and self.visible and not self.busy and self.run==run and self.map==map
+   and self.view==view and ctx.matchEpoch==epoch and self.mode==mode and self.picker==picker
+ end
+ local function flowValid()
+  return run.nodeFlow==flow and flow.event==event and event.revision==revision and not flow.complete
+ end
  return function()
   if retired then return false end
   local attached=root:GetChild('pickerView')==panel
@@ -40,12 +52,8 @@ local function ownership(ctx,view,panel,box,grid)
   -- Native reads may reenter. Check the immutable host last, then all captured
   -- parent links and mutable owners after that final native call.
   local hostAttached=not parent or parent:GetChild('nodePanel')==root
-  local linked=root.parent==parent and panel.parent==root
-   and (not grid or grid.parent==panel)and(not box or box.parent==owner and hit.parent==box)
-  local valid=attached and hostAttached and linked and self.root==root and shown(box or panel)
-   and self.visible and not self.busy and self.run==run and self.map==map
-   and self.view==view and ctx.matchEpoch==epoch and self.mode==mode and self.picker==picker
-   and run.nodeFlow==flow and flow.event==event and event.revision==revision and not flow.complete
+  local linked=hostLinks(owner)
+  local valid=attached and hostAttached and linked and contextValid() and flowValid()
   if not valid then retired=true end
   return valid
  end
@@ -98,9 +106,7 @@ function M.install(ctx)
   end
   return accepted,why
  end
- function ctx.renderMatch(view,node)
-  local panel=ctx.child('pickerView');local event=node and node.event
-  if not M.isBoard(event)then ctx.resetMatch();return nil end
+ local function renderMatchHeader(panel,event)
   if not active then
    for _,name in ipairs({'page','label','hint'})do local box=panel:GetChild(name);headers[name]={text=box.text,visible=box.visible}end
    active=true
@@ -120,6 +126,9 @@ function M.install(ctx)
   ctx.show(panel:GetChild('page'),true)
   panel:GetChild('label').text='剩余机会：'..info.attemptsLeft
   panel:GetChild('hint').text=event.stage=='play'and'请选择两张石牌'or event.stage=='cleanup'and'正在收好卡牌'or'记住翻开的牌面'
+  return grid,info
+ end
+ local function renderMatchSlots(view,panel,grid,info)
   for i,slot in ipairs(info.slots)do
    local box=grid:GetChild('card'..i);ctx.show(box,not slot.removed);box:SetLocalScale(1,1,1)
    local back=box:GetChild('matchBack');ctx.show(back,not slot.faceUp and not slot.removed);ctx.inspectCards[box]=nil
@@ -133,6 +142,8 @@ function M.install(ctx)
     return ctx.commit('chooseEvent','flip',function()return '留影牌局 · 请选择两张石牌'end,slot.token)
    end,'当前不能翻动这张石牌',nil,owned)
   end
+ end
+ local function renderMatchClock(view,panel,info)
   local choice=info.resolveToken and'resolve'or info.completionToken and'finish'or nil
   local scope={run=ctx.self.run,map=ctx.self.map,flow=ctx.self.run.nodeFlow,event=ctx.self.run.nodeFlow.event,
    token=info.resolveToken or info.completionToken,choice=choice,seconds=info.waitSeconds,owned=ownership(ctx,view,panel)}
@@ -147,6 +158,13 @@ function M.install(ctx)
    return submit(choice,scope.token,scope)
   end,'上次结算未改变资源，请重试',nil,retryOwned)
   if retry then panel:GetChild('hint').text='结算未完成，请重试'end
+ end
+ function ctx.renderMatch(view,node)
+  local panel=ctx.child('pickerView');local event=node and node.event
+  if not M.isBoard(event)then ctx.resetMatch();return nil end
+  local grid,info=renderMatchHeader(panel,event)
+  renderMatchSlots(view,panel,grid,info)
+  renderMatchClock(view,panel,info)
   return '留影牌局 · 剩余 '..info.attemptsLeft..' 次机会'
  end
  function ctx.updateMatch(dt)
