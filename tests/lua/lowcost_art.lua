@@ -111,7 +111,7 @@ local eventView=root:GetChild('nodePanel'):GetChild('eventView')
 local eventIcon=eventView:GetChild('art')
 local eventPool=assert(eventView:GetChild('artArt'))
 local eventWrites=0
-Enum={ImageFillHorizontalType={Right=9}}
+platform.imageFillRight=9
 for index=0,59 do
  local shape=assert(eventPool:GetChild('shape'..index))
  local setImage=shape.SetImage
@@ -145,7 +145,7 @@ for id,asset in pairs(eventRegistry.assets)do
  assert(Art.paint(eventIcon,'event',id,330,platform) and eventWrites==before,id)
  events=events+1
 end
-assert(events==49 and masks==268)
+assert(events==49)
 assert(not Art.paint(eventIcon,'event','missing',330,platform))
 assert(not eventPool.visible and eventIcon.visible)
 print('EVENT_ART_POOL_PASS '..events..' '..masks)

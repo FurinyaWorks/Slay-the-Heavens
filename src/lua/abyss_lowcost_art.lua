@@ -33,7 +33,8 @@ local function colour(pool,icon,state,control,r,g,b,a)
  control.imageColor=value;check(pool,icon,state)
 end
 local function matches(state,asset,size,platform)
- return state.asset==asset and state.size==size and state.source==platform.imageSource and state.color==platform.color
+ return state.asset==asset and state.size==size and state.source==platform.imageSource
+  and state.color==platform.color and state.fillRight==platform.imageFillRight
 end
 local function reveal(pool,icon,old)
   local ok=pcall(function()
@@ -43,12 +44,13 @@ local function reveal(pool,icon,old)
   if not ok and current(pool,icon,old)then old.ready=false;fallback(pool,icon,old)end
   return ok and current(pool,icon,old)
 end
-local function drawEventShape(call, control, shape)
+local function drawEventShape(call, control, shape, fillRight)
  call(control,'SetPivot',shape.pivot[1],shape.pivot[2])
  call(control,'SetLocalScale',shape.scale[1],shape.scale[2],1)
  call(control,'SetLocalRotation',shape.rotation[1],shape.rotation[2],shape.rotation[3])
  if shape.halfMask then
-  call(control,'SetFillHorizontal',Enum.ImageFillHorizontalType.Right,.5)
+  assert(fillRight~=nil,'horizontal mask direction unavailable')
+  call(control,'SetFillHorizontal',fillRight,.5)
  else
   call(control,'SetFillUnused')
  end
@@ -70,7 +72,7 @@ local function draw(pool,icon,token,registry,asset,size,platform)
     call(control,'SetImage',platform.imageSource,shape.image)
     if shape.pivot then
      control.enableMask=shape.halfMask;check(pool,icon,token)
-     drawEventShape(call,control,shape)
+     drawEventShape(call,control,shape,token.fillRight)
     end
     call(control,'SetAnchoredPosition',shape.x,shape.y);call(control,'SetSizeDelta',shape.w,shape.h)
     if not shape.pivot then call(control,'SetLocalRotation',0,0,shape.rotation or 0) end
@@ -97,7 +99,8 @@ function M.paint(icon,kind,id,size,platform)
  local old=painted[pool]
  if old and old.failed and matches(old,asset,size,platform)then return false end
  if old and old.ready and matches(old,asset,size,platform)then return reveal(pool,icon,old)end
- local token={asset=asset,size=size,source=platform.imageSource,color=platform.color,parent=icon.parent,pose=old and old.pose,dim=old and old.dim}
+ local token={asset=asset,size=size,source=platform.imageSource,color=platform.color,fillRight=platform.imageFillRight,
+  parent=icon.parent,pose=old and old.pose,dim=old and old.dim}
  painted[pool]=token
  return finish(pool,icon,token,draw(pool,icon,token,registry,asset,size,platform))
 end

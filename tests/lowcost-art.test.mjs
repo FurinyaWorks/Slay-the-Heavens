@@ -22,11 +22,12 @@ test('authored art covers every placeholder relic and every two-act enemy within
 test('real imported pools switch all illustrations, retain fallback on failure, and do not repaint cached shapes',()=>{
  const fits=JSON.parse(readFileSync(eventArtRegistry,'utf8')).fits;
  assert.equal(Object.keys(fits).length,49);
+ const maskCount=Object.values(fits).flatMap(fit=>fit.controlTree.children).filter(shape=>shape.fill).length;
  for(const [id,fit] of Object.entries(fits))
   assert.notEqual(fit.tiers['60'].method.method,'repo-rectangle-grid',id+' must use the reviewed contour fit');
  const before=readFileSync('build/lua/abyss_ui_layout.lua');
  const r=runLua('tests/lua/lowcost_art.lua',{timeout:60000});
  assert.deepEqual(readFileSync('build/lua/abyss_ui_layout.lua'),before,'art fixture must not alter the default layout');
  assert.equal(r.status,0,r.stdout+r.stderr+String(r.error??''));assert.match(r.stdout,/LOWCOST_ART_PASS 89 42/);
- assert.match(r.stdout,/EVENT_ART_POOL_PASS 49 268/);
+ assert(r.stdout.split(/\r?\n/).includes(`EVENT_ART_POOL_PASS 49 ${maskCount}`),r.stdout);
 });
