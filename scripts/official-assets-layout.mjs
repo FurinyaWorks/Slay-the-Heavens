@@ -178,7 +178,7 @@ function buttonFaces(node,theme){
  }
 }
 function relicSurfaces(stage,theme){
- const bar=child(stage,'relicBar'),panel=child(stage,'relicPanel'),protectedHosts=new Set();
+ const bar=child(stage,'relicBar'),panel=child(stage,'relicPanel');
  if(bar){
   const style=theme.officialAssets.battleRelicBar;
   for(let i=1;i<=style.count;i++){
@@ -190,21 +190,7 @@ function relicSurfaces(stage,theme){
  if(panel)for(const host of [panel,...children(panel).filter(n=>/^row\d+$/.test(n.name))]){
   // Keep the compact relic information surfaces and their live input bounds.
   setImage(required(host,host===panel?'frame':'border'),theme.image.rect,theme.color.goldDim);
-  setImage(required(host,'plate'),theme.image.rect,theme.color.panelSunken);protectedHosts.add(host);
- }
- return protectedHosts;
-}
-function panelSurfaces(node,theme,protectedHosts){
- // Retire the legacy ornate landscape plaque for all readable popup surfaces.
- // Keep controls, input ownership and geometry intact; match potionPopup's flat
- // dark image backing instead of ever assigning the old official panel sprite.
- if(node.kind!=='container'||protectedHosts?.has(node)||node.name==='potionPopup')return;
- const hasText=children(node).some(item=>item.kind==='text');
- if(!hasText)return;
- for(const name of ['face','panel','plate']){
-  const plate=child(node,name);
-  if(plate?.kind==='image'&&plate.size?.[0]>=240&&plate.size[1]>=96&&plate.size[0]>=plate.size[1]*1.4)
-   setImage(plate,theme.image.rect,theme.color.panel);
+  setImage(required(host,'plate'),theme.image.rect,theme.color.panelSunken);
  }
 }
 function roomTextFits(node,theme){
@@ -262,9 +248,8 @@ export function applyOfficialAssets(trees,theme){
    for(const host of [child(stage,'relicBar'),child(stage,'relicPanel')])if(host)walk(host,node=>{
     if(node.kind==='image'&&node.name==='icon')node.colour='#FFFFFF';
    });
-   const relicHosts=relicSurfaces(stage,theme);
+   relicSurfaces(stage,theme);
    const rooms=child(stage,'nodePanel'),treasure=child(rooms,'treasureView');
-   if(treasure)relicHosts.add(required(treasure,'details'));
    const battle=child(stage,'battlePanel')??(child(stage,'endTurn')?stage:null);
    if(battle){
     applyV25BattleLayout(tree,theme);
@@ -285,15 +270,13 @@ export function applyOfficialAssets(trees,theme){
     // geometry and preferred sizes, and let the existing autosizer fit the text.
     if(node.kind==='text'&&node.text?.autoSize&&node.text.minFontSize*1.45+4>node.size?.[1])node.text.minFontSize=theme.font.minimum;
    if(child(node,'roundFrame')&&child(node,'skin')&&child(node,'costDisc')){cardFace(node,theme,handSlots.has(node));cardHosts++;}
-   else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
+   else {buttonFaces(node,theme);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
   const deckPanel=child(child(tree,'stage')??tree,'deckPanel');
   const tools=child(deckPanel,'pileTools');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }
-  // Apply authored room geometry after flat-surface normalization. No
-  // decorative landscape image may overwrite read-only details.
   if(treasure)styleTreasure(treasure,theme,{skinButtons:false});
   composeOfficialRun(tree,theme);
  }

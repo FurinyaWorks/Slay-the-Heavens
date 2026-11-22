@@ -945,6 +945,16 @@ assert(not relicHit.click(),'an outside relic click must not open its details be
 assert(not popup:GetChild('use').interactable and popup:GetChild('discard').interactable)
 assert(popup:GetChild('dismiss').click())
 assert(not popup.visible and picker.visible and bar.visible and relicHit.listeners.enter())
+local tip=bar:GetChild('tooltip')
+assert(tip.visible and #tip:GetChild('effect').text>0)
+assert(relicHit.click())
+local relic=root:GetChild('relicPanel')
+assert(relic.visible and relic:GetChild('single').visible and not tip.visible)
+local frame,plate=relic:GetChild('frame'),relic:GetChild('plate')
+local Theme=require('abyss_theme')
+sameColour(frame.imageColor,Theme.color.goldDim,'relic detail rim')
+sameColour(plate.imageColor,Theme.color.panel,'relic detail fill')
+assert(plate.sizeDeltaX==frame.sizeDeltaX-2 and plate.sizeDeltaY==frame.sizeDeltaY-2)
 assert(host.run.potions[1]=='speed_potion' and not host.run.rewards.cardResolved)
 `, 'OFFICIAL_POTION_RELIC_HUD_PASS');
 });

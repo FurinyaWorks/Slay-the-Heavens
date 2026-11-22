@@ -91,7 +91,7 @@ test('final contracts cover every card host and reject local skin, bar and relic
  assert.throws(()=>assertOfficialRunContracts(trees),/bar covered/);
  map.children.shift();map.children.splice(index,0,bar);
  const relic=child(layout,'relicPanel');relic.children.push({name:'regressedCatalog',kind:'image',image:107311,size:[600,400]});
- assert.throws(()=>assertOfficialRunContracts(trees),/Shared relic surface/);
+ assert.throws(()=>assertOfficialRunContracts(trees),/Retired ornate panel/);
  relic.children.pop();assert.doesNotThrow(()=>assertOfficialRunContracts(trees));
 });
 test('reward overview retains live rows while adopting measured compact rows and the shared flag',()=>{

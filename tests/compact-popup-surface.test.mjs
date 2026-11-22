@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { nativeTheme } from '../scripts/native-ui-theme.mjs';
-import { compactPopupSurface } from '../scripts/compact-popup-surface.mjs';
 import { nodeLayout } from '../scripts/node-ui-layout.mjs';
 import { relicTooltip } from '../scripts/relic-view-layout.mjs';
 import { gameLayout } from '../scripts/game-ui-layout.mjs';
-import { applyOfficialAssets, officialAssetsTheme } from '../scripts/official-assets-layout.mjs';
+import { buildUI } from '../scripts/build-ui.mjs';
 
 const parts = node => node?.controls ?? node?.children ?? [];
 const child = (node, name) => parts(node).find(part => part.name === name);
@@ -47,30 +49,40 @@ test('potion and read-only item windows share one flat popup material without ch
   assert.ok(potion, 'battle potion action window exists');
   verifyShell(potion, 'plate', theme);
   for (const action of ['use', 'discard', 'dismiss']) assert.ok(child(potion, action));
-  for (const surface of compactPopupSurface(theme, [360, 156], {face:'face',readOnly:true})) {
-    assert.equal(surface.raycastTarget, false, 'relic hover surface must not steal input');
-  }
   assert.equal(child(relic, 'border').raycastTarget, false);
   assert.equal(child(relic, 'face').raycastTarget, false);
 });
 
-test('official-assets composition never resurrects the retired ornate landscape information plaque', () => {
-  const theme = officialAssetsTheme(nativeTheme);
-  const tree = gameLayout();
-  applyOfficialAssets([tree], theme);
-  const consumers = [];
-  walk(tree, node => {
-    if (node.kind === 'image' && node.image === theme.officialAssets.images.panel)
-      consumers.push(node.name);
-  });
-  assert.deepEqual(consumers, [], 'retired ornate panel must not appear anywhere in generated UI');
-  const root = child(tree, 'nodePanel');
-  const shop = child(child(root, 'shopView'), 'detail');
-  const treasure = child(child(root, 'treasureView'), 'details');
-  for (const owner of [shop, treasure]) {
-    verifyShell(owner, 'panel', theme);
-    assert.ok(child(owner, 'description'), 'details survive official transformation');
+test('generated official UI uses the compact material at every item-detail path', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'abyss-popup-ui-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  buildUI(directory, undefined, { officialAssets: true, nativePageLifecycle: true });
+  const read = name => JSON.parse(readFileSync(join(directory, name + '.json'), 'utf8'));
+  const theme = read('official-assets-theme');
+  const game = read('game-ui'), battle = read('battle-ui');
+  for (const tree of [game, battle, ...read('game-ui-templates')]) {
+    walk(tree, node => {
+      if (node.kind === 'image') assert.notEqual(node.image, 107311, `${tree.name}/${node.name}`);
+    });
   }
-  const potion = findDeep(tree, 'potionPopup');
-  verifyShell(potion, 'plate', theme);
+  const stage = child(game, 'stage'), rooms = child(stage, 'nodePanel');
+  const shop = child(child(rooms, 'shopView'), 'detail');
+  const treasure = child(child(rooms, 'treasureView'), 'details');
+  for (const [owner, fields] of [[shop, ['name', 'description']],
+    [treasure, ['name', 'description', 'relatedName', 'relatedDescription']]]) {
+    verifyShell(owner, 'panel', theme);
+    for (const field of fields) assert.equal(child(owner, field)?.kind, 'text');
+  }
+  const relic = child(child(stage, 'relicBar'), 'tooltip');
+  verifyShell(relic, 'face', theme);
+  assert.ok([relic, ...relic.children].every(control => control.raycastTarget === false));
+  for (const potion of [findDeep(battle, 'potionPopup'), findDeep(game, 'potionPopup'), child(stage, 'potionPanel')]) {
+    verifyShell(potion, 'plate', theme);
+    for (const action of ['use', 'discard', 'dismiss']) assert.ok(child(potion, action));
+  }
+  for (const name of ['rewardStage', 'rewardList']) {
+    const plate = child(child(child(stage, 'battlePanel'), name), 'plate');
+    assert.equal(plate.colour, theme.color.panelSunken, `${name} retains its authored material`);
+    assert.equal(plate.opacity, 0);
+  }
 });

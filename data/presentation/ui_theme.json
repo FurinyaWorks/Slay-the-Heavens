@@ -83,7 +83,6 @@
     "note": "PR #588 opt-in candidate. Existing 2026-10-13 catalog thumbnails inspected; current-client visual acceptance is UNVERIFIED. Preserve all semantic icon IDs and actual Traveler portraits; no MCP catalog update.",
     "images": {
       "cardPanel": 107253,
-      "panel": 107311,
       "button": 107231,
       "costDisc": 107270,
       "battleBanner": 107192,

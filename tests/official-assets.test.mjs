@@ -383,8 +383,8 @@ test('scene and button substitutions preserve semantic icons and all four native
  assert.equal(child(child(layout,'menuPanel'),'backdrop').image,nativeTheme.image.officialBackdrops.title);
  const menu=child(layout,'menuPanel'),result=child(menu,'result');
  for(const key of ['floor','victories','time','deck']){
-  const stat=child(result,'stat_'+key);assert.equal(child(stat,'face').image,107311);
-  assert.equal(child(stat,'face').colour,'#FFFFFF');assert.equal(child(stat,'border').colour,nativeTheme.color.goldDim);
+  const stat=child(result,'stat_'+key);assert.equal(child(stat,'face').image,nativeTheme.image.rect);
+  assert.equal(child(stat,'face').colour,nativeTheme.color.panel);assert.equal(child(stat,'border').colour,nativeTheme.color.goldDim);
  }
  const map=child(layout,'mapPanel'),field=child(child(map,'mapGroup1'),'mapField');
  assert.equal(field.image,nativeTheme.image.rect);assert.equal(field.colour,nativeTheme.color.mapCanvas.backdrop);

@@ -18,6 +18,7 @@ const templates=new Set(['AbyssDeckCard','AbyssBattlePileCard','AbyssReadyCardGr
  'AbyssReadyCardImage',monsterActorTemplateName,'AbyssMonsterPower','AbyssSelectionHalfTriangle','AbyssForgeCard',
  ...monsterActorTierNames]);
 const composed=new WeakSet();
+const retiredPanelImage=107311;
 const runRoles=['menuPanel','characterPanel','mapPanel','nodePanel','battlePanel',
  'deckPanel','potionEntry','relicBar','relicPanel'];
 function required(node,name){
@@ -126,6 +127,8 @@ export function assertOfficialRunContracts(trees){
   const kind=rootKind(tree),host=stage(tree);
   if(['AbyssDeckCard','AbyssBattlePileCard'].includes(tree.name))required(required(tree,'face'),'nativeCardBody');
   walk(tree,node=>{
+   if(node.kind==='image'&&node.image===retiredPanelImage)
+    throw Error(`Retired ornate panel in ${tree.name}/${node.name}`);
    if(!child(node,'roundFrame')&&!child(node,'nativeCardBody'))return;
    required(node,'costDisc');
    const material=cardMaterial(node);
@@ -149,9 +152,5 @@ export function assertOfficialRunContracts(trees){
    if(index<=parts(page).findIndex(part=>part.name===backdrop))
     throw Error('Shared run bar covered by background: '+role);
   }
-  for(const role of ['relicPanel'])walk(required(host,role),node=>{
-   if(node.kind==='image'&&node.image===107311&&node.visible!==false&&node.opacity!==0)
-    throw Error('Shared relic surface replaced by catalog panel');
-  });
  }
 }

@@ -110,9 +110,9 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     function self.pages()return math.max(1,math.ceil(#(self.run and self.run.relics or {})/perPage()))end
     local function paintFrame(single)
         if Theme.presentationProfile=='official-assets-first' and platform.color then
-            local p,f=Theme.color.panelSunken,Theme.color.goldDim
-            child('plate').imageColor=single and platform.color(18,30,40,255) or platform.color(p.r,p.g,p.b,p.a or 255)
-            child('frame').imageColor=single and platform.color(155,122,78,255) or platform.color(f.r,f.g,f.b,f.a or 255)
+            local p,f=single and Theme.color.panel or Theme.color.panelSunken,Theme.color.goldDim
+            child('plate').imageColor=platform.color(p.r,p.g,p.b,p.a or 255)
+            child('frame').imageColor=platform.color(f.r,f.g,f.b,f.a or 255)
         end
     end
     local function positionSingle(view,compact)
@@ -134,7 +134,8 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         local width=compact and 560 or single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
         local height=compact and 342 or Theme.layout.relicView.panel[4]
         child('frame'):SetSizeDelta(width,height)
-        child('plate'):SetSizeDelta(width-Theme.space.border*2,height-Theme.space.border*2)
+        local inset=compact and 2 or Theme.space.border*2
+        child('plate'):SetSizeDelta(width-inset,height-inset)
         child('contentBlocker'):SetSizeDelta(width,height)
         paintFrame(single)
         child('close'):SetAnchoredPosition(single and width/2-58 or Theme.layout.relicView.close[1],
