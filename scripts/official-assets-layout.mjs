@@ -218,9 +218,8 @@ function roomTextFits(node,theme){
  description.text.minFontSize=theme.font.minimum;
 }
 function pageBackgrounds(node,theme){
- const ids=theme.image.officialBackdrops;
  if(node.name==='menuPanel'){
-  setImage(required(node,'backdrop'),ids.title,'#FFFFFF');
+  setImage(required(node,'backdrop'),theme.image.officialBackdrops.title,theme.color.backdrop);
   // Results share this page. Keep the four live value fields and reveal poses,
   // but give their compact plaques the same official surface as other rooms.
   const result=required(node,'result');

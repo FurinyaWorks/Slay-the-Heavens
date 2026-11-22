@@ -45,7 +45,9 @@ export function applyOfficialNoncombatLayout(layout,theme){
  // The static exact-alpha constellation replaces the release initial placeholder.
  selected.children.splice(selected.children.indexOf(child(selected,'v25Constellation')),1,constellationGeometry(theme));
  const background=child(panel,'v25Background');
- background.visible=true; background.children=[{name:'landscape',kind:'image',position:[0,0],size:[1280,720],image:theme.image.officialBackdrops.title,colour:'#FFFFFF'}];
+ background.visible=true;
+ background.children=[{name:'fill',kind:'image',position:[0,0],size:[...theme.canvas.base],
+  image:theme.image.rect,colour:theme.color.backdrop,raycastTarget:false}];
  // The native figure controller owns this host's readiness and presentation.
  // Preserve its established scale instead of enlarging a 133px raster 10x.
  const figure=child(child(panel,'details'),'officialSelectionFigure');

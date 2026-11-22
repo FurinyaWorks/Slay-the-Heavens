@@ -128,9 +128,9 @@ test('official host uses direct inventory actions, read-only relic details and e
  buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
  const stage=child(JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8')),'stage');
  for(const [name,sha] of [
-  ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0'],
-  ['exitPanel','d60b5a107eab5c3bdb79a36c7359cb1be27c833a2e18a450a3b266856c7d98ce'],
-  ['runMenu','a0c480ad85bfa3b3490d6ea6d3c6ae3561a700e60114ee0303810010d71a9b81'],
+  ['menuPanel','22ba44505ce84d1a0db1fc106c385c2fd1594d4dafe2703de04e7cb8ba0b4173'],
+  ['exitPanel','7823696e5eab9c33d02a0d1f2f575bed9a16927d8476d94f9f32a7769e287888'],
+  ['runMenu','0e7ac3c3d114fc0f66ea0e1dd0717dfb08824d1abbbf577cecbda500413cafb0'],
  ]){
   assert.equal(createHash('sha256').update(JSON.stringify(child(stage,name))).digest('hex'),sha,
    'preserve the complete integrated pile and menu layout: '+name);
@@ -156,8 +156,12 @@ test('official generated selection retires the legacy full-screen shade above it
  assert.deepEqual(shade.size,[1280,720]);
  assert.equal(shade.visible,false,'ready artwork must not inherit the old full-screen backdrop shade');
  assert.equal(child(panel,'blocker').kind,'cursorArea','retire paint only; retain the selection input barrier');
- assert.equal(child(panel,'v25Background').visible,true,'the controller still owns its loading fallback');
- assert.deepEqual(parts(child(panel,'v25Background')).map(n=>n.name),['landscape'],'loading and failure show the unshaded fallback image');
+ const fallback=child(panel,'v25Background');
+ assert.equal(fallback.visible,true,'the controller still owns its loading fallback');
+ assert.deepEqual(parts(fallback),[{
+  name:'fill',kind:'image',position:[0,0],size:[1280,720],image:100001,colour:'#0F1117',raycastTarget:false,
+ }],'loading and failure have one opaque dark fill with no picture or hit surface');
+ assert(!all(layout).some(node=>node.image===107271),'the purple catalog picture must not be shipped in this layout');
  assert.deepEqual(readArtFeatures(directory),officialAssetFlags);
 });
 
@@ -173,6 +177,7 @@ local panel=root:GetChild('characterPanel');panel:SetVisible(true)
 local art=panel:GetChild('lumineSelectionBackground')
 local legacy=panel:GetChild('officialBackdropVeil')
 local fallback=panel:GetChild('v25Background')
+local fill=fallback:GetChild('fill')
 local Asset=require('abyss_traveler_portrait_assets')
 Asset.imagePrefabId,Asset.containerPrefabId,Asset.selectionHalfImagePrefabId=41,73,99
 Enum={ImageSource={StaticReference='static'},ImageType={Stretch=23},ImageFillHorizontalType={Right=1}}
@@ -197,6 +202,7 @@ local portraits=require('abyss_traveler_portraits').new(root,nil,{selectionAvata
 local covered={}
 local function scope(label)
  print('SELECTION_SCOPE '..label..' legacy='..tostring(legacy.visible)..' fallback='..tostring(fallback.visible)..' art='..tostring(art.visible)..' phase='..portraits:status().selection.phase)
+ assert(fill.visible)
  if legacy.visible then covered[#covered+1]=label end
 end
 portraits:sync('menu',true,false,'ironclad');scope('building')

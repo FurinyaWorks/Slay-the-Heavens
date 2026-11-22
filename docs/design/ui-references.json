@@ -124,8 +124,29 @@
       "codePath": "scripts/character-selection-composition.mjs",
       "targetVersion": "v2.0.0",
       "state": "details",
-      "revision": "sts1-open-copy-20261119",
+      "revision": "release-sts1-20261122",
       "status": "APPROVED",
+      "backlogTask": "TASK-103.3",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md",
+        "sha256": "2a252035cbcea8225ca3119b216931344f31b949c2704db4bb5ec25b929189ac"
+      },
+      "supersedes": [
+        "sts1-open-copy-20261119"
+      ],
+      "codePaths": [
+        "scripts/character-ui-layout.mjs",
+        "scripts/v25-character-layout.mjs"
+      ],
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-choose-your-character/",
+      "note": "初代 PC 实机选角为设计依据。Release 左栏使用生命、金币、介绍和初始遗物，按正式源码核对。"
+    },
+    {
+      "codePath": "scripts/character-selection-composition.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "details",
+      "revision": "sts1-open-copy-20261119",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/character-selection-open-copy.md",
@@ -135,7 +156,7 @@
         "2026-11-19",
         "reference-ui-lab"
       ],
-      "note": "Owner 更正选角参考为初代实物。左侧信息直接排在原生背景上，使用文字描边。",
+      "note": "早期左栏设计记录，含历史初始牌组摘要描述。现行构图见 Release 实机参考。",
       "codePaths": [
         "scripts/character-ui-layout.mjs",
         "scripts/v25-character-layout.mjs",
@@ -183,8 +204,33 @@
       "codePath": "scripts/character-selection-composition.mjs",
       "targetVersion": "v2.0.0",
       "state": "characterPanel",
+      "revision": "release-sts1-20261122",
+      "status": "APPROVED",
+      "backlogTask": "TASK-103.3",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md",
+        "sha256": "2a252035cbcea8225ca3119b216931344f31b949c2704db4bb5ec25b929189ac"
+      },
+      "supersedes": [
+        "develop",
+        "legacy-projection-20261113"
+      ],
+      "codePaths": [
+        "scripts/noncombat-v25-layout.mjs",
+        "scripts/official-assets-layout.mjs"
+      ],
+      "themeKeys": [
+        "image.officialBackdrops.title"
+      ],
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-choose-your-character/",
+      "note": "基线为 Release 09d6cc17。按用户确认使用近黑纯色底板；沿用正式角色槽、按钮及已选中时的原生角色画面。"
+    },
+    {
+      "codePath": "scripts/character-selection-composition.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "characterPanel",
       "revision": "develop",
-      "status": "CURRENT_IMPLEMENTATION",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/evidence/v2-ui-20261119/p1/runtime-selection.png",
@@ -193,7 +239,22 @@
       "supersedes": [
         "local-board-20261119"
       ],
-      "note": "正式背景创建器的 1600 个原生图元，原有返回与出发按钮、直接排列的左侧信息和原生岩脉残晶图标。已移除预览牌组入口。 1280×720 离线投影，官方候选待验。"
+      "note": "提交 9e3b22dc 的历史实现投影。对照当前 Release 时使用上方新基准。"
+    },
+    {
+      "codePath": "scripts/character-selection-composition.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "characterPanel",
+      "revision": "legacy-projection-20261113",
+      "status": "SUPERSEDED",
+      "backlogTask": "TASK-103.3",
+      "reference": {
+        "path": "docs/evidence/sts-character-reference-20261113/visual-final/character-selected-idle.png",
+        "sha256": "44c63b1f4991cb95bd8f88949ddcc9ae4435fc599c52bcb25663b5d4a24e4d88"
+      },
+      "supersedes": [],
+      "source": "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e65d9b98fbec69442047650254238cd9244df805/docs/evidence/sts-character-reference-20261113/visual-final/character-selected-idle.png",
+      "note": "历史投影含已下线的查看牌组入口、旧按钮和旧角色图标。"
     },
     {
       "codePath": "scripts/character-selection-composition.mjs",
@@ -571,7 +632,9 @@
     },
     {
       "codePath": "scripts/sts-reward-row-layout.mjs",
-      "codePaths": ["scripts/v25-node-layout.mjs"],
+      "codePaths": [
+        "scripts/v25-node-layout.mjs"
+      ],
       "targetVersion": "v2.0.0",
       "state": "rewardList",
       "revision": "develop",

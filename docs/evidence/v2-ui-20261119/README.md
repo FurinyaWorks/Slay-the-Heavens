@@ -39,7 +39,7 @@ python docs/evidence/v2-ui-20261119/render-runtime.py .artifacts/v2-runtime-evid
 
 | 场景 | 当前画面和核对结果 |
 | --- | --- |
-| 选角 | [当前选角](p1/runtime-selection.png)。读取正式背景创建器实际挂载的 1600 个图元和原有控件。生命、金币、角色介绍和初始遗物直接排在左侧，原生文字使用深色描边。岩脉残晶有六块原生图元组成的图标。移除了旧色板和「查看牌组」的控件及命中区。[同视口改前](p1/runtime-selection-before.png) · [Owner 更正后的设计依据](../../design/reference-assets/v2.0.0/character-selection-open-copy.md) |
+| 选角 | [9e3b22dc 历史选角投影](p1/runtime-selection.png)。读取正式背景创建器实际挂载的 1600 个图元和原有控件。生命、金币、角色介绍和初始遗物直接排在左侧，原生文字使用深色描边。岩脉残晶有六块原生图元组成的图标。移除了旧色板和「查看牌组」的控件及命中区。[同视口改前](p1/runtime-selection-before.png) · [Release 对照基准](../../design/reference-assets/v2.0.0/sts1-character-backing-20261122.md) |
 | 战斗与顶栏 | [首个正常战斗](p1/runtime-battle.png)。核对手牌、三种牌堆入口及共享顶栏。药水栏右侧显示楼梯图标和数字 1。[原作战斗构图](https://playcraft.space/gallery/slay-the-spire/combat-ten-card-hand/) |
 | 卡组和牌堆 | [卡组](p1/runtime-deck.png) · [抽牌堆](p1/runtime-pile-draw.png) · [弃牌堆](p1/runtime-pile-discard.png) · [消耗堆](p1/runtime-pile-exhaust.png) · [卡牌详情](p1/runtime-pile-detail.png)。通过已有按钮打开。抽、弃、消耗列表使用各自真实容器，详情绑定所选实例，连续返回两次恢复原战斗。夹具为弃牌、消耗堆移入示例牌并保留实例编号。 |
 | 遗物与药水 | [起始遗物](p1/runtime-relic.png) · [药水选中态](p1/runtime-potion.png)。从当前会话打开说明，检查取消保留原槽位，再确认丢弃只清除选中的槽位。 |

@@ -4,8 +4,8 @@ title: 复核菜单选角与祝福体验（既有实现已交付）
 status: In Progress
 assignee:
   - Furinya
-created_date: 2026-11-11 08:07
-updated_date: '2026-11-19T15:56:00Z'
+created_date: '2026-11-11T08:07:00Z'
+updated_date: '2026-11-22T07:53:54Z'
 labels:
   - 待验
   - delivery-verify
@@ -84,4 +84,6 @@ R7最终复验：SDK28项、实际浏览器HP21+Lament9项通过，20次暖选�
 Owner 更正为初代选角构图，移除左侧半透明信息板，保留原生 1600 图元背景及现有按钮，以原生文字描边保持可读性。正式配置离线前后画面与回归见 docs/evidence/v2-ui-20261119/README.md。同候选 PC/手机保持待验。
 
 选角起始遗物使用六块原生三角形绘制岩脉残晶图标，并移除「查看牌组」的控件及输入命中区。摘要、返回和开始保留。
+
+2026-11-22 Release 选角待选及回退的紫色平台贴图改为原生近黑纯色；相同贴图退出主菜单与结算底层，保留现行角色画面和交互。参考索引按正式基线 09d6cc17 标记旧选角图与旧左栏稿为历史，详见 docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md。千星客户端和设备仍待验。
 <!-- SECTION:NOTES:END -->
