@@ -47,7 +47,21 @@ const portraitLifecycle=JSON.parse(gunzipSync(portraitLifecycleArchive));
 assert.equal(portraitLifecycle.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
 assert.deepEqual(Object.keys(portraitLifecycle.files),["src/lua/abyss_traveler_portraits.lua"]);
 for(const path of Object.keys(portraitLifecycle.files))assert(![cardDisplay.files,mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop portraitLifecycle source owner: '+path);
-const layers=[portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
+const rewardUiArchive=readFileSync(new URL('../fixtures/develop-reward-ui-responsibilities-source.json.gz',import.meta.url));
+assert.equal(hash(rewardUiArchive),'063a04ed8a26ea941887da6050376f12964baaf63ca62ac63f92a8bc62a4c207','exact Develop reward UI predecessor archive');
+const rewardUi=JSON.parse(gunzipSync(rewardUiArchive));
+assert.equal(rewardUi.base,'2f9444dcbd33ac71a6507db1775be5b70533e68a');
+assert.equal(rewardUi.original,'c6cee6a793e32628e8f747ce6515475be4cad0b0');
+const deckPath='src/lua/abyss_deck_ui.lua';
+assert.deepEqual(Object.keys(rewardUi.files),[
+ 'src/lua/abyss_choice_ui.lua',deckPath,'src/lua/abyss_match_event_ui.lua','src/lua/abyss_treasure_ui.lua',
+]);
+assert(matches(rewardUi.files[deckPath].before.source,files[deckPath].after),'reward UI preserves the exact Forethought deck predecessor');
+for(const path of Object.keys(rewardUi.files)){
+ const inherited=[portraitLifecycle.files,cardDisplay.files,mapRender.files,shop,...(path===deckPath?[]:[files])];
+ assert(!inherited.some(layer=>Object.hasOwn(layer,path)),'distinct Develop reward UI source owner: '+path);
+}
+const layers=[rewardUi.files,portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
 for(const {before,after} of layers.flatMap(layer=>Object.values(layer))){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
@@ -72,7 +86,7 @@ function predecessor(layer,path,source){
 export function beforeDevelopBackflow(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
 }
-const forethoughtOwners=['src/lua/abyss_deck_ui.lua','scripts/deck-ui-layout.mjs'];
+const forethoughtOwners=[deckPath,'scripts/deck-ui-layout.mjs'];
 export function authenticateDevelopBackflow(path,source,read){
  const prior=beforeDevelopBackflow(path,source);
  if(prior===source)return source;

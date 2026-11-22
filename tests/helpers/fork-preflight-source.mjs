@@ -150,7 +150,17 @@ function beforeDevelopPortraitLifecycleCopier(path,source){
  assert.equal(hash(prior),'59f327a993b6c55a04fe03df4be341bed7b7cd19c629f85da91542d9d7bf2861','exact Develop portraitLifecycle copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeDevelopRewardUiCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='73b067067041e839e431863fa6af053da07e53caa2d36eaa86fefbdaeb8fb149')return source;
+ const prior=lf.replace(/^const developRewardUiFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developRewardUiFiles))','Object.entries(developPortraitLifecycleFiles))');
+ assert.equal(hash(prior),'b56f2396efb198ba05a6b28e404f47a303d8ef0f4f2e76c436ff206257ef5076','exact Develop reward UI copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopRewardUiCopier(path,source);
  source=beforeDevelopPortraitLifecycleCopier(path,source);
  source=beforeDevelopCardDisplayCopier(path,source);
  source=beforeDevelopMapRenderCopier(path,source);

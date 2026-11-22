@@ -376,19 +376,13 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
         return text
     end
-    local function fill(control, instance, catalog)
-        require('abyss_page_reveal').registerSource(platform,'deckPanel')
-        local battle=(self.choiceToken or self.pileKind) and self.battle
-        local definition = Combat.cardDefinition(battle or {catalog=catalog}, instance)
-        local display = assert(presentation[instance.cardId], "missing deck presentation " .. instance.cardId)
-        local face = control:GetChild("face")
-        local binding = self.bindings[control]
-        local text=paintCardText(face,binding,instance,display,definition,battle)
+    local function paintDeckPalette(face,definition)
         tint(face:GetChild("border"), Theme.color.rarity[definition.rarity] or Theme.color.line)
         tint(face:GetChild("nameBand"), Theme.color.rarityBand[definition.rarity] or Theme.color.rarityBand.basic)
         tint(face:GetChild("nameRule"), Theme.color.rarity[definition.rarity] or Theme.color.line)
         tint(face:GetChild("artPlate"), Theme.color.cardType[definition.type] or Theme.color.panelRaised)
-        CardDisplay.writeArt(face:GetChild("art"), definition, picture,face);CardDisplay.writeNativeArt(face,definition,display.nativeArt,platform,face:GetChild('art'),instance.uid)
+    end
+    local function paintDeckCardSkin(face,definition,instance,catalog)
         local printed=catalog.cards[instance.cardId]
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         local selected=false
@@ -400,6 +394,19 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             face:GetChild('glow'):SetVisible(false)
             face:GetChild('costHalo'):SetVisible(false)
         end
+        return selected
+    end
+    local function fill(control, instance, catalog)
+        require('abyss_page_reveal').registerSource(platform,'deckPanel')
+        local battle=(self.choiceToken or self.pileKind) and self.battle
+        local definition = Combat.cardDefinition(battle or {catalog=catalog}, instance)
+        local display = assert(presentation[instance.cardId], "missing deck presentation " .. instance.cardId)
+        local face = control:GetChild("face")
+        local binding = self.bindings[control]
+        local text=paintCardText(face,binding,instance,display,definition,battle)
+        paintDeckPalette(face,definition)
+        CardDisplay.writeArt(face:GetChild("art"), definition, picture,face);CardDisplay.writeNativeArt(face,definition,display.nativeArt,platform,face:GetChild('art'),instance.uid)
+        local selected=paintDeckCardSkin(face,definition,instance,catalog)
         control:GetChild("uid").text = selected and '已选择' or ''
         local hit=control:GetChild('hit')
         hit:SetVisible(true)
@@ -553,6 +560,25 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
         root:GetChild('header'):SetVisible(not self.browserShell)
     end
+    local function paintDeckOpening(choice,pileKind,cards)
+        local prompts=choicePrompts(choice)
+        self.listTitle=browserHeading(pileKind).." · "..#cards.." 张"
+        if self.pileView then self.sortMode,self.sortAscending='original',true end
+        if self.browseEnabled then projectCards() end
+        root:GetChild("title").text = choice and prompts[choice.op] or self.listTitle
+        if Theme.presentationProfile=='official-assets-first' then
+            root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle
+            root:GetChild('pileReturn'):SetVisible(self.browserShell)
+        end
+        if self.multiple then root:GetChild('title').text=root:GetChild('title').text..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '') end
+    end
+    local function paintDeckClosing(choice)
+        root:GetChild("close"):SetVisible(not choice or self.multiple == true or self.optional==true)
+        if self.browserShell then root:GetChild('close'):SetVisible(false)end
+        local close=root:GetChild('close'):GetChild('hit')
+        close.interactable=not choice or self.optional==true or self.multiple and (not choice.required or #choice.selected==choice.required) or false;close.raycastTarget=close.interactable
+        for _,state in ipairs({'normal','hover','pressed','disabled'}) do close:GetChild(state):GetChild('label').text=self.optional and '跳过' or self.multiple and '确认选择' or '关闭' end
+    end
     function self.open(_, run, choice, onPick, pileKind)
         if self.visible then return false end
         self.openSession=self.openSession+1
@@ -580,21 +606,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.indexBase, self.pending, self.calibrating = nil, false, true
         root:SetVisible(true)
         root:SetAsLastSibling()
-        local prompts=choicePrompts(choice)
-        self.listTitle=browserHeading(pileKind).." · "..#cards.." 张"
-        if self.pileView then self.sortMode,self.sortAscending='original',true end
-        if self.browseEnabled then projectCards() end
-        root:GetChild("title").text = choice and prompts[choice.op] or self.listTitle
-        if Theme.presentationProfile=='official-assets-first' then
-            root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle
-            root:GetChild('pileReturn'):SetVisible(self.browserShell)
-        end
-        if self.multiple then root:GetChild('title').text=root:GetChild('title').text..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '') end
-        root:GetChild("close"):SetVisible(not choice or self.multiple == true or self.optional==true)
-        if self.browserShell then root:GetChild('close'):SetVisible(false)end
-        local close=root:GetChild('close'):GetChild('hit')
-        close.interactable=not choice or self.optional==true or self.multiple and (not choice.required or #choice.selected==choice.required) or false;close.raycastTarget=close.interactable
-        for _,state in ipairs({'normal','hover','pressed','disabled'}) do close:GetChild(state):GetChild('label').text=self.optional and '跳过' or self.multiple and '确认选择' or '关闭' end
+        paintDeckOpening(choice,pileKind,cards)
+        paintDeckClosing(choice)
         paintBrowse()
         refreshGrid()
         if self.browserShell then root:GetChild('pileReturn'):SetAsLastSibling()end

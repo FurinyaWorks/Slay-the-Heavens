@@ -116,50 +116,57 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=picked,surfaceScope='choice'})
     end
-    local function render()
-        if not view.visible then return end
-        require('abyss_page_reveal').registerSource(platform,'choicePanel')
-        local kind=view.context.kind
-        child("title").text=kind=='potion'and '姿态药水：选择姿态'or kind=='pile' and (view.context.mode=='omniscience' and '全知：选择免费打出两次的牌' or view.context.mode=='meditate' and '冥想：回收并保留' or view.context.mode=='headbutt' and '回收至牌堆顶' or '回收至手牌')
+    local function pileTitle()
+        return view.context.mode=='omniscience' and '全知：选择免费打出两次的牌' or view.context.mode=='meditate' and '冥想：回收并保留' or view.context.mode=='headbutt' and '回收至牌堆顶' or '回收至手牌'
+    end
+    local function paintChoiceTitle(kind)
+        child("title").text=kind=='potion'and '姿态药水：选择姿态'or kind=='pile' and pileTitle()
             or kind=="scry" and "占卜" or kind=="discard" and "选择弃牌"
             or view.context.mode=="put_on_deck" and "放回抽牌堆顶" or "选择消耗"
+    end
+    local function paintChoiceHint(kind)
         local pileName=({draw='抽牌堆',discard='弃牌堆',exhaust='消耗堆'})[view.context.pending.source]
         local hint=kind=='potion'and '选择一种姿态，必须完成选择。'or kind=='pile' and ('从'..(pileName or '牌堆')..'选择 '..limit()..' 张牌。')
             or kind=="scry" and "按选择顺序弃置；可不弃置。首张为抽牌堆顶。"
             or kind=="discard" and "选择 "..limit().." 张手牌弃置。" or "选择 1 张手牌。"
         child("hint").text=hint.." 已选 "..#view.selected..(kind=='potion'and ' 种。'or " 张。")
         child("status").text=view.error and "选择未提交，请重新确认。" or ""
-        for slot=1,PAGE_SIZE do
-            local box=child("card"..slot)
-            local card=view.cards[(view.page-1)*PAGE_SIZE+slot]
-            box:SetVisible(card~=nil)
-            local hit=box:GetChild("hit");hit.interactable=card~=nil and not view.confirming;hit.raycastTarget=hit.interactable
-            if card then
-                local order=selected(kind=='potion'and card.id or card.uid)
-                local picked=order~=nil
-                local face=assert(box:GetChild('face'),'missing choice card face')
-                face:SetVisible(kind~='potion')
-                box:GetChild('orderPlate'):SetVisible(kind~='potion' and picked)
-                box:GetChild('order'):SetVisible(kind~='potion' and picked)
-                box:GetChild('order').text=order and '已选 '..order or ''
-                if kind=='potion' then
-                    caption(box,(order and '已选 '..order..' · ' or '')..card.name..'\n'..card.text)
-                else
-                    paintCard(face,card,picked)
-                    -- Keep the native button's semantic caption; only the shared face is visible.
-                    caption(box,face:GetChild('name').text..'\n'..face:GetChild('type').text
-                        ..' · 费用 '..face:GetChild('cost').text..'\n'..face:GetChild('label').text)
-                end
-                for _,state in ipairs(states) do
-                    local buttonState=box:GetChild("hit"):GetChild(state)
-                    for _,name in ipairs({'border','plate','label'})do
-                        buttonState:GetChild(name):SetVisible(kind=='potion')
-                    end
-                    local border=buttonState:GetChild("border")
-                    if border then border.imageColor=colour(picked and Theme.color.goldBright or Theme.color.goldDim) end
-                end
+    end
+    local function paintChoiceStates(box,kind,picked)
+        for _,state in ipairs(states) do
+            local buttonState=box:GetChild("hit"):GetChild(state)
+            for _,name in ipairs({'border','plate','label'})do
+                buttonState:GetChild(name):SetVisible(kind=='potion')
             end
+            local border=buttonState:GetChild("border")
+            if border then border.imageColor=colour(picked and Theme.color.goldBright or Theme.color.goldDim) end
         end
+    end
+    local function paintChoiceSlot(slot,kind)
+        local box=child("card"..slot)
+        local card=view.cards[(view.page-1)*PAGE_SIZE+slot]
+        box:SetVisible(card~=nil)
+        local hit=box:GetChild("hit");hit.interactable=card~=nil and not view.confirming;hit.raycastTarget=hit.interactable
+        if card then
+            local order=selected(kind=='potion'and card.id or card.uid)
+            local picked=order~=nil
+            local face=assert(box:GetChild('face'),'missing choice card face')
+            face:SetVisible(kind~='potion')
+            box:GetChild('orderPlate'):SetVisible(kind~='potion' and picked)
+            box:GetChild('order'):SetVisible(kind~='potion' and picked)
+            box:GetChild('order').text=order and '已选 '..order or ''
+            if kind=='potion' then
+                caption(box,(order and '已选 '..order..' · ' or '')..card.name..'\n'..card.text)
+            else
+                paintCard(face,card,picked)
+                -- Keep the native button's semantic caption; only the shared face is visible.
+                caption(box,face:GetChild('name').text..'\n'..face:GetChild('type').text
+                    ..' · 费用 '..face:GetChild('cost').text..'\n'..face:GetChild('label').text)
+            end
+            paintChoiceStates(box,kind,picked)
+        end
+    end
+    local function paintChoiceNavigation(kind)
         local confirm=child("confirm")
         caption(confirm,kind=="scry" and (#view.selected==0 and "全部保留" or "确认弃置") or "确认选择")
         local confirmHit=confirm:GetChild("hit");confirmHit.interactable=countAllowed() and not view.confirming;confirmHit.raycastTarget=confirmHit.interactable
@@ -170,6 +177,15 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
                 local hit=box:GetChild("hit");hit.interactable=not view.confirming and (name=="before" and view.page>1 or name=="after" and view.page*PAGE_SIZE<#view.cards);hit.raycastTarget=hit.interactable
             end
         end
+    end
+    local function render()
+        if not view.visible then return end
+        require('abyss_page_reveal').registerSource(platform,'choicePanel')
+        local kind=view.context.kind
+        paintChoiceTitle(kind)
+        paintChoiceHint(kind)
+        for slot=1,PAGE_SIZE do paintChoiceSlot(slot,kind) end
+        paintChoiceNavigation(kind)
     end
     function view:close()
         local visible=self.visible
