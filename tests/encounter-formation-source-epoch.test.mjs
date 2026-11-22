@@ -31,12 +31,33 @@ const noncombatPriorRead=currentSourceEpoch.combinedReader(rawCurrent,'noncombat
 const componentRead=file=>jointUiSourceAt(file,beforePc13ThenV2UiHudSource(file,noncombatPriorRead(file),rawCurrent),'component');
 const formationRead=file=>preComponentUiCiSource(file,
  componentUiSourceEpoch.preCombinedSource(file,componentRead(file),{target:'componentPrior',readSource:componentRead}));
-function withFormationRead(use){
- return currentSourceEpoch.withCombinedProjection(path,rawCurrent(path),{target:'noncombatPrior',readSource:rawCurrent},(_,readPrior)=>{
-  const readComponent=file=>jointUiSourceAt(file,beforePc13ThenV2UiHudSource(file,readPrior(file),rawCurrent),'component');
-  return componentUiSourceEpoch.withCombinedProjection(path,readComponent(path),{target:'componentPrior',readSource:readComponent},
-   (_,read)=>use(file=>preComponentUiCiSource(file,read(file))));
+function prepareFormationRead(readRaw){
+ const observed=new Map(),projected=new Map();
+ function observe(file){
+  const source=readRaw(file);
+  if(observed.has(file))assert(source===observed.get(file),'fresh Formation raw owner: '+file);
+  else observed.set(file,source);
+  return source;
+ }
+ currentSourceEpoch.withCombinedProjection(path,observe(path),{target:'noncombatPrior',readSource:observe},(_,readPrior)=>{
+  const readComponent=file=>jointUiSourceAt(file,beforePc13ThenV2UiHudSource(file,readPrior(file),observe),'component');
+  componentUiSourceEpoch.withCombinedProjection(path,readComponent(path),{target:'componentPrior',readSource:readComponent},(_,read)=>{
+   for(const owner of proof.owners)projected.set(owner,preComponentUiCiSource(owner,read(owner)));
+  });
  });
+ const read=owner=>{
+  assert(projected.has(owner),'exact Formation replay owner: '+owner);
+  observe(owner);
+  return projected.get(owner);
+ };
+ // The deterministic view is based on this exact raw cohort. Each replay
+ // rereads every observed source before and after use, including linked inputs
+ // outside the historical owner list, and rereads each requested raw owner.
+ function confirmCohort(){for(const owner of observed.keys())observe(owner);}
+ return use=>{
+  confirmCohort();
+  try{return use(read);}finally{confirmCohort();}
+ };
 }
 test('Encounter formation outer epoch preserves every prior binding and exact frozen production byte',()=>{
  assert.equal(encounterFormationEpoch.proof.currentCommit,'fb04fd36ab4fbdba71c0da08bf71d2899143f69b');
@@ -124,7 +145,16 @@ test('outer foreign-source fallback preserves invalid raw-reader semantics',()=>
 });
 
 test('live LF and CRLF raw owner reads authenticate 51 current owners on every call',()=>{
- const config='config/architecture.json',input=formationRead(config),expected=proof.targets.actor.files[config].source;
+ const config='config/architecture.json',expected=proof.targets.actor.files[config].source;
+ let rawDrift;
+ const withFormationRead=prepareFormationRead(file=>rawCurrent(file)+(file===rawDrift?'\n':''));
+ const {input,formation}=withFormationRead(read=>({input:read(config),formation:read(path)}));
+ rawDrift='src/lua/abyss_battle_actions.lua';
+ assert.throws(()=>withFormationRead(()=>assert.fail('drifted raw cohort authorized the old view')),/fresh Formation raw owner: src\/lua\/abyss_battle_actions.lua/);
+ rawDrift=undefined;
+ assert.throws(()=>withFormationRead(()=>{rawDrift='src/lua/abyss_battle_actions.lua';}),
+  /fresh Formation raw owner: src\/lua\/abyss_battle_actions.lua/);
+ rawDrift=undefined;
  for(const crlf of [false,true]){
   const seen=[];let corrupt=null,missing=null;
   const project=(path,input,target)=>withFormationRead(read=>{
@@ -135,7 +165,6 @@ test('live LF and CRLF raw owner reads authenticate 51 current owners on every c
    };
    return sourceEpoch.preCombinedSource(path,input,{target,readSource:live});
   });
-  const formation=formationRead(path);
   for(let repeat=0;repeat<2;repeat++){seen.length=0;assert.equal(project(config,input,'actor'),expected);assert.deepEqual(seen,proof.owners);}
   for(const owner of proof.owners){
    corrupt=owner;assert.throws(()=>project(config,input,'actor'),/linked owner identity/,owner);corrupt=null;
