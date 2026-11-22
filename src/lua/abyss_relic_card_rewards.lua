@@ -33,37 +33,40 @@ function M.prepareExtra(run)
  end
  M.sync(run)
 end
-function M.open(run,source)
+function M.open(run,source,Run)
  if run.phase~='reward'or run.rewards~=source or source.cardResolved or not M.managed(run)then
   return false,'stale_card_reward'
  end
  if run.pendingBottledRelic or run.shopRelicChoice or run.pendingBossRelic or run.shopRelicRewards or run.pendingCardRewardSelection then
   return false,'relic_choice_pending'
  end
- return require('abyss_run').transaction(run,function(staged)
+ return Run.transaction(run,function(staged)
   M.ensure(staged)
   staged.cardRewardSelectionSerial=(staged.cardRewardSelectionSerial or 0)+1
   staged.pendingCardRewardSelection={token=staged.cardRewardSelectionSerial,rewardOwner=staged.rewards}
   return true
  end)
 end
+local function claimGroupChoice(staged,group,choice,Run)
+ if choice=='bowl'then
+  if not owns(staged,'singing_bowl')then return false,'missing_singing_bowl'end
+  return Run.increaseMaxHp(staged,2)
+ elseif type(choice)=='number'and choice%1==0 and choice>=0 and choice<=#group.cards then
+  if choice==0 then return true end
+  return Run.obtainCard(staged,group.cards[choice],{upgraded=group.cardUpgrades and group.cardUpgrades[choice]==true})
+ end
+ return false,'invalid_reward_choice'
+end
 -- choice=0 is explicit API abandonment of one group; modal Skip instead uses close.
-function M.claim(run,index,choice)
- return require('abyss_run').transaction(run,function(staged)
+function M.claim(run,index,choice,Run)
+ return Run.transaction(run,function(staged)
   if staged.phase~='reward'or not staged.rewards then return false,'no_pending_reward'end
   M.ensure(staged)
   if index==nil then local _,i=M.nextGroup(staged);index=i end
   if type(index)~='number'or index%1~=0 then return false,'invalid_reward_group'end
   local group=staged.rewards.cardRewardGroups[index]
   if not group or group.resolved then return false,'no_pending_reward'end
-  local Run=require('abyss_run');local ok,why
-  if choice=='bowl'then
-   if not owns(staged,'singing_bowl')then return false,'missing_singing_bowl'end
-   ok,why=Run.increaseMaxHp(staged,2)
-  elseif type(choice)=='number'and choice%1==0 and choice>=0 and choice<=#group.cards then
-   if choice==0 then ok=true
-   else ok,why=Run.obtainCard(staged,group.cards[choice],{upgraded=group.cardUpgrades and group.cardUpgrades[choice]==true})end
-  else return false,'invalid_reward_choice'end
+  local ok,why=claimGroupChoice(staged,group,choice,Run)
   if not ok then return false,why end
   staged.rewards.cardRewardGroups[index].resolved=true
   M.sync(staged)
@@ -71,6 +74,7 @@ function M.claim(run,index,choice)
   return true,why
  end)
 end
+
 function M.close(run,token)
  local p=run.pendingCardRewardSelection
  if not p or p.token~=token or p.rewardOwner~=run.rewards then return false,'stale_card_reward'end

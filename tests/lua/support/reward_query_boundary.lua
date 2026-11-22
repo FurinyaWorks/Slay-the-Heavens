@@ -15,12 +15,44 @@ end
 
 local Run=require('abyss_run')
 if REWARD_GROUP=='cards'or REWARD_GROUP=='shop'then
+ if REWARD_VARIANT=='old'then
+  -- The immutable Pending oracle predates explicit host parameters. Bridge
+  -- only its calls into today's real Boss implementation with the same Run
+  -- transaction owner; no game state, returns or failure handling is replaced.
+  local Boss=require('abyss_boss_relics')
+  for key,arity in pairs({select=2,claimRelic=2,claim=3})do
+   local original=Boss[key]
+   Boss[key]=function(...)
+    local args=table.pack(...)
+    if args.n<=arity then args.n=arity+1;args[args.n]=Run
+    else assert(args.n==arity+1 and args[args.n]==Run,'[REWARD_BOUNDARY] invalid legacy Boss host transport')end
+    return original(table.unpack(args,1,args.n))
+   end
+  end
+ end
  local function wrap(owner,key)
   local original=owner[key]
+  local semanticArity=owner==Cards and ({open=2,claim=3})[key]
+   or owner==Choices and ({claim=4,chooseMirror=2})[key]
+   or owner==Pending and ({resolve=2})[key]
   owner[key]=function(...)
-   local args=table.pack(...);capture(key..':enter',args)
+   local args=table.pack(...);local observed={n=args.n}
+   for i=1,args.n do observed[i]=args[i]end
+   -- The final explicit capability is control-plane composition. Preserve all
+   -- original command arguments, state, aliases and returns in the old oracle.
+   -- Only this declared slot may be removed, and only for the real Run owner.
+   if owner==Choices and key=='chooseMirror' and args.n==4 then
+    assert(args[3]==Run and args[4]==require('abyss_shop_relics').chooseMirror,'[REWARD_BOUNDARY] invalid explicit Mirror owner')
+    observed[3],observed[4],observed.n=nil,nil,2
+   elseif semanticArity and args.n==semanticArity+1 then
+    assert(args[args.n]==Run,'[REWARD_BOUNDARY] foreign explicit Run host')
+    observed[args.n]=nil;observed.n=semanticArity
+   elseif semanticArity then
+    assert(args.n<=semanticArity,'[REWARD_BOUNDARY] unexpected command arguments')
+   end
+   capture(key..':enter',observed)
    local result=table.pack(original(table.unpack(args,1,args.n)))
-   capture(key..':leave',args,result)
+   capture(key..':leave',observed,result)
    return table.unpack(result,1,result.n)
   end
  end
@@ -122,7 +154,7 @@ Run.increaseMaxHp=function(owner,n)
  return true,{granted=n}
 end
 local stale=claimed.shopRelicRewards
-local result=table.pack(Choices.claim(claimed,4,1,'bowl'));equal(result[1],true,'Bowl claim succeeds')
+local result=table.pack(Choices.claim(claimed,4,1,'bowl',Run));equal(result[1],true,'Bowl claim succeeds')
 equal(stale.items[1].claimed,nil,'old graph is not marked');equal(claimed.shopRelicRewards.items[1].claimed,true,'new graph is marked')
 capture('nested-owner-replacement',claimed,stale,result)
 Run.increaseMaxHp=oldHp

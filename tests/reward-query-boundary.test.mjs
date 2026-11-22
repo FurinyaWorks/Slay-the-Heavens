@@ -6,12 +6,14 @@ import {spawnSync} from 'node:child_process';
 import {checkArchitecture,analyzeSources} from '../scripts/check-architecture.mjs';
 import {dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {buildLuaData} from '../scripts/build-lua-data.mjs';
+import {runLua} from '../scripts/test-lua.mjs';
 const consumers=['abyss_relic_card_rewards','abyss_relic_choices','abyss_relic_pending'];
-test('reward query consumers use capabilities and retain actual Run transaction dependencies',()=>{
+test('reward query consumers receive Run transaction capabilities through explicit command owners',()=>{
  const graph=checkArchitecture();assert.deepEqual(graph.errors,[]);
  assert.deepEqual(graph.edges.filter(e=>consumers.includes(e.from)&&e.to==='abyss_relic_hooks'),[],'[REWARD_BOUNDARY] mixed Session facade returned');
- for(const from of consumers)assert(graph.edges.some(e=>e.from===from&&e.to==='abyss_run'),'real transaction owner must remain visible');
+ for(const from of consumers)assert(!graph.edges.some(e=>e.from===from&&e.to==='abyss_run'),'real transaction capability comes from Run');
  const cycle=dependencyCycles(graph.nodes,graph.edges).find(c=>c.members.includes('abyss_run'));
+ assert.equal(cycle,undefined,'Run transaction owners must remain acyclic including deferred imports');
  // SCC size may shrink as unrelated command owners are separated. The real
  // boundary is that query providers cannot join the Run transaction cycle.
  assert((cycle?.members.length??0)<=15,'Run cycle cannot exceed the original member budget');
@@ -31,6 +33,22 @@ test('reward query architecture rule rejects immediate and deferred facade regre
   assert(report.errors.some(e=>e.message.includes('Dependency boundary reward-query-consumer-boundary:')));
  }
 });
+test('the architecture gate rejects a deferred runtime import of the Run owner',()=>{
+ const policy=JSON.parse(readFileSync('config/architecture.json','utf8'));
+ const rule=policy.dependencyBoundaries.find(r=>r.id==='session-command-consumers');
+ assert(rule);
+ const sources=Object.fromEntries([...rule.from,'abyss_run'].map(name=>[name,'return {}']));
+ sources.abyss_relic_pending="return function()return require('abyss_run')end";
+ const report=analyzeSources(sources,{layers:policy.layers,dependencyBoundaries:[rule]},{});
+ assert(report.errors.some(e=>e.message.includes('Dependency boundary session-command-consumers:')));
+});
+
+test('explicit Run command capabilities preserve cold loading, dynamic dispatch and late rollback',()=>{
+ const result=runLua('tests/lua/support/run_cycle_host.lua');
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/RUN_CYCLE_HOST_PASS cold-load,explicit-owner,dynamic-slot,nested-transaction,late-rollback/);
+});
+
 function run(variant,group,mutation='none'){
  const directory=`build/reward-query-boundary/${group}-${variant}-${mutation}`;mkdirSync(directory,{recursive:true});
  const result=spawnSync(process.execPath,['--max-old-space-size=512','tests/helpers/reward-query-boundary-vm.mjs',variant,group,directory,mutation],{encoding:'utf8',timeout:30000,maxBuffer:2*1024**2,windowsHide:true});

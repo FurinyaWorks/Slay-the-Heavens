@@ -57,7 +57,7 @@ for _,mixed in ipairs({false,true})do
   end
   assert(houseCount==1)
   snapshot(run,'after-tiny-house')
-  assert(require('abyss_boss_relics').claim(run,'done'))
+  assert(require('abyss_boss_relics').claim(run,'done',nil,Run))
   for _,spec in ipairs({{'war_paint','skill'},{'whetstone','attack'}})do
    local old=snapshot(run,'before-'..spec[1]);assert(Run.obtainRelic(run,spec[1]))
    local count=0

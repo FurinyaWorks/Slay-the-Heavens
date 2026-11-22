@@ -50,14 +50,14 @@ end)
 test('Empty Cage selects two distinct live UIDs and rejects duplicate input atomically',function()
  local r=fresh();obtain(r,'empty_cage');local p=assert(r.pendingBossRelic)
  eq(p.total,2);local first,second=r.deck[1].uid,r.deck[2].uid
- assert(B.select(r,first));local before=C.copy(r);assert(not B.select(r,first));same(r,before)
- assert(B.select(r,second));eq(#r.deck,8);eq(r.pendingBossRelic,nil)
- assert(not B.select(r,second))
+ assert(B.select(r,first,Run));local before=C.copy(r);assert(not B.select(r,first,Run));same(r,before)
+ assert(B.select(r,second,Run));eq(#r.deck,8);eq(r.pendingBossRelic,nil)
+ assert(not B.select(r,second,Run))
 end)
 test('Astrolabe really removes three old cards and obtains three upgraded replacements',function()
  local r=fresh();obtain(r,'astrolabe');local uids={r.deck[1].uid,r.deck[2].uid,r.deck[3].uid}
  local nextUid=r.nextDeckUid;local before=R.snapshot(r.miscRng)
- for _,uid in ipairs(uids)do assert(B.select(r,uid))end
+ for _,uid in ipairs(uids)do assert(B.select(r,uid,Run))end
  eq(r.pendingBossRelic,nil);eq(#r.deck,10);eq(r.nextDeckUid,nextUid+3)
  assert(r.miscRng.counter>before.counter)
  for i=#r.deck-2,#r.deck do assert(r.deck[i].upgraded);assert(r.deck[i].uid>=nextUid)end
@@ -73,10 +73,10 @@ test('Tiny House upgrades one card, increases health, and exposes once-only real
  eq(r.maxHp,maxHp+5);eq(r.hp,25);eq(r.gold,gold)
  local upgrades=0;for _,c in ipairs(r.deck)do if c.upgraded then upgrades=upgrades+1 end end;eq(upgrades,1)
  local p=assert(r.pendingBossRelic);eq(p.gold,50);assert(p.potion and p.cards and #p.cards==3)
- assert(B.claim(r,'gold'));eq(r.gold,gold+50);assert(not B.claim(r,'gold'))
- assert(B.claim(r,'potion'));eq(r.potions[1],p.potion.id)
- local before=#r.deck;assert(B.claim(r,'card',1));eq(#r.deck,before+1);assert(not B.claim(r,'card',1))
- assert(B.claim(r,'done'));eq(r.pendingBossRelic,nil)
+ assert(B.claim(r,'gold',nil,Run));eq(r.gold,gold+50);assert(not B.claim(r,'gold',nil,Run))
+ assert(B.claim(r,'potion',nil,Run));eq(r.potions[1],p.potion.id)
+ local before=#r.deck;assert(B.claim(r,'card',1,Run));eq(#r.deck,before+1);assert(not B.claim(r,'card',1,Run))
+ assert(B.claim(r,'done',nil,Run));eq(r.pendingBossRelic,nil)
 end)
 test('Crown and visibility/retention predicates follow actual acquired owners',function()
  local r=fresh();obtain(r,'busted_crown');eq(B.cardRewardCount(r,3),1)
@@ -107,10 +107,10 @@ test('Calling Bell obtains its protected curse and individually grants three sou
  assert(protected)
  for i=1,3 do
   local id=r.pendingBossRelic.relics[i].id;local old=#r.relics
-  local ok,why=B.claim(r,'relic',i);assert(ok,why);eq(#r.relics,old+1)
-  eq(r.relics[#r.relics],id);local before=C.copy(r);assert(not B.claim(r,'relic',i));same(r,before)
+  local ok,why=B.claim(r,'relic',i,Run);assert(ok,why);eq(#r.relics,old+1)
+  eq(r.relics[#r.relics],id);local before=C.copy(r);assert(not B.claim(r,'relic',i,Run));same(r,before)
  end
- assert(B.claim(r,'done'));eq(r.pendingBossRelic,nil)
+ assert(B.claim(r,'done',nil,Run));eq(r.pendingBossRelic,nil)
 end)
 test('failed complex obtain restores ownership, entropy, deck and pending state',function()
  local r=fresh();r.nextDeckUid=9007199254740991.0;local before=C.copy(r)
