@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {componentUiSourceEpoch} from './helpers/component-ui-source-epoch.mjs';
 import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {
  officialBattlePotionHudSourceProof as proof,preOfficialBattlePotionHudSource,
  preOfficialBattleSource,officialBattleResponseSourceProof as response,
@@ -16,7 +17,12 @@ import {
 const hash=source=>createHash('sha256').update(source).digest('hex');
 // This literal Git contract predates shared CardSkin; authenticate the current
 // closure before selecting the exact reviewed pre-repair battle source view.
-const historical=path=>sourceSlice(path,readFileSync(path,'utf8'),'officialUiRepairPrior');
+const historical=path=>{
+ const live=readFileSync(path,'utf8');
+ const source=sourceSlice(path,live,'officialUiRepairPrior');
+ if(source===live&&path==='src/lua/abyss_battle_info_content.lua')return beforeCharacterPreparationSource(path,live);
+ return source;
+};
 const changed=[
  'src/lua/abyss_battle_actions.lua','src/lua/abyss_battle_card_gestures.lua',
  'src/lua/abyss_battle_card_view.lua','src/lua/abyss_battle_info_content.lua',

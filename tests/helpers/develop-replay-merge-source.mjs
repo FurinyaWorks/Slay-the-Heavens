@@ -28,11 +28,15 @@ const mapRoomCohortPaths=new Set([
  'tests/encounter-formation-source-epoch.test.mjs',
  'tests/run-max-hp-config-inverse.test.mjs',
  'tests/session-menu-navigation.test.mjs',
+ 'scripts/build-native-audio-game.mjs',
+ 'tests/candidate-art-policy.test.mjs',
+ 'tests/lua/node_event_copy.lua',
+ 'tests/official-battle-potion-hud-source-epoch.test.mjs',
 ]);
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  'b087513ebdd898bac64cd8f926d5bdd82f97e2b139407ffe7d9a222a032b7df6','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  '6a19f8d35b71e82893436077ff4be1b8c4ddbb1172be02c8639c20e71941b989','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 

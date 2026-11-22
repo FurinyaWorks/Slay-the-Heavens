@@ -271,6 +271,8 @@ const mapRoomEntryFiles=Object.freeze({
  'tests/helpers/relic-detail-source.mjs':'d0a38c20119cdf8c951b4fb470ab91910a3474d8972d4c2650de4eed667cbfa4',
  'tests/helpers/native-host-replay-source.mjs':'e7755ecdd96304a1355b610493cbe7827f62543dcbf94392e22539fbf6160ea7',
  'tests/helpers/native-host-replay-source.json.gz':'979352d3332e2cc708d22055ed69bb3fcc00a954c1cd55f8f807924116360145',
+ 'tests/helpers/native-fixture-replay-source.mjs':'7301cb32e475eb49d48afa987eaa2006689721ab82d4d0a637f61b49141e7109',
+ 'tests/helpers/native-fixture-replay-source.json.gz':'fec6dde0efe712f98a60bfe0866f6122670c2949b6d617108777aab058a2d84f',
  'tests/helpers/round3-catalog-source-inverse.mjs':'aa305d8d0185ffec57a7ab85065e9767bb607b2c973b23e035413168def86a03',
  'tests/fixtures/develop-map-room-entry-source.json.gz':'bff89df36b2fbbf1bec727dae075c632dba48d50c6c8c75b8e3f271d7600c160',
 });

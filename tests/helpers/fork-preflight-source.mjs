@@ -1,6 +1,7 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
+import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
 import {beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
@@ -709,6 +710,7 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const liveRead=read;
+ assertNativeFixturesCurrent(liveRead);
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
   const live=read(path,encoding),raw=path===replayAssetLedger?beforeReplayArchiveStorage(path,live):live,priorMerge=beforeDevelopReplayMerge(path,raw);
@@ -725,7 +727,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   // The merged runtime helper was checked before its exact replay projection.
   if(path===epochReplayRuntimePath)return beforeDevelopBackflow(path,source);
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
-  return beforeNativeHostReplay(path,authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8')));
+  return beforeNativeFixtureReplay(path,beforeNativeHostReplay(path,authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8'))));
  };
  const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);
@@ -753,6 +755,7 @@ export function beforePreflightSource(path,source,view='prior'){
  source=beforeDevelopEpochReplayRuntime(path,source);
  source=beforeDevelopBackflow(path,source);
  source=beforeNativeHostReplay(path,source);
+ source=beforeNativeFixtureReplay(path,source);
  source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));
  source=beforeStsUiCloseoutSource(path,source);
  source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
