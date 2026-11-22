@@ -1,0 +1,137 @@
+{
+  "source": "BeyondSimulator 0.5.2 fixed offline scene",
+  "limits": {
+    "imageControls": 48,
+    "rootControls": 1,
+    "eventCount": 7
+  },
+  "priorStandaloneGiaBytes": 306115,
+  "newStandaloneGiaBytes": 307323,
+  "deltaBytes": 1208,
+  "unchangedFive": "Identical capture PNG hashes and GIA byte counts. Tool-assigned metadata in fresh GIA exports is not assumed bit-stable.",
+  "requiresUserApproval": true,
+  "deviceOrOfficialImport": "NOT_RUN",
+  "gameIntegration": false,
+  "revised": {
+    "golden_wing": {
+      "previous": {
+        "controls": 49,
+        "images": 48,
+        "visible": 49,
+        "containers": 1,
+        "warnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ],
+        "giaBytes": 43815,
+        "giaSha256": "00f292bdbd007978c886c89ea733d745ee2a2502f12f94a03fd9fce1f8c29f46",
+        "screenshotSha256": "6fb13342317b7149bf05134e38b65142622456d563802494f65a439e7454bf6e"
+      },
+      "new": {
+        "controls": 49,
+        "images": 48,
+        "visible": 49,
+        "containers": 1,
+        "warnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ],
+        "giaBytes": 43935,
+        "giaSha256": "e6a7af79e68ea06207d9a61a06be373075dffb65dd100016e52db02fc84e4b8f",
+        "screenshotSha256": "8cc7c7ae1e693ba38306a5d9d4c5fcb0a044db17776f9b32b47083bb1a025b3d"
+      },
+      "newFixedFrame": {
+        "sourceSaveSha256": "7f94b88876eed639b7d8a2c5967fee46e6ea29a5361e1e456da9fbb96396a1c9",
+        "shown": {
+          "visible": 49,
+          "screenshotSha256": "50d6c245edab35af5580bb738cad2dd66da2f6387ca6ee4f87c54149bed9f554",
+          "repeatIdentical": true,
+          "frame": 0,
+          "time": 0
+        },
+        "hidden": {
+          "visible": 0,
+          "screenshotSha256": "1c2aefa87ab5d0460fdfe0685c135ffea440bd598fa02c99ebad8e833448ded5",
+          "repeatIdentical": true,
+          "frame": 0,
+          "time": 0
+        },
+        "changedPixelsInProxyRects": {
+          "eventName": 0,
+          "bodyAndOptionExtent": 0,
+          "officialBackEnvelope": 0,
+          "officialConfirmEnvelope": 0,
+          "v25ConditionalBackProbe": 468
+        },
+        "changedPixels": 109109,
+        "offSlotPx": 209,
+        "offCenteredWellEnvelopePx": 0,
+        "bboxHalfOpen": [
+          101,
+          243,
+          433,
+          575
+        ],
+        "maxDirectionalOvershoot": 2
+      }
+    },
+    "purifier": {
+      "previous": {
+        "controls": 49,
+        "images": 48,
+        "visible": 49,
+        "containers": 1,
+        "warnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ],
+        "giaBytes": 42777,
+        "giaSha256": "cb1557045fb71aa4f3c856eb7666098fef53ed7c09d209fc0ea2c06f04edfa07",
+        "screenshotSha256": "1c0b0871fdd0afa397fadea05231f355a31e3f078a3bd9ad62331a9c56cefacb"
+      },
+      "new": {
+        "controls": 49,
+        "images": 48,
+        "visible": 49,
+        "containers": 1,
+        "warnings": [
+          "客户端控件容器: 新服务端控件模板写入显式空 Info.related，避免跨沙箱复用伴生资源 GUID 产生无法加载的索引。"
+        ],
+        "giaBytes": 43865,
+        "giaSha256": "32ec99092c0e2d6230373429dd0459064e3cda9b9cda0318a277c038d3038c8d",
+        "screenshotSha256": "3ef74b49d4162a06f1f48ec224c80ebab150184d122e38baa8f11b17bf1ad562"
+      },
+      "newFixedFrame": {
+        "sourceSaveSha256": "62f98092ad04107ec60df15904e095782642bef51587ee89089316a5e65d977b",
+        "shown": {
+          "visible": 49,
+          "screenshotSha256": "9591f6ff783329dd4e31a51fc041ef77ad363641ad84ac8fb0d96629964e6437",
+          "repeatIdentical": true,
+          "frame": 0,
+          "time": 0
+        },
+        "hidden": {
+          "visible": 0,
+          "screenshotSha256": "1c2aefa87ab5d0460fdfe0685c135ffea440bd598fa02c99ebad8e833448ded5",
+          "repeatIdentical": true,
+          "frame": 0,
+          "time": 0
+        },
+        "changedPixelsInProxyRects": {
+          "eventName": 0,
+          "bodyAndOptionExtent": 0,
+          "officialBackEnvelope": 0,
+          "officialConfirmEnvelope": 0,
+          "v25ConditionalBackProbe": 468
+        },
+        "changedPixels": 108900,
+        "offSlotPx": 0,
+        "offCenteredWellEnvelopePx": 0,
+        "bboxHalfOpen": [
+          103,
+          245,
+          433,
+          575
+        ],
+        "maxDirectionalOvershoot": 0
+      }
+    }
+  }
+}
