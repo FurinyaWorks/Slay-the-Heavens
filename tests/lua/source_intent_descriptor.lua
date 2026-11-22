@@ -18,6 +18,7 @@ if not cases then
  end
 end
 local attacks,ops=0,{}
+local secondary={ATTACK_DEBUFF='debuff',ATTACK_DEFEND='defend',ATTACK_BUFF='buff',DEFEND_BUFF='buff'}
 for _,row in ipairs(cases)do
  local definition=assert(s.catalog.enemies[row[1]],row[1])
  local index;for at,move in ipairs(definition.intents)do if move.id==row[2]then index=at end end
@@ -27,6 +28,7 @@ for _,row in ipairs(cases)do
  local before=C.copy(actor)
  local descriptor=V.selectedDescriptor(state,1)
  assert(descriptor.id==row[2] and descriptor.intent==row[3],row[1]..'/'..row[2])
+ assert(descriptor.face.badge==secondary[row[3]],'compound source meaning lost for '..row[1]..'/'..row[2])
  if row[3]:sub(1,6)=='ATTACK'then
   attacks=attacks+1
   local raw

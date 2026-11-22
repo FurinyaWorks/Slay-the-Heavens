@@ -32,9 +32,12 @@ surfaces:each(function(box,slot,entry)
  assert(math.abs(intent.size[1]-64/1.5)<1e-8,'original intent hitbox')
 end)
 assert(count==6,'six actual generated full actor templates must render without truncation')
-for _,enemy in ipairs(state.enemies)do
+for index,enemy in ipairs(state.enemies)do
  local control=surfaces:find(enemy.id)
- assert(not control:GetChild('intentBadge').visible and not control:GetChild('intentExtra').visible,'world intent must not use invented horizontal tooltip composites')
+ local badge=control:GetChild('intentBadge')
+ assert(badge.visible==(F.Combat.intent(state,index).id=='acid_slime_m_1'),'only the actual attack-plus-Slimed move shows a badge')
+ if badge.visible then assert(badge.imageId==F.Theme.icon.intent.debuff)end
+ assert(not control:GetChild('intentExtra').visible,'other controls stay hidden')
  assert(math.abs(control:GetChild('intentIcon').size[1]-math.min(128/1.5,require('abyss_theme').layout.intent.size))<1e-8,'full-bleed intent glyph size')
 end
 

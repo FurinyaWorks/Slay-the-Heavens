@@ -57,4 +57,51 @@ while C.intent(hidden,1).id~='jaw_worm_3'do assert(hiddenTurns<8 and C.endTurn(h
 host.run.combat=hidden;host:refresh();box=actor()
 assert(not box:GetChild('intentIcon').visible and not box:GetChild('intentBadge').visible,'Dome hides both pending effects')
 assert(not box:GetChild('intentHit').visible,'hidden intent does not expose detail hitbox')
-print('MOBILE_COMPOSITE_INTENT_PASS natural Bellow, detail/source, source geometry, rule unchanged, next attack, actor replacement, Dome')
+host:disable()
+
+local packHost,packRoot=F.fixture();assert(F.start(packHost))
+local queue=require('abyss_encounter_queue')
+local roomRun=Run.new(F.Data,91)
+for _=1,3 do local _,nextQueue=queue.consume(roomRun.encounters,'normal');roomRun.encounters=nextQueue end
+roomRun.floor=4
+assert(Run.startRoomCombat(roomRun,'normal'))
+local pack=roomRun.combat
+assert(pack.sourceEncounter=='Gremlin Gang' and #pack.enemies==4,'use the normal-room formation')
+assert(Run.startCombat(packHost.run,'cultist_solo'))
+packHost.run.combat=pack
+packHost:refresh();packHost:update(.8)
+local packPanel=packRoot:GetChild('battlePanel')
+local weakGremlins,previousRight=0,-math.huge
+for index,gremlin in ipairs(pack.enemies)do
+ local control=F.actorControl(packPanel,'enemy'..index)
+ local icon,second,damage=control:GetChild('intentIcon'),control:GetChild('intentBadge'),control:GetChild('intent')
+ if gremlin.definitionId=='fat_gremlin'then
+  weakGremlins=weakGremlins+1
+  assert(icon.visible and icon.imageId==F.Theme.icon.intent.attack and damage.visible and damage.text=='4')
+  assert(second.visible and second.imageId==F.Theme.icon.intent.debuff,'迟缓小魔 must show its pending Weak alongside attack 4')
+  assert(second.imageColor.r==F.Theme.color.debuff.r and second.imageColor.a==icon.imageColor.a)
+  assert(second.y==icon.y and second.x+second.sizeDeltaX/2<=icon.x-icon.sizeDeltaX/2-F.Theme.space.xs+.001)
+  assert(damage.x-damage.sizeDeltaX/2>=icon.x+icon.sizeDeltaX/2+F.Theme.space.xs-.001)
+  if weakGremlins==1 then
+   assert(control:GetChild('intentHit').click(),'intent remains inspectable')
+   assert(packHost.battleUI.info.kind=='intent' and packHost.battleUI.info.index==index)
+  end
+  local rows=V.intentView(pack,index).rows
+  assert(rows[1].name=='攻击 4' and rows[2].name=='虚弱 1')
+ else
+  assert(not second.visible,'neighboring single-intent gremlin must have no badge')
+ end
+ local left,right=math.huge,-math.huge
+ for _,part in ipairs({icon,second,damage})do
+  if part.visible then
+   local start=control.x+part.x-part.sizeDeltaX/2
+   local width=part==damage and utf8.len(part.text)*F.Theme.layout.intent.numberSize or part.sizeDeltaX
+   left,right=math.min(left,start),math.max(right,start+width)
+  end
+ end
+ assert(left>previousRight,'adjacent gremlins must have separate intent rows')
+ previousRight=right
+end
+assert(weakGremlins==2 and (pack.player.statuses.weak or 0)==0,'both badges are previews for independent instances')
+packHost:disable()
+print('MOBILE_COMPOSITE_INTENT_PASS natural Bellow and Gremlin Gang, detail/source, geometry, rule unchanged, replacement, Dome')

@@ -82,14 +82,17 @@ local function intentTone(alpha,kind)
 end
 local function renderIntentBadge(box,face,x,y,size,allowed,alpha,binding,picture,tint)
     local badge=box:GetChild('intentBadge')
-    local visible=allowed~=false and face.sourceEnum=='DEFEND_BUFF'and face.worldVisible==true and face.badge=='buff'
+    local kind=face.badge
+    local visible=allowed~=false and kind~=nil and (not face.sourceEnum or face.worldVisible==true)
     intentVisible(badge,visible,binding)
     if not visible then return end
     local glyph=math.min(size,L.intent.size)
+    -- Attack damage owns the right side of the main icon, including multi-hit text.
+    local side=(face.worldKind or face.kind)=='attack' and -1 or 1
     intentSize(badge,L.intent.badge,L.intent.badge,binding)
-    intentPosition(badge,x+glyph/2+S.xs+L.intent.badge/2,y,binding)
-    picture(badge,Theme.icon.intent.buff)
-    tint(badge,intentTone(alpha,'buff'))
+    intentPosition(badge,x+side*(glyph/2+S.xs+L.intent.badge/2),y,binding)
+    picture(badge,Theme.icon.intent[kind])
+    tint(badge,intentTone(alpha,kind))
 end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)

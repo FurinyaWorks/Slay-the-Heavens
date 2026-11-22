@@ -18,6 +18,12 @@ local effectKinds = { damage = "attack", block = "defend", gainStatus = "buff",
     heartStatusDraw='debuff',spireBashDebuff='debuff',heartPainfulStabs='buff',
     enemyRally = 'buff', enemyEncourage = 'buff', enemyTorchSpawn = 'buff', enemyTorchRevive = 'buff',
     enemyBronzeSpawn = 'buff', enemyStasis = 'debuff', writhingParasite='debuff', enemyBurnBoth='debuff', enemyDazedDraw='debuff',awakenedVoid='debuff' }
+-- The source displays these effects around the main icon. A native badge keeps
+-- the second meaning visible throughout the preview without relying on particles.
+local sourceBadges = {
+    ATTACK_BUFF = 'buff', ATTACK_DEBUFF = 'debuff', ATTACK_DEFEND = 'defend',
+    DEFEND_BUFF = 'buff', DEFEND_DEBUFF = 'debuff',
+}
 
 -- Mixed moves show the first other effect kind in the original icon priority.
 function M.intentBadge(intent)
@@ -353,6 +359,7 @@ local function sourceIntentView(state,index)
  face.sourceEnum=actor and SourceIntents.enum(actor,intent)
  if face.sourceEnum then
   face.sourceTexture,face.worldKind,face.worldVisible=SourceIntents.visual(face.sourceEnum,face.worldDamage,face.worldTimes)
+  face.badge=sourceBadges[face.sourceEnum]
  end
  return face
 end
@@ -378,6 +385,6 @@ function M.selectedDescriptor(state,index)
  assert(not enum or enum:sub(1,6)~='ATTACK' or base~=-1,'source attack move has no damage metadata')
  return {id=intent.id,intent=enum or 'NONE',baseDamage=base,
   multiplier=times,isMultiDamage=SourceIntents.isMulti(actor,intent),
-  face={value='',kind=intent.kind,badge=enum=='DEFEND_BUFF'and'buff'or nil,rows={}}}
+  face={value='',kind=intent.kind,badge=sourceBadges[enum],rows={}}}
 end
 return M
