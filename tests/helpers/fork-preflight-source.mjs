@@ -153,7 +153,7 @@ function beforeDevelopPortraitLifecycleCopier(path,source){
 function beforeDevelopSessionRelicCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='f8448ec29a10f59934d176f16979c59ea5c9b8893d424bb7d5dbb323ee2ae92d')return source;
+ if(hash(lf)!=='c215f44648c33c5019d85f920d6f956cd125da89a1ed7b879416e76e758da375')return source;
  const prior=lf.replace(/^const developSessionRelicFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(developSessionRelicFiles))','Object.entries(developPortraitLifecycleFiles))');
  assert.equal(hash(prior),'b56f2396efb198ba05a6b28e404f47a303d8ef0f4f2e76c436ff206257ef5076','exact Develop session relic copier predecessor');

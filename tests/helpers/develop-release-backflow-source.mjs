@@ -48,11 +48,12 @@ assert.equal(portraitLifecycle.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
 assert.deepEqual(Object.keys(portraitLifecycle.files),["src/lua/abyss_traveler_portraits.lua"]);
 for(const path of Object.keys(portraitLifecycle.files))assert(![cardDisplay.files,mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop portraitLifecycle source owner: '+path);
 const sessionRelicArchive=readFileSync(new URL('../fixtures/develop-session-relic-source.json.gz',import.meta.url));
-assert.equal(hash(sessionRelicArchive),'612f70c4bb5ae96a9dc70d5a9ba485359e22801788dc11fb0df4872f4427f141','exact Develop session relic predecessor archive');
+assert.equal(hash(sessionRelicArchive),'f0d848926a6744e64d461cc1de1f05d324378447705d6e4ab93750b391fe9dd0','exact Develop session relic predecessor archive');
 const sessionRelic=JSON.parse(gunzipSync(sessionRelicArchive));
 assert.equal(sessionRelic.base,'2f9444dcbd33ac71a6507db1775be5b70533e68a');
 assert.deepEqual(Object.keys(sessionRelic.files),[
  'config/architecture.json',
+ 'src/lua/abyss_battle_ui.lua',
  'src/lua/abyss_boss_relics.lua',
  'src/lua/abyss_node_ui.lua',
  'src/lua/abyss_relic_card_rewards.lua',
