@@ -18,19 +18,45 @@ const sources={
     edits:[["then scope=self.pageReveal.state=='failed' and 'pageReveal' or 'blocked'","then scope='pageReveal'"]],
   },
   'src/lua/abyss_page_reveal.lua':{
-    after:'6587cfb510493f0d18c3a419438754a054211eda688c5b7ac0a63c2e9b0b63f7',
+    after:'af170c250864541ebcb2d3a672dc062777d963d2138d5e42b1e5170ab67fc699',
     before:'11c445d81dc6687b06d6b8d617f524740ee3da92264d3400bb54019c0a8adc61',
     edits:[
       ["        local recovery=cover:GetChild('cancel')\n        if self.epoch~=ticket then return false end\n        if recovery then recovery:SetVisible(false)end\n        if self.epoch~=ticket then return false end\n",''],
-      ["        local recovery=cover:GetChild('cancel')\n        if recovery then recovery:SetVisible(self.state=='failed')end\n",''],
+      ["            if self:request(intent) and reason then return reject(self,tostring(reason))end", "            self:request(intent)\n            if reason then return reject(self,tostring(reason))end"],
+      ["    function gate:paint(raise)\n        local ticket=self.epoch\n", "    function gate:paint(raise)\n"],
+      ["        local recovery=cover:GetChild('cancel')\n        if self.epoch~=ticket then return false end\n        if recovery then recovery:SetVisible(self.state=='failed')end\n",''],
       ["        self.error=nil\n        if value~=true",'        if value~=true'],
     ],
   },
   'tests/sts-page-reveal.test.mjs':{
-    after:'d0eebf21d73dbe32256a3d73327d29b55f0abe1777fc3c7293fd00a90e7b02b2',
+    after:'36bb93baad36b0861c04859afaceec559a263b565885f65cf079e072e4e77a93',
     before:'594e4a40b4cfdb98178c15ff211a07457a8c18615379d524a722b22eb22c790c',
     edits:[
       ["\nfor _,operation in ipairs({'lookup','visibility'})do\n local nested,events,trigger=nil,{},true\n local replacement={page='mapPanel',run={}}\n local function reenter()\n  if not trigger then return end\n  trigger=false\n  assert(nested:request(replacement))\n end\n local recovery={SetVisible=function()if operation=='visibility'then reenter()end end}\n local native={SetVisible=function()end,SetAsLastSibling=function()end,GetChild=function(_,name)\n  if name~='cancel'then return end\n  if operation=='lookup'then reenter()end\n  return recovery\n end}\n nested=Gate.new(native,function()return false end,function(epoch)events[#events+1]=epoch end)\n assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)\n assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')\nend\n",''],
+      [`
+
+-- A failed in-place deck paint can be superseded while it hides recovery.
+local oldRun={};local oldDeck={page='deckPanel',mode='map',run=oldRun,overlayContent=1}
+local nextDeck={page='deckPanel',mode='map',run=oldRun,overlayContent=2}
+local newMap={page='mapPanel',mode='map',run={}}
+local handoff,triggerRecoveryWrite,failDeck
+local armedRecovery={SetVisible=function()
+ if not triggerRecoveryWrite then return end
+ triggerRecoveryWrite=false
+ assert(handoff:request(newMap))
+end}
+local reentrantCover={SetVisible=function()end,SetAsLastSibling=function()end,
+ GetChild=function(_,name)if name=='cancel'then return armedRecovery end end}
+handoff=Gate.new(reentrantCover,function()
+ if failDeck then return false,'old deck failed' end
+ return true
+end)
+assert(not handoff:step(oldDeck) and handoff:step(oldDeck))
+assert(handoff:begin(nextDeck))
+failDeck=true;triggerRecoveryWrite=true
+assert(not handoff:finish(nextDeck))
+assert(handoff.intent==newMap and handoff.state=='preparing' and handoff.error==nil,'obsolete deck paint marked the new map as failed')
+`,''],
       ["local recovery=cover:GetChild('cancel');local cancel=recovery:GetChild('hit')\n",''],
       [`assert(not recovery.visible,'normal loading exposed the recovery menu button')
 assert(not cancel.click()and not host.exitOpen,'normal loading accepted a stale recovery click')

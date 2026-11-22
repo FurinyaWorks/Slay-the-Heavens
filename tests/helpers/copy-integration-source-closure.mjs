@@ -84,13 +84,14 @@ const refinedReleaseFiles=Object.freeze({
 const loadingRecoveryFiles=Object.freeze({
  ...refinedReleaseFiles,
  'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',
- 'tests/helpers/loading-recovery-source.mjs':'2889f305db86163075f81f30d9002b34cbdf9edb91766abe9b7a312ea85d6b73',
+ 'tests/helpers/loading-recovery-source.mjs':'e787821394dadfeefb206dda8d8a20bd371d3967eb4722317e5a128477721b01',
  'tests/helpers/release-map-deck-source.mjs':'85e4ee451443b14722853a3bcfe8349df895db3cf6c186f42242050c38ed5017',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',
  'tests/fixtures/combat-visual-source.json.gz':'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d',
  'tests/helpers/energy-reference-source.mjs':'c640c2cf869dc51bcb4b47f143f91e3cb799bec0a80212166592a8c8c29f59c1',
  'tests/fixtures/energy-reference-source.json.gz':'2b0f8c497c73a8afca47b01a41c7c8800f92c2879202c827df663269329ef19e',
+ 'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

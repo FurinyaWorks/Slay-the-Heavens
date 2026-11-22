@@ -57,6 +57,29 @@ for _,operation in ipairs({'lookup','visibility'})do
  assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)
  assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')
 end
+
+-- A failed in-place deck paint can be superseded while it hides recovery.
+local oldRun={};local oldDeck={page='deckPanel',mode='map',run=oldRun,overlayContent=1}
+local nextDeck={page='deckPanel',mode='map',run=oldRun,overlayContent=2}
+local newMap={page='mapPanel',mode='map',run={}}
+local handoff,triggerRecoveryWrite,failDeck
+local armedRecovery={SetVisible=function()
+ if not triggerRecoveryWrite then return end
+ triggerRecoveryWrite=false
+ assert(handoff:request(newMap))
+end}
+local reentrantCover={SetVisible=function()end,SetAsLastSibling=function()end,
+ GetChild=function(_,name)if name=='cancel'then return armedRecovery end end}
+handoff=Gate.new(reentrantCover,function()
+ if failDeck then return false,'old deck failed' end
+ return true
+end)
+assert(not handoff:step(oldDeck) and handoff:step(oldDeck))
+assert(handoff:begin(nextDeck))
+failDeck=true;triggerRecoveryWrite=true
+assert(not handoff:finish(nextDeck))
+assert(handoff.intent==newMap and handoff.state=='preparing' and handoff.error==nil,'obsolete deck paint marked the new map as failed')
+
 print('PAGE_REVEAL_PASS')`);
 });
 test('ready combat choice cannot publish through a synchronous paint or on its first ready turn',()=>{

@@ -160,8 +160,7 @@ function M.new(cover,ready,onIntent,frames)
         if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
         self.painting=nil
         if reason or value~=true then
-            self:request(intent)
-            if reason then return reject(self,tostring(reason))end
+            if self:request(intent) and reason then return reject(self,tostring(reason))end
             return false
         end
         self.epoch=self.epoch+1;self.intent=intent;self.published=intent;self.armed=nil;self.error=nil
@@ -171,12 +170,14 @@ function M.new(cover,ready,onIntent,frames)
         return true
     end
     function gate:paint(raise)
+        local ticket=self.epoch
         if not paintFrame()then return false end
         cover:SetVisible(self:covered())
         if self:covered() and raise then cover:SetAsLastSibling()end
         local message=cover:GetChild('message')
         if message then message.text=self.error and '画面暂未准备完成，可返回菜单。' or '正在准备画面…'end
         local recovery=cover:GetChild('cancel')
+        if self.epoch~=ticket then return false end
         if recovery then recovery:SetVisible(self.state=='failed')end
     end
     function gate:step(intent)
