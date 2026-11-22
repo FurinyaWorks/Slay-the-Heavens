@@ -84,6 +84,20 @@ local function markEmerald(map,context)
     for _,node in ipairs(map.nodes)do if node.id==selection.nodeId then node.hasEmeraldKey=true end end
 end
 
+local lastRoomSource
+local function roomSource(runSeed,act)
+    local source=lastRoomSource
+    if source and source.runSeed==runSeed and source.act==act then return source end
+    -- The source topology and room assignment depend only on the seed and act.
+    -- Retain one private source, without its working grid, and build fresh map
+    -- nodes and RNG state from it. Restore still replays and compares every path.
+    local generated=Rooms.generate(runSeed,act)
+    source={runSeed=runSeed,act=act,mapSeed=generated.mapSeed,nodes=generated.nodes,edges=generated.edges,
+        topologyState=generated.topologyState,randomState=generated.randomState}
+    lastRoomSource=source
+    return source
+end
+
 function M.generate(data, seed, act, trustedContext)
     emeraldContext(trustedContext)
     if act==nil then act=1 end
@@ -101,7 +115,7 @@ function M.generate(data, seed, act, trustedContext)
         end
         return map
     end
-    local generated=Rooms.generate(runSeed,act)
+    local generated=roomSource(runSeed,act)
     local offset=chapter.first-1
     if act~=1 then signature='map-v4:sts-a0-319009d5:'..chapter.id..':'..signature end
     -- seed preserves the Nodes map-identity ABI; both identities are immutable

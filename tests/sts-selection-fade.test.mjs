@@ -18,7 +18,8 @@ ready=false;g:begin(b);g:finish(b)
 for i=1,10 do g:step(b,.1);assert(veil.imageColor.a==255 and g:covered())end
 ready=true;g:step(b,0);g:step(b,0);assert(g:covered());g:step(b,.1);assert(veil.imageColor.a>0 and veil.imageColor.a<255);g:step(b,.1);assert(not g:covered())
 local calls=0;assert(g:depart(function()calls=calls+1;g:begin(a);return true end));assert(not g:depart(function()calls=calls+1 end))
-g:step(b,.1);assert(calls==0);g:step(b,.1);assert(calls==1 and veil.imageColor.a==255)
+g:step(b,.1);assert(calls==0);g:step(b,.1);assert(calls==0 and veil.imageColor.a==255)
+g:step(b,0);assert(calls==1 and veil.imageColor.a==255)
 print('FADE_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FADE_PASS/);
@@ -162,6 +163,8 @@ local a={page='characterPanel'};local b={page='mapPanel'}
 gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
 assert(gate:depart(function()assert(gate:request(b));return false end))
 gate:step(a,.2)
+assert(gate.intent==a and veil.imageColor.a==255,'opaque submission already executed the callback')
+gate:step(a,0)
 assert(gate.intent==b and gate.state=='preparing' and not gate.error,'stale departure rejected the replacement')
 gate:step(b,0);gate:step(b,0);gate:step(b,.2);assert(not gate:covered())
 print('DEPARTURE_EPOCH_PASS')`;

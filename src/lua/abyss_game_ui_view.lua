@@ -376,14 +376,24 @@ function M.renderMapPage(self)
         end
 end
 
+local function recordEntryProjection(self,platform,entry,epoch)
+    if self.nodeEntry~=entry or self.run~=entry.run or self.map~=entry.map
+        or entry.run.roomGeneration~=entry.committedGeneration or self.pageReveal.epoch~=epoch then return end
+    self.nodeEntry=nil
+    if platform.entryTrace then pcall(platform.entryTrace,'projection_built',entry.id,self.mode)end
+end
+
 function M.renderCurrentPage(self,renderBattlePage,renderMapPage,platform)
     return function(run,deckOpen,potionOpen,blocked,covering)
+            local entry=self.nodeEntry
+            local epoch=entry and self.pageReveal.epoch
             PageReveal.registerSource(platform,PageReveal.basePage(self.mode))
             if self.mode == "battle" then
                 renderBattlePage(run)
             elseif self.mode == "map" then
                 renderMapPage(run,deckOpen,potionOpen,blocked,covering)
             elseif self.mode == "node" then self.nodeUI:render() end
+            if entry and entry.committedGeneration then recordEntryProjection(self,platform,entry,epoch)end
         end
 end
 
@@ -622,6 +632,25 @@ function M.deckChanged(self,owner,platform,changed)
     end
 end
 
+local function refreshOpenPotions(potions, canManagePotions)
+    if not potions.visible then return end
+    if canManagePotions(potions.run) then potions:render() else potions:close() end
+end
+
+local function beginRefresh(self,platform,refreshForeground)
+    local entry=self.nodeEntry
+    if entry and entry.committedGeneration and (self.run~=entry.run or self.map~=entry.map or self.sessionPaused)then
+        self.nodeEntry=nil
+    end
+    if requestReveal(self,platform)then
+        if not (self.pageReveal and self.pageReveal.projectionError)then return true end
+        -- A room projection can fail after the rule transaction succeeded.
+        -- Keep the recovery menu usable without trying the failing panel again.
+        refreshForeground()
+    end
+    paintReveal(self);self:syncController();return false
+end
+
 function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManagePotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
     return function(_)
             if self.disabled then return false,"ui_disabled" end
@@ -629,9 +658,7 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             finishRunFlow(run)
             local covering = syncOpening(run)
             selectMode(run)
-            if not requestReveal(self,platform)then
-                paintReveal(self);self:syncController();return
-            end
+            if not beginRefresh(self,platform,refreshForeground)then return end
             local surfaceFrame=CardSkin.beginFrame()
             syncOfficialBattleScene(run)
             local inMenu = self.mode == "menu" or self.mode == "defeat" or self.mode == "victory"
@@ -641,9 +668,7 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             closeStaleDeck(run,inMenu)
             openCardChoice(run)
             local deckOpen = self.deckUI.visible
-            if self.potionUI.visible then
-                if canManagePotions(self.potionUI.run) then self.potionUI:render() else self.potionUI:close() end
-            end
+            refreshOpenPotions(self.potionUI,canManagePotions)
             local potionOpen=self.potionUI.visible
             local blocked=overlaysBlocked() or covering
             local returnAvailable=syncRewardReturn(run,deckOpen,potionOpen,blocked,covering)

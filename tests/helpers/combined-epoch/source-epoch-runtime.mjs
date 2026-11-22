@@ -1,4 +1,4 @@
-import {beforeDevelopBackflow,authenticateDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner} from '../develop-release-backflow-source.mjs';
+import {beforeDevelopBackflow,authenticateDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner,assertCurrentMapRoomOwner} from '../develop-release-backflow-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi} from '../rebased-release-source.mjs';
 import {beforeSlimeSplitReceipt,beforeSlimeSplitSource} from '../slime-split-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
@@ -137,7 +137,12 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   // records the same precursor as the current receipt.
   if(typeof source!=='string'||!current||!before||(backflow===rawInput&&reconciled===rebased&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
   assert.equal(typeof readSource,'function','linked owner reader');
-  const readBackflow=rawReader(readSource);
+  const readRaw=rawReader(readSource);
+  const readBackflow=owner=>{
+   const raw=readRaw(owner);
+   assertCurrentMapRoomOwner(owner,raw);
+   return raw;
+  };
   authenticateDevelopBackflow(path,rawInput,readBackflow,{allowConfigLayout});
   readSource=owner=>{
    const raw=readBackflow(owner);

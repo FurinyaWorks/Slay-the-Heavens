@@ -1,6 +1,6 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
-import {beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
+import {beforeCurrentDevelopReplayMerge,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
@@ -242,6 +242,14 @@ function beforeDevelopBackflowCopier(path,source){
    assert.equal(hash(prior),'5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9','exact integration replay copier predecessor');
    source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
   }
+ }
+ if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'
+  &&hash(normalize(source))==='dbb15c5ae00750913e1c44c41c670181ab87bb7ee5cecade9fb2592c65c5556b'
+  &&(!source.includes('\r')||!/[\r\n]/.test(source.replaceAll('\r\n','')))){
+  const prior=normalize(source).replace(/^const mapRoomEntryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(mapRoomEntryFiles))','Object.entries(relicDetailFiles))');
+  assert.equal(hash(prior),'8f750c5899d830865b07c6802e292041388e1bf15d7a706b00d18da8a6903f32','exact map-room copier predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
  }
  source=beforeDevelopSessionRelicCopier(path,source);
  source=beforeDevelopActorFocusCopier(path,source);
@@ -660,7 +668,8 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
   const raw=read(path,encoding),priorMerge=beforeDevelopReplayMerge(path,raw);
-  if(path==='tests/helpers/copy-integration-source-closure.mjs')assert.notEqual(raw,priorMerge,'fresh complete integration source: '+path);
+  if(path==='tests/helpers/copy-integration-source-closure.mjs'||path===epochReplayRuntimePath)
+   assert.notEqual(raw,beforeCurrentDevelopReplayMerge(path,raw),'fresh complete integration source: '+path);
   const priorFingerprint=beforeReplayFingerprintSource(path,priorMerge);
   const prior=beforeDevelopEpochReplayRuntime(path,priorFingerprint);
   if(path===epochReplayRuntimePath)assert(raw!==priorFingerprint&&prior!==priorFingerprint,'fresh complete integration source: '+path);
@@ -668,6 +677,8 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  };
  const readBackflow=(path,encoding)=>{
   const source=readCurrent(path,encoding);
+  // The merged runtime helper was checked before its exact replay projection.
+  if(path===epochReplayRuntimePath)return beforeDevelopBackflow(path,source);
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
   return authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8'));
  };
