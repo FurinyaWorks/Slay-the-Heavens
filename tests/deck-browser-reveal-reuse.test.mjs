@@ -78,17 +78,9 @@ assert(geometryReads==1,'synchronous card callbacks repeatedly read native grid 
 pile.GetItemSize=itemSize
 settle()
 assert(deck.indexBase==0 and sizes[1]==1 and sizes[2]==3,'first nonempty list did not calibrate its actual zero base')
-local field=panel:GetChild('pileTools'):GetChild('type')
-assert(field:GetChild('hit').click());assert(field:GetChild('direction').localRotationZ==0)
-assert(field:GetChild('hit').click());assert(field:GetChild('direction').localRotationZ==180)
-assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('hit').click())
-assert(field:GetChild('direction').localRotationZ==0,'switching fields retained a stale descending arrow')
-
+assert(not panel:GetChild('deckSort').visible and panel:GetChild('rarityTip').visible)
+assert(deck.setPileSort==nil and not deck:setSort('type'))
 assert(require('abyss_art_features').flags.cards==false)
-for _,mode in ipairs({'type','cost','name','original'})do assert(deck:setPileSort(mode));assert(not host.pageReveal:covered(),'ordinary cards=false sort acquired a cover')end
-assert(deck:setPileSort('name'));local firstName=host.nodeUI.presentation[deck.cards[1].cardId].name
-for i=2,#deck.cards do assert(host.nodeUI.presentation[deck.cards[i-1].cardId].name<=host.nodeUI.presentation[deck.cards[i].cardId].name)end
-assert(deck:setPileSort('name'));assert(host.nodeUI.presentation[deck.cards[1].cardId].name~=firstName,'display order did not actually reverse')
 for i,c in ipairs(run.combat.draw)do assert(c.uid==originalPile[i].uid and c.cardId==originalPile[i].cardId,'display sort changed the real pile order')end
 assert(host:closeDeck());settle()
 for _,instance in ipairs(run.combat.draw)do instance.cardId=card.cardId end
@@ -104,13 +96,17 @@ assert(deck.indexBase==0 and #sizes==1 and sizes[1]==3 and created>0,'known base
 local count,removed=created,destroyed;local shown=0;local cover=root:GetChild('pageReveal');local visibility=cover.SetVisible
 cover.SetVisible=function(self,v)if v then shown=shown+1 end;return visibility(self,v)end
 local before=F.Combat.copy(run.combat.draw);local initialSession=deck.openSession;local back=panel:GetChild('pileReturn'):GetChild('hit')
+assert(host:closeDeck());settle()
+run.deck=F.Combat.copy(run.combat.draw)
+assert(host:openDeck());settle()
+count,removed,shown,initialSession=created,destroyed,0,deck.openSession
 back.listeners.down({touchId=44});sizes={}
 local battleRenders=0;local renderBattle=host.battleUI.render
 host.battleUI.render=function(self,...)battleRenders=battleRenders+1;return renderBattle(self,...)end
 for i=1,100 do
  local renders=battleRenders
- assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('hit').click())
- assert(battleRenders==renders,'read-only pile sorting repainted the covered battle')
+ assert(panel:GetChild('deckSort'):GetChild('cost'):GetChild('hit').click())
+ assert(battleRenders==renders,'read-only deck sorting repainted the covered battle')
  assert(not host.pageReveal:covered(),'same-ready metadata sort acquired a full page cover');host:update(0);Art.update();host.pageReveal:step(Gate.intent(host))
  assert(not host.pageReveal:covered()and deck.openSession==initialSession)
 end
@@ -123,8 +119,8 @@ back.listeners.up({touchId=44});assert(not back.click({touchId=44})and deck.visi
 -- actual Display/NativeArt lease before post-paint readiness is queried.
 artPresentation[other.cardId].nativeArt=F.Combat.copy(metadata);artPresentation[other.cardId].nativeArt.cardId=other.cardId
 deck.allCards[1].cardId=other.cardId
-assert(deck:setPileSort('type'));assert(host.pageReveal:covered()and not Art.presentationReady('deckPanel'),'new native lease was incorrectly treated as the old ready owner');settle()
-pile.deferRefresh=true;assert(deck:setPileSort('type'));assert(deck.pendingGrid and host.pageReveal:covered(),'deferred callbacks must not publish old owner readiness')
+assert(deck:setSort('type'));assert(host.pageReveal:covered()and not Art.presentationReady('deckPanel'),'new native lease was incorrectly treated as the old ready owner');settle()
+pile.deferRefresh=true;assert(deck:setSort('type'));assert(deck.pendingGrid and host.pageReveal:covered(),'deferred callbacks must not publish old owner readiness')
 assert(host.pageReveal.localFrame==F.Theme.layout.deckView.pileViewport,'deck preparation covered title or sort controls')
 pile:recycle(0,pile.indexBase);assert(deck.pendingGrid,'one cell cannot certify all prior visible slots')
 pile:flush();assert(not deck.pendingGrid);pile.deferRefresh=false;settle()
@@ -135,8 +131,8 @@ local choice={token='grid-base',cards=F.Combat.copy(run.combat.draw),op='discove
 assert(host:openDeck('draw'));settle();assert(deck.indexBase==0,'browser/pile grids shared an index calibration');assert(host:closeDeck());settle()
 local renders=battleRenders;host:refresh();assert(battleRenders>renders,'ordinary Host changes must still render the battle')
 assert(host:openDeck());settle();renders=battleRenders
-for _,mode in ipairs({'original','type','cost','name'})do assert(deck:setSort(mode))end
-assert(not deck:setFilter('attack'),'official browser must not expose the legacy filter')
+for _,mode in ipairs({'original','type','cost'})do assert(deck:setSort(mode))end
+assert(deck.setFilter==nil and not deck:setSort('name'))
 assert(battleRenders==renders,'master deck sorting repainted the covered battle')
 assert(host:closeDeck());assert(battleRenders>renders,'closing the deck must refresh the returning battle');settle()
 host.battleUI.render=renderBattle

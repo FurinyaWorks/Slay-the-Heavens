@@ -297,7 +297,7 @@ export function applyOfficialAssets(trees,theme){
    art.name='art';
    pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size]}];
   }
-  const tools=child(deckPanel,'pileTools');
+  const tools=child(deckPanel,'deckSort');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }

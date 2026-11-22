@@ -167,18 +167,6 @@ export function deckControls(theme = nativeTheme) {
   };
   const entry = stackEntry(l.deckView.entry, '卡组');
   const relicImage = theme.icon.node.treasure.id ?? theme.icon.node.treasure;
-  const browseFilters = [
-    ['All', '全部'], ['Attack', '攻击'], ['Skill', '技能'],
-    ['Power', '能力'], ['Status', '状态'], ['Curse', '诅咒'],
-  ];
-  const browseButtons = browseFilters.map(([id, label], i) => {
-    const frame = l.deckView.filters[i];
-    const control = button('filter' + id, frame, label);
-    control.visible = false;
-    control.children.push({ ...plate('selected', [0, -frame[3] / 2 + s.border * 2,
-      frame[2] - s.m * 2, s.border * 2], c.goldBright), visible: false });
-    return control;
-  });
   return [
     { name: 'relicEntry', kind: 'container', size: [...theme.canvas.base], visible: false, children: [
       capsuleEntry(l.deckView.relicEntry, '遗物', 'relicIcon', relicImage),
@@ -190,7 +178,6 @@ export function deckControls(theme = nativeTheme) {
       { ...plate('veil', [0, 0, ...theme.canvas.base], c.backdropVeil.slice(0, 7)),
         opacity: c.backdropVeil.length === 9 ? parseInt(c.backdropVeil.slice(7), 16) / 255 : 1 },
       // Read-only browsing owns its card roots. Only rule selections use a Grid.
-      { ...plate('pileVeil', [0, 0, ...theme.canvas.base], '#000000'), opacity: 0.9, visible: false },
       battlePileChrome(theme),
       { name: 'blocker', kind: 'cursorArea', size: [...theme.canvas.base], focusable: false },
       { name: 'grid', kind: 'grid', position: l.deckView.viewport.slice(0, 2), size: l.deckView.viewport.slice(2),
@@ -203,7 +190,6 @@ export function deckControls(theme = nativeTheme) {
         Math.max(l.deckView.title[3], l.deckView.close[3]) + s.s], c.panel),
       text('title', l.deckView.title, '', f.heading, c.goldBright),
       { ...text('browseTitle', l.deckView.browseTitle, '', f.heading, c.goldBright), visible: false },
-      ...browseButtons,
       ...['original', 'type', 'cost'].map((mode, i) => {
         const control = button('sort' + mode, l.deckView.sort[i], ['获得顺序 ↑', '类型', '耗能'][i]);
         control.visible = false;
@@ -216,14 +202,21 @@ export function deckControls(theme = nativeTheme) {
       { ...button('upgradePreview', l.deckView.upgradePreview, '升级预览'), visible: false },
       button('close', closeFrame, '关闭'),
       {...battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),theme.officialAssets.buttonInk),visible:false},
-      {name:'pileTools',kind:'container',position:[0,241.5],size:[856,33],visible:false,children:[
-        plate('plate',[0,0,856,33],'#76191B'),
-        ...['original','type','cost','name'].map((mode,i)=>({name:mode,kind:'container',position:[(i-1.5)*150,0],size:[150,44],children:[
-          text('label',[-9,0,120,40],['默认','类型','费用','名称'][i],18,'#E9E6DC'),
-          {name:'direction',kind:'image',position:[46,0],size:[9,7],image:100003,colour:'#E9E6DC',raycastTarget:false},
-          {name:'hit',kind:'cursorArea',size:[150,44]},
-        ]})),
-      ]},
+      { name: 'deckSort', kind: 'container', position: l.deckView.browser.sort.slice(0, 2),
+        size: l.deckView.browser.sort.slice(2), visible: false, children: [
+          { ...plate('plate', [0, 0, ...l.deckView.browser.sort.slice(2)], c.panel), opacity: .32 },
+          ...['original', 'type', 'cost'].map((mode, i) => ({
+            name: mode, kind: 'container', position: [(i - 1) * 150, 0], size: [150, 44], children: [
+              text('label', [-9, 0, 120, 40], ['获得顺序', '类型', '耗能'][i], f.small, c.text),
+              { name: 'direction', kind: 'image', position: [i === 0 ? 44 : 26, 0], size: [10, 8],
+                image: 100003, colour: c.text, raycastTarget: false },
+              { name: 'hit', kind: 'cursorArea', size: [150, 44] },
+            ],
+          })),
+        ] },
+      { ...text('browserDescription', l.deckView.browser.legacyDescription, '', f.small, c.text), visible: false },
+      { ...text('rarityTip', l.deckView.browser.legacyRarityTip, '（这里显示的卡牌按照稀有度排列）',
+        f.small, c.goldBright), visible: false },
       { ...button('previous', l.deckView.previous, '上一页'), visible: false },
       { ...button('next', l.deckView.next, '下一页'), visible: false },
       { ...text('pageHint', l.deckView.pageHint, '', f.small, c.textDim), visible: false },

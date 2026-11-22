@@ -52,11 +52,15 @@ function M.previewContext(info)
     return {readOnlyPreview=true,deck=deck,data={cards={cards=definitions}}},presentation
 end
 -- Match the original game's display categories; never sort an actual combat pile.
-local browseFilters={{id='all',control='All'},{id='attack',control='Attack'},
-    {id='skill',control='Skill'},{id='power',control='Power'},
-    {id='status',control='Status'},{id='curse',control='Curse'}}
 local browseSorts={'original','type','cost'}
-local sortNames={original='获得顺序',cost='耗能',type='类型',name='名称'}
+local sortNames={original='获得顺序',cost='耗能',type='类型'}
+-- STS1 V2.3.4 localization/zhs/ui.json, with the original Exhaust spacing.
+local browseDescriptions={
+    deck='这些牌将会出现在每一场战斗中。',
+    draw='每回合开始时将从这里抽牌。',
+    discard='当抽牌堆被抽空时，这里的牌将会被洗牌并重新放入抽牌堆。',
+    exhaust='在这场战斗中被 消耗 的牌。',
+}
 local cardChoiceTitle='选择卡牌'
 
 local function frozenEye(run)
@@ -155,22 +159,25 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
     end
     local function canBrowse()
-        return self.visible == true and self.browseEnabled == true and (not self.browserShell or self.paged and not self.pileKind) and not self.detailOnly and not self.detailPages
+        return self.visible == true and self.browseEnabled == true and not self.detailOnly and not self.detailPages and not self.cardDetail
     end
-    local function paintPileSort()
-        if not self.browserShell then return end
-        local tools=root:GetChild('pileTools')
-        for _,mode in ipairs({'original','type','cost','name'})do
-            local box=tools:GetChild(mode)
+    local deckSort,description,rarityTip=root:GetChild('deckSort'),root:GetChild('browserDescription'),root:GetChild('rarityTip')
+    local function paintDeckSort()
+        if not platform.color then return end
+        local role=self.previewInfo and self.previewInfo.id or self.run.character
+        local colors=Theme.layout.characterSelect.themes
+        local bar=colors[role] or colors.ironclad
+        deckSort:GetChild('plate').imageColor=platform.color(bar.r,bar.g,bar.b,82)
+        for _,mode in ipairs(browseSorts)do
+            local box=deckSort:GetChild(mode)
             local label,arrow=box:GetChild('label'),box:GetChild('direction')
-            label.text=mode=='original' and '默认' or mode=='cost' and '费用' or sortNames[mode]
-            arrow:SetVisible(true)
             local selected=self.sortMode==mode
-            arrow.localRotationZ=selected and not self.sortAscending and 180 or 0
-            if platform.color then
-                local ink=selected and platform.color(228,211,94,255) or platform.color(233,230,220,255)
-                label.fontColor,arrow.imageColor=ink,ink
-            end
+            local ascending=self.sortDirections[mode]
+            if selected then ascending=self.sortAscending end
+            arrow.localRotationZ=ascending and 0 or 180
+            local tone=selected and Theme.color.goldBright or Theme.color.text
+            local ink=platform.color(tone.r,tone.g,tone.b,tone.a)
+            label.fontColor,arrow.imageColor=ink,ink
         end
     end
     local function paintBrowseSort(active)
@@ -188,20 +195,25 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintBrowse()
         local active=canBrowse()
-        local legacy=active and not self.browserShell
-        if self.browserShell and not self.detailPages then root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle end
-        if Theme.presentationProfile=='official-assets-first' then root:GetChild('pileTools'):SetVisible(self.browserShell==true and not self.detailPages)end
-        paintPileSort()
-        root:GetChild('title'):SetVisible(not active and not self.browserShell)
-        local heading=root:GetChild('browseTitle')
-        heading:SetVisible(legacy)
-        if legacy then heading.text=self.listTitle end
-        paintBrowseSort(legacy)
-        for _,filter in ipairs(browseFilters)do
-            local control=root:GetChild('filter'..filter.control)
-            control:SetVisible(active)
-            control:GetChild('selected'):SetVisible(active and self.typeFilter==filter.id)
+        local sorting=active and not self.pileKind
+        local showSort=sorting and self.browserShell==true
+        deckSort:SetVisible(showSort)
+        if showSort then paintDeckSort() end
+        description:SetVisible(active==true)
+        if active then description.text=browseDescriptions[self.pileKind or 'deck'] end
+        rarityTip:SetVisible(active==true and self.pileKind=='draw' and not frozenEye(self.run))
+        root:GetChild('title'):SetVisible(not sorting and not self.browserShell and not self.cardDetail)
+        if self.browserShell then
+            local browserChrome=root:GetChild('pileChrome')
+            browserChrome:GetChild('heading'):SetVisible(self.detailPages~=nil)
+            browserChrome:GetChild('drawBadge'):SetVisible(active==true and self.pileKind=='draw')
+            browserChrome:GetChild('discardBadge'):SetVisible(active==true and self.pileKind=='discard')
         end
+        local heading=root:GetChild('browseTitle')
+        local legacySort=sorting and not self.browserShell
+        heading:SetVisible(legacySort==true)
+        if legacySort then heading.text=self.listTitle end
+        paintBrowseSort(legacySort==true)
     end
     local function detailPage()
         root:GetChild('title').text=self.detailTitle..' · '..self.detailPage..'/'..#self.detailPages
@@ -506,7 +518,6 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local suffix=card.upgraded and ('+'..(repeatable and tostring(card.upgrades or 1) or '')) or ''
         local name=assert(presentation[card.cardId],'missing deck name').name..suffix
         if self.sortMode=='type' then return string.upper(printedField(printed,card,'type'))..name end
-        if self.sortMode=='name' then return name end
         -- MasterDeck compares printed cost, not the transient costForTurn adapter.
         local cost=card.costOverride
         if cost==nil then cost=printedField(printed,card,'cost') end
@@ -515,35 +526,26 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function sortedProjection()
         local entries={}
-        local sorted=not self.pileKind or self.pileView
-        local needsKey=sorted and self.sortMode~='original'
         for i,card in ipairs(self.allCards)do
             local printed=assert(self.catalog.cards[card.cardId],"unknown card")
-            if self.typeFilter=='all' or printedField(printed,card,'type')==self.typeFilter then
-                entries[#entries+1]={card=card,index=i,key=needsKey and sortKey(card,printed) or i}
-            end
+            entries[i]={card=card,index=i,key=self.sortMode=='original' and i or sortKey(card,printed)}
         end
-        if sorted then
-            local ascending=self.sortAscending
-            table.sort(entries,function(a,b)
-                if a.key==b.key then return a.index<b.index end
-                if ascending then return a.key<b.key end
-                return a.key>b.key
-            end)
-        end
+        local ascending=self.sortAscending
+        table.sort(entries,function(a,b)
+            if a.key==b.key then return a.index<b.index end
+            if ascending then return a.key<b.key end
+            return a.key>b.key
+        end)
         local cards={}
         for i,entry in ipairs(entries)do cards[i]=entry.card end
         return cards
     end
     local function projectCards()
-        if self.typeFilter=='all' and (self.sortMode=='original' and self.sortAscending or self.pileKind and not self.pileView) then
+        if self.pileKind or self.sortMode=='original' and self.sortAscending then
             self.cards=self.allCards
         else
             self.cards=sortedProjection()
         end
-        local total=#self.allCards
-        local amount=self.typeFilter=='all' and tostring(total) or #self.cards..'/'..total
-        self.listTitle=browserHeading(self.pileKind)..' · '..amount..' 张'
     end
     local function pageControls(shown,page,pages,total)
         previousControl:SetVisible(shown)
@@ -620,37 +622,19 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if onChanged then onChanged()end
         return true
     end
-    function self.setFilter(_,kind)
-        if not canBrowse() or self.typeFilter==kind then return false end
-        local allowed=false
-        for _,entry in ipairs(browseFilters)do if entry.id==kind then allowed=true;break end end
-        if not allowed then return false end
-        self.typeFilter=kind
-        return changeBrowse()
-    end
     function self.setSort(_,mode)
-        local shell=self.visible and self.browserShell and not self.detailPages and not self.detailOnly
-        if not (canBrowse() or shell) or self.pileKind then return false end
-        local allowed=self.browserShell and mode=='name'
-        for _,value in ipairs(browseSorts)do if mode==value then allowed=true;break end end
-        if not allowed then return false end
+        if not canBrowse() or self.pileKind or not sortNames[mode] then return false end
         self.sortMode=mode
         self.sortDirections[mode]=not self.sortDirections[mode]
         self.sortAscending=self.sortDirections[mode]
         self.masterSort={run=self.run,mode=mode,directions=self.sortDirections,ascending=self.sortAscending}
         return changeBrowse()
     end
-    function self.setPileSort(_,mode)
-        if not self.visible or not self.pileView or self.detailPages or not sortNames[mode] then return false end
-        self.sortAscending=self.sortMode~=mode or not self.sortAscending
-        self.sortMode=mode
-        return changeBrowse()
-    end
     local function restoreSort(run)
         self.sortMode,self.sortAscending='original',true
-        self.sortDirections={original=false,type=false,cost=false,name=false}
+        self.sortDirections={original=false,type=false,cost=false}
         local saved=self.masterSort
-        if saved and saved.run~=run then self.masterSort=nil;saved=nil end
+        if saved and (saved.run~=run or not sortNames[saved.mode]) then self.masterSort=nil;saved=nil end
         if saved and not self.pileKind and not self.choiceToken then
             self.sortMode,self.sortAscending,self.sortDirections=saved.mode,saved.ascending,saved.directions
         end
@@ -668,7 +652,6 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         grid=self.paged and pileGrid or (self.browserShell and pileGrid and pileGrid.RefreshItems and pileGrid or browserGrid)
         browserGrid:SetVisible(not self.paged and grid==browserGrid)
         if pileGrid then pileGrid:SetVisible(not self.paged and grid==pileGrid) end
-        root:GetChild('pileVeil'):SetVisible(self.browserShell)
         if Theme.presentationProfile=='official-assets-first' then
             local chrome=root:GetChild('pileChrome')
             chrome:SetVisible(self.browserShell)
@@ -682,7 +665,6 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if self.browseEnabled then projectCards() end
         root:GetChild("title").text = choice and prompts[choice.op] or self.listTitle
         if Theme.presentationProfile=='official-assets-first' then
-            root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle
             root:GetChild('pileReturn'):SetVisible(self.browserShell)
         end
         if self.multiple then root:GetChild('title').text=root:GetChild('title').text..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '') end
@@ -714,16 +696,13 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.optional=choice and choice.optional
         self.visible,self.run,self.allCards,self.cards,self.catalog=true,run,cards,cards,catalog
         self.browseEnabled=choice==nil
-        self.typeFilter='all'
         restoreSort(run)
-        if self.pileView and not self.paged then self.sortMode,self.sortAscending='original',true end
         local entry=self.previewInfo and ('starter:'..self.previewInfo.id) or pileKind or 'deck'
         local saved=self.paged and self.savedPage
         self.entry=entry
         self.pageIndex=1
         if saved and saved.entry==entry and saved.battle==(pileKind and run.combat or nil) then
-            self.pageIndex,self.typeFilter=saved.page,saved.filter
-            self.sortMode,self.sortAscending,self.sortDirections=saved.sort,saved.ascending,saved.directions
+            self.pageIndex=saved.page
         end
         self.detailOnly,self.detailPages,self.cardDetail=nil,nil,nil
         upgradePreview:SetVisible(false)
@@ -828,8 +807,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     function self.close(_)
         if not self.visible then return false end
         if self.paged then
-            self.savedPage={entry=self.entry,battle=self.pileKind and self.battle,page=self.pageIndex,filter=self.typeFilter,sort=self.sortMode,
-                ascending=self.sortAscending,directions=self.sortDirections}
+            self.savedPage={entry=self.entry,battle=self.pileKind and self.battle,page=self.pageIndex}
             pool:cancel()
             NativeArt.setLeasePage(nil)
             pageControls(false)
@@ -840,7 +818,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.generation = self.generation + 1
         self.visible, self.pending, self.calibrating, self.run, self.cards, self.catalog = false, false, false, nil, nil, nil
         self.pendingGrid=false;self.gridReady=nil
-        self.allCards,self.browseEnabled,self.typeFilter,self.sortMode=nil,nil,nil,nil
+        self.allCards,self.browseEnabled,self.sortMode,self.sortAscending,self.sortDirections=nil,nil,nil,nil,nil
         self.choiceToken,self.onPick,self.battle=nil,nil,nil
         self.pileKind,self.listTitle=nil,nil
         self.multiple,self.choiceSelected,self.optional=nil,nil,nil
@@ -853,12 +831,11 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if not self.paged then grid:RefreshItems(0, function() end) end
         self.paged,self.prepareError=nil,nil
         if pileGrid then pileGrid:SetVisible(false) end
-        root:GetChild('pileVeil'):SetVisible(false)
         root:GetChild('header'):SetVisible(true)
         self.pileView,self.browserShell=nil,nil;grid=browserGrid
         root:GetChild('veil'):SetVisible(true)
         if Theme.presentationProfile=='official-assets-first' then
-            for _,name in ipairs({'pileChrome','pileTools','pileReturn'})do root:GetChild(name):SetVisible(false)end
+            for _,name in ipairs({'pileChrome','pileReturn'})do root:GetChild(name):SetVisible(false)end
         end
         paintBrowse()
         liveFaces()
@@ -930,14 +907,12 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end)
     local function bindOfficialBrowser()
         if Theme.presentationProfile~='official-assets-first' then return end
-        for _,mode in ipairs({'original','type','cost','name'})do
-            local hit=root:GetChild('pileTools'):GetChild(mode):GetChild('hit')
-            local action=function()
-                if not self.browserShell then return false end
-                if self.pileView then return self:setPileSort(mode)end
-                return self:setSort(mode)
-            end
-            hit:AddCursorEventListener(clickEvent,function()if Pointer.blocked(platform)then return true end;return action()end)
+        for _,mode in ipairs(browseSorts)do
+            local hit=deckSort:GetChild(mode):GetChild('hit')
+            hit:AddCursorEventListener(clickEvent,function()
+                if Pointer.blocked(platform)then return true end
+                return self.browserShell and self:setSort(mode) or false
+            end)
         end
         local hit=root:GetChild('pileReturn'):GetChild('hit')
         local held,released,observed
@@ -992,14 +967,6 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 end)
             end
         end
-    end
-    for _,entry in ipairs(browseFilters)do
-        local hit=root:GetChild('filter'..entry.control):GetChild('hit')
-        local action=function()return self:setFilter(entry.id)end
-        hit:AddCursorEventListener(clickEvent,function()
-            if Pointer.blocked(platform)then return false end
-            return action()
-        end)
     end
     for _,mode in ipairs(browseSorts)do
         local hit=root:GetChild('sort'..mode):GetChild('hit')

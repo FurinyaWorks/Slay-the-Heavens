@@ -175,7 +175,9 @@ test('approved pages keep live input identities while unrelated pages retain the
   for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget']){
    const potionLabel=/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)\/label$/.test(path);
    const relicHit=/^\/SlayTheAbyss\/relicBar\/slot\d+\/hit$/.test(path);
-   const expected=key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
+   const footer=/^\/SlayTheAbyss\/deckPanel\/(browserDescription|rarityTip|previous|next|pageHint)$/.exec(path);
+   const frame=footer&&theme.layout.deckView.browser.footer[footer[1]];
+   const expected=key==='position'&&frame?frame.slice(0,2):key==='size'&&frame?frame.slice(2):key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
     ?child(child(child(layout,'battlePanel'),'card1'),'cost').size:key==='visible'&&potionLabel?false:before[key];
    assert.deepEqual(node[key],expected,path+' '+key);
   }
