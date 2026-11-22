@@ -128,10 +128,14 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
-    // The pile return keeps its native receiver while replacing the artwork.
+    // The rounded face is visible independently of the native input receiver.
     if(path.endsWith('/hit')){
-     const hit=current.get(path);assert.equal(hit.kind,'presetButton');
+     const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
      assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
+     const art=current.get(path.replace(/\/hit$/,'/art'));
+     assert.notEqual(art.visible,false);
+     assert.equal(child(art,'roundedButton').kind,'container');
+     assert.equal(child(art,'label').text.content,'返回');
     }
     continue;
    }
@@ -430,6 +434,12 @@ test('official selection leaves the portrait unobscured and exit retains the liv
  assert.equal(hit.kind,'presetButton');
  assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
  const back=child(child(panel,'cancel'),'hit');
+ const confirm=child(child(panel,'confirm'),'hit');
+ for(const button of [hit,back,confirm])for(const state of children(button)){
+  const legacy=children(state).filter(part=>['officialButtonBacking','border','plate'].includes(part.name));
+  assert(legacy.length>0,'official composition must exercise the existing backing');
+  assert(legacy.every(part=>part.visible===false),'legacy backing is visible through the rounded corners');
+ }
  for(const state of children(hit)){
   assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
   assert.equal(child(state,'label').text.content,'退出游戏');

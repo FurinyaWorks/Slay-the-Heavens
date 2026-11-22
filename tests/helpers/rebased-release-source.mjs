@@ -19,16 +19,58 @@ assert.equal(stsUi.source,'d667ad4dd4b7dc4ad5419aee8eba8a1548ea5769');
 assert.equal(reviewedBuild.source,'900527d931df941eed642a9667ccde92f76b73db');
 assert(matches(releaseCopier.source,releaseCopier),'immutable Release copy closure');
 export const historicalReleaseCopier=source=>source.includes('\r\n')?releaseCopier.source.replaceAll('\n','\r\n'):releaseCopier.source;
+// Only the exact native button repair can be projected onto the previous receipt.
+const nativeButtonRepair=Object.freeze({
+ "scripts/official-assets-layout.mjs":{
+  after:'564bb350c05b86866005d76eb44457b78a6c4f29bbe9d1954366d62433b8753e',
+  before:'8204a7befe1e19244a740dc4da965aea1689b5f006a013507adbf43a4c3a2fea',
+  edits:[
+   ["  const deckPanel=child(child(tree,'stage')??tree,'deckPanel');\n  const pileReturn=child(deckPanel,'pileReturn');\n  if(pileReturn){\n   // The installed Simulator cannot bind the normal child of a native preset.\n   const preset=child(pileReturn,'hit'),art=child(preset,'normal');\n   art.name='art';\n   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size],focusable:preset.focusable}];\n  }\n  const tools=child(deckPanel,'pileTools');",
+    "  const pileReturn=child(child(tree,'stage')??tree,'deckPanel');\n  const tools=child(pileReturn,'pileTools');"],
+  ],
+ },
+ "scripts/character-selection-composition.mjs":{
+  after:'c9b0efc1dd5c2fdc14b64656958d660746f90f52ccd4087d0ced50073dca6793',
+  before:'bdb5e22233716ba43e55869dc59adf499cf42bcfc498bb7c61c02229f02525b5',
+  edits:[
+   [" for(const state of children(hit)){\n  for(const name of ['officialButtonBacking','border','plate']){\n   const part=child(state,name);if(part)part.visible=false;\n  }\n  const label=child(state,'label'),previous=child(state,'v25Flag');",
+    " for(const state of children(hit)){\n  const label=child(state,'label'),previous=child(state,'v25Flag');"],
+  ],
+ },
+ "tests/official-assets.test.mjs":{
+  after:'715bdc9709f019bc7904709cee6cfaa20f91d8f0265896ba597928df602d5161',
+  before:'ddfee77694dcf0bc4f12b419e143f723c6d5b865bf82661fbfde4474df10c162',
+  edits:[
+   ["    // The rounded face is visible independently of the native input receiver.\n    if(path.endsWith('/hit')){\n     const hit=current.get(path);assert.equal(hit.kind,'cursorArea');\n     assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);\n     const art=current.get(path.replace(/\\/hit$/,'/art'));\n     assert.notEqual(art.visible,false);\n     assert.equal(child(art,'roundedButton').kind,'container');\n     assert.equal(child(art,'label').text.content,'返回');\n    }",
+    "    // The pile return keeps its native receiver while replacing the artwork.\n    if(path.endsWith('/hit')){\n     const hit=current.get(path);assert.equal(hit.kind,'presetButton');\n     assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);\n    }"],
+   [" const back=child(child(panel,'cancel'),'hit');\n const confirm=child(child(panel,'confirm'),'hit');\n for(const button of [hit,back,confirm])for(const state of children(button)){\n  const legacy=children(state).filter(part=>['officialButtonBacking','border','plate'].includes(part.name));\n  assert(legacy.length>0,'official composition must exercise the existing backing');\n  assert(legacy.every(part=>part.visible===false),'legacy backing is visible through the rounded corners');\n }\n for(const state of children(hit)){\n  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));",
+    " const back=child(child(panel,'cancel'),'hit');\n for(const state of children(hit)){\n  assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));"],
+  ],
+ },
+});
+export function beforeNativeButtonRepair(path,source){
+ const row=Object.hasOwn(nativeButtonRepair,path)?nativeButtonRepair[path]:null;
+ if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=source.replaceAll('\r\n','\n');
+ if(hash(current)!==row.after)return source;
+ let prior=current;
+ for(const [after,before] of row.edits){
+  assert.equal(prior.split(after).length,2,'exact native button repair edit: '+path);
+  prior=prior.replace(after,()=>before);
+ }
+ assert.equal(hash(prior),row.before,'exact native button repair predecessor: '+path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function historical(rows,path,source){
  const row=Object.hasOwn(rows,path)?rows[path]:null;
- if(!row||!matches(source,row.after))return source;
+ if(!row||!matches(beforeNativeButtonRepair(path,source),row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 export function exactReviewedBuildInput(path,read){
  if(!Object.hasOwn(reviewedBuild.files,path))return undefined;
  const source=read(path,'utf8');
  const {after,before}=reviewedBuild.files[path];
- assert(matches(source,after),'fresh reviewed build input: '+path);
+ assert(matches(beforeNativeButtonRepair(path,source),after),'fresh reviewed build input: '+path);
  return before.source;
 }
 export const beforeRebasedCi=(path,source)=>historical(ci,path,source);
@@ -38,13 +80,19 @@ export const rebasedDevelopOwns=path=>path.startsWith('src/lua/')&&Object.hasOwn
 export function authorizeRebasedRelease(samples,read,sources=production){
  const seen=new Set();
  for(const [path,source] of samples){
-  if(!Object.hasOwn(sources,path)||seen.has(path)||!matches(source,sources[path].after))continue;
+  if(!Object.hasOwn(sources,path)||seen.has(path))continue;
+  const {after}=sources[path],current=beforeNativeButtonRepair(path,source);
+  if(!matches(current,after))continue;
   seen.add(path);
-  const {after}=sources[path];
-  assert(samples.every(([owner,bytes])=>owner!==path||matches(bytes,after)),'combined linked owner identity: '+path+' mixed live and predecessor sources');
+  const repaired=current!==source;
+  const sameRevision=bytes=>{
+   const before=beforeNativeButtonRepair(path,bytes);
+   return (before!==bytes)===repaired&&matches(before,after);
+  };
+  assert(samples.every(([owner,bytes])=>owner!==path||sameRevision(bytes)),'combined linked owner identity: '+path+' mixed live and predecessor sources');
   let live;
   try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
-  assert(matches(live,after),'combined linked owner identity: '+path+' changed during owner validation');
+  assert(sameRevision(live),'combined linked owner identity: '+path+' changed during owner validation');
  }
 }
 

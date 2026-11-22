@@ -18,6 +18,9 @@ export function styleCharacterFlag(button,key,theme){
  const hit=child(button,'hit');
  const [rim,cloth]=theme.officialAssets.flagButton[key];
  for(const state of children(hit)){
+  for(const name of ['officialButtonBacking','border','plate']){
+   const part=child(state,name);if(part)part.visible=false;
+  }
   const label=child(state,'label'),previous=child(state,'v25Flag');
   const factor=state.name==='hover'?1.17:state.name==='pressed'?.9:state.name==='disabled'?.6:1;
   const tint=hex=>'#'+hex.slice(1).match(/../g).map(v=>Math.min(255,Math.round(parseInt(v,16)*factor)).toString(16).padStart(2,'0')).join('');

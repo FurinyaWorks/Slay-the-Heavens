@@ -289,8 +289,15 @@ export function applyOfficialAssets(trees,theme){
    if(child(node,'roundFrame')&&child(node,'skin')&&child(node,'costDisc')){cardFace(node,theme);cardHosts++;}
    else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
-  const pileReturn=child(child(tree,'stage')??tree,'deckPanel');
-  const tools=child(pileReturn,'pileTools');
+  const deckPanel=child(child(tree,'stage')??tree,'deckPanel');
+  const pileReturn=child(deckPanel,'pileReturn');
+  if(pileReturn){
+   // The installed Simulator cannot bind the normal child of a native preset.
+   const preset=child(pileReturn,'hit'),art=child(preset,'normal');
+   art.name='art';
+   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size],focusable:preset.focusable}];
+  }
+  const tools=child(deckPanel,'pileTools');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }
