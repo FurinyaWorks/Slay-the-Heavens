@@ -150,7 +150,17 @@ function beforeDevelopPortraitLifecycleCopier(path,source){
  assert.equal(hash(prior),'59f327a993b6c55a04fe03df4be341bed7b7cd19c629f85da91542d9d7bf2861','exact Develop portraitLifecycle copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeDevelopBattleFeedbackCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='2592bf432d66dd3ef4d8ebbecf578f56b2cc56512dc017e4f39b55997f1bb311')return source;
+ const prior=lf.replace(/^const developBattleFeedbackFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developBattleFeedbackFiles))','Object.entries(developPortraitLifecycleFiles))');
+ assert.equal(hash(prior),'b56f2396efb198ba05a6b28e404f47a303d8ef0f4f2e76c436ff206257ef5076','exact Develop battle feedback copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopBattleFeedbackCopier(path,source);
  source=beforeDevelopPortraitLifecycleCopier(path,source);
  source=beforeDevelopCardDisplayCopier(path,source);
  source=beforeDevelopMapRenderCopier(path,source);
