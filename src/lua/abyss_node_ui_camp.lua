@@ -239,23 +239,41 @@ function M.new(ctx)
         state:update()
     end
 
+    local function createList(rows, previous)
+        local w, h = L.viewport[3], L.viewport[4]
+        local cardWidth, cardHeight = fit:GetItemSize()
+        local spacing, gap = fit:GetItemSpacing()
+        local top, bottom, left, right = fit:GetPadding()
+        local rowCount = math.ceil(#rows / 5)
+        local height = top + bottom + rowCount * cardHeight + math.max(0, rowCount - 1) * gap
+        local grid = height > h and scroll or fit
+        if grid == fit then
+            local columns = math.min(#rows, 5)
+            local width = left + right + columns * cardWidth + math.max(0, columns - 1) * spacing
+            fit:SetSizeDelta(math.min(w, width), height)
+        end
+        return { grid = grid, rows = rows, progress = previous and not previous.resetScroll and previous.progress or 0 }
+    end
+
+    local function resumeList(wasActive)
+        if list.resetScroll then list.resetScroll, list.progress = false, 0 end
+        if not wasActive and list.grid == scroll and scroll.scrollProgress ~= list.progress then
+            scroll.scrollProgress = list.progress
+        end
+        if not wasActive or owner.visible and list.paintOnReveal then
+            list.paintOnReveal = nil
+            for box, binding in pairs(bindings) do
+                local card = binding.list == list and list.rows[binding.index]
+                if card and box.alive ~= false then paintFace(box, binding, card) end
+            end
+        end
+    end
+
     local function renderList(rows)
         local previous = list
         if not list or not sameRows(list.rows, rows) then
             suspendList()
-            local w, h = L.viewport[3], L.viewport[4]
-            local cardWidth, cardHeight = fit:GetItemSize()
-            local spacing, gap = fit:GetItemSpacing()
-            local top, bottom, left, right = fit:GetPadding()
-            local rowCount = math.ceil(#rows / 5)
-            local height = top + bottom + rowCount * cardHeight + math.max(0, rowCount - 1) * gap
-            local grid = height > h and scroll or fit
-            if grid == fit then
-                local columns = math.min(#rows, 5)
-                local width = left + right + columns * cardWidth + math.max(0, columns - 1) * spacing
-                fit:SetSizeDelta(math.min(w, width), height)
-            end
-            list = { grid = grid, rows = rows, progress = previous and not previous.resetScroll and previous.progress or 0 }
+            list = createList(rows, previous)
         end
         local wasActive = actions ~= nil
         actions = {}
@@ -267,17 +285,7 @@ function M.new(ctx)
         if list ~= previous then
             refreshGrid(list)
         else
-            if list.resetScroll then list.resetScroll, list.progress = false, 0 end
-            if not wasActive and list.grid == scroll and scroll.scrollProgress ~= list.progress then
-                scroll.scrollProgress = list.progress
-            end
-            if not wasActive or owner.visible and list.paintOnReveal then
-                list.paintOnReveal = nil
-                for box, binding in pairs(bindings) do
-                    local card = binding.list == list and list.rows[binding.index]
-                    if card and box.alive ~= false then paintFace(box, binding, card) end
-                end
-            end
+            resumeList(wasActive)
         end
     end
 
