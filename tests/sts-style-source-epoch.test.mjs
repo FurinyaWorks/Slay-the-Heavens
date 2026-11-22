@@ -1,5 +1,5 @@
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
-import {assertCurrentJsInventory} from './helpers/fork-preflight-source.mjs';
+import {assertCurrentJsInventory,beforeShopEntryInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -28,7 +28,28 @@ function fixture(){
 test('release additions remain in raw Full and exact historical inventories reject gaps and source drift',()=>{
  assertIntegratedCurrent();
  const rawJs=discoverJs(),rawLua=readdirSync('tests/lua').filter(p=>p.endsWith('.lua')).map(p=>'tests/lua/'+p).sort();
- assertCurrentJsInventory(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);
+ assertCurrentJsInventory(rawJs,integratedCiProof.inventory);
+ // These five tests remain in current Full discovery. Only the authenticated
+ // historical view may omit them; a missing live test is not a valid prior view.
+ const liveLuaAdditions=['tests/lua/detail_latency.lua','tests/lua/potion_management_visual.lua',
+  'tests/lua/shop_dismiss.lua','tests/lua/shop_entry.lua','tests/lua/traveler_power_tooltip.lua'];
+ const liveLuaInventory=[...integratedCiProof.luaInventory,...liveLuaAdditions].sort();
+ const historicalLua=(paths,read=readFileSync)=>{
+  assert.deepEqual(paths,liveLuaInventory,'exact live Lua discovery inventory');
+  const prior=beforeShopEntryInventory(paths,'lua',read);
+  assert.deepEqual(prior,integratedCiProof.luaInventory,'exact integrated Lua predecessor inventory');
+  return prior;
+ };
+ const currentLua=historicalLua(rawLua);
+ assert.deepEqual(historicalLua(rawLua,(path,encoding)=>readFileSync(path,encoding).replaceAll('\r\n','\n').replaceAll('\n','\r\n')),currentLua);
+ for(const path of liveLuaAdditions){
+  assert.throws(()=>historicalLua(rawLua.filter(test=>test!==path)),/live Lua discovery inventory/);
+  assert.throws(()=>historicalLua([...rawLua,path].sort()),/live Lua discovery inventory/);
+  const bytes=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  for(const foreign of [null,bytes+'\n',bytes.replace('\n','\r\r\n')])
+   assert.throws(()=>historicalLua(rawLua,(file,encoding)=>file===path?foreign:readFileSync(file,encoding)),/fresh .*?(?:test|source)/);
+ }
+ assert.throws(()=>historicalLua([...rawLua,'tests/lua/foreign.lua'].sort()),/live Lua discovery inventory/);
  const newTest=rawJs.find(path=>!integratedCiProof.inventory.includes(path));
  assert.throws(()=>assertCurrentJsInventory(integratedCiProof.inventory,integratedCiProof.inventory),/inventory/);
  for(const target of Object.keys(integratedCiProof.sources)){
@@ -36,7 +57,7 @@ test('release additions remain in raw Full and exact historical inventories reje
   assert.throws(()=>integratedPriorInventory(rawJs,target,'js',(path,encoding)=>
    readFileSync(path,encoding)+(path===newTest?'\n':'')),/fresh added inventory source/);
  }
- for(const [kind,current]of [['js',integratedCiProof.inventory],['lua',rawLua]])for(const target of Object.keys(integratedCiProof.sources)){
+ for(const [kind,current]of [['js',integratedCiProof.inventory],['lua',currentLua]])for(const target of Object.keys(integratedCiProof.sources)){
   const prior=integratedCiProof.inventories[target][kind],added=current.filter(path=>!prior.includes(path));
   if(target==='release'&&kind==='js'&&added.length===0){
    assert.deepEqual(current,prior,'source-only continuation retains the complete identical JS inventory');

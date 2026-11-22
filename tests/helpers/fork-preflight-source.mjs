@@ -284,7 +284,29 @@ function beforePowerMembershipConfig(path,source){
  assert.equal(hash(prior),'7d0b25ebcbd323e633fad7bcf8e618966450c60dde9671185226f1e6cef8fbd1','exact Power membership architecture predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// Authenticate the live Lua inventory test before restoring its complete prior source.
+const luaInventoryTest="tests/sts-style-source-epoch.test.mjs";
+const luaInventoryTestSha='5b02801e4b9837497fa8f9f20388cff207afa78e7f2a7f358b9ac9332e7b1774';
+const luaInventoryTestBlob='b43000381568f9b167c528e5f96f870c9f144d7a';
+function beforeLuaInventoryTest(path,source){
+ if(path!==luaInventoryTest||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!==luaInventoryTestSha||blob(current)!==luaInventoryTestBlob)return source;
+ const start=" assertCurrentJsInventory(rawJs,integratedCiProof.inventory);\n // These five tests remain in current Full discovery.",end=" const newTest=";
+ assert.equal(current.split(start).length,2,'exact live Lua test boundary');
+ assert.equal(current.split(end).length,2,'exact live Lua test boundary');
+ const opening=current.indexOf(start),closing=current.indexOf(end);
+ assert(closing>opening,'ordered live Lua test boundary');
+ const oldCheck=' assertCurrentJsInventory(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);\n';
+ const prior=(current.slice(0,opening)+oldCheck+current.slice(closing))
+  .replace('assertCurrentJsInventory,beforeShopEntryInventory','assertCurrentJsInventory')
+  .replace("['lua',currentLua]","['lua',rawLua]");
+ assert.equal(hash(prior),'77c59b6dc0d91f8fe1becd5a5df83efa6bcf0b5967e5eb3d95caebd51706d187','exact Lua inventory test predecessor');
+ assert.equal(blob(prior),'dfc38c230b942012183773414d04d5e89ca37315','exact Lua inventory test predecessor blob');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeCoopCiSource(path,source){
+ source=beforeLuaInventoryTest(path,source);
  source=beforeStsFadeCi(path,source);
  source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)));
  source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));
@@ -423,7 +445,9 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertReleaseCapacityCohort(releaseRead);
  assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,shopEntryPreflightRead(releaseRead)(path,encoding)));
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,read(path,'utf8')))));
+  const raw=read(path,'utf8'),projected=beforeLuaInventoryTest(path,raw);
+  if(path===luaInventoryTest)assert.notEqual(projected,raw,'fresh complete integration source: '+path);
+  const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,projected))));
   const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,input)))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
