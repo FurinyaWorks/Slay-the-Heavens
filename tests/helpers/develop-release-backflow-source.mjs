@@ -47,14 +47,35 @@ const portraitLifecycle=JSON.parse(gunzipSync(portraitLifecycleArchive));
 assert.equal(portraitLifecycle.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
 assert.deepEqual(Object.keys(portraitLifecycle.files),["src/lua/abyss_traveler_portraits.lua"]);
 for(const path of Object.keys(portraitLifecycle.files))assert(![cardDisplay.files,mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop portraitLifecycle source owner: '+path);
-const layers=[portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
+const actorFocusArchive=readFileSync(new URL('../fixtures/develop-actor-focus-source.json.gz',import.meta.url));
+assert.equal(hash(actorFocusArchive),'59cdce91bafcbe61525ac25c2dbd6e1a2f257f8e099b4999e8e01ed2ae4aa84c','exact Develop Actor/Focus source archive');
+const actorFocus=JSON.parse(gunzipSync(actorFocusArchive));
+assert.equal(actorFocus.base,'2f9444dcbd33ac71a6507db1775be5b70533e68a');
+assert.equal(actorFocus.source,'926f29bf29db13580b470b64a571db87eced50ad');
+assert.deepEqual(Object.keys(actorFocus.files),[
+ 'config/architecture.json','src/lua/abyss_actor.lua','src/lua/abyss_focus.lua','src/lua/abyss_stances.lua',
+]);
+const actorFocusAdded=Object.keys(actorFocus.added);
+assert.deepEqual(actorFocusAdded,['src/lua/abyss_actor_artifact.lua','src/lua/abyss_stance_damage.lua']);
+assert.equal(actorFocus.luaBefore.length,352);
+assert.equal(new Set(actorFocus.luaBefore).size,actorFocus.luaBefore.length);
+assert(actorFocusAdded.every(path=>!actorFocus.luaBefore.includes(path)),'no invented Actor/Focus predecessor');
+const actorFocusOwners=[...Object.keys(actorFocus.files),...actorFocusAdded];
+const priorLayers=[portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
+for(const path of actorFocusOwners)assert(!priorLayers.some(layer=>Object.hasOwn(layer,path)),'distinct Develop Actor/Focus source owner: '+path);
+const layers=[actorFocus.files,...priorLayers];
 for(const {before,after} of layers.flatMap(layer=>Object.values(layer))){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
-const current=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path];
+for(const {after} of Object.values(actorFocus.added)){
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+const current=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
+ (Object.hasOwn(actorFocus.added,path)?actorFocus.added[path]:undefined);
 export const developBackflowOwns=path=>current(path)!==undefined;
 function matches(source,expected){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -63,6 +84,10 @@ function matches(source,expected){
 }
 export function assertDevelopBackflowCurrent(path,source){
  assert(matches(source,current(path).after),'fresh current production owner: '+path);
+}
+export function assertActorFocusInventory(paths,read=path=>readFileSync(path,'utf8')){
+ assert.deepEqual([...paths].sort(),[...actorFocus.luaBefore,...actorFocusAdded].sort(),'complete current Actor/Focus Lua module inventory');
+ for(const path of actorFocusOwners)assertDevelopBackflowCurrent(path,read(path));
 }
 function predecessor(layer,path,source){
  if(!Object.hasOwn(layer,path)||!matches(source,layer[path].after))return source;
@@ -77,7 +102,7 @@ export function authenticateDevelopBackflow(path,source,read){
  const prior=beforeDevelopBackflow(path,source);
  if(prior===source)return source;
  const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
- const owners=forethoughtOwners.includes(path)?forethoughtOwners:[path];
+ const owners=actorFocusOwners.includes(path)?actorFocusOwners:forethoughtOwners.includes(path)?forethoughtOwners:[path];
  for(const owner of owners){
   let live;
   try{live=read(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}

@@ -24,6 +24,8 @@ Owner 批准本轮专项目标为完整 AST 图零 SCC、全库 CC>30 为零、�
 | 25 个原热点 | 同轮完整 Luacheck 数据，包含匿名及初始化块 | 先逐项按真实职责拆分；对比原行为、事件值、输入/控件生命周期及错误返回。 |
 | 完整图与测试分片 | #714 原历史输入绑定代码落后于当前 develop | 保留历史来源，按当前精确树提供出处和投影；同时单独验证真实当前库存、测量和每个分片。 |
 
+Actor／Focus 切片沿用 Actor 的状态命令，把 Artifact 消耗及其事件交给 `abyss_actor_artifact`，把姿态伤害倍率交给 `abyss_stance_damage`。姿态切换及其队列仍由 `abyss_stances` 处理，Focus 与 Bias 使用既有玩家状态及事件路径。验收覆盖零值和负值 Focus、一次性 Artifact 消耗、姿态乘法顺序、回滚、完整 Lua 模块清单及历史源码的混用拒绝。
+
 ## O — 执行与证据
 
 使用 `npm run check:quality`、`npm run check:engineering` 和 `node scripts/check-quality-ratchet.mjs --base <BASE>`。已有完整影响分析优先用于选择本地测试与可选 Fork 预检。正式准入按 [CI](../CI.md)，逐片绑定独立审查的 HEAD、BASE 和合并树。只有实际合入和 `verify:delivery --merged` 通过后才能收口 TASK-74.19/74.20。
