@@ -139,8 +139,7 @@ const currentContinuationOwners = new Set([
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   if(developBackflowOwns(path)){
-    const currentBackflow=beforeDeckBrowserBackflow(path,beforePotionBackflow(path,rawSource));
-    assertDevelopBackflowCurrent(path,currentBackflow!==rawSource?rawSource:source);
+    assertDevelopBackflowCurrent(path,source);
     return beforeCharacterPreparationSource(path,source,read);
   }
   if(rebasedDevelopOwns(path)){

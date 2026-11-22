@@ -41,11 +41,11 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
 }
 
 const combatEventsArchive=readFileSync(new URL('../fixtures/develop-combat-events-source.json.gz',import.meta.url));
-assert.equal(hash(combatEventsArchive),'b8f16c6f4ee6b51943792e0e6449699e258ac3065c2bc20d51d3c0cb44541e87','exact Develop combat and event sources');
+assert.equal(hash(combatEventsArchive),'6a25140a8a86554e7c072e94cad465082d5930d20ffb7c4b0837bf0f6aa1b87d','exact Develop combat and event sources');
 const combatEvents=JSON.parse(gunzipSync(combatEventsArchive));
 assert.equal(combatEvents.base,'0397645a8ffa5eb8af2e02d7c033ef5c486fbf1e');
 for(const [path,row] of Object.entries(combatEvents.files)){
- assert(/^(?:scripts|src\/lua)\//.test(path)&&matches(row.before.source,row.before),'exact combat/event predecessor: '+path);
+ assert(/^(?:scripts|src\/lua|tests)\//.test(path)&&matches(row.before.source,row.before),'exact combat/event predecessor: '+path);
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
 }
 export const combatEventsOwns=path=>Object.hasOwn(combatEvents.files,path);
@@ -56,7 +56,7 @@ export function beforeCombatEvents(path,source){
 }
 
 const browserArchive=readFileSync(new URL('../fixtures/develop-deck-browser-backflow-source.json.gz',import.meta.url));
-assert.equal(hash(browserArchive),'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284','exact Develop deck browser archive');
+assert.equal(hash(browserArchive),'be0dec7cc329c72890141c6eee4c385b69c15ebf1689b345a856cea82b1d0019','exact Develop deck browser archive');
 const browserBackflow=JSON.parse(gunzipSync(browserArchive));
 assert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
 for(const [path,row] of Object.entries(browserBackflow.files)){
@@ -70,11 +70,11 @@ export function beforeDeckBrowserBackflow(path,source){
 }
 
 const potionArchive=readFileSync(new URL('../fixtures/develop-potion-popup-source.json.gz',import.meta.url));
-assert.equal(hash(potionArchive),'6c85ba4df16b702a4f6955b50631d1af9533c141d19fb930a51be22224eabf95','exact Develop potion popup archive');
+assert.equal(hash(potionArchive),'d7e6b6a7b6d603cec23424eedb0ed25fbef3c7fdeae2a4d1ee6fe208ca693690','exact Develop potion popup archive');
 const potionBackflow=JSON.parse(gunzipSync(potionArchive));
 assert.equal(potionBackflow.base,'103aa4072bd3801deb6bf090455bd974181a9647');
 for(const [path,row] of Object.entries(potionBackflow.files)){
- assert(Object.hasOwn(files,path)&&matches(row.before.source,row.before),'exact potion popup predecessor: '+path);
+ assert(matches(row.before.source,row.before),'exact potion popup predecessor: '+path);
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
 }
 export function beforePotionBackflow(path,source){

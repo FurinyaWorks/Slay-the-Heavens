@@ -136,13 +136,13 @@ local host,platform,portrait;local noPortraitDuringBuild=false;local P=require('
 P.new=function(...)portrait=create(...);return portrait end
 G.new=function(root,data,presentation,event,p)platform=p;host=make(root,data,presentation,event,p);return host end
 package.loaded.abyss_art_features={schemaVersion=2,flags={cards=false,menuBackground=true,selectionAvatar=true,battlePortrait=false,monsters=false}}
-local Asset=require('abyss_traveler_portrait_assets');Asset.imagePrefabId=801;Asset.containerPrefabId=802
+local Asset=require('abyss_traveler_portrait_assets');Asset.imagePrefabId=801;Asset.containerPrefabId=802;Asset.selectionHalfImagePrefabId=803
 Asset.${land}
 local actors=F.monsterActors()
 package.loaded.abyss_monster_actor_binding={enabled=true,templateIndex=actors.templateIndex,containerTemplateIndex=actors.containerTemplateIndex,powerTemplateIndex=actors.powerTemplateIndex}
 local function native(c)
  c.active=true;c.SetActive=function(self,value)self.active=value;F.setEngineActive(self,value)end
- for _,method in ipairs({'SetAnchorMin','SetAnchorMax','SetPivot','SetLocalRotation'})do c[method]=function()end end
+ for _,method in ipairs({'SetAnchorMin','SetAnchorMax','SetPivot','SetLocalRotation','SetFillHorizontal','SetFillUnused'})do c[method]=function()end end
  for _,child in ipairs(c:GetChildren())do native(child)end;return c
 end
 local canvas=native(F.control({children=F.Layout}));local serial=0;local enabled=false
@@ -153,7 +153,7 @@ for _,name in ipairs({'characterPanel','battlePanel','menuPanel'})do
 end
 Color=setmetatable({FromRGBA=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end},{__call=function(_,r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},CursorEventType={CursorClick='click'},
- Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
+ ImageFillHorizontalType={Right='right'},Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
 game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return true end,GetDevice=function()return'desktop'end,
  GetCursorUIPos=function()return 0,0 end,InstantiateClientUIControl=function(index,parent)
   if index==1 or index==2 or index==3 then return actors.instantiate(index,parent)end
@@ -163,13 +163,15 @@ game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return 
    end
    noPortraitDuringBuild=true
   end
-  assert(index==801 or index==802,'unexpected source template');serial=serial+1
-  local c=native(F.control({name='portrait'..serial,kind=index==801 and'image'or'container'},parent));parent.children[c.name]=c;return c
+  assert(index==801 or index==802 or index==803,'unexpected source template');serial=serial+1
+  local c=native(F.control({name='portrait'..serial,kind=index==802 and'container'or'image'},parent));parent.children[c.name]=c;return c
  end,DestroyClientUIControl=function(c)c:SetActive(false)end}
 script={object=canvas,GetParam=function()return false end,EnableUpdate=function(_,value)enabled=value end}
 dofile('src/lua/abyss_ui.lua');OnStart();assert(enabled and host and portrait,'real OnStart did not create the production owners')
 for i=1,60 do OnUpdate(1/60);if not host.pageReveal:covered()then break end end
-assert(noPortraitDuringBuild and not host.pageReveal:covered());assert(host:start());assert(host.characterSelection.info)
+assert(noPortraitDuringBuild and not host.pageReveal:covered())
+assert(host:start() and not host.characterSelection.info,'selection starts with no character chosen')
+assert(host:selectCharacter('traveler') and host.characterSelection.info,'choose the Geo traveler before checking its portrait')
 local Gate=require('abyss_page_reveal');local state=portrait:status().selection
 assert(state.phase=='building' and not platform.presentationReady(Gate.intent(host)),'real selection must wait for its incomplete portrait')
 assert(not portrait:readyForPage('menu',false,'ironclad'),'negative control requires a real paused menu-scene dependency')
@@ -178,7 +180,10 @@ assert(not host:openStarterDeck(),'public covered input must stay blocked')
 -- The actual shared browser and actual entry readiness remain under test.
 platform.presentationPage('deckPanel');assert(host.deckUI:openPreview(host.characterSelection.info))
 host.characterSelection.deckOpen=true;host:refresh();assert(Gate.intent(host).page=='deckPanel')
-for i=1,5 do OnUpdate(1/60)end
+for i=1,60 do
+ OnUpdate(1/60)
+ if not host.pageReveal:covered()then break end
+end
 state=portrait:status().selection
 assert(state.phase=='building' or state.phase=='revealing','negative control accidentally completed the old portrait')
 assert(host.deckUI.visible and not host.deckUI.pending and not host.deckUI.calibrating)

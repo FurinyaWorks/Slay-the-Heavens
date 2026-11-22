@@ -286,11 +286,11 @@ const inputRetirementFiles=Object.freeze({
  'tests/helpers/game-ui-extraction-source-inverse.mjs':'53382c07cd63cd010a8aa3c9b2dc12ba3a38ac628d3104cce8eb2ef3c8c33d8c',
  [runtime]:'4bf2e1c7038d0bbe0bffd85ec5be1c4685811b63bf79653f56756779b5463348',
  'tests/helpers/develop-release-backflow-source.mjs':'cf5458eeed5203f9264cfc1c60f1ec0e8c37ec4840cae06668a8002edaf94a7f',
- 'tests/helpers/input-retirement-source.mjs':'e72e02d7fc4560b266c8566f2838ffad48bddf1889d9ee95997485da06bdc0c5',
- 'tests/fixtures/develop-deck-browser-backflow-source.json.gz':'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284',
- 'tests/fixtures/develop-potion-popup-source.json.gz':'6c85ba4df16b702a4f6955b50631d1af9533c141d19fb930a51be22224eabf95',
- 'tests/fixtures/develop-combat-events-source.json.gz':'b8f16c6f4ee6b51943792e0e6449699e258ac3065c2bc20d51d3c0cb44541e87',
- 'tests/helpers/character-preparation-source.mjs':'7d4a1328145f78800915f1baf1a8563ef5a419f9eecefbca50f8df517e143e56',
+ 'tests/helpers/input-retirement-source.mjs':'a349fb3488bb67cc180dabf1e7538d7fa5d04b94038f88946cbbd25e068e95b5',
+ 'tests/fixtures/develop-deck-browser-backflow-source.json.gz':'be0dec7cc329c72890141c6eee4c385b69c15ebf1689b345a856cea82b1d0019',
+ 'tests/fixtures/develop-potion-popup-source.json.gz':'d7e6b6a7b6d603cec23424eedb0ed25fbef3c7fdeae2a4d1ee6fe208ca693690',
+ 'tests/fixtures/develop-combat-events-source.json.gz':'6a25140a8a86554e7c072e94cad465082d5930d20ffb7c4b0837bf0f6aa1b87d',
+ 'tests/helpers/character-preparation-source.mjs':'f4758613abd573df8543411e535a5644f952352f5ce5e67650c89ba2059cc771',
  'tests/helpers/rebased-release-source.mjs':'09cd53484024ec226c747686da16d05ee229b763b41f55533d92d2d1a6cd35a5',
  'tests/helpers/native-host-replay-source.mjs':'9a9adcd1ffd1f89db073f735335ccbb51d4112bf8a4ff83de9bf2338f81b19b7',
  'tests/helpers/native-host-replay-source.json.gz':'f6e9062262769766edcca6a82898acec6b66a0e7f3b30d26655c2b45eb511da5',
@@ -310,7 +310,7 @@ const inputRetirementFiles=Object.freeze({
 });
 const actionButtonFiles=Object.freeze({
  ...inputRetirementFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'a07f86027be1511fcb9aeeeda40867c70e4a820a2cc0c17a077709664df919dd',
+ 'tests/helpers/develop-release-backflow-source.mjs':'72956f3ed3ae318664ccad8f17c03b21e3f2a4cf1a96fb3048135b2ae0239d5f',
  'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
  'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });

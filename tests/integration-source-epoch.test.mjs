@@ -202,7 +202,7 @@ test('combined epoch authenticates the complete current production tree',()=>{
   assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),previous,path);
   if(latest.replaceAll('\r\n','\n')===previous)continue;
   for(const invalid of [previous,latest+'\n',null]){
-   assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh (?:current production owner|combat visual source|energy reference source)/,path);
+   assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh (?:current production owner|combat visual source|energy reference source)/);
    assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?invalid:read(owner)),/fresh .*source|(?:combined|map deck) linked owner identity/);
   }
  }

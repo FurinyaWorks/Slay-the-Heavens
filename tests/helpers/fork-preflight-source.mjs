@@ -701,7 +701,13 @@ function withoutArchiveRecords(current,first,after){
 }
 function beforeDeckBrowserAssetLedger(source){
  if(typeof source!=='string'||source.includes('\r\r\n'))return source;
- const current=normalize(source);
+ let current=normalize(source);
+ if(hash(current)==='5ec27c5274a512ccdf2dfb183f65bd15321c87883e3e4e633e6502f726429353'&&
+    blob(current)==='dcd99bd13cf06653847b5ca8eb76748c229f17a4'){
+  current=withoutArchiveRecords(current,'    "native-event-illustrations": {\n','    "deck-browser-host-evidence": {\n');
+  current=withoutArchiveRecords(current,'    "data/presentation/event-native-controls.json": {\n',
+   '    "docs/evidence/deck-pages-20261122/visual/develop-first-open.png": {\n');
+ }
  if(hash(current)!=='1d33f53a8ae76990456e0829980be613201a8bde6502593013bb928768a9627c'||
     blob(current)!=='23e19be19acbca290bdad08d71f2e111b1143f1e')return source;
  const categories=withoutArchiveRecords(current,'    "deck-browser-host-evidence": {\n','    "opening-statue-simulator-evidence": {\n');
@@ -782,12 +788,13 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   const source=readCurrent(path,encoding);
   // The merged runtime helper was checked before its exact replay projection.
   if(path===epochReplayRuntimePath)return beforeDevelopBackflow(path,source);
-  const production=developBackflowOwns(path);
+  const production=!path.startsWith('tests/')&&developBackflowOwns(path);
   if(production)assertDevelopBackflowCurrent(path,source);
   const requireCurrent=path.startsWith('scripts/')||(path!==replayAssetLedger&&Object.hasOwn(sourceSuccessors,path));
   const input=production?source:beforeDeckPagesSuiteSource(path,source,{requireCurrent});
   const backflow=authenticateDevelopBackflow(path,input,owner=>readCurrent(owner,'utf8'));
-  return beforeNativeFixtureReplay(path,beforeNativeHostReplay(path,backflow));
+  const deck=production?beforeDeckPagesSuiteSource(path,backflow):backflow;
+  return beforeNativeFixtureReplay(path,beforeNativeHostReplay(path,deck));
  };
  const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);

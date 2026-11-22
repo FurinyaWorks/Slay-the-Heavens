@@ -187,12 +187,13 @@ export function beforeDeckPages(path,source,options){return deckPagesPrior(path,
 const deckPagesOwns=path=>Object.hasOwn(deckPages.files,path);
 const productionOwner=path=>path===architecturePath||path.startsWith('src/lua/');
 const recentBackflowOwns=path=>mapRoomBackflowOwns(path)||deckPagesOwns(path)||(productionOwner(path)&&inputRetirementOwns(path));
-export const developBackflowOwns=path=>combatEventsOwns(path)||actionButtonsOwns(path)||recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
+export const developBackflowOwns=path=>(productionOwner(path)&&combatEventsOwns(path))||actionButtonsOwns(path)||recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
 const matchEventRepairPath='src/lua/abyss_match_event_ui.lua';
 const beforeMatchEventRepair=(path,source)=>path===matchEventRepairPath?beforeNativeFlowFixture(path,source):source;
 
 function currentRecentBackflowOwner(path,source){
  if(inputRetirementOwns(path))return isCurrentInputRetirementSource(path,source);
+ source=beforeActionButtons(path,beforeDevelopUiBackflows(path,source));
  if(deckPagesOwns(path))return matches(source,deckPages.files[path].after);
  return matches(source,roomEntry.files[path].after);
 }
@@ -249,8 +250,8 @@ function mapRoomOwnerError(path){
 function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  return path=>{
-  const controller=path===retiredControllerPath?readRetiredController(read):undefined;
-  const source=controller?controller.source:beforeActionButtons(path,beforeDevelopUiBackflows(path,read(path)));
+  const controller=path===retiredControllerPath&&!historicalOwners?readRetiredController(read):undefined;
+  const source=controller?controller.source:read(path);
   if(!recentBackflowOwns(path))return source;
   const current=(!controller||controller.restored)&&currentRecentBackflowOwner(path,source);
   const binding=historicalOwners&&Object.hasOwn(historicalOwners,path)?historicalOwners[path]:undefined;
