@@ -197,7 +197,7 @@ local function renderEventArt(ctx, event, id)
     -- Prepare the current event's fallback before pooled native writes can fail.
     ctx.picture(icon, picture)
     local active = artOwners[event]
-    if eventArt and active ~= owner then
+    if active ~= owner then
         if active and active.picture and icon.visible ~= false then ctx.picture(icon, active.picture) end
         return
     end

@@ -5,7 +5,7 @@
   "categories": {
     "native-event-illustrations": {
       "status": "The project owner confirmed authority on 2026-11-22 to distribute these redrawn event illustrations through the public GitHub repository and the Miliastra Wonderland level. The approved payload contains fitted native primitive IDs, colors and transforms. Underlying game and platform IP rights remain with their respective owners.",
-      "evidence": "Owner distribution confirmation and reviewed precision-fix handoff for the 49 event IDs in data/release/launch-content.json. Nine replacement contour fits use the same artwork from the owner-supplied WebP review previews. Their source hashes are retained in the fit records. The sphere has a transparent output reconstructed from its RGB preview."
+      "evidence": "Owner distribution confirmation and reviewed precision-fix handoff for the 49 event IDs in data/release/launch-content.json. The contour refinements use the same artwork from the owner-supplied 330px WebP review previews. The fit records retain source artwork and review preview hashes. The sphere has a transparent output reconstructed from its RGB preview."
     },
     "sts1-combat-sdk-evidence": {
       "status": "Project SDK captures and texture comparison sheets for Release battle diagnostics and an offline effects experiment. Platform texture and other game IP rights remain with their owners. Evidence only. No asset sublicense or commercial clearance.",
@@ -242,7 +242,7 @@
   },
   "files": {
     "data/presentation/event-native-controls.json": {
-      "sha256": "e6656878f635f61db6f2951faff0307e607891166107d72a981fa6dfc237bb3c",
+      "sha256": "db7a1393c4fae90fc9d7cc30b2ee762394a8ab041b19a6a9aa33973a263eeb13",
       "category": "native-event-illustrations"
     },
     "docs/evidence/shop-828/after-click.png": {
