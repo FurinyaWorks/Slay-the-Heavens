@@ -1,6 +1,5 @@
 import {nativeRoundedMaterial} from './official-battle-card-chrome.mjs';
-import {flagButton} from './v25-character-layout.mjs';
-import {styleCharacterFlag} from './character-selection-composition.mjs';
+import {roundedButtonRadius,roundedPresetButton} from './native-rounded-button.mjs';
 export const stsRewardRowNames=Object.freeze(['goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward']);
 const children=n=>n?.children??n?.controls??[];
 const find=(n,name)=>n?.name===name?n:children(n).map(c=>find(c,name)).find(Boolean);
@@ -14,12 +13,12 @@ function iconFor(name,theme){
  return id(theme.icon.node.treasure);
 }
 function rowFace(row,theme){
- const token=theme.officialAssets.rewardRows;row.size=[...token.rowSize];
+ const {rewardRows:token,actionButton}=theme.officialAssets;row.size=[...token.rowSize];
  for(const state of children(row)){
   const border=required(state,'border'),plate=required(state,'plate'),label=required(state,'label');
   for(const old of [border,plate]){old.visible=false;old.image=theme.image.rect;old.size=[...token.rowSize];}
-  state.size=[...token.rowSize];state.scale=[1,1];
-  const face=nativeRoundedMaterial('stsRewardFace',...token.rowSize,token.cornerRadius,token[state.name]??token.normal);
+  state.size=[...token.rowSize];state.scale=state.name==='pressed'?[actionButton.pressedScale,actionButton.pressedScale]:[1,1];
+  const face=nativeRoundedMaterial('stsRewardFace',...token.rowSize,roundedButtonRadius(token.rowSize[1],actionButton),token[state.name]??token.normal);
   const icon={name:'rewardIcon',kind:'image',position:[token.iconX,0],size:[token.iconSize,token.iconSize],image:iconFor(row.name,theme)};
   label.position=[token.textX,0];label.size=[token.textWidth,token.rowSize[1]-theme.space.s];
   Object.assign(label.text,{fontSize:token.fontSize,minFontSize:theme.font.minimum,autoSize:true,align:'left',valign:'middle',colour:state.name==='disabled'?theme.color.textMuted:token.ink,outline:false});
@@ -27,16 +26,10 @@ function rowFace(row,theme){
  }
 }
 export function proceedFlag(button,theme){
- const position=[...button.position],caption=required(button,'label').text.content;
- // Existing flagButton accepts a control wrapper. Adapt the native preset
- // without changing its state objects, listeners or controller ownership.
- const hit={name:'hit',kind:'container',children:button.children};
- const proxy={...button,children:[hit]};flagButton(proxy,'confirm',theme);
- styleCharacterFlag(proxy,'confirm',theme);
- button.size=[...proxy.size];button.position=position;button.children=hit.children;
+ roundedPresetButton(button,theme,'primary',{name:'v25Flag',size:[180,60],fontSize:24});
  for(const state of button.children){
-  for(const node of children(state))if(!['v25Flag','label'].includes(node.name)){node.visible=false;if(node.kind==='image')node.image=theme.image.rect;}
-  required(state,'label').text.content=caption;
+  required(state,'label').size=[164,52];
+  for(const node of children(state))if(node.kind==='image'){node.visible=false;node.image=theme.image.rect;}
  }
 }
 export function applyStsRewardRows(tree,theme){

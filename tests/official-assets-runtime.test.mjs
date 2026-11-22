@@ -604,6 +604,34 @@ print('OFFICIAL_MAP_RETURN_STATES_PASS')
 });
 
 
+test('official reward return uses the shared states and restores the same unclaimed reward',t=>{
+ runOfficial(t,`
+local Run=require('abyss_run')
+local host,_,panel,_,tap,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local back=root:GetChild('combatRewards')
+local hit,face=back:GetChild('hit'),back:GetChild('v25Face')
+local function state(expected)
+ for _,name in ipairs({'normal','hover','pressed','disabled'})do
+  assert(face:GetChild(name).visible==(name==expected),'reward return state '..name)
+ end
+end
+for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
+assert(Run.finishCombat(host.run));host:refresh()
+local rewards,gold=host.run.rewards,host.run.gold
+tap('continue',707)
+assert(host.run.phase=='map' and back.visible);state('normal')
+hit.listeners.enter({});state('hover')
+hit.listeners.down({touchId=708});state('pressed')
+hit.listeners.endDrag({touchId=708});state('normal')
+assert(not hit.click({touchId=708}) and host.run.phase=='map')
+hit.listeners.down({touchId=709});hit.listeners.up({touchId=709})
+assert(hit.click({touchId=709}) and not back.visible)
+assert(host.run.phase=='reward' and host.run.rewards==rewards and host.run.gold==gold)
+assert(panel:GetChild('rewardList').visible);state('disabled')
+print('OFFICIAL_REWARD_RETURN_STATES_PASS')
+`, 'OFFICIAL_REWARD_RETURN_STATES_PASS');
+});
+
 test('official lethal feedback and reward widgets do not flash the page cover',t=>{
  runOfficial(t,`
 local GameUI=require('abyss_game_ui')

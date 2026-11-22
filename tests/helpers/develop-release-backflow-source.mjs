@@ -7,6 +7,7 @@ import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
 import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
+import {authenticateActionButtons,beforeActionButtons,actionButtonsOwns} from './action-buttons-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -182,11 +183,11 @@ for(const [path,{before,after}] of Object.entries(deckPages.files)){
 }
 export const deckPagesAdded=Object.freeze(Object.keys(deckPages.added));
 function deckPagesPrior(path,source){return predecessor(deckPages.files,path,source);}
-export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,source,options));}
+export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,beforeActionButtons(path,source),options));}
 const deckPagesOwns=path=>Object.hasOwn(deckPages.files,path);
 const productionOwner=path=>path===architecturePath||path.startsWith('src/lua/');
 const recentBackflowOwns=path=>mapRoomBackflowOwns(path)||deckPagesOwns(path)||(productionOwner(path)&&inputRetirementOwns(path));
-export const developBackflowOwns=path=>recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
+export const developBackflowOwns=path=>actionButtonsOwns(path)||recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
 const matchEventRepairPath='src/lua/abyss_match_event_ui.lua';
 const beforeMatchEventRepair=(path,source)=>path===matchEventRepairPath?beforeNativeFlowFixture(path,source):source;
 
@@ -196,6 +197,9 @@ function currentRecentBackflowOwner(path,source){
  return matches(source,roomEntry.files[path].after);
 }
 export function assertDevelopBackflowCurrent(path,source){
+ const priorActions=beforeActionButtons(path,source);
+ if(priorActions!==source)source=priorActions;
+ else if(actionButtonsOwns(path)&&!recentBackflowOwns(path)&&!priorDevelopBackflowOwns(path))assert.fail('fresh current production owner: '+path);
  source=beforeMatchEventRepair(path,source);
  if(recentBackflowOwns(path)){
   assert(currentRecentBackflowOwner(path,source),'fresh current production owner: '+path);
@@ -236,7 +240,7 @@ function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  return path=>{
   const controller=path===retiredControllerPath?readRetiredController(read):undefined;
-  const source=controller?controller.source:read(path);
+  const source=controller?controller.source:beforeActionButtons(path,read(path));
   if(!recentBackflowOwns(path))return source;
   const current=(!controller||controller.restored)&&currentRecentBackflowOwner(path,source);
   const binding=historicalOwners&&Object.hasOwn(historicalOwners,path)?historicalOwners[path]:undefined;
@@ -317,8 +321,10 @@ export function authenticateDevelopBackflow(path,source,read,options){
  return authenticateDevelopBackflowWithReaders(path,source,read,recentBackflowOwnerReader(read),options);
 }
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
- const retiredInput=authenticateInputRetirement(path,source,readLive,options);
- const readInputLive=beforeInputRetirementReader(readLive),readInputLinked=beforeInputRetirementReader(readLinked);
+ source=authenticateActionButtons(path,source,readLive);
+ const readActions=owner=>beforeActionButtons(owner,readLive(owner));
+ const retiredInput=authenticateInputRetirement(path,source,readActions,options);
+ const readInputLive=beforeInputRetirementReader(readActions),readInputLinked=beforeInputRetirementReader(readLinked);
  const readDeckLive=owner=>deckPagesPrior(owner,readInputLive(owner));
  const deckPrior=deckPagesPrior(path,retiredInput);
  if(deckPrior!==retiredInput){

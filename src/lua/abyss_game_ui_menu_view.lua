@@ -140,20 +140,50 @@ local function presentTitle(ctx,victory,defeat)
     title.text=victory and endingTitle(ctx.owner.run) or defeat and '旅途在此中断' or '杀戮原塔2'
     title.fontColor=colour(ctx,victory and C.goldBright or defeat and C.text or C.gold)
 end
+local function settlementFace(ctx,enabled)
+    local settlement=ctx.settlement
+    if settlement:GetChild('v25Face') then
+        for _,name in ipairs({'normal','disabled','selected','border','officialButtonBacking'})do
+            local legacy=settlement:GetChild(name)
+            if legacy then legacy:SetVisible(false)end
+        end
+        V25.button(settlement,enabled)
+        return Theme.officialAssets.buttonInk
+    end
+    local busy=ctx.owner.settlementBusy
+    settlement:GetChild('normal'):SetVisible(enabled==true)
+    settlement:GetChild('disabled'):SetVisible(not enabled and not busy)
+    settlement:GetChild('selected'):SetVisible(busy==true)
+    settlement:GetChild('border').imageColor=colour(ctx,enabled and C.gold or C.line)
+    return C.gold
+end
+
 local function presentSettlement(ctx,outcome,available)
     local self,settlement=ctx.owner,ctx.settlement
     settlement:SetVisible(outcome)
     local enabled=outcome and available and not self.settlementRequested and not self.settlementBusy
-    settlement:GetChild('normal'):SetVisible(enabled==true)
-    settlement:GetChild('disabled'):SetVisible(not enabled and not self.settlementBusy)
-    settlement:GetChild('selected'):SetVisible(self.settlementBusy==true)
-    settlement:GetChild('border').imageColor=colour(ctx,enabled and C.gold or C.line)
-    settlement:GetChild('label').text=self.settlementRequested and '已发送结算请求' or '结束并结算'
-    settlement:GetChild('label').fontColor=colour(ctx,enabled and C.gold or C.textDim)
+    local ink=settlementFace(ctx,enabled)
+    local label=settlement:GetChild('label')
+    label.text=self.settlementRequested and '已发送结算请求' or '结束并结算'
+    label.fontColor=colour(ctx,enabled and ink or C.textDim)
     local m=self.motion
     local targetX=self.settlementRequested and 0 or V25.settlementFrame(ctx,L.settle)[1]
     if targetX~=m.settleX then m.slide,m.settleX={from=m.settleX,to=targetX,t=0},targetX end
 end
+local function presentResultAction(ctx,outcome)
+    if Theme.presentationProfile~='official-assets-first' then return end
+    local start=ctx.start
+    local face=start:GetChild('v25Face')
+    if not face then return end
+    face:SetVisible(outcome)
+    if not outcome then return end
+    for _,name in ipairs({'plate','border','officialButtonBacking'})do
+        local legacy=start:GetChild(name)
+        if legacy then legacy:SetVisible(false)end
+    end
+    V25.button(start,start.visible and not ctx.owner.exitOpen and not ctx.owner.disabled)
+end
+
 function M.present(ctx)
     local self,menu,start=ctx.owner,ctx.menu,ctx.start
     local mode,run,m=self.mode,self.run,self.motion
@@ -178,6 +208,7 @@ function M.present(ctx)
     if outcome then presentStats(ctx,victory,mode,available)
     else menu:GetChild('tagline').text=Narrative.title;menu:GetChild('summary').text='' end
     V25.present(ctx,outcome)
+    presentResultAction(ctx,outcome)
     require('abyss_game_ui_navigation_view').title(self,menu,outcome,V25)
     pose(ctx)
 end

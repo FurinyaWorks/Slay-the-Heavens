@@ -218,10 +218,14 @@ function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEn
     return function(run,inMenu,deckOpen,potionOpen,blocked,covering,returnAvailable)
             local ending=run and run.phase=='ending_proceed'
             local utilitiesVisible=not ending and not inMenu and not deckOpen and not potionOpen and not blocked and not covering
-            child("combatRewards"):SetVisible(returnAvailable)
+            local rewardsBack=child("combatRewards")
+            rewardsBack:SetVisible(returnAvailable)
+            if rewardsBack:GetChild('v25Face') then
+                require('abyss_v25_menu_view').button(rewardsBack,returnAvailable)
+            end
             -- Route preview raises the full-page map. Restore this sibling above it
             -- when returning to navigation; visibility alone leaves it occluded.
-            if returnAvailable then child("combatRewards"):SetAsLastSibling() end
+            if returnAvailable then rewardsBack:SetAsLastSibling() end
             child("deckEntry"):SetVisible(utilitiesVisible)
             -- STS has no separate relic button: the discs under the HP row are the one control.
             child("relicEntry"):SetVisible(false)
