@@ -1,5 +1,5 @@
 import {developReleaseBackflowRead} from './helpers/develop-release-backflow-predecessors.mjs';
-import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
+import {actorFocusAdded,assertActorFocusInventory,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './helpers/release-guide-backflow-source.mjs';
 import test from 'node:test';
@@ -15,8 +15,12 @@ import {withViewport} from '../scripts/viewport-layout.mjs';
 import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
 const readLive = path => readFileSync(path,'utf8');
-const readBeforeUiCloseout = path => beforePc13ThenV2UiHudSource(path,readLive(path),readLive);
-const readHistoricalMenu = liveEpoch.combinedReader(readBeforeUiCloseout,'v2RunMenuPrior');
+const neowFeedbackPath='src/lua/abyss_node_ui_feedback.lua';
+const readCurrentMenuPrior=liveEpoch.combinedReader(readLive,'v2RunMenuPrior');
+function readHistoricalMenu(path){
+ if(path===neowFeedbackPath)return beforeCharacterPreparationSource(path,readLive(path),readLive);
+ return readCurrentMenuPrior(path);
+}
 test('Release guide backflow authenticates all changed develop owners before replay',()=>{
  const read = path => developReleaseBackflowRead('d7d77fe88d3b6fef6da233cfad0ec9361094db0d', path);
  for(const path of releaseGuideSourcePaths){
@@ -70,7 +74,7 @@ test('deck notification continuation preserves immutable menu sources and authen
 test('Neow retirement continuation keeps the complete prior corpus and rejects fresh owner drift',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),retirement=packet.neowRetirementContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path=neowFeedbackPath,read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
  const {navigationRetirementPrior,neowRetirementStaticPrior,...oldTargets}=proof.targets;
  assert.equal(navigationRetirementPrior.commit,'808a310cfc9a0c2734ec424d7ac80d3a040557c8');
  assert.deepEqual(Object.keys(navigationRetirementPrior.files),Object.keys(proof.current));
@@ -97,7 +101,7 @@ test('Neow retirement continuation keeps the complete prior corpus and rejects f
 test('optional Neow flow helper retains the exact first fix and rejects changed producer bytes',()=>{
  const packet=JSON.parse(gunzipSync(readFileSync('tests/helpers/session-menu-source-epoch.json.gz'))),extension=packet.neowRetirementStaticContinuation;
  assertNeowStaticPredecessor(packet);
- const proof=sourceEpoch.proof,path='src/lua/abyss_node_ui_feedback.lua',read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
+ const proof=sourceEpoch.proof,path=neowFeedbackPath,read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
  const {neowRetirementStaticPrior,...oldTargets}=proof.targets;
  const prior={proof:{...proof,current:neowRetirementStaticPrior.files,currentCommit:extension.baseCommit,targets:oldTargets}};
  assert.equal(Object.keys(neowRetirementStaticPrior.files).length,352);
@@ -130,8 +134,14 @@ test('real V25 menu controls support controller round trips without overlapping 
 
 test('menu source continuation retains the complete release corpus and rejects new owner drift',()=>{
  const read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
- const paths=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
- assert.deepEqual(paths,Object.keys(sourceEpoch.proof.current).sort());
+ const luaPaths=readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p).sort();
+ assertActorFocusInventory(luaPaths,readLive);
+ const paths=Object.keys(sourceEpoch.proof.current).sort();
+ assert.equal(paths.length,352);
+ const later=['src/lua/abyss_power_membership.lua',...stasisUpgradeAddedPaths,...actorFocusAdded];
+ assert.deepEqual(['config/architecture.json',...luaPaths].sort(),[...paths,...later].sort());
+ const power='src/lua/abyss_power_membership.lua';
+ assert.equal(readLive(power).replaceAll('\r\n','\n'),liveEpoch.proof.current[power].source);
  const added=paths.filter(p=>!Object.hasOwn(releaseSourceEpoch.proof.current,p));
  assert.deepEqual(added,['src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua']);
  for(const p of paths)assert.equal(beforeCharacterPreparationSource(p,read(p)),sourceEpoch.proof.current[p].source,p);
@@ -148,12 +158,12 @@ test('menu source continuation retains the complete release corpus and rejects n
 });
 
 test('v2 run menu continuation preserves the prior owner and rejects changed siblings',()=>{
- const read=p=>readBeforeUiCloseout(p).replaceAll('\r\n','\n');
  const changed=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'];
  for(const path of changed) {
-  assert.equal(read(path),liveEpoch.proof.current[path].source);
-  assert.equal(liveEpoch.preCombinedSource(path,read(path),{target:'v2RunMenuPrior',readSource:read}),sourceEpoch.proof.current[path].source);
-  for(const missing of changed) assert.throws(()=>liveEpoch.preCombinedSource(path,read(path),
-   {target:'v2RunMenuPrior',readSource:p=>p===missing?null:read(p)}),/linked owner identity/);
+  const raw=readLive(path);
+  assert.equal(beforeCharacterPreparationSource(path,raw,readLive),liveEpoch.proof.current[path].source);
+  assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);
+  for(const missing of changed)assert.throws(()=>liveEpoch.preCombinedSource(path,raw,
+   {target:'v2RunMenuPrior',readSource:p=>p===missing?null:readLive(p)}),/linked owner identity/);
  }
 });
