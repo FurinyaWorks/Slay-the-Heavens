@@ -1,6 +1,7 @@
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 import { cardFaceChildren } from './card-face.mjs';
-import {battlePileChrome,battlePileReturn} from './official-battle-pile-chrome.mjs';
+import {battlePileChrome} from './official-battle-pile-chrome.mjs';
+import {roundedButtonPalettes,roundedCursorButton} from './native-rounded-button.mjs';
 
 // Reserve a real native line below the unchanged card face for choice feedback.
 const itemSize = theme => [theme.layout.deckView.itemSize[0], Math.max(theme.layout.deckView.itemSize[1],
@@ -179,7 +180,9 @@ export function deckControls(theme = nativeTheme) {
         visible: false, children: [{ ...deckCardTemplate(theme).children[0], position: [0, 0] }] },
       { ...button('upgradePreview', [0, -245, ...l.deckView.upgradePreview.slice(2)], '查看升级'), visible: false },
       button('close', closeFrame, '关闭'),
-      {...battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),theme.officialAssets.buttonInk),visible:false},
+      {...roundedCursorButton('pileReturn',[-550,-237],[180,54],
+        text('label',[0,0,180-s.s,54-s.s],'返回',f.label,theme.officialAssets.buttonInk),
+        roundedButtonPalettes(theme).cancel),visible:false},
       {name:'pileTools',kind:'container',position:[0,241.5],size:[856,33],visible:false,children:[
         plate('plate',[0,0,856,33],'#76191B'),
         ...['original','type','cost','name'].map((mode,i)=>({name:mode,kind:'container',position:[(i-1.5)*150,0],size:[150,44],children:[

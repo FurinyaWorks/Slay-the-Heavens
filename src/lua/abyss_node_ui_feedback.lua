@@ -1,5 +1,6 @@
 local Theme = require("abyss_theme")
 local RoomMotion = require('abyss_node_ui_motion')
+local RoundedButton = require('abyss_rounded_button')
 local RewardDetail = require('abyss_node_ui_reward_detail')
 local C = Theme.color
 local layout = Theme.layout.nativeNode
@@ -26,14 +27,6 @@ local function neowChoiceChrome(ctx, box, look, hover, pressed)
     for _, part in ipairs(chrome:GetChild('face'):GetChildren()) do ctx.tint(part, face) end
 end
 
-local function roundedPalette(look,hover,pressed)
-    if not look.enabled then return C.line,C.panelSunken end
-    if pressed then return C.goldBright,C.buttonPressedFill end
-    if hover then return C.goldBright,C.buttonHover end
-    if look.primary or look.selected then return C.goldBright,C.panel end
-    return C.gold,C.panelRaised
-end
-
 local function paintRoundedButton(ctx,box,look,hover,pressed)
     local chrome=box:GetChild('roundedButton')
     if not chrome then return end
@@ -42,9 +35,10 @@ local function paintRoundedButton(ctx,box,look,hover,pressed)
     for _,state in ipairs({'border','normal','hover','pressed','disabled','selected'})do
         box:GetChild(state):SetVisible(false)
     end
-    local rim,fill=roundedPalette(look,hover,pressed)
-    for _,part in ipairs(chrome:GetChild('rim'):GetChildren())do ctx.tint(part,rim) end
-    for _,part in ipairs(chrome:GetChild('cloth'):GetChildren())do ctx.tint(part,fill) end
+    local palette = Theme.officialAssets.roundedButtonPalettes.neutral
+    local state = not look.enabled and 'disabled' or pressed and 'pressed' or hover and 'hover'
+        or (look.primary or look.selected) and 'emphasized' or 'normal'
+    RoundedButton.paint(chrome, palette[state], ctx.options.color)
 end
 
 local function referenceCamp(ctx, box)

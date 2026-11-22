@@ -1,5 +1,6 @@
 {
   "layers": {
+    "abyss_rounded_button": "ui",
     "abyss_page_reveal": "ui",
     "abyss_lowcost_art": "ui",
     "abyss_game_ui_navigation": "ui",

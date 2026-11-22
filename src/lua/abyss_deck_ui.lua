@@ -7,6 +7,7 @@ local OriginalDisplay = require('abyss_original_v4_display')
 local CardOrigin = require('abyss_card_origin_view')
 local M = {}
 local Controller = require('abyss_controller')
+local RoundedButton = require('abyss_rounded_button')
 local typeNames = { attack = "攻击", skill = "技能", power = "能力", status = "状态", curse = "诅咒" }
 local pileNames = {draw="抽牌堆",discard="弃牌堆",exhaust="消耗堆"}
 local rarityOrder = {basic=1,special=2,common=3,uncommon=4,rare=5,curse=6}
@@ -110,6 +111,74 @@ local function permanentOrChoiceCards(run,choice)
         end
     end
     return cards,catalog
+end
+
+local function bindPileReturn(deck, button, platform, cursor, clickEvent, revision)
+    local hit, art = button:GetChild('hit'), button:GetChild('art')
+    local chrome = art:GetChild('roundedButton')
+    local palette = Theme.officialAssets.roundedButtonPalettes.cancel
+    local held, released, observed, hovered
+    local painted = 'normal'
+    local function available()
+        return deck.visible and deck.browserShell and not deck.choiceToken and not deck.detailOnly
+    end
+    local function current(token)
+        return token and available() and token.generation == deck.generation and token.run == deck.run
+            and token.revision == revision()
+    end
+    local function paint(state)
+        if painted == state then return end
+        painted = state
+        RoundedButton.paint(chrome, palette[state], platform.color)
+        local scale = state == 'pressed' and Theme.layout.deckView.pressedScale or 1
+        art:SetLocalScale(scale, scale, 1)
+    end
+    local function reset()
+        held, released, hovered = nil, nil, nil
+        paint('normal')
+    end
+    local function touch(event) return event and event.touchId end
+    if cursor.CursorEnter then
+        hit:AddCursorEventListener(cursor.CursorEnter, function()
+            if not available() or Controller.pointerBlocked(platform.controller) then return end
+            hovered = true
+            if not held then paint('hover') end
+        end)
+    end
+    for _, kind in pairs({cursor.CursorExit, cursor.CursorEndDrag}) do
+        hit:AddCursorEventListener(kind, function(event)
+            local owner = held or released
+            if not owner or not event or owner.touch == touch(event) then reset() end
+        end)
+    end
+    if cursor.CursorDown and cursor.CursorUp then
+        hit:AddCursorEventListener(cursor.CursorDown, function(event)
+            if current(held) and held.touch ~= touch(event) then return end
+            observed, held, released = true, nil, nil
+            if not available() or Controller.pointerBlocked(platform.controller) then
+                reset()
+                return
+            end
+            if touch(event) ~= nil then hovered = nil end
+            held = {generation=deck.generation, run=deck.run, revision=revision(), touch=touch(event)}
+            paint('pressed')
+        end)
+        hit:AddCursorEventListener(cursor.CursorUp, function(event)
+            if not held or held.touch ~= touch(event) then return end
+            released, held = current(held) and held or nil, nil
+            paint(released and hovered and 'hover' or 'normal')
+        end)
+    end
+    hit:AddCursorEventListener(clickEvent, function(event)
+        if not available() or Controller.pointerBlocked(platform.controller) then return false end
+        if observed or cursor.CursorDown and cursor.CursorUp and touch(event) ~= nil then
+            if not current(released) or released.touch ~= touch(event) then return false end
+            released = nil
+        end
+        return deck:back()
+    end)
+    Controller.bind(platform.controller, hit, 'deck', function() return deck:back() end, available, 100)
+    return reset
 end
 
 function M.new(root, presentation, clickEvent, platform, onClose)
@@ -749,6 +818,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.generation=self.generation+1
         self.controllerPage,self.pending=page,true;self:update();return true
     end
+    local resetPileReturn
     function self.close(_)
         if not self.visible then return false end
         if self.previewInfo then presentation=self.previousPresentation;self.masterSort=self.previewMasterSort end
@@ -774,6 +844,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.pileView,self.browserShell=nil,nil;grid=browserGrid
         root:GetChild('veil'):SetVisible(true)
         if Theme.presentationProfile=='official-assets-first' then
+            resetPileReturn()
             for _,name in ipairs({'pileChrome','pileTools','pileReturn'})do root:GetChild(name):SetVisible(false)end
         end
         paintBrowse()
@@ -867,35 +938,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             hit:AddCursorEventListener(clickEvent,function()if Controller.pointerBlocked(platform.controller)then return true end;return action()end)
             Controller.bind(platform.controller,hit,'deck',action,function()return self.visible and self.browserShell and not inDetail() end,80)
         end
-        local hit=root:GetChild('pileReturn'):GetChild('hit')
-        local held,released,observed
-        local function available()
-            return self.visible and self.browserShell and not self.choiceToken and not self.detailOnly
-        end
-        local function current(token)
-            return token and available() and token.generation==self.generation and token.run==self.run and token.revision==returnRevision
-        end
-        if cursor.CursorDown and cursor.CursorUp then
-            hit:AddCursorEventListener(cursor.CursorDown,function(event)
-                observed=true;held,released=nil,nil
-                if available() then held={generation=self.generation,run=self.run,revision=returnRevision,touch=event and event.touchId}end
-            end)
-            hit:AddCursorEventListener(cursor.CursorUp,function(event)
-                if held and held.touch==(event and event.touchId)then released=current(held) and held or nil;held=nil end
-            end)
-            for _,kind in pairs({cursor.CursorExit,cursor.CursorEndDrag})do
-                hit:AddCursorEventListener(kind,function()held,released=nil,nil end)
-            end
-        end
-        hit:AddCursorEventListener(clickEvent,function(event)
-            if not available() or Controller.pointerBlocked(platform.controller)then return false end
-            if observed or cursor.CursorDown and cursor.CursorUp and event and event.touchId~=nil then
-                local token=released;released=nil
-                if not current(token) or token.touch~=(event and event.touchId)then return false end
-            end
-            return self:back()
-        end)
-        Controller.bind(platform.controller,hit,'deck',function()return self:back()end,available,100)
+        resetPileReturn=bindPileReturn(self,root:GetChild('pileReturn'),platform,cursor,clickEvent,function()return returnRevision end)
     end
     bindOfficialBrowser()
     for _,name in ipairs({'previous','next'})do

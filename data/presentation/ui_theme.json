@@ -175,6 +175,11 @@
     },
     "buttonBacking": "#17252D",
     "buttonInk": "#FFF8E7",
+    "roundedCancelStates": {
+      "hover": ["#D9BE60", "#A84D43"],
+      "pressed": ["#C6A858", "#592A2B"],
+      "disabled": ["#716650", "#483332"]
+    },
     "flagButton": {
       "cancel": ["#BCA348", "#8C3739", "#B95B4A"],
       "confirm": ["#A2B4B5", "#477B89", "#77A4AF"],

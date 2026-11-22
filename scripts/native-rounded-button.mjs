@@ -35,14 +35,29 @@ export function roundedButtonState(state,size,colours,name='roundedButton'){
  state.children.splice(label?state.children.indexOf(label):0,0,face);
 }
 
-export function roundedPresetButton(button,theme,normal){
- const c=theme.color;
- const danger=normal===theme.officialAssets.flagButton.cancel;
- const colours={normal,hover:[c.goldBright,danger?'#A84D43':c.buttonHover],pressed:[c.goldBright,danger?'#592A2B':c.buttonPressedFill],
-  disabled:[c.line,c.panelSunken]};
+export function roundedButtonPalettes(theme){
+ const {color:c,officialAssets:art}=theme;
+ return {
+  neutral:{normal:[c.gold,c.panelRaised],emphasized:[c.goldBright,c.panel],
+   hover:[c.goldBright,c.buttonHover],pressed:[c.goldBright,c.buttonPressedFill],disabled:[c.line,c.panelSunken]},
+  cancel:{normal:art.flagButton.cancel.slice(0,2),...art.roundedCancelStates},
+ };
+}
+
+export function roundedPresetButton(button,theme,{tone='neutral',normal}={}){
+ const palette=theme.officialAssets.roundedButtonPalettes[tone];
  for(const state of button.children){
-  roundedButtonState(state,button.size,colours[state.name]);
+  roundedButtonState(state,button.size,state.name==='normal'&&normal?normal:palette[state.name]);
  }
+}
+
+// Native preset children cannot host the visible face on this Simulator path.
+// Fit the same material to a sibling of the cursor area, with one live caption.
+export function roundedCursorButton(name,position,size,label,palette){
+ const art={name:'art',kind:'container',size,children:[
+  roundedButtonMaterial('roundedButton',size,palette.normal),{...label,raycastTarget:false},
+ ]};
+ return {name,kind:'container',position,size,children:[art,{name:'hit',kind:'cursorArea',size,focusable:true}]};
 }
 
 export function roundedFramedButton(button,theme,{stretch=false}={}){
@@ -51,6 +66,6 @@ export function roundedFramedButton(button,theme,{stretch=false}={}){
   if(['border','normal','hover','pressed','disabled','selected','officialButtonBacking',
    'v25BaseMaterial','v25StateChrome'].includes(part.name))part.visible=false;
  }
- const {gold,panelRaised}=theme.color;
- button.children.splice(base,0,roundedButtonMaterial('roundedButton',button.size,[gold,panelRaised],{stretch}));
+ const palette=theme.officialAssets.roundedButtonPalettes.neutral;
+ button.children.splice(base,0,roundedButtonMaterial('roundedButton',button.size,palette.normal,{stretch}));
 }

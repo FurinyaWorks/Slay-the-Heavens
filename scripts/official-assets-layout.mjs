@@ -10,6 +10,7 @@ import {officialBattleCardChrome} from './official-battle-card-chrome.mjs';
 import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferenceTokens} from './sts-card-reference-profile.mjs';
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
+import {roundedButtonPalettes} from './native-rounded-button.mjs';
 const children=node=>node?.controls??node?.children??[];
 const child=(node,name)=>children(node).find(item=>item.name===name);
 const required=(node,name)=>{const value=child(node,name);if(!value)throw Error('Official assets missing '+name);return value;};
@@ -45,6 +46,7 @@ export function officialAssetsTheme(source){
    disabled:theme.officialAssets.neowChoice.disabled,ink:theme.officialAssets.buttonInk});
  theme.officialAssets.stsCardReference={...geoCardReferenceTokens(theme),geometry:structuredClone(stsReferenceRuntimeGeometry)};
  theme.presentationProfile='official-assets-first';
+ theme.officialAssets.roundedButtonPalettes=roundedButtonPalettes(theme);
  theme.lowCostArt=loadLowCostArt();
  theme.cardSkin.text.body=theme.officialAssets.cardInk;
   theme.cardSkin.costText=theme.officialAssets.battleCostInk;
@@ -290,13 +292,6 @@ export function applyOfficialAssets(trees,theme){
    else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
   const deckPanel=child(child(tree,'stage')??tree,'deckPanel');
-  const pileReturn=child(deckPanel,'pileReturn');
-  if(pileReturn){
-   // The installed Simulator cannot bind the normal child of a native preset.
-   const preset=child(pileReturn,'hit'),art=child(preset,'normal');
-   art.name='art';
-   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size],focusable:preset.focusable}];
-  }
   const tools=child(deckPanel,'pileTools');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
