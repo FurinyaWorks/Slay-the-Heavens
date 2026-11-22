@@ -158,11 +158,11 @@ const priorCurrent=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
 const current=path=>Object.hasOwn(sessionRelic.files,path)?sessionRelic.files[path]:priorCurrent(path);
 export const developBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
 const roomEntryArchive=readFileSync(new URL('../fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
-assert.equal(hash(roomEntryArchive),'eddc1f3d920264c350db5632a5b3c4c7ad80c48a109fb03ddb03def5ec3a20b9','exact Develop map-room predecessor archive');
+assert.equal(hash(roomEntryArchive),'7bdbc244d5e96e286ec6ac0f4d155823ade55145999247fd664161ca38fb4976','exact Develop map-room predecessor archive');
 const roomEntry=JSON.parse(gunzipSync(roomEntryArchive));
 assert.equal(roomEntry.base,'d7ae494a3136b2f4f707428fefeeae478c6e0495');
 for(const [path,{before,after}] of Object.entries(roomEntry.files)){
- assert(developBackflowOwns(path),'inherited map-room owner: '+path);
+ assert(developBackflowOwns(path)||/^src\/lua\/abyss_[a-z0-9_]+\.lua$/.test(path),'map-room replay owner: '+path);
  assert(matches(before.source,before),'exact Develop map-room predecessor: '+path);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);

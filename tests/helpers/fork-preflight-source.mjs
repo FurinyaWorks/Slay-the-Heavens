@@ -202,6 +202,14 @@ function beforeDevelopSessionRelicCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'
+  &&hash(normalize(source))==='a63c13772858f86507915f46cef9f9e555c954b23ef76b9b2e1cd81c82406f7f'
+  &&(!source.includes('\r')||!/[\r\n]/.test(source.replaceAll('\r\n','')))){
+  const prior=normalize(source).replace(/^const mapRoomEntryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(mapRoomEntryFiles))','Object.entries(relicDetailFiles))');
+  assert.equal(hash(prior),'8f750c5899d830865b07c6802e292041388e1bf15d7a706b00d18da8a6903f32','exact map-room copier predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  source=beforeDevelopSessionRelicCopier(path,source);
  source=beforeDevelopActorFocusCopier(path,source);
  source=beforeDevelopStasisUpgradeCopier(path,source);

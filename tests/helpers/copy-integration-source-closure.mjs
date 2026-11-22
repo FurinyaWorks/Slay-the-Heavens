@@ -247,8 +247,8 @@ const relicDetailFiles=Object.freeze({
 });
 const mapRoomEntryFiles=Object.freeze({
  ...relicDetailFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'05f546be647fadacefc469af8fd245a82ae1b5f9c9f72e9a66a68f517ec57fbc',
- 'tests/fixtures/develop-map-room-entry-source.json.gz':'eddc1f3d920264c350db5632a5b3c4c7ad80c48a109fb03ddb03def5ec3a20b9',
+ 'tests/helpers/develop-release-backflow-source.mjs':'47ccfaf9286fc7e96d169b354b99615f6620b90b0136ccfbaccc192fa8cf4fd2',
+ 'tests/fixtures/develop-map-room-entry-source.json.gz':'7bdbc244d5e96e286ec6ac0f4d155823ade55145999247fd664161ca38fb4976',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
