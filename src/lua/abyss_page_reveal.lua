@@ -214,6 +214,20 @@ function M.new(cover,ready,onIntent,frames,motion)
         self.painting={epoch=self.epoch,intent=intent,fast=fast,changed=not same(intent,self.intent),roomEntry=roomEntry}
         return true
     end
+    local function finishMapRoom(self,intent,ticket)
+        local value,reason=readiness(ready,intent)
+        if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
+        self.painting=nil
+        if not value or reason then
+            if not same(intent,self.intent) and not self:request(intent,true) then return false end
+            if reason then return reject(self,tostring(reason))end
+            return false
+        end
+        self.intent=intent;self.published=intent;self.state='visible';cover:SetVisible(false)
+        if ticket.epoch~=self.epoch then return false end
+        print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..self.epoch)
+        return true
+    end
     function gate:finish(intent,roomPainted)
         local ticket=self.painting
         if not ticket then return false end
@@ -221,18 +235,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         -- Entry may reset the previous room's picker/page during paint.
         -- Verify the room identity before checking its new leases.
         if roomPainted and ticket.roomEntry and sameOwner(ticket.intent,intent) and not intent.complete then
-            local value,reason=readiness(ready,intent)
-            if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
-            self.painting=nil
-            if not value or reason then
-                if not same(intent,self.intent) and not self:request(intent,true) then return false end
-                if reason then return reject(self,tostring(reason))end
-                return false
-            end
-            self.intent=intent;self.published=intent;self.state='visible';cover:SetVisible(false)
-            if ticket.epoch~=self.epoch then return false end
-            print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..self.epoch)
-            return true
+            return finishMapRoom(self,intent,ticket)
         end
         if not same(ticket.intent,intent)then self:request(intent);return false end
         if not ticket.fast or not ticket.changed then self.painting=nil;return false end
@@ -252,17 +255,23 @@ function M.new(cover,ready,onIntent,frames,motion)
         return true
     end
     function gate:paint(raise)
+        local ticket=self.epoch
         if not paintFrame()then return false end
         local covered,failed=self:covered(),self.state=='failed'
         if cover.visible~=covered then cover:SetVisible(covered)end
+        if self.epoch~=ticket then return false end
         if covered and raise then cover:SetAsLastSibling()end
+        if self.epoch~=ticket then return false end
         local message=cover:GetChild('message')
+        if self.epoch~=ticket then return false end
         if message then
             local text=failed and '画面暂未准备完成，可返回。' or '正在准备画面…'
             if message.visible~=failed then message:SetVisible(failed)end
+            if self.epoch~=ticket then return false end
             if message.text~=text then message.text=text end
         end
         local recovery=cover:GetChild('cancel')
+        if self.epoch~=ticket then return false end
         if recovery and recovery.visible~=failed then recovery:SetVisible(failed)end
     end
     local function finishDeparture(dt)
@@ -318,6 +327,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         local value,reason=readiness(ready,intent)
         if ticket~=self.epoch then return false end
         if reason then return reject(self,tostring(reason))end
+        self.error=nil
         if value~=true then self.state='preparing';self.armed=nil;return false end
         return publishReadyPage(intent,ticket)
     end

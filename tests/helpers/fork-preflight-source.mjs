@@ -67,6 +67,17 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
 // Authenticate the current copier before giving old CI receipts its exact predecessor.
+function beforeLoadingRecoveryCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(!['92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c',
+  '9cba1f84217e1b5c619dc2eab8bb898c5f04ddfc3a9b416270beb64420730248'].includes(hash(lf)))return source;
+ const prior=lf.replace(/const loadingRecoveryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(loadingRecoveryFiles))','Object.entries(refinedReleaseFiles))');
+ assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact loading recovery helper copy predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+
 function beforeRefinedReleaseCopier(path,source){
  if(path!=="tests/helpers/copy-integration-source-closure.mjs"||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
@@ -89,7 +100,7 @@ function shopEntryPreflightRead(read){
  return (path,...args)=>beforeShopEntryCopier(path,prior(path,...args));
 }
 function beforeReleaseUiBuildSource(path,source){
- source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
+ source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);
  source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,source));

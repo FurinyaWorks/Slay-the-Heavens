@@ -108,10 +108,7 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
         end
         return table.concat(result,'；')
     end
-    function self.render(_)
-        if not self.visible then return end
-        self.generation=self.generation+1
-        if not currentSelection()then self.selected=nil end
+    local function renderSlots()
         local capacity=Run.potionCapacity(self.run)
         for slot=1,Theme.layout.battlePotions.count do
             local id=self.run.potions[slot]
@@ -130,6 +127,12 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
             end
             local hit=child('slot'..slot):GetChild('hit');hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
         end
+    end
+    function self.render(_)
+        if not self.visible then return end
+        self.generation=self.generation+1
+        if not currentSelection()then self.selected=nil end
+        renderSlots()
         local selected=self.selected
         child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
         local view=selected and Run.potionView(self.run)[selected.slot]
