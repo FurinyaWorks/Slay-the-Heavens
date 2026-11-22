@@ -1,7 +1,8 @@
 -- Real generated controls + production GameUI, with controlled native APIs.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
-local function finish(ui,root,seconds)
+local function finish(ui,root,seconds,waitForResult)
  ui.run.elapsedSeconds=seconds;ui.run.phase='defeat';ui:refresh()
+ if waitForResult then waitForResult() end
  return F.statValue(root,'time')
 end
 -- Merged opening/deck priority: the prologue blocks character Back, while a
@@ -52,7 +53,21 @@ game={IsTestPlay=function()return false end,GetUICanvasSize=function()return 128
 dofile('src/lua/abyss_ui.lua');OnStart();GameUI.new=originalNew
 assert(host and script.updating,'actual native public entry must start')
 local nativeRoot=canvas:GetChild('stage');nativeRoot.ui=host
-assert(F.start(host))
+local function finishReveal()
+ for _=1,80 do
+  if not host.pageReveal:covered() then return end
+  OnUpdate(.05)
+ end
+ error('native page publication never completed')
+end
+local function startNativeRun()
+ finishReveal()
+ assert(host:start());finishReveal()
+ assert(host:selectCharacter('traveler'));finishReveal()
+ assert(host:selectElement('ironclad'));finishReveal()
+ assert(host:confirmCharacter())
+end
+startNativeRun()
 local function openingReady()
  -- Both publication gates must settle: the interstitial can finish before the
  -- destination's native page scheduler. Only advance positive time under cover.
@@ -63,7 +78,7 @@ local function openingReady()
    assert(host.run and host.run.elapsedSeconds==0,'preparation must not count as playing time')
    return
   end
-  OnUpdate(opening and .05 or 0)
+  OnUpdate(.05)
  end
  error('native opening/page publication never completed')
 end
@@ -72,13 +87,13 @@ openingReady()
 -- foreground/background clock guarantee and therefore must not claim accuracy.
 OnUpdate(60.5);OnUpdate(1.75)
 assert(host.run.elapsedSeconds==62.25,'native fallback must not alter internal accumulation')
-assert(finish(host,nativeRoot,62.25)=='暂不可用','unverified native clock must be unavailable even for plausible values')
+assert(finish(host,nativeRoot,62.25,finishReveal)=='暂不可用','unverified native clock must be unavailable even for plausible values')
 for _,value in ipairs({0,3074457345,184467440737.0955,math.huge,-1,0/0})do
- assert(finish(host,nativeRoot,value)=='暂不可用','native values must never leak into the timer display')
+ assert(finish(host,nativeRoot,value,finishReveal)=='暂不可用','native values must never leak into the timer display')
 end
-assert(F.start(host));openingReady();assert(host.run.elapsedSeconds==0)
+startNativeRun();openingReady();assert(host.run.elapsedSeconds==0)
 OnUpdate(3600) -- background/resume-like interval, not a device timing claim
-host.run.phase='victory';host.run.nodeFlow={complete=true,result='boss_treasure_complete'};host:refresh()
+host.run.phase='victory';host.run.nodeFlow={complete=true,result='boss_treasure_complete'};host:refresh();finishReveal()
 assert(F.statValue(nativeRoot,'time')=='暂不可用','victory shares safe fallback after background-like update')
 assert(host:settle(),'safe fallback must not disable settlement')
 print('NATIVE_TIMER_FALLBACK_PASS public OnStart/OnUpdate, defeat/victory, restart, background, settlement; device NOT_RUN')

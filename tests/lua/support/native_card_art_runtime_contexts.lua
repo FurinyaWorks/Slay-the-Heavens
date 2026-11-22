@@ -122,8 +122,11 @@ elseif ABYSS_RUNTIME_CONTEXT=='node-shop' or ABYSS_RUNTIME_CONTEXT=='node-picker
  run.nodeFlow.cards[1].id='cleave'
  local node=NodeUI.new(r:GetChild('nodePanel'),run,map,F.Presentation,'click',function()end,platform)
  local face=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1')
+ assert(node:press('merchant/talk'))
+ dofile('tests/lua/support/shop_timeline.lua')(node)
+ assert(node.shopOpen and not node.shopBusy and node.actions['shopView/card1'])
  if ABYSS_RUNTIME_CONTEXT=='node-shop' then
-  node:render();Runtime.update();node:setVisible(false)
+  Runtime.update();node:setVisible(false)
   assert(Runtime.status().livePools==0,'pending node pool leaked on hide')
   phase('node-pending-hide')
   node:render();drain();check(face,false,true);assert(Runtime.status().livePools==0,'hidden node render restarted art')
@@ -133,15 +136,15 @@ elseif ABYSS_RUNTIME_CONTEXT=='node-shop' or ABYSS_RUNTIME_CONTEXT=='node-picker
  else
   -- Separate complete ready-to-ready page transitions so no VM redraws the
   -- seven-slot real shop twice. All generated offers and artwork stay intact.
-  if ABYSS_RUNTIME_CONTEXT=='node-picker' then node:render();drain();check(face,true,true)end
+  if ABYSS_RUNTIME_CONTEXT=='node-picker' then drain();check(face,true,true)end
   run.deck={{uid=99,cardId='cleave',upgraded=true}}
-  node.mode,node.picker,node.pickPage='picker','remove',1;node:render();drain()
+  assert(node:press('shopView/removal'));drain()
   check(r:GetChild('nodePanel'):GetChild('pickerView'):GetChild('card1'),true,true)
   if ABYSS_RUNTIME_CONTEXT=='node-picker' then
    assert(not face:GetChild('artSamples').visible,'shop to picker leaked art')
    phase('node-shop-to-picker')
   else
-   node.mode,node.picker='main',nil;node:render();drain();check(face,true,true)
+   assert(node:press('back'));drain();check(face,true,true)
    assert(not r:GetChild('nodePanel'):GetChild('pickerView'):GetChild('card1'):GetChild('artSamples').visible)
    phase('node-picker-to-shop')
   end

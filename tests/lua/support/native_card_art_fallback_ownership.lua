@@ -10,10 +10,16 @@ for _=1,17 do
  for _,node in ipairs(choices)do if node.type=='shop'then assert(Nodes.enter(run,map,node.id));found=true;break end end
  if found then break end;assert(Map.choose(map,assert(choices[1]).id))
 end
+-- This ownership fixture repeatedly replaces the same visible offer. The
+-- ready-art runtime contexts separately exercise the complete seven-slot shelf.
+run.nodeFlow.cards={assert(run.nodeFlow.cards[1])}
 local root=Native.decorate(F.Viewport.apply(F.control({children=F.Layout}),1280,720))
 local face=root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1')
 local options=Small.platform
 local node=require('abyss_node_ui').new(root:GetChild('nodePanel'),run,map,F.Presentation,'click',function()end,options)
+assert(node:press('merchant/talk'))
+dofile('tests/lua/support/shop_timeline.lua')(node)
+assert(node.shopOpen and not node.shopBusy and node.actions['shopView/card1'])
 local failures,passed={},0
 local function check(kind,ready,label)
  for art in pairs(F.Theme.icon.cardArt)do

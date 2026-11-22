@@ -40,8 +40,16 @@ test('each complete chapter route remains reachable within the same viewport',fu
             local node=Map.available(map)[1]
             ui:focusCurrent()
             local control=box(panel,map,node.id)
-            assert(control.visible and control:GetChild('hit').visible,'next chapter room is offscreen')
-            assert(control:GetChild('hit').click())
+            local hit=control:GetChild('hit')
+            if node.roomKind=='boss_treasure' then
+                assert(act==2 and #Map.available(map)==1 and not control.visible and not hit.visible)
+                assert(not hit.click(),'host-owned boss treasure must not accept a map click')
+                -- Project the host's automatic room entry after the boss rewards.
+                assert(Map.choose(map,node.id));ui:render()
+            else
+                assert(control.visible and hit.visible,'next chapter room is offscreen')
+                assert(hit.click())
+            end
             assert(map.floor==node.floor)
             rooms=rooms+1
         end
