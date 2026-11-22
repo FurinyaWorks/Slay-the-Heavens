@@ -52,6 +52,29 @@ local function connect(links, services)
         end
     end
 end
+local function bindCancelSelectionKey(self, ownership, host, services)
+    local keys = host.platform.keyEvents
+    local keyRoot = host.platform.keyRoot or host.root
+    if keys and keys.KeyboardSprintKeyDown and keyRoot.AddKeyEventListener then
+        -- The official sprint binding defaults to RMB. Listen on the persistent UI root.
+        keyRoot:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
+            local run, gesture = self.run, self.gesture or self.carry
+            if not self.active or self.busy or not run or run.phase ~= 'combat' or run.combat.phase ~= 'player'
+                or not (gesture or self.selected) or host.root.visible == false then return false end
+            services.cancelCardInputs()
+            services.cancelActionInputs()
+            services.cancelPotionInputs()
+            self.gesture, self.carry, self.selected, self.cardAim = nil, nil, nil, nil
+            self.hover, self.handHover, self.help = nil, nil, nil
+            self.selectionEpoch = (self.selectionEpoch or 0) + 1
+            if gesture then ownership.releasedDragTouch = gesture.touch end
+            self.suppressClick = gesture ~= nil
+            services.notice('')
+            self:render()
+            return true
+        end)
+    end
+end
 function M.new(root, data, presentation, clickEvent, platform, options)
     options = options or {}
     local self = { root = root, data = data, presentation = presentation, target = 1, seed = 1, busy = false, active = true }
@@ -362,27 +385,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         end)
         Controller.bind(host.controller,hit,'battle',openPile,available,80)
     end
-    local keys = host.platform.keyEvents
-    local keyRoot = host.platform.keyRoot or host.root
-    if keys and keys.KeyboardSprintKeyDown and keyRoot.AddKeyEventListener then
-        -- The official sprint binding defaults to RMB. Listen on the persistent UI root.
-        keyRoot:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
-            local run, gesture = self.run, self.gesture or self.carry
-            if not self.active or self.busy or not run or run.phase ~= 'combat' or run.combat.phase ~= 'player'
-                or not (gesture or self.selected) or host.root.visible == false then return false end
-            services.cancelCardInputs()
-            services.cancelActionInputs()
-            services.cancelPotionInputs()
-            self.gesture, self.carry, self.selected, self.cardAim = nil, nil, nil, nil
-            self.hover, self.handHover, self.help = nil, nil, nil
-            self.selectionEpoch = (self.selectionEpoch or 0) + 1
-            if gesture then ownership.releasedDragTouch = gesture.touch end
-            self.suppressClick = gesture ~= nil
-            services.notice('')
-            self:render()
-            return true
-        end)
-    end
+    bindCancelSelectionKey(self, ownership, host, services)
     services.refresh()
     return self
 end
