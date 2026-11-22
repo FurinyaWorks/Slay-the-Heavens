@@ -1,3 +1,4 @@
+import {beforeDevelopBackflow,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi,rebasedDevelopOwns} from './rebased-release-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner,cardFeedbackOwnerPaths} from './card-feedback-owner-source.mjs';
@@ -116,6 +117,9 @@ function beforeAdmissionReceipt(path,source,read){
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source=authenticateDevelopBackflow(path,source,read);
+  const readBackflow=read;
+  read=owner=>authenticateDevelopBackflow(owner,readBackflow(owner),readBackflow);
   const rebound=beforeRebasedCi(path,source);
   if(rebound!==source)authorizeRebasedDevelop([[path,source]],read);
   source=rebound;
@@ -166,6 +170,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  if(developBackflowOwns(path)){
+    assert.notEqual(beforeDevelopBackflow(path,source),source,'fresh current production owner: '+path);
+    return beforeCharacterPreparationSource(path,source,read);
+  }
   if(rebasedDevelopOwns(path)){
     assert.notEqual(beforeRebasedCi(path,source),source,'fresh current production owner: '+path);
     return beforeCharacterPreparationSource(path,source,read);

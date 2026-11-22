@@ -181,11 +181,19 @@ const stsCloseoutFiles=Object.freeze({
  'tests/helpers/sts-ui-closeout-source.mjs':'9303fe7c8dc88f40b552cdc8f291ec22932d6ee28e1e7f7463191a2f1ffa32a9',
  'tests/fixtures/sts-ui-closeout-source.json':'6d3859741054bc3da48bd31b5a520ce559da6a06a866a9232741c82a175e891d',
 });
+const developBackflowFiles=Object.freeze({
+ ...stsCloseoutFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'97ba16b8c6e311e099a694b03ffd7fbf7ca6addcbf66e9768f91abc59f741791',
+ 'tests/fixtures/develop-release-backflow-source.json.gz':'0274fb7add34eeb3fe478d240e371bb2ac7af872932c262334b0613a0dc9d738',
+ 'tests/helpers/character-preparation-source.mjs':'84bc051c39920b1fa6d4c15dc27add68d4b0451032a1993486e93d21bd9e7b15',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'4e615ebe00db432f4454613cebc88c3ade5ca1053e6a1bc7ac80fe3c067a5ee3',
+ 'tests/helpers/sts-selection-fade-source.mjs':'18fe99cc5af9f83d6efb565c63db404923f6efe690d9f47e9338b4bb85dad0ef',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(stsCloseoutFiles)){
+ for(const [path,sha]of Object.entries(developBackflowFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

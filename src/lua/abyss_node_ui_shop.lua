@@ -18,8 +18,7 @@ function M.install(ctx)
             hit:AddCursorEventListener(cursor.CursorDown,function(event)
                 observed=true;released=nil
                 held={touch=event and event.touchId,epoch=ctx.shopEpoch,run=ctx.self.run,map=ctx.self.map,actions=ctx.self.actions}
-                if not ctx.self.visible or ctx.self.shopBusy or ctx.self.shopOpen
-                    or ctx.options.inputCovered and ctx.options.inputCovered() then held=nil end
+                if ctx.inputCovered() or ctx.self.shopBusy or ctx.self.shopOpen then held=nil end
             end)
             hit:AddCursorEventListener(cursor.CursorUp,function(event)
                 if held and held.touch==(event and event.touchId) then released,held=held,nil end
@@ -125,13 +124,16 @@ function M.install(ctx)
     ctx.self.merchant = ctx.merchant
 
     ctx.shopSelection = ShopSelection.new(ctx.self, ctx.child('shopView'), ctx.options)
-    ctx.renderShop = ShopUI.new(ctx.self, {
+    local renderShop = ShopUI.new(ctx.self, {
         selection = ctx.shopSelection,
         child = ctx.child, show = ctx.show, state = ctx.state, ink = ctx.ink, picture = ctx.picture,relicPicture=ctx.relicPicture,
         fillCard = ctx.fillCard, cardName = ctx.cardName, relicName = ctx.relicName, relicText = ctx.relicText,
         action = ctx.action, pageArrows = ctx.pageArrows,
         commit = function(...) return ctx.commit(...) end,
     })
+    function ctx.renderShop(view, node)
+        return ctx.self.shopOpen and renderShop(view,node) or ''
+    end
     function ctx.shopFooter()
         ctx.action('merchant/talk', not ctx.self.shopOpen and not ctx.self.shopBusy, ctx.openShop)
         if ctx.shopSelection.selected then return ctx.shopSelection:footer() end

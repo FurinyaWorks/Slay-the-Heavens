@@ -656,7 +656,7 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             if self.easterEgg then self.easterEgg:refresh()end
             syncPortraits()
             CardSkin.endFrame(surfaceFrame,surfaceScopes(self))
-            finishReveal(self,platform,not blocked and not deckOpen and not potionOpen and not self.nodeUI.pendingOwner)
+            finishReveal(self,platform,self.nodeUI.visible and not self.nodeUI.pendingOwner)
             paintReveal(self)
             openingForeground(covering)
             self:syncController()

@@ -521,15 +521,18 @@ function M.new(stage, platform, present, complete)
         self.acting = entry.kind == "intent" and entry.detail.enemy or self.acting
         if entry.kind == "player_turn" then self.acting = nil end
         self.enemyRows=EnemyView.slots(self.shadow,self)
-        -- The final reward frame is painted by completion. Skip the obsolete combat redraw.
-        if not self.rewardTransition or entry.kind ~= "victory" then
+        return old,contactDeaths
+    end
+    local function presentFrame(kind)
+        -- The final reward frame is painted by completion.
+        if not self.rewardTransition or kind ~= "victory" then
             present(self.shadow, self.acting, self.deaths)
         end
-        return old,contactDeaths
     end
     local function step(entry, style)
         local old,contactDeaths=enterFrame(entry,style)
         local d, kind = type(entry.detail) == "table" and entry.detail or {}, entry.kind
+        presentFrame(kind)
         print("ABYSS_FEEDBACK " .. kind .. " source=" .. tostring(d.source or d.enemy or "-") .. " target=" .. tostring(d.target or "-") .. " amount=" .. n(d.amount))
         if kind == "play" then
             playStep(d,kind,style,old)

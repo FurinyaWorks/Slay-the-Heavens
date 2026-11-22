@@ -4,13 +4,13 @@
 -- no keys or historical wins are granted. This is not a natural playthrough.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map,Run=require('abyss_map'),require('abyss_run')
-local function finishOpening(host)
+local function awaitNativePage(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
             and not(host.pageReveal and host.pageReveal:covered())then assert(host.run and not host.disabled);return end
         OnUpdate(0.05)
     end
-    error('native opening did not finish')
+    error('native page did not become ready')
 end
 local function fixture(experimental,bgm)
     local canvas=F.control({children=F.Layout})
@@ -55,7 +55,7 @@ local function start(host,root,button,element)
     if element then F.click(root,'characterPanel','elements/element'..element)end
     assert(not host.run,'selection must not create a Run')
     F.click(root,'characterPanel','confirm')
-    finishOpening(host)
+    awaitNativePage(host)
     assert(not(host.prologue and host.prologue:covering()) and host.mode=='map' and host.map.floor==0,
         'full-source reaches the map after the opening')
     assert(host.mapUI.navigationEnabled)
@@ -80,32 +80,41 @@ local function fight(host,root,floor)
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
     assert(Run.finishCombat(host.run));host:refresh()
     assert(host.run.phase=='reward' and host.run.rewards.cards)
-    F.click(root,'battlePanel','continue')
-    assert(host.mode=='map' and host.run.nodeFlow.complete)
+    if nextNode.type~='boss' then
+        F.click(root,'battlePanel','continue')
+        assert(host.mode=='map' and host.run.nodeFlow.complete)
+    end
 end
 local function bossComplete(host,bossFloor)
     local map,run=host.map,host.run
     -- Skip the intervening played rooms, retaining the actual generated map,
     -- legal path and chapter owners. Do not fabricate a chest or ending reward.
-    while Map.available(map)[1].floor<=bossFloor do
+    while Map.available(map)[1].floor<bossFloor do
         assert(Map.choose(map,Map.available(map)[1].id))
     end
-    run.floor,run.phase=bossFloor,'map'
-    run.nodeFlow={id=map.currentNodeId,floor=bossFloor,type='boss',complete=true,result='boss_victory',
+    run.floor,run.phase=map.floor,'map'
+    run.nodeFlow={id=map.currentNodeId,floor=map.floor,type='combat',complete=true,result='victory',
         mapSeed=map.seed,mapSignature=map.sourceSignature}
     host:refresh()
+    awaitNativePage(host)
+    fight(host,host.root,bossFloor)
+    F.click(host.root,'battlePanel','continue')
+    awaitNativePage(host)
 end
 local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
     bossComplete(host,bossFloor)
     assert(host.mode=='node' and run.floor==bossFloor+1 and run.nodeFlow.roomKind=='boss_treasure')
+    awaitNativePage(host)
     assert(host.nodeUI:press('treasureView/chest'))
     host.nodeUI:update(2)
+    awaitNativePage(host)
     assert(host.nodeUI:press('back'))
     assert(run.phase=='act_transition',
         'FORMAL_CAMPAIGN_STOPPED floor='..run.floor..' phase='..run.phase..'; Boss chest must continue the campaign')
     assert(host.mode=='node' and run.act==nextAct-1)
     local uid,gold=run.deck[1].uid,run.gold
+    awaitNativePage(host)
     assert(host.nodeUI:press('confirm'))
     assert(host.run==run and host.map==map and run.act==nextAct and host.mode=='map')
     assert(run.deck[1].uid==uid and run.gold==gold)

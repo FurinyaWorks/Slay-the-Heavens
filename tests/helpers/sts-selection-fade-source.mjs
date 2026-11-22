@@ -1,3 +1,4 @@
+import {beforeDevelopBackflow,authenticateDevelopBackflow} from './develop-release-backflow-source.mjs';
 import {authorizeRebasedStsUi,beforeRebasedStsUi} from './rebased-release-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 // Exact full-source continuation for historical receipts. Product tests use live files.
@@ -15,9 +16,12 @@ function beforeOriginalFade(path,source){
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
 }
 export function beforeStsSelectionFade(path,source){
- return beforeOriginalFade(path,beforeStsUiCloseoutSource(path,beforeRebasedStsUi(path,source)));
+ return beforeOriginalFade(path,beforeStsUiCloseoutSource(path,beforeRebasedStsUi(path,beforeDevelopBackflow(path,source))));
 }
 export function beforeAuthenticatedStsSelectionFade(path,source,read){
+ source=authenticateDevelopBackflow(path,source,read);
+ const readBackflow=read;
+ read=owner=>authenticateDevelopBackflow(owner,readBackflow(owner),readBackflow);
  const original=beforeRebasedStsUi(path,source);
  if(original!==source)authorizeRebasedStsUi([[path,source]],read);
  const predecessor=beforeStsUiCloseoutSource(path,original);
