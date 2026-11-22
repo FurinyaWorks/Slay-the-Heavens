@@ -1,7 +1,7 @@
 // Proposal facade: the original epoch module and its oracle are byte-for-byte frozen.
 export * from './epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 import { preGameUiExtractionSource as original } from './epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
-import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
+import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {existsSync,realpathSync,statSync,rmSync} from 'node:fs';
@@ -17,6 +17,9 @@ export function preGameUiExtractionSource(path,source,{readSource=live}={}){
    assert.equal(typeof readSource,'function','GameUI extraction linked reader must be a function');
   return original(path,source,{readSource});
  }
+ if(readSource===live&&(path==='config/architecture.json'||path==='src/lua/abyss_game_ui.lua'))
+  return sourceEpoch.withCombinedProjection(path,source,{target:'develop',readSource},
+   (projected,read)=>original(path,projected,{readSource:read}));
  const projected=sourceEpoch.preCombinedSource(path,source,{target:'develop',readSource});
  return original(path,projected,{readSource:(typeof readSource==='function'?sourceEpoch.combinedReader(readSource,'develop'):readSource)});
 }

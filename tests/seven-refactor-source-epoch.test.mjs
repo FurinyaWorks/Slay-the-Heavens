@@ -5,11 +5,16 @@ import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {beforePotionPointerSource} from './helpers/potion-pointer-source.mjs';
+import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
 // Original assertions retain their explicit frozen source view.
 const currentRaw=p=>nativeReadFileSync(p,'utf8');
 const noncombatPriorRead=currentSourceEpoch.combinedReader(currentRaw,'noncombatPrior');
-// noncombatPrior may leave unchanged owners at their newer live identity.
-const beforePointerRead=p=>beforePotionPointerSource(p,noncombatPriorRead(p),currentRaw);
+// Even a same-target owner can have a newer source outside this historical view.
+const beforePointerRead=p=>{
+ const current=currentRaw(p),prior=noncombatPriorRead(p);
+ const source=prior===current&&p.startsWith('src/lua/')?beforeCurrentProductionSource(p,current,currentRaw):prior;
+ return beforePotionPointerSource(p,source,currentRaw);
+};
 const readFileSync=(p,encoding)=>encoding==='utf8'
  ?jointUiSourceAt(p,beforePc13ThenV2UiHudSource(p,beforePointerRead(p),currentRaw),'official')
  :nativeReadFileSync(p,encoding);
@@ -407,13 +412,20 @@ test('pure source calculations reuse exact strings but every projection freshly 
  const proof={schemaVersion:1,normalization:'LF',currentCommit:'a'.repeat(40),owners:[path],current:{[path]:bind(source)},
   targets:{prior:{commit:'b'.repeat(40),files:{[path]:bind('{}\n')}}}};
  const project=createSourceEpochProjector(proof,{allowConfigLayout:true});
+ const luaPath='src/lua/cache_freshness.lua',luaSource='return 1\n',luaPrior='return 0\n';
+ const lua=createSourceEpochProjector({...proof,owners:[luaPath],current:{[luaPath]:bind(luaSource)},
+  targets:{prior:{...proof.targets.prior,files:{[luaPath]:bind(luaPrior)}}}});
  const originalHash=crypto.createHash,originalParse=JSON.parse;let hashes=0,parses=0,reads=0,actual=source;
  try{
   crypto.createHash=(...args)=>{hashes++;return originalHash(...args);};syncBuiltinESMExports();
   JSON.parse=(...args)=>{parses++;return originalParse(...args);};
+  let luaReads=0;
+  const runLua=()=>lua.preCombinedSource(luaPath,luaSource,{target:'prior',readSource:()=>{luaReads++;return luaSource;}});
+  assert.equal(runLua(),luaPrior);assert.equal(hashes,1);assert.equal(luaReads,1);
+  assert.equal(runLua(),luaPrior);assert.equal(hashes,1);assert.equal(luaReads,2);
   const run=input=>project.preCombinedSource(path,input,{target:'prior',readSource:()=>{reads++;return actual;}});
-  assert.equal(run(source),'{}\n');assert.equal(hashes,1);assert.equal(reads,1);
-  assert.equal(run(source),'{}\n');assert.equal(hashes,1);assert.equal(reads,2);
+  assert.equal(run(source),'{}\n');assert.equal(reads,1);
+  assert.equal(run(source),'{}\n');assert.equal(reads,2);
   const layout='{ "cacheFreshness" : 1 }\n';
   assert.equal(run(layout),'{}\n');assert.equal(parses,1);assert.equal(reads,3);
   assert.equal(run(layout),'{}\n');assert.equal(parses,1);assert.equal(reads,4);

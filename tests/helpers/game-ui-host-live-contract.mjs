@@ -179,7 +179,10 @@ end
 `;
 
 export function installCurrentHostContract(directory){
- const file=path.join(directory,'tests/lua/support/game_ui_host_trace.lua');let source=fs.readFileSync(file,'utf8');
+ const file=path.join(directory,'tests/lua/support/game_ui_host_trace.lua');
+ // Apply the exact multiline checkpoints to the private copy on either checkout EOL.
+ let source=fs.readFileSync(file,'utf8').replaceAll('\r\n','\n');
+ assert(!source.includes('\r'),'valid current driver line endings');
  for(const [before,after]of [
   [`local firstSync,secondSync=host.controller.sync,second.controller.sync
 host.controller.sync=function(...)record('first controller');return firstSync(...)end

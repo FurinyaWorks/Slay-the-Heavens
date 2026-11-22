@@ -64,11 +64,13 @@ function historical(rows,path,source){
  if(!row||!matches(beforeNativeButtonRepair(path,source),row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
-export function exactReviewedBuildInput(path,read){
+export function exactReviewedBuildInput(path,read,{beforeReviewedInput}={}){
  if(!Object.hasOwn(reviewedBuild.files,path))return undefined;
  const source=read(path,'utf8');
  const {after,before}=reviewedBuild.files[path];
- assert(matches(beforeNativeButtonRepair(path,source),after),'fresh reviewed build input: '+path);
+ let current=beforeNativeButtonRepair(path,source);
+ if(!matches(current,after)&&beforeReviewedInput)current=beforeNativeButtonRepair(path,beforeReviewedInput(path,source,read));
+ assert(matches(current,after),'fresh reviewed build input: '+path);
  return before.source;
 }
 export const beforeRebasedCi=(path,source)=>historical(ci,path,source);

@@ -10,6 +10,7 @@ import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {preReadyArtSource as currentProject} from './helpers/ready-art-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {nativeMonsterSourceLayer} from './helpers/epochs/develop/tests/helpers/native-monster-art-source-inverse.mjs';
 import {gameUiExtractionProof} from './helpers/epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 const hash=s=>s===null?null:createHash('sha256').update(s).digest('hex');
@@ -105,19 +106,21 @@ historicalTest('ready-art retirement rejects live directory aliases and retarget
 
 // Current acceptance uses the real entry and real filesystem reads. Its Host
 // and config reach the frozen GameUI intermediate, not the old ready-art epoch.
-function observeCurrentReads(callback){
+function observeCurrentReads(callback,retiredSource){
  const originalRead=fs.readFileSync,seen=[];
  let bad=null,mode='good';
  fs.readFileSync=function(file,...options){
   const absolute=file instanceof URL?fileURLToPath(file):resolve(String(file));
   const path=relative(repository,absolute).replaceAll('\\','/');
-  if(Object.hasOwn(sourceEpoch.proof.current,path)){
+  if(Object.hasOwn(sourceEpoch.proof.current,path)||path===pointerInputPath){
    seen.push(path);
    if(path===bad){
     if(mode==='throw')throw Error('ready-art raw reader sentinel: '+path);
     if(mode==='missing')return undefined;if(mode==='null')return null;
-    if(mode==='buffer')return Buffer.from(originalRead.call(this,file,...options));
-    if(mode==='changed')return originalRead.call(this,file,...options)+'\n';
+    const source=path===retiredControllerPath?retiredSource:originalRead.call(this,file,...options);
+    if(mode==='present')return source;
+    if(mode==='buffer')return Buffer.from(source);
+    if(mode==='changed')return source+'\n';
    }
   }
   return originalRead.call(this,file,...options);
@@ -128,6 +131,10 @@ function observeCurrentReads(callback){
 }
 test('current ready-art Host/config retain authenticated intermediate bytes and reread every real raw owner',()=>{
  const paths=['config/architecture.json','src/lua/abyss_game_ui.lua'];
+ const read=path=>readFileSync(path,'utf8');
+ assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});
+ const retiredSource=beforeInputRetirementReader(read)(retiredControllerPath);
+ const owners=[...sourceEpoch.proof.owners,pointerInputPath];
  const current=Object.fromEntries(paths.map(path=>[path,readFileSync(path,'utf8').replaceAll('\r\n','\n')]));
  for(const path of paths){
   const expected=gameUiExtractionProof.files[path];
@@ -136,13 +143,17 @@ test('current ready-art Host/config retain authenticated intermediate bytes and 
   observeCurrentReads(({seen,fault})=>{
    const check=()=>assert.equal(currentProject(path,current[path]),expected.beforeSource);
    check();const first=[...seen];
-   for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current ready-art owner: '+owner);
+   for(const owner of owners)assert(first.includes(owner),'fresh current ready-art owner: '+owner);
    seen.length=0;check();assert.deepEqual(seen,first,'warm calls repeat the complete real raw-read sequence');
-   for(const owner of sourceEpoch.proof.owners){
-    for(const mode of ['changed','missing','null','buffer','throw']){
+   for(const owner of owners){
+    if(owner===retiredControllerPath)for(const mode of ['missing','null']){
+     seen.length=0;fault(owner,mode);check();assert.deepEqual(seen,first,'retired Controller still requires fresh pointer ownership');
+    }
+    const modes=owner===retiredControllerPath?['present','changed','buffer','throw']:['changed','missing','null','buffer','throw'];
+    for(const mode of modes){
      seen.length=0;fault(owner,mode);
      for(let repeat=0;repeat<2;repeat++)assert.throws(check,error=>{
-      assert.match(error.message,/linked owner/);assert(error.message.includes(owner));
+      assert.match(error.message,/linked owner/);assert(error.message.includes(owner===pointerInputPath&&mode!=='throw'?retiredControllerPath:owner));
       if(mode==='throw')assert.match(error.message,/ready-art raw reader sentinel/);return true;
      });
      assert(seen.includes(owner));
@@ -150,7 +161,7 @@ test('current ready-art Host/config retain authenticated intermediate bytes and 
     }
     fault(null,'good');check();
    }
-  });
+  },retiredSource);
  }
 });
 

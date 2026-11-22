@@ -35,6 +35,13 @@ const mapRoomCohortPaths=new Set([
  'tests/defect-actor-boundary.test.mjs',
  'tests/integration-source-epoch.test.mjs',
  'tests/helpers/historical-sts-style-entry.mjs',
+ 'tests/defect-final-source-epoch.test.mjs',
+ 'tests/defect-utility-planning.test.mjs',
+ 'tests/menu-red-source-proof.cases.mjs',
+ 'tests/seven-refactor-source-epoch.test.mjs',
+ 'tests/room-ui-source-epoch.test.mjs',
+ 'tests/delivery.test.mjs',
+ 'scripts/ci-media-lfs.mjs',
  'tests/lua/menu_input_boundaries_current.lua',
  'tests/lua/noncombat_v25_menu.lua',
  'tests/lua/support/committed_defeat_fixture.lua',
@@ -44,7 +51,7 @@ const mapRoomCohortPaths=new Set([
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  '517ea3d0c962b4a3e57834b549498dda0110a894eccb68395f472c4ade652608','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  'ec9944df7fa1c4afe4293f5ddd6e87c15382f6ab9da4f853784c9cd0599bad23','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 

@@ -5,6 +5,7 @@ import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBa
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
+import {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
 import {beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
@@ -534,7 +535,7 @@ export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
  paths=beforeInputRetirementTestInventory(paths,kind,read);
- if(kind==='js')paths=beforeIntegratedStsInventory(paths,read);
+ if(kind==='js')paths=beforeIntegratedStsInventory(paths,(path,encoding)=>beforeNativeFlowFixture(path,read(path,encoding)));
  paths=beforeReleaseAdditionalInventory(paths,kind,read);
  const [path,...authenticated]=shopEntryTests[kind];
  const position=paths.indexOf(path);
@@ -729,6 +730,13 @@ function beforeReplayArchiveStorage(path,source){
  assert.equal(blob(prior),priorId,path);
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+export function beforeReviewedBuildInput(path,source,read){
+ const live=owner=>read(owner,'utf8');
+ const production=authenticateDevelopBackflow(path,source,live);
+ const deck=beforeDeckPagesSuiteSource(path,production);
+ const merged=beforeDevelopReplayMerge(path,deck);
+ return beforeForkFirstCi(path,beforeReplayArchiveStorage(path,merged));
+}
 function beforeIntegrationSuccessor(path,source){
  source=beforeIntegrationReplayTests(path,source);
  if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
@@ -740,10 +748,11 @@ function beforeIntegrationSuccessor(path,source){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const liveRead=read;
  assertNativeFixturesCurrent(liveRead);
+ assertNativeFlowFixturesCurrent(liveRead);
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
   const live=read(path,encoding);
-  let raw=live;
+  let raw=beforeNativeFlowFixture(path,live);
   if(path===replayAssetLedger){
    const ledger=beforeDeckBrowserAssetLedger(live);
    assert.notEqual(live,ledger,'fresh complete integration source: '+path);
@@ -786,6 +795,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeNativeFlowFixture(path,source);
  source=beforeOfficialBackgroundFixture(path,source);
  if(path===replayAssetLedger)source=beforeDeckBrowserAssetLedger(source);
  source=beforeReplayArchiveStorage(path,source);
@@ -820,14 +830,16 @@ export function beforePreflightSource(path,source,view='prior'){
  if(prior===undefined||prior===null)return source;
  const eol=source.includes('\r\n')?'\r\n':'\n';return prior.replaceAll('\n',eol);
 }
-export function preflightPriorRead(read=readFileSync,view='prior'){return(path,encoding)=>{
- let raw;
- try{raw=read(path,encoding);}catch(error){
+export function readHistoricalPreflightInput(path,encoding,read=readFileSync){
+ try{return read(path,encoding);}catch(error){
   if(error.code!=='ENOENT'||!Object.hasOwn(archiveFiles,path))throw error;
   const row=archiveFiles[path].current,source=readRetiredInputLuaReceipt(path,row?.sha256,read,row);
   if(source===undefined)throw error;
-  raw=encoding?source:Buffer.from(source);
+  return encoding?source:Buffer.from(source);
  }
+}
+export function preflightPriorRead(read=readFileSync,view='prior'){return(path,encoding)=>{
+ const raw=readHistoricalPreflightInput(path,encoding,read);
  if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforePreflightSource(path,text,view);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);

@@ -8,6 +8,7 @@ import {preM7FinalSource,m7FinalReader} from './helpers/m7-core-final-source-inv
 import {preRelicQuerySource,relicQueryReader} from './helpers/relic-query-source-inverse.mjs';
 import {preColorlessCatalogSource as frozenProject,colorlessCatalogReader as frozenReader} from './helpers/epochs/colorless/tests/helpers/colorless-catalog-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const owners=Object.keys(proof.files),originals=owners.filter(p=>Object.hasOwn(proof.files[p],'beforeSource'));
@@ -84,21 +85,35 @@ test('new catalog retirement checks bytes twice and cannot delete a live-file al
 
 
 test('every current Colorless entry freshly authenticates the full dynamic owner set through all reader forms',()=>{
- const current=Object.fromEntries(sourceEpoch.proof.owners.map(p=>[p,read(p)]));
+ const currentOwners=[...sourceEpoch.proof.owners,pointerInputPath];
+ assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});
+ const retiredSource=beforeInputRetirementReader(read)(retiredControllerPath);
+ const current=Object.fromEntries(currentOwners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));
  for(const path of originals)for(const wrap of [r=>r,colorlessCatalogReader,r=>colorlessCatalogReader(colorlessCatalogReader(r))]){
   let bad=null,mode='good',seen=[];
   const raw=p=>{seen.push(p);if(p===bad){
-   if(mode==='throw')throw Error('expanded reader sentinel');
+   if(mode==='throw')throw Error('expanded reader sentinel: '+p);
    if(mode==='missing')return undefined;if(mode==='null')return null;
-   if(mode==='buffer')return Buffer.from(current[p]);if(mode==='changed')return current[p]+'\n';
-  }return current[p]??read(p);};
+   const source=p===retiredControllerPath?retiredSource:current[p];
+   if(mode==='present')return source;
+   if(mode==='buffer')return Buffer.from(source);if(mode==='changed')return source+'\n';
+  }return p===retiredControllerPath?undefined:current[p]??read(p);};
   const wrapped=wrap(raw),check=()=>assert.equal(project(path,read(path),{readSource:wrapped}),proof.files[path].beforeSource);
   check();const first=[...seen];
-  for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current owner: '+owner);
+  for(const owner of currentOwners)assert(first.includes(owner),'fresh current owner: '+owner);
   seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the entire raw-read sequence');
-  for(bad of sourceEpoch.proof.owners)for(mode of ['changed','missing','null','buffer','throw']){
-   seen=[];assert.throws(check,error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(bad));if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;});
-   assert(seen.includes(bad));mode='good';seen=[];check();assert.deepEqual(seen,first,'recovery rereads the entire closure');
+  for(bad of currentOwners){
+   if(bad===retiredControllerPath)for(mode of ['missing','null']){
+    seen=[];check();assert.deepEqual(seen,first,'retired Controller still requires fresh pointer ownership');
+   }
+   const modes=bad===retiredControllerPath?['present','changed','buffer','throw']:['changed','missing','null','buffer','throw'];
+   for(mode of modes){
+    seen=[];assert.throws(check,error=>{
+     assert.match(error.message,/linked owner/);assert(error.message.includes(bad===pointerInputPath&&mode!=='throw'?retiredControllerPath:bad));
+     if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;
+    });
+    assert(seen.includes(bad));mode='good';seen=[];check();assert.deepEqual(seen,first,'recovery rereads the entire closure');
+   }
   }
   const formatted=JSON.stringify(JSON.parse(read(config)));
   assert.throws(()=>project(path,read(path),{readSource:wrap(p=>p===config?formatted:read(p))}),/linked owner identity/,'input formatting cannot authorize a reformatted raw configuration');

@@ -1,4 +1,4 @@
-import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
+import {beforeInputRetirementTestInventory,beforePreflightSource} from './helpers/fork-preflight-source.mjs';
 import {beforeExecutionTimeoutWorkflow} from './helpers/auto-merge-workflow.mjs';
 import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.mjs';
 import test from 'node:test';
@@ -72,8 +72,10 @@ test('historical fourteen-slot budget retains its complete observed inventory wh
  const historicalJs=[...new Set(ciCompleteCalibrationProof.evidence.observations.js.map(row=>row.file))].sort();
  const historicalLua=[...new Set(ciCompleteCalibrationProof.evidence.observations.lua.map(row=>row.file))].sort();
  assert.equal(historicalJs.length,725);assert.equal(historicalLua.length,1356);
- for(const file of historicalJs)assert(js.includes(file),'complete historical JS input still present: '+file);
- for(const file of historicalLua)assert(lua.includes(file),'complete historical Lua input still present: '+file);
+ const retainedJs=beforeInputRetirementTestInventory(js,'js',readFileSync,{required:true});
+ const retainedLua=beforeInputRetirementTestInventory(lua,'lua',readFileSync,{required:true});
+ for(const file of historicalJs)assert(retainedJs.includes(file),'complete historical JS inventory input: '+file);
+ for(const file of historicalLua)assert(retainedLua.includes(file),'complete historical Lua inventory input: '+file);
  combined(13,js,lua);combined(14,js,lua); // Current raw inventory keeps both complete partition checks.
  assert.ok(Math.max(...combined(13,historicalJs,historicalLua))+60000>=1800000,'retain the actual thirteen-slot infeasibility witness');
  assert.ok(Math.max(...combined(14,historicalJs,historicalLua))+60000<1800000,'the unchanged thirty-minute budget and sixty-second sensitivity must pass');

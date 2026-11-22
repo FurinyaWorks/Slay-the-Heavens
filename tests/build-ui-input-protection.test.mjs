@@ -16,7 +16,7 @@ const outputs = ['abyss_theme.lua', 'map-ui.json', 'abyss_map_layout.lua', 'abys
   'abyss_narrative.lua', 'abyss_presentation.lua', 'battle-ui.json', 'game-ui.json', 'abyss_ui_layout.lua',
   'game-ui-templates.json', 'abyss_ui_templates.lua', 'abyss_ui_profile.lua', 'abyss_menu_background_asset.lua',
   'abyss_ready_card_binding.lua','abyss_ready_card_assets.lua','abyss_traveler_portrait_assets.lua','abyss_monster_art_data.lua','abyss_art_features.lua','abyss_monster_actor_binding.lua',
-  'abyss_component_binding.lua','abyss_v25_card_assets.lua','art-render-v2.json'];
+  'abyss_component_binding.lua','abyss_deck_browser_binding.lua','abyss_v25_card_assets.lua','art-render-v2.json'];
 // Every fixture gets a fresh copy of the same validated repository inputs.
 const artInputs = [...new Set([...backgroundInputs, ...readyArtSourceInputs(), ...portraitInputs])];
 const monsterInputs = prepareMonsterArt().inputPaths;

@@ -4,6 +4,7 @@ local F = dofile("tests/lua/support/game_ui_fixture.lua")
 local GameUI, Combat, Nodes, Data = F.GameUI, F.Combat, F.Nodes, F.Data
 local Presentation, Layout, Viewport, Theme = F.Presentation, F.Layout, F.Viewport, F.Theme
 local preview, control, fixture = F.preview, F.control, F.fixture
+local click, win = F.click, F.win
 local count = 0
 local Map = require('abyss_map')
 local function test(name, fn) fn(); count = count + 1; print("ok game UI " .. count .. " - " .. name) end

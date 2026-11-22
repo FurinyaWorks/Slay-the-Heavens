@@ -1,4 +1,5 @@
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -174,9 +175,7 @@ test('original Nodes config closure rejects relabeled, missing and changed input
 test('current architecture admission rereads its complete raw owner closure and rejects changed or missing owners',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),owners=sourceEpoch.proof.owners;
- // The #730 and #733 continuations re-read their authenticated live sources
- // after the main closure, in continuation order.
- const admittedReads=[...owners,...currentProductionRereads];
+ const priorReadOrder=[...owners,...currentProductionRereads];
  let changed,replacement,reads=[];
  const reader=file=>{reads.push(file);if(file===changed){if(replacement instanceof Error)throw replacement;return replacement;}return readFileSync(file,'utf8');};
  const layers=JSON.parse(raw).layers;
@@ -185,12 +184,26 @@ test('current architecture admission rereads its complete raw owner closure and 
  // Admission targets the current declared develop epoch. It does not claim
  // that unrelated modern owners can replay the complete 98fef history.
  const project=()=>sourceEpoch.preCombinedSource(path,raw,{target:'develop',readSource:reader});
- const accepted=project();assert.equal(hash(accepted),sourceEpoch.proof.targets.develop.files[path].sha256,'the declared current target, not the ancient candidate');assert.notEqual(accepted,raw);assert.deepEqual(reads,admittedReads,'fresh raw current closure, in original admission order');
- for(const owner of owners){
+ const accepted=project();assert.equal(hash(accepted),sourceEpoch.proof.targets.develop.files[path].sha256,'the declared current target, not the ancient candidate');assert.notEqual(accepted,raw);
+ const admittedReads=[...reads];
+ assert.equal(admittedReads.length,417,'complete fresh raw closure size');
+ assert.equal(hash(JSON.stringify(admittedReads)),'05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67','exact current admission order');
+ let position=-1;
+ for(const owner of priorReadOrder){
+  position=admittedReads.indexOf(owner,position+1);
+  assert.notEqual(position,-1,'retained original admission read: '+owner);
+ }
+ const readOwner=owner=>readFileSync(owner,'utf8');
+ assert.throws(()=>readOwner(retiredControllerPath),{code:'ENOENT'});
+ for(const owner of [...owners,pointerInputPath]){
   changed=owner;
-  for(replacement of [readFileSync(owner,'utf8')+'\n',null,new Error('missing current owner')]){
-   reads=[];assert.throws(project,/linked owner (identity|missing)/);
-   assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'stop at the first untrusted current owner');
+  const missing=new Error('missing current owner');
+  const variants=owner===retiredControllerPath?[beforeInputRetirementReader(readOwner)(owner),missing]:[readOwner(owner)+'\n',null,missing];
+  for(replacement of variants){
+   const expected=owner===pointerInputPath?'linked owner missing: '+retiredControllerPath:
+    'linked owner '+(replacement instanceof Error?'missing: ':'identity: ')+owner;
+   reads=[];assert.throws(project,error=>error.message.includes(expected));
+   assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'stop at the first untrusted current owner');
   }
  }
  changed=undefined;reads=[];assert.equal(project(),accepted);assert.deepEqual(reads,admittedReads,'restoring owners validates afresh; no retained admission');

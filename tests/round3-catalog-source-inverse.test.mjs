@@ -13,6 +13,7 @@ import {round3CatalogProof as proof,preRound3CatalogSource as prior,prepareRound
 import {preRound3CatalogSource as currentProject,prepareRound3CatalogModuleRetirement as currentRetire} from './helpers/round3-catalog-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {actorFocusAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {gameUiExtractionProof} from './helpers/epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 import {coreLifecycleSourceProof} from './helpers/epochs/develop/tests/helpers/core-lifecycle-source-inverse.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
@@ -130,8 +131,11 @@ test('current catalog hosts retain authenticated intermediate epochs and freshly
   'config/architecture.json':gameUiExtractionProof.files['config/architecture.json'],
   'src/lua/abyss_combat.lua':coreLifecycleSourceProof.files['src/lua/abyss_combat.lua'],
  };
- const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded];
- const current=Object.fromEntries([...Object.keys(sourceEpoch.proof.current),...addedOwners].map(p=>[p,readLive(p)]));
+ const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath];
+ assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});
+ const retiredSource=beforeInputRetirementReader(readLive)(retiredControllerPath);
+ const paths=[...Object.keys(sourceEpoch.proof.current),...addedOwners].filter(path=>path!==retiredControllerPath);
+ const current=Object.fromEntries(paths.map(path=>[path,readLive(path)]));
  const linkedOwners=[...new Set([...sourceEpoch.proof.owners,...addedOwners])];
  for(const [path,binding]of Object.entries(expected)){
   assert.equal(hash(binding.beforeSource),binding.beforeSha256);
@@ -144,7 +148,9 @@ test('current catalog hosts retain authenticated intermediate epochs and freshly
    if(p===bad){
     if(mode==='throw')throw Error('current catalog reader sentinel');
     if(mode==='missing')return undefined;if(mode==='null')return null;
-    if(mode==='buffer')return Buffer.from(current[p]);if(mode==='changed')return current[p]+'\n';
+    const source=p===retiredControllerPath?retiredSource:current[p];
+    if(mode==='present')return source;
+    if(mode==='buffer')return Buffer.from(source);if(mode==='changed')return source+'\n';
    }
    return current[p];
   };
@@ -158,9 +164,13 @@ test('current catalog hosts retain authenticated intermediate epochs and freshly
   assert.throws(check,error=>error.message.includes(lateOwner)&&/changed during replay/.test(error.message));
   lateRead=0;
   for(bad of linkedOwners){
-   for(mode of ['changed','missing','null','buffer','throw']){
+   if(bad===retiredControllerPath)for(mode of ['missing','null']){
+    seen=[];check();assert.deepEqual(seen,first,'retired Controller still requires fresh pointer ownership');
+   }
+   const modes=bad===retiredControllerPath?['present','changed','buffer','throw']:['changed','missing','null','buffer','throw'];
+   for(mode of modes){
     seen=[];assert.throws(check,error=>{
-     assert.match(error.message,/linked owner/);assert(error.message.includes(bad));
+     assert.match(error.message,/linked owner/);assert(error.message.includes(bad===pointerInputPath&&mode!=='throw'?retiredControllerPath:bad));
      if(mode==='throw')assert.match(error.message,/current catalog reader sentinel/);return true;
     });
     assert(seen.includes(bad));

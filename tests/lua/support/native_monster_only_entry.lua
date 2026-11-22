@@ -1,5 +1,13 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local captured,options
+local function awaitNativePage()
+ for _=1,80 do
+  if not captured.starting and not(captured.prologue and captured.prologue:covering())
+   and not(captured.pageReveal and captured.pageReveal:covered())then return end
+  OnUpdate(0.05)
+ end
+ error('native monster page did not become ready')
+end
 local GameUI=require('abyss_game_ui')
 local realNew=GameUI.new
 GameUI.new=function(...)
@@ -57,7 +65,8 @@ assert(oldFace:GetChild('art').visible,'prior world official fallback not restor
 local menu=root:GetChild('menuPanel')
 assert(menu.visible and menu:GetChild('start').visible)
 assert(not menu:GetChild('heroArt').visible,'merged menu layout keeps its legacy hero overlay hidden')
-OnUpdate(.01);assert(F.click(root,'menuPanel','start'))
+awaitNativePage();assert(F.click(root,'menuPanel','start'))
+awaitNativePage()
 assert(root:GetChild('characterPanel').visible,'official selection remains interactive')
 OnUpdate(.01)
 local hero=root:GetChild('battlePanel'):GetChild('hero'):GetChild('portrait')
@@ -65,22 +74,24 @@ assert(hero.visible,'official hero fallback remains visible')
 assert(creates==0)
 for name in pairs(forbidden)do assert(package.loaded[name]==nil,'disabled data loaded '..name)end
 assert(not options.cardArt and not options.background and not options.portraits)
+assert(F.click(root,'characterPanel','traveler'))
+awaitNativePage()
 assert(captured:confirmCharacter())
-for _=1,80 do
- if not captured.starting and not(captured.prologue and captured.prologue:covering())
-  and not(captured.pageReveal and captured.pageReveal:covered())then break end
- OnUpdate(0.05)
-end
-assert(captured.run and not captured.starting and not captured.prologue:covering(),'native monster opening did not finish')
+awaitNativePage()
+assert(captured.run and not captured.starting and captured.mode=='node','native monster opening did not finish')
 assert(F.click(root,'nodePanel','eventView/option1'))
+awaitNativePage()
 assert(F.click(root,'nodePanel','eventView/option2'))
+awaitNativePage()
 assert(F.click(root,'nodePanel','eventView/option1'))
+awaitNativePage()
 assert(captured.run.phase=='map' and captured.run.neowStatus=='complete')
 local Nodes=require('abyss_nodes')
 assert(Nodes.enter(captured.run,captured.map,Nodes.available(captured.run,captured.map)[1].id))
 assert(captured.run.phase=='combat')
 captured.run.combat=F.Combat.new(F.Data,{deck={'strike','defend'},enemies={'cultist','acid_slime_m'},seed=11})
 captured:refresh()
+awaitNativePage()
 local grass=captured.run.combat.enemies[2]
 local actor=assert(Surfaces.get(panel):find(grass.id),'source instance must own a complete dynamic actor')
 local art=assert(actor:GetChild('monsterArt'))

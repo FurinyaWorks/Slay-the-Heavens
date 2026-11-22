@@ -42,9 +42,8 @@ for i=1,500 do
 end
 assert(deathSeen and not ui.battleUI.busy and ui.run.phase=='reward')
 retained('reward')
--- The approved reward page is a panel, and production deliberately hides the
--- entire hero. Its child remains cached; parent visibility is not asset loss.
-assert(ui.mode=='battle' and panel.visible and not hero.visible and figure.visible)
+-- Enemy death leads to the reward overlay on the surviving combat stage.
+assert(ui.mode=='battle' and ui.battleUI.rewardScreen=='list' and panel.visible and hero.visible and figure.visible)
 F.click(root,'battlePanel','continue');assert(ui.mode=='map')
 retained('map');assert(not panel.visible and not figure.visible)
 assert(Run.startCombat(ui.run,'cultist_solo'));ui:refresh();ui:update(.02)

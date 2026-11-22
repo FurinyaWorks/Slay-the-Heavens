@@ -81,9 +81,11 @@ end
 local function fight(host,root,floor)
     awaitNativePage(host)
     local nextNode=Map.available(host.map)[1]
-    assert(nextNode.floor==floor and host.mapUI:choose(nextNode.id))
-    assert(host.mode=='battle' and host.run.phase=='combat')
+    assert(nextNode and nextNode.floor==floor)
+    local accepted,state=host.mapUI:choose(nextNode.id)
+    assert(accepted and state=='selection_pending' and host.mode=='map' and host.run.phase=='map')
     awaitNativePage(host)
+    assert(host.map.currentNodeId==nextNode.id and host.mode=='battle' and host.run.phase=='combat')
     -- Controlled final-damage boundary; encounter construction and rewards stay real.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
     assert(Run.finishCombat(host.run));host:refresh()

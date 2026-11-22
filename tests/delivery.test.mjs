@@ -4,7 +4,7 @@ import { readFileSync, mkdtempSync, writeFileSync, rmSync, mkdirSync, renameSync
 import {spawnSync} from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { verifyDelivery, verifyMergedDelivery, collectPrDelivery, collectMergedDelivery, checkoutReceipt, isLowRiskDocumentationChange, fullQualityJobs, currentFullQualityJobs, deliverySchemaVersion, qualityWorkflowPath } from '../scripts/verify-delivery.mjs';
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import * as delivery from '../scripts/verify-delivery.mjs';
@@ -122,7 +122,7 @@ globalThis.fetch = async (address, init) => {
   return {ok: true, json: async () => responses[path]};
 };`);
   const script = fileURLToPath(new URL('../scripts/branch-hygiene.mjs', import.meta.url));
-  const run = mode => spawnSync(process.execPath, ['--import', fixture, script], {cwd, encoding: 'utf8',
+  const run = mode => spawnSync(process.execPath, ['--import', pathToFileURL(fixture).href, script], {cwd, encoding: 'utf8',
     env: {...process.env, GITHUB_REPOSITORY: handoffRepo, GITHUB_TOKEN: 'fixture', GITHUB_EVENT_NAME: mode,
       GITHUB_EVENT_PATH: event, GITHUB_STEP_SUMMARY: ''}});
   writeFileSync(event, JSON.stringify({action: 'closed', pull_request: pr}));

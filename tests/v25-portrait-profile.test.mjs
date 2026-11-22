@@ -8,6 +8,7 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {attachOfficialPortraits} from '../scripts/official-portraits.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {withPortraitVm} from './helpers/portrait-runtime-vm.mjs';
+import {officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {applyV25PortraitProfile,v25PortraitRuntimeProfile} from '../scripts/v25-portrait-profile.mjs';
 
 const sourceHash='4851e4aae6c43799ec31e2b2ebd06f9b00cf07161f26e71d72a6ec89191ad98e';
@@ -214,14 +215,15 @@ assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
 
-test('official selection retains its bounded cache while battle uses the approved native figure and full-body literals remain available',()=>{
+test('official portraits keep their bounded caches and development retains its full-body literals',()=>{
+ withPortraitVm(`assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315,'full-body development drawing was replaced')`,{runtimeV2:true});
  withPortraitVm(`
 local selectionHost=tree();stage.children.characterPanel.children.lumineSelectionBackground=selectionHost;local frame=tree();rawset(frame,'sizeDeltaX',440)
 local note=tree();note.text=''
 stage.children.characterPanel.children.details=tree({officialSelectionFigure=selectionHost,portraitFrame=frame,
  portraits=tree({traveler_ironclad=tree()}),portraitNote=note})
 traveler:SetVisible(false)
-assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315,'full-source figure was replaced')
+assert(Asset.battle133==nil and Asset.battlePortraitEnabled==true,'official pack must omit the full-body literal and keep battle portraits enabled')
 assert(Asset.battlePixel.count==57 and #Asset.battlePixel.rows==57)
 local native=assert(Asset.battleApprovedNative)
 assert(native.renderProfile=='lowpoly-v1' and native.count==464 and #native.rows==464)
@@ -248,7 +250,7 @@ assert(a:sync('menu',true,false,'ironclad'));a:tick()
 assert(a:sync('battle',false,false,'ironclad'));a:tick()
 assert(a:status().battle.phase=='ready' and a:status().battle.generation==generation and LiveCount()==complete,'scene reentry rebuilt the approved cache')
 local resumed=Images();for i,image in ipairs(both)do assert(resumed[i]==image,'scene reentry replaced a cached image')end
-assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315)
+assert(Asset.battle133==nil and Asset.battlePortraitEnabled==true)
 assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
@@ -515,8 +517,9 @@ test('approved Lumine official battle mounts the exact native drawing and retain
  assert.equal(data.count,464);
  assert.equal(data.rows.filter(r=>r[17]!==255).length,20);
  assert.equal(data.rows.filter(r=>r[18]||r[19]).length,448);
+ const theme=officialAssetsTheme(nativeTheme);
  withPortraitVm(`
-Asset.v25PortraitProfile=${toLua(v25PortraitRuntimeProfile(nativeTheme))}
+Theme=${toLua(theme)}
 local data=assert(Asset.battleApprovedNative,'official battle module omitted approved native Lumine')
 local expected=${toLua(data.rows)}
 Equal(data.rows,expected)
@@ -529,7 +532,7 @@ end
 local q=owner:status().battle
 assert(q.phase=='ready' and q.owned==473 and LiveCount()==473,'battle did not mount exactly 464 images, 8 groups, 1 page: '..tostring(q.reason))
 local images=Images()
-Equal(figure.SetAnchoredPositionValue,Asset.v25PortraitProfile.battlePosition)
+Equal(figure.SetAnchoredPositionValue,${toLua(theme.officialAssets.battlePortraitPosition)})
 Equal(figure.SetLocalScaleValue,{210/133,210/133,1})
 assert(#images==464,'incorrect image count')
 for i,c in ipairs(images)do

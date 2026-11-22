@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeMergedInputRetirement} from './input-retirement-source.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {beforeCurrentOfficialRuntimeFixture} from './sts-fade-ci-source.mjs';
 
 const archive=readFileSync(new URL('./input-retirement-merged-sts-source.json.gz',import.meta.url));
@@ -31,7 +32,8 @@ function beforeArchiveStorageLedger(source){
 
 export function inputRetirementStsFixtureSource(path,raw){
  const buffered=Buffer.isBuffer(raw),source=buffered?raw.toString('utf8'):raw;
- const native=beforeMergedInputRetirement(path,source,{requireCurrent:true});
+ const fixture=beforeNativeFlowFixture(path,source,{requireCurrent:true});
+ const native=beforeMergedInputRetirement(path,fixture,{requireCurrent:true});
  let prior=beforeCurrentOfficialRuntimeFixture(path,native);
  if(path==='docs/legal/assets.json')prior=beforeArchiveStorageLedger(native);
  if(path===integration.path){
@@ -42,6 +44,6 @@ export function inputRetirementStsFixtureSource(path,raw){
 }
 
 export const inputRetirementStsWitness=Object.freeze({
- 'tests/helpers/copy-integration-source-closure.mjs':'3d77e168ad86340719c49355cda43643054a9630cf0f0c6ceacd8b1b9ad0eeec',
+ 'tests/helpers/copy-integration-source-closure.mjs':'f0cfdc5ed388832b1ffea613c22ddf9dcf603d04c2141574ee4406635cd82932',
  'tests/helpers/historical-sts-style-entry.mjs':'96c580efcf1c7ed4e1be8b1bc3a27d15212c8b485e5a345d5ec450ad364017ae',
 });

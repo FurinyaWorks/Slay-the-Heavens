@@ -4,6 +4,7 @@ import {mkdirSync,mkdtempSync,readdirSync,rmSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
 const require=createRequire(import.meta.url);
@@ -32,13 +33,12 @@ test('Tiny House exact source admission preserves the ordered full owner read an
  const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const {currentProductionRereads}=await import('./helpers/current-production-source-reads.mjs');
  const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');
+ const {authenticateDevelopBackflow}=await import('./helpers/develop-release-backflow-source.mjs');
  const {proof}=sourceEpoch;
  const config='config/architecture.json',event='src/lua/abyss_node_ui_events.lua',pending='src/lua/abyss_relic_pending_ui.lua';
  const read=p=>readFileSync(p,'utf8'),reads=[];
- const expected=[...proof.owners,...currentProductionRereads];
- const eventReread=expected.lastIndexOf(event)+1;
- assert.ok(eventReread>proof.owners.length,'the event owner must be checked again after the initial scan');
- let readFailure;
+ const priorReadOrder=[...proof.owners,...currentProductionRereads];
+ let readFailure,eventReread;
  const project=()=>sourceEpoch.preCombinedSource(config,read(config),{target:'develop',readSource:p=>{
   reads.push(p);
   if(p===event&&reads.length===eventReread&&readFailure!==undefined){
@@ -48,7 +48,18 @@ test('Tiny House exact source admission preserves the ordered full owner read an
   return read(p);
  }});
  assert.equal(project(),proof.targets.develop.files[config].source);
- assert.deepEqual(reads,expected);
+ const expected=[...reads];
+ assert.equal(expected.length,417,'complete fresh raw closure size');
+ assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),
+  '05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67','exact current admission order');
+ let position=-1;
+ for(const owner of priorReadOrder){
+  position=expected.indexOf(owner,position+1);
+  assert.notEqual(position,-1,'retained original admission read: '+owner);
+ }
+ eventReread=expected.lastIndexOf(event)+1;
+ assert.equal(eventReread,417,'the event owner must be checked again after the initial scan');
+ assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');
  for(readFailure of [null,read(event)+'\n',new Error('unavailable')]){
   reads.length=0;
   assert.throws(project,/linked owner (?:identity|missing): .*abyss_node_ui_events\.lua/);
@@ -57,9 +68,11 @@ test('Tiny House exact source admission preserves the ordered full owner read an
  readFailure=undefined;reads.length=0;
  assert.equal(project(),proof.targets.develop.files[config].source);
  assert.deepEqual(reads,expected);
- assert.equal(beforeTinyHouseUiSource(pending,read(pending),read),proof.current[pending].source);
- assert.throws(()=>beforeTinyHouseUiSource(pending,read(pending),()=>null),/linked owner identity/);
- const foreign=read(pending)+'\n';
+ const readBeforeTinyHouse=owner=>authenticateDevelopBackflow(owner,read(owner),read);
+ const pendingSuccessor=readBeforeTinyHouse(pending);
+ assert.equal(beforeTinyHouseUiSource(pending,pendingSuccessor,readBeforeTinyHouse),proof.current[pending].source);
+ assert.throws(()=>beforeTinyHouseUiSource(pending,pendingSuccessor,()=>null),/linked owner identity/);
+ const foreign=pendingSuccessor+'\n';
  assert.equal(beforeTinyHouseUiSource(pending,foreign,()=>{throw Error('cannot read unknown source');}),foreign);
 });
 
@@ -88,7 +101,8 @@ test('capacity build exact projection preserves older receipts and rejects mixed
  const {assertIntegrationSuccessorsCurrent}=await import('./helpers/fork-preflight-source.mjs');
  const {beforeReleaseCapacitySource}=await import('./helpers/release-integration-source.mjs');
  const {beforeRebasedRelease}=await import('./helpers/rebased-release-source.mjs');
- const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,source));
+ const {beforeDeckPagesSuiteSource}=await import('./helpers/input-retirement-source.mjs');
+ const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,source)));
  const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',
   'scripts/official-portraits.mjs','tests/official-portraits-build.test.mjs'];
  const crlf=s=>s.replaceAll('\n','\r\n');

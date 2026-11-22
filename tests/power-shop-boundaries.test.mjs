@@ -13,6 +13,7 @@ import {runLua} from '../scripts/test-lua.mjs';
 import {prePowerShopSource,powerShopAfter} from './helpers/power-shop-source-inverse.mjs';
 import {prePowerShopSource as frozenPowerShopSource} from './helpers/epochs/powerShop/tests/helpers/power-shop-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const require=createRequire(import.meta.url);
 const {lua,lauxlib,lualib,to_luastring,to_jsstring}=require('fengari');
 process.on('exit',()=>process.stdout.write('POWER_SHOP_RESOURCE '+JSON.stringify({testProcessMaxRSSKiB:process.resourceUsage().maxRSS})+'\n'));
@@ -156,15 +157,30 @@ test('the frozen Power Shop epoch keeps complete old Git sources and freshly aut
 
 test('the current Power Shop facade authenticates every expanded owner and recovers through all original hosts',()=>{
  const read=p=>readFileSync(p,'utf8');
+ assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});
+ const retiredSource=beforeInputRetirementReader(read)(retiredControllerPath);
  for(const path of Object.keys(powerShopAfter)){
   const current=read(path),expected=before.files[path]?.source??null;
   assert.equal(prePowerShopSource(path,current),expected);
-  for(const linked of sourceEpoch.proof.owners)for(const bad of ['foreign','missing','throw']){
-   let changed=false;
-   const readSource=p=>{if(p!==linked||!changed)return read(p);if(bad==='throw')throw Error('fresh sentinel');return bad==='missing'?undefined:read(p)+'-- foreign';};
-   assert.equal(prePowerShopSource(path,current,{readSource}),expected);
-   changed=true;assert.throws(()=>prePowerShopSource(path,current,{readSource}),error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(linked));if(bad==='throw')assert.match(error.message,/fresh sentinel/);return true;});
-   changed=false;assert.equal(prePowerShopSource(path,current,{readSource}),expected);
+  assert.equal(prePowerShopSource(path,current,{readSource:p=>p===retiredControllerPath?undefined:read(p)}),expected);
+  for(const linked of [...sourceEpoch.proof.owners,pointerInputPath]){
+   const faults=linked===retiredControllerPath?['foreign','present','throw']:['foreign','missing','throw'];
+   for(const bad of faults){
+    let changed=false;
+    const readSource=p=>{
+     if(p!==linked||!changed)return read(p);
+     if(bad==='throw')throw Error('fresh sentinel: '+p);
+     if(bad==='missing')return undefined;
+     if(bad==='present')return retiredSource;
+     return (p===retiredControllerPath?retiredSource:read(p))+'-- foreign';
+    };
+    assert.equal(prePowerShopSource(path,current,{readSource}),expected);
+    changed=true;assert.throws(()=>prePowerShopSource(path,current,{readSource}),error=>{
+     assert.match(error.message,/linked owner/);assert(error.message.includes(linked===pointerInputPath&&bad!=='throw'?retiredControllerPath:linked));
+     if(bad==='throw')assert.match(error.message,/fresh sentinel/);return true;
+    });
+    changed=false;assert.equal(prePowerShopSource(path,current,{readSource}),expected);
+   }
   }
   for(const readSource of [null,{},'invalid'])assert.throws(()=>prePowerShopSource(path,current,{readSource}),/linked (?:owner )?reader/);
   for(const foreign of [expected,current+'-- foreign',null,'']){

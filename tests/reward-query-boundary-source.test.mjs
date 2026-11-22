@@ -13,6 +13,7 @@ import {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';
 import {preRewardQueryBoundarySource as frozenProject,rewardQueryBoundaryReader as frozenReader} from './helpers/epochs/reward/tests/helpers/reward-query-boundary-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {authenticateDevelopBackflow} from './helpers/develop-release-backflow-source.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const paths=Object.keys(proof.files),config='config/architecture.json';
@@ -153,16 +154,19 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project} from './tests/helpers/reward-query-boundary-source-inverse.mjs';
 const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));
-for(const host of paths)for(const linked of paths){
+const host=process.argv[1];assert(paths.includes(host));
+for(const linked of paths){
  assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
  writeFileSync(linked,sources[linked]+'\\n');assert.throws(()=>project(host,sources[host]),/linked owner/);
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
  rmSync(linked);assert.throws(()=>project(host,sources[host]),/linked owner/);
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
 }
-console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;
-  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
-  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);
+console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS '+host);`;
+  for(const host of paths){
+   const result=spawnSync(process.execPath,['--input-type=module','-e',script,'--',host],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
+   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.equal(result.stdout.trim(),'ISOLATED_REWARD_QUERY_SOURCE_PASS '+host);
+  }
   const proofPath=join(root,'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');
   writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));
   const negative=spawnSync(process.execPath,['--input-type=module','-e',"import './tests/helpers/reward-query-boundary-source-inverse.mjs'"],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
@@ -172,26 +176,41 @@ console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;
 
 
 test('current reward and M7 wrappers freshly reject every expanded owner and recover after each fault',()=>{
- const sources=Object.fromEntries(sourceEpoch.proof.owners.map(p=>[p,read(p)]));
+ const owners=[...sourceEpoch.proof.owners,pointerInputPath];
+ assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});
+ const retiredSource=beforeInputRetirementReader(read)(retiredControllerPath);
+ const sources=Object.fromEntries(owners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));
  for(const [consume,wrap]of [[project,reader],[preM7FinalSource,m7FinalReader]])for(const host of paths){
   let bad=null,mode='good',seen=[];
   const raw=p=>{seen.push(p);if(p===bad){
-   if(mode==='throw')throw Error('expanded reader sentinel');
+   if(mode==='throw')throw Error('expanded reader sentinel: '+p);
    if(mode==='missing')return undefined;if(mode==='null')return null;
    if(mode==='before')return before[p];
-   if(mode==='buffer')return Buffer.from(sources[p]);if(mode==='changed')return sources[p]+'\n';
-  }return sources[p]??read(p);};
+   const source=p===retiredControllerPath?retiredSource:sources[p];
+   if(mode==='present')return source;
+   if(mode==='buffer')return Buffer.from(source);if(mode==='changed')return source+'\n';
+  }return p===retiredControllerPath?undefined:sources[p]??read(p);};
   const wrapped=wrap(wrap(raw));assert.equal(wrap(wrapped),wrapped);
   assert.equal(wrapped(host),before[host]);seen=[];
   const check=()=>assert.equal(consume(host,read(host),{readSource:wrapped}),before[host]);
-  check();const first=[...seen];for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current owner: '+owner);
+  check();const first=[...seen];for(const owner of owners)assert(first.includes(owner),'fresh current owner: '+owner);
   seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the complete raw-read sequence');
-  for(bad of sourceEpoch.proof.owners)for(mode of ['changed','missing','null','buffer','throw',...(paths.includes(bad)?['before']:[])]){
-   seen=[];assert.throws(check,error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(bad));if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;});
-   assert(seen.includes(bad));
-   // When the host itself is changed, a reader must preserve unknown input bytes.
-   if(bad!==host)assert.throws(()=>wrapped(host),/linked owner/);
-   const previous=mode;mode='good';check();assert.equal(wrapped(host),before[host]);mode=previous;
+  for(bad of owners){
+   if(bad===retiredControllerPath)for(mode of ['missing','null']){
+    seen=[];check();assert.deepEqual(seen,first,'retired Controller still requires fresh pointer ownership');
+   }
+   const modes=bad===retiredControllerPath?['present','changed','buffer','throw']:
+    ['changed','missing','null','buffer','throw',...(paths.includes(bad)?['before']:[])];
+   for(mode of modes){
+    seen=[];assert.throws(check,error=>{
+     assert.match(error.message,/linked owner/);assert(error.message.includes(bad===pointerInputPath&&mode!=='throw'?retiredControllerPath:bad));
+     if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;
+    });
+    assert(seen.includes(bad));
+    // When the host itself is changed, a reader must preserve unknown input bytes.
+    if(bad!==host)assert.throws(()=>wrapped(host),/linked owner/);
+    const previous=mode;mode='good';check();assert.equal(wrapped(host),before[host]);mode=previous;
+   }
   }
   for(const readSource of [null,{},'invalid'])assert.throws(()=>consume(host,read(host),{readSource}),/linked (?:owner )?reader/);
   const formatted=JSON.stringify(JSON.parse(read(config)));

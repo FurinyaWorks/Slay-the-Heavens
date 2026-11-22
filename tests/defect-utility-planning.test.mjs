@@ -1,3 +1,4 @@
+import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import {preDefectActorSource,defectActorEpoch} from './helpers/defect-actor-source-epoch.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
@@ -33,17 +34,33 @@ test('utility planner frozen complete source remains authenticated to develop d8
 
 test('the explicit historical reader requires current owners and rejects a stale configuration after warm success',()=>{
  const proof=currentEpoch.proof,config='config/architecture.json';
- const admittedReads=[...proof.owners,...currentProductionRereads];
- const actual=Object.fromEntries(proof.owners.map(p=>[p,read(p)]));let reads=[],changed,value;
- const reader=currentDefectActorReader(p=>{reads.push(p);if(p===changed){if(value instanceof Error)throw value;return value;}return actual[p];});
+ let reads=[],changed,value;
+ const reader=currentDefectActorReader(p=>{reads.push(p);if(p===changed){if(value instanceof Error)throw value;return value;}return read(p);});
+ const expected=defectActorEpoch.proof.current[config].source;
+ assert.equal(reader(config),expected);
+ const admittedReads=[...reads];
+ assert.equal(admittedReads.length,418);
+ assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),
+  '5a6e1ad0b3362c34562f566c1a8b3c5496a1c1cebb6c302930cc1efe6976e1bc','exact raw Actor admission before historical bytes');
+ let preceding=-1;
+ for(const owner of [config,...proof.owners,...currentProductionRereads]){
+  preceding=admittedReads.indexOf(owner,preceding+1);
+  assert.notEqual(preceding,-1,'retained complete Actor source read: '+owner);
+ }
  for(let warm=0;warm<2;warm++){
-  reads=[];assert.equal(reader(config),defectActorEpoch.proof.current[config].source);
+  reads=[];assert.equal(reader(config),expected);
   assert.deepEqual(reads,admittedReads,'all raw current owners precede historical bytes');
  }
- changed=config;value=defectActorEpoch.proof.current[config].source;
+ changed=config;value=expected;
  assert.throws(()=>reader(config),/combined linked owner identity: config\/architecture\.json/,'an otherwise correct old Actor config is not current permission');
+ const {source:retired,restored}=readRetiredController(read);
+ assert(restored,'live Controller is absent with its exact pointer witness');
+ changed=retiredControllerPath;value=retired;
+ assert.throws(()=>reader(config),/combined linked owner identity: src\/lua\/abyss_controller\.lua/);
+ changed=pointerInputPath;value=read(pointerInputPath)+'\n';
+ assert.throws(()=>reader(config),/combined linked owner missing: src\/lua\/abyss_controller\.lua/);
  changed=proof.owners.find(p=>!Object.hasOwn(defectActorEpoch.proof.current,p));
- for(value of [actual[changed]+'\n',null,new Error('unavailable')])assert.throws(()=>reader(config),/combined linked owner/);
+ for(value of [read(changed)+'\n',null,new Error('unavailable')])assert.throws(()=>reader(config),/combined linked owner/);
  changed=undefined;reads=[];assert.equal(reader(config),defectActorEpoch.proof.current[config].source);assert.deepEqual(reads,admittedReads);
  assert.throws(()=>reader('src/lua/not_an_actor_owner.lua'),/known Actor owner/,'unknown paths cannot receive projected source');
 });

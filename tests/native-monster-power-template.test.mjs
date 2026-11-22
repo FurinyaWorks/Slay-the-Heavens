@@ -11,15 +11,26 @@ import {bindMonsterActorTemplates,writeMonsterActorBinding,monsterPowerTemplateN
 import {compareNativeCandidate} from '../scripts/native-candidate-audit.mjs';
 import {readyArtRuntimeInventory} from '../scripts/art/ready-card-runtime.mjs';
 const all=n=>[n,...(n.children??n.controls??[]).flatMap(all)];
-test('enemy powers use empty unmasked origin and independent seven-control template; hero is byte-identical',()=>{
+test('enemy powers use empty unmasked origin and independent seven-control template; hero keeps its reviewed geometry',()=>{
  assert.equal(readyArtRuntimeInventory().maxLivePools,10);
  const layer=enemyUnitTemplate().children.find(n=>n.name==='statusRow');
  assert.deepEqual(layer.children,[]);assert.deepEqual(layer.position,[0,0]);assert(!layer.mask);
  const power=enemyPowerTemplate();assert.equal(power.name,monsterPowerTemplateName);assert.equal(all(power).length,7);
  assert.deepEqual(power.children.map(n=>n.name),['edge','body','icon','badge','count','hit']);
  assert.equal(power.visible,false);assert(power.children.every(n=>n.visible===false));assertNativeUiCapacity(power);
- const hero=all(battleLayout()).find(n=>n.name==='hero');
- assert.equal(createHash('sha256').update(JSON.stringify(preReadableUnitTypography(hero,{hero:true}))).digest('hex'),'ee457437376d90ded5fe29ce2018ed9266eda755a59779022c9571b8439a3d97');
+ const hero=preReadableUnitTypography(all(battleLayout()).find(n=>n.name==='hero'),{hero:true});
+ const statusRow=hero.children.find(node=>node.name==='statusRow');
+ const statusHits=['hit',...Array.from({length:10},(_,index)=>`hit${index+1}`)];
+ // Reconstruct only #899's retired focus metadata for the original byte check.
+ for(const [children,hits] of [[hero.children,['hit']],[statusRow.children,statusHits]]){
+  for(const hit of hits){
+   const index=children.findIndex(node=>node.name===hit),node=children[index];
+   assert.equal(node.kind,'cursorArea');assert.equal(Object.hasOwn(node,'focusable'),false);
+   const {name,kind,size,...layout}=node;
+   children[index]={name,kind,size,focusable:true,...layout};
+  }
+ }
+ assert.equal(createHash('sha256').update(JSON.stringify(hero)).digest('hex'),'ee457437376d90ded5fe29ce2018ed9266eda755a59779022c9571b8439a3d97');
  // Physical page limit remains 60, never a logical power visibility limit.
  assertNativeUiCapacity({children:Array.from({length:60},()=>enemyPowerTemplate())});
  assert.throws(()=>assertNativeUiCapacity({children:Array.from({length:61},()=>enemyPowerTemplate())}),/60/);

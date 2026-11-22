@@ -1,7 +1,7 @@
 // Proposal facade: the original epoch module and its oracle are byte-for-byte frozen.
 export * from './epochs/reward/tests/helpers/reward-query-boundary-source-inverse.mjs';
 import { preRewardQueryBoundarySource as original } from './epochs/reward/tests/helpers/reward-query-boundary-source-inverse.mjs';
-import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
+import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {readFileSync} from 'node:fs';
 const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');
 export function preRewardQueryBoundarySource(path,source,{readSource=live}={}){

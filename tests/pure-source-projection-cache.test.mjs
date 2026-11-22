@@ -12,6 +12,8 @@ import {preRound3CatalogSource,round3CatalogProof} from './helpers/epochs/develo
 import {preRound2UiSource,round2UiSourceLayer} from './helpers/round2-ui-source-inverse.mjs';
 import {gameUiExtractionProof} from './helpers/epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {actorFocusAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const targets=deepFreezeSourceProof({one:{files:{a:{},b:{}}},two:{files:{a:{}}}});
 
@@ -85,7 +87,13 @@ historicalTest('warm pure projections never cache catalog or extracted UI linked
 
 test('warm current UI projections preserve their frozen intermediate epoch and reread every raw owner',()=>{
  // Current hosts reach the independently frozen GameUI extraction epoch, not the older round-two beforeSource.
- const current=Object.fromEntries(Object.keys(sourceEpoch.proof.current).map(p=>[p,readFileSync(p,'utf8').replaceAll('\r\n','\n')]));
+ const live=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
+ assert.throws(()=>live(retiredControllerPath),{code:'ENOENT'});
+ const retired=beforeInputRetirementReader(live)(retiredControllerPath);
+ const added=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath];
+ const paths=[...Object.keys(sourceEpoch.proof.current),...added].filter(p=>p!==retiredControllerPath);
+ const current=Object.fromEntries(paths.map(p=>[p,live(p)]));
+ const owners=[...new Set([...sourceEpoch.proof.owners,...added])];
  for(const path of ['config/architecture.json','src/lua/abyss_game_ui.lua']){
   const expected=gameUiExtractionProof.files[path];
   assert.equal(hash(expected.beforeSource),expected.beforeSha256);
@@ -95,18 +103,24 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
    if(p===bad){
     if(mode==='throw')throw Error('warm UI reader sentinel');
     if(mode==='missing')return undefined;if(mode==='null')return null;
-    if(mode==='buffer')return Buffer.from(current[p]);if(mode==='changed')return current[p]+'\n';
+    const value=p===retiredControllerPath?retired:current[p];
+    if(mode==='present')return value;
+    if(mode==='buffer')return Buffer.from(value);if(mode==='changed')return value+'\n';
    }
    return current[p];
   };
   const check=()=>assert.equal(preRound2UiSource(path,current[path],{readSource:raw}),expected.beforeSource);
-  check();const first=[...seen];for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current UI owner: '+owner);
+  check();const first=[...seen];for(const owner of owners)assert(first.includes(owner),'fresh current UI owner: '+owner);
   seen=[];check();assert.deepEqual(seen,first,'a warm pure projection repeats the complete raw-read sequence');
-  for(bad of sourceEpoch.proof.owners){
-   for(mode of ['changed','missing','null','buffer','throw']){
+  for(bad of owners){
+   if(bad===retiredControllerPath)for(mode of ['missing','null']){
+    seen=[];check();assert.deepEqual(seen,first,'retired Controller is absent while the current pointer is still read');
+   }
+   const modes=bad===retiredControllerPath?['present','changed','buffer','throw']:['changed','missing','null','buffer','throw'];
+   for(mode of modes){
     seen=[];
     for(let repeat=0;repeat<2;repeat++)assert.throws(check,error=>{
-     assert.match(error.message,/linked owner/);assert(error.message.includes(bad));
+     assert.match(error.message,/linked owner/);assert(error.message.includes(bad===pointerInputPath&&mode!=='throw'?retiredControllerPath:bad));
      if(mode==='throw')assert.match(error.message,/warm UI reader sentinel/);return true;
     });
     assert(seen.includes(bad));

@@ -1,3 +1,5 @@
+import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import test from 'node:test';
@@ -11,12 +13,22 @@ import {goldenIdolEpoch} from './helpers/golden-idol-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
 
 const currentRaw=file=>nativeReadFileSync(file,'utf8');
+function goldenReader(read){
+ const admitted=file=>{
+  if(file===retiredControllerPath){
+   const {source,restored}=readRetiredController(read);
+   assert(restored,'current Controller must be retired');
+   return beforeCharacterPreparationSource(file,source,read);
+  }
+  return beforeCurrentProductionSource(file,read(file),read);
+ };
+ return file=>beforePc13ThenV2UiHudSource(file,sourceSlice(file,admitted(file),'pr614',admitted),read);
+}
+const liveGolden=goldenReader(currentRaw);
 const readFileSync=(file,encoding)=>{
- const value=nativeReadFileSync(file,encoding);
- if(file!=='config/architecture.json'&&!file.startsWith('src/lua/'))return value;
- const source=typeof value==='string'?value:value.toString('utf8');
- const prior=beforePc13ThenV2UiHudSource(file,sourceSlice(file,source,'pr614',currentRaw),currentRaw);
- return typeof value==='string'?prior:prior===source?value:Buffer.from(prior);
+ if(file!=='config/architecture.json'&&!file.startsWith('src/lua/'))return nativeReadFileSync(file,encoding);
+ const source=liveGolden(file);
+ return encoding?source:Buffer.from(source);
 };
 const path='src/lua/abyss_golden_idol_event.lua',proof=sourceEpoch.proof,prior=preGoldenIdolEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
@@ -106,14 +118,37 @@ test('outer foreign-source fallback preserves invalid raw-reader semantics',()=>
 });
 
 test('live LF and CRLF raw owner reads authenticate 80 current owners on every call',()=>{
- const config='config/architecture.json',input=readFileSync(config,'utf8'),expected=proof.targets.actor.files[config].source;
+ const config='config/architecture.json',expected=proof.targets.actor.files[config].source;
+ const stamped=new Map();
+ const observe=file=>{
+  let raw;try{raw=currentRaw(file);}catch(error){if(file!==retiredControllerPath||error.code!=='ENOENT')throw error;raw=null;}
+  if(stamped.has(file))assert(raw===stamped.get(file),'fresh Golden Idol raw owner: '+file);
+  else stamped.set(file,raw);
+  return raw;
+ };
+ const readView=goldenReader(observe);
+ const prior=new Map([...new Set([...proof.owners,path,config,pointerInputPath])].map(file=>[file,readView(file).replaceAll('\r\n','\n')]));
+ const confirm=()=>{for(const file of stamped.keys())observe(file);};
  for(const crlf of [false,true]){
   const seen=[];let corrupt=null,missing=null;
-  const live=file=>{seen.push(file);if(file===missing)return null;const bytes=readFileSync(file,'utf8').replaceAll('\r\n','\n');return file===corrupt?bytes+'\n':crlf?bytes.replaceAll('\n','\r\n'):bytes;};
-  for(let repeat=0;repeat<2;repeat++){seen.length=0;assert.equal(sourceEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),expected);assert.deepEqual(seen,proof.owners);}
+  const live=file=>{
+   seen.push(file);if(file===missing)return null;
+   assert(prior.has(file),'known Golden Idol historical owner: '+file);
+   observe(file);
+   const source=prior.get(file);
+   return file===corrupt?source+'\n':crlf?source.replaceAll('\n','\r\n'):source;
+  };
+  const project=(file,target)=>{
+   // Historical values are derived once for a fixed cohort. The physical
+   // inputs are checked again around every invocation and requested owner.
+   confirm();
+   try{return sourceEpoch.preCombinedSource(file,prior.get(file),{target,readSource:live});}
+   finally{confirm();}
+  };
+  for(let repeat=0;repeat<2;repeat++){seen.length=0;assert.equal(project(config,'actor'),expected);assert.deepEqual(seen,proof.owners);}
   for(const owner of proof.owners){
-   corrupt=owner;assert.throws(()=>sourceEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),/linked owner identity/,owner);corrupt=null;
-   missing=owner;assert.throws(()=>sourceEpoch.preCombinedSource(path,readFileSync(path,'utf8'),{target:'goldenIdolPrior',readSource:live}),/linked owner identity/,owner);missing=null;
+   corrupt=owner;assert.throws(()=>project(config,'actor'),/linked owner identity/,owner);corrupt=null;
+   missing=owner;assert.throws(()=>project(path,'goldenIdolPrior'),/linked owner identity/,owner);missing=null;
   }
  }
 });

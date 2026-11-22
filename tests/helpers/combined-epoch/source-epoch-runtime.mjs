@@ -1,4 +1,5 @@
 import {beforeDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner,bindDevelopBackflow} from '../develop-release-backflow-source.mjs';
+import {beforeInputRetirementReader,retiredControllerPath} from '../input-retirement-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi} from '../rebased-release-source.mjs';
 import {beforeSlimeSplitReceipt,beforeSlimeSplitSource} from '../slime-split-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
@@ -202,7 +203,10 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   // entire observed cohort again before returning the projected source.
   const readFresh=owner=>{
    let value;
-   try{value=readRaw(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+   try{value=readRaw(owner);}catch(error){
+    if(owner!==retiredControllerPath||error?.code!=='ENOENT')assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));
+    value=null;
+   }
    if(observed.has(owner))assert(value===observed.get(owner),'combined linked owner identity: '+owner+' changed during replay');
    else observed.set(owner,value);
    return value;
@@ -210,8 +214,9 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   if(liveReaders.has(readRaw))liveReaders.add(readFresh);
   const options={target,readSource:readFresh};
   const projected=preCombinedSource(path,source,options);
+  const historicalInput=beforeInputRetirementReader(readFresh);
   const readProjection=owner=>{
-   const value=readFresh(owner);
+   const value=owner===retiredControllerPath?historicalInput(owner):readFresh(owner);
    if(!projections.has(owner))projections.set(owner,preCombinedSource(owner,value,options));
    return projections.get(owner);
   };

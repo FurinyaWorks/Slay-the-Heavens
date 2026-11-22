@@ -1,3 +1,5 @@
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
+import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
@@ -14,8 +16,14 @@ import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.m
 import {sourceEpoch as currentEpoch,preRoomUiEpoch as componentEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 // Authenticate current sources and exact continuations before entering the frozen Defect epoch.
 const readFileSync=(file,...args)=>{
- const source=diskReadFileSync(file,...args).replaceAll('\r\n','\n');
- return preComponentUiCiSource(file,currentEpoch.preCombinedSource(file,source,{target:'encounterFormationPrior'}));
+ const read=path=>diskReadFileSync(path,'utf8');
+ let source;
+ if(file===retiredControllerPath){
+  const retired=readRetiredController(read);
+  assert(retired.restored,'current Controller must be retired');
+  source=beforeCharacterPreparationSource(file,retired.source,read);
+ }else source=diskReadFileSync(file,...args);
+ return preComponentUiCiSource(file,currentEpoch.preCombinedSource(file,source.replaceAll('\r\n','\n'),{target:'encounterFormationPrior',readSource:read}));
 };
 const path='src/lua/abyss_defect_final_cards.lua',proof=sourceEpoch.proof,prior=preDefectFinalEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
@@ -165,7 +173,10 @@ test('pre-feedback production retains original68, exact28, merchant and all 104 
  assert.equal(createHash('sha256').update(expected).digest('hex'),'0e75d9e1f08cfb7738215b9a31cce141f03cc2469077bce0db3376fe1f446a9c');
  assert.equal(project(source),expected);assert.deepEqual(reads,current.owners);
  for(const owner of current.owners)for(replacement of [actual[owner]+'\n',null,new Error('missing current owner')]){
-  changed=owner;reads=[];assert.throws(()=>project(source),/combined linked owner/);assert.deepEqual(reads,current.owners.slice(0,current.owners.indexOf(owner)+1));
+  changed=owner;reads=[];assert.throws(()=>project(source),/combined linked owner/);
+  const attempted=current.owners.slice(0,current.owners.indexOf(owner)+1);
+  if(owner===retiredControllerPath&&replacement===null)attempted.push(pointerInputPath);
+  assert.deepEqual(reads,attempted);
   changed=undefined;reads=[];assert.equal(project(source),expected);assert.deepEqual(reads,current.owners);
  }
  for(const foreign of [source+'-- foreign',expected,null,undefined,{},17]){reads=[];assert.equal(project(foreign),foreign);assert.deepEqual(reads,[]);}
@@ -177,14 +188,28 @@ test('current raw production retains the exact power-view owner and complete rel
  assert.deepEqual(current.targets.stsFeedbackPrior.files,pad(stsStyleEpoch.proof.current));
  assert.deepEqual(menuRedEpoch.proof.owners,[...stsStyleEpoch.proof.owners,owner].sort());assert.equal(menuRedEpoch.proof.owners.length,105);
  const additions=['character_select','game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','node_ui_reward_detail','node_ui_shop','node_ui_treasure','node_ui_treasure_list','prologue','treasure_ui'].map(name=>'src/lua/abyss_'+name+'.lua');
- assert.deepEqual(current.owners,[...menuRedEpoch.proof.owners,...additions].sort());assert.equal(current.owners.length,116);
- const admittedReads=[...current.owners,...currentProductionRereads];
+ const membership=['src/lua/abyss_power_membership.lua','src/lua/abyss_power_schedule.lua'];
+ assert.deepEqual(current.owners,[...[...menuRedEpoch.proof.owners,...additions].sort(),...membership]);assert.equal(current.owners.length,118);
  const reads=[],raw=path=>{reads.push(path);return diskReadFileSync(path,'utf8');};
  const expected=current.targets.develop.files[file].source;
- assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);assert.deepEqual(reads,admittedReads);
+ assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);
+ const admittedReads=[...reads];
+ assert.equal(admittedReads.length,417);
+ assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),
+  '05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67','exact current owner read order');
+ let prior=-1;
+ for(const path of [...current.owners,...currentProductionRereads]){
+  prior=admittedReads.indexOf(path,prior+1);
+  assert.notEqual(prior,-1,'retained direct or continuation owner: '+path);
+ }
+ const {source:retired,restored}=readRetiredController(path=>diskReadFileSync(path,'utf8'));
+ assert(restored,'live Controller is absent with its exact pointer witness');
+ assert.throws(()=>currentEpoch.preCombinedSource(file,source,{
+  target:'develop',readSource:path=>path===retiredControllerPath?retired:diskReadFileSync(path,'utf8'),
+ }),/combined linked owner identity: src\/lua\/abyss_controller.lua/);
  for(const replacement of [null,diskReadFileSync(owner,'utf8')+'\n',new Error('missing current power view')]){
   reads.length=0;
   assert.throws(()=>currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:path=>{if(path===owner){reads.push(path);if(replacement instanceof Error)throw replacement;return replacement;}return raw(path);}}),/combined linked owner/);
-  assert.deepEqual(reads,current.owners.slice(0,current.owners.indexOf(owner)+1));
+  assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1));
  }
 });

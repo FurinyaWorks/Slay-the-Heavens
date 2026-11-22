@@ -87,7 +87,9 @@ test('historical source replay rejects foreign bytes and a changed linked fade o
  const {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade}=await import('./helpers/sts-selection-fade-source.mjs');
  const {files}=JSON.parse(readFileSync('tests/fixtures/sts-selection-fade-source.json','utf8'));
  const path='src/lua/abyss_page_reveal.lua',source=readFileSync(path,'utf8');
- assert.equal(beforeStsSelectionFade(path,source),files[path].before);
+ const lf=source.replaceAll('\r\n','\n'),crlf=text=>text.replaceAll('\n','\r\n');
+ assert.equal(beforeStsSelectionFade(path,lf),files[path].before);
+ assert.equal(beforeStsSelectionFade(path,crlf(lf)),crlf(files[path].before));
  const foreign=source+'\n-- foreign drift';assert.equal(beforeStsSelectionFade(path,foreign),foreign);
  assert.throws(()=>beforeAuthenticatedStsSelectionFade(path,source,owner=>readFileSync(owner,'utf8')+(owner==='src/lua/abyss_game_ui_run.lua'?'\n-- drift':'')),/fresh linked STS fade source/);
 });
@@ -112,9 +114,11 @@ print('CANCEL_REENTRY_PASS')`;
 test('STS discovery custody removes only the complete authenticated added test',async()=>{
  const {readFileSync}=await import('node:fs');
  const {stsCurrentJsDiscovery}=await import('./helpers/sts-selection-fade-source.mjs');
+ const {beforeNativeFlowFixture}=await import('./helpers/native-flow-fixture-source.mjs');
  const {inventory}=JSON.parse(readFileSync('tests/fixtures/sts-selection-fade-source.json','utf8'));
  const raw=[...inventory.before,inventory.addition];
- assert.deepEqual(stsCurrentJsDiscovery(raw),inventory.before);
+ const read=p=>beforeNativeFlowFixture(p,readFileSync(p,'utf8'),{requireCurrent:true});
+ assert.deepEqual(stsCurrentJsDiscovery(raw,read),inventory.before);
  for(const invalid of [inventory.before,[...raw,inventory.addition],raw.slice(1),[...raw,'foreign']])
   assert.throws(()=>stsCurrentJsDiscovery(invalid),/complete STS raw/);
  assert.throws(()=>stsCurrentJsDiscovery(raw,()=>null),/fresh STS added/);
@@ -138,8 +142,12 @@ print('SAME_PANEL_NEW_BASE_PASS')`;
 
 test('departure restores the full cover after a retained local panel',()=>{
  const body=`package.path='src/lua/?.lua;'..package.path
-local G=require('abyss_page_reveal');local ready=true;local veil={SetAnchoredPosition=function()end,SetSizeDelta=function(self,w,h)self.size={w,h}end}
-local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local G=require('abyss_page_reveal');local ready=true
+local function frameControl()
+ return {SetAnchoredPosition=function(self,x,y)self.position={x,y}end,SetSizeDelta=function(self,w,h)self.size={w,h}end}
+end
+local veil,blocker=frameControl(),frameControl()
+local cover={GetChild=function(_,n)if n=='veil'then return veil elseif n=='blocker'then return blocker end end,SetVisible=function()end,SetAsLastSibling=function()end}
 local frames={full={0,0,1280,720},deckPanel={0,0,600,400}}
 local gate=G.new(cover,function()return ready end,nil,frames,{duration=.2,color=function(r,g,b,a)return {a=a}end})
 local run,combat={},{};local a={page='battlePanel',mode='battle',phase='combat',run=run,battle=combat};local b={page='deckPanel',mode='battle',phase='combat',run=run,battle=combat}
@@ -148,6 +156,8 @@ ready=false;gate:begin(b);gate:finish(b);ready=true;gate:step(b,0)
 gate:begin(a);gate:finish(a);assert(not gate:covered()and veil.size[1]==600)
 assert(gate:depart(function()return true end))
 assert(veil.size[1]==1280 and veil.size[2]==720 and veil.imageColor.a==0,'departure retained local cover geometry')
+assert(blocker.size[1]==1280 and blocker.size[2]==720 and cover.disableCursorEventPassthrough,
+ 'departure must restore the full pointer cover')
 print('FULL_DEPARTURE_COVER_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FULL_DEPARTURE_COVER_PASS/);

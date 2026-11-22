@@ -6,9 +6,11 @@ import {spawnSync,execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {sourceEpoch} from './closeout-source-epoch.mjs';
 import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.mjs';
-import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
+import {beforeCurrentProductionSource,beforeCharacterPreparationSource} from './character-preparation-source.mjs';
 import {exactReviewedBuildInput} from './rebased-release-source.mjs';
+import {beforeReviewedBuildInput} from './fork-preflight-source.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
+import {beforeDeckPagesSuiteSource,readRetiredController,retiredControllerPath} from './input-retirement-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const reviewedContracts=Object.freeze({
  'tests/sts-character-reference.test.mjs':5,
@@ -20,8 +22,12 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
  assert(Object.hasOwn(reviewedContracts,script),'exact reviewed selection contract');
  const expected=reviewedContracts[script],root=process.cwd();
  assertIntegratedCurrent();
+ const readOwner=path=>readFileSync(path,'utf8');
+ const retiredInput=readRetiredController(readOwner);
+ assert(retiredInput.restored,'only the exact pointer successor can restore the retired input owner');
  for(const [path,row]of Object.entries(sourceEpoch.proof.current)){
-  const source=beforeCurrentProductionSource(path,readFileSync(path,'utf8'));
+  const source=path===retiredControllerPath?beforeCharacterPreparationSource(path,retiredInput.source,readOwner)
+   :beforeCurrentProductionSource(path,readOwner(path),readOwner);
   assert.equal(hash(norm(source)),row.sha256,'fresh current production owner: '+path);
  }
  assert.equal(integratedCiProof.sources.release,'900527d931df941eed642a9667ccde92f76b73db');
@@ -32,7 +38,7 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
   const paths=execFileSync('git',['ls-files','scripts','data','config','tools','tests/helpers'],{encoding:'utf8'}).trim().split('\n');
   for(const path of paths){
    assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
-   const predecessor=exactReviewedBuildInput(path,readFileSync);
+   const predecessor=exactReviewedBuildInput(path,readFileSync,{beforeReviewedInput:beforeReviewedBuildInput});
    if(predecessor===undefined)copyFileSync(path,target);
    else writeFileSync(target,predecessor);
   }
@@ -41,12 +47,20 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
    if(!row.views.release||path.startsWith('src/'))continue;
    const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,row.views.release.source);
   }
-  // This retired layout is absent from live Git discovery, but the exact
-  // archived exit layout still imports it. Restore only its frozen runtime dependency.
+  // The old exit layout needs its retired guide, and its native candidate
+  // imports the script and cache modules from before the paged deck templates.
   const controls='scripts/controls-guide-layout.mjs';
-  const savedControls=stsStylePriorRuntime.files[controls];
-  assert.equal(hash(savedControls.source),'0dd26ffbe94d487478a961c1fd90c8ff348a3615347102a1478f3f7fa56a444f');
-  writeFileSync(join(directory,controls),savedControls.source);
+  const dependencies={
+   [controls]:'0dd26ffbe94d487478a961c1fd90c8ff348a3615347102a1478f3f7fa56a444f',
+   'scripts/native-candidate-scripts.mjs':'d75104fc6ab3e3b0c5196678bbd96e5ba4cacbb6938631743b752dd3ecd9f939',
+   'scripts/native-candidate-ui-cache.mjs':'b1cddca52e1f8340efdc9666ff9aecbfe905abb1235edae9e95c4c2064fec977',
+  };
+  for(const [path,sha]of Object.entries(dependencies)){
+   if(path!==controls)beforeDeckPagesSuiteSource(path,readOwner(path),{requireCurrent:true});
+   const saved=stsStylePriorRuntime.files[path];
+   assert.equal(hash(saved.source),sha,'exact reviewed runtime dependency: '+path);
+   writeFileSync(join(directory,path),saved.source);
+  }
   for(const [path,row]of Object.entries(sourceEpoch.proof.targets.releaseReviewed.files)){
    if(!row)continue;const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,row.source);
   }

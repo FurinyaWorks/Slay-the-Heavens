@@ -1,4 +1,5 @@
-import {assertCurrentJsInventory,assertCurrentLuaInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,exactReviewedBuildInput,beforeM05ShopCiSource,assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './fork-preflight-source.mjs';
+import {assertCurrentJsInventory,assertCurrentLuaInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,exactReviewedBuildInput,beforeM05ShopCiSource,assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns,readHistoricalPreflightInput} from './fork-preflight-source.mjs';
+import {beforeInputRetirement} from './input-retirement-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -86,6 +87,7 @@ function guidanceBefore(path,source){
 // two descendants before entering that chain; already-historical readers are unchanged.
 function beforeRunHudDiskInput(path,source,read){
  if(path!=='scripts/deck-ui-layout.mjs'&&path!=='tests/node-ui-layout.test.mjs')return source;
+ if(path==='tests/node-ui-layout.test.mjs')source=beforeInputRetirement(path,source);
  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
  source=authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
  if(path==='scripts/deck-ui-layout.mjs')return exactReviewedBuildInput(path,()=>source);
@@ -108,7 +110,7 @@ function beforeRunHudDiskInput(path,source,read){
  return original;
 }
 export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)));
+ const raw=readHistoricalPreflightInput(path,encoding,read),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)));
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
@@ -130,8 +132,10 @@ export function releaseBootstrapWorkflowBefore(path,source){
 }
 export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));
- if(kind==='js')return assertCurrentJsInventory(paths,packet.currentInventory.js);
- assertCurrentLuaInventory(paths,packet.currentInventory.lua);
+ try{
+  if(kind==='js')return assertCurrentJsInventory(paths,packet.currentInventory.js);
+  assertCurrentLuaInventory(paths,packet.currentInventory.lua);
+ }catch(error){throw new Error('complete Release bootstrap raw discovery inventory: '+error.message,{cause:error});}
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
  assertIntegrationSuccessorsCurrent(read);

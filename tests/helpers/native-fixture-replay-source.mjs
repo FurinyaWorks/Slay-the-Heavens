@@ -6,22 +6,31 @@ import {gunzipSync} from 'node:zlib';
 const sha256=source=>createHash('sha256').update(source).digest('hex');
 const blob=source=>createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex');
 const archive=readFileSync(new URL('./native-fixture-replay-source.json.gz',import.meta.url));
-assert.equal(sha256(archive),'47bd373dbd725d8a5fec37b881d484e891b9788c696b6f5c22baefbacacdbd2c','exact native fixture replay archive');
+assert.equal(sha256(archive),'d1cbf62cf27c0458efec5a303852cfbf38acad680e77a15fdb902b34a758c1c5','exact native fixture replay archive');
 const {schemaVersion,base,inputRetirementHead,files}=JSON.parse(gunzipSync(archive));
 assert.equal(schemaVersion,1);
 assert.equal(base,'67fc8750dd6ef9a13067c6a43137f910b6a44228');
 assert.equal(inputRetirementHead,'392fae8d8dee2bd57829dda0e8da836f45107398');
 assert.deepEqual(Object.keys(files),[
+ 'tests/build-ui-input-protection.test.mjs',
+ 'tests/helpers/game-ui-host-live-contract.mjs',
+ 'tests/lua/game_ui.lua',
+ 'tests/lua/game_ui_deck.lua',
  'tests/lua/game_ui_timer_safety.lua',
  'tests/lua/geo_public_entry.lua',
  'tests/lua/map_ui_chapters.lua',
  'tests/lua/support/native_card_art_contexts.lua',
  'tests/lua/support/native_card_art_fallback_ownership.lua',
  'tests/lua/support/native_card_art_runtime_contexts.lua',
+ 'tests/lua/support/official_portrait_game_lifecycle.lua',
+ 'tests/native-candidate-rebuild.test.mjs',
+ 'tests/native-monster-power-template.test.mjs',
  'tests/native-ui-theme.test.mjs',
+ 'tests/v25-portrait-profile.test.mjs',
 ]);
+assert.equal(files['tests/lua/game_ui_deck.lua'].beforeCommit,'0461bcd30dac18818318cbafa77ad72fad069e0a');
 assert.deepEqual(Object.keys(files).filter(path=>files[path].inputRetirement),[
- 'tests/lua/game_ui_timer_safety.lua','tests/native-ui-theme.test.mjs',
+ 'tests/helpers/game-ui-host-live-contract.mjs','tests/lua/game_ui_timer_safety.lua','tests/native-ui-theme.test.mjs',
 ]);
 for(const [path,{before,after,inputRetirement}] of Object.entries(files)){
  for(const row of [before,after,inputRetirement].filter(Boolean)){

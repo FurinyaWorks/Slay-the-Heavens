@@ -160,17 +160,26 @@ test("node panels compose through Boss16, independent treasure17 then restart", 
     testStartButton(root)
     local route=dofile('tests/lua/support/map_routes.lua').best(ui.map,function(node)return node.type=='event' and 1 or 0 end)
     local seen,seenEvents = {},{}
-    for floor = 1, data.rules.map.floors do
+    local bossFloor,finalFloor=data.rules.map.bossFloor,data.rules.map.floors
+    for floor = 1, finalFloor do
         local node
-        for _,available in ipairs(Nodes.available(ui.run,ui.map))do if available.id==route[floor]then node=available;break end end
-        assert(node and node.floor == floor)
-        local slot
-        for i, id in pairs(ui.mapUI.slots) do if id == node.id then slot = i break end end
-        assert(slot, "next layer missing from focused map page")
-        click(root, "mapPanel", "node" .. slot)
-        if not ui.run.nodeFlow or ui.run.nodeFlow.id~=node.id then
-            local _,why=Nodes.enter(ui.run,ui.map,node.id)
-            error('entry failed on floor '..floor..' mode '..ui.mode..' reason '..tostring(why))
+        if floor==finalFloor then
+            -- The host enters the independent boss treasure once rewards are complete.
+            local chest=ui.run.nodeFlow
+            assert(chest.roomKind=='boss_treasure' and chest.id==route[floor] and chest.floor==floor)
+            assert(ui.mode=='node' and ui.map.floor==floor and not ui.mapUI.navigationEnabled and not chest.complete)
+            node={id=chest.id,floor=chest.floor,type=chest.type}
+        else
+            for _,available in ipairs(Nodes.available(ui.run,ui.map))do if available.id==route[floor]then node=available;break end end
+            assert(node and node.floor == floor)
+            local slot
+            for i, id in pairs(ui.mapUI.slots) do if id == node.id then slot = i break end end
+            assert(slot, "next layer missing from focused map page")
+            click(root, "mapPanel", "node" .. slot)
+            if not ui.run.nodeFlow or ui.run.nodeFlow.id~=node.id then
+                local _,why=Nodes.enter(ui.run,ui.map,node.id)
+                error('entry failed on floor '..floor..' mode '..ui.mode..' reason '..tostring(why))
+            end
         end
         node.type=ui.run.nodeFlow.type -- ? retains its map symbol but routes by actual room.
         if ui.run.nodeFlow.event then seenEvents[ui.run.nodeFlow.event.id]=true end
@@ -247,8 +256,13 @@ test("node panels compose through Boss16, independent treasure17 then restart", 
                 click(root, "nodePanel", "confirm")
             end
         end
-        assert(ui.map.floor == floor and ui.run.nodeFlow.complete)
-        assert(ui.mode == (floor == data.rules.map.floors and "victory" or "map"))
+        if floor==bossFloor then
+            assert(ui.run.lastResult.outcome=='victory' and ui.map.floor==finalFloor)
+            assert(ui.run.nodeFlow.roomKind=='boss_treasure' and ui.run.nodeFlow.id==route[finalFloor] and ui.mode=='node')
+        else
+            assert(ui.map.floor == floor and ui.run.nodeFlow.complete)
+            assert(ui.mode == (floor == finalFloor and "victory" or "map"))
+        end
     end
     -- Optional shop/event/elite rooms are no longer artificially forced on every route.
     for _, kind in ipairs({"combat", "treasure", "camp", "boss"}) do assert(seen[kind], "missing mandatory panel " .. kind) end
@@ -523,18 +537,28 @@ test("native lifecycle loads every composed control and registers its listeners 
     NativeGameUI.new=originalNew
     assert(root.scale[1] == 1.25)
     assert(script.updating)
-    click(root, "menuPanel", "start")
-    assert(root:GetChild("characterPanel").visible and not root:GetChild("prologuePanel").visible)
-    assert(not root:GetChild("characterPanel"):GetChild("traveler").visible,
-        "ordinary native entry hides the single preselected traveler")
+    local function finishReveal()
+        for _=1,80 do
+            if not host.pageReveal:covered() then return end
+            OnUpdate(.05)
+        end
+        error('native page did not become ready')
+    end
+    finishReveal()
+    assert(click(root, "menuPanel", "start"));finishReveal()
+    local characterPanel=root:GetChild('characterPanel')
+    assert(characterPanel.visible and not root:GetChild('prologuePanel').visible)
+    assert(not host.characterSelection:canConfirm() and characterPanel:GetChild('traveler').visible,
+        'ordinary native entry requires an explicit character choice')
+    assert(click(root,'characterPanel','traveler'));finishReveal()
     assert(host.characterSelection.character=='traveler' and host.characterSelection.info.id=='ironclad',
-        "ordinary native entry preselects the approved Geo traveler")
-    assert(root:GetChild("characterPanel"):GetChild("confirm"):GetChild("hit").interactable,
-        "ordinary native entry can confirm the preselected Geo loadout")
-    assert(root:GetChild("characterPanel").visible and not root:GetChild("mapPanel").visible)
-    click(root, "characterPanel", "confirm")
-    assert(root:GetChild("characterPanel").visible and root:GetChild("prologuePanel").visible,
-        "selection remains behind the short opening fade until full cover")
+        "ordinary native choice selects the approved Geo traveler")
+    assert(characterPanel:GetChild("confirm"):GetChild("hit").interactable,
+        "ordinary native entry can confirm the selected Geo loadout")
+    assert(characterPanel.visible and not root:GetChild("mapPanel").visible)
+    assert(click(root, "characterPanel", "confirm"))
+    assert(characterPanel.visible and host.starting and host.pageReveal:covered(),
+        "selection remains behind the opening fade until full cover")
     for _ = 1, 33 do OnUpdate(0.25) end
     assert(not root:GetChild("mapPanel").visible and not root:GetChild("prologuePanel").visible)
     assert(root:GetChild('nodePanel').visible and root:GetChild('nodePanel'):GetChild('eventView').visible)

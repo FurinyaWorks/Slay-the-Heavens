@@ -8,6 +8,7 @@ import { preM7FinalSource as original } from './epochs/develop/tests/helpers/m7-
 import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
+import {isCurrentInputRetirementSource} from './input-retirement-source.mjs';
 const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');
 const actorTarget=sourceEpoch.proof.targets.pr618,actorAnchor='config/architecture.json';
 // This real preserved PR contains the exact three-owner Actor after-image.
@@ -27,8 +28,19 @@ function actorReader(raw){
   return actorTarget.files[path].source;
  };
 }
-// Explicit compatibility readers share this same full-current admission gate.
-export {actorReader as currentDefectActorReader};
+// Explicit live compatibility readers start with the exact current architecture
+// before authenticating the complete current graph and exposing an earlier view.
+export function currentDefectActorReader(raw){
+ if(typeof raw!=='function')return raw;
+ return path=>{
+  const source=raw(actorAnchor);
+  assert(isCurrentInputRetirementSource(actorAnchor,source),'combined linked owner identity: '+actorAnchor);
+  assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),
+   actorTarget.files[actorAnchor].source,'exact current Actor admission target');
+  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');
+  return actorTarget.files[path].source;
+ };
+}
 export function preM7FinalSource(path,source,{readSource=live}={}){
  readSource=readers.get(readSource)??readSource;
  const input=source;source=preDefectActorSource(path,source,{readSource:actorReader(readSource)});

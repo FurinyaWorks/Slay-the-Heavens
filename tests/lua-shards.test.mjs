@@ -1,4 +1,5 @@
 import { partition, jsShard, jsPlanningWeights, discoverJs, timings as runtimeTimings } from '../scripts/ci-shards.mjs';
+import {beforeInputRetirementTestInventory} from './helpers/input-retirement-inventory.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -167,7 +168,8 @@ test('current placement retains the original inventory, safety classification an
     if(Object.hasOwn(original.luaShard,file))assert.ok(timings.luaShard[file]>=original.luaShard[file],'original observations cannot decrease');
   }
   const current = readdirSync('tests/lua').filter(file => file.endsWith('.lua')).map(file => `tests/lua/${file}`);
-  assert.ok(files.every(file => current.includes(file)), 'complete measured inventory remains discovered');
+  const retained = new Set(beforeInputRetirementTestInventory(current,'lua',readFileSync,{required:true}));
+  assert.ok(files.every(file => retained.has(file)), 'complete measured inventory remains authenticated');
   const count=qualityShardMatrices.windows.length;
   const short = file => (timings.lua[file] ?? timings.unknownLuaMs) < 10000;
   const js = jsShard(discoverJs(), `1/${count}`, 'win32').loads;

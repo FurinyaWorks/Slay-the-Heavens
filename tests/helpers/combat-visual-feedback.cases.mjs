@@ -77,6 +77,7 @@ test('historical adapter only recognises exact current bytes and rejects changed
 
 import {assertIntegrationSuccessorsCurrent} from './fork-preflight-source.mjs';
 import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
+import {beforeDeckPagesSuiteSource} from './input-retirement-source.mjs';
 test('fresh guards reject mixed old/new sources and integrated readback drift',()=>{
  const path='src/lua/abyss_card_skin.lua',source=readFileSync(path,'utf8');
  let reads=0;
@@ -84,8 +85,13 @@ test('fresh guards reject mixed old/new sources and integrated readback drift',(
  assert.throws(()=>combatVisualPriorRead(reader)(path,'utf8'),/linked owner identity/);
  const before=beforeCombatVisualSource(path,source);
  assert.throws(()=>beforeCurrentProductionSource(path,before,p=>readFileSync(p,'utf8')),/fresh (?:current production owner|combat visual source)/);
- const layout='scripts/official-run-layout.mjs',old=beforeCombatVisualSource(layout,readFileSync(layout,'utf8'));
- assert.throws(()=>assertIntegrationSuccessorsCurrent(p=>p===layout?old:readFileSync(p,'utf8')),/fresh combat visual source/);
+ const layout='scripts/official-run-layout.mjs',current=readFileSync(layout,'utf8');
+ const readSuite=p=>beforeDeckPagesSuiteSource(p,readFileSync(p,'utf8'));
+ const preDeck=readSuite(layout),old=beforeCombatVisualSource(layout,preDeck,readSuite);
+ assert.notEqual(preDeck,current,'exact current input-retirement layout');
+ assert.notEqual(old,preDeck,'exact earlier combat-visual layout');
+ assert.throws(()=>assertIntegrationSuccessorsCurrent(p=>p===layout?old:readFileSync(p,'utf8')),
+  /fresh (?:complete integration source|current production owner|combat visual source): scripts\/official-run-layout\.mjs/);
 });
 
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';

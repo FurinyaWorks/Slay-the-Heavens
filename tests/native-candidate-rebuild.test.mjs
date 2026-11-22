@@ -3,6 +3,7 @@ import {generatedRuntimeModules,payloadDigest} from '../scripts/build-native-can
 import {monsterActorTemplate} from '../scripts/monster-art.mjs';
 import {enemyPowerTemplate} from '../scripts/ui-layout.mjs';
 import {readyArtTemplates,readyArtGroupTemplate} from '../scripts/art/ready-card-runtime.mjs';
+import {deckBrowserBindingModule,deckBrowserBindingSource,deckBrowserTemplateName,deckCardTemplate,plainBrowserCardTemplate} from '../scripts/deck-ui-layout.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
@@ -15,12 +16,15 @@ import {uiProfileSource} from '../scripts/ui-profile.mjs';
 
 const builder = fileURLToPath(new URL('../scripts/build-native-candidate.mjs', import.meta.url));
 const existing = { id: 1073741899, name: '_GSTS_ABYSS_SETTLEMENT', type: 20000, writable: true };
+const deckBrowserIndex = 1073741853;
 const uiModules = Object.keys(generatedRuntimeModules).filter(name=>generatedRuntimeModules[name]==='scripts/build-ui.mjs');
 // Rebuild/ownership fixtures exercise the ordinary default-off candidate.
 // Artwork binding and template contracts have separate opt-in integration tests.
-const templates = [readyArtTemplates().find(template=>template.name===readyArtGroupTemplate),monsterActorTemplate(null),enemyPowerTemplate()];
+const templates = [readyArtTemplates().find(template=>template.name===readyArtGroupTemplate),monsterActorTemplate(null),enemyPowerTemplate(),
+  plainBrowserCardTemplate(deckCardTemplate())];
 const generatedSource = name => name === artFeatureModule ? artFeaturesSource({})
   : name === 'abyss_ui_profile' ? uiProfileSource()
+  : name === deckBrowserBindingModule ? deckBrowserBindingSource()
   : name === 'abyss_monster_art_data' ? '-- Generated from the bounded native monster registry.\nreturn {}\n' : 'return {}';
 // Fake only the MCP boundary: execute the actual CLI and inspect its calls.
 const sdk = `
@@ -36,7 +40,8 @@ export class Client {
   if(name===state.payloadErrorTool)return {structuredContent:{error:{code:'PAYLOAD_FAILURE',message:name}}};
   if(name===state.malformedTool)return {structuredContent:{mapPath:args.mapPath}};
   if(name==='scene_add_client_template'){
-   const indices={AbyssReadyCardGroup:1073741848,AbyssMonsterActor:1073741849,AbyssMonsterPower:1073741850};
+   const indices={AbyssReadyCardGroup:1073741848,AbyssMonsterActor:1073741849,AbyssMonsterPower:1073741850,
+    [${JSON.stringify(deckBrowserTemplateName)}]:${deckBrowserIndex}};
    if(!Object.hasOwn(indices,args.template.name))throw Error('Unregistered native template '+args.template.name);
    return {structuredContent:{mapPath:args.mapPath,templateIndex:indices[args.template.name]}};
   }
@@ -98,6 +103,8 @@ function run(scenario, check) {
      assert.equal(receipt.monsterActors.templateIndex,1073741849);
      assert.equal(receipt.monsterActors.containerTemplateIndex,1073741848);
      assert.equal(receipt.monsterActors.powerTemplateIndex,1073741850);
+     assert.deepEqual(receipt.deckBrowser,{templateIndex:deckBrowserIndex,maxFaces:10,parts:[]});
+     assert.equal(actual.find(row=>row.name===deckBrowserBindingModule)?.source,deckBrowserBindingSource(deckBrowserIndex));
      assert.deepEqual(actual.map(s=>s.name).sort(),Object.keys(receipt.moduleDigests).sort(),'final inventory must be read from the batch-written map');
      for(const row of actual)assert.equal(sha256(row.source),receipt.moduleDigests[row.name]);
      assert(calls.some(c=>c.name==='native_batch_script'),'actual production batch writer must construct records');
@@ -111,8 +118,8 @@ test('rebuilding existing scene replaces UI, reuses actual graph id and preserve
   success(result);
   assert.equal(calls.find(c=>c.name==='scene_add_client_ui').args.replace,true);
   assert.deepEqual(calls.filter(c=>c.name==='scene_add_client_template').map(c=>c.args.template.name).sort(),
-    ['AbyssMonsterActor','AbyssMonsterPower','AbyssReadyCardGroup'],
-    'default-off keeps required actor/power/group templates and excludes all optional image artwork');
+    [deckBrowserTemplateName,'AbyssMonsterActor','AbyssMonsterPower','AbyssReadyCardGroup'],
+    'default-off keeps the required browser, actor, power and group templates and excludes optional image artwork');
   const flags=calls.find(c=>c.name==='native_batch_script'&&c.args.name===artFeatureModule);
   assert(flags,'canonical default-off configuration must reach the real candidate payload');
   assert.equal(flags.args.source,artFeaturesSource({}));

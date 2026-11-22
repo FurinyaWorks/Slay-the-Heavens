@@ -72,7 +72,7 @@ test('complete admission responsibility measurements retain the CC15 limits',()=
 test('historical admission receipts use only the exact current successor source',()=>{
  const read=path=>readFileSync(path,'utf8');
  for(const name of ['abyss_map','abyss_treasure_source','abyss_wheel_event','abyss_winding_event']){
-  const path=`src/lua/${name}.lua`,source=current[name];
+  const path=`src/lua/${name}.lua`,source=current[name].replaceAll('\r\n','\n');
   assert.equal(beforeCharacterPreparationSource(path,source,read),before.sources[name]);
   assert.equal(beforeCharacterPreparationSource(path,source.replaceAll('\n','\r\n'),read),before.sources[name]);
   assert.equal(beforeCharacterPreparationSource(path,source+'-- drift',read),source+'-- drift');

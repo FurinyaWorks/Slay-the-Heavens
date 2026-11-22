@@ -4,11 +4,19 @@ import assert from 'node:assert/strict';
 import {readFileSync as nativeReadFileSync} from 'node:fs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
-import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
-import {beforePc13ThenV2UiHudSource,beforeAuthenticatedPc13RewardCover} from './helpers/pc13-reward-cover-source.mjs';
+import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
+import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 // Original assertions retain their explicit frozen source view.
 const currentRaw=p=>nativeReadFileSync(p,'utf8');
-const roomPriorRead=combinedCurrent.combinedReader(currentRaw,'jointUiPrior');
+function admittedRaw(path,read=currentRaw){
+ if(path===retiredControllerPath)return beforeCharacterPreparationSource(path,readRetiredController(read).source,read);
+ return beforeCurrentProductionSource(path,read(path),read);
+}
+const readRoomPrior=combinedCurrent.combinedReader(currentRaw,'jointUiPrior');
+const roomPriorRead=path=>path===retiredControllerPath?
+ combinedCurrent.preCombinedSource(path,admittedRaw(path),{target:'jointUiPrior',readSource:admittedRaw}):readRoomPrior(path);
 import {roomUiSourceEpoch as room} from './helpers/room-ui-source-epoch.mjs';
 import {componentUiSourceEpoch as component} from './helpers/component-ui-source-epoch.mjs';
 import {preJointUiEpoch as epoch,preRoomUiEpoch as prior} from './helpers/combined-epoch/source-epoch.mjs';
@@ -17,22 +25,59 @@ const changed=['src/lua/abyss_game_ui_view.lua','src/lua/abyss_map_ui.lua','src/
 import {preJoustEpoch as joint,joustIntegratedEpoch as current} from './helpers/combined-epoch/source-epoch.mjs';
 import {joustSourceProof} from './helpers/joust-source-epoch.mjs';
 import {readdirSync} from 'node:fs';
-const admittedRaw=p=>beforeCurrentProductionSource(p,currentRaw(p),currentRaw);
-const currentLive=p=>{try{return sourceSlice(p,admittedRaw(p),'pr612',admittedRaw).replaceAll('\r\n','\n');}catch(e){if(e.code==='ENOENT')return null;throw e;}};
+function joustReader(read){
+ const admitted=path=>admittedRaw(path,read);
+ return path=>{
+  try{return sourceSlice(path,admitted(path),'pr612',admitted).replaceAll('\r\n','\n');}
+  catch(error){if(error.code==='ENOENT')return null;throw error;}
+ };
+}
+const currentLive=joustReader(currentRaw);
 // Preserve the original joint UI assertions against their explicit predecessor.
-const jointLive=current.combinedReader(currentLive,'joustPrior');
+const jointReader=read=>current.combinedReader(joustReader(read),'joustPrior');
+const jointLive=jointReader(currentRaw);
+function prepareHistoricalRead(paths,createRead,readDisk=currentRaw){
+ const observed=new Map();
+ const readRaw=path=>{
+  let source;
+  try{source=readDisk(path);}
+  catch(error){if(path!==retiredControllerPath||error.code!=='ENOENT')throw error;source=null;}
+  if(observed.has(path))assert(source===observed.get(path),'fresh Room UI raw owner: '+path);
+  else observed.set(path,source);
+  return source;
+ };
+ const project=createRead(readRaw),projected=new Map([...new Set([...paths,pointerInputPath])].map(path=>[path,project(path)]));
+ const confirmCohort=()=>{for(const path of observed.keys())readRaw(path);};
+ // Only the deterministic historical output is retained. Every physical input
+ // is reread around each projection, with a fresh read for each requested owner.
+ const read=path=>{
+  assert(projected.has(path),'exact Room UI replay owner: '+path);
+  readRaw(path);
+  return projected.get(path);
+ };
+ return use=>{
+  confirmCohort();
+  try{return use(read);}finally{confirmCohort();}
+ };
+}
 function retainedPaths(historical){
- const live=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)];
- assert.deepEqual(live.slice().sort(),Object.keys(combinedCurrent.proof.current).sort(),'complete live production inventory');
- const styleAdded=live.filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();
- assert.deepEqual(styleAdded,['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua'),'exact registered post-closeout source additions');
+ const liveLua=readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p);
+ assertActorFocusInventory(liveLua,currentRaw);
+ const activeAdditions=[...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded,pointerInputPath];
+ const historicalPaths=Object.keys(combinedCurrent.proof.current);
+ assert.deepEqual(['config/architecture.json',...liveLua].sort(),
+  [...historicalPaths.filter(p=>p!==retiredControllerPath),...activeAdditions].sort(),'complete live production inventory');
+ assert.throws(()=>currentRaw(retiredControllerPath),{code:'ENOENT'});
+ assert.equal(admittedRaw(retiredControllerPath),combinedCurrent.proof.current[retiredControllerPath].source);
+ const styleAdded=historicalPaths.filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();
+ assert.deepEqual(styleAdded,['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal','power_membership'].map(name=>'src/lua/abyss_'+name+'.lua'),'exact registered post-closeout source additions');
  combinedCurrent.preCombinedSource('config/architecture.json',currentRaw('config/architecture.json'),{target:'stsStylePrior',readSource:currentRaw});
  for(const p of styleAdded){
   assert.equal(combinedCurrent.proof.targets.stsStylePrior.files[p],null,'complete original absence must remain explicit');
-  assert.equal(beforeAuthenticatedPc13RewardCover(p,currentRaw(p),currentRaw).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
+  assert.equal(admittedRaw(p).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
   assert(combinedCurrent.proof.owners.includes(p),'new module is an authenticated current owner');
  }
- const actual=live.filter(p=>!styleAdded.includes(p));
+ const actual=historicalPaths.filter(p=>!styleAdded.includes(p));
  assert.deepEqual(actual.slice().sort(),Object.keys(ciRepairSourceEpoch.proof.current).sort(),'complete pre-style production inventory retained');
  const added=actual.filter(p=>!Object.hasOwn(historical.proof.current,p));
  assert.deepEqual(added,['src/lua/abyss_lumine_idle.lua'],'only the explicitly adopted idle may extend this historical corpus');
@@ -54,13 +99,22 @@ test('joint UI current identity includes every live module and the entire inheri
 });
 
 test('joint UI projection rejects every warm owner drift and deletion from the real composed source',()=>{
- const p='config/architecture.json',source=jointLive(p),before=epoch.proof.current[p].source;
+ const p='config/architecture.json',before=epoch.proof.current[p].source;
+ let rawDrift=false;
+ const readDisk=path=>{const source=currentRaw(path);return path===p&&rawDrift?source+'\n':source;};
+ const verify=prepareHistoricalRead([...joint.proof.owners,p],jointReader,readDisk),source=verify(read=>read(p));
+ rawDrift=true;
+ assert.throws(()=>verify(()=>assert.fail('raw drift authorized the frozen reader')),/fresh Room UI raw owner/);
+ rawDrift=false;
+ assert.throws(()=>verify(()=>{rawDrift=true;}),/fresh Room UI raw owner/);
+ rawDrift=false;
+ const project=transform=>verify(read=>joint.preCombinedSource(p,source,{target:'jointUiPrior',readSource:transform(read)}));
  for(const owner of joint.proof.owners){
   let bad=false;
-  const reader=q=>{const s=jointLive(q);return bad&&q===owner?s+'\n':s;};
-  assert.equal(joint.preCombinedSource(p,source,{target:'jointUiPrior',readSource:reader}),before);bad=true;
-  assert.throws(()=>joint.preCombinedSource(p,source,{target:'jointUiPrior',readSource:reader}),/linked owner identity/,owner);
-  assert.throws(()=>joint.preCombinedSource(p,source,{target:'jointUiPrior',readSource:q=>q===owner?null:jointLive(q)}),/linked owner identity/,owner);
+  const reader=read=>q=>{const s=read(q);return bad&&q===owner?s+'\n':s;};
+  assert.equal(project(reader),before);bad=true;
+  assert.throws(()=>project(reader),/linked owner identity/,owner);
+  assert.throws(()=>project(read=>q=>q===owner?null:read(q)),/linked owner identity/,owner);
  }
  // JSON layout is explicitly supported; corrupt a token for the foreign case.
  for(const input of [source.replace('"layers"','"foreignLayers"'),source.slice(1),null,{},17]){
@@ -140,16 +194,18 @@ test('Joust current source identity preserves every inherited target and all liv
 });
 
 test('Joust projections retain every target and reject warm drift or deletion of each raw owner',()=>{
- const p=joustSourceProof.path,source=currentLive(p);
+ const p=joustSourceProof.path;
+ const verify=prepareHistoricalRead([...current.proof.owners,p],joustReader),source=verify(read=>read(p));
+ const project=(input,target,transform=read=>read)=>verify(read=>current.preCombinedSource(p,input,{target,readSource:transform(read)}));
  for(const target of Object.keys(current.proof.targets))for(const input of [source,source.replaceAll('\n','\r\n')])
-  assert.equal(current.preCombinedSource(p,input,{target,readSource:currentLive}),current.proof.targets[target].files[p].source,target);
+  assert.equal(project(input,target),current.proof.targets[target].files[p].source,target);
  for(const owner of current.proof.owners){
   let drift=false,reads=0;
-  const reader=q=>{reads++;const text=currentLive(q);return drift&&q===owner?text+'\n':text;};
-  assert.equal(current.preCombinedSource(p,source,{target:'joustPrior',readSource:reader}),joustSourceProof.before.source);
+  const reader=read=>q=>{reads++;const text=read(q);return drift&&q===owner?text+'\n':text;};
+  assert.equal(project(source,'joustPrior',reader),joustSourceProof.before.source);
   assert.equal(reads,current.proof.owners.length,'fresh complete closure');drift=true;
-  assert.throws(()=>current.preCombinedSource(p,source,{target:'joustPrior',readSource:reader}),/linked owner identity/,owner);
-  assert.throws(()=>current.preCombinedSource(p,source,{target:'joustPrior',readSource:q=>q===owner?null:currentLive(q)}),/linked owner identity/,owner);
+  assert.throws(()=>project(source,'joustPrior',reader),/linked owner identity/,owner);
+  assert.throws(()=>project(source,'joustPrior',read=>q=>q===owner?null:read(q)),/linked owner identity/,owner);
  }
  const reader=current.combinedReader(currentLive,'joustPrior');
  assert.equal(current.readerTarget(reader),'joustPrior');assert.equal(reader(p),joustSourceProof.before.source);

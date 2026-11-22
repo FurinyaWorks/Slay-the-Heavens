@@ -11,6 +11,15 @@ import {monsterActorTemplateName,monsterActorInventory} from '../scripts/monster
 const descendants=n=>[n,...(n.children??n.controls??[]).flatMap(descendants)];
 const digest=n=>createHash('sha256').update(JSON.stringify(n)).digest('hex');
 const layers=new Set(['intentVfxBehind','intentVfxAfter']);
+function beforeFocusRetirement(children,hits) {
+  for(const hit of hits) {
+    const index=children.findIndex(node=>node.name===hit),node=children[index];
+    assert.equal(node.kind,'cursorArea');
+    assert.equal(Object.hasOwn(node,'focusable'),false);
+    const {name,kind,size,...layout}=node;
+    children[index]={name,kind,size,focusable:true,...layout};
+  }
+}
 function assertLayers(actor) {
   const names=actor.children.map(n=>n.name),start=names.indexOf('intentVfxBehind');
   assert.deepEqual(names.slice(start,start+6),['intentVfxBehind','intentIcon','intentBadge','intentExtra','intentVfxAfter','intent']);
@@ -26,9 +35,15 @@ test('enemy intent effect layers add exactly two empty draw-order roots without 
   // Approved native readability delta: horizontal intent values are vertically centered.
   const intent=actor.children.find(n=>n.name==='intent');assert.equal(intent.text.valign,'middle');
   intent.text.valign='top'; // Retain the frozen digest for every other existing actor field.
-  assert.equal(digest(preReadableUnitTypography(actor)),'e17a5a9bdaa32056b274d7b12d2a492eee381d4fc70f70c521a4d9b705232f5d');
+  const previousActor=preReadableUnitTypography(actor);
+  beforeFocusRetirement(previousActor.children,['intentHit','hit']);
+  assert.equal(digest(previousActor),'e17a5a9bdaa32056b274d7b12d2a492eee381d4fc70f70c521a4d9b705232f5d');
   const hero=descendants(battleLayout()).find(n=>n.name==='hero');
-  assert.equal(digest(preReadableUnitTypography(hero,{hero:true})),'ee457437376d90ded5fe29ce2018ed9266eda755a59779022c9571b8439a3d97');
+  const previousHero=preReadableUnitTypography(hero,{hero:true});
+  beforeFocusRetirement(previousHero.children,['hit']);
+  const statusRow=previousHero.children.find(node=>node.name==='statusRow');
+  beforeFocusRetirement(statusRow.children,['hit',...Array.from({length:10},(_,index)=>`hit${index+1}`)]);
+  assert.equal(digest(previousHero),'ee457437376d90ded5fe29ce2018ed9266eda755a59779022c9571b8439a3d97');
   assert(!descendants(hero).some(n=>layers.has(n.name)));
   const second=enemyUnitTemplate('second');second.children.find(n=>n.name==='intentVfxBehind').children.push({name:'local'});
   assertLayers(enemyUnitTemplate());
