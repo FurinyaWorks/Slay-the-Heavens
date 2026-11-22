@@ -1,4 +1,5 @@
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
+import { compactPopupSurface } from './compact-popup-surface.mjs';
 import { cardFaceChildren } from './card-face.mjs';
 import { merchantControl } from './cinematic-ui-layout.mjs';
 import { shopRoom } from './shop-room-layout.mjs';
@@ -104,8 +105,7 @@ export function nodeLayout(theme = nativeTheme) {
   });
   shopControls.push(hidden(arrow('relicPrevious', shop.relicPrevious, icon.back)), hidden(arrow('relicNext', shop.relicNext, icon.next)));
   shopControls.push(hidden({name:'detail',kind:'container',position:shop.detail.slice(0,2),size:shop.detail.slice(2),children:[
-    plate('border',frame([0,0],shop.detail.slice(2)),color.gold),
-    plate('panel',frame([0,0],shop.detail.slice(2).map(v=>v-space.border*2)),color.panelSunken),
+    ...compactPopupSurface(theme,shop.detail.slice(2),{face:'panel'}),
     text('name',frame([0,40],[shop.detail[2]-space.l,40]),'',font.body,color.goldBright),
     text('description',frame([0,-20],[shop.detail[2]-space.l,80]),'',font.body,color.text),
   ]}));
@@ -213,7 +213,7 @@ export function nodeLayout(theme = nativeTheme) {
   treasureControls.push(hidden({...picture('burst',[...chest.chest.slice(0,2),360,360],image.glow,color.goldBright)}));
   const rd=list.detail;
   treasureControls.push(hidden({name:'details',kind:'container',position:rd.slice(0,2),size:rd.slice(2),children:[
-    plate('border',[0,0,...rd.slice(2)],color.gold),plate('panel',[0,0,rd[2]-4,rd[3]-4],color.panelSunken),
+    ...compactPopupSurface(theme,rd.slice(2),{face:'panel'}),
     text('name',[0,rd[3]/2-36,rd[2]-40,44],'',font.heading,color.goldBright),
     readable(text('description',[0,rd[3]/2-116,rd[2]-40,104],'',22,color.text)),
     hidden(text('relatedName',[0,-30,rd[2]-40,40],'',font.body,color.goldBright)),

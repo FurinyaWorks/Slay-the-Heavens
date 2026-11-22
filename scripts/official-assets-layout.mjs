@@ -195,15 +195,16 @@ function relicSurfaces(stage,theme){
  return protectedHosts;
 }
 function panelSurfaces(node,theme,protectedHosts){
- // Keep all modal catchers, live field paths, sizes and visibility. Only replace
-// large landscape image surfaces; do not stretch the landscape plaque into icons.
+ // Retire the legacy ornate landscape plaque for all readable popup surfaces.
+ // Keep controls, input ownership and geometry intact; match potionPopup's flat
+ // dark image backing instead of ever assigning the old official panel sprite.
  if(node.kind!=='container'||protectedHosts?.has(node)||node.name==='potionPopup')return;
  const hasText=children(node).some(item=>item.kind==='text');
  if(!hasText)return;
  for(const name of ['face','panel','plate']){
   const plate=child(node,name);
   if(plate?.kind==='image'&&plate.size?.[0]>=240&&plate.size[1]>=96&&plate.size[0]>=plate.size[1]*1.4)
-   setImage(plate,theme.officialAssets.images.panel,'#FFFFFF');
+   setImage(plate,theme.image.rect,theme.color.panel);
  }
 }
 function roomTextFits(node,theme){
@@ -222,7 +223,7 @@ function pageBackgrounds(node,theme){
   const result=required(node,'result');
   for(const key of ['floor','victories','time','deck']){
    const stat=required(result,'stat_'+key);
-   setImage(required(stat,'face'),theme.officialAssets.images.panel,'#FFFFFF');
+   setImage(required(stat,'face'),theme.image.rect,theme.color.panel);
    required(stat,'border').colour=theme.color.goldDim;
   }
  }
@@ -291,8 +292,8 @@ export function applyOfficialAssets(trees,theme){
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }
-  // Apply authored room geometry after generic surface substitution. No atlas
-  // landscape or ornate modal skin may overwrite these read-only details.
+  // Apply authored room geometry after flat-surface normalization. No
+  // decorative landscape image may overwrite read-only details.
   if(treasure)styleTreasure(treasure,theme,{skinButtons:false});
   composeOfficialRun(tree,theme);
  }

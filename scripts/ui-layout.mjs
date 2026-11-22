@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { cardFaceChildren } from './card-face.mjs';
 import { potionSlotVisual } from './potion-slot-visual.mjs';
 import { nativeFontSize } from './native-ui-theme.mjs';
+import { compactPopupSurface } from './compact-popup-surface.mjs';
 
 // One source of tokens for both the native tree and its Lua controller.
 export const theme = JSON.parse(readFileSync(new URL('../data/presentation/ui_theme.json', import.meta.url), 'utf8'));
@@ -344,7 +345,7 @@ export function battleLayout() {
   potionHelp.push({name:'potionPopup',kind:'container',position:[l.battlePotions.origin[0],pop.top-ph/2],
     size:[pop.width,ph],visible:false,children:[
       {...hit(...theme.canvas.base),name:'dismiss',position:[-l.battlePotions.origin[0],-(pop.top-ph/2)]},
-      panel('border',0,0,pop.width,ph,c.goldDim),panel('plate',0,0,pop.width-2,ph-2,c.panel),
+      ...compactPopupSurface(theme,[pop.width,ph]),
       hit(pop.width,ph),
       aligned(text('title',0,0,pop.width-pop.padding*2,l.nativeText.lineHeight,'',pop.font,c.goldBright)),
       aligned(text('target',0,0,pop.targetWidth,l.nativeText.lineHeight,'',pop.font,c.textDim),'right'),
