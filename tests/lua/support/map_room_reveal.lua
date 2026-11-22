@@ -2,6 +2,7 @@ local GameUI = require('abyss_game_ui')
 local Reveal = require('abyss_page_reveal')
 local Map = require('abyss_map')
 local make = GameUI.new
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 
 local loading, failure, readyChecks, beforeReady
 GameUI.new = function(root, data, presentation, click, platform)
@@ -11,6 +12,8 @@ GameUI.new = function(root, data, presentation, click, platform)
         local room = root:GetChild('nodePanel')
         assert(room.active and room.visible, 'readiness queried before the room was mounted')
         assert(room:GetChild('merchant').visible == (intent.nodeType == 'shop'), 'readiness queried before room paint')
+        assert(room:GetChild('shopRoom').visible == (intent.nodeType == 'shop'), 'complete room was not painted')
+        assert(not room:GetChild('shopView').visible, 'unused goods appeared before room publication')
         readyChecks = readyChecks + 1
         if beforeReady then beforeReady(room) end
         return not loading and not failure, failure
@@ -99,7 +102,7 @@ for _, kind in ipairs({'shop', 'event', 'camp'}) do
         local freshTap = {touchId=2}
         pressAndRelease(hit, freshTap)
         assert(hit.click(freshTap), 'fresh touch did not open the shop')
-        host:update(.31)
+        advanceShop(host)
         assert(host.nodeUI.actions['shopView/card1'], 'opened shop did not paint the shelf')
     elseif kind == 'event' then
         assert(host.nodeUI.actions['eventView/option1'].enabled)

@@ -90,7 +90,12 @@ function beforeTravelerStatusCiSource(path,source){
  const regression=path==='tests/integration-source-epoch.test.mjs';
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source),sha=hash(lf);
+ let lf=normalize(source);
+ if(copier&&hash(lf)==='3910354d5306dd7ff7a86d282e5f5716b7ec8e3982d98e5a29d26d32bddd48d4'){
+  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'dd02f8976ed65dae8d055f881020f71d6169a4e396c9cd0bc72d6c84c9254e9a',", " 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',");
+  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Forethought helper copy predecessor');
+ }
+ const sha=hash(lf);
  let prior,expected;
  if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
   prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
@@ -145,13 +150,42 @@ function beforeShopEntryCopier(path,source){
  assert.equal(hash(prior),'6da6f0f4defe5d10ec161a626d020ecd22d6f651d0e35c2ba941907f579337a6','exact shop entry helper copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeShopRoomCiSource(path,source){
+ const merchant=path==='tests/lua/merchant_dialogue_lifecycle.lua';
+ const pagination=path==='tests/lua/support/official_node_picker_pagination.lua';
+ if((!merchant&&!pagination)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source),sha=hash(lf);
+ const importLine="local advanceShop = dofile('tests/lua/support/shop_timeline.lua')\n";
+ let prior,expected;
+ if(merchant&&sha==='5f961e91862bd42d9288d82c889607651c200c4276197f4c47938a07d9df64f8'){
+  prior=lf.replace(importLine,'')
+   .replace(' advanceShop(ui) -- Stage the concealed shelf before testing interruption of its visible slide.\n','')
+   .replace('assert(tap());advanceShop(ui)','assert(tap());ui:update(.31)')
+   .replace("assert(not root:GetChild('shopRoom').visible)","assert(not root:GetChild('merchant'):GetChild('portrait').visible)");
+  expected='97e5495448e73f35cf5a8b33ba0c5094f22360b7553644384eacc8850ccbf306';
+ }else if(pagination&&sha==='ba6e805f24fa5ffb79b1a8adc9a278e5f8ee53a2d06a18958353c5dec3519369'){
+  prior=lf.replace(importLine,'').replace("assert(ui:press('merchant/talk'));advanceShop(ui)",
+   "assert(ui:press('merchant/talk'));ui:update(.31)");
+  expected='d365f7b1d9f8f36eb016a84578a97ddd1051cf1c1c321d2d6b347289f943ea8e';
+ }else return source;
+ assert.equal(hash(prior),expected,'exact Release shop room test predecessor: '+path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function shopEntryPreflightRead(read){
- const prior=shopEntryPriorRead(read);
+ const prior=shopEntryPriorRead((path,...args)=>beforeShopRoomCiSource(path,read(path,...args)));
  return (path,...args)=>beforeShopEntryCopier(path,beforeLoadingRecoveryCopier(path,beforeTravelerStatusCiSource(path,prior(path,...args))));
 }
 function beforeReleaseAssetInventory(path,source){
  if(path!=='docs/legal/assets.json'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
+ let lf=normalize(source);
+ if(hash(lf)==='bda923e34a9c5c025c87a9b17b4f59718cafaaf17607bb73c51667e2e8a06746'){
+  const inventory=JSON.parse(lf);
+  for(const file of Object.keys(inventory.files)){
+   if(file.startsWith('docs/evidence/shop-828/'))delete inventory.files[file];
+  }
+  lf=JSON.stringify(inventory,null,2)+'\n';
+  assert.equal(hash(lf),'c4c0df4494ef02b2f5341b2ed52fba207dc5cbb66065e584b7ffe3fa3df893a9','exact shop evidence inventory predecessor');
+ }
  if(hash(lf)!=='c4c0df4494ef02b2f5341b2ed52fba207dc5cbb66065e584b7ffe3fa3df893a9')return source;
  const inventory=JSON.parse(lf),category='sts1-combat-sdk-evidence';
  delete inventory.categories[category];
@@ -172,7 +206,7 @@ function beforeReleaseBackflowTest(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeReleaseUiBuildSource(path,source){
- source=beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source));
+ source=beforeShopRoomCiSource(path,beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source)));
  source=beforeTravelerStatusCiSource(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
@@ -214,14 +248,15 @@ function assertCoopJsInventory(paths,preceding,read){
 }
 const shopEntryTests={
  js:['tests/shop-entry.test.mjs','3b687d1afb6ee83dc7103bc4c074e990a748a96ef55c4cba326498a5ed2d1919'],
- lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259'],
+ lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259',
+  'e2b0e5297f87eb64525710b871ba23bd9bbcf81e942623c316759e9991dcebeb'],
 };
-function beforeAddedTest(paths,[path,sha],read){
+function beforeAddedTest(paths,[path,...authenticated],read){
  const position=paths.indexOf(path);
  if(position===-1)return paths;
  assert.equal(paths.lastIndexOf(path),position,'duplicate inventory source: '+path);
  const source=read(path,'utf8');
- assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
+ assert(typeof source==='string'&&!source.includes('\r\r\n')&&authenticated.includes(hash(normalize(source))),'fresh added inventory source: '+path);
  return paths.filter(test=>test!==path);
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){

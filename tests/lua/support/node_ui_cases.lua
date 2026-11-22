@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local function plainCardTitle(text)return (text:gsub('<color=#[%x]+>',''):gsub('</color>',''))end
 local NativeContract = dofile('tests/lua/support/native_ui_contract.lua')
 return function(first,last,cardFirst,cardLast)
@@ -91,7 +92,7 @@ local function setup(kind, source, prepare, events, sound,relicSeed)
     assert(math.max(1, math.ceil(width / Theme.layout.nativeNode.notice[3])) * Theme.layout.nativeText.lineHeight
         <= Theme.layout.nativeNode.notice[4], "node notice exceeds existing text capacity")
     ui:setVisible(true) -- the host shows the panel in node mode
-    if kind=="shop" then assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());ui:update(.31) end
+    if kind=="shop" then assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());advanceShop(ui) end
     local function get(key)
         local node = root
         for part in key:gmatch("[^/]+") do node = assert(node:GetChild(part), "missing " .. key) end
@@ -306,13 +307,13 @@ end)
 
 test("merchant only gives short transaction feedback and never idle dialogue", function()
     local ui,get,click,shown=setup('shop',nil,function(run)run.gold=10000 end)
-    assert(not shown('merchant/portrait') and ui.merchant.current==nil)
+    assert(not shown('shopRoom') and ui.merchant.current==nil)
     assert(click('shopView/card1') and click('confirm'))
     assert(get('merchant/line').text=='谢啦！' and shown('merchant/bubble'))
     ui:update(2);assert(not shown('merchant/bubble'))
     ui:update(20);assert(not shown('merchant/bubble'))
     assert(click('shopView/card2') and click('confirm'))
-    assert(shown('merchant/bubble') and not shown('merchant/portrait'))
+    assert(shown('merchant/bubble') and not shown('shopRoom'))
     assert(click('back'));ui:update(.31)
     assert(ui:holding() and not shown('shopView'))
     assert(click('confirm') and not ui:holding())
@@ -326,7 +327,7 @@ test("merchant reaction sounds are requested only for sales and refusals", funct
     local ui = UI.new(root, run, map, Presentation, "click", nil, { color = colour, imageSource = "static",
         sound = function(cue) cues[#cues + 1] = cue end })
     ui:setVisible(true)
-    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());ui:update(.31)
+    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());advanceShop(ui)
     assert(#cues == 0, "entering and greeting are silent")
     assert(ui:press("shopView/card1"))
     assert(#cues==0, "preview is not a sale")

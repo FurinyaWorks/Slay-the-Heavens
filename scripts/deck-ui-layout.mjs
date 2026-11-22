@@ -75,6 +75,8 @@ export function deckControls(theme = nativeTheme) {
   // The 48px hit is separate from the scaled 66.667 x 34.667 visible surface.
   // The 遗物 entry reuses the same capsule (relic glyph + count) so the
   // top-right utilities read as one family instead of a boxy text button.
+  const closeFrame = [...l.deckView.close];
+  closeFrame[2] = Math.max(closeFrame[2], 4 * f.label + 2 * s.s);
   const visual = l.deckView.entryVisual;
   const capsule = (name, size, colour) => {
     const [w, h] = size, x = (w - h) / 2;
@@ -172,7 +174,7 @@ export function deckControls(theme = nativeTheme) {
       { name: 'detailHit', kind: 'cursorArea', position: l.deckView.viewport.slice(0, 2),
         size: l.deckView.viewport.slice(2), focusable: true, visible: false },
       { ...button('upgradePreview', l.deckView.upgradePreview, '升级预览'), visible: false },
-      button('close', l.deckView.close, '关闭'),
+      button('close', closeFrame, '关闭'),
       {...battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),true,undefined,theme.officialAssets.buttonInk),visible:false},
       {name:'pileTools',kind:'container',position:[0,241.5],size:[856,33],visible:false,children:[
         plate('plate',[0,0,856,33],'#76191B'),

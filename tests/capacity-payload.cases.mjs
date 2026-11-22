@@ -80,7 +80,9 @@ test('Release capacity history rejects a current source replaced with its predec
  assert.throws(()=>assertIntegrationSuccessorsCurrent(subsequentPredecessor),{message:'fresh Release capacity source: '+path});
  assert.equal(reads,2);
  for(const [owner,label] of [['docs/legal/assets.json',''],['tests/delivery.test.mjs',''],
-  ['tests/native-monster-actor-template.test.mjs','refined Release ']]){
+  ['tests/native-monster-actor-template.test.mjs','refined Release '],
+  ['tests/lua/support/official_node_picker_pagination.lua','refined Release '],
+  ['tests/lua/merchant_dialogue_lifecycle.lua','']]){
   assert.throws(()=>assertIntegrationSuccessorsCurrent((file,encoding)=>
    file===owner?readFileSync(file,encoding)+'\n':readFileSync(file,encoding)),
    {message:'fresh complete integration source: '+label+owner});
