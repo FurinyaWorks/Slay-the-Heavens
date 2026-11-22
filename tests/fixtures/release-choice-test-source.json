@@ -1,0 +1,60 @@
+{
+  "beforeSha256": "715bdc9709f019bc7904709cee6cfaa20f91d8f0265896ba597928df602d5161",
+  "afterSha256": "9f7805663713e1c0a036cfa19d1518750cf568c5c38335da33d17a4430832c9b",
+  "edits": [
+    [
+      279,
+      1,
+      [
+        " assert.equal(cards.length,cardHosts.size-retiredCards.length);assert.equal(cards.length,38);assert(result.removedControls>500);"
+      ]
+    ],
+    [
+      270,
+      7,
+      [
+        " assert.equal(retiredChoiceCards.length,8,'only choice faces three through ten are retired');"
+      ]
+    ],
+    [
+      253,
+      0,
+      [
+        "    const choiceSlot=/^\\/SlayTheAbyss\\/choicePanel\\/card([12])$/.exec(path);",
+        "    if(choiceSlot&&key==='position'){",
+        "     const page=theme.layout.combatChoice,index=Number(choiceSlot[1])-1;",
+        "     assert.deepEqual(node.position,[page.origin[0]+index%page.columns*page.step[0],page.origin[1]+Math.floor(index/page.columns)*page.step[1]],path+' two-card page position');continue;",
+        "    }"
+      ]
+    ],
+    [
+      235,
+      5,
+      []
+    ],
+    [
+      145,
+      13,
+      [
+        "   assert.equal(current.get(path),node,path);"
+      ]
+    ],
+    [
+      115,
+      1,
+      [
+        " const retiredChoice=path=>/^\\/SlayTheAbyss\\/choicePanel\\/card(?:[3-9]|10)(?:\\/|$)/.test(path);"
+      ]
+    ],
+    [
+      93,
+      3,
+      []
+    ],
+    [
+      9,
+      1,
+      []
+    ]
+  ]
+}

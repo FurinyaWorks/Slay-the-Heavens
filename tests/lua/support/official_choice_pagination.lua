@@ -119,6 +119,14 @@ assert(not gate:step(Gate.intent(owner)) and gate:step(Gate.intent(owner)))
 local epoch,writes=gate.epoch,coverWrites
 local first,last=view.cards[2].uid,view.cards[#view.cards].uid
 assert(tap(2))
+event(1,'down',5);event(1,'up',5)
+local retired=hit(1)
+grid.destroyOnRecycle=true;grid:recycle(0,0);grid.destroyOnRecycle=false
+assert(not retired.listeners.click({touchId=5}) and #view.selected==1,'destroyed card executed its queued click')
+view:update()
+local retiredController=controllerMode(true)
+assert(not retiredController.byControl[retired],'destroyed card kept its Controller focus record')
+controllerMode(false)
 event(1,'down',3);event(1,'up',3)
 grid.scrollProgress=1
 grid:recycle(0,#view.cards-1)

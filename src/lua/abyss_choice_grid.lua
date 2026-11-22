@@ -17,6 +17,7 @@ function M.new(grid,controller,columns,bind,paint,paintSelection)
     local function retire(clear)
         for control,entry in pairs(list.bindings)do
             if control.alive==false then
+                entry.binding=nil
                 Controller.unbind(controller,entry.hit,true)
                 list.bindings[control]=nil
                 if list.cells[entry.index]==control then list.cells[entry.index]=nil end

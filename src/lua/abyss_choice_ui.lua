@@ -313,7 +313,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     local function bind(hit,action,order,current)
         local function enabled()
             local binding=current and current()
-            return view.visible and not view.confirming and hit.raycastTarget~=false
+            return hit.alive~=false and view.visible and not view.confirming and hit.raycastTarget~=false
                 and (not current or binding and binding.context==view.context)
         end
         Controller.bind(platform.controller,hit,'choice',action,enabled,order)
