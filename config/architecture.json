@@ -14,6 +14,8 @@
     "abyss_purge_candidates": "core",
     "abyss_relic_queries": "core",
     "abyss_actor_power_rules": "core",
+    "abyss_blood_for_blood_cost": "core",
+    "abyss_card_upgrade": "core",
     "abyss_combat_reactions": "core",
     "abyss_compendium_catalog": "ui",
     "abyss_relic_text": "core",
@@ -564,11 +566,6 @@
       "reason": "Only runtime Master Reality creation uses the initialized host upgrade API; no module-load import."
     },
     {
-      "from": "abyss_act2_stasis",
-      "to": "abyss_combat",
-      "reason": "StasisPower death constructs Master Reality's upgrade only at runtime after Combat initialization."
-    },
-    {
       "from": "abyss_actor",
       "to": "abyss_colorless_cards",
       "reason": "Runtime Power callbacks run after Actor initialization."
@@ -800,6 +797,12 @@
     }
   ],
   "dependencyBoundaries": [
+    {
+      "id": "stasis-card-upgrade",
+      "from": ["abyss_act2_stasis", "abyss_card_upgrade", "abyss_blood_for_blood_cost"],
+      "forbiddenTargets": ["abyss_combat", "abyss_actor", "abyss_warrior_status_cards"],
+      "reason": "Stasis returns a card through shared instance upgrade rules without loading the combat owner."
+    },
     {
       "id": "power-metadata-independence",
       "from": [

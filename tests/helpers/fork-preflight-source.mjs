@@ -168,7 +168,17 @@ function beforeDevelopBattleFeedbackCopier(path,source){
  assert.equal(hash(prior),'73b067067041e839e431863fa6af053da07e53caa2d36eaa86fefbdaeb8fb149','exact Develop battle feedback copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeDevelopStasisUpgradeCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='a943bd62f8ef5232548a9e415724e7aaf9518bf365686ec3d09e79d83fd54754')return source;
+ const prior=lf.replace(/^const developStasisUpgradeFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developStasisUpgradeFiles))','Object.entries(developBattleFeedbackFiles))');
+ assert.equal(hash(prior),'202a6beb3429f4aa83c1d40d55a69c63e4d3ba38ec8817140bd3c35e6edce846','exact Develop stasisUpgrade copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopStasisUpgradeCopier(path,source);
  source=beforeDevelopBattleFeedbackCopier(path,source);
  source=beforeDevelopRewardUiCopier(path,source);
  source=beforeDevelopPortraitLifecycleCopier(path,source);
@@ -478,12 +488,12 @@ const sourceSuccessors=Object.freeze({
  'tests/helpers/closeout-source-epoch.mjs':'5c47cf4cfa424551010f1e12f39fc84363ad77c93733c4f3d3e8932e00e1c4c9',
  'tests/helpers/copy-integration-source-closure.mjs':'c0a43b2cfca0c01bc6608fbd4f8bcd279c4d91c3d839d92654daf0513bc6d2f3',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
- 'tests/integration-source-epoch.test.mjs':'52c1cb8227f7849a1757d531c82611d36f7d73cad3462185599d18b9be096440',
+ 'tests/integration-source-epoch.test.mjs':'e43ab34dcc1291c087c6e46fa081a54495e7c8f70ff3a34ebda3ab07ac6283bf',
  'tests/defect-actor-boundary.test.mjs':'bd3deb3006a06adb5b8cb5f1bbda90a354882b015d5a57bd1c1623df35dfb039',
  'tests/defect-final-source-epoch.test.mjs':'c5d27da04e6430a3bb4da253075cf0b7fe5baf5599c86dad8d9b922eafb72651',
  'tests/encounter-formation-source-epoch.test.mjs':'1a624e24e88927828d3d09012145046bcc0317c99757c6aa2d8b30e4ff55e399',
  'tests/room-ui-source-epoch.test.mjs':'230214c3b5f21e8f440c21178afd5636fc1219b528bfb2fffe446150e15e1d20',
- 'tests/watcher-actor-boundary.test.mjs':'1954759b210bc333d65550e9abda023e0fe5aaa9b7253ce6aa1ea1939cabc909',
+ 'tests/watcher-actor-boundary.test.mjs':'f81a523011ae3838fd5162ac6d8816fcae5f36c92a661e00d2bcadf4c50a3007',
  'tests/helpers/replay-reviewed-selection.mjs':'47ba348e9a26348b1ed0255cd16bb9099cf5767986a70a28f2f132c39f4c278d',
  ...closeoutSuccessors,
 });

@@ -1,7 +1,21 @@
 -- Real class profiles and the complete source metadata introduced by 39c40f8.
+local Stasis=require('abyss_act2_stasis')
+local held={cardId='strike',upgraded=false}
+local state={hand={},rules={player={maxHand=10}},player={statuses={master_reality=1}},
+ catalog={cards={strike={type='attack',cost=1,upgrade={damage=3}}}},act2StasisCards={[7]=held}}
+local action=Stasis.death(state,{id=7})
+assert(action and action.op=='stasis_return' and action.ownerId==7 and not action.forceDiscard)
+assert(state.act2StasisCards[7]==held and held.upgraded and held.upgrades==1)
+assert(package.loaded.abyss_combat==nil and package.loaded.abyss_actor==nil and package.loaded.abyss_warrior_status_cards==nil)
+
 local Profiles=require('abyss_character_profiles')
 local Pools=require('abyss_class_card_pools')
 local C=require('abyss_combat')
+local capabilities={}
+for key,value in pairs(C)do capabilities[key]=value end
+for _,key in ipairs({'combatBaseCost','validSearingBlowCopy','canUpgrade','upgrade'})do
+ assert(type(capabilities[key])=='function' and capabilities[key]==C[key],key..' is missing from the Combat API')
+end
 local R=require('abyss_sts_random')
 local Data=require('abyss_data')
 local rows={

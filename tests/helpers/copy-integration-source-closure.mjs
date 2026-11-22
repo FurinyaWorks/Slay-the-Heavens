@@ -222,11 +222,17 @@ const developBattleFeedbackFiles=Object.freeze({
  'tests/helpers/develop-release-backflow-source.mjs':'cdd1d43eb8a0cd6e3b829c52954bddbcbc961449089d4a17f787dea391e890bc',
  'tests/fixtures/develop-battle-feedback-responsibilities-source.json.gz':'c8432495ff7b795025f12f0f931d55e6409505b6347fbbddc46701555f80e791',
 });
+const developStasisUpgradeFiles=Object.freeze({
+ ...developBattleFeedbackFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'980e0e060d3c52a5d38ad948afb7f2d020bea83f4578828c801211a1f7cc6822',
+ 'tests/fixtures/develop-stasis-upgrade-boundary-source.json.gz':'04dd257d8cdd059a629082e1e3cf39c89f636dc8b2376c3c30286baae23065de',
+ 'tests/fixtures/develop-card-display-leaf-source.json.gz':'424ee22e001dbcc5bf1256622b0dd527da3b1ca428330fbf7ce98c7fa21c943d',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developBattleFeedbackFiles)){
+ for(const [path,sha]of Object.entries(developStasisUpgradeFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

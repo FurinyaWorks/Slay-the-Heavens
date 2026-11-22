@@ -5,6 +5,7 @@ import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-sou
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
+import {assertStasisUpgradeAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
@@ -152,15 +153,17 @@ test('fresh authorization covers the complete changed-owner union without cachin
 });
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
- assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
+ const recorded=Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort();
+ assert.deepEqual(files,[...recorded,...stasisUpgradeAddedPaths].sort());
+ for(const path of stasisUpgradeAddedPaths)assertStasisUpgradeAdded(path,readFileSync(path,'utf8'));
  assertCharacterPreparationSources();
- for(const path of files)assert.equal(beforeCharacterPreparationSource(path,readFileSync(path,'utf8')).replaceAll('\r\n','\n'),raw(path),path);
+ for(const path of recorded)assert.equal(beforeCharacterPreparationSource(path,readFileSync(path,'utf8')).replaceAll('\r\n','\n'),raw(path),path);
  const [owner]=characterPreparationOwners, read=path=>readFileSync(path,'utf8'), current=read(owner);
  assert.equal(beforeCharacterPreparationSource(owner,current,read),raw(owner));
  assert.equal(beforeCharacterPreparationSource(owner,current+'\n',()=>{throw Error('foreign must not authorize reads');}),current+'\n');
  for(const missing of characterPreparationOwners)
   assert.throws(()=>beforeCharacterPreparationSource(owner,current,path=>path===missing?null:read(path)),/fresh character preparation source/);
- for(const path of files){
+ for(const path of recorded){
   const latest=read(path),previous=raw(path);
   assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),previous,path);
   if(latest.replaceAll('\r\n','\n')===previous)continue;

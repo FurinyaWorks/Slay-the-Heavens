@@ -41,6 +41,14 @@ const cardDisplay=JSON.parse(gunzipSync(cardDisplayArchive));
 assert.equal(cardDisplay.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
 assert.deepEqual(Object.keys(cardDisplay.files),["src/lua/abyss_watcher_flow_cards.lua"]);
 for(const path of Object.keys(cardDisplay.files))assert(![mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop cardDisplay source owner: '+path);
+const displayLeafArchive=readFileSync(new URL('../fixtures/develop-card-display-leaf-source.json.gz',import.meta.url));
+assert.equal(hash(displayLeafArchive),'424ee22e001dbcc5bf1256622b0dd527da3b1ca428330fbf7ce98c7fa21c943d','exact Develop card display leaf predecessor archive');
+const displayLeaf=JSON.parse(gunzipSync(displayLeafArchive));
+assert.equal(displayLeaf.base,'ae94d8079df3263c88281e04c9eb05847cf65066');
+assert.equal(displayLeaf.head,'27b8b5509306fc106fa1528b488d3d2c5146afb8');
+const warriorStatusPath='src/lua/abyss_warrior_status_cards.lua';
+assert.deepEqual(Object.keys(displayLeaf.files),['src/lua/abyss_original_v4_display.lua',warriorStatusPath]);
+for(const path of Object.keys(displayLeaf.files))assert(![cardDisplay.files,mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop display leaf owner: '+path);
 const portraitLifecycleArchive=readFileSync(new URL('../fixtures/develop-native-portrait-lifecycle-source.json.gz',import.meta.url));
 assert.equal(hash(portraitLifecycleArchive),'1e0d7cf24e2bd08938383e862161fe5d70c9a5ae29a216a8890c1768b8c57422','exact Develop native-portrait-lifecycle predecessor archive');
 const portraitLifecycle=JSON.parse(gunzipSync(portraitLifecycleArchive));
@@ -71,10 +79,24 @@ assert.deepEqual(Object.keys(battleFeedback.files),[feedbackPath]);
 assert(matches(battleFeedback.files[feedbackPath].before.source,files[feedbackPath].after),'battle feedback preserves the exact Develop backflow predecessor');
 assert(matches(battleFeedback.frozenAfter.source,battleFeedback.frozenAfter),'frozen branch feedback identity');
 export const developBattleFeedback=Object.freeze({before:battleFeedback.files[feedbackPath].before.source,frozenAfter:battleFeedback.frozenAfter.source});
-const layers=[battleFeedback.files,rewardUi.files,portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
+const stasisArchive=readFileSync(new URL('../fixtures/develop-stasis-upgrade-boundary-source.json.gz',import.meta.url));
+assert.equal(hash(stasisArchive),'04dd257d8cdd059a629082e1e3cf39c89f636dc8b2376c3c30286baae23065de','exact Develop Stasis upgrade predecessor archive');
+const stasis=JSON.parse(gunzipSync(stasisArchive));
+assert.equal(stasis.base,'3d4283eeded352ff1aebd9f897933c2e095e2b02');
+assert.equal(stasis.original,'c6f85876205c90b0c6a4125f98a4188a8ebd287b');
+assert.deepEqual(Object.keys(stasis.files),['config/architecture.json','src/lua/abyss_act2_stasis.lua','src/lua/abyss_combat.lua',warriorStatusPath]);
+assert(matches(stasis.files[warriorStatusPath].before.source,displayLeaf.files[warriorStatusPath].after),'Stasis follows the exact Warrior status display predecessor');
+export const stasisUpgradeAddedPaths=Object.freeze(['src/lua/abyss_blood_for_blood_cost.lua','src/lua/abyss_card_upgrade.lua']);
+assert.deepEqual(Object.keys(stasis.added),stasisUpgradeAddedPaths);
+const stasisCurrent={...Object.fromEntries(Object.entries(stasis.files).map(([path,row])=>[path,row.after])),...stasis.added};
+const layers=[stasis.files,battleFeedback.files,rewardUi.files,portraitLifecycle.files,displayLeaf.files,cardDisplay.files,mapRender.files,files,shop];
 for(const {before,after} of layers.flatMap(layer=>Object.values(layer))){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+for(const after of Object.values(stasis.added)){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
@@ -87,6 +109,9 @@ function matches(source,expected){
 }
 export function assertDevelopBackflowCurrent(path,source){
  assert(matches(source,current(path).after),'fresh current production owner: '+path);
+}
+export function assertStasisUpgradeAdded(path,source){
+ assert(Object.hasOwn(stasis.added,path)&&matches(source,stasis.added[path]),'fresh Stasis upgrade module: '+path);
 }
 function predecessor(layer,path,source){
  if(!Object.hasOwn(layer,path)||!matches(source,layer[path].after))return source;
@@ -101,12 +126,13 @@ export function authenticateDevelopBackflow(path,source,read){
  const prior=beforeDevelopBackflow(path,source);
  if(prior===source)return source;
  const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
- const owners=forethoughtOwners.includes(path)?forethoughtOwners:[path];
+ const stasisOwner=Object.hasOwn(stasis.files,path)&&row===stasis.files[path];
+ const owners=stasisOwner?Object.keys(stasisCurrent):forethoughtOwners.includes(path)?forethoughtOwners:[path];
  for(const owner of owners){
   let live;
   try{live=read(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-  const expected=owner===path?row:current(owner);
-  assert(matches(live,expected.after),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
+  const expected=stasisOwner?stasisCurrent[owner]:(owner===path?row:current(owner)).after;
+  assert(matches(live,expected),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
  }
  return prior;
 }
