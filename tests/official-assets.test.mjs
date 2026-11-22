@@ -383,8 +383,8 @@ test('scene and button substitutions preserve semantic icons and all four native
  assert.equal(child(child(layout,'menuPanel'),'backdrop').image,nativeTheme.image.officialBackdrops.title);
  const menu=child(layout,'menuPanel'),result=child(menu,'result');
  for(const key of ['floor','victories','time','deck']){
-  const stat=child(result,'stat_'+key);assert.equal(child(stat,'face').image,107311);
-  assert.equal(child(stat,'face').colour,'#FFFFFF');assert.equal(child(stat,'border').colour,nativeTheme.color.goldDim);
+  const stat=child(result,'stat_'+key);assert.equal(child(stat,'face').image,nativeTheme.image.rect);
+  assert.equal(child(stat,'face').colour,nativeTheme.color.panel);assert.equal(child(stat,'border').colour,nativeTheme.color.goldDim);
  }
  const map=child(layout,'mapPanel'),field=child(child(map,'mapGroup1'),'mapField');
  assert.equal(field.image,nativeTheme.image.rect);assert.equal(field.colour,nativeTheme.color.mapCanvas.backdrop);
@@ -489,11 +489,14 @@ test('official run pages use one three-step floor marker just after the potion s
 test('ordinary fade keeps the original input barrier and retires the cinematic artwork',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
  const cover=child(layout,'pageReveal'),blocker=child(cover,'blocker'),cancel=child(cover,'cancel');
+ const subtitle=child(cover,'subtitle');
  assert(child(child(child(layout,'prologuePanel'),'scene'),'seal'),'legacy fixture still retains its reference');
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(child(layout,'prologuePanel'),undefined);
- assert.deepEqual(children(cover).map(node=>node.name),['veil','blocker','message','cancel']);
+ assert.deepEqual(children(cover).map(node=>node.name),['veil','blocker','subtitle','message','cancel']);
  assert.equal(child(cover,'veil').colour,'#000000');
+ assert.strictEqual(child(cover,'subtitle'),subtitle);
+ assert.equal(subtitle.visible,false);
  assert.equal(child(cover,'message').visible,false);
  assert.strictEqual(child(cover,'blocker'),blocker);
  assert.strictEqual(child(cover,'cancel'),cancel);

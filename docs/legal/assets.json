@@ -264,6 +264,11 @@
       "category": "platform-evidence",
       "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
     },
+    "docs/evidence/release-power-tips/ui-comparison.png": {
+      "sha256": "7240a09871e162fe4d32c60d8bf95a92cf7517f4a8d21a416c93e168ef161d72",
+      "category": "platform-evidence",
+      "evidence": "PR #887, commit c52f1a603dbff5b358aaf54e8c48a1a6a1b982f2. Offline Chromium comparison of generated status controls with gallery glyph stand-ins. Diagnostic capture only."
+    },
     "docs/evidence/shop-828/after-transition.png": {
       "sha256": "94c0a78f1b14ad55d52b3576f8fdf494a626a65b219af8266e08e02b730caaf0",
       "category": "platform-evidence",

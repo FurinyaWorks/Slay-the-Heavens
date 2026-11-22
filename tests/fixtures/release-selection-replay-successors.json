@@ -1,0 +1,253 @@
+{
+  "head": "dd7b9cdc1e86094965dbf50f89b92aebbe2c8381",
+  "files": {
+    "config/architecture.json": {
+      "currentSha": "178e876a145f71b181220a81fd76b9983281dc36187f07b871f33e6b1f795861",
+      "predecessorSha": "7d0b25ebcbd323e633fad7bcf8e618966450c60dde9671185226f1e6cef8fbd1"
+    },
+    "src/lua/abyss_battle_action_bindings.lua": {
+      "currentSha": "3fdd85a34a897e812b2b135c88231835fa02d06d9ba2e3eca796bad6245e6f04",
+      "predecessorSha": "84d11f396803b5bcd202aa6226e9d0b67a56fef6956b3e6bf167e089de933bd7"
+    },
+    "src/lua/abyss_battle_actions.lua": {
+      "currentSha": "a2b1db101e8c13623f3aeb414a1cc4e4aa8eb1a186d6cc12c8eb45abee016b43",
+      "predecessorSha": "11222422d46898fdc10f26eb5cc17fc700f8bbb3d4aaba375ab53721206af5e0"
+    },
+    "src/lua/abyss_battle_card_gestures.lua": {
+      "currentSha": "a3bf8f4ec9386df62c3df2bd298ee6db836264ff794e4ff30c7117fac677c349",
+      "predecessorSha": "de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153"
+    },
+    "src/lua/abyss_battle_card_view.lua": {
+      "currentSha": "fec0d68e0ae409651b300908cb3b06e1655251c40fd34745cd427b4ea4c97699",
+      "predecessorSha": "269d8787ad09f28b6068a3535ba3f3adeda9a13fca776ab2ebd9452f2b17067a"
+    },
+    "src/lua/abyss_battle_detail_bindings.lua": {
+      "currentSha": "4dc20d5f83e99fcdb14dabc9fe54b1e9263453cf2ad7a56cfe9d6d6d24830fca",
+      "predecessorSha": "2eee30b903e8d41618cfd320da89ea57ccdf7470d31e33e1a0617228e054a9bd"
+    },
+    "src/lua/abyss_battle_details.lua": {
+      "currentSha": "dc99c560c64b4c4d87f487ea985989f41a17b43b2c0d6fb4b3aecdf65d8dcd49",
+      "predecessorSha": "23d5e423b607b9f4ec86b9544931180eab71b74af95a944670a02c5c79d1a5b3"
+    },
+    "src/lua/abyss_battle_enemy_view.lua": {
+      "currentSha": "0be9e70714cd4bfd01b744cbe7f525f9ba96c1aa02c2b4f2f4f53b0ac9189260",
+      "predecessorSha": "25894f61ea8084bf59db4f948d1a5ad9644c08e0d35ffb7cf651cbc335a171df"
+    },
+    "src/lua/abyss_battle_info_content.lua": {
+      "currentSha": "0bb9a49fbeeca96802e31bd643e2f457556fc8b8be973f30ffd9eaa480a5ba91",
+      "predecessorSha": "344a4f1c50aa88594aab2062a36ed0319ce818ac22bc1a22a6494f2313ec8275"
+    },
+    "src/lua/abyss_battle_info_view.lua": {
+      "currentSha": "1eb8f6cf1761d2c3bfe86017c3910734a49098f11a2f359dd85338bbc6d8cda4",
+      "predecessorSha": "1dcee05980b5a29696fe9c5223965cbd8a94cd7808a471bc7f817bd364762f18"
+    },
+    "src/lua/abyss_battle_input_state.lua": {
+      "currentSha": "0f74e5c74a6e025eb18793616bfabaed24d2a46268d9824f9d2d201c8bfbe3ad",
+      "predecessorSha": "f5ca34c51e6599284d574b8053297c429b4f14d7a1951395f5a4decfbb87cd3d"
+    },
+    "src/lua/abyss_battle_intent_view.lua": {
+      "currentSha": "6b8531873574d2e2cbe2792f9ae3133e4129e89ac0b4735adda949accdb10279",
+      "predecessorSha": "491d92710d2e269d98ef850ffc100631897fdfc0572e2da7e754776b653634e0"
+    },
+    "src/lua/abyss_battle_potion_popup.lua": {
+      "currentSha": "5f4f4e8d1d9c08bdf18a7e06cbe0affad5606752258e16ff1a73cda1c123b251",
+      "predecessorSha": "705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd"
+    },
+    "src/lua/abyss_battle_render.lua": {
+      "currentSha": "9607d0e0b29f615235f7709961ee404f545288561dfea581a129da6c284985dc",
+      "predecessorSha": "6ab3653f406287abd50cfd6773410fff2c9a64b238810390ee3fce509881daba"
+    },
+    "src/lua/abyss_battle_render_actors.lua": {
+      "currentSha": "e0ee89b6de415a9dda85a887d4fb040cc27cbcc5f80132b86faeae504efbbe97",
+      "predecessorSha": "dfa8d897365b7224cda5e02be448b87334fb7c3160dc672b08940f09a9477845"
+    },
+    "src/lua/abyss_battle_reward_layout.lua": {
+      "currentSha": "fab200e3fb94002662649691de6bc8a1cedb8357179c6fa010ef72775250ed16",
+      "predecessorSha": "7a62389ebc5e053bd32ef3f95d7552d89c67a4f20346c81d1ed603f500622e3d"
+    },
+    "src/lua/abyss_battle_target_bindings.lua": {
+      "currentSha": "72ad653383bead697b03a201d773c1fe2e86cf30dd6b9efb0edfc15bc46e5da5",
+      "predecessorSha": "430762c548eaecda576bb4edb8b85081501a5fc59d93ba11c8e7f2d192048b5b"
+    },
+    "src/lua/abyss_battle_ui.lua": {
+      "currentSha": "3ea577fb99aa54a633d7ed69a97da4f9820726b009f0e3546fd5e894be390c2f",
+      "predecessorSha": "c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481"
+    },
+    "src/lua/abyss_battle_unit_view.lua": {
+      "currentSha": "4d74fa3f735a772fa324bf46d73f3aa47b742eb4b5d14fdd8f861ab5b1f865e1",
+      "predecessorSha": "e723f9d6f1d696cc317947935a1e9a04e10f0046311a4034712c1ec133eea74e"
+    },
+    "src/lua/abyss_card_art_runtime.lua": {
+      "currentSha": "e2e02026b40a0d96d3b46f209dbe3baea4e2f9ea8eb275993fe18cb3ded6b44d",
+      "predecessorSha": "843e37d8c7ac783573129a0b782c63825e3b764ec4787b63d350bb8d6ff60ff8"
+    },
+    "src/lua/abyss_card_display.lua": {
+      "currentSha": "a8d6c2f44147222b4f48e602c5861d641e73e7d473e21461d16cccb7773c4d63",
+      "predecessorSha": "58109fde0c8cee368355ee41366d8da558dd70218cdeabeeb9bb368094b694fa"
+    },
+    "src/lua/abyss_card_skin.lua": {
+      "currentSha": "b03363dd1fd4bfd182ca7030d7ef658b7838bd48a2954859e647b1c3aa3a617b",
+      "predecessorSha": "03dff0cec1876dcd9f2c9d7b2bbf7050c9dcb2bdb7752a41699f19db52da9b22"
+    },
+    "src/lua/abyss_choice_ui.lua": {
+      "currentSha": "aae37b2365e61305f61f3be9d49e0995c05be0175e0414cc02313256f6bb1b43",
+      "predecessorSha": "e0a6dc3040f211c743b16c0a03f9f6076ac8d143cb959c58279ef03560e7e6f5"
+    },
+    "src/lua/abyss_combat.lua": {
+      "currentSha": "a2d96d82d5b1072a98e57343e0cd5b08bdfdeba69026f6110572c2ae4f8c14e2",
+      "predecessorSha": "609e75ba6e83da7b2311629adfdc2fd101c8167d3d17dbb1cdc0748baa9b1d1c"
+    },
+    "src/lua/abyss_deck_ui.lua": {
+      "currentSha": "13f79a9f2d719c913a0ae714be8bbb3062e8aca78943e28549cb75da2528ae23",
+      "predecessorSha": "081875a171ffb00d25036fc98713540880d237f6b67933713453bf3fe75e7673"
+    },
+    "src/lua/abyss_game_ui.lua": {
+      "currentSha": "15bfbbff1e67b4bcad18f8ff25434afb89a9e5419d026a9c8934f0a60f09431f",
+      "predecessorSha": "04456f26110addedb28d3109910091e18011902c3ef6a028e0b61a16aca56ed0"
+    },
+    "src/lua/abyss_game_ui_input.lua": {
+      "currentSha": "2adfe74fbe1934196531b36a47de69e775d94d15ba5208808ac3d311c82901bf",
+      "predecessorSha": "2748898526d4bdfddafaaba8f11431a7a9364ca16b7fd89f116c8ff75edb6836"
+    },
+    "src/lua/abyss_game_ui_lifecycle.lua": {
+      "currentSha": "825c8ef5505e07b6a6348d24b3702315093eedc11ee4b33e21b8251b49a01179",
+      "predecessorSha": "459511320dee4684638a9a80dd585f3d915f2171add31577b883f58e1b753aba"
+    },
+    "src/lua/abyss_game_ui_overlays.lua": {
+      "currentSha": "c0917624e48e9deac13bf7d4ffb078a8b15871039a0b35f3d4e405816efd546f",
+      "predecessorSha": "c576f46a30c8e954a856fc91a38f25f8abb576a5423378e3a4fc28c9e3aa6b00"
+    },
+    "src/lua/abyss_game_ui_run.lua": {
+      "currentSha": "44b249682c9fc1a57cd16dd0068d95da55459b43741918d19ffdb5d3b6a8a62a",
+      "predecessorSha": "596dab6fd323581b74d22e5f3bb8837ee1bca64391d5b2c172c9e4780c231210"
+    },
+    "src/lua/abyss_game_ui_view.lua": {
+      "currentSha": "21aaed83def99c1306b87f41d122f36e1bdae66569f0f58e9079e807f4e480c0",
+      "predecessorSha": "92e6936729549fef3b1e794e5cb8eccf616d0e562f49d5583d7f3bba3e2150aa"
+    },
+    "src/lua/abyss_map.lua": {
+      "currentSha": "7260328267cdbf7dc67004e5560eb333b79c56edf9d8623979491c8b601745ce",
+      "predecessorSha": "52d311bc4a863303906dfa3a29d65bc11606eda30759a560ed80266381900810"
+    },
+    "src/lua/abyss_map_ui.lua": {
+      "currentSha": "0c96989bd7030c6ba87ed4ee9696b83cbe33c4992895160b3a1b01af6590993b",
+      "predecessorSha": "f71c09ef038edcb90cf258a5faac64abb44bbf3fc9367c1893101298e2f33234"
+    },
+    "src/lua/abyss_match_event_ui.lua": {
+      "currentSha": "0f68b75f4d16d00e3e05e37484c3d9b6416b4d3b6dd8f81156736340d5908481",
+      "predecessorSha": "0bd0aa80c86aab562b84b2283c4ea90716ae486f0577e8bafd38c7c3d2d9606b"
+    },
+    "src/lua/abyss_merchant.lua": {
+      "currentSha": "13c87894da498cdbc20b50701bee7f1cc0f389a9152bb2bbdf95669d68e77363",
+      "predecessorSha": "e6e88e409e6d5b1c91f4fc4811205410aa6c1bce961e94daa270a14642be8747"
+    },
+    "src/lua/abyss_monster_escape.lua": {
+      "currentSha": "84fd470dd67a1f616b41d50f1ad7a861bad1238b798119b41e0f4b0059bd0c22",
+      "predecessorSha": "f5fa35cd7aa2f62fe1540d14b732647e79014e8266f64e28b4671d688c3f34a2"
+    },
+    "src/lua/abyss_monster_power_view.lua": {
+      "currentSha": "06dc5081f3055442a1a83c8c4216ba2d2dc7b9600b0822437cea4cca67497087",
+      "predecessorSha": "64b7815f4256d908a8514ab768359730dfc18974916d62444bda0df09c42fe15"
+    },
+    "src/lua/abyss_node_ui.lua": {
+      "currentSha": "223fb64d0c8eb8cbca363fd2ba58b4365ac925ed3635524a91127994b1d2a7df",
+      "predecessorSha": "93afa0ae2dbe98a08caeaa101e13775df3fea3fd0ddc48c0f16546c5eb5f5061"
+    },
+    "src/lua/abyss_node_ui_camp.lua": {
+      "currentSha": "bb1c320472ea91c96ed00e9d1a93e10c3c679db1ca6bf956a7bebec865dffc3a",
+      "predecessorSha": "e67ee265250e0182f551c35b114abb39b539943caa346bbae5ea5f491fe20478"
+    },
+    "src/lua/abyss_node_ui_camp_actions.lua": {
+      "currentSha": "86aed75b3c81775560275deaa280f947f51413bcf1cdab633dc5e82c7c0d755d",
+      "predecessorSha": "cfc7a17942f4c5770a06b38fe67b04183e673d890285fc50f950810130a04252"
+    },
+    "src/lua/abyss_node_ui_events.lua": {
+      "currentSha": "dd2b5d3bdbf39c5d4af2814083516e859b9e1124dc617771eee6e20fe1b32c5b",
+      "predecessorSha": "c3d425e0c65b57fedc5d9d6f63a412403b4197c7b42bfaec407d91fa710c54cc"
+    },
+    "src/lua/abyss_node_ui_faces.lua": {
+      "currentSha": "df9464171b22c47c1bca40f0e4e738b8c761a4e526111832c5e74c1c884d5433",
+      "predecessorSha": "415b7c3230b172e00c39861d797dd814bd668196fe0e7f0132f7ea1cfc60100b"
+    },
+    "src/lua/abyss_node_ui_feedback.lua": {
+      "currentSha": "a316d34b725a460eb6f00457aa27478c5fca4df12748378c8a5e2f34ad5ab3b7",
+      "predecessorSha": "7df89c485223820f2eccc68dffc0b53b1319e090a4cb7f2b57a29ff16a682f4c"
+    },
+    "src/lua/abyss_node_ui_lifecycle.lua": {
+      "currentSha": "9e7bcb4071824ab315d709828d1d04296fb1576bdbf747d3230d9ec0e0ab45fd",
+      "predecessorSha": "141c1a4ec43dd139b05cd6ef1de666d8ec19d990add01d2371a0afea108ce516"
+    },
+    "src/lua/abyss_node_ui_motion.lua": {
+      "currentSha": "f4458f50d20014ebb7151596ffce165600fc6096991a46009c11f58fcb801a9a",
+      "predecessorSha": "3673190f95c5bf81a68c7a671942fb13549267114d702bfe40e36869057bc18f"
+    },
+    "src/lua/abyss_node_ui_shop.lua": {
+      "currentSha": "6e7db9779cf929400840c769d6de7b8a3755df31694f9346ad4f0fc34a572dcf",
+      "predecessorSha": "56723361a9ff0b243800599cafcf15ef3f869daa4bd8aad37af43ad778e69d51"
+    },
+    "src/lua/abyss_node_ui_treasure.lua": {
+      "currentSha": "01b3fe45d94057f4e6c0c3c15510b57c3e00da012f30f6540060c8ba6db2229f",
+      "predecessorSha": "8d7d5b61c32fe993510423a3b2ffc7baa7434169895d810d59305cefa05b2c81"
+    },
+    "src/lua/abyss_node_ui_treasure_list.lua": {
+      "currentSha": "41944f66b0bd7a658b504144de0e5919404be3a9d855eb713b06b7f335bd35d5",
+      "predecessorSha": "58b6453e6d86b98e9eb462de02324af73bfed61d73a3a411ae9fa6e418ce50bd"
+    },
+    "src/lua/abyss_nodes.lua": {
+      "currentSha": "97e7b46e86fc1bcea8098adfa53e84940494091ccf3401985450b9afd2c67aba",
+      "predecessorSha": "f685e7a59b57f66721e3c2f8143b99aa37efd05be77371bbda61fd6e4a4a4d9f"
+    },
+    "src/lua/abyss_nodes_common.lua": {
+      "currentSha": "117fc47aed98201a008ddd87056c270e5b83cefd708689ebd1cee1a8b827352d",
+      "predecessorSha": "584d9e65ce3ae76df830bc3603b2a2f815312dd336774c5d69a7f767f344bb4b"
+    },
+    "src/lua/abyss_page_reveal.lua": {
+      "currentSha": "844d4d299530b9bd32a05f2cfbc9b258b1a68f09c2e5a58bfdb93d8ca58f3641",
+      "predecessorSha": "5b93f48110bdf0d520191deb037e2abdde67f50c1218c788229618c815165230"
+    },
+    "src/lua/abyss_potion_discard_ui.lua": {
+      "currentSha": "7d98164c5578c0ca41d808eca784ab99b1a3cbee25c9d9237664d314b5987fab",
+      "predecessorSha": "023c094dee526f520794fcb8d14b70d53b823fc24049a6946cdb23bda1668426"
+    },
+    "src/lua/abyss_relic_pending_ui.lua": {
+      "currentSha": "63a334fb31d37c9a48e8d9f43f8fb78718f641836028027d4b3555575af015d3",
+      "predecessorSha": "a1d5ba5d2d81ef63209651b571d91de24d967e12e144f3b454a5f9439cf2fe23"
+    },
+    "src/lua/abyss_relic_view_ui.lua": {
+      "currentSha": "8a7db37c991b21a5225861d7e111cb5213e8bb96faa56a7ca7fe1c8e0515b2e1",
+      "predecessorSha": "acb7c4480c4cad44b83aa95a9b25825db217d8b98484ca5d2c88d47b8b366ebf"
+    },
+    "src/lua/abyss_shop_ui.lua": {
+      "currentSha": "1a58da9f757255cb2530a09805276a0748dc583c012fddd742dea4b9933a178e",
+      "predecessorSha": "b2eb4bf26b0423c7aece0dd8b88eab7ad8f89f3f568ece13402fb8c5a66e8fdd"
+    },
+    "src/lua/abyss_traveler_portraits.lua": {
+      "currentSha": "ba9474f0b320a0ddebca687b47b6f0f5053d5ffd117c37c3b24020729a0058d2",
+      "predecessorSha": "95e3ab2064d416d4ba82c122f7af0c91c72a17423e427c5ea3c3b4bb32d1c363"
+    },
+    "src/lua/abyss_treasure_ui.lua": {
+      "currentSha": "6faa1b1e108f43edf54de4bb8b7a85f593814ce94276b2eddd71d8177506797f",
+      "predecessorSha": "f9a88352cca516abcd6a243bb7ffc73b96280876e11a4aad081038e7c4146dd5"
+    },
+    "src/lua/abyss_ui.lua": {
+      "currentSha": "e6bffdaae1d6d4a9ff7632dc44b7aa54a3f76f736037a72525bf6b2ba04662b8",
+      "predecessorSha": "19989127f817f2659be6a29661a916ddf04a2961f43d48a1e35367d95efd01c1"
+    },
+    "src/lua/abyss_v25_menu_view.lua": {
+      "currentSha": "a2a3b9d001699e2bb638193d26523a94e93cefeb0bb222b814619b7d81b8430e",
+      "predecessorSha": "ce1f1d72be3acee9f11213ce3a7abd8b48f405b7543ec9210f8fbde5d83e8fc4"
+    },
+    "src/lua/abyss_v25_texture_runtime.lua": {
+      "currentSha": "d0076483291df810e707db09a72357e0b5a0a36a0bc16b2537d810486349ed05",
+      "predecessorSha": "6da11cb9ac92b48d0aecaf71ef06c82f5cf5dfef58bfcb25f116eb714d52896a"
+    },
+    "src/lua/abyss_lowcost_art.lua": {
+      "currentSha": "7e90fa294e7f7dadc5e181193817c0e0c5cecf5f576c8c76c3136120ddce0301",
+      "predecessorSha": "3d57972c5f3fe0aacb80d1103a97605f0eb3628e65ff132cae4f3c576692cd39"
+    },
+    "src/lua/abyss_game_ui_navigation.lua": {
+      "currentSha": "76ab18b22d6bdfb5f6350e009826eb6bec2dcedeaa7430e3245f7858646bcb95",
+      "predecessorSha": "e274504d00a1f343454a4fa7620666b4b6cbca01f76b2c922abd31450bf8c0df"
+    }
+  }
+}

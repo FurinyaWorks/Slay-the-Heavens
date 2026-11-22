@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -173,13 +173,14 @@ test('original Nodes config closure rejects relabeled, missing and changed input
 
 test('current architecture admission rereads its complete raw owner closure and rejects changed or missing owners',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
- const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),owners=sourceEpoch.proof.owners;
+ const {read,rereads}=readHistoricalReleaseCheckpoint('controls');
+ const raw=read(path),owners=sourceEpoch.proof.owners;
  // The #730 and #733 continuations re-read their authenticated live sources
  // after the main closure, in continuation order.
- const admittedReads=[...owners,...currentProductionRereads];
+ const admittedReads=[...owners,...rereads];
  let changed,replacement,reads=[];
- const reader=file=>{reads.push(file);if(file===changed){if(replacement instanceof Error)throw replacement;return replacement;}return readFileSync(file,'utf8');};
- const layers=JSON.parse(raw).layers;
+ const reader=file=>{reads.push(file);if(file===changed){if(replacement instanceof Error)throw replacement;return replacement;}return read(file);};
+ const layers=JSON.parse(readFileSync(path,'utf8')).layers;
  for(const name of [...nodes,...maxHp])assert.equal(layers[name],'core','current registration: '+name);
  for(const name of battle)assert.equal(layers[name],'ui','current registration: '+name);
  // Admission targets the current declared develop epoch. It does not claim
@@ -188,7 +189,7 @@ test('current architecture admission rereads its complete raw owner closure and 
  const accepted=project();assert.equal(hash(accepted),sourceEpoch.proof.targets.develop.files[path].sha256,'the declared current target, not the ancient candidate');assert.notEqual(accepted,raw);assert.deepEqual(reads,admittedReads,'fresh raw current closure, in original admission order');
  for(const owner of owners){
   changed=owner;
-  for(replacement of [readFileSync(owner,'utf8')+'\n',null,new Error('missing current owner')]){
+  for(replacement of [read(owner)+'\n',null,new Error('missing current owner')]){
    reads=[];assert.throws(project,/linked owner (identity|missing)/);
    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'stop at the first untrusted current owner');
   }
@@ -197,9 +198,10 @@ test('current architecture admission rereads its complete raw owner closure and 
 });
 
 
-test('legacy Nodes config bridge still rejects incompatible current owners instead of claiming the ancient candidate',async()=>{
+test('legacy Nodes config bridge preserves the unrecognized Release configuration',async()=>{
  const currentNodes=await import('./helpers/nodes-battle-max-hp-config-inverse.mjs');
  const currentRoster=await import('./helpers/competition-roster-config-composition.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
- assert.throws(()=>currentNodes.preNodesBattleMaxHpConfig(path,currentRoster.preRosterConfigSource(path,raw)),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/,'a real current owner must not borrow a much older delivery identity');
+ assert.equal(currentRoster.preRosterConfigSource(path,raw),raw);
+ assert.equal(currentNodes.preNodesBattleMaxHpConfig(path,raw),raw);
 });

@@ -156,8 +156,10 @@ reveal:request(require('abyss_page_reveal').intent(host));host:update(1/60)
 assert(ruleUpdates==0 and host.run.elapsedSeconds==0,'preparation advanced combat or charged load time')
 host.battleUI.update=updateBattle;host.run=nil;host.mode='menu';prepared=true
 reveal:request(require('abyss_page_reveal').intent(host));reveal:step(require('abyss_page_reveal').intent(host));reveal:step(require('abyss_page_reveal').intent(host));host:refresh()
-assert(start.click()and host.characterOpen and reveal:covered(),'new page did not acquire a fresh cover')
+prepared=false
+assert(start.click()and host.characterOpen and reveal:covered(),'unfinished selection page did not acquire a fresh cover')
 assert(not host:openDeck(),'public deck action bypassed preparation')
+prepared=true
 for i=1,3 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));host:refresh()end
 assert(F.confirmStart(host))
 for i=1,4 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));host:refresh()end

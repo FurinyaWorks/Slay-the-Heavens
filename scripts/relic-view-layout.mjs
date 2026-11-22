@@ -1,4 +1,5 @@
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
+import { compactPopupSurface } from './compact-popup-surface.mjs';
 
 // TASK-4.7 owned-relic art slots. Prototype topBar(): owned relics are 32px
 // gold-rimmed discs in a 36px row; shop relics pair the same disc with name and
@@ -14,14 +15,14 @@ export function relicDisc(theme, name, size, ring, iconSize, position = [0, 0]) 
 }
 
 export function relicTooltip(theme) {
-  const {plate,text}=nativeControls(theme),{color:c,font:f}=theme;
+  const {text}=nativeControls(theme),{color:c,font:f}=theme;
   const line=(name,box,font,colour,valign)=>{
     const node=text(name,box,'',font,colour);
     Object.assign(node.text,{align:'left',valign});
     return {...node,raycastTarget:false};
   };
   return {name:'tooltip',kind:'container',size:[360,156],visible:false,raycastTarget:false,children:[
-    {...plate('face',[0,0,360,156],c.panelSunken),raycastTarget:false},
+    ...compactPopupSurface(theme,[360,156],{face:'face',readOnly:true}),
     line('name',[0,48,324,36],f.label,c.goldBright,'middle'),
     line('effect',[0,-19,324,94],f.small,c.text,'top'),
   ]};

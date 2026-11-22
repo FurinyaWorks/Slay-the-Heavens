@@ -3,7 +3,7 @@ import {releaseRewardDisplayPriorRead} from './release-ui-closeout-source.mjs';
 import {beforeReleaseShopEntry,releaseUiRestoreArchive,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
-import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
+import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput,beforeSelectionReplaySuccessor} from './refined-release-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence,beforeV2UiPreTinyHouseSource} from './v2-p1-ci-source.mjs';
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
@@ -71,16 +71,21 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
 // Exact #808 predecessor for historical Release builds. Actual builds keep the compressed payload.
 const capacity=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-source.json.gz',import.meta.url)),
  '29e21e465a4102b3b3db501cf4c9d0d44d2584bb0aa6ce56e9adaa624c1e77d1','4d475a485eae7c9bdd84cba1f69db3b5a4d3ddef');
+const capacitySuccessor=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-successor-source.json.gz',import.meta.url)),
+ '82a4d72f5d4accce0cf01ac66871640454b62a788fae894384debb2059bb3373','013bdffb7d4767075d7ebcf0be9eacd275bfbe89');
+const menuProofSuccessor=releaseUiRestoreArchive(readFileSync(new URL('./release-menu-proof-successor-source.json.gz',import.meta.url)),
+ 'd3f739fafbf65fab9015fef7bbf37b08aebd9669fa38df56b38d2bc00a4deb07','ee9f461337e8ae4c84735f0b5461f2be643ef5cd');
+const beforeCapacitySource=(path,source)=>capacity.project(path,capacitySuccessor.project(path,source));
 function assertCapacitySources(read){
  const inputs=Object.keys(capacity.files).map(path=>[path,read(path,'utf8')]);
- const isCurrent=([path,source])=>capacity.project(path,source)!==source;
+ const isCurrent=([path,source])=>beforeCapacitySource(path,source)!==source;
  if(!inputs.some(isCurrent))return false;
  for(const input of inputs)assert(isCurrent(input),'fresh Release capacity source: '+input[0]);
  return true;
 }
 function beforeCapacityRead(read,requireCurrent=false){
  return (path,encoding)=>{
-  const source=read(path,encoding),prior=capacity.project(path,source);
+  const source=read(path,encoding),prior=beforeCapacitySource(path,source);
   if(requireCurrent&&Object.hasOwn(capacity.files,path))assert.notEqual(prior,source,'fresh Release capacity source: '+path);
   return prior;
  };
@@ -93,6 +98,11 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
+ if(copier&&hash(lf)==='a3e67622418134d3b6fc49a2218a33d54191a8e53663e3785723893c74e02a0c'){
+  lf=lf.replace(/^const compactPopupReplayFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(compactPopupReplayFiles)','Object.entries(atomicCardEffectsFiles)');
+  assert.equal(hash(lf),'7461c029c6d0f46924a945217354f8b858ec4b817e7ddb6fbcfad5d69744056b','exact pre-popup helper copy source');
+ }
  if(copier&&hash(lf)==='7461c029c6d0f46924a945217354f8b858ec4b817e7ddb6fbcfad5d69744056b'){
   lf=lf.replace(/const atomicCardEffectsFiles=Object\.freeze\(\{\n[\s\S]*?\n\}\);\n/,'')
    .replace('Object.entries(atomicCardEffectsFiles)','Object.entries(travelerStatusFiles)');
@@ -142,6 +152,10 @@ function beforeTravelerStatusCiSource(path,source){
  if(copier&&hash(lf)==='3910354d5306dd7ff7a86d282e5f5716b7ec8e3982d98e5a29d26d32bddd48d4'){
   lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'dd02f8976ed65dae8d055f881020f71d6169a4e396c9cd0bc72d6c84c9254e9a',", " 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',");
   assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Forethought helper copy predecessor');
+ }
+ if(regression&&hash(lf)==='5fd049b43048293745bc2b49582c68436c20185e95b59f291cb911ed9cd59bcf'){
+  lf=lf.replace(/^test\('compound intent owners[^\n]*\n[\s\S]*?^\}\);\n/m,'');
+  assert.equal(hash(lf),'cff90e25684015aa6df74f6d3533ecb0448eb6597b18eb8eebf9c0a618a10ecb','exact compound intent test predecessor');
  }
  const sha=hash(lf);
  let prior,expected;
@@ -265,6 +279,39 @@ function beforeShopPurchaseRegression(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=menuProofSuccessor.project(path,source);
+ source=beforeSelectionReplaySuccessor(path,source);
+ if(path==='docs/legal/assets.json'&&typeof source==='string'&&hash(normalize(source))==='1c3ea4f310aaf5dccdf177946728f65eaeb1ed882f70b5543bcae178774f0983'){
+  const inventory=JSON.parse(source);
+  delete inventory.categories['release-enemy-tooltip-evidence'];
+  delete inventory.files['docs/evidence/release-enemy-tooltips/comparison.png'];
+  const prior=JSON.stringify(inventory,null,2)+'\n';
+  assert.equal(hash(prior),'eb0a2c2df791ba1c7e50db28599dc79461a4cfa70a3883605c8b9038b0c9944f','exact inventory before the enemy tooltip evidence');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
+ if(path==='tests/integrated-ci-source.cases.mjs'&&typeof source==='string'&&hash(normalize(source))==='dc24e78d4d1fa5b43f8cfcac855bd852eca02afc96d785cf2b71a969e2542a49'){
+  const prior=normalize(source).replace('   const alreadyAtTarget=hash(source)===row.current.sha256&&row.views[target].sha256===row.current.sha256;\n','')
+   .replace('alreadyAtTarget?crlf:expected','row.views[target].sha256===row.current.sha256?crlf:expected');
+  assert.equal(hash(prior),'3e6a0dd86a826099554169a298731f7382f9a682043412f610916671d8c7ca15','exact integration case predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
+ if(path==='tests/helpers/integrated-ci-source.mjs'&&typeof source==='string'&&hash(normalize(source))==='d2613162662475f42c9e4d77326919db7f3ace6f29f1972131b08948a1e2607c'){
+  const prior=normalize(source).replace(/^\/\/ Release hotfixes retain[^\n]*\n[\s\S]*?(?=^export function integratedSource)/m,'')
+   .replace('export function integratedSource(path,source,target){\n','export function integratedSource(path,source,target){\n source=beforePreflightSource(path,source);\n')
+   .replace("if(path.startsWith('src/')||path==='config/architecture.json')return beforePreflightSource(path,source);","if(path.startsWith('src/')||path==='config/architecture.json')return source;")
+   .replace(' const predecessor=row?.views[target]?beforeReleaseSuccessor(path,source):source;\n source=releaseBootstrapCiSource(path,predecessor===source?beforePreflightSource(path,source):predecessor,row?.current);',' source=releaseBootstrapCiSource(path,source,row?.current);')
+   .replace(/ const readCurrent=read;\n([\s\S]*?) for\(const \[path,row\]of Object.entries\(integratedCiProof.files\)\)\{[\s\S]*?\n \}/,
+    "$1 for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);");
+  assert.equal(hash(prior),'179207678a818066e28f9867d197e3b39c95568fdac16d590fed6bbeeb97efac','exact integration helper predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
+ if(path==='docs/legal/assets.json'&&typeof source==='string'&&hash(normalize(source))==='eb0a2c2df791ba1c7e50db28599dc79461a4cfa70a3883605c8b9038b0c9944f'){
+  const inventory=JSON.parse(source);
+  delete inventory.files['docs/evidence/release-power-tips/ui-comparison.png'];
+  const prior=JSON.stringify(inventory,null,2)+'\n';
+  assert.equal(hash(prior),'9dc3e8a2d070fe5e633be6c869b296f672fc1d82782d30a8b1c4037f359c41b1','exact evidence inventory before the Release status comparison');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  source=beforeShopPurchaseRegression(path,source);
  source=beforeReleaseReplayCiSource(path,beforeIllustrationTestSource(path,source),'early');
  source=beforeShopRoomCiSource(path,beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source)));
@@ -278,7 +325,7 @@ function beforeReleaseUiBuildSource(path,source){
   source=beforeCombatVisualSource(path,prior,readPrior);
  }
  source=beforeSts1MenuCiSource(path,source);
- source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,capacity.project(path,source)));
+ source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,beforeCapacitySource(path,source)));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
@@ -330,17 +377,26 @@ function beforeAddedTest(paths,[path,...authenticated],read){
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
  if(kind==='lua')paths=beforeAddedTest(paths,['tests/lua/traveler_power_tooltip.lua','35363665f69113883246aa33984d4ab17eba727a87476256a617dc0f42dd45f7',
   '76e7c52c6330e921faff4738f7d125100ba349f0ca041347552ba9de22a5ee87',
-  '681970da72659363cd5c15e32e2bb741d8cadb42ec7f2f4fcf6993a95345d7ab'],read);
+  '681970da72659363cd5c15e32e2bb741d8cadb42ec7f2f4fcf6993a95345d7ab',
+  'f73f84b1cf354f044a417ce0746ed5ba5bea1383438793407ee00e179af83a66'],read);
  return beforeAddedTest(paths,shopEntryTests[kind],read);
 }
 const releaseAddedJs=[
+ ['tests/compact-popup-surface.test.mjs','1a6349e7cc53725bfb922a62b8ad6bcfd79b2c37ba0dbe23afda2f300a2741a1'],
  ['tests/detail-latency.test.mjs','310f906435fbbfa45899b30a5344ca83f9de32860d09394b9824de95ee9cffee'],
  ['tests/forethought-selection.test.mjs','efe0d72d48c9c281f9af7f77fe432cdb2c6cb0edca8ee508f0897ea447a7ffab'],
+ ['tests/native-script-storage.test.mjs','a63c7b5266ac5c0acd1201717025df85d008be6ec6ca63fce208a677fd58efa9'],
  ['tests/potion-sts-structure.test.mjs','56b91c313e26d1129a39b7678a39df7df38a71a2252deb060351c5cc115e6118'],
- ['tests/sts-selection-fade.test.mjs','3257ed5beda1cca328ac38a080f9112e9394f6d4152d0a0d27e9a6765182df1b'],
+ ['tests/sts-selection-fade.test.mjs','3257ed5beda1cca328ac38a080f9112e9394f6d4152d0a0d27e9a6765182df1b',
+  '75de678debbfb7e1cdacb94607e448f2a9aecd98b85d2a05d3ff59523d916266'],
 ];
 function beforeReleaseJsInventory(paths,read){
  return releaseAddedJs.reduce((prior,test)=>beforeAddedTest(prior,test,read),paths);
+}
+export function beforeReleaseLuaInventory(paths,read=readFileSync){
+ paths=beforeAddedTest(paths,['tests/lua/detail_latency.lua','571549b4b6819079fe7b353abfbd56ef1f5733f8f316246d4e44e1527e98020e'],read);
+ paths=beforeAddedTest(paths,['tests/lua/potion_management_visual.lua','4732441f834fa47346ac567392bb4c68758b580b091ef2ce54ab05591d89c5f4'],read);
+ return beforeShopEntryInventory(paths,'lua',read);
 }
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  paths=beforeReleaseJsInventory(paths,read);
@@ -441,6 +497,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ if(Object.hasOwn(Object.prototype,path))return source;
  source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.

@@ -17,7 +17,8 @@ test('integration validates complete raw sources and leaves every foreign byte a
   assert.equal(integratedSource(path,source,target),expected);
   if(!production&&row.views[target]){
    const crlf=source.replaceAll('\n','\r\n');
-   assert.equal(integratedSource(path,crlf,target),row.views[target].sha256===row.current.sha256?crlf:expected);
+   const alreadyAtTarget=hash(source)===row.current.sha256&&row.views[target].sha256===row.current.sha256;
+   assert.equal(integratedSource(path,crlf,target),alreadyAtTarget?crlf:expected);
   }
   for(const input of [source+'\n',source.slice(1),source.slice(0,-1),null,{},17])assert.equal(integratedSource(path,input,target),input);
   for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);

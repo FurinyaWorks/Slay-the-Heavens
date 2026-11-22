@@ -12,11 +12,13 @@ import {previewImageMaskFields} from '../scripts/native-candidate-preview.mjs';
 import {selectionCiProof,preSelectionCiSource} from './helpers/selection-ci-source.mjs';
 import {sourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {integratedSource} from './helpers/integrated-ci-source.mjs';
+import {readReviewedSelectionSource} from './helpers/replay-reviewed-selection.mjs';
 
 test('reviewed selection slice authenticates every complete source and rejects unknown drift',()=>{
  for(const [path,row]of Object.entries(selectionCiProof.files)){
-  const current=readFileSync(path,'utf8');
-  const raw=(path.startsWith('src/')?sourceEpoch.preCombinedSource(path,current,{target:'selectionReviewed'}):integratedSource(path,current,'selection')).replaceAll('\r\n','\n');
+  const raw=(path.startsWith('src/')
+   ?sourceEpoch.preCombinedSource(path,readReviewedSelectionSource(path),{target:'selectionReviewed',readSource:readReviewedSelectionSource})
+   :integratedSource(path,readFileSync(path,'utf8'),'selection')).replaceAll('\r\n','\n');
   assert.equal(raw,row.after.source,path+' complete current source');
   assert.equal(preSelectionCiSource(path,raw),row.before.source);
   assert.equal(preSelectionCiSource(path,raw.replaceAll('\n','\r\n')),row.before.source);

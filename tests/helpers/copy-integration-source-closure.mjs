@@ -119,11 +119,16 @@ const atomicCardEffectsFiles=Object.freeze({
  'tests/helpers/release-ui-restore-source.mjs':'164e42ed69f1f80e9bce027292f8537eac24fd26cbec32584347b1340110b82c',
  'tests/helpers/atomic-card-effects-source.mjs':'bd3d19b9a1494f3f8ae44cff7a5f95f7ce4e05b3ebda719b7dc213169cb83576',
 });
+const compactPopupReplayFiles=Object.freeze({
+ ...atomicCardEffectsFiles,
+ 'tests/helpers/refined-release-source.mjs':'3b55f033d708eed73deb6f0507f9b178f536dff3c2063aa619d9a92fb018a3e0',
+ 'tests/helpers/refined-release-successor-source.json.gz':'42e07bbfd3fe5c4ccfa04581fb7bafdb5d9ed99d1d58e586b16bd93511d14ce5',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(atomicCardEffectsFiles)){
+ for(const [path,sha]of Object.entries(compactPopupReplayFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
