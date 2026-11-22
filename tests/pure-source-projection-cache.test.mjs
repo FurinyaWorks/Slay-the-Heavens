@@ -101,7 +101,7 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
   const raw=p=>{
    seen.push(p);
    if(p===bad){
-    if(mode==='throw')throw Error('warm UI reader sentinel');
+    if(mode==='throw')throw Error('warm UI reader sentinel: '+p);
     if(mode==='missing')return undefined;if(mode==='null')return null;
     const value=p===retiredControllerPath?retired:current[p];
     if(mode==='present')return value;
@@ -120,7 +120,9 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
    for(mode of modes){
     seen=[];
     for(let repeat=0;repeat<2;repeat++)assert.throws(check,error=>{
-     assert.match(error.message,/linked owner/);assert(error.message.includes(bad===pointerInputPath&&mode!=='throw'?retiredControllerPath:bad));
+     const owner=bad===pointerInputPath&&mode!=='throw'?retiredControllerPath:bad;
+     assert.match(error.message,/linked owner/);
+     assert(error.message.includes(owner),bad+' '+mode+': '+error.message);
      if(mode==='throw')assert.match(error.message,/warm UI reader sentinel/);return true;
     });
     assert(seen.includes(bad));
