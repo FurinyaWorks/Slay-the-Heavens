@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
@@ -25,11 +26,13 @@ function current(source,binding){
 }
 
 export function beforeMapDeckSource(path,source,read){
+  source=beforeLoadingRecoverySource(path,source);
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
     let live;
     try{live=read(owner,'utf8');}catch{assert.fail('map deck linked owner missing: '+owner);}
-    assert(current(typeof live==='string'?live:live?.toString('utf8'),after),'map deck linked owner identity: '+owner);
+    const text=typeof live==='string'?live:live?.toString('utf8');
+    assert(current(beforeLoadingRecoverySource(owner,text),after),'map deck linked owner identity: '+owner);
   }
   const prior=files[path].before.source;
   return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;

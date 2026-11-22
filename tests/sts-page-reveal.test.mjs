@@ -38,6 +38,25 @@ local ticket=g.epoch;owner.run.combat={hand={1},turn=1};owner.mode='battle';owne
 local fight=Gate.intent(owner);g:request(fight);g:step(fight);g:step(fight);ticket=g.epoch
 owner.run.combat.hand={2,3};owner.run.combat.turn=2
 assert(not g:request(Gate.intent(owner))and g.epoch==ticket,'ordinary combat changes unnecessarily re-covered the page')
+
+for _,operation in ipairs({'lookup','visibility'})do
+ local nested,events,trigger=nil,{},true
+ local replacement={page='mapPanel',run={}}
+ local function reenter()
+  if not trigger then return end
+  trigger=false
+  assert(nested:request(replacement))
+ end
+ local recovery={SetVisible=function()if operation=='visibility'then reenter()end end}
+ local native={SetVisible=function()end,SetAsLastSibling=function()end,GetChild=function(_,name)
+  if name~='cancel'then return end
+  if operation=='lookup'then reenter()end
+  return recovery
+ end}
+ nested=Gate.new(native,function()return false end,function(epoch)events[#events+1]=epoch end)
+ assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)
+ assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')
+end
 print('PAGE_REVEAL_PASS')`);
 });
 test('ready combat choice cannot publish through a synchronous paint or on its first ready turn',()=>{
@@ -75,21 +94,35 @@ G.new=function(root,data,presentation,event,p)
 end
 local F=dofile('tests/lua/support/game_ui_fixture.lua');local host,root=F.fixture(nil,function()return true end)
 local reveal=host.pageReveal;local cover=root:GetChild('pageReveal');local start=root:GetChild('menuPanel'):GetChild('start'):GetChild('hit')
+local recovery=cover:GetChild('cancel');local cancel=recovery:GetChild('hit')
 assert(reveal and reveal:covered()and cover.visible)
 assert(require('abyss_controller').pointerBlocked(host.controller),'keyboard/mouse manager must honor preparation')
 assert(not start.click()and not host.characterOpen,'old page click reached rules during preparation')
+assert(not recovery.visible,'normal loading exposed the recovery menu button')
+assert(not cancel.click()and not host.exitOpen,'normal loading accepted a stale recovery click')
+controllerMode=true;host:syncController()
+assert(not cancel.canControllerFocus and not cancel.navigationListeners.navConfirm(),'normal loading focused or activated the recovery menu')
+assert(not host.controller.cancel()and not host.exitOpen,'controller Back opened a menu during normal loading')
+controllerMode=false;host.controller:tick()
+local intent=require('abyss_page_reveal').intent(host)
+extraReady=function()return false,'asset rejected'end
+assert(not reveal:step(intent)and reveal.state=='failed');host:refresh()
+assert(recovery.visible,'failed preparation lost its recovery entry')
 assert(cover:GetChild('cancel'):GetChild('hit').click()and host.exitOpen,'recovery menu inaccessible')
 assert(root:GetChild('runMenu').visible and host.controller.scope=='exit')
 assert(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit').click()and not host.exitOpen,'recovery menu cannot return')
 controllerMode=true;host:syncController()
-local cancel=cover:GetChild('cancel'):GetChild('hit')
 assert(focus==cancel and not start.navigationListeners.navConfirm(),'blocked controller action reached old page')
 assert(cancel.navigationListeners.navConfirm()and host.exitOpen,'controller cannot reach recovery menu')
 controllerMode=false;host.controller:tick()
 assert(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit').click()and not host.exitOpen)
-local intent=require('abyss_page_reveal').intent(host)
+extraReady=nil
 host:update(1/60);assert(not reveal:step(intent)and calls>0 and cover.visible)
-prepared=true;assert(not reveal:step(intent)and cover.visible);assert(reveal:step(intent));host:refresh()
+host:refresh();assert(not recovery.visible and not cancel.click()and not host.exitOpen,'recovered pending page retained its error menu')
+assert(cover:GetChild('message').text=='正在准备画面…','pending page retained the failure message')
+prepared=true;assert(not reveal:step(intent)and cover.visible);host:refresh()
+assert(not recovery.visible and not cancel.click(),'ready confirmation turn exposed recovery')
+assert(reveal:step(intent));host:refresh()
 assert(not cover.visible and not require('abyss_controller').pointerBlocked(host.controller))
 local epoch=reveal.epoch
 for i=1,20 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));host:refresh();assert(not reveal:covered()and reveal.epoch==epoch,'idle frame restarted cover')end
