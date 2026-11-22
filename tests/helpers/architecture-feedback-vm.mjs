@@ -18,25 +18,16 @@ lua.lua_pushcfunction(L,L=>{
  const values=[];for(let i=1;i<=lua.lua_gettop(L);i++){values.push(to_jsstring(lauxlib.luaL_tolstring(L,i)));lua.lua_pop(L,1);}
  prints.push(normalize(values.join('\t')));return 0;
 });lua.lua_setglobal(L,to_luastring('print'));
-const feedbackPath='src/lua/abyss_feedback.lua';
-const sources=input.live?{[feedbackPath]:{source:input.source,sha256:createHash('sha256').update(input.source).digest('hex')}}
- :(await import('./closeout-source-epoch.mjs')).sourceEpoch.proof.current;
-// Keep all authenticated sources available, but compile only a demanded module.
-// Register native loaders rather than embedding a multi-megabyte Lua bootstrap.
+// Replace only the module being compared and keep both copies on the same host.
 lua.lua_getglobal(L,to_luastring('package'));
 lua.lua_getfield(L,-1,to_luastring('preload'));
-for(const [file,binding]of Object.entries(sources)){
- if(!/^src\/lua\/.+\.lua$/.test(file))continue;
- if(createHash('sha256').update(binding.source).digest('hex')!==binding.sha256)throw Error('old context identity: '+file);
- const source=file===feedbackPath?input.source:binding.source;
- lua.lua_pushcfunction(L,L=>{
-  const count=lua.lua_gettop(L);
-  const status=lauxlib.luaL_loadbuffer(L,to_luastring(source),null,to_luastring('@'+file));
-  if(status!==lua.LUA_OK)return lua.lua_error(L);
-  lua.lua_insert(L,1);lua.lua_call(L,count,1);return 1;
- });
- lua.lua_setfield(L,-2,to_luastring(file.slice(8,-4)));
-}
+lua.lua_pushcfunction(L,L=>{
+ const count=lua.lua_gettop(L);
+ const status=lauxlib.luaL_loadbuffer(L,to_luastring(input.source),null,to_luastring('@src/lua/abyss_feedback.lua'));
+ if(status!==lua.LUA_OK)return lua.lua_error(L);
+ lua.lua_insert(L,1);lua.lua_call(L,count,1);return 1;
+});
+lua.lua_setfield(L,-2,to_luastring('abyss_feedback'));
 lua.lua_pop(L,2);
 const instrument=`
 local Feedback=require('abyss_feedback')
