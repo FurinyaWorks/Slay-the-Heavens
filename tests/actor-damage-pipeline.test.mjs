@@ -20,6 +20,7 @@ test('Actor and Focus replay exact predecessor bytes and reject changed linked o
   const read=path=>readFileSync(path,'utf8');
   const paths=readdirSync('src/lua').filter(path=>path.endsWith('.lua')).map(path=>'src/lua/'+path);
   assertActorFocusInventory(paths,read);
+  assert.throws(()=>assertActorFocusInventory([...paths,'src/lua/foreign.lua'],read),/complete current Actor\/Focus Lua module inventory/);
   for(const added of Object.keys(archive.added)){
     assert.throws(()=>assertActorFocusInventory(paths.filter(path=>path!==added),read),/complete current Actor\/Focus Lua module inventory/);
     assert.throws(()=>assertActorFocusInventory([...paths,added],read),/complete current Actor\/Focus Lua module inventory/);

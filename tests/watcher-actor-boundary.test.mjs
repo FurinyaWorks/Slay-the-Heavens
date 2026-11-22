@@ -11,6 +11,7 @@ import {componentUiSourceEpoch} from './helpers/component-ui-source-epoch.mjs';
 import {sourceEpoch as currentEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {assertActorFocusInventory} from './helpers/develop-release-backflow-source.mjs';
 const file='src/lua/abyss_watcher_attack_cards.lua';
 const queued='src/lua/abyss_combat_queued_play.lua';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
@@ -59,18 +60,27 @@ test('pre-style Watcher planning retains the complete 346-module SCC contract wi
 
 test('current Watcher SCC analysis includes exact release additions and every original production module',()=>{
  const raw=discoverSources(),sources=Object.fromEntries(Object.entries(raw).map(([p,s])=>[p.split('/').at(-1).slice(0,-4),s]));
+ assertActorFocusInventory(Object.keys(raw),read);
  const prior=Object.keys(ciRepairSourceEpoch.proof.current).filter(p=>p.startsWith('src/lua/')).sort();
+ const releaseUi=['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua');
+ const powerMembership='src/lua/abyss_power_membership.lua';
+ const actorLeaves=['src/lua/abyss_actor_artifact.lua','src/lua/abyss_stance_damage.lua'];
  const added=Object.keys(raw).filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();
- assert.deepEqual(added,['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua'));
+ assert.deepEqual(added,[...releaseUi,powerMembership,...actorLeaves].sort());
  assert.deepEqual(Object.keys(raw).filter(p=>!added.includes(p)).sort(),prior,'complete original 346-module corpus retained');
- assert.deepEqual(Object.keys(raw).sort(),Object.keys(currentEpoch.proof.current).filter(p=>p.startsWith('src/lua/')).sort());
- assert.equal(Object.keys(raw).length,351);
- for(const [path,source]of Object.entries(raw))
+ const historical=currentEpoch.proof.current;
+ assert.deepEqual(Object.keys(raw).filter(p=>!actorLeaves.includes(p)).sort(),Object.keys(historical).filter(p=>p.startsWith('src/lua/')).sort());
+ assert.equal(Object.keys(raw).length,354);
+ for(const [path,source]of Object.entries(raw).filter(([path])=>!actorLeaves.includes(path)))
   assert.equal(beforeCurrentProductionSource(path,source,read).replaceAll('\r\n','\n'),currentEpoch.proof.current[path].source,path);
  const policy=JSON.parse(read('config/architecture.json'));
- for(const path of added){
-  assert.equal(policy.layers[path.split('/').at(-1).slice(0,-4)],'ui');
-  assert.equal(currentEpoch.proof.targets.stsStylePrior.files[path],null,'new source has no invented predecessor');
+ for(const path of [...releaseUi,powerMembership]){
+  assert.equal(policy.layers[path.split('/').at(-1).slice(0,-4)],path===powerMembership?'core':'ui');
+  assert.equal(currentEpoch.proof.targets.stsStylePrior.files[path],null,'source added after the frozen style predecessor');
+ }
+ for(const path of actorLeaves){
+  assert.equal(policy.layers[path.split('/').at(-1).slice(0,-4)],'core');
+  assert(!Object.hasOwn(historical,path),'new responsibility has no invented historical source');
  }
  currentEpoch.preCombinedSource('config/architecture.json',read('config/architecture.json'),{target:'stsStylePrior',readSource:read});
  const report=analyzeSources(sources,policy);assert.deepEqual(report.errors,[]);
