@@ -16,8 +16,13 @@ test('escape is a separate three-second presentation, never death or target',fun
    if not u.busy then break end
    if u.feedback.current and u.feedback.current.kind=='enemy_escape' then
     local id=h.run.combat.enemies[1].id;assert(not u.feedback.deaths[id]);assert(monsterControl(p,'enemy1').visible)
-    h:update(2.9);assert(u.feedback.current.kind=='enemy_escape');assert(monsterControl(p,'enemy1').visible)
-    h:update(.11);assert(u.feedback.current.kind~='enemy_escape');assert(not monsterControl(p,'enemy1'));escaped=true;break
+    local list=p:GetChild('rewardList')
+    h:update(2.9)
+    assert(u.feedback.current.kind=='enemy_escape' and monsterControl(p,'enemy1').visible and not list.visible)
+    h:update(.11)
+    assert(not u.busy and not u.feedback.current and not monsterControl(p,'enemy1'))
+    assert(list.visible and list:GetChild('title').text=='敌人已逃跑')
+    escaped=true;break
    end
    h:update(.05)
   end
