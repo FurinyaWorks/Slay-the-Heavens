@@ -81,7 +81,8 @@ for _,kind in ipairs({'camp','shop','event','combat','elite','boss','treasure'})
     if host.mode=='battle' then
         local battle=run.combat
         local turn=battle.turn
-        local endTurn=root:GetChild('battlePanel'):GetChild('endTurn'):GetChild('hit')
+        local button=root:GetChild('battlePanel'):GetChild('endTurn')
+        local endTurn=assert(button.click and button or button:GetChild('hit'))
         assert(not tap(endTurn,4) and battle.turn==turn,'covered battle accepted a direct end-turn listener')
     end
     trace.settle()
@@ -209,4 +210,22 @@ for _, interruption in ipairs({'menu','destroy','rejected'}) do
     Nodes.enter=enter
     if interruption~='destroy' then settle();OnDestroy()end
 end
+
+local host,root,_,_,_,id,hit=onMap('camp')
+local trace,cover=observeCore(host,root)
+local oldMap=Map.snapshot(host.map)
+local oldRun=F.Combat.copy(host.run,{[host.run.data]=host.run.data})
+local raise=cover.SetAsLastSibling
+function cover:SetAsLastSibling()
+    self.SetAsLastSibling=raise
+    error('injected_current_cover_raise_failure')
+end
+assert(not tap(hit,40),'a rejected native cover write accepted a room request')
+assert(trace.calls==0 and host.nodeEntry==nil and not host.pageReveal:covered() and not cover.visible)
+assert(same(host.map,oldMap) and same(host.run,oldRun),'failed feedback submission ran the room transaction')
+assert(tap(hit,41),'failed feedback submission blocked the next legal tap')
+trace.settle()
+assert(trace.calls==1 and host.map.currentNodeId==id)
+Nodes.enter=enter
+OnDestroy()
 end

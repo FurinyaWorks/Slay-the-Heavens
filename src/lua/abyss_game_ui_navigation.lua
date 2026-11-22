@@ -52,9 +52,14 @@ function M.requestNodeEntry(self,platform,changed)
         end
         self.nodeEntry=request
         trace('input_received',request,request.nodeId)
-        if not gate:depart(commit,cancel,true,request.id) then
+        local called,accepted=pcall(gate.depart,gate,commit,cancel,true,request.id)
+        if not called or not accepted then
             cancel()
-            return false,'navigation_disabled'
+            local departure=gate.departure
+            if gate.epoch==request.epoch and departure and departure.commit==commit then
+                pcall(gate.cancelDeparture,gate)
+            end
+            return false,called and 'navigation_disabled' or 'choice_callback_error'
         end
         return 'selection_pending',request.id
     end
