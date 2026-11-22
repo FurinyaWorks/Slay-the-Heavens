@@ -1,4 +1,4 @@
-import {authenticateInputRetirement,beforeInputRetirementReader,beforePotionBackflow} from './input-retirement-source.mjs';
+import {authenticateInputRetirement,beforeInputRetirementReader,beforeDeckBrowserBackflow,beforePotionBackflow} from './input-retirement-source.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi,rebasedDevelopOwns} from './rebased-release-source.mjs';
@@ -175,7 +175,8 @@ export function beforeCurrentProductionSource(path, source, read = readRaw) {
   source=authenticateInputRetirement(path,source,read);
   read=beforeInputRetirementReader(read);
   if(developBackflowOwns(path)){
-    assertDevelopBackflowCurrent(path,beforePotionBackflow(path,rawSource)!==rawSource?rawSource:source);
+    const currentBackflow=beforeDeckBrowserBackflow(path,beforePotionBackflow(path,rawSource));
+    assertDevelopBackflowCurrent(path,currentBackflow!==rawSource?rawSource:source);
     return beforeCharacterPreparationSource(path,source,read);
   }
   if(rebasedDevelopOwns(path)){

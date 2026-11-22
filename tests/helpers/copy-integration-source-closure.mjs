@@ -259,9 +259,10 @@ const deckPagesFiles=Object.freeze({
 const inputRetirementFiles=Object.freeze({
  ...deckPagesFiles,
  'tests/helpers/develop-release-backflow-source.mjs':'c98ed483a6f206491e3647109f4d2f78511faada0c124df2b8ec8399a682e6e2',
- 'tests/helpers/input-retirement-source.mjs':'dd8acde1d6c89af6c3737a829ddaffde94aa5fed0e3bfe17b93cdc6ffb6100ee',
- 'tests/fixtures/develop-potion-popup-source.json.gz':'b599bd20963ba2c666a024a316db3ca2c4ceac2ed07de013fc86b2a7f195ff2d',
- 'tests/helpers/character-preparation-source.mjs':'732e00e7523f56abd353779a5f374f1faa27ccf45aa69e6915f939b0bd985f2a',
+ 'tests/helpers/input-retirement-source.mjs':'c5e451dd18ecb0a1664fc1c5278ee2e27b832b8e688607e69209df748d7f6e5f',
+ 'tests/fixtures/develop-potion-popup-source.json.gz':'6c85ba4df16b702a4f6955b50631d1af9533c141d19fb930a51be22224eabf95',
+ 'tests/fixtures/develop-deck-browser-backflow-source.json.gz':'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284',
+ 'tests/helpers/character-preparation-source.mjs':'2372ccfb620cca7c845b2ec312d1145c75bf44a00b18b5da51b13f91ea7ea732',
  'tests/helpers/rebased-release-source.mjs':'faa43fceaf4e6e51c71e950213eefe15432428245f1a1df412f22e99c6c614cd',
  'tests/fixtures/develop-input-retirement-source.json.gz':'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912',
  'tests/fixtures/develop-combat-pile-opening-source.json.gz':'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6',
@@ -272,7 +273,7 @@ const inputRetirementFiles=Object.freeze({
 });
 const actionButtonFiles=Object.freeze({
  ...inputRetirementFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'5ab39957c0968a380a6b7f246ea91a62ccbf84468db24ec1905e38b8ed12f97a',
+ 'tests/helpers/develop-release-backflow-source.mjs':'051f6e2523939a72227e4a674f988d43bffe08f429bdfcca4a601d497381fd3b',
  'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
  'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });

@@ -73,16 +73,16 @@ test('combat detail preserves temporary cost and complete battle while previewin
  host.deckUI:close();assert(same(before,host.run))
 end)
 
-test('return retains filters sort and scroll, stale and destroyed callbacks cannot reopen details',function()
+test('return retains sort and scroll, stale and destroyed callbacks cannot reopen details',function()
  local cards={};for i=1,20 do cards[i]={uid=i,cardId=i%2==0 and 'bash' or 'defend',upgraded=false}end
  local host,panel,grid=setup(cards)
- assert(host.deckUI:setFilter('attack'));assert(host.deckUI:setSort('type'));host:update(0)
+ assert(host.deckUI:setSort('type'));host:update(0)
  grid.scrollProgress=.6
  local first=grid.items[0];local oldClick=first:GetChild('hit').click
  local oldRefresh=grid.refreshCallback
  assert(oldClick());assert(not oldClick(),'stale card cannot replace active detail')
  assert(toggle(panel));assert(host.deckUI:back());host:update(0)
- assert(host.deckUI.typeFilter=='attack' and host.deckUI.sortMode=='type')
+ assert(host.deckUI.sortMode=='type')
  assert(grid.scrollProgress==.6,'detail return lost scroll position')
  local before=Combat.copy(host.run)
  grid.destroyOnRefresh=true;grid:RefreshItems(grid.itemCount,grid.refreshCallback)

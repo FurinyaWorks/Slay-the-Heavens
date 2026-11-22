@@ -42,10 +42,24 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
  try{JSON.parse(source);return true;}catch{return false;}
 }
 
+const browserArchive=readFileSync(new URL('../fixtures/develop-deck-browser-backflow-source.json.gz',import.meta.url));
+assert.equal(hash(browserArchive),'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284','exact Develop deck browser archive');
+const browserBackflow=JSON.parse(gunzipSync(browserArchive));
+assert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
+for(const [path,row] of Object.entries(browserBackflow.files)){
+ assert(matches(row.before.source,row.before),'exact deck browser predecessor: '+path);
+ assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export function beforeDeckBrowserBackflow(path,source){
+ const row=Object.hasOwn(browserBackflow.files,path)&&browserBackflow.files[path];
+ if(!row||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+
 const potionArchive=readFileSync(new URL('../fixtures/develop-potion-popup-source.json.gz',import.meta.url));
-assert.equal(hash(potionArchive),'b599bd20963ba2c666a024a316db3ca2c4ceac2ed07de013fc86b2a7f195ff2d','exact Develop potion popup archive');
+assert.equal(hash(potionArchive),'6c85ba4df16b702a4f6955b50631d1af9533c141d19fb930a51be22224eabf95','exact Develop potion popup archive');
 const potionBackflow=JSON.parse(gunzipSync(potionArchive));
-assert.equal(potionBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
+assert.equal(potionBackflow.base,'103aa4072bd3801deb6bf090455bd974181a9647');
 for(const [path,row] of Object.entries(potionBackflow.files)){
  assert(Object.hasOwn(files,path)&&matches(row.before.source,row.before),'exact potion popup predecessor: '+path);
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
@@ -58,7 +72,8 @@ export function beforePotionBackflow(path,source){
 
 export function beforeInputRetirement(path,source,options){
  const potionPrior=beforePotionBackflow(path,source);
- if(potionPrior!==source)source=beforeActionButtons(path,potionPrior);
+ const browserPrior=beforeDeckBrowserBackflow(path,potionPrior);
+ if(browserPrior!==source)source=beforeActionButtons(path,browserPrior);
  if(!Object.hasOwn(files,path))return source;
  const row=files[path];
  if(!matches(source,row.after)&&!configLayoutMatches(source,row.after,options))return source;
@@ -90,8 +105,9 @@ export function authenticateInputRetirement(path,source,read,options){
  if(prior===source)return source;
  let live;
  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+ const browserOwner=beforeDeckBrowserBackflow(path,source)!==source;
  const potionOwner=beforePotionBackflow(path,source)!==source;
- const identity=potionOwner?potionBackflow.files[path].after:files[path].after;
+ const identity=potionOwner?potionBackflow.files[path].after:browserOwner?browserBackflow.files[path].after:files[path].after;
  assert(matches(live,identity),'combined linked owner identity: '+path+' during input retirement validation');
  return prior;
 }
@@ -137,8 +153,8 @@ export function beforeInputRetirementStsSuite(paths,read,trustSuccessors){
    return typeof raw==='string'?source:Buffer.from(source);
   }
   if(![files,suite.deck.files,suite.earlier].some(layer=>Object.hasOwn(layer,path)))return raw;
-  const bytes=beforePotionBackflow(path,typeof raw==='string'?raw:raw.toString('utf8'));
-  const source=suitePredecessor(path,suitePredecessor(path,suitePredecessor(path,bytes,files),suite.deck.files),suite.earlier);
+  const bytes=typeof raw==='string'?raw:raw.toString('utf8');
+  const source=suitePredecessor(path,suitePredecessor(path,suitePredecessor(path,beforeActionButtons(path,beforeDeckBrowserBackflow(path,beforePotionBackflow(path,bytes))),files),suite.deck.files),suite.earlier);
   return typeof raw==='string'?source:Buffer.from(source);
  }};
 }

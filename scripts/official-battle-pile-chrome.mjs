@@ -1,16 +1,31 @@
 import {roundedButtonState} from './native-rounded-button.mjs';
 
-// Frozen V25 battle.js deck-shell/deck-back + sts-battle-restore.css:105-108.
-// Separate decoration only: the native scroller clones the live hand template.
-export function battlePileChrome(theme){
- const image=(name,position,size,colour)=>({name,kind:'image',position,size,image:100001,colour});
- return {name:'pileChrome',kind:'container',size:[...theme.canvas.base],visible:false,children:[
-  image('shade',[0,-22],[1280,676],'#000000'),
-  {...image('vignette',[0,-123],[1160,700],'#101614'),image:106057,imageType:'basic',opacity:.9},
-  {name:'empty',kind:'text',position:[0,30],size:[900,56],text:{content:'这里没有卡牌。',fontSize:26,minFontSize:26,align:'centre',valign:'middle',colour:'#B4AFA2'}},
-  {name:'heading',kind:'text',position:[-143,282],size:[570,56],text:{content:'',fontSize:26,minFontSize:26,align:'left',valign:'middle',colour:'#E9DDB6'}},
+// Keep the live run HUD above the darkened scene without cloning its controls.
+export function battlePileChrome(theme) {
+ const [width,height]=theme.canvas.base;
+ const {height:hudHeight}=theme.officialAssets.battleHud;
+ const {browser}=theme.layout.deckView;
+ const {text,goldBright,textDim}=theme.color;
+ const image=(name,position,size,id,colour)=>({name,kind:'image',position,size,image:id,colour,raycastTarget:false});
+ const label=(name,frame,content,fontSize,colour)=>({name,kind:'text',position:frame.slice(0,2),
+  size:frame.slice(2),text:{content,fontSize,minFontSize:fontSize,align:'centre',valign:'middle',colour}});
+ const badge=(kind,icon,caption)=>{
+  const frame=browser[kind+'Badge'];
+  return {name:kind+'Badge',kind:'container',position:frame.slice(0,2),size:frame.slice(2),visible:false,children:[
+   {...image('plate',[0,0],frame.slice(2),100001,theme.color.panelRaised),opacity:.84},
+   image('icon',[-56,0],[32,32],icon,goldBright),
+   label('label',[15,0,128,38],caption,theme.font.label,text),
+  ]};
+ };
+ return {name:'pileChrome',kind:'container',size:[width,height],visible:false,children:[
+  {...image('shade',[0,-hudHeight/2],[width,height-hudHeight],100001,'#000000'),opacity:.85},
+  label('empty',[0,30,900,56],'这里没有卡牌。',26,textDim),
+  label('heading',[0,282,570,48],'',26,text),
+  badge('draw',theme.icon.drawPile,'抽牌堆'),
+  badge('discard',theme.icon.discardPile,'弃牌堆'),
  ]};
 }
+
 export function battlePileReturn(button, ink){
  button.position=[-550,-237];
  const palettes={

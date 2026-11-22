@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {authenticateActionButtons,beforeActionButtons,actionButtonsOwns} from './action-buttons-source.mjs';
-import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,beforePotionBackflow,assertPointerInputSource,pointerInputPath,retiredControllerPath} from './input-retirement-source.mjs';
+import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,beforeDeckBrowserBackflow,beforePotionBackflow,assertPointerInputSource,pointerInputPath,retiredControllerPath} from './input-retirement-source.mjs';
 import {authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
@@ -187,7 +187,7 @@ function matches(source,expected){
  return hash(lf)===expected.sha256&&blob(lf)===expected.gitBlob;
 }
 export function assertDevelopBackflowCurrent(path,source){
- source=beforePotionBackflow(path,source);
+ source=beforeDeckBrowserBackflow(path,beforePotionBackflow(path,source));
  if(actionButtonsOwns(path)){
   assert.notEqual(beforeActionButtons(path,source),source,'fresh current production owner: '+path);
   return;

@@ -45,6 +45,9 @@ function runOfficial(t,body,marker,overrides={},official=true){
  const pileGrid=stage.children.find(c=>c.name==='deckPanel').children.find(c=>c.name==='pileGrid');
  const templates=JSON.parse(readFileSync(join(directory,'game-ui-templates.json'),'utf8'));
  assert.equal(pileGrid.kind,'container');
+ const sort=stage.children.find(c=>c.name==='deckPanel').children.find(c=>c.name==='deckSort');
+ for(const box of sort.children.slice(1))assert.ok(box.children.every(c=>c.name!=='officialButtonBacking'||c.visible===false));
+
  const pile=templates.find(c=>c.name==='AbyssBattlePileCard');
  assert.equal(pile.name,'AbyssBattlePileCard');
  const expected=structuredClone(face);
@@ -1008,11 +1011,12 @@ end
 host.run.floor=host.map.floor;host:refresh();assert(F.Nodes.restoreMap(host.run,host.map))
 assert(host.mapUI:choose(shop.id)and host.mode=='node')
 local page,Theme=root:GetChild('nodePanel'),require('abyss_theme')
-local button,label=page:GetChild('confirm'),page:GetChild('confirm'):GetChild('label')
+local button=page:GetChild('back')
+local label=button:GetChild('label')
 local function ink(expected)
  assert(label.fontColor.r==expected.r and label.fontColor.g==expected.g and label.fontColor.b==expected.b,'official dark button ink was overwritten by light-button ink')
 end
-assert(label.text=='离开商店');ink(Theme.officialAssets.buttonInk)
+assert(button.visible and label.text=='离开');ink(Theme.officialAssets.buttonInk)
 local hit=button:GetChild('hit')
 hit.listeners.enter({touchId=800});ink(Theme.officialAssets.buttonInk)
 hit.listeners.down({touchId=800});ink(Theme.officialAssets.buttonInk)
@@ -1094,11 +1098,11 @@ end
 assert(root:GetChild('deckEntry'):GetChild('open'):GetChild('hit').click());settle()
 assert(grid.visible and visible()==10 and not panel:GetChild('grid').visible)
 assert(grid.kind=='container' and not grid.RefreshItems and grid.sizeDeltaX==918 and grid.sizeDeltaY==557)
-assert(panel:GetChild('pileVeil').visible and panel:GetChild('pileChrome').visible and not panel:GetChild('veil').visible)
+assert(panel:GetChild('pileChrome').visible and not panel:GetChild('veil').visible)
 assert(not panel:GetChild('header').visible and not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
-assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · 17 张')
-assert(panel:GetChild('pileTools').visible and panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
-for _,name in ipairs({'All','Attack','Skill','Power','Status','Curse'})do assert(panel:GetChild('filter'..name).visible)end
+assert(panel:GetChild('browserDescription').text=='这些牌将会出现在每一场战斗中。')
+assert(panel:GetChild('deckSort').visible and panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
+for _,name in ipairs({'All','Attack','Skill','Power','Status','Curse'})do assert(panel:GetChild('filter'..name)==nil)end
 assert(host.deckUI.pileKind==nil and host.deckUI.battle==nil and not host.deckUI.pileView,'visual reuse changed permanent data semantics')
 assert(root:GetChild('nodePanel').visible and not host.nodeUI.visible,'covered shop must retain its scene but reject transactions')
 assert(not host.nodeUI:press('shopView/card1') and not host.nodeUI:press('confirm'))
@@ -1136,7 +1140,7 @@ for _,child in ipairs(template.children)do
  if child.name=='face' or child.name=='hit'then assert(same(child.position,{0,0}),'official template must centre the face and its hit')end
 end
 local function instance(uid,id,upgraded)return {uid=uid,cardId=id,upgraded=upgraded==true}end
-local function tool(mode)return panel:GetChild('pileTools'):GetChild(mode):GetChild('hit').click()end
+local function tool(mode)return panel:GetChild('deckSort'):GetChild(mode):GetChild('hit').click()end
 `;
 
 test('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, detail return and recycled late callbacks',t=>{
@@ -1159,8 +1163,8 @@ for _,origin in ipairs({0,1})do
  if amount>0 then warmed=true end
  assert(grid.itemCount==amount and grid.scrollProgress==0)
  assert(panel:GetChild('pileChrome'):GetChild('empty').visible==(amount==0))
- assert(not deck:setFilter('skill'),'hidden legacy filters must not alter the official snapshot')
- assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · '..amount..' 张')
+ assert(deck.setFilter==nil and deck.setPileSort==nil)
+ assert(panel:GetChild('browserDescription').visible and #deck.cards==amount)
  if amount>0 then
   local first=grid.items[0];local uid=deck.bindings[first].uid
   assert(uid==201 and not first:GetChild('uid').visible)
@@ -1170,7 +1174,7 @@ for _,origin in ipairs({0,1})do
   assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)
   assert(not hit.click({dragging=true}) and not deck.detailPages and grid.scrollProgress==.45)
   assert(hit.click() and deck.cardDetail.instance.uid==uid and not grid.visible)
-  assert(not panel:GetChild('pileTools').visible and not tool('cost'),'detail cannot sort the hidden list')
+  assert(not panel:GetChild('deckSort').visible and not tool('cost'),'detail cannot sort the hidden list')
   assert(panel:GetChild('details').text:find('左下角返回',1,true))
   assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()
   assert(not deck.detailPages and grid.visible and grid.scrollProgress==.45)
@@ -1193,7 +1197,7 @@ for _,origin in ipairs({0,1})do
  local late=grid.refreshCallback;local old=grid.items[0]
  assert(panel:GetChild('pileReturn'):GetChild('hit').click())
  if old then late(old,origin)end
- assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileVeil').visible)
+ assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)
  unchanged(host.run,before,'permanent browsing changed Run or RNG')
 end end
 `, 'OFFICIAL_PERMANENT_BROWSER_LIFECYCLE_PASS');
@@ -1229,11 +1233,12 @@ assert(grid.items[3]:GetChild('hit').click())
 assert(not deck.cardDetail.combat and not panel:GetChild('details').text:find('131',1,true))
 assert(deck:toggleUpgradePreview() and deck.cardDetail.preview and not deck.cardDetail.combat)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();permanent()
-assert(tool('name'));deck:update()
-assert(deck.sortMode=='name' and deck.sortAscending and deck.masterSort.mode=='name')
-assert(order()=='202,201,204,203','name ascending must sort the actual displayed permanent UIDs, including upgrade suffix')
-assert(tool('name'));deck:update();assert(not deck.sortAscending)
-assert(order()=='203,204,201,202','name descending must reverse the complete displayed name key')
+assert(not deck:setSort('name'))
+assert(tool('cost'));deck:update()
+assert(deck.sortMode=='cost' and deck.sortAscending and deck.masterSort.mode=='cost')
+assert(order()=='202,204,203,201','cost ascending sorts printed cost and name, including upgrade suffix')
+assert(tool('cost'));deck:update();assert(not deck.sortAscending)
+assert(order()=='201,203,204,202','cost descending reverses the printed cost/name key')
 local preference=C.copy({mode=deck.masterSort.mode,ascending=deck.masterSort.ascending,directions=deck.masterSort.directions})
 local stale=grid.refreshCallback
 assert(deck:close())
@@ -1246,11 +1251,11 @@ stale(grid.items[0],3);assert(deck.bindings[grid.items[0]].uid==uid,'permanent c
 assert(grid.items[2]:GetChild('hit').click() and deck.cardDetail.combat)
 assert(panel:GetChild('details').text:find('131',1,true),'pile detail lost its current combat instance')
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
-assert(tool('cost'));deck:update();assert(tool('type'));deck:update()
+assert(not tool('cost') and not tool('type') and order()=='201,202,203,204')
 local pileLate=grid.refreshCallback
 assert(deck:close());assert(deck:open(host.run));deck:update()
 assert(deck.sortMode==preference.mode and deck.sortAscending==preference.ascending and same(deck.sortDirections,preference.directions),
- 'combat sorting overwrote permanent preferences')
+ 'combat browse overwrote permanent preferences')
 assert(tool('original'));deck:update();permanent()
 pileLate(grid.items[0],3);permanent()
 assert(deck:close())
@@ -1260,9 +1265,9 @@ host.run.combat.hand={choice};host.run.combat.pendingChoice={token='official-cho
 local picked
 assert(deck:open(host.run,host.run.combat.pendingChoice,function(token,uid)picked={token,uid}end));deck:update()
 local legacy=panel:GetChild('grid')
-assert(legacy.visible and not grid.visible and not panel:GetChild('pileTools').visible and not panel:GetChild('pileReturn').visible)
+assert(legacy.visible and not grid.visible and not panel:GetChild('deckSort').visible and not panel:GetChild('pileReturn').visible)
 assert(not panel:GetChild('close').visible and not deck:back() and not tool('cost'))
-assert(not deck:setSort('name') and not deck:setPileSort('name'))
+assert(not deck:setSort('name') and deck.setPileSort==nil)
 local hit=legacy.items[0]:GetChild('hit')
 assert(legacy.items[0]:GetChild('face'):GetChild('cost').text=='0')
 assert(not hit.click({dragging=true}) and not picked)
@@ -1273,7 +1278,7 @@ Skin.apply=apply
 `, 'OFFICIAL_BROWSER_DATA_ISOLATION_PASS');
 });
 
-test('official pile faces keep hand chrome across bounded pages, sort and detail return',t=>{
+test('official pile faces keep hand chrome across bounded pages and detail return',t=>{
  runOfficial(t,`
 local F=H.F
 local theme=F.Theme
@@ -1311,13 +1316,15 @@ for _,amount in ipairs({1,3,5,6,13})do
  local before=C.copy(host.run)
  assert(deck:openPile(host.run,'discard'));settle()
  assert(grid.visible and visible()==math.min(10,amount) and not panel:GetChild('grid').visible)
- assert(panel:GetChild('pileVeil').visible and not panel:GetChild('header').visible)
+ assert(panel:GetChild('pileChrome').visible and not panel:GetChild('header').visible)
  assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
- assert(panel:GetChild('pileChrome').visible and panel:GetChild('pileChrome'):GetChild('heading').text:find('弃牌堆'))
+ assert(panel:GetChild('pileChrome'):GetChild('discardBadge').visible)
+ assert(panel:GetChild('browserDescription').text=='当抽牌堆被抽空时，这里的牌将会被洗牌并重新放入抽牌堆。')
+ assert(not panel:GetChild('rarityTip').visible)
  assert(panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
- assert(not deck:setFilter('skill') and not deck:setSort('name'))
- for _,sort in ipairs({'name','cost','type','original'})do assert(deck:setPileSort(sort));settle() end
- assert(not deck:setPileSort('rarity') and deck.pageIndex==1 and #deck.cards==amount)
+ assert(deck.setFilter==nil and deck.setPileSort==nil and not panel:GetChild('deckSort').visible)
+ for _,sort in ipairs({'cost','type','original'})do assert(not deck:setSort(sort)) end
+ assert(deck.pageIndex==1 and #deck.cards==amount)
  for i,card in ipairs(deck.cards)do assert(card.uid==100+i,'default sort lost the actual pile UID') end
  local _,first=visible()
  local face=first:GetChild('face')
@@ -1338,13 +1345,13 @@ for _,amount in ipairs({1,3,5,6,13})do
  assert(panel:GetChild('pileReturn'):GetChild('hit').click());settle()
  assert(not deck.detailPages and grid.visible and deck.pageIndex==page)
  assert(panel:GetChild('pileReturn'):GetChild('hit').click())
- assert(not grid.visible and visible()==0 and not panel:GetChild('pileVeil').visible)
+ assert(not grid.visible and visible()==0 and not panel:GetChild('pileChrome').visible)
  unchanged(host.run,before,'official pile inspection changed state or RNG')
 end
 assert(deck:open(host.run));settle()
-assert(not panel:GetChild('grid').visible and grid.visible and panel:GetChild('filterAll').visible)
+assert(not panel:GetChild('grid').visible and grid.visible and panel:GetChild('deckSort').visible)
 assert(not deck.pileView and not deck.pileKind and deck.sortMode=='original' and deck.sortAscending)
-assert(deck:setSort('name') and not deck:setPileSort('name'))
+assert(not deck:setSort('name') and deck.setPileSort==nil)
 assert(deck:close())
 `, 'OFFICIAL_PILE_FACE_PASS');
 });
@@ -1869,7 +1876,7 @@ local function tap(hit,id)
  emit(hit,'down',id);emit(hit,'up',id);return emit(hit,'click',id)
 end
 assert(tap(page:GetChild('merchant'):GetChild('talk'):GetChild('hit'),809))
-host.nodeUI:update(.31)
+dofile('tests/lua/support/shop_timeline.lua')(host.nodeUI)
 local a=assert(shopView:GetChild('relic1')):GetChild('hit')
 local b=assert(shopView:GetChild('relic2')):GetChild('hit')
 local route=assert(page:GetChild('runRoute')):GetChild('hit')
@@ -1938,23 +1945,35 @@ test('M05 exact source and discovery custody reject drift before older adapters'
  }
 });
 
-test('recording sort triangles remain visible and reverse across clicks, mode changes and reopening',t=>{
+test('permanent and starter sort triangles follow direction, selection ink and character theme',t=>{
  runOfficial(t,officialDeckBrowserSetup+`
 host.run.deck={instance(1,'defend'),instance(2,'bash')}
 assert(deck:open(host.run));deck:update(0)
-for _,mode in ipairs({'original','type','cost','name','cost'})do
+for _,mode in ipairs({'original','type','cost','cost'})do
  for i=1,4 do
   assert(tool(mode));deck:update(0)
-  local box=panel:GetChild('pileTools'):GetChild(mode)
+  local box=panel:GetChild('deckSort'):GetChild(mode)
   local arrow=assert(box:GetChild('direction'),'missing font-independent triangle')
   assert(arrow.visible~=false and arrow.localRotationZ==(deck.sortAscending and 0 or 180))
-  assert(not box:GetChild('label').text:find('▴') and not box:GetChild('label').text:find('▾'))
+  sameColour(box:GetChild('label').fontColor,F.Theme.color.goldBright,'selected sort ink')
+  sameColour(arrow.imageColor,F.Theme.color.goldBright,'selected triangle ink')
  end
 end
 local before=C.copy(host.run)
 assert(deck:close());assert(deck:open(host.run));deck:update(0)
-assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('direction').localRotationZ==(deck.sortAscending and 0 or 180))
+assert(panel:GetChild('deckSort'):GetChild('cost'):GetChild('direction').localRotationZ==(deck.sortAscending and 0 or 180))
 unchanged(host.run,before,'sorting changed run')
+assert(deck:close())
+local select=require('abyss_character_select')
+local preview=assert(select.preview(F.Data,F.Presentation,'hutao'))
+assert(deck:openPreview(preview));deck:update(0)
+local bar=panel:GetChild('deckSort')
+assert(bar.visible and not bar:GetChild('name') and not panel:GetChild('filterAll'))
+local tint=F.Theme.layout.characterSelect.themes.hutao
+sameColour(bar:GetChild('plate').imageColor,{tint.r,tint.g,tint.b,82},'starter sort theme')
+assert(tool('type') and #deck.cards==preview.deckSize)
+assert(deck:close() and deck:open(host.run));deck:update(0)
+assert(deck.sortMode=='cost','starter sort leaked into the permanent deck')
 `,'RECORDING_SORT_TRIANGLE_PASS');
 });
 
