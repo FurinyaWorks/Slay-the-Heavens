@@ -3,10 +3,18 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {mkdtempSync,existsSync,rmSync,mkdirSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join,resolve} from 'node:path';
 import {assertCandidateArtPolicy,assertCandidateArtReceipt} from '../scripts/candidate-art-policy.mjs';
 import {artFeatureReceipt} from '../scripts/art-features.mjs';
 import {sourceInputs,payloadDigest} from '../scripts/build-native-candidate.mjs';
+
+function candidateOutputFixture(t){
+ const build=resolve('build');
+ mkdirSync(build,{recursive:true});
+ const dir=mkdtempSync(join(build,'candidate-policy-'));
+ t.after(()=>rmSync(dir,{recursive:true,force:true}));
+ return dir;
+}
 
 for(const entry of ['build-native-candidate.mjs','build-native-audio-game.mjs'])
  for(const [name,args] of [
@@ -15,7 +23,7 @@ for(const entry of ['build-native-candidate.mjs','build-native-audio-game.mjs'])
   ['legacy host',['--native-card-art-registry=missing.json','--native-card-art-host=battlePanel/card1']],
   ['release flag',['--release-candidate','--art-cards=true']],
  ])test(`${entry} rejects deferred card art via ${name} before SDK or save writes`,t=>{
-  const dir=mkdtempSync(join(tmpdir(),'candidate-policy-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+  const dir=candidateOutputFixture(t);
   const output=join(dir,'output');
   const result=spawnSync(process.execPath,[`scripts/${entry}`,'missing.gil',output,'--work-key=alpha-test',...args],{
    encoding:'utf8',timeout:10000,env:{...process.env,MILIASTRA_MCP_ROOT:join(dir,'absent-sdk')},windowsHide:true,
@@ -36,7 +44,7 @@ test('policy allows disabled cards without disabling independent portrait featur
 
 for(const entry of ['build-native-candidate.mjs','build-native-audio-game.mjs'])
  test(`${entry} permits default-off and explicit-off configurations past the policy`,t=>{
-  const dir=mkdtempSync(join(tmpdir(),'candidate-policy-off-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+  const dir=candidateOutputFixture(t);
   for(const args of [[],['--art-cards=false','--no-ready-card-art']]){
    const result=spawnSync(process.execPath,[`scripts/${entry}`,'missing.gil',join(dir,'output'),...args],{
     encoding:'utf8',timeout:10000,env:{...process.env,MILIASTRA_MCP_ROOT:join(dir,'absent-sdk')},windowsHide:true,

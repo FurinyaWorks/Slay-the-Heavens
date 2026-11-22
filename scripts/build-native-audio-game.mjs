@@ -10,6 +10,7 @@ import { buildNativeCandidateFromToolchain, sourceInputs, payloadDigest } from '
 import { fileRecord, prepareOutputDirectory } from './evidence-files.mjs';
 import { releaseBuildArgs, gitSourceIdentity } from './release-notes.mjs';
 import { nativeCardArtArgs, verifyNativeCardArtReceipt } from './card-art-samples.mjs';
+import { assertCandidateArtPolicy } from './candidate-art-policy.mjs';
 
 // PR356's frozen two-card candidate remains an explicit legacy opt-in. Normal
 // builds leave every drawing category disabled unless explicitly opted in.
@@ -113,6 +114,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const { paths, options } = nativeAudioBuildArgs(process.argv.slice(2));
     if (!paths[0] || paths.length > 2) throw new Error('Usage: npm run build:native -- <base.gil> [new-output-directory] [--release-candidate] [--work-key=alpha-test] [--art-version=legacy | --official-assets] [--refined-release-monsters] [--no-ready-card-art | --native-card-art-count=0 | --native-card-art-registry=<file> --native-card-art-count=1|5|10 | --native-card-art-host=<host>]');
+    assertCandidateArtPolicy(options.artFeatures);
     const receipt = await buildNativeAudioGame({ baseMap: paths[0], output: paths[1], ...options });
     console.log(`Complete game with native music: ${receipt.receiptPath}`);
   } catch (error) { console.error(error.message); process.exitCode = 1; }
