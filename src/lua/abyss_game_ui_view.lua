@@ -291,7 +291,7 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
                 suspendBattle(run,deckOpen,potionOpen))
             child("battlePanel"):SetVisible(self.mode == "battle")
             refreshMapVisibility(run,deckOpen,potionOpen or blocked)
-            self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node")
+            self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node",true)
             child("nodePanel"):SetVisible(self.mode == "node")
         end
 end
@@ -550,10 +550,10 @@ local function paintReveal(self)
         self.root:GetChild('exitPanel'):SetAsLastSibling()
     end
 end
-local function finishReveal(self,platform)
+local function finishReveal(self,platform,roomPainted)
     local intent=PageReveal.intent(self)
     PageReveal.registerSource(platform,intent.page)
-    if self.pageReveal then self.pageReveal:finish(intent)end
+    if self.pageReveal then self.pageReveal:finish(intent,roomPainted)end
 end
 -- Sorting has already painted the deck projection. Keep its publication and
 -- resource cleanup boundary without repainting the covered battle/map/room.
@@ -605,7 +605,7 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             if self.easterEgg then self.easterEgg:refresh()end
             syncPortraits()
             CardSkin.endFrame(surfaceFrame,surfaceScopes(self))
-            finishReveal(self,platform)
+            finishReveal(self,platform,not blocked and not deckOpen and not potionOpen and not self.nodeUI.pendingOwner)
             paintReveal(self)
             openingForeground(covering)
             self:syncController()

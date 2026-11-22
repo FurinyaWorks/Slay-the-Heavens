@@ -174,7 +174,8 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         local recallSource,treasureSource
         prepareNodePage(screen,node,active)
         if active and MatchUI.isBoard(node.event) then hint=ctx.renderMatch(view,node)
-        elseif screen == "shopView" then hint = ctx.renderShop(view, node)
+        elseif screen == "shopView" then
+            hint = ctx.self.shopOpen and ctx.renderShop(view, node) or ''
         elseif screen == "campView" then hint, recallSource = ctx.renderCamp(view, node, result)
         elseif screen == "pickerView" then
             if ctx.eventCardsActive(node)then hint=ctx.renderEventCards(view,node)
