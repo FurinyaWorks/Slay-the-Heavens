@@ -60,7 +60,7 @@ export function potionDiscardControls(theme = nativeTheme) {
       {...plate('rule',[0,174,120,2],c.goldDim),visible:false},
       text('hint',[0,54,w,40],'选择一瓶药水查看效果',f.label,c.textDim),
       ...Array.from({length:l.battlePotions.count},(_,i)=>{
-        const slot=button(`slot${i+1}`,[(i-2)*92,120,72,80],'','secondary',f.body);
+        const slot=button(`slot${i+1}`,[(i-2)*92,120,72,84],'','secondary',f.body);
         for(const state of slot.children[0].children){
           const label=state.children.find(n=>n.name==='label');label.visible=false;
           state.children=[...potionSlotVisual(theme,{
@@ -70,8 +70,8 @@ export function potionDiscardControls(theme = nativeTheme) {
         }
         return {...slot,visible:i<3};
       }),
-      plate('detailWell',[0,-52,500,156],c.panel),
-      text('detail',[0,-52,468,144],'',f.label,c.text),
+      plate('detailWell',[0,-52,500,172],c.panel),
+      text('detail',[0,-52,468,160],'',f.label,c.text),
       button('cancel',[-actionStep,y,actionWidth,l.exitMenu.cancel[3]],'关闭','ghost'),
       button('use',[0,y,actionWidth,l.exitMenu.confirm[3]],'使用药水','primary'),
       button('discard',[actionStep,y,actionWidth,l.exitMenu.confirm[3]],'确认丢弃','danger'),

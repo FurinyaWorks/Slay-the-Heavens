@@ -36,6 +36,7 @@ const mapRoomCohortPaths=new Set([
  'tests/integration-source-epoch.test.mjs',
  'tests/helpers/historical-sts-style-entry.mjs',
  'tests/defect-final-source-epoch.test.mjs',
+ 'tests/defect-integration-source.test.mjs',
  'tests/defect-utility-planning.test.mjs',
  'tests/menu-red-source-proof.cases.mjs',
  'tests/seven-refactor-source-epoch.test.mjs',
@@ -51,7 +52,7 @@ const mapRoomCohortPaths=new Set([
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  'ec9944df7fa1c4afe4293f5ddd6e87c15382f6ab9da4f853784c9cd0599bad23','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  '83556d7455817b45c18c8024d1399b48d32f0dcda517b03559b35e36ec3df4e8','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 

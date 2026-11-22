@@ -285,8 +285,8 @@ const inputRetirementFiles=Object.freeze({
  ...deckPagesFiles,
  'tests/helpers/game-ui-extraction-source-inverse.mjs':'53382c07cd63cd010a8aa3c9b2dc12ba3a38ac628d3104cce8eb2ef3c8c33d8c',
  [runtime]:'4bf2e1c7038d0bbe0bffd85ec5be1c4685811b63bf79653f56756779b5463348',
- 'tests/helpers/develop-release-backflow-source.mjs':'5926187fd89d24b3e9ec0e459cedba9cc15bbeaf7bae0f25a3d9b2d0de6bcbe1',
- 'tests/helpers/input-retirement-source.mjs':'cec7ac508bd6a5837fe473cf74a53e9f87ab0a7f6dc43cf59f15838de8a83e09',
+ 'tests/helpers/develop-release-backflow-source.mjs':'cf5458eeed5203f9264cfc1c60f1ec0e8c37ec4840cae06668a8002edaf94a7f',
+ 'tests/helpers/input-retirement-source.mjs':'e1baf52f24fc6094236919fd9cfe140072049ed131052b16339e2bf5a2d1c544',
  'tests/helpers/character-preparation-source.mjs':'f4758613abd573df8543411e535a5644f952352f5ce5e67650c89ba2059cc771',
  'tests/helpers/rebased-release-source.mjs':'09cd53484024ec226c747686da16d05ee229b763b41f55533d92d2d1a6cd35a5',
  'tests/helpers/native-host-replay-source.mjs':'9a9adcd1ffd1f89db073f735335ccbb51d4112bf8a4ff83de9bf2338f81b19b7',
@@ -301,6 +301,9 @@ const inputRetirementFiles=Object.freeze({
  'tests/helpers/sts-feedback-ci.json.gz':'c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59',
  'tests/helpers/reward-query-boundary-source-inverse.mjs':'047320dcda1683f7425f09a181dbc9cb71f5984ef13a4cfb7ad9d5a01cca42cf',
  'tests/helpers/m7-core-final-source-inverse.mjs':'e54e91f55205207fd832ddad079b3fcf03102c4ca1ebcb045d6507b52feaab6b',
+ 'tests/helpers/native-flow-fixture-source.mjs':'6140d29ab1454fe1c4faba3e340873ebad9cfa267f038dc0c73c2b9e0e33f69a',
+ 'tests/helpers/native-flow-fixture-source.json.gz':'2d81d3999d9f1b487155c709edd2e742a70d70ec9b3c4c9e3d02515c7d71d17e',
+ 'tests/helpers/source-fingerprint.mjs':'82873d43045cd012a0ed817a27d88343bd0f092d755d49a04629f98b9bd72612',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

@@ -6,6 +6,7 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
 import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
+import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -186,6 +187,8 @@ const deckPagesOwns=path=>Object.hasOwn(deckPages.files,path);
 const productionOwner=path=>path===architecturePath||path.startsWith('src/lua/');
 const recentBackflowOwns=path=>mapRoomBackflowOwns(path)||deckPagesOwns(path)||(productionOwner(path)&&inputRetirementOwns(path));
 export const developBackflowOwns=path=>recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
+const matchEventRepairPath='src/lua/abyss_match_event_ui.lua';
+const beforeMatchEventRepair=(path,source)=>path===matchEventRepairPath?beforeNativeFlowFixture(path,source):source;
 
 function currentRecentBackflowOwner(path,source){
  if(inputRetirementOwns(path))return isCurrentInputRetirementSource(path,source);
@@ -193,6 +196,7 @@ function currentRecentBackflowOwner(path,source){
  return matches(source,roomEntry.files[path].after);
 }
 export function assertDevelopBackflowCurrent(path,source){
+ source=beforeMatchEventRepair(path,source);
  if(recentBackflowOwns(path)){
   assert(currentRecentBackflowOwner(path,source),'fresh current production owner: '+path);
   if(!priorDevelopBackflowOwns(path))return;
@@ -254,11 +258,14 @@ export function bindDevelopBackflow(read,historicalOwners){
  };
 }
 function beforePriorDevelopBackflow(path,source){
- return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
+ return layers.reduce((prior,layer)=>predecessor(layer,path,prior),beforeMatchEventRepair(path,source));
 }
 const forethoughtOwners=[deckPath,'scripts/deck-ui-layout.mjs'];
 const pileOpenOwners=[...forethoughtOwners,'src/lua/abyss_card_skin.lua'];
 function authenticatePriorDevelopBackflow(path,source,read){
+ const repaired=beforeMatchEventRepair(path,source);
+ const matchSuccessor=repaired!==source;
+ source=repaired;
  const prior=beforePriorDevelopBackflow(path,source);
  if(prior===source)return source;
  const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
@@ -270,6 +277,11 @@ function authenticatePriorDevelopBackflow(path,source,read){
  for(const owner of linkedOwners){
   let live;
   try{live=read(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+  if(owner===matchEventRepairPath){
+   const repairedLive=beforeMatchEventRepair(owner,live);
+   assert(matchSuccessor===(repairedLive!==live),'combined linked owner identity: '+owner+' changed during Match repair validation');
+   live=repairedLive;
+  }
   const expected=owner===path?row.after:stasisOwner?(priorCurrent(owner)?.after??stasisCurrent[owner]):priorCurrent(owner).after;
   assert(matches(live,expected),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
  }

@@ -11,6 +11,7 @@ import {preEnemyIntegrationPlanningSource,enemyIntegrationPlanningProof} from '.
 import {preCurrentCiPlacementSource,preCiCompleteCalibrationSource,ciCompleteCalibrationProof} from './helpers/ci-complete-calibration-source-inverse.mjs';
 import {preM7FinalSource} from './helpers/m7-core-final-source-inverse.mjs';
 import {preDefectUtilitySource,defectUtilitySourceProof} from './helpers/defect-utility-source-inverse.mjs';
+import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const path=proof.path,current=originalPlanningSource(path,read(path),'seven');
@@ -133,18 +134,56 @@ test('foreign capability source bytes cannot trigger reader calls or hide unknow
  const source=actorRaw(actorPaths[1]);let calls=0;
  assert.equal(preDefectActorSource('foreign/'+actorPaths[1],source,{readSource:()=>{calls++;}}),source);assert.equal(calls,0);
 });
+function assertRawActorClosure(project,expected,priorReads,traceLength,traceHash){
+ const physical=owner=>readFileSync(owner,'utf8');
+ let bad,value,reads=[];
+ const reader=owner=>{
+  reads.push(owner);
+  if(owner!==bad)return physical(owner);
+  if(value instanceof Error)throw value;
+  return value;
+ };
+ const replay=()=>project(reader);
+ assert.equal(replay(),expected);
+ const admittedReads=reads;
+ assert.equal(admittedReads.length,traceLength);
+ assert.equal(hash(JSON.stringify(admittedReads)),traceHash,'exact current raw owner order');
+ let position=-1;
+ for(const owner of priorReads){
+  position=admittedReads.indexOf(owner,position+1);
+  assert.notEqual(position,-1,'retained original raw owner: '+owner);
+ }
+ const accept=()=>{
+  reads=[];assert.equal(replay(),expected);assert.deepEqual(reads,admittedReads);
+ };
+ const reject=(owner,replacement,diagnostic=/combined linked owner/)=>{
+  bad=owner;value=replacement;reads=[];
+  assert.throws(replay,diagnostic);
+  assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'first failing owner stops projection: '+owner);
+  bad=undefined;accept();
+ };
+ accept();
+ assert.throws(()=>physical(retiredControllerPath),{code:'ENOENT'});
+ const {source:retired,restored}=readRetiredController(physical);
+ assert(restored,'physical absence requires the exact Pointer Input witness');
+ bad=retiredControllerPath;
+ for(value of [null,undefined])accept();
+ reject(retiredControllerPath,retired,/combined linked owner identity: src\/lua\/abyss_controller\.lua/);
+ reject(retiredControllerPath,retired+'\n');
+ reject(retiredControllerPath,new Error('unavailable'));
+ for(const owner of [...actorCurrentEpoch.proof.owners.filter(owner=>owner!==retiredControllerPath),pointerInputPath]){
+  for(const fault of [physical(owner)+'\n',null,new Error('unavailable')]){
+   reject(owner,fault,owner===pointerInputPath?/combined linked owner missing: src\/lua\/abyss_controller\.lua/:undefined);
+  }
+ }
+ return admittedReads;
+}
 test('the full current facade freshly checks every original owner including after warm success',()=>{
  const epoch=actorCurrentEpoch,proof=epoch.proof,p=actorPaths[0],source=read(p);
- const admittedReads=[...proof.owners,...currentProductionRereads];
- const actual=Object.fromEntries(proof.owners.map(q=>[q,read(q)]));let bad,value,reads=[];
- const reader=q=>{reads.push(q);if(q===bad){if(value instanceof Error)throw value;return value;}return actual[q];};
- const project=()=>epoch.preCombinedSource(p,source,{target:'develop',readSource:reader});
+ const project=readSource=>epoch.preCombinedSource(p,source,{target:'develop',readSource});
  const expected=proof.targets.develop.files[p].source;
- assert.equal(project(),expected);assert.deepEqual(reads,admittedReads);
- for(const owner of proof.owners)for(value of [actual[owner]+'\n',null,new Error('unavailable')]){
-  bad=owner;reads=[];assert.throws(project,/combined linked owner/);assert.deepEqual(reads,proof.owners.slice(0,proof.owners.indexOf(owner)+1));
-  bad=undefined;reads=[];assert.equal(project(),expected);assert.deepEqual(reads,admittedReads);
- }
+ assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],417,
+  '05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67');
 });
 test('capability config layout accepts only an input spelling and still binds exact raw owners',()=>{
  const p=actorPaths[0],source=actorRaw(p),old=actorProof.targets.prior.files[p].source;
@@ -195,26 +234,15 @@ test('Actor entry authenticates the complete raw current closure before exposing
  assert.equal(proof.targets.pr618.commit,'5fb26dcc5b00637785b4d926839c296a735a305a');
  for(const owner of actorPaths)for(const key of ['source','sha256','gitBlob'])
   assert.equal(proof.targets.pr618.files[owner][key],actorProof.current[owner][key]);
- const actual=Object.fromEntries(proof.owners.map(owner=>[owner,read(owner)]));
- let bad,value,reads=[];
- const reader=owner=>{reads.push(owner);if(owner===bad){if(value instanceof Error)throw value;return value;}return actual[owner];};
- const project=()=>preM7FinalSource(p,source,{readSource:reader});
- for(let warm=0;warm<2;warm++){
-  reads=[];assert.equal(project(),beforeUtility());
-  assert.deepEqual(reads.slice(0,proof.owners.length),proof.owners,'raw current authentication precedes Actor projection');
- }
- for(const owner of proof.owners)for(value of [actual[owner]+'\n',null,new Error('unavailable')]){
-  bad=owner;reads=[];assert.throws(project,/combined linked owner/);
-  assert.deepEqual(reads,proof.owners.slice(0,proof.owners.indexOf(owner)+1),'no target bytes before complete raw authentication');
-  bad=undefined;reads=[];assert.equal(project(),beforeUtility());
-  assert.deepEqual(reads.slice(0,proof.owners.length),proof.owners);
- }
+ const project=readSource=>preM7FinalSource(p,source,{readSource});
+ const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,1209,
+  'b6d10e2f98133c5b61d8aaeb7982d3f6047c17b098cc126d39815a9b08af17e1');
  // Supplying just the old three-owner snapshot is never permission to bypass
  // the real current owners, even though it matches the old Actor verifier.
  assert.throws(()=>preM7FinalSource(p,source,{readSource:actorRaw}),/combined linked owner identity/);
- const config='config/architecture.json';reads=[];
+ const config='config/architecture.json',reads=[];
  assert.throws(()=>preM7FinalSource(p,source,{readSource:owner=>{
-  reads.push(owner);return owner===config?proof.targets.pr618.files[config].source:actual[owner];
+  reads.push(owner);return owner===config?proof.targets.pr618.files[config].source:readFileSync(owner,'utf8');
  }}),/combined linked owner identity: config\/architecture\.json/);
- assert.deepEqual(reads,proof.owners.slice(0,proof.owners.indexOf(config)+1),'old config cannot masquerade as a current raw owner');
+ assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(config)+1),'old config cannot masquerade as a current raw owner');
 });

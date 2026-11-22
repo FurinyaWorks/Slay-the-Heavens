@@ -18,7 +18,7 @@ assert.equal(packet.base,'469e80240c5b7c60f75ff434bebac62d73c0bd0c');
 const matches=(source,row)=>typeof source==='string'&&!source.includes('\r\r\n')&&
  hash(lf(source))===row.sha256&&blob(lf(source))===row.gitBlob;
 const retirementBytes=readFileSync(new URL('./input-retirement-calibration-source.json.gz',import.meta.url));
-assert.equal(hash(retirementBytes),'8c729cb23b70d84cc7d6e93c2ed976a2a16d02034ce5f3f9da6c0efb5470ad1f','exact calibration input retirement packet');
+assert.equal(hash(retirementBytes),'2ad6dd590a69fa7035d63d6fc2568dfff5ab815842192bc6a2eec619e316cfa1','exact calibration input retirement packet');
 const retirement=JSON.parse(gunzipSync(retirementBytes));
 assert.equal(retirement.base,'0461bcd30dac18818318cbafa77ad72fad069e0a');
 for(const [path,row] of Object.entries(retirement.extra)){

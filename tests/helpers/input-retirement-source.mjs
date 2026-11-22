@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeNativeFixtureInputRetirement} from './native-fixture-replay-source.mjs';
 import {beforeNativeHostInputRetirement} from './native-host-replay-source.mjs';
+import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
@@ -39,6 +40,7 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
 }
 
 export function beforeMergedInputRetirement(path,source,options){
+ if(path==='scripts/potion-discard-layout.mjs')source=beforeNativeFlowFixture(path,source);
  return beforeNativeHostInputRetirement(path,beforeNativeFixtureInputRetirement(path,source,options),options);
 }
 export const inputRetirementOwns=path=>Object.hasOwn(files,path);

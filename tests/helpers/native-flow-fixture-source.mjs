@@ -5,10 +5,12 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 
 const archive=readFileSync(new URL('./native-flow-fixture-source.json.gz',import.meta.url));
-assert.equal(createHash('sha256').update(archive).digest('hex'),'4e49c9cb23a2ddeffc6d9227dff6793e0c41f334e19015dbe4d08203746bb354','exact native flow fixture archive');
+assert.equal(createHash('sha256').update(archive).digest('hex'),'2d81d3999d9f1b487155c709edd2e742a70d70ec9b3c4c9e3d02515c7d71d17e','exact native flow fixture archive');
 const {base,files}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'0461bcd30dac18818318cbafa77ad72fad069e0a');
 assert.deepEqual(Object.keys(files),[
+ 'scripts/potion-discard-layout.mjs',
+ 'src/lua/abyss_match_event_ui.lua',
  'tests/helpers/replay-reviewed-selection.mjs',
  'tests/lua/formal_campaign_entry.lua',
  'tests/lua/full_source_campaign_entry.lua',

@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 
 // Cache computations over exact immutable strings only. Every caller still
 // reads its owners afresh and applies its own binding and authorization.
-const fingerprints=new Map(),limit=2*1024*1024;
+const fingerprints=new Map(),limit=8*1024*1024;
 let retained=0;
 
 export function exactSourceMatches(source,binding){
@@ -12,7 +12,7 @@ export function exactSourceMatches(source,binding){
  if(!fingerprint){
   fingerprint={sha256:createHash('sha256').update(text).digest('hex')};
   if(text.length<=limit){
-   while(fingerprints.size>=256||retained+text.length>limit){
+   while(fingerprints.size>=512||retained+text.length>limit){
     const first=fingerprints.keys().next().value;
     fingerprints.delete(first);
     retained-=first.length;
