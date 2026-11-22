@@ -6,6 +6,9 @@ local RewardLayout = require("abyss_battle_reward_layout")
 local Theme = require("abyss_theme")
 local M = {}
 local C, L = Theme.color, Theme.layout
+local function usesSharedActionFace(name)
+    return Theme.presentationProfile=='official-assets-first' and (name=='skip' or name=='start')
+end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)
     local closeInfo
@@ -22,7 +25,8 @@ function M.install(owner, ownership, host, dependencies)
             if caption then part:GetChild("label").text = caption end
             if name=='endTurn' then
                 endTurnFace(part,state)
-            elseif not RewardLayout.paintButton(name,part,state,owner.run,host.platform,dependencies.tint,dependencies.ink)
+            elseif not usesSharedActionFace(name)
+                and not RewardLayout.paintButton(name,part,state,owner.run,host.platform,dependencies.tint,dependencies.ink)
                 and (state == "normal" or state == "hover") then
                 dependencies.tint(part:GetChild("plate"), primary and (state == "hover" and C.goldBright or C.geo) or C.panelRaised)
                 dependencies.ink(part:GetChild("label"), primary and C.textOnLight or C.goldBright)

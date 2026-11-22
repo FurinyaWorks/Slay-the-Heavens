@@ -172,6 +172,16 @@ test('approved pages keep live input identities while unrelated pages retain the
     for(const key of ['kind','states','focusable','interactable','raycastTarget'])assert.deepEqual(node[key],before[key],path+' '+key);
     continue;
    }
+   if(path==='/SlayTheAbyss/combatRewards/label'){
+    assert.equal(node.text.content,before.text.content);
+    assert.deepEqual(node.position,[0,0]);
+    continue;
+   }
+   if(path==='/SlayTheAbyss/combatRewards/hit'){
+    assert.deepEqual(node.size,theme.officialAssets.actionButton.mapReturn.size);
+    assert.equal(node.focusable,before.focusable);
+    continue;
+   }
   for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget']){
    const potionLabel=/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)\/label$/.test(path);
    const relicHit=/^\/SlayTheAbyss\/relicBar\/slot\d+\/hit$/.test(path);
@@ -231,6 +241,11 @@ test('approved pages keep live input identities while unrelated pages retain the
    if(merchant.has(path)){
     assert.deepEqual(node,merchant.get(path),path+' shared merchant projection');continue;
    }
+   if(/^\/SlayTheAbyss\/combatRewards(?:\/|$)/.test(path)){
+    const caption=child(node,'label');
+    if(caption)assert.equal(caption.text.content,'返回战利品');
+    continue;
+   }
    for(const key of Object.keys(before)){
     const choiceSlot=/^\/SlayTheAbyss\/choicePanel\/card([12])$/.exec(path);
     if(choiceSlot&&key==='position'){
@@ -239,6 +254,9 @@ test('approved pages keep live input identities while unrelated pages retain the
     }
     if(key==='scale'&&/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)$/.test(path)){
      assert.deepEqual(node.scale,[1,1],path+' battle slot states already own their scale');continue;
+    }
+    if(key==='scale'&&node.name==='pressed'&&child(node,'roundedButton')){
+     assert.deepEqual(node.scale,Array(2).fill(theme.officialAssets.actionButton.pressedScale),path+' common pressed scale');continue;
     }
     const relicSlot=/^\/SlayTheAbyss\/relicBar\/slot(\d+)$/.exec(path);
     if(relicSlot&&key==='position'){

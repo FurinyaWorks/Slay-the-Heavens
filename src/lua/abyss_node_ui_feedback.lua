@@ -27,11 +27,11 @@ local function neowChoiceChrome(ctx, box, look, hover, pressed)
 end
 
 local function roundedPalette(look,hover,pressed)
-    if not look.enabled then return C.line,C.panelSunken end
-    if pressed then return C.goldBright,C.buttonPressedFill end
-    if hover then return C.goldBright,C.buttonHover end
-    if look.primary or look.selected then return C.goldBright,C.panel end
-    return C.gold,C.panelRaised
+    local token=Theme.officialAssets.actionButton
+    local role=look.primary and token.primary or token.secondary
+    local pair=not look.enabled and token.disabled or pressed and role.pressed
+        or hover and role.hover or look.selected and role.selected or role.normal
+    return pair[1],pair[2]
 end
 
 local function paintRoundedButton(ctx,box,look,hover,pressed)

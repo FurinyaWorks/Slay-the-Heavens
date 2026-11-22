@@ -123,6 +123,24 @@ local function targetGroup(effects)
     return members[1]
 end
 
+-- Queue preparation can split ordinary effects. A validated target group is
+-- one action and its members must reach the interpreter together, untouched.
+function M.queueItems(effects)
+    local start, invalid = targetGroup(effects)
+    assert(not invalid, invalid)
+    if not start then return effects end
+
+    local items = {}
+    for index, effect in ipairs(effects) do
+        if index == start then
+            items[#items + 1] = {op='effectBatch', effects={effect, effects[index + 1]}}
+        elseif index ~= start + 1 then
+            items[#items + 1] = effect
+        end
+    end
+    return items
+end
+
 function M.requiresQueue(effects)
     for _,effect in ipairs(effects) do if type(effect)=='table' and effect.op=='defectFinal'then return true end
         if type(effect)=='table' and require('abyss_watcher_final_cards').ops[effect.op] then return true end

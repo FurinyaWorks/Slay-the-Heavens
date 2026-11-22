@@ -55,5 +55,27 @@ for _,upgraded in ipairs({false,true}) do
         eq(#s.events,0,'playback releases events once')
     end)
 end
+test('rule refusal is shown separately from a rolled back internal exception',function()
+    local h,u,p,_,tap=H.setup({'shockwave'},{'cultist'})
+    local s=h.run.combat
+    s.energy=1
+    tap('card1',8)
+    eq(p:GetChild('notice').text,'能量不足')
+
+    s.energy=3
+    C.addStatus(s.enemies[1],'vulnerable',2147483647)
+    local messages,previousPrint={},print
+    print=function(message) messages[#messages+1]=tostring(message) end
+    local called,err=pcall(function() tap('card1',9);tap('playArea',9) end)
+    print=previousPrint
+    assert(called,err)
+    local diagnostic=table.concat(messages,'\n')
+    assert(diagnostic:find('ABYSS_FEEDBACK command_failed',1,true))
+    assert(diagnostic:find('status stack overflow',1,true))
+    assert(diagnostic:find('play uid='..s.hand[1].uid,1,true))
+    assert(p:GetChild('notice').text:find('战斗操作发生错误',1,true))
+    eq(s.energy,3);eq(s.enemies[1].statuses.weak,nil)
+    eq(#s.hand,1);eq(#s.exhaust,0)
+end)
 print('SHOCKWAVE_FEEDBACK '..(count-failed)..' passed; '..failed..' failed')
 assert(failed==0,'Shockwave feedback regression')

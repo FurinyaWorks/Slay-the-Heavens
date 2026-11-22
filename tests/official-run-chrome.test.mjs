@@ -182,6 +182,7 @@ test('official build adopts the existing paper map without replacing graph or in
  const edges=all(map).filter(n=>/^edge\d+$/.test(n.name));
  const hits=all(map).filter(n=>n.kind==='cursorArea');
  const back=child(map,'previewBack'),label=child(back,'label'),hit=child(back,'hit');
+ const reward=child(layout,'combatRewards'),rewardLabel=child(reward,'label'),rewardHit=child(reward,'hit');
  applyOfficialAssets([layout],theme);
  assert(child(map,'v25MapPaper'),'official candidate must include the adopted map, not the old black fallback');
  const group=child(map,'mapGroup1'),legend=child(group,'typeLegend');
@@ -193,13 +194,50 @@ test('official build adopts the existing paper map without replacing graph or in
   current.forEach((node,index)=>assert.strictEqual(node,expected[index],'retain live graph/input owner '+node.name));
  }
  assert(edges.every(n=>n.children?.length===8),'reuse the existing dashed-ink edge adapter');
- const cancel=child(child(layout,'characterPanel'),'cancel'),face=child(back,'v25Face');
+ const token=theme.officialAssets.actionButton.mapReturn;
  assert.equal(child(map,'previewBack'),back);
  assert.equal(child(back,'label'),label);
  assert.equal(child(back,'hit'),hit);
- assert.deepEqual(back.size,cancel.size);
- for(const name of ['normal','hover','pressed','disabled']){
-  assert.deepEqual(child(child(face,name),'v25Flag'),child(child(child(cancel,'hit'),name),'v25Flag'));
+ assert.equal(child(layout,'combatRewards'),reward);
+ assert.equal(child(reward,'label'),rewardLabel);
+ assert.equal(child(reward,'hit'),rewardHit);
+ assert.equal(rewardLabel.text.content,'返回战利品');
+ assert.deepEqual(back.position,reward.position);
+ assert.deepEqual(back.size,token.size);
+ assert.deepEqual(hit.size,token.size);
+ assert.deepEqual(rewardHit.size,token.size);
+ assert.deepEqual(back.position.map((v,i)=>v+(theme.canvas.base[i]-back.size[i])/2),token.inset);
+ const face=child(back,'v25Face');
+ assert.deepEqual(face,child(reward,'v25Face'));
+ assert.deepEqual(face.children.map(n=>n.name),['normal','hover','pressed','disabled']);
+ assert(face.children.every(s=>child(s,'roundedButton')));
+ assert.equal(child(reward,'panelShade').visible,false);
+
+});
+
+test('the official action palette reaches combat, reward choices, room loot and modal actions',()=>{
+ const {layout,theme}=officialLayout();
+ const at=path=>path.split('/').reduce(child,layout);
+ const action=theme.officialAssets.actionButton;
+ for(const [path,material,role] of [
+  ['battlePanel/endTurn','v25Chrome','turn'],['battlePanel/skip','roundedButton','secondary'],
+  ['battlePanel/continue','v25Flag','primary'],['choicePanel/confirm/hit','roundedButton','primary'],
+  ['exitPanel/confirm/hit','roundedButton','danger'],['menuPanel/settle/v25Face','roundedButton','primary'],
+ ]){
+  const button=at(path);
+  for(const name of ['normal','hover','pressed','disabled']){
+   const state=child(button,name),face=child(state,material);
+   const palette=name==='disabled'?action.disabled:action[role][name];
+   assert.deepEqual(['rim','cloth'].map(layer=>child(child(face,layer),'vertical').colour),palette,path+' '+name);
+  }
+ }
+ const treasure=at('nodePanel/treasureView');
+ for(const path of ['nodePanel/eventView/option1','nodePanel/pickerView/matchRetry','nodePanel/confirm']){
+  const box=at(path);assert(child(box,'roundedButton'),path);assert.equal(child(box,'hit').focusable,undefined,path);
+ }
+ for(let i=1;i<=theme.layout.nativeNode.rewardList.rows.length;i++){
+  const row=child(treasure,'rewardItem'+i);
+  assert(child(row,'roundedButton'),'room reward row '+i);assert.equal(child(row,'hit').focusable,undefined);
  }
 });
 
@@ -257,7 +295,7 @@ test('shop relics and potions clear every card at rest and on hover',()=>{
 test('official potion slots survive battle rewards, map, node and return-to-combat transitions',()=>{
  const {theme}=officialLayout(),require=createRequire(import.meta.url),f=require('fengari');
  const L=f.lauxlib.luaL_newstate();f.lualib.luaL_openlibs(L);
- const modules=['abyss_game_ui_view','abyss_game_ui_overlays','abyss_potion_discard_ui'];
+ const modules=['abyss_game_ui_view','abyss_game_ui_overlays','abyss_potion_discard_ui','abyss_v25_menu_view'];
  const sources=Object.fromEntries(modules.map(name=>[name,readFileSync('src/lua/'+name+'.lua','utf8')]));
  const deps=new Set(Object.values(sources).flatMap(source=>[...source.matchAll(/require\(['"]([^'"]+)['"]\)/g)].map(match=>match[1])));
  const selected={presentationProfile:theme.presentationProfile,officialAssets:theme.officialAssets,layout:theme.layout,icon:theme.icon,color:theme.color};
