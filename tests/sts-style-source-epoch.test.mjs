@@ -1,3 +1,4 @@
+import {actorFocusAdded,assertActorFocusInventory,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {assertCurrentJsInventory,beforeShopEntryInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
@@ -104,16 +105,18 @@ test('incomplete inventories, invented predecessors and unowned additions cannot
 });
 
 test('real style source retains the complete CI-repair and every older target while authenticating all current raw owners',async()=>{
- const {sourceEpoch,ciRepairSourceEpoch,releaseSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {sourceEpoch,ciRepairSourceEpoch,releaseSourceEpoch,prePowerMembershipEpoch}=await import('./helpers/closeout-source-epoch.mjs');
  const p=sourceEpoch.proof,before=ciRepairSourceEpoch.proof,read=path=>readFileSync(path,'utf8');
  assert.equal(Object.keys(before.current).length,347); // config plus all 346 prior Lua modules.
  assert.equal(Object.keys(releaseSourceEpoch.proof.current).length,350); // Frozen release: page reveal, low-cost art, merchant pages.
- assert.equal(Object.keys(p.current).length,352); // Final menu adds navigation and navigation view.
+ assert.equal(Object.keys(prePowerMembershipEpoch.proof.current).length,352); // Final menu adds navigation and navigation view.
+ assert.deepEqual(Object.keys(p.current).sort(),[...Object.keys(prePowerMembershipEpoch.proof.current),'src/lua/abyss_power_membership.lua'].sort());
  const actual=['config/architecture.json',...readdirSync('src/lua').filter(n=>n.endsWith('.lua')).map(n=>'src/lua/'+n)].sort();
- assert.deepEqual(Object.keys(p.current).sort(),actual);
+ assert.deepEqual([...Object.keys(p.current),...stasisUpgradeAddedPaths,...actorFocusAdded].sort(),actual);
+ assertActorFocusInventory(actual.filter(path=>path!=='config/architecture.json'),read);
  for(const [path,row]of Object.entries(before.current))assert.deepEqual(p.targets.stsStylePrior.files[path],row,path+' complete prior');
  for(const [name,target]of Object.entries(before.targets))for(const [path,row]of Object.entries(target.files))assert.deepEqual(p.targets[name].files[path],row,name+'/'+path);
- for(const path of actual)assert.equal(beforeCharacterPreparationSource(path,read(path)).replaceAll('\r\n','\n'),p.current[path].source,path+' raw complete current');
+ for(const path of Object.keys(p.current))assert.equal(beforeCharacterPreparationSource(path,read(path)).replaceAll('\r\n','\n'),p.current[path].source,path+' raw complete current');
  const config='config/architecture.json',raw=read(config),prior=p.targets.stsStylePrior.files[config].source;
  assert.equal(sourceEpoch.preCombinedSource(config,raw,{target:'stsStylePrior',readSource:read}),prior);
  for(const owner of p.owners.filter(path=>!before.owners.includes(path)))for(const missing of [null,read(owner)+'\n'])

@@ -88,6 +88,17 @@ test('queue Full accepts only the administrator pull-request bypass and cloud au
  }
 });
 
+test('native queue requires the isolated pending publisher to succeed when present',()=>{
+ const f=fixture();
+ const pending={...f.jobs.find(job=>job.name==='impact'),id:999,name:'status-pending'};
+ f.jobs.push(pending);
+ assert.deepEqual(queueFullErrors(f),[]);
+ for(const conclusion of ['failure','skipped','cancelled']){
+  pending.conclusion=conclusion;
+  assert(queueFullErrors(f).some(error=>error.includes('status-pending')));
+ }
+});
+
 test('native queue rejects old 13/9, 14/9, 16/9, 16/12, 17/13, 17/14 or 17/15 green jobs, missing rules18 or POSIX15, duplicates and forged totals or source receipts',()=>{
  const windows=qualityShardMatrices.windows.length,posix=qualityShardMatrices.posix.length;
  const last=`rules (${windows}/${windows})`,lastPosix=`engineering-posix (${posix}/${posix})`;

@@ -24,6 +24,24 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const hash=s=>createHash('sha256').update(s).digest('hex');
+const gitBlob=source=>createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex');
+const forkFirstBytes=readFileSync(new URL('./fork-bootstrap-ci-source.json.gz',import.meta.url));
+assert.equal(hash(forkFirstBytes),'50efd38e0342ed1c5e543722d25e4c63cfde11384aaf6854df1ab6419590fbb6','exact Fork-First CI predecessor archive');
+const forkFirst=JSON.parse(gunzipSync(forkFirstBytes));
+assert.equal(forkFirst.schemaVersion,1);
+assert.equal(forkFirst.baseCommit,'62943964d4ff1cd152bd28c0fbc8df98df9d054d');
+for(const [path,{before,after}] of Object.entries(forkFirst.files)){
+ assert.equal(hash(before.source),before.sha256,path+' complete Fork-First CI predecessor');
+ assert.equal(gitBlob(before.source),before.gitBlob,path+' immutable Fork-First CI predecessor blob');
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+function beforeForkFirstCi(path,source){
+ if(!Object.hasOwn(forkFirst.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const {before,after}=forkFirst.files[path],lf=source.replaceAll('\r\n','\n');
+ if(hash(lf)!==after.sha256||gitBlob(lf)!==after.gitBlob)return source;
+ return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
 const bytes=readFileSync(new URL('./fork-preflight-source.json.gz',import.meta.url));
 assert.equal(hash(bytes),'c6a6e34e8201b22b4c82fa554502785af7dc5f63840189e9c53da7692a55565e');
 const proof=JSON.parse(gunzipSync(bytes));
@@ -378,9 +396,27 @@ function beforePowerMembershipConfig(path,source){
 const luaInventoryTest="tests/sts-style-source-epoch.test.mjs";
 const luaInventoryTestSha='5b02801e4b9837497fa8f9f20388cff207afa78e7f2a7f358b9ac9332e7b1774';
 const luaInventoryTestBlob='b43000381568f9b167c528e5f96f870c9f144d7a';
+function beforeHistoricalProductionInventoryTest(source){
+ if(hash(source)!=='54d5d3c02c45616cb282fad68678cd034de2f91fe8d478a1512139504ab7e860'||blob(source)!=='97df72579410fd9691412e49ddd14dc86a7f93be')return source;
+ const rewrites=[
+  ["import {actorFocusAdded,assertActorFocusInventory,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';\n", ""],
+  ["releaseSourceEpoch,prePowerMembershipEpoch}=await", "releaseSourceEpoch}=await"],
+  [" assert.equal(Object.keys(prePowerMembershipEpoch.proof.current).length,352); // Final menu adds navigation and navigation view.\n assert.deepEqual(Object.keys(p.current).sort(),[...Object.keys(prePowerMembershipEpoch.proof.current),'src/lua/abyss_power_membership.lua'].sort());", " assert.equal(Object.keys(p.current).length,352); // Final menu adds navigation and navigation view."],
+  [" assert.deepEqual([...Object.keys(p.current),...stasisUpgradeAddedPaths,...actorFocusAdded].sort(),actual);\n assertActorFocusInventory(actual.filter(path=>path!=='config/architecture.json'),read);", " assert.deepEqual(Object.keys(p.current).sort(),actual);"],
+  ["for(const path of Object.keys(p.current))assert.equal(beforeCharacterPreparationSource", "for(const path of actual)assert.equal(beforeCharacterPreparationSource"]
+ ];
+ let prior=source;
+ for(const [current,before]of rewrites){
+  assert.equal(prior.split(current).length,2,'exact live production inventory test boundary');
+  prior=prior.replace(current,()=>before);
+ }
+ assert.equal(hash(prior),luaInventoryTestSha,'exact live production inventory test predecessor');
+ assert.equal(blob(prior),luaInventoryTestBlob,'exact live production inventory test predecessor blob');
+ return prior;
+}
 function beforeLuaInventoryTest(path,source){
  if(path!==luaInventoryTest||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const current=normalize(source);
+ const current=beforeHistoricalProductionInventoryTest(normalize(source));
  if(hash(current)!==luaInventoryTestSha||blob(current)!==luaInventoryTestBlob)return source;
  const start=" assertCurrentJsInventory(rawJs,integratedCiProof.inventory);\n // These five tests remain in current Full discovery.",end=" const newTest=";
  assert.equal(current.split(start).length,2,'exact live Lua test boundary');
@@ -462,7 +498,7 @@ export function assertCurrentLuaInventory(paths,preceding,read=readFileSync){
  const additions=[...Object.keys(newerTests.lua),shopEntryTests.lua[0],'tests/lua/shop_dismiss.lua'];
  assert.deepEqual([...paths].sort(),[...preceding,...additions].sort(),'complete current raw discovery inventory (Lua)');
  const prior=beforeShopEntryInventory(paths,'lua',(path,encoding)=>{
-  const source=read(path,encoding);
+  const source=beforeForkFirstCi(path,read(path,encoding));
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
   return source;
  });
@@ -542,7 +578,7 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const readBackflow=(path,encoding)=>{
-  const source=read(path,encoding);
+  const source=beforeForkFirstCi(path,read(path,encoding));
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
   return authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
  };
@@ -563,6 +599,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeForkFirstCi(path,source);
  source=beforeDevelopBackflow(path,source);
  source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));
  source=beforeStsUiCloseoutSource(path,source);

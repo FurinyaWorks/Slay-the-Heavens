@@ -9,6 +9,7 @@ import {collectQueueAdmission,queueAdmissionCompatible} from './merge-queue-admi
 import {queueBypassActorsAllowed} from './arm-auto-merge.mjs';
 import {isDeepStrictEqual} from 'node:util';
 import {projectRepositoryMatches} from './repository-identity.mjs';
+import {qualityPendingStatusJob,qualityPendingStatusJobErrors} from './pr-quality-evidence.mjs';
 
 const contexts=['check','presentation','engineering-posix','inventory','full-quality','independent-review'];
 const sha=value=>typeof value==='string'&&/^[0-9a-f]{40}$/.test(value);
@@ -69,7 +70,7 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
  if(!Array.isArray(jobs))errors.push('Missing Full job inventory');
  for(const job of jobs??[]) {
   const key=job.name+':'+job.run_attempt;
-  if(!currentFullQualityJobs.includes(job.name)||seen.has(key)||!id(job.id)||ids.has(job.id)||
+  if((!currentFullQualityJobs.includes(job.name)&&job.name!==qualityPendingStatusJob)||seen.has(key)||!id(job.id)||ids.has(job.id)||
    !id(job.run_attempt)||job.run_attempt>run?.run_attempt||
    job.run_id!==run?.id||job.head_sha!==env.GITHUB_SHA)
    errors.push('Unknown, duplicate, stale or mismatched Full job: '+job.name);
@@ -83,6 +84,7 @@ export function queueFullErrors({event,env,needs,ruleset,run,latest,jobs,checkou
   } else if(job?.status!=='completed'||job.conclusion!==(name==='fast'?'skipped':'success'))
    errors.push('Full job is missing or not successful: '+name);
  }
+ errors.push(...qualityPendingStatusJobErrors(jobs,run));
  const receipt=checkout?.checkout??{};
  if(receipt.schemaVersion!==1||receipt.event!=='merge_group'||receipt.runId!==run?.id||
   receipt.tested!==env.GITHUB_SHA||receipt.head!==env.GITHUB_SHA||

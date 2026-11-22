@@ -4,6 +4,25 @@ import {join} from 'node:path';
 const workflowPath='.github/workflows/quality.yml';
 const sha=value=>typeof value==='string'&&/^[a-f0-9]{40}$/.test(value);
 const positive=value=>Number.isSafeInteger(value)&&value>0;
+export const qualityPendingStatusJob='status-pending';
+
+// Existing receipts predate the separate publisher. When present, the exact
+// publisher name participates in every job identity check, and its newest
+// execution must match the run's native event and trusted source.
+export function qualityPendingStatusJobErrors(jobs,run,pr,baseRef) {
+ if(!Array.isArray(jobs))return [];
+ const job=jobs.filter(row=>row?.name===qualityPendingStatusJob).sort((a,b)=>b.run_attempt-a.run_attempt)[0];
+ if(!job)return [];
+ let expected=run?.event==='merge_group'?'success':'skipped';
+ if(run?.event==='pull_request') {
+  const headRepository=pr?.head?.repo??run.head_repository;
+  const target=pr?.base?.ref??baseRef??run.pull_requests?.[0]?.base?.ref;
+  if(headRepository?.full_name===run.repository?.full_name&&target==='develop')expected='success';
+  else if(!headRepository?.full_name||!target&&headRepository.full_name===run.repository?.full_name)expected=undefined;
+ }
+ return job.status==='completed'&&(expected===undefined?['success','skipped'].includes(job.conclusion):job.conclusion===expected)?[]:
+  ['Quality status-pending job is incomplete or has the wrong conclusion'];
+}
 // GitHub keeps the unexpanded job-name expression when its matrix is skipped.
 // Match those two exact observed identities; do not accept aliases or Full jobs.
 const skippedJobs=new Set([

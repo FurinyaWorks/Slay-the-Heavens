@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import {qualityShardJobs} from './ci-quality-shape.mjs';
 import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';
-import {prFastErrors,collectFastCheckout} from './pr-quality-evidence.mjs';
+import {prFastErrors,collectFastCheckout,qualityPendingStatusJob,qualityPendingStatusJobErrors} from './pr-quality-evidence.mjs';
 import {syncBacklogCloseout} from './backlog-closeout.mjs';
 import {validateIndependentAiReview,cloudGateSourceErrors,collectCloudGateSource} from './independent-ai-review.mjs';
 export {planBacklogCloseout,syncBacklogCloseout} from './backlog-closeout.mjs';
@@ -35,7 +35,7 @@ export function isLowRiskDocumentationChange(files,count) {
       !file.filename.includes('\\')&&!file.filename.split('/').some(segment=>segment==='.'||segment==='..')&&
       ['added','modified'].includes(file.status)&&validSha(file.sha));
 }
-function qualityErrors(jobs,{attempt,runId,head,schemaVersion,allowRunningAggregate=false}) {
+function qualityErrors(jobs,{attempt,runId,head,schemaVersion,allowRunningAggregate=false,run}) {
   // Collect filter=all, not one attempt: reruns preserve GITHUB_SHA/GITHUB_REF
   // and only reexecute selected jobs. Never search for the last *successful*
   // execution; a newer failure must supersede an older success.
@@ -48,7 +48,7 @@ function qualityErrors(jobs,{attempt,runId,head,schemaVersion,allowRunningAggreg
   const identities=new Set(),ids=new Set();
   for(const job of jobs) {
     const identity=`${job?.name}:${job?.run_attempt}`;
-    if(!expectedJobs.includes(job?.name)||!positiveId(job?.id)||ids.has(job.id)||identities.has(identity)||
+    if((!expectedJobs.includes(job?.name)&&!(schemaVersion===3&&job?.name===qualityPendingStatusJob))||!positiveId(job?.id)||ids.has(job.id)||identities.has(identity)||
       !positiveId(job?.run_attempt)||job.run_attempt>attempt||job.run_id!==runId||job.head_sha!==head)
       errors.push(`Unexpected, duplicate or mismatched Quality job ${job?.name}`);
     identities.add(identity);ids.add(job?.id);
@@ -62,6 +62,7 @@ function qualityErrors(jobs,{attempt,runId,head,schemaVersion,allowRunningAggreg
     const runningAggregate=allowRunningAggregate&&name==='check'&&job?.status==='in_progress'&&job.conclusion==null&&job.run_attempt===attempt;
     if(!runningAggregate&&(job?.status!=='completed'||job.conclusion!==conclusion))errors.push(`Quality job ${name} is missing, incomplete or does not have required conclusion ${conclusion} on its latest execution`);
   }
+  if(schemaVersion===3)errors.push(...qualityPendingStatusJobErrors(jobs,run));
   return errors;
 }
 function latestJob(jobs,name) {
@@ -211,7 +212,7 @@ export function verifyDelivery(e) {
   if(e.testedCommit?.sha!==e.tested||JSON.stringify(parentShas(e.testedCommit))!==JSON.stringify(e.parents)||e.testedCommit?.commit?.tree?.sha!==e.sourceTree)errors.push('Tested source commit/tree evidence is missing or mismatched');
   if(JSON.stringify(e.checkout?.parents)!==JSON.stringify(e.parents))errors.push('Checkout merge parents differ from tested commit');
   if(!Array.isArray(e.run?.pull_requests)||!e.run.pull_requests.some(pr=>pr?.number===e.prNumber))errors.push('Quality run does not belong to this PR');
-  errors.push(...runErrors(e.run,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}),...qualityErrors(e.jobs,{attempt:e.attempt,runId:e.runId,head:e.head,schemaVersion:e.schemaVersion}));
+  errors.push(...runErrors(e.run,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}),...qualityErrors(e.jobs,{attempt:e.attempt,runId:e.runId,head:e.head,schemaVersion:e.schemaVersion,run:e.run}));
   errors.push(...runErrors(e.currentRun,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}));
   if(e.review?.disposition==='low-risk-docs') {
     if(e.schemaVersion!==deliverySchemaVersion||e.baseRef!=='develop'||e.review.reviewedHeadSha!==e.head||
@@ -254,7 +255,7 @@ export function verifyMergedDelivery(e) {
   if(e.current?.number!==e.pr?.number||e.current?.head?.sha!==e.pr?.head?.sha||e.current?.base?.ref!==e.pr?.base?.ref||!e.current?.merged||e.current?.state!=='closed'||e.current?.merge_commit_sha!==e.pr?.merge_commit_sha)errors.push('Merged PR identity changed during verification');
   errors.push(...runErrors(e.run,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));
   errors.push(...runErrors(e.currentRun,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));
-  errors.push(...qualityErrors(e.jobs,{attempt:e.run?.run_attempt,runId:e.run?.id,head:e.commit?.sha,schemaVersion:e.schemaVersion}));
+  errors.push(...qualityErrors(e.jobs,{attempt:e.run?.run_attempt,runId:e.run?.id,head:e.commit?.sha,schemaVersion:e.schemaVersion,run:e.run}));
   errors.push(...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,e.run,e.schemaVersion));
   for(const [field,value] of Object.entries({event:'push',runId:e.run?.id,tested:e.commit?.sha,head:e.commit?.sha,base:squashBase})) {
     if(value===undefined||e.checkout?.[field]!==value)errors.push(`Merged checkout ${field} is missing, stale or mismatched`);
@@ -275,7 +276,7 @@ export function verifyHistoricalAutoFull(e,arm,identityWitness){
     errors.push('Historical Full repository transfer identity is invalid');
   errors.push(...runErrors(run,{head:arm.head,event:'pull_request',runId:run.id,attempt:run.run_attempt,repo}),
     ...runErrors(e.currentRun,{head:arm.head,event:'pull_request',runId:run.id,attempt:run.run_attempt,repo}),
-    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:arm.head,schemaVersion:3}),
+    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:arm.head,schemaVersion:3,run}),
     ...receiptErrors(checkout,e.checkoutArtifact,e.jobs,run,3));
   if(!Array.isArray(run.pull_requests)||run.pull_requests.length>0&&!run.pull_requests.some(p=>p.number===arm.prNumber)||run.id<arm.pendingRun?.id||
     run.id===arm.pendingRun?.id&&run.run_attempt<arm.pendingRun.attempt)
@@ -296,7 +297,7 @@ function verifyQueueFull(e,arm,mergedSha,kind){
   const run=e.run??{},errors=[];
   errors.push(...runErrors(run,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),
     ...runErrors(e.currentRun,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),
-    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:mergedSha,schemaVersion:3}),
+    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:mergedSha,schemaVersion:3,run}),
     ...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,run,3));
   const native=kind==='native-queue-full',queueBase=native?e.commit?.parents?.[0]?.sha:arm.base;
   if(native){
@@ -494,7 +495,7 @@ function lowRiskFiles(query,repo,number,expectedCount) {
   return files;
 }
 export function checkoutReceipt(repo,run,jobs,dir,query=gh,schemaVersion=deliverySchemaVersion,{allowRunningAggregate=false}={}) {
-  const errors=qualityErrors(jobs,{attempt:run.run_attempt,runId:run.id,head:run.head_sha,schemaVersion,allowRunningAggregate});
+  const errors=qualityErrors(jobs,{attempt:run.run_attempt,runId:run.id,head:run.head_sha,schemaVersion,allowRunningAggregate,run});
   if(errors.length)throw new Error(errors.join('\n'));
   const attempt=receiptExecutionAttempt(jobs,schemaVersion);
   if(!positiveId(attempt))throw new Error('Cannot prove first rules shard execution attempt');
