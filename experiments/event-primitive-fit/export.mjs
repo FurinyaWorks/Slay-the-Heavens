@@ -76,5 +76,3 @@ const byTier=Object.fromEntries(tierIds.map(t=>{
 save(join(outDir,'summary.json'),{byTier,nativeControlCatalogBytes:statSync(join(outDir,'native-controls.json')).size,cases:cases.length});
 save(join(outDir,'scenes','inventory.json'),{room:{min:1,max:2},cases});
 console.log(JSON.stringify(byTier));
-
-
