@@ -128,6 +128,13 @@ assert(#F.Nodes.available(run,h.map)>0)
 test('official flow: independently routed shop previews, cancels, purchases and exits without duplicate spending',t=>{
  runOfficial(t,`
 local h,root=room('shop');local run=h.run;local gold,deck=run.gold,#run.deck
+local advanceShop=dofile('tests/lua/support/shop_timeline.lua')
+local page=root:GetChild('nodePanel')
+assert(page:GetChild('shopRoom').visible and not page:GetChild('shopView').visible)
+assert(F.click(root,'nodePanel','merchant/talk'))
+assert(page:GetChild('shopRoom').visible and not page:GetChild('shopView').visible)
+advanceShop(h)
+assert(page:GetChild('shopView').visible and not h.nodeUI.shopBusy)
 local index
 for i=1,7 do local action=h.nodeUI.actions['shopView/card'..i];if action and action.enabled then index=i;break end end
 assert(index,'seed must offer an affordable real card')
@@ -138,7 +145,7 @@ F.click(root,'nodePanel',name);F.click(root,'nodePanel','confirm')
 assert(run.gold<gold and #run.deck==deck+1,'confirmed shop purchase did not reach Core')
 local spent=run.gold
 F.click(root,'nodePanel','back');assert(run.phase=='node')
-h.nodeUI:update(.31);assert(run.phase=='map' and h.mode=='node')
+advanceShop(h.nodeUI);assert(run.phase=='map' and h.mode=='node')
 F.click(root,'nodePanel','confirm');assert(h.mode=='map' and run.nodeFlow.complete)
 assert(run.gold==spent and #run.deck==deck+1,'shop exit replayed transaction')
 assert(not root:GetChild('nodePanel').active)

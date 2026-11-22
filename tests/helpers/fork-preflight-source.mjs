@@ -223,7 +223,18 @@ function beforeReleaseBackflowTest(path,source){
  assert.equal(hash(prior),'f74b528375f1f487985a4c108687cd62b61fccb2a23070bb5810205fb69cfc2a','exact Release backflow test predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// Restore only the exact staged-shop test when replaying earlier CI evidence.
+function beforeShopPurchaseRegression(path,source){
+ if(path!=="tests/official-assets-flow.test.mjs"||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!=='632cddaca410e7402e8a98ae161fbc0360b3b70ace9135a515e084bc2596ab74')return source;
+ const prior=current.replace("local advanceShop=dofile('tests/lua/support/shop_timeline.lua')\nlocal page=root:GetChild('nodePanel')\nassert(page:GetChild('shopRoom').visible and not page:GetChild('shopView').visible)\nassert(F.click(root,'nodePanel','merchant/talk'))\nassert(page:GetChild('shopRoom').visible and not page:GetChild('shopView').visible)\nadvanceShop(h)\nassert(page:GetChild('shopView').visible and not h.nodeUI.shopBusy)\n",'')
+  .replace("advanceShop(h.nodeUI);assert(run.phase=='map' and h.mode=='node')","h.nodeUI:update(.31);assert(run.phase=='map' and h.mode=='node')");
+ assert.equal(hash(prior),'0097a0c33630ce01495b99601c4220dc424295ca6dadade7967bbf9106be2ad8','exact pre-shop-purchase fixture');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeShopPurchaseRegression(path,source);
  source=beforeShopRoomCiSource(path,beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source)));
  source=beforeTravelerStatusCiSource(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
