@@ -249,6 +249,11 @@
       "sha256": "db7a1393c4fae90fc9d7cc30b2ee762394a8ab041b19a6a9aa33973a263eeb13",
       "category": "native-event-illustrations"
     },
+    "docs/reviews/task-112-button-comparison.png": {
+      "category": "v2-native-menu-layout-evidence",
+      "sha256": "cafccfd7aa0c47a8d4898626e3be9eb981d5052597f19abd530f8d62f7a70ce7",
+      "evidence": "TASK-112 review comparison generated from the project's before and after layout trees, runtime-map.png and rasterized system Noto Sans CJK text."
+    },
     "docs/evidence/deck-pages-20261122/visual/develop-first-open.png": {
       "sha256": "aaa9b562db06d7e2c6a80e87a98e8cdade33770c4dbf7182ec9e4074fd508b5b",
       "category": "deck-browser-host-evidence"

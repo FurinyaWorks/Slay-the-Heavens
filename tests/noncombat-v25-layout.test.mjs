@@ -140,14 +140,14 @@ test('official host uses direct inventory actions, read-only relic details and e
  buildLuaData('data',join(directory,'abyss_data.lua'));
  buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
  const stage=child(JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8')),'stage');
- // Exact 74aa9a18 integrated layout, with only the old input fields
- // reconstructed. That source already differed from #812's runMenu hash.
+ // Validate the reviewed action styles with the previous navigation fields
+ // reconstructed only for the layout comparison.
  for(const [name,sha,focusPaths] of [
-  ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0',
+  ['menuPanel','0a446fd209492789ac70789eddded2a6c23a8c95441462b580d9d13ce4f7958c',
    [['result','viewEasterEgg','hit'],...['start','continueRun','titleQuit','settle'].map(name=>[name,'hit'])]],
-  ['exitPanel','d60b5a107eab5c3bdb79a36c7359cb1be27c833a2e18a450a3b266856c7d98ce',
+  ['exitPanel','2f839c0755387aa4131ff9a9b72f886bf516ab715385a78b937117ab4c0adaf5',
    ['cancel','confirm'].map(name=>[name,'hit'])],
-  ['runMenu','a0c480ad85bfa3b3490d6ea6d3c6ae3561a700e60114ee0303810010d71a9b81',
+  ['runMenu','d18ff3b4edd0af091727ff52ee370c9db1d2628500c3424b02eb246ca53a04d1',
    ['resume','map','mainMenu','abandon','quit'].map(name=>[name,'hit'])],
  ]){
   const panel=child(stage,name);

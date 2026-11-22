@@ -1,6 +1,31 @@
 {
   "references": [
     {
+      "codePath": "scripts/official-map-return-controls.mjs",
+      "codePaths": [
+        "scripts/native-rounded-button.mjs",
+        "scripts/official-run-layout.mjs",
+        "scripts/sts-reward-row-layout.mjs",
+        "scripts/character-selection-composition.mjs",
+        "src/lua/abyss_node_ui_feedback.lua",
+        "src/lua/abyss_game_ui_menu_view.lua"
+      ],
+      "targetVersion": "v2.0.0",
+      "state": "actionButtons",
+      "revision": "develop-task-112",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-112",
+      "reference": {
+        "path": "docs/reviews/TASK-112-ACTION-BUTTONS.md",
+        "sha256": "9389faf434ca90e2dd049afd1a431bccb2ed7d1bd2e85a82fd827d5a17943d63"
+      },
+      "themeKeys": [
+        "officialAssets.actionButton"
+      ],
+      "supersedes": [],
+      "note": "统一局内操作的圆角材质、状态色与地图返回位置。示意来自真实生成布局，官方设备待验。"
+    },
+    {
       "codePath": "scripts/official-run-layout.mjs",
       "codePaths": [
         "scripts/ui-layout.mjs",
@@ -14,7 +39,7 @@
       "backlogTask": "TASK-4.15",
       "reference": {
         "path": "docs/reviews/develop-potion-popup.md",
-        "sha256": "b23b773eed54fe55c808eb2f314b2c2661aeb421d8331633b820734c8933793d"
+        "sha256": "2a29f361ecb479effba363568c9235ed8ad287aec6c9225bbaf4ebd0f4f11ed9"
       },
       "supersedes": [],
       "note": "Release #871 回流。战斗与非战斗共用紧凑弹窗，保留等宽按钮、状态色及战后遗物栏。"

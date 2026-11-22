@@ -53,8 +53,8 @@ function M.dismissFromOutside(platform,self)
         end
 end
 
-local function bindV25Hover(box,hit,cursor,available,routeReturn)
-    local officialMenu=Theme.presentationProfile=='official-assets-first' and (box:GetChild('v25MenuFace') or routeReturn and box:GetChild('v25Face'))
+local function bindV25Hover(box,hit,cursor,available)
+    local officialMenu=Theme.presentationProfile=='official-assets-first' and (box:GetChild('v25MenuFace') or box:GetChild('v25Face'))
     if (Theme.presentationProfile~='v25-reference' and not officialMenu) or not cursor.CursorEnter then return end
     if not box:GetChild('v25Face') and not box:GetChild('v25MenuFace')then return end
     hit:AddCursorEventListener(cursor.CursorEnter,function()V25View.pointer(box,'enter',available())end)
@@ -159,7 +159,7 @@ function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
                     and (not mapContext or currentMapReturn(token))
             end
             local function touch(event) return event and event.touchId end
-            bindV25Hover(box,hit,cursor,available,kind=='routeClose')
+            bindV25Hover(box,hit,cursor,available)
             if cursor.CursorDown and cursor.CursorUp then
                 hit:AddCursorEventListener(cursor.CursorDown, function(event)
                     if held and not current(held) then held = nil end

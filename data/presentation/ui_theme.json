@@ -176,6 +176,29 @@
     },
     "buttonBacking": "#17252D",
     "buttonInk": "#FFF8E7",
+    "actionButton": {
+      "radiusRatio": 0.16666666666666666,
+      "rimWidth": 2,
+      "pressedScale": 0.96,
+      "mapReturn": { "inset": [42, 42], "size": [150, 48], "fontSize": 20 },
+      "disabled": ["#3B3E4C", "#13141B"],
+      "secondary": {
+        "normal": ["#8E7448", "#272A36"], "hover": ["#F5D79A", "#353949"],
+        "pressed": ["#F5D79A", "#51412B"], "selected": ["#F5D79A", "#353949"]
+      },
+      "primary": {
+        "normal": ["#A2B4B5", "#40717E"], "hover": ["#C4D4D3", "#49798A"],
+        "pressed": ["#A2B4B5", "#315462"], "selected": ["#C4D4D3", "#315462"]
+      },
+      "danger": {
+        "normal": ["#BCA348", "#8C3739"], "hover": ["#E1C46A", "#A84D43"],
+        "pressed": ["#BCA348", "#592A2B"], "selected": ["#E1C46A", "#592A2B"]
+      },
+      "turn": {
+        "normal": ["#6D8F96", "#243942"], "hover": ["#ABC5C6", "#395862"],
+        "pressed": ["#6D8F96", "#192C33"]
+      }
+    },
     "flagButton": {
       "cancel": ["#BCA348", "#8C3739", "#B95B4A"],
       "confirm": ["#A2B4B5", "#477B89", "#77A4AF"],

@@ -54,10 +54,9 @@ test('battle and noncombat potion popups share compact panel and action tokens',
  assert.deepEqual(use.size,discard.size);
  assert.ok(discard.position[0]-use.position[0]>use.size[0]);
  const colours=(button,state)=>child(child(button,state),'roundedButton').children.map(layer=>child(layer,'horizontal').colour);
- assert.deepEqual(colours(use,'normal'),[theme.color.gold,theme.color.panelRaised]);
- assert.deepEqual(colours(use,'hover'),[theme.color.goldBright,theme.color.buttonHover]);
- assert.deepEqual(colours(use,'pressed'),[theme.color.goldBright,theme.color.buttonPressedFill]);
- assert.deepEqual(colours(use,'disabled'),[theme.color.line,theme.color.panel]);
+ const palette=theme.officialAssets.actionButton;
+ for(const state of ['normal','hover','pressed'])assert.deepEqual(colours(use,state),palette.primary[state]);
+ assert.deepEqual(colours(use,'disabled'),palette.disabled);
  const destructive=child(child(child(tree,'exitPanel'),'confirm'),'hit');
  for(const state of ['normal','hover','pressed','disabled'])assert.deepEqual(colours(discard,state),colours(destructive,state));
 });

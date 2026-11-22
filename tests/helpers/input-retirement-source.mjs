@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {beforeActionButtons} from './action-buttons-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const gitBlob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -42,9 +43,9 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
 }
 
 const potionArchive=readFileSync(new URL('../fixtures/develop-potion-popup-source.json.gz',import.meta.url));
-assert.equal(hash(potionArchive),'5afc503262571983c0864441fc922edca28aa8ed80c963f9fb5eb0ed9fa5abad','exact Develop potion popup archive');
+assert.equal(hash(potionArchive),'b599bd20963ba2c666a024a316db3ca2c4ceac2ed07de013fc86b2a7f195ff2d','exact Develop potion popup archive');
 const potionBackflow=JSON.parse(gunzipSync(potionArchive));
-assert.equal(potionBackflow.base,'3b533744e369246f2eae505d637e860399f743f7');
+assert.equal(potionBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
 for(const [path,row] of Object.entries(potionBackflow.files)){
  assert(Object.hasOwn(files,path)&&matches(row.before.source,row.before),'exact potion popup predecessor: '+path);
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
@@ -52,7 +53,8 @@ for(const [path,row] of Object.entries(potionBackflow.files)){
 function beforePotionBackflow(path,source){
  const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];
  if(!row||!matches(source,row.after))return source;
- return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+ const prior=source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+ return beforeActionButtons(path,prior);
 }
 
 export function beforeInputRetirement(path,source,options){
@@ -60,7 +62,8 @@ export function beforeInputRetirement(path,source,options){
  if(!Object.hasOwn(files,path))return source;
  const row=files[path];
  if(!matches(source,row.after)&&!configLayoutMatches(source,row.after,options))return source;
- return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+ const prior=source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+ return beforeActionButtons(path,prior);
 }
 
 export function beforeInputRetirementReader(read){

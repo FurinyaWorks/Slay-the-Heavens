@@ -259,8 +259,8 @@ const deckPagesFiles=Object.freeze({
 const inputRetirementFiles=Object.freeze({
  ...deckPagesFiles,
  'tests/helpers/develop-release-backflow-source.mjs':'c98ed483a6f206491e3647109f4d2f78511faada0c124df2b8ec8399a682e6e2',
- 'tests/helpers/input-retirement-source.mjs':'e8f67ea86231ece39672bfeece798c17ef214f22d9630aa0fc318e64b3a0f929',
- 'tests/fixtures/develop-potion-popup-source.json.gz':'5afc503262571983c0864441fc922edca28aa8ed80c963f9fb5eb0ed9fa5abad',
+ 'tests/helpers/input-retirement-source.mjs':'60ded475179385e2cd21963c3e87eaaf903c1ebed454257fc2d3c5907c9dcd80',
+ 'tests/fixtures/develop-potion-popup-source.json.gz':'b599bd20963ba2c666a024a316db3ca2c4ceac2ed07de013fc86b2a7f195ff2d',
  'tests/helpers/character-preparation-source.mjs':'c33aaa686a55d39650ee65920db03df9023dd1551680f4cae8436f6403f97833',
  'tests/helpers/rebased-release-source.mjs':'faa43fceaf4e6e51c71e950213eefe15432428245f1a1df412f22e99c6c614cd',
  'tests/fixtures/develop-input-retirement-source.json.gz':'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912',
@@ -270,11 +270,17 @@ const inputRetirementFiles=Object.freeze({
  'tests/fixtures/architecture-admission-before.json.gz':'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42',
  'tests/helpers/sts-feedback-ci.json.gz':'c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59',
 });
+const actionButtonFiles=Object.freeze({
+ ...inputRetirementFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'ef51cd698c391f8b14b66bd4968d6d81717646578a75e908d00b9ec7906362a3',
+ 'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
+ 'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(inputRetirementFiles)){
+ for(const [path,sha]of Object.entries(actionButtonFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

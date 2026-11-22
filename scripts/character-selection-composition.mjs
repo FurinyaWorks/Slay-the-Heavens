@@ -1,4 +1,5 @@
-import {rounded,bands} from './v25-character-layout.mjs';
+import {bands} from './v25-character-layout.mjs';
+import {roundedPresetButton} from './native-rounded-button.mjs';
 // Positions measured in the 1280x720 Slay the Spire character-screen reference.
 // Data and input controls remain owned by the existing selection controller.
 
@@ -16,19 +17,10 @@ function surface(name,w,h,colour,theme){
 }
 export function styleCharacterFlag(button,key,theme){
  const hit=child(button,'hit');
- const [rim,cloth]=theme.officialAssets.flagButton[key];
+ roundedPresetButton(hit,theme,key==='cancel'?'danger':'primary',{name:'v25Flag',fontSize:24});
  for(const state of children(hit)){
-  for(const name of ['officialButtonBacking','border','plate']){
-   const part=child(state,name);if(part)part.visible=false;
-  }
-  const label=child(state,'label'),previous=child(state,'v25Flag');
-  const factor=state.name==='hover'?1.17:state.name==='pressed'?.9:state.name==='disabled'?.6:1;
-  const tint=hex=>'#'+hex.slice(1).match(/../g).map(v=>Math.min(255,Math.round(parseInt(v,16)*factor)).toString(16).padStart(2,'0')).join('');
-  const face={name:'v25Flag',kind:'container',size:[180,60],children:[
-   rounded('rim',180,60,10,tint(rim),theme),rounded('cloth',176,56,8,tint(cloth),theme)]};
-  if(previous)state.children.splice(state.children.indexOf(previous),1,face);
-  else state.children.splice(state.children.indexOf(label),0,face);
-  label.position=[0,0];label.text.fontSize=24;label.text.minFontSize=24;
+  const label=child(state,'label');
+  label.position=[0,0];label.text.minFontSize=24;
  }
 }
 export function characterSelectionComposition(panel,theme){

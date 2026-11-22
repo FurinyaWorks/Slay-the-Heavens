@@ -6,6 +6,7 @@
 
 | 目标版本 | 代码组件 · 视觉状态 | 设计修订 | 参考 | 设计状态 | Backlog | 取代修订 | 范围 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| v2.0.0 | [scripts/official-map-return-controls.mjs](../../scripts/official-map-return-controls.mjs) · `actionButtons` | develop-task-112 | [打开参考](../reviews/TASK-112-ACTION-BUTTONS.md) | CURRENT_IMPLEMENTATION | TASK-112 | — | 统一局内操作的圆角材质、状态色与地图返回位置。示意来自真实生成布局，官方设备待验。 |
 | v2.0.0 | [scripts/official-run-layout.mjs](../../scripts/official-run-layout.mjs) · `potionPopup` | shared-rounded-palette | [打开参考](../reviews/develop-potion-popup.md) | CURRENT_IMPLEMENTATION | TASK-4.15 | — | Release #871 回流。战斗与非战斗共用紧凑弹窗，保留等宽按钮、状态色及战后遗物栏。 |
 | v2.0.0 | [scripts/v25-menu-layout.mjs](../../scripts/v25-menu-layout.mjs) · `menuPanel` | sts1-pc-20261121 | [打开参考](reference-assets/v2.0.0/sts1-main-menu-20261121/REFERENCE.md) · [来源](https://interfaceingame.com/screenshots/slay-the-spire-main-menu/) | APPROVED | TASK-103.5 | 2026-11-19 | Owner 本轮明确指定的唯一标准：初代 PC 主菜单。批准设计方向与范围；绘画成图/官方设备验收另记。 |
 | v2.0.0 | [scripts/v25-menu-layout.mjs](../../scripts/v25-menu-layout.mjs) · `menuPanel` | sts1-painting-20261121 | [打开图片](reference-assets/v2.0.0/sts1-main-menu-20261121/design-hd.png) · [来源](https://interfaceingame.com/screenshots/slay-the-spire-main-menu/) | CURRENT_IMPLEMENTATION | TASK-103.5 | — | 正式新绘画稿及原生实现的对照源；具体画质与官方设备仍待确认。 |
