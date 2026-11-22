@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,readdirSync,rmSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,readFileSync,readdirSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
@@ -229,9 +229,13 @@ print('PAGE_REVEAL_PASS')`);
 test('new battle still gates input while settlement and reward cards stay on the ready scene',t=>{
  const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});const out=mkdtempSync(join(base,'pc13-cover-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
  buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out);
- lua(`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path
+ const source=`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path`;
+ lua(`${source}
 dofile('tests/lua/support/pc13_reward_cover.lua')
 dofile('tests/lua/support/modal_cover_setters.lua')
+print('PAGE_REVEAL_PASS')`);
+ lua(`${source}
+dofile('tests/lua/support/pc13_reward_feedback_tail.lua')
 print('PAGE_REVEAL_PASS')`);
 });
 
@@ -243,4 +247,15 @@ test('official Host publishes painted map rooms immediately when ready and gates
  lua(`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path
 dofile('tests/lua/support/map_room_reveal.lua')
 print('PAGE_REVEAL_PASS')`);
+});
+
+test('faster reward entry preserves the exact historical feedback and rejects drift',async()=>{
+ const {beforeEnergyReferenceSource,assertEnergyReferenceCurrent}=await import('./helpers/energy-reference-source.mjs');
+ const path='src/lua/abyss_feedback.lua',source=readFileSync(path,'utf8');
+ assert.doesNotThrow(()=>assertEnergyReferenceCurrent(path,source));
+ const prior=beforeEnergyReferenceSource(path,source);
+ assert.notEqual(prior,source);
+ assert.throws(()=>assertEnergyReferenceCurrent(path,prior),/fresh energy reference source/);
+ assert.equal(beforeEnergyReferenceSource(path,source+'-- unknown'),source+'-- unknown');
+ assert.throws(()=>beforeEnergyReferenceSource(path,source,()=>source+'-- changed'),/linked owner identity/);
 });
