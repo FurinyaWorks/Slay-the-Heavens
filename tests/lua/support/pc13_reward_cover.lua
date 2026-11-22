@@ -44,20 +44,37 @@ tick();assert(not cover.visible and not host.pageReveal:covered())
 run.combat=F.Combat.new(run.data,{enemies={'acid_slime_s'},deck={'bludgeon'}})
 host:refresh();settle();local lethalCombat=run.combat
 host.battleUI:playSlot(1);host.battleUI:playSelected(1)
-for _=1,400 do
+local monster=dofile('tests/lua/support/monster_control_fixture.lua')
+local enemyId=lethalCombat.enemies[1].id
+local lethalFrame,rewardFrame
+for frame=1,400 do
  assert(not cover.visible and not host.pageReveal:covered(),'lethal feedback/settlement flashed a cover')
  if not host.battleUI.busy then break end
- tick()
- assert(not bannerPlate.visible,'victory displayed the combat feedback plate')
- if victoryCues>0 then assert(list.visible and not host.battleUI.busy,'victory cue must hand off in the same frame')end
+ host:update(1/60)
+ if not lethalFrame and host.battleUI.feedback.deaths[enemyId] then
+  lethalFrame=frame
+  assert(monster(battle,'enemy1') and not list.visible,'lethal contact must be visible before rewards')
+ end
+ if list.visible then
+  rewardFrame=rewardFrame or frame
+  assert(not monster(battle,'enemy1') and not host.battleUI.busy,'enemy must retire before rewards are interactive')
+ end
+ assert(not bannerPlate.visible,'victory displayed a separate combat feedback plate')
+ if victoryCues>0 then assert(list.visible and not host.battleUI.busy,'victory cue did not hand off to rewards in the same frame')end
 end
 assert(host.run==run and run.combat==lethalCombat and run.phase=='reward')
 assert(victoryCues==1 and list.visible and list:GetChild('title').text=='战斗胜利')
+local rewardDelay=assert(rewardFrame)-assert(lethalFrame)
+print('REWARD_LETHAL_TO_LIST_FRAMES '..rewardDelay)
+assert(rewardDelay<=24,'lethal contact to reward list took '..rewardDelay..' frames at 60 Hz')
 local title=list:GetChild('title')
 local shade=list:GetChild('v25RewardField'):GetChild('dark')
 local alpha=F.Theme.officialAssets.backdropVeil.a
 assert(title.localScaleX<1 and title.fontColor.a<255 and battle:GetChild('hero').visible)
 assert(shade.imageColor.a>0 and shade.imageColor.a<alpha)
+local gold=run.gold
+battle:GetChild('goldReward').click()
+assert(run.rewards.goldClaimed and run.gold>gold,'the first reward frame must accept input')
 host:update(F.Theme.motion.slow)
 assert(title.localScaleX==1 and title.fontColor.a==255 and shade.imageColor.a==alpha)
 battle:GetChild('cardReward').click()

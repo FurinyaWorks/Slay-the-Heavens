@@ -229,6 +229,7 @@ function M.new(stage, platform, present, complete)
         local history=retainHistory and self.deaths or {}
         self.battle = retainHistory and (self.battle or self.idleBattle) or nil
         self.idleBattle, self.idleClock, self.shadow = nil, 0, nil
+        self.rewardTransition = nil
         self.cardFlow:reset()
         stage:SetAnchoredPosition(0, 0)
         self.stageShake = 0
@@ -520,7 +521,10 @@ function M.new(stage, platform, present, complete)
         self.acting = entry.kind == "intent" and entry.detail.enemy or self.acting
         if entry.kind == "player_turn" then self.acting = nil end
         self.enemyRows=EnemyView.slots(self.shadow,self)
-        present(self.shadow, self.acting, self.deaths)
+        -- The final reward frame is painted by completion. Skip the obsolete combat redraw.
+        if not self.rewardTransition or entry.kind ~= "victory" then
+            present(self.shadow, self.acting, self.deaths)
+        end
         return old,contactDeaths
     end
     local function step(entry, style)
@@ -545,22 +549,23 @@ function M.new(stage, platform, present, complete)
         -- Keep hit/action sound order within the same lethal presentation frame.
         for _,id in ipairs(contactDeaths)do contactDeathSound(id)end
     end
-    local function pendingMonsterExit()
+    local function pendingVictoryEffects()
+        if self.effects.player then return true end
         for id in pairs(self.dying)do if id~='player'then return true end end
         return next(self.escaping)~=nil
     end
     local function advanceQueue()
         repeat
             local entry=self.queue[self.index+1]
-            if entry and entry.kind=='victory' and (pendingMonsterExit() or self.effects.player)then return end
+            if entry and entry.kind=='victory' and pendingVictoryEffects()then return end
             self.index=self.index+1
             if not entry then finish();return end
             step(entry,self.styles[self.index])
-            -- Victory hands off after the last visible effects, without a banner hold.
+            -- Once the last effect completes, the victory cue hands off immediately.
             -- Source onModifyPower is synchronous as well.
         until entry.kind~='source_intent_powers' and entry.kind~='victory'
     end
-    function self.start(_owner,before, battle, first, presentation, origin)
+    function self.start(_owner,before, battle, first, presentation, origin, rewardTransition)
         -- GameActionManager releases its action gate independently of the
         -- dungeon's effectList. A subsequent card in this battle must not erase
         -- a previous target's still-running number, HP ghost or recovery pose.
@@ -568,6 +573,7 @@ function M.new(stage, platform, present, complete)
         if self.battle ~= battle then self:reset(nil,self.idleBattle==battle) end
         self.battle = battle
         self.playbackFastMode = self.fastMode
+        self.rewardTransition = rewardTransition
         self.presentation, self.origin, self.acting = presentation, origin, nil
         self.shadow = {catalog = battle.catalog, rules = battle.rules}
         for k, v in pairs(before) do self.shadow[k] = v end

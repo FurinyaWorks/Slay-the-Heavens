@@ -72,7 +72,7 @@ function M.install(owner, _ownership, host, dependencies)
         -- No core callback is retained by playback. The committed result is immutable to it.
         owner.feedbackLast = #battle.events
         owner.feedback:setFastMode(owner.fastMode==true)
-        owner.feedback:begin(before, battle, first, owner.presentation, origin)
+        owner.feedback:begin(before, battle, first, owner.presentation, origin, owner.run.phase == "reward")
         return ok, reason, clearPlayedSelection and feedbackPresented(owner,battle)
     end
     function owner:chooseCards(kind, uids, token, generation,battle)
