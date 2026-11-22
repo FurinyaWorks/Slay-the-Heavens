@@ -17,14 +17,20 @@ const traveler=JSON.parse(gunzipSync(travelerArchive));
 assert.equal(traveler.base,shopBase);
 assert.deepEqual(Object.keys(traveler.files),['src/lua/abyss_battle_detail_bindings.lua','tests/lua/traveler_power_tooltip.lua']);
 for(const path of Object.keys(traveler.files))assert(!Object.hasOwn(releaseFiles,path)&&!Object.hasOwn(shop,path),'distinct Develop backflow source owner: '+path);
+const refactorArchive=readFileSync(new URL('../fixtures/develop-card-display-responsibilities-source.json.gz',import.meta.url));
+assert.equal(hash(refactorArchive),'fafb7ec975e6ae3fa1f0629a7366a0f673bbad64668afede85267e7af0d0871c','exact Develop card-display-responsibilities predecessor archive');
+const refactor=JSON.parse(gunzipSync(refactorArchive));
+assert.equal(refactor.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
+assert.deepEqual(Object.keys(refactor.files),["src/lua/abyss_watcher_flow_cards.lua"]);
 const files={...releaseFiles,...traveler.files};
-for(const {before,after} of [...Object.values(files),...Object.values(shop)]){
+for(const path of Object.keys(refactor.files))assert(!Object.hasOwn(files,path)&&!Object.hasOwn(shop,path),'distinct Develop refactor source owner: '+path);
+for(const {before,after} of [...Object.values(files),...Object.values(shop),...Object.values(refactor.files)]){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
-const current=path=>Object.hasOwn(files,path)?files[path]:Object.hasOwn(shop,path)?shop[path]:undefined;
+const current=path=>Object.hasOwn(refactor.files,path)?refactor.files[path]:Object.hasOwn(files,path)?files[path]:Object.hasOwn(shop,path)?shop[path]:undefined;
 export const developBackflowOwns=path=>current(path)!==undefined;
 function matches(source,expected){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -40,7 +46,7 @@ function predecessor(layer,path,source){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source){
- return predecessor(shop,path,predecessor(files,path,source));
+ return predecessor(shop,path,predecessor(files,path,predecessor(refactor.files,path,source)));
 }
 const forethoughtOwners=['src/lua/abyss_deck_ui.lua','scripts/deck-ui-layout.mjs'];
 export function authenticateDevelopBackflow(path,source,read){

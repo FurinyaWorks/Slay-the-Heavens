@@ -1,3 +1,4 @@
+import {assertDevelopBackflowCurrent,authenticateDevelopBackflow} from './helpers/develop-release-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,rmSync} from 'node:fs';
@@ -106,7 +107,9 @@ test('published Flow Silent and Effects stack retains all predecessor bindings a
  assert.equal(proof.currentCommit,preEffectsTargetGroupEpoch.proof.currentCommit);
  for(const [file,standalone]of changed.map((file,i)=>[file,[flow,silent,effects][i]])){
   assert.deepEqual(proof.current[file],standalone.proof.current[file]);
-  assert.equal(raw(file),readFileSync(file,'utf8').replaceAll('\r\n','\n'));
+  const read=path=>readFileSync(path,'utf8'), live=read(file);
+  if(file===changed[0])assertDevelopBackflowCurrent(file,live);
+  assert.equal(raw(file),authenticateDevelopBackflow(file,live,read).replaceAll('\r\n','\n'));
  }
  for(const [name,target]of Object.entries(preEffectsTargetGroupEpoch.proof.targets))assert.deepEqual(proof.targets[name],target);
  for(const [file,binding]of Object.entries(preEffectsTargetGroupEpoch.proof.current))if(!changed.includes(file))assert.deepEqual(proof.current[file],binding);

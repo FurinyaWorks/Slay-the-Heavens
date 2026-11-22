@@ -1,3 +1,4 @@
+import {assertDevelopBackflowCurrent,authenticateDevelopBackflow} from './helpers/develop-release-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
@@ -24,7 +25,9 @@ function replay(source,fixture='tests/lua/watcher_flow_planning.lua'){
 const pass=r=>assert.equal(r.status,0,r.stdout+r.stderr);
 test('frozen complete source is authenticated and every unmodified responsibility is byte preserved',()=>{
  assert.equal(createHash('sha256').update(before).digest('hex'),proof.beforeSha256);
- const current=read(file);
+ const live=read(file);
+ assertDevelopBackflowCurrent(file,live);
+ const current=authenticateDevelopBackflow(file,live,read);
  assert.equal(current.split('-- These planners only')[0],before.split('function M.planEffect(')[0]);
  assert.equal(current.split('-- After the actual NORMAL damage')[1],before.split('-- After the actual NORMAL damage')[1]);
 });
@@ -65,7 +68,9 @@ for(const [name,from,to,diagnostic]of [
 });
 test('standalone exact inverse preserves identity without accepting source drift or foreign inputs',()=>{
  const current=read(file);
- for(const input of [current,current.replaceAll('\n','\r\n')])assert.equal(preWatcherFlowSource(file,input),before);
+ for(const input of [current,current.replaceAll('\n','\r\n')]){
+  assert.equal(preWatcherFlowSource(file,authenticateDevelopBackflow(file,input,read)),before);
+ }
  for(const input of [before,current+'\n',current.slice(1),current+current,null,undefined,{},17])assert.equal(preWatcherFlowSource(file,input),input);
  assert.equal(preWatcherFlowSource('foreign/'+file,current),current);
 });
