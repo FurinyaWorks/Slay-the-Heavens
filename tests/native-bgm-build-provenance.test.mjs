@@ -11,6 +11,7 @@ import { spawnSync } from 'node:child_process';
 import { fileRecord, sha256 } from '../scripts/evidence-files.mjs';
 import { nativeUiVariables } from '../scripts/native-candidate-scripts.mjs';
 import { requireStartupEvidence } from '../scripts/native-playtest-evidence.mjs';
+import {packNativeScript,nativeScriptStorageProfile} from '../scripts/native-script-storage.mjs';
 
 const builder = fileURLToPath(new URL('../scripts/build-native-bgm-candidate.mjs', import.meta.url));
 const sdk = `
@@ -37,7 +38,7 @@ export class Client {
  }
 }
 `;
-function fixture(t, corrupt, existing=false, official=false) {
+function fixture(t, corrupt, existing=false, official=false, packed=false, wrongConfiguration) {
   const root = mkdtempSync(join(tmpdir(), 'abyss-bgm-marker-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const put = (file, text) => { const path = join(root, file); mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, text); return path; };
@@ -45,11 +46,15 @@ function fixture(t, corrupt, existing=false, official=false) {
   const flags=official?officialAssetFlags:{menuBackground:true};
   const sources = { ...(official?{abyss_ui_profile:uiProfileSource(true)}:{}),abyss_art_features:artFeaturesSource(flags), abyss_bgm: 'return {bgm=true}', abyss_game_ui: 'return {view=true}',
     abyss_ui: `print("ABYSS_BUILD ${buildId}")\n-- exact full-build instrumentation\nreturn {}`, abyss_narrative: 'return {codeVersion="v0.1.0"}' };
+  if(wrongConfiguration==='abyss_ui_profile')sources.abyss_ui_profile=uiProfileSource(false);
+  if(wrongConfiguration==='abyss_art_features')sources.abyss_art_features=artFeaturesSource({...flags,battlePortrait:!flags.battlePortrait});
+  if(packed)for(const name of Object.keys(sources))sources[name]=packNativeScript(name,sources[name],nativeScriptStorageProfile);
   const moduleDigests = Object.fromEntries(Object.entries(sources).map(([name, source]) => {
     put(`full/payload/${name}.lua`, source); return [name, sha256(source)];
   }));
   const base = put('full/candidate.gil', 'full pre-audio candidate');
   const sourceReceipt = put('full/candidate.json', JSON.stringify({ buildId,
+    ...(packed?{nativeScriptStorage:{profile:nativeScriptStorageProfile,modules:[]}}:{}),
     ...(official ? { officialAssetsProfile, uiProfile: uiProfileReceipt(true), release: { version: 'v1.0.0', workKey: 'alpha-test' } } : {}),
     artFeatures:artFeatureReceipt(flags), candidate: fileRecord(base), moduleDigests, officialBackground:{templateIndex:1470123456,peakDynamicControls:13201} }));
   const tool = join(root, 'tool');
@@ -114,3 +119,21 @@ test('audio CLI preserves official skin and lifecycle identity and rejects chang
  assert.match(bad.run.stderr,/Final audio script readback differs/);
  assert.equal(existsSync(join(bad.output,'candidate.json')),false);
 });
+test('audio CLI accepts exact packed official policy modules and preserves the storage profile',t=>{
+ const f=fixture(t,undefined,false,true,true);assert.equal(f.run.status,0,f.run.stderr);
+ assert.notEqual(f.sources.abyss_ui_profile,uiProfileSource(true));
+ assert.notEqual(f.sources.abyss_art_features,artFeaturesSource(officialAssetFlags));
+ const receipt=JSON.parse(readFileSync(join(f.output,'candidate.json')));
+ assert.deepEqual(receipt.nativeScriptStorage,{profile:nativeScriptStorageProfile,modules:[]});
+ for(const name of ['abyss_ui_profile','abyss_art_features']){
+  const bad=fixture(t,name,false,true,true);assert.notEqual(bad.run.status,0);
+  assert.match(bad.run.stderr,/Final audio script readback differs/);
+  assert.equal(existsSync(join(bad.output,'candidate.json')),false);
+ }
+});
+for(const [name,label]of [['abyss_ui_profile','UI profile'],['abyss_art_features','art feature']])
+ test(`packed ${name} cannot change its configured policy even with a matching source digest`,t=>{
+  const f=fixture(t,undefined,false,true,true,name);assert.notEqual(f.run.status,0);
+  assert(f.run.stderr.includes('Full candidate '+label+' configuration mismatch'),f.run.stderr);
+  assert.equal(existsSync(join(f.output,'candidate.json')),false);
+ });

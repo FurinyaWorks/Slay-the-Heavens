@@ -13,6 +13,7 @@ import {embeddedScripts} from './native-script-inventory.mjs';
 import {runNativeClientCheck} from './native-client-check.mjs';
 import {writeScriptBatch} from './native-script-batch.mjs';
 import {assertCandidateArtReceipt} from './candidate-art-policy.mjs';
+import {packNativeScript} from './native-script-storage.mjs';
 
 const [base, directory = '.artifacts/native-bgm-candidate', sourceReceiptFile] = process.argv.slice(2);
 if (!base) throw new Error('Usage: node scripts/build-native-bgm-candidate.mjs <full-game-base.gil> [output-directory] [full-candidate.json]');
@@ -27,13 +28,13 @@ if(refinedReleaseMonsterArtFromReceipt(full))artBuildOptionsFromReceipt(full);
 const nativePageLifecycle=uiProfileFromReceipt(full);
 if(full.uiProfile){
  const source=readFileSync(join(dirname(resolve(sourceReceiptFile)),'payload',uiProfileModule+'.lua'),'utf8');
- if(source!==uiProfileSource(nativePageLifecycle)||createHash('sha256').update(source).digest('hex')!==full.moduleDigests?.[uiProfileModule])throw Error('Full candidate UI profile configuration mismatch');
+ if(source!==packNativeScript(uiProfileModule,uiProfileSource(nativePageLifecycle),full.nativeScriptStorage?.profile)||createHash('sha256').update(source).digest('hex')!==full.moduleDigests?.[uiProfileModule])throw Error('Full candidate UI profile configuration mismatch');
 }
 if (full && (full.candidate?.sha256 !== baseSha256 || typeof full.buildId !== 'string' || !full.buildId))
   throw new Error('Full candidate receipt does not match the audio base/build');
 if(full){
  const flags=verifyArtFeatureReceipt(full.artFeatures),source=readFileSync(join(dirname(resolve(sourceReceiptFile)),'payload',artFeatureModule+'.lua'),'utf8');
- if(source!==artFeaturesSource(flags)||createHash('sha256').update(source).digest('hex')!==full.moduleDigests?.[artFeatureModule])throw Error('Full candidate art feature configuration mismatch');
+ if(source!==packNativeScript(artFeatureModule,artFeaturesSource(flags),full.nativeScriptStorage?.profile)||createHash('sha256').update(source).digest('hex')!==full.moduleDigests?.[artFeatureModule])throw Error('Full candidate art feature configuration mismatch');
 }
 const scripts = ['abyss_bgm', 'abyss_game_ui', 'abyss_ui'].map(name => ({ name,
   source: readFileSync(full ? join(dirname(resolve(sourceReceiptFile)), 'payload', `${name}.lua`)
