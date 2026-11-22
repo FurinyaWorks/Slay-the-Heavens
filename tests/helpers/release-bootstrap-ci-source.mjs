@@ -1,4 +1,4 @@
-import {beforeShopEntryInventory,assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
+import {assertCurrentJsInventory,assertCurrentLuaInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,exactReviewedBuildInput,beforeM05ShopCiSource,assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './fork-preflight-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -82,8 +82,33 @@ function guidanceBefore(path,source){
  }
  return source;
 }
+// The live disk reader feeds the Run HUD predecessor chain. Authenticate these
+// two descendants before entering that chain; already-historical readers are unchanged.
+function beforeRunHudDiskInput(path,source,read){
+ if(path!=='scripts/deck-ui-layout.mjs'&&path!=='tests/node-ui-layout.test.mjs')return source;
+ if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
+ source=authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
+ if(path==='scripts/deck-ui-layout.mjs')return exactReviewedBuildInput(path,()=>source);
+ assert(!source.includes('\r\r\n'),'fresh Run HUD source: '+path);
+ const lf=norm(source),hashBlob=s=>createHash('sha1').update(`blob ${Buffer.byteLength(s)}\0`).update(s).digest('hex');
+ assert.equal(hash(lf),'60b7f711eb3b3939bace1e69a6293d30ac563769039d30937cb982e202693c31','fresh Run HUD source: '+path);
+ assert.equal(hashBlob(lf),'3b01c5376f0e928de2e0cc560e16c163764dfe08','fresh Run HUD source blob: '+path);
+ // Undo only the integrated coverage import and scrolling Forge assertions.
+ let prior=lf;
+ for(const [from,to] of [
+  ["import './helpers/shop-dismiss.cases.mjs';\n",""],
+  ["test('reward rows, Match board and the scrolling forge fit without hiding neighboring content',()=>{","test('source reward rows and the twelve-card smithing grid fit without hiding neighboring content',()=>{"],
+  [" const scrolling=find(picker,'forgeScroll'),fit=find(picker,'forgeFit');\n assert.equal(scrolling.grid.columns,5);\n assert.equal(scrolling.grid.horizontal,false);\n assert.equal(scrolling.grid.scrollbar,true);\n assert.equal(fit.grid.scrollbar,false);\n assert.equal(scrolling.itemTemplate,fit.itemTemplate);\n const prompt=find(find(picker,'forgePrompt').children,'label');\n assert.equal(prompt.text.content,'选择一张卡牌升级');\n for(const footer of [prompt,find(panel.children,'back'),find(panel.children,'confirm')])\n  assert.ok(!overlaps(bounds(scrolling),bounds(footer)),scrolling.name+' / '+footer.name);\n\n"," for(const name of ['forgePrevious','forgeNext']){\n  const arrow=find(picker,name);\n  for(const c of [...grid,find(panel.children,'back'),find(panel.children,'confirm')])\n   assert.ok(!overlaps(bounds(arrow),bounds(c)),name+' overlaps '+c.name);\n }\n"],
+ ]){
+  assert.equal(prior.split(from).length,2,'exact node-layout test edit');
+  prior=prior.replace(from,()=>to);
+ }
+ const original=beforeM05ShopCiSource(path,prior);
+ assert.notEqual(original,prior,'exact M05 test bridge: '+path);
+ return original;
+}
 export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,text));
+ const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)));
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
@@ -106,7 +131,7 @@ export function releaseBootstrapWorkflowBefore(path,source){
 export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));
  if(kind==='js')return assertCurrentJsInventory(paths,packet.currentInventory.js);
- assert.deepEqual([...beforeShopEntryInventory(paths,kind)].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
+ assertCurrentLuaInventory(paths,packet.currentInventory.lua);
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
  assertIntegrationSuccessorsCurrent(read);
