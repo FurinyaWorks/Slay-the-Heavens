@@ -113,7 +113,7 @@ function beforeShopEntryCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function shopEntryPreflightRead(read){
- const prior=shopEntryPriorRead(read);
+ const prior=shopEntryPriorRead((path,...args)=>beforeLoadingRecoveryCopier(path,read(path,...args)));
  return (path,...args)=>beforeShopEntryCopier(path,prior(path,...args));
 }
 function beforeReleaseUiBuildSource(path,source){
