@@ -100,8 +100,8 @@ const loadingRecoveryFiles=Object.freeze({
 const travelerStatusFiles=Object.freeze({
  ...loadingRecoveryFiles,
  'tests/helpers/combat-visual-source.mjs':'721b73965767d683ef2b1853113baa1508fb7d8f913031df84b5285ba38caada',
- 'tests/helpers/traveler-status-source.mjs':'2b00b666e1ae142f734f87f1f9895421a60cb051dee5611f508d84a4e576ab84',
- 'tests/fixtures/traveler-status-source.json.gz':'94e24cb97d3af9dafe79e15ecf05c1f9fefb917738d7b09fd1c6fd7d23e60c00',
+ 'tests/helpers/traveler-status-source.mjs':'41da0aaea833a446033b1fb964d31eebc4c4b5cd22e990a03370636f7afcc5ff',
+ 'tests/fixtures/traveler-status-source.json.gz':'78ea0afbc225eb83cfd79d24cbed5c1af166e21c07f2adfec3588b488a0d0de2',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

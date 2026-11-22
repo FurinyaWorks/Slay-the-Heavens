@@ -73,10 +73,10 @@ function beforeTravelerStatusCiSource(path,source){
  if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source),sha=hash(lf);
  let prior,expected;
- if(copier&&sha==='838f8f770883ed7224e9c4779e5f2fb2eba4411dc5d131b88c6eaf6e3754930a'){
+ if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
   prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(travelerStatusFiles))','Object.entries(loadingRecoveryFiles))');
-  expected='92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c';
+  expected='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac';
  }else if(regression&&sha==='e411b5d46c2bde12ef10d0615abaeacee3bc83d6c72221aa212cb3e708494089'){
   prior=lf.replace("import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';\n",'')
    .replace(/^test\('Traveler status continuation[^\n]*\n[\s\S]*?^\}\);\n\n/m,'');

@@ -4,10 +4,10 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 
 const archive = readFileSync(new URL('../fixtures/traveler-status-source.json.gz', import.meta.url));
-assert.equal(hash('sha256', archive), '94e24cb97d3af9dafe79e15ecf05c1f9fefb917738d7b09fd1c6fd7d23e60c00');
+assert.equal(hash('sha256', archive), '78ea0afbc225eb83cfd79d24cbed5c1af166e21c07f2adfec3588b488a0d0de2');
 const {base, successor, files} = JSON.parse(gunzipSync(archive));
-assert.equal(base, '4ac434d02f0479d92d96da75367f4cab98809a17');
-assert.equal(successor, 'd111244d322140bbd22d83857430e4283e32da9c');
+assert.equal(base, '43f0f359cd271cee6cfe8fc2b12d646b33617456');
+assert.equal(successor, '5ec19f71fd7f03033482e9591e8505e068c4ebbb');
 
 function matches(source, binding) {
   if (typeof source !== 'string' || source.includes('\r\r\n')) return false;
