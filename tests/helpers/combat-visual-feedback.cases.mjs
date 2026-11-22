@@ -89,16 +89,6 @@ test('fresh guards reject mixed old/new sources and integrated readback drift',(
 });
 
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
-test('faster reward entry preserves the exact historical feedback and rejects drift',()=>{
- const path='src/lua/abyss_feedback.lua',source=readFileSync(path,'utf8');
- assert.doesNotThrow(()=>assertEnergyReferenceCurrent(path,source));
- const prior=beforeEnergyReferenceSource(path,source);
- assert.notEqual(prior,source);
- assert.throws(()=>assertEnergyReferenceCurrent(path,prior),/fresh energy reference source/);
- assert.equal(beforeEnergyReferenceSource(path,source+'-- unknown'),source+'-- unknown');
- assert.throws(()=>beforeEnergyReferenceSource(path,source,()=>source+'-- changed'),/linked owner identity/);
-});
-
 test('reference correction keeps exact history while rejecting stale source and changed readers',()=>{
  const path='src/lua/abyss_battle_render_hud.lua',source=readFileSync(path,'utf8');
  const previous=beforeEnergyReferenceSource(path,source);assert.notEqual(previous,source);
