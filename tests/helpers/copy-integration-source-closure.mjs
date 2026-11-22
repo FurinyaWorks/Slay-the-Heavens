@@ -114,11 +114,16 @@ const travelerStatusFiles=Object.freeze({
  'tests/fixtures/release-battle-detail-source.json.gz':'62be372b9fcdbfee8c06bb68cf3808ec8932ed8097537c85c83fa85310e6ea9f',
  'tests/fixtures/traveler-status-source.json.gz':'78ea0afbc225eb83cfd79d24cbed5c1af166e21c07f2adfec3588b488a0d0de2',
 });
+const atomicCardEffectsFiles=Object.freeze({
+ ...travelerStatusFiles,
+ 'tests/helpers/release-ui-restore-source.mjs':'164e42ed69f1f80e9bce027292f8537eac24fd26cbec32584347b1340110b82c',
+ 'tests/helpers/atomic-card-effects-source.mjs':'bd3d19b9a1494f3f8ae44cff7a5f95f7ce4e05b3ebda719b7dc213169cb83576',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(travelerStatusFiles)){
+ for(const [path,sha]of Object.entries(atomicCardEffectsFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

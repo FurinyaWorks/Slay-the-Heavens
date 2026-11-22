@@ -1,3 +1,4 @@
+import {authenticateAtomicCardEffects,beforeAtomicCardEffects} from './helpers/atomic-card-effects-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,rmSync} from 'node:fs';
@@ -16,7 +17,11 @@ test('Effects target group outer epoch preserves every prior binding and exact f
  assert.equal(proof.collectedBaseCommit,prior.collectedBaseCommit);
  assert.equal(proof.effectsTargetGroupLocalSourceSliceCommit,'eba244948d6116aeb478b409095680f5c3f8cdc9');
  assert.equal(proof.effectsTargetGroupSourceTree,'ef6ff1bd7ce4fe466ea52752bee6c9fd9eb5fc65');
- assert.equal(raw(path),readFileSync(path,'utf8').replaceAll('\r\n','\n'));
+ const read=file=>readFileSync(file,'utf8'),live=read(path);
+ assert.notEqual(live.replaceAll('\r\n','\n'),raw(path));
+ assert.equal(authenticateAtomicCardEffects(path,live,read).replaceAll('\r\n','\n'),raw(path));
+ assert.equal(beforeAtomicCardEffects(path,live+'\n'),live+'\n');
+ assert.throws(()=>authenticateAtomicCardEffects(path,live,()=>live+'\n'),/linked owner identity/);
  assert.deepEqual(effectsTargetGroupEpoch.proof.targets.prior.files[path],prior.current[path]);
  assert.deepEqual(proof.targets.effectsTargetGroupPrior.files,prior.current);
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(proof.targets[name],target,name);
@@ -106,7 +111,7 @@ test('published Flow Silent and Effects stack retains all predecessor bindings a
  assert.equal(proof.currentCommit,preEffectsTargetGroupEpoch.proof.currentCommit);
  for(const [file,standalone]of changed.map((file,i)=>[file,[flow,silent,effects][i]])){
   assert.deepEqual(proof.current[file],standalone.proof.current[file]);
-  assert.equal(raw(file),readFileSync(file,'utf8').replaceAll('\r\n','\n'));
+  assert.equal(raw(file),beforeAtomicCardEffects(file,readFileSync(file,'utf8')).replaceAll('\r\n','\n'));
  }
  for(const [name,target]of Object.entries(preEffectsTargetGroupEpoch.proof.targets))assert.deepEqual(proof.targets[name],target);
  for(const [file,binding]of Object.entries(preEffectsTargetGroupEpoch.proof.current))if(!changed.includes(file))assert.deepEqual(proof.current[file],binding);

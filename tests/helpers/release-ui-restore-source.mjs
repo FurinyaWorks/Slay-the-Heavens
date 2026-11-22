@@ -2,6 +2,7 @@ import {beforeEventArtSource,eventArtPriorRead,beforeShopProductionSource,before
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {authorizeRefinedReleaseProduction,beforeRefinedReleaseProduction} from './refined-release-source.mjs';
 import assert from 'node:assert/strict';
+import {authenticateAtomicCardEffects,beforeAtomicCardEffects} from './atomic-card-effects-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -114,6 +115,7 @@ export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.f
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
 export function beforeReleaseUiRestore(path,source){
+ source=beforeAtomicCardEffects(path,source);
  const shopSource=beforeShopProductionUi(path,compoundIntent.project(path,source),liveCompoundIntentRead,liveEventRead);
  const recorded=beforeHistoricalRecordingUi(path,beforeReleaseShopEntry(path,shopSource),liveShopEntryRead);
  const refined=beforeRefinedReleaseProduction(path,recorded);
@@ -124,6 +126,9 @@ export function beforeReleaseUiRestore(path,source){
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ samples=samples.map(([path,input])=>[path,authenticateAtomicCardEffects(path,input,read)]);
+ const readRaw=read;
+ read=path=>beforeAtomicCardEffects(path,readRaw(path));
  if(samples.some(([path,input])=>matches(input,compoundIntent.files[path]?.after)))assertCompoundIntentOwners(samples,read);
  samples=samples.map(([path,input])=>[path,compoundIntent.project(path,input)]);
  read=compoundIntentPriorRead(read);
