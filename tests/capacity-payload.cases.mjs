@@ -79,8 +79,9 @@ test('Release capacity history rejects a current source replaced with its predec
  const subsequentPredecessor=(file,encoding)=>file===path&&++reads>1?previous:readFileSync(file,encoding);
  assert.throws(()=>assertIntegrationSuccessorsCurrent(subsequentPredecessor),{message:'fresh Release capacity source: '+path});
  assert.equal(reads,2);
- const inventory='docs/legal/assets.json';
- assert.throws(()=>assertIntegrationSuccessorsCurrent((file,encoding)=>
-  file===inventory?readFileSync(file,encoding)+'\n':readFileSync(file,encoding)),
-  {message:'fresh complete integration source: '+inventory});
+ for(const owner of ['docs/legal/assets.json','tests/delivery.test.mjs']){
+  assert.throws(()=>assertIntegrationSuccessorsCurrent((file,encoding)=>
+   file===owner?readFileSync(file,encoding)+'\n':readFileSync(file,encoding)),
+   {message:'fresh complete integration source: '+owner});
+ }
 });

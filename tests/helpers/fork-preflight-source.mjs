@@ -135,8 +135,17 @@ function beforeReleaseAssetInventory(path,source){
  assert.equal(hash(prior),'821176420ff12bfca7675c6c3fdbbb5bf5f7d10a1b95e1202fad08c671635ecb','exact Release evidence inventory predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeReleaseBackflowTest(path,source){
+ if(path!=='tests/delivery.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='8450cf025ac639efea3d40452f614fa5200ab5b21b2ca59e82ad7b0b87b1318d')return source;
+ const prior=lf.replace("import { fileURLToPath } from 'node:url';\n",'')
+  .replace(/^test\('Release event and default-branch sweep report residuals against an immutable develop tree',[\s\S]*?(?=^test\('checkout writer)/m,'');
+ assert.equal(hash(prior),'f74b528375f1f487985a4c108687cd62b61fccb2a23070bb5810205fb69cfc2a','exact Release backflow test predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeReleaseUiBuildSource(path,source){
- source=beforeReleaseAssetInventory(path,source);
+ source=beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source));
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);
