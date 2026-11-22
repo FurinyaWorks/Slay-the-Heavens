@@ -82,15 +82,15 @@ function curvedPolygon(name,start,segments,colour){
 
 export function shopCloth(){return group('v25ShopCloth',[
  rect('perimeter',0,-21.5,1280,677,'#162320'),
- rect('shadow',5,-28,1146,659,'#162D29'),
- rect('hem',0,-20,1144,663,'#A39066'),
- rect('cloth',0,-20,1136,655,'#435953'),
- fade('clothLight',0,-20,1136,655,'#71866A',{rotation:180,opacity:.28}),
+ rect('shadow',5,-28,1196,659,'#162D29'),
+ rect('hem',0,-20,1194,663,'#A39066'),
+ rect('cloth',0,-20,1186,655,'#435953'),
+ fade('clothLight',0,-20,1186,655,'#71866A',{rotation:180,opacity:.28}),
  ...[-1,1].flatMap(side=>[
-  rect('selvedge'+side,side*557,-20,1,652,'#CCB77C',{opacity:.65}),
-  ...[278,146,14,-118,-250].map((y,i)=>image('stitch'+side+'_'+i,side*548,y,10,10,100004,'#BAA475',{opacity:.68})),
+  rect('selvedge'+side,side*587,-20,1,652,'#CCB77C',{opacity:.65}),
+  ...[278,146,14,-118,-250].map((y,i)=>image('stitch'+side+'_'+i,side*578,y,10,10,100004,'#BAA475',{opacity:.68})),
  ]),
- rect('lowerHem',0,-341,1116,2,'#A3916C'),
+ rect('lowerHem',0,-341,1174,2,'#A3916C'),
  ]);}
 
 function campScene(theme){
