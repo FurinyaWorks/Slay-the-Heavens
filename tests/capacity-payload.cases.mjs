@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,writeFileSync,rmSync,mkdirSync} from 'node:fs';
+import {mkdtempSync,readFileSync,writeFileSync,rmSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
+import {gunzipSync} from 'node:zlib';
 import * as monsters from '../scripts/monster-art.mjs';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
@@ -64,4 +65,26 @@ test('official portrait payload omits the unused legacy full body and retains ac
  writeFileSync(file,`local a=(function()\n${source}\nend)()\nassert(a.battle133==nil)\nassert(a.avatar96.count==4822)\nassert(a.lowpolyLumine.count==1600)\nassert(a.battleApprovedNative.count==464)\nprint('official assets intact')\n`);
  const result=runLua(file,{timeout:30000});assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/official assets intact/);
  assert.match(writePortraitModule(legacy),/\bbattle133=\(function/,'legacy callers retain their original drawing');
+});
+
+test('Release capacity history rejects a current source replaced with its predecessor on reread',async()=>{
+ const {assertIntegrationSuccessorsCurrent}=await import('./helpers/fork-preflight-source.mjs');
+ const archive=readFileSync(new URL('./helpers/release-capacity-source.json.gz',import.meta.url));
+ const {files}=JSON.parse(gunzipSync(archive));
+ const path='scripts/build-native-candidate.mjs';
+ const previous=files[path].before.source;
+ assert.doesNotThrow(()=>assertIntegrationSuccessorsCurrent((file,encoding)=>
+  files[file]?.before.source??readFileSync(file,encoding)));
+ let reads=0;
+ const subsequentPredecessor=(file,encoding)=>file===path&&++reads>1?previous:readFileSync(file,encoding);
+ assert.throws(()=>assertIntegrationSuccessorsCurrent(subsequentPredecessor),{message:'fresh Release capacity source: '+path});
+ assert.equal(reads,2);
+ for(const [owner,label] of [['docs/legal/assets.json',''],['tests/delivery.test.mjs',''],
+  ['tests/native-monster-actor-template.test.mjs','refined Release '],
+  ['tests/lua/support/official_node_picker_pagination.lua','refined Release '],
+  ['tests/lua/merchant_dialogue_lifecycle.lua','']]){
+  assert.throws(()=>assertIntegrationSuccessorsCurrent((file,encoding)=>
+   file===owner?readFileSync(file,encoding)+'\n':readFileSync(file,encoding)),
+   {message:'fresh complete integration source: '+label+owner});
+ }
 });
