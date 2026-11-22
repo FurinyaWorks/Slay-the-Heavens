@@ -2,6 +2,7 @@
 export * from './epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import { preRound3CatalogSource as original } from './epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
+import {authenticateDevelopBackflow} from './develop-release-backflow-source.mjs';
 import {readFileSync} from 'node:fs';
 const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');
 function unusedOriginalFacade(path,source,{readSource=live}={}){
@@ -59,7 +60,16 @@ export function prepareRound3CatalogModuleRetirement(directory,{sourceRoot=proce
   assert.equal(now.dev,initial.dev);assert.equal(now.ino,initial.ino);assert.equal(now.nlink,1,'retirement requires single link');
   assert(now.dev!==liveStat.dev||now.ino!==liveStat.ino,'retirement inode aliases live source');
   const input=sourceEpoch.preCombinedSource(path,readFileSync(target,'utf8'),{target:'colorless',readSource:raw});
-  const previous=originalColorless(path,input,{readSource:sourceEpoch.combinedReader(raw,'colorless')});
+  const readSource=owner=>{
+   const observed=raw(owner);
+   const projected=sourceEpoch.preCombinedSource(owner,observed,{target:'colorless',readSource:raw});
+   // The frozen target and current receipt have the same Colorless owner hash.
+   // The combined reader keeps raw bytes in that case, so authenticate the
+   // exact Develop successor before passing it to the frozen Colorless inverse.
+   return owner==='src/lua/abyss_colorless_cards.lua'&&projected===observed?
+    authenticateDevelopBackflow(owner,observed,raw):projected;
+  };
+  const previous=originalColorless(path,input,{readSource});
   assert.equal(hash(previous),round3CatalogProof.files[path].afterSha256,'complete retirement catalog identity');
  };
  check();return ()=>{check();retireExtras();rmSync(target);};

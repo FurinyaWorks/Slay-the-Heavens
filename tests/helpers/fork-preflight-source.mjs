@@ -214,6 +214,15 @@ function beforeDevelopSessionRelicCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
+  const lf=normalize(source);
+  if(hash(lf)==='0a378223063056063e2903ec3d36c323a55e25b8a1f5ad6ccba71c9e5b70d30a'&&blob(lf)==='fd462c9e87c8563efb8b343405cc8550e52c0f47'){
+   const prior=lf.replace(/^const developIntegrationReplayFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+    .replace('Object.entries(developIntegrationReplayFiles))','Object.entries(developSessionRelicFiles))');
+   assert.equal(hash(prior),'5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9','exact integration replay copier predecessor');
+   source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  }
+ }
  source=beforeDevelopSessionRelicCopier(path,source);
  source=beforeDevelopActorFocusCopier(path,source);
  source=beforeDevelopStasisUpgradeCopier(path,source);
@@ -569,7 +578,25 @@ function closeoutPredecessor(path){
  }
  return closeoutPredecessors.get(path);
 }
+function beforeIntegrationReplayTests(path,source){
+ if(path!=='tests/integration-source-epoch.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!=='54554c11d6514f5bf8b164fb30fe9b5538e39f550e9a22587514461ad9442587'||
+  blob(current)!=='bf77a954913587402aea8992f734cf891d9891bd')return source;
+ const archive=readFileSync(new URL('./integration-replay-test-source.json.gz',import.meta.url));
+ assert.equal(hash(archive),'8b1b39e9d26df59754f64d3771dce43974554c4c9acb67a7fa9f9e921232d3f6','immutable integration replay test predecessor archive');
+ const proof=JSON.parse(gunzipSync(archive));
+ assert.equal(proof.schemaVersion,1);
+ assert.equal(proof.base,'469e80240c5b7c60f75ff434bebac62d73c0bd0c');
+ assert.equal(proof.path,path);
+ assert.equal(proof.after.sha256,hash(current));assert.equal(proof.after.gitBlob,blob(current));
+ const prior=proof.before;
+ assert.equal(prior.sha256,sourceSuccessors[path]);assert.equal(hash(prior.source),prior.sha256);
+ assert.equal(blob(prior.source),prior.gitBlob);
+ return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
+}
 function beforeIntegrationSuccessor(path,source){
+ source=beforeIntegrationReplayTests(path,source);
  if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
    ||hash(normalize(source))!==sourceSuccessors[path])return source;
  const prior=archiveFiles[path]?.current??closeoutPredecessor(path);
@@ -578,7 +605,7 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const readBackflow=(path,encoding)=>{
-  const source=beforeForkFirstCi(path,read(path,encoding));
+  const source=beforeIntegrationReplayTests(path,beforeForkFirstCi(path,read(path,encoding)));
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
   return authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
  };
