@@ -36,7 +36,7 @@ export function beforeAuthenticatedStsSelectionFade(path,source,read){
 
 export function stsCurrentJsDiscovery(paths,read=readFileSync){
  assert.deepEqual([...paths].sort(),[...inventory.before,inventory.addition].sort(),'complete STS raw JS discovery inventory');
- const source=read(inventory.addition,'utf8');
+ const source=beforeDevelopBackflow(inventory.addition,read(inventory.addition,'utf8'));
  assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===inventory.sha256,'fresh STS added test source');
  return paths.filter(path=>path!==inventory.addition);
 }
@@ -49,7 +49,7 @@ export function beforeIntegratedStsInventory(paths,read=readFileSync){
  const first=paths.indexOf(addition);
  if(first===-1)return paths;
  assert.equal(paths.lastIndexOf(addition),first,'one STS added test');
- const source=read(addition,'utf8');
+ const source=beforeDevelopBackflow(addition,read(addition,'utf8'));
  assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===inventory.sha256,'fresh STS added test source');
  return paths.filter(path=>path!==addition);
 }
