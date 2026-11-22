@@ -259,7 +259,8 @@ const deckPagesFiles=Object.freeze({
 const inputRetirementFiles=Object.freeze({
  ...deckPagesFiles,
  'tests/helpers/develop-release-backflow-source.mjs':'c98ed483a6f206491e3647109f4d2f78511faada0c124df2b8ec8399a682e6e2',
- 'tests/helpers/input-retirement-source.mjs':'d1d3222246ac29175ceea5a119bb99598e7265efb5863e9918f4e90713578924',
+ 'tests/helpers/input-retirement-source.mjs':'e8f67ea86231ece39672bfeece798c17ef214f22d9630aa0fc318e64b3a0f929',
+ 'tests/fixtures/develop-potion-popup-source.json.gz':'5afc503262571983c0864441fc922edca28aa8ed80c963f9fb5eb0ed9fa5abad',
  'tests/helpers/character-preparation-source.mjs':'c33aaa686a55d39650ee65920db03df9023dd1551680f4cae8436f6403f97833',
  'tests/helpers/rebased-release-source.mjs':'faa43fceaf4e6e51c71e950213eefe15432428245f1a1df412f22e99c6c614cd',
  'tests/fixtures/develop-input-retirement-source.json.gz':'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912',
