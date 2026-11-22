@@ -24,6 +24,7 @@ const mapRoomCohortPaths=new Set([
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs',
  'tests/helpers/copy-integration-source-closure.mjs',
  'tests/helpers/develop-release-backflow-source.mjs',
+ 'tests/helpers/round3-catalog-source-inverse.mjs',
  'tests/encounter-formation-source-epoch.test.mjs',
  'tests/run-max-hp-config-inverse.test.mjs',
  'tests/session-menu-navigation.test.mjs',
@@ -31,7 +32,7 @@ const mapRoomCohortPaths=new Set([
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  'a849c523b72b56f38fe863afa60d9ad7e65490eee8df79b3addbdf03f0a0a580','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  'b087513ebdd898bac64cd8f926d5bdd82f97e2b139407ffe7d9a222a032b7df6','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 

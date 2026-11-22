@@ -3,6 +3,7 @@ export * from './epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs'
 import { preRound3CatalogSource as original } from './epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
 import {authenticateDevelopBackflow} from './develop-release-backflow-source.mjs';
+import {beforeReleaseForgeGridUi} from './release-ui-restore-source.mjs';
 import {readFileSync} from 'node:fs';
 const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');
 function unusedOriginalFacade(path,source,{readSource=live}={}){
@@ -23,7 +24,8 @@ import {preparePotionCallbackRetirement} from './epochs/potion/tests/helpers/pot
 import {prepareActorPresenceRetirement} from './epochs/actor/tests/helpers/actor-presence-source-inverse.mjs';
 const hash=s=>createHash('sha256').update(s.replaceAll('\r\n','\n')).digest('hex');
 function projectRound3(path,source,{readSource=live}={}){
- return sourceEpoch.withCombinedProjection(path,source,{target:'develop',readSource},(projected,read)=>{
+ return sourceEpoch.withCombinedProjection(path,source,{target:'develop',readSource},(projected,readPast)=>{
+  const read=owner=>beforeReleaseForgeGridUi(owner,readPast(owner));
   let candidate=legacyIntegration(path,projected,'base',{readSource:read});
   candidate=legacyMonster(path,candidate,{readSource:read});
   candidate=legacyComposition(path,candidate,'round3');
