@@ -77,13 +77,13 @@ for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon
 if official then
  assert(bar:GetChild('slot1'):GetChild('hit').click())
  assert(h.relicUI.selectedIndex==1 and h.relicUI.selected.id=='burning_blood','shared single entry from map')
- checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
+ checkCrystal(panel:GetChild('single'),96)
  assert(panel:GetChild('single'):GetChild('icon').imageId==runIcon('burning_blood'),'same single atlas outside combat')
  assert(h.relicUI:turn(1))
  assert(not panel:GetChild('single'):GetChild('iconArt').visible,'other relics must not inherit the crystal')
  assert(panel:GetChild('single'):GetChild('icon').visible)
  assert(h.relicUI:turn(-1))
- checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
+ checkCrystal(panel:GetChild('single'),96)
  assert(h:closeDeck())
  local battleHost,root=F.fixture();assert(F.start(battleHost))
  local run=battleHost.run
@@ -131,6 +131,36 @@ if official then
  checkCandle(root:GetChild('relicBar'):GetChild('slot2'),'icon')
  assert(battleHost:openRelics(2))
  checkCandle(root:GetChild('relicPanel'):GetChild('single'),'icon')
+
+ -- The first owned relic opens over the three-card selection, with the same
+ -- icon placement as an adjacent relic that uses the atlas image.
+ assert(battleHost:closeDeck())
+ run.relics[2]='red_skull'
+ run.rewards={manualContinue=true,gold=0,goldClaimed=true,
+  cards={'strike','defend','bash'},cardResolved=false}
+ battleHost:refresh()
+ local battle=root:GetChild('battlePanel')
+ F.click(root,'battlePanel','cardReward')
+ assert(battle:GetChild('rewardStage').visible,'opened the three-card reward picker')
+ local rewardBar=root:GetChild('relicBar')
+ local detail=root:GetChild('relicPanel')
+ local single=detail:GetChild('single')
+ local icon,art=single:GetChild('icon'),single:GetChild('iconArt')
+ assert(rewardBar:GetChild('slot1'):GetChild('hit').click())
+ assert(single:GetChild('name').text=='岩脉残晶')
+ checkCrystal(single,96)
+ assert(art.x==icon.x and art.y==icon.y,'crystal must share the in-panel atlas anchor')
+ assert(math.abs(art.x)+48<detail:GetChild('frame').sizeDeltaX/2
+  and math.abs(art.y)+48<detail:GetChild('frame').sizeDeltaY/2,'crystal fits inside the detail panel')
+ assert(not detail:GetChild('previous').visible)
+ assert(detail:GetChild('next'):GetChild('hit').click())
+ assert(single:GetChild('name').text=='红头骨' and icon.visible and not art.visible)
+ assert(icon.x==art.x and icon.y==art.y)
+ assert(detail:GetChild('previous'):GetChild('hit').click())
+ checkCrystal(single,96)
+ assert(art.x==icon.x and art.y==icon.y,'returning to page one retains the anchor')
+ assert(detail:GetChild('close'):GetChild('hit').click())
+ assert(not detail.visible and battle:GetChild('rewardStage').visible and not run.rewards.cardResolved)
 else
  assert(h:openRelics(1))
  assert(not h.relicUI.selectedIndex)

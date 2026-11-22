@@ -117,8 +117,12 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     end
     local function positionSingle(view,compact)
         if not compact then return end
-        view:GetChild('icon'):SetAnchoredPosition(-177,8)
-        view:GetChild('icon'):SetSizeDelta(96,96)
+        local x,y=-177,8
+        local icon,art=view:GetChild('icon'),view:GetChild('iconArt')
+        icon:SetAnchoredPosition(x,y)
+        icon:SetSizeDelta(96,96)
+        -- Native art is a sibling of the atlas image and needs the same anchor.
+        if art then art:SetAnchoredPosition(x,y)end
         for name,frame in pairs({name={55,91,350,40},rarity={55,53,350,32},
             description={55,-30,350,126},status={55,-110,350,34}})do
             local control=view:GetChild(name)
