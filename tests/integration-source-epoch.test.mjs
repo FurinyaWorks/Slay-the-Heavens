@@ -8,10 +8,27 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
+import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';
 const sandbox=process.cwd();
 const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
 const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
 const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];
+
+test('Traveler status continuation accepts exact live sources and rejects stale or foreign bytes',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ const noRead=()=>assert.fail('foreign source must not trigger a linked read');
+ for(const path of travelerStatusSourcePaths){
+  const current=read(path), prior=beforeTravelerStatusSource(path,current,read,true);
+  assert.notEqual(prior,current,path);
+  assert.equal(beforeTravelerStatusSource(path,current.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
+  for(const invalid of [prior,current+'\n',null]){
+   assert.equal(beforeTravelerStatusSource(path,invalid,noRead),invalid);
+   assert.throws(()=>beforeTravelerStatusSource(path,invalid,noRead,true),/fresh current production owner/);
+   assert.throws(()=>beforeTravelerStatusSource(path,current,()=>invalid),/combined linked owner identity/);
+  }
+  assert.equal(beforeTravelerStatusSource('unrelated',current,noRead),current);
+ }
+});
 
 test('runtime helper copy continuation retains every old view and rejects stale predecessor identity',async()=>{
  const {integratedCiProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');

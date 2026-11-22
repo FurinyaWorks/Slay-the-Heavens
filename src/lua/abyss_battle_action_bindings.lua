@@ -63,6 +63,9 @@ function M.install(owner, ownership, host, dependencies)
     end
     local function bind(name, fn)
         local control, input = dependencies.child(name), {}
+        local function dismissPowerTip()
+            return name == "playArea" and owner.powerTip and owner.powerTip.touch and owner:closePowerTip()
+        end
         if name == "playArea" then control = control:GetChild("hit") end
         ownership.actionInputs[#ownership.actionInputs + 1] = input
         Controller.bind(host.controller,control,name=="playArea" and "aim" or "battle",function()
@@ -78,7 +81,7 @@ function M.install(owner, ownership, host, dependencies)
         end,name=="endTurn" and 90 or 50)
         control:AddCursorEventListener(host.clickEvent, function(event)
             if Controller.pointerBlocked(host.controller)then return false end
-            if dependencies.swallowed(event) then return end
+            if dismissPowerTip() or dependencies.swallowed(event) then return end
             if name == "playArea" and ownership.fieldPointerObserved or name ~= "playArea" and ownership.actionPointerObserved then
                 local released = input.released
                 if not released or released.touch ~= (event and event.touchId) then return end
@@ -90,7 +93,7 @@ function M.install(owner, ownership, host, dependencies)
         if owner.dragEnabled then
             control:AddCursorEventListener(host.cursor.CursorDown, function(event)
                 if name == "playArea" then ownership.fieldPointerObserved = true else ownership.actionPointerObserved = true end
-                local dismissed = dependencies.down(event)
+                local dismissed = dismissPowerTip() or dependencies.down(event)
                 input.held, input.released = nil, nil
                 if dismissed then return end
                 local g = actionToken(name, event)
