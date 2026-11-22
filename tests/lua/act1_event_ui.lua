@@ -28,7 +28,7 @@ test('bonfire native source purge picker excludes bottled card',function()
  local r,m,ui,get,click=fixture('bonfire',{{uid=1,cardId='strike',upgraded=false,inBottleFlame=true},{uid=7,cardId='bash',upgraded=false}})
  eq(get('eventView/name').text,'篝火精灵');click('eventView/option1');eq(r.nodeFlow.event.stage,'choose');click('eventView/option1');eq(r.nodeFlow.event.stage,'choose_card');eq(get('pickerView').visible,true)
  eq(get('back').visible,false);eq(get('pickerView/card2').visible,false);eq(ui.removeRows[1].uid,7)
- click('pickerView/card1');eq(get('confirm/label').text,'确认献祭')
+ click('pickerView/card1');eq(get('confirm/label').text,'确认交换')
 end)
 test('serpent native decline keeps farewell and rejects old option closure',function()
  local r,m,ui,get,click=fixture('sssserpent');local old=ui.actions['eventView/option1'].handler

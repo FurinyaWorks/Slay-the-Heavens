@@ -23,6 +23,7 @@ import { toLua } from './build-lua-data.mjs';
 import { nativeCardArtArgs, prepareNativeCardArt, nativeCardArtBuildReceipt, verifyNativeCardArtReceipt } from './card-art-samples.mjs';
 import {reusableUi} from './native-candidate-ui-cache.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
+import {assertClientScriptText} from './check-release-text.mjs';
 import {runNativeClientCheck} from './native-client-check.mjs';
 import {assertCandidateArtPolicy,assertCandidateArtReceipt} from './candidate-art-policy.mjs';
 import {lightweightProfile} from './lightweight-2d-profile.mjs';
@@ -338,8 +339,9 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     receipt.reusedModules=[];
     if(officialAssets)receipt.nativeScriptStorage={profile:nativeScriptStorageProfile,modules:[]};
     const moduleDigests={},pendingScripts=[];
-    for(const [name,source] of modules) {
-      const original=readFileSync(fileRecord(source).path,'utf8').replace(/^\uFEFF/,'');
+    const scriptInputs=[...modules].map(([name,path])=>({name,source:readFileSync(path,'utf8').replace(/^\uFEFF/,'')}));
+    assertClientScriptText(scriptInputs,'candidate-source');
+    for(const {name,source:original} of scriptInputs) {
       const compact=packNativeScript(name,original,receipt.nativeScriptStorage?.profile);
       const bytes=Buffer.from(name==='abyss_ui'?`print("ABYSS_BUILD ${buildId}")\n`+compact:compact),destination=join(payload,`${name}.lua`);
       receipt.nativeScriptStorage?.modules.push({name,sourceSha256:sha256(original),sourceBytes:Buffer.byteLength(original),packedSha256:sha256(bytes),packedBytes:bytes.length});
@@ -399,6 +401,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     const readback=await call('scene_list_client_scripts',{mapPath,includeSource:true});
     if(!Array.isArray(readback.scripts)||JSON.stringify(readback.scripts.map(row=>row.name).sort())!==JSON.stringify(names))throw new Error('Candidate readback module set differs');
     for(const row of readback.scripts)if(typeof row.source!=='string'||sha256(row.source)!==moduleDigests[row.name])throw new Error(`Candidate content digest mismatch: ${row.name}`);
+    receipt.scriptText=assertClientScriptText(readback.scripts,'candidate.gil');
     for(const record of receipt.outputs)if(fileRecord(record.path,workspace).sha256!==record.sha256)throw new Error('Packaged output changed during build');
     receipt.moduleDigests=moduleDigests;
     receipt.productionManifest={modules:[...modules.keys()].map(name=>({name,...fileRecord(join(payload,`${name}.lua`),workspace)})),

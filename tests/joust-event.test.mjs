@@ -96,6 +96,25 @@ import {parseDiagnostics,reviewResponsibilityComplexity} from '../scripts/check-
 import {joustTrace} from './helpers/joust-trace.mjs';
 const joustPath='src/lua/abyss_joust_event.lua';
 const joustBefore=read('tests/fixtures/joust-event-before.lua');
+// Replay the old reducer with the approved display text so that the full
+// graph comparison still detects unrelated field changes and numeric drift.
+const releaseCopy=[
+ ['两名决斗者拦住去路，邀请你观看一场比试。','两名决斗者正在准备比试，邀请你担任一方的后勤助手。'],
+ ['听取比试和下注规则。','了解后勤委托的费用和报酬。'],
+ ['押挑战者','协助挑战者'],
+ ['押庄园主','协助庄园主'],
+ ['支付50金币；若','支付50金币购置补给；若'],
+ ['查看胜者及下注结果。','查看比试结果和委托报酬。'],
+ ['你已下注，决斗者准备开始比试。','补给已交付，决斗者准备开始比试。'],
+ ['你押中了胜者，获得','你协助的一方获胜，获得'],
+ ['你押下的金币归对方所有。','你协助的一方落败，本次委托没有报酬。'],
+ ['挑战者胜出可获得100金币，庄园主胜出可获得250金币；每次下注50金币。','为任意一方购置补给需50金币。协助挑战者获胜可得100金币，协助庄园主获胜可得250金币。'],
+];
+const joustBeforeWithReleaseCopy=releaseCopy.reduce((source,[before,after])=>{
+ assert(source.includes(before),before);
+ return source.replaceAll(before,after);
+},joustBefore);
+
 const joustErrors=(source,rows)=>reviewResponsibilityComplexity(rows,{[joustPath]:source}).errors.filter(e=>e.file===joustPath);
 function measureJoust(source){
  const dir=mkdtempSync(join(tmpdir(),'joust-cc-'));
@@ -115,7 +134,7 @@ test('Joust complete module meets CC15 and retains the immutable baseline',()=>{
  console.log('JOUST_COMPLEXITY '+JSON.stringify(rows));
 });
 test('Joust stages preserve independent old/new graph, RNG, callback and failure traces',()=>{
- const old=joustTrace(joustBefore),current=joustTrace(read(joustPath));
+ const old=joustTrace(joustBeforeWithReleaseCopy),current=joustTrace(read(joustPath));
  assert(old.length>100);assert.deepEqual(current,old);
  console.log('JOUST_TRACE '+JSON.stringify({checkpoints:old.length,sha256:hash(JSON.stringify(old))}));
 });
@@ -134,7 +153,7 @@ test('Joust hard gate rejects old hotspot, future helpers, anonymous functions a
  assert(joustErrors(source,current.map((r,i)=>i===1?{...r,column:r.column+1}:r)).some(e=>e.message.includes('AST')));
 });
 test('Joust real semantic mutations change the trace or fail a named assertion',()=>{
- const source=read(joustPath),expected=joustTrace(joustBefore);
+ const source=read(joustPath),expected=joustTrace(joustBeforeWithReleaseCopy);
  for(const [from,to]of [
   ['math.max(0,run.gold-50)','math.max(0,run.gold-49)'],
   ['Random.randomBooleanChance(run.miscRng,OWNER_CHANCE)','not Random.randomBooleanChance(run.miscRng,OWNER_CHANCE)'],

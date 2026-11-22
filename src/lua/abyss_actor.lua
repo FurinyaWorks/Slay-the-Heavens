@@ -543,7 +543,7 @@ function M.sacrificeDagger(state,target,amount)
 end
 
 function M.suicideTransient(state,target)
-    assert(M.isActive(target)and target.ai and target.ai.kind=='act3'and target.ai.policy=='transient','Transient suicide only')
+    assert(M.isActive(target)and target.ai and target.ai.kind=='act3'and target.ai.policy=='transient','Expected a Transient exit')
     local before=target.hp;target.hp,target.gold=0,0
     Events.emit(state,'enemy_suicide',{enemy=target.id})
     local reactions={};queueDeathPower(state,target,before,reactions)

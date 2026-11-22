@@ -21,7 +21,7 @@ function M.prepare(run,event)
  event.startMaxHp=run.maxHp
  event.hpLoss=math.floor(R.float32(R.float32(run.maxHp)*R.float32(.125))+.5)
  event.hasIdol=idol(run)~=nil
- event.stage,event.body='intro','一尊巨大的石像挡在路边，要求你作出献祭。'
+ event.stage,event.body='intro','路边的巨石像上刻着一段古老的交换契约。'
 end
 function M.options(run,event)
  if event.stage=='result'then return {row('leave','离开','返回路线。')}end
@@ -31,7 +31,7 @@ function M.options(run,event)
  return {
   row('heal','触碰石像','失去'..event.hpLoss..'点最大生命（'..string.format('%.0f',run.maxHp)..' → '..string.format('%.0f',math.max(1,run.maxHp-event.hpLoss))..'）。'..healing),
   row('give_idol','献上金神像',event.hasIdol and'失去金神像。'..gold or'需要金神像（未持有）。',event.hasIdol),
-  row('leave','离开','不作献祭，继续前进。')}
+  row('leave','离开','沿原路继续前进。')}
 end
 function M.choose(run,flow,choice,uid)
  local event=flow.event
@@ -61,7 +61,7 @@ function M.choose(run,flow,choice,uid)
   if not integer(gained)then return false,'event_gold_failed'end
   event.lostRelicId,event.goldGained='golden_idol',gained
   event.body='你献出了金神像，获得'..gained..'金币。'
- elseif choice=='leave'then event.body='你没有献祭，石像身后的道路依然畅通。'
+ elseif choice=='leave'then event.body='石像身后的道路依然畅通。'
  else return false,'invalid_event_choice'end
  event.stage='result';return true,'pending'
 end
