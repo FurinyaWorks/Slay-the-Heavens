@@ -6,6 +6,7 @@ import{officialAssetsTheme,applyOfficialAssets}from'../scripts/official-assets-l
 const child=(node,name)=>(node.controls??node.children??[]).find(item=>item.name===name);
 const returnButton=tree=>child(child(tree,'deckPanel'),'pileReturn');
 const label=face=>child(face,'label');
+const stateInk=(face,activeInk)=>face.name==='disabled'?'#AFA18C':activeInk;
 function luminance(hex){const values=hex.slice(1).match(/../g).map(value=>parseInt(value,16)/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4);return values[0]*.2126+values[1]*.7152+values[2]*.0722;}
 function contrast(first,second){const a=luminance(first),b=luminance(second);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);}
 test('pile chrome shades the design canvas below the live HUD',()=>{
@@ -22,12 +23,14 @@ test('pile return keeps the existing button ink readable in all four native stat
  const button=returnButton(gameLayout()),faces=child(button,'hit').children;
  assert.deepEqual(faces.map(face=>face.name),['normal','hover','pressed','disabled']);
  assert.equal(button.visible,false);assert.deepEqual(button.position,[-550,-237]);assert.deepEqual(button.size,[180,54]);
- for(const face of faces){assert.equal(label(face).text.colour,nativeTheme.officialAssets.buttonInk,face.name);assert.ok(contrast(label(face).text.colour,child(face,'plate').colour)>=4.5,face.name);}
+ for(const face of faces){assert.equal(label(face).text.colour,stateInk(face,nativeTheme.officialAssets.buttonInk),face.name);assert.ok(contrast(label(face).text.colour,child(face,'plate').colour)>=4.5,face.name);}
 });
 test('both pile return routes resolve the supplied theme ink without changing their receiver',()=>{
  const source=structuredClone(nativeTheme);source.officialAssets.buttonInk='#FDFDFD';
- const ordinary=returnButton(gameLayout(source));
- for(const face of child(ordinary,'hit').children)assert.equal(label(face).text.colour,source.officialAssets.buttonInk);
+ const ordinary=returnButton(gameLayout(source)),ordinaryHit=child(ordinary,'hit');
+ assert.equal(ordinaryHit.kind,'presetButton');assert.deepEqual(ordinaryHit.size,ordinary.size);
+ assert.equal(ordinaryHit.focusable,undefined);
+ for(const face of ordinaryHit.children)assert.equal(label(face).text.colour,stateInk(face,source.officialAssets.buttonInk),face.name);
  const theme=officialAssetsTheme(source),tree=gameLayout(theme),before=structuredClone(returnButton(tree));
  applyOfficialAssets([tree],theme);
  const button=returnButton(tree),art=child(button,'art'),hit=child(button,'hit');
