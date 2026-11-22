@@ -194,10 +194,29 @@ function roomEntryCurrent(path,source){
  assert(matches(source,roomEntry.files[path].after),'fresh current production owner: '+path);
  return predecessor(roomEntry.files,path,source);
 }
-export function assertCurrentMapRoomOwner(path,source){
- if(Object.hasOwn(roomEntry.files,path)){
-  assert(matches(source,roomEntry.files[path].after),'combined linked owner identity: '+path+' during map-room validation');
- }
+function mapRoomOwnerError(path){
+ return 'combined linked owner identity: '+path+' changed during Develop backflow validation (map-room validation)';
+}
+function mapRoomOwnerReader(read,historicalOwners){
+ let epoch;
+ return path=>{
+  const source=read(path);
+  if(!Object.hasOwn(roomEntry.files,path))return source;
+  const current=matches(source,roomEntry.files[path].after);
+  const historical=historicalOwners&&Object.hasOwn(historicalOwners,path)&&historicalOwners[path];
+  const exactHistorical=historical&&typeof source==='string'&&source.replaceAll('\r\n','\n')===historical.source;
+  const observed=current?'current':exactHistorical?'historical':undefined;
+  assert(observed&&(!epoch||epoch===observed),mapRoomOwnerError(path));
+  epoch=observed;
+  return source;
+ };
+}
+export function bindDevelopBackflow(read,historicalOwners){
+ const readOwner=mapRoomOwnerReader(read,historicalOwners);
+ return {
+  readOwner,
+  authenticate:(path,source,options)=>authenticateDevelopBackflowWithReaders(path,source,readOwner,readOwner,options),
+ };
 }
 function beforePriorDevelopBackflow(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
@@ -248,18 +267,16 @@ export function assertCurrentSessionRelicOwner(path,source){
  }
 }
 export function authenticateDevelopBackflow(path,source,read,options){
+ return authenticateDevelopBackflowWithReaders(path,source,read,mapRoomOwnerReader(read),options);
+}
+function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
  const roomPrior=predecessor(roomEntry.files,path,source);
  if(roomPrior!==source){
   let live;
-  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
-  assert(matches(live,roomEntry.files[path].after),'combined linked owner identity: '+path+' during map-room validation');
+  try{live=readLive(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,roomEntry.files[path].after),mapRoomOwnerError(path));
  }
- const readLive=read;
- read=owner=>{
-  const live=readLive(owner);
-  if(owner!==path)assertCurrentMapRoomOwner(owner,live);
-  return predecessor(roomEntry.files,owner,live);
- };
+ const read=owner=>predecessor(roomEntry.files,owner,(owner===path?readLive:readLinked)(owner));
  source=roomPrior;
  source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);

@@ -1,4 +1,4 @@
-import {beforeDevelopBackflow,authenticateDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner,assertCurrentMapRoomOwner} from '../develop-release-backflow-source.mjs';
+import {beforeDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner,bindDevelopBackflow} from '../develop-release-backflow-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi} from '../rebased-release-source.mjs';
 import {beforeSlimeSplitReceipt,beforeSlimeSplitSource} from '../slime-split-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
@@ -138,16 +138,16 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   if(typeof source!=='string'||!current||!before||(backflow===rawInput&&reconciled===rebased&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
   assert.equal(typeof readSource,'function','linked owner reader');
   const readRaw=rawReader(readSource);
-  const readBackflow=owner=>{
-   const raw=readRaw(owner);
-   assertCurrentMapRoomOwner(owner,raw);
-   return raw;
-  };
-  authenticateDevelopBackflow(path,rawInput,readBackflow,{allowConfigLayout});
+  // An exact frozen input can be replayed against its owner cohort. Live
+  // Develop successors and the default live reader require current owners.
+  const historicalOwners=readRaw!==readLive&&backflow===rawInput
+   &&(sourceHash(rawInput)===current.sha256||(path==='config/architecture.json'&&sameConfigLayout(rawInput)))?proof.current:undefined;
+  const backflowReader=bindDevelopBackflow(readRaw,historicalOwners);
+  backflowReader.authenticate(path,rawInput,{allowConfigLayout});
   readSource=owner=>{
-   const raw=readBackflow(owner);
+   const raw=backflowReader.readOwner(owner);
    if(sessionSuccessor)assertCurrentSessionRelicOwner(owner,raw);
-   return authenticateDevelopBackflow(owner,raw,readBackflow);
+   return backflowReader.authenticate(owner,raw);
   };
   const readRebased=owner=>beforeRebasedCi(owner,readSource(owner));
   beforeSlimeSplitReceipt(path,rebased,readRebased);
