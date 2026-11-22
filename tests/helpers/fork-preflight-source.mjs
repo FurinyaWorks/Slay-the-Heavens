@@ -72,10 +72,17 @@ const capacity=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-
 function assertCapacitySources(read){
  const inputs=Object.keys(capacity.files).map(path=>[path,read(path,'utf8')]);
  const isCurrent=([path,source])=>capacity.project(path,source)!==source;
- if(!inputs.some(isCurrent))return;
+ if(!inputs.some(isCurrent))return false;
  for(const input of inputs)assert(isCurrent(input),'fresh Release capacity source: '+input[0]);
+ return true;
 }
-const beforeCapacityRead=read=>(path,encoding)=>capacity.project(path,read(path,encoding));
+function beforeCapacityRead(read,requireCurrent=false){
+ return (path,encoding)=>{
+  const source=read(path,encoding),prior=capacity.project(path,source);
+  if(requireCurrent&&Object.hasOwn(capacity.files,path))assert.notEqual(prior,source,'fresh Release capacity source: '+path);
+  return prior;
+ };
+}
 
 // Authenticate the current copier before giving old CI receipts its exact predecessor.
 function beforeRefinedReleaseCopier(path,source){
@@ -233,8 +240,8 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- assertCapacitySources(read);
- read=beforeCapacityRead(shopEntryPreflightRead(read));
+ const requireCurrent=assertCapacitySources(read);
+ read=beforeCapacityRead(shopEntryPreflightRead(read),requireCurrent);
  assertRefinedReleaseSourcesCurrent(read);
  read=combatVisualPriorRead(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
