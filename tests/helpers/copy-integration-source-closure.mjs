@@ -228,11 +228,22 @@ const developStasisUpgradeFiles=Object.freeze({
  'tests/fixtures/develop-stasis-upgrade-boundary-source.json.gz':'04dd257d8cdd059a629082e1e3cf39c89f636dc8b2376c3c30286baae23065de',
  'tests/fixtures/develop-card-display-leaf-source.json.gz':'424ee22e001dbcc5bf1256622b0dd527da3b1ca428330fbf7ce98c7fa21c943d',
 });
+const developActorFocusFiles=Object.freeze({
+ ...developStasisUpgradeFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'60077930e44d7faf8c8c645c981720e7a8b0755b1955ab62bdaf182fa7e23328',
+ 'tests/fixtures/develop-actor-focus-source.json.gz':'2dd9f47a776d59d6cfc4ce544f8e0783f133cfda4f78f489b25b983b53315688',
+});
+const developSessionRelicFiles=Object.freeze({
+ ...developActorFocusFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'e78f9ff41aa7bc32f166288e7628a0590baf79ca660afa28498d4fb1b4847c2c',
+ 'tests/fixtures/develop-session-relic-source.json.gz':'3597ea919d88cd07f5e4e8f2c8918c0558f613f6a3fd3d6fda3a08469276db05',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'10c612b573801aff960786be378827d32af65ac52edbbfd282a7f562155ca683',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developStasisUpgradeFiles)){
+ for(const [path,sha]of Object.entries(developSessionRelicFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

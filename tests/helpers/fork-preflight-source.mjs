@@ -177,7 +177,27 @@ function beforeDevelopStasisUpgradeCopier(path,source){
  assert.equal(hash(prior),'202a6beb3429f4aa83c1d40d55a69c63e4d3ba38ec8817140bd3c35e6edce846','exact Develop stasisUpgrade copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeDevelopActorFocusCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='6d3bf93a3d1e020b69673d7864fe574ca8ed858945a02772cd662eb4b042a6ed')return source;
+ const prior=lf.replace(/^const developActorFocusFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developActorFocusFiles))','Object.entries(developStasisUpgradeFiles))');
+ assert.equal(hash(prior),'a943bd62f8ef5232548a9e415724e7aaf9518bf365686ec3d09e79d83fd54754','exact Develop actorFocus copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+function beforeDevelopSessionRelicCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9')return source;
+ const prior=lf.replace(/^const developSessionRelicFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developSessionRelicFiles))','Object.entries(developActorFocusFiles))');
+ assert.equal(hash(prior),'6d3bf93a3d1e020b69673d7864fe574ca8ed858945a02772cd662eb4b042a6ed','exact Develop sessionRelic copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopSessionRelicCopier(path,source);
+ source=beforeDevelopActorFocusCopier(path,source);
  source=beforeDevelopStasisUpgradeCopier(path,source);
  source=beforeDevelopBattleFeedbackCopier(path,source);
  source=beforeDevelopRewardUiCopier(path,source);
@@ -488,12 +508,12 @@ const sourceSuccessors=Object.freeze({
  'tests/helpers/closeout-source-epoch.mjs':'5c47cf4cfa424551010f1e12f39fc84363ad77c93733c4f3d3e8932e00e1c4c9',
  'tests/helpers/copy-integration-source-closure.mjs':'c0a43b2cfca0c01bc6608fbd4f8bcd279c4d91c3d839d92654daf0513bc6d2f3',
  'tests/ci-complete-calibration.test.mjs':'0581fa1b5e5e7735a85337a02c7ad9a5826cc59c36b56d4233da1d34924ad268',
- 'tests/integration-source-epoch.test.mjs':'e43ab34dcc1291c087c6e46fa081a54495e7c8f70ff3a34ebda3ab07ac6283bf',
+ 'tests/integration-source-epoch.test.mjs':'f64f203f4c7c6a3054475390069f7c70e39b3a9e64477bc8f4bc726e6de7fc48',
  'tests/defect-actor-boundary.test.mjs':'bd3deb3006a06adb5b8cb5f1bbda90a354882b015d5a57bd1c1623df35dfb039',
  'tests/defect-final-source-epoch.test.mjs':'c5d27da04e6430a3bb4da253075cf0b7fe5baf5599c86dad8d9b922eafb72651',
  'tests/encounter-formation-source-epoch.test.mjs':'1a624e24e88927828d3d09012145046bcc0317c99757c6aa2d8b30e4ff55e399',
  'tests/room-ui-source-epoch.test.mjs':'230214c3b5f21e8f440c21178afd5636fc1219b528bfb2fffe446150e15e1d20',
- 'tests/watcher-actor-boundary.test.mjs':'f81a523011ae3838fd5162ac6d8816fcae5f36c92a661e00d2bcadf4c50a3007',
+ 'tests/watcher-actor-boundary.test.mjs':'fe851ca7cd8db5ec5980fb7fbd97efbd162482aa69be379817c27f286f9c56f2',
  'tests/helpers/replay-reviewed-selection.mjs':'47ba348e9a26348b1ed0255cd16bb9099cf5767986a70a28f2f132c39f4c278d',
  ...closeoutSuccessors,
 });

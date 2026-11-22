@@ -10,7 +10,7 @@ local function same(a,b)
 end
 local function consume(r)
  local token,details=Select.choose(r,Policy.scoreCard);assert(token,'driver omitted mandatory relic choice')
- local ok,why=Pending.resolve(r,token);assert(ok,why);return token,details
+ local ok,why=Pending.resolve(r,token,Run);assert(ok,why);return token,details
 end
 local r=Run.new(D,'25',{experimental=true,campaign=true,campaignProfile='competition-two-act'})
 local m=Map.generate(r.data,r.runSeed,1)
@@ -26,7 +26,7 @@ assert(r.phase=='reward','starter fight must win through real commands')
 -- controlled Singing Bowl precondition for the public reward-selection modal.
 local cardRun=C.copy(r)
 assert(Run.obtainRelic(cardRun,'Singing Bowl'))
-assert(require('abyss_relic_card_rewards').open(cardRun,cardRun.rewards))
+assert(require('abyss_relic_card_rewards').open(cardRun,cardRun.rewards,Run))
 assert(Pending.view(cardRun).key=='pendingCardRewardSelection')
 while Pending.owner(cardRun)do consume(cardRun)end
 assert(cardRun.rewards.cardResolved)
@@ -54,7 +54,7 @@ local token,details=consume(r)
 assert(details.key=='pendingBottledRelic'and details.uid==token.uid)
 assert(not Pending.owner(r)and r.floor==roomFloor and r.nodeFlow.id==roomId and r.phase==phase)
 local bottled=false;for _,c in ipairs(r.deck)do if c.uid==token.uid then bottled=c.inBottleFlame end end;assert(bottled)
-local before=C.copy(r);local ok,why=Pending.resolve(r,token)
+local before=C.copy(r);local ok,why=Pending.resolve(r,token,Run)
 assert(not ok and why=='stale_relic_choice');same(r,before)
 assert(N.enter(r,m,N.available(r,m)[1].id),'driver must continue from original completed chest')
 print('PASS normal chest bottle mandatory token and original-room continuation')

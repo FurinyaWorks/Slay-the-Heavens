@@ -295,7 +295,7 @@ function M.obtainRelic(run,id)
                         {kind='relic',relicId=sourceRelic})
                 end
                 return true
-            end})
+            end, runCommands=M})
         if equipped==false then return false,equipReason end
     publishCombatRelic(staged, definition)
         return true,definition.id
@@ -355,7 +355,7 @@ end
 function M.claimCardReward(run, choice)
     if run.phase ~= "reward" or run.rewards.cardResolved then return false, "no_pending_reward" end
     if run.rewards.cardRewardGroups or require('abyss_relic_hooks').owns(run,'singing_bowl')then
-        return require('abyss_relic_card_rewards').claim(run,nil,choice)
+        return require('abyss_relic_card_rewards').claim(run,nil,choice,M)
     end
     if type(choice) ~= "number" or choice % 1 ~= 0 or choice < 0 or choice > #run.rewards.cards then
         return false, "invalid_reward_choice"

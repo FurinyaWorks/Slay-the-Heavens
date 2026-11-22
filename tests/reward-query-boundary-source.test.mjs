@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -11,6 +12,7 @@ import {preRelicQuerySource} from './helpers/relic-query-source-inverse.mjs';
 import {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';
 import {preRewardQueryBoundarySource as frozenProject,rewardQueryBoundaryReader as frozenReader} from './helpers/epochs/reward/tests/helpers/reward-query-boundary-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {authenticateDevelopBackflow} from './helpers/develop-release-backflow-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const paths=Object.keys(proof.files),config='config/architecture.json';
@@ -65,6 +67,24 @@ test('the current reward and final M7 entries retain LF CRLF layout and the olde
  }
  for(const input of [JSON.stringify(JSON.parse(read(config))),JSON.stringify(JSON.parse(read(config)),null,'\t'),read(config)+'\n\t '])for(const consume of [project,preM7FinalSource])assert.equal(consume(config,input),before[config]);
  assert.equal(hash(preRelicQuerySource(config,read(config))),'68d46e73d734f9684326b24ba040706d768349ce9a552daf52006bb900bfaabf','the original 391 epoch remains reachable');
+});
+
+test('current session admission rejects a plausible linked reward predecessor',()=>{
+ const owner='src/lua/abyss_relic_choices.lua';
+ const host='src/lua/abyss_relic_card_rewards.lua';
+ const prior=current[owner];
+ assert.notEqual(prior,read(owner));
+ for(const consume of [project,preM7FinalSource]){
+  assert.equal(consume(host,read(host)),before[host]);
+  assert.throws(()=>consume(host,read(host),{readSource:p=>p===owner?prior:read(p)}),/linked owner identity: src\/lua\/abyss_relic_choices\.lua/);
+ }
+});
+
+test('the archived shared configuration cannot pass with the latest raw configuration as its own reader',()=>{
+ const archive=JSON.parse(gunzipSync(readFileSync(new URL('./fixtures/develop-session-relic-source.json.gz',import.meta.url))));
+ const prior=archive.files[config].before.source;
+ assert.notEqual(prior,read(config));
+ assert.throws(()=>authenticateDevelopBackflow(config,prior,read),/linked owner identity: config\/architecture\.json/);
 });
 
 test('unknown original partial raw and duplicate escaped reordered inputs preserve identity with zero linked IO',()=>{

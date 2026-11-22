@@ -264,7 +264,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             or self.rewardScreen ~= "list" or self.run.rewards.cardResolved then return end
         local Cards=require('abyss_relic_card_rewards')
         if Cards.managed(self.run)then
-            local ok=Cards.open(self.run,self.rewardOwner)
+            local ok=Cards.open(self.run,self.rewardOwner,Run)
             if ok then services.notice('');services.refresh(true)end
             return ok
         end

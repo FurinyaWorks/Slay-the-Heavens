@@ -10,7 +10,7 @@ end
 local n=0
 local function test(name,f)f();n=n+1;print('PASS '..name)end
 local function claim(run,token,index,choice)
- return R.transaction(run,function(s)return Choices.claim(s,token,index,choice)end)
+ return R.transaction(run,function(s)return Choices.claim(s,token,index,choice,R)end)
 end
 test('Orrery acquisition offers five independent ordinary card rewards and resolves all',function()
  local run=R.new(data,42);local before=#run.deck
@@ -36,12 +36,12 @@ end)
 test('Dolly copies chosen upgraded permanent card with new UID and clears selection',function()
  local run=R.new(data,42);local old=run.deck[1];old.upgraded=true;old.upgrades=1
  local before=#run.deck;assert(R.obtainRelic(run,'DollysMirror'))
- assert(not Choices.chooseMirror(run,999999))
- assert(R.transaction(run,function(s)return Choices.chooseMirror(s,old.uid)end))
+ assert(not Choices.chooseMirror(run,999999,R,Shop.chooseMirror))
+ assert(R.transaction(run,function(s)return Choices.chooseMirror(s,old.uid,R,Shop.chooseMirror)end))
  local copy=run.deck[#run.deck];assert(#run.deck==before+1)
  assert(copy.cardId==old.cardId and copy.upgraded and copy.uid~=old.uid)
  assert(not copy.inBottleFlame and not run.shopRelicChoice)
- assert(not Choices.chooseMirror(run,old.uid))
+ assert(not Choices.chooseMirror(run,old.uid,R,Shop.chooseMirror))
 end)
 test('Prismatic acquisition keeps all320 cards and spends source shuffle+identity RNG',function()
  local run=R.new(data,42);assert(R.obtainRelic(run,'PrismaticShard'));assert(run.masterMaxOrbs==1)
@@ -88,7 +88,7 @@ test('Singing Bowl at full HP heals the new two maxHP and stale owner tokens ref
  local Pending=require('abyss_relic_pending');local view=Pending.view(run)
  local stale=view.rows[1].token;local p=run.shopRelicRewards;local before=run.maxHp
  assert(claim(run,p.token,1,'bowl'));assert(run.maxHp==before+2 and run.hp==run.maxHp)
- assert(not Pending.resolve(run,stale))
+ assert(not Pending.resolve(run,stale,R))
  local other=R.new(data,42);assert(R.obtainRelic(other,'Orrery'))
  assert(not claim(other,other.shopRelicRewards.token,1,'bowl'))
  assert(not other.shopRelicRewards.items[1].claimed)

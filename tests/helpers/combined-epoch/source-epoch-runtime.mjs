@@ -1,4 +1,4 @@
-import {beforeDevelopBackflow,authenticateDevelopBackflow} from '../develop-release-backflow-source.mjs';
+import {beforeDevelopBackflow,authenticateDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner} from '../develop-release-backflow-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi} from '../rebased-release-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner} from '../card-feedback-owner-source.mjs';
 import {authorizeSts1MapSource,beforeSts1MapSource} from '../sts1-map-source.mjs';
@@ -40,14 +40,13 @@ function cacheStringCalculation(calculate){
 const sourceHash=cacheStringCalculation(source=>hash(normalize(source)));
 // Input layout permission never applies to linked raw owners. Preserve every
 // token, including string escapes, key order and duplicates, without reserialization.
-const tokens=s=>s.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,t=>t.startsWith('"')?t:'');
 function configLayoutMatcher(current){
- const currentTokens=tokens(current);
+ const currentTokens=configSourceTokens(current);
  return cacheStringCalculation(source=>{
  // Whitespace inside a number or keyword is not JSON layout. Parsing is only
  // a syntax gate; the original token text still decides identity.
  try{JSON.parse(source);}catch{return false;}
- return tokens(source)===currentTokens;
+ return configSourceTokens(source)===currentTokens;
  });
 }
 const validPath=p=>p==='config/architecture.json'||/^src\/lua\/[A-Za-z0-9_-]+\.lua$/.test(p);
@@ -123,19 +122,24 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
-  const rawInput=source,backflow=beforeDevelopBackflow(path,source),reconciled=beforeRebasedCi(path,backflow),mapPrior=beforeCardFeedbackOwner(path,beforeSts1MapSource(path,reconciled)),guidePrior=beforeReleaseGuideSource(path,mapPrior);
+  const rawInput=source,backflow=beforeDevelopBackflow(path,source,{allowConfigLayout}),reconciled=beforeRebasedCi(path,backflow),mapPrior=beforeCardFeedbackOwner(path,beforeSts1MapSource(path,reconciled)),guidePrior=beforeReleaseGuideSource(path,mapPrior);
   const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,beforeTinyHouseIntegratedSource(path,guidePrior)));
   source=inputSource;
   const destination=requireTarget(target),current=proof.current[path],before=destination.files[path];
+  const sessionSuccessor=isSessionRelicSuccessor(path,rawInput,{allowConfigLayout});
   source=projectTinyHouseUiSource(path,projectV2UiHudSource(path,projectPotionPointerSource(path,source,current),current),current);
   source=projectLumineSource(path,projectPotionTextSource(path,projectSelectorSource(path,projectFatalBgmSource(path,source,current),current),current),current);
   // New witnesses are retained here; retirement belongs to a separate checked
   // materializer. Unknown/original/foreign bytes never authorize owner reads.
-  if(typeof source!=='string'||!current||!before||current.sha256===before.sha256||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
+  if(typeof source!=='string'||!current||!before||(!sessionSuccessor&&current.sha256===before.sha256)||(sourceHash(source)!==current.sha256&&(!allowConfigLayout||path!=='config/architecture.json'||!sameConfigLayout(source))))return rawInput;
   assert.equal(typeof readSource,'function','linked owner reader');
   const readBackflow=rawReader(readSource);
-  authenticateDevelopBackflow(path,rawInput,readBackflow);
-  readSource=owner=>authenticateDevelopBackflow(owner,readBackflow(owner),readBackflow);
+  authenticateDevelopBackflow(path,rawInput,readBackflow,{allowConfigLayout});
+  readSource=owner=>{
+   const raw=readBackflow(owner);
+   if(sessionSuccessor)assertCurrentSessionRelicOwner(owner,raw);
+   return authenticateDevelopBackflow(owner,raw,readBackflow);
+  };
   const samples=[],rawSamples=[],mapSamples=[],reconciledSamples=[[path,backflow]];
   let guideProjected=guidePrior!==mapPrior;
   for(const owner of proof.owners){
