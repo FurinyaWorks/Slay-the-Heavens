@@ -32,11 +32,12 @@ const mapRoomCohortPaths=new Set([
  'tests/candidate-art-policy.test.mjs',
  'tests/lua/node_event_copy.lua',
  'tests/official-battle-potion-hud-source-epoch.test.mjs',
+ 'tests/defect-actor-boundary.test.mjs',
 ]);
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  '96c88d533b19150fc5dc55e7f76336ec5c5034e6ab7267e8d0f328eba61fd0c7','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  '50c5c281beef5e00ec0e205f5a70d0d7f0e1260012114f75842e8d385b912618','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 

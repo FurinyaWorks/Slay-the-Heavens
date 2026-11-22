@@ -10,6 +10,7 @@ import {generatedRuntimeModules} from '../scripts/build-native-candidate.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {sourceEpoch,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';
 import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {actorFocusAdded,assertActorFocusInventory,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 const require=createRequire(import.meta.url),luaparse=require('luaparse');
 const utility='src/lua/abyss_defect_utility_cards.lua',queued='src/lua/abyss_combat_queued_play.lua';
 const fixture='tests/lua/defect_utility_build.lua',protocol='tests/lua/support/m9_combat_protocol_baseline.lua';
@@ -20,10 +21,12 @@ const actorRead=currentDefectActorReader(read);
 // before materializing that explicit view; never filter arbitrary live modules.
 function capabilityPreStyle(raw=discoverSources()){
  const config='config/architecture.json',live={...raw,[config]:read(config)},proof=sourceEpoch.proof;
- assert.deepEqual(Object.keys(live).sort(),Object.keys(proof.current).sort(),'complete live source inventory before preStyle');
+ const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);
+ assert.deepEqual(Object.keys(live).sort(),[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths].sort(),'complete live source inventory before preStyle');
+ assertActorFocusInventory(Object.keys(raw),readLive);
  for(const [path,binding]of Object.entries(proof.current))
-  assert.equal(beforeCurrentProductionSource(path,live[path],read).replaceAll('\r\n','\n'),binding.source,'live preStyle input identity: '+path);
- const admitted=sourceEpoch.preCombinedSource(config,live[config],{target:'stsStylePrior',readSource:read});
+  assert.equal(beforeCurrentProductionSource(path,live[path],readLive).replaceAll('\r\n','\n'),binding.source,'live preStyle input identity: '+path);
+ const admitted=sourceEpoch.preCombinedSource(config,live[config],{target:'stsStylePrior',readSource:readLive});
  assert.equal(admitted,ciRepairSourceEpoch.proof.current[config].source,'fresh complete current owners authorize the cb view');
  const prior=proof.targets.stsStylePrior.files;
  for(const [path,binding]of Object.entries(ciRepairSourceEpoch.proof.current))assert.deepEqual(prior[path],binding,'complete preStyle target: '+path);
