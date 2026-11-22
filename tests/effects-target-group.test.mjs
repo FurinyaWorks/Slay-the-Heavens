@@ -21,7 +21,14 @@ test('target-group frozen full Git source authenticates and all unrelated bytes 
  assert.equal(before.path,file);assert.equal(hash(before.source),before.sha256);
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(before.source)}\0`).update(before.source).digest('hex'),before.gitBlob);
  const [a,b]=span(before.source),[c,d]=span(source);
- assert.equal(source.slice(0,c),before.source.slice(0,a));assert.equal(source.slice(d),before.source.slice(b));
+ assert.equal(source.slice(0,c),before.source.slice(0,a));
+ const queueItems=source.indexOf('-- Queue preparation can split ordinary effects.',d);
+ const requiresQueue=source.indexOf('function M.requiresQueue(effects)',queueItems);
+ assert(queueItems>d && requiresQueue>queueItems);
+ const extension=luaparse.parse(source.slice(queueItems,requiresQueue),{luaVersion:'5.3'});
+ assert.deepEqual(extension.body.map(n=>[n.type,n.identifier?.base?.name,n.identifier?.identifier?.name]),
+  [['FunctionDeclaration','M','queueItems']]);
+ assert.equal(source.slice(d,queueItems)+source.slice(requiresQueue),before.source.slice(b));
  const ast=luaparse.parse(source.slice(c,d),{luaVersion:'5.3'});
  assert.deepEqual(ast.body.map(n=>n.identifier.name),names);assert(ast.body.every(n=>n.isLocal));
 });

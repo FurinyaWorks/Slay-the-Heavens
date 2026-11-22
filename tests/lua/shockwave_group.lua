@@ -216,5 +216,133 @@ for _,marked in ipairs({false,true}) do
         end
     end)
 end
+test('Shockwave plays for zero energy with Red Skull and a living Shelled Parasite',function()
+    local s=C.new(data,{seed=5433,deck={'shockwave'},enemies={'shelled_parasite'},
+        enableStances=true})
+    require('abyss_relic_hooks').bindBattle(s,{'red_skull'})
+    local card=s.hand[1]
+    card.costForTurn=0
+    s.energy=3
+    assert(require('abyss_hp_loss').requiresQueue(s))
+    assert(C.canPlay(s,card.uid))
+    assert(C.play(s,card.uid))
+    eq(s.energy,3)
+    eq(s.exhaust[1],card)
+    eq(s.enemies[1].statuses.weak,3)
+    eq(s.enemies[1].statuses.vulnerable,3)
+end)
+local routes={
+    {name='native'},
+    {name='native split',relic='red_skull'},
+    {name='direct',experimental=true},
+    {name='ActionQueue batch',experimental=true,relic='anchor'},
+    {name='advanced Red Skull',experimental=true,relic='red_skull'},
+    {name='advanced Centennial Puzzle',experimental=true,relic='centennial_puzzle'},
+    {name='advanced After Image',experimental=true,afterImage=true},
+}
+local function routeBattle(route,upgraded)
+    local s=battle(upgraded)
+    s.experimentalMechanics=route.experimental
+    if route.relic then require('abyss_relic_hooks').bindBattle(s,{route.relic}) end
+    if route.afterImage then
+        local triggers=require('abyss_card_triggers')
+        s.catalog.statuses.after_image=triggers.definition('after_image')
+        triggers.apply(s,'after_image',1)
+    end
+    return s
+end
+for _,route in ipairs(routes) do
+    for _,upgraded in ipairs({false,true}) do
+        test('Shockwave '..route.name..' upgraded='..tostring(upgraded),function()
+            local s=routeBattle(route,upgraded)
+            local card=s.hand[1]
+            if upgraded then card.costForTurn=0 end
+            local energy=s.energy
+            s.events={}
+            assert(C.canPlay(s,card.uid))
+            assert(C.play(s,card.uid))
+            eq(s.energy,energy-(upgraded and 0 or 2))
+            eq(#s.hand,0);eq(#s.discard,0);eq(#s.exhaust,1);eq(s.exhaust[1],card)
+            eq(statusOrder(s),grouped)
+            for _,enemy in ipairs(s.enemies) do
+                eq(enemy.statuses.weak,upgraded and 5 or 3)
+                eq(enemy.statuses.vulnerable,upgraded and 5 or 3)
+            end
+            if route.afterImage then eq(s.player.block,1) end
+        end)
+    end
+end
+test('a copied Shockwave applies one ordered pair per target per play and disposes once',function()
+    local s=routeBattle(routes[5])
+    C.addStatus(s.player,'duplication',1)
+    local card=s.hand[1]
+    s.events={}
+    assert(C.play(s,card.uid))
+    eq(s.energy,1);eq(#s.exhaust,1);eq(s.exhaust[1],card)
+    eq(s.player.statuses.duplication,0)
+    eq(statusOrder(s),grouped..','..grouped)
+    for _,enemy in ipairs(s.enemies) do
+        eq(enemy.statuses.weak,6);eq(enemy.statuses.vulnerable,6)
+    end
+end)
+test('advanced queue keeps surrounding effects in sequence',function()
+    local s=routeBattle(routes[5])
+    local effects=s.catalog.cards.shockwave.effects
+    table.insert(effects,1,{op='block',value=7})
+    effects[#effects+1]={op='energy',value=2}
+    s.events={}
+    assert(C.play(s,s.hand[1].uid))
+    eq(s.energy,3);eq(s.player.block,7);eq(statusOrder(s),grouped)
+    eq(s.events[2].kind,'block')
+    eq(s.events[3].frame.energy,1)
+end)
+test('advanced queue rejects malformed data and rolls back an in-flight overflow',function()
+    local s=routeBattle(routes[5])
+    local card=s.hand[1]
+    local def=s.catalog.cards.shockwave
+    local valid=def.effects
+    def.effects={valid[1]}
+    local unchanged=snapshot(s)
+    local accepted,reason=C.canPlay(s,card.uid)
+    eq(accepted,false);eq(reason,'unsupported_effect:invalid_target_group')
+    eq(C.play(s,card.uid),false);unchanged()
+
+    def.effects=valid
+    C.addStatus(s.enemies[1],'artifact',1)
+    C.addStatus(s.enemies[2],'vulnerable',2147483647)
+    unchanged=snapshot(s)
+    assert(C.canPlay(s,card.uid))
+    local called,err=pcall(C.play,s,card.uid)
+    eq(called,false);assert(tostring(err):find('status stack overflow',1,true),tostring(err))
+    unchanged()
+end)
+test('Run play uses the packaged card definition and preserves the failed transaction',function()
+    local Run=require('abyss_run')
+    -- This room fixture naturally draws Shell Parasite and rolls a zero cost
+    -- through Snecko Eye. The incident-seed fixture above controls those inputs.
+    local run=Run.new(data,5)
+    run.deck={{uid=1,cardId='shockwave',upgraded=true}}
+    run.nextDeckUid=2
+    run.relics[#run.relics+1]='red_skull'
+    run.relics[#run.relics+1]='snecko_eye'
+    run.act,run.floor=2,20
+    run.encounters=require('abyss_encounter_queue').new('5',2)
+    assert(Run.startRoomCombat(run,'normal'))
+    local s=run.combat
+    local card=s.hand[1]
+    local cost,energy=C.cardDefinition(s,card).cost,s.energy
+    eq(cost,0);eq(energy,3)
+    eq(s.enemies[1].definitionId,'shelled_parasite')
+    C.addStatus(s.enemies[1],'vulnerable',2147483647)
+    local unchanged=snapshot(run)
+    assert(C.canPlay(s,card.uid))
+    local called,err=pcall(Run.play,run,card.uid)
+    eq(called,false);assert(tostring(err):find('status stack overflow',1,true),tostring(err))
+    unchanged()
+    s.enemies[1].statuses.vulnerable=nil
+    assert(Run.play(run,card.uid))
+    eq(#s.exhaust,1);eq(s.exhaust[1],card);eq(s.energy,energy)
+    eq(s.enemies[1].statuses.weak,5);eq(s.enemies[1].statuses.vulnerable,5)
+end)
 print('SHOCKWAVE_GROUP '..(count-failed)..' passed; '..failed..' failed')
 assert(failed==0,'Shockwave target-group regressions failed')

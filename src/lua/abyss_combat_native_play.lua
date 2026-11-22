@@ -3,6 +3,7 @@
 local Actors=require('abyss_actor')
 local EnemyAI=require('abyss_enemy_ai')
 local CardActions=require('abyss_card_actions')
+local Effects=require('abyss_effects')
 local RelicHooks=require('abyss_relic_combat_hooks')
 local Rare=require('abyss_relic_family_combat').rare
 local Boss=require('abyss_relic_family_combat').boss
@@ -65,13 +66,11 @@ end
 
 local function effectItems(combat,state,card,targetIndex,x,free)
     local items={}
-    for i,effect in ipairs(card.effects)do
-        if not(effect.targetGroup and card.effects[i-1]and card.effects[i-1].targetGroup)then
-            local e=prepareEffect(combat,state,copy(effect),targetIndex,x,card,free)
-            if e.targetGroup then e={op='effectBatch',effects={e,copy(card.effects[i+1])}}end
-            if e.times=='X'then e.times=x+ShopRelicsQueries.xBonus(state);if e.times==0 then e=nil end end
-            if e then items[#items+1]=e end
-        end
+    for _,effect in ipairs(Effects.queueItems(card.effects))do
+        local e=copy(effect)
+        if e.op~='effectBatch'then e=prepareEffect(combat,state,e,targetIndex,x,card,free)end
+        if e.times=='X'then e.times=x+ShopRelicsQueries.xBonus(state);if e.times==0 then e=nil end end
+        if e then items[#items+1]=e end
     end
     return items
 end
