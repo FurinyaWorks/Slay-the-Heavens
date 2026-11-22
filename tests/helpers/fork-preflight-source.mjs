@@ -92,14 +92,14 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(copier&&hash(lf)==='bd53081a4e0d764483a918bbaef33da93a0536a5d86a3cecb5e32151a58a8381'){
-  lf=lf.replace(" 'tests/helpers/release-ui-closeout-source.mjs':'2d7c5fbf5bcfcbc8bec90826ddd370fceaaeab9bbb0828532adb06d675701023',\n"," 'tests/helpers/release-ui-closeout-source.mjs':'a3d1de143ef40fdaab5a08bca47e4e1ff29414d2e3e97826fb68db84885998ab',\n")
-     .replace(" 'tests/fixtures/release-reward-display-source.json.gz':'16fb43b697f02531c0d25a8504b43294c0535ba4f432ac6b04a20ec42bd962cd',\n",'');
-  assert.equal(hash(lf),'66f19b9a8f4cdc7d58af5cfb30aa8ce2799ce65ae06735fd34e898b3c59e7fbe','exact reward display helper copy predecessor');
+ if(copier&&hash(lf)==='23868164b55d4d54cb3cf6d661f869545a606607ff1bbf4721518c9dfa5ed574'){
+  lf=lf.replace(" 'tests/helpers/release-ui-closeout-source.mjs':'f0494e25c04a94b932ff7160f5dd00904cfde3ff8c86beb00eb83968b251ba08',\n"," 'tests/helpers/release-ui-closeout-source.mjs':'a3d1de143ef40fdaab5a08bca47e4e1ff29414d2e3e97826fb68db84885998ab',\n")
+     .replace(" 'tests/fixtures/release-reward-display-source.json.gz':'c06069437d787cc0e590f2c6899b026e0ee47d060173b867dbd9dfcd8bb89255',\n",'');
+  assert.equal(hash(lf),'7839a90538fdc661a02da94afed8b610a9a204141108456a1618ed6dcf7d5070','exact reward display helper copy predecessor');
  }
- if(copier&&hash(lf)==='66f19b9a8f4cdc7d58af5cfb30aa8ce2799ce65ae06735fd34e898b3c59e7fbe'){
+ if(copier&&hash(lf)==='7839a90538fdc661a02da94afed8b610a9a204141108456a1618ed6dcf7d5070'){
   lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'d76d9d67c6e696d966fe9608a46e66eea0c0e2739c06dd9672151afd4b1f0973',\n"," 'tests/helpers/release-map-deck-source.mjs':'dd02f8976ed65dae8d055f881020f71d6169a4e396c9cd0bc72d6c84c9254e9a',\n")
-     .replace(" 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',\n"," 'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',\n")
+     .replace(" 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',\n"," 'tests/helpers/combat-visual-source.mjs':'721b73965767d683ef2b1853113baa1508fb7d8f913031df84b5285ba38caada',\n")
      .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'a3d1de143ef40fdaab5a08bca47e4e1ff29414d2e3e97826fb68db84885998ab',\n","")
      .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'1798bb413901e57c51a19f359721a4621212c7a48d51a7d4b48bdc4be05eddba',\n","");
   assert.equal(hash(lf),'3910354d5306dd7ff7a86d282e5f5716b7ec8e3982d98e5a29d26d32bddd48d4','exact Release UI closeout helper copy predecessor');
@@ -114,8 +114,9 @@ function beforeTravelerStatusCiSource(path,source){
   prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(travelerStatusFiles))','Object.entries(loadingRecoveryFiles))');
   expected='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac';
- }else if(regression&&sha==='e411b5d46c2bde12ef10d0615abaeacee3bc83d6c72221aa212cb3e708494089'){
-  prior=lf.replace("import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';\n",'')
+ }else if(regression&&['e411b5d46c2bde12ef10d0615abaeacee3bc83d6c72221aa212cb3e708494089','cff90e25684015aa6df74f6d3533ecb0448eb6597b18eb8eebf9c0a618a10ecb'].includes(sha)){
+  prior=lf.replace("import {beforeReleaseUiCloseoutSource,ownsReleaseUiCloseoutSource,releaseUiCloseoutPriorRead} from './helpers/release-ui-closeout-source.mjs';\n",'')
+   .replace("import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';\n",'')
    .replace(/^test\('Traveler status continuation[^\n]*\n[\s\S]*?^\}\);\n\n/m,'');
   expected='db962d7fe34be9e68f12ee153be9ef6679135e0803d28fb0db0db8a3d3fba0f4';
  }else if(actorTemplate&&sha==='d28f7e6ac4221f6424d9c4c9c36e23c79e5d7f88186f4ae288a8faa52e36ac6e'){

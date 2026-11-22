@@ -12,9 +12,9 @@ assert.equal(hash(bytes),'1798bb413901e57c51a19f359721a4621212c7a48d51a7d4b48bdc
 const {base,files}=JSON.parse(gunzipSync(bytes));
 assert.equal(base,'b895de06186f866ac1a85fc4f4e948631074ca6b');
 const displayBytes=readFileSync(new URL('../fixtures/release-reward-display-source.json.gz',import.meta.url));
-assert.equal(hash(displayBytes),'16fb43b697f02531c0d25a8504b43294c0535ba4f432ac6b04a20ec42bd962cd','exact Release reward display archive');
+assert.equal(hash(displayBytes),'c06069437d787cc0e590f2c6899b026e0ee47d060173b867dbd9dfcd8bb89255','exact Release reward display archive');
 const display=JSON.parse(gunzipSync(displayBytes));
-assert.equal(display.base,'778e50b7af3868ce2d5adcf389e7235faa8455d3');
+assert.equal(display.base,'5a972c7371d0217ce4d9806df35ba1464c50f40f');
 
 function matches(source,binding){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;

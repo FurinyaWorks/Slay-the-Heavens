@@ -9,6 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';
+import {beforeReleaseUiCloseoutSource,ownsReleaseUiCloseoutSource,releaseUiCloseoutPriorRead} from './helpers/release-ui-closeout-source.mjs';
 const sandbox=process.cwd();
 const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
 const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
@@ -18,9 +19,18 @@ test('Traveler status continuation accepts exact live sources and rejects stale 
  const read=path=>readFileSync(path,'utf8');
  const noRead=()=>assert.fail('foreign source must not trigger a linked read');
  for(const path of travelerStatusSourcePaths){
-  const current=read(path), prior=beforeTravelerStatusSource(path,current,read,true);
+  const live=read(path), overlap=ownsReleaseUiCloseoutSource(path);
+  const current=beforeReleaseUiCloseoutSource(path,live,read,overlap);
+  const readCurrent=releaseUiCloseoutPriorRead(read,overlap?path:undefined);
+  const prior=beforeTravelerStatusSource(path,current,readCurrent,true);
+  if(overlap){
+   assert.notEqual(live,current,path);
+   assert.throws(()=>beforeReleaseUiCloseoutSource(path,current,noRead,true),/Release UI closeout owner identity/,path);
+   const staleRead=releaseUiCloseoutPriorRead(()=>current,path);
+   assert.throws(()=>beforeTravelerStatusSource(path,current,staleRead,true),/combined linked owner missing/,path);
+  }
   assert.notEqual(prior,current,path);
-  assert.equal(beforeTravelerStatusSource(path,current.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
+  assert.equal(beforeTravelerStatusSource(path,current.replaceAll('\n','\r\n'),readCurrent),prior.replaceAll('\n','\r\n'));
   for(const invalid of [prior,current+'\n',null]){
    assert.equal(beforeTravelerStatusSource(path,invalid,noRead),invalid);
    assert.throws(()=>beforeTravelerStatusSource(path,invalid,noRead,true),/fresh current production owner/);

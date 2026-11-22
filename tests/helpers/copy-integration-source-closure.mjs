@@ -86,12 +86,12 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/helpers/pc13-reward-cover-source.mjs':'cd9cf4d774a92df100e6e367bdbc41a58fa281cef428316f1671fd878167cd92',
  'tests/helpers/loading-recovery-source.mjs':'43bc339bf238105e3967e774cc6fa15091d386d8ad9746671bc9c2865780c4f4',
  'tests/helpers/release-map-deck-source.mjs':'d76d9d67c6e696d966fe9608a46e66eea0c0e2739c06dd9672151afd4b1f0973',
- 'tests/helpers/release-ui-closeout-source.mjs':'2d7c5fbf5bcfcbc8bec90826ddd370fceaaeab9bbb0828532adb06d675701023',
- 'tests/fixtures/release-reward-display-source.json.gz':'16fb43b697f02531c0d25a8504b43294c0535ba4f432ac6b04a20ec42bd962cd',
+ 'tests/helpers/release-ui-closeout-source.mjs':'f0494e25c04a94b932ff7160f5dd00904cfde3ff8c86beb00eb83968b251ba08',
+ 'tests/fixtures/release-reward-display-source.json.gz':'c06069437d787cc0e590f2c6899b026e0ee47d060173b867dbd9dfcd8bb89255',
  'tests/fixtures/release-ui-closeout-source.json.gz':'1798bb413901e57c51a19f359721a4621212c7a48d51a7d4b48bdc4be05eddba',
  'tests/helpers/release-map-room-source.json.gz':'834f71a1a70fe4858c4874497f8f7b46ae02a8f1949041aacc2d91353d190b13',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
- 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',
+ 'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',
  'tests/fixtures/combat-visual-source.json.gz':'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d',
  'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',
  'tests/fixtures/release-reward-frame-source.json.gz':'09f99aff296875fa9787a94bfd6be19c1a4d76dcb9a33fd6b1f31213d10cd8a5',
@@ -102,7 +102,7 @@ const loadingRecoveryFiles=Object.freeze({
 });
 const travelerStatusFiles=Object.freeze({
  ...loadingRecoveryFiles,
- 'tests/helpers/combat-visual-source.mjs':'721b73965767d683ef2b1853113baa1508fb7d8f913031df84b5285ba38caada',
+ 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',
  'tests/helpers/traveler-status-source.mjs':'41da0aaea833a446033b1fb964d31eebc4c4b5cd22e990a03370636f7afcc5ff',
  'tests/fixtures/traveler-status-source.json.gz':'78ea0afbc225eb83cfd79d24cbed5c1af166e21c07f2adfec3588b488a0d0de2',
 });
