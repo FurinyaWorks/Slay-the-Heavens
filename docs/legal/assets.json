@@ -3,6 +3,10 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "native-event-illustrations": {
+      "status": "The project owner confirmed authority on 2026-11-22 to distribute these redrawn event illustrations through the public GitHub repository and the Miliastra Wonderland level. The approved payload contains fitted native primitive IDs, colors and transforms. Underlying game and platform IP rights remain with their respective owners.",
+      "evidence": "Owner distribution confirmation and reviewed precision-fix handoff for the 49 event IDs in data/release/launch-content.json. Nine replacement contour fits use the same artwork from the owner-supplied WebP review previews. Their source hashes are retained in the fit records. The sphere has a transparent output reconstructed from its RGB preview."
+    },
     "opening-statue-simulator-evidence": {
       "status": "Project rendering of the owner-supplied opening statue design using native shape IDs. Simulator comparison evidence. Game and platform rights remain with their respective owners.",
       "evidence": "scripts/sts-neow-guide-layout.mjs and docs/evidence/neow-geo-statue-preview.png; BeyondSimulator 0.5.2 rendering of the native Lua opening UI fixture."
@@ -237,6 +241,10 @@
     }
   },
   "files": {
+    "data/presentation/event-native-controls.json": {
+      "sha256": "e6656878f635f61db6f2951faff0307e607891166107d72a981fa6dfc237bb3c",
+      "category": "native-event-illustrations"
+    },
     "docs/evidence/neow-geo-statue-preview.png": {
       "sha256": "18cf82689b2a3185d51aaa90979acd0fc40e7150fd744bde5716db95d33aa92d",
       "category": "opening-statue-simulator-evidence"

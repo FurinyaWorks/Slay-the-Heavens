@@ -16,11 +16,15 @@ local function current(pool,icon,state)
  return painted[pool]==state and pool.alive~=false and icon.alive~=false
   and icon.parent==state.parent and pool.parent==state.parent
 end
+local function fallback(pool,icon,state)
+ visible(pool,false)
+ if current(pool,icon,state)then visible(icon,true)end
+end
 local function check(pool,icon,state)
  if current(pool,icon,state)then return end
  local newer=painted[pool]
- if newer and pool.alive~=false and icon.alive~=false then
-  newer.ready=false;visible(pool,false);visible(icon,true)
+ if newer and current(pool,icon,newer)then
+  newer.ready=false;fallback(pool,icon,newer)
  end
  error('artwork ownership changed')
 end
@@ -36,8 +40,18 @@ local function reveal(pool,icon,old)
    local accepted=visible(pool,true);check(pool,icon,old);assert(accepted)
    accepted=visible(icon,false);check(pool,icon,old);assert(accepted)
   end)
-  if not ok and current(pool,icon,old)then old.ready=false;visible(pool,false);visible(icon,true)end
+  if not ok and current(pool,icon,old)then old.ready=false;fallback(pool,icon,old)end
   return ok and current(pool,icon,old)
+end
+local function drawEventShape(call, control, shape)
+ call(control,'SetPivot',shape.pivot[1],shape.pivot[2])
+ call(control,'SetLocalScale',shape.scale[1],shape.scale[2],1)
+ call(control,'SetLocalRotation',shape.rotation[1],shape.rotation[2],shape.rotation[3])
+ if shape.halfMask then
+  call(control,'SetFillHorizontal',Enum.ImageFillHorizontalType.Right,.5)
+ else
+  call(control,'SetFillUnused')
+ end
 end
 local function draw(pool,icon,token,registry,asset,size,platform)
  local function call(control,method,...)
@@ -49,13 +63,17 @@ local function draw(pool,icon,token,registry,asset,size,platform)
   -- The imported sibling already shares the icon's authored anchor position.
   -- Native handles need not expose initial x/y getters before their first write.
   call(pool,'SetVisible',false)
-  call(pool,'SetLocalScale',size/100,size/100,1)
+  call(pool,'SetLocalScale',size/registry.canvas,size/registry.canvas,1)
   for i=1,registry.capacity do
    local control=pool:GetChild('shape'..(i-1));local shape=asset.shapes[i]
    if shape then
     call(control,'SetImage',platform.imageSource,shape.image)
+    if shape.pivot then
+     control.enableMask=shape.halfMask;check(pool,icon,token)
+     drawEventShape(call,control,shape)
+    end
     call(control,'SetAnchoredPosition',shape.x,shape.y);call(control,'SetSizeDelta',shape.w,shape.h)
-    call(control,'SetLocalRotation',0,0,shape.rotation or 0)
+    if not shape.pivot then call(control,'SetLocalRotation',0,0,shape.rotation or 0) end
     local c=shape.colour;colour(pool,icon,token,control,c.r,c.g,c.b,c.a or 255)
    end
    call(control,'SetVisible',shape~=nil)
@@ -64,7 +82,7 @@ local function draw(pool,icon,token,registry,asset,size,platform)
  end)
 end
 local function finish(pool,icon,token,ok)
- if not ok and current(pool,icon,token)then token.failed=true;visible(pool,false);visible(icon,true)end
+ if not ok and current(pool,icon,token)then token.failed=true;fallback(pool,icon,token)end
  if ok and current(pool,icon,token)then token.ready=true;return true end
  return false
 end
@@ -73,7 +91,8 @@ function M.paint(icon,kind,id,size,platform)
  local registry=Theme.lowCostArt and Theme.lowCostArt[kind]
  local asset=registry and registry.assets[id]
  if not asset or not platform.imageSource or not platform.color then
-  painted[pool]=nil;visible(pool,false);visible(icon,true);return false
+  M.hide(icon)
+  return false
  end
  local old=painted[pool]
  if old and old.failed and matches(old,asset,size,platform)then return false end
@@ -83,7 +102,15 @@ function M.paint(icon,kind,id,size,platform)
  return finish(pool,icon,token,draw(pool,icon,token,registry,asset,size,platform))
 end
 function M.hide(icon,restore)
- local pool=poolFor(icon);if pool then painted[pool]=nil;visible(pool,false);if restore~=false then visible(icon,true)end end
+ local pool=poolFor(icon)
+ if not pool then return end
+ local token={parent=icon.parent}
+ painted[pool]=token
+ visible(pool,false)
+ if current(pool,icon,token)then
+  painted[pool]=nil
+  if restore~=false then visible(icon,true)end
+ end
 end
 function M.scale(icon,scale)
  local pool=poolFor(icon);local state=pool and painted[pool]
