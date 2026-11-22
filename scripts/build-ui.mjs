@@ -40,6 +40,7 @@ import {applyV25ResultLayout} from './v25-result-layout.mjs';
 import {applyV25NodeLayout,applyV25RewardLayout} from './v25-node-layout.mjs';
 import {prepareV25CardTemplates} from './v25-card-templates.mjs';
 import {writeV25CardBinding,v25CardModule} from './v25-card-binding.mjs';
+import {eventArtRegistry,loadEventArt} from './lowcost-art.mjs';
 
 export function assertNativeUiCapacity(layout) {
   const checkFonts = (control, path) => {
@@ -126,6 +127,10 @@ function rejectInputOutputAliases(outputDirectory, extraInputs = []) {
 export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYSS_PYTHON || 'python', options = {}) {
   // Preflight the entire batch before any generated file can be changed.
   const officialAssets=validateOfficialAssets(options);
+  const eventArt=officialAssets?loadEventArt(eventArtRegistry,
+    JSON.parse(readFileSync('data/release/launch-content.json','utf8')).events.map(event=>event.id)):null;
+  if(eventArt?.unavailable.length)
+    throw Error('Invalid production event artwork: '+eventArt.unavailable.join(', '));
   if(officialAssets)options={...options,artFeatures:{...officialAssetFlagsFor(options)}};
   const v25BattleChrome=validateV25Chrome(options);
   if(v25BattleChrome&&options.performanceArt)throw Error('V25 reference mode cannot use compact art sampling');
@@ -142,7 +147,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   const performance=compact?loadPerformancePack():null;
   if(flags.menuBackground)backgroundSources();
   portraitSources(process.cwd(),flags);
-  rejectInputOutputAliases(outputDirectory, [...(v25Cards?.inputs.map(row=>row.path)??[]),...(v25Masks?.inputs.map(row=>row.path)??[]),...(flags.menuBackground?backgroundInputs:[]),...portraitRuntimeInputs(flags), ...(readyArt?readyArtSourceInputs():[]), ...(art?.inputPaths??[])].map(path=>resolve(path)));
+  rejectInputOutputAliases(outputDirectory, [...(v25Cards?.inputs.map(row=>row.path)??[]),...(v25Masks?.inputs.map(row=>row.path)??[]),...(flags.menuBackground?backgroundInputs:[]),...portraitRuntimeInputs(flags), ...(readyArt?readyArtSourceInputs():[]), ...(art?.inputPaths??[]),...(eventArt?[eventArtRegistry]:[])].map(path=>resolve(path)));
   // The optional-art identity scan above also protects grass sources before decoding.
   const refined=options.refinedReleaseMonsterArt===true;
   const refinedSource=refined?prepareRefinedReleaseMonsterArt(JSON.parse(readFileSync(refinedReleaseMonsterRegistry,'utf8'))):null;
@@ -154,6 +159,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     sourceIdentity: options.sourceIdentity });
   const sourceTheme = JSON.parse(readFileSync('data/presentation/ui_theme.json', 'utf8').replace(/^\uFEFF/, ''));
   const theme=officialAssets?officialAssetsTheme(sourceTheme):v25BattleChrome?v25Theme(sourceTheme):sourceTheme;
+  if(eventArt)theme.lowCostArt.event=eventArt;
   const battle = battleLayout(), layout = withViewport(gameLayout(undefined, options), theme);
   const templates = [deckCardTemplate()];
   if(officialAssets&&flags.selectionAvatar)templates.push(selectionHalfImage());
