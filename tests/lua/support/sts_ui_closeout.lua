@@ -15,7 +15,8 @@ local ui,root=F.fixture(nil,nil,nil,{CursorEnter='enter',CursorExit='exit'})
 if not STS_UI_BASELINE then
     assert(not root:GetChild('prologuePanel'),'legacy controls shipped in the official layout')
     local details=root:GetChild('characterPanel'):GetChild('details')
-    for _,name in ipairs({'deckTitle','deckSummary','deckOpen'})do assert(not details:GetChild(name),name)end
+    for _,name in ipairs({'deckTitle','deckSummary'})do assert(details:GetChild(name),name)end
+    assert(not details:GetChild('deckOpen'))
 end
 start(ui)
 local run=ui.run

@@ -31,10 +31,11 @@ local function beginNeow(run,map,neowHistory)
     return true
 end
 
-function M.selectionChanged(self,owner)
-    return function()
+function M.selectionChanged(self,owner,refreshSelection)
+    return function(changed)
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
-            self:refresh()
+            if changed==nil then self:refresh()
+            elseif changed then refreshSelection()end
         end
 end
 
@@ -53,8 +54,8 @@ end
 function M.selectCharacter(self,selectionChanged)
     return function(_,id)
             if not self.characterOpen or self.starting or self.disabled then return false end
-            local ok,reason=self.characterSelection:select(id)
-            if ok then selectionChanged()end
+            local ok,reason,changed=self.characterSelection:select(id)
+            if ok then selectionChanged(changed)end
             return ok,reason
         end
 end
@@ -62,8 +63,8 @@ end
 function M.selectElement(self,selectionChanged)
     return function(_,id)
             if not self.characterOpen or self.starting or self.disabled then return false end
-            local ok,reason=self.characterSelection:selectElement(id)
-            if ok then selectionChanged()end
+            local ok,reason,changed=self.characterSelection:selectElement(id)
+            if ok then selectionChanged(changed)end
             return ok,reason
         end
 end

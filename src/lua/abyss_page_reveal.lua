@@ -115,6 +115,10 @@ end
 local function needsSchedulerConfirmation(intent)
     return intent.page=='choicePanel' and intent.phase=='combat'
 end
+local function entersCharacters(previous,intent)
+    return previous and previous.page=='menuPanel' and intent.page=='characterPanel'
+        and previous.mode==intent.mode and previous.run==intent.run
+end
 local function isMapOverlayChange(previous,intent)
     return previous and previous.run~=nil and previous.run==intent.run
         and (previous.page=='mapPanel' or intent.page=='mapPanel')
@@ -273,7 +277,8 @@ function M.new(cover,ready,onIntent,frames,motion)
         gate.roomEntry=entersMapRoom(gate.published,intent) or gate.roomEntry and sameOwner(gate.intent,intent)
         gate.localFrame=not gate.sceneDuration and localFrame(intent,gate.intent) or nil
         gate.painting=nil
-        gate.localOnly=motion and gate.published and gate.published.page=='characterPanel' and intent.page=='characterPanel'
+        gate.localOnly=motion and gate.published and intent.page=='characterPanel'
+            and (gate.published.page=='characterPanel' or entersCharacters(gate.published,intent))
         gate.epoch=gate.epoch+1;gate.intent=intent;gate.state='preparing';gate.armed=nil;gate.error=nil
         gate.projectionError=nil;gate.retryProjection=nil
         resetWait(gate)
@@ -313,7 +318,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         -- one refresh, including when the run already switched to map mode.
         local localChange=localFrame(intent,self.intent)~=nil or isMapOverlayChange(self.published,intent)
         local fast=not self.sceneDuration and not needsSchedulerConfirmation(intent) and
-            (self.state=='visible' and (canUpdate(intent,self.intent) or localChange)
+            (self.state=='visible' and (canUpdate(intent,self.intent) or localChange or entersCharacters(self.published,intent))
             or localChange and same(intent,self.published))
         if self.departure then return false end
         if not fast then

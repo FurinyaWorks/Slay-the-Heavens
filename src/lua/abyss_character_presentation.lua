@@ -116,19 +116,23 @@ local function validateCard(card,seen)
     assert(type(card.id)=='string' and not seen[card.id],'duplicate or invalid card id');seen[card.id]=true
     assert(card.type=='attack' or card.type=='skill' or card.type=='power' or card.type=='status' or card.type=='curse','unknown card type')
 end
-function M.prepare(existing,prepared)
+local function prepare(existing,prepared,starterOnly)
     assert(type(existing)=='table' and type(prepared)=='table' and prepared.cards and type(prepared.cards.cards)=='table','invalid presentation inputs')
-    local out=copy(existing)
+    local out=starterOnly and {} or copy(existing)
     local nativeBundle=prepared.originalV4Role or not prepared.runCardCatalog and not prepared.experimentalCharacter and prepared.cards.sourcePools~=nil
     local seen={}
     for _,card in ipairs(prepared.cards.cards) do
         validateCard(card,seen)
         local upgraded=copy(card);for k,v in pairs(card.upgrade or {}) do upgraded[k]=copy(v) end;upgraded._upgraded=true
-        local current=prepareDisplay(out,card,upgraded,out[card.id],nativeBundle)
+        local existingCard=starterOnly and copy(existing[card.id]) or out[card.id]
+        local current=prepareDisplay(out,card,upgraded,existingCard,nativeBundle)
         current.id=card.id
         displayCosts(current,card,upgraded,nativeBundle)
         current.type=card.type
+        out[card.id]=current
     end
     return out
 end
+function M.prepare(existing,prepared)return prepare(existing,prepared,false)end
+function M.preparePreview(existing,prepared)return prepare(existing,prepared,true)end
 return M

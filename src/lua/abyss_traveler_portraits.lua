@@ -88,6 +88,7 @@ local function controller(host, data, display, templates, options)
     local Idle=idleModule(data)
     local Asset=templates or require('abyss_traveler_portrait_assets')
     local retryFailedOnPause=type(options)=='table' and options.retryFailedOnPause==true
+    local fixedSelectionTemplate=type(options)=='table' and options.fixedSelectionTemplate==true
     local nativeLifecycle=type(options)=='table' and options.nativeLifecycle==true
     local ownerEpoch=type(options)=='table' and options.ownerEpoch or function()return 0 end
     local rotation=type(options)=='table' and options.rotation or 0
@@ -199,7 +200,8 @@ local function controller(host, data, display, templates, options)
     local function create(token,prefab,parent)
         local c=game.InstantiateClientUIControl(prefab,parent)
         if c then created[#created+1]={control=c,parent=parent}end
-        check(token);assert(c,'portrait template unavailable');call(token,c,'SetVisible',false)
+        check(token);assert(c,'portrait template unavailable')
+        if not fixedSelectionTemplate or c.visible~=false then call(token,c,'SetVisible',false)end
         return c
     end
     local function rowColour(r)
@@ -215,6 +217,16 @@ local function controller(host, data, display, templates, options)
             else call(token,c,'SetFillUnused')end
         end
     end
+    local function selectionTransform(token,c,r)
+        -- The official base and half-triangle templates already have centered
+        -- anchors, centered pivot and unit scale. Only write the authored overrides.
+        if r[1]~=(r[21]==1 and 100003 or 100001) then call(token,c,'SetImage',Enum.ImageSource.StaticReference,r[1])end
+        if r[6]~=.5 or r[7]~=.5 then call(token,c,'SetPivot',r[6],r[7])end
+        call(token,c,'SetSizeDelta',r[4],r[5])
+        if r[12]~=1 or r[13]~=1 then call(token,c,'SetLocalScale',r[12],r[13],1)end
+        call(token,c,'SetLocalRotation',r[19],r[20],r[14])
+        call(token,c,'SetAnchoredPosition',r[2],r[3])
+    end
     local function image(token,c,r)
         local tri=data.renderProfile=='lowpoly-v1'
         assert(tri and (#r==20 or #r==21) and integer(r[1]) or #r==18 and r[1]==100001,'unexpected portrait image row')
@@ -225,6 +237,15 @@ local function controller(host, data, display, templates, options)
             call(token,c,'SetSizeDelta',r[4],r[5]);call(token,c,'SetAnchoredPosition',r[2],r[3])
             c.imageColor=rowColour(r);check(token)
             call(token,c,'SetVisible',true);return
+        end
+        if fixedSelectionTemplate then
+            selectionTransform(token,c,r)
+            c.imageColor=rowColour(r);check(token)
+            imageMask(token,c,r)
+            call(token,c,'SetAsLastSibling')
+            if c.active~=true then call(token,c,'SetActive',true)end
+            call(token,c,'SetVisible',true)
+            return
         end
         call(token,c,'SetImage',Enum.ImageSource.StaticReference,r[1])
         if r[1]<100001 or r[1]>100006 then
@@ -328,8 +349,7 @@ local function controller(host, data, display, templates, options)
     end
     function self.pause(_)
         idlePaused=true
-        -- Only the battle portrait opts into scene-boundary failure recovery.
-        -- Other cached adapters retain their explicit-release retry policy.
+        -- Owners that opt in can retry failed artwork on their next activation.
         if retryFailedOnPause and (phase=='failed' or phase=='release_failed')then return self:release()end
         if not data.cache and not compactProfile(data) then return self:release()end
         if phase=='destroyed' or host.alive==false then return false end
@@ -422,11 +442,51 @@ local function enabled(flags,key)
     return type(flags)=='table' and flags[key]==true
 end
 local function selectionFallback(panel,details,official)
-    return official and {panel:GetChild('v25Background'),details:GetChild('portraits')}
-        or {details:GetChild('portraits'):GetChild('traveler_ironclad')}
+    local portraits=details:GetChild('portraits')
+    return official and {panel:GetChild('v25Background'),portraits} or {portraits}
 end
 local function fallbackControls(row)
     return (row.name~='selection' or row.active or row.restoreOnPause)and row.fallback or {}
+end
+local dots={'• · ·','· • ·','· · •'}
+local function show(control,visible)
+    if control and control.alive~=false and control.visible~=visible then control:SetVisible(visible)end
+end
+local function pendingSelection(state)
+    return state.phase=='building' or state.phase=='revealing'
+end
+local function advanceSelection(row,dt)
+    if not row.active or not row.panel.visible then return end
+    if pendingSelection(row.adapter:status()) and not row.timedOut then
+        row.wait=(row.wait or 0)+dt
+        if row.wait>=4 then
+            row.timedOut=true
+            row.adapter:pause()
+        end
+    elseif row.fadeTime then
+        row.fadeTime=math.max(0,row.fadeTime-dt)
+    end
+end
+local function paintSelection(row,state)
+    local visible=row.active and row.panel.visible
+    local pending=visible and pendingSelection(state) and not row.timedOut
+    local waiting=pending and (row.wait or 0)>=.5
+    if waiting and row.dots and row.dots.alive~=false then
+        local label=dots[1+math.floor((row.wait-.5)*6)%#dots]
+        if row.dots.text~=label then row.dots.text=label end
+    end
+    show(row.dots,waiting)
+    if visible and state.phase=='ready' and row.wasPending then row.fadeTime=.16 end
+    row.wasPending=pending
+    local fading=visible and state.phase=='ready' and (row.fadeTime or 0)>0
+    if fading and row.matte and row.matte.alive~=false then
+        local alpha=math.floor(82*row.fadeTime/.16+.5)
+        if alpha~=row.fadeAlpha then
+            row.matte.imageColor=Color.FromRGBA(15,17,23,alpha)
+            row.fadeAlpha=alpha
+        end
+    end
+    show(row.matte,fading)
 end
 function M.new(stage,report,flags,cardTemplates)
     local selecting=enabled(flags,'selectionAvatar')
@@ -443,7 +503,7 @@ function M.new(stage,report,flags,cardTemplates)
     if carding and not lowpoly(Asset.lowpolyCardFan) then carding=false end
     if landing and not lowpoly(Asset.lowpolyLand) then landing=false end
     if not selecting and not fighting and not carding and not landing then return nil end
-    local avatar,battle,selection,details,rows=nil,nil,nil,nil,{}
+    local avatar,battle,selection,selectionRow,rows=nil,nil,nil,nil,{}
     local result,resultHost,resultRow,resultOutcome
     local templates=integer(Asset.imagePrefabId) and Asset.imagePrefabId~=100001 and integer(Asset.containerPrefabId) and Asset
         or type(cardTemplates)=='table' and {imagePrefabId=cardTemplates.imageTemplateIndex,containerPrefabId=cardTemplates.containerTemplateIndex}
@@ -457,14 +517,14 @@ function M.new(stage,report,flags,cardTemplates)
             end
         end
     end
-    if selecting then
+    local function attachSelection()
         validate(Asset.avatar96,96,4822,'c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb','93bcf4303d370f7faac2b8289146acfe655bae6dced0abf5257e407d69f748ef')
         local panel=assert(stage:GetChild('characterPanel'))
         local traveler=assert(panel:GetChild('traveler'))
         local bust=assert(traveler:GetChild('hit'):GetChild('normal'):GetChild('bust'))
         avatar=controller(traveler:GetChild('officialAvatar'),Asset.avatar96,assert(bust.sizeDeltaX),Asset,
             profile and {nativeLifecycle=true,ownerEpoch=function()return epoch end})
-        details=panel:GetChild('details')
+        local details=panel:GetChild('details')
         local host
         if official then host=assert(panel:GetChild('lumineSelectionBackground'),'missing approved selection background host')
         else host=details and details:GetChild('officialSelectionFigure')end
@@ -475,14 +535,25 @@ function M.new(stage,report,flags,cardTemplates)
                 validate(figure,133,4315,'ae2161957033d688b1bed1c7ab2ad2891d5f7bf5e34b291f9ecaef7cfa11f880','f8a7af7b079aa5bbb7e16b502b222f1fd7dbfaa2c30f6eef1bf0d76af0a0a248')
             end
             local display=official and 1280 or profile and profile.selectionDisplay or assert(details:GetChild('portraitFrame').sizeDeltaX)
-            selection=controller(host,figure,display,Asset,profile and {position=profile.selectionPosition,
-                nativeLifecycle=true,ownerEpoch=function()return epoch end})
+            selection=controller(host,figure,display,Asset,{position=profile and profile.selectionPosition,fixedSelectionTemplate=official,
+                nativeLifecycle=profile~=nil,ownerEpoch=function()return epoch end,retryFailedOnPause=true})
             local fallback=selectionFallback(panel,details,official)
-            rows[#rows+1]={name='selection',adapter=selection,fallback=fallback,active=false,restoreOnPause=official}
+            selectionRow={name='selection',adapter=selection,fallback=fallback,active=false,restoreOnPause=true,
+                panel=panel,dots=details:GetChild('portraitLoading'),matte=details:GetChild('portraitFade')}
         end
         local row={name='avatar',adapter=avatar,fallback={},active=false,visibleOwner=traveler,symbolOwner=panel:GetChild('v25Roster')}
         for _,name in ipairs({'normal','hover','pressed','disabled'})do row.fallback[#row.fallback+1]=traveler:GetChild('hit'):GetChild(name):GetChild('bust')end
+        if selectionRow then rows[#rows+1]=selectionRow end
         rows[#rows+1]=row
+    end
+    if selecting then
+        if official then
+            local ok,reason=pcall(attachSelection)
+            if not ok then
+                avatar,selection,selectionRow=nil,nil,nil
+                if report then pcall(report,'ABYSS_PORTRAIT selection phase=failed reason='..tostring(reason))end
+            end
+        else attachSelection()end
     end
     if carding then
         -- Premium frames + low-poly illustrations fanned under the select details, like the breakthrough GIF.
@@ -528,9 +599,16 @@ function M.new(stage,report,flags,cardTemplates)
             resultRow={name='result',adapter=result,fallback={},active=false};rows[#rows+1]=resultRow
         end
     end
-    if #rows==0 then return nil end
-    local timeBudget=selecting and Asset.avatar96.runtimeV2 or fighting and battleDrawing.runtimeV2 or carding or landing
+    if #rows==0 and not (official and selecting) then return nil end
+    local timeBudget=avatar and Asset.avatar96.runtimeV2 or fighting and battleDrawing.runtimeV2 or carding or landing
     local self,busy,destroyed,painting={},false,false,false
+    local pendingSync
+    local function finishSync()
+        busy=false
+        local nextSync=pendingSync
+        pendingSync=nil
+        if nextSync and not destroyed then self:sync(table.unpack(nextSync,1,5))end
+    end
     local fallbackVisibility=setmetatable({},{__mode='k'})
     local function paintFallback(control,visible,phase)
         local setter=control.SetVisible
@@ -549,7 +627,7 @@ function M.new(stage,report,flags,cardTemplates)
         painting=true
         for _,row in ipairs(rows)do
             local s=row.adapter:status();local ready=row.active and s.phase=='ready'
-            local fallbackVisible=(row.name~='selection' or row.restoreOnPause) and row.fallbackVisible~=false
+            local fallbackVisible=row.fallbackVisible~=false
             for _,c in ipairs(fallbackControls(row))do
                 if destroyed then painting=false;return end
                 if c and c.alive~=false then
@@ -561,8 +639,12 @@ function M.new(stage,report,flags,cardTemplates)
                     end
                 end
             end
-            if row.name=='selection' and ready then
-                local note=details:GetChild('portraitNote');note.text=note.text:gsub(' · 肖像待补','')
+            if row.name=='selection' then
+                local ok=pcall(paintSelection,row,s)
+                if not ok then
+                    pcall(show,row.dots,false);pcall(show,row.matte,false)
+                    row.dots,row.matte=nil,nil
+                end
             end
             if row.lastPhase~=s.phase then row.lastPhase=s.phase;if report then pcall(report,'ABYSS_PORTRAIT '..row.name..' phase='..s.phase..' owned='..s.owned..' reason='..tostring(s.reason))end end
         end
@@ -587,14 +669,17 @@ function M.new(stage,report,flags,cardTemplates)
         if epoch~=token or destroyed then busy=false;return false end
         local phase=result:status().phase
         local valid=phase~='failed' and phase~='release_failed' and phase~='destroyed'
-        paint();busy=false;return accepted~=false and valid and epoch==token and not destroyed
+        paint();finishSync();return accepted~=false and valid and epoch==token and not destroyed
     end
     local function transitionRow(row,wanted,mode,stopped)
         local accepted=true
             local resultOwned=row.name=='result' and not stopped and (mode=='victory' or mode=='defeat')
             if not resultOwned then
                 if wanted[row.name] and not row.active then row.active=true;accepted=row.adapter:begin()
-                elseif not wanted[row.name] and row.active then row.active=false;accepted=row.adapter:pause()end
+                elseif not wanted[row.name] and row.active then
+                    row.active=false;row.wait,row.timedOut,row.fadeTime=nil,nil,nil
+                    accepted=row.adapter:pause()
+                end
             end
         return accepted
     end
@@ -610,7 +695,13 @@ function M.new(stage,report,flags,cardTemplates)
         return wanted
     end
     function self.sync(_,mode,characterOpen,stopped,character,preloadSelection)
-        if busy or destroyed then return false end
+        if destroyed then return false end
+        if busy then
+            -- Native setters can synchronously dispatch newer UI input.
+            -- Apply only the latest intent after the in-flight setter returns.
+            pendingSync={mode,characterOpen,stopped,character,preloadSelection}
+            return false
+        end
         busy=true;local token=epoch
         -- V25 and official pages open selection artwork on demand. The legacy host's warm
         -- hint must not allocate hidden figures during its title screen.
@@ -624,9 +715,11 @@ function M.new(stage,report,flags,cardTemplates)
             -- figure while a defeat outcome is still being prepared.
             local accepted=transitionRow(row,wanted,mode,stopped)
             if epoch~=token or destroyed then busy=false;return false end
-            if profile and accepted==false then paint();busy=false;return false end
+            if pendingSync then break end
+            if profile and accepted==false and row.name~='selection' then paint();finishSync();return false end
         end
-        paint();busy=false;return not profile or epoch==token and not destroyed
+        if not pendingSync then paint()end
+        finishSync();return not profile or epoch==token and not destroyed
     end
     -- Prioritize the main selection figure over the small thumbnail.
     local buildOrder=rows
@@ -646,32 +739,37 @@ function M.new(stage,report,flags,cardTemplates)
         end
         return true
     end
-    function self.tick(_)
+    function self.tick(_,dt)
         if busy or destroyed then return end
         busy=true
+        if selectionRow and dt and dt>0 then advanceSelection(selectionRow,dt)end
         local start=os.clock()
         for i=1,64 do
             local progressed,kind=false,nil
-            for _,row in ipairs(buildOrder)do if row.active then
+            for _,row in ipairs(buildOrder)do if row.active and not row.timedOut then
                 local advance,phase=row.adapter:step()
                 if advance then progressed=true;kind=phase;break end
             end end
-            if not progressed or kind=='reveal' or timeBudget and i%8==0 and os.clock()-start>=.008 then break end
+            if pendingSync or not progressed or kind=='reveal' or timeBudget and i%8==0 and os.clock()-start>=.008 then break end
         end
-        paint();busy=false
+        if not pendingSync then paint()end
+        finishSync()
     end
     function self.battlePose(_,x,y,sx,sy,dt,motionState)
         if busy or destroyed or not battle then return end
-        busy=true;battle:pose(x,y,sx,sy,dt,motionState);paint();busy=false
+        busy=true;battle:pose(x,y,sx,sy,dt,motionState);paint();finishSync()
     end
     function self.release(_)
         if destroyed then return true end
-        epoch=epoch+1;local old=busy;busy=true;local ok=true
-        for _,row in ipairs(rows)do row.active=false;if not row.adapter:release()then ok=false end end
-        paint();busy=old;return ok
+        pendingSync=nil;epoch=epoch+1;local old=busy;busy=true;local ok=true
+        for _,row in ipairs(rows)do
+            row.active=false;row.wait,row.timedOut,row.fadeTime=nil,nil,nil
+            if not row.adapter:release()then ok=false end
+        end
+        paint();pendingSync=nil;busy=old;return ok
     end
     function self.onEngineDestroy(_)
-        epoch=epoch+1;destroyed=true;for _,row in ipairs(rows)do row.active=false;row.adapter:destroy()end
+        pendingSync=nil;epoch=epoch+1;destroyed=true;for _,row in ipairs(rows)do row.active=false;row.adapter:destroy()end
         -- Keep owners[stage] as a weak-key tombstone even before engine alive=false.
     end
     owners[stage]=self;return self

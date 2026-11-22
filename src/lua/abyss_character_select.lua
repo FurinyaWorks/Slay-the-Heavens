@@ -1,6 +1,7 @@
 -- Read-only loadout preview. Selection never owns a Run, map or RNG stream.
 local M={}
 local Admission=require('abyss_run_admission')
+local Copy=require('abyss_copy').copy
 M.characters={'hutao','arlecchino','furina','raiden','traveler'}
 M.elements={'ironclad','silent','defect','watcher'}
 local names={hutao='胡桃',arlecchino='阿蕾奇诺',furina='芙宁娜',raiden='雷电将军',traveler='旅行者'}
@@ -31,9 +32,9 @@ end
 function M.preview(source,presentation,id)
     local data,profile=source,nil
     if names[id] and id~='traveler' then
-        data,profile=require('abyss_original_v4_profiles').prepare(source,id)
+        data,profile=require('abyss_original_v4_profiles').preview(source,id)
     elseif elements[id] then
-        if id~='ironclad' then data,profile=require('abyss_run_card_catalog').prepareSelected(source,id)end
+        if id~='ironclad' then data,profile=require('abyss_run_card_catalog').previewSelected(source,id)end
     else return nil end
     local cards,defs,counts,order={},{},{},{}
     for _,card in ipairs(data.cards.cards)do defs[card.id]=card end
@@ -42,12 +43,16 @@ function M.preview(source,presentation,id)
         counts[card]=(counts[card] or 0)+1
     end
     -- Use the existing Chinese display adapter for only the starter definitions.
-    local display=require('abyss_character_presentation').prepare(presentation,{
+    local display=require('abyss_character_presentation').preparePreview(presentation,{
         cards={cards=cards,sourcePools=data.cards.sourcePools},originalV4Role=data.originalV4Role,
         experimentalCharacter=data.experimentalCharacter,runCardCatalog=data.runCardCatalog})
     local deck={}
-    for _,card in ipairs(order)do local shown=display[card]
-        deck[#deck+1]={id=card,name=shown.name,count=counts[card],type=defs[card].type,cost=shown.cost or defs[card].cost,text=shown.text or defs[card].text,definition=defs[card],display=shown}end
+    for _,card in ipairs(order)do
+        local shown=display[card]
+        local definition=id=='ironclad' and Copy(defs[card]) or defs[card]
+        deck[#deck+1]={id=card,name=shown.name,count=counts[card],type=definition.type,cost=shown.cost or definition.cost,
+            text=shown.text or definition.text,definition=definition,display=shown}
+    end
     local relics={}
     for _,owned in ipairs(data.rules.player.startingRelics)do
         for _,relic in ipairs(data.relics.relics)do if relic.id==owned then
@@ -62,6 +67,14 @@ end
 function M.new(source,presentation,profile)
     profile=admissionProfile(profile)
     local state={profile=profile}
+    -- The source catalogue is fixed for the host. The starter browser detaches
+    -- the few cards it consumes, and Run preparation owns separate copies.
+    local previews={}
+    local function preview(id)
+        local info=previews[id]
+        if not info then info=M.preview(source,presentation,id);previews[id]=info end
+        return info
+    end
     local function accepts(id)
         -- The visible choice is explicit even when Geo's Run options stay nil.
         return Admission.accepts(source,{campaignProfile=profile,character=id})
@@ -85,16 +98,21 @@ function M.new(source,presentation,profile)
         if not accepts(id=='traveler' and (self.element or 'ironclad') or id)then
             return false,'competition_character_unavailable'
         end
-        self.character=id
-        if id=='traveler' then self.element=self.element or 'ironclad' end
-        self.info=M.preview(source,presentation,id=='traveler' and self.element or id)
-        return true
+        local element=self.element or 'ironclad'
+        local info=preview(id=='traveler' and element or id)
+        local changed=self.character~=id or self.info~=info
+        self.character,self.info=id,info
+        if id=='traveler' then self.element=element end
+        return true,nil,changed
     end
     function state:selectElement(id)
         if self.character~='traveler' or not contains(M.elements,id)then return false,'element_unavailable'end
         if not self:allowsElement(id)then return false,'competition_character_unavailable'end
         if not accepts(id)then return false,'competition_character_unavailable'end
-        self.element=id;self.info=M.preview(source,presentation,id);return true
+        local info=preview(id)
+        local changed=self.element~=id or self.info~=info
+        self.element,self.info=id,info
+        return true,nil,changed
     end
     return state
 end

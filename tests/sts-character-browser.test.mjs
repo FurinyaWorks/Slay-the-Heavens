@@ -69,8 +69,8 @@ local previewId=info.deck[1].id;info.deck[1].display.name='只读投影专用名
 local panel=root:GetChild('characterPanel')
 assert(not panel:GetChild('details'):GetChild('deckOpen'),'official selection must have no starter deck hit area')
 assert(panel.visible and not host.run and created==0)
-local Display=require('abyss_card_display');local write=Display.writeNativeArt;local painted=0
-Display.writeNativeArt=function(...)
+local Display=require('abyss_card_display');local write=Display.writeArt;local painted=0
+Display.writeArt=function(...)
  assert(sourcePage=='deckPanel','starter card wrote before its deck presentation owner');painted=painted+1;return write(...)
 end
 prepared=false;assert(host:openStarterDeck());assert(host.pageReveal:covered() and Gate.intent(host).page=='deckPanel')
@@ -79,17 +79,18 @@ local deck=host.deckUI;local deckPanel=root:GetChild('deckPanel')
 assert(deck.browserShell and not deck.pileView and not deck.pileKind and not deck.choiceToken and not deck.battle)
 assert(deck.run.readOnlyPreview and #deck.cards==info.deckSize and deckPanel:GetChild('pileGrid').visible)
 assert(not panel.visible and not panel:GetChild('deckView').visible and #panel:GetChild('deckView'):GetChildren()==0)
-assert(host.controller.scope=='pageReveal' and require('abyss_controller').pointerBlocked(host.controller),'preparation must keep preview input covered')
+assert(host.controller.scope=='blocked' and require('abyss_controller').pointerBlocked(host.controller),'preparation must keep preview input covered')
 assert(not host:openStarterDeck(),'covered/reentrant opening must fail')
 for i=1,4 do host:update(1/60);host:refresh()end
 assert(deck.visible and host.pageReveal:covered(),'menu stale-deck rule closed read-only preview')
-prepared=true;settle();assert(host.controller.scope=='deck' and not host.pageReveal:covered() and painted>0)
+prepared=true;settle();assert(host.controller.scope=='deck' and not host.pageReveal:covered())
 local cards=deckPanel:GetChild('pileGrid');assert(cards.itemCount==info.deckSize,'starter browser omitted cards')
 for index=0,info.deckSize-1 do
  local cell=cards:recycle(0,index+cards.indexBase);local face=cell:GetChild('face')
  assert(face:GetChild('name').text~='' and face:GetChild('cost').text~='' and face:GetChild('label').text~='','starter card lost actual name/cost/rules')
 end
 cards:flush()
+assert(painted>0,'visible starter cards did not paint')
 assert(deckPanel:GetChild('pileReturn').visible)
 assert(deck:setSort('cost'));settle()
 local previewCard;for _,card in ipairs(deck.cards)do if card.cardId==previewId then previewCard=card;break end end
@@ -103,7 +104,7 @@ assert(back.navigationListeners.navConfirm(),'controller cannot reach shared bro
 controllerMode=false;settle();assert(not deck.visible and not host.characterSelection.deckOpen and panel.visible)
 assert(host.characterSelection.info==info and info.deck[1].count==original.deck[1].count and created==0 and not host.run)
 -- Closing preview restores the exact caller display source, not a preview copy.
-Display.writeNativeArt=write
+Display.writeArt=write
 assert(F.confirmStart(host));settle();assert(created==1 and host.run)
 assert(host:openDeck());settle();assert(not deck.previewInfo and deck.browserShell and not deck.run.readOnlyPreview)
 assert(deck.listTitle:find('卡组',1,true) and deck.catalog.cards[deck.cards[1].cardId])
@@ -141,7 +142,8 @@ local host,platform,portrait;local noPortraitDuringBuild=false;local P=require('
 P.new=function(...)portrait=create(...);return portrait end
 G.new=function(root,data,presentation,event,p)platform=p;host=make(root,data,presentation,event,p);return host end
 package.loaded.abyss_art_features={schemaVersion=2,flags={cards=false,menuBackground=true,selectionAvatar=true,battlePortrait=false,monsters=false}}
-local Asset=require('abyss_traveler_portrait_assets');Asset.imagePrefabId=801;Asset.containerPrefabId=802
+local Asset=require('abyss_traveler_portrait_assets')
+Asset.imagePrefabId,Asset.containerPrefabId,Asset.selectionHalfImagePrefabId=801,802,803
 Asset.${land}
 local actors=F.monsterActors()
 package.loaded.abyss_monster_actor_binding={enabled=true,templateIndex=actors.templateIndex,containerTemplateIndex=actors.containerTemplateIndex,powerTemplateIndex=actors.powerTemplateIndex}
@@ -157,7 +159,7 @@ for _,name in ipairs({'characterPanel','battlePanel','menuPanel'})do
  if not panel:GetChild('lowpolyScene')then panel.children.lowpolyScene=native(F.control({name='lowpolyScene',kind='container'},panel))end
 end
 Color=setmetatable({FromRGBA=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end},{__call=function(_,r,g,b,a)return{r=r,g=g,b=b,a=a}end})
-Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},CursorEventType={CursorClick='click'},
+Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},ImageFillHorizontalType={Right=1},CursorEventType={CursorClick='click'},
  Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
 game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return true end,GetDevice=function()return'desktop'end,
  GetCursorUIPos=function()return 0,0 end,InstantiateClientUIControl=function(index,parent)
@@ -168,21 +170,22 @@ game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return 
    end
    noPortraitDuringBuild=true
   end
-  assert(index==801 or index==802,'unexpected source template');serial=serial+1
-  local c=native(F.control({name='portrait'..serial,kind=index==801 and'image'or'container'},parent));parent.children[c.name]=c;return c
+  assert(index==801 or index==802 or index==803,'unexpected source template');serial=serial+1
+  local c=native(F.control({name='portrait'..serial,kind=index==802 and'container'or'image'},parent));parent.children[c.name]=c;return c
  end,DestroyClientUIControl=function(c)c:SetActive(false)end}
 script={object=canvas,GetParam=function()return false end,EnableUpdate=function(_,value)enabled=value end}
 dofile('src/lua/abyss_ui.lua');OnStart();assert(enabled and host and portrait,'real OnStart did not create the production owners')
 for i=1,60 do OnUpdate(1/60);if not host.pageReveal:covered()then break end end
-assert(noPortraitDuringBuild and not host.pageReveal:covered());assert(host:start());assert(host.characterSelection.info)
+assert(noPortraitDuringBuild and not host.pageReveal:covered());assert(host:start())
+assert(host:selectCharacter('traveler') and host.characterSelection.info)
 local Gate=require('abyss_page_reveal');local state=portrait:status().selection
-assert(state.phase=='building' and not platform.presentationReady(Gate.intent(host)),'real selection must wait for its incomplete portrait')
+assert(state.phase=='building' and platform.presentationReady(Gate.intent(host)),'decorative selection blocked real page readiness')
+assert(not host.pageReveal:covered() and not host.root:GetChild('pageReveal').visible,'selection put up the page cover')
+local details=host.root:GetChild('characterPanel'):GetChild('details')
+assert(details.visible and details:GetChild('name').text~='' and details:GetChild('deckSummary').text~='','click lost the real loadout')
 assert(not portrait:readyForPage('menu',false,'ironclad'),'negative control requires a real paused menu-scene dependency')
-assert(not host:openStarterDeck(),'public covered input must stay blocked')
--- Arrange an asynchronous page replacement without completing its old owner.
--- The actual shared browser and actual entry readiness remain under test.
-platform.presentationPage('deckPanel');assert(host.deckUI:openPreview(host.characterSelection.info))
-host.characterSelection.deckOpen=true;host:refresh();assert(Gate.intent(host).page=='deckPanel')
+assert(host:openStarterDeck(),'incomplete artwork blocked public starter deck input')
+assert(Gate.intent(host).page=='deckPanel')
 for i=1,5 do OnUpdate(1/60)end
 state=portrait:status().selection
 assert(state.phase=='building' or state.phase=='revealing','negative control accidentally completed the old portrait')

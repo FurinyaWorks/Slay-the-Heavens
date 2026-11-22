@@ -253,17 +253,18 @@ assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
 
-test('official selection rejects missing shared pixel source instead of silently building the old full-body drawing',()=>{
+test('official selection retains its static fallback when the approved source is missing',()=>{
  withPortraitVm(`
 local selectionHost=tree();stage.children.characterPanel.children.lumineSelectionBackground=selectionHost;local frame=tree();rawset(frame,'sizeDeltaX',440)
 local note=tree();note.text=''
 stage.children.characterPanel.children.details=tree({officialSelectionFigure=selectionHost,portraitFrame=frame,
  portraits=tree({traveler_ironclad=tree()}),portraitNote=note})
 Asset.lowpolyLumine=nil
-local ok,reason=pcall(Portraits.new,stage,nil,{selectionAvatar=true})
-assert(not ok and tostring(reason):find('approved 1600 background',1,true),
- 'official selection silently fell back to 4315 primitives')
-assert(LiveCount()==0)
+local reason
+local owner=assert(Portraits.new(stage,function(line)reason=line end,{selectionAvatar=true}))
+assert(reason:find('approved 1600 background',1,true))
+owner:sync('menu',true,false,'ironclad');owner:tick()
+assert(not owner:status().selection and LiveCount()==0,'missing source built a different portrait')
 `,{runtimeV2:true,officialAssets:true});
 });
 
@@ -276,9 +277,11 @@ stage.children.characterPanel.children.details=tree({officialSelectionFigure=sel
  portraits=tree({traveler_ironclad=tree()}),portraitNote=note})
 Asset.selectionUses=${marker}
 assert(Asset.battlePixel and Asset.battlePixel.count==57)
-local ok,reason=pcall(Portraits.new,stage,nil,{selectionAvatar=true})
-assert(not ok and tostring(reason):find('approved background schema',1,true),'unmarked official source was accepted')
-assert(LiveCount()==0)
+local reason
+local owner=assert(Portraits.new(stage,function(line)reason=line end,{selectionAvatar=true}))
+assert(reason:find('approved background schema',1,true))
+owner:sync('menu',true,false,'ironclad');owner:tick()
+assert(not owner:status().selection and LiveCount()==0,'unmarked official source was accepted')
 `,{runtimeV2:true,officialAssets:true});
  }
 });

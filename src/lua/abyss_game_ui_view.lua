@@ -16,10 +16,6 @@ local M = {}
 local function building(status)
     return status and (status.phase=='building' or status.phase=='revealing')
 end
-local function currentAvatar(portraits)
-    return portraits and (portraits.selection and portraits.selection.phase~='idle' and portraits.selection or portraits.avatar)
-end
-
 function M.present(menuView)
     return function() MenuView.present(menuView) end
 end
@@ -28,22 +24,16 @@ function M.animate(menuView)
     return function(_,dt) MenuView.animate(menuView,dt) end
 end
 
-function M.paintArtLoading(platform,menu,self,menuLoading,characterPanel,characterLoading,originalCharacterHint)
+function M.paintArtLoading(platform,menu,self)
+    local menuLoading=false
     return function(_)
             if Theme.presentationProfile=='official-assets-first' then return end
             local bg=platform.background and platform.background:status()
-            local portraits=platform.portraits and platform.portraits:status()
-            local avatar=currentAvatar(portraits)
             local function percent(s)return math.min(99,math.floor(100*((s.nextIndex or 1)-1)/math.max(1,s.total or 1)))end
             local summary=menu:GetChild('summary')
             if self.mode=='menu' and not self.characterOpen and building(bg) then
                 summary.text='正在载入画面… '..percent(bg)..'%';summary:SetVisible(true);menuLoading=true
             elseif menuLoading then summary:SetVisible(false);menuLoading=false end
-            local hint=characterPanel:GetChild('hint')
-            if self.characterOpen and building(avatar) then
-                if not characterLoading then originalCharacterHint=hint.text end
-                hint.text='正在载入角色画面… '..percent(avatar)..'%';characterLoading=true
-            elseif characterLoading then hint.text=originalCharacterHint or '查看初始信息，确认后开始冒险。';characterLoading=false end
         end
 end
 
@@ -580,6 +570,35 @@ local function finishReveal(self,platform,roomPainted)
         if self.pageReveal.localOnly and self.pageReveal:covered()then
             CharacterView.render(self.root:GetChild('characterPanel'),self.characterSelection,platform,false)
         end
+    end
+end
+local function selectionPageVisible(self,panel)
+    return panel.visible and self.characterOpen and not self.disabled and not self.deckUI.visible
+        and not self.exitOpen and not self.settlementRequested and not self.settlementBusy
+end
+function M.refreshSelection(self,platform,syncPortraits)
+    local panel=self.root:GetChild('characterPanel')
+    local painting,pending=false,false
+    return function()
+        if painting then pending=true;return end
+        if not selectionPageVisible(self,panel) or self.pageReveal and self.pageReveal:covered() then
+            return self:refresh()
+        end
+        -- A role change replaces the summary and decorative art on the same
+        -- page. Reuse the publication boundary for any actual readiness work.
+        painting=true
+        repeat
+            pending=false
+            if not requestReveal(self,platform) then painting=false;return self:refresh()end
+            CharacterView.render(panel,self.characterSelection,platform)
+            syncPortraits()
+            if not pending and selectionPageVisible(self,panel) then
+                finishReveal(self,platform)
+                paintReveal(self)
+                self:syncController()
+            end
+        until not pending or not selectionPageVisible(self,panel)
+        painting=false
     end
 end
 -- Sorting has already painted the deck projection. Keep its publication and

@@ -112,6 +112,7 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
             local function characterAvailable()
                 if characterAction then
                     return self.characterOpen==true and not self.exitOpen and not self.starting
+                        and not self.deckUI.visible and not (self.pageReveal and self.pageReveal:covered())
                         and (not enabled or enabled())
                         and (self.mode=="menu" or self.mode=="defeat" or self.mode=="victory")
                 end

@@ -90,7 +90,7 @@ local function attachComponents(stage,flags)
 end
 local function preparedArtOwners(page)
     for name,reason in pairs(artFailures)do
-        if name=='portraits' or name=='cards' or name=='v25CardSurface' then return false,reason end
+        if name=='portraits' and page~='characterPanel' or name=='cards' or name=='v25CardSurface' then return false,reason end
     end
     if componentBridge then
         local state,reason,_,cursor=componentBridge:pageState(page)
@@ -111,7 +111,9 @@ end
 local function presentationReady(intent)
     local prepared,why,progress=preparedArtOwners(intent.page)
     if not prepared then return false,why,'component:'..tostring(progress) end
-    if portraits then
+    -- Selection has its own static fallbacks. Keep the page/component and
+    -- input gates below, with native portrait readiness still required elsewhere.
+    if portraits and intent.page~='characterPanel' then
         local ready,reason,cursor=portraits:readyForPage(intent.mode,intent.characterOpen,intent.character,intent.page)
         if not ready then return false,reason,'portrait:'..tostring(cursor) end
     end

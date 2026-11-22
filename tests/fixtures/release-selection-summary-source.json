@@ -1,0 +1,21 @@
+{
+  "beforeSha256": "9f7805663713e1c0a036cfa19d1518750cf568c5c38335da33d17a4430832c9b",
+  "afterSha256": "2d78157fa403de43b2dc35e15e9c55d75a7e5881761c201d5a3c375958311e70",
+  "edits": [
+    [
+      446,
+      2,
+      [
+        " for(const name of ['deckTitle','deckSummary','deckOpen'])assert.equal(child(details,name),undefined);",
+        " for(const name of ['name','stats','gold','v25Story','relic','relicText']){"
+      ]
+    ],
+    [
+      112,
+      1,
+      [
+        " const retiredStarterEntry=path=>/^\\/SlayTheAbyss\\/characterPanel\\/details\\/deck(?:Open|Title|Summary|Rule)(?:\\/|$)/.test(path);"
+      ]
+    ]
+  ]
+}

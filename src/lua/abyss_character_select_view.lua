@@ -3,6 +3,17 @@ local Theme=require('abyss_theme')
 local Select=require('abyss_character_select')
 local number=require('abyss_numbers').integer
 local M={}
+local function visible(control,value)
+    if control.visible~=value then control:SetVisible(value)end
+end
+local function text(control,value)
+    if control.text~=value then control.text=value end
+end
+local function image(control,platform,entry)
+    if control and entry and platform.imageSource and control.imageId~=entry.id then
+        control:SetImage(platform.imageSource,entry.id)
+    end
+end
 -- 选角只做一眼扫读（对标 STS 选角页）：牌组按 攻击→技能→能力→其它 排好直接列出，不提供筛选。
 local typeOrder={attack=1,skill=2,power=3,status=4,curse=5}
 local function sortedDeck(info)
@@ -20,11 +31,11 @@ end
 local function renderStarterDeck(details,info)
     local parts={}
     for _,card in ipairs(sortedDeck(info))do parts[#parts+1]=card.name..'×'..number(card.count)end
-    details:GetChild('deckTitle').text='初始牌组 · '..number(info.deckSize)..' 张'
-    details:GetChild('deckSummary').text=table.concat(parts,'  ')
+    text(details:GetChild('deckTitle'),'初始牌组 · '..number(info.deckSize)..' 张')
+    text(details:GetChild('deckSummary'),table.concat(parts,'  '))
 end
 local function selected(box,value)
-    box:GetChild('selected'):SetVisible(value)
+    visible(box:GetChild('selected'),value)
 end
 local function paintBust(box,entry,platform)
     if not entry or not platform.imageSource then return end
@@ -32,7 +43,7 @@ local function paintBust(box,entry,platform)
     for _,state in ipairs({'normal','hover','pressed','disabled'}) do
         local face=hit:GetChild(state)
         local bust=face and face:GetChild('bust')
-        if bust then bust:SetImage(platform.imageSource,entry.id) end
+        image(bust,platform,entry)
     end
 end
 local function largeSlot(character,element)
@@ -47,61 +58,57 @@ local function paintPortraits(details,state,platform)
     for _,id in ipairs(Select.characters)do
         if id=='traveler' then
             for _,element in ipairs(Select.elements)do
-                portraits:GetChild('traveler_'..element):SetVisible(key=='traveler_'..element)
+                visible(portraits:GetChild('traveler_'..element),key=='traveler_'..element)
             end
-        else portraits:GetChild(id):SetVisible(id==key) end
+        else visible(portraits:GetChild(id),id==key) end
     end
-    if platform.imageSource and large then portraits:GetChild(key):SetImage(platform.imageSource,large.id) end
-    return large,key,portraits
+    image(portraits:GetChild(key),platform,large)
+    return large
 end
-local function paintPortraitNote(details,info,platform,large,key,portraits)
-    local note=info.name
-    local native=platform.portraits and platform.portraits.status and platform.portraits:status().selection
-    if key=='traveler_ironclad' and native then portraits:GetChild(key):SetVisible(false)end
-    if (not large or large.status=='placeholder') and not native then note=note..' · 肖像待补' end
-    if large and large.playable==false then note=note..' · 非本次正式角色' end
-    details:GetChild('portraitNote').text=note
-end
-local function paintCharacterButtons(panel,state,platform,originalSts,open)
+local function paintCharacterButtons(panel,state,platform,originalSts,open,singleRoster)
     for i,id in ipairs(Select.characters)do
         local box=panel:GetChild(i==5 and 'traveler' or 'character'..i)
         local allowed=(originalSts or open>1 or id=='traveler') and state:allowsCharacter(id)
-        if box.visible~=allowed then box:SetVisible(allowed)end
-        selected(box,state.character==id)
+        visible(box,allowed)
+        selected(box,state.character==id and (id~='traveler' or not singleRoster))
         local _,bust=largeSlot(id,id=='traveler' and (state.element or 'ironclad') or nil)
-        if not originalSts or id~='traveler' then paintBust(box,bust,platform)end
+        if allowed and (not originalSts or id~='traveler') then paintBust(box,bust,platform)end
     end
 end
 local function paintThemesAndElements(panel,state,platform,elementsOpen)
     local traveler=state.character=='traveler'
     -- Theme layers are prebuilt per character/element; only visibility changes.
     local theme=traveler and state.element or state.character
-    for _,layer in ipairs({'themes'})do
-        local group=panel:GetChild(layer)
-        for _,id in ipairs(Select.characters)do if id~='traveler' then group:GetChild(id):SetVisible(id==theme)end end
-        for _,id in ipairs(Select.elements)do group:GetChild(id):SetVisible(id==theme)end
-    end
-    panel:GetChild('elements'):SetVisible(traveler and elementsOpen>1)
+    local group=panel:GetChild('themes')
+    for _,id in ipairs(Select.characters)do if id~='traveler' then visible(group:GetChild(id),id==theme)end end
+    for _,id in ipairs(Select.elements)do visible(group:GetChild(id),id==theme)end
+    local elements=panel:GetChild('elements')
+    visible(elements,traveler and elementsOpen>1)
     for i,id in ipairs(Select.elements)do
-        local box=panel:GetChild('elements'):GetChild('element'..i)
+        local box=elements:GetChild('element'..i)
         local allowed=state:allowsElement(id)
-        if box.visible~=allowed then box:SetVisible(allowed)end
+        visible(box,allowed)
         selected(box,state.element==id)
-        paintBust(box,Theme.icon.heroSlots.bust.traveler[id],platform)
+        if allowed and elements.visible then paintBust(box,Theme.icon.heroSlots.bust.traveler[id],platform)end
     end
 end
-local function paintDetails(details,state,platform,originalSts,nativeV25,info)
-    details:GetChild('name').text=info.name
-    details:GetChild('stats').text=(nativeV25 and '生命：' or '生命  ')..number(info.maxHp)..(nativeV25 and '/' or ' / ')..number(info.maxHp)
-    details:GetChild('gold').text=(nativeV25 and '金币：' or '金币  ')..number(info.gold)
+local function paintDetails(details,state,platform,nativeV25,info)
+    text(details:GetChild('name'),info.name)
+    text(details:GetChild('stats'),(nativeV25 and '生命：' or '生命  ')..number(info.maxHp)..(nativeV25 and '/' or ' / ')..number(info.maxHp))
+    text(details:GetChild('gold'),(nativeV25 and '金币：' or '金币  ')..number(info.gold))
     local relics,texts={},{}
     for _,r in ipairs(info.relics)do relics[#relics+1]=r.name;if r.text and r.text~='' then texts[#texts+1]=r.text end end
-    details:GetChild('relic').text=#relics>0 and table.concat(relics,'、') or '无'
-    details:GetChild('relicText').text=table.concat(texts,' ')
+    text(details:GetChild('relic'),#relics>0 and table.concat(relics,'、') or '无')
+    text(details:GetChild('relicText'),table.concat(texts,' '))
     if details:GetChild('deckSummary') then renderStarterDeck(details,info) end
-    local large,key,portraits=paintPortraits(details,state,platform)
-    if originalSts then portraits:SetVisible(false)end
-    paintPortraitNote(details,info,platform,large,key,portraits)
+    local large=paintPortraits(details,state,platform)
+    local note=info.name
+    if large and large.playable==false then note=note..' · 非本次正式角色' end
+    text(details:GetChild('portraitNote'),note)
+    if nativeV25 then
+        visible(details:GetChild('v25Story'),info.id=='ironclad')
+        visible(details:GetChild('v25RelicIcon'),info.id=='ironclad')
+    end
 end
 local function countAllowed(ids,allows)
     local count=0
@@ -113,25 +120,26 @@ function M.render(panel,state,platform,published)
     if published==false then info=nil end
     local originalSts=Theme.presentationProfile=='official-assets-first' and panel:GetChild('stsCharacter')~=nil
     local nativeV25=Theme.presentationProfile=='official-assets-first' and (originalSts or panel:GetChild('v25Roster')~=nil)
-    panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))
+    text(panel:GetChild('hint'),state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。')))
     -- 只剩一个可选角色/元素时不摆假选择钮（Pan 2026-10-31：单角色发版）。
     local open=countAllowed(Select.characters,function(id)return state:allowsCharacter(id)end)
     local elementsOpen=countAllowed(Select.elements,function(id)return state:allowsElement(id)end)
-    paintCharacterButtons(panel,state,platform,originalSts,open)
-    paintThemesAndElements(panel,state,platform,elementsOpen)
-    local details=panel:GetChild('details');details:SetVisible(info~=nil)
-    panel:GetChild('deckView'):SetVisible(false)
     local roster=panel:GetChild('v25Roster')
+    paintCharacterButtons(panel,state,platform,originalSts,open,nativeV25 and roster and open==1)
+    paintThemesAndElements(panel,state,platform,elementsOpen)
+    local details=panel:GetChild('details');visible(details,info~=nil)
+    visible(panel:GetChild('deckView'),false)
     if nativeV25 and roster then
-        roster:SetVisible(open==1)
-        panel:GetChild('title'):SetVisible(info==nil)
-        roster:GetChild('selected'):GetChild('selection'):SetVisible(info~=nil)
-        panel:GetChild('traveler'):GetChild('selected'):SetVisible(false)
+        visible(roster,open==1)
+        visible(panel:GetChild('title'),info==nil)
+        visible(roster:GetChild('selected'):GetChild('selection'),info~=nil)
     end
-    panel:GetChild('confirm'):SetVisible(info~=nil)
+    visible(panel:GetChild('confirm'),info~=nil)
     local confirm=panel:GetChild('confirm'):GetChild('hit')
-    confirm.interactable,confirm.raycastTarget=state:canConfirm(),state:canConfirm()
+    local enabled=info~=nil and state:canConfirm()
+    if confirm.interactable~=enabled then confirm.interactable=enabled end
+    if confirm.raycastTarget~=enabled then confirm.raycastTarget=enabled end
     if not info then return end
-    paintDetails(details,state,platform,originalSts,nativeV25,info)
+    paintDetails(details,state,platform,nativeV25,info)
 end
 return M

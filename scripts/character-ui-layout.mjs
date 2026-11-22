@@ -114,6 +114,8 @@ export function experimentalCharacterControls(theme = nativeTheme) {
           ...elementIds.map(id => largePortrait(`traveler_${id}`, slots.large.traveler[id], id === 'ironclad')),
           ...roles.map(id => largePortrait(id, slots.large[id])),
         ] },
+        { ...tinted('portraitFade', d.portrait, c.backdrop, theme.image.glowWide, 0), visible: false, raycastTarget: false },
+        { ...text('portraitLoading', [d.portrait[0], d.portrait[1] - 100, 72, 30], '', f.label, c.textMuted), visible: false },
         text('portraitNote', d.portraitNote, '', f.small, c.textMuted),
         // 信息层级（STS）：名字 → 生命/金币 → 初始遗物（名+效果）→ 初始牌组摘要 + 查看牌组。
         left(text('name', d.name, '', f.title, c.goldBright)),

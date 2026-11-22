@@ -9,20 +9,20 @@ local colors={ironclad='red',silent='green',defect='blue',watcher='purple'}
 local basicSourceIds={survivor='Survivor'}
 local native={armaments=true,havoc=true,sword_boomerang=true,dual_wield=true,infernal_blade=true,
  searing_blow=true,double_tap=true,feed=true,juggernaut=true}
-local constantComponents
-local function components()
- if not constantComponents then
-  -- Compile only module-authored constants from an empty scaffold. Never read
-  -- any caller here: rules/cards/statuses and extension graphs are read anew
-  -- below. These private constants are never returned or installed by alias.
-  local compiled={}
-  for _,id in ipairs({'silent','defect','watcher'})do
-   compiled[id]=Profiles.prepare({rules={player={}},cards={cards={}},
-    statuses={statuses={}},relics={relics={}},potions={potions={}}},id)
-  end
-  constantComponents=compiled
+local constantComponents={}
+local function component(id)
+ local loaded=constantComponents[id]
+ if not loaded then
+  local data,profile=Profiles.prepare({rules={player={}},cards={cards={}},
+   statuses={statuses={}},relics={relics={}},potions={potions={}}},id)
+  loaded={data=data,profile=profile};constantComponents[id]=loaded
  end
- return constantComponents
+ return loaded.data,loaded.profile
+end
+local function components()
+ local compiled={}
+ for _,id in ipairs({'silent','defect','watcher'})do compiled[id]=component(id)end
+ return compiled
 end
 local function carrier(data)
  -- Fact builders need these dependencies only. Do not repeatedly copy enemies,
@@ -197,6 +197,28 @@ function M.prepareSelected(source,id)
  restoreSelectedCards(out,current)
  restoreSelectedStatuses(out,currentStatuses)
  return out,profile
+end
+function M.previewSelected(source,id)
+ -- Run preparation still validates and owns the full catalogue and caller graph.
+ local data,profile=component(id)
+ local wanted,overrides,cards={},{},{}
+ local starter=data.cards.starter_deck
+ for _,cardId in ipairs(starter.cards)do wanted[cardId]=true end
+ for _,card in ipairs(source.cards.cards)do
+  if wanted[card.id]then overrides[card.id]=card end
+ end
+ for _,card in ipairs(data.cards.cards)do
+  if wanted[card.id]then
+   local supplied=overrides[card.id]
+   if supplied then
+    validateForeign(supplied)
+    card=canonicalForeign(Copy.copy(supplied))
+   else card=Copy.copy(card)end
+   cards[#cards+1]=card
+  end
+ end
+ return {cards={cards=cards,starter_deck=Copy.copy(starter)},rules=Copy.copy(data.rules),
+  relics=Copy.copy(data.relics),experimentalCharacter=id},Copy.copy(profile)
 end
 local function validateCallerCards(source,character,authored)
  local overrides={}

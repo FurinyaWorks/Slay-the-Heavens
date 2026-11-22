@@ -42,7 +42,7 @@ for(const suffix of ['contracts','isolation','caller_foreign','review_card_graph
 test('Run catalogue full module includes every helper, callback and initialization in CC15',()=>{
  const sources=discoverSources(),diagnostics=runStatic(['--max-cyclomatic-complexity','0','--only','561']).diagnostics;
  const measured=measureSources(sources,diagnostics);assert.deepEqual(measured.errors,[]);
- const module=measured.modules.find(m=>m.file===file);assert.equal(module.functions.length,35);assert(module.functions.every(f=>f.complexity<=15));
+ const module=measured.modules.find(m=>m.file===file);assert.equal(module.functions.length,37);assert(module.functions.every(f=>f.complexity<=15));
  const report=reviewResponsibilityComplexity(diagnostics,sources);assert.deepEqual(report.errors,[]);
  assert.equal(report.functions.filter(f=>f.file===file).length,module.functions.length);
  const source='local function future() return function() end end';

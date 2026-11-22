@@ -10,18 +10,19 @@ assert.equal(hash(bytes),'b10cce10b072edcd45acc8204944ece9b604343699658543229999
 const files=JSON.parse(gunzipSync(bytes));
 for(const row of Object.values(files))assert.equal(hash(row.before),row.beforeSha256);
 const choice=JSON.parse(readFileSync(new URL('../fixtures/release-choice-test-source.json',import.meta.url),'utf8'));
-function beforeChoiceTest(path,source){
+const selection=JSON.parse(readFileSync(new URL('../fixtures/release-selection-summary-source.json',import.meta.url),'utf8'));
+function beforeTest(path,source,record){
  if(path!=='tests/official-assets.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=source.replaceAll('\r\n','\n');
- if(hash(lf)!==choice.afterSha256)return source;
+ if(hash(lf)!==record.afterSha256)return source;
  const lines=lf.split('\n');
- for(const [index,count,previous]of choice.edits)lines.splice(index,count,...previous);
+ for(const [index,count,previous]of record.edits)lines.splice(index,count,...previous);
  const prior=lines.join('\n');
- assert.equal(hash(prior),choice.beforeSha256,'exact predecessor before the choice layout update');
+ assert.equal(hash(prior),record.beforeSha256,'exact predecessor of the official asset test');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeSts1MenuCiSource(path,source){
- source=beforeReleaseUiCloseoutSource(path,beforeChoiceTest(path,source));
+ source=beforeReleaseUiCloseoutSource(path,beforeTest(path,beforeTest(path,source,selection),choice));
  const row=Object.hasOwn(files,path)?files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.afterSha256)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;

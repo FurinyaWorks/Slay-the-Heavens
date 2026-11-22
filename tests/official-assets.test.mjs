@@ -110,7 +110,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  const result=applyOfficialAssets([layout,template],theme);
  const current=new Map([...paths(layout),...paths(template)]);
  const retiredDeckPrefix='/SlayTheAbyss/characterPanel/deckView/';
- const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deck(?:Open|Title|Summary|Rule)(?:\/|$)/.test(path);
+ const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deck(?:Open|Rule)(?:\/|$)/.test(path);
  const retiredOverlay=path=>/^\/SlayTheAbyss\/(?:prologuePanel(?:\/|$)|(?:exitPanel|runMenu)\/(?:help|guide)(?:\/|$)|potionPanel\/)/.test(path);
  const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
  const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card\d+(?:\/|$)/.test(path)&&!choiceProjection.has(choicePath(path));
@@ -444,8 +444,8 @@ test('official selection leaves the portrait unobscured and exit retains the liv
  const hit=child(child(child(layout,'runMenu'),'mainMenu'),'hit');
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(child(details,'informationBoard'),undefined,'the left copy must not shade the portrait');
- for(const name of ['deckTitle','deckSummary','deckOpen'])assert.equal(child(details,name),undefined);
- for(const name of ['name','stats','gold','v25Story','relic','relicText']){
+ assert.equal(child(details,'deckOpen'),undefined);
+ for(const name of ['name','stats','gold','v25Story','relic','relicText','deckTitle','deckSummary']){
   const control=child(details,name);
   assert.equal(control.text.align,'left',name);
   assert.equal(control.text.outline,true,name);

@@ -171,8 +171,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     local start,settlement=menuView.start,menuView.settlement
     local present = View.present(menuView)
     self.animate = View.animate(menuView)
-    local menuLoading,characterLoading,originalCharacterHint=false,false,nil
-    self.paintArtLoading = View.paintArtLoading(platform,menu,self,menuLoading,characterPanel,characterLoading,originalCharacterHint)
+    self.paintArtLoading = View.paintArtLoading(platform,menu,self)
 
     self.syncController = View.syncController(self,controller,openingCovered)
     local finishRunFlow = View.finishRunFlow(neowHistory,endingHistory,self)
@@ -201,7 +200,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     local openingForeground = View.openingForeground(self,child,prologuePanel,runMenu,exitPanel)
     local syncOfficialBattleScene = View.syncOfficialBattleScene(root,self)
     self.refresh = View.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManagePotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
-    local selectionChanged = RunFlow.selectionChanged(self,owner)
+    local selectionChanged = RunFlow.selectionChanged(self,owner,View.refreshSelection(self,platform,syncPortraits))
     self.closeCharacters = RunFlow.closeCharacters(self,selectionChanged)
     self.selectCharacter = RunFlow.selectCharacter(self,selectionChanged)
     self.selectElement = RunFlow.selectElement(self,selectionChanged)

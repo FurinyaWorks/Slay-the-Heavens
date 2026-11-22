@@ -175,6 +175,8 @@ local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
 local panel=root:GetChild('characterPanel');panel:SetVisible(true)
 local art=panel:GetChild('lumineSelectionBackground')
+local details=panel:GetChild('details')
+local dots,fade=details:GetChild('portraitLoading'),details:GetChild('portraitFade')
 local legacy=panel:GetChild('officialBackdropVeil')
 local fallback=panel:GetChild('v25Background')
 local fill=fallback:GetChild('fill')
@@ -206,9 +208,14 @@ local function scope(label)
  if legacy.visible then covered[#covered+1]=label end
 end
 portraits:sync('menu',true,false,'ironclad');scope('building')
+portraits:tick(.49);assert(not dots.visible and not fade.visible)
+portraits:tick(.02);assert(dots.visible and dots.text=='• · ·' and not art.visible)
+portraits:tick(.17);assert(dots.text=='· • ·')
 for _=1,600 do portraits:tick();if portraits:readyForPage('menu',true,'ironclad','characterPanel')then break end end
 assert(portraits:readyForPage('menu',true,'ironclad','characterPanel'))
 assert(portraits:status().selection.phase=='ready' and art.visible and not fallback.visible)
+assert(not dots.visible and fade.visible)
+portraits:tick(.17);assert(not fade.visible)
 scope('ready')
 local total=created
 portraits:sync('menu',false,false,'ironclad');assert(not art.visible and fallback.visible);scope('paused')
@@ -219,6 +226,24 @@ assert(portraits:release());rejectCreation=true
 portraits:sync('menu',true,false,'ironclad');portraits:tick()
 assert(portraits:status().selection.phase=='failed' and not art.visible and fallback.visible)
 scope('failed')
+rejectCreation=false
+portraits:sync('menu',false,false,'ironclad')
+portraits:sync('menu',true,false,'ironclad')
+portraits:tick(4);local timedOut=created
+for _=1,10 do portraits:tick(1/60)end
+assert(created==timedOut and fallback.visible and not dots.visible and not art.visible)
+portraits:sync('menu',false,false,'ironclad')
+portraits:sync('menu',true,false,'ironclad')
+local setVisible=art.SetVisible;local reentered=false
+art.SetVisible=function(self,value)
+ setVisible(self,value)
+ if value and not reentered then
+  reentered=true;portraits:sync('menu',true,false,'hutao')
+ end
+end
+for _=1,600 do portraits:tick(1/60);if reentered then break end end
+assert(reentered and not art.visible and fallback.visible and not fade.visible and not dots.visible,
+ 'late Geo art became visible after the next role was chosen')
 portraits:onEngineDestroy();portraits:tick();scope('destroyed')
 assert(#covered==0,'inherited full-screen shade covers the approved selection art: '..table.concat(covered,','))
 print('SELECTION_OVERLAY_SCOPE_PASS created='..created)
