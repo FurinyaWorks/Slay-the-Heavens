@@ -129,7 +129,7 @@
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md",
-        "sha256": "2a252035cbcea8225ca3119b216931344f31b949c2704db4bb5ec25b929189ac"
+        "sha256": "18eb9b18811d124cf65a7a8b8578977b65afbc2823e95eb67807dfb6991f982f"
       },
       "supersedes": [
         "sts1-open-copy-20261119"
@@ -209,7 +209,7 @@
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md",
-        "sha256": "2a252035cbcea8225ca3119b216931344f31b949c2704db4bb5ec25b929189ac"
+        "sha256": "18eb9b18811d124cf65a7a8b8578977b65afbc2823e95eb67807dfb6991f982f"
       },
       "supersedes": [
         "develop",
