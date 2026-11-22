@@ -7,7 +7,7 @@ const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).diges
 const normalize=source=>source.replaceAll('\r\n','\n');
 const blob=source=>hash('blob '+Buffer.byteLength(source)+'\0'+source,'sha1');
 const roomArchive=readFileSync(new URL('./release-map-room-source.json.gz',import.meta.url));
-assert.equal(hash(roomArchive),'e1add3087f823b670f37310624c11e43bfa57b20aa3d1735396999d8be9a74f7','exact map room source archive');
+assert.equal(hash(roomArchive),'834f71a1a70fe4858c4874497f8f7b46ae02a8f1949041aacc2d91353d190b13','exact map room source archive');
 const {base:roomBase,files:roomFiles}=JSON.parse(gunzipSync(roomArchive));
 assert.equal(roomBase,'4ac434d02f0479d92d96da75367f4cab98809a17');
 for(const [path,{before}] of Object.entries(roomFiles)){
