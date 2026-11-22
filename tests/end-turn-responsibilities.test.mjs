@@ -98,16 +98,31 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
  };
  const wrapped=relicQueryReader(raw);assert.equal(relicQueryReader(wrapped),wrapped);
  assert.equal(preRelicQuerySource(file,current),old);assert.equal(wrapped(file),old);
+ const outerReadCount=325;
  let validReads;
  for(const readSource of [raw,wrapped]){
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,current,{readSource}),old);
-  assert.deepEqual(reads.slice(0,owners.length),owners);if(validReads)assert.deepEqual(reads,validReads);else validReads=[...reads];
+  if(!validReads){
+   // Nested source cohorts have their own fresh reads before and after the
+   // original owners. Bind the full live trace to its exact frozen order.
+   assert.equal(reads.length,6588);
+   assert.equal(hash(JSON.stringify(reads)),'afabd4fabc424b96c725f591c6eb943b7a969b858a3be8122a35f19e987c5f16');
+   let position=-1;
+   for(const owner of owners){
+    position=reads.indexOf(owner,position+1);
+    assert(position>=0&&position<outerReadCount,'retained original EndTurn read: '+owner);
+   }
+   validReads=[...reads];
+  }
+  assert.deepEqual(reads,validReads);
   for(const owner of owners){
    for(mode of ['drift','foreign','old','null','missing','throw']){
     changed=owner;reads=[];
     const message=mode==='throw'?'combined linked owner missing: '+owner+': owner sentinel':'combined linked owner identity: '+owner;
-    assert.throws(()=>preRelicQuerySource(file,current,{readSource}),{message});
-    assert.deepEqual(reads,owners.slice(0,owners.indexOf(owner)+1),'fresh reads stop at the actual bad owner');
+    assert.throws(()=>preRelicQuerySource(file,current,{readSource}),error=>{
+     assert.ok(error.message.includes(message),error.message);return true;
+    });
+    assert.deepEqual(reads,validReads.slice(0,validReads.indexOf(owner)+1),'fresh reads stop at the actual bad owner: '+owner);
    }
    changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,current,{readSource}),old);assert.deepEqual(reads,validReads,'recovery must reread the whole chain');
   }
@@ -119,10 +134,17 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
  assert.equal(preRelicQuerySource(file,current.replaceAll('\n','\r\n'),{readSource:p=>read(p).replaceAll('\n','\r\n')}),old);
  const config='config/architecture.json';
  assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>p===config?JSON.stringify(JSON.parse(read(p))):read(p)}),{message:'combined linked owner identity: '+config});
- let configReads=0;
- assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>read(p)+(p===config&&++configReads>1?'\n':'')}),
-  /relic query linked owner missing: .*: combined linked owner identity: config\/architecture\.json$/,'inner validation cannot reuse an earlier outer success');
- assert.equal(configReads,2);
+ // The first 325 observations belong to the outer authenticated projection.
+ // Mutate the first config observation from the wrapped N35 projector.
+ const firstInnerConfig=validReads.indexOf(config,outerReadCount);
+ assert.equal(firstInnerConfig,327);
+ const innerOccurrence=validReads.slice(0,firstInnerConfig+1).filter(path=>path===config).length;
+ let configReads=0;reads=[];
+ assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>{
+  reads.push(p);return read(p)+(p===config&&++configReads===innerOccurrence?'\n':'');
+ }}),/relic query linked owner missing: .*: combined linked owner identity: config\/architecture\.json$/,'inner validation cannot reuse an earlier outer success');
+ assert.equal(configReads,innerOccurrence);
+ assert.deepEqual(reads,validReads.slice(0,firstInnerConfig+1),'inner drift stops at the first new configuration read');
 });
 for(const [name,from,to]of [
  ['negative Ritual guard',"if n>0 then add(bottom,{op='gainStatus',status='strength',value=n})end","if n>=0 then add(bottom,{op='gainStatus',status='strength',value=n})end"],
