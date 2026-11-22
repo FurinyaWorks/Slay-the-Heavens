@@ -34,6 +34,13 @@ local create=GameUI.new
 local F
 GameUI.new=function(root,data,presentation,event,platform)
     platform.nativePageLifecycle=true
+    platform.presentationReady=function(intent)
+        if intent.page=='nodePanel' then
+            local node=root:GetChild('nodePanel')
+            assert(node.active and node.visible,'mock readiness called before room mount')
+        end
+        return true
+    end
     for _,name in ipairs({'nodePanel','choicePanel'}) do
         local panel=root:GetChild(name)
         local previous,active=getmetatable(panel),true

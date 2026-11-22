@@ -1,12 +1,13 @@
 local F = dofile('tests/lua/support/game_ui_fixture.lua')
 local V = dofile(ARTIFACTS .. '/visual-tree.lua')
 local Map = require('abyss_map')
+local Reveal = require('abyss_page_reveal')
 local Routes = dofile('tests/lua/support/map_routes.lua')
 local fps = 30
 local dt = 1 / fps
 local repetitions = tonumber(os.getenv('SHOP_REPETITIONS')) or 9
 local dwell = tonumber(os.getenv('SHOP_DWELL_TICKS')) or 0
-local trace, totals, spans, activation
+local trace, totals, spans, activation, rootShown, coverLifted
 local function count(area, method)
     if not trace then return end
     local key = area .. '.' .. method
@@ -38,9 +39,14 @@ local function observe(control, area)
             control[method] = function(box, ...)
                 count(area, method)
                 local accepted, reason = original(box, ...)
-                if trace and activation and area == 'panel' and method == 'SetVisible'
-                        and (...) == true and spans['node.activationToVisibility'] == nil then
-                    spans['node.activationToVisibility'] = (os.clock() - activation) * 1000
+                if trace and activation and method == 'SetVisible' then
+                    if area == 'panel' and (...) == true and not rootShown then
+                        rootShown = true
+                        spans['node.activationToVisibility'] = (os.clock() - activation) * 1000
+                    elseif area == 'cover' and (...) == false and not coverLifted then
+                        coverLifted = true
+                        spans['node.activationToUncover'] = (os.clock() - activation) * 1000
+                    end
                 end
                 return accepted, reason
             end
@@ -73,7 +79,7 @@ local function observe(control, area)
     end
 end
 local function measure(index, label, operation)
-    totals, spans, activation = {}, {}, nil
+    totals, spans = {}, {}
     trace = true
     local start = os.clock()
     local result, why = operation()
@@ -103,6 +109,18 @@ local function snapshot(kind, name, ui, root, node, view, merchant, tick)
         show(view) and 1 or 0, view.y or 0, ui.nodeUI.shopBusy and 1 or 0}, '\t'))
     V.capture(kind .. '-' .. name, ui, root, 'Generated official-assets layout, Fengari GameUI state, browser geometry rendering')
 end
+local function tick(ui)
+    local result, reason = ui:update(dt)
+    if ui.pageReveal and ui.pageReveal:step(Reveal.intent(ui)) then ui:refresh() end
+    return result, reason
+end
+local function settle(ui)
+    for _ = 1, 90 do
+        if not ui.pageReveal or not ui.pageReveal:covered() then return end
+        tick(ui)
+    end
+    error('page reveal did not settle')
+end
 local function connectedRoute(ui)
     local path = Routes.to(ui.map, function(n) return n.type == 'shop' end)
     if ui.run.nodeFlow and #path > 1 then
@@ -111,30 +129,32 @@ local function connectedRoute(ui)
     end
     for i = 1, #path - 1 do assert(Map.choose(ui.map, path[i])) end
     ui:refresh()
+    settle(ui)
     for _ = 1, 90 do
         if ui.mapUI.navigationEnabled then break end
-        ui:update(dt)
+        tick(ui)
     end
     assert(ui.mapUI.navigationEnabled, 'route selector still disabled: ' .. tostring(ui.run.phase))
     return path[#path]
 end
 local function runShop(i, kind, ui, root, node, view, merchant, emitSnapshots)
+    activation, rootShown, coverLifted = nil, nil, nil
     local route = connectedRoute(ui)
     ui.run.gold = 10000
     assert(measure(i, kind .. '.nodeSelection', function() return ui.mapUI:choose(route) end))
     assert(ui.run.nodeFlow and ui.run.nodeFlow.type == 'shop')
     local ready = 0
-    if emitSnapshots then snapshot(kind, 'room-published', ui, root, node, view, merchant, 0) end
     while not ui.nodeUI.visible or (ui.pageReveal and ui.pageReveal:covered()) do
         ready = ready + 1
-        measure(i, kind .. '.roomUpdate', function() return ui:update(dt) end)
+        measure(i, kind .. '.roomUpdate', function() return tick(ui) end)
         assert(ready < 90, 'room did not become interactive')
     end
-    measure(i, kind .. '.roomFirstUpdate', function() return ui:update(dt) end)
+    if emitSnapshots then snapshot(kind, 'room-published', ui, root, node, view, merchant, ready) end
+    measure(i, kind .. '.roomFirstUpdate', function() return tick(ui) end)
     assert(not show(view), 'shelf must be hidden before opening')
     if emitSnapshots then snapshot(kind, 'room', ui, root, node, view, merchant, ready) end
     for _ = 1, dwell do
-        measure(i, kind .. '.roomDwellUpdate', function() return ui:update(dt) end)
+        measure(i, kind .. '.roomDwellUpdate', function() return tick(ui) end)
     end
     local hit = merchant:GetChild('talk'):GetChild('hit')
     assert(show(hit), 'merchant input must be visible')
@@ -144,7 +164,7 @@ local function runShop(i, kind, ui, root, node, view, merchant, emitSnapshots)
     repeat
         ticks = ticks + 1
         local phase = show(view) and '.shelfUpdate' or '.prepUpdate'
-        measure(i, kind .. phase, function() return ui:update(dt) end)
+        measure(i, kind .. phase, function() return tick(ui) end)
         if not firstShelf and show(view) and (view.y or 0) < 720 then firstShelf = ticks end
         assert(ticks < 90, 'shelf did not become interactive')
         if emitSnapshots and ticks == 1 then snapshot(kind, 'shelf-first-update', ui, root, node, view, merchant, ticks) end
@@ -155,33 +175,35 @@ local function runShop(i, kind, ui, root, node, view, merchant, emitSnapshots)
     assert(show(view), 'shelf is hidden after opening')
     if emitSnapshots then snapshot(kind, 'shelf-ready', ui, root, node, view, merchant, ticks) end
     print(table.concat({'SHOP_READY', i, kind, ready, ticks, firstShelf or ticks}, '\t'))
-    for _ = 1, 6 do measure(i, kind .. '.idleUpdate', function() return ui:update(dt) end) end
+    for _ = 1, 6 do measure(i, kind .. '.idleUpdate', function() return tick(ui) end) end
     local cost = ui.run.gold
     assert(measure(i, kind .. '.cardSelect', function() return ui.nodeUI:press('shopView/card1') end))
     assert(measure(i, kind .. '.purchase', function() return ui.nodeUI:press('confirm') end))
     assert(ui.run.gold < cost and ui.run.nodeFlow.cards[1].sold)
+    settle(ui)
     assert(measure(i, kind .. '.leaveClick', function() return ui.nodeUI:press('back') end))
     ticks = 0
     while ui.nodeUI.shopBusy do
         ticks = ticks + 1
-        measure(i, kind .. '.leaveUpdate', function() return ui:update(dt) end)
+        measure(i, kind .. '.leaveUpdate', function() return tick(ui) end)
         assert(ticks < 90, 'exit did not complete')
     end
     assert(ui.run.nodeFlow.complete)
+    settle(ui)
     assert(ui.nodeUI:press('confirm'))
-    if ui.pageReveal and ui.pageReveal:covered() then
-        for _ = 1, 75 do
-            if not ui.pageReveal:covered() then break end
-            ui:update(dt)
-        end
-    end
+    settle(ui)
 end
 for i = 1, repetitions do
     local ui, root = F.fixture()
-    assert(F.start(ui))
+    settle(ui)
+    assert(ui:start())
+    settle(ui)
+    assert(F.confirmStart(ui))
+    settle(ui)
     local node = root:GetChild('nodePanel')
     local view, merchant = node:GetChild('shopView'), node:GetChild('merchant')
     observe(node, 'panel')
+    observe(root:GetChild('pageReveal'), 'cover')
     measureCall(ui.nodeUI, 'setVisible', 'node.visibility')
     measureCall(ui.nodeUI, 'render', 'node.render')
     measureCall(ui.nodeUI, 'update', 'node.update')

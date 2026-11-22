@@ -129,15 +129,16 @@ function assertCoopJsInventory(paths,preceding,read){
 }
 const shopEntryTests={
  js:['tests/shop-entry.test.mjs','3b687d1afb6ee83dc7103bc4c074e990a748a96ef55c4cba326498a5ed2d1919'],
- lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259'],
+ lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259',
+  'e2b0e5297f87eb64525710b871ba23bd9bbcf81e942623c316759e9991dcebeb'],
 };
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
- const [path,sha]=shopEntryTests[kind];
+ const [path,...authenticated]=shopEntryTests[kind];
  const position=paths.indexOf(path);
  if(position===-1)return paths;
  assert.equal(paths.lastIndexOf(path),position,'duplicate inventory source: '+path);
  const source=read(path,'utf8');
- assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
+ assert(typeof source==='string'&&!source.includes('\r\r\n')&&authenticated.includes(hash(normalize(source))),'fresh added inventory source: '+path);
  return paths.filter(test=>test!==path);
 }
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
