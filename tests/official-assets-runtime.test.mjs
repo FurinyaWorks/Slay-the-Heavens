@@ -843,6 +843,36 @@ Run.potionView=whole
 `, 'DEFAULT_POTION_INVENTORY_VIEW_PASS',{},false);
 });
 
+test('official reward card picker keeps owned relics visible when inspecting a potion',t=>{
+ runOfficial(t,`
+local Run=require('abyss_run')
+local host,ui,battle,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+assert(Run.obtainPotion(host.run,'speed_potion'))
+host.run.combat.enemies[1].hp=0;host.run.combat.phase='victory'
+assert(Run.finishCombat(host.run));host:refresh()
+battle:GetChild('cardReward').click()
+local picker=battle:GetChild('rewardStage')
+local bar=root:GetChild('relicBar')
+local slot=bar:GetChild('slot1')
+local relicHit=slot:GetChild('hit')
+assert(picker.visible and bar.visible and slot.visible)
+assert(relicHit.listeners.enter())
+local potionHit=root:GetChild('potionEntry'):GetChild('slot1'):GetChild('hit')
+potionHit.listeners.down({touchId=1});potionHit.listeners.up({touchId=1})
+assert(potionHit.click({touchId=1}))
+local popup=root:GetChild('potionPanel')
+assert(popup.visible and picker.visible and ui.rewardScreen=='cards')
+assert(bar.visible and slot.visible,'opening the potion popup hid the relic row')
+assert(popup.y+popup.sizeDeltaY/2 < slot.y-relicHit.sizeDeltaY/2,'potion popup overlaps the relic row')
+assert(not bar:GetChild('tooltip').visible and not relicHit.listeners.enter())
+assert(not relicHit.click(),'an outside relic click must not open its details beneath the potion popup')
+assert(not popup:GetChild('use').interactable and popup:GetChild('discard').interactable)
+assert(popup:GetChild('dismiss').click())
+assert(not popup.visible and picker.visible and bar.visible and relicHit.listeners.enter())
+assert(host.run.potions[1]=='speed_potion' and not host.run.rewards.cardResolved)
+`, 'OFFICIAL_POTION_RELIC_HUD_PASS');
+});
+
 test('official hover refresh touches poses only and falls back on turn, UID and viewport changes',t=>{
  runOfficial(t,`
 local deck={};for i=1,10 do deck[i]='strike'end

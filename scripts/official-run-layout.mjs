@@ -6,7 +6,7 @@ import {applyV25MapLayout} from './v25-map-layout.mjs';
 import {applyOfficialMapReturnControls} from './official-map-return-controls.mjs';
 import {applyV25RewardLayout,styleMerchant,styleEvent} from './v25-node-layout.mjs';
 import {officialRunChrome} from './official-battle-hud.mjs';
-import {roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
+import {roundedButtonState,roundedFramedButton,roundedPresetButton} from './native-rounded-button.mjs';
 import {monsterActorTierNames,monsterActorTemplateName} from './monster-art.mjs';
 import {applyStsRewardRows} from './sts-reward-row-layout.mjs';
 
@@ -84,12 +84,11 @@ function roundRunActions(host,theme){
  }
 }
 function roundPotionActions(battle,theme){
- const popup=required(required(battle,'potionHelp'),'potionPopup'),layout=theme.layout.potionPopup;
- const height=Math.max(layout.actionHeight,theme.layout.nativeText.lineHeight),c=theme.color;
+ const popup=required(required(battle,'potionHelp'),'potionPopup'),c=theme.color;
  const use=required(popup,'use'),discard=required(popup,'discard');
- use.size=[layout.width/2,height];discard.size=[layout.width/3-layout.padding,height];
- roundedPresetButton(use,theme,[c.gold,'#3B5A54']);
- roundedPresetButton(discard,theme,[c.goldDim,c.panelSunken]);
+ roundedPresetButton(use,theme,[c.gold,c.panelRaised]);
+ roundedButtonState(required(use,'disabled'),use.size,[c.line,c.panel]);
+ roundedPresetButton(discard,theme,theme.officialAssets.flagButton.cancel);
 }
 
 export function composeOfficialRun(tree,theme){
