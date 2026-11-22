@@ -592,7 +592,7 @@ print('OFFICIAL_MAP_RETURN_STATES_PASS')
 });
 
 
-test('official lethal feedback and reward widgets do not flash the page cover',t=>{
+test('official rewards preserve the card picker through a map preview and keep settings separate',t=>{
  runOfficial(t,`
 local GameUI=require('abyss_game_ui')
 local original=GameUI.new
@@ -611,7 +611,7 @@ local map=root:GetChild('mapPanel')
 local function frame()
  host:update(1/60)
  if gate:step(Gate.intent(host)) then host:refresh()end
- gate:paint(not host.exitOpen)
+ gate:paint(not host.exitOpen or host.routeOpen)
 end
 local function actor()
  local exists,box=pcall(F.actorControl,battle,'enemy1')
@@ -647,8 +647,28 @@ end
 for _=1,4 do frame();expectReward(true,false)end
 battle:GetChild('cardReward').click();expectReward(false,true)
 for _=1,4 do frame();expectReward(false,true)end
+local menu,exit=root:GetChild('runMenu'),root:GetChild('exitPanel')
+local showMenu,menuShows=menu.SetVisible,0
+function menu:SetVisible(visible)
+ if visible then menuShows=menuShows+1 end
+ showMenu(self,visible)
+end
+local function press(hit,id)
+ hit.listeners.down({touchId=id});hit.listeners.up({touchId=id})
+ return hit.click({touchId=id})
+end
+local route=battle:GetChild('topBar'):GetChild('battleRoute'):GetChild('hit')
+assert(press(route,202) and host.routeOpen)
+for _=1,4 do frame()end
+assert(map.visible and not cover.visible and not host.mapUI.navigationEnabled)
+assert(press(map:GetChild('previewBack'):GetChild('hit'),203))
+for _=1,4 do frame()end
+expectReward(false,true)
+assert(menuShows==0 and not menu.visible and not exit.visible,'map preview opened the settings menu during its transition')
+assert(press(root:GetChild('exitEntry'):GetChild('open'):GetChild('hit'),204) and menu.visible and menuShows==1)
+assert(host:closeExit());expectReward(false,true)
 local count=#host.run.deck
-tap('card1',203);expectReward(true,false)
+tap('card1',205);expectReward(true,false)
 for _=1,4 do frame();expectReward(true,false)end
 assert(#host.run.deck==count+1 and host.run.rewards.cardResolved,'public pick must claim exactly one card')
 battle:GetChild('continue').click()

@@ -296,8 +296,11 @@ end
 function M.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     local bar=Theme.presentationProfile=='official-assets-first' and child('battlePanel'):GetChild('topBar')
     local function openRoute()
-        if not self:openMenu()then return false end
-        self.routeOpen=true;self:refresh();return true
+        -- The first refresh can start a page fade, so publish the route state together.
+        owner.exitGeneration=owner.exitGeneration+1
+        self.exitOpen,self.menuOpen,self.routeOpen,self.exitError=true,false,true,nil
+        self:refresh()
+        return true
     end
     local shortcut=bar and bar:GetChild('battleRoute')
     if shortcut then bindCommand(shortcut,'battleRoute',openRoute,canViewRoute)end
