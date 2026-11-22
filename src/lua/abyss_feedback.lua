@@ -334,12 +334,12 @@ function M.new(stage, platform, present, complete)
             and {{0, 0, 1}, {lift, -S.s, 1}, {T.base, S.l, 1}, {T.base + T.slow, 0, 1}}
             or {{0, 0, 1}, {T.base, 0, 1 + SWELL}, {T.base + T.slow, 0, 1}}}
     end
-    local function bannerStep(d, kind)
+    local function bannerStep(kind)
         if kind=='player_turn' and v25Notice then v25Notice:playerTurn(self.shadow.turn);sound('turn');return end
         if v25Notice then v25Notice:reset()end
         if kind == "enemy_turn" then banner("敌方回合") sound("turn")
         elseif kind == "player_turn" then banner("我方回合 " .. n(self.shadow.turn)) sound("turn")
-        elseif kind == "victory" then banner(d.allEnemiesEscaped and "敌人已逃跑" or "战斗胜利") sound("victory")
+        elseif kind == "victory" then sound("victory")
         else
             banner("旅途暂歇", true)
             local shade = overlay:GetChild("deathShade")
@@ -527,7 +527,7 @@ function M.new(stage, platform, present, complete)
             playStep(d,kind,style,old)
             startCast(d,kind,style)
         elseif banners[kind] then
-            bannerStep(d,kind,style,old)
+            bannerStep(kind)
         elseif kind == "intent" then
             intentStep(d,kind,style,old)
             startCast(d,kind,style)
@@ -541,19 +541,21 @@ function M.new(stage, platform, present, complete)
         -- Keep hit/action sound order within the same lethal presentation frame.
         for _,id in ipairs(contactDeaths)do contactDeathSound(id)end
     end
-    local function pendingMonsterExit()
+    local function pendingVictoryEffects()
+        if self.effects.player then return true end
         for id in pairs(self.dying)do if id~='player'then return true end end
         return next(self.escaping)~=nil
     end
     local function advanceQueue()
         repeat
             local entry=self.queue[self.index+1]
-            if entry and entry.kind=='victory' and pendingMonsterExit()then return end
+            if entry and entry.kind=='victory' and pendingVictoryEffects()then return end
             self.index=self.index+1
             if not entry then finish();return end
             step(entry,self.styles[self.index])
-            -- Source onModifyPower is a synchronous callback, never another action wait/frame.
-        until entry.kind~='source_intent_powers'
+            -- Once the last effect completes, the victory cue hands off immediately.
+            -- Source onModifyPower is synchronous as well.
+        until entry.kind~='source_intent_powers' and entry.kind~='victory'
     end
     function self.start(_owner,before, battle, first, presentation, origin)
         -- GameActionManager releases its action gate independently of the
