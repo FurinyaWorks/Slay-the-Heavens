@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import {mkdtempSync, readFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {isDeepStrictEqual} from 'node:util';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
+import {nativeTheme} from '../scripts/native-ui-theme.mjs';
+import {applyV25RewardLayout} from '../scripts/v25-node-layout.mjs';
 import {sourceInputs} from '../scripts/build-native-candidate.mjs';
 import {writeBackgroundModule} from '../scripts/official-background.mjs';
 import {createOptInArtFixture} from './helpers/opt-in-art-fixture.mjs';
@@ -42,9 +45,11 @@ test('real UI build registers one shared hidden background host and one native i
  assert.equal(actor.visible,false);assert.equal(actor.children[0].visible,false);
  const original=structuredClone(stage.children.slice(1));
  const strip=nodes=>{for(const node of nodes){if(node.children){node.children=node.children.filter(c=>!['artSamples','officialAvatar','officialFigure','officialSelectionFigure','monsterArt','lowpolyScene'].includes(c.name));strip(node.children);}}};
+ const approved=JSON.parse(JSON.stringify(applyV25RewardLayout(gameLayout(),nativeTheme).controls));
+ const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input remain exact apart from explicit empty artwork hosts');
  removeMenuEdgePlates(original);
  strip(original);
- assert.deepEqual(original,JSON.parse(JSON.stringify(gameLayout().controls)),'approved controls/input remain byte-equivalent apart from explicit empty artwork hosts');
+ assertControls(original);
  // Every negative starts from the same actual generated tree, never a hand-built mock.
  const changed=(mutate)=>{const c=structuredClone(stage.children.slice(1));mutate(c);return c;};
  const menuOf=c=>c.find(n=>n.name==='menuPanel');
@@ -60,7 +65,7 @@ test('real UI build registers one shared hidden background host and one native i
  ])assert.throws(()=>removeMenuEdgePlates(changed(mutate)),assert.AssertionError);
  for(const mutate of [c=>{menuOf(c).size[0]++;},c=>{menuOf(c).raycastTarget=true;}]){
   const drift=changed(mutate);removeMenuEdgePlates(drift);strip(drift);
-  assert.throws(()=>assert.deepEqual(drift,JSON.parse(JSON.stringify(gameLayout().controls))),assert.AssertionError,
+  assert.throws(()=>assertControls(drift),assert.AssertionError,
    'the original full controls/input oracle must still reject unrelated drift');
  }
  const source=readFileSync(join(dir,'abyss_menu_background_asset.lua'),'utf8');

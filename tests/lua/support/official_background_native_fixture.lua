@@ -58,14 +58,27 @@ function M.new()
   assert(self.updates and self.ui,'actual native entry did not start')
  end
  function self:openVictory()
-  assert(F.start(self.ui));assert(self.attempts==0,'ordinary play eagerly created artwork')
-  for _=1,80 do
-   if not self.ui.starting and not self.ui.prologue:covering()and not self.ui.pageReveal:covered()then break end
-   OnUpdate(0.05)
+  local function pageReady()
+   return not self.ui.starting and not (self.ui.prologue and self.ui.prologue:covering()) and not self.ui.pageReveal:covered()
   end
-  assert(self.ui.run and not self.ui.starting and not self.ui.prologue:covering()and not self.ui.pageReveal:covered(),'native artwork opening did not finish')
+  local function finishPage()
+   for _=1,240 do
+    if pageReady()then return end
+    assert(self.ui.pageReveal.state~='failed',self.ui.pageReveal.error)
+    OnUpdate(0.05)
+   end
+   error('native artwork opening did not finish')
+  end
+  finishPage();assert(self.ui:start())
+  finishPage();assert(self.ui:selectCharacter('traveler'))
+  finishPage();assert(self.ui:selectElement('ironclad'))
+  finishPage();assert(self.ui:confirmCharacter())
+  assert(self.attempts==0,'ordinary play eagerly created artwork')
+  finishPage()
+  assert(self.ui.run and pageReady(),'native artwork opening did not finish')
   assert(self.sceneCreated>0,'background flag must retain its actual page artwork owner')
   self.ui.run.phase='victory';self.ui.run.nodeFlow={complete=true,result='boss_treasure_complete'};self.ui:refresh()
+  finishPage()
   assert(self.root:GetChild('menuPanel'):GetChild('result'):GetChild('viewEasterEgg'):GetChild('hit').click())
  end
  function self:engineDestroy()
