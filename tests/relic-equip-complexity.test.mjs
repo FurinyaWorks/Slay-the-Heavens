@@ -49,8 +49,9 @@ test('real pinned measurements reject old equip complexity and all real helper a
       const mutant=source.replace(signature,match[0]+branches+'\n');
       assert(errors(mutant,measure(mutant)).some(e=>e.message.includes(`function '${name}'`)&&e.message.includes('exceeds 15')),name);
     }
-    const nested=source.replace('local function admitEquipment(run,id)\n',
-      'local function admitEquipment(run,id)\n local probe=function()\n'+branches+'\n end\n probe()\n');
+    const admissionSignature=/^local function admitEquipment\([^\n]*\)\n/m;
+    const admission=source.match(admissionSignature);assert(admission,'current admission entry');
+    const nested=source.replace(admissionSignature,admission[0]+' local probe=function()\n'+branches+'\n end\n probe()\n');
     assert(errors(nested,measure(nested)).some(e=>e.message.includes('17 exceeds 15')),'anonymous nested helper');
     t.diagnostic(current.filter(r=>names.some(name=>r.message.includes(`function '${name}'`))).map(r=>r.message).join('; '));
   }finally{rmSync(dir,{recursive:true,force:true});}

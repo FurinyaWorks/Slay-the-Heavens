@@ -72,7 +72,7 @@ return function(v,pools)
  groups(actual,v.stages[2].groups);state(v.stages[2])
  while Pending.owner(run)do
   local choice;for _,row in ipairs(Pending.view(run).rows)do if row.token.kind=='done'or row.token.choice==0 then choice=row.token;break end end
-  assert(choice);unchanged(function()return Pending.resolve(run,choice)end)
+  assert(choice);unchanged(function()return Pending.resolve(run,choice,Run)end)
  end
  local function enter(kind)
   local first=assert(Nodes.available(run,map)[1]);for _,node in ipairs(map.nodes)do if node.id==first.id then node.type=kind end end

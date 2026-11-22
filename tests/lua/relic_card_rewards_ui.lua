@@ -6,7 +6,12 @@ assert(Run.obtainRelic(ui.run,'prayer_wheel'));assert(Run.obtainRelic(ui.run,'si
 assert(Run.startRoomCombat(ui.run,'normal'))
 for _,e in ipairs(ui.run.combat.enemies)do C.damage(ui.run.combat,ui.run.combat.player,e,20000,true)end
 assert(Run.finishCombat(ui.run));ui:refresh();assert(ui.mode=='battle')
-assert(F.click(root,'battlePanel','cardReward'));assert(ui.mode=='node'and Pending.owner(ui.run))
+local rewardOwner=ui.run.rewards
+assert(F.click(root,'battlePanel','cardReward'))
+local pending,key=Pending.owner(ui.run)
+assert(ui.mode=='node' and key=='pendingCardRewardSelection','CARD row must open the managed reward picker')
+assert(pending.rewardOwner==ui.run.rewards and pending.rewardOwner~=rewardOwner,'picker must own the committed rewards')
+assert(#ui.run.rewards.cardRewardGroups==2,'Prayer Wheel keeps both groups available')
 local function choose(index,choice)
  for i,row in ipairs(Pending.view(ui.run).rows)do if row.token.index==index and row.token.choice==choice then
   assert(ui.nodeUI:setPage(math.floor((i-1)/3)+1))
