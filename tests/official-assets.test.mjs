@@ -489,11 +489,14 @@ test('official run pages use one three-step floor marker just after the potion s
 test('ordinary fade keeps the original input barrier and retires the cinematic artwork',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
  const cover=child(layout,'pageReveal'),blocker=child(cover,'blocker'),cancel=child(cover,'cancel');
+ const subtitle=child(cover,'subtitle');
  assert(child(child(child(layout,'prologuePanel'),'scene'),'seal'),'legacy fixture still retains its reference');
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(child(layout,'prologuePanel'),undefined);
- assert.deepEqual(children(cover).map(node=>node.name),['veil','blocker','message','cancel']);
+ assert.deepEqual(children(cover).map(node=>node.name),['veil','blocker','subtitle','message','cancel']);
  assert.equal(child(cover,'veil').colour,'#000000');
+ assert.strictEqual(child(cover,'subtitle'),subtitle);
+ assert.equal(subtitle.visible,false);
  assert.equal(child(cover,'message').visible,false);
  assert.strictEqual(child(cover,'blocker'),blocker);
  assert.strictEqual(child(cover,'cancel'),cancel);
