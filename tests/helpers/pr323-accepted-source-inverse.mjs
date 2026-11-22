@@ -2,7 +2,6 @@ import {preLuaTimeoutPolicySource} from './lua-timeout-policy-source-inverse.mjs
 import {preCardOriginSource} from './card-origin-source-inverse.mjs';
 import {preMultiHistoricalUiTest} from './multi-historical-ui-tests.mjs';
 import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
-import {beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {preIntegrationSource,prepareIntegrationRetirement} from './pr372-integration-source.mjs';
 import {architectureSourceFormat} from './architecture-source-format.mjs';
 import {preCardDescOverflowSource} from './card-desc-overflow-inverse.mjs';
@@ -100,7 +99,6 @@ function project(path,source,target){
 // Expose the existing full composition step so one materialization can validate
 // and project the same normalized bytes without running that step twice.
 export function normalizePr323HistoryInput(path,source){
- source=beforeNativeFixtureReplay(path,source);
  source=beforeOfficialBackgroundFixture(path,source);
  source=preCardOriginSource(path,source);
  source=preMultiHistoricalUiTest(path,source);
