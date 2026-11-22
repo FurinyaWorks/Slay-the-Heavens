@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,readdirSync,rmSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,readFileSync,readdirSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
@@ -247,4 +247,15 @@ test('official Host publishes painted map rooms immediately when ready and gates
  lua(`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path
 dofile('tests/lua/support/map_room_reveal.lua')
 print('PAGE_REVEAL_PASS')`);
+});
+
+test('faster reward entry preserves the exact historical feedback and rejects drift',async()=>{
+ const {beforeEnergyReferenceSource,assertEnergyReferenceCurrent}=await import('./helpers/energy-reference-source.mjs');
+ const path='src/lua/abyss_feedback.lua',source=readFileSync(path,'utf8');
+ assert.doesNotThrow(()=>assertEnergyReferenceCurrent(path,source));
+ const prior=beforeEnergyReferenceSource(path,source);
+ assert.notEqual(prior,source);
+ assert.throws(()=>assertEnergyReferenceCurrent(path,prior),/fresh energy reference source/);
+ assert.equal(beforeEnergyReferenceSource(path,source+'-- unknown'),source+'-- unknown');
+ assert.throws(()=>beforeEnergyReferenceSource(path,source,()=>source+'-- changed'),/linked owner identity/);
 });
