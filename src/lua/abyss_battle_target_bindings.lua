@@ -73,7 +73,7 @@ function M.install(owner, ownership, host, dependencies)
                 end
                 if selected and needsTarget(owner.run.combat, selected) then owner:playSelected(target)
                 else
-                    owner:showStatus(target)
+                    return owner:showStatus(target, control)
                 end
             end
             end
@@ -100,7 +100,7 @@ function M.install(owner, ownership, host, dependencies)
             if not entryAt() then return end
             control:AddCursorEventListener(host.clickEvent, function(event)
                 if not entryAt() or Controller.pointerBlocked(host.controller)then return false end
-                if dependencies.swallowed(event) then
+                if dependencies.swallowed(event, true) then
                     -- Dismissal consumes this pointer too, but cannot consume a
                     -- newer token owned by a different touch on the same actor.
                     dependencies.discardEnemyPointer(input,event)
@@ -117,11 +117,11 @@ function M.install(owner, ownership, host, dependencies)
                 if not dependencies.consumeReleasedDragClick(event) and not owner.suppressClick and not owner.gesture then return chooseEnemy() end
             end)
             if not entryAt() then return end
-            if owner.dragEnabled then
+            local function bindPointer()
                 control:AddCursorEventListener(host.cursor.CursorDown, function(event)
                     if not entryAt() then return false end
                     ownership.enemyPointerObserved = true
-                    local dismissed = dependencies.down(event)
+                    local dismissed = dependencies.down(event, true)
                     input.held, input.released = nil, nil
                     if dismissed then return end
                     local run, battle = owner.run, owner.run and owner.run.combat
@@ -137,8 +137,9 @@ function M.install(owner, ownership, host, dependencies)
                     end
                 end)
                 if not entryAt() then return end
-                local function clearCardAim(token)
-                    if owner.cardAim==token then owner.cardAim=nil;owner:render() end
+                local function retireAim(token)
+                    if owner.cardAim == token then owner.cardAim = nil; owner:render() end
+                    if dependencies.cancelPotionAim("已取消药水瞄准。") then owner:render() end
                 end
                 local function releaseEnemy(event, ended)
                     if not entryAt() then return false end
@@ -146,19 +147,26 @@ function M.install(owner, ownership, host, dependencies)
                     local touch, held = event and event.touchId, input.held
                     if held and held.touch == touch then
                         input.held = nil
-                        input.released = not ended and dependencies.enemyReady(held) and held or nil
-                        if ended then
-                            clearCardAim(held)
-                            if dependencies.cancelPotionAim("已取消药水瞄准。") then owner:render() end
-                        end
+                        if ended then retireAim(held)
+                        elseif not (event and event.dragging) and dependencies.enemyReady(held) then input.released = held end
                     elseif ended and input.released and input.released.touch == touch then
-                        clearCardAim(input.released)
+                        local released = input.released
                         input.released = nil
-                        if dependencies.cancelPotionAim("已取消药水瞄准。") then owner:render() end
+                        retireAim(released)
                     end
                 end
+                local device = host.platform and host.platform.touchScreen
+                if device and host.cursor.CursorEnter and host.cursor.CursorExit then
+                    control:AddCursorEventListener(host.cursor.CursorEnter,function()
+                        if device() or Controller.isController(host.controller) or Controller.pointerBlocked(host.controller) or owner.selected then return end
+                        local entry = entryAt()
+                        if entry then return owner:showStatus(entry.index, control, true) end
+                    end)
+                end
+                if not entryAt() then return end
                 if host.cursor.CursorExit then
                     control:AddCursorEventListener(host.cursor.CursorExit,function(event)
+                        if device then owner:dismissActorDetails(control) end
                         local aim=owner.cardAim
                         if aim and aim.touch==(event and event.touchId) and (aim==input.held or aim==input.released) then
                             owner.cardAim=nil;owner:render()
@@ -168,13 +176,19 @@ function M.install(owner, ownership, host, dependencies)
                 if not entryAt() then return end
                 control:AddCursorEventListener(host.cursor.CursorUp, releaseEnemy)
                 if not entryAt() then return end
+                if device and host.cursor.CursorDrag then
+                    control:AddCursorEventListener(host.cursor.CursorDrag, function(event) releaseEnemy(event, true) end)
+                end
+                if not entryAt() then return end
                 control:AddCursorEventListener(host.cursor.CursorEndDrag, function(event) releaseEnemy(event, true) end)
             end
+            if owner.dragEnabled then bindPointer() end
     end
     local function unbindEnemyControl(screenSlot,box,engineDestroyed)
         local input=bound[box]
         if not input then return end
         input.retired=true;input.held=nil;input.released=nil
+        if owner.info and owner.info.source == input.control then owner.info = nil end
         if ownership.enemyInputs[screenSlot]==input then ownership.enemyInputs[screenSlot]=nil end
         Controller.unbind(host.controller,input.control,engineDestroyed)
         bound[box]=nil

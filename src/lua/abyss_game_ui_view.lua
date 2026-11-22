@@ -63,7 +63,8 @@ function M.syncController(self,controller,openingCovered)
             elseif self.deckUI.visible then scope='deck'
             elseif self.potionUI.visible then scope='potions'
             elseif self.mode=='battle' and self.battleUI.potionMenu then scope='battlePotion'
-            elseif self.mode=='battle' and self.battleUI.info then scope='battleInfo'
+            elseif self.mode=='battle' and self.battleUI.info
+                and (self.battleUI.info.kind or not self.battleUI.info.transient) then scope='battleInfo'
             elseif self.mode=='battle' and (self.battleUI.selected or self.battleUI.potionAim) then scope='aim' end
                 return scope
             end

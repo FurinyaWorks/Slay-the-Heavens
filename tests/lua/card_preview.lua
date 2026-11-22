@@ -471,14 +471,13 @@ end)
 
 for _, drag in ipairs({false, true}) do
     local mode = drag and "pointer" or "click-only"
-    test(mode .. ": status taps never play, target or end the turn, and an open panel swallows the next tap", function()
+    test(mode .. ": status inspection leaves the selected card and battle unchanged", function()
         local ui, panel, event, tap = setup({"strike", "strike", "defend"}, {"jaw_worm", "cultist"}, drag)
         local s = ui.run.combat
         for _, enemy in ipairs(s.enemies) do enemy.ai = nil end
         Combat.addStatus(s.enemies[2],'artifact',1) ui:render() -- A real native power hit area.
         local strike
         for i, instance in ipairs(s.hand) do if instance.cardId == "strike" then strike = strike or i end end
-        local other = strike == 1 and 2 or 1
         local function snapshot() return {energy = s.energy, hand = #s.hand, turn = s.turn, hp1 = s.enemies[1].hp,
             hp2 = s.enemies[2].hp, block = s.player.block, events = #s.events} end
         local before = snapshot()
@@ -492,26 +491,14 @@ for _, drag in ipairs({false, true}) do
         assert(panel:GetChild("statusInfo").visible and ui.selected == s.hand[strike].uid)
         eq(ui.target, 1, "status rows never move the potion/card target")
         unchanged("status row")
-        -- With the panel open, a tap on an enemy, a card or End Turn only closes it.
-        for _, path in ipairs({"enemy2", "card" .. other, "endTurn"}) do
-            tap(path)
-            assert(not panel:GetChild("statusInfo").visible, path .. " closed the panel")
-            unchanged(path)
-            eq(ui.selected, s.hand[strike].uid, path .. " kept the selection")
-            tap({"hero", "hit"}) assert(panel:GetChild("statusInfo").visible)
-        end
-        if drag then
-            -- A drag that starts on a card while the panel is open never becomes a play.
-            local card = panel:GetChild("card" .. other)
-            event("card" .. other, "down", card.x, card.y)
-            assert(not panel:GetChild("statusInfo").visible and ui.gesture == nil)
-            event("card" .. other, "drag", enemyPoint(panel,2))
-            event("card" .. other, "up", enemyPoint(panel,2))
-            event("card" .. other, "click", enemyPoint(panel,2))
-            unchanged("drag")
-        else tap({"statusInfo", "hit"}) end
+        -- The outside dismissal is separate from the enemy's deliberate target tap.
+        event("statusDismiss", "click")
         assert(not panel:GetChild("statusInfo").visible)
-        -- Closed again, the ordinary flow is untouched: the selected Strike hits enemy 2.
+        unchanged("dismissal")
+        eq(ui.selected, s.hand[strike].uid, "dismissal kept the selection")
+        tap({"hero", "hit"})
+        assert(panel:GetChild("statusInfo").visible)
+        unchanged("hero portrait")
         tap("enemy2") drain(ui)
         eq(s.enemies[2].hp, before.hp2 - 6) eq(#s.hand, before.hand - 1)
     end)

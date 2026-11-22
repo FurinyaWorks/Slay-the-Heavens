@@ -163,22 +163,9 @@ function statusInfo() {
     panel('rule', 0, 0, inner, s.hairline, c.line),
     ...sections,
     ...rows,
-    powerTips(),
     text('more', 0, 0, inner, line, '', f.small, c.textDim),
     { ...hit(si.width, si.width), name: 'page' },
   ] };
-}
-
-function powerTips() {
-  const tip = l.powerTips;
-  return { name: 'powerTips', kind: 'container', size: [...theme.canvas.base], visible: false,
-    children: Array.from({ length: tip.rows }, (_, i) => ({
-      name: `tip${i + 1}`, kind: 'container', size: [tip.width, l.nativeText.lineHeight], visible: false, children: [
-        panel('edge', 0, 0, tip.width, l.nativeText.lineHeight, tip.border),
-        panel('face', 0, 0, tip.width, l.nativeText.lineHeight, tip.fill),
-        aligned(text('copy', 0, 0, tip.width, l.nativeText.lineHeight, '', tip.font, c.text)),
-      ],
-    })) };
 }
 
 export function handPose(count, index, selected = false) {

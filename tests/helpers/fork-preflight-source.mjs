@@ -279,7 +279,8 @@ function beforeAddedTest(paths,[path,...authenticated],read){
  return paths.filter(test=>test!==path);
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
- if(kind==='lua')paths=beforeAddedTest(paths,['tests/lua/traveler_power_tooltip.lua','35363665f69113883246aa33984d4ab17eba727a87476256a617dc0f42dd45f7'],read);
+ if(kind==='lua')paths=beforeAddedTest(paths,['tests/lua/traveler_power_tooltip.lua','35363665f69113883246aa33984d4ab17eba727a87476256a617dc0f42dd45f7',
+  '76e7c52c6330e921faff4738f7d125100ba349f0ca041347552ba9de22a5ee87'],read);
  return beforeAddedTest(paths,shopEntryTests[kind],read);
 }
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){

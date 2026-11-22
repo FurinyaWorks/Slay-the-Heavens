@@ -1559,14 +1559,11 @@
       "perRow": 5,
       "rows": 2
     },
-    "powerTips": {
-      "rows": 48,
-      "width": 248,
-      "minWidth": 176,
+    "actorDetail": {
+      "width": 392,
       "font": 18,
-      "minFont": 14,
-      "padding": 8,
-      "gap": 5,
+      "pitch": 27,
+      "tagWidth": 104,
       "fill": "#20292D",
       "border": "#71848B",
       "title": "#F5D78A"

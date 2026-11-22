@@ -49,7 +49,7 @@ function surfaces:control(slot)return self.boxes[slot]end
 function surfaces:slotFor(box)for i,b in pairs(self.boxes)do if b==box then return i end end end
 local host={monsterSurfaces=surfaces,controller=ctl,clickEvent='click',cursor={CursorDown='down',CursorUp='up',CursorEndDrag='endDrag',CursorEnter='enter',CursorExit='exit'}}
 local ownership={enemyInputs={},enemyPointerObserved=false}
-local static={hero=unit('hero'),statusInfo=control('statusInfo')};control('hit',static.statusInfo);control('page',static.statusInfo)
+local static={hero=unit('hero'),statusInfo=control('statusInfo'),statusDismiss=control('statusDismiss')};control('hit',static.statusInfo);control('page',static.statusInfo)
 for i=1,10 do static['card'..i]=unit('card'..i)end
 for i=1,Theme.layout.battlePotions.count do static['potion'..i]=control('potion'..i);static['potionHelp'..i]=control('potionHelp'..i)end
 local deps={}

@@ -1415,11 +1415,13 @@ for _,slot in ipairs({1,5,10})do
  assert(not u.info and not info.visible,'leaving a card retained transient help')
 end
 u:showStatus(0)
-assert(plate.sizeDeltaX==theme.layout.statusInfo.width and info:GetChild('hit').visible,'actor details inherited the narrow card mode')
+assert(plate.sizeDeltaX==theme.layout.actorDetail.width and not info:GetChild('hit').visible,
+ 'actor details did not restore the shared compact style and input')
 event('card1','down',230)
-assert(not u.info and not u.gesture and u.swallow,'actor detail close must still swallow the press')
+assert(not u.info and u.gesture and not u.swallow,'actor detail closed without swallowing the card press')
 event('card1','up',230);event('card1','click',230)
-assert(not u.selected and not u.swallow)
+assert(u.selected==battle.hand[1].uid and not u.swallow)
+assert(u:controllerBack() and not u.selected)
 unchanged(battle,before,'hover/detail layout changed battle state')
 -- A fresh click-only surface has never observed a Down. Automatic card help
 -- must preserve its very first Click, while normal target selection remains core-owned.

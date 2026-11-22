@@ -36,7 +36,6 @@ function M.install(owner, ownership, host, dependencies)
         dependencies.cancelActionInputs()
         for _, input in ipairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
         if cancelled then self.gesture, self.carry, self.selected, self.suppressClick = nil, nil, nil, true end
-        self:closePowerTip()
         if closeInfo() then cancelled = true end
         self.canvasWidth, self.canvasHeight = width, height
         local k = math.min(width / Theme.canvas.base[1], height / Theme.canvas.base[2])
@@ -53,62 +52,69 @@ function M.install(owner, ownership, host, dependencies)
     closeInfo = function()
         if host.potionPopup and host.potionPopup:close() then return true end
         if not owner.info then return false end
-        -- Pointer gestures may continue only after automatic card hover help;
-        -- explicit/held readers and potion popups still consume their close.
-        local automaticCard=owner.info.transient==true and owner.info.kind=='card'
+        local info = owner.info
+        local passThrough = not info.kind or info.transient and info.kind == "card"
         owner.info = nil
         dependencies.child("statusInfo"):SetVisible(false)
-        return true,automaticCard
+        if not info.kind then dependencies.child("statusDismiss"):SetVisible(false) end
+        return true,passThrough
     end
-    function owner:closePowerTip(source)
-        if not self.powerTip or source and source ~= self.powerTip.source then return end
-        self.powerTip = nil
-        host.renderInfo(self.run and self.run.combat)
+    function owner:dismissActorDetails(source)
+        local info = self.info
+        if not info or info.kind or source and (info.source ~= source or not info.transient) then return false end
+        closeInfo()
+        self:renderDetailsOnly()
         return true
     end
-    function owner:showPowerTip(spec, source, touch)
-        local run = self.run
-        if not run or run.phase ~= "combat" or not self.active or self.info then return end
-        local tip = self.powerTip
-        if touch and tip and tip.source == source and tip.touch then
-            return self:closePowerTip(source)
+    function owner:showStatus(index, source, transient)
+        return self:openHelp({index = index, toggle = not transient}, source, transient)
+    end
+    local function actorDetailAvailable(transient)
+        if owner.gesture or owner.carry or owner.potionMenu then return false end
+        if owner.potionAim and (transient or owner.potionAim.moving) then return false end
+        return not (transient and owner.info and not owner.info.transient)
+    end
+    local function repeatsDetail(spec, source, transient, battle, actor)
+        local info = owner.info
+        if not info or transient or info.transient or info.actor ~= actor
+            or info.battle ~= battle or info.turn ~= battle.turn then return false end
+        if info.statusId ~= spec.statusId or info.offset ~= spec.offset then return false end
+        return spec.toggle or not spec.kind and source and source == info.source
+    end
+    local function helpContext(spec)
+        local run = owner.run
+        if not spec or not run or not owner.active or owner.busy then return end
+        local reward = spec.kind == "rewardCard" and RewardOwner.ready(owner, spec)
+        if run.phase ~= "combat" and not reward then return end
+        local battle = run.combat
+        local actor = spec.index == 0 and battle.player or battle.enemies[spec.index]
+        if Actors.isPresent(actor) then return battle, actor, reward end
+    end
+    function owner:openHelp(spec, source, transient)
+        local battle, actor, reward = helpContext(spec)
+        if not actor then return false end
+        if not spec.kind and not actorDetailAvailable(transient) then return false end
+        local cancelled = dependencies.cancelPotionAim("已取消药水瞄准。")
+        if repeatsDetail(spec, source, transient, battle, actor) then
+            closeInfo()
+            self:renderDetailsOnly(cancelled)
+            return true
         end
-        self.powerTip = {kind = "powerTips", index = 0, statusId = spec.statusId, offset = spec.offset,
-            source = source, touch = touch, battle = run.combat, position = not touch and spec.position or nil}
-        host.renderInfo(run.combat)
-    end
-    function owner:showStatus(index)
-        local run = self.run
-        if not self.active or self.busy or self.gesture or not run or run.phase ~= "combat" then return false end
-        local actor = index == 0 and run.combat.player or run.combat.enemies[index]
-        if not Actors.isPresent(actor) then return false end
-        local cancelled=dependencies.cancelPotionAim("已取消药水瞄准。")
-        if self.info and self.info.index == index and self.info.id == actor.id then closeInfo()
-        else self.info = {index = index, id = actor.id, battle = run.combat} end
-        self:renderDetailsOnly(cancelled)
-        return true
-    end
-    function owner.openHelp(_, spec, source, transient)
-        local run=owner.run
-        local reward=spec and spec.kind=='rewardCard' and RewardOwner.ready(owner,spec)
-        if not owner.active or owner.busy or not run or run.phase~="combat" and not reward then return false end
-        local actor=spec.index==0 and run.combat.player or run.combat.enemies[spec.index]
-        if not Actors.isPresent(actor)then return false end
-        local cancelled=dependencies.cancelPotionAim("已取消药水瞄准。")
-        owner.info={index=spec.index,id=actor.id,battle=run.combat,kind=spec.kind,statusId=spec.statusId,
-            offset=spec.offset,uid=spec.uid,source=source,transient=transient==true,
+        if not spec.kind then
+            local help = self.help
+            if help and source ~= help.source then self.help = nil end
+        end
+        self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,statusId=spec.statusId,
+            offset=spec.offset,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
             slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
-        owner:renderDetailsOnly(cancelled)
-        return owner.info~=nil
+        self:renderDetailsOnly(cancelled)
+        return self.info ~= nil
     end
     function owner.queueHelp(_,spec,source,held,touch,card)
-        local run=owner.run
-        if not spec or not owner.active or owner.busy or not run
-            or run.phase~="combat" and not (spec.kind=='rewardCard' and RewardOwner.ready(owner,spec)) then return end
-        local actor=spec.index==0 and run.combat.player or run.combat.enemies[spec.index]
-        if not Actors.isPresent(actor)then return end
-        owner.help={spec=spec,source=source,held=held,touch=touch,t=0,run=run,battle=run.combat,
-            turn=run.combat.turn,actor=actor,card=card}
+        local battle, actor = helpContext(spec)
+        if not actor then return end
+        owner.help={spec=spec,source=source,held=held,touch=touch,t=0,run=owner.run,battle=battle,
+            turn=battle.turn,actor=actor,card=card}
     end
     function owner.cardHelpSpec(_,slot)
         local run=owner.run
