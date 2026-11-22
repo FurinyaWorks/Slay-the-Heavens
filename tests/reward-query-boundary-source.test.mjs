@@ -67,6 +67,17 @@ test('the current reward and final M7 entries retain LF CRLF layout and the olde
  assert.equal(hash(preRelicQuerySource(config,read(config))),'68d46e73d734f9684326b24ba040706d768349ce9a552daf52006bb900bfaabf','the original 391 epoch remains reachable');
 });
 
+test('current session admission rejects a plausible linked reward predecessor',()=>{
+ const owner='src/lua/abyss_relic_choices.lua';
+ const host='src/lua/abyss_relic_card_rewards.lua';
+ const prior=current[owner];
+ assert.notEqual(prior,read(owner));
+ for(const consume of [project,preM7FinalSource]){
+  assert.equal(consume(host,read(host)),before[host]);
+  assert.throws(()=>consume(host,read(host),{readSource:p=>p===owner?prior:read(p)}),/linked owner identity: src\/lua\/abyss_relic_choices\.lua/);
+ }
+});
+
 test('unknown original partial raw and duplicate escaped reordered inputs preserve identity with zero linked IO',()=>{
  let reads=0;const options={readSource(){reads++;throw Error('must not read');}};
  for(const path of paths)for(const source of [current[path],read(path)]){

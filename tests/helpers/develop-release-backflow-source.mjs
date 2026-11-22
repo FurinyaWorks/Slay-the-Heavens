@@ -48,7 +48,7 @@ assert.equal(portraitLifecycle.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
 assert.deepEqual(Object.keys(portraitLifecycle.files),["src/lua/abyss_traveler_portraits.lua"]);
 for(const path of Object.keys(portraitLifecycle.files))assert(![cardDisplay.files,mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop portraitLifecycle source owner: '+path);
 const sessionRelicArchive=readFileSync(new URL('../fixtures/develop-session-relic-source.json.gz',import.meta.url));
-assert.equal(hash(sessionRelicArchive),'c5420298bbdf7cb8894d9839bdc48c8bd4b3ea3da004789a0f88ca465fef67bd','exact Develop session relic predecessor archive');
+assert.equal(hash(sessionRelicArchive),'612f70c4bb5ae96a9dc70d5a9ba485359e22801788dc11fb0df4872f4427f141','exact Develop session relic predecessor archive');
 const sessionRelic=JSON.parse(gunzipSync(sessionRelicArchive));
 assert.equal(sessionRelic.base,'2f9444dcbd33ac71a6507db1775be5b70533e68a');
 assert.deepEqual(Object.keys(sessionRelic.files),[
@@ -102,6 +102,17 @@ function predecessor(layer,path,source,allowConfigLayout){
 }
 export function beforeDevelopBackflow(path,source,{allowConfigLayout=false}={}){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior,allowConfigLayout),source);
+}
+export function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){
+ if(!Object.hasOwn(sessionRelic.files,path))return false;
+ for(const layer of layers){
+  if(layer===sessionRelic.files)return matchesInput(source,layer[path],allowConfigLayout);
+  source=predecessor(layer,path,source,allowConfigLayout);
+ }
+ return false;
+}
+export function assertCurrentSessionRelicOwner(path,source){
+ if(Object.hasOwn(sessionRelic.files,path))assert(matches(source,current(path).after),'combined linked owner identity: '+path);
 }
 const forethoughtOwners=['src/lua/abyss_deck_ui.lua','scripts/deck-ui-layout.mjs'];
 export function authenticateDevelopBackflow(path,source,read,{allowConfigLayout=false}={}){

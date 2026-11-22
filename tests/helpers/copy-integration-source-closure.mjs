@@ -214,9 +214,9 @@ const developPortraitLifecycleFiles=Object.freeze({
 });
 const developSessionRelicFiles=Object.freeze({
  ...developPortraitLifecycleFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'64e06430bda132b5bb48a72c9e5771972a76eea5dce3875a64d38725d20fd9c9',
- 'tests/fixtures/develop-session-relic-source.json.gz':'c5420298bbdf7cb8894d9839bdc48c8bd4b3ea3da004789a0f88ca465fef67bd',
- 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'d6cc94c715c64be4d3044eb65a72b0774e8e8b12d89c0d6d96eb5998d16ace7a',
+ 'tests/helpers/develop-release-backflow-source.mjs':'4f9832dc8b72eba6fe13bbaaacb654c7f342b91970f0da4329e5cbe0e59d79ee',
+ 'tests/fixtures/develop-session-relic-source.json.gz':'612f70c4bb5ae96a9dc70d5a9ba485359e22801788dc11fb0df4872f4427f141',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'10c612b573801aff960786be378827d32af65ac52edbbfd282a7f562155ca683',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
