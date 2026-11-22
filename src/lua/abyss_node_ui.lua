@@ -276,13 +276,22 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         return node and kinds[node.type] and not node.complete and view.phase == "node"
     end
 
+    local function projectNode(self)
+        local flow = self.run.nodeFlow
+        if ctx.options.enhancedRooms and flow and self.run.phase == "node"
+            and (flow.type == "camp" or flow.type == "shop") then
+            return Nodes.roomView(self.run, self.map)
+        end
+        return Nodes.view(self.run, self.map)
+    end
+
     function ctx.self:render()
         if not self.run then ctx.root:SetVisible(false);return false, "node_unbound" end
         if reuseShopRender(self) then return end
         ctx.resetButtons();local previousArt=ctx.artFaces;ctx.artFaces={}
         ctx.inspectCards={}
         if ctx.renderRelicPending()then ctx.campUI:hide();ctx.clearUnusedNativeArt(previousArt);return true end
-        local view = Nodes.view(self.run, self.map)
+        local view = projectNode(self)
         local node = view.node
         ctx.syncNodeIdentity(node)
         ctx.syncShop()

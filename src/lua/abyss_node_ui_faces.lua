@@ -8,6 +8,9 @@ local typeNames = { attack = "攻击", skill = "技能", power = "能力", statu
 local function find(entries, id, key)
     for _, item in ipairs(entries or {}) do if item[key or "id"] == id then return item end end
 end
+local function displayName(id, display, definition)
+    return display and display.name or definition and definition.name or id
+end
 local M = {}
 
 local function referenceCard(ctx, box, definition, look)
@@ -29,11 +32,12 @@ end
 
 -- Installs the faces responsibility on one node UI instance.
 function M.install(ctx)
+    local fitText = CardDisplay.newTextFitter()
     function ctx.card(id) return find(ctx.self.run.data.cards.cards, id) end
 
     function ctx.cardName(id, upgraded, upgrades)
         local display, definition = ctx.self.presentation[id], ctx.card(id)
-        return (display and display.name or (definition and definition.name) or id)
+        return displayName(id, display, definition)
         .. (upgraded and ('+'..(definition and definition.repeatable and number(upgrades or 1) or '')) or '')
     end
 
@@ -69,10 +73,22 @@ function M.install(ctx)
 
     ctx.artFaces={}
 
+    function ctx.fillNativeCardArt(box, definition, art, uid)
+        local kind = Theme.icon.cardArt[definition.type] and definition.type or "status"
+        CardDisplay.writeNativeArt(box, definition, art, ctx.options, box:GetChild('art_'..kind), uid)
+        ctx.artFaces[box] = true
+    end
+
+    local function fillNativeArt(box, definition, display, instance, look)
+        if look.deferNativeArt then return end
+        if ctx.self.visible then ctx.fillNativeCardArt(box, definition, display.nativeArt, instance.uid)
+        else CardDisplay.clearNativeArt(box) end
+    end
+
     function ctx.fillCard(box, id, upgraded, look)
         look = look or {}
         local definition, display = ctx.card(id) or {}, ctx.self.presentation[id] or {}
-        local printedCost=definition.cost
+        local printedCost, title = definition.cost, displayName(id, display, definition)
         ctx.skinFaces[box]=true
         local instance=look.instance or {cardId=id,upgraded=upgraded==true}
         definition=Combat.cardDefinition({catalog={cards={[id]=definition}}},instance)
@@ -80,12 +96,12 @@ function M.install(ctx)
         if look.inspectOnly then box:GetChild('hit'):SetVisible(definition.originalV4~=nil) end
         local kind = Theme.icon.cardArt[definition.type] and definition.type or "status"
         local function writeCardCopy()
-            CardDisplay.writeTitle(box:GetChild("name"),ctx.cardName(id,false),instance.upgraded,
+            CardDisplay.writeTitle(box:GetChild("name"),title,instance.upgraded,
             definition.repeatable and (instance.upgrades or 1) or nil,box:GetChild("type"),
-            typeNames[definition.type] or "")
+            typeNames[definition.type] or "", fitText)
             ctx.ink(box:GetChild("name"), Theme.cardSkin.text.title)
             local text=CardDisplay.permanentText(display,definition,instance)
-            CardDisplay.writeBody(box:GetChild("description"),type(text)=='string' and text or '',box)
+            CardDisplay.writeBody(box:GetChild("description"),type(text)=='string' and text or '',box,fitText)
             ctx.ink(box:GetChild("description"), Theme.cardSkin.text.body or C.text)
         end
         writeCardCopy()
@@ -101,10 +117,7 @@ function M.install(ctx)
         local function writeCardArt()
             for art in pairs(Theme.icon.cardArt) do box:GetChild("art_" .. art):SetVisible(art == kind) end
             CardDisplay.writeArt(box:GetChild("art_" .. kind), definition, ctx.picture,box)
-            if ctx.self.visible then
-                CardDisplay.writeNativeArt(box,definition,display.nativeArt,ctx.options,box:GetChild('art_'..kind),instance.uid)
-                ctx.artFaces[box]=true -- Pending pools also belong to this page's lifetime.
-            else CardDisplay.clearNativeArt(box)end
+            fillNativeArt(box, definition, display, instance, look)
             ctx.tint(box:GetChild("artPlate"), look.dim and C.panelSunken or C.cardType[kind] or C.panelRaised)
         end
         writeCardArt()
@@ -116,7 +129,7 @@ function M.install(ctx)
             ctx.tint(box:GetChild("nameRule"), C.rarity[definition.rarity] or C.line)
             ctx.ink(box:GetChild("cost"), look.dim and C.textMuted or look.changed and C.positive or C.energy)
             CardSkin.apply(box,definition,ctx.options,{dim=look.dim,selected=look.selected,cost=cost,baseCost=look.changed and printedCost or definition.cost,
-                reason=reason,overlayCovered=covered,surfaceScope='node',templateKind=look.templateKind})
+                reason=reason,overlayCovered=covered,surfaceScope='node',templateKind=look.templateKind,templateMaterials=look.templateMaterials})
         end
         writeCardFrame()
         referenceCard(ctx, box, definition, look)
@@ -125,6 +138,7 @@ function M.install(ctx)
         ctx.show(box:GetChild("stampPlate"), look.stamp ~= nil)
         ctx.show(box:GetChild("stamp"), look.stamp ~= nil)
         box:GetChild("stamp").text = look.stamp or ""
+        return definition
     end
 end
 return M

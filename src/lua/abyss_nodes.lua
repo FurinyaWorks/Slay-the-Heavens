@@ -222,16 +222,13 @@ local function campView(run,node)
     node.heal=healingPreview(run,RelicHooks.campHealAmount(run,math.floor(run.maxHp*run.data.rules.camp.healPercent/100)))
     node.dreamCatcher=RelicHooks.owns(run,'dream_catcher')
 end
-function M.view(run, map)
-    local available, mapView = M.available(run, map), Map.view(map,require('abyss_rare_relics').canWingedTravel(run))
-    local enabled = #available > 0
-    if not enabled then for _, node in ipairs(mapView.nodes) do node.available = false end end
+function M.roomView(run, map)
     local node = run.nodeFlow and Combat.copy(run.nodeFlow) or nil
     if run.phase=='ending_proceed' then
         node=node or {id=map.currentNodeId,floor=55,complete=false}
         node.type,node.event,node.reward='ending_proceed',nil,nil
         node.canProceed=M.endingProceedSource(run,map)~=nil
-        return {phase=run.phase,node=node,map=mapView,available={},navigationEnabled=false}
+        return {phase=run.phase,node=node}
     end
     if node and not node.complete then
         node.purgeCards=LivingWall.purgeCards(run)
@@ -244,7 +241,18 @@ function M.view(run, map)
             eventView(run,node)
         end
     end
-    return { phase = run.phase, node = node, map = mapView, available = available, navigationEnabled = enabled }
+    return { phase = run.phase, node = node }
+end
+
+function M.view(run, map)
+    local available, mapView = M.available(run, map), Map.view(map,require('abyss_rare_relics').canWingedTravel(run))
+    local enabled = #available > 0
+    if not enabled then for _, node in ipairs(mapView.nodes) do node.available = false end end
+    local view = M.roomView(run, map)
+    view.map = mapView
+    if view.phase == 'ending_proceed' then available, enabled = {}, false end
+    view.available, view.navigationEnabled = available, enabled
+    return view
 end
 
 local function recallEligible(run)

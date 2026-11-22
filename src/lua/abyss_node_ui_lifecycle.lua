@@ -249,7 +249,7 @@ function M.install(ctx)
             if entry and entry.retire then entry.retire() end
             return false, view
         end
-        local entry = self.actions[key]
+        local entry = self.actions[key] or ctx.campUI:action(key)
         if not entry then return false, "unavailable_action" end
         if not entry.enabled then
             if entry.poor then ctx.merchant:react("poor") end

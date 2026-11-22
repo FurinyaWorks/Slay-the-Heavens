@@ -11,7 +11,7 @@ local function same(a,b)
     for k,v in pairs(a) do same(v,b[k]) end
     for k in pairs(b) do assert(a[k]~=nil) end
 end
-local function setup(kind,linked,extraCards,source)
+local function setup(kind,linked,extraCards,source,inputCovered)
     source=source or Data
     local run,map=Run.new(source,42),Map.generate(source,42)
     for _=1,extraCards or 0 do assert(Run.obtainCard(run,run.deck[1].cardId))end
@@ -37,7 +37,7 @@ local function setup(kind,linked,extraCards,source)
     end
     local root=F.control(assert(find(Layout)))
     local sounds={}
-    local ui=UI.new(root,run,map,Presentation,"click",nil,{cursorEvents=cursor,enhancedRooms=true,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,sound=function(cue)sounds[#sounds+1]=cue end})
+    local ui=UI.new(root,run,map,Presentation,"click",nil,{cursorEvents=cursor,enhancedRooms=true,inputCovered=inputCovered,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,sound=function(cue)sounds[#sounds+1]=cue end})
     ui.testSounds=sounds
     ui:setVisible(true)
     if kind=="shop" then assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").listeners.click());advanceShop(ui) end
@@ -209,6 +209,114 @@ test('forge retains the native list and skips unchanged faces during scroll call
  ui:setVisible(true)
  assert(refreshes==4 and scroll.itemCount==14)
 end)
+test('camp idle preloads only the first window and opens it without painting or refreshing',function()
+ local covered=true
+ local ui,get,_,tap=setup('camp',nil,70,nil,function()return covered end)
+ local scroll=get('pickerView/forgeScroll')
+ function scroll:flush()
+  for i=0,math.min(self.itemCount,15)-1 do self:recycle(i,i+self.indexBase) end
+ end
+ local refresh,refreshes=scroll.RefreshItems,0
+ function scroll:RefreshItems(...)
+  refreshes=refreshes+1
+  return refresh(self,...)
+ end
+ local display=require('abyss_card_display')
+ local write,paints=display.writeBody,0
+ function display.writeBody(...)
+  paints=paints+1
+  return write(...)
+ end
+ local before=Combat.copy(ui.run)
+ local mapView, mapQueries = Map.view, 0
+ function Map.view(...)
+  mapQueries=mapQueries+1
+  return mapView(...)
+ end
+ ui:update(.016)
+ assert(refreshes==0 and paints==0)
+ covered=false
+ local function countActions()
+  local count=0
+  for key in pairs(ui.actions) do
+   if key:match('^pickerView/forgeScroll/card%d+$') then count=count+1 end
+  end
+  return count
+ end
+ for _=1,10 do
+  local previous=paints
+  ui:update(.016)
+  assert(paints-previous<=2 and countActions()==0)
+ end
+ assert(paints==15 and refreshes==2 and not scroll.visible and not get('pickerView').visible)
+ assert(not tapCard(scroll.items[0],3) and not ui.selected)
+ assert(tap('campView/forge',1))
+ assert(scroll.visible and scroll.itemCount==80 and paints==15 and refreshes==2 and countActions()==15 and mapQueries==0)
+ assert(scroll.items[14].visible and #scroll.items[14]:GetChild('description').text>0)
+ same(ui.run,before)
+ assert(ui:press('pickerView/forgeScroll/card80') and ui.selected==ui.run.deck[80].uid)
+ display.writeBody, Map.view=write,mapView
+end)
+test('forge retries a partial hidden window and ignores obsolete refreshes after the deck changes',function()
+ local ui,get,_,tap=setup('camp',nil,6)
+ local scroll=get('pickerView/forgeScroll')
+ local refresh,flush,refreshes=scroll.RefreshItems,scroll.flush,0
+ function scroll:flush()
+  if not self.visible and self.itemCount>1 then
+   self:recycle(0,self.indexBase)
+  else
+   flush(self)
+  end
+ end
+ function scroll:RefreshItems(...)
+  refreshes=refreshes+1
+  return refresh(self,...)
+ end
+ ui:update(.016)
+ assert(refreshes==2 and not scroll.items[1])
+ assert(tap('campView/forge',1) and refreshes==3 and scroll.items[1].visible)
+ local obsolete,oldBox=scroll.refreshCallback,scroll.items[0]
+ assert(tap('back',2))
+ ui.run.deck[1].upgraded=true
+ scroll.deferRefresh=true
+ ui:render();ui:update(.016)
+ assert(not oldBox.visible)
+ assert(tap('campView/forge',3))
+ obsolete(oldBox,0)
+ assert(not oldBox.visible and not tapCard(oldBox,4) and not ui.selected)
+ scroll:flush()
+ assert(tapCard(oldBox,5) and ui.selected==ui.run.deck[2].uid)
+end)
+test('a host that rejects hidden refresh can still open the visible forge',function()
+ local ui,get,_,tap=setup('camp',nil,6)
+ local scroll=get('pickerView/forgeScroll')
+ local refresh,refusals=scroll.RefreshItems,0
+ function scroll:RefreshItems(amount,fn)
+  if not self.visible then refusals=refusals+1;error('inactive native grid') end
+  return refresh(self,amount,fn)
+ end
+ ui:update(.016);ui:update(.016)
+ assert(refusals==1 and not scroll.visible)
+ assert(tap('campView/forge',1) and tapCard(scroll.items[0],2))
+ assert(ui.selected==ui.run.deck[1].uid)
+end)
+test('an interrupted hidden refresh leaves the next forge open usable',function()
+ local ui,get,_,tap=setup('camp',nil,6)
+ local scroll=get('pickerView/forgeScroll')
+ local refresh,interrupted=scroll.RefreshItems,false
+ function scroll:RefreshItems(amount,fn)
+  refresh(self,amount,fn)
+  if amount>1 and not interrupted then
+   interrupted=true
+   ui:setVisible(false)
+  end
+ end
+ ui:update(.016)
+ assert(interrupted and not ui.visible)
+ ui:setVisible(true)
+ assert(tap('campView/forge',1) and tapCard(scroll.items[0],2))
+ assert(ui.selected==ui.run.deck[1].uid)
+end)
 test('the visible grid restores artwork for cells recycled while covered',function()
  local ui,get,_,tap=setup('camp',nil,3)
  local display=Presentation[ui.run.deck[1].cardId]
@@ -230,6 +338,35 @@ test('the visible grid restores artwork for cells recycled while covered',functi
  ui:setVisible(true,true)
  CardDisplay.writeNativeArt,display.nativeArt=write,previousArt
  assert(paints==1,'the recycled face must request its artwork when revealed')
+end)
+test('a recycled card only shows the new type after releasing native art',function()
+ local ui,get,_,tap=setup('camp',nil,6)
+ local scroll=get('pickerView/forgeScroll')
+ local attack,skill=ui.run.deck[1],nil
+ for index,card in ipairs(ui.run.deck) do
+  for _,definition in ipairs(ui.run.data.cards.cards) do
+   if definition.id==card.cardId and definition.type=='skill' then skill=index;break end
+  end
+  if skill then break end
+ end
+ local display=Presentation[attack.cardId]
+ local original=display.nativeArt
+ display.nativeArt={cardId=attack.cardId,capacity=0,slots={}}
+ local refresh=scroll.RefreshItems
+ function scroll:RefreshItems(amount,fn)
+  return refresh(self,amount,function(box,index)
+   if not box:GetChild('artSamples') then
+    box.children.artSamples=F.control({name='artSamples',kind='container',size={144,64}},box)
+   end
+   fn(box,index)
+  end)
+ end
+ assert(tap('campView/forge',1))
+ local box=scroll.items[0]
+ assert(box:GetChild('artSamples').visible)
+ assert(scroll:recycle(0,assert(skill)-1)==box)
+ assert(not box:GetChild('art_attack').visible and box:GetChild('art_skill').visible)
+ display.nativeArt=original
 end)
 test('a small eligible set is centered without a scroll bar and re-entry starts clean',function()
  local ui,get,_,tap=setup('camp')
