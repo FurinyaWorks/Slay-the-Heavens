@@ -648,8 +648,8 @@ local function previews(state, player, aimed, instance, effects)
     return result
 end
 
-function M.cardPreview(state, instance, targetIndex)
-    local card, player = M.cardDefinition(state, instance), state.player
+function M.cardPreview(state, instance, targetIndex, definition)
+    local card, player = definition or M.cardDefinition(state, instance), state.player
     if card.originalV4 then return require('abyss_original_v4').preview(M,state,instance,targetIndex) end
     local aimed = state.enemies[targetIndex]
     return previews(state, player, aimed, instance, card.effects)

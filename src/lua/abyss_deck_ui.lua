@@ -12,6 +12,7 @@ local typeNames = { attack = "攻击", skill = "技能", power = "能力", statu
 local pileNames = {draw="抽牌堆",discard="弃牌堆",exhaust="消耗堆"}
 local rarityOrder = {basic=1,special=2,common=3,uncommon=4,rare=5,curse=6}
 local noPlayPreview = {}
+local PageReveal = require('abyss_page_reveal')
 -- ClientUIGridScrollerControl: current item size/spacing, top/bottom padding,
 -- fixed columns and viewport determine visible rows, including clipped edges.
 -- Only those logical indices must be painted; virtual offscreen items may not exist.
@@ -250,11 +251,17 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintBrowse()
         local active=canBrowse()
-        if self.browserShell and not inDetail() then root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle end
-        if Theme.presentationProfile=='official-assets-first' then root:GetChild('pileTools'):SetVisible(self.browserShell==true and not inDetail())end
-        paintPileSort()
+        if Theme.presentationProfile=='official-assets-first' then
+            root:GetChild('pileTools'):SetVisible(self.browserShell==true and not inDetail())
+        end
         root:GetChild('title'):SetVisible(not active and not self.browserShell and not self.cardDetail)
-        if self.browserShell then root:GetChild('pileChrome'):GetChild('heading'):SetVisible(self.cardDetail==nil)end
+        if self.browserShell then
+            local heading=root:GetChild('pileChrome'):GetChild('heading')
+            if not inDetail() then heading.text=self.listTitle end
+            heading:SetVisible(self.cardDetail==nil)
+            paintPileSort()
+            return -- The legacy filters and sort buttons stay hidden in this shell.
+        end
         local heading=root:GetChild('browseTitle')
         heading:SetVisible(active)
         if active then heading.text=self.listTitle end
@@ -405,7 +412,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function cardBody(display,definition,instance,battle)
         if not battle then return CardDisplay.permanentText(display,definition,instance) end
         -- V4 simulations require a hand card; a pile still gets live rules text.
-        local preview=self.pileKind and definition.originalV4 and noPlayPreview or Combat.cardPreview(battle,instance)
+        local preview=self.pileKind and definition.originalV4 and noPlayPreview
+            or Combat.cardPreview(battle,instance,nil,definition)
         return CardDisplay.combatText(display,definition,instance,preview,battle)
     end
     local function paintCardText(face,instance,display,definition,text,bodyUnchanged)
@@ -431,7 +439,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         CardSkin.apply(face,definition,platform,look)
     end
     local function fill(control, instance, catalog)
-        require('abyss_page_reveal').registerSource(platform,'deckPanel')
+        PageReveal.registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
         local definition = Combat.cardDefinition(battle or {catalog=catalog}, instance)
         local display = assert(presentation[instance.cardId], "missing deck presentation " .. instance.cardId)
@@ -446,7 +454,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
         paintCardSkin(face,definition,{cost=definition.cost,baseCost=base,selected=selected,
             surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil,
-            templateMaterials=self.pileView})
+            templateMaterials=self.browserShell})
         if self.browserShell then
             face:GetChild('nativePlayableRim'):SetVisible(false)
             face:GetChild('glow'):SetVisible(false)
@@ -615,8 +623,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             else fill(control,cards[1],catalog) end
         end)
         liveFaces()
-        -- A synchronous first probe can populate the real pile in this input turn.
-        if self.pileView and self.pending and self.generation==generation then self:update(0) end
+        -- A synchronous probe lets the shared browser paint before the click returns.
+        if self.browserShell and self.pending and self.generation==generation then self:update(0) end
     end
     local function changeBrowse()
         self.contentRevision=self.contentRevision+1
@@ -714,21 +722,23 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.indexBase, self.pending, self.calibrating = nil, false, true
         root:SetVisible(true)
         root:SetAsLastSibling()
-        local prompts=choicePrompts(choice)
         self.listTitle=browserHeading(pileKind).." · "..#cards.." 张"
         if self.pileView then self.sortMode,self.sortAscending='original',true end
         if self.browseEnabled then projectCards() end
-        root:GetChild("title").text = choice and prompts[choice.op] or self.listTitle
+        root:GetChild("title").text = choice and choicePrompts(choice)[choice.op] or self.listTitle
         if Theme.presentationProfile=='official-assets-first' then
             root:GetChild('pileChrome'):GetChild('heading').text=self.listTitle
             root:GetChild('pileReturn'):SetVisible(self.browserShell)
         end
         if self.multiple then root:GetChild('title').text=root:GetChild('title').text..' · 已选'..#choice.selected..(choice.required and '/'..choice.required or '') end
-        root:GetChild("close"):SetVisible(not choice or self.multiple == true or self.optional==true)
-        if self.browserShell then root:GetChild('close'):SetVisible(false)end
-        local close=root:GetChild('close'):GetChild('hit')
-        close.interactable=not choice or self.optional==true or self.multiple and (not choice.required or #choice.selected==choice.required) or false;close.raycastTarget=close.interactable
-        for _,state in ipairs({'normal','hover','pressed','disabled'}) do close:GetChild(state):GetChild('label').text=self.optional and '跳过' or self.multiple and '确认选择' or '关闭' end
+        local closeButton=root:GetChild('close')
+        closeButton:SetVisible(not self.browserShell and (not choice or self.multiple==true or self.optional==true))
+        if not self.browserShell then
+            local close=closeButton:GetChild('hit')
+            close.interactable=not choice or self.optional==true or self.multiple and (not choice.required or #choice.selected==choice.required) or false
+            close.raycastTarget=close.interactable
+            closeLabel(self.optional and '跳过' or self.multiple and '确认选择' or '关闭')
+        end
         paintBrowse()
         refreshGrid()
         if self.browserShell then root:GetChild('pileReturn'):SetAsLastSibling()end

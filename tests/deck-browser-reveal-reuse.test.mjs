@@ -67,6 +67,11 @@ for i=1,3 do local instance=F.Combat.copy(i==2 and card or other);instance.uid=9
 local originalPile=F.Combat.copy(run.combat.draw)
 local renderOriginal=host.battleUI.render;local openRenders=0
 host.battleUI.render=function(self,...)openRenders=openRenders+1;return renderOriginal(self,...)end
+local definition=F.Combat.cardDefinition;local definitionReads=0
+F.Combat.cardDefinition=function(state,instance,...)
+ if state==run.combat and instance.uid>=901 and instance.uid<=903 then definitionReads=definitionReads+1 end
+ return definition(state,instance,...)
+end
 local itemSize=pile.GetItemSize;local geometryReads=0
 pile.GetItemSize=function(self)geometryReads=geometryReads+1;return itemSize(self)end
 sizes={};assert(host:openDeck('draw'));local deck=host.deckUI
@@ -75,7 +80,16 @@ host.battleUI.render=renderOriginal
 assert(probeHidden,'calibration painted a provisional card')
 assert(not deck.calibrating and not deck.pendingGrid and not host.pageReveal:covered(),'synchronous combat pile missed the opening turn')
 assert(geometryReads==1,'synchronous pile callbacks repeatedly read native grid geometry')
+assert(definitionReads==3,'pile face preview resolved a definition twice: '..definitionReads)
+F.Combat.cardDefinition=definition
 pile.GetItemSize=itemSize
+local Display=require('abyss_card_display')
+for i=0,2 do
+ local cell=pile.items[i];local instance=deck.bindings[cell].instance
+ local displayed=host.nodeUI.presentation[instance.cardId]
+ local expected=Display.combatText(displayed,definition(run.combat,instance),instance,F.Combat.cardPreview(run.combat,instance),run.combat)
+ assert(cell:GetChild('face'):GetChild('label').text==expected,'reused definition changed a combat card description')
+end
 settle()
 assert(deck.indexBase==0 and sizes[1]==1 and sizes[2]==3,'first nonempty list did not calibrate its actual zero base')
 local field=panel:GetChild('pileTools'):GetChild('type')
@@ -193,6 +207,8 @@ for i,kind in ipairs({'draw','discard','exhaust'})do
   grid:flush();tick()
   assert(host.deckUI.pendingGrid and host.pageReveal:covered(),'deferred card fill published the probe')
   grid:flush();grid.deferRefresh=false
+ else
+  assert(not host.pageReveal:covered(),'ready combat pile missed the click turn: '..kind)
  end
  settle()
  local cell=grid.items[0]
@@ -211,7 +227,7 @@ local C=F.Combat;local Gate=require('abyss_page_reveal')
 package.loaded.abyss_art_features={schemaVersion=2,flags={cards=false,menuBackground=false,selectionAvatar=false,battlePortrait=false,monsters=false}}
 Color=setmetatable({FromRGBA=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end},{__call=function(_,r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},CursorEventType={CursorClick='click'},Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
-local function boot(amount,origin)
+local function boot(amount,origin,deferred)
  local canvas=F.control({children=F.Layout});local host,p;local actors=F.monsterActors()
  package.loaded.abyss_monster_actor_binding={enabled=true,templateIndex=actors.templateIndex,containerTemplateIndex=actors.containerTemplateIndex,powerTemplateIndex=actors.powerTemplateIndex}
  game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return true end,GetDevice=function()return'desktop'end,GetCursorUIPos=function()return 0,0 end,
@@ -226,13 +242,30 @@ local function boot(amount,origin)
   update(1/60)
  end
  assert(host.run and not host.starting and not(host.prologue and host.prologue:covering())and not host.pageReveal:covered(),'native deck opening did not finish')
+ if deferred==false and host.run.phase=='node' then
+  for _,choice in ipairs({'continue','reward_1','leave'})do assert(F.Nodes.chooseEvent(host.run,choice))end
+  host:refresh()
+  for _=1,60 do if not host.pageReveal:covered()then break end;update(.05)end
+ end
  local original=C.copy(host.run.deck);host.run.deck={}
  for i=1,amount do local card=C.copy(original[(i-1)%#original+1]);card.uid=1000+i;host.run.deck[i]=card end
- local grid=host.root:GetChild('deckPanel'):GetChild('pileGrid');grid.indexBase=origin;grid.deferRefresh=true
- assert(host:openDeck());return host,p,grid,update
+ local grid=host.root:GetChild('deckPanel'):GetChild('pileGrid');grid.indexBase=origin;grid.deferRefresh=deferred~=false
+ if deferred==false then
+  local hit=host.root:GetChild('deckEntry'):GetChild('open'):GetChild('hit')
+  assert(host.mode=='map' and not host.pageReveal:covered() and hit.click(),'map top-bar input did not reach the browser')
+ else
+  assert(host:openDeck())
+ end
+ return host,p,grid,update
 end
 local function turns(update)for i=1,3 do update(1/60)end end
 local function fill(grid,first,last)for i=first,last do grid:recycle(i-1,i-1+grid.indexBase)end end
+do
+ local host,p,grid=boot(10,1,false)
+ assert(grid.itemCount==10 and p.presentationReady(Gate.intent(host)) and not host.pageReveal:covered(),
+    'the real map entry failed to publish its synchronous first screen on click')
+ assert(host.deckUI.bindings[grid.items[0]].uid==1001)
+end
 for _,origin in ipairs({0,1})do
  local host,p,grid,update=boot(10,origin);local deck=host.deckUI
  assert(deck.calibrating and grid.itemCount==1,'cold grid must calibrate its own native origin')
