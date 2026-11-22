@@ -66,15 +66,35 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
+// Preserve the exact historical copier and regression source after Traveler status coverage.
+function beforeTravelerStatusCiSource(path,source){
+ const copier=path==='tests/helpers/copy-integration-source-closure.mjs';
+ const regression=path==='tests/integration-source-epoch.test.mjs';
+ if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source),sha=hash(lf);
+ let prior,expected;
+ if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
+  prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(travelerStatusFiles))','Object.entries(loadingRecoveryFiles))');
+  expected='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac';
+ }else if(regression&&sha==='e411b5d46c2bde12ef10d0615abaeacee3bc83d6c72221aa212cb3e708494089'){
+  prior=lf.replace("import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';\n",'')
+   .replace(/^test\('Traveler status continuation[^\n]*\n[\s\S]*?^\}\);\n\n/m,'');
+  expected='db962d7fe34be9e68f12ee153be9ef6679135e0803d28fb0db0db8a3d3fba0f4';
+ }else return source;
+ assert.equal(hash(prior),expected,'exact Traveler status CI predecessor: '+path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+
 // Authenticate the current copier before giving old CI receipts its exact predecessor.
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(hash(lf)==='f5127e418dccd48be7eaec793f0911c4804a8904c0076c447cf269b7a6f51919'){
+ if(hash(lf)==='df0870ba4ac54c17813ddbad6a79bff2ace2b902b2cb012a8929d95123f8bd7d'){
   lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'b122161ed4df0178b87aac9ba253e8fbe2e3827492da521884d94c823721c777',\n"," 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',\n")
-     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'b2b4e596ae8c3274808cb3e4bd2af4ae512dedef06fe10871e87ad944a5759b0',\n","")
-     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'00bce29ddfc3c02eeabc4c93a452f68243bb3ba04bad9d558410f32cadeff87e',\n","");
-  assert.equal(hash(lf),'eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac','exact Release UI closeout helper copy predecessor');
+     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'a06e2d99dba41704d05fdbb901350de58991ae7aca6b0a0eb994d3fa9830b4c1',\n","")
+     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'9d169f7f031e95c8a9c329087b0d9a71d526da584f65da18031537897e3fcc5c',\n","");
+  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Release UI closeout helper copy predecessor');
  }
  if(hash(lf)==='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac'){
   lf=lf.replace(" 'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',\n",
@@ -108,9 +128,10 @@ function beforeShopEntryCopier(path,source){
 }
 function shopEntryPreflightRead(read){
  const prior=shopEntryPriorRead(read);
- return (path,...args)=>beforeShopEntryCopier(path,beforeLoadingRecoveryCopier(path,prior(path,...args)));
+ return (path,...args)=>beforeShopEntryCopier(path,beforeLoadingRecoveryCopier(path,beforeTravelerStatusCiSource(path,prior(path,...args))));
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeTravelerStatusCiSource(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);
@@ -153,7 +174,7 @@ const shopEntryTests={
  js:['tests/shop-entry.test.mjs','3b687d1afb6ee83dc7103bc4c074e990a748a96ef55c4cba326498a5ed2d1919'],
  lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259'],
 };
-function beforeAddedInventorySource(paths,path,sha,read){
+function beforeAddedTest(paths,[path,sha],read){
  const position=paths.indexOf(path);
  if(position===-1)return paths;
  assert.equal(paths.lastIndexOf(path),position,'duplicate inventory source: '+path);
@@ -162,11 +183,12 @@ function beforeAddedInventorySource(paths,path,sha,read){
  return paths.filter(test=>test!==path);
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
- return beforeAddedInventorySource(paths,...shopEntryTests[kind],read);
+ if(kind==='lua')paths=beforeAddedTest(paths,['tests/lua/traveler_power_tooltip.lua','35363665f69113883246aa33984d4ab17eba727a87476256a617dc0f42dd45f7'],read);
+ return beforeAddedTest(paths,shopEntryTests[kind],read);
 }
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
- paths=beforeAddedInventorySource(paths,'tests/sts-selection-fade.test.mjs',
-  '3257ed5beda1cca328ac38a080f9112e9394f6d4152d0a0d27e9a6765182df1b',read);
+ paths=beforeAddedTest(paths,['tests/sts-selection-fade.test.mjs',
+  '3257ed5beda1cca328ac38a080f9112e9394f6d4152d0a0d27e9a6765182df1b'],read);
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
 }

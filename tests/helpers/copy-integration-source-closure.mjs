@@ -86,8 +86,8 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/helpers/pc13-reward-cover-source.mjs':'cd9cf4d774a92df100e6e367bdbc41a58fa281cef428316f1671fd878167cd92',
  'tests/helpers/loading-recovery-source.mjs':'43bc339bf238105e3967e774cc6fa15091d386d8ad9746671bc9c2865780c4f4',
  'tests/helpers/release-map-deck-source.mjs':'b122161ed4df0178b87aac9ba253e8fbe2e3827492da521884d94c823721c777',
- 'tests/helpers/release-ui-closeout-source.mjs':'b2b4e596ae8c3274808cb3e4bd2af4ae512dedef06fe10871e87ad944a5759b0',
- 'tests/fixtures/release-ui-closeout-source.json.gz':'00bce29ddfc3c02eeabc4c93a452f68243bb3ba04bad9d558410f32cadeff87e',
+ 'tests/helpers/release-ui-closeout-source.mjs':'a06e2d99dba41704d05fdbb901350de58991ae7aca6b0a0eb994d3fa9830b4c1',
+ 'tests/fixtures/release-ui-closeout-source.json.gz':'9d169f7f031e95c8a9c329087b0d9a71d526da584f65da18031537897e3fcc5c',
  'tests/helpers/release-map-room-source.json.gz':'834f71a1a70fe4858c4874497f8f7b46ae02a8f1949041aacc2d91353d190b13',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',
@@ -99,11 +99,17 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/fixtures/energy-reference-source.json.gz':'2b0f8c497c73a8afca47b01a41c7c8800f92c2879202c827df663269329ef19e',
  'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
 });
+const travelerStatusFiles=Object.freeze({
+ ...loadingRecoveryFiles,
+ 'tests/helpers/combat-visual-source.mjs':'721b73965767d683ef2b1853113baa1508fb7d8f913031df84b5285ba38caada',
+ 'tests/helpers/traveler-status-source.mjs':'41da0aaea833a446033b1fb964d31eebc4c4b5cd22e990a03370636f7afcc5ff',
+ 'tests/fixtures/traveler-status-source.json.gz':'78ea0afbc225eb83cfd79d24cbed5c1af166e21c07f2adfec3588b488a0d0de2',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(loadingRecoveryFiles)){
+ for(const [path,sha]of Object.entries(travelerStatusFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

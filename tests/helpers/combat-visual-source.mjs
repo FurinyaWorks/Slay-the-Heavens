@@ -1,5 +1,6 @@
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
 import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
+import {beforeTravelerStatusSource,travelerStatusPriorRead} from './traveler-status-source.mjs';
 // Exact predecessor view for historical receipts; live builds keep current sources.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -18,6 +19,8 @@ for(const [path,row]of Object.entries(rows)){
  continuations.set(path,exactSourceContinuation(row));
 }
 export function beforeCombatVisualSource(path,source,read=p=>readFileSync(p,'utf8')){
+ source=beforeTravelerStatusSource(path,source,read);
+ read=travelerStatusPriorRead(read);
  source=beforeMapDeckSource(path,source,read);
  read=mapDeckPriorRead(read);
  source=beforeEnergyReferenceSource(path,source,read);
@@ -32,6 +35,8 @@ export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>
 };}
 
 export function assertCombatVisualCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ source=beforeTravelerStatusSource(path,source,read);
+ read=travelerStatusPriorRead(read);
  source=beforeMapDeckSource(path,source,read);
  read=mapDeckPriorRead(read);
  assertEnergyReferenceCurrent(path,source,read);
