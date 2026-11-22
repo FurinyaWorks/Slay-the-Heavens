@@ -15,6 +15,9 @@ import {beforeV2UiEvidence,beforeV2UiPreTinyHouseSource,beforeFieldConfirmation,
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
+export {beforeDevelopBackflow};
+export {exactReviewedBuildInput} from './rebased-release-source.mjs';
+export {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
 // Full-source continuation for historical contracts; no partial/foreign projection.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';

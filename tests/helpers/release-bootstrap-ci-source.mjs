@@ -1,7 +1,5 @@
-import {beforeShopEntryInventory,assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
-import {beforeDevelopBackflow} from './develop-release-backflow-source.mjs';
-import {exactReviewedBuildInput} from './rebased-release-source.mjs';
-import {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
+import {beforeShopEntryInventory,assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,
+ beforeDevelopBackflow,exactReviewedBuildInput,beforeM05ShopCiSource} from './fork-preflight-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
