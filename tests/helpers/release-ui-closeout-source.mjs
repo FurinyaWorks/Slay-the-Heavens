@@ -22,12 +22,29 @@ for(const [path,{before,after}] of Object.entries(files)){
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
 export const ownsReleaseUiCloseoutSource=path=>Object.hasOwn(files,path);
-export function beforeReleaseUiCloseoutSource(path,source,read){
- if(!ownsReleaseUiCloseoutSource(path)||!matches(source,files[path].after))return source;
+export function beforeReleaseUiCloseoutSource(path,source,read,currentOnly=false){
+ if(!ownsReleaseUiCloseoutSource(path))return source;
  const {before,after}=files[path];
+ if(!matches(source,after)){
+  assert(!currentOnly,'Release UI closeout owner identity: '+path);
+  return source;
+ }
  if(read){
   let live;try{live=read(path,'utf8');}catch{assert.fail('Release UI closeout owner missing: '+path);}
   assert(matches(live,after),'Release UI closeout owner identity: '+path);
  }
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
+
+export function releaseUiCloseoutPriorRead(read,firstCurrentPath){
+ const currentPaths=new Set(firstCurrentPath?[firstCurrentPath]:[]);
+ return (path,encoding)=>{
+  const value=read(path,encoding);
+  if(!ownsReleaseUiCloseoutSource(path))return value;
+  const source=Buffer.isBuffer(value)?value.toString('utf8'):value;
+  const prior=beforeReleaseUiCloseoutSource(path,source,read,currentPaths.has(path));
+  if(source===prior)return value;
+  currentPaths.add(path);
+  return Buffer.isBuffer(value)?Buffer.from(prior):prior;
+ };
 }

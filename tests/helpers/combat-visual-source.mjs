@@ -1,3 +1,4 @@
+import {beforeReleaseUiCloseoutSource,releaseUiCloseoutPriorRead} from './release-ui-closeout-source.mjs';
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
 import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
 import {beforeTravelerStatusSource,travelerStatusPriorRead} from './traveler-status-source.mjs';
@@ -19,6 +20,9 @@ for(const [path,row]of Object.entries(rows)){
  continuations.set(path,exactSourceContinuation(row));
 }
 export function beforeCombatVisualSource(path,source,read=p=>readFileSync(p,'utf8')){
+ const closeout=beforeReleaseUiCloseoutSource(path,source,read);
+ read=releaseUiCloseoutPriorRead(read,closeout!==source?path:undefined);
+ source=closeout;
  source=beforeTravelerStatusSource(path,source,read);
  read=travelerStatusPriorRead(read);
  source=beforeMapDeckSource(path,source,read);
@@ -35,6 +39,9 @@ export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>
 };}
 
 export function assertCombatVisualCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ const closeout=beforeReleaseUiCloseoutSource(path,source,read);
+ read=releaseUiCloseoutPriorRead(read,closeout!==source?path:undefined);
+ source=closeout;
  source=beforeTravelerStatusSource(path,source,read);
  read=travelerStatusPriorRead(read);
  source=beforeMapDeckSource(path,source,read);

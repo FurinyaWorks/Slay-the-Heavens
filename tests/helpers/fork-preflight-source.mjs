@@ -71,7 +71,15 @@ function beforeTravelerStatusCiSource(path,source){
  const copier=path==='tests/helpers/copy-integration-source-closure.mjs';
  const regression=path==='tests/integration-source-epoch.test.mjs';
  if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source),sha=hash(lf);
+ let lf=normalize(source);
+ if(copier&&hash(lf)==='526945527d3ad125ab354ba317c94ec699f8260c3450c92bfc2eaa9f8452b9d8'){
+  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'0ce722b519a95e9e3cb700cc9e3d61be24c888b66e3c7f21a168ffd527dc0648',\n"," 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',\n")
+     .replace(" 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',\n"," 'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',\n")
+     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'ccd87b38f5846159b15b4e398e0e0a5a67bddb1f5fac14901bae9539a7cb31ef',\n","")
+     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'9d169f7f031e95c8a9c329087b0d9a71d526da584f65da18031537897e3fcc5c',\n","");
+  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Release UI closeout helper copy predecessor');
+ }
+ const sha=hash(lf);
  let prior,expected;
  if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
   prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
@@ -90,12 +98,6 @@ function beforeTravelerStatusCiSource(path,source){
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(hash(lf)==='df0870ba4ac54c17813ddbad6a79bff2ace2b902b2cb012a8929d95123f8bd7d'){
-  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'b122161ed4df0178b87aac9ba253e8fbe2e3827492da521884d94c823721c777',\n"," 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',\n")
-     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'a06e2d99dba41704d05fdbb901350de58991ae7aca6b0a0eb994d3fa9830b4c1',\n","")
-     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'9d169f7f031e95c8a9c329087b0d9a71d526da584f65da18031537897e3fcc5c',\n","");
-  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Release UI closeout helper copy predecessor');
- }
  if(hash(lf)==='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac'){
   lf=lf.replace(" 'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',\n",
    " 'tests/helpers/energy-reference-source.mjs':'a8db68450b733114e4b5cb9c345d6d7935b9309e150e4ce7717e9c833e4df0ad',\n")

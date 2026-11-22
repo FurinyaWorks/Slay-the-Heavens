@@ -41,13 +41,15 @@ export function beforeMapRoomSource(path,source){
 }
 
 export function beforeMapDeckSource(path,source,read){
-  source=beforeMapRoomSource(path,beforeLoadingRecoverySource(path,beforeReleaseUiCloseoutSource(path,source,read)));
+  const closeout=beforeReleaseUiCloseoutSource(path,source,read);
+  const currentCloseout=closeout!==source;
+  source=beforeMapRoomSource(path,beforeLoadingRecoverySource(path,closeout));
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
     let live;
     try{live=read(owner,'utf8');}catch{assert.fail('map deck linked owner missing: '+owner);}
     const text=typeof live==='string'?live:live?.toString('utf8');
-    const prior=beforeMapRoomSource(owner,beforeLoadingRecoverySource(owner,beforeReleaseUiCloseoutSource(owner,text,read)));
+    const prior=beforeMapRoomSource(owner,beforeLoadingRecoverySource(owner,beforeReleaseUiCloseoutSource(owner,text,read,currentCloseout)));
     assert(current(prior,after),'map deck linked owner identity: '+owner);
   }
   const prior=files[path].before.source;
