@@ -94,6 +94,26 @@ do
     ui:render()
     hero.enter()
     assert(not info.visible, "touch must not synthesize hover")
+    local fresh, foreign = {touchId = 65}, {touchId = 66}
+    for _, hit in ipairs({hero, icon(1)}) do
+        hit.down(fresh)
+        hit.click(foreign)
+        assert(not info.visible, "a foreign click cannot activate a held status tap")
+        hit.up(fresh)
+        hit.click(foreign)
+        assert(not info.visible, "a foreign click cannot open a status tip")
+        hit.click(fresh)
+        assert(info.visible, "a foreign click cannot consume the released status tap")
+        ground.click(fresh)
+        for _, cancel in ipairs({hit.exit, hit.drag, hit.endDrag}) do
+            hit.down(fresh)
+            cancel(foreign)
+            hit.up(fresh)
+            hit.click(fresh)
+            assert(info.visible, "a foreign pointer exit or drag cannot cancel a held status tap")
+            ground.click(fresh)
+        end
+    end
     touch(hero, 7)
     assert(#descriptions() == 2 and ground.visible)
     local entries = Combat.statusView(actor)

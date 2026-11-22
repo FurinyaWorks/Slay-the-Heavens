@@ -22,6 +22,12 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
     end
     local function touchScreen() return host.platform.touchScreen() == true end
     local function clear() held, released = nil, nil end
+    local function ownsPointer(event, token)
+        return not event or token and token.touch == event.touchId
+    end
+    local function cancelPointer(event)
+        if ownsPointer(event, held or released) then clear() end
+    end
     function handlers.observe()
         observed = true
         clear()
@@ -39,8 +45,8 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
         on(host.cursor.CursorEnter, function()
             if travelerMode(owner) and not touchScreen() then activate(describe(), false) end
         end)
-        on(host.cursor.CursorExit, function()
-            held = nil
+        on(host.cursor.CursorExit, function(event)
+            if ownsPointer(event, held) then held = nil end
             if not touchScreen() then owner:closePowerTip(control) end
         end)
     end
@@ -50,9 +56,10 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
     if not shared then Controller.bind(host.controller, control, "battle", handlers.press, dependencies.controllerReady, 80) end
     local function tapSpec(event)
         local touch, token = event and event.touchId, released
-        clear()
         if dependencies.consumeReleasedDragClick(event) or owner.suppressClick then return end
-        if observed and (not token or token.touch ~= touch or not dependencies.dragReady(token)) then return end
+        if observed and (not token or token.touch ~= touch) then return end
+        clear()
+        if token and not dependencies.dragReady(token) then return end
         local spec = describe()
         if not token or spec and spec.statusId == token.spec.statusId and spec.offset == token.spec.offset then
             return spec
@@ -61,8 +68,8 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
     on(host.clickEvent, function(event)
         if Controller.pointerBlocked(host.controller) or not ready() then return end
         if travelerMode(owner) and not touchScreen() then return end
-        if owner.info and dependencies.swallowed(event) then clear(); return end
-        activate(tapSpec(event), true)
+        local spec = tapSpec(event)
+        if spec and not (owner.info and dependencies.swallowed(event)) then activate(spec, true) end
     end)
     if host.cursor and host.cursor.CursorDown and host.cursor.CursorUp then
         on(host.cursor.CursorDown, function(event)
@@ -79,10 +86,10 @@ local function bindTraveler(owner, host, dependencies, control, describe, shared
                 held = nil
             end
         end)
-        if host.cursor.CursorDrag then control:AddCursorEventListener(host.cursor.CursorDrag, function()
-            if travelerMode(owner) then clear() end
+        if host.cursor.CursorDrag then control:AddCursorEventListener(host.cursor.CursorDrag, function(event)
+            if travelerMode(owner) then cancelPointer(event) end
         end) end
-        if host.cursor.CursorEndDrag then on(host.cursor.CursorEndDrag, clear) end
+        if host.cursor.CursorEndDrag then on(host.cursor.CursorEndDrag, cancelPointer) end
     end
     return handlers
 end
