@@ -50,7 +50,9 @@ end
 
 local cases={
     {name='native multi-hit damage and block',native=true,effects={{op='damage',value=6,times=2},{op='block',value=3}}},
-    {name='native target group retains companion',native=true,effects={{op='damage',value=6,targetGroup=1},{op='applyStatus',status='weak',value=1,targetGroup=1}}},
+    {name='native target group retains companion',native=true,effects={
+        {op='applyStatusAll',status='weak',value=1,targetGroup='weak_then_vulnerable'},
+        {op='applyStatusAll',status='vulnerable',value=1,targetGroup='weak_then_vulnerable'}}},
     {name='native zero X removes item',native=true,energy=0,effects={{op='damage',value=6,times='X'}}},
     {name='native X bonus automatic TOP purge',native=true,automatic=true,energy=2,effects={{op='damageAll',value=3,times='X'}}},
     {name='native random target and poison capture',native=true,effects={{op='playTop',value=1},{op='applyStatus',status='poison',value=2}}},

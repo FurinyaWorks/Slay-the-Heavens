@@ -11,6 +11,13 @@ local L = Theme.layout
 local reasons = { insufficient_energy = "能量不足", invalid_target = "请选择存活的敌人", card_content_unavailable = "此卡牌尚未实装，可选择其他卡牌或跳过。",
     card_not_in_hand = "这张牌已离开手牌", not_player_turn = "敌方行动中",
     normality_limit = "平庸：本回合已打出三张牌",
+    velvet_choker_limit = "天鹅绒颈圈：本回合已打出六张牌",
+    unplayable_card = "这张牌不能打出", entangled = "被缠绕时无法打出攻击牌",
+    selection_pending = "请先完成当前选牌", discard_choice_pending = "请先完成弃牌选择",
+    card_choice_pending = "请先完成当前选牌",
+    requires_empty_draw_pile = "抽牌堆为空时才能打出", requires_only_attacks = "手牌均为攻击牌时才能打出",
+    requires_no_other_attack = "手中没有其他攻击牌时才能打出", no_matching_draw_card = "抽牌堆中没有符合条件的牌",
+    command_failed = "战斗操作发生错误，请重试。若再次失败，请反馈游戏日志。",
     advanced_card_not_enabled = "此牌效果尚未接入", not_in_combat = "战斗已经结束",
     empty_potion_slot = "此药水已使用", invalid_potion_slot = "请选择有效药水",
     smoke_not_allowed = '此战斗不能使用烟雾弹',
@@ -48,7 +55,7 @@ function M.install(owner, _ownership, host, dependencies)
         owner:render()
         if changed and host.options.onChange then host.options.onChange(owner) end
     end
-    local function perform(command, origin, clearPlayedSelection)
+    local function perform(command, origin, clearPlayedSelection, commandContext)
         if inputCovered()then return false,'panel_hidden' end
         local battle = owner.run.combat
         local before, first = Events.frame(battle), #battle.events + 1
@@ -65,7 +72,10 @@ function M.install(owner, _ownership, host, dependencies)
         local called, ok, reason = pcall(command)
         if not called or not ok then
             owner.busy, owner.displayBattle = false, nil
-            if not called then print("ABYSS_FEEDBACK command_failed " .. tostring(ok)) end
+            if not called then
+                print("ABYSS_FEEDBACK command_failed " .. tostring(ok) .. " turn=" .. tostring(battle.turn)
+                    .. (commandContext or ""))
+            end
             refresh()
             return false, called and reason or "command_failed"
         end
@@ -188,7 +198,7 @@ function M.install(owner, _ownership, host, dependencies)
         if not self.active or not self.selected or self.busy or self.gesture or not self.run or self.run.phase ~= "combat" then return end
         local uid, origin = self.selected, self.cardPositions[self.selected]
         local ok, reason, presented = perform(function() return Run.play(self.run, uid, target) end, origin,
-            Theme.presentationProfile=='official-assets-first')
+            Theme.presentationProfile=='official-assets-first', " play uid=" .. tostring(uid) .. " target=" .. tostring(target))
         if ok then self.selected = nil end
         dependencies.notice(ok and "" or reasons[reason] or "当前无法使用这张牌。")
         if reason ~= "presentation_unavailable" and not presented then refresh() end
