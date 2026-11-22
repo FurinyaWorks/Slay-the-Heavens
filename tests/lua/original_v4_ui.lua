@@ -1,3 +1,4 @@
+local advanceShop=dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 package.path='tests/lua/?.lua;'..package.path
 local F=require('support.game_ui_fixture')
@@ -62,6 +63,13 @@ local run,map=ui.run,ui.map
 assert(Map.choose(map,'f1_l4'));assert(Map.choose(map,'f2_l5'))
 assert(F.Nodes.enter(run,map,'f3_l5'))
 ui:refresh();assert(ui.mode=='node')
+local room=path(ui.root,'nodePanel/shopRoom')
+local shelf=path(ui.root,'nodePanel/shopView')
+assert(room.visible and not shelf.visible, 'the complete shop room appears before the shelf')
+assert(path(ui.root,'nodePanel/merchant/talk/hit').click())
+assert(room.visible and not shelf.visible, 'cold shelf preparation must stay behind the room')
+advanceShop(ui)
+assert(shelf.visible and not room.visible and not ui.nodeUI.shopBusy, 'the staged shelf must become interactive')
 assert(path(ui.root,'nodePanel/shopView/page').text=='') -- all seven offers are displayed together
 for i=1,7 do assert(path(ui.root,'nodePanel/shopView/card'..i).visible) end
 local hit=path(ui.root,'nodePanel/shopView/card1/hit')

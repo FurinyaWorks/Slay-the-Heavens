@@ -16,12 +16,18 @@ assert.equal(hash(displayBytes),'c06069437d787cc0e590f2c6899b026e0ee47d060173b86
 const display=JSON.parse(gunzipSync(displayBytes));
 assert.equal(display.base,'5a972c7371d0217ce4d9806df35ba1464c50f40f');
 
+const shopFixtureBytes=readFileSync(new URL('../fixtures/release-shop-fixture-source.json.gz',import.meta.url));
+assert.equal(hash(shopFixtureBytes),'cfafa1b569223099444cb0340d8483ecd5daade105effeb6934802fb73133020','exact Release shop fixture archive');
+const shopFixture=JSON.parse(gunzipSync(shopFixtureBytes));
+assert.equal(shopFixture.base,'25d389968670c0812f8b9565157cf32642fb58e2');
+assert.deepEqual(Object.keys(shopFixture.files),['tests/official-assets-runtime.test.mjs']);
+
 function matches(source,binding){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
  const text=normalize(source);
  return hash(text)===binding.sha256&&blob(text)===binding.gitBlob;
 }
-for(const [path,{before,after}] of [...Object.entries(files),...Object.entries(display.files)]){
+for(const [path,{before,after}] of [...Object.entries(files),...Object.entries(display.files),...Object.entries(shopFixture.files)]){
  assert(matches(before.source,before),'exact Release UI closeout predecessor: '+path);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
@@ -61,10 +67,20 @@ export function releaseRewardDisplayPriorRead(read,firstCurrentPath){
  return priorRead(read,ownsRewardDisplay,beforeRewardDisplay,firstCurrentPath);
 }
 
-export function beforeReleaseUiCloseoutSource(path,source,read,currentOnly=false){
+function beforeExistingReleaseUiCloseoutSource(path,source,read,currentOnly){
  const earlier=beforeRewardDisplay(path,source,read,currentOnly);
  const prior=read&&releaseRewardDisplayPriorRead(read,earlier!==source?path:undefined);
  return beforeSource(files,path,earlier,prior,currentOnly&&!ownsRewardDisplay(path));
+}
+
+export function beforeReleaseUiCloseoutSource(path,source,read,currentOnly=false){
+ const shop=shopFixture.files[path];
+ if(!shop)return beforeExistingReleaseUiCloseoutSource(path,source,read,currentOnly);
+ const earlier=beforeSource(shopFixture.files,path,source,read,currentOnly);
+ // Never project live current bytes on behalf of a stale supplied predecessor.
+ const prior=read&&earlier!==source?priorRead(read,p=>p===path,
+  (p,input,next,strict)=>beforeSource(shopFixture.files,p,input,next,strict),path):read;
+ return beforeExistingReleaseUiCloseoutSource(path,earlier,prior,currentOnly);
 }
 
 export function releaseUiCloseoutPriorRead(read,firstCurrentPath){

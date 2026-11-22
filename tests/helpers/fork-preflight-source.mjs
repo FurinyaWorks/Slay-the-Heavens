@@ -92,6 +92,10 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
+ if(copier&&hash(lf)==='7f3574e841cfe053de331c55ca4872bde0143c7a1b6bde58b03757ff3a821121'){
+  lf=lf.replace(" 'tests/helpers/release-ui-closeout-source.mjs':'ad5561e57e88406fa9615ff0ac7ed654b625112b7667c0b6da06d8a0fc4e3b84',\n 'tests/fixtures/release-shop-fixture-source.json.gz':'cfafa1b569223099444cb0340d8483ecd5daade105effeb6934802fb73133020',\n"," 'tests/helpers/release-ui-closeout-source.mjs':'f0494e25c04a94b932ff7160f5dd00904cfde3ff8c86beb00eb83968b251ba08',\n");
+  assert.equal(hash(lf),'23868164b55d4d54cb3cf6d661f869545a606607ff1bbf4721518c9dfa5ed574','exact shop fixture helper copy predecessor');
+ }
  if(copier&&hash(lf)==='23868164b55d4d54cb3cf6d661f869545a606607ff1bbf4721518c9dfa5ed574'){
   lf=lf.replace(" 'tests/helpers/release-ui-closeout-source.mjs':'f0494e25c04a94b932ff7160f5dd00904cfde3ff8c86beb00eb83968b251ba08',\n"," 'tests/helpers/release-ui-closeout-source.mjs':'a3d1de143ef40fdaab5a08bca47e4e1ff29414d2e3e97826fb68db84885998ab',\n")
      .replace(" 'tests/fixtures/release-reward-display-source.json.gz':'c06069437d787cc0e590f2c6899b026e0ee47d060173b867dbd9dfcd8bb89255',\n",'');
