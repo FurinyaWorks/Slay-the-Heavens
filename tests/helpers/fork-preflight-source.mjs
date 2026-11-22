@@ -657,17 +657,45 @@ function beforeDevelopEpochReplayRuntime(path,source){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 const replayAssetLedger='docs/legal/assets.json';
+const replayStorageSources=Object.freeze({
+ '.gitattributes':['0b385940b40b3e3c37337ce283b8772bb800333d6654675ff3107fd70cca7cf5','11d5e5b797cff39ed75bc0614fb9d02975fbcc24'],
+ 'config/ci-media-lfs.json':['80e6bae0a63426858864d5d13d50b86e7fa2369a4b89715b2f0d264b8068092e','04ad2de599ff5e2a702764f0d07d5bbea41a2d77'],
+ [replayAssetLedger]:['3177b5d318db49ae78255bbcf6deae7413024d0f6c2781b31e633c549e173cc0','2d5d723f3a76e0563dda2e28d9f2dccedadf5b42'],
+ 'scripts/ci-media-lfs.mjs':['a4ca309a0e8257fbdbc135b8272acecca74c846db4c56b48a9fa727c00c56458','22fea391946d3d0438fefd054f5e32e5ceb122ec'],
+ 'tests/ci-reviewed-lfs.test.mjs':['05f1824d4c92aed4a8199f2c5b1d62b73c323c752add998376e75e1d11f519f8','fe0cbb9f737f58051ff2154170bd434e85d463cd'],
+});
+function withoutArchiveRecords(current,first,after){
+ const start=current.indexOf(first),end=current.indexOf(after);
+ assert(start>=0&&end>start,'complete replay archive records');
+ return current.slice(0,start)+current.slice(end);
+}
 function beforeReplayArchiveStorage(path,source){
- if(path!==replayAssetLedger||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ if(!Object.hasOwn(replayStorageSources,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const current=normalize(source);
- if(hash(current)!=='3177b5d318db49ae78255bbcf6deae7413024d0f6c2781b31e633c549e173cc0'||
-    blob(current)!=='2d5d723f3a76e0563dda2e28d9f2dccedadf5b42')return source;
- const start=current.indexOf('    "tests/fixtures/integration-ci-epochs.json.gz": {\n');
- const end=current.indexOf('    "docs/evidence/sts-selection-fade-20261121/after-selection.png": {\n');
- assert(start>=0&&end>start,'complete replay archive provenance records');
- const prior=current.slice(0,start)+current.slice(end);
- assert.equal(hash(prior),'28c8b76109df44c218fc25b226dfec494870b591d56c53fd66cb0b6eb06d0a3c','immutable replay archive ledger predecessor');
- assert.equal(blob(prior),'719804fae3a3b3ddac4d41b6ee020f7fba03319c');
+ const [sha,id]=replayStorageSources[path];
+ if(hash(current)!==sha||blob(current)!==id)return source;
+ let prior,priorSha,priorId;
+ switch(path){
+  case '.gitattributes':
+   prior=withoutArchiveRecords(current,'tests/fixtures/integration-ci-epochs.json.gz filter=lfs','\n# Original bytes of the v2 P1 screenshots');
+   priorSha='f0b3ef1846d96a102b82bdc023fd2e88e39e9f93c679be5134df1f8b095b7ac0';priorId='62cc3f1be7620666b1ee3a8205c9c5674b8007dd';
+   break;
+  case 'config/ci-media-lfs.json': {
+   const {replayArchiveExtension,...manifest}=JSON.parse(current);
+   assert(replayArchiveExtension,'complete replay archive manifest extension');
+   prior=JSON.stringify(manifest,null,2)+'\n';
+   priorSha='a744f84701e638657569cf3211443adbace935c28435b2742ebc28b2a666e89d';priorId='ebb146be32e84e6b6161f1b558056900383ffd6c';
+   break;
+  }
+  case replayAssetLedger:
+   prior=withoutArchiveRecords(current,'    "tests/fixtures/integration-ci-epochs.json.gz": {\n','    "docs/evidence/sts-selection-fade-20261121/after-selection.png": {\n');
+   priorSha='28c8b76109df44c218fc25b226dfec494870b591d56c53fd66cb0b6eb06d0a3c';priorId='719804fae3a3b3ddac4d41b6ee020f7fba03319c';
+   break;
+  default:
+   ({before:prior,beforeSha:priorSha,gitBlob:priorId}=transport.files[path]);
+ }
+ assert.equal(hash(prior),priorSha,'immutable replay archive storage predecessor: '+path);
+ assert.equal(blob(prior),priorId,path);
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeIntegrationSuccessor(path,source){
@@ -682,7 +710,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const liveRead=read;
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
-  const live=read(path,encoding),raw=beforeReplayArchiveStorage(path,live),priorMerge=beforeDevelopReplayMerge(path,raw);
+  const live=read(path,encoding),raw=path===replayAssetLedger?beforeReplayArchiveStorage(path,live):live,priorMerge=beforeDevelopReplayMerge(path,raw);
   if(path===replayAssetLedger)assert.notEqual(live,raw,'fresh complete integration source: '+path);
   if(path==='tests/helpers/copy-integration-source-closure.mjs'||path===epochReplayRuntimePath)
    assert.notEqual(raw,beforeMapRoomReplayCohort(path,raw),'fresh complete integration source: '+path);
