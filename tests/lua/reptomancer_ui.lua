@@ -1,3 +1,4 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 -- Generated controls and explicit source room setup, not native/live evidence.
@@ -44,8 +45,8 @@ tap('endTurn',201);drain();eq(#s.enemies,4);eq(s.enemies[3].id,'snake_dagger_4')
 local rows=visible();eq(#rows,4);eq(s.enemies[3].intents[s.enemies[3].intentIndex].id,'stab')
 local explosion=View.intentView(s,1);eq(explosion.value,'25');has(explosion.text,'自毁');has(explosion.text,'无视格挡')
 local infoHit=monsterControl(panel,'enemy1'):GetChild('intentHit');infoHit.click({touchId=202})
-local info=panel:GetChild('statusInfo');assert(info.visible);has(info:GetChild('text2').text,'生命')
-info:GetChild('hit').click({touchId=203});assert(not info.visible)
+local info=panel:GetChild('statusInfo');assert(info.visible);has(readPowers(panel),'生命')
+panel:GetChild('statusDismiss').click({touchId=203});assert(not info.visible)
 -- Component refill stresses all five slots while retaining corpses. Never
 -- rebuild actor IDs from visible positions or remove an old table from core.
 R.summon(C,s,leader);host:refresh();rows=visible();eq(#rows,5)
@@ -55,7 +56,7 @@ for slot,row in ipairs(rows)do eq(row.actor,s.enemies[row.index]);eq(row.id,s.en
  local box=monsterControl(panel,'enemy'..slot)
  local _,nativeSlot=monsterControl(panel,'enemy'..slot)
  tap('enemy'..nativeSlot,210+slot);eq(ui.info.id,row.id);eq(ui.info.index,row.index)
- info:GetChild('hit').click({touchId=220+slot})
+ panel:GetChild('statusDismiss').click({touchId=220+slot})
 end
 -- Source SnakeStrike retains two-hit face plus Weak text through approved icons.
 for i,move in ipairs(leader.intents)do if move.id=='snake_strike'then leader.intentIndex=i end end

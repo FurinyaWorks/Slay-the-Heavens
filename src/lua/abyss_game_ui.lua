@@ -111,7 +111,7 @@ function M.new(root, data, presentation, clickEvent, platform)
             imageFillRight = platform.imageFillRight,
             textAlignments = platform.textAlignments,
             cursorEvents = platform.cursorEvents, sound = platform.sound, controller = controller, touchScreen = platform.touchScreen,
-            enhancedRooms=true, inputCovered=inputCovered,
+            enhancedRooms=true, hostRendersEvents=true, inputCovered=inputCovered,
             onInspectCard=function(definition,upgraded)
                 if not self.run or self.disabled or self.mode~='node' or self.exitOpen
                     or self.deckUI.visible or self.potionUI.visible or self.settlementRequested then return false end

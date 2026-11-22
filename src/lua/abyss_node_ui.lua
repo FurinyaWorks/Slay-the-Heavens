@@ -134,6 +134,10 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         self.run.nodeFlow ~= nil and self.run.nodeFlow.id == result.nodeId and self.run.nodeFlow.complete == true
     end
 
+    function ctx.hostRendersEvent(node)
+        return ctx.options.hostRendersEvents and node and node.type == "event"
+    end
+
     function ctx.syncNodeIdentity(node)
         if ctx.self.renderRun ~= ctx.self.run or ctx.self.renderMap ~= ctx.self.map or ctx.self.nodeId ~= (node and node.id) then
             ctx.self.page, ctx.self.relicPage, ctx.self.pickPage, ctx.self.mode, ctx.self.picker = 1, 1, 1, "main", nil
@@ -209,12 +213,13 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         return nil,confirmLabel,confirmOk,confirmFn,nil,nil
     end
 
-    function ctx.resultFooter()
+    function ctx.resultFooter(node)
         local confirmLabel,confirmOk,confirmFn
         confirmLabel, confirmOk = "继续", true
         confirmFn = function()
             ctx.self.result, ctx.self.notice = nil, ""
-            ctx.self:render() if ctx.onChange then ctx.onChange(true, "continue", ctx.self) end
+            if not ctx.hostRendersEvent(node) then ctx.self:render() end
+            if ctx.onChange then ctx.onChange(true, "continue", ctx.self) end
             return true, "continue"
         end
         return nil,confirmLabel,confirmOk,confirmFn,nil,nil
@@ -225,7 +230,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         if view.phase=='ending_proceed' and node and node.type=='ending_proceed' then
             return EndingUI.footer(ctx.self,confirm,ctx.commit)
         elseif result then
-            backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve=ctx.resultFooter()
+            backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve=ctx.resultFooter(node)
         elseif node and node.complete then
             backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve=ctx.completedFooter(view)
         elseif screen == "shopView" then
@@ -278,6 +283,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
 
     local function projectNode(self)
         local flow = self.run.nodeFlow
+        if ctx.hostRendersEvent(flow) then return Nodes.roomView(self.run, self.map) end
         if ctx.options.enhancedRooms and flow and self.run.phase == "node"
             and (flow.type == "camp" or flow.type == "shop") then
             return Nodes.roomView(self.run, self.map)

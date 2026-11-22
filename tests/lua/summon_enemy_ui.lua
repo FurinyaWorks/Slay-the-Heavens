@@ -101,7 +101,7 @@ test('retired portrait and help presses cannot follow a reused slot in the same 
  C.damage(s,s.player,living[2],1,true);h:refresh()
  local kept=living[2];local oldSlot,oldBox=shown(p,kept);assert(oldSlot)
  tap('enemy'..oldSlot,60);assert(u.target==indexOf(s,kept))
- p:GetChild('statusInfo'):GetChild('hit').click({touchId=60});assert(not u.info)
+ p:GetChild('statusDismiss').click({touchId=60});assert(not u.info)
  event('enemy'..oldSlot,'down',61)
  local help=oldBox:GetChild('intentHit');part(help,'down',62)
  local oldX,oldY=oldBox.x,oldBox.y
@@ -112,10 +112,10 @@ test('retired portrait and help presses cannot follow a reused slot in the same 
  event('enemy'..oldSlot,'up',61);event('enemy'..oldSlot,'click',61)
  assert(u.target==indexOf(s,kept),'surviving portrait press lost its actor')
  assert(u.info and u.info.id==kept.id,'surviving portrait details lost ownership')
- p:GetChild('statusInfo'):GetChild('hit').click({touchId=61})
+ p:GetChild('statusDismiss').click({touchId=61})
  part(help,'up',62);part(help,'click',62)
- assert(u.info and u.info.id==kept.id and u.info.kind=='intent','surviving intent press lost ownership')
- p:GetChild('statusInfo'):GetChild('hit').click({touchId=62});assert(not u.info)
+ assert(u.info and u.info.id==kept.id and u.info.powerTips and not u.info.kind,'surviving intent press lost ownership')
+ p:GetChild('statusDismiss').click({touchId=62});assert(not u.info)
  event('enemy'..oldSlot,'down',65);part(help,'down',66)
  -- Keep queued native callbacks, even after native unbind removes listeners.
  local hit=oldBox.listeners and oldBox or oldBox:GetChild('hit')
@@ -138,11 +138,11 @@ test('retired portrait and help presses cannot follow a reused slot in the same 
  -- An ordinary fresh portrait now opens that actor's approved details. Close it
  -- through the real surface before the next independent intent-help gesture.
  assert(u.info and u.info.index==indexOf(s,boss) and u.info.id==boss.id,'fresh remapped details used a different actor')
- p:GetChild('statusInfo'):GetChild('hit').click({touchId=63});assert(not u.info)
+ p:GetChild('statusDismiss').click({touchId=63});assert(not u.info)
  local _,bossBox=shown(p,boss)
  local intent=bossBox:GetChild('intentHit')
  part(intent,'down',64);part(intent,'up',64);part(intent,'click',64)
- assert(u.info and u.info.index==indexOf(s,boss) and u.info.kind=='intent','fresh mapped intent help failed')
+ assert(u.info and u.info.index==indexOf(s,boss) and u.info.powerTips and not u.info.kind,'fresh mapped intent help failed')
 end)
 test('completed death feedback cannot hide or tint other identity-owned actor surfaces',function()
  local h,u,p,_,tap,drain,s,boss=fixture('leader')

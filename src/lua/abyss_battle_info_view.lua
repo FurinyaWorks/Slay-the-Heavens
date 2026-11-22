@@ -96,18 +96,27 @@ end
 local function powerColumns(rows, width, font, room)
     local column, used, columns = {}, 0, {}
     local pitch = math.ceil(font * 1.25)
-    for i = 1, math.min(#rows, P.rows) do
-        local row = rows[i]
-        local count = wrappedLines(row.name, width, font, P.padding * 2)
-        for paragraph in row.body:gmatch("[^\n]+") do
-            count = count + wrappedLines(paragraph, width, font, P.padding * 2)
+    local i = 1
+    while i <= #rows do
+        local first, count, copy = i, 0, {}
+        -- Reserve the first tooltip for its own entry. If all the native
+        -- boxes are occupied, share the later boxes between adjacent entries.
+        local groupSize = first == 1 and 1 or math.ceil((#rows - 1) / (P.rows - 1))
+        for j = first, math.min(#rows, first + groupSize - 1) do
+            local row = rows[j]
+            count = count + wrappedLines(row.name, width, font, P.padding * 2)
+            for paragraph in row.body:gmatch("[^\n]+") do
+                count = count + wrappedLines(paragraph, width, font, P.padding * 2)
+            end
+            copy[#copy + 1] = powerTitle .. row.name .. "</color>\n" .. row.body
+            i = j + 1
         end
         local height = math.max(L.nativeText.lineHeight, count * pitch + P.padding * 2)
         if used > 0 and used + height > room then
             columns[#columns + 1] = {rows = column, height = used - P.gap}
             column, used = {}, 0
         end
-        column[#column + 1] = {row = row, height = height, y = used}
+        column[#column + 1] = {text = table.concat(copy, "\n"), height = height, y = used}
         used = used + height + P.gap
     end
     columns[#columns + 1] = {rows = column, height = used - P.gap}
@@ -124,6 +133,7 @@ local function powerLayout(rows, edge, direction)
     for font = P.font, P.minFont, -1 do
         local columns = powerColumns(rows, width, font, top - floor)
         local fits = left + #columns * (width + P.gap) - P.gap <= safeRight
+        for _, column in ipairs(columns) do fits = fits and column.height <= top - floor end
         if fits and (#columns == 1 or #rows > 3 or font == P.minFont) then
             return columns, left, top, floor, width, font, 1
         end
@@ -133,6 +143,7 @@ local function powerLayout(rows, edge, direction)
     local columns = powerColumns(rows, width, P.minFont, top - floor)
     local span = #columns * (width + P.gap) - P.gap
     local scale = math.min(1, 2 * safeRight / span)
+    for _, column in ipairs(columns) do scale = math.min(scale, (top - floor) / column.height) end
     left = math.min(left, safeRight - span * scale)
     return columns, left, top, floor, width, P.minFont, scale
 end
@@ -353,7 +364,7 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         box:SetLocalScale(geometry.scale, geometry.scale, 1)
         local copy = place(box, "copy", 0, 0, geometry.width - P.padding * 2, entry.height)
         copy.fontSize, copy.minimumFontSize = geometry.font, geometry.font
-        copy.text = powerTitle .. entry.row.name .. "</color>\n" .. entry.row.body
+        copy.text = entry.text
         box:SetVisible(true)
     end
 

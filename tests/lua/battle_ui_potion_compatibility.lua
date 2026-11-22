@@ -52,7 +52,7 @@ test("sparse targeted potion follows fresh target selection without moving slots
     assert(h.run.potions[1]==nil and h.run.potions[2]=="fire_potion")
     local b=h.run.combat; local hp1,hp2=b.enemies[1].hp,b.enemies[2].hp
     emit("enemy2","down",8); emit("enemy2","click",8)
-    assert(u.target==2 and u.info);p:GetChild("statusInfo"):GetChild("hit").click()
+    assert(u.target==2 and u.info.powerTips);p:GetChild("statusDismiss").click()
     tap(9,2); d()
     assert(h.run.potions[2]=="fire_potion")
     emit("enemy2","down",10); emit("enemy2","click",10); d()

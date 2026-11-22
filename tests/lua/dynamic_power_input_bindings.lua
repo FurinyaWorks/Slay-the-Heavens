@@ -23,7 +23,7 @@ local function control(name,parent)
  return c
 end
 local function unit(name)
- local c=control(name);control('hit',c);control('intentHit',c);local row=control('statusRow',c);control('hit',row)
+ local c=control(name);control('hit',c);control('intentHit',c);control('hpHit',c);local row=control('statusRow',c);control('hit',row)
  for i=1,Theme.layout.statusIcon.perRow*Theme.layout.statusIcon.rows do control('hit'..i,row)end
  return c
 end
@@ -79,10 +79,10 @@ end
 local function event(c,kind,touch)if c.listeners[kind]then return c.listeners[kind]({touchId=touch})end end
 local function click(c,touch)event(c,'down',touch);event(c,'up',touch);event(c,'click',touch)end
 
--- No enemy statusRow or fixed chips: dynamic actor binding must only use intent.
-local actorBox=control('actor');control('hit',actorBox);control('intentHit',actorBox)
+-- No enemy statusRow or fixed chips: dynamic actor binding must bind intent and HP without powers.
+local actorBox=control('actor');control('hit',actorBox);control('intentHit',actorBox);control('hpHit',actorBox)
 bind(1,battle.enemies[1],1,actorBox)
-assert(#ctl.records==staticRecords+2,'enemy should bind only portrait and intent')
+assert(#ctl.records==staticRecords+3,'enemy should bind portrait, intent and HP without a power row')
 local actor=battle.enemies[1];Actors.applyPower(battle,actor,'strength',3,actor);Actors.applyPower(battle,actor,'weak',2,battle.player)
 local pool={entries={},boxes={}}
 function pool:entry(slot)return self.entries[slot]end

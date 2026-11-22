@@ -104,25 +104,29 @@ function M.install(owner, ownership, host, dependencies)
     local function dismissForPointer(keepActor)
         if not (keepActor and owner.info and not owner.info.kind) then return dependencies.closeInfo() end
     end
-    local function prepareDown(event, keepActor)
-        -- The popup owns dismissal as well as Use/Discard. A lower native
-        -- callback must not close it before its own action receives this Down.
+    local function pointerOwned(event, readOnly)
         if owner.potionMenu then return true end
-        if owner.potionAim and owner.potionAim.moving and owner.potionAim.touch~=(event and event.touchId) then return true end
-        retireInterruptedPress(event)
+        local aim = owner.potionAim
+        if readOnly then return owner.gesture or owner.carry or aim and aim.moving end
+        return aim and aim.moving and aim.touch ~= (event and event.touchId)
+    end
+    local function retireStalePotionAim(event)
+        if not owner.active or owner.busy or not owner.potionAim or dependencies.aimReady(owner.potionAim) then return false end
+        dependencies.cancelPotionAim("药水瞄准已失效，已取消；请重新选择药水。")
+        owner.swallow = {touch = event and event.touchId}
+        owner:render()
+        return true
+    end
+    local function prepareDown(event, keepActor, readOnly)
+        if pointerOwned(event, readOnly) then return true end
+        if not readOnly then retireInterruptedPress(event) end
         ownership.pointerObserved = true
-        owner.help=nil
+        owner.help = nil
         reclaimPointer(event)
         owner.swallow = nil
         if owner.gesture then return false end
-        -- Retire a changed potion context before the target captures a token.
-        -- This press only cancels; a refreshed actor must need a new Down.
-        if owner.active and not owner.busy and owner.potionAim and not dependencies.aimReady(owner.potionAim) then
-            dependencies.cancelPotionAim("药水瞄准已失效，已取消；请重新选择药水。")
-            owner.swallow = {touch = event and event.touchId}
-            owner:render()
-            return true
-        end
+        -- A stale target press cancels the aim and requires a fresh Down.
+        if not readOnly and retireStalePotionAim(event) then return true end
         local closed,passThrough=dismissForPointer(keepActor)
         if not closed or passThrough then return false end
         owner.swallow = {touch = event and event.touchId}

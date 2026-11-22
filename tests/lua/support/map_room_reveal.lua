@@ -135,4 +135,43 @@ tick(host)
 assert(host.pageReveal:covered(), 'pending assets skipped scheduler confirmation')
 tick(host)
 assert(not host.pageReveal:covered() and merchant.click())
+
+-- At the top of the real map, both the short central approach and the
+-- diagonal approaches should touch the displayed boss glyph.
+local mapHost, mapRoot = onMap('event')
+local layout = require('abyss_map_layout')
+local mapPanel = mapRoot:GetChild('mapPanel')
+assert(mapHost.mapUI:setScroll(layout.maxScroll))
+local rooms, boss, incoming = {}, nil, 0
+for index, node in ipairs(mapHost.map.nodes) do
+    rooms[node.id] = index
+    if node.type == 'boss' then boss = node end
+end
+local bossBox = F.mapControl(mapPanel, 'node' .. rooms[assert(boss).id])
+local icon = bossBox:GetChild('icon')
+assert(bossBox.visible)
+local edgeIndex = 0
+for _, node in ipairs(mapHost.map.nodes) do
+    for _, target in ipairs(node.nextIds) do
+        edgeIndex = edgeIndex + 1
+        if target == boss.id then
+            local edge = F.mapControl(mapPanel, 'edge' .. edgeIndex)
+            assert(edge.visible)
+            local last
+            for i = 1, 8 do
+                local dash = edge:GetChild('routeInk' .. i)
+                if dash.visible then last = dash end
+            end
+            assert(last, 'boss route lost its ink')
+            local angle = math.rad(edge.localRotationZ)
+            local heading = angle + math.rad(last.localRotationZ)
+            local x = edge.x + last.x * math.cos(angle) - last.y * math.sin(angle) + last.sizeDeltaX / 2 * math.cos(heading)
+            local y = edge.y + last.x * math.sin(angle) + last.y * math.cos(angle) + last.sizeDeltaX / 2 * math.sin(heading)
+            local gap = math.sqrt((x - bossBox.x)^2 + (y - bossBox.y)^2) - icon.sizeDeltaX / 2
+            assert(math.abs(gap) < 4, 'boss route leaves a gap at the glyph: ' .. gap)
+            incoming = incoming + 1
+        end
+    end
+end
+assert(incoming > 1, 'both kinds of boss approach must be exercised')
 GameUI.new = make

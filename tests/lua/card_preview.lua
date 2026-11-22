@@ -9,6 +9,7 @@ local Presentation = require("abyss_presentation")
 local Layout = require("abyss_ui_layout")
 local Fixture=dofile('tests/lua/support/game_ui_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
+local readPowers = dofile("tests/lua/support/power_tip_fixture.lua")
 local L = Theme.layout
 -- These are input points on the current visible native actors, not expected
 -- damage values. Every numerical preview oracle below remains unchanged.
@@ -402,7 +403,7 @@ test("player and every enemy show status icons, stacks and full current effects"
         s.enemies[3].statuses,s.enemies[3].powerOrder={},{}
         Combat.addStatus(s.enemies[3],id,5)
         ui:render()
-        tap({"enemy3", "statusRow", "hit"})
+        assert(ui:openHelp({index=3,statusId=id}))
         open, rows = info(panel,true)
         assert(open and #rows == 1, id)
         local row = rows[1]
@@ -415,6 +416,10 @@ test("player and every enemy show status icons, stacks and full current effects"
         assert(not row.note or utf8.len(row.note) <= perLine * 2, id .. " condition overflows two lines: " .. tostring(row.note))
         assert(utf8.len(row.tag) <= math.floor(I.tagWidth / Theme.font.small), id .. " duration tag too long: " .. row.tag)
         tap({"statusInfo", "hit"})
+        tap({"enemy3", "statusRow", "hit"})
+        local compact, tips = readPowers(panel)
+        assert(#tips == 1 and compact:find(row.name, 1, true) and compact:find(row.text, 1, true), id)
+        panel:GetChild("statusDismiss").click()
     end
 end)
 

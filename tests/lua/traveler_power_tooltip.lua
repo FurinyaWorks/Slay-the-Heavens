@@ -107,7 +107,8 @@ for _, mobile in ipairs({false, true}) do
             assert(not detail.visible, "touch enter cannot open a tip")
         end
         inspect(target.portrait)
-        local first = opened(target.index, 1)[1]
+        local intentRows = target.index > 0 and 1 or 0
+        local first = opened(target.index, 1 + intentRows)[1 + intentRows]
         assert((target.index == 0 and first.x > target.x) or (target.index == 1 and first.x < target.x))
         assert(first.sizeDeltaX == L.powerTips.width)
         assert(first:GetChild("copy").fontSize == L.powerTips.font)
@@ -118,8 +119,8 @@ for _, mobile in ipairs({false, true}) do
 
         Combat.addStatus(target.actor, "weak", 2)
         ui:render()
-        local entries, boxes = Combat.statusView(target.actor), opened(target.index, 2)
-        for i, entry in ipairs(entries) do contains(copy(boxes[i]), entry.name .. " " .. number(entry.amount)) end
+        local entries, boxes = Combat.statusView(target.actor), opened(target.index, 2 + intentRows)
+        for i, entry in ipairs(entries) do contains(copy(boxes[i + intentRows]), entry.name .. " " .. number(entry.amount)) end
 
         inspect(target.power)
         if not mobile then target.portrait.listeners.exit() end
@@ -141,12 +142,18 @@ for _, mobile in ipairs({false, true}) do
         target.actor.statuses.weak = nil
         ui:render()
         inspect(target.portrait)
-        assert(not detail.visible and not ground.visible, "a status-free actor displays nothing")
+        if target.index == 0 then
+            assert(not detail.visible and not ground.visible, "a traveler without status displays nothing")
+        else
+            contains(copy(opened(target.index, 1)[1]), "下一步行动")
+        end
         Combat.addStatus(target.actor, "strength", 2)
         ui:render()
-        if mobile then assert(not detail.visible, "an empty tap cannot pin the next status")
+        if mobile then
+            if target.index == 0 then assert(not detail.visible, "an empty traveler tap cannot pin the next status")
+            else opened(target.index, 2) end
         else
-            opened(target.index, 1)
+            opened(target.index, 1 + intentRows)
             target.portrait.listeners.exit()
             tap(target.portrait, 7)
             assert(not detail.visible and not ground.visible, "PC clicks never pin status tips")
@@ -164,7 +171,7 @@ for _, mobile in ipairs({false, true}) do
     end
     inspect(targets[2].portrait)
     if not mobile then targets[1].portrait.listeners.exit() end
-    opened(1, 1)
+    opened(1, 2)
     if mobile then ground.listeners.click({touchId = 7})
     else targets[2].portrait.listeners.exit() end
     assert(not detail.visible and not ground.visible)
@@ -172,8 +179,10 @@ for _, mobile in ipairs({false, true}) do
     local intent = monster:GetChild("intentHit")
     if mobile then tap(intent, 8)
     else intent.listeners.enter(); ui:update(L.statusInfo.delay) end
-    assert(detail.visible and ui.info.kind == "intent" and #visibleTips(panel) == 0)
-    contains(detail:GetChild("tag").text, "下一步行动")
+    local intentTips = opened(1, 2)
+    contains(copy(intentTips[1]), "下一步行动")
+    contains(copy(intentTips[2]), "力量 2")
+    assert(ui.info.kind == nil and ui.info.powerTips and not detail:GetChild("plate").visible)
     assert(battle.energy == before.energy and battle.turn == before.turn and #battle.hand == #before.hand
         and #battle.events == #before.events and battle.seed == before.seed)
 end
@@ -185,8 +194,8 @@ do
     local portrait = hero:GetChild("hit")
     local power = hero:GetChild("statusRow"):GetChild("hit1")
     local fresh, foreign = {touchId = 65}, {touchId = 66}
-    local monster = enemyControl(panel, "enemy1"):GetChild("hit")
-    for _, hit in ipairs({portrait, power, monster}) do
+    local monster = enemyControl(panel, "enemy1")
+    for _, hit in ipairs({portrait, power, monster:GetChild("hit"), monster:GetChild("intentHit"), monster:GetChild("hpHit")}) do
         local input = hit.listeners
         input.down(fresh)
         input.down(foreign)
@@ -234,6 +243,10 @@ do
     event("potion1", "drag", 19, 150, 100)
     assert(ui.potionAim and ui.potionAim.moving)
     tap(portrait, 9)
+    for _, name in ipairs({"intentHit", "hpHit"}) do
+        tap(monster:GetChild(name), 9)
+        tap(monster:GetChild(name), 19)
+    end
     assert(not detail.visible and ui.potionAim.moving and host.run.potions[1] == "fire_potion")
     event("dragLayer", "up", 19, -590, -310)
     assert(not ui.potionAim and host.run.potions[1] == "fire_potion")
@@ -301,7 +314,7 @@ for _, mobile in ipairs({false, true}) do
         inspect(hit)
         local entries = Combat.statusView(actor)
         boxes = visibleTips(panel)
-        assert(ui.info.actor == actor and #boxes == #entries, "the live actor owns all its visible tips")
+        assert(ui.info.actor == actor and #boxes == #entries + 1, "the live actor owns its visible intent and all status tips")
         assert(boxes[#boxes].x < boxes[1].x, "enemy overflow columns grow inward")
         for _, box in ipairs(boxes) do checkBounds(box) end
         if Theme.presentationProfile == "official-assets-first" then

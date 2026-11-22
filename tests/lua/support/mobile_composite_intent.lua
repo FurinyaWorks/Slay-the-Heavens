@@ -84,7 +84,7 @@ for index,gremlin in ipairs(pack.enemies)do
   assert(damage.x-damage.sizeDeltaX/2>=icon.x+icon.sizeDeltaX/2+F.Theme.space.xs-.001)
   if weakGremlins==1 then
    assert(control:GetChild('intentHit').click(),'intent remains inspectable')
-   assert(packHost.battleUI.info.kind=='intent' and packHost.battleUI.info.index==index)
+   assert(packHost.battleUI.info.powerTips and not packHost.battleUI.info.kind and packHost.battleUI.info.index==index)
   end
   local rows=V.intentView(pack,index).rows
   assert(rows[1].name=='攻击 4' and rows[2].name=='虚弱 1')

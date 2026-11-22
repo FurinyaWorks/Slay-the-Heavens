@@ -69,7 +69,8 @@ function unit(name, position, portrait, player = false) {
     { ...picture('impact', 0, 0, portrait, portrait, im.diamond, c.geo), visible: false },
     { ...picture('shield', 0, 0, portrait, portrait, theme.icon.block, c.block), visible: false },
     { ...text('floating', 0, portrait / 2, bw + s.xxl, l.nativeText.lineHeight * 2, '', f.number, c.goldBright), visible: false },
-    ...(!player ? [picture('intentIcon', -s.xl, l.intent.offsetY, l.intent.size, l.intent.size, theme.icon.intent.unknown, c.textDim),
+    ...(!player ? [{ ...hit(bw, bh), name: 'hpHit', visible: false },
+      picture('intentIcon', -s.xl, l.intent.offsetY, l.intent.size, l.intent.size, theme.icon.intent.unknown, c.textDim),
       // Keep the existing secondary path, with full-sized horizontal peers.
       { ...picture('intentBadge', 0, l.intent.offsetY, l.intent.size, l.intent.size, theme.icon.intent.debuff, c.debuff), visible: false },
       { ...picture('intentExtra', 0, l.intent.offsetY, l.intent.size, l.intent.size, theme.icon.intent.buff, c.buff), visible: false },
@@ -84,6 +85,7 @@ function unit(name, position, portrait, player = false) {
 
 export function enemyUnitTemplate(name = 'AbyssMonsterActor') {
   const actor = unit(name, [0, 0], l.enemyRow.crowdPortrait);
+  actor.blockCursor = true;
   // Original intent effects draw behind the icon, then above it but below damage text.
   for (const [name, before] of [['intentVfxBehind', 'intentIcon'], ['intentVfxAfter', 'intent']]) {
     actor.children.splice(actor.children.findIndex(child => child.name === before), 0,

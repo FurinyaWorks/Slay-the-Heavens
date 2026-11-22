@@ -16,6 +16,20 @@ local function same(a,b,except)
     for key,value in pairs(b)do if key~=except and a[key]~=value then return false end end
     return true
 end
+local function acceptPaintedIntent(ticket, intent, roomPainted)
+    local before=ticket.intent
+    if same(before,intent) then return true end
+    if not roomPainted or not ticket.fast or before.page~='nodePanel'
+        or before.nodeType~='event' or not before.event then return false end
+    local painted={}
+    for key,value in pairs(before)do painted[key]=value end
+    -- Event rendering may select or clamp its picker while drawing the new
+    -- stage. Every field that identifies the owner and stage must still match.
+    painted.nodeMode,painted.picker,painted.pickPage=intent.nodeMode,intent.picker,intent.pickPage
+    if not same(painted,intent) then return false end
+    ticket.changed=true
+    return true
+end
 local function reject(gate,message)
     if gate.error~=message then print('ABYSS_PAGE_REVEAL failed page='..tostring(gate.intent.page)..' epoch='..gate.epoch..' reason='..message)end
     if gate.entry then gate.entry.narration=nil end
@@ -376,7 +390,7 @@ function M.new(cover,ready,onIntent,frames,motion)
             if not same(intent,self.intent) then self:request(intent) end
             return false
         end
-        if not same(ticket.intent,intent)then self:request(intent);return false end
+        if not acceptPaintedIntent(ticket,intent,roomPainted) then self:request(intent);return false end
         if not ticket.fast or not ticket.changed then self.painting=nil;return false end
         return finishLocalPage(self,intent,ticket)
     end

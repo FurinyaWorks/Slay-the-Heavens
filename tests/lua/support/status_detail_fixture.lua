@@ -1,9 +1,16 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 -- Inspect the actual generated detail card, not cached notice or projected model text.
 local Theme = require("abyss_theme")
 return function(ui, panel)
     local info, text = panel:GetChild("statusInfo"), {}
     local opened = ui.info
     assert(info.visible and opened, "ordinary unit inspection must use the detail card")
+    if opened.powerTips then
+        local copy = readPowers(panel)
+        panel:GetChild('statusDismiss').click()
+        assert(not info.visible and not ui.info, "blank space closes the compact reader")
+        return copy
+    end
     local pages = opened.pages
     assert(type(pages) == "number" and pages >= 1 and pages % 1 == 0, "detail page count must be valid")
     for page = 1, pages do
