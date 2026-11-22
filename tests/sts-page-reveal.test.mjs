@@ -332,3 +332,18 @@ for (const officialAssets of [false, true]) {
     assert.match(result.stdout, /FORETHOUGHT_SELECTION_HOST_PASS/);
   });
 }
+
+test('Forethought authenticates its complete Lua and layout owners',async()=>{
+ const {beforeDevelopBackflow,authenticateDevelopBackflow}=await import('./helpers/develop-release-backflow-source.mjs');
+ const lua='src/lua/abyss_deck_ui.lua',layout='scripts/deck-ui-layout.mjs';
+ const read=path=>readFileSync(path,'utf8');
+ const crlf=source=>source.replaceAll('\n','\r\n');
+ const priorLua=beforeDevelopBackflow(lua,read(lua));
+ const priorLayout=beforeDevelopBackflow(layout,read(layout));
+ assert.notEqual(priorLua,read(lua));
+ assert.notEqual(priorLayout,read(layout));
+ assert.equal(authenticateDevelopBackflow(lua,crlf(read(lua)),path=>crlf(read(path))),crlf(priorLua));
+ assert.throws(()=>authenticateDevelopBackflow(lua,read(lua),path=>path===layout?priorLayout:read(path)),/linked owner identity/);
+ const foreign=read(lua)+'\n';
+ assert.equal(authenticateDevelopBackflow(lua,foreign,()=>assert.fail('foreign source read')),foreign);
+});

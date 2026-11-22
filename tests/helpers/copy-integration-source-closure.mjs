@@ -183,8 +183,9 @@ const stsCloseoutFiles=Object.freeze({
 });
 const developBackflowFiles=Object.freeze({
  ...stsCloseoutFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'3e5dc9428ccd21185344d0f4a4e4daed19e9f029fe45100bb4cfa86c72c28909',
- 'tests/fixtures/develop-release-backflow-source.json.gz':'c92d7559ea1ba351da90cee3296a9f05ab1eb55b0aa18b76ffbfd885f73a62dd',
+ 'tests/helpers/release-map-deck-source.mjs':'87a1f219bfca2f4ae049896248efd8217c76e90010aee0a1567e51b0e6fc0aa1',
+ 'tests/helpers/develop-release-backflow-source.mjs':'746506919ebea92ffc0aa98ee7611a597988ce6356570cc0cc001fdf0e4c3927',
+ 'tests/fixtures/develop-release-backflow-source.json.gz':'7d5c23a2892ec034dc1fb183bca19d8c074f834dc03ff037ee93a17a3da99943',
  'tests/helpers/character-preparation-source.mjs':'1adaca46c085f2daaf7450e8421ec4f38bb6b0e30e726f92cc716abef0330fdb',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'4e615ebe00db432f4454613cebc88c3ade5ca1053e6a1bc7ac80fe3c067a5ee3',
  'tests/helpers/sts-selection-fade-source.mjs':'18fe99cc5af9f83d6efb565c63db404923f6efe690d9f47e9338b4bb85dad0ef',

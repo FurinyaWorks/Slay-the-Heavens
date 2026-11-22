@@ -1,3 +1,4 @@
+import {authenticateDevelopBackflow} from './develop-release-backflow-source.mjs';
 import {authorizeRebasedRelease,beforeRebasedRelease} from './rebased-release-source.mjs';
 import {beforeReconciledReleaseSource} from './release-integration-source.mjs';
 import assert from 'node:assert/strict';
@@ -27,6 +28,9 @@ function current(source,binding){
 }
 
 export function beforeMapDeckSource(path,source,read){
+  const readBackflow=read;
+  source=authenticateDevelopBackflow(path,source,owner=>readBackflow(owner,'utf8'));
+  read=(owner,encoding)=>authenticateDevelopBackflow(owner,readBackflow(owner,encoding),p=>readBackflow(p,'utf8'));
   const rebound=beforeRebasedRelease(path,source);
   if(rebound!==source)authorizeRebasedRelease([[path,source]],owner=>read(owner,'utf8'));
   source=beforeReconciledReleaseSource(path,rebound);

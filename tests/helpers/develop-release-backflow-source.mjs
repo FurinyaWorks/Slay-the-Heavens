@@ -7,7 +7,7 @@ import {gunzipSync} from 'node:zlib';
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const archive=readFileSync(new URL('../fixtures/develop-release-backflow-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'c92d7559ea1ba351da90cee3296a9f05ab1eb55b0aa18b76ffbfd885f73a62dd','exact Develop Release-backflow source archive');
+assert.equal(hash(archive),'7d5c23a2892ec034dc1fb183bca19d8c074f834dc03ff037ee93a17a3da99943','exact Develop Release-backflow source archive');
 const {base,files,shopBase,shop}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'742a540ffc999e91acdface3d8fc7f753731f0a8');
 assert.equal(shopBase,'82ba375397ffd7f8f8175a7a1fd18a973450ecc6');
@@ -35,12 +35,17 @@ function predecessor(layer,path,source){
 export function beforeDevelopBackflow(path,source){
  return predecessor(shop,path,predecessor(files,path,source));
 }
+const forethoughtOwners=['src/lua/abyss_deck_ui.lua','scripts/deck-ui-layout.mjs'];
 export function authenticateDevelopBackflow(path,source,read){
  const prior=beforeDevelopBackflow(path,source);
  if(prior===source)return source;
- let live;
- try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
  const row=matches(source,current(path).after)?current(path):shop[path];
- assert(matches(live,row.after),'combined linked owner identity: '+path+' changed during Develop backflow validation');
+ const owners=forethoughtOwners.includes(path)?forethoughtOwners:[path];
+ for(const owner of owners){
+  let live;
+  try{live=read(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+  const expected=owner===path?row:current(owner);
+  assert(matches(live,expected.after),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
+ }
  return prior;
 }
