@@ -89,18 +89,40 @@ assert(matches(stasis.files[warriorStatusPath].before.source,displayLeaf.files[w
 export const stasisUpgradeAddedPaths=Object.freeze(['src/lua/abyss_blood_for_blood_cost.lua','src/lua/abyss_card_upgrade.lua']);
 assert.deepEqual(Object.keys(stasis.added),stasisUpgradeAddedPaths);
 const stasisCurrent={...Object.fromEntries(Object.entries(stasis.files).map(([path,row])=>[path,row.after])),...stasis.added};
-const layers=[stasis.files,battleFeedback.files,rewardUi.files,portraitLifecycle.files,displayLeaf.files,cardDisplay.files,mapRender.files,files,shop];
+const actorFocusArchive=readFileSync(new URL('../fixtures/develop-actor-focus-source.json.gz',import.meta.url));
+assert.equal(hash(actorFocusArchive),'2dd9f47a776d59d6cfc4ce544f8e0783f133cfda4f78f489b25b983b53315688','exact Develop Actor/Focus source archive');
+const actorFocus=JSON.parse(gunzipSync(actorFocusArchive));
+assert.equal(actorFocus.base,'62943964d4ff1cd152bd28c0fbc8df98df9d054d');
+assert.equal(actorFocus.source,'926f29bf29db13580b470b64a571db87eced50ad');
+const architecturePath='config/architecture.json';
+assert.deepEqual(Object.keys(actorFocus.files),[
+ architecturePath,'src/lua/abyss_actor.lua','src/lua/abyss_focus.lua','src/lua/abyss_stances.lua',
+]);
+export const actorFocusAdded=Object.freeze(Object.keys(actorFocus.added));
+assert.deepEqual(actorFocusAdded,['src/lua/abyss_actor_artifact.lua','src/lua/abyss_stance_damage.lua']);
+assert.equal(actorFocus.luaBefore.length,354);
+assert.equal(new Set(actorFocus.luaBefore).size,actorFocus.luaBefore.length);
+assert(actorFocusAdded.every(path=>!actorFocus.luaBefore.includes(path)),'no invented Actor/Focus predecessor');
+const actorFocusOwners=[...Object.keys(actorFocus.files),...actorFocusAdded];
+const priorLayers=[stasis.files,battleFeedback.files,rewardUi.files,portraitLifecycle.files,displayLeaf.files,cardDisplay.files,mapRender.files,files,shop];
+assert(matches(actorFocus.files[architecturePath].before.source,stasis.files[architecturePath].after),'Actor policy follows the exact Stasis predecessor');
+assert(stasisUpgradeAddedPaths.every(path=>actorFocus.luaBefore.includes(path)),'Actor preserves the admitted Stasis modules');
+for(const path of actorFocusOwners.filter(path=>path!==architecturePath)){
+ assert(!priorLayers.some(layer=>Object.hasOwn(layer,path))&&!Object.hasOwn(stasis.added,path),'distinct Develop Actor/Focus source owner: '+path);
+}
+const layers=[actorFocus.files,...priorLayers];
 for(const {before,after} of layers.flatMap(layer=>Object.values(layer))){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
-for(const after of Object.values(stasis.added)){
+for(const after of [...Object.values(stasis.added),...Object.values(actorFocus.added).map(row=>row.after)]){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
-const current=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path];
+const current=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
+ (Object.hasOwn(actorFocus.added,path)?actorFocus.added[path]:undefined);
 export const developBackflowOwns=path=>current(path)!==undefined;
 function matches(source,expected){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -112,6 +134,11 @@ export function assertDevelopBackflowCurrent(path,source){
 }
 export function assertStasisUpgradeAdded(path,source){
  assert(Object.hasOwn(stasis.added,path)&&matches(source,stasis.added[path]),'fresh Stasis upgrade module: '+path);
+}
+export function assertActorFocusInventory(paths,read=path=>readFileSync(path,'utf8')){
+ assert.deepEqual([...paths].sort(),[...actorFocus.luaBefore,...actorFocusAdded].sort(),'complete current Actor/Focus Lua module inventory');
+ for(const path of actorFocusOwners)assertDevelopBackflowCurrent(path,read(path));
+ for(const path of stasisUpgradeAddedPaths)assertStasisUpgradeAdded(path,read(path));
 }
 function predecessor(layer,path,source){
  if(!Object.hasOwn(layer,path)||!matches(source,layer[path].after))return source;
@@ -126,12 +153,14 @@ export function authenticateDevelopBackflow(path,source,read){
  const prior=beforeDevelopBackflow(path,source);
  if(prior===source)return source;
  const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
- const stasisOwner=Object.hasOwn(stasis.files,path)&&row===stasis.files[path];
- const owners=stasisOwner?Object.keys(stasisCurrent):forethoughtOwners.includes(path)?forethoughtOwners:[path];
- for(const owner of owners){
+ const actorOwner=Object.hasOwn(actorFocus.files,path)&&row===actorFocus.files[path];
+ const stasisOwner=Object.hasOwn(stasis.files,path)&&(row===stasis.files[path]||(actorOwner&&path===architecturePath));
+ const owners=actorOwner?actorFocusOwners:forethoughtOwners.includes(path)?forethoughtOwners:[path];
+ const linkedOwners=stasisOwner?new Set([...owners,...Object.keys(stasisCurrent)]):owners;
+ for(const owner of linkedOwners){
   let live;
   try{live=read(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-  const expected=stasisOwner?stasisCurrent[owner]:(owner===path?row:current(owner)).after;
+  const expected=stasisOwner?(current(owner)?.after??stasisCurrent[owner]):(owner===path?row:current(owner)).after;
   assert(matches(live,expected),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
  }
  return prior;

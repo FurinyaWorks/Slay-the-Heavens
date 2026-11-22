@@ -228,11 +228,16 @@ const developStasisUpgradeFiles=Object.freeze({
  'tests/fixtures/develop-stasis-upgrade-boundary-source.json.gz':'04dd257d8cdd059a629082e1e3cf39c89f636dc8b2376c3c30286baae23065de',
  'tests/fixtures/develop-card-display-leaf-source.json.gz':'424ee22e001dbcc5bf1256622b0dd527da3b1ca428330fbf7ce98c7fa21c943d',
 });
+const developActorFocusFiles=Object.freeze({
+ ...developStasisUpgradeFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'d1f518b6106d5ce5ffae5cf363e0cf04e96f52b61aeb08cc7eed96317dd0c5ac',
+ 'tests/fixtures/develop-actor-focus-source.json.gz':'2dd9f47a776d59d6cfc4ce544f8e0783f133cfda4f78f489b25b983b53315688',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developStasisUpgradeFiles)){
+ for(const [path,sha]of Object.entries(developActorFocusFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

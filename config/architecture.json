@@ -151,6 +151,7 @@
     "abyss_silent_discard_cards": "core",
     "abyss_silent_tactics_cards": "core",
     "abyss_snapshot": "core",
+    "abyss_stance_damage": "core",
     "abyss_stances": "core",
     "abyss_turn_powers": "core",
     "abyss_end_turn_powers": "core",
@@ -168,6 +169,7 @@
     "abyss_act1_events": "core",
     "abyss_golden_idol_event": "core",
     "abyss_wheel_event": "core",
+    "abyss_actor_artifact": "core",
     "abyss_actor": "core",
     "abyss_battle_ui": "ui",
     "abyss_battle_card_view": "ui",
@@ -596,11 +598,6 @@
       "reason": "Envenom reaction resolver runs after the combat engine initializes."
     },
     {
-      "from": "abyss_actor",
-      "to": "abyss_stances",
-      "reason": "Damage arithmetic calls the stance modifier only at runtime."
-    },
-    {
       "from": "abyss_silent",
       "to": "abyss_combat",
       "reason": "Foundation builders and generation validation invoke Combat only after initialization."
@@ -797,6 +794,12 @@
     }
   ],
   "dependencyBoundaries": [
+    {
+      "id": "actor-stance-and-focus-leaves",
+      "from": ["abyss_focus", "abyss_actor_artifact", "abyss_stance_damage"],
+      "forbiddenTargets": ["abyss_actor", "abyss_combat", "abyss_stances"],
+      "reason": "Focus and Artifact operate on existing actor data. Stance arithmetic does not load its lifecycle coordinator."
+    },
     {
       "id": "stasis-card-upgrade",
       "from": ["abyss_act2_stasis", "abyss_card_upgrade", "abyss_blood_for_blood_cost"],

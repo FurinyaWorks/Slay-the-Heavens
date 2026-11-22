@@ -1,5 +1,7 @@
 -- Fixed 319009 Focus/Bias rules. Player statuses are the only numeric truth.
 local Events=require('abyss_events')
+local Presence=require('abyss_actor_presence')
+local Artifact=require('abyss_actor_artifact')
 local M={}
 local function integer(n) return type(n)=='number' and n==math.floor(n) and math.abs(n)<=2147483647 end
 local templates={
@@ -41,7 +43,7 @@ function M.sync(state)
 end
 function M.remove(state)
     local player=state.player
-    if not require('abyss_actor').isActive(player) then return false end
+    if not Presence.isActive(player) then return false end
     if player.statuses.focus==nil then M.sync(state);return false end
     local callbackBefore=#state.events
     local before=player.statuses.focus
@@ -52,13 +54,12 @@ function M.remove(state)
     return true
 end
 function M.apply(state,actor,amount,source)
-    local Actors=require('abyss_actor')
-    if not Actors.isActive(actor) then return false end
+    if not Presence.isActive(actor) then return false end
     assert(integer(amount),'invalid focus amount')
     M.ensureDefinitions(state)
     local before=actor.statuses.focus
     assert(before==nil or integer(before),'invalid focus')
-    if amount<=0 and Actors.tryBlockDebuff(state,actor,'focus') then return false end
+    if amount<=0 and Artifact.tryBlockDebuff(state,actor,'focus') then return false end
     local value=amount
     if before~=nil then
         -- Arithmetic is binary64 before source clamp, not Fengari signed32 wrap.
@@ -85,12 +86,11 @@ function M.apply(state,actor,amount,source)
     return true
 end
 function M.startTurn(state,_api)
-    local Actors=require('abyss_actor')
-    if not Actors.isActive(state.player) then return false end
+    if not Presence.isActive(state.player) then return false end
     local bias=state.player.statuses.bias or 0
     assert(integer(bias) and bias>=0,'invalid bias')
     if bias==0 then return false end
     -- One incoming negative Power per tick, even if Bias has multiple stacks.
-    return Actors.applyPower(state,state.player,'focus',-bias,state.player)
+    return M.apply(state,state.player,-bias,state.player)
 end
 return M
