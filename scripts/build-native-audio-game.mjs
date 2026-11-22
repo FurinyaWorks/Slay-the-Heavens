@@ -93,6 +93,7 @@ export async function buildNativeAudioGame({ baseMap, output, root = process.cwd
   if(refinedReleaseMonsterArtFromReceipt(audio)!==refinedReleaseMonsterArt
    ||refinedReleaseMonsterArt&&JSON.stringify(audio.nativeMonsterArt)!==JSON.stringify(full.nativeMonsterArt))throw Error('Audio refined monster artwork differs from full candidate');
   if(JSON.stringify(audio.artFeatures)!==JSON.stringify(full.artFeatures))throw Error('Audio art feature configuration differs from full candidate');
+  if(JSON.stringify(audio.nativeScriptStorage)!==JSON.stringify(full.nativeScriptStorage))throw Error('Audio native script storage differs from full candidate');
   Object.assign(audio, { artFeatures:full.artFeatures, sourceCommit: full.sourceCommit, sourceDirty: full.sourceDirty, payloadDigest: full.payloadDigest,
     startedAt: full.startedAt, productionManifest: full.productionManifest,
     monsterActors: full.monsterActors,

@@ -105,6 +105,7 @@ try {
   mapPath = finalMap;
   writeFileSync(join(workspace, 'candidate.json'), JSON.stringify({ mapPath, sha256: hash(mapPath),
     candidate: fileRecord(mapPath), ...(full ? { buildId: full.buildId, artFeatures:full.artFeatures, moduleDigests: full.moduleDigests,
+      ...(full.nativeScriptStorage ? {nativeScriptStorage:full.nativeScriptStorage} : {}),
       ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}),
       ...(full.refinedReleaseMonsterArt === true ? {refinedReleaseMonsterArt:true,nativeMonsterArt:full.nativeMonsterArt} : {}),
       ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
