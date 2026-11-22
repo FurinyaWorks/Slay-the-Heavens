@@ -3586,7 +3586,7 @@
       },
       "v25TurnNotice": { "position": [0, 43], "size": [1280, 100], "duration": 1.7, "enterEnd": 0.2, "exitStart": 0.65, "travel": 40, "titleSize": 37, "subtitleSize": 16, "titleInk": "#ECD193", "subtitleInk": "#C0B9A4", "shadeInk": "#03080CCD", "shadowInk": "#000000CC", "swordInk": { "edge": "#334947", "left": "#8DACA4", "right": "#AFC3B2", "guard": "#829A88", "handle": "#80958B" } },
       "player": { "position": [-324, -37], "portrait": 210 },
-      "enemyRow": { "floorY": 330, "nativeFloorY": 501, "nativeStatusColumns": 2 },
+      "enemyRow": { "floorY": 330, "nativeFloorY": 501, "nativePowerFloorY": -156.5, "nativeStatusColumns": 2 },
       "hpBar": { "size": [154, 11] },
       "battleUnit": { "heroFoot": 0, "heroNameGap": 0, "heroNameLine": 0, "heroHealthGap": 5, "heroHealthWidth": 154 },
       "energy": { "position": [-511, -233], "size": 86, "numberSize": 29, "rimColour": "#514247", "shellColour": "#24262A", "faceColour": "#FFE35DC0", "lightColour": "#FFF7A680", "elementColour": "#FFE35D30" },

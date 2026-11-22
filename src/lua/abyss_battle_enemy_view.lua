@@ -30,13 +30,23 @@ end
 -- The official native hand/status rectangles need a larger reserved lower lane
 -- than the original atlas sprites. The theme owns that presentation adaptation.
 M.floorY=Theme.presentationProfile=='official-assets-first' and L.enemyRow.nativeFloorY or L.enemyRow.floorY or 400
+local function powerSize(scale,mobile)
+ return 48*scale*(mobile and 1.17 or 1),-(mobile and 22 or 18)*scale
+end
+local function powerGap(healthHeight)
+ return math.max(healthHeight,Theme.font.small)/2+Theme.space.s
+end
+local function powerDepth(icon,countY)
+ local glyphDepth=Theme.font.small*1.2-L.nativeText.lineHeight/2-countY
+ return icon/2+math.max(icon/2,glyphDepth)
+end
 function M.powerLayout(g,mobile)
  local scale=g.sourceScale
- local icon=48*scale*(mobile and 1.17 or 1)
- local countY=-(mobile and 22 or 18)*scale
+ local icon,countY=powerSize(scale,mobile)
  local pitch=(mobile and 55 or 48)*scale
  local firstX=g.healthX-g.hitWidth/2+10*scale
  local columns,rowPitch=math.huge,0
+ local rows=L.statusIcon.rows
  if Theme.presentationProfile=='official-assets-first' then
   local left=math.max(icon/2,(g.statusCountWidth or L.nativeText.lineHeight)-22*scale)
   local right=math.max(icon/2,22*scale)
@@ -48,10 +58,13 @@ function M.powerLayout(g,mobile)
   -- The top-aligned 40px native box has transparent leading below the text.
   -- Its 1.2em line fits inside the icon after compact lower-right placement.
   rowPitch=icon+L.statusIcon.gap
+  local firstBottom=g.y+g.healthY-powerGap(g.healthHeight)-powerDepth(icon,countY)
+  local available=firstBottom-L.enemyRow.nativePowerFloorY
+  rows=math.max(1,math.min(rows,1+math.floor(available/rowPitch)))
  else countY=countY-L.nativeText.lineHeight/2 end
- return {icon=icon,countX=22*scale,countY=countY,pitch=pitch,columns=columns,
+ return {icon=icon,countX=22*scale,countY=countY,pitch=pitch,columns=columns,rows=rows,
   hitHeight=48*scale,firstX=firstX,rowPitch=rowPitch,
-  firstY=g.healthY-math.max(g.healthHeight,Theme.font.small)/2-Theme.space.s-icon/2}
+  firstY=g.healthY-powerGap(g.healthHeight)-icon/2}
 end
 local function statusCountWidth(actor)
  local width=L.nativeText.lineHeight
@@ -73,16 +86,26 @@ function M.geometry(actor)
  local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
  local x=(1440+source.x)*sx-Theme.canvas.base[1]/2
  local bottom=(M.floorY+source.y)*sy-Theme.canvas.base[2]/2
+ local healthOffset,healthHeight=18*sy,20*sy
+ local native=Theme.presentationProfile=='official-assets-first'
+ if native and source.hbY>0 then
+  -- Leave room for one complete power row above the hand on both input modes.
+  local icon,countY=powerSize(sy,true)
+  bottom=math.max(bottom,L.enemyRow.nativePowerFloorY+healthOffset+powerGap(healthHeight)+powerDepth(icon,countY))
+ end
  local bodyScale=presentationScale(source,bottom,sy)
  local portrait=math.max(source.width,source.height)*bodyScale
  local hitX,hitBottom=x+source.hbX*bodyScale,bottom+source.hbY*bodyScale
  local rootY=bottom+portrait/2
+ -- A raised source hitbox can cut through our portrait (e.g. the Guardian's legs).
+ -- Keep the lower annotations together beneath both the hitbox and the portrait.
+ local healthBase=math.min(hitBottom,bottom)-rootY
  return {x=x,y=rootY,portrait=portrait,
   hitX=hitX,hitY=hitBottom+source.height*bodyScale/2,hitWidth=source.width*bodyScale,hitHeight=source.height*bodyScale,
-  statusWidth=source.width*sx,statusCountWidth=Theme.presentationProfile=='official-assets-first' and statusCountWidth(actor)or L.nativeText.lineHeight,
-  nameX=hitX-x,nameY=hitBottom-36*sy-rootY,sourceScale=sy,
-  healthX=hitX-x,healthY=hitBottom-18*sy-rootY,healthTextY=hitBottom-17*sy-rootY,healthHeight=20*sy,
-  blockX=hitX-source.width*bodyScale/2-14*sx-x,blockY=hitBottom-14*sy-rootY,blockTextY=hitBottom-16*sy-rootY,
+  statusWidth=source.width*sx,statusCountWidth=native and statusCountWidth(actor)or L.nativeText.lineHeight,
+  nameX=hitX-x,nameY=healthBase-36*sy,sourceScale=sy,
+  healthX=hitX-x,healthY=healthBase-healthOffset,healthTextY=healthBase-17*sy,healthHeight=healthHeight,
+  blockX=hitX-source.width*bodyScale/2-14*sx-x,blockY=healthBase-14*sy,blockTextY=healthBase-16*sy,
   blockWidth=64*sx,blockHeight=64*sy,
   intentX=hitX-x+(actor.definitionId=='gremlin_nob' and -30*sx or 0),
   -- Full-bleed native glyphs and their 40px text line must clear both art and hitbox.

@@ -46,12 +46,21 @@ local powers={'strength','weak','vulnerable','artifact','metallicize','thorns','
 for _,part in ipairs(F.Templates.AbyssMonsterPower.children)do
  if part.name=='count'then assert(part.text.fontSize==Theme.font.small,'imported power font differs')end
 end
-local function check(state,twoRows)
+local function check(state,expectedRows)
  local manager=require('abyss_monster_surfaces').get(panel)
  local previous
  for index,actor in ipairs(state.enemies)do
   local box=assert(manager:find(actor.id));local g=E.geometry(actor)
   local hp=box:GetChild('hp');assert(box.y+hp.y-hp.sizeDeltaY/2>=maxRest+8,'HP text enters resting hand')
+  local portrait,hpBorder=box:GetChild('portrait'),box:GetChild('hpBorder')
+  local feet=portrait.y-portrait.sizeDeltaY/2
+  assert(hpBorder.y+hpBorder.sizeDeltaY/2<feet,'HP bar overlaps portrait: '..actor.definitionId)
+  assert(hp.y+Theme.font.small/2<feet,'HP digits overlap portrait: '..actor.definitionId)
+  if actor.block>0 then
+   local fill,block=box:GetChild('hpFill'),box:GetChild('blockIcon')
+   assert(block.visible and block.x<fill.x-fill.sizeDeltaX/2,'block must stay left of HP')
+   assert(math.abs(block.y-fill.y-4*g.sourceScale)<.00001,'block must move with HP')
+  end
   local intent=box:GetChild('intent')
   local hud=Theme.officialAssets.battleHud
   assert(box.y+intent.y+intent.sizeDeltaY/2<=hud.y-hud.height/2-Theme.space.s+.00001,'tall actor intent enters HUD')
@@ -77,7 +86,7 @@ local function check(state,twoRows)
    if entry.id=='strength' then hit.click();assert(host.battleUI.info and host.battleUI.info.statusId=='strength','power detail lost native identity');host.battleUI.info=nil end
    if entry.status.overflow then
     local entries=A.statusView(actor);local layout=E.powerLayout(g,touch)
-    assert(count.text=='+'..(#entries-layout.columns*Theme.layout.statusIcon.rows+1),'more count omitted a real status')
+    assert(count.text=='+'..(#entries-layout.columns*layout.rows+1),'more count omitted a real status')
     hit.click();assert(host.battleUI.info and not host.battleUI.info.statusId,'more must open the existing complete status view')
     local text={}
     local function collect(control)
@@ -93,7 +102,12 @@ local function check(state,twoRows)
    end
   end)
   local n=0;for _ in pairs(rows)do n=n+1 end
-  if twoRows then assert(n==2,'long power list must use two bounded rows')end
+  if expectedRows==2 then
+   assert(n==2,'long power list must use two bounded rows: '..actor.definitionId..' at '..(g.y+g.healthY))
+  end
+  if expectedRows==1 then
+   assert(n==1 and pool:find('@more').visible,'low enemy must keep its overflow above the hand')
+  end
   if previous and bounds then assert(bounds.left>previous.right,'adjacent actors power rows overlap')end
   previous=bounds
   px,py=640+g.hitX,360+g.hitY;host:update(.001)
@@ -103,15 +117,18 @@ local function check(state,twoRows)
 end
 for _,mobile in ipairs({false,true})do
  touch=mobile
- check(fresh({'acid_slime_s'},10,{'weak','vulnerable','poison'}),true)
- check(fresh({'acid_slime_s'},10,powers),true)
- check(fresh(nil,10,{'weak','vulnerable','poison','strength','artifact'},'Lots of Slimes'),true)
- check(fresh({'acid_slime_l'},10,powers),true)
- check(fresh({'spike_slime_l'},10,powers),true)
+ check(fresh({'acid_slime_s'},10,{'weak','vulnerable','poison'}),2)
+ check(fresh({'acid_slime_s'},10,powers),2)
+ check(fresh(nil,10,{'weak','vulnerable','poison','strength','artifact'},'Lots of Slimes'),2)
+ check(fresh({'acid_slime_l'},10,powers),2)
+ check(fresh({'spike_slime_l'},10,powers),2)
  for _,id in ipairs({'hexaghost','collector','guardian','champ'})do check(fresh({id},10))end
+ local guardian=fresh({'guardian'},10,powers)
+ guardian.enemies[1].aiPhase='defense';guardian.enemies[1].block=20
+ host:refresh();check(guardian,1)
  local multi=fresh({'sentry','sentry','sentry'},10,{'strength','weak','vulnerable','artifact'})
  for i,actor in ipairs(multi.enemies)do actor.sourcePosition={x=-330+(i-1)*225,y=25}end
- host:refresh();check(multi,true)
+ host:refresh();check(multi,2)
  -- Hover cards may rise over the lower lane, as in STS, but neither the actor
  -- nor status positions follow hover/target selection or change source actors.
  local actor=multi.enemies[1];local before=E.geometry(actor)

@@ -26,9 +26,7 @@ function M.new(platform,picture,tint,ink,onCreate,onRetire)
   valid();picture(icon,image or Theme.icon.intent.unknown);valid()
   tint(icon,{r=255,g=255,b=255,a=255});valid()
  end
- local function paint(box,entry,index,g,visible)
-  local mobile=platform.touchScreen and platform.touchScreen()
-  local layout=EnemyView.powerLayout(g,mobile)
+ local function paint(box,entry,index,layout,visible)
   local x=layout.firstX+(index-1)%layout.columns*layout.pitch
   local y=layout.firstY-math.floor((index-1)/layout.columns)*layout.rowPitch
   -- Native icons have no transparent atlas padding: keep their full rectangle below HP.
@@ -70,14 +68,14 @@ function M.new(platform,picture,tint,ink,onCreate,onRetire)
   local rows={}
   for _,entry in ipairs(Combat.statusView(actor))do rows[#rows+1]={id=entry.id,status=entry}end
   local layout=EnemyView.powerLayout(g,platform.touchScreen and platform.touchScreen())
-  local capacity=layout.columns*Theme.layout.statusIcon.rows
+  local capacity=layout.columns*layout.rows
   local overflow=#rows>capacity
   if overflow then rows[#rows+1]={id='@more',status={overflow=true,amount=#rows-capacity+1}}end
   pool:select(rows,actor.id)
   for index,row in ipairs(rows)do
    row.hidden=overflow and not row.status.overflow and index>=capacity
    local slot=row.status.overflow and capacity or index
-   paint(assert(pool:find(row.id)),row.status,slot,g,not row.hidden)
+   paint(assert(pool:find(row.id)),row.status,slot,layout,not row.hidden)
   end
  end
  return self
