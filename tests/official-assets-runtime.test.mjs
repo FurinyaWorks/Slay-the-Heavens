@@ -184,7 +184,7 @@ for _,name in ipairs({'reward','rewardItem1'})do
   assert(bag.visible==(kind=='gold'),name..'/'..kind)
   if kind=='gold' then assert(not icon.visible and not row:GetChild('iconArt').visible) end
   if kind=='relic' then assert(icon.imageId==relic.icon('burning_blood',true)) end
-  if kind=='sapphire' then assert(icon.visible and icon.imageId==theme.icon.node.treasure.id) end
+  if kind=='sapphire' then assert(icon.visible and icon.imageId==theme.icon.node.treasure) end
  end
 end
 `,'OFFICIAL_TREASURE_GOLD_BAG_PASS');
