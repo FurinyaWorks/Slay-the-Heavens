@@ -37,6 +37,20 @@ test('ordinary profiles and the exact native startup marker retain their origina
  assert.equal(packNativeScript('abyss_ui',source,nativeScriptStorageProfile),source);
  assert.throws(()=>packNativeScript('abyss_theme',source,'unknown'),/storage profile/);
 });
+test('official competition storage omits unpublished V4 data and legacy storage still serves it',t=>{
+ const name='abyss_original_v4_data';
+ const source='return {cards={{id="unpublished"}},rules={roles={}}}\n';
+ assert.equal(packNativeScript(name,source),source);
+ for(const profile of ['lossless-lua-v1','lossless-lua-v2']){
+  const packed=packNativeScript(name,source,profile);
+  assert.match(run(t,`local data=(function()${packed}end)();assert(data.cards[1].id=='unpublished');print('V4_DATA_PASS')`),/V4_DATA_PASS/);
+ }
+ const competition=packNativeScript(name,source,nativeScriptStorageProfile);
+ assert.doesNotMatch(competition,/unpublished|cards/);
+ assert.match(run(t,`package.preload.${name}=function()${competition}end
+ local ok,message=pcall(require,'${name}');assert(not ok and message:find('unavailable in the competition campaign',1,true))
+ print('V4_UNAVAILABLE_PASS')`),/V4_UNAVAILABLE_PASS/);
+});
 test('Lua token boundaries, byte patterns, comments and source line numbers survive compact code storage',t=>{
  const original=`-- a removed comment\nlocal x=1 -- another comment\nlocal pattern="[%z\\1-\\127\\194-\\244][\\128-\\191]*"\nlocal text=[=[中文[[原文]]]=]\nlocal y=x - -2\nreturn {a=1 .. "2",b=y,pattern=pattern,text=text,quote="\\092230\\0008", flag=false}\n`;
  const packed=packNativeScript('abyss_storage_example',original,nativeScriptStorageProfile);

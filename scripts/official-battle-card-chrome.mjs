@@ -23,7 +23,7 @@ function softOutline(name,blur,colour,opacity=1){
    {image:106057,imageType:'basic',opacity}))),
  ]};
 }
-export function officialBattleCardChrome(face,theme){
+export function officialBattleCardChrome(face,theme,playable){
  const art=theme.officialAssets,chrome=art.battleCardChrome;
  const material=art.battleCardBodyMaterials.red;
  const layerOpacity=art.battleCardBodyLayerOpacity;
@@ -55,9 +55,10 @@ export function officialBattleCardChrome(face,theme){
  ribbon.children.sort((a,b)=>ribbonOrder(a.name)-ribbonOrder(b.name));
  child(face,'nameBand').visible=false;child(face,'nativeBannerRight').visible=false;
  face.children.splice(face.children.indexOf(child(face,'name')),0,ribbon);
- const rim=child(face,'nativePlayableRim');
- rim.children=[softOutline('softEdge',2,chrome.ready,.25),
-  ...Array.from({length:4},(_,index)=>({...softOutline(index===0?'pulseEdge':'pulseEdge'+(index+1),3,chrome.ready),visible:false}))];
+ if(playable){
+  child(face,'nativePlayableRim').children=[softOutline('softEdge',2,chrome.ready,.25),
+   ...Array.from({length:4},(_,index)=>({...softOutline(index===0?'pulseEdge':'pulseEdge'+(index+1),3,chrome.ready),visible:false}))];
+ }
  const core=child(face,'costCore');core.visible=false;
  const lens=art.battleCostMaterial;
  const orb={name:'nativeCostOrb',kind:'container',position:[...core.position],size:[chrome.costSize,chrome.costSize],children:[

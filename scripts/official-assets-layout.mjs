@@ -93,7 +93,7 @@ export function officialAssetsTheme(source){
    Object.assign(theme.layout.nativeNode.picker,structuredClone(theme.officialAssets.pickerPage));
   return theme;
 }
-function cardFace(face,theme){
+function cardFace(face,theme,playable){
  const art=theme.officialAssets;
  // The bottom role medallion is decoration, not a card state. Retain handles
  // for shared runtime writers while removing it from every official card host.
@@ -102,10 +102,7 @@ function cardFace(face,theme){
   const image=required(required(face,name),'flat');
    setImage(image,theme.image.rect,name==='roundBody'?art.cardBodyTint:undefined);
  }
-  face.children.unshift({name:'nativePlayableRim',kind:'container',visible:false,size:[150,210],children:[
-   ...[-1,1].map(side=>({name:'side'+side,kind:'image',position:[side*75,0],size:[4,212],image:100001,colour:'#43C6BD',opacity:.55,feather:{pixels:[2,2]}})),
-   ...[-1,1].map(side=>({name:'edge'+side,kind:'image',position:[0,side*105],size:[154,4],image:100001,colour:'#43C6BD',opacity:.55,feather:{pixels:[2,2]}})),
-  ]});
+  face.children.unshift({name:'nativePlayableRim',kind:'container',visible:false,size:[150,210],children:[]});
   const body=required(face,'roundBody'),flat=required(body,'flat');flat.colour=art.battleCardBodyTint;
   body.children.unshift({name:'nativePaperTrim',kind:'image',position:[...flat.position],size:[...flat.size],image:art.images.cardPanel,imageType:'basic',colour:art.battleCardTrim});
   flat.size=flat.size.map(value=>value-art.battleCardInset);
@@ -142,7 +139,7 @@ function cardFace(face,theme){
  const disc=required(face,'costCore');disc.size=[Math.min(...disc.size),Math.min(...disc.size)];
   disc.size=[34,34];disc.imageType='basic';
   const cost=required(face,'cost');cost.text.outline=true;cost.text.outlineColour='#4A2B27';cost.text.outlineOpacity=1;
-  officialBattleCardChrome(face,theme);
+  officialBattleCardChrome(face,theme,playable);
   installStsReferenceCardChrome(face,theme);
 }
 function battleSurfaces(root,theme){
@@ -267,23 +264,26 @@ export function applyOfficialAssets(trees,theme){
    const relicHosts=relicSurfaces(stage,theme);
    const rooms=child(stage,'nodePanel'),treasure=child(rooms,'treasureView');
    if(treasure)relicHosts.add(required(treasure,'details'));
-   if(child(stage,'battlePanel')||child(stage,'endTurn')){
+   const battle=child(stage,'battlePanel')??(child(stage,'endTurn')?stage:null);
+   if(battle){
     applyV25BattleLayout(tree,theme);
     applyV25BattleChrome(tree,theme);
     applyV25TurnNoticeLayout(tree,theme);
     applyV25BattleScene(tree,theme);
-    const battle=child(stage,'battlePanel')??stage;
     battleSurfaces(battle,theme);
     officialBattleHud(battle,theme);officialBattleUtilityFaces(stage,theme);
    }
    rebuildV25CardFaces(tree,theme);
    const result=compactBoundedCardFaces(tree,[],{preserveWindows:true});removedControls+=result.removedControls;
+   // Battle hand slots own the only active rim renderer. Other card views
+   // retain the same hidden rim handle for shared card reset paths.
+   const handSlots=new Set(children(battle).filter(node=>/^card\d+$/.test(node.name)));
    walk(tree,node=>{
     // Several native 28px labels are only 44px high. Their formerly identical
     // preferred/minimum sizes leave no whole line in the real renderer. Keep
     // geometry and preferred sizes, and let the existing autosizer fit the text.
     if(node.kind==='text'&&node.text?.autoSize&&node.text.minFontSize*1.45+4>node.size?.[1])node.text.minFontSize=theme.font.minimum;
-   if(child(node,'roundFrame')&&child(node,'skin')&&child(node,'costDisc')){cardFace(node,theme);cardHosts++;}
+   if(child(node,'roundFrame')&&child(node,'skin')&&child(node,'costDisc')){cardFace(node,theme,handSlots.has(node));cardHosts++;}
    else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
   const deckPanel=child(child(tree,'stage')??tree,'deckPanel');

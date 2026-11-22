@@ -42,6 +42,8 @@ export function battlePileCardTemplate(layout, template) {
     const control = face.children.find(child => child.name === name);
     if (control) control.visible = false;
   }
+  const rim = face.children.find(child => child.name === 'nativePlayableRim');
+  if (rim) rim.children = [];
   const ordinary=structuredClone(face),old=template.children.find(child=>child.name==='face');
   ordinary.position=[...old.position];
   template.children[template.children.indexOf(old)]=ordinary;

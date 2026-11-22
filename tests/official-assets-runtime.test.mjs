@@ -56,11 +56,19 @@ function runOfficial(t,body,marker,overrides={},official=true,refinedReleaseMons
  const templates=JSON.parse(readFileSync(join(directory,'game-ui-templates.json'),'utf8'));
  const pile=templates.find(c=>c.name===pileGrid.itemTemplate);
  assert.equal(pile.name,'AbyssBattlePileCard');
+ const handRims=battle.children.filter(c=>/^card\d+$/.test(c.name)).map(card=>card.children.find(c=>c.name==='nativePlayableRim'));
+ assert.equal(handRims.length,10);
+ for(const rim of handRims)assert.deepEqual(rim.children.map(c=>c.name),['softEdge','pulseEdge','pulseEdge2','pulseEdge3','pulseEdge4']);
+ const rims=node=>node.name==='nativePlayableRim'?[node]:(node.children??node.controls??[]).flatMap(rims);
+ const quietRims=[...rims(stage),...templates.flatMap(rims)].filter(rim=>!handRims.includes(rim));
+ assert.equal(quietRims.length,29);
+ for(const rim of quietRims){assert.equal(rim.visible,false);assert.deepEqual(rim.children,[]);}
  const expected=structuredClone(face);
  Object.assign(expected,{name:'face',position:[0,0],scale:[1,1],rotation:0,visible:true});
  expected.children=expected.children.filter(c=>c.name!=='hit');
  for(const name of ['glow','nativePlayableRim','costHalo'])expected.children.find(c=>c.name===name).visible=false;
- assert.deepEqual(pile.children.find(c=>c.name==='face'),expected,'pile must reuse the final official hand face exactly');
+ expected.children.find(c=>c.name==='nativePlayableRim').children=[];
+ assert.deepEqual(pile.children.find(c=>c.name==='face'),expected,'pile keeps the final official face and omits its inactive playable rim layers');
  assert.deepEqual(pile.children.find(c=>c.name==='hit').size,[150,210]);
  const ordinary=structuredClone(templates.find(c=>c.name==='AbyssDeckCard').children.find(c=>c.name==='face'));
  ordinary.position=[0,0];
