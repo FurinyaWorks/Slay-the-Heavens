@@ -97,6 +97,7 @@ local function opening(host,root,bossCount)
     assert(event.stage=='neow_result')
     if rewardType=='TEN_PERCENT_HP_BONUS'then assert(run.maxHp==baseMaxHp+hpBonus)end
     assert(F.click(root,'nodePanel','eventView/option1'))
+    awaitNativePage(host)
     assert(host.run==run and host.mode=='map' and host.map.floor==0 and run.neowStatus=='complete')
     assert(host.mapUI.navigationEnabled and host.historyCalls()==0)
     return baseMaxHp
@@ -138,14 +139,18 @@ local function start(host,root,button,element)
     return baseMaxHp
 end
 local function fight(host,root,floor)
+    awaitNativePage(host)
     local nextNode=Map.available(host.map)[1]
     assert(nextNode.floor==floor and host.mapUI:choose(nextNode.id))
+    awaitNativePage(host)
     assert(host.mode=='battle' and host.run.phase=='combat')
     -- Controlled final-damage boundary; encounter construction and rewards stay real.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
     assert(Run.finishCombat(host.run));host:refresh()
+    awaitNativePage(host)
     assert(host.run.phase=='reward' and host.run.rewards.cards)
     F.click(root,'battlePanel','continue')
+    awaitNativePage(host)
     assert(host.mode=='map' and host.run.nodeFlow.complete)
 end
 local function bossComplete(host,bossFloor)
@@ -164,6 +169,7 @@ end
 local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
     bossComplete(host,bossFloor)
+    awaitNativePage(host)
     assert(host.mapUI:choose(Map.available(map)[1].id))
     awaitNativePage(host)
     assert(host.nodeUI:press('treasureView/chest'))
@@ -176,6 +182,7 @@ local function chest(host,bossFloor,nextAct)
     local uid,gold=run.deck[1].uid,run.gold
     awaitNativePage(host)
     assert(host.nodeUI:press('confirm'))
+    awaitNativePage(host)
     assert(host.run==run and host.map==map and run.act==nextAct and host.mode=='map')
     assert(run.deck[1].uid==uid and run.gold==gold)
 end
@@ -191,7 +198,8 @@ while Map.available(host.map)[1].floor<9 do assert(Map.choose(host.map,Map.avail
 host.run.floor,host.run.phase=host.map.floor,'map'
 host.run.nodeFlow={id=host.map.currentNodeId,floor=host.map.floor,type='combat',complete=true,result='victory',
     mapSeed=host.map.seed,mapSignature=host.map.sourceSignature}
-host:refresh();assert(host.mapUI:choose(Map.available(host.map)[1].id))
+host:refresh();awaitNativePage(host)
+assert(host.mapUI:choose(Map.available(host.map)[1].id))
 assert(host.pageReveal:covered(), 'treasure entry must retain its normal preparation gate')
 local early,reason=host.nodeUI:press('treasureView/chest')
 assert(not early and reason=='panel_hidden' and not host.run.nodeFlow.chest.opened,
@@ -223,6 +231,7 @@ assert(rewardKey,'seed must offer an implemented boss relic')
 awaitNativePage(host)
 local stale=host.nodeUI.actions[rewardKey].handler
 assert(host.nodeUI:press(rewardKey))
+awaitNativePage(host)
 assert(host.run.floor==34 and host.map.floor==34 and host.run.phase=='victory' and host.mode=='victory')
 assert(host.run.nodeFlow.result=='boss_treasure_complete' and host.run.ending=='two_act_complete')
 assert(host.run.act==2 and host.map.act==2 and not host.run.pendingAct and not host.run.endingHistoryResult)
@@ -246,6 +255,7 @@ assert(host.run.endingHistory.persistence=='disabled' and not host.run.endingHis
 assert(host.mapUI:choose(Map.available(host.map)[1].id))
 host.run.combat.player.hp=0
 assert(Run.finishCombat(host.run));host:refresh()
+awaitNativePage(host)
 assert(host.mode=='defeat' and F.statValue(root,'floor')=='1 / 34')
 assert(host:settle())
 assert(signals[#signals-1]=='ABYSS_LOSE' and signals[#signals]=='ABYSS_BGM_STOP')
@@ -259,6 +269,7 @@ start(skipped,skipRoot,'traveler');chest(skipped,16,2);bossComplete(skipped,33)
 assert(skipped.mapUI:choose(Map.available(skipped.map)[1].id))
 awaitNativePage(skipped)
 assert(skipped.nodeUI:press('back'))
+awaitNativePage(skipped)
 assert(skipped.run.phase=='victory' and skipped.run.ending=='two_act_complete' and skipped.run.floor==34)
 assert(F.statValue(skipRoot,'floor')=='34 / 34' and not skipped.run.pendingAct)
 assert(skipped:settle() and skipSignals[#skipSignals]=='ABYSS_WIN')

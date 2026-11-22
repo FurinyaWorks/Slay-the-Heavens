@@ -70,10 +70,10 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(hash(lf)==='dc459357af6ead00e0a54ce63f84fed8b01e7cd542c6377560b03165c1131439'){
+ if(hash(lf)==='f5127e418dccd48be7eaec793f0911c4804a8904c0076c447cf269b7a6f51919'){
   lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'b122161ed4df0178b87aac9ba253e8fbe2e3827492da521884d94c823721c777',\n"," 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',\n")
-     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'93f250df0201809ac8718a8d83d25bd77247075a89e6e25def6484029369497f',\n","")
-     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'b275402f5f60c8a96989d3328dca7779afc9e9d8b1f51f7865a11b69da9e8021',\n","");
+     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'b2b4e596ae8c3274808cb3e4bd2af4ae512dedef06fe10871e87ad944a5759b0',\n","")
+     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'00bce29ddfc3c02eeabc4c93a452f68243bb3ba04bad9d558410f32cadeff87e',\n","");
   assert.equal(hash(lf),'eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac','exact Release UI closeout helper copy predecessor');
  }
  if(hash(lf)==='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac'){
