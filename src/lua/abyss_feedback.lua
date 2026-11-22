@@ -496,6 +496,10 @@ function M.new(stage, platform, present, complete)
         end
         return started
     end
+    local function shouldPresentCombatFrame(entry)
+        -- Completion paints the final reward frame.
+        return not self.rewardTransition or entry.kind ~= "victory"
+    end
     local function enterFrame(entry, style)
         local old = self.shadow
         local nextView = {catalog = old.catalog, rules = old.rules}
@@ -517,8 +521,7 @@ function M.new(stage, platform, present, complete)
         self.acting = entry.kind == "intent" and entry.detail.enemy or self.acting
         if entry.kind == "player_turn" then self.acting = nil end
         self.enemyRows=EnemyView.slots(self.shadow,self)
-        -- The final reward frame is painted by completion. Skip the obsolete combat redraw.
-        if not self.rewardTransition or entry.kind ~= "victory" then
+        if shouldPresentCombatFrame(entry) then
             present(self.shadow, self.acting, self.deaths)
         end
         return old,contactDeaths

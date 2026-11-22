@@ -11,7 +11,7 @@ function fixture(t,templateIndex=1470123456,templateOverrides={}){
  t.after(()=>rmSync(directory,{recursive:true,force:true}));
  const baseMap=join(directory,'base.gil');writeFileSync(baseMap,'offline test boundary, not a native GIL');
  const sources=new Map(),calls=[];
- const templateOffsets={AbyssOfficialBackgroundImage:0,AbyssReadyCardImage:1,AbyssReadyCardGroup:2,AbyssMonsterActor:3,AbyssMonsterPower:4,AbyssDeckCard:5};
+ const templateOffsets={AbyssOfficialBackgroundImage:0,AbyssReadyCardImage:1,AbyssReadyCardGroup:2,AbyssMonsterActor:3,AbyssMonsterPower:4,AbyssDeckCard:5,AbyssForgeCard:6};
  const client={async readResource(){return {contents:[]}},async close(){},async callTool({name,arguments:args}){
   calls.push({name,args});let data={mapPath:args.mapPath};
   if(name==='scene_add_client_template'){
