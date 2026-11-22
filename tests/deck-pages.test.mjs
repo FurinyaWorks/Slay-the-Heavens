@@ -21,6 +21,9 @@ test('the production card browser retains ten independent faces and retires inpu
   assert.ok(foot.position[1] + foot.size[1] / 2 < cardBottom, 'footer must clear the second row');
   assert.ok(find('previous').position[0] + find('previous').size[0] / 2 < -find('rarityTip').size[0] / 2);
   assert.ok(find('next').position[0] - find('next').size[0] / 2 > find('rarityTip').size[0] / 2);
+  for (const control of [foot, find('rarityTip'), find('pageHint')]) {
+    assert.ok(control.size[1] >= control.text.fontSize * 1.45 + 4, control.name + ' must fit a native line');
+  }
   const theme = JSON.parse(readFileSync(join(generated, 'official-assets-theme.json'), 'utf8'));
   for (const name of ['previous', 'next']) {
     const button = find(name);
