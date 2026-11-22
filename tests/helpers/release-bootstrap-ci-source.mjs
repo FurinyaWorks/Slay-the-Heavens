@@ -1,4 +1,7 @@
-import {beforeShopEntryInventory,assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,exactReviewedBuildInput,beforeM05ShopCiSource} from './fork-preflight-source.mjs';
+import {beforeShopEntryInventory,assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
+import {beforeDevelopBackflow} from './develop-release-backflow-source.mjs';
+import {exactReviewedBuildInput} from './rebased-release-source.mjs';
+import {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -85,8 +88,9 @@ function guidanceBefore(path,source){
 // The live disk reader feeds the Run HUD predecessor chain. Authenticate these
 // two descendants before entering that chain; already-historical readers are unchanged.
 function beforeRunHudDiskInput(path,source){
+ if(path!=='scripts/deck-ui-layout.mjs'&&path!=='tests/node-ui-layout.test.mjs')return source;
+ source=beforeDevelopBackflow(path,source);
  if(path==='scripts/deck-ui-layout.mjs')return exactReviewedBuildInput(path,()=>source);
- if(path!=='tests/node-ui-layout.test.mjs')return source;
  assert(!source.includes('\r\r\n'),'fresh Run HUD source: '+path);
  const lf=norm(source),hashBlob=s=>createHash('sha1').update(`blob ${Buffer.byteLength(s)}\0`).update(s).digest('hex');
  assert.equal(hash(lf),'60b7f711eb3b3939bace1e69a6293d30ac563769039d30937cb982e202693c31','fresh Run HUD source: '+path);
