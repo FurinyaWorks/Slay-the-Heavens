@@ -7,8 +7,12 @@ import { nodeLayout } from '../scripts/node-ui-layout.mjs';
 import { gameLayout } from '../scripts/game-ui-layout.mjs';
 
 const find = (controls, name) => controls.find(control => control.name === name);
-function walk(controls, action) {
-  for (const control of controls) { action(control); walk(control.children ?? [], action); }
+function walk(controls, action, parent = '') {
+  for (const control of controls) {
+    const path = parent ? parent + '/' + control.name : control.name;
+    action(control, path);
+    walk(control.children ?? [], action, path);
+  }
 }
 function freeze(value) {
   if (value && typeof value === 'object') { Object.freeze(value); Object.values(value).forEach(freeze); }
@@ -55,6 +59,8 @@ test('node and menu layouts resolve semantic colour, font, minimum font and pict
   theme.font.minimum = 16; theme.font.hud = 29; theme.image.rect = 100004; theme.icon.lock = 999999;
   theme.image.officialBackdrops.act1_1 = 999998;
   theme.image.vignette = 999997; theme.image.discSoft = 999996;
+  theme.image.glowWide = 999995; theme.image.coffer = 999994; theme.image.scroll = 999993;
+  theme.icon.potion.energy_potion = 999992;
   const node = nodeLayout(theme).controls[0].children;
   // Node title reuses the map header (TopPanel) ink and size.
   assert.equal(find(node, 'title').text.colour, theme.color.mapHeader.title);
@@ -76,12 +82,29 @@ test('node and menu layouts resolve semantic colour, font, minimum font and pict
     // The shop merchant's official bust and its next-line marker.
     theme.image.merchant, theme.image.officialBackdrops.act1_1, theme.image.vignette, theme.image.discSoft,
     theme.image.diamond, theme.image.fadeLine /* map header hairline, reused by node TopPanel */,100001,100002,100003,100004,100006];
-  walk(nodeLayout(theme).controls, control => {
-    if (control.kind === 'image') assert.ok(allowed.includes(control.image), `unexpected node image ${control.image}`);
+  const shopArt = new Map([
+    ['nodePanel/shopRoom/mist', theme.image.glowWide],
+    ['nodePanel/shopRoom/stoneFloor/stallLight', theme.image.glowWide],
+    ['nodePanel/shopRoom/stoneFloor/depth', 106095],
+    ['nodePanel/shopView/v25ShopCloth/clothLight', 106095],
+    ['nodePanel/shopRoom/travelCoffer', theme.image.coffer],
+    ['nodePanel/shopRoom/rolledParchment', theme.image.scroll],
+    ['nodePanel/shopRoom/sealedJar', theme.icon.potion.energy_potion],
+  ]);
+  const foundShopArt = new Set();
+  walk(nodeLayout(theme).controls, (control, path) => {
+    if (shopArt.has(path)) {
+      assert.equal(control.kind, 'image', path);
+      assert.equal(control.image, shopArt.get(path), path);
+      foundShopArt.add(path);
+    } else if (control.kind === 'image') {
+      assert.ok(allowed.includes(control.image), `unexpected node image ${control.image} at ${path}`);
+    }
     if (control.name === 'blockedLock') assert.equal(control.image,theme.icon.lock,'existing semantic lock token must propagate');
     if (control.kind === 'text') assert.equal(control.text.minFontSize, control.text.fontSize,
       `${control.name}: auto fitting must preserve the selected readable size`);
   });
+  assert.deepEqual(foundShopArt, new Set(shopArt.keys()));
 });
 
 test('host preserves the approved battle and scrollable map while composing node and menu panels', () => {
@@ -168,11 +191,19 @@ test('building and mutating output trees cannot mutate the source theme', () => 
   assert.equal(JSON.stringify(theme), before);
 });
 
-test('all native text preserves its readable size when auto fitting', () => {
-  walk(gameLayout().controls, control => {
+test('native text preserves its readable size, with the relic description using its approved fitting range', () => {
+  let detailFound = false;
+  walk(gameLayout().controls, (control, path) => {
     if (control.kind !== 'text') return;
-    assert.equal(control.text.minFontSize, control.text.fontSize,
-      `${control.name}: auto fitting must not shrink a readable label`);
+    const detailDescription = path === 'relicPanel/single/description';
+    if (detailDescription) {
+      detailFound = true;
+      assert.equal(control.text.fontSize, nativeTheme.font.small);
+      assert.equal(control.text.autoSize, true);
+    }
+    assert.equal(control.text.minFontSize, detailDescription ? nativeTheme.font.minimum : control.text.fontSize,
+      `${path}: auto fitting must preserve its approved floor`);
     assert.ok(control.text.fontSize >= nativeTheme.font.minimum);
   });
+  assert.equal(detailFound, true);
 });

@@ -15,10 +15,13 @@ if(baseline){
  const before=readFileSync('tests/fixtures/intent-visibility/before.lua','utf8');
  if(createHash('sha256').update(before.replaceAll('\r\n','\n')).digest('hex')!=='f535f2d14b15e8af3fe49bf3e3af45900b4cae4fcc8f8ccb29a407cf6fdcc6d9')throw Error('baseline source identity changed');
  // Keep the immutable pre-cache algorithm, but match the integrated renderer's
- // shared art dependency so cold require/load counts compare the same workload.
- const sharedDependency="local LowCostArt=require('abyss_lowcost_art')";
- if(readFileSync('src/lua/abyss_battle_render_actors.lua','utf8').split(sharedDependency).length!==2)throw Error('integrated art dependency changed');
- const integratedBefore=sharedDependency+'\n'+before;
+ // exact current art and room dependencies so the workload remains comparable.
+ const sharedDependencies=['local Acts = require("abyss_acts")',"local LowCostArt=require('abyss_lowcost_art')"];
+ const integrated=readFileSync('src/lua/abyss_battle_render_actors.lua','utf8');
+ for(const dependency of sharedDependencies){
+  if(integrated.split(dependency).length!==2||before.includes(dependency))throw Error('integrated dependency changed: '+dependency);
+ }
+ const integratedBefore=sharedDependencies.join('\n')+'\n'+before;
  execute(`package.preload.abyss_battle_render_actors=assert(load(${JSON.stringify(integratedBefore)},'@visibility-before'))`);
 }
 const fixture=readFileSync('tests/lua/support/game_ui_fixture.lua','utf8');

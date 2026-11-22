@@ -45,6 +45,19 @@ local function finishOpening()
     end
     error('native opening did not finish')
 end
+local function finishReveal()
+    for _=1,80 do
+        if not host.pageReveal or not host.pageReveal:covered() then return end
+        OnUpdate(0.05)
+    end
+    error('native page did not become ready')
+end
+local function confirmStart()
+    finishReveal()
+    assert(host:selectCharacter('traveler'));finishReveal()
+    assert(host:selectElement('ironclad'));finishReveal()
+    return host:confirmCharacter()
+end
 local function hit(panel,button)
     local control=root:GetChild(panel)
     for part in button:gmatch('[^/]+') do control=assert(control:GetChild(part)) end
@@ -70,16 +83,13 @@ local function defeat()
     finishOpening()
     -- Finish the production opening, enter the first legal room, then let real
     -- enemy turns defeat a controlled three-HP player. Never assign a phase.
-    assert(F.click(root,'nodePanel','eventView/option1'))
-    assert(F.click(root,'nodePanel','eventView/option2'))
-    assert(F.click(root,'nodePanel','eventView/option1'))
+    assert(F.click(root,'nodePanel','eventView/option1'));finishReveal()
+    assert(F.click(root,'nodePanel','eventView/option2'));finishReveal()
+    assert(F.click(root,'nodePanel','eventView/option1'));finishReveal()
     assert(host.run.phase=='map','native Neow opening must finish through its buttons')
     host.run.hp=3
     assert(host.mapUI:choose(F.Nodes.available(host.run,host.map)[1].id))
-    for _=1,80 do
-        if not host.pageReveal or not host.pageReveal:covered() then break end
-        OnUpdate(0.05)
-    end
+    finishReveal()
     local panel, battle = root:GetChild('battlePanel'), host.run.combat
     local card = hit('battlePanel','card1')
     local energy, uid = battle.energy, battle.hand[1].uid
@@ -110,17 +120,19 @@ local function defeat()
         assert(not host.battleUI.busy,'native battle feedback must finish')
     end
     for _=1,600 do
-        if host.mode=='defeat' and not host.motion.deathReveal then break end
+        local reveal=host.pageReveal and host.pageReveal:covered()
+        if host.mode=='defeat' and not host.motion.deathReveal and not reveal then break end
         OnUpdate(0.05)
         revealUpdates=revealUpdates+1
     end
     assert(feedbackUpdates>0 and revealUpdates>0,'OnUpdate must drive feedback and result reveal')
     assert(host.run.phase=='defeat' and host.mode=='defeat' and not host.motion.deathReveal)
+    assert(not host.pageReveal or not host.pageReveal:covered(),'native result must finish preparation')
     assert(root:GetChild('menuPanel'):GetChild('result').visible)
     assert(F.statValue(root,'time')=='暂不可用','unverified native time must stay unavailable')
 end
 
-assert(tap('menuPanel','start',1) and F.confirmStart(host))
+assert(tap('menuPanel','start',1) and confirmStart())
 OnUpdate(3600) -- resume-like input, not evidence about a device clock
 defeat()
 local oldRun=host.run
@@ -134,7 +146,7 @@ assert(host.run==oldRun and host.mode=='defeat' and attempts==0)
 assert(F.statValue(root,'time')=='暂不可用')
 assert(not fire(hit('menuPanel','start'),'click',30),'cancel must invalidate old restart gesture')
 assert(tap('menuPanel','start',34) and host.characterOpen and host.run==oldRun)
-assert(F.confirmStart(host))
+assert(confirmStart())
 finishOpening()
 assert(host.run~=oldRun and host.run.elapsedSeconds==0,
     'unavailable timer must permit restart without carrying old duration')

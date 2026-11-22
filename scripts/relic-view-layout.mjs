@@ -96,7 +96,7 @@ export function relicViewControls(theme = nativeTheme) {
       { name: 'contentBlocker', kind: 'cursorArea', size: v.panel.slice(2), focusable: false },
       text('title', v.title, '持有遗物', f.heading, c.goldBright),
       ...rows,
-      { name: 'single', kind: 'container', size: detail.size, visible: false, children: [
+      { name: 'single', kind: 'container', size: [...detail.size], visible: false, children: [
         { name: 'icon', kind: 'image', position: detail.icon.slice(0, 2), size: detail.icon.slice(2),
           image: theme.icon.node.treasure.id ?? theme.icon.node.treasure, colour: '#FFFFFF' },
         left(text('name', detail.name, '', f.heading, c.goldBright)),

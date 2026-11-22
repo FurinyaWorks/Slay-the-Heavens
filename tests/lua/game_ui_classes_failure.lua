@@ -94,19 +94,32 @@ local function finishOpening(ui)
     end
     error('native opening did not finish before failure injection')
 end
+local function finishReveal(ui)
+    for _=1,80 do
+        if not ui.pageReveal or not ui.pageReveal:covered() then return end
+        OnUpdate(0.05)
+    end
+    error('native page did not become ready')
+end
+local function startTraveler(ui,element)
+    assert(ui:start());finishReveal(ui)
+    assert(ui:selectCharacter('traveler'));finishReveal(ui)
+    assert(ui:selectElement(element));finishReveal(ui)
+    assert(ui:confirmCharacter())
+end
 local function battle(ui,root,finishFeedback,competition)
     local character,card=competition and 'ironclad' or 'watcher',competition and 'warcry' or 'third_eye'
-    assert(ui:start());assert(ui:selectCharacter('traveler'));assert(ui:selectElement(character));assert(ui:confirmCharacter())
+    startTraveler(ui,character)
     finishOpening(ui)
     eq(ui.run.campaignProfile,competition and 'competition-two-act' or 'full-source')
     if ui.prologue then ui.prologue:cancel() end
     ui:refresh()
     if competition then
         assert(ui.run.nodeFlow.event.id=='neow')
-        assert(click(root,'nodePanel/eventView/option1'))
+        assert(click(root,'nodePanel/eventView/option1'));finishReveal(ui)
         eq(#ui.run.nodeFlow.event.rewards,2)
-        assert(click(root,'nodePanel/eventView/option1')) -- actual mini Lament keeps the base maximum
-        assert(click(root,'nodePanel/eventView/option1'))
+        assert(click(root,'nodePanel/eventView/option1'));finishReveal(ui) -- actual mini Lament keeps the base maximum
+        assert(click(root,'nodePanel/eventView/option1'));finishReveal(ui)
         eq(ui.run.phase,'map')
     end
     -- Exact unit entry deck; no natural acquisition, HP, energy or enemy overrides.
@@ -118,7 +131,7 @@ local function battle(ui,root,finishFeedback,competition)
         local first=require('abyss_map').available(ui.map)[1]
         assert(first and first.floor==1 and ui.mapUI:choose(first.id))
     else assert(Run.startCombat(ui.run,"cultist_solo"))end
-    ui:refresh()
+    ui:refresh();finishReveal(ui)
     local slot
     for i,c in ipairs(ui.run.combat.hand) do if c.cardId==card then slot=i;break end end
     assert(slot);click(root,"battlePanel/card"..slot);click(root,"battlePanel/playArea")
@@ -137,7 +150,7 @@ end
 test("undeclared host flag keeps the unified production selection available",function()
     local ui,root,state,lines,restore=startup(nil,true)
     assert(ui);eq(state(),true);eq(root:GetChild("characterPanel").visible,false);eq(root:GetChild("choicePanel").visible,false)
-    assert(F.start(ui));finishOpening(ui);eq(ui.run.characterProfile,nil);eq(ui.run.maxHp,80);eq(#ui.run.deck,10)
+    startTraveler(ui,'ironclad');finishOpening(ui);eq(ui.run.characterProfile,nil);eq(ui.run.maxHp,80);eq(#ui.run.deck,10)
     assert(table.concat(lines,"\n"):find("ABYSS_UI ready",1,true));restore()
 end)
 test("missing formal layout produces startup diagnostic and never reports ready",function()
@@ -149,7 +162,7 @@ test("missing formal layout produces startup diagnostic and never reports ready"
 end)
 test("update failure closes class overlay, disables old class and exit callbacks and keeps diagnostic visible",function()
     local ui,root,state,_,restore=startup(true,true,'full-source')
-    assert(ui:start());eq(root:GetChild("characterPanel").visible,true)
+    assert(ui:start());finishReveal(ui);eq(root:GetChild("characterPanel").visible,true)
     local oldChoice=hit(root,"characterPanel/character2").click
     local oldExit=hit(root,"exitEntry/open").click
     failUpdate();eq(state(),false);eq(ui.disabled,true)

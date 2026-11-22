@@ -31,6 +31,7 @@ test('Angry uses an approved picture mapping and the complete theme validates', 
  const {readFileSync}=await import('node:fs');
  const {validateTheme}=await import('../scripts/build-ui-theme.mjs');
  const theme=JSON.parse(readFileSync('data/presentation/ui_theme.json','utf8'));
- assert.equal(theme.icon.status.angry,103047);
+ assert.equal(theme.icon.status.angry,102044);
+ assert.notEqual(theme.icon.status.angry,theme.icon.status.strength);
  assert.deepEqual(validateTheme(theme,loadContent('data')),[]);
 });
