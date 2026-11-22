@@ -1,3 +1,4 @@
+import {beforeReleaseForgeGridUi} from './release-ui-restore-source.mjs';
 import {preEvent487Source} from './event-487-source-inverse.mjs';
 import {preEvent488Source} from './event-488-source-inverse.mjs';
 import {preDeckDeliverySource,deckDeliveryPaths} from './deck-delivery-source-composition.mjs';
@@ -63,7 +64,7 @@ function tryPreparedDeliverySource(path,source,target,{readSource=readLive}={}){
  // Every call re-reads linked owners. No cache may cover this validation.
  for(const [p,b]of Object.entries(proof.targets[target].files).filter(([,b])=>b.beforeSha256===null)){
   const label='delivery linked source';
-  let live;try{live=readSource(p);}catch{assert.fail(label+' missing: '+p);}
+  let live;try{live=beforeReleaseForgeGridUi(p,readSource(p));}catch{assert.fail(label+' missing: '+p);}
   if(target==='develop'||target==='pre379'){const projected=projectedInverse(p,live,'developEvents');if(projected!==undefined)live=projected;}
   if(target==='pre379'){const projected=projectedInverse(p,live,'develop');if(projected!==undefined)live=projected;}
   live=preEventSource(p,live);
